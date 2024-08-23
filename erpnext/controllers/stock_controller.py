@@ -608,7 +608,6 @@ class StockController(AccountsController):
 			return details
 		else:
 			details = self.get("items")
-
 			if default_expense_account or default_cost_center:
 				for d in details:
 					if default_expense_account and not d.get("expense_account"):

@@ -45,6 +45,12 @@ frappe.ui.form.on("Purchase Order", {
 				},
 			};
 		});
+
+		frm.set_query("branch", function (doc) {
+			return {
+				filters: { company: doc.company },
+			};
+		});
 	},
 
 	company: function (frm) {

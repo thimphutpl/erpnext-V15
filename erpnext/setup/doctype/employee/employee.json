@@ -26,6 +26,7 @@
   "date_of_joining",
   "image",
   "status",
+  "old_emp_id",
   "erpnext_user",
   "user_id",
   "create_user",
@@ -34,11 +35,15 @@
   "company",
   "department",
   "employee_number",
+  "parent_agency",
   "column_break_25",
   "designation",
   "reports_to",
+  "employee_group",
   "column_break_18",
   "branch",
+  "cost_center",
+  "pms_group",
   "employment_details",
   "scheduled_confirmation_date",
   "column_break_32",
@@ -78,13 +83,18 @@
   "salary_mode",
   "bank_details_section",
   "bank_name",
+  "bank_branch",
   "column_break_heye",
+  "bank_account_type",
   "bank_ac_no",
   "iban",
   "personal_details",
+  "dzongkhag",
   "marital_status",
   "family_background",
   "column_break6",
+  "gewog",
+  "village",
   "blood_group",
   "health_details",
   "passport_details_section",
@@ -137,6 +147,7 @@
   {
    "fieldname": "naming_series",
    "fieldtype": "Select",
+   "hidden": 1,
    "label": "Series",
    "no_copy": 1,
    "oldfieldname": "naming_series",
@@ -155,8 +166,7 @@
   {
    "fieldname": "first_name",
    "fieldtype": "Data",
-   "label": "First Name",
-   "reqd": 1
+   "label": "First Name"
   },
   {
    "allow_in_quick_entry": 1,
@@ -219,6 +229,7 @@
   {
    "fieldname": "employee_number",
    "fieldtype": "Data",
+   "hidden": 1,
    "in_global_search": 1,
    "label": "Employee Number",
    "oldfieldname": "employee_number",
@@ -227,23 +238,23 @@
   {
    "fieldname": "gender",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Gender",
    "oldfieldname": "gender",
    "oldfieldtype": "Select",
-   "options": "Gender",
-   "reqd": 1
+   "options": "Gender"
   },
   {
    "fieldname": "date_of_birth",
    "fieldtype": "Date",
    "label": "Date of Birth",
    "oldfieldname": "date_of_birth",
-   "oldfieldtype": "Date",
-   "reqd": 1
+   "oldfieldtype": "Date"
   },
   {
    "fieldname": "date_of_joining",
    "fieldtype": "Date",
+   "in_list_view": 1,
    "label": "Date of Joining",
    "oldfieldname": "date_of_joining",
    "oldfieldtype": "Date",
@@ -413,10 +424,11 @@
   {
    "depends_on": "eval:doc.salary_mode == 'Bank'",
    "fieldname": "bank_name",
-   "fieldtype": "Data",
+   "fieldtype": "Link",
    "label": "Bank Name",
    "oldfieldname": "bank_name",
-   "oldfieldtype": "Link"
+   "oldfieldtype": "Link",
+   "options": "Financial Institution"
   },
   {
    "depends_on": "eval:doc.salary_mode == 'Bank'",
@@ -514,7 +526,7 @@
   {
    "fieldname": "passport_number",
    "fieldtype": "Data",
-   "label": "Passport Number"
+   "label": "CID Number"
   },
   {
    "fieldname": "date_of_issue",
@@ -816,7 +828,68 @@
    "depends_on": "eval:doc.salary_mode == 'Bank'",
    "fieldname": "iban",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "IBAN"
+  },
+  {
+   "fieldname": "employee_group",
+   "fieldtype": "Link",
+   "label": "Employee Group",
+   "options": "Employee Group"
+  },
+  {
+   "fieldname": "old_emp_id",
+   "fieldtype": "Data",
+   "label": "Old EMP ID"
+  },
+  {
+   "fetch_from": "branch.cost_center",
+   "fieldname": "cost_center",
+   "fieldtype": "Link",
+   "label": "Cost Center",
+   "options": "Cost Center",
+   "read_only": 1
+  },
+  {
+   "fieldname": "pms_group",
+   "fieldtype": "Link",
+   "label": "PMS Group",
+   "options": "PMS Group"
+  },
+  {
+   "fieldname": "bank_branch",
+   "fieldtype": "Link",
+   "label": "Bank Branch",
+   "options": "Financial Institution Branch"
+  },
+  {
+   "fieldname": "bank_account_type",
+   "fieldtype": "Link",
+   "label": "Bank Account Type",
+   "options": "Bank Account Type"
+  },
+  {
+   "fieldname": "parent_agency",
+   "fieldtype": "Data",
+   "label": "Parent Agency"
+  },
+  {
+   "fieldname": "dzongkhag",
+   "fieldtype": "Link",
+   "label": "Dzongkhag",
+   "options": "Dzongkhag"
+  },
+  {
+   "fieldname": "gewog",
+   "fieldtype": "Link",
+   "label": "Gewog",
+   "options": "Dzongkhag"
+  },
+  {
+   "fieldname": "village",
+   "fieldtype": "Link",
+   "label": "Village",
+   "options": "Dzongkhag"
   }
  ],
  "icon": "fa fa-user",
@@ -824,7 +897,7 @@
  "image_field": "image",
  "is_tree": 1,
  "links": [],
- "modified": "2024-01-03 17:36:20.984421",
+ "modified": "2024-08-19 17:00:27.496882",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee",

@@ -4,6 +4,7 @@
 import copy
 
 import frappe
+import re
 from frappe import _
 from frappe.utils.nestedset import NestedSet
 
@@ -15,13 +16,13 @@ class ItemGroup(NestedSet):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
-		from frappe.types import DF
-
 		from erpnext.stock.doctype.item_default.item_default import ItemDefault
 		from erpnext.stock.doctype.item_tax.item_tax import ItemTax
+		from frappe.types import DF
 
 		image: DF.AttachImage | None
 		is_group: DF.Check
+		item_code_base: DF.Data
 		item_group_defaults: DF.Table[ItemDefault]
 		item_group_name: DF.Data
 		lft: DF.Int
@@ -37,6 +38,7 @@ class ItemGroup(NestedSet):
 				self.parent_item_group = _("All Item Groups")
 		self.validate_item_group_defaults()
 		self.check_item_tax()
+		self.validate_item_code_base()
 
 	def check_item_tax(self):
 		"""Check whether Tax Rate is not entered twice for same Tax Type"""
@@ -52,6 +54,10 @@ class ItemGroup(NestedSet):
 					)
 				else:
 					check_list.append((d.item_tax_template, d.tax_category))
+
+	def validate_item_code_base(self):
+		if not re.match(r'^[A-Z]{2}$', self.item_code_base):
+			frappe.throw("Item code base must be exactly two uppercase alphabet letters")
 
 	def on_update(self):
 		NestedSet.on_update(self)

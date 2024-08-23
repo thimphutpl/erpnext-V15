@@ -1,0 +1,119 @@
+{
+ "actions": [],
+ "allow_import": 1,
+ "allow_rename": 1,
+ "autoname": "field:equipment_category",
+ "creation": "2022-10-17 13:39:34.898492",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "equipment_category",
+  "budget_account",
+  "disabled",
+  "pol_expense_account",
+  "r_m_expense_account",
+  "hiring_rate_revision"
+ ],
+ "fields": [
+  {
+   "fieldname": "equipment_category",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Equipment Category",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "budget_account",
+   "fieldtype": "Link",
+   "label": "Budget Account",
+   "options": "Account"
+  },
+  {
+   "default": "0",
+   "fieldname": "disabled",
+   "fieldtype": "Check",
+   "label": "Disabled"
+  },
+  {
+   "fieldname": "pol_expense_account",
+   "fieldtype": "Link",
+   "label": "POL Expense Account",
+   "options": "Account",
+   "reqd": 1
+  },
+  {
+   "fieldname": "r_m_expense_account",
+   "fieldtype": "Link",
+   "label": "R & M Expense Account",
+   "options": "Account",
+   "reqd": 1
+  },
+  {
+   "fieldname": "hiring_rate_revision",
+   "fieldtype": "Percent",
+   "label": "Hiring Rate Revision(%)",
+   "precision": "2",
+   "reqd": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2023-01-04 11:50:23.702606",
+ "modified_by": "Administrator",
+ "module": "Fleet Management",
+ "name": "Equipment Category",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Fleet User",
+   "share": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Fleet Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Maintenance User",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

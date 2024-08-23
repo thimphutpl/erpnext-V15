@@ -33,6 +33,8 @@ class StockEntryDetail(Document):
 		image: DF.Attach | None
 		is_finished_item: DF.Check
 		is_scrap_item: DF.Check
+		issue_to_employee: DF.Link | None
+		issue_to_employee_name: DF.Data | None
 		item_code: DF.Link
 		item_group: DF.Data | None
 		item_name: DF.Data | None

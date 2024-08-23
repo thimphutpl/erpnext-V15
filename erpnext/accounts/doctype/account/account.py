@@ -34,45 +34,19 @@ class Account(NestedSet):
 		account_currency: DF.Link | None
 		account_name: DF.Data
 		account_number: DF.Data | None
-		account_type: DF.Literal[
-			"",
-			"Accumulated Depreciation",
-			"Asset Received But Not Billed",
-			"Bank",
-			"Cash",
-			"Chargeable",
-			"Capital Work in Progress",
-			"Cost of Goods Sold",
-			"Current Asset",
-			"Current Liability",
-			"Depreciation",
-			"Direct Expense",
-			"Direct Income",
-			"Equity",
-			"Expense Account",
-			"Expenses Included In Asset Valuation",
-			"Expenses Included In Valuation",
-			"Fixed Asset",
-			"Income Account",
-			"Indirect Expense",
-			"Indirect Income",
-			"Liability",
-			"Payable",
-			"Receivable",
-			"Round Off",
-			"Stock",
-			"Stock Adjustment",
-			"Stock Received But Not Billed",
-			"Service Received But Not Billed",
-			"Tax",
-			"Temporary",
-		]
+		account_type: DF.Literal["", "Accumulated Depreciation", "Asset Received But Not Billed", "Bank", "Cash", "Chargeable", "Capital Work in Progress", "Cost of Goods Sold", "Current Asset", "Current Liability", "Depreciation", "Direct Expense", "Direct Income", "Equity", "Expense Account", "Expenses Included In Asset Valuation", "Expenses Included In Valuation", "Fixed Asset", "Income Account", "Indirect Expense", "Indirect Income", "Liability", "Payable", "Receivable", "Round Off", "Stock", "Stock Adjustment", "Stock Received But Not Billed", "Service Received But Not Billed", "Tax", "Temporary"]
 		balance_must_be: DF.Literal["", "Debit", "Credit"]
+		budget_type: DF.Link | None
 		company: DF.Link
+		cost_center: DF.Link | None
 		disabled: DF.Check
 		freeze_account: DF.Literal["No", "Yes"]
+		ignore_budget_check: DF.Check
 		include_in_gross: DF.Check
+		is_centralized_budget: DF.Check
 		is_group: DF.Check
+		is_recovery: DF.Check
+		ledger: DF.Literal["", "Capex", "Opex"]
 		lft: DF.Int
 		old_parent: DF.Data | None
 		parent_account: DF.Link
@@ -110,7 +84,8 @@ class Account(NestedSet):
 		self.validate_parent()
 		self.validate_parent_child_account_type()
 		self.validate_root_details()
-		validate_field_number("Account", self.name, self.account_number, self.company, "account_number")
+		# Commented by Dawa Tshering on 2024/07/25
+		# validate_field_number("Account", self.name, self.account_number, self.company, "account_number")
 		self.validate_group_or_ledger()
 		self.set_root_and_report_type()
 		self.validate_mandatory()
@@ -516,8 +491,8 @@ def update_account_number(name, account_name, account_number=None, from_descenda
 				)
 
 				frappe.throw(message, title=_("Rename Not Allowed"))
-
-	validate_account_number(name, account_number, account.company)
+	# Commented by Dawa Tshering
+	# validate_account_number(name, account_number, account.company)
 	if account_number:
 		frappe.db.set_value("Account", name, "account_number", account_number.strip())
 	else:

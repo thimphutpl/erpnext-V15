@@ -9,41 +9,58 @@
  "engine": "InnoDB",
  "field_order": [
   "company",
+  "asset_status",
   "item_code",
   "item_name",
   "asset_owner",
   "asset_owner_company",
   "is_existing_asset",
+  "old_asset_code",
   "is_composite_asset",
   "supplier",
   "customer",
   "image",
   "journal_entry_for_scrap",
+  "vehicle_number",
+  "serial_number",
   "column_break_3",
   "naming_series",
   "asset_name",
   "asset_category",
+  "asset_sub_category",
   "location",
   "split_from",
   "custodian",
+  "custodian_name",
   "department",
   "disposal_date",
+  "posting_date",
   "accounting_dimensions_section",
   "cost_center",
+  "branch",
   "dimension_col_break",
+  "asset_account",
+  "credit_account",
   "purchase_details_section",
   "purchase_receipt",
   "purchase_invoice",
   "available_for_use_date",
+  "additional_value",
   "total_asset_cost",
   "additional_asset_cost",
   "column_break_23",
   "gross_purchase_amount",
   "asset_quantity",
+  "asset_rate",
   "purchase_date",
+  "remarks",
+  "custodian_details_section",
+  "issued_to",
+  "column_break_rbqr",
   "section_break_23",
   "calculate_depreciation",
   "column_break_33",
+  "income_tax_opening_depreciation_amount",
   "opening_accumulated_depreciation",
   "opening_number_of_booked_depreciations",
   "is_fully_depreciated",
@@ -69,8 +86,10 @@
   "section_break_31",
   "maintenance_required",
   "other_details",
+  "asset_issue_details",
   "status",
   "booked_fixed_asset",
+  "residual_value",
   "column_break_51",
   "purchase_amount",
   "default_finance_book",
@@ -546,6 +565,109 @@
    "fieldname": "opening_number_of_booked_depreciations",
    "fieldtype": "Int",
    "label": "Opening Number of Booked Depreciations"
+  },
+  {
+   "fieldname": "asset_sub_category",
+   "fieldtype": "Link",
+   "label": "Asset Sub Category",
+   "options": "Asset Sub Category"
+  },
+  {
+   "fieldname": "old_asset_code",
+   "fieldtype": "Data",
+   "label": "Old Asset Code"
+  },
+  {
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "label": "Posting Date"
+  },
+  {
+   "fieldname": "vehicle_number",
+   "fieldtype": "Data",
+   "label": "Vehicle Number"
+  },
+  {
+   "fieldname": "custodian_details_section",
+   "fieldtype": "Section Break",
+   "label": "Custodian Details"
+  },
+  {
+   "fieldname": "issued_to",
+   "fieldtype": "Select",
+   "label": "Issued To"
+  },
+  {
+   "fieldname": "column_break_rbqr",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "serial_number",
+   "fieldtype": "Data",
+   "label": "Serial Number"
+  },
+  {
+   "fieldname": "asset_status",
+   "fieldtype": "Select",
+   "label": "Asset Status",
+   "options": "Usable\nUnusable\nRepairable\nAllocated\nMarked for Auction\nAuctioned"
+  },
+  {
+   "fieldname": "custodian_name",
+   "fieldtype": "Data",
+   "label": "Custodian Name"
+  },
+  {
+   "fieldname": "asset_rate",
+   "fieldtype": "Currency",
+   "label": "Asset Rate"
+  },
+  {
+   "fieldname": "additional_value",
+   "fieldtype": "Currency",
+   "label": "Additiona Value"
+  },
+  {
+   "fieldname": "asset_issue_details",
+   "fieldtype": "Link",
+   "label": "Asset Issue Details",
+   "options": "Asset Issue Details",
+   "read_only": 1
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "label": "Branch",
+   "options": "Branch"
+  },
+  {
+   "depends_on": "is_existing_asset",
+   "fieldname": "income_tax_opening_depreciation_amount",
+   "fieldtype": "Currency",
+   "label": "Income Tax Opening Depreciation Amount",
+   "options": "Company:company:default_currency"
+  },
+  {
+   "fieldname": "asset_account",
+   "fieldtype": "Link",
+   "label": "Asset Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "credit_account",
+   "fieldtype": "Link",
+   "label": "Credit Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "residual_value",
+   "fieldtype": "Data",
+   "label": "Residual Value"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Small Text",
+   "label": "Remarks"
   }
  ],
  "idx": 72,
@@ -589,7 +711,7 @@
    "link_fieldname": "target_asset"
   }
  ],
- "modified": "2024-05-21 13:46:21.066483",
+ "modified": "2024-08-22 15:15:26.185101",
  "modified_by": "Administrator",
  "module": "Assets",
  "name": "Asset",

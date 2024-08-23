@@ -33,12 +33,26 @@
   "column_break_30",
   "website",
   "language",
-  "dashboard_tab",
   "tax_tab",
   "tax_id",
+  "tax_holiday",
   "column_break_27",
   "tax_category",
   "tax_withholding_category",
+  "bank_account_details_tab",
+  "default_bank_account_section",
+  "bank_name",
+  "bank_account_type",
+  "column_break_ilcg",
+  "bank_branch",
+  "bank_ac_no",
+  "international_bank_details_section",
+  "bank",
+  "swift_code",
+  "column_break_ldue",
+  "bank_address",
+  "account_number",
+  "dashboard_tab",
   "contact_and_address_tab",
   "address_contacts",
   "address_html",
@@ -473,6 +487,78 @@
   {
    "fieldname": "column_break_mglr",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "tax_holiday",
+   "fieldtype": "Link",
+   "label": "Tax Holiday",
+   "options": "Tax Holiday"
+  },
+  {
+   "fieldname": "bank_account_details_tab",
+   "fieldtype": "Tab Break",
+   "label": "Bank Details"
+  },
+  {
+   "fieldname": "default_bank_account_section",
+   "fieldtype": "Section Break",
+   "label": "Default Bank Account"
+  },
+  {
+   "fieldname": "bank_name",
+   "fieldtype": "Link",
+   "label": "Bank Name",
+   "options": "Financial Institution"
+  },
+  {
+   "fieldname": "column_break_ilcg",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "bank_branch",
+   "fieldtype": "Link",
+   "label": "Bank Branch",
+   "options": "Financial Institution Branch"
+  },
+  {
+   "fieldname": "bank_account_type",
+   "fieldtype": "Link",
+   "label": "Bank Account Type",
+   "options": "Bank Account Type"
+  },
+  {
+   "fieldname": "bank_ac_no",
+   "fieldtype": "Data",
+   "label": "Bank A/C No."
+  },
+  {
+   "fieldname": "international_bank_details_section",
+   "fieldtype": "Section Break",
+   "label": "International Bank Details"
+  },
+  {
+   "fieldname": "bank",
+   "fieldtype": "Data",
+   "label": "Bank"
+  },
+  {
+   "fieldname": "swift_code",
+   "fieldtype": "Data",
+   "label": "Swift Code"
+  },
+  {
+   "fieldname": "column_break_ldue",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "bank_address",
+   "fieldtype": "Data",
+   "label": "Bank Address"
+  },
+  {
+   "fieldname": "account_number",
+   "fieldtype": "Data",
+   "label": "Account Number"
   }
  ],
  "icon": "fa fa-user",
@@ -485,7 +571,7 @@
    "link_fieldname": "party"
   }
  ],
- "modified": "2024-05-08 18:02:57.342931",
+ "modified": "2024-08-06 11:26:27.028678",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Supplier",

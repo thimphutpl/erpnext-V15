@@ -57,8 +57,6 @@ class Item(Document):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
-		from frappe.types import DF
-
 		from erpnext.stock.doctype.item_barcode.item_barcode import ItemBarcode
 		from erpnext.stock.doctype.item_customer_detail.item_customer_detail import ItemCustomerDetail
 		from erpnext.stock.doctype.item_default.item_default import ItemDefault
@@ -67,11 +65,13 @@ class Item(Document):
 		from erpnext.stock.doctype.item_tax.item_tax import ItemTax
 		from erpnext.stock.doctype.item_variant_attribute.item_variant_attribute import ItemVariantAttribute
 		from erpnext.stock.doctype.uom_conversion_detail.uom_conversion_detail import UOMConversionDetail
+		from frappe.types import DF
 
 		allow_alternative_item: DF.Check
 		allow_negative_stock: DF.Check
 		asset_category: DF.Link | None
 		asset_naming_series: DF.Literal[None]
+		asset_sub_category: DF.Link | None
 		attributes: DF.Table[ItemVariantAttribute]
 		auto_create_assets: DF.Check
 		barcodes: DF.Table[ItemBarcode]
@@ -86,9 +86,7 @@ class Item(Document):
 		default_bom: DF.Link | None
 		default_item_manufacturer: DF.Link | None
 		default_manufacturer_part_no: DF.Data | None
-		default_material_request_type: DF.Literal[
-			"Purchase", "Material Transfer", "Material Issue", "Manufacture", "Customer Provided"
-		]
+		default_material_request_type: DF.Literal["Purchase", "Material Transfer", "Material Issue", "Manufacture", "Customer Provided"]
 		delivered_by_supplier: DF.Check
 		description: DF.TextEditor | None
 		disabled: DF.Check
@@ -107,14 +105,15 @@ class Item(Document):
 		is_customer_provided_item: DF.Check
 		is_fixed_asset: DF.Check
 		is_grouped_asset: DF.Check
+		is_pol_item: DF.Check
 		is_purchase_item: DF.Check
 		is_sales_item: DF.Check
 		is_stock_item: DF.Check
 		is_sub_contracted_item: DF.Check
-		item_code: DF.Data
+		item_code: DF.Data | None
 		item_defaults: DF.Table[ItemDefault]
 		item_group: DF.Link
-		item_name: DF.Data | None
+		item_name: DF.Data
 		last_purchase_rate: DF.Float
 		lead_time_days: DF.Int
 		max_discount: DF.Float
@@ -154,19 +153,41 @@ class Item(Document):
 		self.set_onload("asset_naming_series", get_asset_naming_series())
 
 	def autoname(self):
-		if frappe.db.get_default("item_naming_by") == "Naming Series":
-			if self.variant_of:
-				if not self.item_code:
-					template_item_name = frappe.db.get_value("Item", self.variant_of, "item_name")
-					make_variant_item_code(self.variant_of, template_item_name, self)
-			else:
-				from frappe.model.naming import set_name_by_naming_series
+		# if frappe.db.get_default("item_naming_by") == "Naming Series":
+		# 	if self.variant_of:
+		# 		if not self.item_code:
+		# 			template_item_name = frappe.db.get_value("Item", self.variant_of, "item_name")
+		# 			make_variant_item_code(self.variant_of, template_item_name, self)
+		# 	else:
+		# 		from frappe.model.naming import set_name_by_naming_series
 
-				set_name_by_naming_series(self)
-				self.item_code = self.name
+		# 		set_name_by_naming_series(self)
+		# 		self.item_code = self.name
+
+		# self.item_code = strip(self.item_code)
+		# self.name = self.item_code
+		self.item_code = self.get_current_item_code()
+		if not self.item_code:
+			msgprint(
+				_("Item Code is mandatory because Item is not automatically numbered"), raise_exception=1)
 
 		self.item_code = strip(self.item_code)
 		self.name = self.item_code
+
+	def get_current_item_code(self):
+		item_code = frappe.db.sql(
+			"""select item_code from tabItem where item_group=%s order by item_code desc limit 1;""", self.item_group)
+		if item_code:
+			base = str(item_code[0][0])[0:2]
+			incremnent = int((item_code[0][0])[2:8]) + 1
+			return base + str(incremnent)
+		else:
+			base = frappe.db.get_value(
+				"Item Group", self.item_group, "item_code_base")
+			if not base:
+				frappe.throw("Setup Item Code Base in Item Group '{}'".format(frappe.get_desk_link("Item Group", self.item_group)))
+			return str(base) + str("100001")
+
 
 	def after_insert(self):
 		"""set opening stock and item price"""
@@ -213,10 +234,20 @@ class Item(Document):
 		self.validate_auto_reorder_enabled_in_stock_settings()
 		self.cant_change()
 		self.validate_item_tax_net_rate_range()
+		self.validate_duplicate()
 
 		if not self.is_new():
 			self.old_item_group = frappe.db.get_value(self.doctype, self.name, "item_group")
 
+	def validate_duplicate(self):
+		data = frappe.db.sql('''
+            select item_name from `tabItem` where name!=%s
+			'''
+		,str(self.name), as_dict=True)
+  
+		for d in data:
+			if d['item_name'] == self.item_name:
+				frappe.throw("The Item with the same name already exist")
 	def on_update(self):
 		self.update_variants()
 		self.update_item_price()

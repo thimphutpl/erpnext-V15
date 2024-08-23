@@ -9,6 +9,7 @@
  "engine": "InnoDB",
  "field_order": [
   "supplier_section",
+  "dispatch_number",
   "title",
   "naming_series",
   "supplier",
@@ -19,8 +20,10 @@
   "column_break_7",
   "transaction_date",
   "schedule_date",
+  "business_activity",
   "column_break1",
   "company",
+  "branch",
   "apply_tds",
   "tax_withholding_category",
   "is_subcontracted",
@@ -39,7 +42,6 @@
   "plc_conversion_rate",
   "ignore_pricing_rule",
   "before_items_section",
-  "scan_barcode",
   "set_from_warehouse",
   "items_col_break",
   "set_warehouse",
@@ -62,13 +64,9 @@
   "set_reserve_warehouse",
   "supplied_items",
   "taxes_section",
-  "tax_category",
   "taxes_and_charges",
   "column_break_53",
-  "shipping_rule",
   "column_break_50",
-  "incoterm",
-  "named_place",
   "section_break_52",
   "taxes",
   "totals",
@@ -489,12 +487,6 @@
    "options": "fa fa-shopping-cart"
   },
   {
-   "fieldname": "scan_barcode",
-   "fieldtype": "Data",
-   "label": "Scan Barcode",
-   "options": "Barcode"
-  },
-  {
    "allow_bulk_edit": 1,
    "fieldname": "items",
    "fieldtype": "Table",
@@ -612,13 +604,6 @@
   {
    "fieldname": "column_break_50",
    "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "shipping_rule",
-   "fieldtype": "Link",
-   "label": "Shipping Rule",
-   "options": "Shipping Rule",
-   "print_hide": 1
   },
   {
    "fieldname": "section_break_52",
@@ -1067,12 +1052,6 @@
    "label": "Update Auto Repeat Reference"
   },
   {
-   "fieldname": "tax_category",
-   "fieldtype": "Link",
-   "label": "Tax Category",
-   "options": "Tax Category"
-  },
-  {
    "depends_on": "supplied_items",
    "fieldname": "set_reserve_warehouse",
    "fieldtype": "Link",
@@ -1147,6 +1126,7 @@
    "label": "Accounting Dimensions "
   },
   {
+   "fetch_from": "branch.cost_center",
    "fieldname": "cost_center",
    "fieldtype": "Link",
    "label": "Cost Center",
@@ -1248,18 +1228,6 @@
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "incoterm",
-   "fieldtype": "Link",
-   "label": "Incoterm",
-   "options": "Incoterm"
-  },
-  {
-   "depends_on": "incoterm",
-   "fieldname": "named_place",
-   "fieldtype": "Data",
-   "label": "Named Place"
-  },
-  {
    "fieldname": "shipping_address_section",
    "fieldtype": "Section Break",
    "label": "Shipping Address"
@@ -1269,13 +1237,33 @@
    "fieldtype": "Tab Break",
    "label": "Connections",
    "show_dashboard": 1
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "label": "Branch",
+   "options": "Branch",
+   "reqd": 1
+  },
+  {
+   "fieldname": "dispatch_number",
+   "fieldtype": "Data",
+   "label": "Dispatch Number",
+   "read_only": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "business_activity",
+   "fieldtype": "Link",
+   "label": "Business Activity",
+   "options": "Business Activity"
   }
  ],
  "icon": "fa fa-file-text",
  "idx": 105,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-03-20 16:03:31.611808",
+ "modified": "2024-08-20 12:52:02.095177",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Purchase Order",

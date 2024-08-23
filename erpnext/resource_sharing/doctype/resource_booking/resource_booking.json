@@ -1,0 +1,137 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "ResBk.####",
+ "creation": "2024-07-26 09:58:41.012963",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "resource_type",
+  "resource",
+  "resource_name",
+  "cost_center",
+  "column_break_4",
+  "from_date_time",
+  "to_date_time",
+  "requesting_by",
+  "reason",
+  "amended_from",
+  "approver_details_section",
+  "approver_name",
+  "contact_number",
+  "column_break_hmqq",
+  "approver_email"
+ ],
+ "fields": [
+  {
+   "fieldname": "resource",
+   "fieldtype": "Link",
+   "label": "Resource",
+   "options": "Resource Directory"
+  },
+  {
+   "fieldname": "from_date_time",
+   "fieldtype": "Datetime",
+   "label": "From Date Time"
+  },
+  {
+   "fieldname": "to_date_time",
+   "fieldtype": "Datetime",
+   "label": "To Date Time"
+  },
+  {
+   "fieldname": "requesting_by",
+   "fieldtype": "Data",
+   "label": "Requesting By"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Resource Booking",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "reason",
+   "fieldtype": "Data",
+   "label": "Reason"
+  },
+  {
+   "fieldname": "column_break_4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "resource.resource_type",
+   "fieldname": "resource_type",
+   "fieldtype": "Link",
+   "label": "Resource Type",
+   "options": "Resource Type"
+  },
+  {
+   "fieldname": "approver_details_section",
+   "fieldtype": "Section Break",
+   "label": "Approver Details"
+  },
+  {
+   "fieldname": "approver_name",
+   "fieldtype": "Data",
+   "label": "Approver Name"
+  },
+  {
+   "fieldname": "column_break_hmqq",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "approver_email",
+   "fieldtype": "Data",
+   "label": "Approver Email"
+  },
+  {
+   "fieldname": "contact_number",
+   "fieldtype": "Data",
+   "label": "Contact Number"
+  },
+  {
+   "fetch_from": "resource.resource_name",
+   "fieldname": "resource_name",
+   "fieldtype": "Data",
+   "label": "Resource Name"
+  },
+  {
+   "fetch_from": "resource.cost_center",
+   "fieldname": "cost_center",
+   "fieldtype": "Link",
+   "label": "Cost Center",
+   "options": "Cost Center"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2024-08-19 19:38:58.470577",
+ "modified_by": "Administrator",
+ "module": "Resource Sharing",
+ "name": "Resource Booking",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

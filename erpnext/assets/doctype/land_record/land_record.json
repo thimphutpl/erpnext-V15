@@ -1,0 +1,232 @@
+{
+ "actions": [],
+ "autoname": "LR.#####",
+ "creation": "2024-07-22 12:55:39.447809",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "plot_id",
+  "ownership_type",
+  "column_break_idnx",
+  "land_type",
+  "land_sub_type",
+  "section_break_gxny",
+  "thram_no",
+  "thram_holder",
+  "thromde",
+  "column_break_caos",
+  "village",
+  "gewog",
+  "dzongkhag",
+  "section_break_mypc",
+  "origin_of_thram",
+  "plot_category",
+  "areain_acre",
+  "areain_sqft",
+  "column_break_tkqs",
+  "precinctland_type",
+  "ruralurban",
+  "location",
+  "section_break_snyv",
+  "remarks",
+  "finding",
+  "column_break_nmid",
+  "plot_status",
+  "way_forward",
+  "section_break_apzd",
+  "attach_file",
+  "photograph",
+  "reference",
+  "column_break_ruie"
+ ],
+ "fields": [
+  {
+   "fieldname": "plot_id",
+   "fieldtype": "Data",
+   "label": "Plot ID"
+  },
+  {
+   "fieldname": "column_break_tkqs",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "ownership_type",
+   "fieldtype": "Select",
+   "label": "Ownership Type",
+   "options": "\nIndividual Person\nCrown Property"
+  },
+  {
+   "fieldname": "thram_no",
+   "fieldtype": "Data",
+   "label": "Thram No"
+  },
+  {
+   "fieldname": "ruralurban",
+   "fieldtype": "Select",
+   "label": "Rural/Urban",
+   "options": "\nRural\nUrban"
+  },
+  {
+   "fieldname": "dzongkhag",
+   "fieldtype": "Data",
+   "label": "Dzongkhag"
+  },
+  {
+   "fieldname": "gewog",
+   "fieldtype": "Data",
+   "label": "Gewog"
+  },
+  {
+   "fieldname": "precinctland_type",
+   "fieldtype": "Select",
+   "label": "Precinct/Land Type",
+   "options": "\nKamzhing\nRoyal Uses\nUrban\nNeighbourg\nHeritage"
+  },
+  {
+   "fieldname": "location",
+   "fieldtype": "Data",
+   "label": "Location"
+  },
+  {
+   "fieldname": "areain_acre",
+   "fieldtype": "Data",
+   "label": "Area(in Acres)"
+  },
+  {
+   "fieldname": "plot_status",
+   "fieldtype": "Small Text",
+   "label": "Plot Status"
+  },
+  {
+   "fieldname": "origin_of_thram",
+   "fieldtype": "Data",
+   "label": "Origin of Thram"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Data",
+   "label": "Remarks"
+  },
+  {
+   "fieldname": "plot_category",
+   "fieldtype": "Data",
+   "label": "Plot Category"
+  },
+  {
+   "fieldname": "thromde",
+   "fieldtype": "Data",
+   "label": "Thromde"
+  },
+  {
+   "fieldname": "finding",
+   "fieldtype": "Small Text",
+   "label": "Finding"
+  },
+  {
+   "fieldname": "way_forward",
+   "fieldtype": "Small Text",
+   "label": "Way Forward"
+  },
+  {
+   "fieldname": "attach_file",
+   "fieldtype": "Attach",
+   "label": "MAP"
+  },
+  {
+   "fieldname": "land_type",
+   "fieldtype": "Select",
+   "label": "Land Type",
+   "options": "\nCrown Property\nOGZ"
+  },
+  {
+   "depends_on": "eval:doc.land_type==\"Crown Property\"",
+   "fieldname": "land_sub_type",
+   "fieldtype": "Select",
+   "label": "Land Sub Type",
+   "options": "\nCrown Property\nIndividual\nLhakhang"
+  },
+  {
+   "fieldname": "thram_holder",
+   "fieldtype": "Select",
+   "label": "Thram Holder",
+   "options": "\nHM"
+  },
+  {
+   "fieldname": "areain_sqft",
+   "fieldtype": "Data",
+   "label": "Area(in Sqft)"
+  },
+  {
+   "fieldname": "village",
+   "fieldtype": "Data",
+   "label": "Village"
+  },
+  {
+   "fieldname": "column_break_idnx",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_gxny",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_caos",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_mypc",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "section_break_snyv",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_nmid",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_apzd",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "photograph",
+   "fieldtype": "Attach",
+   "label": "Photograph"
+  },
+  {
+   "fieldname": "reference",
+   "fieldtype": "Attach",
+   "label": "Reference"
+  },
+  {
+   "fieldname": "column_break_ruie",
+   "fieldtype": "Column Break"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-08-19 15:12:48.184458",
+ "modified_by": "Administrator",
+ "module": "Assets",
+ "name": "Land Record",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

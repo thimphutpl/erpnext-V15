@@ -16,6 +16,8 @@ class DepreciationSchedule(Document):
 
 		accumulated_depreciation_amount: DF.Currency
 		depreciation_amount: DF.Currency
+		income_accumulated_depreciation: DF.Currency
+		income_depreciation_amount: DF.Currency
 		journal_entry: DF.Link | None
 		parent: DF.Data
 		parentfield: DF.Data

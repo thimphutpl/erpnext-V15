@@ -11,6 +11,9 @@
   },
   {
    "card": "Total Outgoing Payment"
+  },
+  {
+   "card": "Sum of Debit"
   }
  ],
  "charts": [
@@ -50,8 +53,8 @@
  "idx": 0,
  "is_default": 0,
  "is_standard": 1,
- "modified": "2020-07-22 13:07:34.540574",
- "modified_by": "Administrator",
+ "modified": "2024-07-13 16:19:37.620893",
+ "modified_by": "pema.dhendup@thimphutechpark.bt",
  "module": "Accounts",
  "name": "Accounts",
  "owner": "Administrator"

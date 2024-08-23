@@ -46,25 +46,33 @@ class Asset(AccountsController):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
+		from erpnext.assets.doctype.asset_finance_book.asset_finance_book import AssetFinanceBook
 		from frappe.types import DF
 
-		from erpnext.assets.doctype.asset_finance_book.asset_finance_book import AssetFinanceBook
-
 		additional_asset_cost: DF.Currency
+		additional_value: DF.Currency
 		amended_from: DF.Link | None
+		asset_account: DF.Link | None
 		asset_category: DF.Link | None
+		asset_issue_details: DF.Link | None
 		asset_name: DF.Data
 		asset_owner: DF.Literal["", "Company", "Supplier", "Customer"]
 		asset_owner_company: DF.Link | None
 		asset_quantity: DF.Int
+		asset_rate: DF.Currency
+		asset_status: DF.Literal["Usable", "Unusable", "Repairable", "Allocated", "Marked for Auction", "Auctioned"]
+		asset_sub_category: DF.Link | None
 		available_for_use_date: DF.Date | None
 		booked_fixed_asset: DF.Check
+		branch: DF.Link | None
 		calculate_depreciation: DF.Check
 		capitalized_in: DF.Link | None
 		company: DF.Link
 		comprehensive_insurance: DF.Data | None
 		cost_center: DF.Link | None
+		credit_account: DF.Link | None
 		custodian: DF.Link | None
+		custodian_name: DF.Data | None
 		customer: DF.Link | None
 		default_finance_book: DF.Link | None
 		department: DF.Link | None
@@ -75,6 +83,7 @@ class Asset(AccountsController):
 		frequency_of_depreciation: DF.Int
 		gross_purchase_amount: DF.Currency
 		image: DF.AttachImage | None
+		income_tax_opening_depreciation_amount: DF.Currency
 		insurance_end_date: DF.Date | None
 		insurance_start_date: DF.Date | None
 		insured_value: DF.Data | None
@@ -82,6 +91,7 @@ class Asset(AccountsController):
 		is_composite_asset: DF.Check
 		is_existing_asset: DF.Check
 		is_fully_depreciated: DF.Check
+		issued_to: DF.Literal[None]
 		item_code: DF.Link
 		item_name: DF.ReadOnly | None
 		journal_entry_for_scrap: DF.Link | None
@@ -89,32 +99,25 @@ class Asset(AccountsController):
 		maintenance_required: DF.Check
 		naming_series: DF.Literal["ACC-ASS-.YYYY.-"]
 		next_depreciation_date: DF.Date | None
+		old_asset_code: DF.Data | None
 		opening_accumulated_depreciation: DF.Currency
 		opening_number_of_booked_depreciations: DF.Int
 		policy_number: DF.Data | None
+		posting_date: DF.Date | None
 		purchase_amount: DF.Currency
 		purchase_date: DF.Date | None
 		purchase_invoice: DF.Link | None
 		purchase_receipt: DF.Link | None
+		remarks: DF.SmallText | None
+		residual_value: DF.Data | None
+		serial_number: DF.Data | None
 		split_from: DF.Link | None
-		status: DF.Literal[
-			"Draft",
-			"Submitted",
-			"Partially Depreciated",
-			"Fully Depreciated",
-			"Sold",
-			"Scrapped",
-			"In Maintenance",
-			"Out of Order",
-			"Issue",
-			"Receipt",
-			"Capitalized",
-			"Decapitalized",
-		]
+		status: DF.Literal["Draft", "Submitted", "Partially Depreciated", "Fully Depreciated", "Sold", "Scrapped", "In Maintenance", "Out of Order", "Issue", "Receipt", "Capitalized", "Decapitalized"]
 		supplier: DF.Link | None
 		total_asset_cost: DF.Currency
 		total_number_of_depreciations: DF.Int
 		value_after_depreciation: DF.Currency
+		vehicle_number: DF.Data | None
 	# end: auto-generated types
 
 	def validate(self):
@@ -152,6 +155,7 @@ class Asset(AccountsController):
 	def on_submit(self):
 		self.validate_in_use_date()
 		self.make_asset_movement()
+		self.make_asset_je_entry()
 		if not self.booked_fixed_asset and self.validate_make_gl_entry():
 			self.make_gl_entries()
 		if self.calculate_depreciation and not self.split_from:
@@ -701,6 +705,70 @@ class Asset(AccountsController):
 
 		return cwip_account
 
+	def make_asset_je_entry(self):
+		if self.gross_purchase_amount:
+			je = frappe.new_doc("Journal Entry")
+			je.flags.ignore_permissions = 1 
+			je.update({
+				"voucher_type": "Journal Entry",
+				"naming_series": "Adjustment",
+				"company": self.company,
+				"remark": self.name + " (" + self.asset_name + ") Asset Issued",
+				"user_remark": self.name + " (" + self.asset_name + ") Asset Issued",
+				"posting_date": self.posting_date if self.posting_date else self.purchase_date,
+				"branch": self.branch
+				})
+
+			#credit account update
+			je.append("accounts", {
+				"account": self.credit_account,
+				"credit_in_account_currency": self.gross_purchase_amount,
+				"reference_type": "Asset",
+				"reference_name": self.name,
+				"cost_center": self.cost_center
+				})
+
+			#debit account update
+			je.append("accounts", {
+				"account": self.asset_account,
+				"debit_in_account_currency": self.gross_purchase_amount,
+				"reference_type": "Asset",
+				"reference_name": self.name,
+				"cost_center": self.cost_center
+				})
+			je.submit()
+		if self.is_existing_asset:
+			je = frappe.new_doc("Journal Entry")
+			je.flags.ignore_permissions = 1 
+			je.update({
+				"voucher_type": "Journal Entry",
+				"naming_series": "Adjustment",
+				"company": self.company,
+				"remark": self.name + " (" + self.asset_name + ") Asset Issued",
+				"user_remark": self.name + " (" + self.asset_name + ") Asset Issued",
+				"posting_date": self.posting_date if self.posting_date else self.purchase_date,
+				"branch": self.branch
+				})
+
+			#credit account update
+			je.append("accounts", {
+				"account": self.accumulated_depreciation_account,
+				"credit_in_account_currency": self.opening_accumulated_depreciation,
+				"reference_type": "Asset",
+				"reference_name": self.name,
+				"cost_center": self.cost_center
+				})
+
+			#debit account update
+			je.append("accounts", {
+				"account": self.credit_account,
+				"debit_in_account_currency": self.opening_accumulated_depreciation,
+				"reference_type": "Asset",
+				"reference_name": self.name,
+				"cost_center": self.cost_center
+				})
+			je.submit()
+
 	def make_gl_entries(self):
 		gl_entries = []
 
@@ -974,7 +1042,7 @@ def make_journal_entry(asset_name):
 
 	je = frappe.new_doc("Journal Entry")
 	je.voucher_type = "Depreciation Entry"
-	je.naming_series = depreciation_series
+	je.naming_series: "Depreciation Entry"
 	je.company = asset.company
 	je.remark = f"Depreciation Entry against asset {asset_name}"
 

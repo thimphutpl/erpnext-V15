@@ -8,7 +8,8 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "account_type"
+  "account_type",
+  "description"
  ],
  "fields": [
   {
@@ -16,13 +17,20 @@
    "fieldtype": "Data",
    "label": "Account Type",
    "unique": 1
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "label": "Description"
   }
  ],
  "links": [],
- "modified": "2020-04-10 21:13:09.137898",
+ "modified": "2024-07-26 17:16:37.897239",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Bank Account Type",
+ "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [
   {
@@ -63,6 +71,8 @@
   }
  ],
  "quick_entry": 1,
+ "search_fields": "description",
  "sort_field": "modified",
- "sort_order": "DESC"
+ "sort_order": "DESC",
+ "states": []
 }

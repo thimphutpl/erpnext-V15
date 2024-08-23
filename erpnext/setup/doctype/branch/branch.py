@@ -3,6 +3,8 @@
 
 
 from frappe.model.document import Document
+import frappe
+import re
 
 
 class Branch(Document):
@@ -14,7 +16,18 @@ class Branch(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		abbreviation: DF.Data | None
 		branch: DF.Data
+		company: DF.Link
+		cost_center: DF.Link
+		disabled: DF.Check
+		expense_bank_account: DF.Link | None
 	# end: auto-generated types
 
-	pass
+	def validate(self):
+		if not self.get("__islocal"):
+			self.validate_branch_abbreviation()
+
+	def validate_branch_abbreviation(self):
+		if not re.match(r'^[A-Z]{3}$', self.abbreviation):
+			frappe.throw("Branch abbreviation must be exactly three uppercase alphabet letters")

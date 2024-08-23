@@ -42,6 +42,12 @@ frappe.ui.form.on("Material Request", {
 				},
 			};
 		});
+
+		frm.set_query("branch", function (doc) {
+			return {
+				filters: { company: doc.company },
+			};
+		});
 	},
 
 	onload: function (frm) {
@@ -111,11 +117,11 @@ frappe.ui.form.on("Material Request", {
 
 			if (flt(frm.doc.per_ordered, precision) < 100) {
 				let add_create_pick_list_button = () => {
-					frm.add_custom_button(
-						__("Pick List"),
-						() => frm.events.create_pick_list(frm),
-						__("Create")
-					);
+					// frm.add_custom_button(
+					// 	__("Pick List"),
+					// 	() => frm.events.create_pick_list(frm),
+					// 	__("Create")
+					// );
 				};
 
 				if (frm.doc.material_request_type === "Material Transfer") {
@@ -126,11 +132,11 @@ frappe.ui.form.on("Material Request", {
 						__("Create")
 					);
 
-					frm.add_custom_button(
-						__("Material Transfer (In Transit)"),
-						() => frm.events.make_in_transit_stock_entry(frm),
-						__("Create")
-					);
+					// frm.add_custom_button(
+					// 	__("Material Transfer (In Transit)"),
+					// 	() => frm.events.make_in_transit_stock_entry(frm),
+					// 	__("Create")
+					// );
 				}
 
 				if (frm.doc.material_request_type === "Material Issue") {
@@ -150,28 +156,53 @@ frappe.ui.form.on("Material Request", {
 				}
 
 				if (frm.doc.material_request_type === "Purchase") {
+
 					frm.add_custom_button(
 						__("Purchase Order"),
 						() => frm.events.make_purchase_order(frm),
 						__("Create")
 					);
+					
 				}
 
-				if (frm.doc.material_request_type === "Purchase") {
+				if (frm.doc.material_request_type === "Requisition") {
+
 					frm.add_custom_button(
-						__("Request for Quotation"),
-						() => frm.events.make_request_for_quotation(frm),
+						__("Purchase Order"),
+						() => frm.events.make_purchase_order(frm),
 						__("Create")
 					);
+					frm.add_custom_button(
+						__("Material Issue"),
+						() => frm.events.make_stock_entry(frm),
+						__("Create")
+					);
+					frm.add_custom_button(
+						__("Material Transfer"),
+						() => frm.events.make_stock_entry(frm),
+						__("Create")
+					);
+					
+					
 				}
 
-				if (frm.doc.material_request_type === "Purchase") {
-					frm.add_custom_button(
-						__("Supplier Quotation"),
-						() => frm.events.make_supplier_quotation(frm),
-						__("Create")
-					);
-				}
+				console.log(frm.doc.material_request_type)
+
+				// if (frm.doc.material_request_type === "Purchase") {
+				// 	frm.add_custom_button(
+				// 		__("Request for Quotation"),
+				// 		() => frm.events.make_request_for_quotation(frm),
+				// 		__("Create")
+				// 	);
+				// }
+
+				// if (frm.doc.material_request_type === "Purchase") {
+				// 	frm.add_custom_button(
+				// 		__("Supplier Quotation"),
+				// 		() => frm.events.make_supplier_quotation(frm),
+				// 		__("Create")
+				// 	);
+				// }
 
 				if (frm.doc.material_request_type === "Manufacture") {
 					frm.add_custom_button(
@@ -356,33 +387,39 @@ frappe.ui.form.on("Material Request", {
 	},
 
 	make_purchase_order: function (frm) {
-		frappe.prompt(
-			{
-				label: __("For Default Supplier (Optional)"),
-				fieldname: "default_supplier",
-				fieldtype: "Link",
-				options: "Supplier",
-				description: __(
-					"Select a Supplier from the Default Suppliers of the items below. On selection, a Purchase Order will be made against items belonging to the selected Supplier only."
-				),
-				get_query: () => {
-					return {
-						query: "erpnext.stock.doctype.material_request.material_request.get_default_supplier_query",
-						filters: { doc: frm.doc.name },
-					};
-				},
-			},
-			(values) => {
-				frappe.model.open_mapped_doc({
-					method: "erpnext.stock.doctype.material_request.material_request.make_purchase_order",
-					frm: frm,
-					args: { default_supplier: values.default_supplier },
-					run_link_triggers: true,
-				});
-			},
-			__("Enter Supplier"),
-			__("Create")
-		);
+		frappe.model.open_mapped_doc({
+			method: "erpnext.stock.doctype.material_request.material_request.make_purchase_order",
+			frm: frm,
+			args: {  },
+			run_link_triggers: true,
+		});
+		// frappe.prompt(
+		// 	{
+		// 		label: __("For Default Supplier (Optional)"),
+		// 		fieldname: "default_supplier",
+		// 		fieldtype: "Link",
+		// 		options: "Supplier",
+		// 		description: __(
+		// 			"Select a Supplier from the Default Suppliers of the items below. On selection, a Purchase Order will be made against items belonging to the selected Supplier only."
+		// 		),
+		// 		get_query: () => {
+		// 			return {
+		// 				query: "erpnext.stock.doctype.material_request.material_request.get_default_supplier_query",
+		// 				filters: { doc: frm.doc.name },
+		// 			};
+		// 		},
+		// 	},
+		// 	(values) => {
+		// 		frappe.model.open_mapped_doc({
+		// 			method: "erpnext.stock.doctype.material_request.material_request.make_purchase_order",
+		// 			frm: frm,
+		// 			args: { default_supplier: values.default_supplier },
+		// 			run_link_triggers: true,
+		// 		});
+		// 	},
+		// 	__("Enter Supplier"),
+		// 	__("Create")
+		// );
 	},
 
 	make_request_for_quotation: function (frm) {

@@ -38,9 +38,11 @@
   {
    "fieldname": "company",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Company",
    "options": "Company",
+   "remember_last_selected_value": 1,
    "reqd": 1
   },
   {
@@ -90,7 +92,7 @@
  "idx": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2024-06-12 16:10:31.451257",
+ "modified": "2024-08-14 14:37:26.567083",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Department",

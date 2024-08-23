@@ -1,0 +1,200 @@
+# Copyright (c) 2022, Frappe Technologies Pvt. Ltd. and contributors
+# For license information, please see license.txt
+
+import frappe
+from frappe.model.document import Document
+from erpnext.custom_utils import check_future_date
+from frappe.utils import flt, cint
+from erpnext.controllers.stock_controller import StockController
+from erpnext.fleet_management.fleet_utils import get_pol_till, get_previous_km
+from erpnext.accounts.general_ledger import (
+	get_round_off_account_and_cost_center,
+	make_gl_entries,
+	make_reverse_gl_entries,
+	merge_similar_entries,
+)
+class POLIssue(StockController):
+	def __init__(self, *args, **kwargs):
+		super(POLIssue, self).__init__(*args, **kwargs)
+	def validate(self):
+		check_future_date(self.posting_date)
+		self.validate_uom_is_integer("stock_uom", "qty")
+		self.update_items()
+		self.validate_duplicate_equipment()
+		self.validate_data()
+	
+	def validate_data(self):
+		if not self.cost_center :
+			frappe.throw("Cost Center and Warehouse are Mandatory")
+		total_quantity = 0
+		for a in self.items:
+			if flt(a.qty) <= 0:
+				frappe.throw("Quantity for <b>"+str(a.equipment)+"</b> should be greater than 0")
+			total_quantity = flt(total_quantity) + flt(a.qty)
+			previous_km_reading = frappe.db.sql('''
+				select cur_km_reading
+				from `tabPOL Issue` p inner join `tabPOL Issue Items` pi on p.name = pi.parent	
+				where p.docstatus = 1 and p.name != '{}' and pi.equipment = '{}'
+				and pi.uom = '{}' 
+				order by p.posting_date desc, p.posting_time desc
+				limit 1
+			'''.format(self.name, a.equipment, a.uom))
+			previous_pol_rev_km_reading = frappe.db.sql('''
+				select cur_km_reading from `tabPOL Receive` where equipment = '{}' and docstatus = 1 and uom = '{}'
+				order by posting_date desc, posting_time desc
+				limit 1
+			'''.format(a.equipment,a.uom))
+			pv_km = 0
+			if not previous_km_reading and previous_pol_rev_km_reading:
+				previous_km_reading = previous_pol_rev_km_reading
+			elif previous_km_reading and previous_pol_rev_km_reading:
+				if flt(previous_km_reading[0][0]) < previous_pol_rev_km_reading[0][0]:
+					previous_km_reading = previous_pol_rev_km_reading
+
+			if not previous_km_reading:
+				pv_km = frappe.db.get_value("Equipment",a.equipment,"initial_km_reading")
+			else:
+				pv_km = previous_km_reading[0][0]
+
+			if flt(pv_km) >= flt(a.cur_km_reading):
+				frappe.throw("Current KM/Hr Reading cannot be less than Previous KM/Hr Reading({}) for Equipment Number <b>{}</b>".format(pv_km,a.equipment))
+			a.km_difference = flt(a.cur_km_reading) - flt(pv_km)
+			if a.uom == "Hour":
+				a.mileage = flt(a.qty) / flt(a.km_difference)
+			else :
+				a.mileage = flt(a.km_difference) / a.qty
+			a.previous_km = pv_km
+			a.amount = flt(a.rate) * flt(a.qty)
+		self.total_quantity = total_quantity
+	
+	def on_submit(self):
+		self.validate_duplicate_equipment()
+		self.check_tanker_hsd_balance()
+		self.make_pol_entry()
+		self.make_gl_entries()
+	def on_cancel(self):
+		self.ignore_linked_doctypes = ("GL Entry", "Stock Ledger Entry", "Payment Ledger Entry", "POL Entry")
+		self.delete_pol_entry()
+		self.make_gl_entries()
+	def make_gl_entries(self):
+		expense_account = frappe.db.get_value("Company", self.company,'pol_expense_account')
+		gl_entries=[]
+		for d in self.items:
+			party = frappe.db.get_value("Fuelbook", d.fuelbook,"supplier")
+			pol_expense_account = frappe.db.get_value("Equipment Category", d.equipment_category,"pol_expense_account")
+			gl_entries.append(
+				self.get_gl_dict({
+					"account": pol_expense_account,
+					"debit": d.amount,
+					"debit_in_account_currency": d.amount,
+					"against_voucher": self.name,
+					"party_type": "Supplier",
+					"party": party,
+					"against_voucher_type": self.doctype,
+					"cost_center": d.cost_center,
+					"voucher_type":self.doctype,
+					"voucher_no":self.name
+				}))
+			gl_entries.append(
+				self.get_gl_dict({
+					"account": expense_account,
+					"credit": d.amount,
+					"credit_in_account_currency": d.amount,
+					"against_voucher": self.name,
+					"party_type": "Supplier",
+					"party": party,
+					"against_voucher_type": self.doctype,
+					"cost_center": d.cost_center,
+					"voucher_type":self.doctype,
+					"voucher_no":self.name
+				}))
+		gl_entries = merge_similar_entries(gl_entries)
+		make_gl_entries(gl_entries,update_outstanding="No",cancel=self.docstatus == 2)
+
+	def check_tanker_hsd_balance(self):
+		if not self.tanker:
+			return
+		received_till = get_pol_till("Stock", self.tanker, self.posting_date, self.pol_type, self.posting_time)
+		issue_till = get_pol_till("Issue", self.tanker, self.posting_date, self.pol_type)
+		balance = flt(received_till) - flt(issue_till)
+		if flt(self.total_quantity) > flt(balance):
+			frappe.throw("Not enough balance in tanker to issue. The balance is " + str(balance))	
+
+	def make_pol_entry(self):
+		if self.tanker:
+			con1 = frappe.new_doc("POL Entry")
+			con1.flags.ignore_permissions = 1	
+			con1.equipment = self.tanker
+			con1.pol_type = self.pol_type
+			con1.branch = self.branch
+			con1.posting_date = self.posting_date
+			con1.posting_time = self.posting_time
+			con1.qty = self.total_quantity
+			con1.reference_type = self.doctype
+			con1.reference = self.name
+			con1.type = "Issue"
+			con1.is_opening = 0
+			con1.cost_center = self.cost_center
+			con1.submit()
+		for item in self.items:
+			con = frappe.new_doc("POL Entry")
+			con.flags.ignore_permissions = 1	
+			con.equipment = item.equipment
+			con.pol_type = self.pol_type
+			con.branch = self.branch
+			con.cost_center = item.cost_center
+			con.posting_date = self.posting_date
+			con.posting_time = self.posting_time
+			con.qty = item.qty
+			con.reference_type = self.doctype
+			con.reference = self.name
+			con.is_opening = 0
+			con.uom = item.uom
+			con.cost_center = self.cost_center
+			con.current_km = item.cur_km_reading
+			con.mileage = item.mileage
+			con.km_difference = item.km_difference
+			con.type = "Receive"
+			con.rate = item.rate
+			con.amount = item.amount
+			con.fuelbook = item.fuelbook
+			con.submit() 
+
+	def delete_pol_entry(self):
+		frappe.db.sql("delete from `tabPOL Entry` where reference = %s", self.name)
+	def validate_duplicate_equipment(self):
+		for a in self.items:
+			for b in self.items:
+				if a.idx != b.idx:
+					if a.equipment == b.equipment and a.equipment_category == b.equipment_category:
+						frappe.throw("duplicate equipment {0} at row {1} and row {2}".format(a.equipment,a.idx,b.idx))
+
+	def update_items(self):
+		for a in self.items:
+			# item code 
+			a.item_code = self.pol_type
+			# cost center
+			# a.cost_center = self.cost_center		
+			# Warehouse
+			a.warehouse = self.warehouse
+			# Expense Account
+			a.equipment_category = frappe.db.get_value("Equipment", a.equipment, "equipment_category")
+			budget_account = frappe.db.get_value("Equipment Category", a.equipment_category, "budget_account")
+			if not budget_account:
+				budget_account = frappe.db.get_value("Item Default", {'parent':self.pol_type}, "expense_account")
+			if not budget_account:
+				frappe.throw("Set Budget Account in Equipment Category")
+			a.expense_account = budget_account
+	
+	# def update_stock_ledger(self):
+	# 	sl_entries = []
+	# 	for a in self.items:
+	# 		sl_entries.append(self.get_sl_entries(a, {
+	# 			"actual_qty": -1 * flt(a.qty), 
+	# 			"warehouse": self.warehouse, 
+	# 			"incoming_rate": 0 
+	# 		}))
+
+	# 	if self.docstatus == 2:
+	# 		sl_entries.reverse()
+	# 	self.make_sl_entries(sl_entries, self.amended_from and 'Yes' or 'No')

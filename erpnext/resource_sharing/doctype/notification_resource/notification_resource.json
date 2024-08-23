@@ -1,0 +1,84 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-07-26 10:49:56.989789",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "employee",
+  "column_break_fruo",
+  "employee_name",
+  "column_break_eoir",
+  "cid_number",
+  "column_break_gzrs",
+  "contact_number",
+  "column_break_nkvk",
+  "email"
+ ],
+ "fields": [
+  {
+   "fieldname": "employee",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Employee",
+   "options": "Employee"
+  },
+  {
+   "fieldname": "column_break_fruo",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "employee.employee_name",
+   "fieldname": "employee_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Employee Name"
+  },
+  {
+   "fieldname": "column_break_nkvk",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "employee.company_email",
+   "fieldname": "email",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Email"
+  },
+  {
+   "fieldname": "column_break_eoir",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "employee.passport_number",
+   "fieldname": "cid_number",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "CID Number"
+  },
+  {
+   "fieldname": "column_break_gzrs",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "employee.cell_number",
+   "fieldname": "contact_number",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Contact Number"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2024-08-16 11:16:16.885091",
+ "modified_by": "Administrator",
+ "module": "Resource Sharing",
+ "name": "Notification Resource",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

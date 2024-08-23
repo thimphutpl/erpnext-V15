@@ -1,0 +1,56 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-08-06 12:30:28.130147",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "reference_name",
+  "column_break_lclo",
+  "od_amount",
+  "column_break_qvxv",
+  "od_outstanding_amount"
+ ],
+ "fields": [
+  {
+   "fieldname": "reference_name",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Reference Name",
+   "options": "Imprest Advance"
+  },
+  {
+   "fieldname": "column_break_lclo",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "od_amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "OD Amount"
+  },
+  {
+   "fieldname": "column_break_qvxv",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "od_outstanding_amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "OD Outstanding Amount"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2024-08-06 12:32:06.862304",
+ "modified_by": "Administrator",
+ "module": "Accounts",
+ "name": "Imprest Advance OD Item",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

@@ -33,6 +33,7 @@ frappe.query_reports["Stock Balance"] = {
 			fieldtype: "Link",
 			width: "80",
 			options: "Item Group",
+			
 		},
 		{
 			fieldname: "item_code",
@@ -40,11 +41,22 @@ frappe.query_reports["Stock Balance"] = {
 			fieldtype: "Link",
 			width: "80",
 			options: "Item",
-			get_query: function () {
-				return {
-					query: "erpnext.controllers.queries.item_query",
-				};
-			},
+			get_query: () => {
+                let item_group = frappe.query_report.get_filter_value('item_group');
+                if (item_group) {
+                    return {
+                        filters: {
+                            item_group: item_group
+                        }
+                    };
+                }
+            }
+			//Remarks [Old code]
+			// get_query: function () {
+			// 	return {
+			// 		query: "erpnext.controllers.queries.item_query",
+			// 	};
+			// },
 		},
 		{
 			fieldname: "warehouse",

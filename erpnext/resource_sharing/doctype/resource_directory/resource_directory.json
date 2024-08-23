@@ -1,0 +1,200 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "RES.#####",
+ "creation": "2024-07-26 09:58:11.277746",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "resource_type",
+  "resource_name",
+  "custodian",
+  "quanity",
+  "capacity",
+  "adjustable_sitting_capacity",
+  "specialisation",
+  "vehicle_type",
+  "model",
+  "custodian_name",
+  "custodiam_contact_number",
+  "custodian_email_address",
+  "column_break_5",
+  "cost_center",
+  "status",
+  "remarks",
+  "discription",
+  "fuel_book",
+  "engine_number",
+  "chasis_number",
+  "contact_no",
+  "resource_available_section",
+  "resource"
+ ],
+ "fields": [
+  {
+   "fieldname": "resource_type",
+   "fieldtype": "Link",
+   "label": "Resource Type",
+   "options": "Resource Type"
+  },
+  {
+   "fieldname": "resource_name",
+   "fieldtype": "Data",
+   "label": "Resource Name"
+  },
+  {
+   "fieldname": "custodian",
+   "fieldtype": "Link",
+   "label": "Custodian",
+   "options": "Employee"
+  },
+  {
+   "fieldname": "cost_center",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Cost Center",
+   "options": "Cost Center",
+   "reqd": 1
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Available\nNot Available"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Data",
+   "label": "Remarks"
+  },
+  {
+   "fieldname": "column_break_5",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.resource_type==\"Equipment\"",
+   "fieldname": "quanity",
+   "fieldtype": "Data",
+   "label": "Quantity"
+  },
+  {
+   "fieldname": "discription",
+   "fieldtype": "Data",
+   "label": "Description"
+  },
+  {
+   "depends_on": "eval:doc.resource_type==\"Vehicle\"",
+   "fieldname": "model",
+   "fieldtype": "Data",
+   "label": "Model"
+  },
+  {
+   "depends_on": "eval:doc.resource_type==\"Vehicle\"",
+   "fieldname": "fuel_book",
+   "fieldtype": "Data",
+   "label": "Fuel Book"
+  },
+  {
+   "depends_on": "eval:doc.resource_type==\"Vehicle\"",
+   "fieldname": "vehicle_type",
+   "fieldtype": "Data",
+   "label": "Vehicle Type "
+  },
+  {
+   "depends_on": "eval:doc.resource_type==\"Vehicle\"",
+   "fieldname": "engine_number",
+   "fieldtype": "Data",
+   "label": "Engine Number"
+  },
+  {
+   "depends_on": "eval:doc.resource_type==\"Vehicle\"",
+   "fieldname": "chasis_number",
+   "fieldtype": "Data",
+   "label": "Chasis Number"
+  },
+  {
+   "depends_on": "eval:doc.resource_type==\"Hall\"",
+   "fieldname": "capacity",
+   "fieldtype": "Data",
+   "label": "Actual Sitting Capacity"
+  },
+  {
+   "depends_on": "eval:doc.resource_type==\"Professional\"",
+   "fieldname": "specialisation",
+   "fieldtype": "Data",
+   "label": "Specialisation"
+  },
+  {
+   "fieldname": "resource_available_section",
+   "fieldtype": "Section Break",
+   "label": "Resource Available"
+  },
+  {
+   "depends_on": "eval:doc.resource_type==\"Hall\"",
+   "fieldname": "resource",
+   "fieldtype": "Table",
+   "label": "Resource",
+   "options": "Resource Available",
+   "reqd": 1
+  },
+  {
+   "depends_on": "eval:doc.resource_type==\"Professional\"",
+   "fieldname": "contact_no",
+   "fieldtype": "Data",
+   "label": "Contact No."
+  },
+  {
+   "depends_on": "eval:doc.resource_type==\"Hall\"",
+   "fieldname": "adjustable_sitting_capacity",
+   "fieldtype": "Data",
+   "label": "Adjustable Sitting Capacity"
+  },
+  {
+   "fetch_from": "custodian.employee_name",
+   "fieldname": "custodian_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Custodian Name"
+  },
+  {
+   "fetch_from": "custodian.cell_number",
+   "fieldname": "custodiam_contact_number",
+   "fieldtype": "Data",
+   "label": "Custodian Contact Number"
+  },
+  {
+   "fetch_from": "custodian.prefered_email",
+   "fieldname": "custodian_email_address",
+   "fieldtype": "Data",
+   "label": "Custodian Email Address"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-08-20 17:56:57.623623",
+ "modified_by": "Administrator",
+ "module": "Resource Sharing",
+ "name": "Resource Directory",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "search_fields": "resource_type,resource_type,resource_name",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "resource_name",
+ "track_changes": 1
+}

@@ -9,6 +9,7 @@ from frappe import _, msgprint
 from frappe.desk.notifications import clear_doctype_notifications
 from frappe.model.mapper import get_mapped_doc
 from frappe.utils import cint, cstr, flt, get_link_to_form
+from frappe.model.naming import make_autoname
 
 from erpnext.accounts.doctype.sales_invoice.sales_invoice import (
 	unlink_inter_company_doc,
@@ -42,22 +43,16 @@ class PurchaseOrder(BuyingController):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
-		from frappe.types import DF
-
 		from erpnext.accounts.doctype.payment_schedule.payment_schedule import PaymentSchedule
 		from erpnext.accounts.doctype.pricing_rule_detail.pricing_rule_detail import PricingRuleDetail
-		from erpnext.accounts.doctype.purchase_taxes_and_charges.purchase_taxes_and_charges import (
-			PurchaseTaxesandCharges,
-		)
+		from erpnext.accounts.doctype.purchase_taxes_and_charges.purchase_taxes_and_charges import PurchaseTaxesandCharges
 		from erpnext.buying.doctype.purchase_order_item.purchase_order_item import PurchaseOrderItem
-		from erpnext.buying.doctype.purchase_order_item_supplied.purchase_order_item_supplied import (
-			PurchaseOrderItemSupplied,
-		)
+		from erpnext.buying.doctype.purchase_order_item_supplied.purchase_order_item_supplied import PurchaseOrderItemSupplied
+		from frappe.types import DF
 
 		additional_discount_percentage: DF.Float
 		address_display: DF.SmallText | None
 		advance_paid: DF.Currency
-		advance_payment_status: DF.Literal["Not Initiated", "Initiated", "Partially Paid", "Fully Paid"]
 		amended_from: DF.Link | None
 		apply_discount_on: DF.Literal["", "Grand Total", "Net Total"]
 		apply_tds: DF.Check
@@ -75,6 +70,8 @@ class PurchaseOrder(BuyingController):
 		base_total_taxes_and_charges: DF.Currency
 		billing_address: DF.Link | None
 		billing_address_display: DF.SmallText | None
+		branch: DF.Link
+		business_activity: DF.Link | None
 		buying_price_list: DF.Link | None
 		company: DF.Link
 		contact_display: DF.SmallText | None
@@ -92,12 +89,12 @@ class PurchaseOrder(BuyingController):
 		customer_name: DF.Data | None
 		disable_rounded_total: DF.Check
 		discount_amount: DF.Currency
+		dispatch_number: DF.Data | None
 		from_date: DF.Date | None
 		grand_total: DF.Currency
 		group_same_items: DF.Check
 		ignore_pricing_rule: DF.Check
 		in_words: DF.Data | None
-		incoterm: DF.Link | None
 		inter_company_order_reference: DF.Link | None
 		is_internal_supplier: DF.Check
 		is_old_subcontracting_flow: DF.Check
@@ -105,7 +102,6 @@ class PurchaseOrder(BuyingController):
 		items: DF.Table[PurchaseOrderItem]
 		language: DF.Data | None
 		letter_head: DF.Link | None
-		named_place: DF.Data | None
 		naming_series: DF.Literal["PUR-ORD-.YYYY.-"]
 		net_total: DF.Currency
 		order_confirmation_date: DF.Date | None
@@ -124,7 +120,6 @@ class PurchaseOrder(BuyingController):
 		represents_company: DF.Link | None
 		rounded_total: DF.Currency
 		rounding_adjustment: DF.Currency
-		scan_barcode: DF.Data | None
 		schedule_date: DF.Date | None
 		select_print_heading: DF.Link | None
 		set_from_warehouse: DF.Link | None
@@ -132,25 +127,12 @@ class PurchaseOrder(BuyingController):
 		set_warehouse: DF.Link | None
 		shipping_address: DF.Link | None
 		shipping_address_display: DF.SmallText | None
-		shipping_rule: DF.Link | None
-		status: DF.Literal[
-			"",
-			"Draft",
-			"On Hold",
-			"To Receive and Bill",
-			"To Bill",
-			"To Receive",
-			"Completed",
-			"Cancelled",
-			"Closed",
-			"Delivered",
-		]
+		status: DF.Literal["", "Draft", "On Hold", "To Receive and Bill", "To Bill", "To Receive", "Completed", "Cancelled", "Closed", "Delivered"]
 		supplied_items: DF.Table[PurchaseOrderItemSupplied]
 		supplier: DF.Link
 		supplier_address: DF.Link | None
 		supplier_name: DF.Data | None
 		supplier_warehouse: DF.Link | None
-		tax_category: DF.Link | None
 		tax_withholding_category: DF.Link | None
 		tax_withholding_net_total: DF.Currency
 		taxes: DF.Table[PurchaseTaxesandCharges]
@@ -461,6 +443,8 @@ class PurchaseOrder(BuyingController):
 
 	def on_submit(self):
 		super().on_submit()
+		self.dispatch_number = make_autoname("No. HMS/ADM/03-02/"+".YYYY./.#####")
+		frappe.db.set_value("Purchase Order", self.name, "dispatch_number", self.dispatch_number)
 
 		if self.is_against_so():
 			self.update_status_updater()
@@ -470,7 +454,7 @@ class PurchaseOrder(BuyingController):
 			self.update_requested_qty()
 
 		self.update_ordered_qty()
-		self.validate_budget()
+		# self.validate_budget()
 		self.update_reserved_qty_for_subcontract()
 
 		frappe.get_doc("Authorization Control").validate_approving_authority(

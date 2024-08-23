@@ -165,6 +165,12 @@ frappe.ui.form.on("Payment Entry", {
 				filters: filters,
 			};
 		});
+
+		frm.set_query("branch", function (doc) {
+			return {
+				filters: { company: doc.company },
+			};
+		});
 	},
 
 	refresh: function (frm) {

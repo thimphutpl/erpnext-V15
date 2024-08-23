@@ -26,17 +26,21 @@ class Supplier(TransactionBase):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
-		from frappe.types import DF
-
-		from erpnext.accounts.doctype.allowed_to_transact_with.allowed_to_transact_with import (
-			AllowedToTransactWith,
-		)
+		from erpnext.accounts.doctype.allowed_to_transact_with.allowed_to_transact_with import AllowedToTransactWith
 		from erpnext.accounts.doctype.party_account.party_account import PartyAccount
 		from erpnext.utilities.doctype.portal_user.portal_user import PortalUser
+		from frappe.types import DF
 
+		account_number: DF.Data | None
 		accounts: DF.Table[PartyAccount]
 		allow_purchase_invoice_creation_without_purchase_order: DF.Check
 		allow_purchase_invoice_creation_without_purchase_receipt: DF.Check
+		bank: DF.Data | None
+		bank_ac_no: DF.Data | None
+		bank_account_type: DF.Link | None
+		bank_address: DF.Data | None
+		bank_branch: DF.Link | None
+		bank_name: DF.Link | None
 		companies: DF.Table[AllowedToTransactWith]
 		country: DF.Link | None
 		default_bank_account: DF.Link | None
@@ -66,7 +70,9 @@ class Supplier(TransactionBase):
 		supplier_primary_address: DF.Link | None
 		supplier_primary_contact: DF.Link | None
 		supplier_type: DF.Literal["Company", "Individual", "Proprietorship", "Partnership"]
+		swift_code: DF.Data | None
 		tax_category: DF.Link | None
+		tax_holiday: DF.Link | None
 		tax_id: DF.Data | None
 		tax_withholding_category: DF.Link | None
 		warn_pos: DF.Check

@@ -18,3 +18,8 @@ Communication
 Telephony
 Bulk Transaction
 Subcontracting
+Fleet Management
+Budget
+Resource Sharing
+PMS
+eNote

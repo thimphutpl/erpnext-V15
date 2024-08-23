@@ -28,16 +28,11 @@ class PurchaseReceipt(BuyingController):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
-		from frappe.types import DF
-
 		from erpnext.accounts.doctype.pricing_rule_detail.pricing_rule_detail import PricingRuleDetail
-		from erpnext.accounts.doctype.purchase_taxes_and_charges.purchase_taxes_and_charges import (
-			PurchaseTaxesandCharges,
-		)
-		from erpnext.buying.doctype.purchase_receipt_item_supplied.purchase_receipt_item_supplied import (
-			PurchaseReceiptItemSupplied,
-		)
+		from erpnext.accounts.doctype.purchase_taxes_and_charges.purchase_taxes_and_charges import PurchaseTaxesandCharges
+		from erpnext.buying.doctype.purchase_receipt_item_supplied.purchase_receipt_item_supplied import PurchaseReceiptItemSupplied
 		from erpnext.stock.doctype.purchase_receipt_item.purchase_receipt_item import PurchaseReceiptItem
+		from frappe.types import DF
 
 		additional_discount_percentage: DF.Float
 		address_display: DF.SmallText | None
@@ -58,6 +53,7 @@ class PurchaseReceipt(BuyingController):
 		base_total_taxes_and_charges: DF.Currency
 		billing_address: DF.Link | None
 		billing_address_display: DF.SmallText | None
+		branch: DF.Link
 		buying_price_list: DF.Link | None
 		company: DF.Link
 		contact_display: DF.SmallText | None
@@ -104,9 +100,7 @@ class PurchaseReceipt(BuyingController):
 		return_against: DF.Link | None
 		rounded_total: DF.Currency
 		rounding_adjustment: DF.Currency
-		scan_barcode: DF.Data | None
 		select_print_heading: DF.Link | None
-		set_from_warehouse: DF.Link | None
 		set_posting_time: DF.Check
 		set_warehouse: DF.Link | None
 		shipping_address: DF.Link | None
@@ -380,6 +374,7 @@ class PurchaseReceipt(BuyingController):
 		self.repost_future_sle_and_gle()
 		self.set_consumed_qty_in_subcontract_order()
 		self.reserve_stock_for_sales_order()
+		self.update_asset_receive_entries()
 
 	def check_next_docstatus(self):
 		submit_rv = frappe.db.sql(
@@ -421,6 +416,30 @@ class PurchaseReceipt(BuyingController):
 		)
 		self.delete_auto_created_batches()
 		self.set_consumed_qty_in_subcontract_order()
+		self.delete_asset_receive_entries()
+
+	#Update asset entries if asset
+	def update_asset_receive_entries(self):
+		for a in self.items:
+			item_group = frappe.db.get_value("Item", a.item_code, "item_group")
+			if item_group and item_group == "Fixed Asset":
+				ae = frappe.new_doc("Asset Received Entries")
+				ae.item_code = a.item_code
+				ae.child_ref = a.name
+				ae.item_name = a.item_name
+				ae.qty = a.qty
+				ae.company = self.company
+				ae.received_date = self.posting_date
+				ae.reference_type = "Purchase Receipt"
+				ae.ref_doc = self.name
+				ae.branch = self.branch
+				ae.cost_center = a.cost_center
+				ae.warehouse = a.warehouse
+				ae.flags.ignore_permissions = True
+				ae.submit()
+	#Delete asset entries. Taken from old code base
+	def delete_asset_receive_entries(self):
+		frappe.db.sql("delete from `tabAsset Received Entries` where ref_doc = %s", self.name)
 
 	def get_gl_entries(self, warehouse_account=None, via_landed_cost_voucher=False):
 		from erpnext.accounts.general_ledger import process_gl_map
@@ -676,7 +695,7 @@ class PurchaseReceipt(BuyingController):
 					account_type = (
 						"capital_work_in_progress_account"
 						if is_cwip_accounting_enabled(d.asset_category)
-						else "fixed_asset_account"
+						else "credit_account"
 					)
 
 					stock_asset_account_name = get_asset_account(
@@ -938,7 +957,6 @@ class PurchaseReceipt(BuyingController):
 			.where(sle_table.voucher_no == self.name)
 			.where(sle_table.voucher_type == "Purchase Receipt")
 		).run()
-
 
 def get_stock_value_difference(voucher_no, voucher_detail_no, warehouse):
 	return frappe.db.get_value(
@@ -1324,7 +1342,6 @@ def make_stock_entry(source_name, target_doc=None):
 @frappe.whitelist()
 def make_inter_company_delivery_note(source_name, target_doc=None):
 	return make_inter_company_transaction("Purchase Receipt", source_name, target_doc)
-
 
 def get_item_account_wise_additional_cost(purchase_document):
 	landed_cost_vouchers = frappe.get_all(

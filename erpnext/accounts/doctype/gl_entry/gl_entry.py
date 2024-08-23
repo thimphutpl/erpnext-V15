@@ -34,6 +34,7 @@ class GLEntry(Document):
 		against: DF.Text | None
 		against_voucher: DF.DynamicLink | None
 		against_voucher_type: DF.Link | None
+		business_activity: DF.Link | None
 		company: DF.Link | None
 		cost_center: DF.Link | None
 		credit: DF.Currency

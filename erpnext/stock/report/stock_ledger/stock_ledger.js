@@ -26,6 +26,35 @@ frappe.query_reports["Stock Ledger"] = {
 			reqd: 1,
 		},
 		{
+			fieldname: "item_group",
+			label: __("Item Group"),
+			fieldtype: "Link",
+			options: "Item Group",
+		},
+		{
+			fieldname: "item_code",
+			label: __("Item"),
+			fieldtype: "Link",
+			options: "Item",
+
+			//Remarks: Old code
+			// get_query: function () {
+			// 	return {
+			// 		query: "erpnext.controllers.queries.item_query",
+			// 	};
+			// },
+			get_query: () => {
+                let items = frappe.query_report.get_filter_value('item_group');
+                if (items) {
+                    return {
+                        filters: {
+                            item_group: items
+                        }
+                    };
+                }
+			}
+		},
+		{
 			fieldname: "warehouse",
 			label: __("Warehouse"),
 			fieldtype: "Link",
@@ -36,23 +65,6 @@ frappe.query_reports["Stock Ledger"] = {
 					filters: { company: company },
 				};
 			},
-		},
-		{
-			fieldname: "item_code",
-			label: __("Item"),
-			fieldtype: "Link",
-			options: "Item",
-			get_query: function () {
-				return {
-					query: "erpnext.controllers.queries.item_query",
-				};
-			},
-		},
-		{
-			fieldname: "item_group",
-			label: __("Item Group"),
-			fieldtype: "Link",
-			options: "Item Group",
 		},
 		{
 			fieldname: "batch_no",

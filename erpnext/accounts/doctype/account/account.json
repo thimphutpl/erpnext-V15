@@ -18,6 +18,7 @@
   "root_type",
   "report_type",
   "account_currency",
+  "ledger",
   "column_break1",
   "parent_account",
   "account_type",
@@ -27,7 +28,14 @@
   "lft",
   "rgt",
   "old_parent",
-  "include_in_gross"
+  "include_in_gross",
+  "is_recovery",
+  "budget_details",
+  "ignore_budget_check",
+  "is_centralized_budget",
+  "cost_center",
+  "column_break_hvbi",
+  "budget_type"
  ],
  "fields": [
   {
@@ -185,13 +193,61 @@
    "fieldname": "disabled",
    "fieldtype": "Check",
    "label": "Disable"
+  },
+  {
+   "depends_on": "eval:(doc.account_type == \"Expense Account\" || doc.account_type==\"Fixed Asset\")",
+   "fieldname": "ledger",
+   "fieldtype": "Select",
+   "label": "Ledger",
+   "options": "\nCapex\nOpex"
+  },
+  {
+   "default": "0",
+   "fieldname": "ignore_budget_check",
+   "fieldtype": "Check",
+   "label": " Ignore Budget Check"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_centralized_budget",
+   "fieldtype": "Check",
+   "label": " Is Centralized Budget"
+  },
+  {
+   "depends_on": "eval:doc.is_centralized_budget",
+   "fieldname": "cost_center",
+   "fieldtype": "Link",
+   "label": "Cost Center",
+   "mandatory_depends_on": "eval:doc.is_centralized_budget",
+   "options": "Cost Center"
+  },
+  {
+   "fieldname": "column_break_hvbi",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "budget_type",
+   "fieldtype": "Link",
+   "label": "Budget Type",
+   "options": "Budget Type"
+  },
+  {
+   "fieldname": "budget_details",
+   "fieldtype": "Tab Break",
+   "label": "Budget Details"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_recovery",
+   "fieldtype": "Check",
+   "label": "Is Recovery"
   }
  ],
  "icon": "fa fa-money",
  "idx": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2024-06-27 16:23:04.444354",
+ "modified": "2024-08-19 17:56:43.405705",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Account",

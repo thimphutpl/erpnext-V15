@@ -86,12 +86,9 @@ class StockEntry(StockController):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
-		from frappe.types import DF
-
-		from erpnext.stock.doctype.landed_cost_taxes_and_charges.landed_cost_taxes_and_charges import (
-			LandedCostTaxesandCharges,
-		)
+		from erpnext.stock.doctype.landed_cost_taxes_and_charges.landed_cost_taxes_and_charges import LandedCostTaxesandCharges
 		from erpnext.stock.doctype.stock_entry_detail.stock_entry_detail import StockEntryDetail
+		from frappe.types import DF
 
 		add_to_transit: DF.Check
 		additional_costs: DF.Table[LandedCostTaxesandCharges]
@@ -100,15 +97,18 @@ class StockEntry(StockController):
 		apply_putaway_rule: DF.Check
 		asset_repair: DF.Link | None
 		bom_no: DF.Link | None
+		branch: DF.Link
 		company: DF.Link
 		credit_note: DF.Link | None
 		delivery_note_no: DF.Link | None
 		fg_completed_qty: DF.Float
 		from_bom: DF.Check
 		from_warehouse: DF.Link | None
+		in_transit: DF.Check
 		inspection_required: DF.Check
 		is_opening: DF.Literal["No", "Yes"]
 		is_return: DF.Check
+		issued_by: DF.Data | None
 		items: DF.Table[StockEntryDetail]
 		job_card: DF.Link | None
 		letter_head: DF.Link | None
@@ -123,16 +123,8 @@ class StockEntry(StockController):
 		project: DF.Link | None
 		purchase_order: DF.Link | None
 		purchase_receipt_no: DF.Link | None
-		purpose: DF.Literal[
-			"Material Issue",
-			"Material Receipt",
-			"Material Transfer",
-			"Material Transfer for Manufacture",
-			"Material Consumption for Manufacture",
-			"Manufacture",
-			"Repack",
-			"Send to Subcontractor",
-		]
+		purpose: DF.Literal["Material Issue", "Material Receipt", "Material Transfer", "Material Transfer for Manufacture", "Material Consumption for Manufacture", "Manufacture", "Repack", "Send to Subcontractor"]
+		received_by: DF.Data | None
 		remarks: DF.Text | None
 		sales_invoice_no: DF.Link | None
 		scan_barcode: DF.Data | None
@@ -743,6 +735,7 @@ class StockEntry(StockController):
 					NegativeStockError,
 					title=_("Insufficient Stock"),
 				)
+	
 
 	@frappe.whitelist()
 	def get_stock_and_rate(self):
@@ -3197,3 +3190,32 @@ def get_batchwise_serial_nos(item_code, row):
 			batchwise_serial_nos[batch_no] = sorted([serial_no.name for serial_no in serial_nos])
 
 	return batchwise_serial_nos
+
+@frappe.whitelist()
+def has_warehouse_permission(warehouse):
+	user = frappe.session.user
+	user_roles = frappe.get_roles(user)
+
+	if user == "Administrator" or "System Manager" in user_roles:
+		return 1
+	res = frappe.db.sql("""
+			select 1
+			from `tabWarehouse` w, `tabWarehouse Branch` as wb
+			where wb.parent = w.name
+			and w.name = '{warehouse}'
+			and (
+				   exists(select 1
+						   from `tabEmployee` e
+						 where e.user_id = '{user}'
+						 and e.branch = wb.branch)
+				or
+				exists(select 1
+					from `tabEmployee` e,`tabAssign Branch` ab, `tabBranch Item` bi
+					 where e.user_id = '{user}'
+					and ab.employee = e.name
+					  and bi.parent = ab.name
+					   and bi.branch = wb.branch)
+			)
+			""".format(warehouse=warehouse, user=frappe.session.user))
+	
+	return res[0][0] if res else 0

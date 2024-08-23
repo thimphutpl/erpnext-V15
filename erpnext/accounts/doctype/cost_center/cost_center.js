@@ -13,6 +13,15 @@ frappe.ui.form.on("Cost Center", {
 				},
 			};
 		});
+
+		frm.set_query("budget_cost_center", function() {
+			return {
+				filters: {
+					company: frm.doc.company,
+					is_group: 1
+				}
+			}
+		});
 	},
 	refresh: function (frm) {
 		if (!frm.is_new()) {

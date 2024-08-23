@@ -6,7 +6,7 @@ import json
 
 import frappe
 from frappe import _, msgprint, scrub
-from frappe.utils import comma_and, cstr, flt, fmt_money, formatdate, get_link_to_form, nowdate
+from frappe.utils import comma_and, cstr, flt, fmt_money, formatdate, get_link_to_form, nowdate, now_datetime, cint
 
 import erpnext
 from erpnext.accounts.deferred_revenue import get_deferred_booking_accounts
@@ -20,6 +20,8 @@ from erpnext.accounts.doctype.repost_accounting_ledger.repost_accounting_ledger 
 from erpnext.accounts.doctype.tax_withholding_category.tax_withholding_category import (
 	get_party_tax_withholding_details,
 )
+
+from erpnext.accounts.utils import get_tds_account,get_account_type, check_clearance_date
 from erpnext.accounts.party import get_party_account
 from erpnext.accounts.utils import (
 	cancel_exchange_gain_loss_journal,
@@ -32,7 +34,7 @@ from erpnext.assets.doctype.asset_depreciation_schedule.asset_depreciation_sched
 	get_depr_schedule,
 )
 from erpnext.controllers.accounts_controller import AccountsController
-
+from frappe.model.naming import make_autoname
 
 class StockAccountInvalidTransaction(frappe.ValidationError):
 	pass
@@ -45,11 +47,8 @@ class JournalEntry(AccountsController):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
+		from erpnext.accounts.doctype.journal_entry_account.journal_entry_account import JournalEntryAccount
 		from frappe.types import DF
-
-		from erpnext.accounts.doctype.journal_entry_account.journal_entry_account import (
-			JournalEntryAccount,
-		)
 
 		accounts: DF.Table[JournalEntryAccount]
 		amended_from: DF.Link | None
@@ -57,6 +56,7 @@ class JournalEntry(AccountsController):
 		auto_repeat: DF.Link | None
 		bill_date: DF.Date | None
 		bill_no: DF.Data | None
+		business_activity: DF.Link | None
 		cheque_date: DF.Date | None
 		cheque_no: DF.Data | None
 		clearance_date: DF.Date | None
@@ -71,13 +71,14 @@ class JournalEntry(AccountsController):
 		letter_head: DF.Link | None
 		mode_of_payment: DF.Link | None
 		multi_currency: DF.Check
-		naming_series: DF.Literal["ACC-JV-.YYYY.-"]
+		naming_series: DF.Literal["Journal Entry Series"]
 		paid_loan: DF.Data | None
 		pay_to_recd_from: DF.Data | None
 		payment_order: DF.Link | None
 		posting_date: DF.Date
 		process_deferred_accounting: DF.Link | None
 		remark: DF.SmallText | None
+		repost_required: DF.Check
 		reversal_of: DF.Link | None
 		select_print_heading: DF.Link | None
 		stock_entry: DF.Link | None
@@ -89,30 +90,21 @@ class JournalEntry(AccountsController):
 		total_credit: DF.Currency
 		total_debit: DF.Currency
 		user_remark: DF.SmallText | None
-		voucher_type: DF.Literal[
-			"Journal Entry",
-			"Inter Company Journal Entry",
-			"Bank Entry",
-			"Cash Entry",
-			"Credit Card Entry",
-			"Debit Note",
-			"Credit Note",
-			"Contra Entry",
-			"Excise Entry",
-			"Write Off Entry",
-			"Opening Entry",
-			"Depreciation Entry",
-			"Exchange Rate Revaluation",
-			"Exchange Gain Or Loss",
-			"Deferred Revenue",
-			"Deferred Expense",
-		]
+		voucher_type: DF.Literal["Journal Entry", "Inter Company Journal Entry", "Bank Entry", "Cash Entry", "Credit Card Entry", "Debit Note", "Credit Note", "Contra Entry", "Excise Entry", "Write Off Entry", "Opening Entry", "Depreciation Entry", "Exchange Rate Revaluation", "Exchange Gain Or Loss", "Deferred Revenue", "Deferred Expense"]
 		write_off_amount: DF.Currency
 		write_off_based_on: DF.Literal["Accounts Receivable", "Accounts Payable"]
 	# end: auto-generated types
 
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
+
+	def autoname(self):
+		prefix = frappe.db.get_value("Journal Entry Series", self.naming_series, "prefix")
+		if not prefix:
+			frappe.throw("Please set prefix {}".format(
+				frappe.get_desk_link("Journal Entry Series", self.naming_series)
+			))
+		self.name = make_autoname(str(prefix) + ".YYYY.MM.####")
 
 	def validate(self):
 		if self.voucher_type == "Opening Entry":
@@ -195,6 +187,7 @@ class JournalEntry(AccountsController):
 		self.update_inter_company_jv()
 		self.update_invoice_discounting()
 		self.update_booked_depreciation()
+		self.update_reference_document()
 
 	def on_update_after_submit(self):
 		if hasattr(self, "repost_required"):
@@ -227,6 +220,8 @@ class JournalEntry(AccountsController):
 		self.unlink_asset_adjustment_entry()
 		self.update_invoice_discounting()
 		self.update_booked_depreciation(1)
+		self.update_reference_document(cancel=True)
+		check_clearance_date(self.doctype, self.name)
 
 	def get_title(self):
 		return self.pay_to_recd_from or self.accounts[0].account
@@ -874,11 +869,23 @@ class JournalEntry(AccountsController):
 	def set_total_debit_credit(self):
 		self.total_debit, self.total_credit, self.difference = 0, 0, 0
 		for d in self.get("accounts"):
+			tax_amount, tax_dr, tax_cr = 0, 0, 0
 			if d.debit and d.credit:
 				frappe.throw(_("You cannot credit and debit same account at the same time"))
 
-			self.total_debit = flt(self.total_debit) + flt(d.debit, d.precision("debit"))
-			self.total_credit = flt(self.total_credit) + flt(d.credit, d.precision("credit"))
+			# self.total_debit = flt(self.total_debit) + flt(d.debit, d.precision("debit"))
+			# self.total_credit = flt(self.total_credit) + flt(d.credit, d.precision("credit"))
+
+			if cint(self.apply_tds) and cint(d.apply_tds) and d.add_deduct_tax:
+				tax_amount = flt(d.tax_amount)
+				if(d.add_deduct_tax == "Add"):
+					tax_cr = tax_amount if flt(d.credit) else 0
+					tax_dr = tax_amount if flt(d.debit) else 0
+				else:
+					tax_dr = tax_amount if flt(d.credit) else 0
+					tax_cr = tax_amount if flt(d.debit) else 0
+			self.total_debit = flt(self.total_debit) + flt(d.debit, d.precision("debit")) + flt(tax_dr)
+			self.total_credit = flt(self.total_credit) + flt(d.credit, d.precision("credit")) + flt(tax_cr)
 
 		self.difference = flt(self.total_debit, self.precision("total_debit")) - flt(
 			self.total_credit, self.precision("total_credit")
@@ -1043,6 +1050,18 @@ class JournalEntry(AccountsController):
 
 		self.set_total_amount(total_amount, currency)
 
+	def update_reference_document(self, cancel=False):
+		for a in self.get("accounts"):
+			if a.reference_type == "Abstract Bill" and a.reference_name:
+				doc = frappe.get_doc("Abstract Bill", a.reference_name)
+				if cancel:
+					doc.journal_entry_status = "Cancelled on {0}".format(
+						now_datetime().strftime("%Y-%m-%d %H:%M:%S")
+					)
+					doc.db_set("journal_entry_status", "Cancelled on {0}".format(now_datetime().strftime('%Y-%m-%d %H:%M:%S')))
+				else:
+					doc.db_set("journal_entry_status", "Paid on {0}".format(now_datetime().strftime('%Y-%m-%d %H:%M:%S')))
+
 	def set_total_amount(self, amt, currency):
 		self.total_amount = amt
 		self.total_amount_currency = currency
@@ -1068,35 +1087,67 @@ class JournalEntry(AccountsController):
 				r = [d.user_remark, self.remark]
 				r = [x for x in r if x]
 				remarks = "\n".join(r)
+				
+				""" tax code moved from old v14 22/08/2024"""
+				with_tax = [d.account]
+				if cint(self.apply_tds) and cint(d.apply_tds) and d.tax_account and flt(d.rate) and flt(d.tax_amount):
+					with_tax.append(d.tax_account)
 
-				gl_map.append(
-					self.get_gl_dict(
-						{
-							"account": d.account,
-							"party_type": d.party_type,
-							"due_date": self.due_date,
-							"party": d.party,
-							"against": d.against_account,
-							"debit": flt(d.debit, d.precision("debit")),
-							"credit": flt(d.credit, d.precision("credit")),
-							"account_currency": d.account_currency,
-							"debit_in_account_currency": flt(
-								d.debit_in_account_currency, d.precision("debit_in_account_currency")
-							),
-							"credit_in_account_currency": flt(
-								d.credit_in_account_currency, d.precision("credit_in_account_currency")
-							),
-							"against_voucher_type": d.reference_type,
-							"against_voucher": d.reference_name,
-							"remarks": remarks,
-							"voucher_detail_no": d.reference_detail_no,
-							"cost_center": d.cost_center,
-							"project": d.project,
-							"finance_book": self.finance_book,
-						},
-						item=d,
+				for acc in with_tax:
+					tax_account = (acc == d.tax_account)
+					tax_amount_in_account_currency, tax_amount = 0, 0
+					tax_amount_in_account_currency_dr, tax_amount_in_account_currency_cr = 0, 0
+					tax_amount_dr, tax_amount_cr = 0, 0
+					
+					if tax_account:
+						tax_amount_in_account_currency = flt(d.tax_amount_in_account_currency)
+						tax_amount = flt(d.tax_amount)
+
+						if(d.add_deduct_tax == "Add"):
+							tax_amount_in_account_currency_cr = tax_amount_in_account_currency if flt(d.credit) else 0
+							tax_amount_in_account_currency_dr = tax_amount_in_account_currency if flt(d.debit) else 0
+
+							tax_amount_cr = tax_amount if flt(d.credit) else 0
+							tax_amount_dr = tax_amount if flt(d.debit) else 0
+						else:
+							tax_amount_in_account_currency_dr = tax_amount_in_account_currency if flt(d.credit) else 0
+							tax_amount_in_account_currency_cr = tax_amount_in_account_currency if flt(d.debit) else 0
+
+							tax_amount_dr = tax_amount if flt(d.credit) else 0
+							tax_amount_cr = tax_amount if flt(d.debit) else 0
+					party_type = party = ''
+					if  get_account_type( acc, self.company) in ["Receivable","Payable","Expense Account","Income Account"]:
+						party_type = d.party_type
+						party = d.party
+					gl_map.append(
+						self.get_gl_dict(
+							{
+								"account": d.account,
+								"party_type": d.party_type,
+								"due_date": self.due_date,
+								"party": d.party,
+								"against": d.against_account,
+								"debit": flt(abs(tax_amount_dr), d.precision("tax_amount")) if tax_account \
+									else flt(d.debit, d.precision("debit")),
+								"credit": flt(abs(tax_amount_cr), d.precision("tax_amount")) if tax_account \
+									else flt(d.credit, d.precision("credit")),
+								"account_currency": d.account_currency,
+								"debit_in_account_currency": flt(abs(tax_amount_in_account_currency_dr), d.precision("tax_amount_in_account_currency")) \
+									if tax_account else flt(d.debit_in_account_currency, d.precision("debit_in_account_currency")),
+								"credit_in_account_currency": flt(abs(tax_amount_in_account_currency_cr), d.precision("tax_amount_in_account_currency")) \
+									if tax_account else flt(d.credit_in_account_currency, d.precision("credit_in_account_currency")),
+								"against_voucher_type": d.reference_type,
+								"against_voucher": d.reference_name,
+								"remarks": remarks,
+								"voucher_detail_no": d.reference_detail_no,
+								"cost_center": d.cost_center,
+								"project": d.project,
+								"finance_book": self.finance_book,
+								"business_activity": d.business_activity,
+							},
+							item=d,
+						)
 					)
-				)
 		return gl_map
 
 	def make_gl_entries(self, cancel=0, adv_adj=0):
@@ -1120,6 +1171,14 @@ class JournalEntry(AccountsController):
 			)
 			if cancel:
 				cancel_exchange_gain_loss_journal(frappe._dict(doctype=self.doctype, name=self.name))
+
+	@frappe.whitelist()
+	def toggle_cheque_log(self):
+		mandatory = 0
+		cheque_required = frappe.db.get_value("Company", self.company, "cheque_required")
+		if cheque_required and self.voucher_type=="Bank Entry":
+			mandatory = 1
+		return mandatory
 
 	@frappe.whitelist()
 	def get_balance(self, difference_account=None):
@@ -1676,3 +1735,18 @@ def make_reverse_journal_entry(source_name, target_doc=None):
 	)
 
 	return doclist
+
+@frappe.whitelist()
+def get_tds_account(tax_withholding_category):
+	account = frappe.db.sql("""select t.name,
+			ifnull((select tax_withholding_rate
+				from `tabTax Withholding Rate` r
+				where r.parent = t.name
+				limit 1),0) as tax_withholding_rate,
+			(select account
+				from `tabTax Withholding Account` a
+				where a.parent = t.name
+				limit 1) as tax_withholding_account
+		from `tabTax Withholding Category` t
+		where t.name = "{}" """.format(tax_withholding_category), as_dict=True)
+	return account[0] if account else None

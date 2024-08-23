@@ -28,6 +28,7 @@ class PurchaseInvoiceItem(Document):
 		batch_no: DF.Link | None
 		bom: DF.Link | None
 		brand: DF.Link | None
+		business_activity: DF.Link
 		conversion_factor: DF.Float
 		cost_center: DF.Link | None
 		deferred_expense_account: DF.Link | None
@@ -35,7 +36,7 @@ class PurchaseInvoiceItem(Document):
 		discount_amount: DF.Currency
 		discount_percentage: DF.Percent
 		enable_deferred_expense: DF.Check
-		expense_account: DF.Link | None
+		expense_account: DF.Link
 		from_warehouse: DF.Link | None
 		image: DF.Attach | None
 		include_exploded_items: DF.Check
@@ -88,6 +89,7 @@ class PurchaseInvoiceItem(Document):
 		stock_qty: DF.Float
 		stock_uom: DF.Link | None
 		stock_uom_rate: DF.Currency
+		sub_ledger: DF.Link
 		total_weight: DF.Float
 		uom: DF.Link
 		use_serial_batch_fields: DF.Check

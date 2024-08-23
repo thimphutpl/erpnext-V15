@@ -260,6 +260,8 @@ frappe.ui.form.on("Asset", {
 				frappe.format(sch["schedule_date"], { fieldtype: "Date" }),
 				frappe.format(sch["depreciation_amount"], { fieldtype: "Currency" }),
 				frappe.format(sch["accumulated_depreciation_amount"], { fieldtype: "Currency" }),
+				frappe.format(sch["income_depreciation_amount"], { fieldtype: "Currency" }),
+				frappe.format(sch["income_accumulated_depreciation"], { fieldtype: "Currency" }),
 				sch["journal_entry"] || "",
 			];
 
@@ -271,10 +273,12 @@ frappe.ui.form.on("Asset", {
 		});
 
 		let columns = [
-			{ name: __("No."), editable: false, resizable: false, format: (value) => value, width: 60 },
-			{ name: __("Schedule Date"), editable: false, resizable: false, width: 270 },
+			{ name: __("No."), editable: false, resizable: false, format: (value) => value, width: 40 },
+			{ name: __("Schedule Date"), editable: false, resizable: false, width: 100 },
 			{ name: __("Depreciation Amount"), editable: false, resizable: false, width: 164 },
 			{ name: __("Accumulated Depreciation Amount"), editable: false, resizable: false, width: 164 },
+			{ name: __("Income Depreciation Amount"), editable: false, resizable: false, width: 164 },
+			{ name: __("Income Accumulated Depreciation"), editable: false, resizable: false, width: 164 },
 		];
 
 		if (asset_depr_schedule_doc.shift_based) {
@@ -283,7 +287,7 @@ frappe.ui.form.on("Asset", {
 				editable: false,
 				resizable: false,
 				format: (value) => `<a href="/app/journal-entry/${value}">${value}</a>`,
-				width: 245,
+				width: 164,
 			});
 			columns.push({ name: __("Shift"), editable: false, resizable: false, width: 59 });
 		} else {
@@ -292,7 +296,7 @@ frappe.ui.form.on("Asset", {
 				editable: false,
 				resizable: false,
 				format: (value) => `<a href="/app/journal-entry/${value}">${value}</a>`,
-				width: 304,
+				width: 164,
 			});
 		}
 

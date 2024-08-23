@@ -1,0 +1,22 @@
+{
+ "creation": "2024-07-13 16:19:37.204138",
+ "docstatus": 0,
+ "doctype": "Number Card",
+ "filters_json": "{\"company\":\"Office of Gyalpoi Zimpon (Demo)\",\"from_date\":\"2024-01-01\",\"to_date\":\"2024-07-08\",\"account\":[],\"voucher_no\":\"ACC-PAY-2024-00005\",\"party\":[],\"cost_center\":[],\"project\":[],\"include_dimensions\":1,\"include_default_book_entries\":1}",
+ "function": "Count",
+ "idx": 0,
+ "is_public": 0,
+ "is_standard": 1,
+ "label": "Sum of Debit",
+ "modified": "2024-07-13 16:19:37.563224",
+ "modified_by": "pema.dhendup@thimphutechpark.bt",
+ "module": "Accounts",
+ "name": "Sum of Debit",
+ "owner": "pema.dhendup@thimphutechpark.bt",
+ "report_field": "debit",
+ "report_function": "Sum",
+ "report_name": "General Ledger",
+ "show_percentage_stats": 1,
+ "stats_time_interval": "Daily",
+ "type": "Report"
+}

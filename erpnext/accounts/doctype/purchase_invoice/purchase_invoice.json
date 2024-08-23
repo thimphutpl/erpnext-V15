@@ -1,23 +1,26 @@
 {
  "actions": [],
  "allow_import": 1,
- "autoname": "naming_series:",
+ "autoname": "PI.YY.MM.######",
  "creation": "2013-05-21 16:16:39",
  "doctype": "DocType",
  "document_type": "Document",
  "engine": "InnoDB",
  "field_order": [
   "title",
+  "payment_status",
   "naming_series",
   "supplier",
   "supplier_name",
   "tax_id",
   "company",
+  "branch",
   "column_break_6",
   "posting_date",
   "posting_time",
   "set_posting_time",
   "due_date",
+  "business_activity",
   "column_break1",
   "is_paid",
   "is_return",
@@ -32,6 +35,11 @@
   "bill_no",
   "column_break_15",
   "bill_date",
+  "section_break_cxav",
+  "settle_from_advance",
+  "party_type",
+  "column_break_dakv",
+  "imprest_party",
   "accounting_dimensions_section",
   "cost_center",
   "dimension_col_break",
@@ -46,7 +54,6 @@
   "plc_conversion_rate",
   "ignore_pricing_rule",
   "sec_warehouse",
-  "scan_barcode",
   "col_break_warehouse",
   "update_stock",
   "set_warehouse",
@@ -54,6 +61,7 @@
   "is_subcontracted",
   "rejected_warehouse",
   "supplier_warehouse",
+  "column_break_ecuy",
   "items_section",
   "items",
   "section_break_26",
@@ -68,13 +76,9 @@
   "tax_withholding_net_total",
   "base_tax_withholding_net_total",
   "taxes_section",
-  "tax_category",
   "taxes_and_charges",
   "column_break_58",
-  "shipping_rule",
   "column_break_49",
-  "incoterm",
-  "named_place",
   "section_break_51",
   "taxes",
   "totals",
@@ -299,7 +303,7 @@
    "remember_last_selected_value": 1
   },
   {
-   "allow_on_submit": 1,
+   "fetch_from": "branch.cost_center",
    "fieldname": "cost_center",
    "fieldtype": "Link",
    "label": "Cost Center",
@@ -605,12 +609,6 @@
    "print_hide": 1
   },
   {
-   "fieldname": "scan_barcode",
-   "fieldtype": "Data",
-   "label": "Scan Barcode",
-   "options": "Barcode"
-  },
-  {
    "allow_bulk_edit": 1,
    "fieldname": "items",
    "fieldtype": "Table",
@@ -714,22 +712,8 @@
    "options": "fa fa-money"
   },
   {
-   "fieldname": "tax_category",
-   "fieldtype": "Link",
-   "label": "Tax Category",
-   "options": "Tax Category",
-   "print_hide": 1
-  },
-  {
    "fieldname": "column_break_49",
    "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "shipping_rule",
-   "fieldtype": "Link",
-   "label": "Shipping Rule",
-   "options": "Shipping Rule",
-   "print_hide": 1
   },
   {
    "fieldname": "section_break_51",
@@ -1338,7 +1322,6 @@
    "label": "Update Auto Repeat Reference"
   },
   {
-   "collapsible": 1,
    "fieldname": "accounting_dimensions_section",
    "fieldtype": "Section Break",
    "label": "Accounting Dimensions "
@@ -1578,18 +1561,6 @@
    "print_hide": 1
   },
   {
-   "fieldname": "incoterm",
-   "fieldtype": "Link",
-   "label": "Incoterm",
-   "options": "Incoterm"
-  },
-  {
-   "depends_on": "incoterm",
-   "fieldname": "named_place",
-   "fieldtype": "Data",
-   "label": "Named Place"
-  },
-  {
    "default": "0",
    "depends_on": "allocate_advances_automatically",
    "description": "Advance payments allocated against orders will only be fetched",
@@ -1633,17 +1604,70 @@
    "fieldname": "update_outstanding_for_self",
    "fieldtype": "Check",
    "label": "Update Outstanding for Self"
+  },
+  {
+   "fieldname": "payment_status",
+   "fieldtype": "Select",
+   "label": "Payment Status",
+   "options": "Unpaid\nPaid",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_ecuy",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "label": "Branch",
+   "options": "Branch",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_cxav",
+   "fieldtype": "Section Break",
+   "label": "Imprest Party Detail"
+  },
+  {
+   "default": "0",
+   "fieldname": "settle_from_advance",
+   "fieldtype": "Check",
+   "label": "Settle from Advance"
+  },
+  {
+   "fieldname": "column_break_dakv",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.settle_from_advance",
+   "fieldname": "party_type",
+   "fieldtype": "Select",
+   "label": "Imprest Party Type",
+   "options": "\nEmployee\nAgency"
+  },
+  {
+   "depends_on": "eval:doc.settle_from_advance",
+   "fieldname": "imprest_party",
+   "fieldtype": "Dynamic Link",
+   "label": "Imprest Party",
+   "options": "party_type"
+  },
+  {
+   "fieldname": "business_activity",
+   "fieldtype": "Link",
+   "label": "Business Activity",
+   "options": "Business Activity"
   }
  ],
  "icon": "fa fa-file-text",
  "idx": 204,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-04-11 11:28:42.802211",
+ "modified": "2024-08-20 12:58:15.992596",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Purchase Invoice",
- "naming_rule": "By \"Naming Series\" field",
+ "naming_rule": "Expression (old style)",
  "owner": "Administrator",
  "permissions": [
   {

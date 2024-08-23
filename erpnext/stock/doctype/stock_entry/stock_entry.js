@@ -150,6 +150,80 @@ frappe.ui.form.on("Stock Entry", {
 			erpnext.accounts.dimensions.update_dimension(frm, frm.doctype);
 		}
 	},
+	create_custom_buttons: function (frm) {
+		if (frm.doc.__unsaved) {
+			frm.set_value("in_transit", 0);
+			//frm.set_value("status", "Draft");
+			return;
+		}
+
+		if (frm.doc.purpose == "Material Transfer" && frm.doc.docstatus === 0) {
+			frm.page.clear_primary_action();
+			frappe.call({
+				method: 'erpnext.stock.doctype.stock_entry.stock_entry.has_warehouse_permission',
+				args: {
+					warehouse: frm.doc.items[0].t_warehouse
+				},
+				callback: (r) => {
+					if (!frm.doc.in_transit) {
+						frm.page.set_primary_action(__('Transfer'), () => {
+							frm.set_value("in_transit", 1);
+							frm.set_value("issued_by", frappe.session.user_fullname);
+							frm.save().then(() => {
+								frm.page.clear_primary_action();
+								frm.refresh();
+								// frm.events.refresh(frm);
+							});
+						});
+					} else {
+						if (r.message) {
+							frm.page.set_primary_action(__('Confirm Receipt'), () => {
+								frm.set_value("received_by", frappe.session.user_fullname);
+								frm.save('Submit').then(() => {
+									frm.page.clear_primary_action();
+									frm.refresh();
+									// frm.events.refresh(frm);
+								});
+							});
+						}
+					}
+				}
+			});
+		}
+		// if (frm.doc.stock_entry_type == "Material Return" && frm.doc.docstatus === 0) {
+		// 	frm.page.clear_primary_action();
+		// 	frappe.call({
+		// 		method: 'erpnext.stock.doctype.stock_entry.stock_entry.has_warehouse_permission',
+		// 		args: {
+		// 			warehouse: frm.doc.items[0].t_warehouse
+		// 		},
+		// 		callback: (r) => {
+		// 			if (!frm.doc.in_transit) {
+		// 				frm.page.set_primary_action(__('Return'), () => {
+		// 					frm.set_value("in_transit", 1);
+		// 					frm.set_value("issued_by", frappe.session.user_fullname);
+		// 					frm.save().then(() => {
+		// 						frm.page.clear_primary_action();
+		// 						frm.refresh();
+		// 						// frm.events.refresh(frm);
+		// 					});
+		// 				});
+		// 			} else {
+		// 				if (r.message) {
+		// 					frm.page.set_primary_action(__('Confirm Receipt'), () => {
+		// 						frm.set_value("received_by", frappe.session.user_fullname);
+		// 						frm.save('Submit').then(() => {
+		// 							frm.page.clear_primary_action();
+		// 							frm.refresh();
+		// 							// frm.events.refresh(frm);
+		// 						});
+		// 					});
+		// 				}
+		// 			}
+		// 		}
+		// 	});
+		// }
+	},
 
 	setup_quality_inspection: function (frm) {
 		if (!frm.doc.inspection_required) {
@@ -207,6 +281,7 @@ frappe.ui.form.on("Stock Entry", {
 
 	refresh: function (frm) {
 		frm.trigger("get_items_from_transit_entry");
+		frm.events.create_custom_buttons(frm)
 
 		if (!frm.doc.docstatus) {
 			frm.trigger("validate_purpose_consumption");
@@ -462,6 +537,7 @@ frappe.ui.form.on("Stock Entry", {
 			);
 		}
 	},
+
 
 	before_save: function (frm) {
 		frm.doc.items.forEach((item) => {
