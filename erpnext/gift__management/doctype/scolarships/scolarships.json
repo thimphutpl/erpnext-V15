@@ -1,0 +1,160 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-09-16 09:31:43.093891",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_ggxh",
+  "amended_from",
+  "batch",
+  "column_break_eula",
+  "country",
+  "student_details_section",
+  "name1",
+  "cid_number",
+  "permanent_address",
+  "status",
+  "college",
+  "column_break_uohv",
+  "start_date",
+  "end_date",
+  "course",
+  "contact_number",
+  "email_address"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_ggxh",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Scolarships",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "batch",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Batch",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_eula",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "country",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Country",
+   "reqd": 1
+  },
+  {
+   "fieldname": "student_details_section",
+   "fieldtype": "Section Break",
+   "label": "Student Details"
+  },
+  {
+   "fieldname": "name1",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "cid_number",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "CID Number",
+   "length": 11,
+   "reqd": 1
+  },
+  {
+   "fieldname": "permanent_address",
+   "fieldtype": "Data",
+   "label": "Permanent Address ",
+   "reqd": 1
+  },
+  {
+   "default": "On-Going",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "On-Going\nCompleted",
+   "reqd": 1
+  },
+  {
+   "fieldname": "college",
+   "fieldtype": "Data",
+   "label": "College",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_uohv",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "start_date",
+   "fieldtype": "Datetime",
+   "label": "Start Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "end_date",
+   "fieldtype": "Datetime",
+   "label": "End Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "course",
+   "fieldtype": "Select",
+   "label": "Course",
+   "options": "Bachelor of Arts in English\nBachelor of Arts in History\nBSc in Sustainable Development\nBSc in Environment & Climate Studies\nBSc in Animal Science\nBSc in Forestry\nBSc in Food Science and Technology\nBSc in Organic Agriculture\nBSc in Agriculture\nMaster of Science in Natural Resources Management\nMasters in Development Practice\nBE in Civil Engineering\nBE in Information Technology\nBE in Electronics & Communications Engineering\nBachelor of Architecture\nBE in Engineering Geology\nBE in Instrumentation & Control Engineering\nBE in Electrical Engineering\nME in Renewable Energy\nBachelor of Business Administration (BBA)\nMBA\nBachelor of Commerce\nBA in Bhutanese & Himalayan Studies\nBA in Language & Literature\nDiploma in Language & Literature\nDiploma in Materials and Procurement Management\nBachelor of Engineering in Surveying & Geoinformatics\nDiploma in Computer System & Network\nDiploma in Civil Engineering\nDiploma in Surveying\nBachelor of Engineering in Mechanical Engineering\nBachelor of Engineering in Power Engineering\nDiploma in Mechanical Engineering\nBEd (Primary)\nB.Ed (Primary)\nBEd (Dzongkha)\nDiploma in Early Childhood, Care\u00a0 and Development\nDiploma in Early Childhood, Care\u00a0 and Development\nMEd in Dzongkha Education\nPg Diploma in Education (Dzongkha)\nPg Diploma in Education (Dzongkha)\nBachelors in Education Secondary\nBachelor of Arts in Social Work\nMaster of Education in English\nPostgraudate Diploma in Contemplative Counselling Psychology\nMaster of Education in Science (Biology/Chemistry/Physics) and Mathematics\nM.Ed in Geography\nPostgraduate Diploma in Education\nB.A Political Science and Sociology\nB.A (Honours) Political Science and Sociology\nBA Population and Development Studies\nB.Sc. (Honours) Population and Development Studies/td>\nB.Sc.Life Science\nB.Sc. (Honours) Botany\nB.Sc. (Honours) Zoology\nBachelor of Science in Chemistry\nBachelor of Science (Honours) in Chemistry\nBSc in Geography &\u00a0BSc Honours in Geography\nB.A Dzongkha and English\nB.A. (Honours) English\nB.A. (Honours) Dzongkha\nBachelor of Science in Physics\nBachelor of Science (Honours) in Physics\nBachelor of Arts in Economics & Bachelor of Arts Honours in Economics\nB.Sc.Mathematics\nB.Sc. (Honours) Mathematics\nB.Sc.Environmental Science\nB.A. (Honours) Environmental Science\nBachelor in Computer Application\nBachelor of Science in Computer Science\nBachelor of Science in Information Technology",
+   "reqd": 1
+  },
+  {
+   "fieldname": "contact_number",
+   "fieldtype": "Data",
+   "label": "Contact Number",
+   "reqd": 1
+  },
+  {
+   "fieldname": "email_address",
+   "fieldtype": "Data",
+   "label": "Email Address",
+   "reqd": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-09-16 10:22:28.500432",
+ "modified_by": "Administrator",
+ "module": "Gift  Management",
+ "name": "Scolarships",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "select": 1,
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

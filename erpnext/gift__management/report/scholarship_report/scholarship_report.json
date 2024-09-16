@@ -1,0 +1,27 @@
+{
+ "add_total_row": 0,
+ "columns": [],
+ "creation": "2024-09-16 11:59:11.146142",
+ "disabled": 0,
+ "docstatus": 0,
+ "doctype": "Report",
+ "filters": [],
+ "idx": 0,
+ "is_standard": "Yes",
+ "letter_head": "Office of the Gyalpoi Zimpon",
+ "letterhead": null,
+ "modified": "2024-09-16 11:59:11.146142",
+ "modified_by": "Administrator",
+ "module": "Gift  Management",
+ "name": "Scholarship Report",
+ "owner": "Administrator",
+ "prepared_report": 0,
+ "ref_doctype": "Scholarship",
+ "report_name": "Scholarship Report",
+ "report_type": "Script Report",
+ "roles": [
+  {
+   "role": "System Manager"
+  }
+ ]
+}

@@ -24,6 +24,7 @@
   "salutation",
   "column_break1",
   "date_of_joining",
+  "date_of_joining_hms",
   "image",
   "status",
   "old_emp_id",
@@ -52,6 +53,10 @@
   "col_break_22",
   "notice_number_of_days",
   "date_of_retirement",
+  "section_break_rflw",
+  "increment_cycle",
+  "column_break_gfej",
+  "promotion_cycle",
   "contact_details",
   "cell_number",
   "column_break_40",
@@ -88,6 +93,9 @@
   "bank_account_type",
   "bank_ac_no",
   "iban",
+  "tpn_number",
+  "gis_number",
+  "pf_number",
   "personal_details",
   "dzongkhag",
   "marital_status",
@@ -145,6 +153,7 @@
    "report_hide": 1
   },
   {
+   "default": "HR-EMP-",
    "fieldname": "naming_series",
    "fieldtype": "Select",
    "hidden": 1,
@@ -153,6 +162,7 @@
    "oldfieldname": "naming_series",
    "oldfieldtype": "Select",
    "options": "HR-EMP-",
+   "read_only": 1,
    "set_only_once": 1
   },
   {
@@ -890,6 +900,46 @@
    "fieldtype": "Link",
    "label": "Village",
    "options": "Dzongkhag"
+  },
+  {
+   "fieldname": "date_of_joining_hms",
+   "fieldtype": "Date",
+   "label": "Date of Joining HMS"
+  },
+  {
+   "fieldname": "tpn_number",
+   "fieldtype": "Data",
+   "label": "TPN Number"
+  },
+  {
+   "fieldname": "gis_number",
+   "fieldtype": "Data",
+   "label": "GIS Number"
+  },
+  {
+   "fieldname": "pf_number",
+   "fieldtype": "Data",
+   "label": "PF Number"
+  },
+  {
+   "fieldname": "section_break_rflw",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "increment_cycle",
+   "fieldtype": "Select",
+   "label": "Increment Cycle",
+   "options": "\nJanuary\nJuly"
+  },
+  {
+   "fieldname": "column_break_gfej",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "promotion_cycle",
+   "fieldtype": "Select",
+   "label": "Promotion Cycle",
+   "options": "\nJanuary\nJuly"
   }
  ],
  "icon": "fa fa-user",
@@ -897,7 +947,7 @@
  "image_field": "image",
  "is_tree": 1,
  "links": [],
- "modified": "2024-08-19 17:00:27.496882",
+ "modified": "2024-09-11 12:44:49.102268",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee",

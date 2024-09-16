@@ -621,8 +621,8 @@
    "type": "Link"
   }
  ],
- "modified": "2024-08-09 15:28:46.071848",
- "modified_by": "pema.dhendup@thimphutechpark.bt",
+ "modified": "2024-09-12 20:06:40.142042",
+ "modified_by": "Administrator",
  "module": "Selling",
  "name": "Selling",
  "number_cards": [],
@@ -632,7 +632,7 @@
  "quick_lists": [],
  "restrict_to_domain": "",
  "roles": [],
- "sequence_id": 8.0,
+ "sequence_id": 9.0,
  "shortcuts": [
   {
    "color": "Grey",

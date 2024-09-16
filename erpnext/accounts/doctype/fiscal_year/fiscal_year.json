@@ -9,12 +9,15 @@
  "engine": "InnoDB",
  "field_order": [
   "year",
-  "disabled",
   "is_short_year",
+  "is_calendar_year",
   "year_start_date",
+  "auto_created",
+  "column_break_uzkz",
+  "disabled",
   "year_end_date",
-  "companies",
-  "auto_created"
+  "section_break_gusu",
+  "companies"
  ],
  "fields": [
   {
@@ -57,6 +60,7 @@
   {
    "fieldname": "companies",
    "fieldtype": "Table",
+   "ignore_user_permissions": 1,
    "label": "Companies",
    "options": "Fiscal Year Company"
   },
@@ -75,19 +79,36 @@
    "description": "Less than 12 months.",
    "fieldname": "is_short_year",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "Is Short Year",
    "set_only_once": 1
+  },
+  {
+   "fieldname": "column_break_uzkz",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_calendar_year",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Is Calendar Year",
+   "set_only_once": 1
+  },
+  {
+   "fieldname": "section_break_gusu",
+   "fieldtype": "Section Break"
   }
  ],
  "icon": "fa fa-calendar",
  "idx": 1,
  "links": [],
- "modified": "2024-05-27 17:29:55.560840",
+ "modified": "2024-09-13 13:52:11.775851",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Fiscal Year",
  "naming_rule": "By fieldname",
-  "owner": "Administrator",
+ "owner": "Administrator",
  "permissions": [
   {
    "create": 1,
@@ -136,5 +157,6 @@
  "show_name_in_global_search": 1,
  "sort_field": "name",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "track_changes": 1
 }

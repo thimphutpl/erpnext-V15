@@ -9,11 +9,11 @@
  "field_order": [
   "business_activity_name",
   "abbreviation",
-  "company",
+  "is_default",
   "cb_3",
   "is_disabled",
-  "cb_6",
-  "is_default"
+  "company_section",
+  "table_kovz"
  ],
  "fields": [
   {
@@ -31,14 +31,6 @@
    "label": "Abbreviation"
   },
   {
-   "fieldname": "company",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "Company",
-   "options": "Company",
-   "reqd": 1
-  },
-  {
    "fieldname": "cb_3",
    "fieldtype": "Column Break"
   },
@@ -49,19 +41,25 @@
    "label": "Is Disabled"
   },
   {
-   "fieldname": "cb_6",
-   "fieldtype": "Column Break"
-  },
-  {
    "default": "0",
    "fieldname": "is_default",
    "fieldtype": "Check",
    "label": "Is Default"
+  },
+  {
+   "fieldname": "company_section",
+   "fieldtype": "Section Break",
+   "label": "Company"
+  },
+  {
+   "fieldname": "table_kovz",
+   "fieldtype": "Table",
+   "options": "Business Activity Company"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-07-15 14:43:58.441184",
+ "modified": "2024-09-13 13:50:02.014213",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Business Activity",

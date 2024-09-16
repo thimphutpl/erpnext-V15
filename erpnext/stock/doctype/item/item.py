@@ -106,8 +106,10 @@ class Item(Document):
 		is_fixed_asset: DF.Check
 		is_grouped_asset: DF.Check
 		is_pol_item: DF.Check
+		is_production_item: DF.Check
 		is_purchase_item: DF.Check
 		is_sales_item: DF.Check
+		is_service_item: DF.Check
 		is_stock_item: DF.Check
 		is_sub_contracted_item: DF.Check
 		item_code: DF.Data | None

@@ -1,0 +1,319 @@
+{
+ "actions": [],
+ "autoname": "GIFT.YY.MM.###",
+ "creation": "2024-08-26 14:38:18.391142",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "gift_status_section",
+  "column_break_ghae",
+  "gift_status",
+  "name_of_organisation",
+  "column_break_htms",
+  "remarks_gift",
+  "date",
+  "receiptacknowledgement",
+  "gift_recipient_details_section",
+  "gift_recipient_name",
+  "designation_of_the_recipient",
+  "contact_number",
+  "divisiondepartment",
+  "organization",
+  "column_break_eylz",
+  "date_of_receipt",
+  "relationship_with_the_giver",
+  "relationship_to_the_public_servant",
+  "remarks",
+  "received_from",
+  "gift_givers_information_section",
+  "name_of_the_gift_giver",
+  "agency",
+  "phone_no",
+  "column_break_ficu",
+  "designation",
+  "address",
+  "section_break_eixf",
+  "gift_name",
+  "description_of_gift",
+  "source_of_gift_name",
+  "date_of_deposit",
+  "column_break_rtyn",
+  "current_deposition_of_location",
+  "mode_of_disposal",
+  "gift_image",
+  "amended_from",
+  "gift_value_detail_section",
+  "currency",
+  "estimated_fair_market_value",
+  "column_break_mnqe",
+  "exchange_rate",
+  "estimated_fair_market_valuenu",
+  "section_break_xxjv",
+  "gift_acceptance_circumstanes"
+ ],
+ "fields": [
+  {
+   "fieldname": "relationship_with_the_giver",
+   "fieldtype": "Data",
+   "label": "Relationship with the giver"
+  },
+  {
+   "fieldname": "date_of_receipt",
+   "fieldtype": "Date",
+   "label": "Date of Receipt"
+  },
+  {
+   "fieldname": "section_break_eixf",
+   "fieldtype": "Section Break",
+   "label": "Gift Details"
+  },
+  {
+   "fieldname": "description_of_gift",
+   "fieldtype": "Data",
+   "label": "Description of gift"
+  },
+  {
+   "fieldname": "source_of_gift_name",
+   "fieldtype": "Data",
+   "label": "Source of Gift (name)"
+  },
+  {
+   "fieldname": "date_of_deposit",
+   "fieldtype": "Date",
+   "label": "Date of Deposit"
+  },
+  {
+   "fieldname": "estimated_fair_market_value",
+   "fieldtype": "Currency",
+   "label": "Estimated Fair Market Value",
+   "precision": "2"
+  },
+  {
+   "fieldname": "column_break_rtyn",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "current_deposition_of_location",
+   "fieldtype": "Data",
+   "label": "Current Deposition of Location"
+  },
+  {
+   "fieldname": "mode_of_disposal",
+   "fieldtype": "Data",
+   "label": "Mode of disposal"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Gift Register",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "gift_status",
+   "fieldtype": "Select",
+   "label": "Gift Status",
+   "options": "\nReceived\nReturned\nDisposed\nSold",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_htms",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "received_from",
+   "fieldtype": "Data",
+   "label": "Received From"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Data",
+   "label": "Remarks"
+  },
+  {
+   "fieldname": "column_break_ghae",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "gift_image",
+   "fieldtype": "Attach Image",
+   "label": "Gift Image"
+  },
+  {
+   "fieldname": "gift_value_detail_section",
+   "fieldtype": "Section Break",
+   "label": "Gift Value Detail"
+  },
+  {
+   "fieldname": "currency",
+   "fieldtype": "Link",
+   "label": "Currency",
+   "options": "Currency"
+  },
+  {
+   "fieldname": "column_break_mnqe",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "1",
+   "fieldname": "exchange_rate",
+   "fieldtype": "Float",
+   "label": "Exchange Rate",
+   "precision": "9"
+  },
+  {
+   "fieldname": "gift_recipient_details_section",
+   "fieldtype": "Section Break",
+   "label": "Gift Recipient Details"
+  },
+  {
+   "fieldname": "gift_recipient_name",
+   "fieldtype": "Data",
+   "label": "Gift Recipient Name"
+  },
+  {
+   "fieldname": "designation_of_the_recipient",
+   "fieldtype": "Data",
+   "label": "Designation of the recipient"
+  },
+  {
+   "fieldname": "column_break_eylz",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "(If gift receiver is spouse and/or dependent.)",
+   "fieldname": "relationship_to_the_public_servant",
+   "fieldtype": "Data",
+   "label": "Relationship to the public servant"
+  },
+  {
+   "fieldname": "estimated_fair_market_valuenu",
+   "fieldtype": "Currency",
+   "label": "Estimated Fair Market Value(Nu)",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "divisiondepartment",
+   "fieldtype": "Data",
+   "label": "Division/Department"
+  },
+  {
+   "fieldname": "contact_number",
+   "fieldtype": "Phone",
+   "label": "Contact Number"
+  },
+  {
+   "fieldname": "gift_givers_information_section",
+   "fieldtype": "Section Break",
+   "label": "Gift Giver's Information"
+  },
+  {
+   "fieldname": "name_of_the_gift_giver",
+   "fieldtype": "Data",
+   "label": "Name of the gift giver"
+  },
+  {
+   "fieldname": "agency",
+   "fieldtype": "Data",
+   "label": "Agency"
+  },
+  {
+   "fieldname": "phone_no",
+   "fieldtype": "Phone",
+   "label": "Phone No"
+  },
+  {
+   "fieldname": "column_break_ficu",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "designation",
+   "fieldtype": "Data",
+   "label": "Designation"
+  },
+  {
+   "fieldname": "address",
+   "fieldtype": "Data",
+   "label": "Address"
+  },
+  {
+   "fieldname": "section_break_xxjv",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "gift_acceptance_circumstanes",
+   "fieldtype": "Text",
+   "label": "Gift Acceptance Circumstanes"
+  },
+  {
+   "fieldname": "remarks_gift",
+   "fieldtype": "Data",
+   "label": "Status Remarks",
+   "read_only": 1
+  },
+  {
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "label": "Date",
+   "read_only": 1
+  },
+  {
+   "fieldname": "gift_status_section",
+   "fieldtype": "Section Break",
+   "label": "Gift Status"
+  },
+  {
+   "fieldname": "name_of_organisation",
+   "fieldtype": "Data",
+   "label": "Name of Organisation",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.gift_status=='Returned'",
+   "fieldname": "receiptacknowledgement",
+   "fieldtype": "Attach",
+   "label": "Receipt/Acknowledgement of deposit"
+  },
+  {
+   "fieldname": "gift_name",
+   "fieldtype": "Data",
+   "label": "Gift Name"
+  },
+  {
+   "fieldname": "organization",
+   "fieldtype": "Data",
+   "label": "Organization"
+  }
+ ],
+ "image_field": "gift_image",
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-09-13 13:49:30.882680",
+ "modified_by": "Administrator",
+ "module": "Gift  Management",
+ "name": "Gift Register",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

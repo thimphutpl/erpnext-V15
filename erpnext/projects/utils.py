@@ -19,14 +19,13 @@ def query_task(doctype, txt, searchfield, start, page_len, filters):
 
 	return frappe.db.sql(
 		"""select name, subject from `tabTask`
-		where (`{}` like {} or `subject` like {}) {}
+		where (`%s` like %s or `subject` like %s) %s
 		order by
-			case when `subject` like {} then 0 else 1 end,
-			case when `{}` like {} then 0 else 1 end,
-			`{}`,
+			case when `subject` like %s then 0 else 1 end,
+			case when `%s` like %s then 0 else 1 end,
+			`%s`,
 			subject
-		limit {} offset {}""".format(
-			searchfield, "%s", "%s", match_conditions, "%s", searchfield, "%s", searchfield, "%s", "%s"
-		),
+		limit %s offset %s"""
+		% (searchfield, "%s", "%s", match_conditions, "%s", searchfield, "%s", searchfield, "%s", "%s"),
 		(search_string, search_string, order_by_string, order_by_string, page_len, start),
 	)

@@ -1,0 +1,108 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-09-12 12:13:29.694309",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "particulars",
+  "rate",
+  "uom",
+  "column_break_hues",
+  "quantity",
+  "currency",
+  "exchange_rate",
+  "warehouse",
+  "section_break_phsa",
+  "estimated_fair_market_value",
+  "column_break_hyek",
+  "estimated_fair_market_valuenu"
+ ],
+ "fields": [
+  {
+   "fieldname": "particulars",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Particulars",
+   "options": "Item"
+  },
+  {
+   "fieldname": "column_break_hues",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "quantity",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Quantity"
+  },
+  {
+   "fieldname": "rate",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Rate"
+  },
+  {
+   "fieldname": "warehouse",
+   "fieldtype": "Link",
+   "label": "Warehouse",
+   "options": "Warehouse"
+  },
+  {
+   "fetch_from": "particulars.stock_uom",
+   "fieldname": "uom",
+   "fieldtype": "Data",
+   "label": "UOM"
+  },
+  {
+   "fieldname": "currency",
+   "fieldtype": "Link",
+   "label": "Currency",
+   "options": "Currency"
+  },
+  {
+   "fieldname": "section_break_phsa",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_hyek",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "1.00",
+   "fieldname": "exchange_rate",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Exchange Rate",
+   "precision": "2"
+  },
+  {
+   "fieldname": "estimated_fair_market_value",
+   "fieldtype": "Currency",
+   "label": "Estimated Fair Market Value",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "estimated_fair_market_valuenu",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Estimated Fair Market Value(Nu)",
+   "precision": "2",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2024-09-13 14:11:31.573909",
+ "modified_by": "Administrator",
+ "module": "Gift  Management",
+ "name": "Soelra Details",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

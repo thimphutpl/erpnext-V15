@@ -8,8 +8,9 @@
  "engine": "InnoDB",
  "field_order": [
   "stock_entry_details_tab",
-  "branch",
+  "company",
   "naming_series",
+  "item_group",
   "stock_entry_type",
   "outgoing_stock_entry",
   "purpose",
@@ -25,10 +26,11 @@
   "issued_by",
   "received_by",
   "col2",
-  "company",
+  "branch",
+  "cost_center",
+  "column_break_eaoa",
   "posting_date",
   "posting_time",
-  "column_break_eaoa",
   "set_posting_time",
   "inspection_required",
   "apply_putaway_rule",
@@ -76,8 +78,10 @@
   "other_info_tab",
   "printing_settings",
   "select_print_heading",
+  "reference_doctype",
   "print_settings_col_break",
   "letter_head",
+  "reference_name",
   "more_info",
   "is_opening",
   "remarks",
@@ -91,8 +95,10 @@
  ],
  "fields": [
   {
+   "default": "MAT-STE-.YYYY.-",
    "fieldname": "naming_series",
    "fieldtype": "Select",
+   "hidden": 1,
    "label": "Series",
    "no_copy": 1,
    "oldfieldname": "naming_series",
@@ -713,6 +719,32 @@
    "fieldtype": "Data",
    "label": "Received By",
    "read_only": 1
+  },
+  {
+   "fieldname": "item_group",
+   "fieldtype": "Link",
+   "label": "Item Group",
+   "options": "Item"
+  },
+  {
+   "fieldname": "reference_doctype",
+   "fieldtype": "Link",
+   "label": "Reference DocType",
+   "options": "DocType"
+  },
+  {
+   "fieldname": "reference_name",
+   "fieldtype": "Dynamic Link",
+   "label": "Reference Name",
+   "options": "reference_doctype"
+  },
+  {
+   "fetch_from": "branch.cost_center",
+   "fieldname": "cost_center",
+   "fieldtype": "Link",
+   "label": "Cost Center",
+   "options": "Cost Center",
+   "read_only": 1
   }
  ],
  "icon": "fa fa-file-text",
@@ -720,7 +752,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-08-16 15:16:49.298675",
+ "modified": "2024-09-16 12:24:29.365559",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Stock Entry",

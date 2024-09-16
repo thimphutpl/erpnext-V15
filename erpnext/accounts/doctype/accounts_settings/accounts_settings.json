@@ -43,6 +43,12 @@
   "section_break_jpd0",
   "auto_reconcile_payments",
   "stale_days",
+  "approver_tab",
+  "abstract_bill_approver",
+  "column_break_pzef",
+  "ab_approver_name",
+  "column_break_moyj",
+  "ab_user_id",
   "invoicing_settings_tab",
   "accounts_transactions_settings_section",
   "over_billing_allowance",
@@ -462,6 +468,40 @@
    "fieldname": "enable_immutable_ledger",
    "fieldtype": "Check",
    "label": "Enable Immutable Ledger"
+  },
+  {
+   "fieldname": "approver_tab",
+   "fieldtype": "Tab Break",
+   "label": "Approver"
+  },
+  {
+   "fieldname": "abstract_bill_approver",
+   "fieldtype": "Link",
+   "label": "Abstract Bill Approver",
+   "options": "Employee"
+  },
+  {
+   "fieldname": "column_break_pzef",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "abstract_bill_approver.employee_name",
+   "fieldname": "ab_approver_name",
+   "fieldtype": "Data",
+   "label": "Approver Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_moyj",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "abstract_bill_approver.user_id",
+   "fieldname": "ab_user_id",
+   "fieldtype": "Link",
+   "label": "Email",
+   "options": "User",
+   "read_only": 1
   }
  ],
  "icon": "icon-cog",
@@ -469,7 +509,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-07-26 12:24:17.184760",
+ "modified": "2024-09-03 10:43:28.685062",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Accounts Settings",

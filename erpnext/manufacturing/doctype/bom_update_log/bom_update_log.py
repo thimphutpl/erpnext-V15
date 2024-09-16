@@ -1,7 +1,7 @@
 # Copyright (c) 2022, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 import json
-from typing import Any
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 import frappe
 from frappe import _
@@ -24,34 +24,15 @@ class BOMMissingError(frappe.ValidationError):
 
 
 class BOMUpdateLog(Document):
-	# begin: auto-generated types
-	# This code is auto-generated. Do not modify anything in this block.
-
-	from typing import TYPE_CHECKING
-
-	if TYPE_CHECKING:
-		from frappe.types import DF
-
-		from erpnext.manufacturing.doctype.bom_update_batch.bom_update_batch import BOMUpdateBatch
-
-		amended_from: DF.Link | None
-		bom_batches: DF.Table[BOMUpdateBatch]
-		current_bom: DF.Link | None
-		current_level: DF.Int
-		error_log: DF.Link | None
-		new_bom: DF.Link | None
-		processed_boms: DF.LongText | None
-		status: DF.Literal["Queued", "In Progress", "Completed", "Failed"]
-		update_type: DF.Literal["Replace BOM", "Update Cost"]
-	# end: auto-generated types
-
 	@staticmethod
 	def clear_old_logs(days=None):
 		days = days or 90
 		table = DocType("BOM Update Log")
 		frappe.db.delete(
 			table,
-			filters=((table.modified < (Now() - Interval(days=days))) & (table.update_type == "Update Cost")),
+			filters=(
+				(table.modified < (Now() - Interval(days=days))) & (table.update_type == "Update Cost")
+			),
 		)
 
 	def validate(self):
@@ -107,21 +88,18 @@ class BOMUpdateLog(Document):
 				boms=boms,
 				timeout=40000,
 				now=frappe.flags.in_test,
-				enqueue_after_commit=True,
 			)
 		else:
 			frappe.enqueue(
 				method="erpnext.manufacturing.doctype.bom_update_log.bom_update_log.process_boms_cost_level_wise",
-				queue="long",
 				update_doc=self,
 				now=frappe.flags.in_test,
-				enqueue_after_commit=True,
 			)
 
 
 def run_replace_bom_job(
 	doc: "BOMUpdateLog",
-	boms: dict[str, str] | None = None,
+	boms: Optional[Dict[str, str]] = None,
 ) -> None:
 	try:
 		doc.db_set("status", "In Progress")
@@ -144,8 +122,8 @@ def run_replace_bom_job(
 
 
 def process_boms_cost_level_wise(
-	update_doc: "BOMUpdateLog", parent_boms: list[str] | None = None
-) -> None | tuple:
+	update_doc: "BOMUpdateLog", parent_boms: List[str] = None
+) -> Union[None, Tuple]:
 	"Queue jobs at the start of new BOM Level in 'Update Cost' Jobs."
 
 	current_boms = {}
@@ -178,13 +156,15 @@ def process_boms_cost_level_wise(
 		handle_exception(update_doc)
 
 
-def queue_bom_cost_jobs(current_boms_list: list[str], update_doc: "BOMUpdateLog", current_level: int) -> None:
+def queue_bom_cost_jobs(
+	current_boms_list: List[str], update_doc: "BOMUpdateLog", current_level: int
+) -> None:
 	"Queue batches of 20k BOMs of the same level to process parallelly"
 	batch_no = 0
 
 	while current_boms_list:
 		batch_no += 1
-		batch_size = 7_000
+		batch_size = 20_000
 		boms_to_process = current_boms_list[:batch_size]  # slice out batch of 20k BOMs
 
 		# update list to exclude 20K (queued) BOMs
@@ -262,8 +242,8 @@ def resume_bom_cost_update_jobs():
 
 
 def get_processed_current_boms(
-	log: dict[str, Any], bom_batches: dict[str, Any]
-) -> tuple[list[str], dict[str, Any]]:
+	log: Dict[str, Any], bom_batches: Dict[str, Any]
+) -> Tuple[List[str], Dict[str, Any]]:
 	"""
 	Aggregate all BOMs from BOM Update Batch rows into 'processed_boms' field
 	and into current boms list.

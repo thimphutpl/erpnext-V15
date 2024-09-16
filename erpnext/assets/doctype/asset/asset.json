@@ -101,6 +101,7 @@
   {
    "fieldname": "naming_series",
    "fieldtype": "Select",
+   "hidden": 1,
    "label": "Naming Series",
    "options": "ACC-ASS-.YYYY.-"
   },
@@ -711,7 +712,7 @@
    "link_fieldname": "target_asset"
   }
  ],
- "modified": "2024-08-22 15:15:26.185101",
+ "modified": "2024-09-03 11:25:12.637355",
  "modified_by": "Administrator",
  "module": "Assets",
  "name": "Asset",

@@ -1,5 +1,4 @@
 {
- "actions": [],
  "creation": "2018-05-24 07:20:04.255236",
  "doctype": "DocType",
  "editable_grid": 1,
@@ -7,7 +6,6 @@
  "field_order": [
   "item_code",
   "item_name",
-  "party_item_code",
   "column_break_3",
   "qty",
   "rate",
@@ -64,17 +62,10 @@
    "fieldname": "terms_and_conditions",
    "fieldtype": "Text",
    "label": "Terms and Conditions"
-  },
-  {
-   "fieldname": "party_item_code",
-   "fieldtype": "Data",
-   "label": "Party Item Code",
-   "read_only": 1
   }
  ],
  "istable": 1,
- "links": [],
- "modified": "2024-02-14 18:25:26.479672",
+ "modified": "2019-11-18 19:37:46.245878",
  "modified_by": "Administrator",
  "module": "Manufacturing",
  "name": "Blanket Order Item",
@@ -83,6 +74,5 @@
  "quick_entry": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": [],
  "track_changes": 1
 }

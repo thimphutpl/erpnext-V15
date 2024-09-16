@@ -22,6 +22,9 @@ class AccountsSettings(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		ab_approver_name: DF.Data | None
+		ab_user_id: DF.Link | None
+		abstract_bill_approver: DF.Link | None
 		acc_frozen_upto: DF.Date | None
 		add_taxes_from_item_tax_template: DF.Check
 		allow_multi_currency_invoices_against_single_party_account: DF.Check

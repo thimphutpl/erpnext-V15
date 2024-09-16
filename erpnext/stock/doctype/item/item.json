@@ -21,6 +21,8 @@
   "disabled",
   "allow_alternative_item",
   "is_stock_item",
+  "is_service_item",
+  "is_production_item",
   "has_variants",
   "is_pol_item",
   "opening_stock",
@@ -900,6 +902,18 @@
    "label": "Asset Sub Category",
    "mandatory_depends_on": "is_fixed_asset",
    "options": "Asset Sub Category"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_service_item",
+   "fieldtype": "Check",
+   "label": "Is Service Item"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_production_item",
+   "fieldtype": "Check",
+   "label": " Is Production Item"
   }
  ],
  "icon": "fa fa-tag",
@@ -908,7 +922,7 @@
  "index_web_pages_for_search": 1,
  "links": [],
  "make_attachments_public": 1,
- "modified": "2024-08-14 13:37:59.560366",
+ "modified": "2024-09-12 13:00:40.285366",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Item",

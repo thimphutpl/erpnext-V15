@@ -20,6 +20,7 @@
   "column_break1",
   "from_template",
   "company",
+  "branch",
   "business_activity",
   "posting_date",
   "apply_tds",
@@ -566,6 +567,13 @@
    "fieldtype": "HTML",
    "label": "TDS Table",
    "read_only": 1
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "label": "Branch",
+   "options": "Branch",
+   "reqd": 1
   }
  ],
  "icon": "fa fa-file-text",
@@ -580,7 +588,7 @@
    "table_fieldname": "payment_entries"
   }
  ],
- "modified": "2024-08-22 16:28:28.606396",
+ "modified": "2024-09-13 13:57:50.694338",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Journal Entry",

@@ -8,37 +8,21 @@
  "document_type": "Setup",
  "engine": "InnoDB",
  "field_order": [
-  "dashboard_tab",
-  "workstation_dashboard",
-  "details_tab",
   "workstation_name",
-  "workstation_type",
-  "plant_floor",
-  "column_break_3",
   "production_capacity",
-  "warehouse",
-  "workstation_status_tab",
-  "status",
-  "column_break_glcv",
-  "illustration_section",
-  "on_status_image",
-  "column_break_etmc",
-  "off_status_image",
+  "column_break_3",
   "over_heads",
   "hour_rate_electricity",
   "hour_rate_consumable",
   "column_break_11",
   "hour_rate_rent",
   "hour_rate_labour",
-  "section_break_11",
   "hour_rate",
-  "workstaion_description",
-  "description",
   "working_hours_section",
   "holiday_list",
   "working_hours",
-  "total_working_hours",
-  "connections_tab"
+  "workstaion_description",
+  "description"
  ],
  "fields": [
   {
@@ -62,7 +46,7 @@
   },
   {
    "fieldname": "over_heads",
-   "fieldtype": "Tab Break",
+   "fieldtype": "Section Break",
    "label": "Operating Costs",
    "oldfieldtype": "Section Break"
   },
@@ -117,7 +101,7 @@
   },
   {
    "fieldname": "working_hours_section",
-   "fieldtype": "Tab Break",
+   "fieldtype": "Section Break",
    "label": "Working Hours"
   },
   {
@@ -134,10 +118,9 @@
   },
   {
    "default": "1",
-   "description": "Run parallel job cards in a workstation",
    "fieldname": "production_capacity",
    "fieldtype": "Int",
-   "label": "Job Capacity",
+   "label": "Production Capacity",
    "reqd": 1
   },
   {
@@ -147,100 +130,14 @@
   {
    "collapsible": 1,
    "fieldname": "workstaion_description",
-   "fieldtype": "Tab Break",
-   "label": "Description"
-  },
-  {
-   "bold": 1,
-   "fieldname": "workstation_type",
-   "fieldtype": "Link",
-   "label": "Workstation Type",
-   "options": "Workstation Type"
-  },
-  {
-   "fieldname": "section_break_11",
-   "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "plant_floor",
-   "fieldtype": "Link",
-   "label": "Plant Floor",
-   "options": "Plant Floor"
-  },
-  {
-   "fieldname": "workstation_status_tab",
-   "fieldtype": "Tab Break",
-   "label": "Workstation Status"
-  },
-  {
-   "fieldname": "illustration_section",
    "fieldtype": "Section Break",
-   "label": "Status Illustration"
-  },
-  {
-   "fieldname": "column_break_etmc",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "status",
-   "fieldtype": "Select",
-   "in_list_view": 1,
-   "label": "Status",
-   "options": "Production\nOff\nIdle\nProblem\nMaintenance\nSetup"
-  },
-  {
-   "fieldname": "column_break_glcv",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "on_status_image",
-   "fieldtype": "Attach Image",
-   "label": "Active Status"
-  },
-  {
-   "fieldname": "off_status_image",
-   "fieldtype": "Attach Image",
-   "label": "Inactive Status"
-  },
-  {
-   "fieldname": "warehouse",
-   "fieldtype": "Link",
-   "label": "Warehouse",
-   "options": "Warehouse"
-  },
-  {
-   "fieldname": "total_working_hours",
-   "fieldtype": "Float",
-   "label": "Total Working Hours"
-  },
-  {
-   "depends_on": "eval:!doc.__islocal",
-   "fieldname": "dashboard_tab",
-   "fieldtype": "Tab Break",
-   "label": "Job Cards"
-  },
-  {
-   "fieldname": "details_tab",
-   "fieldtype": "Tab Break",
-   "label": "Details"
-  },
-  {
-   "fieldname": "connections_tab",
-   "fieldtype": "Tab Break",
-   "label": "Connections",
-   "show_dashboard": 1
-  },
-  {
-   "fieldname": "workstation_dashboard",
-   "fieldtype": "HTML",
-   "label": "Workstation Dashboard"
+   "label": "Description"
   }
  ],
  "icon": "icon-wrench",
  "idx": 1,
- "image_field": "on_status_image",
  "links": [],
- "modified": "2024-06-20 14:17:13.806609",
+ "modified": "2023-05-26 11:59:27.767622",
  "modified_by": "Administrator",
  "module": "Manufacturing",
  "name": "Workstation",
@@ -255,6 +152,30 @@
    "read": 1,
    "report": 1,
    "role": "Manufacturing User",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Maintenance Manager",
    "share": 1,
    "write": 1
   }

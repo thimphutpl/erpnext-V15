@@ -99,6 +99,7 @@ class StockEntry(StockController):
 		bom_no: DF.Link | None
 		branch: DF.Link
 		company: DF.Link
+		cost_center: DF.Link | None
 		credit_note: DF.Link | None
 		delivery_note_no: DF.Link | None
 		fg_completed_qty: DF.Float
@@ -109,6 +110,7 @@ class StockEntry(StockController):
 		is_opening: DF.Literal["No", "Yes"]
 		is_return: DF.Check
 		issued_by: DF.Data | None
+		item_group: DF.Link | None
 		items: DF.Table[StockEntryDetail]
 		job_card: DF.Link | None
 		letter_head: DF.Link | None
@@ -125,6 +127,8 @@ class StockEntry(StockController):
 		purchase_receipt_no: DF.Link | None
 		purpose: DF.Literal["Material Issue", "Material Receipt", "Material Transfer", "Material Transfer for Manufacture", "Material Consumption for Manufacture", "Manufacture", "Repack", "Send to Subcontractor"]
 		received_by: DF.Data | None
+		reference_doctype: DF.Link | None
+		reference_name: DF.DynamicLink | None
 		remarks: DF.Text | None
 		sales_invoice_no: DF.Link | None
 		scan_barcode: DF.Data | None
@@ -1665,9 +1669,9 @@ class StockEntry(StockController):
 			if subcontract_items and len(subcontract_items) == 1:
 				ret["subcontracted_item"] = subcontract_items[0].main_item_code
 
-		barcode_data = get_barcode_data(item_code=item.name)
-		if barcode_data and len(barcode_data.get(item.name)) == 1:
-			ret["barcode"] = barcode_data.get(item.name)[0]
+		# barcode_data = get_barcode_data(item_code=item.name)
+		# if barcode_data and len(barcode_data.get(item.name)) == 1:
+		# 	ret["barcode"] = barcode_data.get(item.name)[0]
 
 		return ret
 
@@ -1697,7 +1701,7 @@ class StockEntry(StockController):
 				)
 
 	@frappe.whitelist()
-	def get_items(self):
+	def get_items(self, cost_center=None):
 		self.set("items", [])
 		self.validate_work_order()
 

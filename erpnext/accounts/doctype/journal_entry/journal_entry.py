@@ -56,6 +56,7 @@ class JournalEntry(AccountsController):
 		auto_repeat: DF.Link | None
 		bill_date: DF.Date | None
 		bill_no: DF.Data | None
+		branch: DF.Link
 		business_activity: DF.Link | None
 		cheque_date: DF.Date | None
 		cheque_no: DF.Data | None
@@ -179,7 +180,7 @@ class JournalEntry(AccountsController):
 			return self._cancel()
 
 	def on_submit(self):
-		self.validate_cheque_info()
+		# self.validate_cheque_info()
 		self.check_credit_limit()
 		self.make_gl_entries()
 		self.update_advance_paid()

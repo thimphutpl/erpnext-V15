@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_import": 1,
- "autoname": "TASK-.YYYY.-.#####",
+ "autoname": "TASK-.YY.-.MM.-.#####",
  "creation": "2013-01-29 19:25:50",
  "doctype": "DocType",
  "document_type": "Setup",
@@ -47,17 +47,18 @@
   "sb_more_info",
   "review_date",
   "closing_date",
+  "branch",
+  "cost_center",
   "column_break_22",
   "department",
   "company",
   "lft",
   "rgt",
   "old_parent",
-  "template_task"
+  "amended_from"
  ],
  "fields": [
   {
-   "allow_in_quick_entry": 1,
    "fieldname": "subject",
    "fieldtype": "Data",
    "in_global_search": 1,
@@ -67,7 +68,6 @@
    "search_index": 1
   },
   {
-   "allow_in_quick_entry": 1,
    "bold": 1,
    "fieldname": "project",
    "fieldtype": "Link",
@@ -109,6 +109,7 @@
    "width": "50%"
   },
   {
+   "allow_on_submit": 1,
    "bold": 1,
    "fieldname": "status",
    "fieldtype": "Select",
@@ -121,6 +122,7 @@
    "options": "Open\nWorking\nPending Review\nOverdue\nTemplate\nCompleted\nCancelled"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "priority",
    "fieldtype": "Select",
    "in_list_view": 1,
@@ -146,17 +148,15 @@
    "search_index": 1
   },
   {
-   "collapsible": 1,
    "collapsible_depends_on": "eval:doc.__islocal",
    "fieldname": "sb_timeline",
    "fieldtype": "Section Break",
    "label": "Timeline"
   },
   {
-   "bold": 1,
    "fieldname": "exp_start_date",
    "fieldtype": "Date",
-   "label": "Expected Start Date",
+   "label": "Planned Start Date",
    "oldfieldname": "exp_start_date",
    "oldfieldtype": "Date"
   },
@@ -164,7 +164,7 @@
    "default": "0",
    "fieldname": "expected_time",
    "fieldtype": "Float",
-   "label": "Expected Time (in hours)",
+   "label": "Planned Time (in hours)",
    "oldfieldname": "exp_total_hrs",
    "oldfieldtype": "Data"
   },
@@ -182,12 +182,13 @@
    "bold": 1,
    "fieldname": "exp_end_date",
    "fieldtype": "Date",
-   "label": "Expected End Date",
+   "label": "Planned End Date",
    "oldfieldname": "exp_end_date",
    "oldfieldtype": "Date",
    "search_index": 1
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "progress",
    "fieldtype": "Percent",
    "label": "% Progress",
@@ -242,17 +243,17 @@
    "width": "50%"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "act_start_date",
    "fieldtype": "Date",
-   "label": "Actual Start Date (via Timesheet)",
+   "label": "Actual Start Date (via Time Sheet)",
    "oldfieldname": "act_start_date",
-   "oldfieldtype": "Date",
-   "read_only": 1
+   "oldfieldtype": "Date"
   },
   {
    "fieldname": "actual_time",
    "fieldtype": "Float",
-   "label": "Actual Time in Hours (via Timesheet)",
+   "label": "Actual Time (in Hours via Time Sheet)",
    "read_only": 1
   },
   {
@@ -260,12 +261,12 @@
    "fieldtype": "Column Break"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "act_end_date",
    "fieldtype": "Date",
-   "label": "Actual End Date (via Timesheet)",
+   "label": "Actual End Date (via Time Sheet)",
    "oldfieldname": "act_end_date",
-   "oldfieldtype": "Date",
-   "read_only": 1
+   "oldfieldtype": "Date"
   },
   {
    "collapsible": 1,
@@ -276,7 +277,7 @@
   {
    "fieldname": "total_costing_amount",
    "fieldtype": "Currency",
-   "label": "Total Costing Amount (via Timesheet)",
+   "label": "Total Costing Amount (via Time Sheet)",
    "oldfieldname": "actual_budget",
    "oldfieldtype": "Currency",
    "options": "Company:company:default_currency",
@@ -289,7 +290,7 @@
   {
    "fieldname": "total_billing_amount",
    "fieldtype": "Currency",
-   "label": "Total Billable Amount (via Timesheet)",
+   "label": "Total Billing Amount (via Time Sheet)",
    "read_only": 1
   },
   {
@@ -388,18 +389,36 @@
    "mandatory_depends_on": "eval: doc.status == \"Completed\""
   },
   {
-   "fieldname": "template_task",
-   "fieldtype": "Data",
-   "hidden": 1,
-   "label": "Template Task"
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "label": "Branch",
+   "options": "Branch"
+  },
+  {
+   "fetch_from": "branch.cost_center",
+   "fieldname": "cost_center",
+   "fieldtype": "Link",
+   "label": "Cost Center",
+   "options": "Cost Center",
+   "read_only": 1
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Task",
+   "print_hide": 1,
+   "read_only": 1
   }
  ],
  "icon": "fa fa-check",
  "idx": 1,
+ "is_submittable": 1,
  "is_tree": 1,
  "links": [],
  "max_attachments": 5,
- "modified": "2024-01-08 16:00:41.296203",
+ "modified": "2023-12-07 16:08:39.664974",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Task",
@@ -408,6 +427,8 @@
  "owner": "Administrator",
  "permissions": [
   {
+   "amend": 1,
+   "cancel": 1,
    "create": 1,
    "delete": 1,
    "email": 1,
@@ -416,10 +437,40 @@
    "report": 1,
    "role": "Projects User",
    "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "amend": 1,
+   "cancel": 1,
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Projects Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "amend": 1,
+   "cancel": 1,
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
    "write": 1
   }
  ],
- "quick_entry": 1,
  "search_fields": "subject",
  "show_name_in_global_search": 1,
  "show_preview_popup": 1,
@@ -428,5 +479,6 @@
  "states": [],
  "timeline_field": "project",
  "title_field": "subject",
+ "track_changes": 1,
  "track_seen": 1
 }

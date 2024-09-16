@@ -29,6 +29,8 @@ class AbstractBill(Document):
 		from frappe.types import DF
 
 		amended_from: DF.Link | None
+		approver: DF.Link | None
+		approver_name: DF.Data | None
 		base_total_amount: DF.Currency
 		branch: DF.Link
 		company: DF.Link
@@ -81,6 +83,7 @@ class AbstractBill(Document):
 		self.validate_abstract_bill_requires()
 		self.set_activity_head()
 		self.calculate_total_amount()
+		self.set_approver()
 		if not self.get("__islocal"):
 			self.validate_fiscal_year()
 			self.validate_file_index()
@@ -202,6 +205,10 @@ class AbstractBill(Document):
 			total_amount += flt(a.amount, 2)
 		self.total_amount = total_amount
 
+	def set_approver(self):
+		self.approver = frappe.db.get_single_value("Accounts Settings", "abstract_bill_approver")
+		self.approver_name = frappe.db.get_single_value("Accounts Settings", "ab_approver_name")
+
 	def post_journal_entry(self):
 		accounts = []
 		bank_account = frappe.db.get_value("Company", self.company, "default_bank_account")
@@ -281,3 +288,12 @@ class AbstractBill(Document):
 				self.append('items', d)
 
 			return True
+
+@frappe.whitelist()
+def get_fiscal_years_for_company(company):
+    fiscal_years = frappe.get_all('Fiscal Year Company', 
+                                  filters={'company': company}, 
+                                  fields=['parent'])
+    # Extract the fiscal year names
+    fiscal_year_list = [fy['parent'] for fy in fiscal_years]
+    return fiscal_year_list

@@ -35,6 +35,7 @@ class Company(NestedSet):
 		auto_err_frequency: DF.Literal["Daily", "Weekly"]
 		auto_exchange_rate_revaluation: DF.Check
 		book_advance_payments_in_separate_party_account: DF.Check
+		calendar_year_based: DF.Check
 		capital_work_in_progress_account: DF.Link | None
 		chart_of_accounts: DF.Literal[None]
 		cheque_required: DF.Check
@@ -105,6 +106,7 @@ class Company(NestedSet):
 		tax_id: DF.Data | None
 		total_monthly_sales: DF.Currency
 		transactions_annual_history: DF.Code | None
+		travel_expense_account: DF.Link | None
 		unrealized_exchange_gain_loss_account: DF.Link | None
 		unrealized_profit_loss_account: DF.Link | None
 		website: DF.Data | None

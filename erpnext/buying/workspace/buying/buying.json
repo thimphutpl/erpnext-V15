@@ -198,8 +198,8 @@
    "type": "Link"
   }
  ],
- "modified": "2024-08-20 10:52:35.270307",
- "modified_by": "tshering.lham@thimphutechpark.bt",
+ "modified": "2024-09-12 20:06:40.087218",
+ "modified_by": "Administrator",
  "module": "Buying",
  "name": "Buying",
  "number_cards": [],
@@ -209,7 +209,7 @@
  "quick_lists": [],
  "restrict_to_domain": "",
  "roles": [],
- "sequence_id": 7.0,
+ "sequence_id": 8.0,
  "shortcuts": [
   {
    "color": "Green",

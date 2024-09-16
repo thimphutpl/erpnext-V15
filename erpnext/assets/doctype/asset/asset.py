@@ -20,6 +20,7 @@ from frappe.utils import (
 
 import erpnext
 from erpnext.accounts.general_ledger import make_reverse_gl_entries
+from frappe.model.naming import set_name_by_naming_series, make_autoname
 from erpnext.assets.doctype.asset.depreciation import (
 	get_comma_separated_links,
 	get_depreciation_accounts,
@@ -119,6 +120,13 @@ class Asset(AccountsController):
 		value_after_depreciation: DF.Currency
 		vehicle_number: DF.Data | None
 	# end: auto-generated types
+
+	# Added by Dawa Tshering on 2024/09/03
+	def autoname(self):
+		if self.old_asset_code:
+			self.name = self.old_asset_code
+		else:
+			self.name = make_autoname('ACC-ASS-.YYYY.####')
 
 	def validate(self):
 		self.validate_asset_values()

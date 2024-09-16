@@ -526,8 +526,8 @@
    "type": "Link"
   }
  ],
- "modified": "2024-08-19 14:45:13.488480",
- "modified_by": "tshering.lham@thimphutechpark.bt",
+ "modified": "2024-09-12 20:06:40.231052",
+ "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Fleet Management",
  "number_cards": [],
@@ -537,7 +537,7 @@
  "quick_lists": [],
  "restrict_to_domain": "",
  "roles": [],
- "sequence_id": 9.0,
+ "sequence_id": 10.0,
  "shortcuts": [
   {
    "color": "Red",

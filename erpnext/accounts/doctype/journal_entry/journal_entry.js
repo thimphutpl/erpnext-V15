@@ -36,12 +36,22 @@ frappe.ui.form.on("Journal Entry", {
 				}
 			}
 		});
-		
 	},
+
 	onload:function(frm){
 		draw_tds_table(frm);
 	},
+
 	refresh: function (frm) {
+
+		frm.set_query("branch", function(doc) {
+			return {
+				filters: {
+					'company': doc.company
+				}
+			};
+		});
+
 		erpnext.toggle_naming_series();
 
 		frm.trigger("toggle_cheque_log");

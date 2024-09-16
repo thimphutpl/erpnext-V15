@@ -4,7 +4,7 @@
 import copy
 import json
 from collections import defaultdict
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
 if TYPE_CHECKING:
 	from erpnext.manufacturing.doctype.bom_update_log.bom_update_log import BOMUpdateLog
@@ -13,7 +13,7 @@ import frappe
 from frappe import _
 
 
-def replace_bom(boms: dict, log_name: str) -> None:
+def replace_bom(boms: Dict, log_name: str) -> None:
 	"Replace current BOM with new BOM in parent BOMs."
 
 	current_bom = boms.get("current_bom")
@@ -43,7 +43,9 @@ def replace_bom(boms: dict, log_name: str) -> None:
 		bom_obj.save_version()
 
 
-def update_cost_in_level(doc: "BOMUpdateLog", bom_list: list[str], batch_name: int | str) -> None:
+def update_cost_in_level(
+	doc: "BOMUpdateLog", bom_list: List[str], batch_name: Union[int, str]
+) -> None:
 	"Updates Cost for BOMs within a given level. Runs via background jobs."
 
 	try:
@@ -67,7 +69,7 @@ def update_cost_in_level(doc: "BOMUpdateLog", bom_list: list[str], batch_name: i
 			frappe.db.commit()  # nosemgrep
 
 
-def get_ancestor_boms(new_bom: str, bom_list: list | None = None) -> list:
+def get_ancestor_boms(new_bom: str, bom_list: Optional[List] = None) -> List:
 	"Recursively get all ancestors of BOM."
 
 	bom_list = bom_list or []
@@ -84,12 +86,10 @@ def get_ancestor_boms(new_bom: str, bom_list: list | None = None) -> list:
 		if new_bom == d.parent:
 			frappe.throw(_("BOM recursion: {0} cannot be child of {1}").format(new_bom, d.parent))
 
-		if d.parent not in tuple(bom_list):
-			bom_list.append(d.parent)
-
+		bom_list.append(d.parent)
 		get_ancestor_boms(d.parent, bom_list)
 
-	return bom_list
+	return list(set(bom_list))
 
 
 def update_new_bom_in_bom_items(unit_cost: float, current_bom: str, new_bom: str) -> None:
@@ -99,7 +99,9 @@ def update_new_bom_in_bom_items(unit_cost: float, current_bom: str, new_bom: str
 		.set(bom_item.bom_no, new_bom)
 		.set(bom_item.rate, unit_cost)
 		.set(bom_item.amount, (bom_item.stock_qty * unit_cost))
-		.where((bom_item.bom_no == current_bom) & (bom_item.docstatus < 2) & (bom_item.parenttype == "BOM"))
+		.where(
+			(bom_item.bom_no == current_bom) & (bom_item.docstatus < 2) & (bom_item.parenttype == "BOM")
+		)
 	).run()
 
 
@@ -112,7 +114,7 @@ def get_bom_unit_cost(bom_name: str) -> float:
 	return frappe.utils.flt(new_bom_unitcost[0][0])
 
 
-def update_cost_in_boms(bom_list: list[str]) -> None:
+def update_cost_in_boms(bom_list: List[str]) -> None:
 	"Updates cost in given BOMs. Returns current and total updated BOMs."
 
 	for index, bom in enumerate(bom_list):
@@ -124,7 +126,9 @@ def update_cost_in_boms(bom_list: list[str]) -> None:
 			frappe.db.commit()  # nosemgrep
 
 
-def get_next_higher_level_boms(child_boms: list[str], processed_boms: dict[str, bool]) -> list[str]:
+def get_next_higher_level_boms(
+	child_boms: List[str], processed_boms: Dict[str, bool]
+) -> List[str]:
 	"Generate immediate higher level dependants with no unresolved dependencies (children)."
 
 	def _all_children_are_processed(parent_bom):
@@ -150,22 +154,15 @@ def get_next_higher_level_boms(child_boms: list[str], processed_boms: dict[str, 
 	return list(resolved_dependants)
 
 
-def get_leaf_boms() -> list[str]:
+def get_leaf_boms() -> List[str]:
 	"Get BOMs that have no dependencies."
 
-	bom = frappe.qb.DocType("BOM")
-	bom_item = frappe.qb.DocType("BOM Item")
-
-	boms = (
-		frappe.qb.from_(bom)
-		.left_join(bom_item)
-		.on((bom.name == bom_item.parent) & (bom_item.bom_no != ""))
-		.select(bom.name)
-		.where((bom.docstatus == 1) & (bom.is_active == 1) & (bom_item.bom_no.isnull()))
-		.distinct()
-	).run(pluck=True)
-
-	return boms
+	return frappe.db.sql_list(
+		"""select name from `tabBOM` bom
+		where docstatus=1 and is_active=1
+			and not exists(select bom_no from `tabBOM Item`
+				where parent=bom.name and ifnull(bom_no, '')!='')"""
+	)
 
 
 def _generate_dependence_map() -> defaultdict:
@@ -203,7 +200,7 @@ def _generate_dependence_map() -> defaultdict:
 	return child_parent_map, parent_child_map
 
 
-def set_values_in_log(log_name: str, values: dict[str, Any], commit: bool = False) -> None:
+def set_values_in_log(log_name: str, values: Dict[str, Any], commit: bool = False) -> None:
 	"Update BOM Update Log record."
 
 	if not values:

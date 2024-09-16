@@ -1,0 +1,149 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "S.YY.MM.#####",
+ "creation": "2024-09-12 12:54:22.788628",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_6j5b",
+  "batch",
+  "column_break_tivd",
+  "country",
+  "student_details_section",
+  "name1",
+  "cid_number",
+  "permanent_address",
+  "status",
+  "college",
+  "column_break_jdzp",
+  "start_date",
+  "end_date",
+  "course",
+  "contact_number",
+  "email_address"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_6j5b",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "name1",
+   "fieldtype": "Data",
+   "label": "Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "country",
+   "fieldtype": "Data",
+   "label": "Country",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_tivd",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "batch",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Batch",
+   "reqd": 1
+  },
+  {
+   "fieldname": "student_details_section",
+   "fieldtype": "Section Break",
+   "label": "Student Details"
+  },
+  {
+   "fieldname": "cid_number",
+   "fieldtype": "Data",
+   "label": "CID Number",
+   "length": 11,
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "permanent_address",
+   "fieldtype": "Data",
+   "label": "Permanent Address",
+   "reqd": 1
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "On-Going\nCompleted",
+   "reqd": 1
+  },
+  {
+   "fieldname": "college",
+   "fieldtype": "Data",
+   "label": "College",
+   "reqd": 1
+  },
+  {
+   "fieldname": "start_date",
+   "fieldtype": "Date",
+   "label": "Start Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "end_date",
+   "fieldtype": "Date",
+   "label": "End Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "course",
+   "fieldtype": "Link",
+   "label": "Course",
+   "options": "Courses",
+   "reqd": 1
+  },
+  {
+   "fieldname": "contact_number",
+   "fieldtype": "Data",
+   "label": "Contact Number",
+   "reqd": 1
+  },
+  {
+   "fieldname": "email_address",
+   "fieldtype": "Data",
+   "label": "Email Address",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_jdzp",
+   "fieldtype": "Column Break"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-09-16 12:30:39.636064",
+ "modified_by": "Administrator",
+ "module": "Gift  Management",
+ "name": "Scholarship",
+ "naming_rule": "Expression (old style)",
+ "nsm_parent_field": "parent_scholarship",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "select": 1,
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

@@ -162,8 +162,8 @@
    "type": "Link"
   }
  ],
- "modified": "2024-08-09 16:52:44.971104",
- "modified_by": "pema.dhendup@thimphutechpark.bt",
+ "modified": "2024-09-12 20:06:39.858848",
+ "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Payables",
  "number_cards": [],
@@ -173,7 +173,7 @@
  "quick_lists": [],
  "restrict_to_domain": "",
  "roles": [],
- "sequence_id": 2.0,
+ "sequence_id": 3.0,
  "shortcuts": [
   {
    "doc_view": "",

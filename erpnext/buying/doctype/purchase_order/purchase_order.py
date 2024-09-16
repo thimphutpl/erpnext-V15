@@ -443,7 +443,7 @@ class PurchaseOrder(BuyingController):
 
 	def on_submit(self):
 		super().on_submit()
-		self.dispatch_number = make_autoname("No. HMS/ADM/03-02/"+".YYYY./.#####")
+		self.dispatch_number = make_autoname("HMS/ADM/03-02/"+".YYYY./.#####")
 		frappe.db.set_value("Purchase Order", self.name, "dispatch_number", self.dispatch_number)
 
 		if self.is_against_so():

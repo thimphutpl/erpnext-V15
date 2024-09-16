@@ -1,0 +1,103 @@
+{
+ "actions": [],
+ "autoname": "SR.YY.MM.####",
+ "creation": "2024-09-12 12:10:23.018284",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_hkjy",
+  "branch",
+  "date",
+  "column_break_qeis",
+  "company",
+  "vip_name",
+  "gift_details_section",
+  "items",
+  "amended_from",
+  "remarks"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_hkjy",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "label": "Branch",
+   "options": "Branch"
+  },
+  {
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "label": "Date"
+  },
+  {
+   "fieldname": "column_break_qeis",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "gift_details_section",
+   "fieldtype": "Section Break",
+   "label": "Gift Details"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Soelra",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Data",
+   "label": "Remarks"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company"
+  },
+  {
+   "fieldname": "vip_name",
+   "fieldtype": "Data",
+   "label": "VIP's Name"
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "options": "Soelra Details"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2024-09-13 13:56:28.511471",
+ "modified_by": "Administrator",
+ "module": "Gift  Management",
+ "name": "Soelra",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

@@ -21,7 +21,6 @@
   "transaction_date",
   "delivery_date",
   "column_break1",
-  "po_no",
   "po_date",
   "company",
   "skip_delivery_note",
@@ -196,6 +195,7 @@
   {
    "fieldname": "naming_series",
    "fieldtype": "Select",
+   "hidden": 1,
    "hide_days": 1,
    "hide_seconds": 1,
    "label": "Series",
@@ -204,7 +204,7 @@
    "oldfieldtype": "Select",
    "options": "SAL-ORD-.YYYY.-",
    "print_hide": 1,
-   "reqd": 1,
+   "read_only": 1,
    "set_only_once": 1
   },
   {
@@ -311,17 +311,6 @@
    "in_list_view": 1,
    "label": "Delivery Date",
    "no_copy": 1
-  },
-  {
-   "allow_on_submit": 1,
-   "fieldname": "po_no",
-   "fieldtype": "Data",
-   "hide_days": 1,
-   "hide_seconds": 1,
-   "label": "Customer's Purchase Order",
-   "oldfieldname": "po_no",
-   "oldfieldtype": "Data",
-   "width": "100px"
   },
   {
    "allow_on_submit": 1,
@@ -1646,7 +1635,7 @@
  "idx": 105,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-05-23 16:35:54.905804",
+ "modified": "2024-09-13 15:45:38.032245",
  "modified_by": "Administrator",
  "module": "Selling",
  "name": "Sales Order",

@@ -6,6 +6,16 @@ frappe.provide("erpnext.accounts.dimensions");
 erpnext.landed_cost_taxes_and_charges.setup_triggers("Stock Entry");
 
 frappe.ui.form.on("Stock Entry", {
+	company: function(frm) {
+        // Apply the filter when the company is selected or changed
+        frm.set_query('item_group', function() {
+            return {
+                filters: {
+                    'company': frm.doc.company  // Filter based on selected company
+                }
+            };
+        });
+    },
 	setup: function (frm) {
 		frm.ignore_doctypes_on_cancel_all = ["Serial and Batch Bundle"];
 
@@ -15,6 +25,14 @@ frappe.ui.form.on("Stock Entry", {
 			} else {
 				return doc.qty <= doc.actual_qty ? "green" : "orange";
 			}
+		});
+
+		frm.set_query("branch", function(doc) {
+			return {
+				filters: {
+					'company': doc.company
+				}
+			};
 		});
 
 		frm.set_query("work_order", function () {
@@ -53,6 +71,8 @@ frappe.ui.form.on("Stock Entry", {
 				},
 			};
 		});
+
+		
 
 		frappe.db.get_value(
 			"Stock Settings",

@@ -12,13 +12,14 @@ class BusinessActivity(Document):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
+		from erpnext.accounts.doctype.business_activity_company.business_activity_company import BusinessActivityCompany
 		from frappe.types import DF
 
 		abbreviation: DF.Data | None
 		business_activity_name: DF.Data
-		company: DF.Link
 		is_default: DF.Check
 		is_disabled: DF.Check
+		table_kovz: DF.Table[BusinessActivityCompany]
 	# end: auto-generated types
 	def validate(self):
 		if self.is_default:

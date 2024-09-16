@@ -1,4 +1,5 @@
 import unittest
+from typing import List, Tuple
 
 import frappe
 
@@ -12,7 +13,7 @@ DEFAULT_FILTERS = {
 }
 
 
-REPORT_FILTER_TEST_CASES: list[tuple[ReportName, ReportFilters]] = [
+REPORT_FILTER_TEST_CASES: List[Tuple[ReportName, ReportFilters]] = [
 	("BOM Explorer", {"bom": frappe.get_last_doc("BOM").name}),
 	("BOM Operations Time", {}),
 	("BOM Stock Calculated", {"bom": frappe.get_last_doc("BOM").name, "qty_to_make": 2}),

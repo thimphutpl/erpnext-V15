@@ -31,7 +31,6 @@ def get_data(filters):
 		"sales_order",
 		"production_item",
 		"qty",
-		"creation",
 		"produced_qty",
 		"planned_start_date",
 		"planned_end_date",
@@ -40,22 +39,12 @@ def get_data(filters):
 		"lead_time",
 	]
 
-	for field in ["sales_order", "production_item"]:
+	for field in ["sales_order", "production_item", "status", "company"]:
 		if filters.get(field):
 			query_filters[field] = ("in", filters.get(field))
 
-	for field in ["status", "company"]:
-		if filters.get(field):
-			query_filters[field] = filters.get(field)
-
-	if filters.get("based_on") == "Planned Date":
-		query_filters["planned_start_date"] = (">=", filters.get("from_date"))
-		query_filters["planned_end_date"] = ("<=", filters.get("to_date"))
-	elif filters.get("based_on") == "Actual Date":
-		query_filters["actual_start_date"] = (">=", filters.get("from_date"))
-		query_filters["actual_end_date"] = ("<=", filters.get("to_date"))
-	else:
-		query_filters["creation"] = ("between", [filters.get("from_date"), filters.get("to_date")])
+	query_filters["planned_start_date"] = (">=", filters.get("from_date"))
+	query_filters["planned_end_date"] = ("<=", filters.get("to_date"))
 
 	data = frappe.get_all(
 		"Work Order", fields=fields, filters=query_filters, order_by="planned_start_date asc"
@@ -94,7 +83,6 @@ def get_chart_based_on_status(data):
 	for d in data:
 		status_wise_data[d.status] += 1
 
-	labels = [_(label) for label in labels]
 	values = [status_wise_data[label] for label in labels]
 
 	chart = {
@@ -107,7 +95,7 @@ def get_chart_based_on_status(data):
 
 
 def get_chart_based_on_age(data):
-	labels = [_("0-30 Days"), _("30-60 Days"), _("60-90 Days"), _("90 Above")]
+	labels = ["0-30 Days", "30-60 Days", "60-90 Days", "90 Above"]
 
 	age_wise_data = {"0-30 Days": 0, "30-60 Days": 0, "60-90 Days": 0, "90 Above": 0}
 
@@ -147,8 +135,8 @@ def get_chart_based_on_qty(data, filters):
 		pending.append(periodic_data.get("Pending").get(d))
 		completed.append(periodic_data.get("Completed").get(d))
 
-	datasets.append({"name": _("Pending"), "values": pending})
-	datasets.append({"name": _("Completed"), "values": completed})
+	datasets.append({"name": "Pending", "values": pending})
+	datasets.append({"name": "Completed", "values": completed})
 
 	chart = {
 		"data": {"labels": labels, "datasets": datasets},
@@ -219,12 +207,6 @@ def get_columns(filters):
 				"fieldtype": "Link",
 				"options": "Sales Order",
 				"width": 90,
-			},
-			{
-				"label": _("Created On"),
-				"fieldname": "creation",
-				"fieldtype": "Date",
-				"width": 150,
 			},
 			{
 				"label": _("Planned Start Date"),

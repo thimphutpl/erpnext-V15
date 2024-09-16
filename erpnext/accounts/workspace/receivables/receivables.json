@@ -196,8 +196,8 @@
    "type": "Link"
   }
  ],
- "modified": "2024-08-09 15:28:45.810478",
- "modified_by": "pema.dhendup@thimphutechpark.bt",
+ "modified": "2024-09-12 20:06:39.908552",
+ "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Receivables",
  "number_cards": [],
@@ -207,7 +207,7 @@
  "quick_lists": [],
  "restrict_to_domain": "",
  "roles": [],
- "sequence_id": 3.0,
+ "sequence_id": 4.0,
  "shortcuts": [
   {
    "color": "Grey",

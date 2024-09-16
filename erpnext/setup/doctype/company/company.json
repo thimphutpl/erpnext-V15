@@ -17,6 +17,7 @@
   "is_group",
   "abstract_bill_required",
   "cheque_required",
+  "calendar_year_based",
   "default_holiday_list",
   "cb0",
   "default_letter_head",
@@ -56,6 +57,7 @@
   "exchange_gain_loss_account",
   "unrealized_exchange_gain_loss_account",
   "unrealized_profit_loss_account",
+  "travel_expense_account",
   "column_break0",
   "allow_account_creation_against_child_company",
   "default_payable_account",
@@ -846,6 +848,19 @@
    "fieldname": "cheque_required",
    "fieldtype": "Check",
    "label": "Cheque Required"
+  },
+  {
+   "default": "0",
+   "fieldname": "calendar_year_based",
+   "fieldtype": "Check",
+   "label": "Calendar Year Based",
+   "set_only_once": 1
+  },
+  {
+   "fieldname": "travel_expense_account",
+   "fieldtype": "Link",
+   "label": "Travel Expense Account",
+   "options": "Account"
   }
  ],
  "icon": "fa fa-building",
@@ -853,7 +868,7 @@
  "image_field": "company_logo",
  "is_tree": 1,
  "links": [],
- "modified": "2024-08-20 12:25:16.789687",
+ "modified": "2024-09-03 16:44:45.967401",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Company",

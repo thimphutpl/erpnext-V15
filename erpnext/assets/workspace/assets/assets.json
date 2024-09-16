@@ -8,7 +8,7 @@
  "for_user": "",
  "hide_custom": 0,
  "icon": "assets",
- "idx": 0,
+ "idx": 1,
  "is_hidden": 0,
  "label": "Assets",
  "links": [
@@ -87,7 +87,7 @@
    "hidden": 0,
    "is_query_report": 0,
    "label": "Reports",
-   "link_count": 5,
+   "link_count": 4,
    "link_type": "DocType",
    "onboard": 0,
    "type": "Card Break"
@@ -128,16 +128,6 @@
   {
    "hidden": 0,
    "is_query_report": 1,
-   "label": "Fixed Asset Register",
-   "link_count": 0,
-   "link_to": "Fixed Asset Register",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
    "label": "Asst Register",
    "link_count": 0,
    "link_to": "Asset Register",
@@ -146,8 +136,8 @@
    "type": "Link"
   }
  ],
- "modified": "2024-08-22 16:12:38.717573",
- "modified_by": "pema.dhendup@thimphutechpark.bt",
+ "modified": "2024-09-12 20:06:40.374499",
+ "modified_by": "Administrator",
  "module": "Assets",
  "name": "Assets",
  "number_cards": [
@@ -169,7 +159,7 @@
    "role": "Asset User"
   }
  ],
- "sequence_id": 11.0,
+ "sequence_id": 12.0,
  "shortcuts": [],
  "title": "Assets"
 }

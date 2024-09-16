@@ -7,7 +7,6 @@
  "field_order": [
   "raw_materials_consumption_section",
   "material_consumption",
-  "get_rm_cost_from_consumption_entry",
   "column_break_3",
   "backflush_raw_materials_based_on",
   "capacity_planning",
@@ -32,9 +31,15 @@
   "job_card_excess_transfer",
   "other_settings_section",
   "update_bom_costs_automatically",
-  "set_op_cost_and_scrape_from_sub_assemblies",
   "column_break_23",
-  "make_serial_no_batch_from_work_order"
+  "make_serial_no_batch_from_work_order",
+  "manufacturing_overhead_section",
+  "hand_tools",
+  "supervision_charges",
+  "column_break_32",
+  "electrical_charges",
+  "ohs_miscellaneous",
+  "profit"
  ],
  "fields": [
   {
@@ -198,25 +203,46 @@
    "label": "Allow Excess Material Transfer"
   },
   {
-   "default": "0",
-   "description": "In the case of 'Use Multi-Level BOM' in a work order, if the user wishes to add sub-assembly costs to Finished Goods items without using a job card as well the scrap items, then this option needs to be enable.",
-   "fieldname": "set_op_cost_and_scrape_from_sub_assemblies",
-   "fieldtype": "Check",
-   "label": "Set Operating Cost / Scrape Items From Sub-assemblies"
+   "fieldname": "manufacturing_overhead_section",
+   "fieldtype": "Section Break",
+   "label": "Manufacturing Overhead Percentage "
   },
   {
-   "default": "0",
-   "depends_on": "eval: doc.material_consumption",
-   "fieldname": "get_rm_cost_from_consumption_entry",
-   "fieldtype": "Check",
-   "label": "Get Raw Materials Cost from Consumption Entry"
+   "fieldname": "hand_tools",
+   "fieldtype": "Percent",
+   "label": "Hand Tools, Equipments, Machinery(%)"
+  },
+  {
+   "fieldname": "supervision_charges",
+   "fieldtype": "Percent",
+   "label": "Supervision charges(%)"
+  },
+  {
+   "fieldname": "electrical_charges",
+   "fieldtype": "Percent",
+   "label": "Electrical Charges(%)"
+  },
+  {
+   "fieldname": "profit",
+   "fieldtype": "Percent",
+   "hidden": 1,
+   "label": "Profit(%)"
+  },
+  {
+   "fieldname": "column_break_32",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "ohs_miscellaneous",
+   "fieldtype": "Percent",
+   "label": "OHS/Miscellaneous(%)"
   }
  ],
  "icon": "icon-wrench",
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-02-08 19:00:37.561244",
+ "modified": "2023-06-13 10:59:43.784817",
  "modified_by": "Administrator",
  "module": "Manufacturing",
  "name": "Manufacturing Settings",

@@ -1,0 +1,163 @@
+<div>
+    {%total_num_received_dur_year=0;%}
+    {%total_val_received_dur_year=0;%}
+    {%total_num_disposed_dur_year=0;%}
+    {%total_val_disposed_dur_year=0;%}
+    {%total_num_retained_end_year=0;%}
+    {%total_val_retained_end_year=0;%}
+    {%curdate=String(new Date().getDate()).padStart(2, '0')+"/"+String(new Date().getMonth() + 1).padStart(2, '0')+"/"+new Date().getFullYear();%}
+
+    <h3 style="text-align: center;">GIFT REPORT</h3>
+    
+    {% if(filters.to_date && filters.from_date){ %}
+
+      {% todate=String(new Date(filters.to_date).getDate()).padStart(2, '0')+"/"+String(new Date(filters.to_date).getMonth() + 1).padStart(2, '0')+"/"+new Date(filters.to_date).getFullYear();%}
+      {% fromdate=String(new Date(filters.from_date).getDate()).padStart(2, '0')+"/"+String(new Date(filters.from_date).getMonth() + 1).padStart(2, '0')+"/"+new Date(filters.from_date).getFullYear();%}
+
+      {% for ( var i = 0; i < data.length; i++ ) { %}
+        
+        {%total_num_received_dur_year+=1;%}
+        {%total_val_received_dur_year+=parseFloat(data[i].estimated_fair_market_value);%}
+
+        {% if (data[i].gift_status=="Diposed") { %}
+          {%total_num_disposed_dur_year+=1;%}
+          {%total_val_disposed_dur_year+=parseFloat(data[i].estimated_fair_market_value);%}
+        {% } %}
+        {% if (data[i].gift_status=="Retained") { %}
+          {%total_num_retained_end_year+=1;%}
+          {%total_val_retained_end_year+=parseFloat(data[i].estimated_fair_market_value);%}
+        {% } %}
+
+        
+      {% } %}
+      <h4 style="text-align: center;">Financial Year: {%=fromdate%} to {%=todate%}</h4>
+      <p>Total Number of Gift(s) received during the duration from {%=fromdate%} to {%=todate%}: {%=total_num_received_dur_year%}</p>
+      <p>Total Value of Gift(s) received during the duration from {%=fromdate%} to {%=todate%}: {%=total_val_received_dur_year%}</p>
+      <p>Total Number of Gift(s) disposed during the duration from {%=fromdate%} to {%=todate%}: {%=total_num_disposed_dur_year%}</p>
+      <p>Total Value of Gift(s) disposed during the duration from {%=fromdate%} to {%=todate%}: {%=total_val_disposed_dur_year%}</p>
+      <p>Total Number of Gift(s) retained/not disposed duration from {%=fromdate%} to {%=todate%}: {%=total_num_retained_end_year%}</p>
+      <p>Total Value of Gift(s) retained/not disposed duration from {%=fromdate%} to {%=todate%}: {%=total_val_retained_end_year%}</p>
+      <p style="margin-top: 30px; font-weight: bold;">Prepared by:</p>
+      <p>Gift Administrator (Name, Designation & Signature)</p>
+  
+      <p style="margin-top: 100px; font-weight: bold;">Verified by:</p>
+      <p>Gift Administrator Committee</p>
+
+    {% }else if(filters.from_date){ %}
+
+      {% fromdate=String(new Date(filters.from_date).getDate()).padStart(2, '0')+"/"+String(new Date(filters.from_date).getMonth() + 1).padStart(2, '0')+"/"+new Date(filters.from_date).getFullYear();%} 
+
+      {% for ( var i = 0; i < data.length; i++ ) { %}
+          
+        {%total_num_received_dur_year+=1;%}
+        {%total_val_received_dur_year+=parseFloat(data[i].estimated_fair_market_value);%}
+        {% if (data[i].gift_status=="Diposed") { %}
+          {%total_num_disposed_dur_year+=1;%}
+          {%total_val_disposed_dur_year+=parseFloat(data[i].estimated_fair_market_value);%}
+        {% } %}
+        {% if (data[i].gift_status=="Retained") { %}
+          {%total_num_retained_end_year+=1;%}
+          {%total_val_retained_end_year+=parseFloat(data[i].estimated_fair_market_value);%}
+        {% } %}
+
+        
+      {% } %}
+
+      
+      <h4 style="text-align: center;">Financial Year: {%=fromdate%} to {%=curdate%} </h4>
+      <p>Total Number of Gift(s) received during the duration from {%=fromdate%} to {%=curdate%}: {%=total_num_received_dur_year%}</p>
+      <p>Total Value of Gift(s) received during the duration from {%=fromdate%} to {%=curdate%}: {%=total_val_received_dur_year%}</p>
+      <p>Total Number of Gift(s) disposed during the duration from {%=fromdate%} to {%=curdate%}: {%=total_num_disposed_dur_year%}</p>
+      <p>Total Value of Gift(s) disposed during the duration from {%=fromdate%} to {%=curdate%}: {%=total_val_disposed_dur_year%}</p>
+      <p>Total Number of Gift(s) retained/not disposed duration from {%=fromdate%} to {%=curdate%}: {%=total_num_retained_end_year%}</p>
+      <p>Total Value of Gift(s) retained/not disposed duration from {%=fromdate%} to {%=curdate%}: {%=total_val_retained_end_year%}</p>
+      <p style="margin-top: 30px; font-weight: bold;">Prepared by:</p>
+      <p>Gift Administrator (Name, Designation & Signature)</p>
+  
+      <p style="margin-top: 100px; font-weight: bold;">Verified by:</p>
+      <p>Gift Administrator Committee</p>
+    
+    {% }else if(filters.to_date){ %}
+
+    {% todate=String(new Date(filters.to_date).getDate()).padStart(2, '0')+"/"+String(new Date(filters.to_date).getMonth() + 1).padStart(2, '0')+"/"+new Date(filters.to_date).getFullYear();%}
+
+      {% for ( var i = 0; i < data.length; i++ ) { %}
+          
+        {%total_num_received_dur_year+=1;%}
+        {%total_val_received_dur_year+=parseFloat(data[i].estimated_fair_market_value);%}
+        {% if (data[i].gift_status=="Diposed") { %}
+          {%total_num_disposed_dur_year+=1;%}
+          {%total_val_disposed_dur_year+=parseFloat(data[i].estimated_fair_market_value);%}
+        {% } %}
+        {% if (data[i].gift_status=="Retained") { %}
+          {%total_num_retained_end_year+=1;%}
+          {%total_val_retained_end_year+=parseFloat(data[i].estimated_fair_market_value);%}
+        {% } %}
+
+        
+      {% } %}
+
+      <h4 style="text-align: center;">Financial Year: till {%=todate%}</h4>
+      <p>Total Number of Gift(s) received till {%=todate%}: {%=total_num_received_dur_year%}</p>
+      <p>Total Value of Gift(s) received till {%=todate%}: {%=total_val_received_dur_year%}</p>
+      <p>Total Number of Gift(s) disposed till {%=todate%}: {%=total_num_disposed_dur_year%}</p>
+      <p>Total Value of Gift(s) disposed till {%=todate%}: {%=total_val_disposed_dur_year%}</p>
+      <p>Total Number of Gift(s) retained/not disposed till {%=todate%}: {%=total_num_retained_end_year%}</p>
+      <p>Total Value of Gift(s) retained/not disposed till {%=todate%}: {%=total_val_retained_end_year%}</p>
+      <p style="margin-top: 30px; font-weight: bold;">Prepared by:</p>
+      <p>Gift Administrator (Name, Designation & Signature)</p>
+  
+      <p style="margin-top: 100px; font-weight: bold;">Verified by:</p>
+      <p>Gift Administrator Committee</p>
+    {% }else if(filters.fiscal_year) { %}
+      {% for ( var i = 0; i < data.length; i++ ) { %}
+            
+        {% if(new Date(data[i].date_of_receipt)>=new Date(filters.fiscal_year+'-01-01') && new Date(data[i].date_of_receipt)<=new Date(filters.fiscal_year+'-12-31')) { %}
+          {%total_num_received_dur_year+=1;%}
+          {%total_val_received_dur_year+=parseFloat(data[i].estimated_fair_market_value);%}
+          {% if (data[i].gift_status=="Diposed") { %}
+            {%total_num_disposed_dur_year+=1;%}
+            {%total_val_disposed_dur_year+=parseFloat(data[i].estimated_fair_market_value);%}
+          {% } %}
+          {% if (data[i].gift_status=="Retained") { %}
+            {%total_num_retained_end_year+=1;%}
+            {%total_val_retained_end_year+=parseFloat(data[i].estimated_fair_market_value);%}
+          {% } %}
+        {% } %}
+
+
+        
+      {% } %}
+      <h4 style="text-align: center;">Financial Year: {%=filters.fiscal_year%}</h4>
+      <p>Total Number of Gift(s) received during the year : {%=total_num_received_dur_year%}</p>
+      <p>Total Value of Gift(s) received during the year : {%=total_val_received_dur_year%}</p>
+      <p>Total Number of Gift(s) disposed during the year : {%=total_num_disposed_dur_year%}</p>
+      <p>Total Value of Gift(s) disposed during the year : {%=total_val_disposed_dur_year%}</p>
+      <p>Total Number of Gift(s) retained/not disposed at the end of year : {%=total_num_retained_end_year%}</p>
+      <p>Total Value of Gift(s) retained/not disposed at the end of year : {%=total_val_retained_end_year%}</p>
+      <p style="margin-top: 30px; font-weight: bold;">Prepared by:</p>
+      <p>Gift Administrator (Name, Designation & Signature)</p>
+  
+      <p style="margin-top: 100px; font-weight: bold;">Verified by:</p>
+      <p>Gift Administrator Committee</p>
+
+    {% }else{ %}
+      <p>SELECT A FISCAL YEAR</p>
+
+    {% }%}
+    
+
+   
+
+    
+
+    
+
+    
+
+
+    
+
+    
+
+</div>
