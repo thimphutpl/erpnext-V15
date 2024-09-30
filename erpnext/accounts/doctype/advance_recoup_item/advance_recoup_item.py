@@ -18,8 +18,8 @@ class AdvanceRecoupItem(Document):
 		amount: DF.Currency
 		business_activity: DF.Link
 		cost_center: DF.Link
-		invoice_date: DF.Date
-		invoice_no: DF.Data
+		invoice_date: DF.Date | None
+		invoice_no: DF.Data | None
 		name: DF.Int | None
 		parent: DF.Data
 		parentfield: DF.Data

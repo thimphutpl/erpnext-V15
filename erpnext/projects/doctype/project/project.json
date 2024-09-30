@@ -14,8 +14,8 @@
   "consultancy_charge",
   "boq_value",
   "section_break_6",
-  "naming_series",
   "project_name",
+  "naming_series",
   "branch",
   "status",
   "project_type",
@@ -23,6 +23,7 @@
   "percent_complete_method",
   "percent_complete",
   "column_break_5",
+  "company",
   "cost_center",
   "project_template",
   "expected_start_date",
@@ -46,7 +47,6 @@
   "copied_from",
   "section_break0",
   "notes",
-  "company",
   "section_break_18",
   "actual_start_date",
   "actual_time",
@@ -312,7 +312,8 @@
    "fieldtype": "Link",
    "label": "Company",
    "options": "Company",
-   "remember_last_selected_value": 1
+   "remember_last_selected_value": 1,
+   "reqd": 1
   },
   {
    "fieldname": "column_break_28",
@@ -577,11 +578,10 @@
  "index_web_pages_for_search": 1,
  "links": [],
  "max_attachments": 4,
- "modified": "2023-12-28 12:54:55.908136",
+ "modified": "2024-09-17 15:32:55.651524",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Project",
- "name_case": "UPPER CASE",
  "naming_rule": "Expression (old style)",
  "owner": "Administrator",
  "permissions": [

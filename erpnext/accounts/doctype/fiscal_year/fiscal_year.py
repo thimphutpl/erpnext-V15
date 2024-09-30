@@ -208,3 +208,32 @@ def get_from_and_to_date(fiscal_year):
 	fields = ["year_start_date", "year_end_date"]
 	cached_results = frappe.get_cached_value("Fiscal Year", fiscal_year, fields, as_dict=1)
 	return dict(from_date=cached_results.year_start_date, to_date=cached_results.year_end_date)
+
+
+def get_permission_query_conditions(user):
+	if not user: user = frappe.session.user
+	user_roles = frappe.get_roles(user)
+
+	if user == "Administrator" or "System Manager" in user_roles: 
+		return
+	
+	return """(
+		exists(select 1
+			from `tabEmployee` as e
+			where e.company = `tabFiscal Year Company`.company
+			and e.user_id = '{user}')
+	)""".format(user=user)
+
+	# return """(
+	# 	exists(select 1
+	# 		from `tabEmployee` as e
+	# 		where e.company = `tabFiscal Year Company`.company
+	# 		and e.user_id = '{user}')
+	# 	or
+	# 	exists(select 1
+	# 		from `tabEmployee` e, `tabAssign Branch` ab, `tabBranch Item` bi
+	# 		where e.user_id = '{user}'
+	# 		and ab.employee = e.name
+	# 		and bi.parent = ab.name
+	# 		and bi.branch = `tabJournal Entry`.branch)
+	# )""".format(user=user)

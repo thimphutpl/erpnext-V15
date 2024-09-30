@@ -7,13 +7,13 @@
  "document_type": "Document",
  "engine": "InnoDB",
  "field_order": [
+  "company",
   "title",
   "payment_status",
   "naming_series",
   "supplier",
   "supplier_name",
   "tax_id",
-  "company",
   "branch",
   "column_break_6",
   "posting_date",
@@ -300,7 +300,8 @@
    "label": "Company",
    "options": "Company",
    "print_hide": 1,
-   "remember_last_selected_value": 1
+   "remember_last_selected_value": 1,
+   "reqd": 1
   },
   {
    "fetch_from": "branch.cost_center",
@@ -1663,7 +1664,7 @@
  "idx": 204,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-08-20 12:58:15.992596",
+ "modified": "2024-09-17 16:03:24.854986",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Purchase Invoice",

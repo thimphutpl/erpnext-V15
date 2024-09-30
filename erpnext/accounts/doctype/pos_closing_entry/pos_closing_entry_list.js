@@ -7,6 +7,7 @@ frappe.listview_settings["POS Closing Entry"] = {
 		var status_color = {
 			Draft: "red",
 			Submitted: "blue",
+			Deposited: "yellow",
 			Queued: "orange",
 			Failed: "red",
 			Cancelled: "red",

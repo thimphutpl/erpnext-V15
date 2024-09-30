@@ -24,6 +24,7 @@
   "salutation",
   "column_break1",
   "date_of_joining",
+  "promotion_due_date",
   "date_of_joining_hms",
   "image",
   "status",
@@ -41,6 +42,7 @@
   "designation",
   "reports_to",
   "employee_group",
+  "division",
   "column_break_18",
   "branch",
   "cost_center",
@@ -57,6 +59,7 @@
   "increment_cycle",
   "column_break_gfej",
   "promotion_cycle",
+  "employment_status",
   "contact_details",
   "cell_number",
   "column_break_40",
@@ -162,8 +165,7 @@
    "oldfieldname": "naming_series",
    "oldfieldtype": "Select",
    "options": "HR-EMP-",
-   "read_only": 1,
-   "set_only_once": 1
+   "read_only": 1
   },
   {
    "fieldname": "salutation",
@@ -219,6 +221,7 @@
   {
    "fieldname": "company",
    "fieldtype": "Link",
+   "in_standard_filter": 1,
    "label": "Company",
    "options": "Company",
    "print_hide": 1,
@@ -940,6 +943,22 @@
    "fieldtype": "Select",
    "label": "Promotion Cycle",
    "options": "\nJanuary\nJuly"
+  },
+  {
+   "fieldname": "promotion_due_date",
+   "fieldtype": "Date",
+   "label": "Promotion Due Date"
+  },
+  {
+   "fieldname": "division",
+   "fieldtype": "Data",
+   "label": "Division"
+  },
+  {
+   "fieldname": "employment_status",
+   "fieldtype": "Select",
+   "label": "Employment Status",
+   "options": "\nIn Service\nEOL\nProbation\nLeft"
   }
  ],
  "icon": "fa fa-user",
@@ -947,7 +966,7 @@
  "image_field": "image",
  "is_tree": 1,
  "links": [],
- "modified": "2024-09-11 12:44:49.102268",
+ "modified": "2024-09-25 11:28:46.838879",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee",
@@ -989,7 +1008,7 @@
    "write": 1
   }
  ],
- "search_fields": "employee_name",
+ "search_fields": "employee_name, company",
  "show_name_in_global_search": 1,
  "sort_field": "modified",
  "sort_order": "DESC",

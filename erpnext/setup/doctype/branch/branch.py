@@ -22,6 +22,7 @@ class Branch(Document):
 		cost_center: DF.Link
 		disabled: DF.Check
 		expense_bank_account: DF.Link | None
+		holiday_list: DF.Link | None
 	# end: auto-generated types
 
 	def validate(self):
@@ -29,5 +30,7 @@ class Branch(Document):
 			self.validate_branch_abbreviation()
 
 	def validate_branch_abbreviation(self):
+		if not self.abbreviation:
+			frappe.throw("Please set Abbreviation for this branch")
 		if not re.match(r'^[A-Z]{3}$', self.abbreviation):
 			frappe.throw("Branch abbreviation must be exactly three uppercase alphabet letters")

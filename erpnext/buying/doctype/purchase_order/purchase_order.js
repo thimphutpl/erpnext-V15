@@ -51,6 +51,8 @@ frappe.ui.form.on("Purchase Order", {
 				filters: { company: doc.company },
 			};
 		});
+
+		frm.toggle_display("naming_series", false);
 	},
 
 	company: function (frm) {
@@ -58,6 +60,7 @@ frappe.ui.form.on("Purchase Order", {
 	},
 
 	refresh: function (frm) {
+		frm.toggle_display("naming_series", false);
 		if (frm.doc.is_old_subcontracting_flow) {
 			frm.trigger("get_materials_from_supplier");
 

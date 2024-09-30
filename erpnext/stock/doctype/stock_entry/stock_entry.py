@@ -131,7 +131,6 @@ class StockEntry(StockController):
 		reference_name: DF.DynamicLink | None
 		remarks: DF.Text | None
 		sales_invoice_no: DF.Link | None
-		scan_barcode: DF.Data | None
 		select_print_heading: DF.Link | None
 		set_posting_time: DF.Check
 		source_address_display: DF.SmallText | None

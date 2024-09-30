@@ -16,7 +16,6 @@
   "finance_book",
   "process_deferred_accounting",
   "reversal_of",
-  "tax_withholding_category",
   "column_break1",
   "from_template",
   "company",
@@ -24,6 +23,7 @@
   "business_activity",
   "posting_date",
   "apply_tds",
+  "tax_withholding_category",
   "2_add_edit_gl_entries",
   "accounts",
   "tds_table",
@@ -588,7 +588,7 @@
    "table_fieldname": "payment_entries"
   }
  ],
- "modified": "2024-09-13 13:57:50.694338",
+ "modified": "2024-09-17 10:36:54.317257",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Journal Entry",

@@ -13,8 +13,12 @@
   "payroll_settings_section",
   "employee_pf",
   "employer_pf",
+  "salary_advance_max_months",
   "column_break_htfk",
-  "health_contribution"
+  "health_contribution",
+  "section_break_kzad",
+  "minimum_months",
+  "increment_prorated"
  ],
  "fields": [
   {
@@ -66,10 +70,30 @@
    "fieldtype": "Percent",
    "label": "Health Contribution ( % )",
    "precision": "2"
+  },
+  {
+   "fieldname": "section_break_kzad",
+   "fieldtype": "Section Break",
+   "label": "Annual Increment Settings"
+  },
+  {
+   "fieldname": "minimum_months",
+   "fieldtype": "Float",
+   "label": "Minimum No.of Months In Service Required For Full Increment"
+  },
+  {
+   "default": "0",
+   "fieldname": "increment_prorated",
+   "fieldtype": "Check",
+   "label": "Is Prorated?"
+  },
+  {
+   "fieldname": "salary_advance_max_months",
+   "fieldtype": "Data"
   }
  ],
  "links": [],
- "modified": "2024-07-22 22:53:54.950719",
+ "modified": "2024-09-20 11:28:16.420445",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee Group",

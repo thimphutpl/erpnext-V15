@@ -43,6 +43,7 @@ class Company(NestedSet):
 		company_logo: DF.AttachImage | None
 		company_name: DF.Data
 		cost_center: DF.Link | None
+		count_series: DF.Int
 		country: DF.Link
 		create_chart_of_accounts_based_on: DF.Literal["", "Standard Template", "Existing Company"]
 		credit_limit: DF.Currency
@@ -58,6 +59,7 @@ class Company(NestedSet):
 		default_deferred_expense_account: DF.Link | None
 		default_deferred_revenue_account: DF.Link | None
 		default_discount_account: DF.Link | None
+		default_employee_advance_account: DF.Link | None
 		default_expense_account: DF.Link | None
 		default_finance_book: DF.Link | None
 		default_holiday_list: DF.Link | None
@@ -67,15 +69,19 @@ class Company(NestedSet):
 		default_letter_head: DF.Link | None
 		default_operating_cost_account: DF.Link | None
 		default_payable_account: DF.Link | None
+		default_payroll_payable_account: DF.Link | None
 		default_provisional_account: DF.Link | None
 		default_receivable_account: DF.Link | None
+		default_salary_payable_account: DF.Link | None
 		default_selling_terms: DF.Link | None
+		default_travel_advance_account: DF.Link | None
 		default_warehouse_for_sales_return: DF.Link | None
 		depreciation_cost_center: DF.Link | None
 		depreciation_expense_account: DF.Link | None
 		disposal_account: DF.Link | None
 		domain: DF.Data | None
 		email: DF.Data | None
+		employer_contribution_to_pf: DF.Link | None
 		enable_perpetual_inventory: DF.Check
 		enable_provisional_accounting_for_non_stock_items: DF.Check
 		exception_budget_approver_role: DF.Link | None
@@ -85,9 +91,12 @@ class Company(NestedSet):
 		expenses_included_in_valuation: DF.Link | None
 		fax: DF.Data | None
 		is_group: DF.Check
+		leave_encashment_account: DF.Link | None
 		lft: DF.Int
+		ltc_account: DF.Link | None
 		monthly_sales_target: DF.Currency
 		old_parent: DF.Data | None
+		overtime_allowance_account: DF.Link | None
 		parent_company: DF.Link | None
 		payment_terms: DF.Link | None
 		phone_no: DF.Data | None
@@ -98,6 +107,8 @@ class Company(NestedSet):
 		rgt: DF.Int
 		round_off_account: DF.Link | None
 		round_off_cost_center: DF.Link | None
+		salary_advance_account: DF.Link | None
+		salary_tax_account: DF.Link | None
 		sales_monthly_history: DF.SmallText | None
 		series_for_depreciation_entry: DF.Data | None
 		stock_adjustment_account: DF.Link | None
@@ -106,6 +117,7 @@ class Company(NestedSet):
 		tax_id: DF.Data | None
 		total_monthly_sales: DF.Currency
 		transactions_annual_history: DF.Code | None
+		travel_advance_account: DF.Link | None
 		travel_expense_account: DF.Link | None
 		unrealized_exchange_gain_loss_account: DF.Link | None
 		unrealized_profit_loss_account: DF.Link | None

@@ -106,12 +106,13 @@ class Advance(Document):
 			return max_limit
 		
 	def get_advance_type_account(self, advance_type):
-		account = frappe.db.get_value(
-			"Advance Type Account",
-			{"parent": advance_type, "company": self.company},
-			"account",
-			cache=True,
-		)
+		# account = frappe.db.get_value(
+		# 	"Advance Type Account",
+		# 	{"parent": advance_type, "company": self.company},
+		# 	"account",
+		# 	cache=True,
+		# )
+		account = frappe.db.get_value("Advance Type", self.advance_type, "account")
 
 		if not account:
 			frappe.throw(

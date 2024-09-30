@@ -36,6 +36,7 @@ class AbstractBill(Document):
 		company: DF.Link
 		cost_center: DF.Link
 		currency: DF.Link | None
+		dispatch_number: DF.Data | None
 		exchange_rate: DF.Float
 		fetch_other_transactions: DF.Check
 		file_index: DF.Link | None
@@ -44,8 +45,9 @@ class AbstractBill(Document):
 		items: DF.Table[AbstractBillItem]
 		journal_entry: DF.Data | None
 		journal_entry_status: DF.Data | None
-		narration: DF.SmallText | None
+		mode_of_payment: DF.Literal["", "Bank Entry", "Cash Entry"]
 		posting_date: DF.Date
+		reference: DF.SmallText | None
 		reference_doctype: DF.Link | None
 		reference_name: DF.DynamicLink | None
 		total_amount: DF.Currency
@@ -94,7 +96,10 @@ class AbstractBill(Document):
 			frappe.throw("Please fiscal year")
 
 	def before_submit(self):
+		if not self.mode_of_payment:
+			frappe.throw("Please set mode of payment before submit")
 		self.validate_tax_exemption()
+		self.generate_dispatch_number()
 
 	def on_submit(self):
 		self.post_journal_entry()
@@ -129,6 +134,14 @@ class AbstractBill(Document):
 			# Check whether supplier is in tax holiday or not
 			if item.party_type == "Supplier":
 				item.tax_exempted = self.check_tax_holiday(item.party_type, item.party, item.bill_date, item.idx)
+
+	def generate_dispatch_number(self):
+		current_count_series = frappe.db.get_value("Company", self.company, "count_series")
+		new_count_series = int(current_count_series) + 1
+		self.dispatch_number = f"{self.file_index}/{self.fiscal_year}/{new_count_series}"
+
+		# Atomically update the count_series in the Company document
+		frappe.db.set_value("Company", self.company, "count_series", new_count_series)
 
 	def validate_file_index(self):
 		if not self.file_index:
@@ -211,9 +224,12 @@ class AbstractBill(Document):
 
 	def post_journal_entry(self):
 		accounts = []
-		bank_account = frappe.db.get_value("Company", self.company, "default_bank_account")
-		if not bank_account:
-			frappe.throw("Set Default Bank Account in Company {}".format(frappe.get_desk_link(self.company)))
+		if self.mode_of_payment == "Bank Entry":
+			account = frappe.db.get_value("Company", self.company, "default_bank_account")
+		elif self.mode_of_payment == "Cash Entry":
+			account = frappe.db.get_value("Company", self.company, "default_cash_account")
+		if not account:
+			frappe.throw("Set Default {} Account in Company {}".format("Bank" if self.mode_of_payment=="Bank Entry" else "Cash", frappe.get_desk_link(self.company)))
 		for item in self.items:
 			accounts.append({
 				"account": item.account,
@@ -227,7 +243,7 @@ class AbstractBill(Document):
 			})
 
 			accounts.append({
-				"account": bank_account,
+				"account": account,
 				"credit_in_account_currency": flt(item.amount, 2) if self.currency == 'BTN' else flt(item.base_amount, 2),
 				"cost_center": item.cost_center,
 				"reference_type": self.doctype,
@@ -239,14 +255,16 @@ class AbstractBill(Document):
 		je.update({
 			"doctype": "Journal Entry",
 			"posting_date": self.posting_date,
-			"voucher_type": "Bank Entry",
-			"naming_series": "Bank Payment Voucher",
+			"branch": self.branch,
+			"voucher_type": self.mode_of_payment,
+			"naming_series": "Bank Payment Voucher" if self.mode_of_payment == "Bank Entry" else "Cash Payment Voucher",
 			"company": self.company,
 			"reference_doctype": self.doctype,
 			"reference_name": self.name,
 			"accounts": accounts
 		})
 		je.insert()
+		je.submit()
 		self.db_set('journal_entry', je.name)
 		self.db_set("journal_entry_status", "Forwarded to accounts for processing payment on {0}".format(now_datetime().strftime('%Y-%m-%d %H:%M:%S')))
 		frappe.msgprint(_('Journal Entry {0} posted to accounts').format(frappe.get_desk_link("Journal Entry", je.name)))
@@ -290,10 +308,23 @@ class AbstractBill(Document):
 			return True
 
 @frappe.whitelist()
-def get_fiscal_years_for_company(company):
-    fiscal_years = frappe.get_all('Fiscal Year Company', 
-                                  filters={'company': company}, 
-                                  fields=['parent'])
-    # Extract the fiscal year names
-    fiscal_year_list = [fy['parent'] for fy in fiscal_years]
-    return fiscal_year_list
+def get_fiscal_year(doctype, txt, searchfield, start, page_len, filters):
+    cond = ""
+    if filters and filters.get("company"):
+        cond = "and t2.company = %(company)s"
+
+    return frappe.db.sql(
+        f"""
+        select t1.name 
+        from `tabFiscal Year` t1, `tabFiscal Year Company` t2
+        where t1.name = t2.parent and t1.`{searchfield}` LIKE %(txt)s {cond}
+        order by t1.name 
+        limit %(page_len)s offset %(start)s
+        """,
+        {
+            "txt": "%" + txt + "%",
+            "company": filters.get("company"),
+            "start": start,
+            "page_len": page_len
+        }
+    )

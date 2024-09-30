@@ -138,47 +138,47 @@ erpnext.accounts.SalesInvoiceController = class SalesInvoiceController extends (
 				}
 			}
 
-			if (doc.outstanding_amount > 0) {
-				cur_frm.add_custom_button(
-					__("Payment Request"),
-					function () {
-						me.make_payment_request();
-					},
-					__("Create")
-				);
+			// if (doc.outstanding_amount > 0) {
+			// 	cur_frm.add_custom_button(
+			// 		__("Payment Request"),
+			// 		function () {
+			// 			me.make_payment_request();
+			// 		},
+			// 		__("Create")
+			// 	);
 
-				cur_frm.add_custom_button(
-					__("Invoice Discounting"),
-					function () {
-						cur_frm.events.create_invoice_discounting(cur_frm);
-					},
-					__("Create")
-				);
+			// 	cur_frm.add_custom_button(
+			// 		__("Invoice Discounting"),
+			// 		function () {
+			// 			cur_frm.events.create_invoice_discounting(cur_frm);
+			// 		},
+			// 		__("Create")
+			// 	);
 
-				const payment_is_overdue = doc.payment_schedule
-					.map((row) => Date.parse(row.due_date) < Date.now())
-					.reduce((prev, current) => prev || current);
+			// 	const payment_is_overdue = doc.payment_schedule
+			// 		.map((row) => Date.parse(row.due_date) < Date.now())
+			// 		.reduce((prev, current) => prev || current);
 
-				if (payment_is_overdue) {
-					this.frm.add_custom_button(
-						__("Dunning"),
-						() => {
-							this.frm.events.create_dunning(this.frm);
-						},
-						__("Create")
-					);
-				}
-			}
+			// 	if (payment_is_overdue) {
+			// 		this.frm.add_custom_button(
+			// 			__("Dunning"),
+			// 			() => {
+			// 				this.frm.events.create_dunning(this.frm);
+			// 			},
+			// 			__("Create")
+			// 		);
+			// 	}
+			// }
 
-			if (doc.docstatus === 1) {
-				cur_frm.add_custom_button(
-					__("Maintenance Schedule"),
-					function () {
-						cur_frm.cscript.make_maintenance_schedule();
-					},
-					__("Create")
-				);
-			}
+			// if (doc.docstatus === 1) {
+			// 	cur_frm.add_custom_button(
+			// 		__("Maintenance Schedule"),
+			// 		function () {
+			// 			cur_frm.cscript.make_maintenance_schedule();
+			// 		},
+			// 		__("Create")
+			// 	);
+			// }
 		}
 
 		// Show buttons only when pos view is active

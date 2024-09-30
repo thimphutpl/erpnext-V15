@@ -75,6 +75,7 @@
    "fieldname": "company",
    "fieldtype": "Link",
    "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Company",
    "oldfieldname": "company",
    "oldfieldtype": "Link",
@@ -402,7 +403,7 @@
    "link_fieldname": "pos_profile"
   }
  ],
- "modified": "2022-08-10 12:57:06.241439",
+ "modified": "2024-09-24 15:09:14.060821",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "POS Profile",

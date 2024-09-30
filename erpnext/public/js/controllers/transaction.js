@@ -2075,6 +2075,7 @@ erpnext.TransactionController = class TransactionController extends erpnext.taxe
 	}
 
 	make_payment_entry() {
+		console.log("hi");
 		let via_journal_entry = this.frm.doc.__onload && this.frm.doc.__onload.make_payment_via_journal_entry;
 		if(this.has_discount_in_schedule() && !via_journal_entry) {
 			// If early payment discount is applied, ask user for reference date

@@ -75,6 +75,13 @@ class AdvanceRecoup(Document):
 		self.update_reference_document(cancel=True)
 		self.ignore_linked_doctypes = ("GL Entry", "Payment Ledger Entry")
 
+	def set_recoup_account(self, validate=False):
+		for d in self.items:
+			if not d.account or not validate:
+				d.account = get_imprest_recoup_account(d.recoup_type, self.company)[
+					"account"
+				]
+
 	def calculate_amount(self):
 		total_payable_amt = sum(d.amount for d in self.items) if self.items else 0
 		self.total_amount = total_payable_amt
@@ -227,3 +234,16 @@ class AdvanceRecoup(Document):
 
 			if not self.advances:
 				frappe.throw("No Advance")
+
+@frappe.whitelist()
+def get_imprest_recoup_account(recoup_type, company):
+	account = frappe.db.get_value(
+		"Imprest Recoup Account", {"parent": recoup_type, "company": company}, "default_account"
+	)
+	if not account:
+		frappe.throw(
+			_("Set the default account for the {0} {1}").format(
+				frappe.bold("Recoup Type"), get_link_to_form("Recoup Type", recoup_type)
+			)
+		)
+	return {"account": account}

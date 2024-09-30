@@ -161,7 +161,7 @@
  "idx": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2024-08-14 11:20:45.277395",
+ "modified": "2024-09-20 11:41:58.432536",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Cost Center",
@@ -214,5 +214,6 @@
  "show_name_in_global_search": 1,
  "sort_field": "modified",
  "sort_order": "ASC",
- "states": []
+ "states": [],
+ "track_changes": 1
 }

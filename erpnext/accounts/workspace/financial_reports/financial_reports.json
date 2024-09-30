@@ -248,19 +248,17 @@
    "type": "Link"
   },
   {
-   "dependencies": "GL Entry",
    "hidden": 0,
    "is_query_report": 1,
-   "label": "UAE VAT 201",
+   "label": "Receipts and Payments Statement",
    "link_count": 0,
-   "link_to": "UAE VAT 201",
+   "link_to": "Receipts and Payments Statement",
    "link_type": "Report",
    "onboard": 0,
-   "only_for": "United Arab Emirates",
    "type": "Link"
   }
  ],
- "modified": "2024-09-12 20:06:39.959996",
+ "modified": "2024-09-18 11:25:06.794976",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Financial Reports",

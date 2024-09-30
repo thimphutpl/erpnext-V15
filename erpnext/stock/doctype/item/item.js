@@ -211,6 +211,19 @@ frappe.ui.form.on("Item", {
 		frm.toggle_reqd("customer", frm.doc.is_customer_provided_item ? 1 : 0);
 	},
 
+	item_group: function (frm) {
+		frappe.call({
+			method: "erpnext.stock.doctype.item.item.get_is_fixed_asset",
+			args: {
+				item_group: frm.doc.item_group,
+			},
+			callback: function (r) {
+				frm.set_value("is_fixed_asset", r.message ? 1 : 0);
+				frm.set_value("is_stock_item", frm.doc.is_fixed_asset ? 0 : 1);
+			},
+		});
+	},
+
 	is_fixed_asset: function (frm) {
 		// set serial no to false & toggles its visibility
 		frm.set_value("has_serial_no", 0);
@@ -377,7 +390,11 @@ $.extend(erpnext.item, {
 
 		frm.fields_dict["item_group"].get_query = function (doc, cdt, cdn) {
 			return {
-				filters: [["Item Group", "docstatus", "!=", 2]],
+				filters: [
+					["Item Group", "docstatus", "!=", 2],
+					["Item Group", "parent_item_group", "!=", ""],
+
+				],
 			};
 		};
 

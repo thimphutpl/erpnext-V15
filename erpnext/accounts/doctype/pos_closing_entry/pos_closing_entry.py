@@ -20,17 +20,10 @@ class POSClosingEntry(StatusUpdater):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
+		from erpnext.accounts.doctype.pos_closing_entry_detail.pos_closing_entry_detail import POSClosingEntryDetail
+		from erpnext.accounts.doctype.pos_closing_entry_taxes.pos_closing_entry_taxes import POSClosingEntryTaxes
+		from erpnext.accounts.doctype.pos_invoice_reference.pos_invoice_reference import POSInvoiceReference
 		from frappe.types import DF
-
-		from erpnext.accounts.doctype.pos_closing_entry_detail.pos_closing_entry_detail import (
-			POSClosingEntryDetail,
-		)
-		from erpnext.accounts.doctype.pos_closing_entry_taxes.pos_closing_entry_taxes import (
-			POSClosingEntryTaxes,
-		)
-		from erpnext.accounts.doctype.pos_invoice_reference.pos_invoice_reference import (
-			POSInvoiceReference,
-		)
 
 		amended_from: DF.Link | None
 		company: DF.Link
@@ -45,7 +38,7 @@ class POSClosingEntry(StatusUpdater):
 		pos_transactions: DF.Table[POSInvoiceReference]
 		posting_date: DF.Date
 		posting_time: DF.Time
-		status: DF.Literal["Draft", "Submitted", "Queued", "Failed", "Cancelled"]
+		status: DF.Literal["Draft", "Submitted", "Queued", "Failed", "Cancelled", "Deposited"]
 		taxes: DF.Table[POSClosingEntryTaxes]
 		total_quantity: DF.Float
 		user: DF.Link

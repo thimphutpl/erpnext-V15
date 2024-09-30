@@ -514,9 +514,9 @@ class POLReceive(StockController):
 				AND fuelbook_branch = '{}'
 				AND balance_amount > 0
 				AND equipment_number = '{}' 
-				ORDER BY entry_date""".format(self.fuelbook, self.equipment_branch, self.equipment_number),as_dict=True)
+				ORDER BY entry_date""".format(self.fuelbook, self.fuelbook_branch, self.equipment_number),as_dict=True)
 		self.set('advances',[])
-
+		
 		if not data:
 			data = frappe.db.sql("""
 						SELECT 

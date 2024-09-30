@@ -6,6 +6,7 @@
  "field_order": [
   "company",
   "file_index",
+  "mode_of_payment",
   "column_break_pjnb",
   "fiscal_year",
   "branch",
@@ -20,7 +21,7 @@
   "transaction_type",
   "get_items",
   "items",
-  "narration",
+  "reference",
   "section_break_tinj",
   "total_amount",
   "column_break_debx",
@@ -36,6 +37,7 @@
   "journal_entry_status",
   "column_break_uwng",
   "reference_name",
+  "dispatch_number",
   "amended_from"
  ],
  "fields": [
@@ -115,7 +117,8 @@
   {
    "fieldname": "journal_entry_html",
    "fieldtype": "HTML",
-   "label": "Journal Entry Html"
+   "label": "Journal Entry Html",
+   "no_copy": 1
   },
   {
    "allow_on_submit": 1,
@@ -123,6 +126,7 @@
    "fieldtype": "Data",
    "hidden": 1,
    "label": "Journal Entry Status",
+   "no_copy": 1,
    "read_only": 1
   },
   {
@@ -209,11 +213,6 @@
    "options": "\nPurchase Invoice"
   },
   {
-   "fieldname": "narration",
-   "fieldtype": "Small Text",
-   "label": "Narration"
-  },
-  {
    "fieldname": "fiscal_year",
    "fieldtype": "Link",
    "ignore_user_permissions": 1,
@@ -230,6 +229,7 @@
   {
    "fieldname": "approver_details_section",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Approver Details"
   },
   {
@@ -249,12 +249,30 @@
    "fieldtype": "Data",
    "label": "Approver Name",
    "read_only": 1
+  },
+  {
+   "fieldname": "mode_of_payment",
+   "fieldtype": "Select",
+   "label": "Mode of Payment",
+   "options": "\nBank Entry\nCash Entry"
+  },
+  {
+   "fieldname": "reference",
+   "fieldtype": "Small Text",
+   "label": "Reference"
+  },
+  {
+   "fieldname": "dispatch_number",
+   "fieldtype": "Data",
+   "label": "Dispatch Number",
+   "no_copy": 1,
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-09-11 11:33:36.158654",
+ "modified": "2024-09-19 02:08:51.672924",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Abstract Bill",

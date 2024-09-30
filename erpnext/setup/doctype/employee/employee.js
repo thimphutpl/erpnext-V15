@@ -20,6 +20,8 @@ erpnext.setup.EmployeeController = class EmployeeController extends frappe.ui.fo
 	// }
 };
 
+
+
 frappe.ui.form.on("Employee", {
 	onload: function (frm) {
 		frm.set_query("department", function () {
@@ -29,6 +31,9 @@ frappe.ui.form.on("Employee", {
 				},
 			};
 		});
+
+		frm.toggle_display("naming_series", false);
+
 
 		frm.set_query("dzongkhag", function () {
 			return {
@@ -51,6 +56,9 @@ frappe.ui.form.on("Employee", {
 				},
 			};
 		});
+	},
+	refresh(frm){
+		frm.toggle_display("naming_series", false);
 	},
 	prefered_contact_email: function (frm) {
 		frm.events.update_contact(frm);

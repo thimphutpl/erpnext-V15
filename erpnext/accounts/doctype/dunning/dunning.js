@@ -50,6 +50,7 @@ frappe.ui.form.on("Dunning", {
 			frm.add_custom_button(
 				__("Payment"),
 				function () {
+					console.log("hi")
 					frm.events.make_payment_entry(frm);
 				},
 				__("Create")

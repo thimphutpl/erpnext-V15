@@ -196,7 +196,7 @@
    "fieldtype": "Select",
    "hidden": 1,
    "label": "Status",
-   "options": "Draft\nSubmitted\nQueued\nFailed\nCancelled",
+   "options": "Draft\nSubmitted\nQueued\nFailed\nCancelled\nDeposited",
    "print_hide": 1,
    "read_only": 1
   },
@@ -236,7 +236,7 @@
    "link_fieldname": "pos_closing_entry"
   }
  ],
- "modified": "2023-08-10 16:25:49.322697",
+ "modified": "2024-09-24 10:25:36.087932",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "POS Closing Entry",

@@ -128,7 +128,7 @@
   {
    "hidden": 0,
    "is_query_report": 1,
-   "label": "Asst Register",
+   "label": "Asset Register",
    "link_count": 0,
    "link_to": "Asset Register",
    "link_type": "Report",
@@ -136,8 +136,8 @@
    "type": "Link"
   }
  ],
- "modified": "2024-09-12 20:06:40.374499",
- "modified_by": "Administrator",
+ "modified": "2024-09-18 14:45:53.889261",
+ "modified_by": "sonam.norbu@thimphutechpark.bt",
  "module": "Assets",
  "name": "Assets",
  "number_cards": [

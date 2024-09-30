@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "allow_import": 1,
  "allow_rename": 1,
  "autoname": "S.YY.MM.#####",
  "creation": "2024-09-12 12:54:22.788628",
@@ -12,16 +13,49 @@
   "country",
   "student_details_section",
   "name1",
+  "date_of_birth",
   "cid_number",
   "permanent_address",
+  "present_address",
   "status",
   "college",
+  "profile_picture",
   "column_break_jdzp",
+  "student_id",
   "start_date",
   "end_date",
   "course",
   "contact_number",
-  "email_address"
+  "email_address",
+  "cumulative_gpa",
+  "college_details_section",
+  "college_name",
+  "financial_information_section",
+  "tuition_fee",
+  "accommodation_charge",
+  "disbursement_deta_adhoc_detail_section",
+  "disbursement",
+  "personal_details_section",
+  "village",
+  "gewog",
+  "dzongkhag",
+  "academic_details_section",
+  "highschool",
+  "stream",
+  "rankxii",
+  "percentage",
+  "english",
+  "completed_datexii",
+  "column_break_wudo",
+  "middle_school",
+  "streamx",
+  "percentagex",
+  "student_achievement_section",
+  "student_achievements",
+  "family_details_section",
+  "family_details",
+  "royal_command_section",
+  "royal_command"
  ],
  "fields": [
   {
@@ -31,7 +65,7 @@
   {
    "fieldname": "name1",
    "fieldtype": "Data",
-   "label": "Name",
+   "label": "Full Name",
    "reqd": 1
   },
   {
@@ -80,7 +114,7 @@
   {
    "fieldname": "college",
    "fieldtype": "Data",
-   "label": "College",
+   "label": "College/Academic Institution",
    "reqd": 1
   },
   {
@@ -117,11 +151,180 @@
   {
    "fieldname": "column_break_jdzp",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "date_of_birth",
+   "fieldtype": "Date",
+   "label": "Date of Birth",
+   "reqd": 1
+  },
+  {
+   "fieldname": "student_id",
+   "fieldtype": "Data",
+   "label": "Student ID"
+  },
+  {
+   "fieldname": "present_address",
+   "fieldtype": "Data",
+   "label": "Present Address"
+  },
+  {
+   "fieldname": "cumulative_gpa",
+   "fieldtype": "Data",
+   "label": "Cumulative GPA"
+  },
+  {
+   "fieldname": "college_details_section",
+   "fieldtype": "Section Break",
+   "label": "College Details"
+  },
+  {
+   "fieldname": "college_name",
+   "fieldtype": "Data",
+   "label": "College Name"
+  },
+  {
+   "fieldname": "financial_information_section",
+   "fieldtype": "Section Break",
+   "label": "Financial Information"
+  },
+  {
+   "fieldname": "tuition_fee",
+   "fieldtype": "Data",
+   "label": "Tuition Fee"
+  },
+  {
+   "fieldname": "accommodation_charge",
+   "fieldtype": "Data",
+   "label": "Accommodation Charge"
+  },
+  {
+   "fieldname": "disbursement_deta_adhoc_detail_section",
+   "fieldtype": "Section Break",
+   "label": "Disbursement Deta Adhoc Detail"
+  },
+  {
+   "fieldname": "disbursement",
+   "fieldtype": "Small Text",
+   "label": "Disbursement"
+  },
+  {
+   "fieldname": "personal_details_section",
+   "fieldtype": "Section Break",
+   "label": "Personal Details"
+  },
+  {
+   "fieldname": "village",
+   "fieldtype": "Data",
+   "label": "Village"
+  },
+  {
+   "fieldname": "gewog",
+   "fieldtype": "Data",
+   "label": "Gewog"
+  },
+  {
+   "fieldname": "dzongkhag",
+   "fieldtype": "Data",
+   "label": "Dzongkhag"
+  },
+  {
+   "fieldname": "academic_details_section",
+   "fieldtype": "Section Break",
+   "label": "Academic Details"
+  },
+  {
+   "fieldname": "highschool",
+   "fieldtype": "Data",
+   "label": "Highschool "
+  },
+  {
+   "fieldname": "stream",
+   "fieldtype": "Data",
+   "label": "Stream(XII)"
+  },
+  {
+   "fieldname": "percentage",
+   "fieldtype": "Data",
+   "label": "Percentage(XII)"
+  },
+  {
+   "fieldname": "family_details_section",
+   "fieldtype": "Section Break",
+   "label": "Family Details"
+  },
+  {
+   "fieldname": "family_details",
+   "fieldtype": "Table",
+   "label": "Family Details",
+   "options": "Family Detail Table"
+  },
+  {
+   "fieldname": "profile_picture",
+   "fieldtype": "Attach Image",
+   "label": "Profile Picture"
+  },
+  {
+   "fieldname": "english",
+   "fieldtype": "Data",
+   "label": "English(XII)"
+  },
+  {
+   "fieldname": "rankxii",
+   "fieldtype": "Data",
+   "label": "Rank(XII)"
+  },
+  {
+   "fieldname": "column_break_wudo",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "middle_school",
+   "fieldtype": "Data",
+   "label": "Middle School"
+  },
+  {
+   "fieldname": "streamx",
+   "fieldtype": "Data",
+   "label": "Stream(X)"
+  },
+  {
+   "fieldname": "percentagex",
+   "fieldtype": "Data",
+   "label": "Percentage(X)"
+  },
+  {
+   "fieldname": "student_achievement_section",
+   "fieldtype": "Section Break",
+   "label": "Student Achievement"
+  },
+  {
+   "fieldname": "student_achievements",
+   "fieldtype": "Table",
+   "label": "Student Achievements",
+   "options": "Student Achievement Table"
+  },
+  {
+   "fieldname": "completed_datexii",
+   "fieldtype": "Date",
+   "label": "Completed Date(XII)"
+  },
+  {
+   "fieldname": "royal_command_section",
+   "fieldtype": "Section Break",
+   "label": "Royal Command"
+  },
+  {
+   "fieldname": "royal_command",
+   "fieldtype": "Text",
+   "label": "Royal Command"
   }
  ],
+ "image_field": "profile_picture",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-09-16 12:30:39.636064",
+ "make_attachments_public": 1,
+ "modified": "2024-09-24 12:35:34.713831",
  "modified_by": "Administrator",
  "module": "Gift  Management",
  "name": "Scholarship",

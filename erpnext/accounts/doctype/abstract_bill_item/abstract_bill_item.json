@@ -161,7 +161,7 @@
   {
    "fieldname": "narration",
    "fieldtype": "Small Text",
-   "label": "Narration"
+   "label": "Narration To MOF"
   },
   {
    "depends_on": "eval:parent.final_settlement",
@@ -186,7 +186,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-09-03 11:00:07.046567",
+ "modified": "2024-09-17 11:48:26.229642",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Abstract Bill Item",

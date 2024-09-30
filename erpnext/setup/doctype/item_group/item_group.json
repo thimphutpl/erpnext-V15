@@ -16,6 +16,7 @@
   "image",
   "item_code_base",
   "column_break_5",
+  "is_fixed_asset",
   "defaults",
   "item_group_defaults",
   "sec_break_taxes",
@@ -136,6 +137,12 @@
    "options": "\n",
    "reqd": 1,
    "unique": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_fixed_asset",
+   "fieldtype": "Check",
+   "label": "Is Fixed Asset"
   }
  ],
  "icon": "fa fa-sitemap",
@@ -144,7 +151,7 @@
  "is_tree": 1,
  "links": [],
  "max_attachments": 3,
- "modified": "2024-07-16 12:43:40.984987",
+ "modified": "2024-09-26 11:05:53.429383",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Item Group",

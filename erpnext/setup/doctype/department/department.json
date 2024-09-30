@@ -15,7 +15,13 @@
   "disabled",
   "lft",
   "rgt",
-  "old_parent"
+  "old_parent",
+  "department_head_details_section",
+  "department_head",
+  "column_break_jodt",
+  "department_head_name",
+  "column_break_wtpp",
+  "designation"
  ],
  "fields": [
   {
@@ -86,13 +92,47 @@
   {
    "fieldname": "column_break_3",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "department_head_details_section",
+   "fieldtype": "Section Break",
+   "label": "Department Head Details"
+  },
+  {
+   "fieldname": "department_head",
+   "fieldtype": "Link",
+   "label": "Department Head",
+   "options": "Employee"
+  },
+  {
+   "fieldname": "column_break_jodt",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "department_head.employee_name",
+   "fieldname": "department_head_name",
+   "fieldtype": "Data",
+   "label": "Department Head Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_wtpp",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "department_head.designation",
+   "fieldname": "designation",
+   "fieldtype": "Link",
+   "label": "Designation",
+   "options": "Designation",
+   "read_only": 1
   }
  ],
  "icon": "fa fa-sitemap",
  "idx": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2024-08-14 14:37:26.567083",
+ "modified": "2024-09-19 21:56:33.905845",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Department",
@@ -143,5 +183,6 @@
  "show_name_in_global_search": 1,
  "sort_field": "modified",
  "sort_order": "ASC",
- "states": []
+ "states": [],
+ "track_changes": 1
 }

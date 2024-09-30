@@ -8,7 +8,8 @@
  "engine": "InnoDB",
  "field_order": [
   "advance_type",
-  "account"
+  "account",
+  "max_limit"
  ],
  "fields": [
   {
@@ -25,11 +26,16 @@
    "label": "Account",
    "options": "Account",
    "reqd": 1
+  },
+  {
+   "fieldname": "max_limit",
+   "fieldtype": "Currency",
+   "label": "Maximum Advance Limit"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-12-07 16:08:42.136727",
+ "modified": "2024-09-18 10:34:56.849053",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Advance Type",

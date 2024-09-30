@@ -19,6 +19,7 @@
   "posting_time",
   "set_posting_time",
   "due_date",
+  "branch",
   "column_break_14",
   "is_pos",
   "pos_profile",
@@ -2176,6 +2177,12 @@
    "label": "Update Outstanding for Self",
    "no_copy": 1,
    "print_hide": 1
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "label": "Branch",
+   "options": "Branch"
   }
  ],
  "icon": "fa fa-file-text",
@@ -2188,7 +2195,7 @@
    "link_fieldname": "consolidated_invoice"
   }
  ],
- "modified": "2024-06-07 16:49:32.458402",
+ "modified": "2024-09-20 12:41:03.689340",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Sales Invoice",

@@ -32,6 +32,7 @@
   "email",
   "company_description",
   "column_break1",
+  "count_series",
   "date_of_commencement",
   "fax",
   "website",
@@ -58,6 +59,7 @@
   "unrealized_exchange_gain_loss_account",
   "unrealized_profit_loss_account",
   "travel_expense_account",
+  "travel_advance_account",
   "column_break0",
   "allow_account_creation_against_child_company",
   "default_payable_account",
@@ -86,11 +88,22 @@
   "depreciation_expense_account",
   "series_for_depreciation_entry",
   "expenses_included_in_asset_valuation",
+  "salary_advance_account",
   "column_break_40",
   "disposal_account",
   "depreciation_cost_center",
   "capital_work_in_progress_account",
   "asset_received_but_not_billed",
+  "hr_payroll_tab",
+  "default_salary_payable_account",
+  "default_employee_advance_account",
+  "salary_tax_account",
+  "leave_encashment_account",
+  "column_break_qiby",
+  "default_payroll_payable_account",
+  "employer_contribution_to_pf",
+  "overtime_allowance_account",
+  "ltc_account",
   "buying_and_selling_tab",
   "sales_settings",
   "default_buying_terms",
@@ -118,6 +131,7 @@
   "fleet_management_tab",
   "pol_settings_section",
   "pol_advance_account",
+  "default_travel_advance_account",
   "column_break_jfxu",
   "repair_and_service_account",
   "dashboard_tab"
@@ -861,6 +875,86 @@
    "fieldtype": "Link",
    "label": "Travel Expense Account",
    "options": "Account"
+  },
+  {
+   "fieldname": "default_travel_advance_account",
+   "fieldtype": "Link",
+   "label": "Default Travel Advance Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "count_series",
+   "fieldtype": "Int",
+   "label": "Dispatch Series"
+  },
+  {
+   "fieldname": "hr_payroll_tab",
+   "fieldtype": "Tab Break",
+   "label": "HR & Payroll"
+  },
+  {
+   "fieldname": "default_salary_payable_account",
+   "fieldtype": "Link",
+   "label": "Default Salary Payable Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "default_employee_advance_account",
+   "fieldtype": "Link",
+   "label": "Default Employee Advance Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "column_break_qiby",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "default_payroll_payable_account",
+   "fieldtype": "Link",
+   "label": "Default Payroll Payable Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "travel_advance_account",
+   "fieldtype": "Link",
+   "label": "Travel Advance Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "employer_contribution_to_pf",
+   "fieldtype": "Link",
+   "label": "Employer Contribution to PF",
+   "options": "Account"
+  },
+  {
+   "fieldname": "salary_tax_account",
+   "fieldtype": "Link",
+   "label": "Salary Tax Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "leave_encashment_account",
+   "fieldtype": "Link",
+   "label": "Leave Encashment Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "overtime_allowance_account",
+   "fieldtype": "Link",
+   "label": "Overtime Allowance Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "ltc_account",
+   "fieldtype": "Link",
+   "label": "LTC Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "salary_advance_account",
+   "fieldtype": "Link",
+   "label": "Salary Advance  Account",
+   "options": "Account"
   }
  ],
  "icon": "fa fa-building",
@@ -868,7 +962,7 @@
  "image_field": "company_logo",
  "is_tree": 1,
  "links": [],
- "modified": "2024-09-03 16:44:45.967401",
+ "modified": "2024-09-25 11:32:31.385423",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Company",

@@ -2,7 +2,26 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on("Abstract Bill", {
-    onload(frm) {
+	setup: function(frm) {
+		frm.set_query("fiscal_year", function () {
+			return {
+				query: "erpnext.accounts.doctype.abstract_bill.abstract_bill.get_fiscal_year",
+				filters: {
+					company: frm.doc.company,
+				}
+			};
+		});
+	},
+
+    onload: (frm) => {
+		frm.set_query("branch", function(doc) {
+			return {
+				filters: {
+					'company': doc.company,
+				}
+			}
+		});
+
         frm.set_query("cost_center", "items", function(doc) {
             return {
                 filters: {
@@ -18,40 +37,6 @@ frappe.ui.form.on("Abstract Bill", {
                 }
             }
         })
-
-		if (frm.doc.company) {
-            frappe.call({
-                method: 'erpnext.accounts.doctype.abstract_bill.abstract_bill.get_fiscal_years_for_company',
-                args: {
-                    company: frm.doc.company
-                },
-                callback: function(r) {
-                    if (r.message) {
-                        frm.set_query('fiscal_year', function() {
-                            return {
-                                filters: {
-                                    name: ['in', r.message]
-                                }
-                            };
-                        });
-                    }
-                }
-            });
-        }
-
-		// frm.set_query("fiscal_year", function(doc){
-		// 	var chk = 0
-		// 	frappe.db.get_value("Company", frm.doc.company, "calendar_year_based", (r) =>{
-		// 		console.log(r);
-		// 		chk = r.calendar_year_based
-		// 	});
-		// 	// console.log(chk);
-		// 	return {
-		// 		filters: {
-		// 			'is_calendar_year': chk
-		// 		}
-		// 	}
-        // })
 
         frm.set_query("party", "items", function(doc, cdt, cdn){
             var child = locals[cdt][cdn];
@@ -84,26 +69,6 @@ frappe.ui.form.on("Abstract Bill", {
 
     company: function (frm) {
         frm.events.clear_items_table(frm);
-
-		if (frm.doc.company) {
-            frappe.call({
-                method: 'erpnext.accounts.doctype.abstract_bill.abstract_bill.get_fiscal_years_for_company',
-                args: {
-                    company: frm.doc.company
-                },
-                callback: function(r) {
-                    if (r.message) {
-                        frm.set_query('fiscal_year', function() {
-                            return {
-                                filters: {
-                                    name: ['in', r.message]
-                                }
-                            };
-                        });
-                    }
-                }
-            });
-        }
     },
 
     clear_items_table: function (frm) {

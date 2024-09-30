@@ -234,7 +234,7 @@ class ImprestRecoup(Document):
 			if not self.imprest_advance_list:
 				frappe.throw("No Imprest Advance")
 
-	def update_reference_document(self, cancel=False):
+	def update_reference_document(self, cancel=False):			
 		for d in self.imprest_advance_list:
 			doc = frappe.get_doc("Imprest Advance", d.imprest_advance)
 			allocated_amount = flt(d.allocated_amount)

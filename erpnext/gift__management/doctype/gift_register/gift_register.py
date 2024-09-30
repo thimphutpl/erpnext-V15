@@ -1,7 +1,7 @@
 # Copyright (c) 2024, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
-# import frappe
+import frappe
 from frappe.model.document import Document
 
 
@@ -17,6 +17,8 @@ class GiftRegister(Document):
 		address: DF.Data | None
 		agency: DF.Data | None
 		amended_from: DF.Link | None
+		branch: DF.Link | None
+		company: DF.Link | None
 		contact_number: DF.Phone | None
 		currency: DF.Link | None
 		current_deposition_of_location: DF.Data | None
@@ -55,3 +57,38 @@ class GiftRegister(Document):
 	def calculateAmount(self):
 		if self.exchange_rate and self.estimated_fair_market_value:
 			self.estimated_fair_market_valuenu = self.exchange_rate * self.estimated_fair_market_value
+   
+	def on_submit(self):
+		self.create_stock_entry()
+  
+  
+	def create_stock_entry(self):
+		stock_entry = frappe.get_doc({
+        "doctype": "Stock Entry",
+        "branch":self.branch,
+        "stock_entry_type": "Material Receipt",  # or "Material Receipt" / "Material Transfer" depending on the type
+        "company": self.company,  
+        "purpose": "Material Issue",  # Set the purpose of the stock entry
+        "reference_doctype": self.doctype,
+        "reference_name": self.name,
+        "items": []
+    })
+    
+		
+		stock_entry.append("items", {
+			"item_code": self.gift_item,
+			"transfer_qty": self.quantity,
+			"t_warehouse": self.warehouse,  # or use t_warehouse for 'Material Receipt'
+			"qty":self.quantity,
+			"uom":self.uom,
+			"stock_uom":self.uom
+				# "uom": item.uom,
+				# "conversion_factor": item.conversion_factor,  # if applicable
+				# "basic_rate": item.rate  # Set rate if needed
+			})
+		
+		# Insert and submit the Stock Entry
+		stock_entry.insert(ignore_permissions=True)
+		stock_entry.submit()
+
+		frappe.msgprint(f"Stock Entry {stock_entry.name} has been created and submitted.")

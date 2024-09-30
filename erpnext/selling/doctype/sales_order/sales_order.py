@@ -76,6 +76,7 @@ class SalesOrder(SellingController):
 		base_total: DF.Currency
 		base_total_taxes_and_charges: DF.Currency
 		billing_status: DF.Literal["Not Billed", "Fully Billed", "Partly Billed", "Closed"]
+		branch: DF.Link | None
 		campaign: DF.Link | None
 		commission_rate: DF.Float
 		company: DF.Link
@@ -127,6 +128,7 @@ class SalesOrder(SellingController):
 		per_picked: DF.Percent
 		plc_conversion_rate: DF.Float
 		po_date: DF.Date | None
+		po_no: DF.Data | None
 		price_list_currency: DF.Link
 		pricing_rules: DF.Table[PricingRuleDetail]
 		project: DF.Link | None
@@ -136,7 +138,6 @@ class SalesOrder(SellingController):
 		rounding_adjustment: DF.Currency
 		sales_partner: DF.Link | None
 		sales_team: DF.Table[SalesTeam]
-		scan_barcode: DF.Data | None
 		select_print_heading: DF.Link | None
 		selling_price_list: DF.Link
 		set_warehouse: DF.Link | None
@@ -911,7 +912,8 @@ def make_delivery_note(source_name, target_doc=None, kwargs=None):
 		target.run_method("set_po_nos")
 		target.run_method("calculate_taxes_and_totals")
 		target.run_method("set_use_serial_batch_fields")
-
+		target.branch=source.branch
+		
 		if source.company_address:
 			target.update({"company_address": source.company_address})
 		else:

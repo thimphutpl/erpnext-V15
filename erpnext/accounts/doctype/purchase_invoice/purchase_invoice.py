@@ -103,7 +103,7 @@ class PurchaseInvoice(BuyingController):
 		buying_price_list: DF.Link | None
 		cash_bank_account: DF.Link | None
 		clearance_date: DF.Date | None
-		company: DF.Link | None
+		company: DF.Link
 		contact_display: DF.SmallText | None
 		contact_email: DF.SmallText | None
 		contact_mobile: DF.SmallText | None
@@ -808,6 +808,8 @@ class PurchaseInvoice(BuyingController):
 				if frappe.db.get_value("Item", item.item_code, "is_fixed_asset"):
 					expense = get_asset_category_account('fixed_asset_account', item=item.item_code,
 																  company=self.company)
+			if not expense:
+				expense = item.expense_account
 			budget_cost_center = budget_account = ""
 			bud_acc_dtl = frappe.get_doc("Account", expense)
 			if bud_acc_dtl.is_centralized_budget:

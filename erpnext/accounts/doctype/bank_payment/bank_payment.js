@@ -8,7 +8,14 @@ cur_frm.add_fetch("paid_from", "bank_account_type", "bank_account_type");
 cur_frm.add_fetch("paid_from", "bank_account_no", "bank_account_no");	
 frappe.ui.form.on('Bank Payment', {
 	setup: function(frm){
-		//Your code
+		frm.set_query("fiscal_year", function () {
+			return {
+				query: "erpnext.accounts.doctype.abstract_bill.abstract_bill.get_fiscal_year",
+				filters: {
+					company: frm.doc.company,
+				}
+			};
+		});
 	},
 	onload: function(frm){
 		enable_disable(frm);

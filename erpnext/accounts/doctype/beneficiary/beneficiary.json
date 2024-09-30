@@ -70,7 +70,7 @@
   {
    "fieldname": "swift_code",
    "fieldtype": "Data",
-   "label": "Swift Code"
+   "label": "Swift Code/IFSC Code"
   },
   {
    "fieldname": "account_number",
@@ -112,7 +112,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-08-13 12:17:11.744005",
+ "modified": "2024-09-18 11:48:56.828314",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Beneficiary",

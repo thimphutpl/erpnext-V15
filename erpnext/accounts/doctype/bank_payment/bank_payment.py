@@ -1547,39 +1547,24 @@ def get_inr_bank_file(doc, filename, posting_date):
 def get_paid_from(doctype, txt, searchfield, start, page_len, filters):
     if not filters.get("branch"):
         frappe.msgprint(_("Please select <b>Paid From Branch</b> first"))
-    data = []
+        return []
+
     data = frappe.db.sql(
-        """select a.name, a.bank_name, a.bank_branch, a.bank_account_type, a.bank_account_no
-		from `tabAccount` a
-		where a.bank_name is not null
-		and a.bank_branch is not null
-		and a.bank_account_type is not null
-		and a.bank_account_no is not null
-			and ( exists (select 1
-			from `tabBranch` b 
-			inner join `tabBranch Bank Account` ba 
-			on b.name = ba.parent
-			where b.name = '{0}'
-			and ba.account = a.name)
-		or 
-		exists (select 1
-			from `tabBranch` 
-			where name = "{0}"
-			and expense_bank_account = a.name)
-	)
-	""".format(
-            filters.get("branch")
-        )
+        """
+        SELECT a.name, a.bank_name, a.bank_branch, a.bank_account_type, a.bank_account_no
+        FROM `tabAccount` a
+        WHERE a.bank_name IS NOT NULL
+            AND a.bank_branch IS NOT NULL
+            AND a.bank_account_type IS NOT NULL
+            AND a.bank_account_no IS NOT NULL
+            AND EXISTS (
+                SELECT 1
+                FROM `tabBranch`
+                WHERE name = %s
+                AND expense_bank_account = a.name
+            )
+        """, (filters.get("branch"),)
     )
-    # data = frappe.db.sql("""select a.name, a.bank_name, a.bank_branch, a.bank_account_type, a.bank_account_no
-    #     from `tabBranch` b, `tabAccount` a
-    #     where b.name = "{}"
-    #     and a.name = b.expense_bank_account
-    #     and a.bank_name is not null
-    #     and a.bank_branch is not null
-    #     and a.bank_account_type is not null
-    #     and a.bank_account_no is not null
-    # """.format(filters.get("branch")))
 
     if filters.get("branch") and not data:
         expense_bank_account = frappe.db.get_value(
@@ -1589,31 +1574,14 @@ def get_paid_from(doctype, txt, searchfield, start, page_len, filters):
             frappe.msgprint(_("Default <b>Expense Bank Account</b> is not set for this branch"))
         else:
             account = frappe.db.get("Account", expense_bank_account)
-            if not account.bank_name:
-                frappe.msgprint(
-                    _("<b>Bank Name</b> is not set for {}").format(
-                        frappe.get_desk_link("Account", expense_bank_account)
-                    )
-                )
-            elif not account.bank_branch:
-                frappe.msgprint(
-                    _("""<b>Bank Account's Branch</b> is not set for {} """).format(
-                        frappe.get_desk_link("Account", expense_bank_account)
-                    )
-                )
-            elif not account.bank_account_no:
-                frappe.msgprint(
-                    _("<b>Bank Account No.</b> is not set for {}").format(
-                        frappe.get_desk_link("Account", expense_bank_account)
-                    )
-                )
-            elif not account.bank_account_type:
-                frappe.msgprint(
-                    _("<b>Bank Account Type</b> is not set for {}").format(
-                        frappe.get_desk_link("Account", expense_bank_account)
-                    )
-                )
-    return data
+            if account and all([account.bank_name, account.bank_branch, account.bank_account_no, account.bank_account_type]):
+                data.append((account.name, account.name))  # Adding as tuple (value, description)
+            else:
+                frappe.msgprint(_("Bank account details are incomplete for {0}")
+                                .format(frappe.get_desk_link("Account", expense_bank_account)))
+
+    # Ensure data is returned as a list of tuples (value, description)
+    return [(d[0], "{0} - {1}, {2}, {3}".format(d[0], d[1], d[2], d[3])) for d in data if d]
 
 
 def get_child_cost_centers(current_cs=None):

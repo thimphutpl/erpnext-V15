@@ -98,7 +98,11 @@ frappe.query_reports["Receipts and Payments Statement"] = {
             // Set fiscal year filter width
             // $('div[data-fieldname="fiscal_year"] input').css("width", "120px");
         }, 100);
-    }
+    },
+	formatter: erpnext.financial_statements.formatter,
+	tree: true,
+	name_field: "account",
+	parent_field: "parent_account",
+	initial_depth: 3,
 };
 
-erpnext.utils.add_dimensions("Receipts and Payments Statement", 15);

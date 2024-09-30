@@ -1,14 +1,6 @@
 # Copyright (c) 2024, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
-# import frappe
-
-
-# def execute(filters=None):
-# 	columns, data = [], []
-# 	return columns, data
-# scholarship_report.py (script report)
-
 import frappe
 from frappe.utils import nowdate
 
@@ -35,12 +27,31 @@ def get_columns():
     ]
 
 def get_data(filters):
-    today = nowdate()
-    return frappe.db.sql("""
+    conditions = []
+    
+    # Apply filters dynamically
+    if filters.get("college"):
+        conditions.append("college = %(college)s")
+    if filters.get("cid_number"):
+        conditions.append("cid_number = %(cid_number)s")
+    if filters.get("name1"):
+        conditions.append("name1 = %(name1)s")
+    if filters.get("country"):
+        conditions.append("country = %(country)s")
+    if filters.get("status"):
+        conditions.append("status = %(status)s")    
+    
+    # Build the WHERE clause
+    where_clause = " AND ".join(conditions) if conditions else "1=1"
+    
+    query = f"""
         SELECT
             name, batch, country, name1, cid_number, permanent_address, contact_number, email_address, college, course, status, start_date, end_date
         FROM
             `tabScholarship`
         WHERE
-            docstatus = 1
-    """, as_dict=1)
+            {where_clause}
+    """
+    
+    # Execute the query with filters
+    return frappe.db.sql(query, filters, as_dict=1)

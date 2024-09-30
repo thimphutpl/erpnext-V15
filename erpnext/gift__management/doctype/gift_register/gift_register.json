@@ -5,6 +5,9 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "company",
+  "column_break_uuaj",
+  "branch",
   "gift_status_section",
   "column_break_ghae",
   "gift_status",
@@ -33,15 +36,19 @@
   "designation",
   "address",
   "section_break_eixf",
+  "gift_item",
   "gift_name",
   "description_of_gift",
   "source_of_gift_name",
   "date_of_deposit",
+  "uom",
   "column_break_rtyn",
   "current_deposition_of_location",
   "mode_of_disposal",
   "gift_image",
   "amended_from",
+  "quantity",
+  "warehouse",
   "gift_value_detail_section",
   "currency",
   "estimated_fair_market_value",
@@ -287,12 +294,51 @@
    "fieldname": "organization",
    "fieldtype": "Data",
    "label": "Organization"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company"
+  },
+  {
+   "fieldname": "column_break_uuaj",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "label": "Branch",
+   "options": "Branch"
+  },
+  {
+   "fieldname": "gift_item",
+   "fieldtype": "Link",
+   "label": "Gift Item",
+   "options": "Item"
+  },
+  {
+   "fieldname": "quantity",
+   "fieldtype": "Int",
+   "label": "Quantity"
+  },
+  {
+   "fieldname": "warehouse",
+   "fieldtype": "Link",
+   "label": "Warehouse",
+   "options": "Warehouse"
+  },
+  {
+   "fetch_from": "gift_item.stock_uom",
+   "fieldname": "uom",
+   "fieldtype": "Data",
+   "label": "UOM"
   }
  ],
  "image_field": "gift_image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-09-13 13:49:30.882680",
+ "modified": "2024-09-24 14:47:10.972208",
  "modified_by": "Administrator",
  "module": "Gift  Management",
  "name": "Gift Register",

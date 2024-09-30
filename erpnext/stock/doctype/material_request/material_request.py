@@ -815,3 +815,16 @@ def make_in_transit_stock_entry(source_name, in_transit_warehouse):
 		row.t_warehouse = in_transit_warehouse
 
 	return ste_doc
+
+def get_permission_query_conditions(user):
+	if not user: user = frappe.session.user
+	user_roles = frappe.get_roles(user)
+
+	if user == "Administrator":
+		return
+	if "Stock Manager" in user_roles or "System Manager" in user_roles or "Accounts Manager" in user_roles or "CEO" in user_roles:
+		return
+
+	return """(
+		`tabMaterial Request`.owner = '{user}'
+		""".format(user=user)

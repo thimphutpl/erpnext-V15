@@ -20,6 +20,9 @@ class EmployeeGroup(Document):
 		employee_pf: DF.Percent
 		employer_pf: DF.Percent
 		health_contribution: DF.Percent
+		increment_prorated: DF.Check
+		minimum_months: DF.Float
+		salary_advance_max_months: DF.Data | None
 	# end: auto-generated types
 
 	pass

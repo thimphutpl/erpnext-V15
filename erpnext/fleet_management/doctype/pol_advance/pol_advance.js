@@ -2,6 +2,16 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on('POL Advance', {
+	company: function(frm) { 
+        frm.set_query('expense_account', function() {
+			return {
+				filters: {
+					'company': frm.doc.company  // Filter based on selected company
+				}
+			};
+		});
+
+    },
 	onload: function(frm) {
 		set_party_type(frm);
 		
@@ -46,6 +56,13 @@ frappe.ui.form.on('POL Advance', {
 	},
 	refresh: (frm)=>{
 		open_ledger(frm);
+		frm.set_query('expense_account', function() {
+			return {
+				filters: {
+					'company': frm.doc.company  // Filter based on selected company
+				}
+			};
+		});
 	},
 	amount: (frm)=> {
 		calculate_balance(frm);

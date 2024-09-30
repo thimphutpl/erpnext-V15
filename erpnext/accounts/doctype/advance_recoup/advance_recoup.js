@@ -62,7 +62,7 @@ frappe.ui.form.on("Advance Recoup Item", {
 			return;
 		}
 		return frappe.call({
-			method: "erpnext.accounts.doctype.imprest_recoup.imprest_recoup.get_imprest_recoup_account",
+			method: "erpnext.accounts.doctype.advance_recoup.advance_recoup.get_imprest_recoup_account",
 			args: {
 				"recoup_type": d.recoup_type,
 				"company": frm.doc.company

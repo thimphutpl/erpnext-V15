@@ -21,6 +21,7 @@ class ItemGroup(NestedSet):
 		from frappe.types import DF
 
 		image: DF.AttachImage | None
+		is_fixed_asset: DF.Check
 		is_group: DF.Check
 		item_code_base: DF.Data
 		item_group_defaults: DF.Table[ItemDefault]

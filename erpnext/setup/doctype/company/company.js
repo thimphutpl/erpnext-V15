@@ -282,6 +282,11 @@ erpnext.company.setup_queries = function (frm) {
 			["default_provisional_account", { root_type: ["in", ["Liability", "Asset"]] }],
 			["default_advance_received_account", { root_type: "Liability", account_type: "Receivable" }],
 			["default_advance_paid_account", { root_type: "Asset", account_type: "Payable" }],
+
+			["default_salary_payable_account", { root_type: ["in", ["Liability"]] }],
+			["default_employee_advance_account", { root_type: ["in", ["Liability", "Asset"]] }],
+			["default_payroll_payable_account", { root_type: ["in", ["Liability", "Asset"]] }],
+
 		],
 		function (i, v) {
 			erpnext.company.set_custom_query(frm, v);

@@ -1406,7 +1406,10 @@ def validate_item_default_company_links(item_defaults: list[ItemDefault]) -> Non
 						),
 						title=_("Invalid Item Defaults"),
 					)
-
+@frappe.whitelist()
+def get_is_fixed_asset(item_group):
+	fixed_asset = frappe.db.get_value("Item Group", item_group, "is_fixed_asset")
+	return fixed_asset
 
 @frappe.whitelist()
 def get_asset_naming_series():

@@ -67,12 +67,31 @@ def get_data(filters):
 
 	opening_balances = get_opening_balances(filters, month_start, year_start_date)
 	# frappe.throw("heklo"+str(opening_balances))
+	args = {}
+	default_bank_acc = frappe.db.get_value("Company", filters.get('company'), "default_bank_account")
+	def_bank_acc_name = frappe.db.get_value("Account", default_bank_acc, "account_name")
+	parent_def_bank = frappe.db.get_value("Account", default_bank_acc, "parent_account")
+	parent_def_bank_name = frappe.db.get_value("Account", parent_def_bank, "account_name")
+	
+	default_cash_acc = frappe.db.get_value("Company", filters.get('company'), "default_cash_account")
+	def_cash_acc_name = frappe.db.get_value("Account", default_cash_acc, "account_name")
+	parent_def_cash = frappe.db.get_value("Account", default_cash_acc, "parent_account")
+	parent_def_cash_name = frappe.db.get_value("Account", parent_def_cash, "account_name")
+	args = {
+		'default_bank_acc': default_bank_acc,
+		'def_bank_acc_name': def_bank_acc_name,
+		'parent_def_bank': parent_def_bank,
+		'parent_def_bank_name': parent_def_bank_name,
+		'default_cash_acc': default_cash_acc,
+		'def_cash_acc_name': def_cash_acc_name,
+		'parent_def_cash': parent_def_cash,
+		'parent_def_cash_name': parent_def_cash_name
+	}
 
-	total_row = calculate_values(accounts, gl_entries_by_account, opening_balances, filters, month_start, month_end)
+	total_row = calculate_values(accounts, gl_entries_by_account, opening_balances, filters, month_start, month_end, args)
 	accumulate_values_into_parents(accounts, accounts_by_name)
-	# frappe.throw(str(total_row))
 
-	data = prepare_data(accounts, filters, total_row, parent_children_map)
+	data = prepare_data(accounts, filters, total_row, parent_children_map, args)
 	data = filter_out_zero_value_rows(data, parent_children_map,
 		show_zero_values=filters.get("show_zero_values"))
 
@@ -166,7 +185,7 @@ def get_conditions(filters):
 
 	return "and {}".format(" and ".join(conditions)) if conditions else ""
 
-def calculate_values(accounts, gl_entries_by_account, opening_balances, filters, month_start, month_end):
+def calculate_values(accounts, gl_entries_by_account, opening_balances, filters, month_start, month_end, args):
 	init = {
 		"opening_debit": 0.0,
 		"opening_credit": 0.0,
@@ -201,8 +220,9 @@ def calculate_values(accounts, gl_entries_by_account, opening_balances, filters,
 		d["opening_credit"] = opening_balances.get(d.name, {}).get("opening_credit", 0)
 		# if d["name"] == '93.06-PWA: Suppliers-Mobilization Advances - GCC':
 		# 	frappe.msgprint(str(d["opening_debit"]))
+		
 		opening = 0
-		if d["account_name"] in ("12.B/80.02 - Bank Account - OGZ"):
+		if d["account_name"] in (args['def_bank_acc_name'], args['parent_def_bank_name'], args['def_cash_acc_name'], args['parent_def_cash_name']):
 			# frappe.msgprint(str(d))
 			opening += d["opening_debit"] - d["opening_credit"]
 			# frappe.msgprint(str(d["opening_credit"]))
@@ -215,13 +235,13 @@ def calculate_values(accounts, gl_entries_by_account, opening_balances, filters,
 		a = b = c = e = 0
 
 		for entry in gl_entries_by_account.get(d.name, []):
-			if entry.account in ("12.B/80.02 - Bank Account - OGZ"):
+			if entry.account in (args['default_bank_acc']):
 				d["debit"] = 0
 				d["credit"] = 0
 				d["mdebit"] = 0
 				d["mcredit"] = 0
 
-			if cstr(entry.is_opening) != "Yes" and entry.account in ("12.B/80.02 - Bank Account - OGZ"):
+			if cstr(entry.is_opening) != "Yes" and entry.account in (args['default_bank_acc'], args['parent_def_bank'], args['default_cash_acc'], args['parent_def_cash']):
 					d["debit"] += flt(entry.debit, 3)
 					d["credit"] += flt(entry.credit, 3)
 				
@@ -234,12 +254,12 @@ def calculate_values(accounts, gl_entries_by_account, opening_balances, filters,
 				d["mdebit"] += flt(entry.debit, 3)
 				d["mcredit"] += flt(entry.credit, 3)
 
-			if entry.account in ("De-Suung fund AC 202944097 - DS"):
+			if entry.account in (args['default_bank_acc']):
 				bank_closing_credit += d["mcredit"]
 				bank_closing_debit += d["mdebit"]
 				# frappe.msgprint(str(bank_closing_debit)+" "+str(bank_closing_credit))
 
-			if entry.account in ("Cash in Hand - DS"):
+			if entry.account in (args['default_cash_acc']):
 				cash_closing_credit = d["mcredit"]
 				cash_closing_debit = d["mdebit"]
 				# frappe.msgprint(str(cash_closing_debit)+" "+str(cash_closing_credit))
@@ -254,14 +274,14 @@ def calculate_values(accounts, gl_entries_by_account, opening_balances, filters,
 		# frappe.msgprint(str(d))
 				# total_row["mdebit"] += d["opening_debit"]
 		# frappe.msgprint("Here "+str(a)+" "+d.name+" "+str(d["credit"]))
-		if d.name in ("De-Suung fund AC 202944097 - DS"):
+		if d.name in (args['default_bank_acc']):
 			if a != 1:
 				total_row["mcredit"] += d["opening_debit"] + d["opening_credit"]
 				total_row["credit"] += d["opening_debit"] + d["opening_credit"] - d["credit"]
 				a = 1
 
 
-		if d.name in ("Cash in Hand - DS"):
+		if d.name in (args['default_cash_acc']):
 			if b != 1:
 				total_row["mcredit"] += d["opening_debit"] + d["opening_credit"]
 				total_row["credit"] += d["credit"]
@@ -285,14 +305,14 @@ def calculate_values(accounts, gl_entries_by_account, opening_balances, filters,
 		total_row["mdebit"] += d["mdebit"]
 
 		# frappe.msgprint(str(d["debit"]))
-		if d.name not in ('12.B/80.02 - Bank Account - OGZ'):
+		if d.name not in (args['default_bank_acc'], args['default_cash_acc'], args['parent_def_bank'], args['parent_def_cash']):
 			total_row["credit"] += d["credit"]
 			total_row["mcredit"] += d["mcredit"]
 	
 	# total_row["debit"] += total_row["mdebit"]
 	cb_closing_debit = cb_closing_credit = 0
 	for d in accounts:
-		if d["account_name"] in ('12.B/80.02 - Bank Account - OGZ'):
+		if d["account_name"] in (args['def_bank_acc_name']):
 			b_amount = bank_closing_debit - bank_closing_credit + d["opening_debit"]
 			# frappe.msgprint(str(bank_closing_credit)+" "+str(bank_closing_debit)+" "+str(d["opening_debit"]))	
 			if b_amount > 0:
@@ -303,7 +323,7 @@ def calculate_values(accounts, gl_entries_by_account, opening_balances, filters,
 				cb_closing_credit += b_amount
 			# frappe.msgprint(str(b_amount))
 
-		elif d["account_name"] in ("Cash in Hand"):
+		elif d["account_name"] in (args['def_cash_acc_name']):
 			c_amount = cash_closing_debit - cash_closing_credit + d["opening_debit"]
 			# frappe.msgprint(str(cash_closing_credit)+" "+str(cash_closing_debit))
 			if c_amount > 0:
@@ -322,7 +342,7 @@ def calculate_values(accounts, gl_entries_by_account, opening_balances, filters,
 		# 	else:
 		# 		d["closing_credit"] = amount
 	for d in accounts:
-		if d["account_name"] in ("12.B/80.02 - Bank Account - OGZ"):
+		if d["account_name"] in (args['parent_def_bank'], args['parent_def_cash']):
 				d["closing_debit"] = cb_closing_debit
 				d["closing_credit"] = cb_closing_credit
 		
@@ -340,7 +360,7 @@ def accumulate_values_into_parents(accounts, accounts_by_name):
 			for key in value_fields:
 				accounts_by_name[d.parent_account][key] += d[key]
 
-def prepare_data(accounts, filters, total_row, parent_children_map):
+def prepare_data(accounts, filters, total_row, parent_children_map, args):
 	data = []
 	for d in accounts:
 		has_value = False
@@ -362,9 +382,9 @@ def prepare_data(accounts, filters, total_row, parent_children_map):
 				"from_date": filters.from_date,
 				"to_date": filters.to_date
 			}
-		if d.name == 'Bank & Cash - DS':
+		if d.name == 'Current Assets - OGZ':
 			row = {
-				"account_name": "Bank & Cash",
+				"account_name": d.account_name,
 				"account": d.name,
 				"parent_account": "",
 				"indent": 0,
@@ -380,17 +400,8 @@ def prepare_data(accounts, filters, total_row, parent_children_map):
 				"from_date": filters.from_date,
 				"to_date": filters.to_date
 			}
-		# if d.name == 'Receipts - DS':
-		# 		row = {
-		# 			"account_name": d.account_name,
-		# 			"account": d.name,
-		# 			"parent_account": d.parent_account,
-		# 			"indent": d.indent,
-		# 			"from_date": filters.from_date,
-		# 			"to_date": filters.to_date
-		# 		}
 		if d.name not in ('Assets - OGZ'):
-			prepare_opening_and_closing(d, total_row)
+			prepare_opening_and_closing(d, total_row, args)
 	
 			for key in value_fields:
 				row[key] = flt(d.get(key, 0.0), 3)
@@ -406,7 +417,7 @@ def prepare_data(accounts, filters, total_row, parent_children_map):
 
 	return data
 
-def prepare_opening_and_closing(d, total_row):
+def prepare_opening_and_closing(d, total_row, args):
 	# if d["account_name"] in ('b - Bank'):
 	# 	#divided by 2 because the closing debit or credit for parent account is double somehow
 	# 	if d["closing_debit"]:
@@ -414,7 +425,7 @@ def prepare_opening_and_closing(d, total_row):
 	# 	else:
 	# 		d["closing_credit"] /= 2
 			
-	if d["account_name"] in ('Bank & Cash'):
+	if d["account_name"] in (str(args['parent_def_bank_name']), str(args['parent_def_cash_name'])):
 		#divided by 3 because the closing debit or credit for parent account is triple
 		# frappe.throw(str(d["closing_debit"]))
 		if d["closing_debit"]:
@@ -424,7 +435,7 @@ def prepare_opening_and_closing(d, total_row):
 	# if d["name"] == "93.06-PWA: Suppliers-Mobilization Advances - GCC":
 	# 	frappe.msgprint(str(d["opening_credit"]))
 
-	if d["account_name"] not in ("De-Suung fund AC 202944097","a - Cash","Cash in Hand","b - Bank", "Bank & Cash"):
+	if d["account_name"] not in (args['def_bank_acc_name'], args['parent_def_bank_name'], args['def_cash_acc_name'], args['parent_def_cash_name']):
 		if d["opening_debit"] > d["opening_credit"]:
 			# if d["name"] == "93.06-PWA: Suppliers-Mobilization Advances - GCC":
 			# 	frappe.msgprint(str(d["opening_debit"]-d["opening_credit"]))
@@ -447,20 +458,20 @@ def prepare_opening_and_closing(d, total_row):
 			# d["closing_credit"] -= d["closing_debit"]
 			d["closing_debit"] = 0.0
 	
-	if d.name in ("De-Suung fund AC 202944097 - DS", "Cash in Hand - DS"):
+	if d.name in (args['default_bank_acc'], args['default_cash_acc']):
 		# if c != 1:
 		# frappe.msgprint(str(total_row["debit"])+" "+str(d["closing_debit"])+" "+str(d["debit"]))
 		total_row["mdebit"] += d["closing_debit"] + d["closing_credit"]
 		total_row["debit"] += d["closing_debit"] + d["closing_credit"] - d["debit"]
 
 	# Added below code to remove the mid section figures for cash and bank accounts in the report // Kinley Dorji 2021/02/03
-	if d["name"] in ("Bank & Cash - DS", "De-Suung fund AC 202944097 - DS", "b - Bank - DS"):
+	if d["name"] in (args['default_bank_acc'], args['parent_def_bank']):
 		d["debit"] = 0
 		d["credit"] = 0
 		d["mdebit"] = 0
 		d["mcredit"] = 0
 
-	if d["name"] in ("a - Cash - DS", "Cash in Hand - DS"):
+	if d["name"] in (args['default_cash_acc'], args['parent_def_cash']):
 		d["debit"] = 0
 		d["mdebit"] = 0
 

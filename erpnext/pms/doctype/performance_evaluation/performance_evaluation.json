@@ -52,6 +52,7 @@
   "form_i_score",
   "target_total_weightage",
   "max_rating_limit",
+  "overall_rating",
   "column_break_32",
   "form_ii_score",
   "competency_total_weightage",
@@ -62,7 +63,6 @@
   "column_break_46",
   "form_iii_score",
   "no_of_months_served",
-  "overall_rating",
   "comment_section_section",
   "employee_comment",
   "column_break_48",
@@ -287,6 +287,7 @@
    "allow_on_submit": 1,
    "fieldname": "final_score",
    "fieldtype": "Float",
+   "hidden": 1,
    "label": "Final Score",
    "precision": "5",
    "read_only": 1
@@ -420,6 +421,7 @@
    "allow_on_submit": 1,
    "fieldname": "form_i_score",
    "fieldtype": "Float",
+   "hidden": 1,
    "label": "Form I Score",
    "precision": "5",
    "read_only": 1
@@ -428,6 +430,7 @@
    "allow_on_submit": 1,
    "fieldname": "form_ii_score",
    "fieldtype": "Float",
+   "hidden": 1,
    "label": "Form II Score",
    "precision": "5",
    "read_only": 1
@@ -435,12 +438,14 @@
   {
    "fieldname": "target_total_weightage",
    "fieldtype": "Percent",
+   "hidden": 1,
    "label": "Target Total Weightage(%)",
    "read_only": 1
   },
   {
    "fieldname": "competency_total_weightage",
    "fieldtype": "Percent",
+   "hidden": 1,
    "label": "Competecy Total Weightage(%)",
    "read_only": 1
   },
@@ -576,6 +581,7 @@
    "allow_on_submit": 1,
    "fieldname": "final_score_percent",
    "fieldtype": "Percent",
+   "hidden": 1,
    "label": "Final Score(%)",
    "precision": "5",
    "read_only": 1
@@ -641,6 +647,7 @@
    "allow_on_submit": 1,
    "fieldname": "star_obtained",
    "fieldtype": "Rating",
+   "hidden": 1,
    "label": "Star Obtained",
    "read_only": 1
   },
@@ -722,7 +729,7 @@
  ],
  "is_submittable": 1,
  "links": [],
- "modified": "2024-07-30 15:42:45.758384",
+ "modified": "2024-09-16 20:24:19.087265",
  "modified_by": "Administrator",
  "module": "PMS",
  "name": "Performance Evaluation",

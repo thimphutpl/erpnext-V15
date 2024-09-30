@@ -4,7 +4,7 @@
 
 import frappe
 from frappe.utils.nestedset import NestedSet, get_root_of
-
+from frappe.utils import cint
 from erpnext.utilities.transaction_base import delete_events
 
 
@@ -18,7 +18,10 @@ class Department(NestedSet):
 		from frappe.types import DF
 
 		company: DF.Link
+		department_head: DF.Link | None
+		department_head_name: DF.Data | None
 		department_name: DF.Data
+		designation: DF.Link | None
 		disabled: DF.Check
 		is_group: DF.Check
 		lft: DF.Int
@@ -95,3 +98,25 @@ def add_node():
 		args.parent_department = None
 
 	frappe.get_doc(args).insert()
+
+@frappe.whitelist()
+def get_employee_count(department):
+	dep = frappe.get_doc("Department", department)
+	cond = ''
+	cond = ' and department ="{}"'.format(dep.name)
+
+	# if cint(dep.is_department):	
+	# 	cond = ' and department ="{}"'.format(dep.name)
+	# if cint(dep.is_division):	
+	# 	cond = ' and division ="{}"'.format(dep.department_name)
+	# if cint(dep.is_unit): 
+	# 	cond = ' and unit ="{}"'.format(dep.department_name)
+	# if cint(dep.is_section): 
+	# 	cond = ' and section ="{}"'.format(dep.department_name)
+	data = {}
+	res = frappe.db.sql("""select count(*) employee_count from `tabEmployee`
+					where status = "Active" {} """.format(cond))
+	data['count'] = res[0][0] if res[0][0] else 0
+	data['approver_name'] = dep.department_head_name
+	data['approver_level'] = dep.designation
+	return data

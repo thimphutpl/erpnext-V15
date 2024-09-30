@@ -54,8 +54,6 @@
   "to_warehouse",
   "target_warehouse_address",
   "target_address_display",
-  "sb0",
-  "scan_barcode",
   "items_section",
   "items",
   "get_stock_and_rate",
@@ -350,17 +348,6 @@
    "fieldtype": "Small Text",
    "label": "Target Warehouse Address",
    "read_only": 1
-  },
-  {
-   "fieldname": "sb0",
-   "fieldtype": "Section Break",
-   "options": "Simple"
-  },
-  {
-   "fieldname": "scan_barcode",
-   "fieldtype": "Data",
-   "label": "Scan Barcode",
-   "options": "Barcode"
   },
   {
    "allow_bulk_edit": 1,
@@ -752,7 +739,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-09-16 12:24:29.365559",
+ "modified": "2024-09-24 10:11:00.820835",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Stock Entry",
