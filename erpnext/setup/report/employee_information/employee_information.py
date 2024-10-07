@@ -27,10 +27,9 @@ def get_data(filters):
 
 	data = frappe.db.sql("""
 		SELECT e.name, e.employee_name, e.passport_number, e.company_email, e.date_of_birth, e.cell_number, e.reports_to, 
-		(select t.employee_name from `tabEmployee` t where t.name=e.name) as reports_to_name,
+		(select t.employee_name from `tabEmployee` t where t.name=e.reports_to) as reports_to_name,
 		e.department, e.branch, e.employment_type, e.employee_group, e.grade, e.designation, e.date_of_joining, e.status, e.blood_group
-		FROM `tabEmployee` e
-		WHERE e.department is not null %s			
+		FROM `tabEmployee` e %s			
 		"""%conditions, filters)
 
 	return data
