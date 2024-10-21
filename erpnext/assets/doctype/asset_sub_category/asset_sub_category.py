@@ -14,6 +14,7 @@ class AssetSubCategory(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		abbr: DF.Data | None
 		asset_category: DF.Link
 		asset_sub_category: DF.Data
 	# end: auto-generated types

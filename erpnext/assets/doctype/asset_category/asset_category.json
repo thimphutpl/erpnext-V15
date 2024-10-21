@@ -68,11 +68,11 @@
   {
    "fieldname": "abbr",
    "fieldtype": "Data",
-   "label": "Abbrevation"
+   "label": "Abbr"
   }
  ],
  "links": [],
- "modified": "2024-08-14 13:55:43.255010",
+ "modified": "2024-10-21 07:59:13.766821",
  "modified_by": "Administrator",
  "module": "Assets",
  "name": "Asset Category",

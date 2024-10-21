@@ -25,19 +25,18 @@
   "serial_number",
   "column_break_3",
   "naming_series",
+  "item_category_abbr",
   "asset_name",
   "asset_category",
   "asset_sub_category",
   "location",
   "split_from",
-  "custodian",
-  "custodian_name",
   "department",
   "disposal_date",
   "posting_date",
   "accounting_dimensions_section",
-  "cost_center",
   "branch",
+  "cost_center",
   "dimension_col_break",
   "asset_account",
   "credit_account",
@@ -56,7 +55,9 @@
   "remarks",
   "custodian_details_section",
   "issued_to",
+  "custodian",
   "column_break_rbqr",
+  "custodian_name",
   "section_break_23",
   "calculate_depreciation",
   "column_break_33",
@@ -207,6 +208,7 @@
    "options": "Employee"
   },
   {
+   "fetch_from": "branch.cost_center",
    "fieldname": "cost_center",
    "fieldtype": "Link",
    "label": "Cost Center",
@@ -246,7 +248,6 @@
    "fieldname": "gross_purchase_amount",
    "fieldtype": "Currency",
    "label": "Gross Purchase Amount",
-   "mandatory_depends_on": "eval:(!doc.is_composite_asset || doc.docstatus==1)",
    "options": "Company:company:default_currency",
    "read_only_depends_on": "eval:!doc.is_existing_asset"
   },
@@ -596,7 +597,9 @@
   {
    "fieldname": "issued_to",
    "fieldtype": "Select",
-   "label": "Issued To"
+   "hidden": 1,
+   "label": "Issued To",
+   "options": "\nEmployee"
   },
   {
    "fieldname": "column_break_rbqr",
@@ -614,9 +617,11 @@
    "options": "Usable\nUnusable\nRepairable\nAllocated\nMarked for Auction\nAuctioned"
   },
   {
+   "fetch_from": "custodian.employee_name",
    "fieldname": "custodian_name",
    "fieldtype": "Data",
-   "label": "Custodian Name"
+   "label": "Custodian Name",
+   "read_only": 1
   },
   {
    "fieldname": "asset_rate",
@@ -669,6 +674,11 @@
    "fieldname": "remarks",
    "fieldtype": "Small Text",
    "label": "Remarks"
+  },
+  {
+   "fieldname": "item_category_abbr",
+   "fieldtype": "Data",
+   "label": "Item Category"
   }
  ],
  "idx": 72,
@@ -712,7 +722,7 @@
    "link_fieldname": "target_asset"
   }
  ],
- "modified": "2024-09-03 11:25:12.637355",
+ "modified": "2024-10-21 10:22:32.230059",
  "modified_by": "Administrator",
  "module": "Assets",
  "name": "Asset",

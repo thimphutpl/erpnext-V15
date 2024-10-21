@@ -7,7 +7,9 @@
  "engine": "InnoDB",
  "field_order": [
   "asset_category",
-  "asset_sub_category"
+  "asset_sub_category",
+  "column_break_kpao",
+  "abbr"
  ],
  "fields": [
   {
@@ -25,11 +27,20 @@
    "label": "Asset Sub Category",
    "reqd": 1,
    "unique": 1
+  },
+  {
+   "fieldname": "column_break_kpao",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "abbr",
+   "fieldtype": "Data",
+   "label": "Abbr"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-08-14 13:39:57.773810",
+ "modified": "2024-10-21 07:59:27.503309",
  "modified_by": "Administrator",
  "module": "Assets",
  "name": "Asset Sub Category",

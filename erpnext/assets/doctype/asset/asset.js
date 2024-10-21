@@ -15,6 +15,14 @@ frappe.ui.form.on("Asset", {
 			};
 		});
 
+		frm.set_query("branch", function () {
+			return {
+				filters: {
+					'company': frm.doc.company,
+				},
+			};
+		});
+
 		frm.set_query("warehouse", function () {
 			return {
 				filters: {
