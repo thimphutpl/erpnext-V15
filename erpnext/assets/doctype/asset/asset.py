@@ -124,28 +124,32 @@ class Asset(AccountsController):
 
 	# Added by Dawa Tshering on 2024/09/03
 	def autoname(self):
-		default_company = frappe.db.get_single_value("Global Defaults", "default_company")
-		if not default_company:
-			frappe.throw("Please set the default Company in Global Defaults.")
-		
-		if default_company == self.company:
-			agency_abbr = frappe.db.get_value("Branch", self.branch, "abbreviation")
-			if not agency_abbr:
-				frappe.throw(f"Set abbreviation in {frappe.get_desk_link('Branch', self.branch)}.")
+		# set old asset code if exists
+		if self.old_asset_code:
+			self.name = self.old_asset_code
+		# other wise generate new asset code
 		else:
-			agency_abbr = frappe.db.get_value("Company", self.company, "abbr")
-			if not agency_abbr:
-				frappe.throw(f"Set abbreviation in {frappe.get_desk_link('Company', self.company)}.")
-		
-		asset_category_abbr = frappe.db.get_value("Asset Category", self.asset_category, "abbr")
-		asset_sub_category_abbr = frappe.db.get_value("Asset Sub Category", self.asset_sub_category, "abbr")
+			default_company = frappe.db.get_single_value("Global Defaults", "default_company")
+			if not default_company:
+				frappe.throw("Please set the default Company in Global Defaults.")
+			
+			if default_company == self.company:
+				agency_abbr = frappe.db.get_value("Branch", self.branch, "abbreviation")
+				if not agency_abbr:
+					frappe.throw(f"Set abbreviation in {frappe.get_desk_link('Branch', self.branch)}.")
+			else:
+				agency_abbr = frappe.db.get_value("Company", self.company, "abbr")
+				if not agency_abbr:
+					frappe.throw(f"Set abbreviation in {frappe.get_desk_link('Company', self.company)}.")
+			
+			asset_category_abbr = frappe.db.get_value("Asset Category", self.asset_category, "abbr")
+			asset_sub_category_abbr = frappe.db.get_value("Asset Sub Category", self.asset_sub_category, "abbr")
 
-		if not asset_category_abbr:
-			frappe.throw(f"Set abbreviation in {frappe.get_desk_link('Asset Category', self.asset_category)}.")
-		if not asset_sub_category_abbr:
-			frappe.throw(f"Set abbreviation in {frappe.get_desk_link('Asset Sub Category', self.asset_sub_category)}.")
-		
-		self.name = frappe.model.naming.make_autoname(f"HMS/{agency_abbr}/{asset_category_abbr}-{asset_sub_category_abbr}.####")
+			if not asset_category_abbr:
+				frappe.throw(f"Set abbreviation in {frappe.get_desk_link('Asset Category', self.asset_category)}.")
+			if not asset_sub_category_abbr:
+				frappe.throw(f"Set abbreviation in {frappe.get_desk_link('Asset Sub Category', self.asset_sub_category)}.")
+			self.name = frappe.model.naming.make_autoname(f"HMS/{agency_abbr}/{asset_category_abbr}-{asset_sub_category_abbr}.####")
 
 	def validate(self):
 		self.validate_asset_values()
