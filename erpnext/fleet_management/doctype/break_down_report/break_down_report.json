@@ -1,0 +1,256 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "BDR.YY.MM.####",
+ "creation": "2024-09-24 10:29:50.336854",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_bgbv",
+  "date",
+  "time",
+  "owned_by",
+  "column_break_2",
+  "cost_center",
+  "branch",
+  "section_break_8",
+  "customer_cost_center",
+  "column_break_10",
+  "customer_branch",
+  "section_break_2",
+  "customer",
+  "client",
+  "private_customer_name",
+  "private_customer_address",
+  "column_break_4",
+  "equipment",
+  "equipment_type",
+  "equipment_model",
+  "equipment_number",
+  "nature_of_break_down",
+  "defect",
+  "section_break_15",
+  "fleet_comment",
+  "column_break_17",
+  "workshop_comment",
+  "section_break_19",
+  "job_cards",
+  "column_break_21",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_bgbv",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Break Down Report",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "time",
+   "fieldtype": "Time",
+   "label": "Time",
+   "reqd": 1
+  },
+  {
+   "fieldname": "owned_by",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Equipment Owned By",
+   "options": "\nOwn\nCDCL\nOthers",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "cost_center",
+   "fieldtype": "Link",
+   "label": "Cost Center",
+   "options": "Cost Center",
+   "reqd": 1
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "label": "Branch",
+   "options": "Branch",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "depends_on": "eval:doc.owned_by == \"CDCL\"",
+   "fieldname": "section_break_8",
+   "fieldtype": "Section Break",
+   "label": "Intra-CDCL Transaction Details"
+  },
+  {
+   "fetch_from": "customer.cost_center",
+   "fieldname": "customer_cost_center",
+   "fieldtype": "Read Only",
+   "label": "Customer Cost Center",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_10",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "customer.branch",
+   "fieldname": "customer_branch",
+   "fieldtype": "Read Only",
+   "label": "Customer Branch",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_2",
+   "fieldtype": "Section Break",
+   "label": "Customer & Equipment Details"
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Customer",
+   "options": "Customer",
+   "reqd": 1
+  },
+  {
+   "fieldname": "client",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Client Type"
+  },
+  {
+   "depends_on": "eval:doc.owned_by == 'Others' && doc.customer",
+   "fieldname": "private_customer_name",
+   "fieldtype": "Data",
+   "label": "Customer Name"
+  },
+  {
+   "depends_on": "eval:doc.owned_by == 'Others' && doc.customer",
+   "fieldname": "private_customer_address",
+   "fieldtype": "Small Text",
+   "label": "Customer Address"
+  },
+  {
+   "fieldname": "column_break_4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "equipment",
+   "fieldtype": "Link",
+   "label": "Equipment",
+   "options": "Equipment"
+  },
+  {
+   "fieldname": "equipment_type",
+   "fieldtype": "Link",
+   "label": "Equipment Type",
+   "options": "Equipment Type",
+   "reqd": 1
+  },
+  {
+   "depends_on": "eval:doc.client != 'Internal' && doc.customer",
+   "fieldname": "equipment_model",
+   "fieldtype": "Link",
+   "label": "Equipment Model",
+   "options": "Equipment Model",
+   "reqd": 1
+  },
+  {
+   "depends_on": "eval:doc.client != 'Internal' && doc.customer",
+   "fieldname": "equipment_number",
+   "fieldtype": "Data",
+   "label": "Equipment Number"
+  },
+  {
+   "fieldname": "nature_of_break_down",
+   "fieldtype": "Section Break",
+   "label": "Nature of Break Down"
+  },
+  {
+   "fieldname": "defect",
+   "fieldtype": "Text Editor",
+   "label": " Defects / Malfunction Observed Comments on Repair",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_15",
+   "fieldtype": "Section Break"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "fleet_comment",
+   "fieldtype": "Small Text",
+   "label": "Comments from Manager (Fleet)"
+  },
+  {
+   "fieldname": "column_break_17",
+   "fieldtype": "Column Break"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "workshop_comment",
+   "fieldtype": "Small Text",
+   "label": "Comments from Manager (Workshop)"
+  },
+  {
+   "fieldname": "section_break_19",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_21",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "job_cards",
+   "fieldtype": "Data",
+   "label": "Job Card",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2024-10-08 15:06:43.317447",
+ "modified_by": "Administrator",
+ "module": "Fleet Management",
+ "name": "Break Down Report",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "search_fields": "customer, equipment, equipment_type, equipment_model",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "customer"
+}

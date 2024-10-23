@@ -351,7 +351,17 @@ class Project(Document):
 					content=content.format(*messages),
 				)
 				user.welcome_email_sent = 1
-
+	
+	@frappe.whitelist()
+	def update_party_info(self):
+		if self.project_type:
+			if self.party_type and self.party:
+				doc = frappe.get_doc(self.party_type, self.party)
+				self.party_address = doc.get("customer_details") if self.party_type == "Customer" else doc.get("supplier_details") if self.party_type == "Supplier" else doc.get("employee_name")
+				self.party_image = doc.image
+			else:
+				self.party_address = None
+				self.party_image = None
 
 def get_timeline_data(doctype: str, name: str) -> dict[int, int]:
 	"""Return timeline for attendance"""

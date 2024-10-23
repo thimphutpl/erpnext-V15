@@ -696,7 +696,7 @@ class BuyingController(SubcontractingController):
 							if self.doctype == "Material Request"
 							else self.transaction_date
 						),
-						"business_activity": self.business_activity
+						# "business_activity": self.business_activity
 					}
 				)
 

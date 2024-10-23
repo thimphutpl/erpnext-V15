@@ -196,13 +196,13 @@ frappe.ui.form.on("Material Request", {
 				// 	);
 				// }
 
-				// if (frm.doc.material_request_type === "Purchase") {
-				// 	frm.add_custom_button(
-				// 		__("Supplier Quotation"),
-				// 		() => frm.events.make_supplier_quotation(frm),
-				// 		__("Create")
-				// 	);
-				// }
+				if (frm.doc.material_request_type === "Purchase") {
+					frm.add_custom_button(
+						__("Supplier Quotation"),
+						() => frm.events.make_supplier_quotation(frm),
+						__("Create")
+					);
+				}
 
 				if (frm.doc.material_request_type === "Manufacture") {
 					frm.add_custom_button(

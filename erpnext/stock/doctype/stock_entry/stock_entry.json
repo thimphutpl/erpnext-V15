@@ -30,8 +30,6 @@
   "posting_time",
   "column_break_eaoa",
   "set_posting_time",
-  "inspection_required",
-  "apply_putaway_rule",
   "in_transit",
   "bom_info_section",
   "from_bom",
@@ -103,11 +101,13 @@
    "set_only_once": 1
   },
   {
+   "default": "Material Issue",
    "fieldname": "stock_entry_type",
    "fieldtype": "Link",
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Stock Entry Type",
+   "mandatory_depends_on": "material_issue",
    "options": "Stock Entry Type",
    "reqd": 1,
    "search_index": 1
@@ -161,7 +161,8 @@
    "fieldname": "purchase_order",
    "fieldtype": "Link",
    "label": "Purchase Order",
-   "options": "Purchase Order"
+   "options": "Purchase Order",
+   "read_only": 1
   },
   {
    "depends_on": "eval:doc.purpose==\"Send to Subcontractor\"",
@@ -236,12 +237,6 @@
    "fieldtype": "Check",
    "label": "Edit Posting Date and Time",
    "print_hide": 1
-  },
-  {
-   "default": "0",
-   "fieldname": "inspection_required",
-   "fieldtype": "Check",
-   "label": "Inspection Required"
   },
   {
    "default": "0",
@@ -604,13 +599,6 @@
   },
   {
    "default": "0",
-   "depends_on": "eval:in_list([\"Material Transfer\", \"Material Receipt\"], doc.purpose)",
-   "fieldname": "apply_putaway_rule",
-   "fieldtype": "Check",
-   "label": "Apply Putaway Rule"
-  },
-  {
-   "default": "0",
    "fieldname": "is_return",
    "fieldtype": "Check",
    "hidden": 1,
@@ -696,13 +684,6 @@
    "reqd": 1
   },
   {
-   "default": "0",
-   "fieldname": "in_transit",
-   "fieldtype": "Check",
-   "label": "In transit",
-   "read_only": 1
-  },
-  {
    "fieldname": "issued_by",
    "fieldtype": "Data",
    "label": "Issued By",
@@ -713,6 +694,12 @@
    "fieldtype": "Data",
    "label": "Received By",
    "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "in_transit",
+   "fieldtype": "Check",
+   "label": "In transit"
   }
  ],
  "icon": "fa fa-file-text",
@@ -720,7 +707,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-08-16 15:16:49.298675",
+ "modified": "2024-10-22 10:41:17.307670",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Stock Entry",

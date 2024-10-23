@@ -15,6 +15,7 @@ class JobCardItem(Document):
 		from frappe.types import DF
 
 		allow_alternative_item: DF.Check
+		amount: DF.Currency
 		description: DF.Text | None
 		item_code: DF.Link | None
 		item_group: DF.Link | None
@@ -22,6 +23,7 @@ class JobCardItem(Document):
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
+		rate: DF.Float
 		required_qty: DF.Float
 		source_warehouse: DF.Link | None
 		stock_uom: DF.Link | None

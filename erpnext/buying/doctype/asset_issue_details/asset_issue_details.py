@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 import frappe
 from frappe import _
 from frappe.model.document import Document
-from frappe.utils import cint, flt, getdate, nowdate
+from frappe.utils import cint, flt, getdate, nowdate, get_last_day
 
 class AssetIssueDetails(Document):
     def validate(self):
@@ -85,7 +85,7 @@ class AssetIssueDetails(Document):
                     "abbr": asset_abbr,
                     "cost_center": frappe.db.get_value("Branch", self.branch, "cost_center"),
                     "company": self.company,
-                    "purchase_date": self.issued_date,
+                    "purchase_date": self.entry_date,
                     "calculate_depreciation": 1,
                     "asset_rate": self.asset_rate,
                     "purchase_amount": self.asset_rate,
@@ -100,7 +100,8 @@ class AssetIssueDetails(Document):
                     "asset_account": fixed_asset_account,
                     "credit_account": credit_account,
                     "asset_issue_details":self.name,
-                    "serial_number":self.reg_number
+                    "serial_number":self.reg_number,
+                    "next_depreciation_date":get_last_day(self.issued_date)
                 }
             )
         else:
@@ -115,7 +116,7 @@ class AssetIssueDetails(Document):
                     "abbr": asset_abbr,
                     "cost_center": frappe.db.get_value("Branch", self.branch, "cost_center"),
                     "company": self.company,
-                    "purchase_date": self.issued_date,
+                    "purchase_date": self.entry_date,
                     "calculate_depreciation": 1,
                     "asset_rate": self.asset_rate,
                     "purchase_amount": self.asset_rate,
@@ -131,7 +132,8 @@ class AssetIssueDetails(Document):
                     "credit_account": credit_account,
                     "asset_issue_details":self.name,
                     "serial_number":self.reg_number,
-                    "is_single_asset":1
+                    "is_single_asset":1,
+                    "next_depreciation_date":get_last_day(self.issued_date)
                 }
             )
         asset.flags.ignore_validate = True

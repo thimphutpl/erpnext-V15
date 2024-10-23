@@ -1,5 +1,3 @@
-# Copyright (c) 2015, Frappe Technologies Pvt. Ltd. and Contributors
-# License: GNU General Public License v3. See license.txt
 import frappe
 from frappe import _, scrub, throw
 from frappe.model.naming import set_name_by_naming_series
@@ -8,12 +6,13 @@ from frappe.permissions import (
 	get_doc_permissions,
 	has_permission,
 	remove_user_permission,
+	set_user_permission_if_allowed,
 )
 from frappe.utils import cstr, getdate, today, validate_email_address, cint, flt, add_days, nowdate, date_diff
 from frappe.utils.nestedset import NestedSet
-
+from frappe.model.naming import make_autoname
 from erpnext.utilities.transaction_base import delete_events
-
+from erpnext.custom_utils import get_year_start_date, get_year_end_date, round5, check_future_date
 
 class EmployeeUserDisabledError(frappe.ValidationError):
 	pass
@@ -25,19 +24,18 @@ class InactiveEmployeeStatusError(frappe.ValidationError):
 
 class Employee(NestedSet):
 	nsm_parent_field = "reports_to"
-
-	# autoname is created from employee_master.py
-	# def autoname(self):
-	# 	set_name_by_naming_series(self)
-	# 	self.employee = self.name
-
+	def autoname(self):
+		name = make_autoname('EMP.####')[3:]
+		if not self.employee_name:
+			self.set_employee_name()
 	def validate(self):
 		from erpnext.controllers.status_updater import validate_status
-
 		validate_status(self.status, ["Active", "Inactive", "Suspended", "Left"])
-
-		self.employee = self.name
-		self.set_employee_name()
+		# naming done with combination with joining year, month and 4 digits series
+		if self.old_id:
+			self.employee =	self.name = self.old_id
+			return
+		year_month = str(self.date_of_joining)[2:4] + str(self.date_of_joining)[5:7]
 		self.validate_date()
 		self.validate_email()
 		self.validate_status()
@@ -49,9 +47,6 @@ class Employee(NestedSet):
 		else:
 			existing_user_id = frappe.db.get_value("Employee", self.name, "user_id")
 			if existing_user_id:
-				user = frappe.get_doc("User", existing_user_id)
-				validate_employee_role(user, ignore_emp_check=True)
-				user.save(ignore_permissions=True)
 				remove_user_permission("Employee", self.name, existing_user_id)
 
 	def after_rename(self, old, new, merge):
@@ -84,6 +79,52 @@ class Employee(NestedSet):
 			self.update_user()
 			self.update_user_permissions()
 		self.reset_employee_emails_cache()
+		self.post_casual_leave()
+
+	def post_casual_leave(self):
+		from_date = getdate(self.date_of_joining)
+		to_date = get_year_end_date(from_date)
+
+		if not cint(self.casual_leave_allocated):
+			if frappe.db.exists("Leave Allocation", {"leave_type": "Casual Leave", "employee": self.name, "from_date": ("<=",str(to_date)), "to_date": (">=", str(from_date))}):
+				# self.add_comments("Auto allocation of CL is skipped as an allocation already exists for the period {} - {}".format(from_date, to_date))
+				self.db_set("casual_leave_allocated", 1)
+				return
+				
+			if not frappe.db.sql("""select count(*) as counts from `tabFiscal Year` where now() between year_start_date and year_end_date
+				and '{}' <= year_end_date and '{}' >= year_start_date""".format(from_date, to_date))[0][0]:
+				# self.add_comments("Auto allocation of CL is skipped as the Employee's Date of Joing is not in current Fiscal Year")
+				self.db_set("casual_leave_allocated", 1)
+				return
+
+			credits_per_year = frappe.db.get_value("Employee Group Item", {"parent": self.employee_group, "leave_type": 'Casual Leave'}, "credits_per_year")
+			if flt(credits_per_year):
+				no_of_months = frappe.db.sql("""
+						select (
+								case
+										when day('{0}') > 1 and day('{0}') <= 15
+										then timestampdiff(MONTH,'{0}','{1}')+1
+										else timestampdiff(MONTH,'{0}','{1}')
+								end
+								) as no_of_months
+				""".format(str(self.date_of_joining),str(add_days(to_date,1))))[0][0]
+
+				new_leaves_allocated = round5((flt(no_of_months)/12)*flt(credits_per_year))
+				new_leaves_allocated = new_leaves_allocated if new_leaves_allocated <= flt(credits_per_year) else flt(credits_per_year)
+
+				if flt(new_leaves_allocated):
+					la = frappe.new_doc("Leave Allocation")
+					la.employee = self.employee
+					la.employee_name = self.employee_name
+					la.leave_type = "Casual Leave"
+					la.from_date = str(from_date)
+					la.to_date = str(to_date)
+					la.carry_forward = cint(0)
+					la.new_leaves_allocated = flt(new_leaves_allocated)
+					la.submit()
+					self.db_set("casual_leave_allocated", 1)
+					if la.name:
+						frappe.msgprint("Causal Leave Allocated {} for this Employee ".format(frappe.get_desk_link("Leave Allocation",la.name)))
 
 	def update_user_permissions(self):
 		if not self.create_user_permission:
@@ -99,7 +140,7 @@ class Employee(NestedSet):
 			return
 
 		add_user_permission("Employee", self.name, self.user_id)
-		add_user_permission("Company", self.company, self.user_id)
+		set_user_permission_if_allowed("Company", self.company, self.user_id)
 
 	def update_user(self):
 		# add employee role if missing
@@ -148,10 +189,33 @@ class Employee(NestedSet):
 		if self.date_of_birth and getdate(self.date_of_birth) > getdate(today()):
 			throw(_("Date of Birth cannot be greater than today."))
 
-		self.validate_from_to_dates("date_of_birth", "date_of_joining")
-		self.validate_from_to_dates("date_of_joining", "date_of_retirement")
-		self.validate_from_to_dates("date_of_joining", "relieving_date")
-		self.validate_from_to_dates("date_of_joining", "contract_end_date")
+		if (
+			self.date_of_birth
+			and self.date_of_joining
+			and getdate(self.date_of_birth) >= getdate(self.date_of_joining)
+		):
+			throw(_("Date of Joining must be greater than Date of Birth"))
+
+		elif (
+			self.date_of_retirement
+			and self.date_of_joining
+			and (getdate(self.date_of_retirement) <= getdate(self.date_of_joining))
+		):
+			throw(_("Date Of Retirement must be greater than Date of Joining"))
+
+		elif (
+			self.relieving_date
+			and self.date_of_joining
+			and (getdate(self.relieving_date) < getdate(self.date_of_joining))
+		):
+			throw(_("Relieving Date must be greater than or equal to Date of Joining"))
+
+		elif (
+			self.contract_end_date
+			and self.date_of_joining
+			and (getdate(self.contract_end_date) <= getdate(self.date_of_joining))
+		):
+			throw(_("Contract End Date must be greater than Date of Joining"))
 
 	def validate_email(self):
 		if self.company_email:
@@ -234,22 +298,12 @@ class Employee(NestedSet):
 			frappe.cache().hdel("employees_with_number", prev_number)
 
 
-def validate_employee_role(doc, method=None, ignore_emp_check=False):
+def validate_employee_role(doc, method):
 	# called via User hook
-	if not ignore_emp_check:
-		if frappe.db.get_value("Employee", {"user_id": doc.name}):
-			return
-
-	user_roles = [d.role for d in doc.get("roles")]
-	if "Employee" in user_roles:
-		frappe.msgprint(_("User {0}: Removed Employee role as there is no mapped employee.").format(doc.name))
-		doc.get("roles").remove(doc.get("roles", {"role": "Employee"})[0])
-
-	if "Employee Self Service" in user_roles:
-		frappe.msgprint(
-			_("User {0}: Removed Employee Self Service role as there is no mapped employee.").format(doc.name)
-		)
-		doc.get("roles").remove(doc.get("roles", {"role": "Employee Self Service"})[0])
+	if "Employee" in [d.role for d in doc.get("roles")]:
+		if not frappe.db.get_value("Employee", {"user_id": doc.name}):
+			frappe.msgprint(_("Please set User ID field in an Employee record to set Employee Role"))
+			doc.get("roles").remove(doc.get("roles", {"role": "Employee"})[0])
 
 
 def update_user_permissions(doc, method):
@@ -263,16 +317,22 @@ def update_user_permissions(doc, method):
 
 def get_employee_email(employee_doc):
 	return (
-		employee_doc.get("user_id") or employee_doc.get("personal_email") or employee_doc.get("company_email")
+		employee_doc.get("user_id")
+		or employee_doc.get("personal_email")
+		or employee_doc.get("company_email")
 	)
 
 
 def get_holiday_list_for_employee(employee, raise_exception=True):
 	if employee:
-		holiday_list, company = frappe.get_cached_value("Employee", employee, ["holiday_list", "company"])
+		holiday_list, company = frappe.db.get_value("Employee", employee, ["holiday_list", "company"])
 	else:
 		holiday_list = ""
 		company = frappe.db.get_single_value("Global Defaults", "default_company")
+	
+	if not holiday_list:
+		holiday_list = frappe.db.get_value("Branch", frappe.db.get_value("Employee", employee, "branch"), "holiday_list")
+		
 
 	if not holiday_list:
 		holiday_list = frappe.get_cached_value("Company", company, "default_holiday_list")
@@ -285,7 +345,9 @@ def get_holiday_list_for_employee(employee, raise_exception=True):
 	return holiday_list
 
 
-def is_holiday(employee, date=None, raise_exception=True, only_non_weekly=False, with_description=False):
+def is_holiday(
+	employee, date=None, raise_exception=True, only_non_weekly=False, with_description=False
+):
 	"""
 	Returns True if given Employee has an holiday on the given date
 	        :param employee: Employee `name`
@@ -355,8 +417,6 @@ def create_user(employee, user=None, email=None):
 		}
 	)
 	user.insert()
-	emp.user_id = user.name
-	emp.save()
 	return user.name
 
 @frappe.whitelist()
@@ -366,10 +426,10 @@ def get_overtime_rate(employee, posting_date ):
 		if not cint(basic[0].eligible_for_overtime_and_payment):
 			if not frappe.db.get_value("Employee Grade", frappe.db.get_value("Employee", employee, "grade"), "eligible_for_overtime"):
 				frappe.throw(_("Employee is not eligible for Overtime"))
-		if is_holiday(employee=employee, date= posting_date):
-			return ((flt(basic[0].basic_pay) * 1.5) / (30 * 8))
-		else:
-			return (flt(basic[0].basic_pay) / (30 * 8))
+		# if is_holiday(employee=employee, date= posting_date):
+		# 	return ((flt(basic[0].basic_pay) * 1.5) / (30 * 8))
+		# else:
+		return (flt(flt(basic[0].basic_pay) / (30 * 8),0))
 	else:
 		frappe.throw("No Salary Structure found for the employee")
 
@@ -395,7 +455,7 @@ def get_employee_emails(employee_list):
 	"""Returns list of employee emails either based on user_id or company_email"""
 	employee_emails = []
 	for employee in employee_list:
-		if not employee:
+		if not employee or not frappe.db.exists("Employee", employee) or frappe.db.get_value("Employee", employee, "status") != "Active":
 			continue
 		user, company_email, personal_email = frappe.db.get_value(
 			"Employee", employee, ["user_id", "company_email", "personal_email"]
@@ -408,6 +468,7 @@ def get_employee_emails(employee_list):
 
 @frappe.whitelist()
 def get_children(doctype, parent=None, company=None, is_root=False, is_tree=False):
+
 	filters = [["status", "=", "Active"]]
 	if company and company != "All Companies":
 		filters.append(["company", "=", company])
@@ -451,3 +512,42 @@ def has_upload_permission(doc, ptype="read", user=None):
 	if get_doc_permissions(doc, user=user, ptype=ptype).get(ptype):
 		return True
 	return doc.user_id == user
+
+def get_permission_query_conditions(user):
+	if not user: user = frappe.session.user
+	user_roles = frappe.get_roles(user)
+	if "HR User" in user_roles or "HR Manager" in user_roles or "Accounts User" in user_roles or "CEO" in user_roles:
+		return
+	if "MR User" in user_roles:
+		return """(
+			exists(select 1
+				from `tabEmployee` as e
+				where e.name = `tabEmployee`.name
+				and e.user_id = '{user}')
+			or
+			exists(select 1
+				from `tabEmployee` e, `tabAssign Branch` ab, `tabBranch Item` bi
+				where e.user_id = '{user}'
+				and ab.employee = e.name
+				and bi.parent = ab.name
+				and bi.branch = e.branch)
+		)""".format(user=user)
+	else:
+		return """(
+			exists(select 1
+				from `tabEmployee` as e
+				where e.name = `tabEmployee`.name
+				and e.user_id = '{user}')
+		)""".format(user=user)
+
+def has_record_permission(doc, user):
+	if not user: user = frappe.session.user
+	user_roles = frappe.get_roles(user)
+
+	if "HR User" in user_roles or "HR Manager" in user_roles:
+		return True
+	else:			
+		if frappe.db.exists("Employee", {"name":doc.name, "user_id": user}):
+			return True
+		else:
+			return False 

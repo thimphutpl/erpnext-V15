@@ -198,6 +198,18 @@ frappe.ui.form.on("Project", {
 				});
 		});
 	},
+	
+	project_type: function(frm){
+		enable_disable(frm);
+		update_party_info(frm.doc);
+	},
+	party_type: function(frm){
+		enable_disable(frm);
+		update_party_info(frm.doc);
+	},
+	party: function(frm){
+		update_party_info(frm.doc);
+	},
 });
 
 function open_form(frm, doctype, child_doctype, parentfield) {
@@ -215,4 +227,41 @@ function open_form(frm, doctype, child_doctype, parentfield) {
 
 		frappe.ui.form.make_quick_entry(doctype, null, null, new_doc);
 	});
+}
+
+var update_party_info=function(doc){
+	cur_frm.call({
+		method: "update_party_info",
+		doc:doc
+	});
+}
+
+var enable_disable = function(frm){
+	// Display tasks only after the project is saved
+	cur_frm.toggle_display("activity_and_tasks", !frm.doc.__islocal);
+	cur_frm.toggle_display("activity_tasks", !frm.doc.__islocal);
+	cur_frm.toggle_display("sb_additional_tasks", !frm.doc.__islocal);
+	cur_frm.toggle_display("additional_tasks", !frm.doc.__islocal);
+	
+	//cur_frm.toggle_reqd("party_type", frm.doc.project_type=="External");
+	//cur_frm.toggle_reqd("party", frm.doc.party_type || frm.doc.project_type=="External");
+	cur_frm.toggle_reqd("party_type", 1);
+	cur_frm.toggle_reqd("party", 1);
+	
+	if (frm.doc.project_type == "External") {
+		frm.set_query("party_type", function() {
+			return {
+				//filters: {"name": ["in", ["Customer", "Supplier"]]}
+				filters: {"name": ["in", ["Supplier"]]}
+			}
+		});
+		//cur_frm.toggle_reqd("party", frm.doc.party_type);
+	} else {
+		frm.set_query("party_type", function() {
+			return {
+				//filters: {"name": ["in", ["Employee"]]}
+				filters: {"name": ["in", ["Customer"]]}
+			}
+		});
+	}
 }

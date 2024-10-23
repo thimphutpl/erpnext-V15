@@ -1,0 +1,293 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-09-24 14:46:08.138425",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_in30",
+  "company",
+  "branch",
+  "cost_center",
+  "column_break_2",
+  "posting_date",
+  "customer",
+  "payment_for",
+  "section_break_8",
+  "receivable_amount",
+  "actual_amount",
+  "deduction_amount",
+  "column_break_10",
+  "net_amount",
+  "income_account",
+  "cheque_no",
+  "cheque_date",
+  "clearance_date",
+  "section_break_14",
+  "tds_amount",
+  "column_break_16",
+  "tds_account",
+  "section_break_19",
+  "get_transactions",
+  "items",
+  "sb_321",
+  "deducts",
+  "section_break_18",
+  "amended_from",
+  "column_break_20",
+  "remarks",
+  "money_receipt_information",
+  "get_series",
+  "money_receipt_prefix",
+  "col_break_mo",
+  "money_receipt_no",
+  "status"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_in30",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "label": "Branch",
+   "options": "Branch",
+   "reqd": 1
+  },
+  {
+   "fieldname": "cost_center",
+   "fieldtype": "Link",
+   "label": "Cost Center",
+   "options": "Cost Center",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "label": "Posting Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Customer",
+   "options": "Customer",
+   "reqd": 1
+  },
+  {
+   "fieldname": "payment_for",
+   "fieldtype": "Select",
+   "label": "Payment For",
+   "options": "Job Card\nHire Charge Invoice",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_8",
+   "fieldtype": "Section Break",
+   "label": "Amount Details"
+  },
+  {
+   "depends_on": "eval:doc.items",
+   "fieldname": "receivable_amount",
+   "fieldtype": "Currency",
+   "label": "Receivable Amount",
+   "options": "0",
+   "reqd": 1
+  },
+  {
+   "fieldname": "actual_amount",
+   "fieldtype": "Currency",
+   "label": "Actual Amount",
+   "options": "o",
+   "reqd": 1
+  },
+  {
+   "fieldname": "deduction_amount",
+   "fieldtype": "Currency",
+   "label": "Deduction Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_10",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "net_amount",
+   "fieldtype": "Currency",
+   "label": "Net Amount",
+   "options": "0",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "income_account",
+   "fieldtype": "Link",
+   "label": "Incoming Account",
+   "options": "Account",
+   "reqd": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "cheque_no",
+   "fieldtype": "Data",
+   "label": "Cheque Number"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "cheque_date",
+   "fieldtype": "Date",
+   "label": "Cheque Date"
+  },
+  {
+   "fieldname": "clearance_date",
+   "fieldtype": "Date",
+   "label": "Clearance Date",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_14",
+   "fieldtype": "Section Break",
+   "label": "TDS Details"
+  },
+  {
+   "fieldname": "tds_amount",
+   "fieldtype": "Currency",
+   "label": "TDS Amount",
+   "options": "0"
+  },
+  {
+   "fieldname": "column_break_16",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "TDS - wittheld by Client - CDCL",
+   "fieldname": "tds_account",
+   "fieldtype": "Link",
+   "label": "TDS Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "section_break_19",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "get_transactions",
+   "fieldtype": "Button",
+   "label": "Get Transactions"
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Data",
+   "reqd": 1
+  },
+  {
+   "fieldname": "sb_321",
+   "fieldtype": "Section Break",
+   "label": "Deduction Info"
+  },
+  {
+   "fieldname": "deducts",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "section_break_18",
+   "fieldtype": "Section Break",
+   "label": "Reference Document"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Mechanical Payment",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_20",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Small Text",
+   "label": "Narration"
+  },
+  {
+   "depends_on": "eval:doc.docstatus==1",
+   "fieldname": "money_receipt_information",
+   "fieldtype": "Section Break",
+   "label": "Money Receipt Information"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "get_series",
+   "fieldtype": "Button",
+   "label": "Get Series"
+  },
+  {
+   "fieldname": "money_receipt_prefix",
+   "fieldtype": "Data",
+   "label": "Money Receipt Prefix",
+   "read_only": 1
+  },
+  {
+   "fieldname": "col_break_mo",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "money_receipt_no",
+   "fieldtype": "Data",
+   "label": "Money Receipt No",
+   "read_only": 1
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "hidden": 1,
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "Draft\nSubmitted\nCancelled"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2024-09-25 10:13:08.817474",
+ "modified_by": "Administrator",
+ "module": "Accounts",
+ "name": "Mechanical Payment",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

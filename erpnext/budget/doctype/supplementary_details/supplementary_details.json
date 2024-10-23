@@ -11,11 +11,12 @@
   "account",
   "project",
   "amount",
+  "month",
   "posting_date",
   "reference",
   "company",
   "amended_from",
-  "business_activity"
+  "fiscal_year"
  ],
  "fields": [
   {
@@ -82,17 +83,24 @@
    "read_only": 1
   },
   {
-   "fieldname": "business_activity",
+   "fieldname": "month",
    "fieldtype": "Link",
-   "label": "Business Activity",
-   "options": "Business Activity"
+   "label": "Month",
+   "options": "Month"
+  },
+  {
+   "fieldname": "fiscal_year",
+   "fieldtype": "Link",
+   "label": "Fiscal Year",
+   "options": "Fiscal Year",
+   "read_only": 1
   }
  ],
  "in_create": 1,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-12-04 15:48:54.619478",
+ "modified": "2024-10-18 17:31:35.615482",
  "modified_by": "Administrator",
  "module": "Budget",
  "name": "Supplementary Details",

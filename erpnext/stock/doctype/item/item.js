@@ -43,6 +43,14 @@ frappe.ui.form.on("Item", {
 				open_form(frm, "Stock Entry", "Stock Entry Detail", "items");
 			},
 		};
+
+		frm.set_query("asset_sub_category", (frm) => {
+			return {
+				filters: {
+					asset_category: frm.asset_category,
+				},
+			};
+		});
 	},
 	onload: function (frm) {
 		erpnext.item.setup_queries(frm);
@@ -56,6 +64,30 @@ frappe.ui.form.on("Item", {
 	},
 
 	refresh: function (frm) {
+		// When the form loads or refreshes, set up the query filter
+        frm.set_query('item_sub_group', function() {
+            if (frm.doc.item_group) {
+                return {
+                    filters: {
+                        'item_group': frm.doc.item_group  // Replace 'parent_group' with the correct field 'item_group'
+                    }
+                };
+            }
+        });
+    },
+
+    item_group: function(frm) {
+        frm.set_value('item_sub_group', null);  // Clear Item Sub Group
+        frm.set_query('item_sub_group', function() {
+            if (frm.doc.item_group) {
+                return {
+                    filters: {
+                        'item_group': frm.doc.item_group  // Filter based on the correct field 'item_group'
+                    }
+                };
+            }
+        });
+		
 		if (frm.doc.is_stock_item) {
 			frm.add_custom_button(
 				__("Stock Balance"),

@@ -28,6 +28,7 @@
   "asset_name",
   "asset_category",
   "asset_sub_category",
+  "abbr",
   "location",
   "split_from",
   "custodian",
@@ -203,7 +204,8 @@
    "fieldtype": "Link",
    "ignore_user_permissions": 1,
    "label": "Custodian",
-   "options": "Employee"
+   "options": "Employee",
+   "reqd": 1
   },
   {
    "fieldname": "cost_center",
@@ -567,6 +569,7 @@
    "label": "Opening Number of Booked Depreciations"
   },
   {
+   "fetch_from": "item_code.asset_sub_category",
    "fieldname": "asset_sub_category",
    "fieldtype": "Link",
    "label": "Asset Sub Category",
@@ -668,6 +671,14 @@
    "fieldname": "remarks",
    "fieldtype": "Small Text",
    "label": "Remarks"
+  },
+  {
+   "fetch_from": "asset_category.abbr",
+   "fieldname": "abbr",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Abbr",
+   "read_only": 1
   }
  ],
  "idx": 72,
@@ -711,7 +722,7 @@
    "link_fieldname": "target_asset"
   }
  ],
- "modified": "2024-08-22 15:15:26.185101",
+ "modified": "2024-10-15 15:34:22.360174",
  "modified_by": "Administrator",
  "module": "Assets",
  "name": "Asset",

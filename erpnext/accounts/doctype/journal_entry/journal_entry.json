@@ -98,7 +98,7 @@
   },
   {
    "fieldname": "naming_series",
-   "fieldtype": "Select",
+   "fieldtype": "Link",
    "label": "Series",
    "no_copy": 1,
    "oldfieldname": "naming_series",
@@ -580,7 +580,7 @@
    "table_fieldname": "payment_entries"
   }
  ],
- "modified": "2024-08-22 16:28:28.606396",
+ "modified": "2024-10-22 15:16:32.813154",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Journal Entry",

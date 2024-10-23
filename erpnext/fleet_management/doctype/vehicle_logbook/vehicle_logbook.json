@@ -97,7 +97,7 @@
  "fields": [
   {
    "fieldname": "vehicle_request",
-   "fieldtype": "Link",
+   "fieldtype": "Data",
    "hidden": 1,
    "label": "Vehicle Request",
    "options": "Vehicle Request"

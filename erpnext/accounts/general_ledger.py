@@ -407,7 +407,7 @@ def make_entry(args, adv_adj, update_outstanding, from_repost=False):
 						"amount": flt(args.debit_in_account_currency),
 						"company": args.company,
 						"closed": 1,
-						"business_activity": args.business_activity,
+						# "business_activity": args.business_activity,
 					})
 					bud_obj.flags.ignore_permissions=1
 					bud_obj.submit()
@@ -425,7 +425,7 @@ def make_entry(args, adv_adj, update_outstanding, from_repost=False):
 						"amount": flt(args.debit_in_account_currency),
 						"company": args.company,
 						"com_ref": bud_obj.name,
-						"business_activity": args.business_activity,
+						# "business_activity": args.business_activity,
 					})
 					con_obj.flags.ignore_permissions=1
 					con_obj.submit()

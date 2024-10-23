@@ -120,6 +120,14 @@ class RequestforQuotation(BuyingController):
 
 	def before_print(self, settings=None):
 		"""Use the first suppliers data to render the print preview."""
+		# if self.approver_id:
+		# 	approver_details = frappe.get_doc("User", self.approver_id)
+			
+		# 	# Add the approver's details to the document before printing
+		# 	self.approver_name = approver_details.full_name
+		# 	self.approver_designation = approver_details.designation
+		# 	self.approver_signature = approver_details.e_signature  # assuming e-signature is stored as an image in the user doctype
+			
 		if self.vendor or not self.suppliers:
 			# If a specific supplier is already set, via Tools > Download PDF,
 			# we don't want to override it.

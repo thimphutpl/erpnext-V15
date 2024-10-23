@@ -13,11 +13,14 @@
   "to_project",
   "from_account",
   "to_account",
+  "from_month",
+  "to_month",
   "amount",
   "posting_date",
   "reference",
   "company",
-  "amended_from"
+  "amended_from",
+  "fiscal_year"
  ],
  "fields": [
   {
@@ -91,13 +94,32 @@
    "options": "Reappropriation Details",
    "print_hide": 1,
    "read_only": 1
+  },
+  {
+   "fieldname": "from_month",
+   "fieldtype": "Link",
+   "label": "From Month",
+   "options": "Month"
+  },
+  {
+   "fieldname": "to_month",
+   "fieldtype": "Link",
+   "label": "To Month",
+   "options": "Month"
+  },
+  {
+   "fieldname": "fiscal_year",
+   "fieldtype": "Link",
+   "label": "Fiscal Year",
+   "options": "Fiscal Year",
+   "read_only": 1
   }
  ],
  "in_create": 1,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2022-09-13 16:08:39.383682",
+ "modified": "2024-10-18 17:28:40.946131",
  "modified_by": "Administrator",
  "module": "Budget",
  "name": "Reappropriation Details",

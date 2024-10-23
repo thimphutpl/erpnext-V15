@@ -4,37 +4,10 @@
 
 frappe.ui.form.on('Budget', {
 	onload: function(frm) {
-		// if (frm.doc.__islocal) {
-		// 	frappe.model.get_value('Accounts Settings', {'name': 'Accounts Settings'}, 'budget_level',
-		// 		function(d) {
-		// 			frm.set_value("budget_against", d.budget_level);
-		// 	});
-		// }
-		if(frm.doc.__islocal) {
-			frappe.call({
-				method: "erpnext.custom_utils.get_user_info",
-				args: {"user": frappe.session.user},
-				callback(r) {
-					cur_frm.set_value("company", r.message.company);
-				}
-			});
-		}
-			
-		frm.set_query("cost_center", function() {
-			return {
-				filters: {
-					company: frm.doc.company,
-					disabled: 0,
-					use_budget_from_parent: 0
-				}
-			}
-		});
-
 		frm.set_query("account", "accounts", function() {
 			return {
 				filters: {
 					company: frm.doc.company,
-					// report_type: "Profit and Loss",
 					is_group: 0
 				}
 			};
@@ -89,11 +62,60 @@ frappe.ui.form.on('Budget', {
 	}
 });
 
-frappe.ui.form.on("Budget Account", {
-	initial_budget: function (frm, doctype, name) {
-		var d = locals[doctype][name];
-		if(d.initial_budget >0){
-			frappe.model.set_value(doctype, name, "budget_amount", d.initial_budget);
-		}
+// frappe.ui.form.on("Budget Account", {
+// 	initial_budget: function (frm, doctype, name) {
+// 		var d = locals[doctype][name];
+// 		frappe.model.set_value(doctype, name, "budget_amount", d.initial_budget);
+// 	},
+// });
+
+frappe.ui.form.on("Budget Account", {	
+	"january": function(frm, cdt, cdn) {
+		set_initial_budget(frm, cdt, cdn);
 	},
-});
+	"february": function(frm, cdt, cdn) {
+		set_initial_budget(frm, cdt, cdn);
+	},
+	"march": function(frm, cdt, cdn) {
+		set_initial_budget(frm, cdt, cdn);
+	},
+	"april": function(frm, cdt, cdn) {
+		set_initial_budget(frm, cdt, cdn);
+	},
+	"may": function(frm, cdt, cdn) {
+		set_initial_budget(frm, cdt, cdn);
+	},
+	"june": function(frm, cdt, cdn) {
+		set_initial_budget(frm, cdt, cdn);
+	},
+	"july": function(frm, cdt, cdn) {
+		set_initial_budget(frm, cdt, cdn);
+	},
+	"august": function(frm, cdt, cdn) {
+		set_initial_budget(frm, cdt, cdn);
+	},
+	"september": function(frm, cdt, cdn) {
+		set_initial_budget(frm, cdt, cdn);
+	},
+	"october": function(frm, cdt, cdn) {
+		set_initial_budget(frm, cdt, cdn);
+	},
+	"november": function(frm, cdt, cdn) {
+		set_initial_budget(frm, cdt, cdn);
+	},
+	"december": function(frm, cdt, cdn) {
+		set_initial_budget(frm, cdt, cdn);
+	},
+}); 
+
+function set_initial_budget(frm, cdt, cdn){
+	frappe.call({
+		method:"set_initial_budget",
+		doc: frm.doc,
+		callback: function(r) {
+			frm.refresh_field('initial_budget');
+			frm.refresh_field('budget_amount');
+			frm.refresh_fields('accounts');
+		}
+	})
+}

@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "RNS.-.YY.-.MM.-.DD.-.###",
+ "autoname": "format:RNS-{YY}-{MM}-{DD}-{###}",
  "creation": "2022-10-26 13:37:35.658012",
  "doctype": "DocType",
  "editable_grid": 1,
@@ -15,7 +15,6 @@
   "column_break_2",
   "posting_date",
   "posting_time",
-  "business_activity",
   "other_details_section",
   "start_date",
   "completion_status",
@@ -32,18 +31,9 @@
   "equipment_category",
   "current_km",
   "km_difference",
-  "amount_details_section",
-  "cash_memo_number",
-  "column_break_oyxc",
-  "invoice_date",
   "supplier_details_section",
   "party_type",
   "party",
-  "section_break_qsqg",
-  "settle_from_advance",
-  "party_type_imprest",
-  "imprest_party",
-  "column_break_gbmy",
   "parts_to_be_change_section",
   "items",
   "section_break_26",
@@ -65,10 +55,8 @@
   "job_outsource_footer",
   "amended_from",
   "paid",
-  "invoice_created",
   "sb_approver",
   "approver",
-  "workflow_state",
   "cb_approver_01",
   "approver_name",
   "cb_approver_02",
@@ -305,7 +293,7 @@
    "fieldname": "repair_and_services_type",
    "fieldtype": "Select",
    "label": "Repair and Services Type",
-   "options": "\nPreventive Maintenance\nBreakdown Maintenance"
+   "options": "\nPreventive Maintenance\nProactive Maintenance\nBreakdown Maintenance"
   },
   {
    "fieldname": "sb_approver",
@@ -415,85 +403,16 @@
   {
    "fieldname": "column_break_13",
    "fieldtype": "Column Break"
-  },
-  {
-   "allow_on_submit": 1,
-   "default": "0",
-   "fieldname": "invoice_created",
-   "fieldtype": "Check",
-   "hidden": 1,
-   "label": "Invoice Created ",
-   "read_only": 1
-  },
-  {
-   "fieldname": "workflow_state",
-   "fieldtype": "Data",
-   "label": "Workflow State"
-  },
-  {
-   "fieldname": "business_activity",
-   "fieldtype": "Link",
-   "label": "Business Activity",
-   "options": "Business Activity"
-  },
-  {
-   "fieldname": "amount_details_section",
-   "fieldtype": "Section Break",
-   "label": "Amount Details"
-  },
-  {
-   "fieldname": "cash_memo_number",
-   "fieldtype": "Data",
-   "label": "Cash Memo Number",
-   "reqd": 1
-  },
-  {
-   "fieldname": "column_break_oyxc",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "invoice_date",
-   "fieldtype": "Date",
-   "label": "Invoice Date",
-   "reqd": 1
-  },
-  {
-   "fieldname": "section_break_qsqg",
-   "fieldtype": "Section Break"
-  },
-  {
-   "default": "0",
-   "fieldname": "settle_from_advance",
-   "fieldtype": "Check",
-   "label": "Settle from Advance"
-  },
-  {
-   "fieldname": "column_break_gbmy",
-   "fieldtype": "Column Break"
-  },
-  {
-   "depends_on": "eval:doc.settle_from_advance",
-   "fieldname": "party_type_imprest",
-   "fieldtype": "Select",
-   "label": "Imprest Party Type",
-   "options": "\nEmployee\nAgency"
-  },
-  {
-   "depends_on": "eval:doc.settle_from_advance",
-   "fieldname": "imprest_party",
-   "fieldtype": "Dynamic Link",
-   "label": "Imprest Party",
-   "options": "party_type_imprest"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-08-16 14:43:31.064378",
+ "modified": "2023-12-07 16:08:01.126356",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Repair And Services",
- "naming_rule": "Expression (old style)",
+ "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
   {

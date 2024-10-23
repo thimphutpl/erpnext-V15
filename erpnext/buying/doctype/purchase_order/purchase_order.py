@@ -71,7 +71,6 @@ class PurchaseOrder(BuyingController):
 		billing_address: DF.Link | None
 		billing_address_display: DF.SmallText | None
 		branch: DF.Link
-		business_activity: DF.Link | None
 		buying_price_list: DF.Link | None
 		company: DF.Link
 		contact_display: DF.SmallText | None
@@ -89,7 +88,6 @@ class PurchaseOrder(BuyingController):
 		customer_name: DF.Data | None
 		disable_rounded_total: DF.Check
 		discount_amount: DF.Currency
-		dispatch_number: DF.Data | None
 		from_date: DF.Date | None
 		grand_total: DF.Currency
 		group_same_items: DF.Check
@@ -98,10 +96,10 @@ class PurchaseOrder(BuyingController):
 		inter_company_order_reference: DF.Link | None
 		is_internal_supplier: DF.Check
 		is_old_subcontracting_flow: DF.Check
-		is_subcontracted: DF.Check
 		items: DF.Table[PurchaseOrderItem]
 		language: DF.Data | None
 		letter_head: DF.Link | None
+		material_requst: DF.Link | None
 		naming_series: DF.Literal["PUR-ORD-.YYYY.-"]
 		net_total: DF.Currency
 		order_confirmation_date: DF.Date | None
@@ -443,8 +441,6 @@ class PurchaseOrder(BuyingController):
 
 	def on_submit(self):
 		super().on_submit()
-		self.dispatch_number = make_autoname("No. HMS/ADM/03-02/"+".YYYY./.#####")
-		frappe.db.set_value("Purchase Order", self.name, "dispatch_number", self.dispatch_number)
 
 		if self.is_against_so():
 			self.update_status_updater()

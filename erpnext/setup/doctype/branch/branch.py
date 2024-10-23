@@ -14,14 +14,24 @@ class Branch(Document):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
+		from erpnext.accounts.doctype.branch_bank_account.branch_bank_account import BranchBankAccount
 		from frappe.types import DF
+		from hrms.hr.doctype.branch_imprest_item.branch_imprest_item import BranchImprestItem
 
 		abbreviation: DF.Data | None
+		address: DF.LongText
 		branch: DF.Data
+		branch_bank_account: DF.Table[BranchBankAccount]
 		company: DF.Link
 		cost_center: DF.Link
 		disabled: DF.Check
 		expense_bank_account: DF.Link | None
+		gis_policy_number: DF.Data | None
+		holiday_list: DF.Link | None
+		imprest_limit: DF.Currency
+		items: DF.Table[BranchImprestItem]
+		letter_head: DF.Link | None
+		revenue_bank_account: DF.Link | None
 	# end: auto-generated types
 
 	def validate(self):

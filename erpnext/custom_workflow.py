@@ -30,7 +30,7 @@ class CustomWorkflow:
 			self.employee		= frappe.db.get_value("Employee", self.doc.employee, self.field_list)
 			self.reports_to = frappe.db.get_value("Employee", {"name":frappe.db.get_value("Employee", self.doc.employee, "reports_to")}, self.field_list)
 			
-			if self.doc.doctype in ("Travel Request","Employee Separation","Overtime Application"):
+			if self.doc.doctype in ("Travel Request","Travel Authorization", "Travel Claim","Employee Separation","Overtime Application"):
 				if frappe.db.get_value("Employee", self.doc.employee, "expense_approver"):
 					self.expense_approver		= frappe.db.get_value("Employee", {"user_id":frappe.db.get_value("Employee", self.doc.employee, "expense_approver")}, self.field_list)
 				else:
@@ -415,6 +415,10 @@ class CustomWorkflow:
 			self.salary_advance()
 		elif self.doc.doctype == "Travel Request":
 			self.travel_request()
+		elif self.doc.doctype == "Travel Authorization":
+			self.travel_authorization()
+		elif self.doc.doctype == "Travel Claim":
+			self.travel_claim()		
 		elif self.doc.doctype == "Vehicle Request":
 			self.vehicle_request()
 		elif self.doc.doctype == "Repair And Services":
@@ -1340,6 +1344,8 @@ def get_field_map():
 		"Leave Encashment": ["approver","approver_name","approver_designation"],
 		"Leave Application": ["leave_approver", "leave_approver_name", "leave_approver_designation"],
 		"Travel Request": ["supervisor", "supervisor_name", "supervisor_designation"],
+		"Travel Authorization": ["supervisor", "supervisor_name", "supervisor_designation"],
+		"Travel Claim": ["supervisor", "supervisor_name", "supervisor_designation"],
 		"Employee Advance": ["advance_approver_name", "advance_approver", "advance_approver_designation"],
 		"Vehicle Request": ["approver_id", "approver"],
 		"Repair And Services": ["approver", "approver_name", "aprover_designation"],

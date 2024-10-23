@@ -2,7 +2,7 @@
  "actions": [],
  "allow_import": 1,
  "allow_rename": 1,
- "autoname": "naming_series:",
+ "autoname": "PROJ.YY.MM.####",
  "creation": "2013-03-07 11:55:07",
  "doctype": "DocType",
  "document_type": "Setup",
@@ -12,6 +12,8 @@
   "project_name",
   "status",
   "project_type",
+  "project_category",
+  "project_sub_category",
   "is_active",
   "percent_complete_method",
   "percent_complete",
@@ -21,13 +23,42 @@
   "expected_end_date",
   "priority",
   "department",
+  "cb_1",
+  "branch",
+  "cost_center",
+  "reference_no",
+  "reference_date",
   "customer_details",
+  "party_type",
+  "party",
   "customer",
+  "project_value",
   "column_break_14",
   "sales_order",
   "users_section",
   "users",
   "copied_from",
+  "activity_and_tasks",
+  "tot_wq_percent",
+  "cb_at",
+  "tot_wq_percent_complete",
+  "cb_at_1",
+  "sb_activity_task",
+  "activity_tasks",
+  "sb_additional_tasks",
+  "tot_add_wq_percent",
+  "cb_adt_1",
+  "tot_add_wq_percent_complete",
+  "cb_adt_2",
+  "add_percent_complete",
+  "sb_tab_additional_tasks",
+  "additional_tasks",
+  "sb_advances",
+  "project_advance_item",
+  "boq_section",
+  "sb_boq",
+  "sb_invoices",
+  "project_invoice_item",
   "section_break0",
   "notes",
   "section_break_18",
@@ -45,7 +76,6 @@
   "total_billable_amount",
   "total_billed_amount",
   "total_consumed_material_cost",
-  "cost_center",
   "margin",
   "gross_margin",
   "column_break_37",
@@ -74,7 +104,7 @@
    "unique": 1
   },
   {
-   "default": "Open",
+   "default": "Planning",
    "fieldname": "status",
    "fieldtype": "Select",
    "in_standard_filter": 1,
@@ -82,7 +112,7 @@
    "no_copy": 1,
    "oldfieldname": "status",
    "oldfieldtype": "Select",
-   "options": "Open\nCompleted\nCancelled",
+   "options": "Planning\nOngoing\nCompleted\nCancelled",
    "search_index": 1
   },
   {
@@ -98,6 +128,7 @@
   {
    "fieldname": "is_active",
    "fieldtype": "Select",
+   "hidden": 1,
    "label": "Is Active",
    "oldfieldname": "is_active",
    "oldfieldtype": "Select",
@@ -107,6 +138,7 @@
    "default": "Task Completion",
    "fieldname": "percent_complete_method",
    "fieldtype": "Select",
+   "hidden": 1,
    "label": "% Complete Method",
    "options": "Manual\nTask Completion\nTask Progress\nTask Weight"
   },
@@ -114,6 +146,7 @@
    "bold": 1,
    "fieldname": "percent_complete",
    "fieldtype": "Percent",
+   "hidden": 1,
    "label": "% Completed",
    "no_copy": 1,
    "read_only": 1
@@ -126,6 +159,7 @@
    "allow_in_quick_entry": 1,
    "fieldname": "project_template",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "From Template",
    "options": "Project Template",
    "set_only_once": 1
@@ -159,14 +193,14 @@
   {
    "fieldname": "department",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Department",
    "options": "Department"
   },
   {
-   "collapsible": 1,
    "fieldname": "customer_details",
    "fieldtype": "Section Break",
-   "label": "Customer Details",
+   "label": "Party Details",
    "oldfieldtype": "Section Break",
    "options": "fa fa-user"
   },
@@ -179,6 +213,7 @@
    "oldfieldtype": "Link",
    "options": "Customer",
    "print_hide": 1,
+   "read_only": 1,
    "search_index": 1
   },
   {
@@ -188,6 +223,7 @@
   {
    "fieldname": "sales_order",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Sales Order",
    "options": "Sales Order"
   },
@@ -195,6 +231,7 @@
    "collapsible": 1,
    "fieldname": "users_section",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Users"
   },
   {
@@ -322,9 +359,10 @@
    "read_only": 1
   },
   {
+   "fetch_from": "branch.cost_center",
    "fieldname": "cost_center",
    "fieldtype": "Link",
-   "label": "Default Cost Center",
+   "label": "Cost Center",
    "options": "Cost Center"
   },
   {
@@ -441,12 +479,177 @@
   {
    "fieldname": "naming_series",
    "fieldtype": "Select",
+   "hidden": 1,
    "label": "Series",
    "no_copy": 1,
    "options": "PROJ-.####",
    "print_hide": 1,
-   "reqd": 1,
    "set_only_once": 1
+  },
+  {
+   "fieldname": "cb_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "label": "Branch",
+   "options": "Branch"
+  },
+  {
+   "fieldname": "reference_no",
+   "fieldtype": "Data",
+   "label": "Reference No"
+  },
+  {
+   "fieldname": "reference_date",
+   "fieldtype": "Date",
+   "label": "Reference Date"
+  },
+  {
+   "fieldname": "party_type",
+   "fieldtype": "Link",
+   "label": "Party Type",
+   "options": "DocType"
+  },
+  {
+   "fieldname": "party",
+   "fieldtype": "Dynamic Link",
+   "label": "Party",
+   "options": "party_type"
+  },
+  {
+   "fieldname": "project_value",
+   "fieldtype": "Currency",
+   "label": "Project Value",
+   "read_only": 1
+  },
+  {
+   "fieldname": "activity_and_tasks",
+   "fieldtype": "Section Break",
+   "label": "WORK PLAN"
+  },
+  {
+   "fieldname": "tot_wq_percent",
+   "fieldtype": "Percent",
+   "label": "% Work Quantity",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cb_at",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "tot_wq_percent_complete",
+   "fieldtype": "Percent",
+   "label": "% Work Quantity Completed",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cb_at_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "sb_activity_task",
+   "fieldtype": "Section Break"
+  },
+  {
+   "allow_bulk_edit": 1,
+   "fieldname": "activity_tasks",
+   "fieldtype": "Table",
+   "label": "Activity Tasks",
+   "options": "Activity Tasks"
+  },
+  {
+   "fieldname": "project_category",
+   "fieldtype": "Link",
+   "label": "Project Category",
+   "options": "Project Category"
+  },
+  {
+   "fieldname": "project_sub_category",
+   "fieldtype": "Link",
+   "label": "Project Sub Category",
+   "options": "Project Sub Category"
+  },
+  {
+   "fieldname": "sb_additional_tasks",
+   "fieldtype": "Section Break",
+   "label": "ADDITIONAL TASKS"
+  },
+  {
+   "fieldname": "tot_add_wq_percent",
+   "fieldtype": "Percent",
+   "label": "% Work Quantity",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cb_adt_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "tot_add_wq_percent_complete",
+   "fieldtype": "Percent",
+   "label": "% Work Quantity Completed",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cb_adt_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "add_percent_complete",
+   "fieldtype": "Percent",
+   "hidden": 1,
+   "label": "add percent complete",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sb_tab_additional_tasks",
+   "fieldtype": "Section Break"
+  },
+  {
+   "allow_bulk_edit": 1,
+   "fieldname": "additional_tasks",
+   "fieldtype": "Table",
+   "label": "Additional Tasks",
+   "options": "Additional Tasks"
+  },
+  {
+   "fieldname": "sb_advances",
+   "fieldtype": "Section Break",
+   "label": "ADVANCES"
+  },
+  {
+   "fieldname": "project_advance_item",
+   "fieldtype": "Table",
+   "label": "Project Advance",
+   "options": "Project Advance Item",
+   "read_only": 1
+  },
+  {
+   "fieldname": "boq_section",
+   "fieldtype": "Section Break",
+   "label": "BOQ"
+  },
+  {
+   "fieldname": "sb_boq",
+   "fieldtype": "Table",
+   "label": "Project BOQ Item",
+   "options": "Project BOQ Item",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sb_invoices",
+   "fieldtype": "Section Break",
+   "label": "INVOICES"
+  },
+  {
+   "fieldname": "project_invoice_item",
+   "fieldtype": "Table",
+   "label": "Project Invoice Item",
+   "options": "Project Invoice Item",
+   "read_only": 1
   }
  ],
  "icon": "fa fa-puzzle-piece",
@@ -454,11 +657,11 @@
  "index_web_pages_for_search": 1,
  "links": [],
  "max_attachments": 4,
- "modified": "2024-04-24 10:56:16.001032",
+ "modified": "2024-10-14 16:23:21.596828",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Project",
- "naming_rule": "By \"Naming Series\" field",
+ "naming_rule": "Expression (old style)",
  "owner": "Administrator",
  "permissions": [
   {
@@ -500,7 +703,6 @@
    "share": 1
   }
  ],
- "quick_entry": 1,
  "search_fields": "project_name,customer, status, priority, is_active",
  "show_name_in_global_search": 1,
  "sort_field": "modified",

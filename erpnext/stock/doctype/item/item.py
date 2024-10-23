@@ -114,6 +114,7 @@ class Item(Document):
 		item_defaults: DF.Table[ItemDefault]
 		item_group: DF.Link
 		item_name: DF.Data
+		item_sub_group: DF.Link | None
 		last_purchase_rate: DF.Float
 		lead_time_days: DF.Int
 		max_discount: DF.Float

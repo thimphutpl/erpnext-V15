@@ -223,8 +223,8 @@
    "type": "Link"
   }
  ],
- "modified": "2024-08-20 14:51:37.601902",
- "modified_by": "tshering.lham@thimphutechpark.bt",
+ "modified": "2024-10-17 14:32:56.806205",
+ "modified_by": "Administrator",
  "module": "ERPNext Integrations",
  "name": "ERPNext Integrations",
  "number_cards": [],
@@ -234,7 +234,7 @@
  "quick_lists": [],
  "restrict_to_domain": "",
  "roles": [],
- "sequence_id": 30.0,
+ "sequence_id": 29.0,
  "shortcuts": [
   {
    "color": "Grey",

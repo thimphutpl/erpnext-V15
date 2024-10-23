@@ -1,0 +1,72 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-10-09 10:28:04.734944",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "employee_type",
+  "mechanic",
+  "employee_name",
+  "column_break_3",
+  "start_time",
+  "end_time",
+  "total_time"
+ ],
+ "fields": [
+  {
+   "fieldname": "employee_type",
+   "fieldtype": "Select",
+   "label": "Employee Type",
+   "options": "Employee\nGEP Employee\nMuster Roll Employee",
+   "reqd": 1
+  },
+  {
+   "fieldname": "mechanic",
+   "fieldtype": "Dynamic Link",
+   "label": "Mechanic",
+   "options": "employee_type",
+   "reqd": 1
+  },
+  {
+   "fieldname": "employee_name",
+   "fieldtype": "Data",
+   "in_global_search": 1,
+   "in_list_view": 1,
+   "label": "Technician Name"
+  },
+  {
+   "fieldname": "column_break_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "start_time",
+   "fieldtype": "Datetime",
+   "label": "Start Time"
+  },
+  {
+   "fieldname": "end_time",
+   "fieldtype": "Datetime",
+   "label": "End Time"
+  },
+  {
+   "fieldname": "total_time",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Total Time (Hours)"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2024-10-09 10:46:34.298849",
+ "modified_by": "Administrator",
+ "module": "Fleet Management",
+ "name": "Mechanic Assigned",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

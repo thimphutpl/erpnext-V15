@@ -49,6 +49,7 @@ class Asset(AccountsController):
 		from erpnext.assets.doctype.asset_finance_book.asset_finance_book import AssetFinanceBook
 		from frappe.types import DF
 
+		abbr: DF.Data | None
 		additional_asset_cost: DF.Currency
 		additional_value: DF.Currency
 		amended_from: DF.Link | None
@@ -71,7 +72,7 @@ class Asset(AccountsController):
 		comprehensive_insurance: DF.Data | None
 		cost_center: DF.Link | None
 		credit_account: DF.Link | None
-		custodian: DF.Link | None
+		custodian: DF.Link
 		custodian_name: DF.Data | None
 		customer: DF.Link | None
 		default_finance_book: DF.Link | None
@@ -281,12 +282,26 @@ class Asset(AccountsController):
 				)
 
 	def set_missing_values(self):
+		finance_books = get_item_details(self.item_code, self.asset_category, self.gross_purchase_amount, self.asset_sub_category, self.available_for_use_date)
 		if not self.asset_category:
 			self.asset_category = frappe.get_cached_value("Item", self.item_code, "asset_category")
 
 		if self.item_code and not self.get("finance_books"):
-			finance_books = get_item_details(self.item_code, self.asset_category, self.gross_purchase_amount)
 			self.set("finance_books", finance_books)
+
+		if self.available_for_use_date:
+			for a in self.finance_books:
+				a.finance_book = finance_books[0]['finance_book']
+				a.depreciation_method = finance_books[0]['depreciation_method']
+				a.total_number_of_depreciations = finance_books[0]['total_number_of_depreciations']
+				a.frequency_of_depreciation = finance_books[0]['frequency_of_depreciation']
+				a.income_depreciation_percent = finance_books[0]['income_depreciation_percent']
+				a.asset_sub_category = finance_books[0]['asset_sub_category']
+				a.depreciation_start_date = self.get_month_end(self.available_for_use_date)
+		if not self.abbr:
+			self.abbr = frappe.db.get_value('Asset Category',self.asset_category,'abbr')
+		if not self.branch:
+			self.branch = frappe.db.get_value('Branch',{'cost_center':self.cost_center},'branch')
 
 	def validate_finance_books(self):
 		if not self.calculate_depreciation or len(self.finance_books) == 1:
@@ -857,6 +872,9 @@ class Asset(AccountsController):
 
 			return flt((100 * (1 - depreciation_rate)), float_precision)
 
+	@frappe.whitelist()
+	def get_month_end(self,available_for_use_date):
+		return get_last_day(available_for_use_date)
 
 def update_maintenance_status():
 	assets = frappe.get_all(
@@ -977,25 +995,28 @@ def transfer_asset(args):
 
 
 @frappe.whitelist()
-def get_item_details(item_code, asset_category, gross_purchase_amount):
+def get_item_details(item_code, asset_category, gross_purchase_amount, asset_sub_category, depreciation_start_date=None):
 	asset_category_doc = frappe.get_doc("Asset Category", asset_category)
 	books = []
 	for d in asset_category_doc.finance_books:
-		books.append(
-			{
-				"finance_book": d.finance_book,
-				"depreciation_method": d.depreciation_method,
-				"total_number_of_depreciations": d.total_number_of_depreciations,
-				"frequency_of_depreciation": d.frequency_of_depreciation,
-				"daily_prorata_based": d.daily_prorata_based,
-				"shift_based": d.shift_based,
-				"salvage_value_percentage": d.salvage_value_percentage,
-				"expected_value_after_useful_life": flt(gross_purchase_amount)
-				* flt(d.salvage_value_percentage / 100),
-				"depreciation_start_date": d.depreciation_start_date or nowdate(),
-				"rate_of_depreciation": d.rate_of_depreciation,
-			}
-		)
+		if d.asset_sub_category == asset_sub_category:
+			books.append(
+				{
+					"finance_book": d.finance_book,
+					"depreciation_method": d.depreciation_method,
+					"total_number_of_depreciations": d.total_number_of_depreciations,
+					"frequency_of_depreciation": d.frequency_of_depreciation,
+					"daily_prorata_based": d.daily_prorata_based,
+					"shift_based": d.shift_based,
+					"salvage_value_percentage": d.salvage_value_percentage,
+					"expected_value_after_useful_life": flt(gross_purchase_amount)
+					* flt(d.salvage_value_percentage / 100),
+					"depreciation_start_date": get_last_day(depreciation_start_date),
+					"rate_of_depreciation": d.rate_of_depreciation,
+					"income_depreciation_percent":d.income_depreciation_percent,
+					"asset_sub_category":d.asset_sub_category,
+				}
+			)
 
 	return books
 

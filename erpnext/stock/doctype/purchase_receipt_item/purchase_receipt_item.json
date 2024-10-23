@@ -145,7 +145,7 @@
   },
   {
    "bold": 1,
-   "columns": 3,
+   "columns": 2,
    "fieldname": "item_code",
    "fieldtype": "Link",
    "in_global_search": 1,
@@ -230,7 +230,7 @@
    "width": "100px"
   },
   {
-   "columns": 2,
+   "columns": 1,
    "fieldname": "qty",
    "fieldtype": "Float",
    "in_list_view": 1,
@@ -365,6 +365,7 @@
    "width": "100px"
   },
   {
+   "columns": 2,
    "fieldname": "amount",
    "fieldtype": "Currency",
    "in_list_view": 1,
@@ -432,10 +433,8 @@
    "read_only": 1
   },
   {
-   "columns": 2,
    "fieldname": "net_amount",
    "fieldtype": "Currency",
-   "in_list_view": 1,
    "label": "Net Amount",
    "options": "currency",
    "print_hide": 1,
@@ -497,7 +496,6 @@
    "bold": 1,
    "fieldname": "warehouse",
    "fieldtype": "Link",
-   "in_list_view": 1,
    "label": "Accepted Warehouse",
    "oldfieldname": "warehouse",
    "oldfieldtype": "Link",
@@ -557,8 +555,10 @@
    "width": "150px"
   },
   {
+   "columns": 1,
    "fieldname": "schedule_date",
    "fieldtype": "Date",
+   "in_list_view": 1,
    "label": "Required By",
    "oldfieldname": "schedule_date",
    "oldfieldtype": "Date",
@@ -1129,7 +1129,7 @@
  "idx": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-05-28 09:48:24.448815",
+ "modified": "2024-10-10 14:35:28.954952",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Purchase Receipt Item",

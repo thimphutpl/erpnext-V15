@@ -94,7 +94,6 @@ class StockEntry(StockController):
 		additional_costs: DF.Table[LandedCostTaxesandCharges]
 		address_display: DF.SmallText | None
 		amended_from: DF.Link | None
-		apply_putaway_rule: DF.Check
 		asset_repair: DF.Link | None
 		bom_no: DF.Link | None
 		branch: DF.Link
@@ -105,7 +104,6 @@ class StockEntry(StockController):
 		from_bom: DF.Check
 		from_warehouse: DF.Link | None
 		in_transit: DF.Check
-		inspection_required: DF.Check
 		is_opening: DF.Literal["No", "Yes"]
 		is_return: DF.Check
 		issued_by: DF.Data | None

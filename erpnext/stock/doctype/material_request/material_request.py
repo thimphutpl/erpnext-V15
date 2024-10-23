@@ -37,6 +37,7 @@ class MaterialRequest(BuyingController):
 		company: DF.Link
 		cost_center: DF.Link | None
 		customer: DF.Link | None
+		estimated_cost: DF.Data | None
 		items: DF.Table[MaterialRequestItem]
 		job_card: DF.Link | None
 		letter_head: DF.Link | None
@@ -148,9 +149,11 @@ class MaterialRequest(BuyingController):
 
 	def set_title(self):
 		"""Set title as comma separated list of items"""
+		
 		if not self.title:
 			items = ", ".join([d.item_name for d in self.items][:3])
 			self.title = _("{0} Request for {1}").format(_(self.material_request_type), items)[:100]
+			self.title = _("{0}").format(items)[:100]
 
 	def on_submit(self):
 		self.update_requested_qty_in_production_plan()

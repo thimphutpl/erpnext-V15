@@ -12,61 +12,6 @@ from erpnext.custom_workflow import validate_workflow_states
 from erpnext.stock.stock_ledger import get_valuation_rate
 from erpnext.stock.get_item_details import get_bin_details
 class RepairAndServices(StockController):
-	# begin: auto-generated types
-	# This code is auto-generated. Do not modify anything in this block.
-
-	from typing import TYPE_CHECKING
-
-	if TYPE_CHECKING:
-		from erpnext.fleet_management.doctype.repair_and_services_item.repair_and_services_item import RepairAndServicesItem
-		from frappe.types import DF
-
-		amended_from: DF.Link | None
-		approver: DF.Link | None
-		approver_designation: DF.Link | None
-		approver_name: DF.Data | None
-		branch: DF.Link
-		business_activity: DF.Link | None
-		cash_memo_number: DF.Data
-		company: DF.Link | None
-		completion_status: DF.Literal["In Process", "Completed"]
-		cost_center: DF.Link
-		current_km: DF.Float
-		defect: DF.TextEditor | None
-		end_date: DF.Datetime | None
-		equipment: DF.Link
-		equipment_category: DF.Link | None
-		equipment_model: DF.Link | None
-		equipment_type: DF.Link | None
-		fleet_comment: DF.SmallText | None
-		hired_equipment: DF.Check
-		imprest_party: DF.DynamicLink | None
-		invoice_created: DF.Check
-		invoice_date: DF.Date
-		items: DF.Table[RepairAndServicesItem]
-		job_outsource_footer: DF.TextEditor | None
-		job_outsource_header: DF.TextEditor | None
-		km_difference: DF.Float
-		out_source: DF.Check
-		paid: DF.Check
-		party: DF.DynamicLink | None
-		party_type: DF.Literal["", "Employee", "Supplier"]
-		party_type_imprest: DF.Literal["", "Employee", "Agency"]
-		posting_date: DF.Date
-		posting_time: DF.Time
-		recent_maintenance_date: DF.Date | None
-		repair_and_services_type: DF.Literal["", "Preventive Maintenance", "Breakdown Maintenance"]
-		set_warehouse: DF.Link | None
-		settle_from_advance: DF.Check
-		start_date: DF.Datetime
-		status: DF.Data | None
-		tc_name: DF.Link | None
-		total_amount: DF.Currency
-		total_hrs: DF.Float
-		total_out_source_amt: DF.Currency
-		total_stock_amt: DF.Currency
-		workflow_state: DF.Data | None
-	# end: auto-generated types
 	def __init__(self, *args, **kwargs):
 		super(RepairAndServices, self).__init__(*args, **kwargs)
 
@@ -87,46 +32,6 @@ class RepairAndServices(StockController):
 
 	def on_submit(self):
 		self.calculate_total_hr()
-		# self.create_abstract_bill()
-  
-	def create_abstract_bill(self):
-     
-		data = frappe.db.sql("""
-		select repair_and_service_account from `tabCompany` where name='Office of the Gyalpoi Zimpon'
-		""", as_dict=True)
-
-		# Accessing the result
-		if data:
-			repair_and_service_account = data[0].get('repair_and_service_account')
-		else:
-			frappe.throw("Add repair_and_service_account in company")
-		
-
-		# imprest_advance_account = self.get_imprest_type_account(self.imprest_type)
-		items = []
-		items.append({
-			"account": repair_and_service_account,
-			"cost_center": self.cost_center,
-			"party_type": self.party_type,
-			"party": self.party,
-			"business_activity": self.business_activity,
-			"amount": self.total_amount,
-		})		
-		ab = frappe.new_doc("Abstract Bill")
-		ab.flags.ignore_permission = 1
-		ab.update({
-			"doctype": "Abstract Bill",
-			"posting_date": self.posting_date,
-			"company": self.company,
-			"branch": self.branch,
-			"reference_doctype": self.doctype,
-			"reference_name": self.name,
-			"items": items,
-		})
-		ab.insert()
-		frappe.msgprint(_('Abstarct Bill {0} posted to accounts').format(frappe.get_desk_link("Abstract Bill", ab.name)))
-
-
 
 	def calculate_total_hr(self):
 		if self.start_date and self.end_date:
@@ -317,6 +222,4 @@ def get_permission_query_conditions(user):
 			and ab.employee = e.name
 			and bi.parent = ab.name
 			and bi.branch = `tabRepair And Services`.branch)
-		or 
-		(`tabRepair And Services`.approver = '{user}' and `tabRepair And Services`.workflow_state not in  ('Draft','Approved','Rejected','Cancelled'))
 	)""".format(user=user)

@@ -28,7 +28,7 @@ class PurchaseInvoiceItem(Document):
 		batch_no: DF.Link | None
 		bom: DF.Link | None
 		brand: DF.Link | None
-		business_activity: DF.Link
+		business_activity: DF.Link | None
 		conversion_factor: DF.Float
 		cost_center: DF.Link | None
 		deferred_expense_account: DF.Link | None
@@ -89,7 +89,7 @@ class PurchaseInvoiceItem(Document):
 		stock_qty: DF.Float
 		stock_uom: DF.Link | None
 		stock_uom_rate: DF.Currency
-		sub_ledger: DF.Link
+		sub_ledger: DF.Link | None
 		total_weight: DF.Float
 		uom: DF.Link
 		use_serial_batch_fields: DF.Check

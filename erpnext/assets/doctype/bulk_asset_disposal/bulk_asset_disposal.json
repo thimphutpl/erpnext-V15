@@ -1,0 +1,128 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "BAD.######",
+ "creation": "2024-10-20 19:41:07.645962",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_t0fv",
+  "amended_from",
+  "scrap_date",
+  "asset_category",
+  "branch",
+  "column_break_xosw",
+  "scrap",
+  "customer",
+  "section_break_zrkq",
+  "item",
+  "amended_form",
+  "sales_invoice"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_t0fv",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Bulk Asset Disposal",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "scrap_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Scrap Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "asset_category",
+   "fieldtype": "Link",
+   "label": "Asset Category",
+   "options": "Asset Category",
+   "reqd": 1
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "label": "Branch",
+   "options": "Branch"
+  },
+  {
+   "fieldname": "column_break_xosw",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "scrap",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Scrap/Sale",
+   "options": "\nScrap Asset",
+   "reqd": 1
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "label": "Customer",
+   "options": "Customer"
+  },
+  {
+   "fieldname": "section_break_zrkq",
+   "fieldtype": "Section Break"
+  },
+  {
+   "allow_bulk_edit": 1,
+   "fieldname": "item",
+   "fieldtype": "Table",
+   "options": "Bulk Asset Disposal Item"
+  },
+  {
+   "fieldname": "amended_form",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Bulk Asset Disposal",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "sales_invoice",
+   "fieldtype": "Link",
+   "label": "Sales Invoice",
+   "options": "Sales Invoice"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2024-10-20 21:09:16.948970",
+ "modified_by": "Administrator",
+ "module": "Assets",
+ "name": "Bulk Asset Disposal",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

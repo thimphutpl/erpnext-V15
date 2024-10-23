@@ -71,7 +71,7 @@ class JournalEntry(AccountsController):
 		letter_head: DF.Link | None
 		mode_of_payment: DF.Link | None
 		multi_currency: DF.Check
-		naming_series: DF.Literal["Journal Entry Series"]
+		naming_series: DF.Link
 		paid_loan: DF.Data | None
 		pay_to_recd_from: DF.Data | None
 		payment_order: DF.Link | None
@@ -100,11 +100,54 @@ class JournalEntry(AccountsController):
 
 	def autoname(self):
 		prefix = frappe.db.get_value("Journal Entry Series", self.naming_series, "prefix")
+		frappe.throw("hhhh")
 		if not prefix:
 			frappe.throw("Please set prefix {}".format(
 				frappe.get_desk_link("Journal Entry Series", self.naming_series)
 			))
 		self.name = make_autoname(str(prefix) + ".YYYY.MM.####")
+
+	    # Ver 1.0 by SSK on 09/08/2016, autoname() method is added
+	# def autoname(self):
+    #             series_seq = ""
+    #             if self.voucher_type == 'Journal Entry':
+    #                     series_seq = 'JEJV'
+    #             elif self.voucher_type == 'Bank Entry':
+    #                     if self.naming_series == 'Bank Payment Voucher':
+    #                             series_seq = 'JEBP'
+    #                     elif self.naming_series == 'Bank Receipt Voucher':
+    #                             series_seq = 'JEBR'
+    #                     else:
+    #                             series_seq = 'JEBE'
+    #             elif self.voucher_type == 'Cash Entry':
+    #                     if self.naming_series == 'Cash Payment Voucher':
+    #                             series_seq = 'JECP'
+    #                     elif self.naming_series == 'Cash Receipt Voucher':
+    #                             series_seq = 'JECR'
+    #                     else:
+    #                             series_seq = 'JECA'
+    #             elif self.voucher_type == 'Debit Note':
+    #                     series_seq = 'JEDN'
+    #             elif self.voucher_type == 'Credit Note':
+    #                     series_seq = 'JECN'
+    #             elif self.voucher_type == 'Contra Entry':
+    #                     series_seq = 'JECE'
+    #             elif self.voucher_type == 'Excise Entry':
+    #                     series_seq = 'JEEE'
+    #             elif self.voucher_type == 'Write Off Entry':
+    #                     series_seq = 'JEWE'
+    #             elif self.voucher_type == 'Opening Entry':
+    #                     series_seq = 'JEOP'
+    #             elif self.voucher_type == 'Depreciation Entry':
+    #                     series_seq = 'JEDE'
+    #             elif self.voucher_type == 'Maintenance Invoice':
+    #                     series_seq = 'JEMA'
+    #             elif self.voucher_type == 'Hire Invoice':
+    #                     series_seq = 'JEHI'
+	# 			else:
+	# 				series_seq = 'JEJE'
+
+    #             self.name = make_autoname(str(series_seq) + '.YY.MM.#####')	
 
 	def validate(self):
 		if self.voucher_type == "Opening Entry":
@@ -1143,7 +1186,7 @@ class JournalEntry(AccountsController):
 								"cost_center": d.cost_center,
 								"project": d.project,
 								"finance_book": self.finance_book,
-								"business_activity": d.business_activity,
+								# "business_activity": d.business_activity,
 							},
 							item=d,
 						)

@@ -38,7 +38,6 @@ class PurchaseReceipt(BuyingController):
 		address_display: DF.SmallText | None
 		amended_from: DF.Link | None
 		apply_discount_on: DF.Literal["", "Grand Total", "Net Total"]
-		apply_putaway_rule: DF.Check
 		auto_repeat: DF.Link | None
 		base_discount_amount: DF.Currency
 		base_grand_total: DF.Currency

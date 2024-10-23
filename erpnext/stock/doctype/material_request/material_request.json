@@ -14,6 +14,7 @@
   "customer",
   "company",
   "branch",
+  "estimated_cost",
   "column_break_2",
   "transaction_date",
   "schedule_date",
@@ -277,6 +278,7 @@
   {
    "fieldname": "set_warehouse",
    "fieldtype": "Link",
+   "hidden": 1,
    "ignore_user_permissions": 1,
    "in_list_view": 1,
    "label": "Set Target Warehouse",
@@ -352,6 +354,7 @@
   {
    "fieldname": "repair_and_services",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Repair and Services"
   },
   {
@@ -372,13 +375,18 @@
    "label": "Cost Center",
    "options": "Cost Center",
    "read_only": 1
+  },
+  {
+   "fieldname": "estimated_cost",
+   "fieldtype": "Data",
+   "label": "Estimated Cost"
   }
  ],
  "icon": "fa fa-ticket",
  "idx": 70,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-08-20 12:46:59.328940",
+ "modified": "2024-10-15 12:46:18.553206",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Material Request",

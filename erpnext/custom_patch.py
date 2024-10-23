@@ -748,6 +748,6 @@ def create_branch_from_cc():
     print("DONE")
 
 def create_asset_receive():
-    doc = frappe.get_doc("Purchase Receipt", "MAT-PRE-2024-00022")
+    doc = frappe.get_doc("Purchase Receipt", "MAT-PRE-2024-00018")
     doc.update_asset_receive_entries()
     

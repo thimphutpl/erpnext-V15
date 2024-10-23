@@ -198,6 +198,23 @@ frappe.ui.form.on("Asset", {
 		}
 	},
 
+	available_for_use_date:function(frm){
+		if (frm.doc.available_for_use_date){
+			frappe.call({
+				method:'get_month_end',
+				doc:frm.doc,
+				args:{
+					available_for_use_date:frm.doc.available_for_use_date
+				},
+				callback:function(r){
+					frm.doc.finance_books.map(v=> v.depreciation_start_date = r.message)
+					frm.refresh_field('finance_books')
+				}
+			})
+			
+		}
+	},
+
 	set_depr_posting_failure_alert: function (frm) {
 		const alert = `
 			<div class="row">
@@ -440,10 +457,13 @@ frappe.ui.form.on("Asset", {
 				item_code: frm.doc.item_code,
 				asset_category: frm.doc.asset_category,
 				gross_purchase_amount: frm.doc.gross_purchase_amount,
+				asset_sub_category:frm.doc.asset_sub_category,
+                available_for_use_date: frm.doc.available_for_use_date
 			},
 			callback: function (r, rt) {
 				if (r.message) {
 					frm.set_value("finance_books", r.message);
+					frm.refresh_field('finance_books');
 				}
 			},
 		});

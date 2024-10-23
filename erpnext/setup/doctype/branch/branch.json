@@ -15,7 +15,21 @@
   "company",
   "disabled",
   "accounts_settings_section",
-  "expense_bank_account"
+  "expense_bank_account",
+  "column_break_6",
+  "revenue_bank_account",
+  "section_break_8",
+  "letter_head",
+  "gis_policy_number",
+  "column_break_8",
+  "holiday_list",
+  "imprest_limit",
+  "sb_imprest_settings",
+  "items",
+  "epayment_bank_accounts",
+  "branch_bank_account",
+  "section_break_6",
+  "address"
  ],
  "fields": [
   {
@@ -71,12 +85,84 @@
    "fieldtype": "Link",
    "label": "Default Expense Bank Account",
    "options": "Account"
+  },
+  {
+   "fieldname": "column_break_6",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "revenue_bank_account",
+   "fieldtype": "Link",
+   "label": "Revenue Bank Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "section_break_8",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "letter_head",
+   "fieldtype": "Link",
+   "label": "Letter Head",
+   "options": "Letter Head"
+  },
+  {
+   "fieldname": "gis_policy_number",
+   "fieldtype": "Data",
+   "label": "GIS Policy Number"
+  },
+  {
+   "fieldname": "column_break_8",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "holiday_list",
+   "fieldtype": "Link",
+   "label": "Holiday List",
+   "options": "Holiday List"
+  },
+  {
+   "fieldname": "imprest_limit",
+   "fieldtype": "Currency",
+   "hidden": 1,
+   "label": "Imprest Limit",
+   "options": "Company:company:default_currency"
+  },
+  {
+   "fieldname": "sb_imprest_settings",
+   "fieldtype": "Section Break",
+   "label": "IMPREST SETTINGS"
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "options": "Branch Imprest Item"
+  },
+  {
+   "fieldname": "epayment_bank_accounts",
+   "fieldtype": "Section Break",
+   "label": "ePayment Bank Accounts"
+  },
+  {
+   "fieldname": "branch_bank_account",
+   "fieldtype": "Table",
+   "options": "Branch Bank Account"
+  },
+  {
+   "fieldname": "section_break_6",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "address",
+   "fieldtype": "Long Text",
+   "label": "Address",
+   "reqd": 1
   }
  ],
  "icon": "fa fa-code-fork",
  "idx": 1,
  "links": [],
- "modified": "2024-08-13 16:43:23.679263",
+ "modified": "2024-10-14 12:17:05.779210",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Branch",
@@ -109,5 +195,6 @@
  "quick_entry": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "track_changes": 1
 }

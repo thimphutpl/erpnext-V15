@@ -837,7 +837,7 @@ class PurchaseInvoice(BuyingController):
 							"posting_date": self.posting_date,
 							"company": self.company,
 							"amount": flt(amount,2),
-							"business_activity": self.business_activity,
+							# "business_activity": self.business_activity,
 						})
 					if not commited_budget_id:					
 						validate_expense_against_budget(args)
@@ -856,7 +856,7 @@ class PurchaseInvoice(BuyingController):
 							"item_code": item.item_code,
 							"company": self.company,
 							"closed":1,
-							"business_activity": self.business_activity,
+							# "business_activity": self.business_activity,
 							"committed_cost_center": committed_consumed_cost_center
 						})
 						bud_obj.flags.ignore_permissions=1
@@ -876,7 +876,7 @@ class PurchaseInvoice(BuyingController):
 						"reference_id": item.name,
 						"item_code": item.item_code,
 						"com_ref": commited_budget_id,
-						"business_activity": self.business_activity,
+						# "business_activity": self.business_activity,
 						"consumed_cost_center": committed_consumed_cost_center
 					})
 					consume.flags.ignore_permissions=1

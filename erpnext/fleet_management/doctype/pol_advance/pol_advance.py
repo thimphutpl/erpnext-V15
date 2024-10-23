@@ -1,18 +1,21 @@
-# -*- coding: utf-8 -*-
-# Copyright (c) 2015, Frappe Technologies Pvt. Ltd. and contributors
+# Copyright (c) 2023, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
-from __future__ import unicode_literals
 import frappe
+from frappe import _
 from frappe.model.document import Document
 from erpnext.accounts.doctype.business_activity.business_activity import get_default_ba
-from erpnext.accounts.general_ledger import make_gl_entries
+from frappe.utils import money_in_words, cstr, flt, fmt_money, formatdate, getdate, nowdate, cint, get_link_to_form, now_datetime, get_datetime
+from erpnext.custom_workflow import validate_workflow_states, notify_workflow_states
+from frappe import _, qb, throw, bold
+from erpnext.accounts.party import get_party_account
 from erpnext.controllers.accounts_controller import AccountsController
-from erpnext.custom_utils import check_budget_available
-import json
-from frappe import _, msgprint
-from frappe.utils import flt, cint, nowdate, getdate, formatdate, money_in_words
-
+from erpnext.accounts.general_ledger import (
+	get_round_off_account_and_cost_center,
+	make_gl_entries,
+	make_reverse_gl_entries,
+	merge_similar_entries,
+)
 
 class POLAdvance(AccountsController):
 	# begin: auto-generated types
@@ -21,193 +24,148 @@ class POLAdvance(AccountsController):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
-		from erpnext.fleet_management.doctype.pol_od_item.pol_od_item import POLODitem
 		from frappe.types import DF
 
 		adjusted_amount: DF.Currency
+		advance_limit: DF.Currency
 		amended_from: DF.Link | None
 		amount: DF.Currency
-		approved_by: DF.Data | None
+		approver: DF.Link | None
+		approver_designation: DF.Link | None
+		approver_name: DF.Data | None
 		balance_amount: DF.Currency
-		branch: DF.Link
-		business_activity: DF.Link
+		branch: DF.Link | None
 		cheque_date: DF.Date | None
 		cheque_no: DF.Data | None
-		clearance_date: DF.Date | None
 		company: DF.Link
 		cost_center: DF.Link | None
+		credit_account: DF.Link | None
 		currency: DF.Link
 		entry_date: DF.Date
-		equipment: DF.Link
-		equipment_number: DF.Data | None
-		expense_account: DF.Link
-		fuelbook: DF.Link | None
+		equipment: DF.Link | None
+		equipment_category: DF.Link | None
+		equipment_type: DF.Link | None
+		fuel_book: DF.Link
 		fuelbook_branch: DF.Link | None
 		is_opening: DF.Check
-		items: DF.Table[POLODitem]
-		je_status: DF.Literal["", "Submitted"]
 		journal_entry: DF.Data | None
-		od_adjusted_amount: DF.Currency
-		od_amount: DF.Currency
-		od_outstanding_amount: DF.Currency
-		party_type: DF.Literal["Supplier"]
+		party: DF.Link
+		party_type: DF.Link
 		pay_to_recd_from: DF.Data | None
-		payment_type: DF.Data | None
+		payment_status: DF.Literal["", "Paid", "Unpaid", "Submitted", "Partly Paid", "Draft", "Cancelled"]
 		select_cheque_lot: DF.Link | None
-		supplier: DF.Link
-		use_check_lot: DF.Check
+		use_cheque_lot: DF.Check
+		use_common_fuelbook: DF.Check
 		user_remark: DF.SmallText | None
-		workflow_state: DF.Link | None
+		workflow_state: DF.Data | None
 	# end: auto-generated types
 	def validate(self):
-		self.validate_cheque_info()
-		self.od_adjustment()
-		if self.is_opening and flt(self.od_amount) > flt(0.0):
-			self.od_outstanding_amount = flt(self.od_amount)
-		else:
-			self.od_amount = self.od_outstanding_amount = 0.0
+		# if flt(self.is_opening) == 0:
+		# 	validate_workflow_states(self)
+		self.set_advance_limit()
+		# self.set_auto_advance_amount()
+		self.posting_date = self.entry_date
+		self.validate_amount()
+
+		self.credit_account = frappe.db.get_value("Branch", self.fuelbook_branch, "expense_bank_account")
+
+		# if flt(self.is_opening) == 0 and self.workflow_state != "Approved" :
+		# 	notify_workflow_states(self)
+	
+	def on_submit(self): 
+		if not self.is_opening:
+			self.post_journal_entry()
+		# if flt(self.is_opening) == 0:
+			# notify_workflow_states(self)
 
 	def before_cancel(self):
 		if self.is_opening:
 			return
-		if self.journal_entry:
-			for t in frappe.get_all("Journal Entry", ["name"], {"name": self.journal_entry, "docstatus": ("<",2)}):
-				frappe.throw(_('Journal Entry {} for this transaction needs to be cancelled first').format(frappe.get_desk_link(self.doctype,self.journal_entry)),title='Not permitted')
-
-	def on_submit(self):
-		if not self.is_opening:
-			# check_budget_available(self.cost_center,advance_account,self.entry_date,self.amount,self.business_activity)
-			self.update_od_balance()
-			# self.post_journal_entry()
-			self.create_abstract_bill()
-
+		if frappe.db.exists("Journal Entry",self.journal_entry):
+			doc = frappe.get_doc("Journal Entry", self.journal_entry)
+			if doc.docstatus != 2:
+				frappe.throw("Journal Entry exists for this transaction {}".format(frappe.get_desk_link("Journal Entry",self.journal_entry)))
+				
 	def on_cancel(self):
-		if not self.is_opening:
-			# self.cancel_budget_entry()
-			self.update_od_balance()
+		self.ignore_linked_doctypes = ("GL Entry", "Stock Ledger Entry", "Payment Ledger Entry")
+		# if cint(self.use_common_fuelbook) == 0:
+		# 	self.make_gl_entries()
 
-	def update_od_balance(self):
+	@frappe.whitelist()
+	def set_advance_limit(self):
+		if cint(self.use_common_fuelbook) == 1:
+			if not self.fuel_book:
+				frappe.throw("Fuel book is missing")
+			if flt(self.advance_limit) <= 0 :
+				self.advance_limit = frappe.db.get_value("Fuelbook", self.fuel_book, "expense_limit")
+		else:
+			if not self.equipment:
+				frappe.throw("Equipment or Fuel book is missing")
+
+			if flt(self.advance_limit) <= 0 and self.equipment_type:
+				self.advance_limit = frappe.db.get_value("Equipment Type", self.equipment_type, "pol_expense_limit")
+	
+	@frappe.whitelist()
+	def set_auto_advance_amount(self):
+		if not self.fuel_book:
+			frappe.throw("Fuel book is missing")
+		if not self.equipment:
+			frappe.throw("Equipment or Fuel book is missing")
+		
+		advance_amount = frappe.db.sql("""
+							SELECT SUM(amount) - sum(adjusted_amount) as bal
+							FROM `tabPOL Advance`
+							WHERE docstatus = 1 AND equipment = '{0}' 
+							AND fuel_book = '{1}' AND entry_date < '{2}'
+						""".format(self.equipment, self.fuel_book, self.entry_date), as_list=True)
+
+		if advance_amount and advance_amount[0][0]:
+			new_amount = self.advance_limit - flt(advance_amount[0][0])
+			if new_amount > 0:
+				return self.advance_limit - flt(advance_amount[0][0])
+			else:
+				return 0
+
+	def post_journal_entry(self):
 		if self.is_opening:
 			return
-		for d in self.items:
-			doc = frappe.get_doc('POL Advance',d.reference)
-			if self.docstatus == 2:
-				if flt(self.adjusted_amount) - flt(doc.od_amount) < 0:
-					self.adjusted_amount = 0
-					self.balance_amount = flt(self.amount)
-				else:
-					self.adjusted_amount = flt(self.adjusted_amount) - flt(doc.od_amount)
-					self.balance_amount = flt(self.balance_amount) + flt(doc.od_amount)
-				self.od_amount = 0
-				self.od_outstanding_amount = 0
-				doc.od_adjusted_amount = 0 
-				doc.od_outstanding_amount = doc.od_amount
-				doc.save(ignore_permissions=True)
-			elif self.docstatus == 1:
-				if flt(self.adjusted_amount) == flt(self.amount):
-					self.od_amount += doc.od_amount
-					self.od_outstanding_amount += doc.od_amount
-				elif flt(self.adjusted_amount) + flt(doc.od_amount) > flt(self.amount):
-					excess_amount = flt(self.adjusted_amount) + flt(doc.od_amount) - flt(self.amount)
-					self.od_amount += flt(excess_amount)
-					self.od_outstanding_amount += flt(excess_amount)
-					if self.adjusted_amount != self.amount:
-						self.adjusted_amount = flt(self.amount)
-						self.balance_amount = flt(self.amount) - flt(self.adjusted_amount)
-				else:
-					self.adjusted_amount += flt(doc.od_amount)
-					self.balance_amount = flt(self.amount) - flt(self.adjusted_amount)
-				doc.od_adjusted_amount = doc.od_outstanding_amount 
-				doc.od_outstanding_amount = 0
-				doc.save(ignore_permissions=True)
-				self.save()
-
-	def od_adjustment(self):
-		data = frappe.db.sql('''
-			SELECT
-				name as reference, od_amount,
-				od_outstanding_amount
-			FROM `tabPOL Advance`
-			WHERE od_outstanding_amount > 0
-			and docstatus = 1
-			and equipment = '{}'
-		'''.format(self.equipment),as_dict=True)
-		
-		if data :
-			self.set('items',[])
-			for d in data:
-				row = self.append('items',{})
-				row.update(d)
-
-	def validate_cheque_info(self):
-		if self.cheque_date and not self.cheque_no:
-			frappe.msgprint(_("Cheque No is mandatory if you entered Cheque Date"), raise_exception=1)
-  
-	# def cancel_budget_entry(self):
-	# 	frappe.db.sql("delete from `tabConsumed Budget` where reference_no = %s", self.name) 
-   
-	def post_journal_entry(self):
 		if not self.amount:
 			frappe.throw(_("Amount should be greater than zero"))
-		if self.is_opening:
-			return
-
-		self.posting_date = self.entry_date
-		ba = self.business_activity
-
-		credit_account = self.expense_account
-		advance_account = frappe.db.get_value("Company", self.company, "pol_advance_account")
 			
-		if not credit_account:
-			frappe.throw("Expense Account is mandatory")
+		default_ba = get_default_ba()
+		
+		credit_account = self.credit_account
+		advance_account = frappe.db.get_value("Equipment Category", self.equipment_category, 'pol_advance_account')
 		if not advance_account:
-			frappe.throw("Setup POL Advance Account in Maintenance Accounts Settings")
-
-		account_type = frappe.db.get_value("Account", credit_account, "account_type")
-		voucher_type = "Journal Entry"
-		voucher_series = "Journal Voucher"
-		party_type = ''
-		party = ''
-		if account_type == "Bank":
-			voucher_type = "Bank Entry"
-			voucher_series = "Bank Receipt Voucher" if self.payment_type == "Receive" else "Bank Payment Voucher"
-		elif account_type == "Payable":
-			party_type = self.party_type
-			party = self.supplier
-
+			advance_account = frappe.db.get_value("Company", self.company, "pol_advance_account")
+		if not credit_account:
+			frappe.throw("Credit Account is mandatory")
+		
 		r = []
 		if self.cheque_no:
 			if self.cheque_date:
 				r.append(_('Reference #{0} dated {1}').format(self.cheque_no, formatdate(self.cheque_date)))
 			else:
-				frappe.msgprint(_("Please enter Cheque Date date"), raise_exception=frappe.MandatoryError)
+				msgprint(_("Please enter Cheque Date date"), raise_exception=frappe.MandatoryError)
+		
 		if self.user_remark:
 			r.append(_("Note: {0}").format(self.user_remark))
 
-		remarks = ("").join(r)
-
+		remarks = ("").join(r) #User Remarks is not mandatory
+		
+		# Posting Journal Entry
 		je = frappe.new_doc("Journal Entry")
-
+		je.flags.ignore_permissions=1
 		je.update({
 			"doctype": "Journal Entry",
-			"voucher_type": voucher_type,
-			"naming_series": voucher_series,
-			"title": "POL Advance - " + self.equipment,
-			"user_remark": remarks if remarks else "Note: " + "POL Advance - " + self.equipment,
+			"voucher_type": "Bank Entry",
+			"naming_series": "Bank Payment Voucher",
+			"title": "POL Advance - " + self.equipment if cint(self.use_common_fuelbook) == 0 else self.fuel_book,
+			"user_remark": "Note: " + "POL Advance - " + self.equipment if cint(self.use_common_fuelbook) == 0 else self.fuel_book,
 			"posting_date": self.posting_date,
 			"company": self.company,
 			"total_amount_in_words": money_in_words(self.amount),
 			"branch": self.fuelbook_branch,
-		})
-
-		je.append("accounts",{
-			"account": advance_account,
-			"debit_in_account_currency": self.amount,
-			"cost_center": self.cost_center,
-			"party_check": 1,
-			"party_type": self.party_type,
-			"party": self.supplier,
-			"business_activity": ba
 		})
 
 		je.append("accounts",{
@@ -216,51 +174,53 @@ class POLAdvance(AccountsController):
 			"cost_center": self.cost_center,
 			"reference_type": "POL Advance",
 			"reference_name": self.name,
-			"party_type": party_type,
-			"party": party,
-			"business_activity": ba
+			"business_activity": default_ba
+		})
+
+		je.append("accounts",{
+			"account": advance_account,
+			"debit_in_account_currency": self.amount,
+			"cost_center": self.cost_center,
+			"party_check": 0,
+			"party_type": "Supplier",
+			"party": self.party,
+			"business_activity": default_ba
 		})
 
 		je.insert()
-
+		#Set a reference to the claim journal entry
 		self.db_set("journal_entry",je.name)
-		frappe.msgprint(_('Journal Entry {} posted to accounts').format(frappe.get_desk_link(je.doctype,je.name)))
+		frappe.msgprint(_('Journal Entry {0} posted to accounts').format(frappe.get_desk_link("Journal Entry",je.name)))
+	
+	def validate_amount(self):
+		if flt(self.amount) <= 0:
+			frappe.throw("Amount cannot be less than or equal to Zero")
+		if cint(self.use_common_fuelbook) == 0 and flt(self.amount) > flt(self.advance_limit):
+			frappe.throw("Amount cannot be greater than advance limit")
+		if cint(self.is_opening) == 0 :
+			self.outstanding_amount = self.amount
 
+def get_permission_query_conditions(user):
+	if not user: user = frappe.session.user
+	user_roles = frappe.get_roles(user)
 
-	def create_abstract_bill(self):
-     
-		data = frappe.db.sql("""
-		select pol_advance_account from `tabCompany` where name='Office of the Gyalpoi Zimpon'
-		""", as_dict=True)
+	if user == "Administrator" or "System Manager" in user_roles: 
+		return
 
-		# Accessing the result
-		if data:
-			pol_advance_account = data[0].get('pol_advance_account')
-		else:
-			frappe.throw("Add pol_advance_account in company")
-		
-
-		# imprest_advance_account = self.get_imprest_type_account(self.imprest_type)
-		items = []
-		items.append({
-			"account": pol_advance_account,
-			"cost_center": self.cost_center,
-			"party_type": self.party_type,
-			"party": self.supplier,
-			"business_activity": self.business_activity,
-			"amount": self.amount,
-		})		
-		ab = frappe.new_doc("Abstract Bill")
-		ab.flags.ignore_permission = 1
-		ab.update({
-			"doctype": "Abstract Bill",
-			"posting_date": self.entry_date,
-			"company": self.company,
-			"branch": self.branch,
-			"reference_doctype": self.doctype,
-			"reference_name": self.name,
-			"items": items,
-		})
-		ab.insert()
-		frappe.msgprint(_('Abstarct Bill {0} posted to accounts').format(frappe.get_desk_link("Abstract Bill", ab.name)))
-
+	return """(
+		`tabPOL Advance`.owner = '{user}'
+		or
+		exists(select 1
+			from `tabEmployee` as e
+			where e.branch = `tabPOL Advance`.fuelbook_branch
+			and e.user_id = '{user}')
+		or
+		exists(select 1
+			from `tabEmployee` e, `tabAssign Branch` ab, `tabBranch Item` bi
+			where e.user_id = '{user}'
+			and ab.employee = e.name
+			and bi.parent = ab.name
+			and bi.branch = `tabPOL Advance`.fuelbook_branch)
+		or
+		(`tabPOL Advance`.approver = '{user}' and `tabPOL Advance`.workflow_state not in  ('Draft','Approved','Rejected','Cancelled'))
+	)""".format(user=user)

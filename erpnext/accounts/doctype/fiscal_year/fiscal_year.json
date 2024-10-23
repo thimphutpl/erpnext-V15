@@ -9,10 +9,13 @@
  "engine": "InnoDB",
  "field_order": [
   "year",
+  "closed",
   "disabled",
   "is_short_year",
+  "cb_1",
   "year_start_date",
   "year_end_date",
+  "sb_company",
   "companies",
   "auto_created"
  ],
@@ -77,17 +80,33 @@
    "fieldtype": "Check",
    "label": "Is Short Year",
    "set_only_once": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "closed",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Financial Year Closed"
+  },
+  {
+   "fieldname": "cb_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "sb_company",
+   "fieldtype": "Section Break",
+   "label": "Company"
   }
  ],
  "icon": "fa fa-calendar",
  "idx": 1,
  "links": [],
- "modified": "2024-05-27 17:29:55.560840",
+ "modified": "2024-10-18 23:28:06.404128",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Fiscal Year",
  "naming_rule": "By fieldname",
-  "owner": "Administrator",
+ "owner": "Administrator",
  "permissions": [
   {
    "create": 1,

@@ -8,7 +8,8 @@
  "field_order": [
   "distribution_id",
   "fiscal_year",
-  "percentages"
+  "percentages",
+  "amended_from"
  ],
  "fields": [
   {
@@ -41,12 +42,22 @@
    "oldfieldname": "budget_distribution_details",
    "oldfieldtype": "Table",
    "options": "Monthly Distribution Percentage"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Monthly Distribution",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
   }
  ],
  "icon": "fa fa-bar-chart",
  "idx": 1,
  "links": [],
- "modified": "2024-01-30 13:57:55.802744",
+ "modified": "2024-10-17 11:26:49.590393",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Monthly Distribution",
@@ -65,10 +76,24 @@
    "write": 1
   },
   {
+   "delete": 1,
    "permlevel": 2,
    "read": 1,
    "report": 1,
-   "role": "Accounts Manager"
+   "role": "Accounts Manager",
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Administrator",
+   "share": 1,
+   "write": 1
   }
  ],
  "sort_field": "modified",

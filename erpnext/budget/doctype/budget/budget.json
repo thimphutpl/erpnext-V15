@@ -1,7 +1,6 @@
 {
  "actions": [],
  "allow_import": 1,
- "autoname": "BUD.YYYY.##",
  "creation": "2016-05-16 11:42:29.632528",
  "doctype": "DocType",
  "editable_grid": 1,
@@ -13,12 +12,11 @@
   "project",
   "project_name",
   "column_break_3",
-  "fiscal_year",
-  "business_activity",
   "deviation",
-  "budget_type",
+  "fiscal_year",
   "monthly_distribution",
   "amended_from",
+  "budget_type",
   "section_break_21",
   "get_accounts",
   "accounts",
@@ -45,10 +43,10 @@
    "default": "Cost Center",
    "fieldname": "budget_against",
    "fieldtype": "Select",
-   "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Budget Against",
    "options": "\nCost Center\nProject",
+   "read_only": 1,
    "reqd": 1
   },
   {
@@ -93,6 +91,7 @@
    "depends_on": "eval:in_list([\"Stop\", \"Warn\"], doc.action_if_accumulated_monthly_budget_exceeded_on_po || doc.action_if_accumulated_monthly_budget_exceeded_on_mr || doc.action_if_accumulated_monthly_budget_exceeded_on_actual)",
    "fieldname": "monthly_distribution",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Monthly Distribution",
    "options": "Monthly Distribution"
   },
@@ -127,7 +126,7 @@
   },
   {
    "allow_on_submit": 1,
-   "default": "Warn",
+   "default": "Stop",
    "depends_on": "eval:doc.applicable_on_material_request == 1",
    "fieldname": "action_if_accumulated_monthly_budget_exceeded_on_mr",
    "fieldtype": "Select",
@@ -155,7 +154,7 @@
   },
   {
    "allow_on_submit": 1,
-   "default": "Warn",
+   "default": "Stop",
    "depends_on": "eval:doc.applicable_on_purchase_order == 1",
    "fieldname": "action_if_accumulated_monthly_budget_exceeded_on_po",
    "fieldtype": "Select",
@@ -183,7 +182,7 @@
   },
   {
    "allow_on_submit": 1,
-   "default": "Warn",
+   "default": "Stop",
    "depends_on": "eval:doc.applicable_on_booking_actual_expenses == 1",
    "fieldname": "action_if_accumulated_monthly_budget_exceeded",
    "fieldtype": "Select",
@@ -209,14 +208,6 @@
    "label": "Get Budget Heads"
   },
   {
-   "fieldname": "budget_type",
-   "fieldtype": "Link",
-   "hidden": 1,
-   "label": "Budget Type",
-   "options": "Budget Type"
-  },
-  {
-   "allow_on_submit": 1,
    "fieldname": "initial_total",
    "fieldtype": "Currency",
    "label": "Total(Initial)",
@@ -227,14 +218,12 @@
    "fieldtype": "Column Break"
   },
   {
-   "allow_on_submit": 1,
    "fieldname": "supp_total",
    "fieldtype": "Currency",
    "label": "Total(Supplementary)",
    "read_only": 1
   },
   {
-   "allow_on_submit": 1,
    "fieldname": "actual_total",
    "fieldtype": "Currency",
    "label": "Total(Actual)",
@@ -255,27 +244,22 @@
   {
    "fieldname": "deviation",
    "fieldtype": "Percent",
-   "hidden": 1,
    "label": "Allow Deviation (%)",
    "precision": "2"
   },
   {
-   "default": "Common",
-   "fieldname": "business_activity",
-   "fieldtype": "Link",
-   "label": "Business Activity",
-   "options": "Business Activity",
-   "reqd": 1
+   "fieldname": "budget_type",
+   "fieldtype": "Data",
+   "label": "Budget Type"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-05-28 15:32:54.227139",
+ "modified": "2024-10-21 16:24:02.406612",
  "modified_by": "Administrator",
  "module": "Budget",
  "name": "Budget",
- "naming_rule": "Expression (old style)",
  "owner": "Administrator",
  "permissions": [
   {

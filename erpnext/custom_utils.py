@@ -99,7 +99,7 @@ def get_user_info(user=None, employee=None, cost_center=None):
 		
 	warehouse   = frappe.db.get_value("Cost Center", cost_center, "warehouse")
 	approver    = frappe.db.get_value("Approver Item", {"cost_center": cost_center}, "approver")
-	# customer    = frappe.db.get_value("Customer", {"cost_center": cost_center}, "name")
+	customer    = frappe.db.get_value("Customer", {"cost_center": cost_center}, "name")
 
 	info.setdefault('cost_center', cost_center)
 	info.setdefault('branch', branch)
@@ -261,7 +261,7 @@ def check_budget_available(cost_center, budget_account, transaction_date, amount
 		if bud_acc_dtl.budget_check:
 			return
 		#Check if Budget Account is Centralized
-		if bud_acc_dtl.centralized_budget:
+		if bud_acc_dtl.is_centralized_budget:
 			cost_center = bud_acc_dtl.cost_center
 		else:
 			cc_doc = frappe.get_doc("Cost Center", cost_center)

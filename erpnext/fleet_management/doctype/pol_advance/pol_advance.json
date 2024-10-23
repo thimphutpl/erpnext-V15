@@ -1,81 +1,56 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "POLE.-.YY.-.MM.-.###",
- "creation": "2022-10-19 15:24:00.939251",
+ "autoname": "POLA.-.YY.-.MM.-.###",
+ "creation": "2023-06-07 15:52:51.124231",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "company",
-  "column_break_2",
-  "branch",
-  "column_break_nnvi",
-  "cost_center",
-  "entry_date",
-  "section_break_3",
+  "use_common_fuelbook",
   "equipment",
-  "equipment_number",
-  "column_break_6",
-  "fuelbook",
+  "equipment_type",
+  "equipment_category",
+  "fuel_book",
+  "column_break_5",
+  "entry_date",
+  "cost_center",
   "fuelbook_branch",
   "is_opening",
-  "payment_details",
+  "payment_details_section",
   "party_type",
-  "payment_type",
-  "supplier",
+  "party",
+  "credit_account",
+  "advance_limit",
+  "column_break_11",
   "currency",
-  "column_break_16",
-  "expense_account",
   "amount",
   "adjusted_amount",
   "balance_amount",
-  "column_break_18",
-  "od_amount",
-  "od_adjusted_amount",
-  "od_outstanding_amount",
-  "additional_information",
-  "column_break_23",
-  "business_activity",
-  "od_adjustment",
-  "items",
-  "sb_cheque",
-  "use_check_lot",
+  "cheque_details_section",
+  "use_cheque_lot",
   "select_cheque_lot",
-  "cheque_date",
+  "column_break_25",
   "pay_to_recd_from",
-  "column_break_qhot",
   "cheque_no",
-  "clearance_date",
-  "user_remark",
-  "section_break_uvue",
+  "cheque_date",
+  "sb_additional_info",
+  "company",
+  "branch",
+  "sb_approver",
+  "approver",
+  "column_break_34",
+  "approver_name",
+  "column_break_36",
+  "approver_designation",
+  "section_break_31",
   "journal_entry",
-  "approved_by",
+  "user_remark",
+  "amended_from",
   "workflow_state",
-  "column_break_fffd",
-  "je_status",
-  "amended_from"
+  "payment_status"
  ],
  "fields": [
-  {
-   "fieldname": "equipment",
-   "fieldtype": "Link",
-   "label": "Equipment",
-   "options": "Equipment",
-   "reqd": 1
-  },
-  {
-   "fetch_from": "equipment.registeration_number",
-   "fieldname": "equipment_number",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Equipment Number",
-   "read_only": 1
-  },
-  {
-   "fieldname": "column_break_6",
-   "fieldtype": "Column Break"
-  },
   {
    "default": "Today",
    "fieldname": "entry_date",
@@ -85,130 +60,88 @@
    "reqd": 1
   },
   {
-   "fetch_from": "equipment.fuelbook",
-   "fieldname": "fuelbook",
+   "fieldname": "branch",
    "fieldtype": "Link",
    "in_list_view": 1,
-   "label": "Fuelbook",
-   "options": "Fuelbook",
-   "read_only": 1
-  },
-  {
-   "fetch_from": "fuelbook.branch",
-   "fieldname": "fuelbook_branch",
-   "fieldtype": "Link",
-   "label": "Fuelbook Branch",
+   "label": "Branch",
    "options": "Branch",
    "read_only": 1
   },
   {
-   "fetch_from": "branch.cost_center",
-   "fieldname": "cost_center",
-   "fieldtype": "Link",
-   "label": "Cost Center",
-   "options": "Cost Center",
-   "read_only": 1
+   "fieldname": "column_break_5",
+   "fieldtype": "Column Break"
   },
   {
-   "fieldname": "payment_details",
-   "fieldtype": "Section Break",
-   "label": "Payment Details"
-  },
-  {
+   "default": "Supplier",
    "fieldname": "party_type",
-   "fieldtype": "Select",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "ignore_user_permissions": 1,
    "label": "Party Type",
-   "options": "Supplier",
+   "options": "Party Type",
    "reqd": 1
   },
   {
-   "fetch_from": "party_type.account_type",
-   "fieldname": "payment_type",
-   "fieldtype": "Data",
-   "label": "Payment Type",
-   "read_only": 1
-  },
-  {
-   "fetch_from": "fuelbook.supplier",
-   "fieldname": "supplier",
+   "fetch_from": "fuel_book.supplier",
+   "fieldname": "party",
    "fieldtype": "Link",
+   "ignore_user_permissions": 1,
+   "in_list_view": 1,
    "label": "Supplier",
    "options": "Supplier",
    "reqd": 1
   },
   {
+   "fieldname": "payment_details_section",
+   "fieldtype": "Section Break",
+   "label": "Payment Details"
+  },
+  {
+   "default": "BTN",
    "fieldname": "currency",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Currency",
    "options": "Currency",
+   "read_only": 1,
    "reqd": 1
   },
   {
-   "fieldname": "column_break_16",
+   "fieldname": "column_break_11",
    "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "expense_account",
-   "fieldtype": "Link",
-   "label": "Credit Account",
-   "options": "Account",
-   "reqd": 1
   },
   {
    "fieldname": "amount",
    "fieldtype": "Currency",
    "in_list_view": 1,
-   "label": "Amount",
+   "label": "Advance Amount",
    "reqd": 1
   },
   {
-   "allow_on_submit": 1,
-   "fieldname": "adjusted_amount",
-   "fieldtype": "Currency",
-   "ignore_user_permissions": 1,
-   "label": "Adjusted Amount",
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "POL Advance",
+   "print_hide": 1,
    "read_only": 1
   },
   {
-   "allow_on_submit": 1,
-   "fieldname": "balance_amount",
-   "fieldtype": "Currency",
-   "ignore_user_permissions": 1,
-   "label": "Balance Amount",
+   "fieldname": "fuel_book",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Fuel Book",
+   "options": "Fuelbook",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "fuel_book.branch",
+   "fieldname": "fuelbook_branch",
+   "fieldtype": "Link",
+   "label": "Fuelbook Branch",
+   "options": "Branch",
    "read_only": 1
-  },
-  {
-   "fieldname": "column_break_18",
-   "fieldtype": "Column Break"
-  },
-  {
-   "allow_on_submit": 1,
-   "fieldname": "od_amount",
-   "fieldtype": "Currency",
-   "ignore_user_permissions": 1,
-   "label": "OD Amount",
-   "read_only": 1
-  },
-  {
-   "allow_on_submit": 1,
-   "fieldname": "od_adjusted_amount",
-   "fieldtype": "Currency",
-   "ignore_user_permissions": 1,
-   "label": "OD Adjusted Amount",
-   "read_only": 1
-  },
-  {
-   "allow_on_submit": 1,
-   "fieldname": "od_outstanding_amount",
-   "fieldtype": "Currency",
-   "ignore_user_permissions": 1,
-   "label": "OD Outstanding Amount",
-   "read_only": 1
-  },
-  {
-   "fieldname": "additional_information",
-   "fieldtype": "Section Break",
-   "label": "Additional Information"
   },
   {
    "fieldname": "company",
@@ -218,95 +151,93 @@
    "reqd": 1
   },
   {
-   "fieldname": "branch",
+   "fetch_from": "fuelbook_branch.cost_center",
+   "fieldname": "cost_center",
    "fieldtype": "Link",
-   "label": "Branch",
-   "options": "Branch",
-   "reqd": 1
-  },
-  {
-   "fieldname": "column_break_23",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "business_activity",
-   "fieldtype": "Link",
-   "label": "Business Activity",
-   "options": "Business Activity",
-   "reqd": 1
-  },
-  {
-   "fieldname": "od_adjustment",
-   "fieldtype": "Section Break",
-   "label": "OD Adjustment"
-  },
-  {
-   "fieldname": "items",
-   "fieldtype": "Table",
-   "label": "Items",
-   "options": "POL OD item",
+   "label": "Cost Center",
+   "options": "Cost Center",
    "read_only": 1
   },
   {
-   "fieldname": "sb_cheque",
-   "fieldtype": "Section Break"
+   "allow_on_submit": 1,
+   "fieldname": "adjusted_amount",
+   "fieldtype": "Currency",
+   "label": "Adjusted Amount",
+   "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "balance_amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Balance Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "credit_account",
+   "fieldtype": "Link",
+   "label": "Credit Account",
+   "options": "Account",
+   "read_only": 1
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "sb_additional_info",
+   "fieldtype": "Section Break",
+   "label": "ADDITIONAL INFORMATION"
+  },
+  {
+   "depends_on": "eval:doc.workflow_state ==\"Waiting Approval\";",
+   "fieldname": "cheque_details_section",
+   "fieldtype": "Section Break",
+   "label": "Cheque Details"
   },
   {
    "default": "0",
-   "fieldname": "use_check_lot",
+   "fieldname": "use_cheque_lot",
    "fieldtype": "Check",
-   "label": "Assign Using Check Lot"
+   "label": "Assign Using Cheque Lot"
   },
   {
-   "depends_on": "eval:doc.use_check_lot==1",
+   "depends_on": "eval:doc.use_cheque_lot",
    "fieldname": "select_cheque_lot",
    "fieldtype": "Link",
-   "label": "Select Cheque Lot",
+   "label": "Cheque Lot",
    "options": "Cheque Lot"
   },
   {
-   "allow_on_submit": 1,
    "fieldname": "cheque_no",
    "fieldtype": "Data",
-   "in_filter": 1,
-   "label": "Cheque Number",
-   "no_copy": 1,
-   "search_index": 1
+   "label": "Cheque Number"
   },
   {
-   "allow_on_submit": 1,
    "fieldname": "cheque_date",
    "fieldtype": "Date",
-   "label": "Cheque Date",
-   "no_copy": 1
+   "label": "Cheque Date"
   },
   {
-   "allow_on_submit": 1,
    "fieldname": "pay_to_recd_from",
    "fieldtype": "Data",
-   "label": "Pay To / Recd From",
-   "report_hide": 1
+   "label": "Pay To / Recd From"
   },
   {
-   "fieldname": "clearance_date",
-   "fieldtype": "Date",
-   "label": "Clearance Date",
-   "read_only": 1
+   "fieldname": "column_break_25",
+   "fieldtype": "Column Break"
   },
   {
-   "allow_on_submit": 1,
+   "default": "0",
+   "fieldname": "is_opening",
+   "fieldtype": "Check",
+   "label": "Is Opening"
+  },
+  {
+   "fieldname": "section_break_31",
+   "fieldtype": "Section Break"
+  },
+  {
    "fieldname": "user_remark",
    "fieldtype": "Small Text",
-   "in_filter": 1,
-   "label": "Narration",
-   "no_copy": 1
-  },
-  {
-   "fieldname": "approved_by",
-   "fieldtype": "Data",
-   "hidden": 1,
-   "label": "Approved By",
-   "read_only": 1
+   "label": "Narration"
   },
   {
    "allow_on_submit": 1,
@@ -316,70 +247,98 @@
    "read_only": 1
   },
   {
-   "allow_on_submit": 1,
-   "fieldname": "je_status",
-   "fieldtype": "Select",
+   "fieldname": "equipment",
+   "fieldtype": "Link",
    "in_list_view": 1,
-   "label": "JE Status",
-   "options": "\nSubmitted",
+   "in_standard_filter": 1,
+   "label": "Equipment",
+   "mandatory_depends_on": "eval:!doc.use_common_fuelbook",
+   "options": "Equipment"
+  },
+  {
+   "fieldname": "workflow_state",
+   "fieldtype": "Data",
+   "label": "Workflow"
+  },
+  {
+   "fetch_from": "equipment.equipment_type",
+   "fieldname": "equipment_type",
+   "fieldtype": "Link",
+   "label": "Equipment Type",
+   "options": "Equipment Type",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sb_approver",
+   "fieldtype": "Section Break",
+   "label": "Approver Details"
+  },
+  {
+   "fieldname": "approver",
+   "fieldtype": "Link",
+   "label": "Approver",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "approver_name",
+   "fieldtype": "Data",
+   "label": "Approver Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "approver_designation",
+   "fieldtype": "Link",
+   "label": "Approver Designation",
+   "options": "Designation",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_34",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_36",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "equipment.equipment_category",
+   "fetch_if_empty": 1,
+   "fieldname": "equipment_category",
+   "fieldtype": "Link",
+   "label": "Equipment Category",
+   "options": "Equipment Category",
+   "read_only": 1
+  },
+  {
+   "fieldname": "payment_status",
+   "fieldtype": "Select",
+   "hidden": 1,
+   "label": "Payment Status",
+   "options": "\nPaid\nUnpaid\nSubmitted\nPartly Paid\nDraft\nCancelled",
    "read_only": 1
   },
   {
    "default": "0",
-   "fieldname": "is_opening",
+   "fieldname": "use_common_fuelbook",
    "fieldtype": "Check",
-   "label": " Is Opening"
+   "label": "Use Common Fuelbook"
   },
   {
-   "fieldname": "workflow_state",
-   "fieldtype": "Link",
-   "hidden": 1,
-   "label": "Workflow State",
-   "options": "Workflow State"
-  },
-  {
-   "fieldname": "section_break_3",
-   "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "column_break_2",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "amended_from",
-   "fieldtype": "Link",
-   "label": "Amended From",
-   "no_copy": 1,
-   "options": "POL Advance",
-   "print_hide": 1,
-   "read_only": 1,
-   "search_index": 1
-  },
-  {
-   "fieldname": "column_break_qhot",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "section_break_uvue",
-   "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "column_break_fffd",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "column_break_nnvi",
-   "fieldtype": "Column Break"
+   "fieldname": "advance_limit",
+   "fieldtype": "Currency",
+   "label": "Advance Limit",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-07-24 15:53:02.521212",
+ "modified": "2024-09-03 12:03:30.012616",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Advance",
- "naming_rule": "Expression (old style)",
+ "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
   {

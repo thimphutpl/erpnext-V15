@@ -17,14 +17,14 @@ class AssetMovement(Document):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
-		from frappe.types import DF
-
 		from erpnext.assets.doctype.asset_movement_item.asset_movement_item import AssetMovementItem
+		from frappe.types import DF
 
 		amended_from: DF.Link | None
 		assets: DF.Table[AssetMovementItem]
 		company: DF.Link
-		purpose: DF.Literal["", "Issue", "Receipt", "Transfer"]
+		from_employee: DF.Link
+		purpose: DF.Literal["Transfer"]
 		reference_doctype: DF.Link | None
 		reference_name: DF.DynamicLink | None
 		transaction_date: DF.Datetime

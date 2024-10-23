@@ -1,88 +1,58 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "POLR.-.YY.-.MM.-.DD.-.###",
+ "autoname": "format:POLR-{YY}-{MM}-{DD}-{###}",
  "creation": "2022-10-20 14:46:05.098826",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
   "section_break_1",
-  "company",
-  "business_activity",
-  "column_break_3",
   "branch",
-  "col_break_2",
   "cost_center",
-  "column_break_2",
+  "company",
+  "column_break_3",
   "posting_date",
   "posting_time",
-  "book_type",
   "direct_consumption",
   "section_break_6",
+  "use_common_fuelbook",
   "equipment",
-  "own_fb",
   "equipment_type",
-  "column_break_68",
-  "equipment_number",
-  "equipment_category",
-  "column_break_70",
-  "equipment_branch",
-  "section_break_23",
-  "hiring_branch",
-  "column_break_25",
-  "hiring_cost_center",
-  "column_break_27",
-  "hiring_warehouse",
-  "section_break_15",
-  "supplier",
-  "col_break_supp",
+  "uom",
   "fuelbook",
-  "column_break_19",
+  "section_break_15",
+  "equipment_category",
   "fuelbook_branch",
+  "supplier",
+  "hired_equipment",
   "section_break_4",
   "pol_type",
-  "rate",
-  "column_break_6",
   "item_name",
-  "amount",
-  "column_break_8",
-  "stock_uom",
-  "is_hsd_item",
-  "section_break_45",
-  "items",
-  "section_break_52",
+  "column_break_6",
   "qty",
-  "column_break_49",
-  "current_km_reading",
-  "column_break_52",
+  "stock_uom",
+  "column_break_8",
+  "rate",
+  "mileage_details",
+  "cur_km_reading",
   "km_difference",
-  "column_break_54",
+  "column_break_31",
+  "previous_km",
+  "column_break_33",
   "mileage",
-  "advance_details",
-  "get_advance",
-  "advances",
+  "advance_details_section",
+  "get_pol_advance",
+  "items",
   "section_break_10",
-  "discount_amount",
   "total_amount",
-  "paid_amount",
-  "outstanding_amount",
+  "pol_slip_no",
   "column_break_12",
-  "od_amount",
   "memo_number",
-  "remarks",
   "section_break_8",
-  "consumed",
-  "column_break_17",
-  "jv",
-  "column_break_24",
-  "section_break_66",
-  "settled_using_imprest",
-  "credit_account",
-  "column_break_69",
-  "party_type",
-  "party",
-  "amended_from"
+  "remarks",
+  "amended_from",
+  "currency"
  ],
  "fields": [
   {
@@ -93,6 +63,7 @@
   {
    "fieldname": "branch",
    "fieldtype": "Link",
+   "in_standard_filter": 1,
    "label": "Branch",
    "options": "Branch",
    "reqd": 1
@@ -103,15 +74,7 @@
    "fieldtype": "Link",
    "label": "Cost Center",
    "options": "Cost Center",
-   "read_only": 1,
-   "reqd": 1
-  },
-  {
-   "fieldname": "business_activity",
-   "fieldtype": "Link",
-   "label": "Business Activity",
-   "options": "Business Activity",
-   "reqd": 1
+   "read_only": 1
   },
   {
    "fieldname": "column_break_3",
@@ -122,35 +85,28 @@
    "fieldtype": "Link",
    "label": "Company",
    "options": "Company",
+   "read_only": 1,
    "reqd": 1
   },
   {
-   "fieldname": "col_break_2",
-   "fieldtype": "Column Break"
-  },
-  {
-   "allow_on_submit": 1,
+   "default": "Today",
    "fieldname": "posting_date",
    "fieldtype": "Date",
    "label": "Posting Date",
    "reqd": 1
   },
   {
-   "fieldname": "column_break_2",
-   "fieldtype": "Column Break"
+   "default": "Now",
+   "fieldname": "posting_time",
+   "fieldtype": "Time",
+   "label": "Posting Time",
+   "reqd": 1
   },
   {
-   "fieldname": "book_type",
-   "fieldtype": "Select",
-   "label": "Fuel Book Type",
-   "options": "Own\nCommon"
-  },
-  {
-   "default": "0",
+   "default": "1",
    "description": "If the POL is consumed directly by the vehicle, check this. This will consume the POL too",
    "fieldname": "direct_consumption",
    "fieldtype": "Check",
-   "hidden": 1,
    "label": "Direct Consumption"
   },
   {
@@ -159,117 +115,16 @@
    "label": "Equipment Details"
   },
   {
-   "fieldname": "equipment",
-   "fieldtype": "Link",
-   "in_filter": 1,
-   "label": "Vehicle",
-   "options": "Equipment",
-   "reqd": 1
-  },
-  {
-   "fieldname": "own_fb",
-   "fieldtype": "Data",
-   "hidden": 1,
-   "label": "Own FB"
-  },
-  {
-   "fetch_from": "equipment.equipment_type",
-   "fieldname": "equipment_type",
-   "fieldtype": "Read Only",
-   "label": "Equipment Type"
-  },
-  {
-   "fieldname": "column_break_68",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fetch_from": "equipment.registeration_number",
-   "fieldname": "equipment_number",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Vehicle Number",
-   "read_only": 1
-  },
-  {
-   "fetch_from": "equipment.equipment_category",
-   "fieldname": "equipment_category",
-   "fieldtype": "Read Only",
-   "label": "Equipment Category"
-  },
-  {
-   "fieldname": "column_break_70",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fetch_from": "equipment.branch",
-   "fieldname": "equipment_branch",
-   "fieldtype": "Read Only",
-   "label": "Equipment Branch"
-  },
-  {
-   "fieldname": "section_break_23",
-   "fieldtype": "Section Break",
-   "read_only": 1
-  },
-  {
-   "fieldname": "hiring_branch",
-   "fieldtype": "Data",
-   "label": "Hiring Branch",
-   "read_only": 1
-  },
-  {
-   "fieldname": "column_break_25",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "hiring_cost_center",
-   "fieldtype": "Data",
-   "label": "Hiring Cost Center",
-   "read_only": 1
-  },
-  {
-   "fieldname": "column_break_27",
-   "fieldtype": "Column Break"
-  },
-  {
-   "depends_on": "eval:doc.hiring_branch",
-   "fieldname": "hiring_warehouse",
-   "fieldtype": "Data",
-   "label": "Hiring Warehouse"
-  },
-  {
    "fieldname": "section_break_15",
-   "fieldtype": "Section Break"
+   "fieldtype": "Column Break"
   },
   {
+   "fetch_from": "fuelbook.supplier",
    "fieldname": "supplier",
    "fieldtype": "Link",
    "label": "Supplier",
    "options": "Supplier",
    "reqd": 1
-  },
-  {
-   "fieldname": "col_break_supp",
-   "fieldtype": "Column Break"
-  },
-  {
-   "depends_on": "eval:doc.equipment",
-   "fetch_from": "equipment.fuelbook",
-   "fieldname": "fuelbook",
-   "fieldtype": "Link",
-   "label": "Fuelbook",
-   "options": "Fuelbook",
-   "read_only": 1
-  },
-  {
-   "fieldname": "column_break_19",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fetch_from": "fuelbook.branch",
-   "fieldname": "fuelbook_branch",
-   "fieldtype": "Read Only",
-   "label": "Fuelbook Branch"
   },
   {
    "fieldname": "section_break_4",
@@ -279,62 +134,9 @@
   {
    "fieldname": "pol_type",
    "fieldtype": "Link",
-   "label": "HSD Item Code",
+   "label": "Fuel Type Item Code",
    "options": "Item",
    "reqd": 1
-  },
-  {
-   "fieldname": "column_break_6",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "qty",
-   "fieldtype": "Float",
-   "in_list_view": 1,
-   "label": "Total Quantity",
-   "precision": "2",
-   "read_only": 1
-  },
-  {
-   "fieldname": "amount",
-   "fieldtype": "Currency",
-   "hidden": 1,
-   "label": "Amount",
-   "read_only": 1
-  },
-  {
-   "fieldname": "km_difference",
-   "fieldtype": "Float",
-   "label": "KM Difference",
-   "read_only": 1
-  },
-  {
-   "fieldname": "column_break_8",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "rate",
-   "fieldtype": "Currency",
-   "hidden": 1,
-   "label": "Rate Per Unit",
-   "precision": "2",
-   "read_only": 1
-  },
-  {
-   "default": "0",
-   "fieldname": "is_hsd_item",
-   "fieldtype": "Check",
-   "hidden": 1,
-   "label": "Is HSD Item",
-   "options": "pol_type.is_hsd_item",
-   "read_only": 1
-  },
-  {
-   "fieldname": "mileage",
-   "fieldtype": "Float",
-   "label": "Mileage",
-   "precision": "2",
-   "read_only": 1
   },
   {
    "fetch_from": "pol_type.item_name",
@@ -344,40 +146,34 @@
    "read_only": 1
   },
   {
-   "fieldname": "current_km_reading",
+   "fieldname": "column_break_6",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "qty",
    "fieldtype": "Float",
-   "label": "Current KM Reading",
+   "in_list_view": 1,
+   "label": "Quantity",
+   "precision": "2",
    "reqd": 1
   },
   {
    "fetch_from": "pol_type.stock_uom",
    "fieldname": "stock_uom",
-   "fieldtype": "Data",
+   "fieldtype": "Link",
    "label": "Stock UOM",
+   "options": "UOM",
    "read_only": 1
   },
   {
-   "fieldname": "advance_details",
-   "fieldtype": "Section Break",
-   "label": "Advance Details"
+   "fieldname": "column_break_8",
+   "fieldtype": "Column Break"
   },
   {
-   "depends_on": "eval:doc.direct_consumption != 1 && doc.docstatus == 0",
-   "fieldname": "get_advance",
-   "fieldtype": "Button",
-   "label": "Get Advance"
-  },
-  {
-   "fieldname": "items",
-   "fieldtype": "Table",
-   "label": "Items",
-   "options": "POL Item"
-  },
-  {
-   "fieldname": "od_amount",
+   "fieldname": "rate",
    "fieldtype": "Currency",
-   "label": "OD Amount",
-   "read_only": 1
+   "label": "Rate Per Unit",
+   "reqd": 1
   },
   {
    "fieldname": "section_break_10",
@@ -385,28 +181,11 @@
    "label": "Amount Details"
   },
   {
-   "fieldname": "discount_amount",
-   "fieldtype": "Currency",
-   "hidden": 1,
-   "label": "Discount Amount"
-  },
-  {
    "fieldname": "total_amount",
    "fieldtype": "Currency",
-   "label": "Total Amount",
-   "read_only": 1
-  },
-  {
-   "fieldname": "paid_amount",
-   "fieldtype": "Currency",
-   "label": "Paid Amount",
-   "read_only": 1
-  },
-  {
-   "fieldname": "outstanding_amount",
-   "fieldtype": "Currency",
-   "label": "Outstanding Amount",
-   "read_only": 1
+   "label": "Bill Amount",
+   "read_only": 1,
+   "reqd": 1
   },
   {
    "fieldname": "column_break_12",
@@ -415,11 +194,12 @@
   {
    "fieldname": "memo_number",
    "fieldtype": "Data",
-   "label": "Cash Memo Number"
+   "label": "Cash Memo Number",
+   "reqd": 1
   },
   {
    "fieldname": "remarks",
-   "fieldtype": "Long Text",
+   "fieldtype": "Small Text",
    "label": "Remarks"
   },
   {
@@ -427,89 +207,59 @@
    "fieldtype": "Section Break"
   },
   {
-   "fieldname": "consumed",
-   "fieldtype": "Link",
-   "label": "Consumption Reference",
-   "options": "Consumed POL",
+   "fieldname": "cur_km_reading",
+   "fieldtype": "Float",
+   "label": "Current KM/HR Reading",
+   "mandatory_depends_on": "eval:doc.direct_consumption && !doc.hired_equipment"
+  },
+  {
+   "fieldname": "km_difference",
+   "fieldtype": "Float",
+   "label": "KM/Hr Difference",
    "read_only": 1
   },
   {
-   "fieldname": "column_break_17",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "jv",
-   "fieldtype": "Data",
-   "label": "Journal Entry",
+   "fieldname": "mileage",
+   "fieldtype": "Float",
+   "label": "Mileage",
    "read_only": 1
   },
   {
-   "fieldname": "column_break_24",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "section_break_66",
+   "fieldname": "advance_details_section",
    "fieldtype": "Section Break",
-   "hidden": 1,
-   "label": "Settled Using Imprest"
+   "label": "Advance Details"
   },
   {
-   "default": "0",
-   "fieldname": "settled_using_imprest",
-   "fieldtype": "Check",
-   "label": "Settled Using Imprest ?"
-  },
-  {
-   "depends_on": "eval: doc.settled_using_imprest",
-   "fieldname": "credit_account",
-   "fieldtype": "Link",
-   "label": "Credit Account",
-   "options": "Account"
-  },
-  {
-   "fieldname": "column_break_69",
-   "fieldtype": "Column Break"
-  },
-  {
-   "depends_on": "eval: doc.credit_account",
-   "fieldname": "party_type",
-   "fieldtype": "Select",
-   "label": "Party Type",
-   "options": "\nEmployee"
-  },
-  {
-   "depends_on": "eval: doc.party_type",
-   "fieldname": "party",
-   "fieldtype": "Dynamic Link",
-   "label": "Party",
-   "options": "party_type"
-  },
-  {
-   "fieldname": "section_break_45",
-   "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "advances",
+   "fieldname": "items",
    "fieldtype": "Table",
-   "label": "Advances",
-   "options": "POL Advance Item",
+   "label": "Items",
+   "options": "POL Receive Item",
    "read_only": 1
   },
   {
-   "fieldname": "section_break_52",
-   "fieldtype": "Section Break"
+   "fieldname": "equipment",
+   "fieldtype": "Link",
+   "in_filter": 1,
+   "in_standard_filter": 1,
+   "label": "Equipment",
+   "options": "Equipment",
+   "reqd": 1
   },
   {
-   "fieldname": "column_break_52",
-   "fieldtype": "Column Break"
+   "fetch_from": "equipment.equipment_type",
+   "fieldname": "equipment_type",
+   "fieldtype": "Link",
+   "label": "Equipment Type",
+   "options": "Equipment Type",
+   "read_only": 1
   },
   {
-   "fieldname": "column_break_54",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "column_break_49",
-   "fieldtype": "Column Break"
+   "fetch_from": "equipment.equipment_category",
+   "fieldname": "equipment_category",
+   "fieldtype": "Link",
+   "label": "Equipment Category",
+   "options": "Equipment Category",
+   "read_only": 1
   },
   {
    "fieldname": "amended_from",
@@ -518,23 +268,91 @@
    "no_copy": 1,
    "options": "POL Receive",
    "print_hide": 1,
-   "read_only": 1,
-   "search_index": 1
+   "read_only": 1
   },
   {
-   "fieldname": "posting_time",
-   "fieldtype": "Time",
-   "label": "Posting Time"
+   "fieldname": "fuelbook",
+   "fieldtype": "Link",
+   "label": "Fuelbook",
+   "options": "Fuelbook",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "fuelbook.branch",
+   "fieldname": "fuelbook_branch",
+   "fieldtype": "Link",
+   "label": "Fuelbook Branch",
+   "options": "Branch",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "equipment.reading_uom",
+   "fieldname": "uom",
+   "fieldtype": "Data",
+   "label": "UOM",
+   "read_only": 1
+  },
+  {
+   "fieldname": "previous_km",
+   "fieldtype": "Float",
+   "label": "Previous KM",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:!doc.hired_equipment",
+   "fieldname": "mileage_details",
+   "fieldtype": "Section Break",
+   "label": "Mileage Details"
+  },
+  {
+   "fieldname": "column_break_31",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_33",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fetch_from": "equipment.hired_equipment",
+   "fieldname": "hired_equipment",
+   "fieldtype": "Check",
+   "label": "Hired Equipment",
+   "read_only": 1
+  },
+  {
+   "fieldname": "pol_slip_no",
+   "fieldtype": "Data",
+   "label": "POL Slip No."
+  },
+  {
+   "default": "0",
+   "fieldname": "use_common_fuelbook",
+   "fieldtype": "Check",
+   "label": "Use Common Fuelbook"
+  },
+  {
+   "fieldname": "currency",
+   "fieldtype": "Link",
+   "label": "Currency",
+   "options": "Currency",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.docstatus == 0",
+   "fieldname": "get_pol_advance",
+   "fieldtype": "Button",
+   "label": "Get Pol Advance"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-07-25 11:47:53.529076",
+ "modified": "2023-12-07 16:07:51.543276",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Receive",
- "naming_rule": "Expression (old style)",
+ "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
   {

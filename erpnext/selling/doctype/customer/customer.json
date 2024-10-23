@@ -41,6 +41,10 @@
   "language",
   "column_break_45",
   "customer_details",
+  "sb_cc_and_branch",
+  "branch",
+  "cb_ccb_1",
+  "cost_center",
   "dashboard_tab",
   "contact_and_address_tab",
   "address_contacts",
@@ -570,6 +574,29 @@
   {
    "fieldname": "column_break_nwor",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "sb_cc_and_branch",
+   "fieldtype": "Section Break",
+   "label": "CC and Branch Info"
+  },
+  {
+   "fetch_from": "branch.cost_center",
+   "fieldname": "cost_center",
+   "fieldtype": "Link",
+   "label": "Cost Center",
+   "options": "Cost Center",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cb_ccb_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "label": "Branch",
+   "options": "Branch"
   }
  ],
  "icon": "fa fa-user",
@@ -583,7 +610,7 @@
    "link_fieldname": "party"
   }
  ],
- "modified": "2024-05-08 18:03:20.716169",
+ "modified": "2024-10-08 11:16:32.101913",
  "modified_by": "Administrator",
  "module": "Selling",
  "name": "Customer",

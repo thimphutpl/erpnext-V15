@@ -8,18 +8,24 @@
  "engine": "InnoDB",
  "field_order": [
   "appropriation_on",
-  "budget_against",
+  "budget_type",
   "from_cost_center",
   "from_project",
   "fiscal_year",
   "column_break_4",
   "company",
+  "budget_against",
   "to_cost_center",
   "to_project",
   "remark",
-  "business_activity",
   "section_break_10",
   "items",
+  "total_reappropiation_amount",
+  "approver_details_section",
+  "approver",
+  "approver_designation",
+  "column_break_16",
+  "approver_name",
   "amended_from"
  ],
  "fields": [
@@ -118,17 +124,50 @@
    "reqd": 1
   },
   {
-   "default": "Common",
-   "fieldname": "business_activity",
+   "fieldname": "approver_details_section",
+   "fieldtype": "Section Break",
+   "label": "Approver Details"
+  },
+  {
+   "fieldname": "approver",
    "fieldtype": "Link",
-   "label": "Business Activity",
-   "options": "Business Activity"
+   "label": "Approver",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_16",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "approver_name",
+   "fieldtype": "Data",
+   "label": "Approver Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "approver_designation",
+   "fieldtype": "Data",
+   "label": "Approver Designation",
+   "read_only": 1
+  },
+  {
+   "fieldname": "budget_type",
+   "fieldtype": "Link",
+   "label": "Budget Type",
+   "options": "Budget Type"
+  },
+  {
+   "fieldname": "total_reappropiation_amount",
+   "fieldtype": "Currency",
+   "label": "Total Reappropiation Amount",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-04-23 15:42:18.832447",
+ "modified": "2023-05-03 11:51:24.166703",
  "modified_by": "Administrator",
  "module": "Budget",
  "name": "Budget Reappropiation",
@@ -145,6 +184,31 @@
    "report": 1,
    "role": "System Manager",
    "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Accounts User",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Budget User",
+   "share": 1,
+   "submit": 1,
    "write": 1
   }
  ],

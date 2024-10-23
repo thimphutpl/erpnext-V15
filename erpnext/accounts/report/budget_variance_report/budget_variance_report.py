@@ -97,7 +97,7 @@ def get_columns(filters):
 			if filters["period"] == "Yearly":
 				labels = [
 					_("Budget") + " " + str(year[0]),
-					_("Actual") + " " + str(year[0]),
+					_("Actual Used") + " " + str(year[0]),
 					_("Variance") + " " + str(year[0]),
 				]
 				for label in labels:
@@ -107,7 +107,7 @@ def get_columns(filters):
 			else:
 				for label in [
 					_("Budget") + " (%s)" + " " + str(year[0]),
-					_("Actual") + " (%s)" + " " + str(year[0]),
+					_("Actual Used") + " (%s)" + " " + str(year[0]),
 					_("Variance") + " (%s)" + " " + str(year[0]),
 				]:
 					if group_months:
