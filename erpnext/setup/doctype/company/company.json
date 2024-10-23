@@ -165,6 +165,7 @@
    "default": "0",
    "fieldname": "is_group",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "Is Group"
   },
   {
@@ -180,11 +181,13 @@
   {
    "fieldname": "domain",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Domain"
   },
   {
    "fieldname": "parent_company",
    "fieldtype": "Link",
+   "hidden": 1,
    "ignore_user_permissions": 1,
    "in_list_view": 1,
    "label": "Parent Company",
@@ -962,7 +965,7 @@
  "image_field": "company_logo",
  "is_tree": 1,
  "links": [],
- "modified": "2024-09-25 11:32:31.385423",
+ "modified": "2024-10-09 11:34:05.575985",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Company",
