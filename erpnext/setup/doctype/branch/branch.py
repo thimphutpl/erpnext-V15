@@ -32,5 +32,5 @@ class Branch(Document):
 	def validate_branch_abbreviation(self):
 		if not self.abbreviation:
 			frappe.throw("Please set Abbreviation for this branch")
-		if not re.match(r'^[A-Z]{3}$', self.abbreviation):
-			frappe.throw("Branch abbreviation must be exactly three uppercase alphabet letters")
+		# if not re.match(r'^[A-Z]{3}$', self.abbreviation):
+		# 	frappe.throw("Branch abbreviation must be exactly three uppercase alphabet letters")

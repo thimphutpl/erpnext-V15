@@ -55,31 +55,11 @@ class AbstractBill(Document):
 	# end: auto-generated types
 
 	def autoname(self):
-		current_name = self.get_current_name()
-		self.name = current_name
-
-	def get_current_name(self):
-		current_name = frappe.db.sql(
-			"""select name from `tabAbstract Bill` where branch=%s order by name desc limit 1;""", self.branch)
-		if current_name:
-			# Extract the abbreviation
-			abbr = str(current_name[0][0])[:3]
-			# Extract year and month from posting_date
-			year_month = str(self.posting_date)[:7].replace('-', '')
-			# Extract and increment the last 4 digits of the current_name
-			last_digits = int(str(current_name[0][0])[9:13])
-			incremented_digits = last_digits + 1
-			# Format incremented digits to 4 digits
-			incremented_number = '{:04d}'.format(incremented_digits)
-			# Return the new name
-			return abbr + year_month + incremented_number
-		else:
-			abbreviation = frappe.db.get_value("Branch", self.branch, "abbreviation")
-			year_month = str(self.posting_date)[:7].replace('-', '')
-			if not abbreviation:
-				frappe.throw("Setup Abbreviation in {}".format(frappe.get_desk_link("Branch", self.branch)))
-			# Return a default new name with '0001'
-			return abbreviation + year_month + '0001'
+		abbreviation = frappe.db.get_value("Branch", self.branch, "abbreviation")
+		if not abbreviation:
+			frappe.throw("Setup Abbreviation in {}".format(frappe.get_desk_link("Branch", self.branch)))
+		year_month = str(self.posting_date)[:7].replace('-', '')
+		self.name = frappe.model.naming.make_autoname(f"{abbreviation}{year_month}.####")
 
 	def validate(self):
 		self.validate_abstract_bill_requires()
