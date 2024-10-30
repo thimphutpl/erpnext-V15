@@ -1,12 +1,13 @@
 # Copyright (c) 2022, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
-from __future__ import unicode_literals
 import frappe
 from frappe import _
-from frappe.utils import flt, getdate, formatdate, cstr, rounded
-from frappe.utils.data import get_first_day, get_last_day, add_years, date_diff, now, today, getdate
+from frappe.utils import cstr, flt, formatdate, getdate, rounded
+from frappe.utils.data import add_years, date_diff, get_first_day, get_last_day, now, today
+
 from erpnext.custom_utils import get_date_diff
+
 
 def execute(filters=None):
     validate_filters(filters)
@@ -24,7 +25,7 @@ def validate_filters(filters):
     # else:
     #     filters.year_start_date = getdate(fiscal_year.year_start_date)
     #     filters.year_end_date = getdate(fiscal_year.year_end_date)
-    
+
     from datetime import datetime
 
     filters.year_start_date = datetime.strptime(filters.fiscal_year + "-01-01", "%Y-%m-%d").date()
@@ -84,7 +85,7 @@ def get_depreciation_details(filters):
         WHERE ds.schedule_date <= '{to_date}'
         AND (IFNULL(ds.journal_entry,'') != '' )
         GROUP BY ds.parent
-    """.format(from_date=filters.from_date, to_date=filters.to_date, fiscal_year = filters.fiscal_year)
+    """.format(from_date=filters.from_date, to_date=filters.to_date)
 
     query_two= """
         SELECT
@@ -129,7 +130,7 @@ def get_data(filters):
                     AND am.docstatus = 1
                     AND am.date < '{from_date}'
                     ),0)
-                ) 
+                )
             ) gross_opening,
             (
                 (CASE WHEN a.purchase_date BETWEEN '{from_date}' AND '{to_date}' THEN IFNULL(a.asset_rate,0)*IFNULL(a.asset_quantity,1)
@@ -143,7 +144,7 @@ def get_data(filters):
                     AND am.date BETWEEN '{from_date}' AND '{to_date}'
                     AND am.difference_amount > 0
                     ),0)
-                ) 
+                )
             ) gross_addition,
             (CASE WHEN a.status in ('Scrapped', 'Sold') AND a.disposal_date BETWEEN '{from_date}' AND '{to_date}'
                 THEN IFNULL(a.gross_purchase_amount,0)
@@ -156,25 +157,25 @@ def get_data(filters):
                 ELSE 0
             END) AS dep_adjustment,
             0 AS opening_income,
-            (select 
+            (select
                        round(total_number_of_depreciations/12,2)
                 from `tabAsset Finance Book`
                    where parent = a.asset_category 
                   and asset_sub_category = a.asset_sub_category
                 limit 1
                 ) as total_number_of_depreciations,
-            (select 
-                income_depreciation_percent 
+            (select
+                income_depreciation_percent
             from `tabAsset Finance Book`
-            where parent = a.asset_category 
+            where parent = a.asset_category
             and asset_sub_category = a.asset_sub_category
             limit 1
             ) as depreciation_percent,
             0 AS depreciation_income_tax
-                FROM 
+                FROM
             `tabAsset` AS a
-            INNER JOIN `tabAsset Finance Book` AS f ON f.parent = a.name       
-        WHERE a.docstatus = 1 
+            INNER JOIN `tabAsset Finance Book` AS f ON f.parent = a.name
+        WHERE a.docstatus = 1
         AND a.purchase_date <= '{to_date}'
         AND (
             a.status not in ('Scrapped', 'Sold')
@@ -182,7 +183,7 @@ def get_data(filters):
             (a.status in ('Scrapped', 'Sold') AND a.disposal_date >= '{from_date}')
         )
         """.format(from_date=filters.from_date, to_date=filters.to_date)
-                
+
     if filters.cost_center:
         query+=" and a.cost_center = \'" + filters.cost_center + "\'"
 
@@ -225,7 +226,6 @@ def get_data(filters):
             net_useful_life = gross_total - dep_total
             net_income_tax = flt(a.gross_purchase_amount) - flt(a.iopening) - flt(a.depreciation_income_tax) - flt(a.opening_income)
 
-           
             row = {
                 "asset_code": a.name,
                 "asset_name": a.asset_name,
@@ -377,7 +377,7 @@ def get_columns():
             "fieldname": "depreciation_percent",
             "label": _("Income Dep. Percent"),
             "fieldtype": "Data",
-            "width": 120	
+            "width": 120
         },
         {
             "fieldname": "qty",
@@ -415,7 +415,7 @@ def get_columns():
             "fieldtype": "Currency",
             "width": 120
         },
-     
+
         {
             "fieldname": "dep_addition",
             "label": _("Dep. During the Year"),

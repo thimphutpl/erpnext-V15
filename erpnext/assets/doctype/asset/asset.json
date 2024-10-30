@@ -9,7 +9,6 @@
  "engine": "InnoDB",
  "field_order": [
   "company",
-  "asset_status",
   "item_code",
   "item_name",
   "asset_owner",
@@ -24,16 +23,17 @@
   "vehicle_number",
   "serial_number",
   "column_break_3",
-  "naming_series",
-  "item_category_abbr",
   "asset_name",
   "asset_category",
   "asset_sub_category",
   "location",
   "split_from",
   "department",
-  "disposal_date",
+  "column_break_lsnb",
+  "naming_series",
   "posting_date",
+  "asset_status",
+  "disposal_date",
   "accounting_dimensions_section",
   "branch",
   "cost_center",
@@ -575,6 +575,7 @@
    "options": "Asset Sub Category"
   },
   {
+   "depends_on": "eval:doc.is_existing_asset",
    "fieldname": "old_asset_code",
    "fieldtype": "Data",
    "label": "Old Asset Code"
@@ -676,9 +677,8 @@
    "label": "Remarks"
   },
   {
-   "fieldname": "item_category_abbr",
-   "fieldtype": "Data",
-   "label": "Item Category"
+   "fieldname": "column_break_lsnb",
+   "fieldtype": "Column Break"
   }
  ],
  "idx": 72,
@@ -722,7 +722,7 @@
    "link_fieldname": "target_asset"
   }
  ],
- "modified": "2024-10-21 10:22:32.230059",
+ "modified": "2024-10-21 15:31:03.630653",
  "modified_by": "Administrator",
  "module": "Assets",
  "name": "Asset",

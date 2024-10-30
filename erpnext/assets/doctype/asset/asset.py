@@ -7,6 +7,7 @@ import math
 
 import frappe
 from frappe import _
+from frappe.model.naming import make_autoname, set_name_by_naming_series
 from frappe.utils import (
 	cint,
 	flt,
@@ -20,7 +21,6 @@ from frappe.utils import (
 
 import erpnext
 from erpnext.accounts.general_ledger import make_reverse_gl_entries
-from frappe.model.naming import set_name_by_naming_series, make_autoname
 from erpnext.assets.doctype.asset.depreciation import (
 	get_comma_separated_links,
 	get_depreciation_accounts,
@@ -47,8 +47,9 @@ class Asset(AccountsController):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
-		from erpnext.assets.doctype.asset_finance_book.asset_finance_book import AssetFinanceBook
 		from frappe.types import DF
+
+		from erpnext.assets.doctype.asset_finance_book.asset_finance_book import AssetFinanceBook
 
 		additional_asset_cost: DF.Currency
 		additional_value: DF.Currency
@@ -93,7 +94,6 @@ class Asset(AccountsController):
 		is_existing_asset: DF.Check
 		is_fully_depreciated: DF.Check
 		issued_to: DF.Literal["", "Employee"]
-		item_category_abbr: DF.Data | None
 		item_code: DF.Link
 		item_name: DF.ReadOnly | None
 		journal_entry_for_scrap: DF.Link | None
@@ -132,7 +132,7 @@ class Asset(AccountsController):
 			default_company = frappe.db.get_single_value("Global Defaults", "default_company")
 			if not default_company:
 				frappe.throw("Please set the default Company in Global Defaults.")
-			
+
 			if default_company == self.company:
 				agency_abbr = frappe.db.get_value("Branch", self.branch, "abbreviation")
 				if not agency_abbr:
@@ -141,7 +141,7 @@ class Asset(AccountsController):
 				agency_abbr = frappe.db.get_value("Company", self.company, "abbr")
 				if not agency_abbr:
 					frappe.throw(f"Set abbreviation in {frappe.get_desk_link('Company', self.company)}.")
-			
+
 			asset_category_abbr = frappe.db.get_value("Asset Category", self.asset_category, "abbr")
 			asset_sub_category_abbr = frappe.db.get_value("Asset Sub Category", self.asset_sub_category, "abbr")
 
