@@ -27,7 +27,12 @@
   "column_break5",
   "items_section",
   "items",
-  "repair_and_services",
+  "section_break_tojb",
+  "approver",
+  "approver_designation",
+  "column_break_cqev",
+  "approver_name",
+  "approver_email",
   "terms_tab",
   "terms_section_break",
   "tc_name",
@@ -64,6 +69,7 @@
    "oldfieldtype": "Select",
    "options": "MAT-MR-.YYYY.-",
    "print_hide": 1,
+   "read_only": 1,
    "reqd": 1,
    "set_only_once": 1
   },
@@ -350,11 +356,6 @@
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "repair_and_services",
-   "fieldtype": "Data",
-   "label": "Repair and Services"
-  },
-  {
    "fieldname": "column_break_ivqt",
    "fieldtype": "Column Break"
   },
@@ -372,13 +373,47 @@
    "label": "Cost Center",
    "options": "Cost Center",
    "read_only": 1
+  },
+  {
+   "fieldname": "section_break_tojb",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_cqev",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "approver.employee_name",
+   "fieldname": "approver_name",
+   "fieldtype": "Data",
+   "label": "Approver Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "approver",
+   "fieldtype": "Link",
+   "label": "Approver",
+   "options": "Employee",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "approver.user_id",
+   "fieldname": "approver_designation",
+   "fieldtype": "Data",
+   "label": "Approver Designation",
+   "read_only": 1
+  },
+  {
+   "fieldname": "approver_email",
+   "fieldtype": "Data",
+   "label": "Approver Email"
   }
  ],
  "icon": "fa fa-ticket",
  "idx": 70,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-08-20 12:46:59.328940",
+ "modified": "2024-10-21 17:58:52.219306",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Material Request",

@@ -65,7 +65,7 @@
  "fields": [
   {
    "bold": 1,
-   "columns": 3,
+   "columns": 2,
    "fieldname": "item_code",
    "fieldtype": "Link",
    "in_global_search": 1,
@@ -327,8 +327,10 @@
    "width": "70px"
   },
   {
+   "columns": 1,
    "fieldname": "actual_qty",
    "fieldtype": "Float",
+   "in_list_view": 1,
    "label": "Actual Qty",
    "no_copy": 1,
    "print_hide": 1,
@@ -491,7 +493,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-02-26 18:30:03.684872",
+ "modified": "2024-10-09 15:18:25.020492",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Material Request Item",

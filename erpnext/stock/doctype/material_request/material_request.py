@@ -18,6 +18,7 @@ from erpnext.controllers.buying_controller import BuyingController
 from erpnext.manufacturing.doctype.work_order.work_order import get_item_details
 from erpnext.stock.doctype.item.item import get_item_defaults
 from erpnext.stock.stock_balance import get_indented_qty, update_bin_qty
+from erpnext.custom_workflow import validate_workflow_states, notify_workflow_states
 
 form_grid_templates = {"items": "templates/form_grid/material_request_grid.html"}
 
@@ -33,6 +34,10 @@ class MaterialRequest(BuyingController):
 		from frappe.types import DF
 
 		amended_from: DF.Link | None
+		approver: DF.Link | None
+		approver_designation: DF.Data | None
+		approver_email: DF.Data | None
+		approver_name: DF.Data | None
 		branch: DF.Link
 		company: DF.Link
 		cost_center: DF.Link | None
@@ -44,7 +49,6 @@ class MaterialRequest(BuyingController):
 		naming_series: DF.Literal["MAT-MR-.YYYY.-"]
 		per_ordered: DF.Percent
 		per_received: DF.Percent
-		repair_and_services: DF.Data | None
 		schedule_date: DF.Date | None
 		select_print_heading: DF.Link | None
 		set_from_warehouse: DF.Link | None
@@ -100,6 +104,7 @@ class MaterialRequest(BuyingController):
 
 	def validate(self):
 		super().validate()
+		validate_workflow_states(self)
 
 		self.validate_schedule_date()
 		self.check_for_on_hold_or_closed_status("Sales Order", "sales_order")
@@ -128,6 +133,7 @@ class MaterialRequest(BuyingController):
 		)
 
 		validate_for_items(self)
+		
 
 		self.set_title()
 		# self.validate_qty_against_so()
@@ -136,7 +142,9 @@ class MaterialRequest(BuyingController):
 
 		self.reset_default_field_value("set_warehouse", "items", "warehouse")
 		self.reset_default_field_value("set_from_warehouse", "items", "from_warehouse")
+  
 
+ 
 	def before_update_after_submit(self):
 		self.validate_schedule_date()
 
@@ -555,7 +563,7 @@ def get_material_requests_based_on_supplier(doctype, txt, searchfield, start, pa
 			and mr.per_ordered < 99.99
 			and mr.docstatus = 1
 			and mr.status != 'Stopped'
-			and mr.company = %s
+			and mr.company = 
 			{}
 		order by mr_item.item_code ASC
 		limit {} offset {} """.format(
@@ -826,5 +834,5 @@ def get_permission_query_conditions(user):
 		return
 
 	return """(
-		`tabMaterial Request`.owner = '{user}'
+		`tabMaterial Request`.owner = '{user}')
 		""".format(user=user)
