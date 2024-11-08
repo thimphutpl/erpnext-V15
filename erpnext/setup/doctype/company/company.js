@@ -287,6 +287,10 @@ erpnext.company.setup_queries = function (frm) {
 			["default_employee_advance_account", { root_type: ["in", ["Liability", "Asset"]] }],
 			["default_payroll_payable_account", { root_type: ["in", ["Liability", "Asset"]] }],
 
+			["travel_expense_account", { root_type: ["in", ["Expense"]] }],
+			["travel_advance_account", { root_type: ["in", ["Asset"]] }],
+			["imprest_advance_account", { root_type: ["in", ["Asset"]] }],
+
 		],
 		function (i, v) {
 			erpnext.company.set_custom_query(frm, v);
