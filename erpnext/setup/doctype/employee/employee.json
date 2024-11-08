@@ -89,6 +89,9 @@
   "ctc",
   "salary_currency",
   "salary_mode",
+  "column_break_szuv",
+  "payroll_cost_center",
+  "omit_payroll",
   "bank_details_section",
   "bank_name",
   "bank_branch",
@@ -959,6 +962,22 @@
    "fieldtype": "Select",
    "label": "Employment Status",
    "options": "\nIn Service\nEOL\nProbation\nLeft"
+  },
+  {
+   "fieldname": "column_break_szuv",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "omit_payroll",
+   "fieldtype": "Check",
+   "label": "Omit Payroll "
+  },
+  {
+   "fieldname": "payroll_cost_center",
+   "fieldtype": "Link",
+   "label": "Payroll Cost Center",
+   "options": "Cost Center"
   }
  ],
  "icon": "fa fa-user",
@@ -966,7 +985,7 @@
  "image_field": "image",
  "is_tree": 1,
  "links": [],
- "modified": "2024-09-25 11:28:46.838879",
+ "modified": "2024-10-25 12:56:40.259400",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee",
