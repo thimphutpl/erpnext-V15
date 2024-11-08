@@ -31,6 +31,8 @@
   "city",
   "state",
   "pin",
+  "section_break_ynjz",
+  "branches",
   "transit_section",
   "warehouse_type",
   "column_break_qajx",
@@ -257,13 +259,22 @@
    "fieldname": "is_rejected_warehouse",
    "fieldtype": "Check",
    "label": "Is Rejected Warehouse"
+  },
+  {
+   "fieldname": "section_break_ynjz",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "branches",
+   "fieldtype": "Table",
+   "options": "Warehouse Branch"
   }
  ],
  "icon": "fa fa-building",
  "idx": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2024-01-24 16:27:28.299520",
+ "modified": "2024-11-08 14:47:56.612102",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Warehouse",
