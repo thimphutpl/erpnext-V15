@@ -9,23 +9,35 @@ frappe.ui.form.on('Imprest Advance', {
 					'company': doc.company,
 				}
 			}
-		})
+		});
+
+		frm.set_query("party", function(doc) {
+			if (doc.party_type === "Employee") {
+				return {
+					filters: {
+						'company': doc.company,
+					}
+				};
+			} else {
+				return {};
+			}
+		});
 	},
 
 	refresh: function(frm) {
 		// 
 	},
 
-	party: (frm) => {
-		frappe.call({
-			method: 'set_advance_amount',
-			doc: frm.doc,
-			callback: (r) =>{
-				frm.set_value("advance_amount", r.message)
-				frm.refresh_fields()
-			}
-		})
-	},
+	// party: (frm) => {
+	// 	frappe.call({
+	// 		method: 'set_advance_amount',
+	// 		doc: frm.doc,
+	// 		callback: (r) =>{
+	// 			frm.set_value("advance_amount", r.message)
+	// 			frm.refresh_fields()
+	// 		}
+	// 	})
+	// },
 
 	advance_amount: function(frm){
 		if (frm.doc.advance_amount > 0 ){

@@ -41,7 +41,7 @@ class JournalEntryAccount(Document):
 		reference_detail_no: DF.Data | None
 		reference_due_date: DF.Date | None
 		reference_name: DF.DynamicLink | None
-		reference_type: DF.Literal["", "Sales Invoice", "Purchase Invoice", "Journal Entry", "Sales Order", "Purchase Order", "Expense Claim", "Asset", "Loan", "Payroll Entry", "Employee Advance", "Exchange Rate Revaluation", "Invoice Discounting", "Fees", "Full and Final Statement", "Payment Entry", "Abstract Bill", "Imprest Advance", "Imprest Recoup", "POL Advance"]
+		reference_type: DF.Literal["", "Sales Invoice", "Purchase Invoice", "Journal Entry", "Sales Order", "Purchase Order", "Expense Claim", "Asset", "Loan", "Payroll Entry", "Employee Advance", "Exchange Rate Revaluation", "Invoice Discounting", "Fees", "Full and Final Statement", "Payment Entry", "Abstract Bill", "Imprest Advance", "Imprest Settlement", "POL Advance"]
 		tax_account: DF.Link | None
 		tax_amount: DF.Currency
 		tax_amount_in_account_currency: DF.Currency

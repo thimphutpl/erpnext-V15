@@ -1056,12 +1056,19 @@ class JournalEntry(AccountsController):
 			if a.reference_type == "Abstract Bill" and a.reference_name:
 				doc = frappe.get_doc("Abstract Bill", a.reference_name)
 				if cancel:
-					doc.journal_entry_status = "Cancelled on {0}".format(
+					doc.journal_entry_status = "Cancelled on {}".format(
 						now_datetime().strftime("%Y-%m-%d %H:%M:%S")
 					)
-					doc.db_set("journal_entry_status", "Cancelled on {0}".format(now_datetime().strftime('%Y-%m-%d %H:%M:%S')))
+					doc.db_set("journal_entry_status", "Cancelled on {}".format(now_datetime().strftime('%Y-%m-%d %H:%M:%S')))
 				else:
-					doc.db_set("journal_entry_status", "Paid on {0}".format(now_datetime().strftime('%Y-%m-%d %H:%M:%S')))
+					doc.db_set("journal_entry_status", "Paid on {}".format(now_datetime().strftime('%Y-%m-%d %H:%M:%S')))
+
+			elif a.reference_type == "Imprest Advance" and a.reference_name:
+				doc = frappe.get_doc("Imprest Advance", self.reference_name)
+				if cancel:
+					pass
+				else:
+					pass
 
 	def set_total_amount(self, amt, currency):
 		self.total_amount = amt
@@ -1088,7 +1095,7 @@ class JournalEntry(AccountsController):
 				r = [d.user_remark, self.remark]
 				r = [x for x in r if x]
 				remarks = "\n".join(r)
-				
+
 				""" tax code moved from old v14 22/08/2024"""
 				with_tax = [d.account]
 				if cint(self.apply_tds) and cint(d.apply_tds) and d.tax_account and flt(d.rate) and flt(d.tax_amount):
@@ -1099,7 +1106,7 @@ class JournalEntry(AccountsController):
 					tax_amount_in_account_currency, tax_amount = 0, 0
 					tax_amount_in_account_currency_dr, tax_amount_in_account_currency_cr = 0, 0
 					tax_amount_dr, tax_amount_cr = 0, 0
-					
+
 					if tax_account:
 						tax_amount_in_account_currency = flt(d.tax_amount_in_account_currency)
 						tax_amount = flt(d.tax_amount)

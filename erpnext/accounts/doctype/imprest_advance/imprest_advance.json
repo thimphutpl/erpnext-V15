@@ -7,23 +7,18 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "title",
+  "company",
   "branch",
   "column_break_2",
-  "company",
-  "cost_center",
-  "section_break_4",
-  "imprest_type",
-  "column_break_001",
   "posting_date",
-  "business_activity",
+  "cost_center",
   "is_opening",
   "section_break_002",
   "party_type",
   "party",
   "column_break_002",
-  "advance_amount",
   "opening_amount",
+  "advance_amount",
   "adjusted_amount",
   "balance_amount",
   "approver_details_section",
@@ -35,9 +30,7 @@
   "section_break_001",
   "remarks",
   "journal_entry",
-  "abstract_bill",
   "column_break_23",
-  "imprest_recoup",
   "amended_from"
  ],
  "fields": [
@@ -63,10 +56,6 @@
    "in_list_view": 1,
    "label": "Posting Date ",
    "reqd": 1
-  },
-  {
-   "fieldname": "column_break_001",
-   "fieldtype": "Column Break"
   },
   {
    "fieldname": "party",
@@ -146,25 +135,8 @@
    "label": "Is Opening"
   },
   {
-   "fieldname": "imprest_type",
-   "fieldtype": "Link",
-   "label": "Imprest Type",
-   "options": "Imprest Type",
-   "reqd": 1
-  },
-  {
-   "fieldname": "title",
-   "fieldtype": "Data",
-   "label": "Title",
-   "reqd": 1
-  },
-  {
    "fieldname": "column_break_2",
    "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "section_break_4",
-   "fieldtype": "Section Break"
   },
   {
    "fieldname": "column_break_23",
@@ -211,38 +183,18 @@
    "mandatory_depends_on": "eval:doc.is_opening != 1"
   },
   {
-   "fieldname": "business_activity",
-   "fieldtype": "Link",
-   "label": "Business Activity",
-   "options": "Business Activity",
-   "reqd": 1
-  },
-  {
    "depends_on": "eval:doc.is_opening",
    "fieldname": "opening_amount",
    "fieldtype": "Currency",
    "in_list_view": 1,
    "label": "Opening Amount",
    "mandatory_depends_on": "eval:doc.is_opening"
-  },
-  {
-   "fieldname": "imprest_recoup",
-   "fieldtype": "Link",
-   "label": "Imprest Recoup",
-   "options": "Imprest Recoup",
-   "read_only": 1
-  },
-  {
-   "fieldname": "abstract_bill",
-   "fieldtype": "Data",
-   "label": "Abstract Bill",
-   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-08-19 18:30:55.967184",
+ "modified": "2024-10-25 15:12:28.501962",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Imprest Advance",
@@ -315,6 +267,5 @@
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],
- "title_field": "title",
  "track_changes": 1
 }
