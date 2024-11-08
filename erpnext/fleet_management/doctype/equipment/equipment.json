@@ -101,7 +101,6 @@
    "set_only_once": 1
   },
   {
-   "fetch_from": "asset_issue_details.equipment_type",
    "fetch_if_empty": 1,
    "fieldname": "equipment_type",
    "fieldtype": "Link",
@@ -117,7 +116,6 @@
    "fieldtype": "Column Break"
   },
   {
-   "fetch_from": "asset_issue_details.model",
    "fetch_if_empty": 1,
    "fieldname": "equipment_model",
    "fieldtype": "Link",
@@ -128,7 +126,6 @@
    "set_only_once": 1
   },
   {
-   "fetch_from": "asset_issue_details.reg_number",
    "fieldname": "registeration_number",
    "fieldtype": "Data",
    "label": "Registration Number",
@@ -384,7 +381,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-08-16 15:47:19.136160",
+ "modified": "2024-11-08 14:17:17.231724",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Equipment",

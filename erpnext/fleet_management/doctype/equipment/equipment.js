@@ -26,6 +26,15 @@ frappe.ui.form.on('Equipment', {
 			};
 		});
 	},
+	registeration_number:function(frm){
+		frm.set_query('fuelbook', function(doc) {
+			return {
+				filters: {
+					"equipment": doc.registeration_number,
+				}
+			};
+		});
+	},
 	equipment_type:function(frm){
 		frm.set_query('equipment_model', function(doc) {
 			return {
