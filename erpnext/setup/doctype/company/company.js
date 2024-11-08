@@ -286,6 +286,8 @@ erpnext.company.setup_queries = function (frm) {
 			["default_salary_payable_account", { root_type: ["in", ["Liability"]] }],
 			["default_employee_advance_account", { root_type: ["in", ["Liability", "Asset"]] }],
 			["default_payroll_payable_account", { root_type: ["in", ["Liability", "Asset"]] }],
+			["employer_contribution_to_pf", { root_type: ["in", ["Expense"]] }],
+			["overtime_allowance_account", { root_type: ["in", ["Expense"]] }],
 
 			["travel_expense_account", { root_type: ["in", ["Expense"]] }],
 			["travel_advance_account", { root_type: ["in", ["Asset"]] }],
