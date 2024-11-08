@@ -116,7 +116,6 @@
    "fieldtype": "Column Break"
   },
   {
-   "fetch_if_empty": 1,
    "fieldname": "equipment_model",
    "fieldtype": "Link",
    "in_list_view": 1,
@@ -381,7 +380,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-08 14:17:17.231724",
+ "modified": "2024-11-08 14:31:28.087197",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Equipment",
