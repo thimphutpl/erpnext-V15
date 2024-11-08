@@ -32,6 +32,7 @@ class ImprestAdvance(Document):
 		opening_amount: DF.Currency
 		party: DF.DynamicLink
 		party_type: DF.Literal["", "Employee", "Agency"]
+		payment_status: DF.Literal["", "Unpaid", "Paid"]
 		posting_date: DF.Date
 		remarks: DF.SmallText | None
 	# end: auto-generated types
@@ -105,4 +106,5 @@ class ImprestAdvance(Document):
 		})
 		ab.insert()
 		self.db_set('journal_entry', ab.name)
+		self.db_set('payment_status', "Unpaid")
 		frappe.msgprint(_('Journal Entry {0} posted').format(frappe.get_desk_link("Journal Entry", ab.name)))

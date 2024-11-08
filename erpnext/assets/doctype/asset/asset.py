@@ -47,9 +47,8 @@ class Asset(AccountsController):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
-		from frappe.types import DF
-
 		from erpnext.assets.doctype.asset_finance_book.asset_finance_book import AssetFinanceBook
+		from frappe.types import DF
 
 		additional_asset_cost: DF.Currency
 		additional_value: DF.Currency

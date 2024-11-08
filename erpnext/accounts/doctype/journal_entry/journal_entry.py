@@ -1064,11 +1064,12 @@ class JournalEntry(AccountsController):
 					doc.db_set("journal_entry_status", "Paid on {}".format(now_datetime().strftime('%Y-%m-%d %H:%M:%S')))
 
 			elif a.reference_type == "Imprest Advance" and a.reference_name:
-				doc = frappe.get_doc("Imprest Advance", self.reference_name)
+				doc = frappe.get_doc("Imprest Advance", a.reference_name)
 				if cancel:
-					pass
+					doc.payment_status = "Unpaid"
 				else:
-					pass
+					doc.payment_status = "Paid"
+				doc.save()
 
 	def set_total_amount(self, amt, currency):
 		self.total_amount = amt

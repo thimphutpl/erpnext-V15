@@ -132,6 +132,7 @@
    "label": "Item Name"
   },
   {
+   "allow_on_submit": 1,
    "depends_on": "item_code",
    "fetch_from": "item_code.asset_category",
    "fieldname": "asset_category",
@@ -193,6 +194,7 @@
    "reqd": 1
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "location",
    "fieldtype": "Link",
    "in_list_view": 1,
@@ -724,7 +726,7 @@
    "link_fieldname": "target_asset"
   }
  ],
- "modified": "2024-11-08 14:51:48.848249",
+ "modified": "2024-11-08 15:42:42.599961",
  "modified_by": "Administrator",
  "module": "Assets",
  "name": "Asset",

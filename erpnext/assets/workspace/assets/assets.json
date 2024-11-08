@@ -96,17 +96,6 @@
    "dependencies": "Asset",
    "hidden": 0,
    "is_query_report": 1,
-   "label": "Asset Depreciation Ledger",
-   "link_count": 0,
-   "link_to": "Asset Depreciation Ledger",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "dependencies": "Asset",
-   "hidden": 0,
-   "is_query_report": 1,
    "label": "Asset Depreciations and Balances",
    "link_count": 0,
    "link_to": "Asset Depreciations and Balances",
@@ -134,10 +123,20 @@
    "link_type": "Report",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Fixed Asset Register",
+   "link_count": 0,
+   "link_to": "Fixed Asset Register",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2024-09-18 14:45:53.889261",
- "modified_by": "sonam.norbu@thimphutechpark.bt",
+ "modified": "2024-10-09 10:16:48.341772",
+ "modified_by": "pema.dhendup@thimphutechpark.bt",
  "module": "Assets",
  "name": "Assets",
  "number_cards": [
@@ -159,7 +158,7 @@
    "role": "Asset User"
   }
  ],
- "sequence_id": 12.0,
+ "sequence_id": 14.0,
  "shortcuts": [],
  "title": "Assets"
 }

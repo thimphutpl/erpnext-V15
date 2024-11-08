@@ -1,0 +1,180 @@
+{
+ "charts": [],
+ "content": "[{\"id\":\"etmXv_Fti2\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Advance Management</span>\",\"col\":12}},{\"id\":\"Ah0Dk-XZm2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Advance\",\"col\":3}},{\"id\":\"s-H7W73twS\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Advance Recoup\",\"col\":3}},{\"id\":\"Wcuu9rPaWy\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Imprest Advance\",\"col\":3}},{\"id\":\"mMXIzi-YNY\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"KZF4yBsyFo\",\"type\":\"card\",\"data\":{\"card_name\":\"Master Data\",\"col\":4}},{\"id\":\"becQxY930S\",\"type\":\"card\",\"data\":{\"card_name\":\"Transactions\",\"col\":4}},{\"id\":\"M526WF5xV_\",\"type\":\"card\",\"data\":{\"card_name\":\"Imprest Management \",\"col\":4}},{\"id\":\"4eYpM0JNpo\",\"type\":\"card\",\"data\":{\"card_name\":\"Reports\",\"col\":4}},{\"id\":\"qatTDzbzNP\",\"type\":\"card\",\"data\":{\"card_name\":\"Related Transactions\",\"col\":4}}]",
+ "creation": "2024-08-08 15:33:44.415028",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "add-round",
+ "idx": 0,
+ "indicator_color": "",
+ "is_hidden": 0,
+ "label": "Advance Management",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Related Transactions",
+   "link_count": 2,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Abstract Bill",
+   "link_count": 0,
+   "link_to": "Abstract Bill",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Journal Entry",
+   "link_count": 0,
+   "link_to": "Journal Entry",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Transactions",
+   "link_count": 2,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Advance",
+   "link_count": 0,
+   "link_to": "Advance",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Advance Recoup",
+   "link_count": 0,
+   "link_to": "Advance Recoup",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Master Data",
+   "link_count": 1,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Advance Type",
+   "link_count": 0,
+   "link_to": "Advance Type",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Reports",
+   "link_count": 1,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Advance Register",
+   "link_count": 0,
+   "link_to": "Advance Register",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Imprest Management ",
+   "link_count": 2,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Imprest Advance",
+   "link_count": 0,
+   "link_to": "Imprest Advance",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Imprest Settlement",
+   "link_count": 0,
+   "link_to": "Imprest Settlement",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  }
+ ],
+ "modified": "2024-11-08 14:49:17.315133",
+ "modified_by": "Administrator",
+ "module": "Accounts",
+ "name": "Advance Management",
+ "number_cards": [],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [],
+ "sequence_id": 8.0,
+ "shortcuts": [
+  {
+   "color": "Orange",
+   "doc_view": "List",
+   "label": "Advance",
+   "link_to": "Advance",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Imprest Advance",
+   "link_to": "Imprest Advance",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Green",
+   "doc_view": "List",
+   "label": "Advance Recoup",
+   "link_to": "Advance Recoup",
+   "stats_filter": "[]",
+   "type": "DocType"
+  }
+ ],
+ "title": "Advance Management"
+}
