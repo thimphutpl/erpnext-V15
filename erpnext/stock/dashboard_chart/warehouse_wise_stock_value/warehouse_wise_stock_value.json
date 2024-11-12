@@ -5,15 +5,21 @@
  "docstatus": 0,
  "doctype": "Dashboard Chart",
  "filters_json": "{}",
- "idx": 0,
+ "idx": 20,
  "is_public": 1,
  "is_standard": 1,
- "modified": "2020-07-22 13:01:01.815123",
+ "last_synced_on": "2024-11-11 23:28:20.471211",
+ "modified": "2024-11-12 09:50:33.947050",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Warehouse wise Stock Value",
  "number_of_groups": 0,
  "owner": "Administrator",
+ "roles": [
+  {
+   "role": "Stock User"
+  }
+ ],
  "source": "Warehouse wise Stock Value",
  "timeseries": 0,
  "type": "Bar",
