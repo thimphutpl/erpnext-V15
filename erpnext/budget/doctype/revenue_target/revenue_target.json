@@ -1,18 +1,18 @@
 {
  "actions": [],
- "allow_rename": 1,
- "autoname": "RT.YY.####",
+ "autoname": "format:{fiscal_year}",
  "creation": "2023-06-14 10:58:13.325324",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
   "company",
-  "branch",
   "fiscal_year",
+  "title",
   "column_break_4",
-  "cost_center",
   "tot_target_amount",
+  "tot_adjustment_amount",
+  "tot_net_target_amount",
   "section_break_9",
   "get_accounts",
   "sb_target",
@@ -23,24 +23,10 @@
  ],
  "fields": [
   {
-   "fieldname": "branch",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "Branch",
-   "options": "Branch",
-   "reqd": 1
-  },
-  {
-   "fetch_from": "branch.cost_center",
-   "fieldname": "cost_center",
-   "fieldtype": "Link",
-   "label": "Cost Center",
-   "options": "Cost Center"
-  },
-  {
    "bold": 1,
    "fieldname": "fiscal_year",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Fiscal Year",
    "options": "Fiscal Year",
    "reqd": 1
@@ -68,6 +54,7 @@
   {
    "fieldname": "company",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Company",
    "options": "Company",
    "read_only": 1,
@@ -105,16 +92,38 @@
    "fieldname": "attachment",
    "fieldtype": "Attach",
    "label": "Attachment"
+  },
+  {
+   "bold": 1,
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "label": "Title"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "tot_adjustment_amount",
+   "fieldtype": "Currency",
+   "hidden": 1,
+   "label": "Adjustment Amount ( +/- )",
+   "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "tot_net_target_amount",
+   "fieldtype": "Currency",
+   "hidden": 1,
+   "label": "Final Target Amount",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-06-21 11:08:25.997229",
+ "modified": "2024-10-31 10:16:24.826951",
  "modified_by": "Administrator",
  "module": "Budget",
  "name": "Revenue Target",
- "naming_rule": "Expression (old style)",
+ "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
   {
@@ -165,5 +174,7 @@
  ],
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "title_field": "title",
+ "track_changes": 1
 }

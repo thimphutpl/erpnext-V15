@@ -9,7 +9,7 @@ from frappe.desk.reportview import get_match_cond
 from frappe.model.document import Document
 from frappe.query_builder import Interval
 from frappe.query_builder.functions import Count, CurDate, Date, Sum, UnixTimestamp
-from frappe.utils import add_days, flt, get_datetime, get_time, get_url, nowtime, today
+from frappe.utils import add_days, flt, get_datetime, get_time, get_url, nowtime, today, getdate
 from frappe.utils.user import is_website_user
 
 from erpnext import get_default_company
@@ -74,6 +74,13 @@ class Project(Document):
 	# end: auto-generated types
 
 	def onload(self):
+		if not self.get('__unsaved'):
+			if not self.get("activity_tasks"):
+				self.load_activity_tasks()
+
+			if not self.get("additional_tasks"):
+				self.load_additional_tasks()
+					
 		self.set_onload(
 			"activity_summary",
 			frappe.db.sql(
@@ -86,20 +93,680 @@ class Project(Document):
 			),
 		)
 
-		self.update_costing()
+		# self.update_costing()
 
 	def before_print(self, settings=None):
 		self.onload()
 
 	def validate(self):
-		if not self.is_new():
-			self.copy_from_template()
-		self.send_welcome_email()
-		self.update_costing()
-		self.update_percent_complete()
-		self.validate_from_to_dates("expected_start_date", "expected_end_date")
-		self.validate_from_to_dates("actual_start_date", "actual_end_date")
+		self.validate_dates()
+		self.validate_branch_cc()
+		self.validate_project_type_and_party()
+		self.update_party_info()
+		# set_status method created by SHIV on 03/11/2017
+		self.set_status()
+		self.validate_target_quantity()
+		self.validate_work_quantity()
+		
+		if self.status in ('Planning','Ongoing'):
+			self.sync_activity_tasks()
+			self.sync_additional_tasks()
+		self.activity_tasks = []
+		self.additional_tasks = []
 
+		self.validate_branch_change()
+		self.send_welcome_email()
+		self.check_timesheet_status()
+
+		# if not self.is_new():
+		# 	self.copy_from_template()
+		# self.send_welcome_email()
+		# self.update_costing()
+		# self.update_percent_complete()
+		# self.validate_from_to_dates("expected_start_date", "expected_end_date")
+		# self.validate_from_to_dates("actual_start_date", "actual_end_date")
+	def on_update(self):
+		self.load_activity_tasks()
+		self.load_additional_tasks()
+		if self.status in ('Planning','Ongoing'):
+			self.sync_activity_tasks()
+			self.sync_additional_tasks()
+		self.update_task_progress()
+		self.update_project_progress()
+		self.update_group_tasks()
+		self.update_branch_change()
+
+	def update_branch_change(self):
+		if self.flags.dont_sync_tasks: return
+		
+		for doctype in ["MB Entry", "BOQ Adjustment", "BOQ", "Timesheet", "Task"]:
+			for t in frappe.get_all(doctype, ["name"], {"project": self.name}):
+				doc = frappe.get_doc(doctype, t.name)
+				if self.branch != doc.branch:
+					doc.branch      = self.branch
+					doc.cost_center = self.cost_center
+					doc.save(ignore_permissions = True)
+
+	def update_group_tasks(self):
+		if self.flags.dont_sync_tasks: return
+		
+		# Activity Tasks
+		group_list = frappe.db.sql("""
+							select t1.name, t1.task_idx, t1.subject, t1.is_group,
+									(select ifnull(min(t2.task_idx),9999)
+										from  `tabTask` as t2
+										where t2.project  = t1.project
+										and   t2.is_group = t1.is_group
+										and   t2.task_idx > t1.task_idx
+									) as max_idx
+							from `tabTask` as t1
+							where t1.project = "{0}"
+							and   t1.is_group = 1
+							and   t1.additional_task = 0
+							order by t1.task_idx
+						""".format(self.name), as_dict=1)
+		
+		for item in group_list:
+			values = frappe.db.sql("""
+							select min(exp_start_date) as min_start_date,
+									max(exp_end_date) as max_end_date,
+									sum(ifnull(work_quantity,0)) as tot_work_quantity,
+									sum(ifnull(work_quantity_complete,0)) as tot_work_quantity_complete
+								from   `tabTask`
+								where  project = "{0}"
+								and    task_idx > {1}
+								and    task_idx < {2}
+								and    additional_task = 0
+					""".format(self.name, item.task_idx, item.max_idx), as_dict=1)[0]
+
+			frappe.db.sql("""
+							update `tabTask`
+							set
+								grp_exp_start_date = '{0}',
+								grp_exp_end_date = '{1}',
+								grp_work_quantity = {4},
+								grp_work_quantity_complete = {5}
+							where project = "{2}"
+							and name = '{3}'
+					""".format(values.min_start_date, values.max_end_date, self.name, item.name, flt(values.tot_work_quantity), flt(values.tot_work_quantity_complete)))
+
+		# Additional Tasks
+		group_list = frappe.db.sql("""
+								select t1.name, t1.task_idx, t1.subject, t1.is_group,
+										(select ifnull(min(t2.task_idx),9999)
+											from  `tabTask` as t2
+											where t2.project  = t1.project
+											and   t2.is_group = t1.is_group
+											and   t2.task_idx > t1.task_idx
+										) as max_idx
+								from `tabTask` as t1
+								where t1.project = "{0}"
+								and   t1.is_group = 1
+								and   t1.additional_task = 1
+								order by t1.task_idx
+						""".format(self.name), as_dict=1)
+		
+		for item in group_list:
+			values = frappe.db.sql("""
+							select min(exp_start_date) as min_start_date,
+									max(exp_end_date) as max_end_date,
+									sum(ifnull(work_quantity,0)) as tot_work_quantity,
+									sum(ifnull(work_quantity_complete,0)) as tot_work_quantity_complete
+								from   `tabTask`
+								where  project = "{0}"
+								and    task_idx > {1}
+								and    task_idx < {2}
+								and    additional_task = 1
+					""".format(self.name, item.task_idx, item.max_idx), as_dict=1)[0]
+
+			frappe.db.sql("""
+							update `tabTask`
+							set
+								grp_exp_start_date = '{0}',
+								grp_exp_end_date = '{1}',
+								grp_work_quantity = {4},
+								grp_work_quantity_complete = {5}
+							where project = "{2}"
+							and name = '{3}'
+					""".format(values.min_start_date, values.max_end_date, self.name, item.name, flt(values.tot_work_quantity), flt(values.tot_work_quantity_complete)))                        
+
+	def update_project_progress(self):
+		if self.flags.dont_sync_tasks: return
+		
+		# Following code added by SHIV on 2017/08/16
+		total = frappe.db.sql("""
+				select
+						sum(
+								case
+								when additional_task = 0 and status in ('Closed', 'Cancelled') then 1
+								else 0
+								end
+						) as completed_count,
+						sum(
+								case
+								when additional_task = 0 then 1
+								else 0
+								end
+						) as count,
+						sum(
+								case
+								when additional_task = 1 and status in ('Closed', 'Cancelled') then 1
+								else 0
+								end
+						) as add_completed_count,
+						sum(
+								case
+								when additional_task = 1 then 1
+								else 0
+								end
+						) as add_count,
+						sum(
+								case
+								when additional_task = 0 then ifnull(work_quantity,0)
+								else 0
+								end
+						) as tot_work_quantity,
+						sum(
+								case
+								when additional_task = 1 then ifnull(work_quantity,0)
+								else 0
+								end
+						) as tot_add_work_quantity,
+						sum(
+								case
+								when additional_task = 0 then ifnull(work_quantity_complete,0)
+								else 0
+								end
+						) as tot_work_quantity_complete,
+						sum(
+								case
+								when additional_task = 1 then ifnull(work_quantity_complete,0)
+								else 0
+								end
+						) as tot_add_work_quantity_complete
+				from tabTask
+				where project=%s
+				and is_group=0
+		""", self.name, as_dict=1)[0]
+
+		# Following code commented by SHIV on 09/11/2017
+		self.percent_complete           = 0.0
+		self.add_percent_complete       = 0.0
+		self.tot_wq_percent             = 0.0
+		self.tot_wq_percent_complete    = 0.0
+		self.tot_add_wq_percent         = 0.0
+		self.tot_add_wq_percent_complete= 0.0
+
+		if total.count:
+				self.percent_complete   = flt(flt(total.completed_count) / total.count * 100, 2)
+				self.tot_wq_percent     = flt(total.tot_work_quantity,2)
+				self.tot_wq_percent_complete = flt(total.tot_work_quantity_complete,2)
+
+		if total.add_count:
+				self.add_percent_complete = flt(flt(total.add_completed_count) / total.add_count * 100, 2)
+				self.tot_add_wq_percent = flt(total.tot_add_work_quantity,2)
+				self.tot_add_wq_percent_complete = flt(total.tot_add_work_quantity_complete,2)
+		# +++++++++++++++++++++ Ver 2.0 ENDS +++++++++++++++++++++                
+
+	def update_task_progress(self):
+		if self.flags.dont_sync_tasks: return
+		
+		task_list = frappe.db.sql("""
+				select name
+				from `tabTask`
+				where project = "{0}"
+				""".format(self.name), as_dict=1)
+
+		if task_list:
+			for task in task_list:
+				values = frappe.db.sql("""
+							select sum(ifnull(target_quantity_complete,0)) as target_quantity_complete,
+									sum(ifnull(work_quantity_complete,0)) as work_quantity_complete
+							from `tabTimesheet`
+							where task = '{0}'
+							and docstatus < 2
+							""".format(task.name), as_dict=1)[0]
+		
+				frappe.db.sql("""
+					update `tabTask`
+					set target_quantity_complete = {0},
+							work_quantity_complete = {1},
+							status = case
+											when {0} >= target_quantity then 'Closed'
+											else status
+										end
+					where name = '{2}'
+				""".format(flt(values.target_quantity_complete), flt(values.work_quantity_complete), task.name))
+
+	def load_activity_tasks(self):
+		#frappe.msgprint(_("load_activity_task is called from onload"))
+		"""Load `activity_tasks` from the database"""
+		self.activity_tasks = []
+		for task in self.get_activity_tasks():
+			self.append("activity_tasks", {
+				"activity": task.activity,
+				"task": task.subject,
+				"is_group": task.is_group,
+				"status": task.status,
+				"start_date": task.exp_start_date,
+				"end_date": task.exp_end_date,
+				"description": task.description,
+				"work_quantity": task.work_quantity,
+				"work_quantity_complete": task.work_quantity_complete,
+				"target_uom": task.target_uom,
+				"target_quantity": task.target_quantity,
+				"target_quantity_complete": task.target_quantity_complete,
+				"task_id": task.name,
+				"grp_exp_start_date": task.grp_exp_start_date,
+				"grp_exp_end_date": task.grp_exp_end_date,
+				"grp_work_quantity": task.grp_work_quantity,
+				"grp_work_quantity_complete": task.grp_work_quantity_complete
+			})
+
+	def load_additional_tasks(self):
+		#frappe.msgprint(_("load_activity_task is called from onload"))
+		"""Load `additional_tasks` from the database"""
+		self.additional_tasks = []
+		for task in self.get_additional_tasks():
+			self.append("additional_tasks", {
+				"activity": task.activity,
+				"task": task.subject,
+				"is_group": task.is_group,
+				"status": task.status,
+				"start_date": task.exp_start_date,
+				"end_date": task.exp_end_date,
+				"description": task.description,
+				"work_quantity": task.work_quantity,
+				"work_quantity_complete": task.work_quantity_complete,
+				"target_uom": task.target_uom,
+				"target_quantity": task.target_quantity,
+				"target_quantity_complete": task.target_quantity_complete,
+				"task_id": task.name,
+				"grp_exp_start_date": task.grp_exp_start_date,
+				"grp_exp_end_date": task.grp_exp_end_date,
+				"grp_work_quantity": task.grp_work_quantity,
+				"grp_work_quantity_complete": task.grp_work_quantity_complete
+			})
+
+	def get_activity_tasks(self):
+		return frappe.get_all("Task", "*", {"project": self.name, "additional_task": 0}, order_by="task_idx, exp_start_date")
+
+	def get_additional_tasks(self):
+		return frappe.get_all("Task", "*", {"project": self.name, "additional_task": 1}, order_by="task_idx, exp_start_date")	
+
+	def get_project_advance(self):
+		return frappe.get_all("Project Advance", "*", {"project": self.name, "docstatus": 1}, order_by="advance_date")
+
+	def get_project_boq(self):
+		return frappe.get_all("BOQ", "*", {"project": self.name, "docstatus": 1}, order_by="boq_date")
+
+	def get_project_invoice(self):
+		return frappe.get_all("Project Invoice", "*", {"project": self.name, "docstatus": 1}, order_by="invoice_date")        
+	
+	# +++++++++++++++++++++ Ver 2.0 ENDS +++++++++++++++++++++
+			
+	def get_tasks(self):
+		return frappe.get_all("Task", "*", {"project": self.name}, order_by="exp_start_date asc")
+
+	def check_timesheet_status(self):
+		if self.status == 'Completed':
+			if frappe.db.exists({
+				'doctype': 'Timesheet',
+				'docstatus': 0,
+				'project':self.name
+			}):
+				frappe.throw('Submit all <b>Timesheet</b> related to this project to close the project')
+
+	def validate_branch_change(self):
+		if self.flags.dont_sync_tasks: return
+		
+		if self.branch != self.get_db_value("branch"):
+			for doctype in ["Project Advance", "Project Invoice"]:
+				for t in frappe.get_all(doctype, ["name"], {"project": self.name, "docstatus":("<",2)}):
+					msg = '<b>Reference# <a href="#Form/{0}/{1}">{0}: {1}</a></b>'.format(doctype, t.name)
+					frappe.throw(_("Change of branch not permitted.<br>{0}").format(msg),title="Dependencies found")
+
+	def sync_additional_tasks(self):
+		"""sync tasks and remove table"""
+		if self.flags.dont_sync_tasks: return
+		
+		task_names = []
+		task_idx = 0
+		for t in self.additional_tasks:
+			task_idx += 1
+
+			if not t.target_uom:
+				t.target_uom = 'Percent'
+				if not t.target_quantity:
+					t.target_quantity = 100
+                        
+			if t.task_id:
+				task = frappe.get_doc("Task", t.task_id)
+			else:
+				task = frappe.new_doc("Task")
+				task.project = self.name
+
+			task.update({
+				"activity": t.activity,
+				"subject": t.task,
+				"is_group": t.is_group,
+				"work_quantity": t.work_quantity,
+				"work_quantity_complete": t.work_quantity_complete,
+				"target_uom": t.target_uom,
+				"target_quantity": t.target_quantity,
+				"status": t.status,
+				"exp_start_date": t.start_date,
+				"exp_end_date": t.end_date,
+				"description": t.description,
+				"target_quantity_complete": t.target_quantity_complete,
+				"task_idx": task_idx,
+				"grp_exp_start_date": t.grp_exp_start_date,
+				"grp_exp_end_date": t.grp_exp_end_date,
+				"grp_work_quantity": t.grp_work_quantity,
+				"grp_work_quantity_complete": t.grp_work_quantity_complete,
+				"additional_task": 1
+			})
+
+			task.flags.ignore_links = True
+			task.flags.from_project = True
+			task.flags.ignore_feed = True
+			task.save(ignore_permissions = True)
+			task_names.append(task.name)
+
+		# delete
+		for t in frappe.get_all("Task", ["name"], {"project": self.name, "name": ("not in", task_names), "additional_task": 1}):
+			frappe.delete_doc("Task", t.name)
+
+		# self.update_percent_complete()
+		self.update_costing()
+
+	def sync_activity_tasks(self):
+		"""sync tasks and remove table"""
+		if self.flags.dont_sync_tasks: return
+
+		task_names = []
+		task_idx = 0
+		for t in self.activity_tasks:
+			task_idx += 1
+
+			if not t.target_uom:
+				t.target_uom = 'Percent'
+				if not t.target_quantity:
+					t.target_quantity = 100
+			
+			if t.task_id:
+				task = frappe.get_doc("Task", t.task_id)
+			else:
+				task = frappe.new_doc("Task")
+				task.project = self.name
+
+			task.update({
+				"activity": t.activity,
+				"subject": t.task,
+				"is_group": t.is_group,
+				"work_quantity": t.work_quantity,
+				"work_quantity_complete": t.work_quantity_complete,
+				"target_uom": t.target_uom,
+				"target_quantity": t.target_quantity,
+				"status": t.status,
+				"exp_start_date": t.start_date,
+				"exp_end_date": t.end_date,
+				"description": t.description,
+				"target_quantity_complete": t.target_quantity_complete,
+				"task_idx": task_idx,
+				"grp_exp_start_date": t.grp_exp_start_date,
+				"grp_exp_end_date": t.grp_exp_end_date,
+				"grp_work_quantity": t.grp_work_quantity,
+				"grp_work_quantity_complete": t.grp_work_quantity_complete,
+				"additional_task": 0
+			})
+
+			task.flags.ignore_links = True
+			task.flags.from_project = True
+			task.flags.ignore_feed = True
+			task.save(ignore_permissions = True)
+			task_names.append(task.name)
+
+		# delete
+		for t in frappe.get_all("Task", ["name"], {"project": self.name, "name": ("not in", task_names), "additional_task": 0}):
+			frappe.delete_doc("Task", t.name)
+
+		# self.update_percent_complete()
+		self.update_costing()
+
+	def validate_work_quantity(self):
+		if self.flags.dont_sync_tasks: return
+		
+		for task in self.activity_tasks:
+			prev_value = frappe.db.get_value("Task", task.task_id, "work_quantity")
+			
+			if flt(task.work_quantity) < flt(task.work_quantity_complete):
+				frappe.throw(_("<b>WORK PLAN</b><br/> Row# {0} : `Target Work Quantity` cannot be less than `Already Achieved Wrok Quantity`.").format(task.idx))
+
+			if flt(task.work_quantity) != flt(prev_value) and flt(prev_value) > 0:
+				msg = ""
+				ts_list = frappe.db.sql("""
+							select name
+							from `tabTimesheet`
+							where project = "{0}"
+							and task = '{1}'
+							and docstatus < 2
+					""".format(self.name, task.task_id), as_dict=1)
+
+				if len(ts_list):
+					for item in ts_list:
+						msg += 'Reference: <a href="#Form/Timesheet/{0}">{0}</a><br/>'.format(item.name,item.name)
+					
+					frappe.throw("Row# {0} : Cannot change `Target Work Quantity` for Tasks already having active Timesheets. <br/>{1}".format(task.idx, msg))
+
+		for task in self.additional_tasks:
+			prev_value = frappe.db.get_value("Task", task.task_id, "work_quantity")
+			
+			if flt(task.work_quantity) < flt(task.work_quantity_complete):
+				frappe.throw(_("<b>WORK PLAN</b><br/> Row# {0} : `Target Work Quantity` cannot be less than `Already Achieved Wrok Quantity`.").format(task.idx))
+
+			if flt(task.work_quantity) != flt(prev_value) and flt(prev_value) > 0:
+				msg = ""
+				ts_list = frappe.db.sql("""
+							select name
+							from `tabTimesheet`
+							where project = "{0}"
+							and task = '{1}'
+							and docstatus < 2
+					""".format(self.name, task.task_id), as_dict=1)
+
+				if len(ts_list):
+					for item in ts_list:
+						msg += 'Reference: <a href="#Form/Timesheet/{0}">{0}</a><br/>'.format(item.name,item.name)
+					
+					frappe.throw("Row# {0} : Cannot change `Target Work Quantity` for Tasks already having active Timesheets. <br/>{1}".format(task.idx, msg))
+                                        
+	def validate_target_quantity(self):
+		if self.flags.dont_sync_tasks: return
+		
+		for task in self.activity_tasks:
+			prev_value = frappe.db.get_value("Task", task.task_id, "target_quantity")
+			
+			if flt(task.target_quantity) < flt(task.target_quantity_complete):
+				frappe.throw(_("<b>WORK PLAN</b><br/> Row# {0} : `Target Value` cannot be less than `Achieved Value`.").format(task.idx))
+
+			if flt(task.target_quantity) != flt(prev_value) and flt(prev_value) > 0:
+				msg = ""
+				ts_list = frappe.db.sql("""
+							select name
+							from `tabTimesheet`
+							where project = "{0}"
+							and task = '{1}'
+							and docstatus < 2
+					""".format(self.name, task.task_id), as_dict=1)
+
+				if len(ts_list):
+					for item in ts_list:
+						msg += 'Reference: <a href="#Form/Timesheet/{0}">{0}</a><br/>'.format(item.name,item.name)
+					
+					frappe.throw("Row# {0} : Cannot change `Target Quantity/Value` for Tasks already having active Timesheets. <br/>{1}".format(task.idx, msg))
+								
+		for task in self.additional_tasks:
+			prev_value = frappe.db.get_value("Task", task.task_id, "target_quantity")
+			
+			if flt(task.target_quantity) < flt(task.target_quantity_complete):
+				frappe.throw(_("<b>WORK PLAN</b><br/> Row# {0} : `Target Value` cannot be less than `Achieved Value`.").format(task.idx))
+
+			if flt(task.target_quantity) != flt(prev_value) and flt(prev_value) > 0:
+				msg = ""
+				ts_list = frappe.db.sql("""
+							select name
+							from `tabTimesheet`
+							where project = "{0}"
+							and task = '{1}'
+							and docstatus < 2
+					""".format(self.name, task.task_id), as_dict=1)
+
+				if len(ts_list):
+					for item in ts_list:
+						msg += 'Reference: <a href="#Form/Timesheet/{0}">{0}</a><br/>'.format(item.name,item.name)
+					
+					frappe.throw("Row# {0} : Cannot change `Target Quantity/Value` for Tasks already having active Timesheets. <br/>{1}".format(task.idx, msg))
+								
+	def set_status(self):
+		self.docstatus = {
+			"Planning": 0,
+			"Ongoing": 0,
+			"Completed": 1,
+			"Cancelled": 2
+		}[str(self.status) or "Planning"]
+
+	def validate_project_type_and_party(self):
+		""" Restrict user from changing party if there are advance/invoice transactions """
+
+		if not self.project_type:
+			frappe.throw(_("Project type cannot be empty"), title="Data Missing")
+		elif self.party_type and not self.party:
+			frappe.throw(_("Party cannot be empty"),title="Data Missing")
+		elif not self.party_type and self.party:
+			frappe.throw(_("Party Type cannot be empty"),title="Data Missing")
+		else:
+			#project_type = {"Internal": ["Employee","None"], "External": ["Supplier","Customer"]}
+			project_type = {"Internal": ["Customer"], "External": ["Supplier"]}
+			for key,value in project_type.items():
+				if self.project_type == key and (self.party_type or "None") not in value:
+					frappe.throw(_("Party type should be {0} for {1} projects").format("/".join(value),key), title="Invalid Data")
+
+			prev_project_type = self.get_db_value("project_type") 
+			prev_party        = self.get_db_value("party")
+
+			fields = []
+			if prev_project_type and prev_project_type != self.project_type:
+				fields.append("Project Type")
+			elif prev_party and prev_party != self.party:
+				fields.append("Party")
+			
+			if fields:
+				self.check_dependencies(fields[0])
+
+	def check_dependencies(self, field):
+		for dt in ["Project Advance", "Project Invoice"]:
+			for t in frappe.get_all(dt, ["name"], {"project": self.name,"docstatus":("<",2)}):
+				msg = '<b>Reference# : <a href="#Form/{1}/{0}">{0}</a></b>'.format(t.name,dt)
+				frappe.throw(_("{2} cannot be changed for projects already having {1}<br>{0}").format(msg,dt,field), title="Invalid Operation")
+                                 
+
+	def validate_branch_cc(self):
+		if self.flags.dont_sync_tasks: return
+
+		if self.cost_center != frappe.db.get_value("Branch", self.branch, "cost_center"):
+			frappe.throw("Project\'s branch and cost center doesn't belong to each other")
+
+	def validate_dates(self):
+		if self.flags.dont_sync_tasks: return
+				
+		if self.expected_start_date and self.expected_end_date:
+			if getdate(self.expected_end_date) < getdate(self.expected_start_date):
+				frappe.throw(_("Expected End Date can not be less than Expected Start Date"))
+				
+		# ++++++++++++++++++++ Ver 2.0 BEGINS ++++++++++++++++++++
+		# Following code added by SHIV on 20/09/2017
+		for task in self.activity_tasks:
+			prev_start_date = getdate(frappe.db.get_value("Task", task.task_id, "exp_start_date"))
+			prev_end_date = getdate(frappe.db.get_value("Task", task.task_id, "exp_end_date"))
+
+			if (prev_start_date and getdate(task.start_date)) and (getdate(task.start_date) != prev_start_date):
+				msg = ""
+				ts_list = frappe.db.sql("""
+							select name
+							from `tabTimesheet`
+							where project = "{0}"
+							and task = '{1}'
+							and docstatus < 2
+					""".format(self.name, task.task_id), as_dict=1)
+
+				if len(ts_list):
+					for item in ts_list:
+						msg += 'Reference: <a href="#Form/Timesheet/{0}">{0}</a><br/>'.format(item.name,item.name)
+					
+					frappe.throw("Row# {0} : Cannot change `Start Date` for Tasks already having active Timesheets. <br/>{1}".format(task.idx, msg))
+
+			if (prev_end_date and getdate(task.end_date)) and (getdate(task.end_date) != prev_end_date):
+				msg = ""
+				ts_list = frappe.db.sql("""
+							select name
+							from `tabTimesheet`
+							where project = "{0}"
+							and task = '{1}'
+							and docstatus < 2
+					""".format(self.name, task.task_id), as_dict=1)
+
+				if len(ts_list):
+					for item in ts_list:
+						msg += 'Reference: <a href="#Form/Timesheet/{0}">{0}</a><br/>'.format(item.name,item.name)
+					
+					frappe.throw("Row# {0} : Cannot change `End Date` for Tasks already having active Timesheets. <br/>{1}".format(task.idx, msg))
+
+		for task in self.additional_tasks:
+			prev_start_date = getdate(frappe.db.get_value("Task", task.task_id, "exp_start_date"))
+			prev_end_date = getdate(frappe.db.get_value("Task", task.task_id, "exp_end_date"))
+
+			if (prev_start_date and getdate(task.start_date)) and (getdate(task.start_date) != prev_start_date):
+				msg = ""
+				ts_list = frappe.db.sql("""
+							select name
+							from `tabTimesheet`
+							where project = "{0}"
+							and task = '{1}'
+							and docstatus < 2
+					""".format(self.name, task.task_id), as_dict=1)
+
+				if len(ts_list):
+					for item in ts_list:
+						msg += 'Reference: <a href="#Form/Timesheet/{0}">{0}</a><br/>'.format(item.name,item.name)
+					
+					frappe.throw("Row# {0} : Cannot change `Start Date` for Tasks already having active Timesheets. <br/>{1}".format(task.idx, msg))
+
+			if (prev_end_date and getdate(task.end_date)) and (getdate(task.end_date) != prev_end_date):
+				msg = ""
+				ts_list = frappe.db.sql("""
+							select name
+							from `tabTimesheet`
+							where project = "{0}"
+							and task = '{1}'
+							and docstatus < 2
+					""".format(self.name, task.task_id), as_dict=1)
+
+				if len(ts_list):
+					for item in ts_list:
+						msg += 'Reference: <a href="#Form/Timesheet/{0}">{0}</a><br/>'.format(item.name,item.name)
+					
+					frappe.throw("Row# {0} : Cannot change `End Date` for Tasks already having active Timesheets. <br/>{1}".format(task.idx, msg))                                        
+								
+		# +++++++++++++++++++++ Ver 1.0 ENDS +++++++++++++++++++++
+	def update_project(self):
+		#self.update_percent_complete()
+		self.update_project_progress()
+		self.update_costing()
+		self.flags.dont_sync_tasks = True
+		self.save(ignore_permissions = True)
+
+	""" Default Project Codes begins here of ERPNext Jai"""
 	def copy_from_template(self):
 		"""
 		Copy tasks from template
@@ -266,32 +933,60 @@ class Project(Document):
 			self.status = "Completed"
 
 	def update_costing(self):
-		from frappe.query_builder.functions import Max, Min, Sum
+		from_time_sheet = frappe.db.sql("""select
+			sum(costing_amount) as costing_amount,
+			sum(billing_amount) as billing_amount,
+			min(from_time) as start_date,
+			max(to_time) as end_date,
+			sum(hours) as time
+			from `tabTimesheet Detail` where project = %s and docstatus = 1""", self.name, as_dict=1)[0]
 
-		TimesheetDetail = frappe.qb.DocType("Timesheet Detail")
-		from_time_sheet = (
-			frappe.qb.from_(TimesheetDetail)
-			.select(
-				Sum(TimesheetDetail.costing_amount).as_("costing_amount"),
-				Sum(TimesheetDetail.billing_amount).as_("billing_amount"),
-				Min(TimesheetDetail.from_time).as_("start_date"),
-				Max(TimesheetDetail.to_time).as_("end_date"),
-				Sum(TimesheetDetail.hours).as_("time"),
-			)
-			.where((TimesheetDetail.project == self.name) & (TimesheetDetail.docstatus == 1))
-		).run(as_dict=True)[0]
+		from_expense_claim = frappe.db.sql("""select
+			sum(total_sanctioned_amount) as total_sanctioned_amount
+			from `tabExpense Claim` where project = %s and approval_status='Approved'
+			and docstatus = 1""",
+			self.name, as_dict=1)[0]
 
 		self.actual_start_date = from_time_sheet.start_date
 		self.actual_end_date = from_time_sheet.end_date
 
-		self.total_costing_amount = from_time_sheet.costing_amount
-		self.total_billable_amount = from_time_sheet.billing_amount
-		self.actual_time = from_time_sheet.time
+		self.total_costing_amount = flt(from_time_sheet.costing_amount)
+		self.total_billing_amount = flt(from_time_sheet.billing_amount)
+		self.actual_time = flt(from_time_sheet.time)
 
-		self.update_purchase_costing()
-		self.update_sales_amount()
-		self.update_billed_amount()
-		self.calculate_gross_margin()
+		self.total_expense_claim = flt(from_expense_claim.total_sanctioned_amount)
+
+		self.gross_margin = flt(self.total_billing_amount) - flt(self.total_costing_amount)
+
+		if self.total_billing_amount:
+			self.per_gross_margin = (self.gross_margin / flt(self.total_billing_amount)) *100
+
+		# from frappe.query_builder.functions import Max, Min, Sum
+
+		# TimesheetDetail = frappe.qb.DocType("Timesheet Detail")
+		# from_time_sheet = (
+		# 	frappe.qb.from_(TimesheetDetail)
+		# 	.select(
+		# 		Sum(TimesheetDetail.costing_amount).as_("costing_amount"),
+		# 		Sum(TimesheetDetail.billing_amount).as_("billing_amount"),
+		# 		Min(TimesheetDetail.from_time).as_("start_date"),
+		# 		Max(TimesheetDetail.to_time).as_("end_date"),
+		# 		Sum(TimesheetDetail.hours).as_("time"),
+		# 	)
+		# 	.where((TimesheetDetail.project == self.name) & (TimesheetDetail.docstatus == 1))
+		# ).run(as_dict=True)[0]
+
+		# self.actual_start_date = from_time_sheet.start_date
+		# self.actual_end_date = from_time_sheet.end_date
+
+		# self.total_costing_amount = from_time_sheet.costing_amount
+		# self.total_billable_amount = from_time_sheet.billing_amount
+		# self.actual_time = from_time_sheet.time
+
+		# self.update_purchase_costing()
+		# self.update_sales_amount()
+		# self.update_billed_amount()
+		# self.calculate_gross_margin()
 
 	def calculate_gross_margin(self):
 		expense_amount = (
@@ -776,3 +1471,49 @@ def recalculate_project_total_purchase_cost(project: str | None = None):
 			"total_purchase_cost",
 			(total_purchase_cost and total_purchase_cost[0][0] or 0),
 		)
+
+""" ************************************************************************* """
+""" custom function starts from here,  codes from old cdcl erp"""
+@frappe.whitelist()
+def change_status_ongoing(project_id):
+	frappe.db.sql("Update `tabProject` set status = 'Ongoing', docstatus = 0 where name = '{}'".format(project_id))
+	return 1
+
+# ++++++++++++++++++++ Ver 2.0 BEGINS ++++++++++++++++++++
+# Following method is created by SHIV on 02/09/2017
+@frappe.whitelist()
+def make_project_advance(source_name, target_doc=None):
+	def update_master(source_doc, target_doc, source_partent):
+		#target_doc.customer = source_doc.customer
+		pass
+	
+	doclist = get_mapped_doc("Project", source_name, {
+		"Project": {
+				"doctype": "Project Advance",
+				"field_map":{
+					"name": "project",
+					"party_type": "party_type",
+					"party": "party",
+					"party_address": "party_address"
+				},
+				"postprocess": update_master
+		}
+	}, target_doc)
+	return doclist
+# +++++++++++++++++++++ Ver 2.0 ENDS +++++++++++++++++++++
+
+@frappe.whitelist()
+def make_boq(source_name, target_doc=None):
+	def update_master(source_doc, target_doc, source_partent):
+		pass
+	
+	doclist = get_mapped_doc("Project", source_name, {
+		"Project": {
+				"doctype": "BOQ",
+				"field_map":{
+						"name": "project",
+				},
+				"postprocess": update_master
+			}
+	}, target_doc)
+	return doclist

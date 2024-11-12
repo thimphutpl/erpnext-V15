@@ -15,5 +15,13 @@ class ConsumedPOL(Document):
 		from frappe.types import DF
 
 		amended_from: DF.Link | None
+		branch: DF.Link
+		company: DF.Link
+		date: DF.Date
+		equipment: DF.Link
+		pol_type: DF.Data
+		qty: DF.Float
+		reference_name: DF.DynamicLink | None
+		reference_type: DF.Literal["", "POL", "Issue POL", "Equipment POL Transfer"]
 	# end: auto-generated types
 	pass

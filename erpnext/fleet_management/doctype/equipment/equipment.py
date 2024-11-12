@@ -122,3 +122,35 @@ class Equipment(Document):
 					getdate(self.equipment_history[a + 1].from_date), -1)
 		else:
 			self.equipment_history[0].to_date = None
+
+	def set_name(self):
+		for a in self.operators:
+			if a.employee_type == "Employee":
+				a.operator_name = frappe.db.get_value("Employee", a.operator, "employee_name")
+			if a.employee_type == "Muster Roll Employee":
+				a.operator_name = frappe.db.get_value("Muster Roll Employee", a.operator, "person_name")
+
+	def validate_asset(self):
+		if self.asset_code:
+			equipments = frappe.db.sql("select name from tabEquipment where asset_code = %s and name != %s", (self.asset_code, self.name), as_dict=True)
+			if equipments:
+				frappe.throw("The Asset is already linked to another equipment")
+
+
+@frappe.whitelist()
+def get_yards(equipment):
+	t, m = frappe.db.get_value("Equipment", equipment, ['equipment_type', 'equipment_model'])
+	data = frappe.db.sql("select lph, kph from `tabHire Charge Parameter` where equipment_type = %s and equipment_model = %s", (t, m), as_dict=True)
+	if not data:
+		frappe.throw("Setup yardstick for " + str(m))
+	return data
+
+@frappe.whitelist()
+def get_equipments(doctype, txt, searchfield, start, page_len, filters):
+	return frappe.db.sql("select a.equipment as name from `tabHiring Approval Details` a where docstatus = 1 and a.parent = \'"+ str(filters.get("ehf_name")) +"\'")
+
+def sync_branch_asset():
+	objs = frappe.db.sql("select e.name, a.branch from tabEquipment e, tabAsset a where e.asset_code = a.name and e.branch != a.branch", as_dict=True)
+	for a in objs:
+		frappe.db.sql("update tabEquipment set branch = %s where name = %s", (a.branch, a.name))
+

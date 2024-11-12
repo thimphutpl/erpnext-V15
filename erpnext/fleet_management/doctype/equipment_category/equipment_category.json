@@ -10,10 +10,8 @@
  "field_order": [
   "equipment_category",
   "budget_account",
-  "disabled",
-  "pol_expense_account",
-  "r_m_expense_account",
-  "hiring_rate_revision"
+  "column_break_vuta",
+  "allow_hire"
  ],
  "fields": [
   {
@@ -31,36 +29,20 @@
    "options": "Account"
   },
   {
+   "fieldname": "column_break_vuta",
+   "fieldtype": "Column Break"
+  },
+  {
    "default": "0",
-   "fieldname": "disabled",
+   "fieldname": "allow_hire",
    "fieldtype": "Check",
-   "label": "Disabled"
-  },
-  {
-   "fieldname": "pol_expense_account",
-   "fieldtype": "Link",
-   "label": "POL Expense Account",
-   "options": "Account",
-   "reqd": 1
-  },
-  {
-   "fieldname": "r_m_expense_account",
-   "fieldtype": "Link",
-   "label": "R & M Expense Account",
-   "options": "Account",
-   "reqd": 1
-  },
-  {
-   "fieldname": "hiring_rate_revision",
-   "fieldtype": "Percent",
-   "label": "Hiring Rate Revision(%)",
-   "precision": "2",
-   "reqd": 1
+   "in_list_view": 1,
+   "label": "Allow Multiple Hire Forms"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-01-04 11:50:23.702606",
+ "modified": "2024-11-08 16:53:06.429722",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Equipment Category",

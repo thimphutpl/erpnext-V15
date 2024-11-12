@@ -8,7 +8,7 @@ from datetime import date
 import frappe
 from frappe import _, throw
 from frappe.model.document import Document
-from frappe.utils import formatdate, getdate, today
+from frappe.utils import formatdate, getdate, today, nowdate, cint
 
 
 class OverlapError(frappe.ValidationError):

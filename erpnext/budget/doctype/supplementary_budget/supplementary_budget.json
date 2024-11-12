@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_import": 1,
- "autoname": "SUP.YY.###",
+ "autoname": "SUP.YY.#####",
  "creation": "2022-09-09 23:17:58.676352",
  "doctype": "DocType",
  "editable_grid": 1,
@@ -108,7 +108,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-05-03 12:00:03.656441",
+ "modified": "2024-10-31 12:43:02.180354",
  "modified_by": "Administrator",
  "module": "Budget",
  "name": "Supplementary Budget",

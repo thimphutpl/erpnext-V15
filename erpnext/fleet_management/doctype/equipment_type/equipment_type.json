@@ -9,12 +9,9 @@
  "field_order": [
   "equipment_category",
   "equipment_type",
-  "pol_expense_limit",
-  "reading_uom",
   "column_break_6",
   "is_container",
-  "doesnt_have_own_tank",
-  "disabled"
+  "doesnt_have_own_tank"
  ],
  "fields": [
   {
@@ -48,31 +45,13 @@
    "label": "Doesn't have Own Tank"
   },
   {
-   "default": "0",
-   "fieldname": "disabled",
-   "fieldtype": "Check",
-   "label": "Disabled"
-  },
-  {
-   "fieldname": "pol_expense_limit",
-   "fieldtype": "Currency",
-   "label": "POL Expense Limit"
-  },
-  {
-   "fieldname": "reading_uom",
-   "fieldtype": "Select",
-   "label": "Reading UOM",
-   "options": "\nKM\nHour",
-   "reqd": 1
-  },
-  {
    "fieldname": "column_break_6",
    "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-01-04 10:20:06.916615",
+ "modified": "2024-11-08 16:09:42.629563",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Equipment Type",

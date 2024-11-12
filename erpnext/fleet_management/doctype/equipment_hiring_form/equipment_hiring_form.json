@@ -9,19 +9,38 @@
   "hiring_status",
   "section_break_1",
   "branch",
+  "column_break_cfeu",
   "cost_center",
   "col_break_3",
-  "company",
+  "private",
+  "section_break_fxma",
+  "customer",
+  "address",
+  "location",
+  "column_break_cmcm",
+  "private_customer_name",
+  "private_customer_address",
+  "column_break_dalm",
   "request_date",
   "contact_number",
+  "customer_branch",
+  "customer_cost_center",
   "section_break_3",
   "equipment",
   "supplier",
-  "equipment_number",
-  "column_break_11",
+  "registeration_number",
+  "request_items",
   "equipment_type",
   "equipment_model",
   "target_hour",
+  "equipment_approved_details_section",
+  "approved_items",
+  "advance_details_if_private_section",
+  "total_hiring_amount",
+  "column_break_qkts",
+  "advance_amount",
+  "column_break_nbsx",
+  "advance_journal",
   "section_break_15",
   "start_date",
   "end_date",
@@ -31,9 +50,11 @@
   "reading_based_on",
   "section_break_20",
   "amended_from",
+  "payment_completed",
   "section_break_32",
   "tc_name",
   "terms",
+  "er_reference",
   "sb12",
   "workflow_state"
  ],
@@ -52,14 +73,16 @@
    "fieldname": "branch",
    "fieldtype": "Link",
    "label": "Branch",
-   "options": "Branch"
+   "options": "Branch",
+   "reqd": 1
   },
   {
    "fieldname": "cost_center",
    "fieldtype": "Link",
    "label": "Cost Center",
    "options": "Cost Center",
-   "read_only": 1
+   "read_only": 1,
+   "reqd": 1
   },
   {
    "fieldname": "col_break_3",
@@ -80,37 +103,27 @@
   {
    "fieldname": "section_break_3",
    "fieldtype": "Section Break",
-   "label": "Equipment Details"
+   "label": "Equipment Request Details"
   },
   {
    "fieldname": "equipment",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Equipment",
-   "options": "Equipment",
-   "reqd": 1
+   "options": "Equipment"
   },
   {
    "fieldname": "supplier",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Owner",
    "options": "Supplier"
-  },
-  {
-   "fetch_from": "equipment.registeration_number",
-   "fieldname": "equipment_number",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Registration Number",
-   "read_only": 1
-  },
-  {
-   "fieldname": "column_break_11",
-   "fieldtype": "Column Break"
   },
   {
    "fetch_from": "equipment.equipment_type",
    "fieldname": "equipment_type",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Equipment Type",
    "read_only": 1
   },
@@ -118,6 +131,7 @@
    "fetch_from": "equipment.equipment_model",
    "fieldname": "equipment_model",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Equipment Model",
    "read_only": 1
   },
@@ -134,14 +148,14 @@
   {
    "fieldname": "start_date",
    "fieldtype": "Date",
-   "label": "Equipment Start Date",
-   "reqd": 1
+   "hidden": 1,
+   "label": "Equipment Start Date"
   },
   {
    "fieldname": "end_date",
    "fieldtype": "Date",
-   "label": "Equipment End Date",
-   "reqd": 1
+   "hidden": 1,
+   "label": "Equipment End Date"
   },
   {
    "fieldname": "column_break_18",
@@ -150,19 +164,20 @@
   {
    "fieldname": "rate",
    "fieldtype": "Currency",
-   "label": "Hiring Rate",
-   "reqd": 1
+   "hidden": 1,
+   "label": "Hiring Rate"
   },
   {
    "fieldname": "rate_based_on",
    "fieldtype": "Select",
+   "hidden": 1,
    "label": "Rate Based On",
-   "options": "\nDaily\nKilometer\nLumpsum\nPer Hour\nPer Pack",
-   "reqd": 1
+   "options": "\nDaily\nKilometer\nLumpsum\nPer Hour\nPer Pack"
   },
   {
    "fieldname": "reading_based_on",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Reading Based On",
    "read_only": 1
   },
@@ -198,25 +213,165 @@
    "fieldtype": "Section Break"
   },
   {
-   "fetch_from": "branch.company",
-   "fieldname": "company",
+   "fieldname": "workflow_state",
    "fieldtype": "Link",
-   "label": "Company",
-   "options": "Company",
+   "hidden": 1,
+   "label": "Workflow State",
+   "options": "Workflow State",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_cfeu",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "Is the Hire for Private?",
+   "fieldname": "private",
+   "fieldtype": "Select",
+   "label": "Private or Others",
+   "options": "Private\nCDCL\nOthers",
    "reqd": 1
   },
   {
-   "fieldname": "workflow_state",
+   "fieldname": "section_break_fxma",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "customer",
    "fieldtype": "Link",
-   "label": "Workflow State",
-   "options": "Workflow State",
+   "in_list_view": 1,
+   "label": "Customer",
+   "options": "Customer",
+   "reqd": 1
+  },
+  {
+   "fieldname": "address",
+   "fieldtype": "Data",
+   "label": "Customer Address",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_cmcm",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.private == 'Private' && doc.customer",
+   "fieldname": "private_customer_name",
+   "fieldtype": "Data",
+   "label": "Customer Name"
+  },
+  {
+   "depends_on": "eval:doc.private == 'Private' && doc.customer",
+   "description": "* For private customers where individual customer creation may not be applicable.",
+   "fieldname": "private_customer_address",
+   "fieldtype": "Small Text",
+   "label": "Customer Address"
+  },
+  {
+   "fieldname": "column_break_dalm",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.private == \"CDCL\"",
+   "fetch_from": "customer.branch",
+   "fieldname": "customer_branch",
+   "fieldtype": "Read Only",
+   "label": "Customer Branch",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "customer.cost_center",
+   "fieldname": "customer_cost_center",
+   "fieldtype": "Read Only",
+   "label": "Customer Cost Center",
+   "read_only": 1
+  },
+  {
+   "fieldname": "request_items",
+   "fieldtype": "Table",
+   "label": "Request Items",
+   "options": "Hiring Request Details"
+  },
+  {
+   "fieldname": "equipment_approved_details_section",
+   "fieldtype": "Section Break",
+   "label": "Equipment Approved Details"
+  },
+  {
+   "fieldname": "approved_items",
+   "fieldtype": "Table",
+   "label": "Approved Items",
+   "options": "Hiring Approval Details",
+   "reqd": 1
+  },
+  {
+   "fieldname": "advance_details_if_private_section",
+   "fieldtype": "Section Break",
+   "label": "Advance Details (If Private)"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "total_hiring_amount",
+   "fieldtype": "Currency",
+   "label": "Total Hiring Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_qkts",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "advance_amount",
+   "fieldtype": "Currency",
+   "label": "Advance Amount"
+  },
+  {
+   "fieldname": "column_break_nbsx",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "advance_journal",
+   "fieldtype": "Data",
+   "label": "Advance Journal",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "description": "If the payment has been completed for the hire or not",
+   "fieldname": "payment_completed",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Payment Completed"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "er_reference",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "ER Reference",
+   "options": "Equipment Request"
+  },
+  {
+   "fieldname": "location",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Location",
+   "options": "Location"
+  },
+  {
+   "fetch_from": "equipment.registeration_number",
+   "fieldname": "registeration_number",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "in_list_view": 1,
+   "label": "Registration Number",
    "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-07-25 12:40:36.985902",
+ "modified": "2024-11-08 09:49:17.679350",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Equipment Hiring Form",
@@ -237,6 +392,7 @@
    "write": 1
   }
  ],
+ "search_fields": "customer, request_date",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []

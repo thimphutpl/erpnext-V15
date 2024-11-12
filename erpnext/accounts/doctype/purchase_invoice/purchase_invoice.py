@@ -133,6 +133,8 @@ class PurchaseInvoice(BuyingController):
 		items: DF.Table[PurchaseInvoiceItem]
 		language: DF.Data | None
 		letter_head: DF.Link | None
+		material_request: DF.Link | None
+		material_request_date: DF.Link | None
 		mode_of_payment: DF.Link | None
 		naming_series: DF.Literal["ACC-PINV-.YYYY.-", "ACC-PINV-RET-.YYYY.-"]
 		net_total: DF.Currency
@@ -153,6 +155,8 @@ class PurchaseInvoice(BuyingController):
 		price_list_currency: DF.Link | None
 		pricing_rules: DF.Table[PricingRuleDetail]
 		project: DF.Link | None
+		purchase_order: DF.Link | None
+		purchase_receipt: DF.Link | None
 		rejected_warehouse: DF.Link | None
 		release_date: DF.Date | None
 		remarks: DF.SmallText | None
@@ -808,6 +812,7 @@ class PurchaseInvoice(BuyingController):
 				if frappe.db.get_value("Item", item.item_code, "is_fixed_asset"):
 					expense = get_asset_category_account('fixed_asset_account', item=item.item_code,
 																  company=self.company)
+			# frappe.throw(str(expense))
 			budget_cost_center = budget_account = ""
 			bud_acc_dtl = frappe.get_doc("Account", expense)
 			if bud_acc_dtl.is_centralized_budget:

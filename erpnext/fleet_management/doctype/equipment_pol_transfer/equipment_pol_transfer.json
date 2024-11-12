@@ -1,0 +1,186 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-10-31 15:15:33.184975",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_koph",
+  "branch",
+  "company",
+  "column_break_pieo",
+  "posting_date",
+  "posting_time",
+  "section_break_obeq",
+  "from_equipment",
+  "fe_number",
+  "from_branch",
+  "column_break_rxkc",
+  "to_equipment",
+  "te_number",
+  "to_branch",
+  "section_break_avnh",
+  "pol_type",
+  "item_name",
+  "qty",
+  "column_break_dvvz",
+  "remarks",
+  "section_break_dsdg",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_koph",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended Form",
+   "no_copy": 1,
+   "options": "Equipment POL Transfer",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Branch",
+   "options": "Branch",
+   "reqd": 1
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_pieo",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Posting Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "posting_time",
+   "fieldtype": "Time",
+   "label": "Posting Time",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_obeq",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "from_equipment",
+   "fieldtype": "Link",
+   "label": "From Equipment",
+   "options": "Equipment",
+   "reqd": 1
+  },
+  {
+   "fieldname": "fe_number",
+   "fieldtype": "Read Only",
+   "label": "From Equipment Number",
+   "options": "from_equipment.equipment_number"
+  },
+  {
+   "fieldname": "from_branch",
+   "fieldtype": "Read Only",
+   "label": "From Branch",
+   "options": "from_equipment.branch"
+  },
+  {
+   "fieldname": "column_break_rxkc",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "to_equipment",
+   "fieldtype": "Link",
+   "label": "To Equipment",
+   "options": "Equipment",
+   "reqd": 1
+  },
+  {
+   "fieldname": "te_number",
+   "fieldtype": "Read Only",
+   "label": "To Equipment Number",
+   "options": "to_equipment.equipment_number"
+  },
+  {
+   "fieldname": "to_branch",
+   "fieldtype": "Read Only",
+   "label": "To Branch",
+   "options": "to_equipment.branch"
+  },
+  {
+   "fieldname": "section_break_avnh",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "pol_type",
+   "fieldtype": "Link",
+   "label": "POL Item Code",
+   "options": "Item",
+   "reqd": 1
+  },
+  {
+   "fieldname": "item_name",
+   "fieldtype": "Data",
+   "label": "Item Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "qty",
+   "fieldtype": "Float",
+   "label": "Quantity",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_dvvz",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Small Text",
+   "label": "Remarks"
+  },
+  {
+   "fieldname": "section_break_dsdg",
+   "fieldtype": "Section Break"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2024-10-31 15:48:35.720723",
+ "modified_by": "Administrator",
+ "module": "Fleet Management",
+ "name": "Equipment POL Transfer",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

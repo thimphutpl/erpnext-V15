@@ -1,0 +1,156 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "ERF.YY.MM.###",
+ "creation": "2024-10-31 09:38:32.174017",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_azlo",
+  "amended_from",
+  "requesting_project",
+  "cost_center",
+  "branch",
+  "column_break_svpo",
+  "request_date",
+  "sbranch",
+  "column_break_xjxz",
+  "purpose",
+  "equipment_details_section",
+  "items",
+  "amended_form",
+  "section_break_pawz",
+  "percent_completed",
+  "ehf"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_azlo",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Equipment Request",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "requesting_project",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Requesting Project",
+   "options": "Project",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "requesting_project.cost_center",
+   "fieldname": "cost_center",
+   "fieldtype": "Read Only",
+   "label": "Requesting Cost Center",
+   "options": "project.cost_center"
+  },
+  {
+   "fetch_from": "requesting_project.branch",
+   "fieldname": "branch",
+   "fieldtype": "Read Only",
+   "label": "Requesting Branch",
+   "options": "project.branch",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_svpo",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "request_date",
+   "fieldtype": "Date",
+   "label": "Request Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "sbranch",
+   "fieldtype": "Link",
+   "label": "Supplier Branch",
+   "options": "Branch",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_xjxz",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "purpose",
+   "fieldtype": "Text",
+   "label": "Purpose"
+  },
+  {
+   "fieldname": "equipment_details_section",
+   "fieldtype": "Section Break",
+   "label": "Equipment Details"
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "options": "Equipment Request Item",
+   "reqd": 1
+  },
+  {
+   "fieldname": "amended_form",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Equipment Request",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_pawz",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "percent_completed",
+   "fieldtype": "Percent",
+   "label": "Percent Completed",
+   "read_only": 1
+  },
+  {
+   "fieldname": "ehf",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Equipment Hiring Form",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2024-11-04 11:54:55.985360",
+ "modified_by": "Administrator",
+ "module": "Fleet Management",
+ "name": "Equipment Request",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

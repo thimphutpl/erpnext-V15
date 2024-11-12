@@ -15,14 +15,18 @@
   "salutation",
   "customer_name",
   "customer_type",
-  "customer_group",
+  "lead_name",
+  "image",
+  "status",
   "column_break0",
+  "customer_group",
   "territory",
   "gender",
-  "lead_name",
   "opportunity_name",
   "account_manager",
-  "image",
+  "place_and_contact_details_section_section",
+  "location",
+  "telephone_and_fax",
   "defaults_tab",
   "default_currency",
   "default_bank_account",
@@ -45,6 +49,14 @@
   "branch",
   "cb_ccb_1",
   "cost_center",
+  "bank_information",
+  "bank_name",
+  "bank_branch",
+  "inr_bank_code",
+  "inr_purpose_code",
+  "column_break_ntab",
+  "bank_account_type",
+  "account_number",
   "dashboard_tab",
   "contact_and_address_tab",
   "address_contacts",
@@ -94,15 +106,16 @@
   {
    "fieldname": "basic_info",
    "fieldtype": "Section Break",
+   "label": "Name and Type",
    "oldfieldtype": "Section Break",
-   "options": "fa fa-user"
+   "options": "icon-user\nfa fa-user"
   },
   {
    "fieldname": "naming_series",
    "fieldtype": "Select",
    "label": "Series",
    "no_copy": 1,
-   "options": "CUST-.YYYY.-",
+   "options": "CUST-\nCUST-.YYYY.-",
    "set_only_once": 1
   },
   {
@@ -116,6 +129,7 @@
    "bold": 1,
    "fieldname": "customer_name",
    "fieldtype": "Data",
+   "in_filter": 1,
    "in_global_search": 1,
    "label": "Customer Name",
    "no_copy": 1,
@@ -138,7 +152,7 @@
    "label": "Customer Type",
    "oldfieldname": "customer_type",
    "oldfieldtype": "Select",
-   "options": "Company\nIndividual\nProprietorship\nPartnership",
+   "options": "\nCompany\nIndividual\nProprietorship\nPartnership",
    "reqd": 1
   },
   {
@@ -150,6 +164,7 @@
   {
    "fieldname": "lead_name",
    "fieldtype": "Link",
+   "in_filter": 1,
    "label": "From Lead",
    "no_copy": 1,
    "oldfieldname": "lead_name",
@@ -179,24 +194,25 @@
   {
    "fieldname": "customer_group",
    "fieldtype": "Link",
+   "in_filter": 1,
    "in_list_view": 1,
-   "in_standard_filter": 1,
    "label": "Customer Group",
    "oldfieldname": "customer_group",
    "oldfieldtype": "Link",
    "options": "Customer Group",
+   "reqd": 1,
    "search_index": 1
   },
   {
    "fieldname": "territory",
    "fieldtype": "Link",
    "in_list_view": 1,
-   "in_standard_filter": 1,
    "label": "Territory",
    "oldfieldname": "territory",
    "oldfieldtype": "Link",
    "options": "Territory",
-   "print_hide": 1
+   "print_hide": 1,
+   "reqd": 1
   },
   {
    "fieldname": "tax_id",
@@ -491,7 +507,7 @@
   {
    "fieldname": "defaults_tab",
    "fieldtype": "Section Break",
-   "label": "Defaults"
+   "label": "Currency and Price List"
   },
   {
    "fieldname": "settings_tab",
@@ -597,6 +613,76 @@
    "fieldtype": "Link",
    "label": "Branch",
    "options": "Branch"
+  },
+  {
+   "default": "Active",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "hidden": 1,
+   "label": "Status",
+   "options": "Active\nDormant\nOpen",
+   "print_hide": 1
+  },
+  {
+   "fieldname": "place_and_contact_details_section_section",
+   "fieldtype": "Section Break",
+   "label": "Place and Contact Details Section"
+  },
+  {
+   "fieldname": "location",
+   "fieldtype": "Link",
+   "label": "Location",
+   "options": "Location"
+  },
+  {
+   "fieldname": "telephone_and_fax",
+   "fieldtype": "Link",
+   "label": "Telephone and Fax",
+   "options": "Telephony Call Type"
+  },
+  {
+   "fieldname": "bank_information",
+   "fieldtype": "Section Break",
+   "label": "Bank Information"
+  },
+  {
+   "fieldname": "bank_name",
+   "fieldtype": "Link",
+   "label": "Bank Name",
+   "options": "Financial Institution"
+  },
+  {
+   "fieldname": "bank_branch",
+   "fieldtype": "Link",
+   "label": "Bank Branch",
+   "options": "Financial Institution Branch"
+  },
+  {
+   "fieldname": "inr_bank_code",
+   "fieldtype": "Select",
+   "label": "Bank Code",
+   "options": "\n01 - AXIS BANK\n02- SBI\n03 -Others\n04 - SCB"
+  },
+  {
+   "fieldname": "inr_purpose_code",
+   "fieldtype": "Select",
+   "label": "Purpose Code",
+   "options": "\n01- INVT IN EQUITY SHARE\n02- INVT IN MUTUAL FUND\n03- INVT IN DEBENTURES\n04- BILL PAYMENT\n05- CREDIT TO NRE A/c\n06- PAYMENT TO HOTELS\n07- TRAVEL & TOURISM\n08- INVT IN REAL ESTATE\n09- PYMNT TO ESTATE DEVELOPER\n10- LIC PREMIUM\n11- EDUCATIONAL EXPENSES\n12- FAMILY MAINTENANCE\n13- POSTMASTER / UTI PREMIUM\n14- PROPERTY Pymnt-Co-op Hsg.Soc\n15- PROPERTY Pymnt-Govt. Hsg.Scheme\n16- MEDICAL EXPENSES\n17- UTILITY PAYMENTS\n18- TAX PAYMENTS\n19- EMI FOR LOAN REPAYMENT\n20- COMPENSATION OF EMPLOYEES\n21- SALARY"
+  },
+  {
+   "fieldname": "column_break_ntab",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "bank_account_type",
+   "fieldtype": "Link",
+   "label": "Bank Account Type",
+   "options": "Bank Account Type"
+  },
+  {
+   "fieldname": "account_number",
+   "fieldtype": "Data",
+   "label": "Account Number"
   }
  ],
  "icon": "fa fa-user",
@@ -610,7 +696,7 @@
    "link_fieldname": "party"
   }
  ],
- "modified": "2024-10-08 11:16:32.101913",
+ "modified": "2024-11-11 21:08:27.556940",
  "modified_by": "Administrator",
  "module": "Selling",
  "name": "Customer",

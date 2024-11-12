@@ -11,6 +11,32 @@ from frappe.utils import date_diff, flt, cint, nowdate, getdate
 from erpnext.assets.doctype.asset.depreciation import make_depreciation_entry
 # import pandas as pd
 
+def save_emp():
+    for emp in frappe.db.sql("select name from `tabEmployee`", as_dict=True):
+        # print(emp.name)
+        try:
+            frappe.delete_doc("Employee", emp.name)
+            print("Success")
+        except Exception:
+            pass
+        # # print(doc.designation)
+        # # doc.designation=None
+        # # # doc.designation=""
+        # doc.save()
+
+
+def clean_designation():
+    for emp in frappe.db.sql("select name from `tabEmployee` where designation is not null", as_dict=True):
+        doc=frappe.get_doc("Employee", emp.name)
+        
+        print(doc.designation)
+        doc.designation=None
+        # doc.designation=""
+        doc.save()
+
+    # for des in frappe.db.sql("select name from `tabDesignation`", as_dict=True):
+    #     doc=frappe.delete_doc("Designation", des.name)
+
 
 def update_asset_journal_entry():
     journal_entries = frappe.db.sql("""

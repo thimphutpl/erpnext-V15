@@ -11,6 +11,7 @@ from frappe.model.mapper import get_mapped_doc
 from frappe.utils import add_days, cstr, date_diff, flt, get_link_to_form, getdate, today
 from frappe.utils.data import format_date
 from frappe.utils.nestedset import NestedSet
+from frappe.model.naming import make_autoname
 
 
 class CircularReferenceError(frappe.ValidationError):
@@ -24,18 +25,21 @@ class Task(NestedSet):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
-		from frappe.types import DF
-
 		from erpnext.projects.doctype.task_depends_on.task_depends_on import TaskDependsOn
+		from frappe.types import DF
 
 		act_end_date: DF.Date | None
 		act_start_date: DF.Date | None
+		activity: DF.Data | None
 		actual_time: DF.Float
+		additional_task: DF.Check
+		branch: DF.Link | None
 		closing_date: DF.Date | None
 		color: DF.Color | None
 		company: DF.Link | None
 		completed_by: DF.Link | None
 		completed_on: DF.Date | None
+		cost_center: DF.Link | None
 		department: DF.Link | None
 		depends_on: DF.Table[TaskDependsOn]
 		depends_on_tasks: DF.Code | None
@@ -44,6 +48,10 @@ class Task(NestedSet):
 		exp_end_date: DF.Date | None
 		exp_start_date: DF.Date | None
 		expected_time: DF.Float
+		grp_exp_end_date: DF.Date | None
+		grp_exp_start_date: DF.Date | None
+		grp_work_quantity: DF.Percent
+		grp_work_quantity_complete: DF.Percent
 		is_group: DF.Check
 		is_milestone: DF.Check
 		is_template: DF.Check
@@ -57,19 +65,34 @@ class Task(NestedSet):
 		review_date: DF.Date | None
 		rgt: DF.Int
 		start: DF.Int
-		status: DF.Literal[
-			"Open", "Working", "Pending Review", "Overdue", "Template", "Completed", "Cancelled"
-		]
+		status: DF.Literal["Open", "Working", "Pending Review", "Overdue", "Template", "Completed", "Cancelled"]
 		subject: DF.Data
+		target_quantity: DF.Float
+		target_quantity_complete: DF.Float
+		target_uom: DF.Link | None
+		task_idx: DF.Int
 		task_weight: DF.Float
 		template_task: DF.Data | None
 		total_billing_amount: DF.Currency
 		total_costing_amount: DF.Currency
 		type: DF.Link | None
+		work_quantity: DF.Percent
+		work_quantity_complete: DF.Percent
 	# end: auto-generated types
 
 	nsm_parent_field = "parent_task"
 
+	def autoname(self):
+		cur_year  = str(today())[0:4]
+		cur_month = str(today())[5:7]
+		if self.project:
+			serialno  = make_autoname("TSK" + self.project[-4:] + ".####")
+			#self.name = serialno[0:3] + cur_year + cur_month + serialno[3:]
+		else:
+			serialno  = make_autoname("TSK.YY.MM.####")
+
+		self.name = serialno
+		
 	def get_customer_details(self):
 		cust = frappe.db.sql("select customer_name from `tabCustomer` where name=%s", self.customer)
 		if cust:
@@ -83,6 +106,8 @@ class Task(NestedSet):
 		self.update_depends_on()
 		self.validate_dependencies_for_template_task()
 		self.validate_completed_on()
+		# Following method created by SHIV on 2017/08/18
+		self.set_defaults()
 
 	def validate_dates(self):
 		self.validate_from_to_dates("exp_start_date", "exp_end_date")
@@ -137,6 +162,22 @@ class Task(NestedSet):
 					)
 
 			close_all_assignments(self.doctype, self.name)
+
+	# Following method created by SHIV on 2017/08/18
+	def set_defaults(self):
+		if not self.target_uom:
+			self.target_uom = 'Percent'
+			if not self.target_quantity:
+				self.target_quantity = 100
+
+		if self.project:
+			base_project    = frappe.get_doc("Project", self.project)
+			self.branch     = base_project.branch
+			self.cost_center= base_project.cost_center
+
+			if base_project.status in ('Completed','Cancelled'):
+				frappe.throw(_("Operation not permitted on already {0} Project.").format(base_project.status),title="Task: Invalid Operation")
+	# +++++++++++++++++++++ Ver 1.0 ENDS +++++++++++++++++++++
 
 	def validate_progress(self):
 		if flt(self.progress or 0) > 100:

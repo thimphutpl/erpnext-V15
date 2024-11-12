@@ -7,24 +7,23 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "registeration_number",
+  "column_break_antj",
   "equipment_type",
-  "model",
-  "disabled",
   "column_break_3",
+  "model",
+  "column_break_euaj",
   "tank_capacity",
-  "section_break_5",
-  "reading_based_on",
-  "column_break_7",
-  "target_hour"
+  "amended_form"
  ],
  "fields": [
   {
    "fieldname": "equipment_type",
    "fieldtype": "Link",
-   "hidden": 1,
    "in_list_view": 1,
    "label": "Equipment Type",
-   "options": "Equipment Type"
+   "options": "Equipment Type",
+   "reqd": 1
   },
   {
    "fieldname": "model",
@@ -44,34 +43,35 @@
    "label": "Tank Capacity"
   },
   {
-   "fieldname": "section_break_5",
-   "fieldtype": "Section Break"
+   "fieldname": "registeration_number",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Registration Number",
+   "options": "Registration Details",
+   "reqd": 1,
+   "unique": 1
   },
   {
-   "fieldname": "reading_based_on",
-   "fieldtype": "Select",
-   "label": "Reading Based On",
-   "options": "Meter\nTrip"
-  },
-  {
-   "fieldname": "column_break_7",
+   "fieldname": "column_break_euaj",
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "target_hour",
-   "fieldtype": "Int",
-   "label": "Target Hour"
+   "fieldname": "amended_form",
+   "fieldtype": "Link",
+   "label": "Amended Form",
+   "no_copy": 1,
+   "options": "Equipment Model",
+   "print_hide": 1,
+   "read_only": 1
   },
   {
-   "default": "0",
-   "fieldname": "disabled",
-   "fieldtype": "Check",
-   "label": "Disabled"
+   "fieldname": "column_break_antj",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2022-11-28 17:45:02.871237",
+ "modified": "2024-11-09 20:11:35.977259",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Equipment Model",

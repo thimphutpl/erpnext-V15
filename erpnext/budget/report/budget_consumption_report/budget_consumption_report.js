@@ -67,7 +67,7 @@ frappe.query_reports["Budget Consumption Report"] = {
 		},
 		{
 			"fieldname": "cost_center",
-			"label": __("Cost Center"),
+			"label": __("Branch"),
 			"fieldtype": "Link",
 			"options": "Cost Center",
 			"get_query": function() {return {'filters': [['Cost Center', 'disabled', '!=', '1']]}}
@@ -121,6 +121,7 @@ frappe.query_reports["Budget Consumption Report"] = {
 			var filters = report.get_values();
 			frappe.route_options = {
 				"budget_against": filters.budget_against,
+				"fiscal_year": filters.fiscal_year,
 				"cost_center": filters.cost_center,
 				"project": filters.project,
 				"budget_type": filters.budget_type,

@@ -15,12 +15,10 @@
   "naming_series",
   "supplier",
   "supplier_name",
-  "supplier_delivery_note",
-  "subcontracting_receipt",
   "column_break1",
   "posting_date",
+  "schedule_date",
   "posting_time",
-  "set_posting_time",
   "column_break_12",
   "company",
   "branch",
@@ -100,6 +98,9 @@
   "raw_material_details",
   "get_current_stock",
   "supplied_items",
+  "references_section",
+  "material_request",
+  "purchase_order",
   "address_and_contact_tab",
   "section_addresses",
   "supplier_address",
@@ -213,11 +214,6 @@
    "read_only": 1
   },
   {
-   "fieldname": "supplier_delivery_note",
-   "fieldtype": "Data",
-   "label": "Supplier Delivery Note"
-  },
-  {
    "fieldname": "column_break1",
    "fieldtype": "Column Break",
    "oldfieldtype": "Column Break",
@@ -249,15 +245,6 @@
    "print_width": "100px",
    "reqd": 1,
    "width": "100px"
-  },
-  {
-   "default": "0",
-   "depends_on": "eval:doc.docstatus==0",
-   "fieldname": "set_posting_time",
-   "fieldtype": "Check",
-   "hidden": 1,
-   "label": "Edit Posting Date and Time",
-   "print_hide": 1
   },
   {
    "fieldname": "company",
@@ -1223,14 +1210,6 @@
    "label": "Named Place"
   },
   {
-   "depends_on": "eval: (doc.is_subcontracted && !doc.is_old_subcontracting_flow)",
-   "fieldname": "subcontracting_receipt",
-   "fieldtype": "Link",
-   "label": "Subcontracting Receipt",
-   "options": "Subcontracting Receipt",
-   "search_index": 1
-  },
-  {
    "fieldname": "tax_withholding_net_total",
    "fieldtype": "Currency",
    "hidden": 1,
@@ -1255,13 +1234,36 @@
    "label": "Branch",
    "options": "Branch",
    "reqd": 1
+  },
+  {
+   "fieldname": "schedule_date",
+   "fieldtype": "Date",
+   "label": "Required By",
+   "options": "1"
+  },
+  {
+   "fieldname": "references_section",
+   "fieldtype": "Section Break",
+   "label": "References"
+  },
+  {
+   "fieldname": "purchase_order",
+   "fieldtype": "Link",
+   "label": "Purchase Order",
+   "options": "Purchase Order"
+  },
+  {
+   "fieldname": "material_request",
+   "fieldtype": "Link",
+   "label": "Material Request",
+   "options": "Material Request"
   }
  ],
  "icon": "fa fa-truck",
  "idx": 261,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-10-22 09:29:09.837906",
+ "modified": "2024-11-05 10:22:01.122660",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Purchase Receipt",

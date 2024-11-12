@@ -38,18 +38,22 @@ class Customer(TransactionBase):
 		from frappe.types import DF
 
 		account_manager: DF.Link | None
+		account_number: DF.Data | None
 		accounts: DF.Table[PartyAccount]
+		bank_account_type: DF.Link | None
+		bank_branch: DF.Link | None
+		bank_name: DF.Link | None
 		branch: DF.Link | None
 		companies: DF.Table[AllowedToTransactWith]
 		cost_center: DF.Link | None
 		credit_limits: DF.Table[CustomerCreditLimit]
 		customer_details: DF.Text | None
-		customer_group: DF.Link | None
+		customer_group: DF.Link
 		customer_name: DF.Data
 		customer_pos_id: DF.Data | None
 		customer_primary_address: DF.Link | None
 		customer_primary_contact: DF.Link | None
-		customer_type: DF.Literal["Company", "Individual", "Proprietorship", "Partnership"]
+		customer_type: DF.Literal["", "Company", "Individual", "Proprietorship", "Partnership"]
 		default_bank_account: DF.Link | None
 		default_commission_rate: DF.Float
 		default_currency: DF.Link | None
@@ -61,15 +65,18 @@ class Customer(TransactionBase):
 		gender: DF.Link | None
 		image: DF.AttachImage | None
 		industry: DF.Link | None
+		inr_bank_code: DF.Literal["", "01 - AXIS BANK", "02- SBI", "03 -Others", "04 - SCB"]
+		inr_purpose_code: DF.Literal["", "01- INVT IN EQUITY SHARE", "02- INVT IN MUTUAL FUND", "03- INVT IN DEBENTURES", "04- BILL PAYMENT", "05- CREDIT TO NRE A/c", "06- PAYMENT TO HOTELS", "07- TRAVEL & TOURISM", "08- INVT IN REAL ESTATE", "09- PYMNT TO ESTATE DEVELOPER", "10- LIC PREMIUM", "11- EDUCATIONAL EXPENSES", "12- FAMILY MAINTENANCE", "13- POSTMASTER / UTI PREMIUM", "14- PROPERTY Pymnt-Co-op Hsg.Soc", "15- PROPERTY Pymnt-Govt. Hsg.Scheme", "16- MEDICAL EXPENSES", "17- UTILITY PAYMENTS", "18- TAX PAYMENTS", "19- EMI FOR LOAN REPAYMENT", "20- COMPENSATION OF EMPLOYEES", "21- SALARY"]
 		is_frozen: DF.Check
 		is_internal_customer: DF.Check
 		language: DF.Link | None
 		lead_name: DF.Link | None
+		location: DF.Link | None
 		loyalty_program: DF.Link | None
 		loyalty_program_tier: DF.Data | None
 		market_segment: DF.Link | None
 		mobile_no: DF.ReadOnly | None
-		naming_series: DF.Literal["CUST-.YYYY.-"]
+		naming_series: DF.Literal["CUST-", "CUST-.YYYY.-"]
 		opportunity_name: DF.Link | None
 		payment_terms: DF.Link | None
 		portal_users: DF.Table[PortalUser]
@@ -78,10 +85,12 @@ class Customer(TransactionBase):
 		sales_team: DF.Table[SalesTeam]
 		salutation: DF.Link | None
 		so_required: DF.Check
+		status: DF.Literal["Active", "Dormant", "Open"]
 		tax_category: DF.Link | None
 		tax_id: DF.Data | None
 		tax_withholding_category: DF.Link | None
-		territory: DF.Link | None
+		telephone_and_fax: DF.Link | None
+		territory: DF.Link
 		website: DF.Data | None
 	# end: auto-generated types
 

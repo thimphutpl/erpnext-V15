@@ -79,6 +79,7 @@ class Asset(AccountsController):
 		department: DF.Link | None
 		depr_entry_posting_status: DF.Literal["", "Successful", "Failed"]
 		depreciation_method: DF.Literal["", "Straight Line", "Double Declining Balance", "Manual"]
+		disable_depreciation: DF.Check
 		disposal_date: DF.Date | None
 		finance_books: DF.Table[AssetFinanceBook]
 		frequency_of_depreciation: DF.Int
@@ -92,7 +93,6 @@ class Asset(AccountsController):
 		is_composite_asset: DF.Check
 		is_existing_asset: DF.Check
 		is_fully_depreciated: DF.Check
-		issued_to: DF.Literal[None]
 		item_code: DF.Link
 		item_name: DF.ReadOnly | None
 		journal_entry_for_scrap: DF.Link | None
@@ -155,7 +155,7 @@ class Asset(AccountsController):
 
 	def on_submit(self):
 		self.validate_in_use_date()
-		self.make_asset_movement()
+		# self.make_asset_movement() # jai
 		self.make_asset_je_entry()
 		if not self.booked_fixed_asset and self.validate_make_gl_entry():
 			self.make_gl_entries()
@@ -283,6 +283,9 @@ class Asset(AccountsController):
 
 	def set_missing_values(self):
 		finance_books = get_item_details(self.item_code, self.asset_category, self.gross_purchase_amount, self.asset_sub_category, self.available_for_use_date)
+		if len(finance_books) == 0:
+			frappe.throw(f"Map {self.asset_sub_category} and Finance Book in {self.asset_category}")
+
 		if not self.asset_category:
 			self.asset_category = frappe.get_cached_value("Item", self.item_code, "asset_category")
 
@@ -395,7 +398,7 @@ class Asset(AccountsController):
 				"asset": self.name,
 				"asset_name": self.asset_name,
 				"target_location": self.location,
-				"to_employee": self.custodian,
+				"to_employee": self.custodian
 			}
 		]
 		asset_movement = frappe.get_doc(

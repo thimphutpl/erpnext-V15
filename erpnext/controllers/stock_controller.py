@@ -56,13 +56,14 @@ class StockController(AccountsController):
 				self.validate_duplicate_serial_and_batch_bundle(table_name)
 
 		if not self.get("is_return"):
-			self.validate_inspection()
-		self.validate_serialized_batch()
-		self.clean_serial_nos()
-		self.validate_customer_provided_item()
-		self.set_rate_of_stock_uom()
-		self.validate_internal_transfer()
-		self.validate_putaway_capacity()
+			self.validate_serialized_batch()
+			self.clean_serial_nos()
+			self.validate_customer_provided_item()
+			self.set_rate_of_stock_uom()
+			self.validate_internal_transfer()
+			self.validate_putaway_capacity()
+			self.validate_inspection()		
+		
 
 	def validate_duplicate_serial_and_batch_bundle(self, table_name):
 		if not self.get(table_name):

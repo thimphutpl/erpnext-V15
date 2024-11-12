@@ -14,6 +14,10 @@
   "color",
   "is_group",
   "is_template",
+  "additional_task",
+  "work_quantity",
+  "work_quantity_complete",
+  "activity",
   "column_break0",
   "status",
   "priority",
@@ -30,6 +34,12 @@
   "progress",
   "duration",
   "is_milestone",
+  "target_achievement_value",
+  "target_uom",
+  "cb_tav_1",
+  "target_quantity",
+  "cb_tav_2",
+  "target_quantity_complete",
   "sb_details",
   "description",
   "sb_depends_on",
@@ -47,13 +57,20 @@
   "sb_more_info",
   "review_date",
   "closing_date",
+  "task_idx",
+  "grp_exp_start_date",
+  "grp_exp_end_date",
+  "grp_work_quantity",
+  "grp_work_quantity_complete",
   "column_break_22",
   "department",
   "company",
   "lft",
   "rgt",
   "old_parent",
-  "template_task"
+  "template_task",
+  "branch",
+  "cost_center"
  ],
  "fields": [
   {
@@ -392,6 +409,115 @@
    "fieldtype": "Data",
    "hidden": 1,
    "label": "Template Task"
+  },
+  {
+   "depends_on": "project",
+   "fieldname": "target_achievement_value",
+   "fieldtype": "Section Break",
+   "label": "Target & Achievement"
+  },
+  {
+   "fieldname": "target_uom",
+   "fieldtype": "Link",
+   "label": "UOM",
+   "options": "UOM",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cb_tav_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "target_quantity",
+   "fieldtype": "Float",
+   "label": "Target",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cb_tav_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "target_quantity_complete",
+   "fieldtype": "Float",
+   "label": "Achievement",
+   "read_only": 1
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Branch",
+   "options": "Branch",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cost_center",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Cost Center",
+   "options": "Cost Center",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "depends_on": "project",
+   "fieldname": "additional_task",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Is Additional Task?"
+  },
+  {
+   "depends_on": "project",
+   "fieldname": "work_quantity",
+   "fieldtype": "Percent",
+   "in_list_view": 1,
+   "label": "Work Quantity in Percentage",
+   "read_only": 1
+  },
+  {
+   "fieldname": "work_quantity_complete",
+   "fieldtype": "Percent",
+   "label": "Work Quantity Complete",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "activity",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "in_list_view": 1,
+   "label": "Activity"
+  },
+  {
+   "fieldname": "task_idx",
+   "fieldtype": "Int",
+   "hidden": 1,
+   "label": "task idx"
+  },
+  {
+   "fieldname": "grp_exp_start_date",
+   "fieldtype": "Date",
+   "hidden": 1,
+   "label": "Group Expected Start Date"
+  },
+  {
+   "fieldname": "grp_exp_end_date",
+   "fieldtype": "Date",
+   "hidden": 1,
+   "label": "Group Expected End Date"
+  },
+  {
+   "fieldname": "grp_work_quantity",
+   "fieldtype": "Percent",
+   "hidden": 1,
+   "label": "Group Work Quantity"
+  },
+  {
+   "fieldname": "grp_work_quantity_complete",
+   "fieldtype": "Percent",
+   "hidden": 1,
+   "label": "Group Work Quantity Complete"
   }
  ],
  "icon": "fa fa-check",
@@ -399,7 +525,7 @@
  "is_tree": 1,
  "links": [],
  "max_attachments": 5,
- "modified": "2024-01-08 16:00:41.296203",
+ "modified": "2024-11-07 16:46:31.924167",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Task",

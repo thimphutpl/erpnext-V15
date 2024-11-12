@@ -12,6 +12,9 @@
   "column_break_3",
   "company",
   "is_group",
+  "is_division",
+  "is_section",
+  "is_unit",
   "disabled",
   "lft",
   "rgt",
@@ -86,13 +89,31 @@
   {
    "fieldname": "column_break_3",
    "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_unit",
+   "fieldtype": "Check",
+   "label": "Is Unit"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_section",
+   "fieldtype": "Check",
+   "label": "Is Section"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_division",
+   "fieldtype": "Check",
+   "label": "Is Division"
   }
  ],
  "icon": "fa fa-sitemap",
  "idx": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2024-08-14 14:37:26.567083",
+ "modified": "2024-10-31 17:09:54.329341",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Department",

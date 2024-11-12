@@ -100,7 +100,6 @@ class JournalEntry(AccountsController):
 
 	def autoname(self):
 		prefix = frappe.db.get_value("Journal Entry Series", self.naming_series, "prefix")
-		frappe.throw("hhhh")
 		if not prefix:
 			frappe.throw("Please set prefix {}".format(
 				frappe.get_desk_link("Journal Entry Series", self.naming_series)

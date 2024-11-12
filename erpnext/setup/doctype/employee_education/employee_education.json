@@ -6,36 +6,28 @@
  "engine": "InnoDB",
  "field_order": [
   "school_univ",
-  "qualification",
   "level",
+  "course_name",
+  "trade",
   "year_of_passing",
+  "country",
   "class_per",
   "maj_opt_subj"
  ],
  "fields": [
   {
    "fieldname": "school_univ",
-   "fieldtype": "Small Text",
+   "fieldtype": "Data",
    "in_list_view": 1,
    "label": "School/University",
    "oldfieldname": "school_univ",
    "oldfieldtype": "Small Text"
   },
   {
-   "fieldname": "qualification",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Qualification",
-   "oldfieldname": "qualification",
-   "oldfieldtype": "Data",
-   "print_width": "100px",
-   "width": "100px"
-  },
-  {
    "fieldname": "level",
    "fieldtype": "Select",
    "in_list_view": 1,
-   "label": "Level",
+   "label": "Qualification Level",
    "oldfieldname": "level",
    "oldfieldtype": "Select",
    "options": "Graduate\nPost Graduate\nUnder Graduate\nDiploma\nCertificate\nPGD\nClass XII\nOthers"
@@ -63,12 +55,30 @@
    "label": "Major/Optional Subjects",
    "oldfieldname": "maj_opt_subj",
    "oldfieldtype": "Text"
+  },
+  {
+   "fieldname": "course_name",
+   "fieldtype": "Link",
+   "label": "Course Name",
+   "options": "Course"
+  },
+  {
+   "fieldname": "trade",
+   "fieldtype": "Link",
+   "label": "Trade",
+   "options": "Trade"
+  },
+  {
+   "fieldname": "country",
+   "fieldtype": "Link",
+   "label": "Country",
+   "options": "Country"
   }
  ],
  "idx": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-08-14 09:55:34.580765",
+ "modified": "2024-11-08 10:17:51.683571",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee Education",

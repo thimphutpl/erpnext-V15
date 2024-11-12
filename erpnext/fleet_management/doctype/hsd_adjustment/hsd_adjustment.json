@@ -1,0 +1,112 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "HSDA.YY.MM.###",
+ "creation": "2024-11-03 19:23:05.015066",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_jbzw",
+  "branch",
+  "column_break_dcre",
+  "date",
+  "column_break_alyk",
+  "posting_time",
+  "section_break_ebgc",
+  "get_equipments",
+  "section_break_rjqi",
+  "items",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_jbzw",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Branch",
+   "options": "Branch",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_dcre",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "As of Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_alyk",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "23:59:59",
+   "fieldname": "posting_time",
+   "fieldtype": "Read Only",
+   "label": "Posting Time",
+   "reqd": 1
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "HSD Adjustment",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_ebgc",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "get_equipments",
+   "fieldtype": "Button",
+   "label": "Get Equipments"
+  },
+  {
+   "fieldname": "section_break_rjqi",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "options": "HSD Adjustment Item",
+   "reqd": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2024-11-03 19:34:12.152719",
+ "modified_by": "Administrator",
+ "module": "Fleet Management",
+ "name": "HSD Adjustment",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

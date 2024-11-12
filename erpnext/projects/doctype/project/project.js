@@ -18,6 +18,7 @@ frappe.ui.form.on("Project", {
 		};
 	},
 	onload: function (frm) {
+		enable_disable(frm);
 		const so = frm.get_docfield("sales_order");
 		so.get_route_options_for_new_doc = () => {
 			if (frm.is_new()) return {};
@@ -66,6 +67,32 @@ frappe.ui.form.on("Project", {
 	},
 
 	refresh: function (frm) {
+		enable_disable(frm);
+		// ++++++++++++++++++++ Ver 1.0 BEGINS ++++++++++++++++++++
+		if(!frm.doc.__islocal){
+			if(in_list([...frappe.user_roles], 'Admin')){
+				frm.add_custom_button(__("Change Status"), function(){frm.trigger("change_status_ongoing")},"icon-file-alt");
+			}
+			frm.add_custom_button(__("Advance"), function(){frm.trigger("make_project_advance")},__("Make"), "icon-file-alt");
+			frm.add_custom_button(__("BOQ"), function(){frm.trigger("make_boq")},__("Make"), "icon-file-alt");
+			frm.add_custom_button(__("Project Register"), function(){
+					frappe.route_options = {
+						project: frm.doc.name,
+						additional_info: 1
+					};
+					frappe.set_route("query-report", "Project Register");
+				},__("Reports"), "icon-file-alt"
+			);
+			frm.add_custom_button(__("Manpower"), function(){
+					frappe.route_options = {
+						project: frm.doc.name
+					};
+					frappe.set_route("query-report", "Project Manpower");
+				},__("Reports"), "icon-file-alt"
+			);
+		}
+		// +++++++++++++++++++++ Ver 1.0 ENDS +++++++++++++++++++++
+
 		if (frm.doc.__islocal) {
 			frm.web_link && frm.web_link.remove();
 		} else {
@@ -74,6 +101,11 @@ frappe.ui.form.on("Project", {
 			frm.trigger("show_dashboard");
 		}
 		frm.trigger("set_custom_buttons");
+		// +++++++++++++++++++++ Begins +++++++++++++++++++++
+		if(frm.doc.docstatus === 0){
+			enable_disable_items(frm);
+		}
+		// +++++++++++++++++++++ Ends +++++++++++++++++++++
 	},
 
 	set_custom_buttons: function (frm) {
@@ -198,7 +230,48 @@ frappe.ui.form.on("Project", {
 				});
 		});
 	},
-	
+
+	make_boq: function(frm){
+		frappe.model.open_mapped_doc({
+			method: "erpnext.projects.doctype.project.project.make_boq",
+			frm: frm
+		});
+	},
+	// ++++++++++++++++++++ Ver 1.0 BEGINS ++++++++++++++++++++
+	// Following function created by SHIV on 02/09/2017
+	make_project_advance: function(frm){
+		frappe.model.open_mapped_doc({
+			method: "erpnext.projects.doctype.project.project.make_project_advance",
+			frm: frm
+		});
+	},
+	// +++++++++++++++++++++ Ver 1.0 ENDS +++++++++++++++++++++
+	change_status_ongoing: function(frm){
+		return frappe.call({
+			method: "erpnext.projects.doctype.project.project.change_status_ongoing",
+			args:{
+				'project_id': frm.doc.name
+			},
+			callback: function(r, rt) {
+				if(r.message){
+					frappe.msgprint("Project Status changed to Ongoing");
+				}
+				cur_frm.reload_doc()
+			},
+		});
+	},
+
+	tasks_refresh: function(frm) {
+		var grid = frm.get_field('tasks').grid;
+		grid.wrapper.find('select[data-fieldname="status"]').each(function() {
+			if($(this).val()==='Open') {
+				$(this).addClass('input-indicator-open');
+			} else {
+				$(this).removeClass('input-indicator-open');
+			}
+		});
+	},
+
 	project_type: function(frm){
 		enable_disable(frm);
 		update_party_info(frm.doc);
@@ -210,6 +283,14 @@ frappe.ui.form.on("Project", {
 	party: function(frm){
 		update_party_info(frm.doc);
 	},
+	project_category: function(){
+		cur_frm.set_value('project_sub_category','');
+		cur_frm.fields_dict['project_sub_category'].get_query = function(doc, dt, dn) {
+		   return {
+				filters:{"project_category": doc.project_category}
+		   }
+		}
+	}
 });
 
 function open_form(frm, doctype, child_doctype, parentfield) {
@@ -238,10 +319,10 @@ var update_party_info=function(doc){
 
 var enable_disable = function(frm){
 	// Display tasks only after the project is saved
-	cur_frm.toggle_display("activity_and_tasks", !frm.doc.__islocal);
-	cur_frm.toggle_display("activity_tasks", !frm.doc.__islocal);
-	cur_frm.toggle_display("sb_additional_tasks", !frm.doc.__islocal);
-	cur_frm.toggle_display("additional_tasks", !frm.doc.__islocal);
+	frm.toggle_display("activity_and_tasks", !frm.is_new());
+	frm.toggle_display("activity_tasks", !frm.is_new());
+	frm.toggle_display("sb_additional_tasks", !frm.is_new());
+	frm.toggle_display("additional_tasks", !frm.is_new());
 	
 	//cur_frm.toggle_reqd("party_type", frm.doc.project_type=="External");
 	//cur_frm.toggle_reqd("party", frm.doc.party_type || frm.doc.project_type=="External");
@@ -265,3 +346,123 @@ var enable_disable = function(frm){
 		});
 	}
 }
+
+// ++++++++++++++++++++ Ver 1.0 BEGINS ++++++++++++++++++++
+// Following block of code added by SHIV on 11/08/2017
+frappe.ui.form.on("Activity Tasks", {
+	activity_tasks_remove: function(frm, doctype, name){
+		calculate_work_quantity(frm);
+	},
+	edit_task: function(frm, doctype, name) {
+		var doc = frappe.get_doc(doctype, name);
+		if(doc.task_id) {
+			frappe.set_route("Form", "Task", doc.task_id);
+		} else {
+			msgprint(__("Save the document first."));
+		}
+	},
+	view_timesheet: function(frm, doctype, name){
+		var doc = frappe.get_doc(doctype, name);
+		if(doc.task_id){
+			frappe.route_options = {"project": frm.doc.name, "task": doc.task_id}
+			frappe.set_route("List", "Timesheet");
+		} else {
+			msgprint(__("Save the document first."));
+		}
+	},
+	status: function(frm, doctype, name) {
+		frm.trigger('tasks_refresh');
+	},
+	work_quantity: function(frm, doctype, name){
+		calculate_work_quantity(frm);
+	},
+});
+
+frappe.ui.form.on("Additional Tasks", {
+	activity_tasks_remove: function(frm, doctype, name){
+		calculate_work_quantity(frm);
+	},
+	edit_task: function(frm, doctype, name) {
+		var doc = frappe.get_doc(doctype, name);
+		if(doc.task_id) {
+			frappe.set_route("Form", "Task", doc.task_id);
+		} else {
+			msgprint(__("Save the document first."));
+		}
+	},
+	view_timesheet: function(frm, doctype, name){
+		var doc = frappe.get_doc(doctype, name);
+		if(doc.task_id){
+			frappe.route_options = {"project": frm.doc.name, "task": doc.task_id}
+			frappe.set_route("List", "Timesheet");
+		} else {
+			msgprint(__("Save the document first."));
+		}
+	},
+	status: function(frm, doctype, name) {
+		frm.trigger('tasks_refresh');
+	},
+	work_quantity: function(frm, doctype, name){
+		calculate_work_quantity(frm);
+	},
+});
+
+function enable_disable_items(frm){
+	var toggle_fields = ["branch"];
+	
+	if(frm.doc.branch){
+		if(in_list([...frappe.user_roles], "CPBD")){
+			toggle_fields.forEach(function(field_name){
+				frm.set_df_property(field_name, "read_only", 0);
+			});
+		}
+		else {
+			toggle_fields.forEach(function(field_name){
+				frm.set_df_property(field_name, "read_only", 1);
+			});
+		}
+	}
+}
+
+// ++++++++++++++++++++ Ver 1.0 BEGINS ++++++++++++++++++++
+// Following function created by SHIV on 2017/08/17
+var calculate_work_quantity = function(frm){
+	var at = frm.doc.activity_tasks || [];
+	var adt= frm.doc.additional_tasks || [];
+	total_work_quantity = 0.0;
+	total_work_quantity_complete = 0.0;
+	total_add_work_quantity = 0.0;
+	total_add_work_quantity_complete = 0.0;
+
+	for(var i=0; i<at.length; i++){
+		//console.log(at[i].is_group);
+		if (at[i].work_quantity && !at[i].is_group){
+			total_work_quantity += at[i].work_quantity || 0;
+			total_work_quantity_complete += at[i].work_quantity_complete || 0;
+		}
+	}
+	
+	for(var i=0; i<adt.length; i++){
+		//console.log(at[i].is_group);
+		if (adt[i].work_quantity && !adt[i].is_group){
+			total_add_work_quantity += adt[i].work_quantity || 0;
+			total_add_work_quantity_complete += adt[i].work_quantity_complete || 0;
+		}
+	}
+	
+	cur_frm.set_value("tot_wq_percent",total_work_quantity);
+	cur_frm.set_value("tot_wq_percent_complete",total_work_quantity_complete);
+	cur_frm.set_value("tot_add_wq_percent",total_add_work_quantity);
+	cur_frm.set_value("tot_add_wq_percent_complete",total_add_work_quantity_complete);
+}
+// +++++++++++++++++++++ Ver 1.0 ENDS +++++++++++++++++++++
+frappe.ui.form.on("Project", "refresh", function(frm) {
+    cur_frm.set_query("cost_center", function() {
+        return {
+            "filters": {
+			"is_group": 0,
+			"disabled": 0
+            }
+        };
+    });
+})

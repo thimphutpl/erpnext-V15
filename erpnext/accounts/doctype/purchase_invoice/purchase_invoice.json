@@ -109,6 +109,11 @@
   "column_break_46",
   "additional_discount_percentage",
   "discount_amount",
+  "references_section",
+  "material_request",
+  "material_request_date",
+  "purchase_order",
+  "purchase_receipt",
   "tax_withheld_vouchers_section",
   "tax_withheld_vouchers",
   "sec_tax_breakup",
@@ -1662,13 +1667,42 @@
    "hidden": 1,
    "label": "Business Activity",
    "options": "Business Activity"
+  },
+  {
+   "fieldname": "references_section",
+   "fieldtype": "Section Break",
+   "label": "References"
+  },
+  {
+   "fieldname": "material_request",
+   "fieldtype": "Link",
+   "label": "Material Request",
+   "options": "Material Request"
+  },
+  {
+   "fieldname": "purchase_order",
+   "fieldtype": "Link",
+   "label": "Purchase Order",
+   "options": "Purchase Order"
+  },
+  {
+   "fieldname": "purchase_receipt",
+   "fieldtype": "Link",
+   "label": "Purchase Reciept",
+   "options": "Purchase Receipt"
+  },
+  {
+   "fieldname": "material_request_date",
+   "fieldtype": "Link",
+   "label": "MR Date",
+   "options": "Material Request"
   }
  ],
  "icon": "fa fa-file-text",
  "idx": 204,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-10-21 15:49:08.635049",
+ "modified": "2024-10-30 11:32:03.487971",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Purchase Invoice",

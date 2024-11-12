@@ -241,13 +241,71 @@ def get_non_moving_branch_data():
 
 # Report 4 Data
 def get_report_4_data():
+    report_1_columns, report_1_data = get_inventory_report_data()
+
+    summary = {
+        "inventory1": {"count": 0, "value": 0},
+        "inventory2": {"count": 0, "value": 0},
+        "inventory3": {"count": 0, "value": 0},
+    }
+
+    total_items = 0
+    total_value = 0
+
+    for entry in report_1_data:
+        total_items += 1
+        total_value += entry["issue_value"]
+
+        if entry["movement"] == "Fast Moving":
+            summary["inventory1"]["count"] += 1
+            summary["inventory1"]["value"] += entry["issue_value"]
+        elif entry["movement"] == "Slow Moving":
+            summary["inventory2"]["count"] += 1
+            summary["inventory2"]["value"] += entry["issue_value"]
+        else:
+            summary["inventory3"]["count"] += 1
+            summary["inventory3"]["value"] += entry["issue_value"]
+
+    total_percent_items = 100
+    total_percent_value = 100
+
     columns = [
-        {"fieldname": "c1", "label": "C1", "fieldtype": "Data"},
-        {"fieldname": "c2", "label": "C2", "fieldtype": "Data"},
-        {"fieldname": "c3", "label": "C3", "fieldtype": "Data"},
-        {"fieldname": "c4", "label": "C4", "fieldtype": "Data"}
+        {"fieldname": "consumption_type", "label": "Consumption Type", "fieldtype": "Data"},
+        {"fieldname": "num_items", "label": "Number of Items", "fieldtype": "Int"},
+        {"fieldname": "item_percent", "label": "Item Percent", "fieldtype": "Percent"},
+        {"fieldname": "total_value", "label": "Total Value", "fieldtype": "Float"},
+        {"fieldname": "value_percent", "label": "Value Percent", "fieldtype": "Percent"}
     ]
+
     data = [
-        {"c1": "C1 Data", "c2": "C2 Data", "c3": "C3 Data", "c4": "C4 Data"}
+        {
+            "consumption_type": "Items with opening balance & closing balance but no Receipt & Consumption",
+            "num_items": summary["inventory1"]["count"],
+            "item_percent": (summary["inventory1"]["count"] / total_items) * 100 if total_items else 0,
+            "total_value": summary["inventory1"]["value"],
+            "value_percent": (summary["inventory1"]["value"] / total_value) * 100 if total_value else 0
+        },
+        {
+            "consumption_type": "Items with Opening balance, Receipt value & no consumption",
+            "num_items": summary["inventory2"]["count"],
+            "item_percent": (summary["inventory2"]["count"] / total_items) * 100 if total_items else 0,
+            "total_value": summary["inventory2"]["value"],
+            "value_percent": (summary["inventory2"]["value"] / total_value) * 100 if total_value else 0
+        },
+        {
+            "consumption_type": "Purchased during the year with no consumption",
+            "num_items": summary["inventory3"]["count"],
+            "item_percent": (summary["inventory3"]["count"] / total_items) * 100 if total_items else 0,
+            "total_value": summary["inventory3"]["value"],
+            "value_percent": (summary["inventory3"]["value"] / total_value) * 100 if total_value else 0
+        },
+        {
+            "consumption_type": "Total",
+            "num_items": total_items,
+            "item_percent": total_percent_items,
+            "total_value": total_value,
+            "value_percent": total_percent_value
+        }
     ]
+
     return columns, data

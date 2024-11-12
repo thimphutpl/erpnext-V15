@@ -1,0 +1,227 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-10-31 12:55:47.089789",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_hn2b",
+  "amended_from",
+  "branch",
+  "column_break_mavk",
+  "ehf_name",
+  "cost_center",
+  "customer",
+  "column_break_xjlz",
+  "posting_date",
+  "section_break_qfzr",
+  "equipment",
+  "column_break_vxmw",
+  "equipment_number",
+  "column_break_zwco",
+  "extension_date",
+  "section_break_nekr",
+  "rate",
+  "hours",
+  "column_break_acgm",
+  "actual_receiable",
+  "total_amount",
+  "column_break_pxep",
+  "advance_balance",
+  "receiable_amount",
+  "section_break_iweg",
+  "journal",
+  "column_break_kcqz",
+  "amended_form"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_hn2b",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Equipment Hiring Extension",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Branch",
+   "options": "Branch",
+   "reqd": 1
+  },
+  {
+   "depends_on": "eval:doc.branch",
+   "fieldname": "ehf_name",
+   "fieldtype": "Link",
+   "label": "Equipment Hiring Form",
+   "options": "Equipment Hiring Form",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_mavk",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "cost_center",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Cost Center",
+   "options": "Cost Center"
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Customer",
+   "options": "Customer"
+  },
+  {
+   "fieldname": "column_break_xjlz",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "label": "Posting Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_qfzr",
+   "fieldtype": "Section Break"
+  },
+  {
+   "depends_on": "eva:doc.ehf_name",
+   "fieldname": "equipment",
+   "fieldtype": "Link",
+   "label": "Equipment ",
+   "options": "Equipment",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_vxmw",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "equipment_number",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Registration Number",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_zwco",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "extension_date",
+   "fieldtype": "Date",
+   "label": "Extension Till",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_nekr",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "rate",
+   "fieldtype": "Currency",
+   "label": "Rate",
+   "read_only": 1
+  },
+  {
+   "fieldname": "hours",
+   "fieldtype": "Float",
+   "label": "Hours"
+  },
+  {
+   "fieldname": "column_break_acgm",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "actual_receiable",
+   "fieldtype": "Currency",
+   "label": "Actual Receivable",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_amount",
+   "fieldtype": "Currency",
+   "label": "Received Amount"
+  },
+  {
+   "fieldname": "column_break_pxep",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "advance_balance",
+   "fieldtype": "Currency",
+   "label": "Advance Balance",
+   "read_only": 1
+  },
+  {
+   "fieldname": "receiable_amount",
+   "fieldtype": "Currency",
+   "label": "Total Advance Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_iweg",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "journal",
+   "fieldtype": "Data",
+   "label": "Advance Journal",
+   "options": "Journal Entry",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_kcqz",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "amended_form",
+   "fieldtype": "Link",
+   "label": "Amended Form",
+   "no_copy": 1,
+   "options": "Equipment Hiring Extension",
+   "print_hide": 1,
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2024-10-31 15:09:03.065862",
+ "modified_by": "Administrator",
+ "module": "Fleet Management",
+ "name": "Equipment Hiring Extension",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

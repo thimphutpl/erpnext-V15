@@ -9,6 +9,25 @@ from frappe.model.mapper import get_mapped_doc
 from frappe.utils import flt, getdate, get_url, today
 
 class RevenueTarget(Document):
+	# begin: auto-generated types
+	# This code is auto-generated. Do not modify anything in this block.
+
+	from typing import TYPE_CHECKING
+
+	if TYPE_CHECKING:
+		from erpnext.budget.doctype.revenue_target_account.revenue_target_account import RevenueTargetAccount
+		from frappe.types import DF
+
+		amended_from: DF.Link | None
+		attachment: DF.Attach | None
+		company: DF.Link
+		fiscal_year: DF.Link
+		revenue_target_account: DF.Table[RevenueTargetAccount]
+		title: DF.Data | None
+		tot_adjustment_amount: DF.Currency
+		tot_net_target_amount: DF.Currency
+		tot_target_amount: DF.Currency
+	# end: auto-generated types
 	def validate(self):
 		self.validate_mandatory()
 		self.calculate_targets()
@@ -44,7 +63,7 @@ class RevenueTarget(Document):
 				item.account_number = frappe.db.get_value("Account", item.account, "account_number")
 	
 	def calculate_targets(self):
-		tot_target_amount     = 0.0
+		tot_target_amount     = flt(0.0)
 
 		for d in self.revenue_target_account:
 			# d.net_target_amount = flt(d.target_amount)
@@ -52,7 +71,7 @@ class RevenueTarget(Document):
 
 		self.tot_target_amount     = tot_target_amount
 		# self.tot_net_target_amount = flt(tot_target_amount)
-	
+			
 	@frappe.whitelist()
 	def get_accounts(self):
 		query = "select name as account, account_number from `tabAccount` where account_type in (\'Income Account\') and is_group = 0 and company = \'" + str(self.company) + "\' and (freeze_account is null or freeze_account != 'Yes') and disabled=0"

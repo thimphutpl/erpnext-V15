@@ -40,7 +40,7 @@ class VehicleLogbook(Document):
         equipment_type: DF.ReadOnly | None
         final_hour: DF.Float
         final_km: DF.Int
-        from_date: DF.Datetime | None
+        from_date: DF.Date
         from_time: DF.Time | None
         grand_total_fuel_consumption: DF.Float
         grand_total_km: DF.Float
@@ -66,12 +66,12 @@ class VehicleLogbook(Document):
         registration_number: DF.Data | None
         remarks: DF.TextEditor | None
         site_name: DF.Link | None
-        to_date: DF.Datetime | None
+        to_date: DF.Date
         to_time: DF.Time | None
         total_days: DF.Int
         total_idle_time: DF.Float
         total_work_time: DF.Float
-        vehicle_request: DF.Link | None
+        vehicle_request: DF.Data | None
         vlogs: DF.Table[VehicleLog]
         work_rate: DF.Currency
         ys_hours: DF.Float

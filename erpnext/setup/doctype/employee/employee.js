@@ -46,10 +46,10 @@ frappe.ui.form.on("Employee", {
 			return {
 				"filters": {
 					"company": frm.doc.company,
-					"parent_department": frm.doc.department,
-					"disabled":0,
+					"disabled": 0,
 					"is_division":1,
-					"is_section":0
+					"is_section":0,
+					"is_unit":0
 				}
 			};
 		});
@@ -67,12 +67,25 @@ frappe.ui.form.on("Employee", {
 		frm.set_query("unit", function() {
 			return {
 				"filters": {
-					"parent_department": frm.doc.section,
+					"parent_department": frm.doc.division,
 					"company": frm.doc.company,
 					"disabled":0,
 					"is_division":0,
 					"is_unit":1,
 					"is_section":0
+				}
+			};
+		});
+	},
+	refresh: function(frm){
+		frm.set_query("division", function() {
+			return {
+				"filters": {
+					"company": frm.doc.company,
+					"disabled": 0,
+					"is_division":1,
+					"is_section":0,
+					"is_unit":0
 				}
 			};
 		});

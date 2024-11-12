@@ -7,6 +7,25 @@ from frappe.model.document import Document
 from frappe.utils import cint, cstr, flt, fmt_money, formatdate, get_link_to_form, nowdate
 
 class SupplementaryBudget(Document):
+	# begin: auto-generated types
+	# This code is auto-generated. Do not modify anything in this block.
+
+	from typing import TYPE_CHECKING
+
+	if TYPE_CHECKING:
+		from erpnext.budget.doctype.supplementary_budget_item.supplementary_budget_item import SupplementaryBudgetItem
+		from frappe.types import DF
+
+		amended_from: DF.Link | None
+		budget_against: DF.Literal["", "Cost Center", "Project"]
+		company: DF.Link
+		cost_center: DF.Link | None
+		fiscal_year: DF.Link
+		items: DF.Table[SupplementaryBudgetItem]
+		posting_date: DF.Date
+		project: DF.Link | None
+		remarks: DF.SmallText | None
+	# end: auto-generated types
 	def validate(self):
 		self.validate_budget()
 

@@ -168,17 +168,17 @@ class StockEntry(StockController):
 				}
 			)
 
-	def onload(self):
-		for item in self.get("items"):
-			item.update(get_bin_details(item.item_code, item.s_warehouse))
+	# def onload(self):
+	# 	for item in self.get("items"):
+	# 		item.update(get_bin_details(item.item_code, item.s_warehouse))
 
-	def before_validate(self):
-		from erpnext.stock.doctype.putaway_rule.putaway_rule import apply_putaway_rule
+	# def before_validate(self):
+	# 	from erpnext.stock.doctype.putaway_rule.putaway_rule import apply_putaway_rule
 
-		apply_rule = self.apply_putaway_rule and (self.purpose in ["Material Transfer", "Material Receipt"])
+	# 	apply_rule = self.apply_putaway_rule and (self.purpose in ["Material Transfer", "Material Receipt"])
 
-		if self.get("items") and apply_rule:
-			apply_putaway_rule(self.doctype, self.get("items"), self.company, purpose=self.purpose)
+	# 	if self.get("items") and apply_rule:
+	# 		apply_putaway_rule(self.doctype, self.get("items"), self.company, purpose=self.purpose)
 
 	def validate(self):
 		self.pro_doc = frappe._dict()
@@ -206,7 +206,7 @@ class StockEntry(StockController):
 
 		self.validate_with_material_request()
 		self.validate_batch()
-		self.validate_inspection()
+		# self.validate_inspection()
 		self.validate_fg_completed_qty()
 		self.validate_difference_account()
 		self.set_job_card_data()
@@ -243,7 +243,7 @@ class StockEntry(StockController):
 		self.repost_future_sle_and_gle()
 		self.update_cost_in_project()
 		self.update_transferred_qty()
-		self.update_quality_inspection()
+		# self.update_quality_inspection()
 
 		if self.purpose == "Material Transfer" and self.add_to_transit:
 			self.set_material_request_transfer_status("In Transit")
@@ -2550,20 +2550,20 @@ class StockEntry(StockController):
 
 			self._update_percent_field_in_targets(args, update_modified=True)
 
-	def update_quality_inspection(self):
-		if self.inspection_required:
-			reference_type = reference_name = ""
-			if self.docstatus == 1:
-				reference_name = self.name
-				reference_type = "Stock Entry"
+	# def update_quality_inspection(self):
+	# 	if self.inspection_required:
+	# 		reference_type = reference_name = ""
+	# 		if self.docstatus == 1:
+	# 			reference_name = self.name
+	# 			reference_type = "Stock Entry"
 
-			for d in self.items:
-				if d.quality_inspection:
-					frappe.db.set_value(
-						"Quality Inspection",
-						d.quality_inspection,
-						{"reference_type": reference_type, "reference_name": reference_name},
-					)
+	# 		for d in self.items:
+	# 			if d.quality_inspection:
+	# 				frappe.db.set_value(
+	# 					"Quality Inspection",
+	# 					d.quality_inspection,
+	# 					{"reference_type": reference_type, "reference_name": reference_name},
+	# 				)
 
 	def set_material_request_transfer_status(self, status):
 		material_requests = []

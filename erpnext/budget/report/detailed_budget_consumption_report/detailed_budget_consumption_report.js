@@ -110,6 +110,7 @@ frappe.query_reports["Detailed Budget Consumption Report"] = {
 			var filters = report.get_values();
 			frappe.route_options = {
 				"budget_against": filters.budget_against,
+				"fiscal_year": filters.fiscal_year,
 				"cost_center": filters.cost_center,
 				"project": filters.project,
 				"budget_type": filters.budget_type,

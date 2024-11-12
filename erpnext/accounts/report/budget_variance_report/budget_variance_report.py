@@ -237,8 +237,8 @@ def get_actual_details(name, filters):
 	budget_against = frappe.scrub(filters.get("budget_against"))
 	cond = ""
 
-	if filters.get("budget_against") == "Cost Center":
-		cc_lft, cc_rgt = frappe.db.get_value("Cost Center", name, ["lft", "rgt"])
+	if filters.get("budget_against") == "Cost Center" and filters.get("budget_against_filter"):
+		cc_lft, cc_rgt = frappe.db.get_value("Cost Center", filters.get("budget_against_filter"), ["lft", "rgt"])
 		cond = f"""
 				and lft >= "{cc_lft}"
 				and rgt <= "{cc_rgt}"

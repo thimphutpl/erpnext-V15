@@ -114,7 +114,7 @@ class Item(Document):
 		item_defaults: DF.Table[ItemDefault]
 		item_group: DF.Link
 		item_name: DF.Data
-		item_sub_group: DF.Link | None
+		item_sub_group: DF.Link
 		last_purchase_rate: DF.Float
 		lead_time_days: DF.Int
 		max_discount: DF.Float
@@ -177,17 +177,21 @@ class Item(Document):
 
 	def get_current_item_code(self):
 		item_code = frappe.db.sql(
-			"""select item_code from tabItem where item_group=%s order by item_code desc limit 1;""", self.item_group)
+			"""select item_code from tabItem where item_group=%s and item_sub_group=%s order by item_code desc limit 1;""", (self.item_group, self.item_sub_group))
 		if item_code:
-			base = str(item_code[0][0])[0:2]
-			incremnent = int((item_code[0][0])[2:8]) + 1
+			base = str(item_code[0][0])[0:5]
+			incremnent = int((item_code[0][0])[5:9]) + 1
 			return base + str(incremnent)
 		else:
 			base = frappe.db.get_value(
 				"Item Group", self.item_group, "item_code_base")
 			if not base:
 				frappe.throw("Setup Item Code Base in Item Group '{}'".format(frappe.get_desk_link("Item Group", self.item_group)))
-			return str(base) + str("100001")
+			sub_base = frappe.db.get_value(
+				"Item Sub Group", self.item_sub_group, "item_code_base")
+			if not sub_base:
+				frappe.throw("Setup Item Code Base in Item Sub Group '{}'".format(frappe.get_desk_link("Item Sub Group", self.item_sub_group)))
+			return str(base) + str(sub_base) + str("1001")
 
 
 	def after_insert(self):
@@ -239,6 +243,12 @@ class Item(Document):
 
 		if not self.is_new():
 			self.old_item_group = frappe.db.get_value(self.doctype, self.name, "item_group")
+
+	def before_save(self):
+		if self.is_stock_item or self.is_fixed_asset:
+			return
+		if not self.is_stock_item or not self.is_fixed_asset:
+			frappe.throw("Before save Check if the Item is to Maintain Stock or Is Fixed Asset")
 
 	def validate_duplicate(self):
 		data = frappe.db.sql('''

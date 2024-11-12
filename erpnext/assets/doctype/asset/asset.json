@@ -31,8 +31,6 @@
   "abbr",
   "location",
   "split_from",
-  "custodian",
-  "custodian_name",
   "department",
   "disposal_date",
   "posting_date",
@@ -56,8 +54,9 @@
   "purchase_date",
   "remarks",
   "custodian_details_section",
-  "issued_to",
+  "custodian",
   "column_break_rbqr",
+  "custodian_name",
   "section_break_23",
   "calculate_depreciation",
   "column_break_33",
@@ -96,7 +95,8 @@
   "default_finance_book",
   "depr_entry_posting_status",
   "amended_from",
-  "capitalized_in"
+  "capitalized_in",
+  "disable_depreciation"
  ],
  "fields": [
   {
@@ -596,11 +596,6 @@
    "label": "Custodian Details"
   },
   {
-   "fieldname": "issued_to",
-   "fieldtype": "Select",
-   "label": "Issued To"
-  },
-  {
    "fieldname": "column_break_rbqr",
    "fieldtype": "Column Break"
   },
@@ -616,6 +611,7 @@
    "options": "Usable\nUnusable\nRepairable\nAllocated\nMarked for Auction\nAuctioned"
   },
   {
+   "fetch_from": "custodian.employee_name",
    "fieldname": "custodian_name",
    "fieldtype": "Data",
    "label": "Custodian Name"
@@ -679,6 +675,13 @@
    "hidden": 1,
    "label": "Abbr",
    "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "disable_depreciation",
+   "fieldtype": "Check",
+   "label": "Disable Depreciation",
+   "read_only": 1
   }
  ],
  "idx": 72,
@@ -722,7 +725,7 @@
    "link_fieldname": "target_asset"
   }
  ],
- "modified": "2024-10-15 15:34:22.360174",
+ "modified": "2024-11-06 15:04:29.279296",
  "modified_by": "Administrator",
  "module": "Assets",
  "name": "Asset",

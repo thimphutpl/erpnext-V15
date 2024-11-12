@@ -80,6 +80,7 @@ class PurchaseReceipt(BuyingController):
 		letter_head: DF.Link | None
 		lr_date: DF.Date | None
 		lr_no: DF.Data | None
+		material_request: DF.Link | None
 		named_place: DF.Data | None
 		naming_series: DF.Literal["MAT-PRE-.YYYY.-", "MAT-PR-RET-.YYYY.-"]
 		net_total: DF.Currency
@@ -92,6 +93,7 @@ class PurchaseReceipt(BuyingController):
 		price_list_currency: DF.Link | None
 		pricing_rules: DF.Table[PricingRuleDetail]
 		project: DF.Link | None
+		purchase_order: DF.Link | None
 		range: DF.Data | None
 		rejected_warehouse: DF.Link | None
 		remarks: DF.SmallText | None
@@ -99,18 +101,16 @@ class PurchaseReceipt(BuyingController):
 		return_against: DF.Link | None
 		rounded_total: DF.Currency
 		rounding_adjustment: DF.Currency
+		schedule_date: DF.Date | None
 		select_print_heading: DF.Link | None
-		set_posting_time: DF.Check
 		set_warehouse: DF.Link | None
 		shipping_address: DF.Link | None
 		shipping_address_display: DF.SmallText | None
 		shipping_rule: DF.Link | None
 		status: DF.Literal["", "Draft", "To Bill", "Completed", "Return Issued", "Cancelled", "Closed"]
-		subcontracting_receipt: DF.Link | None
 		supplied_items: DF.Table[PurchaseReceiptItemSupplied]
 		supplier: DF.Link
 		supplier_address: DF.Link | None
-		supplier_delivery_note: DF.Data | None
 		supplier_name: DF.Data | None
 		supplier_warehouse: DF.Link | None
 		tax_category: DF.Link | None
@@ -218,8 +218,8 @@ class PurchaseReceipt(BuyingController):
 	def before_validate(self):
 		from erpnext.stock.doctype.putaway_rule.putaway_rule import apply_putaway_rule
 
-		if self.get("items") and self.apply_putaway_rule and not self.get("is_return"):
-			apply_putaway_rule(self.doctype, self.get("items"), self.company)
+		# if self.get("items") and self.apply_putaway_rule and not self.get("is_return"):
+		# 	apply_putaway_rule(self.doctype, self.get("items"), self.company)
 
 	def validate(self):
 		self.validate_posting_time()
@@ -369,7 +369,7 @@ class PurchaseReceipt(BuyingController):
 		# because updating ordered qty, reserved_qty_for_subcontract in bin
 		# depends upon updated ordered qty in PO
 		self.update_stock_ledger()
-		self.make_gl_entries()
+		# self.make_gl_entries()
 		self.repost_future_sle_and_gle()
 		self.set_consumed_qty_in_subcontract_order()
 		self.reserve_stock_for_sales_order()

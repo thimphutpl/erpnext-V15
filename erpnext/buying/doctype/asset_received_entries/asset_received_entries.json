@@ -6,17 +6,17 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "branch",
+  "cost_center",
+  "ref_doc",
   "item_code",
-  "amended_from",
   "qty",
   "received_date",
-  "ref_doc",
-  "branch",
+  "amended_from",
   "item_name",
   "company",
   "brand",
-  "model",
-  "serial_no"
+  "model"
  ],
  "fields": [
   {
@@ -52,9 +52,10 @@
   },
   {
    "fieldname": "ref_doc",
-   "fieldtype": "Data",
+   "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Reference Document",
+   "options": "Purchase Receipt",
    "reqd": 1
   },
   {
@@ -87,15 +88,16 @@
    "label": "Model"
   },
   {
-   "fieldname": "serial_no",
-   "fieldtype": "Data",
-   "label": "Serial No"
+   "fieldname": "cost_center",
+   "fieldtype": "Link",
+   "label": "Cost Center",
+   "options": "Cost Center"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-08-14 12:37:43.784078",
+ "modified": "2024-11-08 10:55:39.106723",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Asset Received Entries",

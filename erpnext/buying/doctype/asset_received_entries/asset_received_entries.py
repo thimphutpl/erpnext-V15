@@ -18,12 +18,12 @@ class AssetReceivedEntries(Document):
 		branch: DF.Link | None
 		brand: DF.Link | None
 		company: DF.Link | None
+		cost_center: DF.Link | None
 		item_code: DF.Link
 		item_name: DF.Data | None
 		model: DF.Data | None
 		qty: DF.Data
 		received_date: DF.Date
-		ref_doc: DF.Data
-		serial_no: DF.Data | None
+		ref_doc: DF.Link
 	# end: auto-generated types
 	pass

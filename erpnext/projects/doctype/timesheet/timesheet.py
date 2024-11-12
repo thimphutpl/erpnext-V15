@@ -12,6 +12,7 @@ from frappe.utils import add_to_date, flt, get_datetime, getdate, time_diff_in_h
 from erpnext.controllers.queries import get_match_cond
 from erpnext.setup.utils import get_exchange_rate
 
+from frappe.model.naming import make_autoname
 
 class OverlapError(frappe.ValidationError):
 	pass
@@ -22,7 +23,22 @@ class OverWorkLoggedError(frappe.ValidationError):
 
 
 class Timesheet(Document):
+	def autoname(self):
+		cur_year  = str(today())[0:4]
+		cur_month = str(today())[5:7]
+		if self.parent_project:
+			serialno  = make_autoname("TSM" + self.parent_project[-4:] + ".####")
+		else:
+			serialno  = make_autoname("TSM.YY.MM.####")
+
+		self.name = serialno
+		
 	def validate(self):
+		# ++++++++++++++++++++ Ver 2.0 BEGINS ++++++++++++++++++++
+		# Following two methods introduced by SHIV on 15/08/2017
+		self.validate_target_quantity()
+		self.set_defaults()
+		# +++++++++++++++++++++ Ver 2.0 ENDS +++++++++++++++++++++
 		self.set_status()
 		self.validate_dates()
 		self.calculate_hours()
@@ -32,6 +48,186 @@ class Timesheet(Document):
 		self.calculate_percentage_billed()
 		self.set_dates()
 
+	def before_submit(self):
+		self.set_dates()
+		self.calculate_target_quantity()
+
+	# Following method added by SHIV on 2017/08/16
+	def calculate_target_quantity(self):
+		if flt(self.target_quantity_complete) > flt(self.target_quantity):
+			frappe.throw(_("Total Achieved value({0}) cannot be greater than Task's Target value({1}).").format(flt(self.target_quantity_complete),flt(self.target_quantity)))
+		else:
+			if self.parent_project:
+				# Updating Project Progress                        
+				base_project = frappe.get_doc("Project",self.parent_project)
+				base_project.update_task_progress()
+				#base_project.update_project_progress()
+				base_project.update_group_tasks()
+
+				total = frappe.db.sql("""
+								select
+										sum(
+												case
+												when additional_task = 0 and status in ('Closed', 'Cancelled') then 1
+												else 0
+												end
+										) as completed_count,
+										sum(
+												case
+												when additional_task = 0 then 1
+												else 0
+												end
+										) as count,
+										sum(
+												case
+												when additional_task = 1 and status in ('Closed', 'Cancelled') then 1
+												else 0
+												end
+										) as add_completed_count,
+										sum(
+												case
+												when additional_task = 1 then 1
+												else 0
+												end
+										) as add_count,
+										sum(
+												case
+												when additional_task = 0 then ifnull(work_quantity,0)
+												else 0
+												end
+										) as tot_work_quantity,
+										sum(
+												case
+												when additional_task = 1 then ifnull(work_quantity,0)
+												else 0
+												end
+										) as tot_add_work_quantity,
+										sum(
+												case
+												when additional_task = 0 then ifnull(work_quantity_complete,0)
+												else 0
+												end
+										) as tot_work_quantity_complete,
+										sum(
+												case
+												when additional_task = 1 then ifnull(work_quantity_complete,0)
+												else 0
+												end
+										) as tot_add_work_quantity_complete
+								from tabTask
+								where project=%s
+								and is_group=0
+						""", self.parent_project, as_dict=1)[0]
+				
+				percent_complete           = 0.0
+				add_percent_complete       = 0.0
+				tot_wq_percent             = 0.0
+				tot_wq_percent_complete    = 0.0
+				tot_add_wq_percent         = 0.0
+				tot_add_wq_percent_complete= 0.0
+
+				if total.count:
+					percent_complete   = flt(flt(total.completed_count) / total.count * 100, 2)
+					tot_wq_percent     = flt(total.tot_work_quantity,2)
+					tot_wq_percent_complete = flt(total.tot_work_quantity_complete,2)
+
+				if total.add_count:
+					add_percent_complete = flt(flt(total.add_completed_count) / total.add_count * 100, 2)
+					tot_add_wq_percent = flt(total.tot_add_work_quantity,2)
+					tot_add_wq_percent_complete = flt(total.tot_add_work_quantity_complete,2)                                
+
+				frappe.db.sql("""
+					update `tabProject`
+					set
+							percent_complete = ifnull({1},0),
+							add_percent_complete = ifnull({2},0),
+							tot_wq_percent = ifnull({3},0),
+							tot_wq_percent_complete = ifnull({4},0),
+							tot_add_wq_percent = ifnull({5},0),
+							tot_add_wq_percent_complete = ifnull({6},0)
+					where name = '{0}'
+				""".format(self.parent_project, flt(percent_complete), flt(add_percent_complete), flt(tot_wq_percent), flt(tot_wq_percent_complete), flt(tot_add_wq_percent), flt(tot_add_wq_percent_complete)))
+		# +++++++++++++++++++++ Ver 1.0 ENDS +++++++++++++++++++++	
+
+	def validate_target_quantity(self):
+		curr_balance = 0.0
+
+		prev_balance = get_target_quantity_complete(self.name, self.task)
+		
+		for tl in self.time_logs:
+				curr_balance += flt(tl.target_quantity_complete)
+		
+		if flt(self.target_quantity) < (flt(prev_balance)+flt(curr_balance)):
+				frappe.throw(_("`Total Achieved Value` cannot be more than `Total Target Value`."))
+		
+	def reset_time_log_order(self):
+		idx = 0
+		tl_list = frappe.db.sql("""
+							select *
+							from `tabTimesheet Detail`
+							where parent = '{0}'
+							order by from_date, to_date
+					""".format(self.name), as_dict=1)
+
+		for tl in tl_list:
+			idx += 1
+			frappe.db.sql("""
+					update `tabTimesheet Detail`
+					set idx = {0}
+					where name = '{1}'
+			""".format(idx, tl.name))
+				
+	# ++++++++++++++++++++ Ver 1.0 BEGINS ++++++++++++++++++++
+	# Following method introduced by SHIV on 2017/08/15
+	def set_defaults(self):
+		# Defaults
+		if self.parent_project:
+			base_project    = frappe.get_doc("Project", self.parent_project)
+			self.branch     = base_project.branch
+			self.cost_center= base_project.cost_center
+
+			if base_project.status in ('Completed','Cancelled'):
+				frappe.throw(_("Operation not permitted on already {0} Project.").format(base_project.status),title="Timesheet: Invalid Operation")
+						
+		# `Timesheet Detail` Validations
+		total_target_quantity           = 0.0
+		total_target_quantity_complete  = 0.0
+		for tl in self.time_logs:
+			total_target_quantity           += flt(tl.target_quantity)
+			total_target_quantity_complete  += flt(tl.target_quantity_complete)
+			tl.from_time = tl.from_date
+			tl.to_time   = tl.to_date
+
+			if tl.from_date > tl.to_date:
+				frappe.throw(_("Row {0}: From Date cannot be after To Date.").format(tl.idx))
+						
+		if flt(total_target_quantity_complete) > flt(self.target_quantity):
+			frappe.throw(_("Total Achieved value({0}) cannot be more than Target value({1})").format(flt(total_target_quantity_complete),flt(self.target_quantity)))
+		
+		# Setting `Timesheet` Defaults
+		if self.task:
+			base_task = frappe.get_doc("Task", self.task)
+			
+			self.task_name          = base_task.subject
+			self.work_quantity      = base_task.work_quantity
+			self.exp_start_date     = base_task.exp_start_date
+			self.exp_end_date       = base_task.exp_end_date
+			self.target_uom         = base_task.target_uom
+			self.target_quantity    = base_task.target_quantity
+
+			self.target_quantity_complete = 0.0
+			for item in self.time_logs:
+				self.target_quantity_complete += flt(item.target_quantity_complete)
+
+		# Setting `Timesheet Detail` Defaults
+		for data in self.time_logs:
+			if not data.project or data.project != self.parent_project:
+				data.project = self.parent_project
+
+			if not data.task or data.task != self.task:
+				data.task = self.task
+						
+	""" Default Codes begins here of ERPNext Jai"""
 	def calculate_hours(self):
 		for row in self.time_logs:
 			if row.to_time and row.from_time:
@@ -98,16 +294,35 @@ class Timesheet(Document):
 				self.start_date = getdate(start_date)
 				self.end_date = getdate(end_date)
 
+			if not self.total_days:
+				self.total_days = flt(date_diff(getdate(end_date),getdate(start_date)))+1
+
 	def before_cancel(self):
 		self.set_status()
 
 	def on_cancel(self):
 		self.update_task_and_project()
+		# ++++++++++++++++++++ Ver 2.0 BEGINS ++++++++++++++++++++
+		# Following methods introduced by SHIV on 15/08/2017
+		self.calculate_target_quantity()
+		self.reset_time_log_order()
+		# +++++++++++++++++++++ Ver 2.0 ENDS +++++++++++++++++++++	
 
+	def after_delete(self):
+		self.calculate_target_quantity()
+		self.reset_time_log_order()
+		
 	def on_submit(self):
 		self.validate_mandatory_fields()
 		self.update_task_and_project()
 
+	def on_update(self):
+		# ++++++++++++++++++++ Ver 2.0 BEGINS ++++++++++++++++++++
+		# Following methods introduced by SHIV on 15/08/2017
+		self.calculate_target_quantity()
+		self.reset_time_log_order()
+		# +++++++++++++++++++++ Ver 2.0 ENDS +++++++++++++++++++++
+		
 	def validate_mandatory_fields(self):
 		for data in self.time_logs:
 			if not data.from_time and not data.to_time:
@@ -511,3 +726,20 @@ def get_list_context(context=None):
 		"get_list": get_timesheets_list,
 		"row_template": "templates/includes/timesheet/timesheet_row.html",
 	}
+
+
+@frappe.whitelist()
+def get_target_quantity_complete(docname = None, task = None):
+        td = frappe.db.sql("""
+                select sum(ifnull(tsd.target_quantity_complete, 0)) as target_quantity_complete
+                from `tabTimesheet Detail` tsd, `tabTimesheet` ts
+                where ts.task = '{0}'
+                and ts.name != '{1}'
+                and ts.docstatus != 2
+                and tsd.parent = ts.name                
+        """.format(task, docname), as_dict=1)
+
+        if td:
+                return flt(td[0].target_quantity_complete)
+        else:
+                return 0.0

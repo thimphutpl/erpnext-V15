@@ -188,13 +188,13 @@ frappe.ui.form.on("Material Request", {
 
 				console.log(frm.doc.material_request_type)
 
-				// if (frm.doc.material_request_type === "Purchase") {
-				// 	frm.add_custom_button(
-				// 		__("Request for Quotation"),
-				// 		() => frm.events.make_request_for_quotation(frm),
-				// 		__("Create")
-				// 	);
-				// }
+				if (frm.doc.material_request_type === "Purchase") {
+					frm.add_custom_button(
+						__("Request for Quotation"),
+						() => frm.events.make_request_for_quotation(frm),
+						__("Create")
+					);
+				}
 
 				if (frm.doc.material_request_type === "Purchase") {
 					frm.add_custom_button(
@@ -563,6 +563,7 @@ frappe.ui.form.on("Material Request Item", {
 		const item = locals[doctype][name];
 		frm.events.get_item_data(frm, item, false);
 	},
+
 });
 
 erpnext.buying.MaterialRequestController = class MaterialRequestController extends (

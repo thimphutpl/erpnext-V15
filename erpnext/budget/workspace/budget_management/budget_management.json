@@ -16,45 +16,6 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Transactions",
-   "link_count": 3,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Budget",
-   "link_count": 0,
-   "link_to": "Budget",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Budget Reappropiation",
-   "link_count": 0,
-   "link_to": "Budget Reappropiation",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Supplementary Budget",
-   "link_count": 0,
-   "link_to": "Supplementary Budget",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
    "label": "Reports",
    "link_count": 6,
    "link_type": "DocType",
@@ -73,7 +34,7 @@
   },
   {
    "hidden": 0,
-   "is_query_report": 0,
+   "is_query_report": 1,
    "label": "Detailed Budget Consumption Report",
    "link_count": 0,
    "link_to": "Detailed Budget Consumption Report",
@@ -83,7 +44,7 @@
   },
   {
    "hidden": 0,
-   "is_query_report": 0,
+   "is_query_report": 1,
    "label": "Supplementary Budget Report",
    "link_count": 0,
    "link_to": "Supplementary Budget Report",
@@ -93,7 +54,7 @@
   },
   {
    "hidden": 0,
-   "is_query_report": 0,
+   "is_query_report": 1,
    "label": "Committed Budget Report",
    "link_count": 0,
    "link_to": "Committed Budget Report",
@@ -143,9 +104,9 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Budget Type",
+   "label": "Revenue Target",
    "link_count": 0,
-   "link_to": "Budget Type",
+   "link_to": "Revenue Target",
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
@@ -159,9 +120,38 @@
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Transactions",
+   "link_count": 2,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Budget Reappropiation",
+   "link_count": 0,
+   "link_to": "Budget Reappropiation",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Supplementary Budget",
+   "link_count": 0,
+   "link_to": "Supplementary Budget",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2024-10-22 11:58:30.189068",
+ "modified": "2024-10-31 11:13:45.525683",
  "modified_by": "sonam.bomjan@thimphutechpark.bt",
  "module": "Budget",
  "name": "Budget Management",

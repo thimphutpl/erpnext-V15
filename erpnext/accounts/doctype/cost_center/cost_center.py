@@ -29,7 +29,7 @@ class CostCenter(NestedSet):
 		is_group: DF.Check
 		lft: DF.Int
 		old_parent: DF.Link | None
-		parent_cost_center: DF.Link
+		parent_cost_center: DF.Link | None
 		rgt: DF.Int
 		sub_activity: DF.Table[SubActivity]
 		use_budget_from_parent: DF.Check

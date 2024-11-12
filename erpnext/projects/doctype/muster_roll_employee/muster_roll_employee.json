@@ -2,7 +2,7 @@
  "actions": [],
  "allow_import": 1,
  "allow_rename": 1,
- "autoname": "field:id_card",
+ "autoname": "format:{id_card}",
  "creation": "2024-10-08 15:44:44.695374",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -25,6 +25,8 @@
   "cost_center",
   "column_break_wlay",
   "branch",
+  "column_break_gegn",
+  "unit",
   "section_break_xdjd",
   "joining_date",
   "column_break_xarx",
@@ -229,20 +231,24 @@
   {
    "fieldname": "salary",
    "fieldtype": "Currency",
+   "hidden": 1,
    "label": "Salary Per Month"
   },
   {
    "fieldname": "rate_per_day",
    "fieldtype": "Currency",
+   "hidden": 1,
    "label": "Rate Per Day"
   },
   {
    "fieldname": "column_break_hqgd",
-   "fieldtype": "Column Break"
+   "fieldtype": "Column Break",
+   "hidden": 1
   },
   {
    "fieldname": "rate_per_hour_overtime",
    "fieldtype": "Currency",
+   "hidden": 1,
    "label": "Rate Per Hour (Overtime)(Daily Rate * 1.5 / 8)"
   },
   {
@@ -319,18 +325,19 @@
   {
    "fieldname": "rate_per_hour_normal",
    "fieldtype": "Currency",
-   "hidden": 1,
    "label": "Rate Per Hour (Normal) (Rate/ 8)"
   },
   {
    "fieldname": "sb_wh",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Wage History"
   },
   {
    "fieldname": "id_card",
    "fieldtype": "Data",
    "label": "Citizenship ID Card",
+   "read_only": 1,
    "reqd": 1,
    "unique": 1
   },
@@ -348,16 +355,26 @@
    "fieldname": "wage_history",
    "fieldtype": "Table",
    "options": "Wages History"
+  },
+  {
+   "fieldname": "column_break_gegn",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "unit",
+   "fieldtype": "Link",
+   "label": "Unit",
+   "options": "Department"
   }
  ],
  "in_create": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-10-21 18:58:52.502108",
+ "modified": "2024-11-05 10:46:38.720882",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Muster Roll Employee",
- "naming_rule": "By fieldname",
+ "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
   {

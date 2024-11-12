@@ -15,6 +15,8 @@ class MRPaymentItem(Document):
 		from frappe.types import DF
 
 		account_no: DF.ReadOnly | None
+		amount_regular: DF.Currency
+		amount_special: DF.Currency
 		bank: DF.ReadOnly | None
 		bank_payment: DF.Data | None
 		daily_rate: DF.Currency

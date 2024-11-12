@@ -7,9 +7,11 @@
  "engine": "InnoDB",
  "field_order": [
   "account",
+  "branch",
   "reference_item",
   "column_break_4",
   "account_number",
+  "cost_center",
   "reference",
   "monthly_revenue_target_section",
   "january",
@@ -27,7 +29,10 @@
   "november",
   "december",
   "revenue_target_detail_section_section",
-  "target_amount"
+  "target_amount",
+  "cb_rtd_1",
+  "adjustment_amount",
+  "net_target_amount"
  ],
  "fields": [
   {
@@ -159,11 +164,46 @@
    "fieldtype": "Data",
    "label": "Reference No",
    "read_only": 1
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "label": "Branch",
+   "options": "Branch",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "branch.cost_center",
+   "fieldname": "cost_center",
+   "fieldtype": "Link",
+   "label": "Cost Center",
+   "options": "Cost Center",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cb_rtd_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "adjustment_amount",
+   "fieldtype": "Currency",
+   "hidden": 1,
+   "label": "Adjustment Amount ( +/- )",
+   "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "net_target_amount",
+   "fieldtype": "Currency",
+   "hidden": 1,
+   "label": "Final Target Amount",
+   "read_only": 1
   }
  ],
  "istable": 1,
  "links": [],
- "modified": "2023-06-21 10:59:04.904448",
+ "modified": "2024-10-31 10:16:49.234300",
  "modified_by": "Administrator",
  "module": "Budget",
  "name": "Revenue Target Account",

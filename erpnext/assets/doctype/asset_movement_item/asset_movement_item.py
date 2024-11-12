@@ -24,7 +24,7 @@ class AssetMovementItem(Document):
 		parenttype: DF.Data
 		source_location: DF.Link | None
 		target_location: DF.Link | None
-		to_employee: DF.Link
+		to_employee: DF.Link | None
 	# end: auto-generated types
 
 	pass

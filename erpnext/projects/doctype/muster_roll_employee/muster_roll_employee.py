@@ -54,6 +54,7 @@ class MusterRollEmployee(Document):
 		status: DF.Literal["Active", "Left"]
 		temp_docname: DF.Data | None
 		temp_doctype: DF.Data | None
+		unit: DF.Link | None
 		update_wage_history: DF.Check
 		user_id: DF.Link | None
 		wage_history: DF.Table[WagesHistory]

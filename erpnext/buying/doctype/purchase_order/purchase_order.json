@@ -19,7 +19,7 @@
   "column_break_7",
   "transaction_date",
   "schedule_date",
-  "material_requst",
+  "material_request",
   "column_break1",
   "company",
   "branch",
@@ -56,6 +56,8 @@
   "net_total",
   "tax_withholding_net_total",
   "base_tax_withholding_net_total",
+  "column_break_svkp",
+  "material_requst",
   "section_break_48",
   "pricing_rules",
   "raw_material_details",
@@ -93,6 +95,8 @@
   "column_break_45",
   "additional_discount_percentage",
   "discount_amount",
+  "references_section",
+  "material_request_date",
   "sec_tax_breakup",
   "other_charges_calculation",
   "address_and_contact_tab",
@@ -255,6 +259,7 @@
    "depends_on": "eval:doc.docstatus===1",
    "fieldname": "order_confirmation_no",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Order Confirmation No"
   },
   {
@@ -1237,22 +1242,44 @@
    "reqd": 1
   },
   {
+   "depends_on": "eval:doc.against_blanket_order",
    "fieldname": "material_requst",
    "fieldtype": "Link",
-   "in_filter": 1,
    "label": "Material Request",
-   "no_copy": 1,
+   "mandatory_depends_on": "eval: doc.material_request_item",
    "options": "Material Request",
    "print_hide": 1,
-   "read_only": 1,
-   "search_index": 1
+   "print_width": "120px",
+   "search_index": 1,
+   "width": "120px"
+  },
+  {
+   "fieldname": "material_request",
+   "fieldtype": "Link",
+   "label": "Material Request",
+   "options": "Material Request"
+  },
+  {
+   "fieldname": "column_break_svkp",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "references_section",
+   "fieldtype": "Section Break",
+   "label": "References"
+  },
+  {
+   "fieldname": "material_request_date",
+   "fieldtype": "Link",
+   "label": "Material Request Date",
+   "options": "Material Request"
   }
  ],
  "icon": "fa fa-file-text",
  "idx": 105,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-10-22 09:26:39.014305",
+ "modified": "2024-10-29 22:30:11.983466",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Purchase Order",

@@ -15,6 +15,7 @@
   "supplier",
   "security_deposit",
   "expense_limit",
+  "account_number",
   "disabled"
  ],
  "fields": [
@@ -78,11 +79,17 @@
    "fieldtype": "Currency",
    "label": "Expense Limit",
    "reqd": 1
+  },
+  {
+   "fieldname": "account_number",
+   "fieldtype": "Data",
+   "label": "Account Number",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-05-31 11:24:20.160979",
+ "modified": "2024-11-08 16:59:43.344406",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Fuelbook",

@@ -19,7 +19,7 @@ class Branch(Document):
 		from hrms.hr.doctype.branch_imprest_item.branch_imprest_item import BranchImprestItem
 
 		abbreviation: DF.Data | None
-		address: DF.LongText
+		address: DF.LongText | None
 		branch: DF.Data
 		branch_bank_account: DF.Table[BranchBankAccount]
 		company: DF.Link

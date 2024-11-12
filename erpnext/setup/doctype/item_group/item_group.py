@@ -32,6 +32,12 @@ class ItemGroup(NestedSet):
 		taxes: DF.Table[ItemTax]
 	# end: auto-generated types
 
+	def before_save(self):
+		if not self.item_code_base:
+			frappe.throw(f"Missing Item Code Base")
+		if len(self.item_code_base) != 2:
+			frappe.throw(f"Length of Item Code Base has to be 2")
+
 	def validate(self):
 		if not self.parent_item_group and not frappe.flags.in_test:
 			if frappe.db.exists("Item Group", _("All Item Groups")):

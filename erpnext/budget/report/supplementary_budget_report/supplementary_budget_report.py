@@ -48,7 +48,7 @@ def validate_filters(filters):
 
 def get_data(filters):
 	query = """
-		select cost_center, account, project, amount,
+		select name, cost_center, account, project, amount,
 		(select a.remarks from `tabSupplementary Budget` a where a.name = `tabSupplementary Details`.reference) as remarks,
 		posting_date as date 
 		from `tabSupplementary Details` 
@@ -80,6 +80,8 @@ def get_data(filters):
 				"to_acc": a.account,
 				"amount": a.amount,
 				"date": a.date,
+               # "budget_type": a.budget_type,
+                "name": a.name,
 			}
 			data.append(row)
 	
@@ -94,6 +96,13 @@ def get_columns(filters):
 				"fieldtype": "Date",
 				"width": 120
 			},
+           # {
+            #    "fieldname": "budget_type",
+             #   "label": _("Budget Type"),
+              #  "fieldtype": "Data",
+               # "width": 120
+         #   },
+
 			{
 				"fieldname": "to_cc",
 				"label": _("To Cost Center"),
@@ -114,6 +123,13 @@ def get_columns(filters):
 				"fieldtype": "Currency",
 				"width": 130
 			},
+            {
+                "fieldname": "name",
+                "label": _("Transection"),
+                "fieldtype": "Link",
+                "options": "Supplementary Budget",
+                "with": 120
+                },
 			{
 				"fieldname": "remarks",
 				"label": _("Remarks"),
@@ -129,6 +145,13 @@ def get_columns(filters):
 				"fieldtype": "Date",
 				"width": 120
 			},
+          #  {
+           #     "fieldname": "budget_type",
+            #    "label": _("Budget Type"),
+             #   "fieldtype": "Data",
+              #  "width": 120
+           # },
+
 			{
 				"fieldname": "to_project",
 				"label": _("To Project"),
@@ -149,6 +172,15 @@ def get_columns(filters):
 				"fieldtype": "Currency",
 				"width": 130
 			},
+
+            {
+                "fieldname": "name",
+                "label": _("Transection"),
+                "fieldtype": "Link",
+                "options": "Supplementary Budget",
+                "with": 120
+                },
+
 			{
 				"fieldname": "remarks",
 				"label": _("Remarks"),

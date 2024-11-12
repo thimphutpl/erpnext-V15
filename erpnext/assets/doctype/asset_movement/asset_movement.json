@@ -11,6 +11,8 @@
   "column_break_4",
   "transaction_date",
   "from_employee",
+  "to_single",
+  "to_employee",
   "section_break_10",
   "get_asset",
   "assets",
@@ -35,7 +37,7 @@
    "fieldname": "purpose",
    "fieldtype": "Select",
    "label": "Purpose",
-   "options": "Transfer",
+   "options": "\nTransfer\nReceipt",
    "reqd": 1
   },
   {
@@ -98,20 +100,34 @@
    "fieldname": "from_employee",
    "fieldtype": "Link",
    "label": "From Employee",
-   "options": "Employee",
-   "reqd": 1
+   "options": "Employee"
   },
   {
    "depends_on": "eval:doc.docstatus != 1",
    "fieldname": "get_asset",
    "fieldtype": "Button",
    "label": "Get Asset"
+  },
+  {
+   "default": "0",
+   "fieldname": "to_single",
+   "fieldtype": "Check",
+   "label": "To Single Employee"
+  },
+  {
+   "depends_on": "to_single",
+   "fieldname": "to_employee",
+   "fieldtype": "Link",
+   "ignore_user_permissions": 1,
+   "label": "To Employee",
+   "mandatory_depends_on": "to_single",
+   "options": "Employee"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-10-21 15:50:06.397758",
+ "modified": "2024-11-08 15:01:53.575478",
  "modified_by": "Administrator",
  "module": "Assets",
  "name": "Asset Movement",

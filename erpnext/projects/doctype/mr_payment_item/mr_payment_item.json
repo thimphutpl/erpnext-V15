@@ -26,8 +26,10 @@
   "column_break_11",
   "number_of_hours",
   "hourly_rate_normal",
+  "amount_regular",
   "number_of_hours_special",
   "hourly_rate",
+  "amount_special",
   "total_ot_amount",
   "section_break_15",
   "total_amount",
@@ -168,13 +170,13 @@
   {
    "fieldname": "number_of_hours_special",
    "fieldtype": "Float",
-   "label": "Number of Hours(Regular)",
+   "label": "Number of Hours(Special/Holiday)",
    "read_only": 1
   },
   {
    "fieldname": "hourly_rate",
    "fieldtype": "Currency",
-   "label": "Hourly Rate(Holiday)",
+   "label": "Hourly Rate(Special/Holiday)",
    "read_only": 1
   },
   {
@@ -229,12 +231,22 @@
    "label": "Status",
    "options": "\nPayment Under Process\nPayment Successful\nPayment Failed\nPartial Payment\nPayment Cancelled",
    "read_only": 1
+  },
+  {
+   "fieldname": "amount_regular",
+   "fieldtype": "Currency",
+   "label": "Amount Regular"
+  },
+  {
+   "fieldname": "amount_special",
+   "fieldtype": "Currency",
+   "label": "Amount Special"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-10-18 18:31:47.237139",
+ "modified": "2024-11-07 15:43:30.166680",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "MR Payment Item",

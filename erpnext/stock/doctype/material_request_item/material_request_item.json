@@ -395,6 +395,7 @@
    "depends_on": "eval:in_list([\"Manufacture\", \"Purchase\"], parent.material_request_type)",
    "fieldname": "manufacture_details",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Manufacture"
   },
   {
@@ -491,7 +492,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-10-09 15:47:55.368509",
+ "modified": "2024-10-24 10:14:38.252723",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Material Request Item",

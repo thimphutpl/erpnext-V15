@@ -11,7 +11,7 @@ frappe.query_reports["Inventory Report"] = {
                 "Inventory Report",
                 "Inventory Summary",
                 "Non Moving Branch Wise",
-                "Report 4"
+                "Consumption Report"
             ],
             default: "Inventory Report",
             reqd: 1,

@@ -1,0 +1,159 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "THR.YY.####",
+ "creation": "2024-11-03 18:45:16.752483",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_0zkp",
+  "branch",
+  "customer",
+  "column_break_shhn",
+  "equipment_type",
+  "equipment_model",
+  "section_break_nozl",
+  "with_fuel",
+  "column_break_rgno",
+  "without_fuel",
+  "column_break_hpty",
+  "idle_rate",
+  "section_break_gdnk",
+  "from_date",
+  "column_break_dunl",
+  "to_date",
+  "section_break_jtea",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_0zkp",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Tender Hire Rate",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Branch",
+   "options": "Branch",
+   "reqd": 1
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "label": "Customer",
+   "options": "Customer",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_shhn",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "equipment_type",
+   "fieldtype": "Link",
+   "label": "Equipment Type",
+   "options": "Equipment Type",
+   "reqd": 1
+  },
+  {
+   "depends_on": "eval:doc.equipment_type",
+   "fieldname": "equipment_model",
+   "fieldtype": "Link",
+   "label": "Equipment Model",
+   "options": "Equipment Model",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_nozl",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "with_fuel",
+   "fieldtype": "Float",
+   "label": "With Fuel",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_rgno",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "without_fuel",
+   "fieldtype": "Float",
+   "label": "Without Fuel",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_hpty",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "idle_rate",
+   "fieldtype": "Float",
+   "label": "Idle Rate",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_gdnk",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "from_date",
+   "fieldtype": "Date",
+   "label": "From Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_dunl",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "to_date",
+   "fieldtype": "Date",
+   "label": "To Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_jtea",
+   "fieldtype": "Section Break"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2024-11-03 18:59:29.311573",
+ "modified_by": "Administrator",
+ "module": "Fleet Management",
+ "name": "Tender Hire Rate",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "search_fields": "customer, equipment_type",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

@@ -93,7 +93,8 @@
   },
   {
    "fieldname": "column_break_30",
-   "fieldtype": "Column Break"
+   "fieldtype": "Column Break",
+   "hidden": 1
   },
   {
    "allow_on_submit": 1,
@@ -420,7 +421,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-10-08 11:17:51.045791",
+ "modified": "2024-10-29 15:04:26.663814",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Job Cards",
