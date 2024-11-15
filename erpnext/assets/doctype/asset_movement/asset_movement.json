@@ -1,16 +1,19 @@
 {
  "actions": [],
  "allow_import": 1,
- "autoname": "format:ACC-ASM-{YYYY}-{#####}",
+ "autoname": "ASM.-.YY.-.MM.-.###",
  "creation": "2016-04-25 18:00:23.559973",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
   "company",
   "purpose",
+  "based_on",
   "column_break_4",
   "transaction_date",
   "from_employee",
+  "project",
+  "cost_center",
   "to_single",
   "to_employee",
   "section_break_10",
@@ -18,9 +21,13 @@
   "assets",
   "reference",
   "reference_doctype",
+  "workflow_state",
   "column_break_9",
   "reference_name",
-  "amended_from"
+  "amended_from",
+  "section_break_vxpx",
+  "attachment_column",
+  "attachment"
  ],
  "fields": [
   {
@@ -86,6 +93,7 @@
    "fieldtype": "Section Break"
   },
   {
+   "allow_bulk_edit": 1,
    "fieldname": "assets",
    "fieldtype": "Table",
    "label": "Assets",
@@ -97,6 +105,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "depends_on": "eval:doc.based_on == 'Custodian'",
    "fieldname": "from_employee",
    "fieldtype": "Link",
    "label": "From Employee",
@@ -122,16 +131,57 @@
    "label": "To Employee",
    "mandatory_depends_on": "to_single",
    "options": "Employee"
+  },
+  {
+   "fieldname": "workflow_state",
+   "fieldtype": "Data",
+   "label": "Workflow State",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_vxpx",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "attachment_column",
+   "fieldtype": "Column Break",
+   "label": "Attachment"
+  },
+  {
+   "fieldname": "attachment",
+   "fieldtype": "Attach",
+   "label": "attachment"
+  },
+  {
+   "depends_on": "eval:doc.purpose == \"Transfer\"",
+   "fieldname": "based_on",
+   "fieldtype": "Select",
+   "label": "Select Assets Based On",
+   "options": "\nCustodian\nCost Center"
+  },
+  {
+   "depends_on": "eval:doc.based_on == 'Cost Center'",
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "label": "Project",
+   "options": "Project"
+  },
+  {
+   "depends_on": "eval:doc.based_on == 'Cost Center'",
+   "fieldname": "cost_center",
+   "fieldtype": "Link",
+   "label": "Cost Center",
+   "options": "Cost Center"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-08 15:01:53.575478",
+ "modified": "2024-11-15 12:35:17.773844",
  "modified_by": "Administrator",
  "module": "Assets",
  "name": "Asset Movement",
- "naming_rule": "Expression",
+ "naming_rule": "Expression (old style)",
  "owner": "Administrator",
  "permissions": [
   {
@@ -182,5 +232,6 @@
  ],
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "track_changes": 1
 }

@@ -108,7 +108,7 @@ class ProjectAdvance(Document):
 		if self.sales_invoice:
 				self.status = "Billed"
 		"""
-	
+	@frappe.whitelist()
 	def set_defaults(self):
 		if self.docstatus < 2:
 			self.journal_entry = None

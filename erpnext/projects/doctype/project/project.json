@@ -107,6 +107,7 @@
    "default": "Planning",
    "fieldname": "status",
    "fieldtype": "Select",
+   "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Status",
    "no_copy": 1,
@@ -118,7 +119,6 @@
   {
    "fieldname": "project_type",
    "fieldtype": "Link",
-   "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Project Type",
    "oldfieldname": "project_type",
@@ -176,7 +176,6 @@
    "bold": 1,
    "fieldname": "expected_end_date",
    "fieldtype": "Date",
-   "in_list_view": 1,
    "label": "Expected End Date",
    "oldfieldname": "completion_date",
    "oldfieldtype": "Date"
@@ -540,9 +539,11 @@
    "fieldtype": "Column Break"
   },
   {
+   "bold": 1,
    "fieldname": "tot_wq_percent_complete",
    "fieldtype": "Percent",
    "label": "% Work Quantity Completed",
+   "no_copy": 1,
    "read_only": 1
   },
   {
@@ -657,7 +658,7 @@
  "index_web_pages_for_search": 1,
  "links": [],
  "max_attachments": 4,
- "modified": "2024-10-14 16:23:21.596828",
+ "modified": "2024-11-12 14:53:04.986020",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Project",

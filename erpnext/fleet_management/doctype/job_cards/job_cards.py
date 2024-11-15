@@ -18,7 +18,8 @@ class JobCards(AccountsController):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
-		from erpnext.manufacturing.doctype.job_card_item.job_card_item import JobCardItem
+		# from erpnext.manufacturing.doctype.job_card_item.job_card_item import JobCardItem
+		from erpnext.fleet_management.doctype.job_card_item.job_card_item import JobCardItem
 		from frappe.types import DF
 
 		amended_from: DF.Link | None
@@ -43,6 +44,8 @@ class JobCards(AccountsController):
 		job_in_time: DF.Time | None
 		job_out_time: DF.Time | None
 		jv: DF.Data | None
+		location: DF.Data | None
+		name_of_the_job: DF.Data | None
 		outstanding_amount: DF.Currency
 		owned_by: DF.Data
 		paid: DF.Check
@@ -50,7 +53,7 @@ class JobCards(AccountsController):
 		posting_date: DF.Date | None
 		ref_number: DF.Data | None
 		remarks: DF.LongText | None
-		repair_type: DF.Literal["Major", "Minor"]
+		repair_type: DF.Literal["Minor Repair", "Major Repair", "Fabrication Works", "Bailey Bridge Works"]
 		services_amount: DF.Currency
 		total_amount: DF.Currency
 	# end: auto-generated types

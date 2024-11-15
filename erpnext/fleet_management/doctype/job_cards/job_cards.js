@@ -40,7 +40,7 @@ frappe.ui.form.on('Job Cards', {
 			}, __("Receive"));*/
 			frm.add_custom_button("Receive Payment", function() {
 				frappe.model.open_mapped_doc({
-					method: "erpnext.maintenance.doctype.job_cards.job_cards.make_payment_entry",
+					method: "erpnext.fleet_management.doctype.job_cards.job_cards.make_payment_entry",
 					frm: cur_frm
 				})
 			}, __("Receive"));
@@ -55,7 +55,7 @@ frappe.ui.form.on('Job Cards', {
 	"receive_payment": function(frm) {
 		if(frm.doc.paid == 0) {
 			return frappe.call({
-				method: "erpnext.maintenance.doctype.job_cards.job_cards.make_bank_entry",
+				method: "erpnext.fleet_management.doctype.job_cards.job_cards.make_bank_entry",
 				args: {
 					"frm": cur_frm.doc.name,
 				},
@@ -223,7 +223,7 @@ function calculate_time(frm, cdt, cdn) {
 
 function get_entries_from_min(form) {
 	frappe.call({
-		method: "erpnext.maintenance.doctype.job_cards.job_cards.get_min_items",
+		method: "erpnext.fleet_management.doctype.job_cards.job_cards.get_min_items",
 		async: false,
 		args: {
 			"name": form,
@@ -248,7 +248,7 @@ cur_frm.cscript.receive_payment = function(){
 	var doc = cur_frm.doc;
 	frappe.ui.form.is_saving = true;
 	frappe.call({
-		method: "erpnext.maintenance.doctype.job_cards.job_cards.make_bank_entry",
+		method: "erpnext.fleet_management.doctype.job_cards.job_cards.make_bank_entry",
 		args: {
 			"frm": cur_frm.doc.name,
 		},

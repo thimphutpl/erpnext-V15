@@ -22,5 +22,6 @@ class HSDAdjustmentItem(Document):
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
+		system_balance: DF.Float
 	# end: auto-generated types
 	pass

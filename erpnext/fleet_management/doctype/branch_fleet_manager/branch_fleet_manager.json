@@ -1,0 +1,101 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:branch",
+ "creation": "2024-11-12 15:08:14.606846",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_tfwf",
+  "amended_from",
+  "branch",
+  "office_name",
+  "mail_recipents",
+  "item",
+  "section_break_5",
+  "rm"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_tfwf",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Branch Fleet Manager",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Branch/Fleet Office",
+   "options": "Branch",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "office_name",
+   "fieldtype": "Data",
+   "label": "Branch",
+   "read_only": 1
+  },
+  {
+   "fieldname": "mail_recipents",
+   "fieldtype": "Section Break",
+   "label": "Email Recipients for Hire End Notification"
+  },
+  {
+   "fieldname": "item",
+   "fieldtype": "Table",
+   "label": "Table",
+   "options": "Branch Fleet Manager Item",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_5",
+   "fieldtype": "Section Break",
+   "label": "Email Recipients for Regular Maintenance Notification"
+  },
+  {
+   "fieldname": "rm",
+   "fieldtype": "Table",
+   "options": "Regular Maintenance Item",
+   "reqd": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2024-11-12 15:42:14.788502",
+ "modified_by": "Administrator",
+ "module": "Fleet Management",
+ "name": "Branch Fleet Manager",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "search_fields": "branch",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "branch"
+}

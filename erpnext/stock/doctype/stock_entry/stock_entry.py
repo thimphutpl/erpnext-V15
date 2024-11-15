@@ -109,6 +109,7 @@ class StockEntry(StockController):
 		issued_by: DF.Data | None
 		items: DF.Table[StockEntryDetail]
 		job_card: DF.Link | None
+		job_cards: DF.Link | None
 		letter_head: DF.Link | None
 		naming_series: DF.Literal["MAT-STE-.YYYY.-"]
 		outgoing_stock_entry: DF.Link | None

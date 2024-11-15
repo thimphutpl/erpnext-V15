@@ -71,7 +71,8 @@
   "remarks_section",
   "general_ledger_remarks_length",
   "column_break_lvjk",
-  "receivable_payable_remarks_length"
+  "receivable_payable_remarks_length",
+  "intra_company_account"
  ],
  "fields": [
   {
@@ -462,6 +463,12 @@
    "fieldname": "enable_immutable_ledger",
    "fieldtype": "Check",
    "label": "Enable Immutable Ledger"
+  },
+  {
+   "fieldname": "intra_company_account",
+   "fieldtype": "Link",
+   "label": "Intra Company Account",
+   "options": "Account"
   }
  ],
  "icon": "icon-cog",
@@ -469,7 +476,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-07-26 12:24:17.184760",
+ "modified": "2024-11-15 09:58:53.332623",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Accounts Settings",

@@ -19,4 +19,5 @@ class EquipmentModel(Document):
 		registeration_number: DF.Data
 		tank_capacity: DF.Data | None
 	# end: auto-generated types
-	pass
+	def autoname(self):
+		self.name = self.equipment_type + "(" + self.model + ")"

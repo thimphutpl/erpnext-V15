@@ -230,6 +230,7 @@ class JournalEntry(AccountsController):
 		self.update_invoice_discounting()
 		self.update_booked_depreciation()
 		self.update_reference_document()
+		self.update_project_advance(cancel=self.docstatus == 2)
 
 	def on_update_after_submit(self):
 		if hasattr(self, "repost_required"):
@@ -264,6 +265,7 @@ class JournalEntry(AccountsController):
 		self.update_booked_depreciation(1)
 		self.update_reference_document(cancel=True)
 		check_clearance_date(self.doctype, self.name)
+		self.update_project_advance(cancel=self.docstatus == 2)
 
 	def get_title(self):
 		return self.pay_to_recd_from or self.accounts[0].account
@@ -1326,7 +1328,38 @@ class JournalEntry(AccountsController):
 		if not self.get("accounts"):
 			frappe.throw(_("Accounts table cannot be blank."))
 
+	def update_project_advance(self, cancel=False):
+		project_advance = frappe._dict()
+		for d in self.accounts:
+			if d.reference_type == "Project Advance" and d.reference_name:
+				if project_advance in [d.reference_name]:
+					project_advance[d.reference_name]["credit"] += flt(d.credit)
+					project_advance[d.reference_name]["debit"] += flt(d.debit)
+				else:
+					project_advance[d.reference_name] = frappe._dict({"credit": flt(d.credit), "debit": flt(d.debit)})
 
+		factor = 1
+		for key, value in project_advance.items():
+			doc = frappe.get_doc("Project Advance", key)
+			if cancel:
+				factor = -1
+				doc.journal_entry_status = "Cancelled on {0}".format(now_datetime().strftime('%Y-%m-%d %H:%M:%S'))
+			else:
+				doc.journal_entry = self.name
+				if doc.payment_type == "Pay":
+					doc.journal_entry_status = "Paid on {0}".format(now_datetime().strftime('%Y-%m-%d %H:%M:%S'))
+				else:
+					doc.journal_entry_status = "Received on {0}".format(now_datetime().strftime('%Y-%m-%d %H:%M:%S'))
+					
+			if doc.party_type == "Customer":
+				doc.balance_amount = flt(doc.balance_amount) + (value["credit"] * factor)
+				doc.received_amount = flt(doc.received_amount) + (value["credit"] * factor)
+			else:
+				doc.balance_amount = flt(doc.balance_amount) + (value["debit"] * factor)
+				doc.paid_amount = flt(doc.paid_amount) + (value["debit"] * factor)
+
+			doc.save(ignore_permissions=True)
+			
 @frappe.whitelist()
 def get_default_bank_cash_account(company, account_type=None, mode_of_payment=None, account=None):
 	from erpnext.accounts.doctype.sales_invoice.sales_invoice import get_bank_cash_account

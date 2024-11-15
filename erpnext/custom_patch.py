@@ -10,6 +10,46 @@ from frappe.utils import date_diff, flt, cint, nowdate, getdate
 # from erpnext.integrations.bps import process_files
 from erpnext.assets.doctype.asset.depreciation import make_depreciation_entry
 # import pandas as pd
+from datetime import datetime, timedelta
+
+def update_attendance():
+    auth_doc=frappe.get_doc("Travel Authorization", "TA241100002-1")
+    claim_doc=frappe.get_doc("Travel Claim", "TC241100002")
+
+    for auth in auth_doc.get_all_children():
+            if auth.doctype=="Travel Authorization Item":
+                if auth.date==auth.till_date:
+                    frappe.db.sql("update `tabAttendance` set docstatus=2 where attendance_date='{}' and employee='{}'".format(auth.date, auth_doc.employee))
+                else:
+                    all_dates = get_dates_between(auth.date, auth.till_date)
+                    for date_s in all_dates:
+                        frappe.db.sql("update `tabAttendance` set docstatus=2 where attendance_date='{}' and employee='{}'".format(date_s.strftime("%Y-%m-%d"), auth_doc.employee))
+
+    # for claim in claim_doc.get_all_children():
+    #     if claim.date==claim.till_date:
+    #         print(claim.date)
+    #         frappe.db.sql("update `tabAttendance` set status='Present' where attendance_date='{}' and employee='{}'".format(claim.date, auth_doc.employee))
+    #     else:
+    #         all_dates = get_dates_between(claim.date, claim.till_date)
+    #         for date_s in all_dates:
+    #             print(date_s.strftime("%Y-%m-%d"))
+    #             frappe.db.sql("update `tabAttendance` set status='Present' where attendance_date='{}' and employee='{}'".format(date_s.strftime("%Y-%m-%d"), auth_doc.employee))
+
+def get_dates_between(start_date, end_date):
+    # Convert start_date and end_date to datetime.date if they are strings
+    if isinstance(start_date, str):
+        start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
+    if isinstance(end_date, str):
+        end_date = datetime.strptime(end_date, "%Y-%m-%d").date()
+    
+    dates = []
+    current_date = start_date
+    while current_date <= end_date:
+        dates.append(current_date)
+        current_date += timedelta(days=1)
+    return dates
+
+
 
 def save_emp():
     for emp in frappe.db.sql("select name from `tabEmployee`", as_dict=True):

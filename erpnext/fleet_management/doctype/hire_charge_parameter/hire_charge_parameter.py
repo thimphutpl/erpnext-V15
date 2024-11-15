@@ -28,6 +28,7 @@ class HireChargeParameter(Document):
 		items: DF.Table[HireChargeItem]
 		kph: DF.Float
 		lph: DF.Float
+		registeration_number: DF.Link
 		with_fuel: DF.Currency
 		with_fuel_internal: DF.Currency
 		without_fuel: DF.Currency
@@ -48,7 +49,7 @@ class HireChargeParameter(Document):
 								to_date = add_days(a.from_date, -1)
 
 	def set_parameter_values(self):
-		p = frappe.db.sql("select name from `tabHire Charge Parameter` where equipment_type = %s and equipment_model = %s and name != %s", (str(self.equipment_type), str(self.equipment_model), str(self.name)), as_dict=True)
+		p = frappe.db.sql("select name from `tabHire Charge Parameter` where registeration_number = %s and equipment_type = %s and equipment_model = %s and name != %s", str(self.registeration_number), (str(self.equipment_type), str(self.equipment_model), str(self.name)), as_dict=True)
 		if p:
 			frappe.throw("Hire Charges for the equipment type and model already exists. Update " + str(p[0].name))
 		if self.items:

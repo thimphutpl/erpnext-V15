@@ -452,7 +452,7 @@ class PurchaseOrder(BuyingController):
 		# 	self.update_requested_qty()
 
 		self.update_ordered_qty()
-		# self.validate_budget()
+		self.validate_budget()
 		self.update_reserved_qty_for_subcontract()
 
 		frappe.get_doc("Authorization Control").validate_approving_authority(

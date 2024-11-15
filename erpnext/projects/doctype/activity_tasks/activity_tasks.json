@@ -52,7 +52,6 @@
   {
    "fieldname": "status",
    "fieldtype": "Select",
-   "in_list_view": 1,
    "label": "Status",
    "options": "Open\nWorking\nPending Review\nClosed\nCancelled",
    "reqd": 1
@@ -75,6 +74,7 @@
    "default": "0",
    "fieldname": "is_group",
    "fieldtype": "Check",
+   "in_list_view": 1,
    "label": "Is Group"
   },
   {
@@ -107,6 +107,7 @@
   {
    "fieldname": "work_quantity_complete",
    "fieldtype": "Float",
+   "in_list_view": 1,
    "label": "Work Quantity Complete",
    "read_only": 1
   },
@@ -186,7 +187,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-09-04 23:56:01.535809",
+ "modified": "2024-11-13 10:39:02.224312",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Activity Tasks",

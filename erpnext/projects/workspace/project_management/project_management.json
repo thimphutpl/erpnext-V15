@@ -243,7 +243,7 @@
    "hidden": 0,
    "is_query_report": 0,
    "label": "Projects",
-   "link_count": 6,
+   "link_count": 7,
    "link_type": "DocType",
    "onboard": 0,
    "type": "Card Break"
@@ -301,16 +301,26 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Measurement Book Entries",
+   "label": "Project Type",
    "link_count": 0,
-   "link_to": "MB Entry",
+   "link_to": "Project Type",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Project Update",
+   "link_count": 0,
+   "link_to": "Project Update",
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
   }
  ],
- "modified": "2024-11-07 14:25:21.281137",
- "modified_by": "Administrator",
+ "modified": "2024-11-15 10:19:45.836228",
+ "modified_by": "sonam.bomjan@thimphutechpark.bt",
  "module": "Projects",
  "name": "Project Management",
  "number_cards": [],

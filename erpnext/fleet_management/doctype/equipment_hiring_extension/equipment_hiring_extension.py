@@ -1,8 +1,10 @@
 # Copyright (c) 2024, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
-# import frappe
+from __future__ import unicode_literals
+import frappe
 from frappe.model.document import Document
+from frappe.utils import flt, date_diff
 
 
 class EquipmentHiringExtension(Document):
@@ -78,36 +80,36 @@ class EquipmentHiringExtension(Document):
 		else:
 			frappe.throw("Corresponding Hire Approved Detail not found")
 
-	def check_hire_rate(self, doc):
-                based_on = frappe.db.get_single_value("Mechanical Settings", "hire_rate_based_on")
-                if not based_on:
-                        frappe.throw("Set the <b>Hire Rate Based On</b> in <b>Mechanical Settings</b>")
+	# def check_hire_rate(self, doc):
+    #             based_on = frappe.db.get_single_value("Mechanical Settings", "hire_rate_based_on")
+    #             if not based_on:
+    #                     frappe.throw("Set the <b>Hire Rate Based On</b> in <b>Mechanical Settings</b>")
 
-                if based_on == "Equipment Hiring Form" or doc.tender_hire_rate:
-                        self.rate = doc.rate
-                        return
+    #             if based_on == "Equipment Hiring Form" or doc.tender_hire_rate:
+    #                     self.rate = doc.rate
+    #                     return
 
-                c = frappe.get_doc("Customer", self.customer)
-                wf = "a.rate_fuel"
-                wof = "a.rate_wofuel"
-                ir = "a.idle_rate"
+    #             c = frappe.get_doc("Customer", self.customer)
+    #             wf = "a.rate_fuel"
+    #             wof = "a.rate_wofuel"
+    #             ir = "a.idle_rate"
 
-                if c.customer_group == "Internal":
-                        wf = "a.rate_fuel_internal"
-                        wof = "a.rate_wofuel_internal"
-                        ir = "a.idle_rate_internal"
+    #             if c.customer_group == "Internal":
+    #                     wf = "a.rate_fuel_internal"
+    #                     wof = "a.rate_wofuel_internal"
+    #                     ir = "a.idle_rate_internal"
 
-                e = frappe.get_doc("Equipment", self.equipment)
-
-				db_query = "select {0} as rate_fuel, {1} as rate_wofuel, {2} as idle_rate, a.yard_hours, a.yard_distance from `tabHire Charge Item` a, `tabHire Charge Parameter` b where a.parent = b.name and b.equipment_type = '{3}' and b.equipment_model = '{4}' and '{5}' between a.from_date and ifnull(a.to_date, now()) and '{6}' between a.from_date and ifnull(a.to_date, now()) LIMIT 1"
-                data = frappe.db.sql(db_query.format(wf, wof, ir, e.equipment_type, e.equipment_model, doc.to_date, self.extension_date), as_dict=True)
-
-                if not data:
-                        frappe.throw("There is either no Hire Charge defined or your logbook period overlaps with the Hire Charge period.")
-                if doc.rate_type == "With Fuel":
-                        self.rate = data[0].rate_fuel
-                if doc.rate_type == "Without Fuel":
-                        self.rate = data[0].rate_wofuel		
+    #             e = frappe.get_doc("Equipment", self.equipment)
+			
+	# db_query = "select {0} as rate_fuel, {1} as rate_wofuel, {2} as idle_rate, a.yard_hours, a.yard_distance from `tabHire Charge Item` a, `tabHire Charge Parameter` b where a.parent = b.name and b.equipment_type = '{3}' and b.equipment_model = '{4}' and '{5}' between a.from_date and ifnull(a.to_date, now()) and '{6}' between a.from_date and ifnull(a.to_date, now()) LIMIT 1"
+	# data = frappe.db.sql(db_query.format(wf, wof, ir, e.equipment_type, e.equipment_model, doc.to_date, self.extension_date), as_dict=True)
+	
+	# if not data:
+	# 	frappe.throw("There is either no Hire Charge defined or your logbook period overlaps with the Hire Charge period.")
+	# if doc.rate_type == "With Fuel":
+	# 	self.rate = data[0].rate_fuel
+	# if doc.rate_type == "Without Fuel":
+	# 	self.rate = data[0].rate_wofuel		
 
 	##
 	# make necessary journal entry

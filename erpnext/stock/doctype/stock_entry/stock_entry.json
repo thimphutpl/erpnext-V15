@@ -60,6 +60,8 @@
   "column_break_22",
   "total_incoming_value",
   "value_difference",
+  "job_card_details",
+  "job_cards",
   "additional_costs_section",
   "additional_costs",
   "total_additional_costs",
@@ -700,6 +702,17 @@
    "fieldname": "in_transit",
    "fieldtype": "Check",
    "label": "In transit"
+  },
+  {
+   "fieldname": "job_card_details",
+   "fieldtype": "Section Break",
+   "label": "Job Card Details"
+  },
+  {
+   "fieldname": "job_cards",
+   "fieldtype": "Link",
+   "label": "Job Card",
+   "options": "Job Cards"
   }
  ],
  "icon": "fa fa-file-text",
@@ -707,7 +720,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-10-22 10:41:17.307670",
+ "modified": "2024-11-14 16:24:50.229911",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Stock Entry",

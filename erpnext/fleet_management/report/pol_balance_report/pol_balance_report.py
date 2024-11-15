@@ -1,14 +1,15 @@
 # Copyright (c) 2023, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
+from __future__ import unicode_literals
 import frappe
 from frappe import _
-from frappe.utils import flt
+from frappe.utils import flt, cint,add_days, cstr, flt, getdate, nowdate, rounded, date_diff
 
 def execute(filters=None):
 	columns, data = get_columns(filters), get_data(filters)
 	return columns, data
-
+	
 def get_tanker_details(filters):
 	if filters.get("equipment"):
 		return frappe.get_list("Equipment", fields=["name","equipment_category","registeration_number"], filters={"company": filters.company, "is_container":1, "name":filters.get("equipment") })
@@ -58,6 +59,7 @@ def get_conditions(filters):
 		conditions.append("branch = '{}'".format(filters.get("branch")))
 
 	return "and {}".format(" and ".join(conditions)) if conditions else ""
+		
 
 def get_columns(filters):
 	return [

@@ -428,7 +428,7 @@
    "hidden": 0,
    "is_query_report": 0,
    "label": "Stock Transactions",
-   "link_count": 5,
+   "link_count": 6,
    "link_type": "DocType",
    "onboard": 0,
    "type": "Card Break"
@@ -486,10 +486,20 @@
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Asset Issue Details",
+   "link_count": 0,
+   "link_to": "Asset Issue Details",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2024-10-17 14:32:54.294599",
- "modified_by": "Administrator",
+ "modified": "2024-11-13 11:16:02.647655",
+ "modified_by": "kinzang.namgyal@cdcl.bt",
  "module": "Stock",
  "name": "Stock",
  "number_cards": [],

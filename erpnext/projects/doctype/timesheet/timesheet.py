@@ -7,7 +7,7 @@ import json
 import frappe
 from frappe import _
 from frappe.model.document import Document
-from frappe.utils import add_to_date, flt, get_datetime, getdate, time_diff_in_hours
+from frappe.utils import add_to_date, flt, get_datetime, getdate, time_diff_in_hours, date_diff, today
 
 from erpnext.controllers.queries import get_match_cond
 from erpnext.setup.utils import get_exchange_rate
@@ -200,7 +200,13 @@ class Timesheet(Document):
 
 			if tl.from_date > tl.to_date:
 				frappe.throw(_("Row {0}: From Date cannot be after To Date.").format(tl.idx))
+
+			if flt(tl.target_quantity_complete,2) > flt(tl.target_quantity,2):
+				frappe.throw(_("Row {0}: Target completed cannot be greater than Target quantity.").format(tl.idx))
 						
+		if flt(total_target_quantity) > flt(self.target_quantity):
+			frappe.throw(_("Total Target quantity for Time Sheets items ({0}) cannot be greater than ({1})").format(flt(total_target_quantity),flt(self.target_quantity)))
+		
 		if flt(total_target_quantity_complete) > flt(self.target_quantity):
 			frappe.throw(_("Total Achieved value({0}) cannot be more than Target value({1})").format(flt(total_target_quantity_complete),flt(self.target_quantity)))
 		
@@ -331,8 +337,8 @@ class Timesheet(Document):
 			if not data.activity_type and self.employee:
 				frappe.throw(_("Row {0}: Activity Type is mandatory.").format(data.idx))
 
-			if flt(data.hours) == 0.0:
-				frappe.throw(_("Row {0}: Hours value must be greater than zero.").format(data.idx))
+			# if flt(data.hours) == 0.0:
+			# 	frappe.throw(_("Row {0}: Hours value must be greater than zero.").format(data.idx))
 
 	def update_task_and_project(self):
 		tasks, projects = [], []

@@ -115,6 +115,7 @@
   {
    "fieldname": "employee_detail",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Employee Detail"
   },
   {
@@ -189,6 +190,7 @@
    "default": "0",
    "fieldname": "total_hours",
    "fieldtype": "Float",
+   "hidden": 1,
    "label": "Total Working Hours",
    "read_only": 1
   },
@@ -295,6 +297,7 @@
    "fetch_if_empty": 1,
    "fieldname": "currency",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Currency",
    "options": "Currency"
   },
@@ -323,6 +326,7 @@
    "default": "1",
    "fieldname": "exchange_rate",
    "fieldtype": "Float",
+   "hidden": 1,
    "label": "Exchange Rate"
   },
   {
@@ -436,7 +440,7 @@
  "idx": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-11 22:51:29.409762",
+ "modified": "2024-11-13 12:41:49.533701",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Timesheet",
@@ -515,5 +519,6 @@
  "sort_field": "modified",
  "sort_order": "ASC",
  "states": [],
- "title_field": "title"
+ "title_field": "task_name",
+ "track_changes": 1
 }

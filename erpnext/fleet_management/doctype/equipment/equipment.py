@@ -18,44 +18,30 @@ class Equipment(Document):
 		from frappe.types import DF
 
 		asset_code: DF.Link | None
-		asset_issue_details: DF.Link | None
-		branch: DF.Link | None
-		capacity: DF.Data | None
+		bluebook_date: DF.Date | None
+		branch: DF.Link
 		chasis_number: DF.Data | None
-		company: DF.Link | None
-		consultant: DF.Check
-		consultant_name: DF.Data | None
-		creation_date: DF.Date
+		current_hr_reading: DF.ReadOnly | None
+		current_km_reading: DF.ReadOnly | None
 		current_operator: DF.Data | None
+		details: DF.SmallText | None
+		disabled_date: DF.Date | None
 		dzongkhag: DF.Link | None
-		emission_standard: DF.Data | None
-		enabled: DF.Check
 		engine_number: DF.Data | None
 		equipment_category: DF.Link
-		equipment_description: DF.SmallText | None
 		equipment_history: DF.Table[EquipmentHistory]
 		equipment_model: DF.Link
-		equipment_name: DF.Data | None
 		equipment_operator: DF.Table[EquipmentOperator]
 		equipment_type: DF.Link
-		fuel_type: DF.Link
 		fuelbook: DF.Link | None
 		gewog: DF.Link | None
-		hired_equipment: DF.Check
-		initial_km_reading: DF.Float
-		is_container: DF.Check
-		make: DF.Data | None
+		hsd_type: DF.Link | None
+		is_disabled: DF.Check
 		model_items: DF.Table[EquipmentModelHistory]
-		purchase_date: DF.Date | None
-		purchase_rate: DF.Currency
-		purchase_receipt: DF.Link | None
-		rate: DF.Currency
-		reading_uom: DF.Data | None
-		registeration_number: DF.Data
-		status: DF.Literal["", "Running", "Maintenance"]
+		not_cdcl: DF.Check
+		registeration_number: DF.Data | None
 		supplier: DF.Link | None
 		village: DF.Link | None
-		wheeler: DF.Literal["", "26", "10", "6", "4", "2"]
 	# end: auto-generated types
 	def validate(self):
 		self.update_equipment_hiring_form()

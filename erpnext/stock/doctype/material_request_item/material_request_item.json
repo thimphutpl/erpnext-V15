@@ -475,6 +475,7 @@
   {
    "fieldname": "wip_composite_asset",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "WIP Composite Asset",
    "options": "Asset"
   },
@@ -492,7 +493,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-10-24 10:14:38.252723",
+ "modified": "2024-11-15 15:48:17.251540",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Material Request Item",

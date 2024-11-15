@@ -71,7 +71,7 @@ frappe.ui.form.on("Project", {
 		// ++++++++++++++++++++ Ver 1.0 BEGINS ++++++++++++++++++++
 		if(!frm.doc.__islocal){
 			if(in_list([...frappe.user_roles], 'Admin')){
-				frm.add_custom_button(__("Change Status"), function(){frm.trigger("change_status_ongoing")},"icon-file-alt");
+				frm.add_custom_button(__("Change Status"), function(){frm.trigger("change_status_ongoing")});
 			}
 			frm.add_custom_button(__("Advance"), function(){frm.trigger("make_project_advance")},__("Make"), "icon-file-alt");
 			frm.add_custom_button(__("BOQ"), function(){frm.trigger("make_boq")},__("Make"), "icon-file-alt");

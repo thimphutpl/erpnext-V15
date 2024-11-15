@@ -31,7 +31,7 @@ class VehicleLogbook(Document):
         consumption_km: DF.Float
         cost_center: DF.Link | None
         distance_km: DF.Int
-        equipment1: DF.Link | None
+        equipment1: DF.Link
         equipment: DF.Link
         equipment_hiring_form: DF.Link | None
         equipment_model: DF.Data | None
@@ -62,7 +62,7 @@ class VehicleLogbook(Document):
         posting_date: DF.Date
         rate_type: DF.Data | None
         reason: DF.Data | None
-        registration_number1: DF.Data | None
+        registration_number1: DF.Data
         registration_number: DF.Data | None
         remarks: DF.TextEditor | None
         site_name: DF.Link | None

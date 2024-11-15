@@ -817,4 +817,4 @@ def make_in_transit_stock_entry(source_name, in_transit_warehouse):
 	for row in ste_doc.items:
 		row.t_warehouse = in_transit_warehouse
 
-	return ste_doc
+	return ste_doc	

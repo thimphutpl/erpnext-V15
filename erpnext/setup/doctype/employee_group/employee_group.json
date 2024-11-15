@@ -139,7 +139,7 @@
    "fieldname": "items",
    "fieldtype": "Table",
    "label": "Leave Credits",
-   "options": "Employee Group Table"
+   "options": "Employee Group Item"
   },
   {
    "fieldname": "encashment_frequency",
@@ -213,7 +213,7 @@
   }
  ],
  "links": [],
- "modified": "2024-10-31 17:21:51.600091",
+ "modified": "2024-11-14 15:52:09.354840",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee Group",

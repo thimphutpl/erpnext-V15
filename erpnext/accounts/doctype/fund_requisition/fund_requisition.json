@@ -1,0 +1,187 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "FR.YY.MM.###",
+ "creation": "2024-11-14 15:22:55.159395",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "amended_from",
+  "section_break_1",
+  "issuing_branch",
+  "column_break_2",
+  "issuing_cost_center",
+  "cb5",
+  "bank_account",
+  "sc3",
+  "branch",
+  "cost_center",
+  "cb1",
+  "posting_date",
+  "bank",
+  "sc1",
+  "total_amount",
+  "sc2",
+  "items",
+  "reference",
+  "column_break_18",
+  "remarks"
+ ],
+ "fields": [
+  {
+   "depends_on": "eval:doc.workflow_state==\"Approved\" || doc.workflow_state==\"Paid\"",
+   "fieldname": "section_break_1",
+   "fieldtype": "Section Break",
+   "permlevel": 2
+  },
+  {
+   "fetch_from": "issuing_branch.cost_center",
+   "fieldname": "issuing_cost_center",
+   "fieldtype": "Link",
+   "label": "Issuing Cost Center",
+   "options": "Cost Center",
+   "permlevel": 2,
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "issuing_branch",
+   "fieldtype": "Link",
+   "label": "Issuing Branch",
+   "options": "Branch",
+   "permlevel": 2
+  },
+  {
+   "fieldname": "cb5",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "bank_account",
+   "fieldtype": "Link",
+   "label": "Bank",
+   "options": "Account",
+   "permlevel": 2
+  },
+  {
+   "fieldname": "sc3",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "label": "Requesting Branch",
+   "options": "Branch",
+   "reqd": 1
+  },
+  {
+   "fieldname": "cost_center",
+   "fieldtype": "Data",
+   "label": "Requesting Cost Center",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cb1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "Today",
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "bank",
+   "fieldtype": "Link",
+   "label": "Requesting Bank",
+   "options": "Account",
+   "reqd": 1
+  },
+  {
+   "fieldname": "sc1",
+   "fieldtype": "Section Break"
+  },
+  {
+   "bold": 1,
+   "fieldname": "total_amount",
+   "fieldtype": "Currency",
+   "label": "Total Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sc2",
+   "fieldtype": "Section Break",
+   "label": "Details"
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "options": "Fund Requisition Item",
+   "reqd": 1
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Fund Requisition",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "reference",
+   "fieldtype": "Data",
+   "label": "Reference",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_18",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Long Text",
+   "label": "REMARKS"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Fund Requisition",
+   "print_hide": 1,
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2024-11-15 15:15:29.653104",
+ "modified_by": "Administrator",
+ "module": "Accounts",
+ "name": "Fund Requisition",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

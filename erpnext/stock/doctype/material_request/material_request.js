@@ -77,6 +77,46 @@ frappe.ui.form.on("Material Request", {
 
 		erpnext.accounts.dimensions.setup_dimension_filters(frm, frm.doctype);
 	},
+	"transaction_date": function(frm) {
+		if(frm.doc.transaction_date >= frappe.datetime.nowdate()){
+			frappe.throw("Transaction Date cannot be future date")
+		}
+	},
+	branch: function(frm){
+		if(frm.doc.branch != null || frm.doc.branch != "" || frm.doc.branch != undefined){
+			frappe.call({
+				method: "frappe.client.get_value",
+				args: {
+					doctype: "Branch",
+					fieldname: "cost_center",
+					filters: { name: frm.doc.branch },
+				},
+				callback: function(r, rt) {
+					if(r.message) {
+						frm.set_value("cost_center", r.message.cost_center);
+						frm.trigger("cost_center")
+					}
+				}
+			});
+		}
+		else{
+			frm.set_value("cost_center",null);
+		}
+		frm.refresh_fields();
+	},
+	item_group: function(frm){
+		frm.fields_dict["items"].grid.get_field("item_code").get_query = function (doc) {
+			return {
+				filters: { 'item_group': frm.doc.item_group}
+			};
+		};
+	},
+	cost_center: function(frm){
+		frm.doc.items.map(v=>{
+			v.cost_center = frm.doc.cost_center
+		})
+		frm.refresh_field("items")
+	},
 
 	company: function (frm) {
 		erpnext.accounts.dimensions.update_dimension(frm, frm.doctype);
@@ -182,7 +222,6 @@ frappe.ui.form.on("Material Request", {
 						() => frm.events.make_stock_entry(frm),
 						__("Create")
 					);
-					
 					
 				}
 
@@ -589,29 +628,29 @@ erpnext.buying.MaterialRequestController = class MaterialRequestController exten
 		set_schedule_date(this.frm);
 	}
 
-	onload() {
-		this.frm.set_query("item_code", "items", function (doc, cdt, cdn) {
-			if (doc.material_request_type == "Customer Provided") {
-				return {
-					query: "erpnext.controllers.queries.item_query",
-					filters: {
-						customer: doc.customer,
-						is_stock_item: 1,
-					},
-				};
-			} else if (doc.material_request_type == "Purchase") {
-				return {
-					query: "erpnext.controllers.queries.item_query",
-					filters: { is_purchase_item: 1 },
-				};
-			} else {
-				return {
-					query: "erpnext.controllers.queries.item_query",
-					filters: { is_stock_item: 1 },
-				};
-			}
-		});
-	}
+	// onload() {
+	// 	this.frm.set_query("item_code", "items", function (doc, cdt, cdn) {
+	// 		if (doc.material_request_type == "Customer Provided") {
+	// 			return {
+	// 				query: "erpnext.controllers.queries.item_query",
+	// 				filters: {
+	// 					customer: doc.customer,
+	// 					is_stock_item: 1,
+	// 				},
+	// 			};
+	// 		} else if (doc.material_request_type == "Purchase") {
+	// 			return {
+	// 				query: "erpnext.controllers.queries.item_query",
+	// 				filters: { is_purchase_item: 1 },
+	// 			};
+	// 		} else {
+	// 			return {
+	// 				query: "erpnext.controllers.queries.item_query",
+	// 				filters: { is_stock_item: 1 },
+	// 			};
+	// 		}
+	// 	});
+	// }
 
 	items_add(doc, cdt, cdn) {
 		var row = frappe.get_doc(cdt, cdn);

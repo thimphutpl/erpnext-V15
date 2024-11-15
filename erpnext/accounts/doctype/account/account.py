@@ -412,9 +412,17 @@ def get_account_currency(account):
 		return
 
 	def generator():
-		account_currency, company = frappe.get_cached_value(
+		values = frappe.get_cached_value(
 			"Account", account, ["account_currency", "company"]
 		)
+		if values:
+			account_currency = values[0]
+			company = values[1]
+		else:
+			frappe.throw(f"account cuurency not set for acc {account}")
+		# if values:
+        # 	account_currency = valu
+		# 	frappe.throw(str(account_currency))
 		if not account_currency:
 			account_currency = frappe.get_cached_value("Company", company, "default_currency")
 

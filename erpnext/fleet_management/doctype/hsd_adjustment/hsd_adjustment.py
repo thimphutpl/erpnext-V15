@@ -1,8 +1,11 @@
 # Copyright (c) 2024, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
-# import frappe
+from __future__ import unicode_literals
+import frappe
 from frappe.model.document import Document
+from frappe.utils import flt
+from erpnext.fleet_management.report.hsd_consumption_report.fleet_management_report import get_pol_consumed_till, get_pol_till
 
 
 class HSDAdjustment(Document):
@@ -54,7 +57,7 @@ class HSDAdjustment(Document):
 			con.equipment = a.equipment
 			con.pol_type = a.hsd_type
 			con.branch = self.branch
-			con.date = self.date
+			# con.date = self.date
 			con.posting_time = self.posting_time
 			con.qty = qty
 			con.reference_type = "HSD Adjustment"
@@ -70,6 +73,7 @@ class HSDAdjustment(Document):
 	def cancel_pol_entry(self):
 		frappe.db.sql("delete from `tabPOL Entry` where reference_name = %s", self.name)
 
+	@frappe.whitelist()
 	def get_equipments(self):
 		if not self.branch:
 			frappe.throw("Select the Branch first")

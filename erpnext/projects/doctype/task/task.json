@@ -269,6 +269,7 @@
   {
    "fieldname": "actual_time",
    "fieldtype": "Float",
+   "hidden": 1,
    "label": "Actual Time in Hours (via Timesheet)",
    "read_only": 1
   },
@@ -288,6 +289,7 @@
    "collapsible": 1,
    "fieldname": "sb_costing",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Costing"
   },
   {
@@ -383,6 +385,7 @@
    "default": "0",
    "fieldname": "is_template",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "Is Template"
   },
   {
@@ -525,7 +528,7 @@
  "is_tree": 1,
  "links": [],
  "max_attachments": 5,
- "modified": "2024-11-07 16:46:31.924167",
+ "modified": "2024-11-13 11:16:34.364364",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Task",

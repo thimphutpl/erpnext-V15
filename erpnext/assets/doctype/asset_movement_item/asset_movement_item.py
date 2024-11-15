@@ -19,12 +19,14 @@ class AssetMovementItem(Document):
 		asset_name: DF.Data | None
 		company: DF.Link | None
 		from_employee: DF.Link | None
+		from_employee_name: DF.Data | None
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
-		source_location: DF.Link | None
-		target_location: DF.Link | None
+		source_cost_center: DF.Link | None
+		target_cost_center: DF.Link | None
 		to_employee: DF.Link | None
+		to_employee_name: DF.Data | None
 	# end: auto-generated types
 
 	pass

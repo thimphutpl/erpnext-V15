@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "PJM.YYYY.MM.####",
+ "autoname": "MBE.-.YY.-.MM.-.####",
  "creation": "2024-09-19 16:28:53.824913",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -233,7 +233,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-09-19 16:59:56.193674",
+ "modified": "2024-11-12 15:05:59.497144",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "MB Entry",
