@@ -464,6 +464,7 @@
    "collapsible": 1,
    "fieldname": "item_weight_details",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Item Weight Details"
   },
   {
@@ -581,6 +582,7 @@
   {
    "fieldname": "section_break_45",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Serial and Batch No"
   },
   {
@@ -797,6 +799,7 @@
    "collapsible": 1,
    "fieldname": "manufacture_details",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Manufacture"
   },
   {
@@ -977,6 +980,7 @@
   {
    "fieldname": "provisional_expense_account",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Provisional Expense Account",
    "options": "Account"
   },
@@ -1019,6 +1023,7 @@
    "depends_on": "eval:parent.is_old_subcontracting_flow",
    "fieldname": "subcontract_bom_section",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Subcontract BOM"
   },
   {
@@ -1055,7 +1060,8 @@
   {
    "depends_on": "eval:doc.use_serial_batch_fields === 1",
    "fieldname": "section_break_3vxt",
-   "fieldtype": "Section Break"
+   "fieldtype": "Section Break",
+   "hidden": 1
   },
   {
    "fieldname": "column_break_tolu",
@@ -1070,6 +1076,7 @@
   {
    "fieldname": "wip_composite_asset",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "WIP Composite Asset",
    "options": "Asset"
   },
@@ -1129,7 +1136,7 @@
  "idx": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-10-10 14:35:28.954952",
+ "modified": "2024-11-18 10:12:55.999318",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Purchase Receipt Item",

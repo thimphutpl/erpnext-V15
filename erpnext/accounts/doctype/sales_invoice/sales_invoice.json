@@ -305,6 +305,7 @@
    "default": "0",
    "fieldname": "is_pos",
    "fieldtype": "Check",
+   "hidden": 1,
    "hide_days": 1,
    "hide_seconds": 1,
    "label": "Include Payment (POS)",
@@ -327,6 +328,7 @@
    "depends_on": "eval: !doc.is_debit_note",
    "fieldname": "is_return",
    "fieldtype": "Check",
+   "hidden": 1,
    "hide_days": 1,
    "hide_seconds": 1,
    "label": "Is Return (Credit Note)",
@@ -776,6 +778,7 @@
    "depends_on": "eval:!doc.is_return",
    "fieldname": "time_sheet_list",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "hide_border": 1,
    "hide_days": 1,
    "hide_seconds": 1,
@@ -904,6 +907,7 @@
   {
    "fieldname": "shipping_rule",
    "fieldtype": "Link",
+   "hidden": 1,
    "hide_days": 1,
    "hide_seconds": 1,
    "label": "Shipping Rule",
@@ -1973,6 +1977,7 @@
    "description": "Issue a debit note with 0 qty against an existing Sales Invoice",
    "fieldname": "is_debit_note",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "Is Rate Adjustment Entry (Debit Note)"
   },
   {
@@ -2137,6 +2142,7 @@
   {
    "fieldname": "incoterm",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Incoterm",
    "options": "Incoterm"
   },
@@ -2188,7 +2194,7 @@
    "link_fieldname": "consolidated_invoice"
   }
  ],
- "modified": "2024-06-07 16:49:32.458402",
+ "modified": "2024-11-18 11:25:43.562847",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Sales Invoice",

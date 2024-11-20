@@ -33,8 +33,8 @@ class POLEntry(Document):
 		posting_time: DF.Time | None
 		qty: DF.Float
 		rate: DF.Currency
-		reference: DF.Data | None
-		reference_type: DF.Literal["", "POL Receive", "POL Issue", "Vehicle Logbook"]
+		reference_name: DF.DynamicLink | None
+		reference_type: DF.Literal["", "POL Receive", "POL Issue", "Vehicle Logbook", "HSD Adjustment"]
 		supplier: DF.Link | None
 		type: DF.Literal["Receive", "Issue", "Stock", "consumed"]
 		uom: DF.Literal["", "Hour", "KM"]

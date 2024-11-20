@@ -2,6 +2,7 @@
  "actions": [],
  "allow_copy": 1,
  "allow_import": 1,
+ "allow_rename": 1,
  "creation": "2013-01-23 19:57:17",
  "description": "Track separate Income and Expense for product verticals or divisions.",
  "doctype": "DocType",
@@ -13,6 +14,7 @@
   "cost_center_number",
   "parent_cost_center",
   "company",
+  "warehouse",
   "cb0",
   "is_group",
   "disabled",
@@ -154,13 +156,20 @@
    "label": "Budget Cost Center",
    "mandatory_depends_on": "eval:doc.use_budget_from_parent",
    "options": "Cost Center"
+  },
+  {
+   "depends_on": "eval:doc.is_group!=1",
+   "fieldname": "warehouse",
+   "fieldtype": "Link",
+   "label": "Warehouse",
+   "options": "Warehouse"
   }
  ],
  "icon": "fa fa-money",
  "idx": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2024-11-04 15:32:50.765721",
+ "modified": "2024-11-18 16:26:15.521149",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Cost Center",

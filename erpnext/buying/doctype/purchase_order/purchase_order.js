@@ -149,6 +149,14 @@ frappe.ui.form.on("Purchase Order", {
 			},
 		});
 	},
+	
+	cost_center:function(frm){
+		if (frm.doc.cost_center){
+			frm.doc.items.map(v=>{
+				v.cost_center = frm.doc.cost_center
+			})
+		}
+	}
 });
 
 frappe.ui.form.on("Purchase Order Item", {

@@ -15,58 +15,6 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Assets",
-   "link_count": 4,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "dependencies": "",
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Asset",
-   "link_count": 0,
-   "link_to": "Asset",
-   "link_type": "DocType",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "dependencies": "",
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Location",
-   "link_count": 0,
-   "link_to": "Location",
-   "link_type": "DocType",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "dependencies": "",
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Asset Category",
-   "link_count": 0,
-   "link_to": "Asset Category",
-   "link_type": "DocType",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Asset Sub Category",
-   "link_count": 0,
-   "link_to": "Asset Sub Category",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
    "label": "Transaction",
    "link_count": 4,
    "link_type": "DocType",
@@ -117,36 +65,14 @@
    "hidden": 0,
    "is_query_report": 0,
    "label": "Reports",
-   "link_count": 8,
+   "link_count": 4,
    "link_type": "DocType",
    "onboard": 0,
    "type": "Card Break"
   },
   {
-   "dependencies": "Asset",
    "hidden": 0,
    "is_query_report": 1,
-   "label": "Asset Depreciation Ledger",
-   "link_count": 0,
-   "link_to": "Asset Depreciation Ledger",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "dependencies": "Asset",
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Asset Depreciations and Balances",
-   "link_count": 0,
-   "link_to": "Asset Depreciations and Balances",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
    "label": "Asset Register",
    "link_count": 0,
    "link_to": "Asset Register",
@@ -156,7 +82,7 @@
   },
   {
    "hidden": 0,
-   "is_query_report": 0,
+   "is_query_report": 1,
    "label": "Property Plant and Equipment",
    "link_count": 0,
    "link_to": "Property Plant and Equipment",
@@ -166,7 +92,7 @@
   },
   {
    "hidden": 0,
-   "is_query_report": 0,
+   "is_query_report": 1,
    "label": "Asset Balance Report",
    "link_count": 0,
    "link_to": "Asset Balance Report",
@@ -177,16 +103,6 @@
   {
    "hidden": 0,
    "is_query_report": 1,
-   "label": "Fixed Asset Register",
-   "link_count": 0,
-   "link_to": "Fixed Asset Register",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
    "label": "Asset Issue Report",
    "link_count": 0,
    "link_to": "Asset Issue Report",
@@ -195,19 +111,49 @@
    "type": "Link"
   },
   {
-   "dependencies": "Asset Activity",
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Asset Activity",
+   "label": "Assets",
+   "link_count": 3,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Asset",
    "link_count": 0,
-   "link_to": "Asset Activity",
-   "link_type": "Report",
+   "link_to": "Asset",
+   "link_type": "DocType",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Asset Category",
+   "link_count": 0,
+   "link_to": "Asset Category",
+   "link_type": "DocType",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Asset Sub Category",
+   "link_count": 0,
+   "link_to": "Asset Sub Category",
+   "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
   }
  ],
- "modified": "2024-10-22 11:54:41.622710",
- "modified_by": "sonam.bomjan@thimphutechpark.bt",
+ "modified": "2024-11-20 10:25:47.979890",
+ "modified_by": "tashi.wangchuk@cdcl.bt",
  "module": "Assets",
  "name": "Assets",
  "number_cards": [],

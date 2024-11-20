@@ -1,6 +1,7 @@
 # Copyright (c) 2022, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
+from __future__ import unicode_literals
 import frappe
 from frappe.model.document import Document
 from frappe.utils import nowdate, getdate, cint
@@ -31,7 +32,6 @@ class Equipment(Document):
 		equipment_category: DF.Link
 		equipment_history: DF.Table[EquipmentHistory]
 		equipment_model: DF.Link
-		equipment_operator: DF.Table[EquipmentOperator]
 		equipment_type: DF.Link
 		fuelbook: DF.Link | None
 		gewog: DF.Link | None
@@ -39,21 +39,54 @@ class Equipment(Document):
 		is_disabled: DF.Check
 		model_items: DF.Table[EquipmentModelHistory]
 		not_cdcl: DF.Check
+		operators: DF.Table[EquipmentOperator]
 		registeration_number: DF.Data | None
 		supplier: DF.Link | None
+		tank_capacity: DF.Data | None
 		village: DF.Link | None
 	# end: auto-generated types
-	def validate(self):
-		self.update_equipment_hiring_form()
-		# self.validate_asset_fuelbook()
+	# def validate(self):
+	# 	self.update_equipment_hiring_form()
+	# 	# self.validate_asset_fuelbook()
 	
-	# def validate_asset_fuelbook(self):
-	# 	if self.asset_code:
-	def update_equipment_hiring_form(self):
-		if self.supplier != frappe.db.get_value(self.doctype, self.name,"supplier") and cint(self.hired_equipment) == 1:
-			frappe.db.sql("update `tabEquipment Hiring Form` set supplier = '{}' where equipment = '{}'".format(self.supplier, self.name))
+	# # def validate_asset_fuelbook(self):
+	# # 	if self.asset_code:
+	# def update_equipment_hiring_form(self):
+	# 	if self.supplier != frappe.db.get_value(self.doctype, self.name,"supplier") and cint(self.hired_equipment) == 1:
+	# 		frappe.db.sql("update `tabEquipment Hiring Form` set supplier = '{}' where equipment = '{}'".format(self.supplier, self.name))
+
+	def before_save(self):
+		for i, item in enumerate(sorted(self.operators, key=lambda item: item.start_date), start=1):
+			item.idx = i
+
+	def validate(self):
+		if self.asset_code:
+			doc = frappe.get_doc("Asset", self.asset_code)
+			# doc.db_set("registeration_number", self.name)
+
+		if not self.registeration_number:
+			self.registeration_number = self.name
+		'''if self.equipment_history:
+			self.set("equipment_history", {})'''
+		if not self.equipment_history:
+                        self.create_equipment_history(branch = self.branch, on_date = '2017-01-01', ref_doc = self.name, purpose = 'Submit')
 		
-	@frappe.whitelist()
+		if len(self.operators) > 1:
+			for a in range(len(self.operators)-1):
+				self.operators[a].end_date = frappe.utils.data.add_days(getdate(self.operators[a + 1].start_date), -1)
+			self.operators[len(self.operators) - 1].end_date = ''
+
+		if self.is_disabled == 1:
+                        last_row = self.equipment_history[len(self.equipment_history) - 1]
+                        if not last_row.to_date:
+                                last_row.to_date = getdate(nowdate())
+		if self.not_cdcl == 0:
+			if not self.asset_code:
+				frappe.throw("Asset Code is mandatory, Please Fill the Asset Code!")
+		self.set_name()
+		self.validate_asset()
+		
+	# @frappe.whitelist()
 	def create_equipment_history(self, branch, on_date, ref_doc, purpose):
 		from_date = on_date
 		if purpose == "Cancel":
@@ -70,11 +103,11 @@ class Equipment(Document):
 			self.append("equipment_history", {
 				"branch": self.branch,
 				"from_date": from_date,
-				"supplier": self.supplier if self.hired_equipment else '',
 				"reference_document": ref_doc,
-				"bank_name": self.bank_name,
-				"account_number": self.account_number,
-				"ifs_code": self.ifs_code
+				# "supplier": self.supplier if self.hired_equipment else '',
+				# "bank_name": self.bank_name,
+				# "account_number": self.account_number,
+				# "ifs_code": self.ifs_code
 			})
 		else:
 			#doc = frappe.get_doc(self.doctype,self.name)
@@ -83,21 +116,21 @@ class Equipment(Document):
 				self.append("equipment_history", {
 					"branch": self.branch,
 					"from_date": from_date,
-					"supplier": self.supplier if self.hired_equipment else '',
 					"reference_document": ref_doc,
-					"bank_name": self.bank_name,
-					"account_number": self.account_number,
-					"ifs_code": self.ifs_code
+					# "supplier": self.supplier if self.hired_equipment else '',
+					# "bank_name": self.bank_name,
+					# "account_number": self.account_number,
+					# "ifs_code": self.ifs_code
 				})
 			elif self.branch != self.equipment_history[ln].branch or self.supplier != self.equipment_history[ln].supplier:
 				self.append("equipment_history", {
 					"branch": self.branch,
 					"from_date": from_date,
-					"supplier": self.supplier if self.hired_equipment else '',
 					"reference_document": ref_doc,
-					"bank_name": self.bank_name,
-					"account_number": self.account_number,
-					"ifs_code": self.ifs_code
+					# "supplier": self.supplier if self.hired_equipment else '',
+					# "bank_name": self.bank_name,
+					# "account_number": self.account_number,
+					# "ifs_code": self.ifs_code
 				})
 			self.set_to_date()
 
@@ -140,3 +173,25 @@ def sync_branch_asset():
 	for a in objs:
 		frappe.db.sql("update tabEquipment set branch = %s where name = %s", (a.branch, a.name))
 
+
+@frappe.whitelist()
+def fetch_registeration_numbers(doctype, txt, searchfield, start, page_len, filters):
+    return frappe.db.sql(
+        """
+        SELECT
+            registeration_number
+        FROM
+            `tabEquipment Model`
+        WHERE
+            equipment_type = %(equipment_type)s
+        AND
+            registeration_number LIKE %(txt)s
+        LIMIT %(start)s, %(page_len)s
+        """,
+        {
+            "equipment_type": filters.get("equipment_type"),
+            "txt": f"%{txt}%",
+            "start": start,
+            "page_len": page_len
+        }
+    )

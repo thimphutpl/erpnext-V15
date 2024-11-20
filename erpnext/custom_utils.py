@@ -174,11 +174,11 @@ def prepare_gl(d, args):
 	"""this method populates the common properties of a gl entry record"""
 	gl_dict = frappe._dict({
 		'company': d.company,
-		'posting_date': d.posting_date,
-		'fiscal_year': get_fiscal_year(d.posting_date, company=d.company)[0],
+		'posting_date': d.transaction_date,
+		'fiscal_year': get_fiscal_year(d.transaction_date, company=d.company)[0],
 		'voucher_type': d.doctype,
 		'voucher_no': d.name,
-		'remarks': d.remarks,
+		'remarks': '',
 		'debit': 0,
 		'credit': 0,
 		'debit_in_account_currency': 0,
@@ -336,7 +336,7 @@ def get_cc_customer(cc):
 def send_mail_to_role_branch(branch, role, message, subject=None):
 	if not subject:
 		subject = "Message from ERP System"
-	users = frappe.db.sql_list("select a.parent from tabUserRole a, tabDefaultValue b where a.parent = b.parent and b.defvalue = %s and b.defkey = 'Branch' and a.role = %s", (branch, role))
+	users = frappe.db.sql_list("select a.parent from `tabHas Role` a, tabDefaultValue b where a.parent = b.parent and b.defvalue = %s and b.defkey = 'Branch' and a.role = %s", (branch, role))
 	try:
 		frappe.sendmail(recipients=users, subject=subject, message=message)
 	except:

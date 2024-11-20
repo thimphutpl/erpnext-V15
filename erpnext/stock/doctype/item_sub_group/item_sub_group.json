@@ -44,15 +44,15 @@
    "description": "Eg: 001",
    "fieldname": "item_code_base",
    "fieldtype": "Data",
+   "hidden": 1,
    "in_list_view": 1,
    "label": "Sub Group Code Base",
-   "reqd": 1,
    "unique": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-15 12:40:55.797130",
+ "modified": "2024-11-16 23:36:24.276219",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Item Sub Group",

@@ -297,8 +297,8 @@ def get_basic_details(args, item, overwrite_warehouse=True):
 	
  
 	
-
-	if args.get("doctype") == "Purchase Invoice" and item.is_fixed_asset:
+	#jai
+	if args.get("doctype") in ("Purchase Invoice","Purchase Receipt","Purchase Order","Material Request") and item.is_fixed_asset:
 		from erpnext.assets.doctype.asset_category.asset_category import get_asset_category_account
 
 		expense_account = get_asset_category_account(

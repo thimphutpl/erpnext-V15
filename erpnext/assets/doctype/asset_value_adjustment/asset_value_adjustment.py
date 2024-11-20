@@ -92,6 +92,11 @@ class AssetValueAdjustment(Document):
 		depreciation_cost_center, depreciation_series = frappe.get_cached_value(
 			"Company", asset.company, ["depreciation_cost_center", "series_for_depreciation_entry"]
 		)
+		# depreciation_cost_center, depreciation_series = frappe.get_cached_value(
+		# 	"Company", asset.company, ["depreciation_cost_center", "series_for_depreciation_entry"]
+		# )
+		# depreciation_series = depreciation_series or "DEP-.YYYY.-"  # Default fallback series
+
 
 		je = frappe.new_doc("Journal Entry")
 		je.voucher_type = "Depreciation Entry"

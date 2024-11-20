@@ -10,7 +10,9 @@
  "field_order": [
   "enabled",
   "uom_name",
-  "must_be_whole_number"
+  "must_be_whole_number",
+  "column_break_dvpm",
+  "description"
  ],
  "fields": [
   {
@@ -35,12 +37,23 @@
    "fieldname": "enabled",
    "fieldtype": "Check",
    "label": "Enabled"
+  },
+  {
+   "fieldname": "column_break_dvpm",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "Please add the complete description",
+   "fieldname": "description",
+   "fieldtype": "Data",
+   "label": "Description",
+   "reqd": 1
   }
  ],
  "icon": "fa fa-compass",
  "idx": 1,
  "links": [],
- "modified": "2021-10-18 14:07:43.722144",
+ "modified": "2024-11-20 11:38:17.862676",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "UOM",
@@ -76,7 +89,9 @@
   }
  ],
  "quick_entry": 1,
+ "search_fields": "description",
  "show_name_in_global_search": 1,
  "sort_field": "modified",
- "sort_order": "ASC"
+ "sort_order": "ASC",
+ "states": []
 }

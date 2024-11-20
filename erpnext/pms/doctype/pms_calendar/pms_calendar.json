@@ -21,20 +21,21 @@
   "evaluation_start_date",
   "column_break_16",
   "evaluation_end_date",
-  "section_break_22",
-  "remarks",
   "pms_appeal_duration_section",
   "appeal_start_date",
-  "column_break_wzrqm",
+  "column_break_pedg",
   "appeal_end_date",
+  "section_break_22",
+  "remarks",
   "amended_from"
  ],
  "fields": [
   {
    "fieldname": "fiscal_year",
-   "fieldtype": "Data",
+   "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Fiscal Year",
+   "options": "Fiscal Year",
    "reqd": 1,
    "unique": 1
   },
@@ -146,31 +147,26 @@
    "label": "PMS Appeal Duration"
   },
   {
-   "allow_on_submit": 1,
    "fieldname": "appeal_start_date",
    "fieldtype": "Date",
-   "label": "Appeal Start Date",
-   "reqd": 1
+   "label": "Appeal Start Date"
   },
   {
-   "allow_on_submit": 1,
+   "fieldname": "column_break_pedg",
+   "fieldtype": "Column Break"
+  },
+  {
    "fieldname": "appeal_end_date",
    "fieldtype": "Date",
-   "label": "Appeal End Date",
-   "reqd": 1
-  },
-  {
-   "fieldname": "column_break_wzrqm",
-   "fieldtype": "Column Break"
+   "label": "Appeal End Date"
   }
  ],
  "is_submittable": 1,
  "links": [],
- "modified": "2024-07-30 15:32:12.010061",
+ "modified": "2024-11-20 15:53:38.294474",
  "modified_by": "Administrator",
  "module": "PMS",
  "name": "PMS Calendar",
- "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [
   {

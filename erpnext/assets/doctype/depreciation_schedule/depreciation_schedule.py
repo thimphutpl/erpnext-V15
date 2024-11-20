@@ -19,10 +19,12 @@ class DepreciationSchedule(Document):
 		income_accumulated_depreciation: DF.Currency
 		income_depreciation_amount: DF.Currency
 		journal_entry: DF.Link | None
+		no_of_days_in_a_schedule: DF.Int
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
 		schedule_date: DF.Date
+		schedule_start_date: DF.Date | None
 		shift: DF.Link | None
 	# end: auto-generated types
 

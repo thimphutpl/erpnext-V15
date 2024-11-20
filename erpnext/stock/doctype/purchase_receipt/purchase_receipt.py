@@ -81,6 +81,7 @@ class PurchaseReceipt(BuyingController):
 		lr_date: DF.Date | None
 		lr_no: DF.Data | None
 		material_request: DF.Link | None
+		material_request_date: DF.Date | None
 		named_place: DF.Data | None
 		naming_series: DF.Literal["MAT-PRE-.YYYY.-", "MAT-PR-RET-.YYYY.-"]
 		net_total: DF.Currency
@@ -94,6 +95,7 @@ class PurchaseReceipt(BuyingController):
 		pricing_rules: DF.Table[PricingRuleDetail]
 		project: DF.Link | None
 		purchase_order: DF.Link | None
+		purchase_order_date: DF.Date | None
 		range: DF.Data | None
 		rejected_warehouse: DF.Link | None
 		remarks: DF.SmallText | None
@@ -1218,6 +1220,9 @@ def make_purchase_invoice(source_name, target_doc=None, args=None):
 					"supplier_warehouse": "supplier_warehouse",
 					"is_return": "is_return",
 					"bill_date": "bill_date",
+					"material_request_date":"material_request_date",
+					"purchase_order_date":"purchase_order_date",
+					"purchase_receipt_date":"posting_date"
 				},
 				"validation": {
 					"docstatus": ["=", 1],

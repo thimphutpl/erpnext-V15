@@ -14,6 +14,9 @@ erpnext.accounts.PurchaseInvoice = class PurchaseInvoice extends erpnext.buying.
 	setup(doc) {
 		this.setup_posting_date_time_check();
 		super.setup(doc);
+		// this.frm.set_df_property("apply_tds", "read_only", 0);
+		// refresh_field("apply_tds");
+		// console.log(this.frm);
 
 		// formatter for purchase invoice item
 		if (this.frm.doc.update_stock) {
@@ -41,7 +44,11 @@ erpnext.accounts.PurchaseInvoice = class PurchaseInvoice extends erpnext.buying.
 
 	onload() {
 		super.onload();
-
+		// this.frm.set_df_property("apply_tds", "read_only", 0);
+		// refresh_field("apply_tds");
+		// console.log(frm.fields_dict['apply_tds']);
+		
+		
 		// Ignore linked advances
 		this.frm.ignore_doctypes_on_cancel_all = [
 			"Journal Entry",
@@ -308,6 +315,7 @@ erpnext.accounts.PurchaseInvoice = class PurchaseInvoice extends erpnext.buying.
 
 		this.dialog.show();
 	}
+	
 
 	make_dialog_and_set_release_date() {
 		const me = this;
@@ -629,6 +637,7 @@ frappe.ui.form.on("Purchase Invoice", {
 	},
 
 	refresh: function (frm) {
+		console.log(frm);
 		frm.events.add_custom_buttons(frm);
 	},
 

@@ -904,6 +904,13 @@ frappe.ui.form.on("Stock Entry", {
 });
 
 frappe.ui.form.on("Stock Entry Detail", {
+	"form_render": function (frm, cdt, cdn) {
+		
+		if(frm.doc.stock_entry_type!="Material Transfer"){
+			frm.fields_dict['items'].grid.grid_rows_by_docname[cdn].docfields[4].hidden=1;
+			refresh_field("items");
+		}
+	}, 
 	qty(frm, cdt, cdn) {
 		frm.events.set_basic_rate(frm, cdt, cdn);
 	},

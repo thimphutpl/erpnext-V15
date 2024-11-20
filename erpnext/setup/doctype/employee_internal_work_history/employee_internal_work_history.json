@@ -6,8 +6,14 @@
  "engine": "InnoDB",
  "field_order": [
   "branch",
+  "reference_doctype",
+  "reference_docname",
   "department",
+  "division",
+  "section",
   "designation",
+  "grade",
+  "reports_to",
   "from_date",
   "to_date",
   "promotion_due_date"
@@ -60,12 +66,48 @@
    "fieldname": "promotion_due_date",
    "fieldtype": "Date",
    "label": "Next Promotion Date"
+  },
+  {
+   "fieldname": "reference_doctype",
+   "fieldtype": "Link",
+   "label": "Reference Doctype",
+   "options": "DocType"
+  },
+  {
+   "fieldname": "reference_docname",
+   "fieldtype": "Dynamic Link",
+   "label": "Reference Docname",
+   "options": "reference_doctype"
+  },
+  {
+   "fieldname": "division",
+   "fieldtype": "Link",
+   "label": "Division",
+   "options": "Department"
+  },
+  {
+   "fieldname": "section",
+   "fieldtype": "Link",
+   "label": "Section",
+   "options": "Department"
+  },
+  {
+   "fieldname": "grade",
+   "fieldtype": "Link",
+   "label": "Grade",
+   "options": "Employee Grade"
+  },
+  {
+   "fieldname": "reports_to",
+   "fieldtype": "Link",
+   "label": "Reports to",
+   "options": "Employee"
   }
  ],
  "idx": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-11-15 10:26:19.715314",
+ "modified": "2024-11-18 14:29:39.930197",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee Internal Work History",

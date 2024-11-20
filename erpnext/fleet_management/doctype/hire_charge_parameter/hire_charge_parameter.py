@@ -20,6 +20,7 @@ class HireChargeParameter(Document):
 
 		amended_from: DF.Link | None
 		benchmark: DF.Float
+		equipment: DF.Link | None
 		equipment_model: DF.Link
 		equipment_type: DF.Link
 		idle: DF.Currency
@@ -28,7 +29,7 @@ class HireChargeParameter(Document):
 		items: DF.Table[HireChargeItem]
 		kph: DF.Float
 		lph: DF.Float
-		registeration_number: DF.Link
+		registeration_number: DF.Data
 		with_fuel: DF.Currency
 		with_fuel_internal: DF.Currency
 		without_fuel: DF.Currency
@@ -49,7 +50,19 @@ class HireChargeParameter(Document):
 								to_date = add_days(a.from_date, -1)
 
 	def set_parameter_values(self):
-		p = frappe.db.sql("select name from `tabHire Charge Parameter` where registeration_number = %s and equipment_type = %s and equipment_model = %s and name != %s", str(self.registeration_number), (str(self.equipment_type), str(self.equipment_model), str(self.name)), as_dict=True)
+		# p = frappe.db.sql("select name from `tabHire Charge Parameter` where registeration_number = %s and equipment_type = %s and equipment_model = %s and name != %s", str(self.registeration_number), (str(self.equipment_type), str(self.equipment_model), str(self.name)), as_dict=True)
+		p = frappe.db.sql(
+			"""
+			SELECT name 
+			FROM `tabHire Charge Parameter` 
+			WHERE registeration_number = %s 
+			AND equipment_type = %s 
+			AND equipment_model = %s 
+			AND name != %s
+			""", 
+			(self.registeration_number, self.equipment_type, self.equipment_model, self.name),
+			as_dict=True
+		)
 		if p:
 			frappe.throw("Hire Charges for the equipment type and model already exists. Update " + str(p[0].name))
 		if self.items:
@@ -66,3 +79,26 @@ class HireChargeParameter(Document):
 		if len(self.items) > 1:
 			for a in range(len(self.items)-1):
 				self.items[a].to_date = frappe.utils.data.add_days(getdate(self.items[a + 1].from_date), -1)
+
+
+@frappe.whitelist()
+def fetch_registeration_numbers(doctype, txt, searchfield, start, page_len, filters):
+    return frappe.db.sql(
+        """
+        SELECT
+            registeration_number
+        FROM
+            `tabEquipment Model`
+        WHERE
+            equipment_type = %(equipment_type)s
+        AND
+            registeration_number LIKE %(txt)s
+        LIMIT %(start)s, %(page_len)s
+        """,
+        {
+            "equipment_type": filters.get("equipment_type"),
+            "txt": f"%{txt}%",
+            "start": start,
+            "page_len": page_len
+        }
+    )

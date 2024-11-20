@@ -7,6 +7,7 @@ from frappe.model.document import Document
 from frappe.utils import get_link_to_form
 
 from erpnext.assets.doctype.asset_activity.asset_activity import add_asset_activity
+from erpnext.accounts.utils import make_asset_transfer_gl
 
 
 class AssetMovement(Document):
@@ -37,6 +38,8 @@ class AssetMovement(Document):
 	# end: auto-generated types
 
 	def validate(self):
+		if self.purpose == 'Receipt':
+			return
 		self.validate_asset()
 		self.validate_cost_center()
 		self.validate_employee()
@@ -50,8 +53,14 @@ class AssetMovement(Document):
 			if company != self.company:
 				frappe.throw(_("Asset {0} does not belong to company {1}").format(d.asset, self.company))
 
-			if not (d.source_cost_center or d.target_cost_center or d.from_employee or d.to_employee):
-				frappe.throw(_("Either cost center or employee must be required"))
+			if not (d.source_cost_center and d.from_employee and d.to_employee):
+				frappe.throw(_("Source Cost Center, From Employee, To Employee must be required"))
+
+			""" update target details """
+			d.target_cost_center = frappe.get_value("Employee", d.to_employee, "cost_center")
+			d.to_employee_name = frappe.get_value("Employee", d.to_employee, "employee_name")
+			if not d.target_cost_center:
+				frappe.throw(_("Missing Cost Center value in Employee for {0}").format(d.to_employee))
 
 	def validate_cost_center(self):
 		for d in self.assets:
@@ -78,20 +87,20 @@ class AssetMovement(Document):
 				if not d.to_employee:
 					frappe.throw(_("Employee is required while issuing Asset {0}").format(d.asset))
 
-			# if self.purpose == "Transfer":
-			# 	if d.to_employee:
-			# 		frappe.throw(
-			# 			_(
-			# 				"Transferring cannot be done to an Employee. Please enter location where Asset {0} has to be transferred"
-			# 			).format(d.asset),
-			# 			title=_("Incorrect Movement Purpose"),
-			# 		)
-			# 	if not d.target_location:
-			# 		frappe.throw(
-			# 			_("Target Location is required while transferring Asset {0}").format(d.asset)
-			# 		)
-			# 	if d.source_location == d.target_location:
-			# 		frappe.throw(_("Source and Target Location cannot be same"))
+			if self.purpose == "Transfer":
+				if not d.to_employee:
+					frappe.throw(
+						_(
+							"Missing To Employee at #Row:{0}"
+						).format(d.idx),
+						title=_("Missing Value"),
+					)
+				if not d.target_cost_center:
+					frappe.throw(
+						_("Target Cost Center is required while transferring Asset at #Row:{0}").format(d.idx)
+					)
+				# if d.source_location == d.target_location:
+				# 	frappe.throw(_("Source and Target Location cannot be same"))
 
 			if self.purpose == "Transfer":
 				if not (d.to_employee or d.target_cost_center):
@@ -99,45 +108,45 @@ class AssetMovement(Document):
 						_("Target Cost Center or Employee is required while transferring Asset {0}").format(d.asset)
 					)
 
-				if d.to_employee and d.target_location:
-					frappe.msgprint(
-						_("Asset {0} will be transferred to Cost Center {1} and Employee {2}").format(
-							d.asset, d.target_cost_center, d.to_employee
-						)
-					)
-				elif d.to_employee:
-					frappe.msgprint(
-						_("Asset {0} will be transferred to Employee {1} only").format(
-							d.asset, d.to_employee
-						)
-					)
-				elif d.target_cost_center:
-					frappe.msgprint(
-						_("Asset {0} will be transferred to Cost Center {1} only").format(
-							d.asset, d.target_cost_center
-						)
-					)
+				# if d.to_employee and d.target_cost_center:
+				# 	frappe.msgprint(
+				# 		_("Asset {0} will be transferred to Cost Center {1} and Employee {2}").format(
+				# 			d.asset, d.target_cost_center, d.to_employee
+				# 		)
+				# 	)
+				# elif d.to_employee:
+				# 	frappe.msgprint(
+				# 		_("Asset {0} will be transferred to Employee {1} only").format(
+				# 			d.asset, d.to_employee
+				# 		)
+				# 	)
+				# elif d.target_cost_center:
+				# 	frappe.msgprint(
+				# 		_("Asset {0} will be transferred to Cost Center {1} only").format(
+				# 			d.asset, d.target_cost_center
+				# 		)
+				# 	)
 
-			if self.purpose == "Receipt":
-				if not (d.source_location) and not (d.target_location or d.to_employee):
-					frappe.throw(
-						_("Target Location or To Employee is required while receiving Asset {0}").format(
-							d.asset
-						)
-					)
-				elif d.source_location:
-					if d.from_employee and not d.target_location:
-						frappe.throw(
-							_(
-								"Target Location is required while receiving Asset {0} from an employee"
-							).format(d.asset)
-						)
-					elif d.to_employee and d.target_location:
-						frappe.throw(
-							_(
-								"Asset {0} cannot be received at a location and given to an employee in a single movement"
-							).format(d.asset)
-						)
+			# if self.purpose == "Receipt":
+			# 	if not (d.source_location) and not (d.target_location or d.to_employee):
+			# 		frappe.throw(
+			# 			_("Target Location or To Employee is required while receiving Asset {0}").format(
+			# 				d.asset
+			# 			)
+			# 		)
+			# 	elif d.source_location:
+			# 		if d.from_employee and not d.target_location:
+			# 			frappe.throw(
+			# 				_(
+			# 					"Target Location is required while receiving Asset {0} from an employee"
+			# 				).format(d.asset)
+			# 			)
+			# 		elif d.to_employee and d.target_location:
+			# 			frappe.throw(
+			# 				_(
+			# 					"Asset {0} cannot be received at a location and given to an employee in a single movement"
+			# 				).format(d.asset)
+			# 			)
 
 	def get_assets_for_employee(self):
 		if self.from_employee:
@@ -148,7 +157,7 @@ class AssetMovement(Document):
 			assets = frappe.db.get_all(
 				"Assets",
 				filters={"custodian": self.from_employee, "company": self.company},
-				fields=["name as asset", "location as source_location"]
+				fields=["name as asset", "cost_center as source_cost_center", "custodian_name as from_employee_name"]
 			)
 
 			# Add each asset to the assets table
@@ -159,17 +168,6 @@ class AssetMovement(Document):
 		# Call the function to fetch assets
 		self.get_assets_for_employee()
 
-	def validate_employee(self):
-    	# Existing validation for employee's ownership
-		if self.from_employee:
-			current_custodian = frappe.db.get_value("Asset", self.assets, "custodian")
-			
-			if current_custodian != self.from_employee:
-				frappe.throw(_("Asset does not belong to custodian {0}").format(self.from_employee))
-            
-		# Call function to fetch assets
-		self.get_assets_for_employee()	
-	
 	def validate_employee(self):
 		for d in self.assets:
 			if d.from_employee:
@@ -185,14 +183,32 @@ class AssetMovement(Document):
 					_("Employee {0} does not belongs to the company {1}").format(d.to_employee, self.company)
 				)
 
+	def before_submit(self):
+		for d in self.assets:
+			d.from_employee, d.from_cost_center = frappe.db.get_value("Asset", d.asset, ["custodian", "cost_center"])
+			if self.based_on == "Custodian" and self.from_employee != d.from_employee:
+				frappe.throw("Asset data ("+str(d.asset)+") had changed since you created the document. Pull the assets again")
+			if self.based_on == "Cost Center" and self.cost_center != d.from_cost_center:
+				frappe.throw("Asset data ("+str(d.asset)+") had changed since you created the document. Pull the assets again")
+
+		for a in self.assets:
+			doc_list = frappe.db.sql("select asm.name FROM `tabAsset Movement Item` asm_item, `tabAsset Movement` asm where asm_item.parent=asm.name and asm.docstatus = 1 and asm_item.asset = %s and asm.transaction_date >= %s", (a.asset, self.transaction_date), as_dict=1)
+			for a in doc_list:
+				frappe.throw("Cannot modify Asset <b>"+ str(a.asset) +"</b> since the asset has already been modified at through Asset Movement " + str(a.name))	
+
+	
 	def on_submit(self):
 		self.set_latest_location_and_custodian_in_asset()
 
 	def on_cancel(self):
-		self.set_latest_location_and_custodian_in_asset()
+		self.ignore_linked_doctypes = (
+			"GL Entry",
+			"Payment Ledger Entry",
+		)
+		self.set_latest_location_and_custodian_in_asset(1)
 
-	def set_latest_location_and_custodian_in_asset(self):
-		current_location, current_employee = "", ""
+	def set_latest_location_and_custodian_in_asset(self, cancel=0):
+		current_cost_center, current_employee, current_employee_name = "", "", ""
 		cond = "1=1"
 
 		for d in self.assets:
@@ -202,7 +218,7 @@ class AssetMovement(Document):
 			# In case of cancellation it corresponds to previous latest document's location, employee
 			latest_movement_entry = frappe.db.sql(
 				f"""
-				SELECT asm_item.target_location, asm_item.to_employee
+				SELECT asm_item.target_cost_center, asm_item.to_employee, asm_item.to_employee_name
 				FROM `tabAsset Movement Item` asm_item, `tabAsset Movement` asm
 				WHERE
 					asm_item.parent=asm.name and
@@ -215,25 +231,38 @@ class AssetMovement(Document):
 				args,
 			)
 			if latest_movement_entry:
-				current_location = latest_movement_entry[0][0]
+				current_cost_center = latest_movement_entry[0][0]
 				current_employee = latest_movement_entry[0][1]
+				current_employee_name = latest_movement_entry[0][2]
 
-			frappe.db.set_value("Asset", d.asset, "location", current_location, update_modified=False)
+			branch = frappe.get_value("Branch", {"cost_center":current_cost_center}, "name")
+			frappe.db.set_value("Asset", d.asset, "branch", branch, update_modified=False)
+			frappe.db.set_value("Asset", d.asset, "cost_center", current_cost_center, update_modified=False)
 			frappe.db.set_value("Asset", d.asset, "custodian", current_employee, update_modified=False)
+			frappe.db.set_value("Asset", d.asset, "custodian_name", current_employee_name, update_modified=False)
 
-			if current_location and current_employee:
+			equipment = frappe.db.get_value("Equipment", {"asset_code": d.asset}, "name")
+			if equipment:
+				equip = frappe.get_doc("Equipment", equipment)
+				equip.branch = branch
+				equip.save()
+			""" Asset transfer gl """
+			if d.source_cost_center != d.target_cost_center:
+				make_asset_transfer_gl(self, d.asset, self.transaction_date, d.source_cost_center, d.target_cost_center, cancel)
+
+			if current_cost_center and current_employee:
 				add_asset_activity(
 					d.asset,
-					_("Asset received at Location {0} and issued to Employee {1}").format(
-						get_link_to_form("Location", current_location),
+					_("Asset received at Cost Center {0} and issued to Employee {1}").format(
+						get_link_to_form("Cost Center", current_cost_center),
 						get_link_to_form("Employee", current_employee),
 					),
 				)
-			elif current_location:
+			elif current_cost_center:
 				add_asset_activity(
 					d.asset,
-					_("Asset transferred to Location {0}").format(
-						get_link_to_form("Location", current_location)
+					_("Asset transferred to Cost Center {0}").format(
+						get_link_to_form("Cost Center", current_cost_center)
 					),
 				)
 			elif current_employee:
@@ -247,11 +276,12 @@ class AssetMovement(Document):
 		if not self.from_employee and self.based_on == 'Custodian' or not self.cost_center and self.based_on == 'Cost Center':
 			frappe.throw("From Employee/Cost Center is required.")
 		else:
-			# if self.to_single:
-			# 	if not self.to_employee:
-			# 		frappe.throw("To Employee is Mandatory")
-			# 	elif self.from_employee == self.to_employee:
-			# 		frappe.throw("Select Different Employee")
+			if self.to_single:
+				if not self.to_employee:
+					frappe.throw("To Employee is Mandatory")
+				elif self.from_employee == self.to_employee:
+					frappe.throw("Select Different Employee")
+
 			condition_statement=''
 			if self.based_on == 'Custodian':
 				condition_statement = f"custodian = '{self.from_employee}'"
@@ -272,6 +302,7 @@ class AssetMovement(Document):
 							"from_employee":x.custodian,
 							"from_employee_name":x.custodian_name, 
 							"source_cost_center":x.cost_center,
+							"target_cost_center":frappe.db.get_value("Employee",self.to_employee,"cost_center"),
 							}
 					row.update(data)
 			else:

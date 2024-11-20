@@ -18,11 +18,11 @@ class PMSCalendar(Document):
 		from frappe.types import DF
 
 		amended_from: DF.Link | None
-		appeal_end_date: DF.Date
-		appeal_start_date: DF.Date
+		appeal_end_date: DF.Date | None
+		appeal_start_date: DF.Date | None
 		evaluation_end_date: DF.Date
 		evaluation_start_date: DF.Date
-		fiscal_year: DF.Data
+		fiscal_year: DF.Link
 		phase: DF.Literal["", "Target Phase", "Review Phase", "Evaluation Phase"]
 		remarks: DF.Data | None
 		review_end_date: DF.Date

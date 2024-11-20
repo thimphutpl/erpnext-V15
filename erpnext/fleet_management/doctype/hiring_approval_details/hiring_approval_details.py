@@ -22,7 +22,6 @@ class HiringApprovalDetails(Document):
 		diff_rate: DF.Check
 		equipment: DF.Link | None
 		equipment_model: DF.ReadOnly | None
-		equipment_number: DF.Data | None
 		equipment_request: DF.Link | None
 		equipment_type: DF.Link
 		from_date: DF.Date
@@ -45,6 +44,7 @@ class HiringApprovalDetails(Document):
 		rate5: DF.Currency
 		rate: DF.Currency
 		rate_type: DF.Literal["", "With Fuel", "Without Fuel"]
+		registeration_number: DF.Data | None
 		remarks: DF.SmallText | None
 		request_reference: DF.Data | None
 		tender_hire_rate: DF.Link | None

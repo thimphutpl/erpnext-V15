@@ -32,7 +32,7 @@ from erpnext.controllers.item_variant import (
 	validate_item_variant_attributes,
 )
 from erpnext.stock.doctype.item_default.item_default import ItemDefault
-
+from frappe.model.naming import make_autoname
 
 class DuplicateReorderRows(frappe.ValidationError):
 	pass
@@ -114,7 +114,7 @@ class Item(Document):
 		item_defaults: DF.Table[ItemDefault]
 		item_group: DF.Link
 		item_name: DF.Data
-		item_sub_group: DF.Link
+		item_sub_group: DF.Link | None
 		last_purchase_rate: DF.Float
 		lead_time_days: DF.Int
 		max_discount: DF.Float
@@ -169,29 +169,40 @@ class Item(Document):
 		# self.name = self.item_code
 		self.item_code = self.get_current_item_code()
 		if not self.item_code:
-			msgprint(
+			frappe.msgprint(
 				_("Item Code is mandatory because Item is not automatically numbered"), raise_exception=1)
 
 		self.item_code = strip(self.item_code)
 		self.name = self.item_code
 
 	def get_current_item_code(self):
-		item_code = frappe.db.sql(
-			"""select item_code from tabItem where item_group=%s and item_sub_group=%s order by item_code desc limit 1;""", (self.item_group, self.item_sub_group))
-		if item_code:
-			base = str(item_code[0][0])[0:5]
-			incremnent = int((item_code[0][0])[5:9]) + 1
-			return base + str(incremnent)
+		# item_code = frappe.db.sql(
+		# 	"""select item_code from tabItem where item_group=%s and item_sub_group=%s order by item_code desc limit 1;""", (self.item_group, self.item_sub_group))
+		# if item_code:
+		# 	base = str(item_code[0][0])[0:5]
+		# 	incremnent = int((item_code[0][0])[5:9]) + 1
+		# 	return base + str(incremnent)
+		# else:
+		# 	base = frappe.db.get_value("Item Group", self.item_group, "item_code_base")
+		# 	if not base:
+		# 		frappe.throw("Setup Item Code Base in Item Group '{}'".format(frappe.get_desk_link("Item Group", self.item_group)))
+		# 	sub_base = frappe.db.get_value("Item Sub Group", self.item_sub_group, "item_code_base")
+		# 	if not sub_base:
+		# 		frappe.throw("Setup Item Code Base in Item Sub Group '{}'".format(frappe.get_desk_link("Item Sub Group", self.item_sub_group)))
+		# 	return str(base) + str(sub_base) + str("1001")
+		if frappe.db.exists("Item", {"item_group": self.item_group}):
+			prev_item = frappe.db.sql("SELECT name FROM `tabItem` WHERE item_group = '{}' ORDER BY name DESC LIMIT 1".format(self.item_group))
+			item_code_base = str(prev_item[0][0])[0:2] if prev_item else None
+			item_code = int((prev_item[0][0])[2:7]) + 1 if prev_item else None
+
+			new_item_code = item_code_base + str(item_code)
+
+			if item_code_base is not None:
+				return new_item_code
+			else:
+				return str(frappe.db.get_value('Item Group', self.item_group, 'item_code_base')) + str("10001")
 		else:
-			base = frappe.db.get_value(
-				"Item Group", self.item_group, "item_code_base")
-			if not base:
-				frappe.throw("Setup Item Code Base in Item Group '{}'".format(frappe.get_desk_link("Item Group", self.item_group)))
-			sub_base = frappe.db.get_value(
-				"Item Sub Group", self.item_sub_group, "item_code_base")
-			if not sub_base:
-				frappe.throw("Setup Item Code Base in Item Sub Group '{}'".format(frappe.get_desk_link("Item Sub Group", self.item_sub_group)))
-			return str(base) + str(sub_base) + str("1001")
+			return str(frappe.db.get_value('Item Group', self.item_group, 'item_code_base')) + str("10001")
 
 
 	def after_insert(self):

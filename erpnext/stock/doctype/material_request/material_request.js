@@ -82,6 +82,7 @@ frappe.ui.form.on("Material Request", {
 			frappe.throw("Transaction Date cannot be future date")
 		}
 	},
+	
 	branch: function(frm){
 		if(frm.doc.branch != null || frm.doc.branch != "" || frm.doc.branch != undefined){
 			frappe.call({
@@ -95,6 +96,21 @@ frappe.ui.form.on("Material Request", {
 					if(r.message) {
 						frm.set_value("cost_center", r.message.cost_center);
 						frm.trigger("cost_center")
+					}
+				}
+			});
+
+			frappe.call({
+				method: "erpnext.stock.doctype.material_request.material_request.pull_material_approver",
+				args: {
+					branch: frm.doc.branch,
+				},
+				callback: function(r, rt) {
+					if(r.message) {
+						console.log(r.message);
+						frm.set_value("approver", r.message);
+						frm.refresh_field("approver");
+						frm.trigger("approver");
 					}
 				}
 			});
@@ -550,8 +566,37 @@ frappe.ui.form.on("Material Request", {
 		if (frm.doc.material_request_type !== "Material Transfer" && frm.doc.set_from_warehouse) {
 			frm.set_value("set_from_warehouse", "");
 		}
+		if (/*frm.doc.workflow_state=="Waiting for Approval" && */frm.doc.material_request_type=="Purchase"){
+			let date=new Date();
+			let formatted_date=formatDate(date);
+			// console.log(formatted_date);
+			frm.set_value("date", formatted_date);
+			frappe.call({
+				method: "erpnext.stock.doctype.material_request.material_request.change_date_issue_to_purchase",
+				args: {
+					name: frm.doc.name,
+					new_date: formatted_date,
+					purpose: frm.doc.material_request_type
+				},
+				callback: function(r, rt) {
+					if(r.message) {
+						console.log("works")
+						refresh();
+					}
+				}
+			});
+
+		}else{
+			
+		}
 	},
 });
+const formatDate = (date) => {
+	const year = date.getFullYear();
+	const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-based
+	const day = String(date.getDate()).padStart(2, "0");
+	return `${year}-${month}-${day}`;
+};
 
 frappe.ui.form.on("Material Request Item", {
 	qty: function (frm, doctype, name) {

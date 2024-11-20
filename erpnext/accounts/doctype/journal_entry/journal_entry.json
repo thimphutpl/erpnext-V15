@@ -2,7 +2,7 @@
  "actions": [],
  "allow_auto_repeat": 1,
  "allow_import": 1,
- "autoname": "naming_series:naming_series",
+ "autoname": "naming_series:journal_entry_series",
  "creation": "2022-01-25 10:29:58.717206",
  "doctype": "DocType",
  "document_type": "Document",
@@ -580,7 +580,7 @@
    "table_fieldname": "payment_entries"
   }
  ],
- "modified": "2024-10-22 15:16:32.813154",
+ "modified": "2024-11-19 17:14:41.748041",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Journal Entry",

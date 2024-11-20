@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "allow_import": 1,
  "allow_rename": 1,
  "autoname": "field:branch_name",
  "creation": "2024-07-26 16:48:55.967948",
@@ -8,7 +9,8 @@
  "field_order": [
   "financial_institution",
   "branch_name",
-  "financial_system_code"
+  "financial_system_code",
+  "short_form"
  ],
  "fields": [
   {
@@ -32,11 +34,17 @@
    "in_list_view": 1,
    "label": "Financial System Code",
    "reqd": 1
+  },
+  {
+   "fieldname": "short_form",
+   "fieldtype": "Data",
+   "label": "Short Form",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-07-26 17:13:02.704104",
+ "modified": "2024-11-19 19:47:22.263649",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Financial Institution Branch",

@@ -77,15 +77,16 @@ function disable_drag_drop(frm) {
 	frm.page.body.find('[data-fieldname="items"] [data-idx] .data-row').removeClass('sortable-handle');
 }
 
-frappe.ui.form.on("Hire Charge Parameter", "refresh", function(frm) {
-    cur_frm.set_query("registeration_number", function() {
-        return {
-            "filters": {
-		"equipment_type": frm.doc.equipment_type
-            }
-        };
-    });
-})
+// frappe.ui.form.on("Hire Charge Parameter", "refresh", function(frm) {
+//     cur_frm.set_query("registeration_number", function() {
+//         return {
+//             query: "erpnext.fleet_management.doctype.hire_charge_parameter.hire_charge_parameter.fetch_registeration_numbers",
+//             "filters": {
+// 		"equipment_type": frm.doc.equipment_type
+//             }
+//         };
+//     });
+// })
 
 frappe.ui.form.on("Hire Charge Parameter", "refresh", function(frm) {
     cur_frm.set_query("equipment_model", function() {
@@ -97,6 +98,69 @@ frappe.ui.form.on("Hire Charge Parameter", "refresh", function(frm) {
     });
 })
 
+// frappe.ui.form.on("Hire Charge Parameter", "refresh", function(frm) {
+//     cur_frm.set_query("registeration_number", function() {
+//         return {
+//             "filters": {
+// 		"equipment_type": frm.doc.equipment_type
+//             }
+//         };
+//     });
+// })
+
+
+// frappe.ui.form.on("Hire Charge Parameter", {
+//     refresh: function (frm) {
+//         frm.set_query("registeration_number", function () {
+//             if (!frm.doc.equipment_type) {
+//                 frappe.msgprint(__('Please select Equipment Type first.'));
+//                 return;
+//             }
+//             return {
+//                 // query: "erpnext.fleet_management.doctype.hire_charge_parameter.hire_charge_parameter.fetch_registeration_numbers",
+//                 query: "erpnext.fleet_management.doctype.equipment.equipment.fetch_registeration_numbers",
+//                 filters: {
+//                     equipment_type: frm.doc.equipment_type
+//                 }
+//             };
+//         });
+//     }
+// });
+
+// frappe.ui.form.on("Hire Charge Parameter", {
+//     registeration_number: function (frm) {
+//         // Ensure the selected value persists in the field
+//         frm.refresh_field("registeration_number");
+//     }
+// });
+
+
+frappe.ui.form.on("Equipment", {
+    refresh: function (frm) {
+        frm.set_query("registeration_number", function () {
+            if (!frm.doc.equipment_type) {
+                frappe.msgprint(__('Please select Equipment Type first.'));
+                return;
+            }
+            return {
+                // query: "erpnext.fleet_management.doctype.hire_charge_parameter.hire_charge_parameter.fetch_registeration_numbers",
+                query: "erpnext.fleet_management.doctype.equipment.equipment.fetch_registeration_numbers",
+                filters: {
+                    equipment_type: frm.doc.equipment_type
+                }
+            };
+        });
+    }
+});
+
+frappe.ui.form.on("Equipment", {
+    registeration_number: function (frm) {
+        // Ensure the selected value persists in the field
+        frm.refresh_field("registeration_number");
+    }
+});
+
+
 frappe.ui.form.on('Hire Charge Item', {
         before_items_remove: function(frm, cdt, cdn) {
                 doc = locals[cdt][cdn]
@@ -105,3 +169,4 @@ frappe.ui.form.on('Hire Charge Item', {
                 }
         }
 })
+

@@ -134,7 +134,7 @@ class PurchaseInvoice(BuyingController):
 		language: DF.Data | None
 		letter_head: DF.Link | None
 		material_request: DF.Link | None
-		material_request_date: DF.Link | None
+		material_request_date: DF.Date | None
 		mode_of_payment: DF.Link | None
 		naming_series: DF.Literal["ACC-PINV-.YYYY.-", "ACC-PINV-RET-.YYYY.-"]
 		net_total: DF.Currency
@@ -156,7 +156,9 @@ class PurchaseInvoice(BuyingController):
 		pricing_rules: DF.Table[PricingRuleDetail]
 		project: DF.Link | None
 		purchase_order: DF.Link | None
+		purchase_order_date: DF.Date | None
 		purchase_receipt: DF.Link | None
+		purchase_receipt_date: DF.Date | None
 		rejected_warehouse: DF.Link | None
 		release_date: DF.Date | None
 		remarks: DF.SmallText | None
@@ -1809,6 +1811,7 @@ class PurchaseInvoice(BuyingController):
 		tax_withholding_details, advance_taxes, voucher_wise_amount = get_party_tax_withholding_details(
 			self, self.tax_withholding_category
 		)
+		
 
 		# Adjust TDS paid on advances
 		self.allocate_advance_tds(tax_withholding_details, advance_taxes)
@@ -1820,12 +1823,13 @@ class PurchaseInvoice(BuyingController):
 		for d in self.taxes:
 			if d.account_head == tax_withholding_details.get("account_head"):
 				d.update(tax_withholding_details)
+				# frappe.throw(str(tax_withholding_details))
 
 			accounts.append(d.account_head)
 
 		if not accounts or tax_withholding_details.get("account_head") not in accounts:
 			self.append("taxes", tax_withholding_details)
-
+		frappe.throw(str(self.taxes))
 		to_remove = [
 			d
 			for d in self.taxes

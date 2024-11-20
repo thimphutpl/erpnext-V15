@@ -11,74 +11,19 @@ from frappe.model.mapper import get_mapped_doc
 from erpnext.custom_workflow import validate_workflow_states, notify_workflow_states
 
 class PMSAppeal(Document):
-	# begin: auto-generated types
-	# This code is auto-generated. Do not modify anything in this block.
-
-	from typing import TYPE_CHECKING
-
-	if TYPE_CHECKING:
-		from erpnext.pms.doctype.evaluate_appeal_competency_item.evaluate_appeal_competency_item import EvaluateAppealCompetencyItem
-		from erpnext.pms.doctype.evaluate_appeal_target_item.evaluate_appeal_target_item import EvaluateAppealTargetItem
-		from erpnext.pms.doctype.performance_appeal_evaluation_negative_target.performance_appeal_evaluation_negative_target import PerformanceAppealEvaluationNegativeTarget
-		from frappe.types import DF
-
-		amended_from: DF.Link | None
-		approver: DF.Link | None
-		approver_designation: DF.Data | None
-		approver_name: DF.Data | None
-		branch: DF.Link | None
-		business_target: DF.Table[PerformanceAppealEvaluationNegativeTarget]
-		company: DF.Link | None
-		competency_total_weightage: DF.Percent
-		cost_center: DF.Link | None
-		date_of_joining: DF.Date | None
-		department: DF.Link | None
-		designation: DF.Link | None
-		employee: DF.Link
-		employee_comment: DF.SmallText | None
-		employee_name: DF.ReadOnly | None
-		end_date: DF.Date | None
-		eval_workflow_state: DF.Data | None
-		evaluate_competency_item: DF.Table[EvaluateAppealCompetencyItem]
-		evaluate_target_item: DF.Table[EvaluateAppealTargetItem]
-		evaluation_date: DF.Date | None
-		final_score: DF.Float
-		final_score_percent: DF.Percent
-		form_i_score: DF.Float
-		form_i_total_rating: DF.Float
-		form_ii_score: DF.Float
-		form_ii_total_rating: DF.Float
-		form_iii_score: DF.Float
-		gender: DF.Data | None
-		grade: DF.Link | None
-		max_rating_limit: DF.Float
-		negative_rating: DF.Float
-		negative_target: DF.Check
-		old_employee_id: DF.Data | None
-		overall_rating: DF.Link | None
-		pms_calendar: DF.Link
-		pms_group: DF.Link
-		reference: DF.Link | None
-		required_to_set_target: DF.Data | None
-		review: DF.Link | None
-		star_obtained: DF.Rating
-		start_date: DF.Date | None
-		supervisor_comment: DF.SmallText | None
-		target_total_weightage: DF.Percent
-		unit: DF.Link | None
-		user_id: DF.Link | None
-	# end: auto-generated types
 	def validate(self):
 		self.set_reference()
 		self.calculate_target_score()
-		self.calculate_competency_score()
-		self.calculate_negative_score()
+		if self.form_ii:
+			self.calculate_competency_score()
+		if self.form_iii:
+			self.calculate_leadership_competency_score()
+		self.set_perc_approver()
+		# self.calculate_negative_score()
 		self.calculate_final_score()
-		validate_workflow_states(self)
-		if self.workflow_state != "Approved":
-			notify_workflow_states(self)
-		# Validate appeal dates
-		self.validate_appeal_period()	
+		# validate_workflow_states(self)
+		# if self.workflow_state != "Approved":
+		# 	notify_workflow_states(self)
 	def on_submit(self):
 		self.employee_pms_record()
 	def on_cancel(self):
@@ -86,8 +31,8 @@ class PMSAppeal(Document):
 		self.update_employee_master()
 
 	def set_perc_approver(self):
-		approver = frappe.db.get_single_value("HR Settings","appeal")
-		approver_name = frappe.db.get_single_value("HR Settings","approver_name")
+		approver = frappe.db.get_single_value("HR Settings","hr_approver")
+		approver_name = frappe.db.get_single_value("HR Settings","hr_approver_name")
 		self.db_set("approver", approver)
 		self.db_set("approver_name", approver_name)
 	def set_reference(self, cancel=False):
@@ -144,6 +89,7 @@ class PMSAppeal(Document):
 			item.score = (flt(item.average_rating ) / flt(item.weightage)) * 100
 
 			total_score += flt(item.average_rating)
+		target_rating = frappe.db.get_value("PMS Group",self.pms_group,"weightage_for_target")
 		score =flt(total_score)/100 * flt(target_rating)
 		total_score = score
 		self.form_i_total_rating = total_score
@@ -154,35 +100,37 @@ class PMSAppeal(Document):
 		#     return
 		if not self.evaluate_competency_item:
 			frappe.throw('Competency cannot be empty please use <b>Get Competency Button</b>')
-		indx, total, count, total_score = 0,0,0,0
-		for i, item in enumerate(self.evaluate_competency_item):
-			if not item.is_parent and not item.achievement:
-				frappe.throw('You need to rate competency at row <b>{}</b>'.format(i+1))
-			# frappe.throw(str(self.evaluate_competency_item[indx].competency))
-			if not item.is_parent and item.top_level == self.evaluate_competency_item[indx].competency:
-				# frappe.throw(str(item.rating))
-				tot_rating = flt(item.weightage_percent)/100 * flt(self.evaluate_competency_item[indx].weightage)
-				total += tot_rating
-				count += 1
-				if i == len(self.evaluate_competency_item):
-					indx = i
-					
-			elif i != indx and item.is_parent and item.top_level != self.evaluate_competency_item[indx].competency :
-				self.evaluate_competency_item[indx].average = total / count
-				self.evaluate_competency_item[indx].db_set('average',self.evaluate_competency_item[indx].average)
-				self.evaluate_competency_item[indx].score = flt(self.evaluate_competency_item[indx].average)/ flt(self.evaluate_competency_item[indx].weightage) * 100
-				self.evaluate_competency_item[indx].db_set('score',self.evaluate_competency_item[indx].score)
-				total_score += flt(self.evaluate_competency_item[indx].average)
-				indx, total, count = i,0,0
+		total = 0
+		for item in self.evaluate_competency_item:
+			if not item.achievement:
+				frappe.throw('You need to rate competency at row <b>{}</b>'.format(item.idx))
 
-		self.evaluate_competency_item[indx].average = total / count
-		self.evaluate_competency_item[indx].db_set('average',self.evaluate_competency_item[indx].average)
-		self.evaluate_competency_item[indx].score = flt(self.evaluate_competency_item[indx].average)/ flt(self.evaluate_competency_item[indx].weightage) * 100
-		self.evaluate_competency_item[indx].db_set('score',self.evaluate_competency_item[indx].score)
+			tot_rating = flt(item.weightage_percent)/100 * flt(item.weightage)
+			item.average = tot_rating
+
 		competency_rating = frappe.db.get_value("PMS Group",self.pms_group,"weightage_for_competency")
-		rating_ii = total_score + flt(self.evaluate_competency_item[indx].average)
-		self.form_ii_total_rating = flt(competency_rating)/100 * flt(rating_ii)
+		for item in self.evaluate_competency_item:
+			total = item.average + total
+		self.form_ii_total_rating = flt(competency_rating)/100 * flt(total)
 		self.db_set('form_ii_total_rating', self.form_ii_total_rating)
+
+	def calculate_leadership_competency_score(self):
+		if not self.evaluate_leadership_competency:
+			frappe.throw('Competency cannot be empty please use <b>Get Leadership Competency button</b>')
+		total = 0
+		for item in self.evaluate_leadership_competency:
+			if not item.achievement:
+				frappe.throw('You need to rate leadership competency at row <b>{}</b>'.format(item.idx))
+
+			tot_rating = flt(item.weightage_percent)/100 * flt(item.weightage)
+			item.average = tot_rating
+
+		leadership_competency_rating = frappe.db.get_value("PMS Group",self.pms_group,"weightage_for_form_three")
+		for item in self.evaluate_leadership_competency:
+			total = item.average + total
+		self.negative_rating = flt(leadership_competency_rating)/100 * flt(total)
+		self.db_set('negative_rating', self.negative_rating)
+
 	def calculate_negative_score(self):
 		if not self.negative_target:
 			pass
@@ -241,20 +189,14 @@ class PMSAppeal(Document):
 		emp.save(ignore_permissions=True)
 		frappe.msgprint("""PMS Appeal record Updated in Employee Master Data of employee <a href= "#Form/Employee/{0}">{0}</a>""".format(self.employee))
 
-	def validate_appeal_period(self):
-		"""Validates if the PMS appeal is submitted within the appeal period."""
-		pms_calendar = frappe.get_value("PMS Calendar", self.pms_calendar, ["appeal_start_date", "appeal_end_date"])
-		if not pms_calendar:
-			frappe.throw(_("PMS Calendar not found for employee {0}".format(self.employee)))
-		appeal_start_date, appeal_end_date = pms_calendar
-		today = nowdate()
-		if not is_date_within_range(today, appeal_start_date, appeal_end_date):
-			frappe.throw(_("PMS appeal period for employee {0} has ended. Appeals can only be submitted between {1} and {2}.".format(self.employee, appeal_start_date, appeal_end_date)))
-
-	def is_date_within_range(date, start_date, end_date):
-		"""Checks if a given date is within a specified range."""
-		return start_date <= date <= end_date
-
+	@frappe.whitelist()
+	def check_employee_or_supervisor(self):
+		employee = supervisor = 0
+		if frappe.session.user == frappe.db.get_value("Employee",self.employee,"user_id"):
+			employee = 1
+		if frappe.session.user == frappe.db.get_value("Employee",self.approver,"user_id"):
+			supervisor = 1
+		return employee, supervisor
 
 def get_permission_query_conditions(user):
 	# restrict user from accessing this doctype if not the owner

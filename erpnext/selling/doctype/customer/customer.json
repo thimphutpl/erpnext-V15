@@ -18,12 +18,16 @@
   "lead_name",
   "image",
   "status",
+  "customer_id",
   "column_break0",
   "customer_group",
   "territory",
   "gender",
   "opportunity_name",
   "account_manager",
+  "inter_company",
+  "company_code",
+  "company_name",
   "place_and_contact_details_section_section",
   "location",
   "telephone_and_fax",
@@ -152,7 +156,7 @@
    "label": "Customer Type",
    "oldfieldname": "customer_type",
    "oldfieldtype": "Select",
-   "options": "\nCompany\nIndividual\nProprietorship\nPartnership",
+   "options": "\nCompany\nIndividual",
    "reqd": 1
   },
   {
@@ -683,6 +687,31 @@
    "fieldname": "account_number",
    "fieldtype": "Data",
    "label": "Account Number"
+  },
+  {
+   "fieldname": "customer_id",
+   "fieldtype": "Data",
+   "label": "Customer CID/License No"
+  },
+  {
+   "default": "0",
+   "fieldname": "inter_company",
+   "fieldtype": "Check",
+   "label": "DHI Owned Company?"
+  },
+  {
+   "depends_on": "eval:doc.inter_company",
+   "fieldname": "company_code",
+   "fieldtype": "Link",
+   "label": "DHI Company",
+   "options": "DHI Company"
+  },
+  {
+   "fetch_from": "company_code.company",
+   "fieldname": "company_name",
+   "fieldtype": "Data",
+   "label": "Company Name",
+   "read_only": 1
   }
  ],
  "icon": "fa fa-user",
@@ -696,7 +725,7 @@
    "link_fieldname": "party"
   }
  ],
- "modified": "2024-11-11 21:08:27.556940",
+ "modified": "2024-11-19 18:58:28.945881",
  "modified_by": "Administrator",
  "module": "Selling",
  "name": "Customer",

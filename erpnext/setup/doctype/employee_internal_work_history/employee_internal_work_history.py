@@ -17,11 +17,17 @@ class EmployeeInternalWorkHistory(Document):
 		branch: DF.Link | None
 		department: DF.Link | None
 		designation: DF.Link | None
+		division: DF.Link | None
 		from_date: DF.Date | None
+		grade: DF.Link | None
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
 		promotion_due_date: DF.Date | None
+		reference_docname: DF.DynamicLink | None
+		reference_doctype: DF.Link | None
+		reports_to: DF.Link | None
+		section: DF.Link | None
 		to_date: DF.Date | None
 	# end: auto-generated types
 

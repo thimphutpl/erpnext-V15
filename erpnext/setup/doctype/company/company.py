@@ -83,8 +83,10 @@ class Company(NestedSet):
 		expenses_included_in_asset_valuation: DF.Link | None
 		expenses_included_in_valuation: DF.Link | None
 		fax: DF.Data | None
+		gain_disposal_account: DF.Link | None
 		is_group: DF.Check
 		lft: DF.Int
+		loss_disposal_account: DF.Link | None
 		monthly_sales_target: DF.Currency
 		old_parent: DF.Data | None
 		parent_company: DF.Link | None

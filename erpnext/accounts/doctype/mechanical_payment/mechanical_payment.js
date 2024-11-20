@@ -19,7 +19,7 @@ frappe.ui.form.on('Mechanical Payment', {
         }
     },
 
-    tds_amount: function(frm) {
+    "tds_amount": function(frm) {
         calculate_totals(frm);
         frm.toggle_reqd("tds_account", frm.doc.tds_amount);
     },
@@ -47,7 +47,7 @@ frappe.ui.form.on('Mechanical Payment', {
         });
     },
 
-    receivable_amount: function(frm) {
+    "receivable_amount": function(frm) {
         if (frm.doc.receivable_amount > frm.doc.actual_amount) {
             frm.set_value("receivable_amount", frm.doc.actual_amount);
             frappe.msgprint("Receivable Amount cannot be greater than the Total Payable Amount");
@@ -70,7 +70,7 @@ frappe.ui.form.on('Mechanical Payment', {
         }
     },
 
-    items_on_form_rendered: function(frm, grid_row, cdt, cdn) {
+    "items_on_form_rendered": function(frm, grid_row, cdt, cdn) {
         let row = frm.open_grid_row();
         row.grid_form.fields_dict.reference_type.set_value(frm.doc.payment_for);
         row.grid_form.fields_dict.reference_type.refresh();
@@ -85,7 +85,7 @@ function calculate_totals(frm) {
 }
 
 frappe.ui.form.on("Mechanical Payment Item", {
-    reference_name: function(frm, cdt, cdn) {
+    "reference_name": function(frm, cdt, cdn) {
         let item = locals[cdt][cdn];
         let rec_amount = flt(frm.doc.receivable_amount);
         let act_amount = flt(frm.doc.actual_amount);
@@ -114,7 +114,7 @@ frappe.ui.form.on("Mechanical Payment Item", {
         }
     },
 
-    before_items_remove: function(frm, cdt, cdn) {
+    "before_items_remove": function(frm, cdt, cdn) {
         let doc = locals[cdt][cdn];
         let amount = flt(frm.doc.receivable_amount);
         let ac_amount = flt(frm.doc.actual_amount) - flt(doc.outstanding_amount);

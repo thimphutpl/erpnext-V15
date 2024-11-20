@@ -24,6 +24,12 @@ frappe.ui.form.on("Asset", {
 			};
 		});
 
+		frm.set_query("branch", function (doc) {
+			return {
+				filters: { company: doc.company },
+			};
+		});
+
 		frm.set_query("department", function () {
 			return {
 				filters: {
@@ -72,6 +78,29 @@ frappe.ui.form.on("Asset", {
 				filters: { item_code: doc.item_code },
 			};
 		});
+	},
+
+	branch: function(frm){
+		if(frm.doc.branch != null || frm.doc.branch != "" || frm.doc.branch != undefined){
+			frappe.call({
+				method: "frappe.client.get_value",
+				args: {
+					doctype: "Branch",
+					fieldname: "cost_center",
+					filters: { name: frm.doc.branch },
+				},
+				callback: function(r, rt) {
+					if(r.message) {
+						frm.set_value("cost_center", r.message.cost_center);
+						frm.trigger("cost_center")
+					}
+				}
+			});
+		}
+		else{
+			frm.set_value("cost_center",null);
+		}
+		frm.refresh_fields();
 	},
 
 	refresh: function (frm) {
@@ -123,21 +152,21 @@ frappe.ui.form.on("Asset", {
 				);
 			}
 
-			frm.add_custom_button(
-				__("Repair Asset"),
-				function () {
-					frm.trigger("create_asset_repair");
-				},
-				__("Manage")
-			);
+			// frm.add_custom_button(
+			// 	__("Repair Asset"),
+			// 	function () {
+			// 		frm.trigger("create_asset_repair");
+			// 	},
+			// 	__("Manage")
+			// );
 
-			frm.add_custom_button(
-				__("Split Asset"),
-				function () {
-					frm.trigger("split_asset");
-				},
-				__("Manage")
-			);
+			// frm.add_custom_button(
+			// 	__("Split Asset"),
+			// 	function () {
+			// 		frm.trigger("split_asset");
+			// 	},
+			// 	__("Manage")
+			// );
 
 			if (frm.doc.status != "Fully Depreciated") {
 				frm.add_custom_button(

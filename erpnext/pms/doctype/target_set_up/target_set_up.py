@@ -12,60 +12,16 @@ from frappe.model.mapper import get_mapped_doc
 from erpnext.custom_workflow import validate_workflow_states, notify_workflow_states
 
 class TargetSetUp(Document):
-	# begin: auto-generated types
-	# This code is auto-generated. Do not modify anything in this block.
-
-	from typing import TYPE_CHECKING
-
-	if TYPE_CHECKING:
-		from erpnext.pms.doctype.common_target_item.common_target_item import CommonTargetItem
-		from erpnext.pms.doctype.competency_item.competency_item import CompetencyItem
-		from erpnext.pms.doctype.negative_target.negative_target import NegativeTarget
-		from erpnext.pms.doctype.performance_target_evaluation.performance_target_evaluation import PerformanceTargetEvaluation
-		from frappe.types import DF
-
-		amended_from: DF.Link | None
-		approver: DF.Link | None
-		approver_designation: DF.Data | None
-		approver_name: DF.Data | None
-		branch: DF.Link | None
-		business_target: DF.Table[NegativeTarget]
-		comment: DF.SmallText | None
-		common_target: DF.Table[CommonTargetItem]
-		company: DF.Link | None
-		competency: DF.Table[CompetencyItem]
-		date: DF.Date | None
-		department: DF.Link | None
-		designation: DF.Link | None
-		employee: DF.Link
-		employee_name: DF.ReadOnly | None
-		end_date: DF.Date | None
-		grade: DF.Link | None
-		manual_upload: DF.Check
-		max_weightage_for_target: DF.Float
-		min_weightage_for_target: DF.Float
-		negative_target: DF.Check
-		old_employee_id: DF.Data | None
-		pms_calendar: DF.Link
-		pms_group: DF.Link
-		reason: DF.Data | None
-		reference: DF.Link | None
-		require_to_set_target: DF.Data | None
-		set_manual_approver: DF.Check
-		start_date: DF.Date | None
-		target_item: DF.Table[PerformanceTargetEvaluation]
-		total_weightage: DF.Float
-		user_id: DF.Link | None
-		workflow_state: DF.Data | None
-	# end: auto-generated types
-
 	def validate(self):
 		self.load_pre_requirement()
 		self.check_target()
 		self.check_duplicate_entry() 
+		validate_workflow_states(self) 
+		if self.workflow_state != "Approved":
+			notify_workflow_states(self)
 		if self.reference and self.reason:
 			return
-		else:
+		else:  
 			self.validate_calendar()
 			
 	def on_submit(self):
@@ -77,7 +33,9 @@ class TargetSetUp(Document):
 	def load_pre_requirement(self):
 		doc = frappe.get_doc("PMS Setting")
 		self.max_weightage_for_target = doc.max_weightage_for_target
+		self.max_no_of_target = doc.max_no_of_target
 		self.min_weightage_for_target = doc.min_weightage_for_target
+		self.min_no_of_target = doc.min_no_of_target
 
 	def on_update_after_submit(self):
 		self.check_target()
@@ -142,6 +100,13 @@ class TargetSetUp(Document):
 		else:
 			if not self.target_item:
 				frappe.throw(_('You need to <b>Set The Target</b>'))
+
+			# validate total number of target
+			target_length = flt(len(self.target_item)) + flt(len(self.common_target))
+			if flt(target_length) > flt(self.max_no_of_target) or flt(target_length) < flt(self.min_no_of_target):
+				frappe.throw(
+					title='Error',
+					msg="Total number of target must be between <b>{}</b> and <b>{}</b> but you have set only <b>{}</b> target".format(self.min_no_of_target,self.max_no_of_target,target_length))
 
 			total_target_weightage = 0
 			# total weightage must be 100
@@ -210,7 +175,7 @@ class TargetSetUp(Document):
 def create_review(source_name, target_doc=None):
 	if frappe.db.exists('Review',
 		{'target':source_name,
-		'docstatus':('!=',2)
+		'docstatus':('=',1)
 		}):
 		frappe.throw(
 			title='Error',
@@ -259,7 +224,7 @@ def get_permission_query_conditions(user):
 
 	if user == "Administrator":      
 		return
-	if "HR User" in user_roles or "HR Manager" in user_roles:       
+	if "HR Master" in user_roles or "HR Manager" in user_roles:       
 		return
 	return """(
 		`tabTarget Set Up`.owner = '{user}'

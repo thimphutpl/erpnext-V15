@@ -453,6 +453,7 @@ scheduler_events = {
 		"erpnext.manufacturing.doctype.bom_update_tool.bom_update_tool.auto_update_latest_price_in_all_boms",
 		"erpnext.crm.utils.open_leads_opportunities_based_on_todays_event",
 		"erpnext.assets.doctype.asset.depreciation.post_depreciation_entries",
+		"erpnext.accounts.report.gcoa_wise_report.gcoa_wise_report.create_transaction",
 	],
 	"monthly_long": [
 		"erpnext.accounts.deferred_revenue.process_deferred_accounting",

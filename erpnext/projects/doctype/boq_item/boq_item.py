@@ -20,7 +20,6 @@ class BOQItem(Document):
 		balance_amount: DF.Float
 		balance_quantity: DF.Float
 		balance_rate: DF.Float
-		billing: DF.Float
 		booked_amount: DF.Float
 		booked_quantity: DF.Float
 		boq_code: DF.Data | None
@@ -34,6 +33,7 @@ class BOQItem(Document):
 		parentfield: DF.Data
 		parenttype: DF.Data
 		project: DF.Link | None
+		quantity: DF.Float
 		rate: DF.Float
 		received_amount: DF.Float
 		received_quantity: DF.Float

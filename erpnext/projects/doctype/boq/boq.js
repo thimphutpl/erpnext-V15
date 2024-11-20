@@ -29,7 +29,7 @@ frappe.ui.form.on("BOQ", {
 	},
 
 	refresh(frm) {
-        boq_item_html(frm);
+        // boq_item_html(frm);
 		if(!frm.doc.__islocal && frm.doc.docstatus==1){
 			if(frappe.model.can_read("BOQ Adjustment")) {
 				frm.add_custom_button(__("Adjustments"), function() {

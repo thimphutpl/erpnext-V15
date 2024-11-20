@@ -556,9 +556,10 @@ def get_actual_expense(args):
 
 	return amount
 
-
+from datetime import datetime
 def get_accumulated_monthly_budget(cost_center, budget_account, transaction_date, amount, fiscal_year):
-	mydate = datetime.datetime.strptime(transaction_date, '%Y-%m-%d')
+	# mydate = datetime.strptime(transaction_date, '%Y-%m-%d')
+	mydate = datetime.fromisoformat(str(transaction_date))
 	month = mydate.month
 	if frappe.db.get_value("Account", budget_account, "ignore_budget_check"):
 		return

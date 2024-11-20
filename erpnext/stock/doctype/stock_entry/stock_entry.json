@@ -614,12 +614,14 @@
    "collapsible": 1,
    "fieldname": "bom_info_section",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "BOM Info"
   },
   {
    "collapsible": 1,
    "fieldname": "section_break_jwgn",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Default Warehouse"
   },
   {
@@ -720,7 +722,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-14 16:24:50.229911",
+ "modified": "2024-11-15 16:21:02.556628",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Stock Entry",

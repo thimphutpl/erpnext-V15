@@ -42,7 +42,11 @@ class Supplier(TransactionBase):
 		bank_branch: DF.Link | None
 		bank_name: DF.Link | None
 		companies: DF.Table[AllowedToTransactWith]
+		company_code: DF.Link | None
+		company_name: DF.Data | None
 		country: DF.Link | None
+		credit_days: DF.Int
+		credit_days_based_on: DF.Literal["", "Fixed Days", "Last Day of the Next Month"]
 		default_bank_account: DF.Link | None
 		default_currency: DF.Link | None
 		default_price_list: DF.Link | None
@@ -50,10 +54,12 @@ class Supplier(TransactionBase):
 		email_id: DF.ReadOnly | None
 		hold_type: DF.Literal["", "All", "Invoices", "Payments"]
 		image: DF.AttachImage | None
+		inter_company: DF.Check
 		is_frozen: DF.Check
 		is_internal_supplier: DF.Check
 		is_transporter: DF.Check
 		language: DF.Link | None
+		location: DF.Data | None
 		mobile_no: DF.ReadOnly | None
 		naming_series: DF.Literal["SUP-.YYYY.-"]
 		on_hold: DF.Check
@@ -62,6 +68,7 @@ class Supplier(TransactionBase):
 		prevent_pos: DF.Check
 		prevent_rfqs: DF.Check
 		primary_address: DF.Text | None
+		registered: DF.Check
 		release_date: DF.Date | None
 		represents_company: DF.Link | None
 		supplier_details: DF.Text | None
@@ -69,12 +76,14 @@ class Supplier(TransactionBase):
 		supplier_name: DF.Data
 		supplier_primary_address: DF.Link | None
 		supplier_primary_contact: DF.Link | None
-		supplier_type: DF.Literal["Company", "Individual", "Proprietorship", "Partnership"]
+		supplier_type: DF.Literal["Domestic Vendor", "Indian Vendor", "International Vendor"]
 		swift_code: DF.Data | None
 		tax_category: DF.Link | None
 		tax_holiday: DF.Link | None
 		tax_id: DF.Data | None
 		tax_withholding_category: DF.Link | None
+		telephone_and_fax: DF.Data | None
+		vendor_tpn_no: DF.Data
 		warn_pos: DF.Check
 		warn_rfqs: DF.Check
 		website: DF.Data | None
@@ -106,8 +115,9 @@ class Supplier(TransactionBase):
 			self.name = set_name_from_naming_options(frappe.get_meta(self.doctype).autoname, self)
 
 	def on_update(self):
-		self.create_primary_contact()
-		self.create_primary_address()
+		pass
+		# self.create_primary_contact()
+		# self.create_primary_address()
 
 	def add_role_for_user(self):
 		for portal_user in self.portal_users:

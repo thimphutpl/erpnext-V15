@@ -50,6 +50,7 @@ class Asset(AccountsController):
 		from frappe.types import DF
 
 		abbr: DF.Data | None
+		accumulated_depreciation_account: DF.Link | None
 		additional_asset_cost: DF.Currency
 		additional_value: DF.Currency
 		amended_from: DF.Link | None
@@ -96,7 +97,7 @@ class Asset(AccountsController):
 		item_code: DF.Link
 		item_name: DF.ReadOnly | None
 		journal_entry_for_scrap: DF.Link | None
-		location: DF.Link
+		location: DF.Link | None
 		maintenance_required: DF.Check
 		naming_series: DF.Literal["ACC-ASS-.YYYY.-"]
 		next_depreciation_date: DF.Date | None
@@ -155,7 +156,7 @@ class Asset(AccountsController):
 
 	def on_submit(self):
 		self.validate_in_use_date()
-		# self.make_asset_movement() # jai
+		self.make_asset_movement() # jai, pls don't reomve this func.
 		self.make_asset_je_entry()
 		if not self.booked_fixed_asset and self.validate_make_gl_entry():
 			self.make_gl_entries()
@@ -385,9 +386,12 @@ class Asset(AccountsController):
 			frappe.throw(error_message, title=_("Invalid Gross Purchase Amount"))
 
 	def make_asset_movement(self):
-		reference_doctype = "Purchase Receipt" if self.purchase_receipt else "Purchase Invoice"
-		reference_docname = self.purchase_receipt or self.purchase_invoice
-		transaction_date = getdate(self.purchase_date)
+		# reference_doctype = "Purchase Receipt" if self.purchase_receipt else "Purchase Invoice"
+		# reference_docname = self.purchase_receipt or self.purchase_invoice
+		# transaction_date = getdate(self.purchase_date)
+		reference_doctype = "Purchase Receipt" if self.purchase_receipt else ""
+		reference_docname = self.purchase_receipt or ""
+		transaction_date = nowdate()
 		if reference_docname:
 			posting_date, posting_time = frappe.db.get_value(
 				reference_doctype, reference_docname, ["posting_date", "posting_time"]
@@ -397,7 +401,7 @@ class Asset(AccountsController):
 			{
 				"asset": self.name,
 				"asset_name": self.asset_name,
-				"target_location": self.location,
+				"target_cost_center": self.cost_center,
 				"to_employee": self.custodian
 			}
 		]
@@ -515,6 +519,7 @@ class Asset(AccountsController):
 					row.expected_value_after_useful_life
 					and row.expected_value_after_useful_life < asset_value_after_full_schedule
 				):
+					#jai frappe.throw(f"{row.expected_value_after_useful_life} - {asset_value_after_full_schedule} -- {accumulated_depreciation_after_full_schedule}")
 					frappe.throw(
 						_(
 							"Depreciation Row {0}: Expected value after useful life must be greater than or equal to {1}"
@@ -579,7 +584,11 @@ class Asset(AccountsController):
 		"""Get and update status"""
 		if not status:
 			status = self.get_status()
+		disable_depreciation = 0
+		if status not in ["Submitted", "Partially Depreciated"]:
+			disable_depreciation = 1
 		self.db_set("status", status)
+		self.db_set("disable_depreciation", disable_depreciation)
 
 	def get_status(self):
 		"""Returns status based on whether it is draft, submitted, scrapped or depreciated"""

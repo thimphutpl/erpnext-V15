@@ -14,6 +14,9 @@ class FinancialInstitutionItem(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		branch_name: DF.Data
+		financial_institution_branch: DF.Link | None
+		financial_system_code: DF.Data
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data

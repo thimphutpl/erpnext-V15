@@ -1,7 +1,7 @@
 # Copyright (c) 2024, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
-# import frappe
+import frappe
 from frappe.model.document import Document
 
 
@@ -17,5 +17,8 @@ class FinancialInstitutionBranch(Document):
 		branch_name: DF.Data
 		financial_institution: DF.Link
 		financial_system_code: DF.Data
+		short_form: DF.Data | None
 	# end: auto-generated types
-	pass
+	
+	def autoname(self):
+		self.name = " - ".join([self.branch_name,str(self.financial_institution).strip()])

@@ -109,6 +109,7 @@
    "fieldname": "from_employee",
    "fieldtype": "Link",
    "label": "From Employee",
+   "mandatory_depends_on": "eval:doc.based_on == 'Custodian'",
    "options": "Employee"
   },
   {
@@ -171,13 +172,14 @@
    "fieldname": "cost_center",
    "fieldtype": "Link",
    "label": "Cost Center",
+   "mandatory_depends_on": "eval:doc.based_on == 'Cost Center'",
    "options": "Cost Center"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-15 12:35:17.773844",
+ "modified": "2024-11-17 23:39:13.656932",
  "modified_by": "Administrator",
  "module": "Assets",
  "name": "Asset Movement",

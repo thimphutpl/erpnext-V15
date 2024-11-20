@@ -33,10 +33,13 @@ class MaterialRequest(BuyingController):
 		from frappe.types import DF
 
 		amended_from: DF.Link | None
+		approver: DF.Link | None
+		approver_name: DF.Data | None
 		branch: DF.Link
 		company: DF.Link
 		cost_center: DF.Link | None
 		customer: DF.Link | None
+		date: DF.Date | None
 		estimated_cost: DF.Data | None
 		items: DF.Table[MaterialRequestItem]
 		job_card: DF.Link | None
@@ -137,7 +140,8 @@ class MaterialRequest(BuyingController):
 
 		self.reset_default_field_value("set_warehouse", "items", "warehouse")
 		self.reset_default_field_value("set_from_warehouse", "items", "from_warehouse")
-
+	
+		
 	def before_update_after_submit(self):
 		self.validate_schedule_date()
 
@@ -386,7 +390,17 @@ def get_list_context(context=None):
 	)
 
 	return list_context
+@frappe.whitelist()
+def pull_material_approver(branch):
 
+	approver=frappe.db.sql("""select u.name from `tabUser` u 
+		join `tabEmployee` e on u.name=e.user_id 
+		join `tabHas Role` hr on hr.parent=u.name where hr.role='MR Approver' and e.branch='{}' limit 1""".format(branch), as_dict=True)
+
+	if len(approver)==0:
+		frappe.throw("There is no MR Approver for this Branch")
+		
+	return approver[0].name
 
 @frappe.whitelist()
 def update_status(name, status):
@@ -426,6 +440,10 @@ def make_purchase_order(source_name, target_doc=None, args=None):
 		{
 			"Material Request": {
 				"doctype": "Purchase Order",
+				"field_map": {
+					"material_request_date":"transaction_date" ,
+					"material_request":"name",
+				},
 				"validation": {"docstatus": ["=", 1]},
 				# "validation": {"docstatus": ["=", 1], "material_request_type": ["=", "Purchase"]}, [Remarks]: didn't allow requisition to make purchase
 			},
@@ -500,6 +518,10 @@ def make_purchase_order_based_on_supplier(source_name, target_doc=None, args=Non
 		{
 			"Material Request": {
 				"doctype": "Purchase Order",
+				"field_map": {
+					"material_request_date": "transaction_date",
+					"material_request": "name",
+				},
 			},
 			"Material Request Item": {
 				"doctype": "Purchase Order Item",
@@ -818,3 +840,11 @@ def make_in_transit_stock_entry(source_name, in_transit_warehouse):
 		row.t_warehouse = in_transit_warehouse
 
 	return ste_doc	
+
+@frappe.whitelist()	
+def change_date_issue_to_purchase(name, new_date, purpose):
+	# action = frappe.request.form.get('action')
+	# if self.workflow_state=="Waiting For Approval":
+	# 	if 
+	# if action == ""
+	frappe.db.sql("update `tabMaterial Request` set date = '{}', material_request_type='{}' where name = '{}' ".format(new_date, purpose, name))

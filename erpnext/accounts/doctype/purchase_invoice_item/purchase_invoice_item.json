@@ -396,6 +396,7 @@
    "collapsible": 1,
    "fieldname": "item_weight_details",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Item Weight Details"
   },
   {
@@ -526,6 +527,7 @@
    "collapsible_depends_on": "enable_deferred_expense",
    "fieldname": "deferred_expense_section",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Deferred Expense"
   },
   {
@@ -772,6 +774,7 @@
    "collapsible": 1,
    "fieldname": "manufacture_details",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Manufacture"
   },
   {
@@ -982,7 +985,7 @@
  "idx": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-11-07 15:02:54.335209",
+ "modified": "2024-11-19 15:19:23.699899",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Purchase Invoice Item",

@@ -244,11 +244,11 @@
    "depends_on": "eval:doc.uom != doc.stock_uom",
    "fieldname": "conversion_factor",
    "fieldtype": "Float",
+   "hidden": 1,
    "label": "Conversion Factor",
    "oldfieldname": "conversion_factor",
    "oldfieldtype": "Currency",
-   "print_hide": 1,
-   "reqd": 1
+   "print_hide": 1
   },
   {
    "depends_on": "eval:doc.uom != doc.stock_uom",
@@ -297,6 +297,7 @@
    "depends_on": "eval:doc.use_serial_batch_fields === 1",
    "fieldname": "serial_no",
    "fieldtype": "Text",
+   "hidden": 1,
    "label": "Serial No",
    "no_copy": 1,
    "oldfieldname": "serial_no",
@@ -310,6 +311,7 @@
    "depends_on": "eval:doc.use_serial_batch_fields === 1",
    "fieldname": "batch_no",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Batch No",
    "no_copy": 1,
    "oldfieldname": "batch_no",
@@ -327,6 +329,7 @@
   {
    "fieldname": "accounting",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Accounting"
   },
   {
@@ -551,12 +554,14 @@
    "default": "0",
    "fieldname": "is_scrap_item",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "Is Scrap Item"
   },
   {
    "default": "0",
    "fieldname": "is_finished_item",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "Is Finished Item"
   },
   {
@@ -624,7 +629,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-10-10 12:36:29.165010",
+ "modified": "2024-11-18 10:07:44.474400",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Stock Entry Detail",

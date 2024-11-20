@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "allow_import": 1,
  "allow_rename": 1,
  "autoname": "field:equipment_type",
  "creation": "2022-10-17 13:46:24.897592",
@@ -51,7 +52,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-08 16:09:42.629563",
+ "modified": "2024-11-19 12:34:17.451712",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Equipment Type",

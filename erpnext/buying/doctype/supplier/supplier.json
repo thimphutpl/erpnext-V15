@@ -12,12 +12,24 @@
  "field_order": [
   "naming_series",
   "supplier_name",
+  "vendor_tpn_no",
   "country",
   "column_break0",
   "supplier_group",
   "supplier_type",
   "is_transporter",
   "image",
+  "inter_company",
+  "company_code",
+  "company_name",
+  "registered",
+  "location_and_contact_details_section",
+  "location",
+  "cb_sb_lcd",
+  "telephone_and_fax",
+  "section_credit_limit",
+  "credit_days_based_on",
+  "credit_days",
   "defaults_section",
   "default_currency",
   "default_bank_account",
@@ -109,7 +121,8 @@
    "no_copy": 1,
    "oldfieldname": "supplier_name",
    "oldfieldtype": "Data",
-   "reqd": 1
+   "reqd": 1,
+   "unique": 1
   },
   {
    "fieldname": "country",
@@ -184,11 +197,11 @@
    "options": "Supplier Group"
   },
   {
-   "default": "Company",
+   "default": "Domestic Vendor",
    "fieldname": "supplier_type",
    "fieldtype": "Select",
    "label": "Supplier Type",
-   "options": "Company\nIndividual\nProprietorship\nPartnership",
+   "options": "Domestic Vendor\nIndian Vendor\nInternational Vendor",
    "reqd": 1
   },
   {
@@ -430,6 +443,7 @@
   {
    "fieldname": "defaults_section",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Defaults"
   },
   {
@@ -441,6 +455,7 @@
    "collapsible": 1,
    "fieldname": "internal_supplier_section",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Internal Supplier"
   },
   {
@@ -534,6 +549,7 @@
   {
    "fieldname": "international_bank_details_section",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "International Bank Details"
   },
   {
@@ -559,6 +575,74 @@
    "fieldname": "account_number",
    "fieldtype": "Data",
    "label": "Account Number"
+  },
+  {
+   "fieldname": "vendor_tpn_no",
+   "fieldtype": "Data",
+   "label": "Vendor TPN No",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "inter_company",
+   "fieldtype": "Check",
+   "label": "DHI Owned Company?"
+  },
+  {
+   "depends_on": "eval:doc.inter_company",
+   "fieldname": "company_code",
+   "fieldtype": "Link",
+   "label": "DHI Company",
+   "options": "DHI Company"
+  },
+  {
+   "fetch_from": "company_code.company",
+   "fieldname": "company_name",
+   "fieldtype": "Data",
+   "label": "Company name"
+  },
+  {
+   "default": "0",
+   "fieldname": "registered",
+   "fieldtype": "Check",
+   "label": "Registered Vendor?"
+  },
+  {
+   "fieldname": "location_and_contact_details_section",
+   "fieldtype": "Section Break",
+   "label": "Location and Contact Details"
+  },
+  {
+   "fieldname": "location",
+   "fieldtype": "Data",
+   "label": "Location"
+  },
+  {
+   "fieldname": "cb_sb_lcd",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "telephone_and_fax",
+   "fieldtype": "Data",
+   "label": "Telephone and Fax"
+  },
+  {
+   "fieldname": "section_credit_limit",
+   "fieldtype": "Section Break",
+   "label": "Payment due terms"
+  },
+  {
+   "fieldname": "credit_days_based_on",
+   "fieldtype": "Select",
+   "label": "Payment days Based On",
+   "options": "\nFixed Days\nLast Day of the Next Month"
+  },
+  {
+   "depends_on": "eval:doc.credit_days_based_on == 'Fixed Days'",
+   "fieldname": "credit_days",
+   "fieldtype": "Int",
+   "label": "Payment due days"
   }
  ],
  "icon": "fa fa-user",
@@ -571,7 +655,7 @@
    "link_fieldname": "party"
   }
  ],
- "modified": "2024-08-06 11:26:27.028678",
+ "modified": "2024-11-19 19:16:14.778218",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Supplier",

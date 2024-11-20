@@ -33,6 +33,7 @@ class CostCenter(NestedSet):
 		rgt: DF.Int
 		sub_activity: DF.Table[SubActivity]
 		use_budget_from_parent: DF.Check
+		warehouse: DF.Link | None
 	# end: auto-generated types
 
 	nsm_parent_field = "parent_cost_center"
@@ -45,6 +46,11 @@ class CostCenter(NestedSet):
 	def validate(self):
 		self.validate_mandatory()
 		self.validate_parent_cost_center()
+		# self.check_ware_house()
+
+	def check_ware_house(self):
+		if not self.is_group and not self.warehouse:
+			frappe.throw("Warehouse is mandatory for non-group cost center")
 
 	# Added by Dawa Tshering on 23/07/2024
 	def on_update(self):

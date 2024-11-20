@@ -10,9 +10,10 @@
   "amended_from",
   "equipment_type",
   "column_break_lhne",
-  "registeration_number",
-  "column_break_erjd",
   "equipment_model",
+  "column_break_erjd",
+  "equipment",
+  "registeration_number",
   "external_rate_section",
   "without_fuel",
   "column_break_xfid",
@@ -198,19 +199,25 @@
    "fieldtype": "Column Break"
   },
   {
+   "fetch_from": "equipment.registeration_number",
    "fieldname": "registeration_number",
-   "fieldtype": "Link",
+   "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Registration Number",
-   "options": "Equipment Model",
    "reqd": 1,
    "set_only_once": 1
+  },
+  {
+   "fieldname": "equipment",
+   "fieldtype": "Link",
+   "label": "Equipment",
+   "options": "Equipment"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-14 11:46:53.587207",
+ "modified": "2024-11-19 15:35:12.384153",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Hire Charge Parameter",

@@ -12,55 +12,16 @@ from frappe.utils import flt, nowdate
 from erpnext.custom_workflow import validate_workflow_states, notify_workflow_states
 
 class Review(Document):
-	# begin: auto-generated types
-	# This code is auto-generated. Do not modify anything in this block.
-
-	from typing import TYPE_CHECKING
-
-	if TYPE_CHECKING:
-		from erpnext.pms.doctype.additional_achievements.additional_achievements import AdditionalAchievements
-		from erpnext.pms.doctype.negative_target_review.negative_target_review import NegativeTargetReview
-		from erpnext.pms.doctype.review_competency_item.review_competency_item import ReviewCompetencyItem
-		from erpnext.pms.doctype.review_target_item.review_target_item import ReviewTargetItem
-		from frappe.types import DF
-
-		additional_items: DF.Table[AdditionalAchievements]
-		amended_from: DF.Link | None
-		approver: DF.Link | None
-		approver_designation: DF.Data | None
-		approver_name: DF.Data | None
-		branch: DF.Link | None
-		business_target: DF.Table[NegativeTargetReview]
-		company: DF.Link | None
-		department: DF.Link | None
-		designation: DF.Link | None
-		employee: DF.Link
-		employee_name: DF.ReadOnly | None
-		end_date: DF.ReadOnly | None
-		grade: DF.Link | None
-		max_weightage_for_target: DF.Float
-		min_weightage_for_target: DF.Float
-		negative_target: DF.Check
-		old_employee_id: DF.Data | None
-		pms_calendar: DF.Link
-		pms_group: DF.Link | None
-		reason: DF.SmallText | None
-		reference: DF.Link | None
-		required_to_set_target: DF.Data | None
-		rev_workflow_state: DF.Data | None
-		review_competency_item: DF.Table[ReviewCompetencyItem]
-		review_date: DF.Date | None
-		review_target_item: DF.Table[ReviewTargetItem]
-		set_manual_approver: DF.Check
-		start_date: DF.ReadOnly | None
-		target: DF.Link | None
-		total_weightage: DF.Float
-		user_id: DF.Link | None
-	# end: auto-generated types
 	def validate(self):
 		self.check_duplicate_entry()
-		# validate_workflow_states(self)
+		validate_workflow_states(self)
+		if self.workflow_state != "Approved":
+			notify_workflow_states(self)
 		self.check_target()
+		if self.reference and self.reason:
+			return
+		else:  
+			self.validate_calendar()
 
 	def on_submit(self):
 		if self.reference and self.reason:
@@ -86,7 +47,7 @@ class Review(Document):
 				frappe.throw(_('You have already set the Review for PMS Calendar <b>{}</b>'.format(self.pms_calendar)))
 
 	def check_target(self):
-		check = frappe.db.get_value("PMS Group", self.pms_group, "required_to_set_target")
+		check = frappe.db.get_value("PMS Group",self.pms_group,"required_to_set_target")
 		if not check:
 			frappe.throw(
 					title='Error',
@@ -94,6 +55,13 @@ class Review(Document):
 		else:
 			if not self.review_target_item:
 				frappe.throw(_('You need to <b>Set The Target</b>'))
+
+			# validate total number of target
+			target_length = flt(len(self.review_target_item))
+			if flt(target_length) > flt(self.max_no_of_target) or flt(target_length) < flt(self.min_no_of_target):
+				frappe.throw(
+					title='Error',
+					msg="Total number of target must be between <b>{}</b> and <b>{}</b> but you have set only <b>{}</b> target".format(self.min_no_of_target,self.max_no_of_target,target_length))
 
 			total_target_weightage = 0
 			# total weightage must be 100
@@ -158,8 +126,8 @@ def create_evaluation(source_name, target_doc=None):
 		"Negative Target Review":{
 			"doctype":"Performance Evaluation Negative Target"
 		}
-	}, target_doc)
 
+	}, target_doc)
 	return doclist
 
 @frappe.whitelist()

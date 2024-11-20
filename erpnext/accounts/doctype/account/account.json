@@ -30,6 +30,8 @@
   "old_parent",
   "include_in_gross",
   "is_recovery",
+  "dhi_company",
+  "dhi_company_name",
   "budget_details",
   "ignore_budget_check",
   "is_centralized_budget",
@@ -241,13 +243,26 @@
    "fieldname": "is_recovery",
    "fieldtype": "Check",
    "label": "Is Recovery"
+  },
+  {
+   "fieldname": "dhi_company",
+   "fieldtype": "Link",
+   "label": "DHI Company",
+   "options": "DHI Company"
+  },
+  {
+   "fetch_from": "dhi_company.company",
+   "fieldname": "dhi_company_name",
+   "fieldtype": "Data",
+   "label": "DHI Company Name",
+   "read_only": 1
   }
  ],
  "icon": "fa fa-money",
  "idx": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2024-08-19 17:56:43.405705",
+ "modified": "2024-11-19 15:49:21.540874",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Account",

@@ -350,10 +350,10 @@ def is_holiday(
 ):
 	"""
 	Returns True if given Employee has an holiday on the given date
-	        :param employee: Employee `name`
-	        :param date: Date to check. Will check for today if None
-	        :param raise_exception: Raise an exception if no holiday list found, default is True
-	        :param only_non_weekly: Check only non-weekly holidays, default is False
+			:param employee: Employee `name`
+			:param date: Date to check. Will check for today if None
+			:param raise_exception: Raise an exception if no holiday list found, default is True
+			:param only_non_weekly: Check only non-weekly holidays, default is False
 	"""
 
 	holiday_list = get_holiday_list_for_employee(employee, raise_exception)

@@ -39,6 +39,8 @@ class Account(NestedSet):
 		budget_type: DF.Link | None
 		company: DF.Link
 		cost_center: DF.Link | None
+		dhi_company: DF.Link | None
+		dhi_company_name: DF.Data | None
 		disabled: DF.Check
 		freeze_account: DF.Literal["No", "Yes"]
 		ignore_budget_check: DF.Check

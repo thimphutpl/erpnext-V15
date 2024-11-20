@@ -4,14 +4,15 @@
 frappe.provide("erpnext.setup");
 erpnext.setup.EmployeeController = class EmployeeController extends frappe.ui.form.Controller {
 	setup() {
-		this.frm.fields_dict.user_id.get_query = function(doc, cdt, cdn) {
+		this.frm.fields_dict.user_id.get_query = function (doc, cdt, cdn) {
 			return {
 				query: "frappe.core.doctype.user.user.user_query",
-				filters: {ignore_user_type: 1}
+				filters: { ignore_user_type: 1 }
 			}
 		}
-		this.frm.fields_dict.reports_to.get_query = function(doc, cdt, cdn) {
-			return { query: "erpnext.controllers.queries.employee_query"} }
+		this.frm.fields_dict.reports_to.get_query = function (doc, cdt, cdn) {
+			return { query: "erpnext.controllers.queries.employee_query" }
+		}
 	}
 
 	refresh() {
@@ -31,88 +32,101 @@ erpnext.setup.EmployeeController = class EmployeeController extends frappe.ui.fo
 
 frappe.ui.form.on("Employee", {
 	onload: function (frm) {
-		frm.set_query("department", function() {
-			return {
-				"filters": {
-					"company": frm.doc.company,
-					"disabled":0,
-					"is_division":0,
-					"is_section":0,
-					"is_unit":0
-				}
-			};
-		});
-		frm.set_query("division", function() {
+		frm.set_query("department", function () {
 			return {
 				"filters": {
 					"company": frm.doc.company,
 					"disabled": 0,
-					"is_division":1,
-					"is_section":0,
-					"is_unit":0
+					"is_division": 0,
+					"is_section": 0,
+					"is_unit": 0
 				}
 			};
 		});
-		frm.set_query("section", function() {
-			return {
-				"filters": {
-					"parent_department": frm.doc.division,
-					"company": frm.doc.company,
-					"disabled":0,
-					"is_division":0,
-					"is_section":1
-				}
-			};
-		});
-		frm.set_query("unit", function() {
-			return {
-				"filters": {
-					"parent_department": frm.doc.division,
-					"company": frm.doc.company,
-					"disabled":0,
-					"is_division":0,
-					"is_unit":1,
-					"is_section":0
-				}
-			};
-		});
-	},
-	refresh: function(frm){
-		frm.set_query("division", function() {
+		frm.set_query("division", function () {
 			return {
 				"filters": {
 					"company": frm.doc.company,
 					"disabled": 0,
-					"is_division":1,
-					"is_section":0,
-					"is_unit":0
+					"is_division": 1,
+					"is_section": 0,
+					"is_unit": 0
+				}
+			};
+		});
+		frm.set_query("section", function () {
+			return {
+				"filters": {
+					"parent_department": frm.doc.division,
+					"company": frm.doc.company,
+					"disabled": 0,
+					"is_division": 0,
+					"is_section": 1
+				}
+			};
+		});
+		frm.set_query("unit", function () {
+			if (!frm.doc.section) {
+				return {
+					"filters": {
+						"parent_department": frm.doc.division,
+						"company": frm.doc.company,
+						"disabled": 0,
+						"is_division": 0,
+						"is_unit": 1,
+						"is_section": 0
+					}
+				};
+			} else {
+				return {
+					"filters": {
+						"parent_department": frm.doc.section,
+						"company": frm.doc.company,
+						"disabled": 0,
+						"is_division": 0,
+						"is_unit": 1,
+						"is_section": 0
+					}
+				};
+			}
+		});
+	},
+	refresh: function (frm) {
+		frm.set_query("division", function () {
+			return {
+				"filters": {
+					"company": frm.doc.company,
+					"disabled": 0,
+					"is_division": 1,
+					"is_section": 0,
+					"is_unit": 0
 				}
 			};
 		});
 	},
-	prefered_contact_email: function(frm) {
+	prefered_contact_email: function (frm) {
 		frm.events.update_contact(frm);
 	},
 
-	personal_email: function(frm) {
+	personal_email: function (frm) {
 		frm.events.update_contact(frm);
 	},
 
-	company_email: function(frm) {
+	company_email: function (frm) {
 		frm.events.update_contact(frm);
 	},
 
-	user_id: function(frm) {
+	user_id: function (frm) {
 		frm.events.update_contact(frm);
 	},
 
-	update_contact: function(frm) {
+	update_contact: function (frm) {
 		var prefered_email_fieldname = frappe.model.scrub(frm.doc.prefered_contact_email) || 'user_id';
 		frm.set_value("prefered_email",
 			frm.fields_dict[prefered_email_fieldname].value);
 	},
 
-	status: function(frm) {
+	status: function (frm) {
 		return frm.call({
 			method: "deactivate_sales_person",
 			args: {
@@ -122,7 +136,7 @@ frappe.ui.form.on("Employee", {
 		});
 	},
 
-	create_user: function(frm) {
+	create_user: function (frm) {
 		if (!frm.doc.prefered_email) {
 			frappe.throw(__("Please enter Preferred Contact Email"));
 		}

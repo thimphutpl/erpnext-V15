@@ -223,7 +223,8 @@ class MechanicalPayment(AccountsController):
                 )
 
         make_gl_entries(gl_entries, cancel=(self.docstatus == 2), update_outstanding="No", merge_entries=False)
-
+        
+    @frappe.whitelist()
     def get_transactions(self):
         if not self.branch or not self.customer or not self.payment_for:
             frappe.throw("Branch, Customer and Payment For is Mandatory")

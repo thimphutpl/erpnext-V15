@@ -3,6 +3,21 @@
 cur_frm.add_fetch("project", "cost_center", "cost_center");
 
 frappe.ui.form.on('Asset Movement', {
+	refresh: function(frm) {
+		if(frm.doc.docstatus == 1) {
+			cur_frm.add_custom_button(__('Accounting Ledger'), function() {
+				frappe.route_options = {
+					voucher_no: frm.doc.name,
+					from_date: frm.doc.posting_date,
+					to_date: frm.doc.posting_date,
+					company: frm.doc.company,
+					group_by_voucher: false
+				};
+				frappe.set_route("query-report", "General Ledger");
+			}, __("View"));
+		}
+	},
+	
 	setup: (frm) => {
 		frm.set_query("to_employee", "assets", (doc) => {
 			return {
@@ -53,10 +68,10 @@ frappe.ui.form.on('Asset Movement', {
 		let fieldnames_to_be_altered;
 		if (frm.doc.purpose === 'Transfer') {
 			fieldnames_to_be_altered = {
-				target_cost_center: { read_only: 0, reqd: 1 },
+				target_cost_center: { read_only: 0, reqd: 0 },
 				source_cost_center: { read_only: 1, reqd: 1 },
 				from_employee: { read_only: 1, reqd: 0 },
-				to_employee: { read_only: 0, reqd: 0 }
+				to_employee: { read_only: 0, reqd: 1 }
 			};
 		}
 		else if (frm.doc.purpose === 'Receipt') {

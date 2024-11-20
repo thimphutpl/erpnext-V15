@@ -145,6 +145,7 @@ def get_party_tax_withholding_details(inv, tax_withholding_category=None):
 
 	if party_type == "Supplier":
 		tax_row = get_tax_row_for_tds(tax_details, tax_amount)
+		
 	else:
 		tax_row = get_tax_row_for_tcs(inv, tax_details, tax_amount, tax_deducted)
 

@@ -111,9 +111,12 @@
   "discount_amount",
   "references_section",
   "material_request",
-  "material_request_date",
   "purchase_order",
   "purchase_receipt",
+  "column_break_mqmr",
+  "material_request_date",
+  "purchase_order_date",
+  "purchase_receipt_date",
   "tax_withheld_vouchers_section",
   "tax_withheld_vouchers",
   "sec_tax_breakup",
@@ -289,6 +292,7 @@
    "default": "0",
    "fieldname": "apply_tds",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "Apply Tax Withholding Amount",
    "print_hide": 1
   },
@@ -728,6 +732,7 @@
    "hide_border": 1
   },
   {
+   "fetch_from": "tax_withholding_category.category_name",
    "fieldname": "taxes_and_charges",
    "fieldtype": "Link",
    "label": "Purchase Taxes and Charges Template",
@@ -1692,17 +1697,33 @@
    "options": "Purchase Receipt"
   },
   {
+   "fetch_from": "material_request.date",
    "fieldname": "material_request_date",
-   "fieldtype": "Link",
-   "label": "MR Date",
-   "options": "Material Request"
+   "fieldtype": "Date",
+   "label": "MR Date"
+  },
+  {
+   "fieldname": "column_break_mqmr",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "purchase_order.transaction_date",
+   "fieldname": "purchase_order_date",
+   "fieldtype": "Date",
+   "label": "PO Date"
+  },
+  {
+   "fetch_from": "purchase_receipt.posting_date",
+   "fieldname": "purchase_receipt_date",
+   "fieldtype": "Date",
+   "label": "PR Date"
   }
  ],
  "icon": "fa fa-file-text",
  "idx": 204,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-10-30 11:32:03.487971",
+ "modified": "2024-11-19 18:10:09.253450",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Purchase Invoice",

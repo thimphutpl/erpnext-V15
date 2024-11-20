@@ -13,7 +13,7 @@
   "item",
   "is_group",
   "sb_billing",
-  "billing",
+  "quantity",
   "claimed_quantity",
   "booked_quantity",
   "received_quantity",
@@ -45,19 +45,24 @@
  ],
  "fields": [
   {
+   "columns": 1,
    "fieldname": "boq_code",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "BOQ Code"
   },
   {
+   "columns": 2,
    "fieldname": "uom",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "UOM",
    "options": "UOM"
   },
   {
    "fieldname": "currency",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Currency",
    "options": "Currency"
   },
@@ -66,26 +71,24 @@
    "fieldtype": "Column Break"
   },
   {
+   "columns": 2,
    "fieldname": "item",
    "fieldtype": "Text",
+   "in_list_view": 1,
    "label": "Item"
   },
   {
+   "columns": 1,
    "default": "0",
    "fieldname": "is_group",
    "fieldtype": "Check",
+   "in_list_view": 1,
    "label": "Is Group Item?"
   },
   {
    "fieldname": "sb_billing",
    "fieldtype": "Section Break",
    "label": "BILLING"
-  },
-  {
-   "fieldname": "billing",
-   "fieldtype": "Float",
-   "label": "BILLING",
-   "precision": "5"
   },
   {
    "fieldname": "claimed_quantity",
@@ -121,8 +124,10 @@
    "fieldtype": "Column Break"
   },
   {
+   "columns": 1,
    "fieldname": "rate",
    "fieldtype": "Float",
+   "in_list_view": 1,
    "label": "Rate",
    "precision": "2"
   },
@@ -131,8 +136,10 @@
    "fieldtype": "Column Break"
   },
   {
+   "columns": 2,
    "fieldname": "amount",
    "fieldtype": "Float",
+   "in_list_view": 1,
    "label": "Amount",
    "precision": "2",
    "read_only": 1
@@ -258,12 +265,20 @@
    "fieldtype": "Text",
    "hidden": 1,
    "label": "Parent Item"
+  },
+  {
+   "columns": 1,
+   "fieldname": "quantity",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Quantity",
+   "precision": "5"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-09-16 11:10:02.641214",
+ "modified": "2024-11-20 10:59:44.177182",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "BOQ Item",

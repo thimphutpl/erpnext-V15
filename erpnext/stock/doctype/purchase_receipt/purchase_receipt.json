@@ -65,6 +65,7 @@
   "incoterm",
   "named_place",
   "taxes_section",
+  "column_break_vegp",
   "taxes",
   "totals",
   "base_taxes_and_charges_added",
@@ -101,6 +102,9 @@
   "references_section",
   "material_request",
   "purchase_order",
+  "column_break_rndc",
+  "material_request_date",
+  "purchase_order_date",
   "address_and_contact_tab",
   "section_addresses",
   "supplier_address",
@@ -486,6 +490,7 @@
    "collapsible": 1,
    "fieldname": "pricing_rule_details",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Pricing Rules"
   },
   {
@@ -509,6 +514,7 @@
    "collapsible_depends_on": "supplied_items",
    "fieldname": "raw_material_details",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Raw Materials Consumed",
    "oldfieldtype": "Section Break",
    "options": "fa fa-table",
@@ -589,6 +595,7 @@
   {
    "fieldname": "taxes_charges_section",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "hide_border": 1,
    "label": "Taxes and Charges",
    "oldfieldtype": "Section Break"
@@ -613,6 +620,7 @@
   {
    "fieldname": "taxes_section",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "hide_border": 1
   },
   {
@@ -1257,13 +1265,34 @@
    "fieldtype": "Link",
    "label": "Material Request",
    "options": "Material Request"
+  },
+  {
+   "fieldname": "column_break_vegp",
+   "fieldtype": "Column Break",
+   "hidden": 1
+  },
+  {
+   "fieldname": "column_break_rndc",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "material_request.date",
+   "fieldname": "material_request_date",
+   "fieldtype": "Date",
+   "label": "MR Date"
+  },
+  {
+   "fetch_from": "purchase_order.transaction_date",
+   "fieldname": "purchase_order_date",
+   "fieldtype": "Date",
+   "label": "PO Date"
   }
  ],
  "icon": "fa fa-truck",
  "idx": 261,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-05 10:22:01.122660",
+ "modified": "2024-11-19 15:19:50.059017",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Purchase Receipt",

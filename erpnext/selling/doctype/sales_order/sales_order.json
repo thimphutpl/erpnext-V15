@@ -593,6 +593,7 @@
   {
    "fieldname": "scan_barcode",
    "fieldtype": "Data",
+   "hidden": 1,
    "hide_days": 1,
    "hide_seconds": 1,
    "label": "Scan Barcode",
@@ -731,6 +732,7 @@
   {
    "fieldname": "shipping_rule",
    "fieldtype": "Link",
+   "hidden": 1,
    "hide_days": 1,
    "hide_seconds": 1,
    "label": "Shipping Rule",
@@ -1621,6 +1623,7 @@
   {
    "fieldname": "incoterm",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Incoterm",
    "options": "Incoterm"
   },
@@ -1646,7 +1649,7 @@
  "idx": 105,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-05-23 16:35:54.905804",
+ "modified": "2024-11-18 11:22:26.263940",
  "modified_by": "Administrator",
  "module": "Selling",
  "name": "Sales Order",

@@ -1,0 +1,77 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-11-16 11:33:07.859539",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "account",
+  "column_break_2",
+  "account_type",
+  "column_break_4",
+  "root_type",
+  "column_break_6",
+  "doc_company"
+ ],
+ "fields": [
+  {
+   "fieldname": "account",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Account",
+   "options": "Account",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "account.account_type",
+   "fieldname": "account_type",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Account Type",
+   "options": "account.account_type",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "account.root_type",
+   "fieldname": "root_type",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Root Type",
+   "options": "account.root_type",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_6",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "account.dhi_company",
+   "fieldname": "doc_company",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "DOC Company",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2024-11-19 15:50:30.565423",
+ "modified_by": "Administrator",
+ "module": "Accounts",
+ "name": "DHI Mapper Item",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

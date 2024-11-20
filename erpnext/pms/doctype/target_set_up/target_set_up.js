@@ -8,7 +8,7 @@ frappe.ui.form.on('Target Set Up', {
 		load_required_values(frm)
 		cur_frm.fields_dict['common_target'].grid.get_field('reference').get_query = function(doc, cdt, cdn) {
 			return {
-				// query: "erpnext.pms.doctype.target_set_up.target_set_up.apply_target_filter",
+				query: "erpnext.pms.doctype.target_set_up.target_set_up.apply_target_filter",
 				filters: {
 					'parent': doc.pms_calendar
 				}
@@ -112,12 +112,14 @@ var load_required_values = (frm)=>{
 		method: "frappe.client.get",
 		args: {
 			doctype: "PMS Setting",
-			fieldname:['max_weightage_for_target','min_weightage_for_target']
+			fieldname:['max_weightage_for_target','max_no_of_target','min_weightage_for_target','min_no_of_target']
 		},
 		callback(r) {
 			if (r.message){
 				frm.set_value('max_weightage_for_target',r.message.max_weightage_for_target)
 				frm.set_value('min_weightage_for_target',r.message.min_weightage_for_target)
+				frm.set_value('max_no_of_target',r.message.max_no_of_target)
+				frm.set_value('min_no_of_target',r.message.min_no_of_target)
 				frm.refresh_fields()
 			}
 		}
@@ -159,7 +161,7 @@ var apply_filter=(frm)=> {
 	cur_frm.set_query('pms_calendar', ()=> {
 		return {
 			'filters': {
-				// 'name': frappe.defaults.get_user_default('fiscal_year'),
+				'name': frappe.defaults.get_user_default('fiscal_year'),
 				'docstatus': 1
 			}
 		};

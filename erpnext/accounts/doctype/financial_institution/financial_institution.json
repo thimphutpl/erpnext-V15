@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "allow_import": 1,
  "allow_rename": 1,
  "autoname": "field:short_form",
  "creation": "2024-07-26 16:29:49.909281",
@@ -9,7 +10,18 @@
   "bank_name",
   "short_form",
   "column_break_kasp",
-  "enabled"
+  "enabled",
+  "employee_loan_payment_in_single_account",
+  "account_bank_name",
+  "account_no",
+  "account_holder_name",
+  "bank_account_type",
+  "bank_branch",
+  "sb_branches",
+  "items",
+  "crm_settings_section",
+  "bank_code",
+  "bank_status"
  ],
  "fields": [
   {
@@ -36,11 +48,80 @@
    "fieldname": "enabled",
    "fieldtype": "Check",
    "label": "Enabled"
+  },
+  {
+   "default": "0",
+   "fieldname": "employee_loan_payment_in_single_account",
+   "fieldtype": "Check",
+   "label": "Make Employee Loan Payment in single Account"
+  },
+  {
+   "depends_on": "eval:doc.employee_loan_payment_in_single_account",
+   "fieldname": "account_bank_name",
+   "fieldtype": "Link",
+   "label": "Account Bank Name",
+   "options": "Financial Institution"
+  },
+  {
+   "depends_on": "eval:doc.employee_loan_payment_in_single_account",
+   "fieldname": "account_no",
+   "fieldtype": "Data",
+   "label": "Account No"
+  },
+  {
+   "depends_on": "eval:doc.employee_loan_payment_in_single_account",
+   "fieldname": "account_holder_name",
+   "fieldtype": "Data",
+   "label": "Account Holder Name"
+  },
+  {
+   "depends_on": "eval:doc.employee_loan_payment_in_single_account",
+   "fieldname": "bank_account_type",
+   "fieldtype": "Link",
+   "label": "Bank Account Type",
+   "options": "Bank Account Type"
+  },
+  {
+   "depends_on": "eval:doc.employee_loan_payment_in_single_account",
+   "fieldname": "bank_branch",
+   "fieldtype": "Link",
+   "label": "Bank Branch",
+   "options": "Financial Institution Branch"
+  },
+  {
+   "fieldname": "sb_branches",
+   "fieldtype": "Section Break",
+   "label": "BRANCHES"
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "label": "Financial Institution Item",
+   "options": "Financial Institution Item"
+  },
+  {
+   "fieldname": "crm_settings_section",
+   "fieldtype": "Section Break",
+   "label": "CRM SETTINGS"
+  },
+  {
+   "fieldname": "bank_code",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Bank Code",
+   "read_only": 1
+  },
+  {
+   "fieldname": "bank_status",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Bank Status",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-07-30 09:52:50.379288",
+ "modified": "2024-11-19 19:39:18.785309",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Financial Institution",

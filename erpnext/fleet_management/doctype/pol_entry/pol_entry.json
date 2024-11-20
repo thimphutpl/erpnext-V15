@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "autoname": "POLE.YYYY.MM.#####",
  "creation": "2022-12-31 11:45:33.687353",
  "doctype": "DocType",
  "editable_grid": 1,
@@ -16,7 +17,7 @@
   "posting_date",
   "qty",
   "reference_type",
-  "reference",
+  "reference_name",
   "type",
   "is_opening",
   "amended_from",
@@ -75,12 +76,7 @@
    "fieldname": "reference_type",
    "fieldtype": "Select",
    "label": "Reference Type",
-   "options": "\nPOL Receive\nPOL Issue\nVehicle Logbook"
-  },
-  {
-   "fieldname": "reference",
-   "fieldtype": "Data",
-   "label": "Reference"
+   "options": "\nPOL Receive\nPOL Issue\nVehicle Logbook\nHSD Adjustment"
   },
   {
    "fieldname": "type",
@@ -182,16 +178,23 @@
    "fieldname": "item_name",
    "fieldtype": "Data",
    "label": "Item Name"
+  },
+  {
+   "fieldname": "reference_name",
+   "fieldtype": "Dynamic Link",
+   "label": "Reference Name",
+   "options": "reference_type"
   }
  ],
  "in_create": 1,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-06 15:34:08.034313",
+ "modified": "2024-11-16 22:50:39.650832",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Entry",
+ "naming_rule": "Expression (old style)",
  "owner": "Administrator",
  "permissions": [
   {

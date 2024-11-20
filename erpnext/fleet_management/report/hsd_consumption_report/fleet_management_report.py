@@ -9,19 +9,46 @@ from frappe.utils import flt, cint,add_days, cstr, flt, getdate, nowdate, rounde
 ##
 # Both recieved and issued pols can be queried with this
 ##
-def get_pol_till(purpose, equipment, date, pol_type=None):
-	if not equipment or not date:
-		frappe.throw("Equipment and Till Date are Mandatory")
-	total = 0
-	query = "select sum(qty) as total from `tabPOL Entry` where docstatus = 1 and type = \'"+str(purpose)+"\' and equipment = \'" + str(equipment) + "\' and date <= \'" + str(date) + "\'"
-	if pol_type:
-		query += " and pol_type = \'" + str(pol_type) + "\'"
+# def get_pol_till(purpose, equipment, date, pol_type=None):
+# 	if not equipment or not date:
+# 		frappe.throw("Equipment and Till Date are Mandatory")
+# 	total = 0
+# 	query = "select sum(qty) as total from `tabPOL Entry` where docstatus = 1 and type = \'"+str(purpose)+"\' and equipment = \'" + str(equipment) + "\' and date <= \'" + str(date) + "\'"
+# 	if pol_type:
+# 		query += " and pol_type = \'" + str(pol_type) + "\'"
 	
 
-	quantity = frappe.db.sql(query, as_dict=True)
-	if quantity:
-		total = quantity[0].total
-	return total
+# 	quantity = frappe.db.sql(query, as_dict=True)
+# 	if quantity:
+# 		total = quantity[0].total
+# 	return total
+
+def get_pol_till(purpose, equipment, date, pol_type=None):
+    if not equipment or not date:
+        frappe.throw("Equipment and Till Date are Mandatory")
+
+    total = 0
+    # Replace 'date' with the correct column name, e.g., 'posting_date'
+    query = """
+        SELECT SUM(qty) AS total 
+        FROM `tabPOL Entry` 
+        WHERE docstatus = 1 
+          AND type = %s 
+          AND equipment = %s 
+          AND posting_date <= %s
+    """
+    args = [purpose, equipment, date]
+
+    if pol_type:
+        query += " AND pol_type = %s"
+        args.append(pol_type)
+
+    quantity = frappe.db.sql(query, args, as_dict=True)
+    if quantity and quantity[0].total:
+        total = quantity[0].total
+
+    return total
+
 
 ##
 # Both recieved and issued pols can be queried with this

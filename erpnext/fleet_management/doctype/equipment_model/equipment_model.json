@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "allow_import": 1,
  "allow_rename": 1,
  "autoname": "field:model",
  "creation": "2022-10-17 14:01:59.176916",
@@ -7,14 +8,10 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "registeration_number",
   "column_break_antj",
   "equipment_type",
   "column_break_3",
-  "model",
-  "column_break_euaj",
-  "tank_capacity",
-  "amended_form"
+  "model"
  ],
  "fields": [
   {
@@ -28,7 +25,6 @@
   {
    "fieldname": "model",
    "fieldtype": "Data",
-   "in_list_view": 1,
    "label": "Model",
    "reqd": 1,
    "unique": 1
@@ -38,40 +34,13 @@
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "tank_capacity",
-   "fieldtype": "Data",
-   "label": "Tank Capacity"
-  },
-  {
-   "fieldname": "registeration_number",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Registration Number",
-   "options": "Registration Details",
-   "reqd": 1,
-   "unique": 1
-  },
-  {
-   "fieldname": "column_break_euaj",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "amended_form",
-   "fieldtype": "Link",
-   "label": "Amended Form",
-   "no_copy": 1,
-   "options": "Equipment Model",
-   "print_hide": 1,
-   "read_only": 1
-  },
-  {
    "fieldname": "column_break_antj",
    "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-09 20:11:35.977259",
+ "modified": "2024-11-19 16:05:05.275095",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Equipment Model",
@@ -120,6 +89,8 @@
    "share": 1
   }
  ],
+ "quick_entry": 1,
+ "search_fields": "model, equipment_type",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []

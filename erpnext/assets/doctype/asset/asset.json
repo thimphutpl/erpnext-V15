@@ -35,11 +35,12 @@
   "disposal_date",
   "posting_date",
   "accounting_dimensions_section",
-  "cost_center",
   "branch",
+  "cost_center",
   "dimension_col_break",
   "asset_account",
   "credit_account",
+  "accumulated_depreciation_account",
   "purchase_details_section",
   "purchase_receipt",
   "purchase_invoice",
@@ -194,10 +195,10 @@
   {
    "fieldname": "location",
    "fieldtype": "Link",
+   "hidden": 1,
    "in_list_view": 1,
    "label": "Location",
-   "options": "Location",
-   "reqd": 1
+   "options": "Location"
   },
   {
    "fieldname": "custodian",
@@ -211,7 +212,8 @@
    "fieldname": "cost_center",
    "fieldtype": "Link",
    "label": "Cost Center",
-   "options": "Cost Center"
+   "options": "Cost Center",
+   "read_only": 1
   },
   {
    "fieldname": "department",
@@ -335,6 +337,7 @@
    "collapsible": 1,
    "fieldname": "insurance_details",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Insurance details"
   },
   {
@@ -374,6 +377,7 @@
   {
    "fieldname": "section_break_31",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Maintenance"
   },
   {
@@ -483,6 +487,7 @@
   {
    "fieldname": "split_from",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Split From",
    "options": "Asset",
    "read_only": 1
@@ -527,6 +532,7 @@
    "depends_on": "eval:!doc.is_existing_asset",
    "fieldname": "is_composite_asset",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "Is Composite Asset"
   },
   {
@@ -682,6 +688,13 @@
    "fieldtype": "Check",
    "label": "Disable Depreciation",
    "read_only": 1
+  },
+  {
+   "depends_on": "is_existing_asset",
+   "fieldname": "accumulated_depreciation_account",
+   "fieldtype": "Link",
+   "label": "Accumulated Depreciation Account",
+   "options": "Account"
   }
  ],
  "idx": 72,
@@ -725,7 +738,7 @@
    "link_fieldname": "target_asset"
   }
  ],
- "modified": "2024-11-06 15:04:29.279296",
+ "modified": "2024-11-20 13:52:27.841858",
  "modified_by": "Administrator",
  "module": "Assets",
  "name": "Asset",

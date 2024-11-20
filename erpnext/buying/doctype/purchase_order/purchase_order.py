@@ -692,7 +692,12 @@ def make_purchase_receipt(source_name, target_doc=None):
 		{
 			"Purchase Order": {
 				"doctype": "Purchase Receipt",
-				"field_map": {"supplier_warehouse": "supplier_warehouse"},
+				"field_map": {
+					"supplier_warehouse": "supplier_warehouse",
+					"material_request_date": "material_request_date",
+					"purchase_order_date": "transaction_date",
+					"material_request": "material_request",
+				},
 				"validation": {
 					"docstatus": ["=", 1],
 				},
@@ -771,6 +776,9 @@ def get_mapped_purchase_invoice(source_name, target_doc=None, ignore_permissions
 			"field_map": {
 				"party_account_currency": "party_account_currency",
 				"supplier_warehouse": "supplier_warehouse",
+				"material_request_date": "material_request_date",
+				"purchase_order_date": "transaction_date",
+				"material_request": "material_request",
 			},
 			"field_no_map": ["payment_terms_template"],
 			"validation": {

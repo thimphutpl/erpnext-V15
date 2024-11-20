@@ -19,7 +19,6 @@
   "column_break_7",
   "transaction_date",
   "schedule_date",
-  "material_request",
   "column_break1",
   "company",
   "branch",
@@ -96,6 +95,7 @@
   "additional_discount_percentage",
   "discount_amount",
   "references_section",
+  "material_request",
   "material_request_date",
   "sec_tax_breakup",
   "other_charges_calculation",
@@ -583,6 +583,7 @@
   {
    "fieldname": "taxes_section",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "hide_border": 1,
    "label": "Taxes and Charges",
    "oldfieldtype": "Section Break",
@@ -591,6 +592,7 @@
   {
    "fieldname": "taxes_and_charges",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Purchase Taxes and Charges Template",
    "oldfieldname": "purchase_other_charges",
    "oldfieldtype": "Link",
@@ -609,6 +611,7 @@
   {
    "fieldname": "taxes",
    "fieldtype": "Table",
+   "hidden": 1,
    "label": "Purchase Taxes and Charges",
    "oldfieldname": "purchase_tax_details",
    "oldfieldtype": "Table",
@@ -1106,6 +1109,7 @@
    "default": "0",
    "fieldname": "apply_tds",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "Apply Tax Withholding Amount"
   },
   {
@@ -1280,7 +1284,7 @@
  "idx": 105,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-15 15:05:55.469071",
+ "modified": "2024-11-20 09:49:16.296171",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Purchase Order",

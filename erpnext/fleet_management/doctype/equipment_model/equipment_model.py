@@ -13,11 +13,12 @@ class EquipmentModel(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
-		amended_form: DF.Link | None
 		equipment_type: DF.Link
 		model: DF.Data
-		registeration_number: DF.Data
-		tank_capacity: DF.Data | None
 	# end: auto-generated types
+	# def autoname(self):
+	# 	self.name = self.equipment_type + "(" + self.model + ")" 
+
 	def autoname(self):
-		self.name = self.equipment_type + "(" + self.model + ")"
+		self.name = f"{self.equipment_type} {self.model}"
+	

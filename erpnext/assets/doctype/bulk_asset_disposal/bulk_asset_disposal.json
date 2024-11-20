@@ -49,6 +49,7 @@
    "reqd": 1
   },
   {
+   "depends_on": "eval:doc.scrap == \"Sale Asset\"",
    "fieldname": "branch",
    "fieldtype": "Link",
    "label": "Branch",
@@ -67,6 +68,7 @@
    "reqd": 1
   },
   {
+   "depends_on": "eval:doc.scrap == \"Sale Asset\"",
    "fieldname": "customer",
    "fieldtype": "Link",
    "label": "Customer",
@@ -101,7 +103,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-10-20 21:09:16.948970",
+ "modified": "2024-11-18 00:29:23.864344",
  "modified_by": "Administrator",
  "module": "Assets",
  "name": "Bulk Asset Disposal",

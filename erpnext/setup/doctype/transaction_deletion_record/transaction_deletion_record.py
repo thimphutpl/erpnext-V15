@@ -459,6 +459,8 @@ def get_doctypes_to_be_ignored():
 		"Item Default",
 		"Customer",
 		"Supplier",
+		"Item Sub Group",
+		"Branch",
 	]
 
 	doctypes_to_be_ignored.extend(frappe.get_hooks("company_data_to_be_ignored") or [])

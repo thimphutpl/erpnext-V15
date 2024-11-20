@@ -23,6 +23,7 @@
   "contact_html",
   "warehouse_contact_info",
   "email_id",
+  "email_id1",
   "phone_no",
   "mobile_no",
   "column_break0",
@@ -38,7 +39,9 @@
   "tree_details",
   "lft",
   "rgt",
-  "old_parent"
+  "old_parent",
+  "sb_warehouse_branch",
+  "items"
  ],
  "fields": [
   {
@@ -125,9 +128,10 @@
    "fieldname": "email_id",
    "fieldtype": "Data",
    "hidden": 1,
-   "label": "Email Address",
+   "label": "Email Id 1",
    "oldfieldname": "email_id",
-   "oldfieldtype": "Data"
+   "oldfieldtype": "Data",
+   "options": "User"
   },
   {
    "fieldname": "phone_no",
@@ -257,13 +261,29 @@
    "fieldname": "is_rejected_warehouse",
    "fieldtype": "Check",
    "label": "Is Rejected Warehouse"
+  },
+  {
+   "fieldname": "email_id1",
+   "fieldtype": "Link",
+   "label": "Email Id 2",
+   "options": "User"
+  },
+  {
+   "fieldname": "sb_warehouse_branch",
+   "fieldtype": "Section Break",
+   "label": "Warehouse Belong To"
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "options": "Warehouse Branch"
   }
  ],
  "icon": "fa fa-building",
  "idx": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2024-01-24 16:27:28.299520",
+ "modified": "2024-11-18 15:04:10.559515",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Warehouse",
