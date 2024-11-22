@@ -14,9 +14,9 @@ from erpnext.custom_workflow import validate_workflow_states, notify_workflow_st
 class Review(Document):
 	def validate(self):
 		self.check_duplicate_entry()
-		validate_workflow_states(self)
-		if self.workflow_state != "Approved":
-			notify_workflow_states(self)
+		# validate_workflow_states(self)
+		# if self.workflow_state != "Approved":
+		# 	notify_workflow_states(self)
 		self.check_target()
 		if self.reference and self.reason:
 			return

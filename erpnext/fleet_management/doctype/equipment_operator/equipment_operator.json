@@ -1,10 +1,12 @@
 {
  "actions": [],
+ "autoname": "EOPN.YYYY.####",
  "creation": "2022-10-19 13:44:48.821279",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "employee_type",
   "operator",
   "contact_number",
   "column_break_4",
@@ -68,15 +70,24 @@
    "fieldtype": "Data",
    "label": "License No",
    "read_only": 1
+  },
+  {
+   "fieldname": "employee_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Employee Type",
+   "options": "\nEmployee\nMuster Roll Employee",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-07-25 15:23:24.452680",
+ "modified": "2024-11-20 21:26:46.107038",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Equipment Operator",
+ "naming_rule": "Expression (old style)",
  "owner": "Administrator",
  "permissions": [],
  "sort_field": "modified",

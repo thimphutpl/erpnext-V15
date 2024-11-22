@@ -2,7 +2,7 @@
  "actions": [],
  "allow_import": 1,
  "allow_rename": 1,
- "autoname": "field:registeration_number",
+ "autoname": "EQUIP.YY.####",
  "creation": "2022-10-19 12:38:16.340269",
  "doctype": "DocType",
  "editable_grid": 1,
@@ -58,7 +58,6 @@
    "fieldname": "branch",
    "fieldtype": "Link",
    "in_list_view": 1,
-   "in_standard_filter": 1,
    "label": "Branch",
    "options": "Branch",
    "reqd": 1
@@ -304,11 +303,11 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-20 14:25:40.662019",
+ "modified": "2024-11-20 22:41:42.375224",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Equipment",
- "naming_rule": "By fieldname",
+ "naming_rule": "Expression (old style)",
  "owner": "Administrator",
  "permissions": [
   {
@@ -364,7 +363,7 @@
    "share": 1
   }
  ],
- "search_fields": "equipment_category,equipment_type, equipment_model,registeration_number",
+ "search_fields": "equipment_type,registeration_number, branch",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],

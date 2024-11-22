@@ -1,0 +1,161 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-11-21 09:07:41.434966",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+    "company",
+    "section_break_001",
+    "branch",
+    "audit_subject",
+    "prior_audit_work",
+    "changes",
+    "budget",
+    "col_break_002",
+    "posting_date",
+    "complexity",
+    "operating_management",
+    "control_environment",
+    "sensitivity",
+    "staff",
+    "risk_score_section",
+    "risk_score",
+    "col_break_001",
+    "risk_level"
+   ],
+   "fields": [
+    {
+     "fieldname": "risk_level",
+     "fieldtype": "Select",
+     "in_list_view": 1,
+     "label": "Risk Level",
+     "options": "\nHigh\nMedium\nLow",
+     "reqd": 1
+    },
+    {
+     "fieldname": "prior_audit_work",
+     "fieldtype": "Select",
+     "in_list_view": 1,
+     "label": "Prior Audit Work",
+     "options": "\n&gt;3yrs\n1-2yrs\n&lt;1yr"
+    },
+    {
+     "fieldname": "control_environment",
+     "fieldtype": "Select",
+     "label": "Control Environment",
+     "options": "\nVery Weak\nWeak\nModerate"
+    },
+    {
+     "fieldname": "changes",
+     "fieldtype": "Select",
+     "label": "Changes",
+     "options": "\nMany\nSome\nStable"
+    },
+    {
+     "fieldname": "budget",
+     "fieldtype": "Select",
+     "label": "Budget",
+     "options": "\nHigh\nMedium\nLow"
+    },
+    {
+     "fieldname": "risk_score",
+     "fieldtype": "Int",
+     "in_list_view": 1,
+     "label": "Risk Score",
+     "read_only": 1
+    },
+    {
+     "fieldname": "complexity",
+     "fieldtype": "Select",
+     "in_list_view": 1,
+     "label": "Complexity",
+     "options": "\nHigh\nMedium\nLow"
+    },
+    {
+     "fieldname": "operating_management",
+     "fieldtype": "Select",
+     "label": "Operating Management",
+     "options": "\nPoor\nSatisfactory\nGood"
+    },
+    {
+     "fieldname": "sensitivity",
+     "fieldtype": "Select",
+     "label": "Sensitivity",
+     "options": "\nFrontline\nSignificant\nLow"
+    },
+    {
+     "fieldname": "staff",
+     "fieldtype": "Select",
+     "label": "Staff",
+     "options": "\nHigh\nMedium\nLow"
+    },
+    {
+     "fieldname": "section_break_001",
+     "fieldtype": "Section Break"
+    },
+    {
+     "fieldname": "company",
+     "fieldtype": "Link",
+     "hidden": 1,
+     "label": "Company",
+     "options": "Company"
+    },
+    {
+     "fieldname": "col_break_002",
+     "fieldtype": "Column Break"
+    },
+    {
+     "fieldname": "branch",
+     "fieldtype": "Link",
+     "label": "Branch",
+     "options": "Branch",
+     "reqd": 1
+    },
+    {
+     "fieldname": "audit_subject",
+     "fieldtype": "Small Text",
+     "label": "Audit Subject",
+     "reqd": 1
+    },
+    {
+     "fieldname": "posting_date",
+     "fieldtype": "Date",
+     "label": "Posting Date",
+     "reqd": 1
+    },
+    {
+     "fieldname": "risk_score_section",
+     "fieldtype": "Section Break",
+     "label": "`"
+    },
+    {
+     "fieldname": "col_break_001",
+     "fieldtype": "Column Break"
+    }
+   ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-11-21 09:07:41.434966",
+ "modified_by": "Administrator",
+ "module": "AMS",
+ "name": "Risk Factor",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

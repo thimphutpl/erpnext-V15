@@ -15,8 +15,9 @@ class EquipmentReservationEntry(Document):
 		from frappe.types import DF
 
 		amended_form: DF.Link | None
+		amended_from: DF.Link | None
 		ehf_name: DF.Data | None
-		equipment: DF.Literal["Equipment"]
+		equipment: DF.Link
 		from_date: DF.Date
 		from_time: DF.Time | None
 		hours: DF.Data | None

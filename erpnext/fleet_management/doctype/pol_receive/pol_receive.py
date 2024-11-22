@@ -17,6 +17,56 @@ from erpnext.accounts.general_ledger import (
 from erpnext.accounts.party import get_party_account
 
 class POLReceive(StockController):
+	# begin: auto-generated types
+	# This code is auto-generated. Do not modify anything in this block.
+
+	from typing import TYPE_CHECKING
+
+	if TYPE_CHECKING:
+		from erpnext.fleet_management.doctype.pol_receive_item.pol_receive_item import POLReceiveItem
+		from frappe.types import DF
+
+		amended_from: DF.Link | None
+		book_type: DF.Literal["", "Own", "Common"]
+		branch: DF.Link
+		company: DF.Link
+		consumed: DF.Link | None
+		cost_center: DF.Link | None
+		direct_consumption: DF.Check
+		discount_amount: DF.Currency
+		equipment: DF.Link
+		equipment_branch: DF.ReadOnly | None
+		equipment_category: DF.ReadOnly | None
+		equipment_number: DF.Data | None
+		equipment_type: DF.ReadOnly | None
+		equipment_warehouse: DF.Link
+		expense_account: DF.Link | None
+		fuelbook: DF.Data
+		fuelbook_branch: DF.ReadOnly | None
+		hiring_cost_center: DF.Data | None
+		hiring_warehouse: DF.Data | None
+		is_hsd_item: DF.Check
+		item_name: DF.Data | None
+		items: DF.Table[POLReceiveItem]
+		jv: DF.Link | None
+		km_difference: DF.Float
+		memo_number: DF.Data | None
+		mileage: DF.Float
+		outstanding_amount: DF.Currency
+		own_fb: DF.Data | None
+		paid_amount: DF.Currency
+		pol_type: DF.Link
+		posting_date: DF.Date
+		posting_time: DF.Time
+		previous_km: DF.Float
+		qty: DF.Float
+		rate: DF.Currency
+		remarks: DF.LongText | None
+		stock_uom: DF.Link | None
+		supplier: DF.Link
+		total_amount: DF.Currency
+		warehouse: DF.Link
+	# end: auto-generated types
 	def validate(self):
 		check_future_date(self.posting_date)
 		self.calculate_km_diff()

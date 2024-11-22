@@ -14,12 +14,13 @@
   "place",
   "amended_form",
   "from_time",
-  "to_time"
+  "to_time",
+  "amended_from"
  ],
  "fields": [
   {
    "fieldname": "equipment",
-   "fieldtype": "Select",
+   "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Equipment",
    "options": "Equipment",
@@ -75,12 +76,22 @@
    "fieldname": "to_time",
    "fieldtype": "Time",
    "label": "To Time"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Equipment Reservation Entry",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-10-07 10:42:21.605555",
+ "modified": "2024-11-20 23:27:39.939395",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Equipment Reservation Entry",

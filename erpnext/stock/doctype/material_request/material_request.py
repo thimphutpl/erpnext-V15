@@ -40,7 +40,6 @@ class MaterialRequest(BuyingController):
 		cost_center: DF.Link | None
 		customer: DF.Link | None
 		date: DF.Date | None
-		estimated_cost: DF.Data | None
 		items: DF.Table[MaterialRequestItem]
 		job_card: DF.Link | None
 		letter_head: DF.Link | None

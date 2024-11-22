@@ -14,6 +14,7 @@ class EquipmentOperator(Document):
 		from frappe.types import DF
 
 		contact_number: DF.Data | None
+		employee_type: DF.Literal["", "Employee", "Muster Roll Employee"]
 		end_date: DF.Date | None
 		license_no: DF.Data | None
 		operator: DF.Link

@@ -16,8 +16,7 @@
   "customer",
   "section_break_zrkq",
   "item",
-  "amended_form",
-  "sales_invoice"
+  "amended_form"
  ],
  "fields": [
   {
@@ -63,7 +62,7 @@
    "fieldname": "scrap",
    "fieldtype": "Select",
    "in_list_view": 1,
-   "label": "Scrap/Sale",
+   "label": "Scrap",
    "options": "\nScrap Asset",
    "reqd": 1
   },
@@ -92,18 +91,12 @@
    "options": "Bulk Asset Disposal",
    "print_hide": 1,
    "read_only": 1
-  },
-  {
-   "fieldname": "sales_invoice",
-   "fieldtype": "Link",
-   "label": "Sales Invoice",
-   "options": "Sales Invoice"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-18 00:29:23.864344",
+ "modified": "2024-11-21 15:59:12.552799",
  "modified_by": "Administrator",
  "module": "Assets",
  "name": "Bulk Asset Disposal",

@@ -14,9 +14,11 @@
   "received_date",
   "amended_from",
   "item_name",
+  "child_ref",
   "company",
   "brand",
-  "model"
+  "model",
+  "warehouse"
  ],
  "fields": [
   {
@@ -92,12 +94,23 @@
    "fieldtype": "Link",
    "label": "Cost Center",
    "options": "Cost Center"
+  },
+  {
+   "fieldname": "child_ref",
+   "fieldtype": "Data",
+   "label": "Child Table Reference"
+  },
+  {
+   "fieldname": "warehouse",
+   "fieldtype": "Link",
+   "label": "Warehouse",
+   "options": "Warehouse"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-08 10:55:39.106723",
+ "modified": "2024-11-20 20:50:33.962627",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Asset Received Entries",

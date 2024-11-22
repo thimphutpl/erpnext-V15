@@ -5,13 +5,15 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "vehicle_request",
-  "equipment_type1",
+  "branch",
+  "equipment_type",
   "column_break_1",
-  "branch1",
+  "ehf_name",
   "column_break_4",
-  "equipment1",
-  "registration_number1",
+  "equipment",
+  "pol_type",
+  "column_break_xgbl",
+  "registration_number",
   "equipment_operator",
   "section_break_9",
   "rate_type",
@@ -28,21 +30,8 @@
   "to_date",
   "to_time",
   "cb_100",
-  "section_break_1",
-  "equipment_hiring_form",
-  "col_brk_01",
-  "owned_company",
-  "section_break_27",
-  "equipment",
-  "branch",
-  "equipment_model",
-  "registration_number",
-  "posting_date",
-  "column_break_31",
-  "equipment_type",
-  "cost_center",
-  "site_name",
-  "pol_type",
+  "customer_type",
+  "customer",
   "section_break_8",
   "initial_hour",
   "column_break_21",
@@ -64,12 +53,6 @@
   "hour_adjustment_reason",
   "section_break_4",
   "vlogs",
-  "section_break_50",
-  "grand_total_km",
-  "column_break_51",
-  "grand_total_fuel_consumption",
-  "column_break_54",
-  "total_days",
   "section_break_31",
   "include_km",
   "ys_km",
@@ -90,74 +73,16 @@
   "invoice_created",
   "payment_completed",
   "section_break_remarks",
-  "remarks",
-  "column_break_87",
-  "company"
+  "remarks"
  ],
  "fields": [
-  {
-   "fieldname": "vehicle_request",
-   "fieldtype": "Data",
-   "hidden": 1,
-   "label": "Vehicle Request",
-   "options": "Vehicle Request"
-  },
-  {
-   "fieldname": "equipment_type1",
-   "fieldtype": "Link",
-   "hidden": 1,
-   "label": "Equipment Type",
-   "options": "Equipment Type",
-   "read_only": 1
-  },
-  {
-   "fetch_from": "branch.cost_center",
-   "fieldname": "cost_center",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "Cost Center",
-   "options": "Cost Center",
-   "read_only": 1
-  },
   {
    "fieldname": "column_break_1",
    "fieldtype": "Column Break"
   },
   {
-   "fetch_from": "equipment_hiring_form.branch",
-   "fieldname": "branch1",
-   "fieldtype": "Link",
-   "hidden": 1,
-   "ignore_user_permissions": 1,
-   "label": "Branch",
-   "options": "Branch",
-   "read_only": 1
-  },
-  {
-   "fieldname": "pol_type",
-   "fieldtype": "Data",
-   "label": "POL Type",
-   "options": "Item"
-  },
-  {
    "fieldname": "column_break_4",
    "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "equipment1",
-   "fieldtype": "Link",
-   "label": "Equipment",
-   "options": "Equipment",
-   "read_only": 1,
-   "reqd": 1
-  },
-  {
-   "fetch_from": "equipment.registeration_number",
-   "fieldname": "registration_number1",
-   "fieldtype": "Data",
-   "label": "Registration Number",
-   "read_only": 1,
-   "reqd": 1
   },
   {
    "fieldname": "equipment_operator",
@@ -219,8 +144,8 @@
   {
    "fieldname": "from_time",
    "fieldtype": "Time",
-   "hidden": 1,
-   "label": "From Time"
+   "label": "From Time",
+   "reqd": 1
   },
   {
    "fieldname": "column_break_20",
@@ -235,101 +160,33 @@
   {
    "fieldname": "to_time",
    "fieldtype": "Time",
-   "hidden": 1,
-   "label": "To Time"
+   "label": "To Time",
+   "reqd": 1
   },
   {
    "fieldname": "cb_100",
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "section_break_1",
-   "fieldtype": "Section Break"
-  },
-  {
-   "depends_on": "eval:doc.owned_company != 1",
-   "fieldname": "equipment_hiring_form",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "Equipment Hiring Form",
-   "options": "Equipment Hiring Form"
-  },
-  {
-   "fieldname": "col_brk_01",
-   "fieldtype": "Column Break"
-  },
-  {
-   "default": "0",
-   "fieldname": "owned_company",
-   "fieldtype": "Check",
-   "label": "Owned Company"
-  },
-  {
-   "fieldname": "section_break_27",
-   "fieldtype": "Section Break"
-  },
-  {
-   "fetch_from": "equipment_hiring_form.equipment",
-   "fieldname": "equipment",
-   "fieldtype": "Link",
-   "label": "Equipment",
-   "options": "Equipment",
-   "reqd": 1
-  },
-  {
-   "fetch_from": "equipment_hiring_form.branch",
    "fieldname": "branch",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Branch",
-   "options": "Branch"
-  },
-  {
-   "fetch_from": "equipment.equipment_model",
-   "fieldname": "equipment_model",
-   "fieldtype": "Data",
-   "label": "Equipment Model",
-   "read_only": 1
-  },
-  {
-   "fetch_from": "equipment.registeration_number",
-   "fieldname": "registration_number",
-   "fieldtype": "Data",
-   "label": "Registration Number",
-   "read_only": 1
-  },
-  {
-   "fieldname": "column_break_31",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fetch_from": "equipment.equipment_type",
-   "fieldname": "equipment_type",
-   "fieldtype": "Read Only",
-   "label": "Equipment Type"
-  },
-  {
-   "fieldname": "site_name",
-   "fieldtype": "Link",
-   "label": "Site Name",
-   "options": "Cost Center"
-  },
-  {
-   "fieldname": "posting_date",
-   "fieldtype": "Date",
-   "label": "Posting Date",
+   "options": "Branch",
    "reqd": 1
   },
   {
    "fieldname": "section_break_8",
    "fieldtype": "Section Break",
-   "hidden": 1,
    "label": "Time Details"
   },
   {
    "allow_on_submit": 1,
    "fieldname": "initial_hour",
    "fieldtype": "Float",
-   "label": "Initial Hour "
+   "in_list_view": 1,
+   "label": "Initial Hour ",
+   "width": "104"
   },
   {
    "fieldname": "column_break_21",
@@ -340,7 +197,9 @@
    "depends_on": "eval:doc.initial_hour >= 0",
    "fieldname": "final_hour",
    "fieldtype": "Float",
-   "label": "Final Hour"
+   "in_list_view": 1,
+   "label": "Final Hour",
+   "width": "113"
   },
   {
    "fieldname": "column_break_23",
@@ -350,6 +209,7 @@
    "allow_on_submit": 1,
    "fieldname": "total_work_time",
    "fieldtype": "Float",
+   "in_list_view": 1,
    "label": "Total Work Time (Hours)",
    "precision": "2",
    "read_only": 1
@@ -363,6 +223,7 @@
    "fieldname": "total_idle_time",
    "fieldtype": "Float",
    "hidden": 1,
+   "in_list_view": 1,
    "label": "Total Idle Time (Hours)",
    "precision": "2"
   },
@@ -413,7 +274,6 @@
    "description": "Hours to be added to invoice should be (+) and deducted should be (-)",
    "fieldname": "hour_taken",
    "fieldtype": "Int",
-   "hidden": 1,
    "label": "Hour Adjustment"
   },
   {
@@ -437,39 +297,8 @@
    "options": "Vehicle Log"
   },
   {
-   "fieldname": "section_break_50",
-   "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "grand_total_km",
-   "fieldtype": "Float",
-   "label": "Grand Total Km",
-   "read_only": 1
-  },
-  {
-   "fieldname": "column_break_51",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "grand_total_fuel_consumption",
-   "fieldtype": "Float",
-   "label": "Grand Total Fuel Consumption",
-   "read_only": 1
-  },
-  {
-   "fieldname": "column_break_54",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "total_days",
-   "fieldtype": "Int",
-   "label": "Total Days",
-   "read_only": 1
-  },
-  {
    "fieldname": "section_break_31",
    "fieldtype": "Section Break",
-   "hidden": 1,
    "label": "HSD Consumption Report",
    "read_only": 1
   },
@@ -477,6 +306,7 @@
    "default": "0",
    "fieldname": "include_km",
    "fieldtype": "Check",
+   "in_list_view": 1,
    "label": "Include KM Consumption"
   },
   {
@@ -499,6 +329,7 @@
    "default": "0",
    "fieldname": "include_hour",
    "fieldtype": "Check",
+   "in_list_view": 1,
    "label": "Include Hour Consumption"
   },
   {
@@ -521,6 +352,7 @@
   {
    "fieldname": "other_consumption",
    "fieldtype": "Float",
+   "in_list_view": 1,
    "label": "Other Consumption"
   },
   {
@@ -596,21 +428,68 @@
    "fieldtype": "Text Editor"
   },
   {
-   "fieldname": "column_break_87",
+   "depends_on": "eval:doc.branch",
+   "fieldname": "ehf_name",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Equipment Hiring Form",
+   "options": "Equipment Hiring Form",
+   "reqd": 1
+  },
+  {
+   "depends_on": "eval:doc.branch && doc.ehf_name",
+   "fieldname": "equipment",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Equipment",
+   "options": "Equipment",
+   "reqd": 1
+  },
+  {
+   "fieldname": "pol_type",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "POL Type"
+  },
+  {
+   "fieldname": "column_break_xgbl",
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "company",
+   "fetch_from": "equipment.registeration_number",
+   "fieldname": "registration_number",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Registration Number",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "customer_type",
+   "fieldtype": "Data",
+   "label": "Customer Type",
+   "read_only": 1
+  },
+  {
+   "fieldname": "customer",
    "fieldtype": "Link",
-   "label": "Company",
-   "options": "Company",
+   "label": "Customer",
+   "options": "Customer",
+   "read_only": 1
+  },
+  {
+   "fieldname": "equipment_type",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Equipment Type",
+   "options": "Equipment Type",
    "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-13 12:29:12.722204",
+ "modified": "2024-11-21 15:48:56.011639",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Vehicle Logbook",

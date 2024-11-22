@@ -171,74 +171,127 @@ def get_party_details(party, party_type, args=None):
 	return out
 
 
-def get_tax_template(posting_date, args):
-	"""Get matching tax rule"""
-	args = frappe._dict(args)
-	conditions = []
+# def get_tax_template(posting_date, args):
+# 	"""Get matching tax rule"""
+# 	args = frappe._dict(args)
+# 	conditions = []
 
-	if posting_date:
-		conditions.append(
-			f"""(from_date is null or from_date <= '{posting_date}')
-			and (to_date is null or to_date >= '{posting_date}')"""
-		)
-	else:
-		conditions.append("(from_date is null) and (to_date is null)")
+# 	if posting_date:
+# 		conditions.append(
+# 			f"""(from_date is null or from_date <= '{posting_date}')
+# 			and (to_date is null or to_date >= '{posting_date}')"""
+# 		)
+# 	else:
+# 		conditions.append("(from_date is null) and (to_date is null)")
 
-	conditions.append(
-		"ifnull(tax_category, '') = {}".format(frappe.db.escape(cstr(args.get("tax_category"))))
-	)
-	if "tax_category" in args.keys():
-		del args["tax_category"]
+# 	conditions.append(
+# 		"ifnull(tax_category, '') = {}".format(frappe.db.escape(cstr(args.get("tax_category"))))
+# 	)
+# 	if "tax_category" in args.keys():
+# 		del args["tax_category"]
 
-	for key, value in args.items():
-		if key == "use_for_shopping_cart":
-			conditions.append(f"use_for_shopping_cart = {1 if value else 0}")
-		elif key == "customer_group":
-			if not value:
-				value = get_root_of("Customer Group")
-			customer_group_condition = get_customer_group_condition(value)
-			conditions.append(f"ifnull({key}, '') in ('', {customer_group_condition})")
-		else:
-			conditions.append(f"ifnull({key}, '') in ('', {frappe.db.escape(cstr(value))})")
+# 	for key, value in args.items():
+# 		if key == "use_for_shopping_cart":
+# 			conditions.append(f"use_for_shopping_cart = {1 if value else 0}")
+# 		elif key == "customer_group":
+# 			if not value:
+# 				value = get_root_of("Customer Group")
+# 			customer_group_condition = get_customer_group_condition(value)
+# 			conditions.append(f"ifnull({key}, '') in ('', {customer_group_condition})")
+# 		else:
+# 			conditions.append(f"ifnull({key}, '') in ('', {frappe.db.escape(cstr(value))})")
 
-	tax_rule = frappe.db.sql(
-		"""select * from `tabTax Rule`
-		where {}""".format(" and ".join(conditions)),
-		as_dict=True,
-	)
+# 	tax_rule = frappe.db.sql("""select * from `tabTax Rule`
+# 		where {0}""".format(" and ".join(conditions)), as_dict = True)
 
-	if not tax_rule:
-		return None
+# 	if not tax_rule:
+# 		return None
 
-	for rule in tax_rule:
-		rule.no_of_keys_matched = 0
-		for key in args:
-			if rule.get(key):
-				rule.no_of_keys_matched += 1
+# 	for rule in tax_rule:
+# 		rule.no_of_keys_matched = 0
+# 		for key in args:
+# 			if rule.get(key): rule.no_of_keys_matched += 1
 
-	def cmp(a, b):
-		# refernce: https://docs.python.org/3.0/whatsnew/3.0.html#ordering-comparisons
-		return int(a > b) - int(a < b)
+			
 
-	rule = sorted(
-		tax_rule,
-		key=functools.cmp_to_key(
-			lambda b, a: cmp(a.no_of_keys_matched, b.no_of_keys_matched) or cmp(a.priority, b.priority)
-		),
-	)[0]
+# 	def cmp(a, b):
+# 		# refernce: https://docs.python.org/3.0/whatsnew/3.0.html#ordering-comparisons
+# 		return int(a > b) - int(a < b)
 
-	tax_template = rule.sales_tax_template or rule.purchase_tax_template
-	doctype = f"{rule.tax_type} Taxes and Charges Template"
+# 	rule = sorted(
+# 		tax_rule,
+# 		key=functools.cmp_to_key(
+# 			lambda b, a: cmp(a.no_of_keys_matched, b.no_of_keys_matched) or cmp(a.priority, b.priority)
+# 		),
+# 	)[0]
 
-	if frappe.db.get_value(doctype, tax_template, "disabled") == 1:
-		return None
+# 	tax_template = rule.sales_tax_template or rule.purchase_tax_template
+# 	doctype = f"{rule.tax_type} Taxes and Charges Template"
 
-	return tax_template
+# 	if frappe.db.get_value(doctype, tax_template, "disabled") == 1:
+# 		return None
+
+# 	return tax_template
 
 
 def get_customer_group_condition(customer_group):
 	condition = ""
-	customer_groups = ["%s" % (frappe.db.escape(d.name)) for d in get_parent_customer_groups(customer_group)]
-	if customer_groups:
-		condition = ",".join(["%s"] * len(customer_groups)) % (tuple(customer_groups))
+	# customer_groups = ["%s" % (frappe.db.escape(d.name)) for d in get_parent_customer_groups(customer_group)]
+	# if customer_groups:
+	# 	condition = ",".join(["%s"] * len(customer_groups)) % (tuple(customer_groups))
 	return condition
+
+
+
+def get_tax_template(posting_date, args):
+    """Get matching tax rule"""
+    args = frappe._dict(args)
+
+    # Build conditions for the SQL query
+    conditions = [
+        """
+        (from_date IS NULL OR from_date = '' OR from_date <= %s)
+        AND (to_date IS NULL OR to_date = '' OR to_date >= %s)
+        """
+    ]
+    values = [posting_date, posting_date]
+
+    for key, value in args.items():  # Updated to Python 3 syntax
+        if key == "use_for_shopping_cart":
+            conditions.append("use_for_shopping_cart = %s")
+            values.append(1 if value else 0)
+        else:
+            conditions.append("IFNULL({0}, '') IN ('', %s)".format(key))
+            values.append(frappe.db.escape(cstr(value)))
+
+    # Construct the query safely with parameterized inputs
+    query = """
+        SELECT *
+        FROM `tabTax Rule`
+        WHERE {}
+    """.format(" AND ".join(conditions))
+
+    tax_rule = frappe.db.sql(query, tuple(values), as_dict=True)
+
+    if not tax_rule:
+        return None
+
+    # Add a key match counter for prioritization
+    for rule in tax_rule:
+        rule["no_of_keys_matched"] = sum(1 for key in args if rule.get(key))
+
+    # Sort the rules based on key matches and priority
+    tax_rule = sorted(
+        tax_rule,
+        key=lambda rule: (rule["no_of_keys_matched"], rule["priority"]),
+        reverse=True,
+    )[0]
+
+    tax_template = tax_rule.get("sales_tax_template") or tax_rule.get("purchase_tax_template")
+    doctype = f"{tax_rule.get('tax_type')} Taxes and Charges Template"
+
+    # Check if the tax template is disabled
+    if frappe.db.get_value(doctype, tax_template, "disabled") == 1:
+        return None
+
+    return tax_template

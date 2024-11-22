@@ -438,6 +438,7 @@
   {
    "fieldname": "accounting_tab",
    "fieldtype": "Tab Break",
+   "hidden": 1,
    "label": "Accounting"
   },
   {
@@ -655,7 +656,7 @@
    "link_fieldname": "party"
   }
  ],
- "modified": "2024-11-19 19:16:14.778218",
+ "modified": "2024-11-21 09:37:10.030378",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Supplier",

@@ -135,6 +135,7 @@ class GLEntry(Document):
 					)
 				)
 			elif account_type == "Payable":
+				# frappe.throw(str(self.account))
 				frappe.throw(
 					_("{0} {1}: Supplier is required against Payable account {2}").format(
 						self.voucher_type, self.voucher_no, self.account

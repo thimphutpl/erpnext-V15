@@ -521,45 +521,6 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Maintenance Transaction",
-   "link_count": 3,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Braek Down Report",
-   "link_count": 0,
-   "link_to": "Break Down Report",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Job Cards ",
-   "link_count": 0,
-   "link_to": "Job Cards",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Mechanical Payment",
-   "link_count": 0,
-   "link_to": "Mechanical Payment",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
    "label": "Fleet Transaction",
    "link_count": 6,
    "link_type": "DocType",
@@ -822,10 +783,49 @@
    "link_type": "Report",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Maintenance Transaction",
+   "link_count": 3,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Break Down Report",
+   "link_count": 0,
+   "link_to": "Break Down Report",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Job Cards ",
+   "link_count": 0,
+   "link_to": "Job Cards",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Mechanical Payment",
+   "link_count": 0,
+   "link_to": "Mechanical Payment",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2024-11-20 11:28:43.849871",
- "modified_by": "Administrator",
+ "modified": "2024-11-21 18:26:37.295658",
+ "modified_by": "kinzang.namgyal@cdcl.bt",
  "module": "Fleet Management",
  "name": "Fleet Management",
  "number_cards": [],
@@ -835,7 +835,7 @@
  "quick_lists": [],
  "restrict_to_domain": "",
  "roles": [],
- "sequence_id": 8.0,
+ "sequence_id": 18.0,
  "shortcuts": [
   {
    "color": "Red",

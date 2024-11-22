@@ -20,8 +20,8 @@ class PerformanceEvaluation(Document):
 		self.set_dafault_values() 
 		self.check_duplicate_entry()
 		self.calculate_target_score()
-		if self.form_ii:
-			self.calculate_competency_score()
+		# if self.form_ii:
+			# self.calculate_competency_score()
 		if self.form_iii:
 			self.calculate_leadership_competency_score()
 		# self.calculate_negative_score()

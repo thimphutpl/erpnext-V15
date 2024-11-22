@@ -134,6 +134,7 @@
    "read_only": 1
   },
   {
+   "fetch_from": "item_code.item_name",
    "fieldname": "item_name",
    "fieldtype": "Data",
    "in_global_search": 1,
@@ -925,7 +926,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-11-15 15:03:25.305942",
+ "modified": "2024-11-21 12:21:02.639088",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Purchase Order Item",

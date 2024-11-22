@@ -17,6 +17,7 @@ class AssetReceivedEntries(Document):
 		amended_from: DF.Link | None
 		branch: DF.Link | None
 		brand: DF.Link | None
+		child_ref: DF.Data | None
 		company: DF.Link | None
 		cost_center: DF.Link | None
 		item_code: DF.Link
@@ -25,5 +26,6 @@ class AssetReceivedEntries(Document):
 		qty: DF.Data
 		received_date: DF.Date
 		ref_doc: DF.Link
+		warehouse: DF.Link | None
 	# end: auto-generated types
 	pass

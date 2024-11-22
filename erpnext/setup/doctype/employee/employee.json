@@ -34,7 +34,6 @@
   "region",
   "reports_to",
   "reports_to_name",
-  "business_activity",
   "column_break_22",
   "employment_status",
   "probation_end_date",
@@ -873,12 +872,6 @@
    "options": "Bank Account Type"
   },
   {
-   "fieldname": "business_activity",
-   "fieldtype": "Link",
-   "label": "Business Activity",
-   "options": "Business Activity"
-  },
-  {
    "fetch_from": "branch.cost_center",
    "fieldname": "cost_center",
    "fieldtype": "Link",
@@ -1030,7 +1023,7 @@
  "idx": 24,
  "image_field": "image",
  "links": [],
- "modified": "2024-11-20 12:24:41.343853",
+ "modified": "2024-11-21 22:22:55.198131",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee",

@@ -140,6 +140,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "fetch_from": "item_code.item_name",
    "fieldname": "item_name",
    "fieldtype": "Data",
    "in_global_search": 1,
@@ -910,7 +911,7 @@
  "idx": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-03-21 18:15:56.625005",
+ "modified": "2024-11-21 11:27:19.988268",
  "modified_by": "Administrator",
  "module": "Selling",
  "name": "Sales Order Item",

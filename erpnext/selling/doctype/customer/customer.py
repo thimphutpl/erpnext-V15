@@ -365,7 +365,7 @@ class Customer(TransactionBase):
         customer_pos_id: DF.Data | None
         customer_primary_address: DF.Link | None
         customer_primary_contact: DF.Link | None
-        customer_type: DF.Literal["", "Company", "Individual"]
+        customer_type: DF.Literal["", "Domestic Customer", "International Customer"]
         default_bank_account: DF.Link | None
         default_commission_rate: DF.Float
         default_currency: DF.Link | None
@@ -512,3 +512,115 @@ def parse_full_name(full_name):
     middle_name = name_parts[1] if len(name_parts) > 2 else ""
     last_name = name_parts[-1] if len(name_parts) > 1 else ""
     return first_name, middle_name, last_name
+
+@frappe.whitelist()
+def get_loyalty_programs(doc):
+	"""returns applicable loyalty programs for a customer"""
+
+	lp_details = []
+	loyalty_programs = frappe.get_all(
+		"Loyalty Program",
+		fields=["name", "customer_group", "customer_territory"],
+		filters={
+			"auto_opt_in": 1,
+			"from_date": ["<=", today()],
+			"ifnull(to_date, '2500-01-01')": [">=", today()],
+		},
+	)
+
+	for loyalty_program in loyalty_programs:
+		if (
+			not loyalty_program.customer_group
+			or doc.customer_group
+			in get_nested_links(
+				"Customer Group", loyalty_program.customer_group, doc.flags.ignore_permissions
+			)
+		) and (
+			not loyalty_program.customer_territory
+			or doc.territory
+			in get_nested_links(
+				"Territory", loyalty_program.customer_territory, doc.flags.ignore_permissions
+			)
+		):
+			lp_details.append(loyalty_program.name)
+
+	return lp_details
+
+
+def check_credit_limit(customer, company):
+	customer_outstanding = get_customer_outstanding(customer, company)
+
+	credit_limit = get_credit_limit(customer, company)
+	if credit_limit > 0 and flt(customer_outstanding) > credit_limit:
+		msgprint(_("Credit limit has been crossed for customer {0} {1}/{2}")
+			.format(customer, customer_outstanding, credit_limit))
+
+		# If not authorized person raise exception
+		credit_controller = frappe.db.get_value('Accounts Settings', None, 'credit_controller')
+		if not credit_controller or credit_controller not in frappe.get_roles():
+			throw(_("Please contact to the user who have Sales Master Manager {0} role")
+				.format(" / " + credit_controller if credit_controller else ""))
+
+def get_customer_outstanding(customer, company):
+	# Outstanding based on GL Entries
+	outstanding_based_on_gle = frappe.db.sql("""select sum(debit) - sum(credit)
+		from `tabGL Entry` where party_type = 'Customer' and party = %s and company=%s""", (customer, company))
+
+	outstanding_based_on_gle = flt(outstanding_based_on_gle[0][0]) if outstanding_based_on_gle else 0
+
+	# Outstanding based on Sales Order
+	outstanding_based_on_so = frappe.db.sql("""
+		select sum(base_grand_total*(100 - per_billed)/100)
+		from `tabSales Order`
+		where customer=%s and docstatus = 1 and company=%s
+		and per_billed < 100 and status != 'Closed'""", (customer, company))
+
+	outstanding_based_on_so = flt(outstanding_based_on_so[0][0]) if outstanding_based_on_so else 0.0
+
+	# Outstanding based on Delivery Note
+	unmarked_delivery_note_items = frappe.db.sql("""select
+			dn_item.name, dn_item.amount, dn.base_net_total, dn.base_grand_total
+		from `tabDelivery Note` dn, `tabDelivery Note Item` dn_item
+		where
+			dn.name = dn_item.parent
+			and dn.customer=%s and dn.company=%s
+			and dn.docstatus = 1 and dn.status not in ('Closed', 'Stopped')
+			and ifnull(dn_item.against_sales_order, '') = ''
+			and ifnull(dn_item.against_sales_invoice, '') = ''""", (customer, company), as_dict=True)
+
+	outstanding_based_on_dn = 0.0
+
+	for dn_item in unmarked_delivery_note_items:
+		si_amount = frappe.db.sql("""select sum(amount)
+			from `tabSales Invoice Item`
+			where dn_detail = %s and docstatus = 1""", dn_item.name)[0][0]
+
+		if flt(dn_item.amount) > flt(si_amount) and dn_item.base_net_total:
+			outstanding_based_on_dn += ((flt(dn_item.amount) - flt(si_amount)) \
+				/ dn_item.base_net_total) * dn_item.base_grand_total
+
+	return outstanding_based_on_gle + outstanding_based_on_so + outstanding_based_on_dn
+
+
+def get_credit_limit(customer, company):
+	credit_limit = None
+
+	if customer:
+		credit_limit, customer_group = frappe.db.get_value("Customer", customer, ["credit_limit", "customer_group"])
+
+		if not credit_limit:
+			credit_limit = frappe.db.get_value("Customer Group", customer_group, "credit_limit")
+
+	if not credit_limit:
+		credit_limit = frappe.db.get_value("Company", company, "credit_limit")
+
+	return flt(credit_limit)
+
+
+# def parse_full_name(full_name):
+#     # Custom implementation to split a full name into first, middle, and last names
+#     name_parts = full_name.strip().split(" ")
+#     first_name = name_parts[0]
+#     middle_name = name_parts[1] if len(name_parts) > 2 else ""
+#     last_name = name_parts[-1] if len(name_parts) > 1 else ""
+#     return first_name, middle_name, last_name

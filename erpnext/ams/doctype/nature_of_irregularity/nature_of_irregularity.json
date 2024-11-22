@@ -1,0 +1,47 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:nature_of_irregularity",
+ "creation": "2024-11-20 18:30:03.630894",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "nature_of_irregularity"
+ ],
+ "fields": [
+  {
+   "fieldname": "nature_of_irregularity",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Nature of Irregularity",
+   "reqd": 1,
+   "unique": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-11-20 18:33:22.515314",
+ "modified_by": "Administrator",
+ "module": "AMS",
+ "name": "Nature of Irregularity",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

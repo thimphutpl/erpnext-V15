@@ -64,7 +64,6 @@
   {
    "fieldname": "equipment_type",
    "fieldtype": "Link",
-   "in_list_view": 1,
    "label": "Equipment Type",
    "options": "Equipment Type",
    "reqd": 1
@@ -335,7 +334,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-11-20 15:23:17.820905",
+ "modified": "2024-11-20 23:01:46.461855",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Hiring Approval Details",

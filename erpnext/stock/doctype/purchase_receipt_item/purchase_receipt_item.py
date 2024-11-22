@@ -100,6 +100,7 @@ class PurchaseReceiptItem(Document):
 		subcontracting_receipt_item: DF.Data | None
 		supplier_part_no: DF.Data | None
 		total_weight: DF.Float
+		transporation_cost: DF.Currency
 		uom: DF.Link
 		use_serial_batch_fields: DF.Check
 		valuation_rate: DF.Currency

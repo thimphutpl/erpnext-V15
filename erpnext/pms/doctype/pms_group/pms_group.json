@@ -10,9 +10,15 @@
   "group_name",
   "weightage_for_target",
   "required_to_set_target",
-  "column_break_2",
+  "column_break_2t52g",
   "weightage_for_competency",
-  "description",
+  "description_form_ii",
+  "form_ii",
+  "column_break_2",
+  "weightage_for_form_three",
+  "description_form_iii",
+  "form_three",
+  "not_required_section",
   "negative_target"
  ],
  "fields": [
@@ -22,18 +28,20 @@
   },
   {
    "bold": 1,
+   "depends_on": "required_to_set_target",
    "fieldname": "weightage_for_target",
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Weightage For Target(%)",
-   "reqd": 1
+   "mandatory_depends_on": "required_to_set_target"
   },
   {
+   "depends_on": "form_ii",
    "fieldname": "weightage_for_competency",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Weightage For Competency(%)",
-   "reqd": 1
+   "label": "Weightage For Form ll (%)",
+   "mandatory_depends_on": "form_ii"
   },
   {
    "fieldname": "group_name",
@@ -50,16 +58,52 @@
    "label": "Required to set target"
   },
   {
-   "fieldname": "description",
-   "fieldtype": "Data",
-   "label": "Description"
-  },
-  {
    "default": "0",
    "fieldname": "negative_target",
    "fieldtype": "Check",
    "hidden": 1,
    "label": "Eligible for Negative Target"
+  },
+  {
+   "default": "0",
+   "fieldname": "form_three",
+   "fieldtype": "Check",
+   "label": "Eligible for Form lll"
+  },
+  {
+   "fieldname": "not_required_section",
+   "fieldtype": "Section Break",
+   "hidden": 1,
+   "label": "Not Required"
+  },
+  {
+   "depends_on": "form_three",
+   "fieldname": "weightage_for_form_three",
+   "fieldtype": "Data",
+   "label": "Weightage For Form lll(%)",
+   "mandatory_depends_on": "form_three"
+  },
+  {
+   "fieldname": "column_break_2t52g",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "form_ii",
+   "fieldtype": "Check",
+   "label": "Eligible for Form ll"
+  },
+  {
+   "depends_on": "form_ii",
+   "fieldname": "description_form_ii",
+   "fieldtype": "Data",
+   "label": "Description Form ll"
+  },
+  {
+   "depends_on": "form_three",
+   "fieldname": "description_form_iii",
+   "fieldtype": "Data",
+   "label": "Description Form III"
   }
  ],
  "links": [],

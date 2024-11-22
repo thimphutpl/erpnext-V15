@@ -21,7 +21,9 @@
   {
    "fieldname": "account_code",
    "fieldtype": "Link",
+   "in_filter": 1,
    "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Account Code",
    "options": "DHI GCOA",
    "reqd": 1,
@@ -87,7 +89,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-18 17:08:17.016950",
+ "modified": "2024-11-20 16:55:04.016877",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "DHI GCOA Mapper",

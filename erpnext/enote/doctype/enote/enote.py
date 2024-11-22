@@ -8,6 +8,33 @@ from frappe.model.naming import make_autoname
 from frappe.utils import nowdate
 
 class eNote(Document):
+	# begin: auto-generated types
+	# This code is auto-generated. Do not modify anything in this block.
+
+	from typing import TYPE_CHECKING
+
+	if TYPE_CHECKING:
+		from erpnext.enote.doctype.enote_reviewer.enote_reviewer import eNoteReviewer
+		from erpnext.enote.doctype.note_copy.note_copy import NoteCopy
+		from erpnext.enote.doctype.note_remark.note_remark import NoteRemark
+		from frappe.types import DF
+
+		amended_from: DF.Link | None
+		content: DF.TextEditor | None
+		copied: DF.TableMultiSelect[NoteCopy]
+		enote_format: DF.Data | None
+		enote_series: DF.Data
+		enote_type: DF.Link
+		forward_to: DF.Link | None
+		note_date: DF.Date | None
+		permitted_user: DF.Link | None
+		remark: DF.Table[NoteRemark]
+		reviewer_required: DF.Check
+		reviewers: DF.Table[eNoteReviewer]
+		title: DF.Data
+		type: DF.Literal["", "Process", "Payment"]
+		workflow_state: DF.Link | None
+	# end: auto-generated types
 	
 	def on_submit(self):
 		self.enote_format = make_autoname(str(self.enote_series)+".YYYY./.#####")

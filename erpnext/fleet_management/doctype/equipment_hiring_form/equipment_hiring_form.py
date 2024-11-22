@@ -32,9 +32,6 @@ class EquipmentHiringForm(Document):
 		customer_branch: DF.ReadOnly | None
 		customer_cost_center: DF.ReadOnly | None
 		end_date: DF.Date | None
-		equipment: DF.Link | None
-		equipment_model: DF.Data | None
-		equipment_type: DF.Data | None
 		er_reference: DF.Link | None
 		hiring_status: DF.Check
 		location: DF.Link | None
@@ -45,12 +42,9 @@ class EquipmentHiringForm(Document):
 		rate: DF.Currency
 		rate_based_on: DF.Literal["", "Daily", "Kilometer", "Lumpsum", "Per Hour", "Per Pack"]
 		reading_based_on: DF.Data | None
-		registeration_number: DF.Data | None
 		request_date: DF.Date
 		request_items: DF.Table[HiringRequestDetails]
 		start_date: DF.Date | None
-		supplier: DF.Link | None
-		target_hour: DF.Int
 		tc_name: DF.Link | None
 		terms: DF.TextEditor | None
 		total_hiring_amount: DF.Currency
@@ -207,29 +201,31 @@ class EquipmentHiringForm(Document):
 @frappe.whitelist()
 # def get_hire_rates(customer ="T-Customer" , equipment="EQUIP2400000", from_date= "18/11/2024"):
 def get_hire_rates(customer, equipment, from_date):
-    frappe.msgprint(str(customer))
-		
-        # if not customer or not equipment:
-        #         frappe.throw("Customer and Equipment Details are mandatory")
-		# frappe.msgprint(str(customer))
-        # c = frappe.get_doc("Customer", customer)
-        # wf = "a.rate_fuel"
-        # wof = "a.rate_wofuel"
-        # ir = "a.idle_rate"
+        if not customer or not equipment:
+                frappe.throw("Customer and Equipment Details are mandatory")
 
-        # if c.customer_group == "Internal":
-        #         wf = "a.rate_fuel_internal"
-        #         wof = "a.rate_wofuel_internal"
-        #         ir = "a.idle_rate_internal"
+        c = frappe.get_doc("Customer", customer)
+        wf = "a.rate_fuel"
+        wof = "a.rate_wofuel"
+        ir = "a.idle_rate"
 
-        # e = frappe.get_doc("Equipment", equipment)
+        if c.customer_group == "Internal":
+                wf = "a.rate_fuel_internal"
+                wof = "a.rate_wofuel_internal"
+                ir = "a.idle_rate_internal"
+
+        e = frappe.get_doc("Equipment", equipment)
         # db_query = "select with_fuel, without_fuel, idle from `tabHire Charge Parameter` where equipment_type = \"" + str(e.equipment_type) + "\" and equipment_model =\"" + str(e.equipment_model) + "\""
-        # # db_query = "select {0} as with_fuel, {1} as without_fuel, {2} as idle from `tabHire Charge Item` a, `tabHire Charge Parameter` b where a.parent = b.name and b.equipment_type = '{3}' and b.equipment_model = '{4}' and '{5}' between a.from_date and ifnull(a.to_date, now()) LIMIT 1"
+        # db_query = "select {0} as with_fuel, {1} as without_fuel, {2} as idle from `tabHire Charge Item` a, `tabHire Charge Parameter` b where a.parent = b.name and b.equipment_type = '{3}' and b.equipment_model = '{4}' and '{5}' between a.from_date and ifnull(a.to_date, now()) LIMIT 1"
         # data = frappe.db.sql(db_query.format(wf, wof, ir, e.equipment_type, e.equipment_model, from_date), as_dict=True)
-        # #data = frappe.db.sql(query, as_dict=True)
-        # if not data:
-        #         frappe.throw(_("No Hire Rates has been assigned for equipment type {0} and model {1}").format(e.equipment_type, e.equipment_model), title="No Data Found!")
-        # return data		
+        # data = frappe.db.sql(db_query.format(e.equipment_type, e.equipment_model), as_dict=True)
+        #data = frappe.db.sql(query, as_dict=True)
+        data = frappe.db.sql('''
+                             select with_fuel, without_fuel, idle from `tabHire Charge Parameter` where equipment_type ='{equipment_type}' and equipment_model='{model}';
+                             '''.format(equipment_type=e.equipment_type,model=e.equipment_model),as_dict=True)
+        if not data:
+                frappe.throw(_("No Hire Rates has been assigned for equipment type {0} and model {1}").format(e.equipment_type, e.equipment_model), title="No Data Found!")
+        return data		
 
 
 @frappe.whitelist()
@@ -245,7 +241,22 @@ def get_rates(form, equipment):
 	if form and equipment:
 		return frappe.db.sql("select rate_type, rate, idle_rate, from_date, to_date, from_time, to_time, tender_hire_rate from `tabHiring Approval Details` where docstatus = 1 and parent = \'" + str(form) + "\' and equipment = \'" + str(equipment) + "\'", as_dict=True)
 
-@frappe.whitelist()
+# @frappe.whitelist()
+# def get_rates(form, equipment):
+#     # Fetch rates using parameterized queries
+#     query = """
+#         SELECT rate_type, rate, idle_rate, from_date, to_date, from_time, to_time, place
+#         FROM `tabHiring Approval Details`
+#         WHERE name = %(form)s AND equipment = %(equipment)s
+#     """
+#     rates = frappe.db.sql(query, {"form": form, "equipment": equipment}, as_dict=True)
+#     if rates:
+#         return rates[0]
+#     else:
+#         frappe.throw(_("No rates found for the given Equipment and Hiring Form"))
+
+
+# @frappe.whitelist()
 # def update_status(name, customer, equipment):
 # 	# Get the hire rates based on customer and equipment
 #     hire_rates = get_hire_rates(customer, equipment)
@@ -254,9 +265,9 @@ def get_rates(form, equipment):
 
 # 	# Additional code if you want to use `hire_rates` in some way
 # 	frappe.msgprint(f"Hire rates fetched: {hire_rates}")
-def update_status(name):
-	so = frappe.get_doc("Equipment Hiring Form", name)
-	so.db_set("payment_completed", 1)
+# def update_status(name):
+# 	so = frappe.get_doc("Equipment Hiring Form", name)
+# 	so.db_set("payment_completed", 1)
 
 # @frappe.whitelist()
 # def equipment_query(doctype, txt, searchfield, start, page_len, filters):
@@ -391,4 +402,6 @@ def get_advance_balance(branch, customer):
 					data.append({"journal":a.journal, "name":a.name, "amount":a.amount, "party":a.party, "ref_type":a.ref_type, "ref_name":a.ref_name, "cost_center":a.cc, "posting_date":a.posting_date})
 		return data
 	else:
-		frappe.throw("Select Equipment Hiring Form first!")																						
+		frappe.throw("Select Equipment Hiring Form first!")	
+
+

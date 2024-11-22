@@ -25,7 +25,6 @@ class BulkAssetDisposal(Document):
 		branch: DF.Link | None
 		customer: DF.Link | None
 		item: DF.Table[BulkAssetDisposalItem]
-		sales_invoice: DF.Link | None
 		scrap: DF.Literal["", "Scrap Asset"]
 		scrap_date: DF.Date
 	# end: auto-generated types

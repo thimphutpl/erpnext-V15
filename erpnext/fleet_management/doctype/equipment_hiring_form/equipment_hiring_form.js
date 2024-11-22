@@ -86,8 +86,9 @@ frappe.ui.form.on('Equipment Hiring Form', {
 			}else{
 				frm.set_value("advance_amount", frm.doc.advance_required);				
 			}*/
-			frm.set_value("advance_amount", frm.doc.total_hiring_amount);	
+			
 		}
+		
 	},
 	"private": function(frm) {
 		cur_frm.toggle_reqd("customer_cost_center", frm.doc.private == 'Own Company')
@@ -135,6 +136,7 @@ frappe.ui.form.on("Hiring Request Details", {
 	"tender_hire_rate": function (frm, cdt, cdn) {
 
 	}
+	
 })
 
 function calculate_datetime(frm, cdt, cdn) {
@@ -180,7 +182,8 @@ frappe.ui.form.on("Hiring Approval Details", {
 		calculate_total(frm)
 	},
 	"grand_total": function (frm, cdt, cdn) {
-		calculate_total(frm)
+		calculate_total(frm);
+		
 	},
 	"rate_type": function (frm, cdt, cdn) {
 		get_rates(frm, cdt, cdn)
@@ -228,12 +231,11 @@ function calculate_time(frm, cdt, cdn) {
 }
 
 function get_rates(frm, cdt, cdn) {
-	alert(doc.equipment)
 	doc = locals[cdt][cdn]
 	if (doc.equipment && doc.rate_type && doc.from_date) {
 		return frappe.call({
 			method: "erpnext.fleet_management.doctype.equipment_hiring_form.equipment_hiring_form.get_hire_rates",
-			args: { customer:doc,equipment: doc.equipment, from_date: doc.from_date },
+			args: { customer:frm.doc.customer, equipment: doc.equipment, from_date: doc.from_date },
 			callback: function (r) {
 				if (r.message) {
 					if (doc.rate_type == "Without Fuel") {
@@ -293,6 +295,9 @@ function calculate_total(frm) {
 	})
 	frm.set_value("total_hiring_amount", total)
 	frm.refresh_field("total_hiring_amount")
+	
+	frm.set_value("advance_amount", frm.doc.total_hiring_amount);	
+	frm.refresh_field("advance_amount");
 }
 
 function calculate_amount(frm, cdt, cdn) {

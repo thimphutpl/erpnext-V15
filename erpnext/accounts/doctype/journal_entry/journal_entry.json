@@ -11,6 +11,7 @@
   "entry_type_and_date",
   "is_system_generated",
   "title",
+  "branch",
   "voucher_type",
   "naming_series",
   "finance_book",
@@ -26,7 +27,9 @@
   "2_add_edit_gl_entries",
   "accounts",
   "tds_table",
+  "use_check_lot",
   "section_break99",
+  "select_cheque_lot",
   "cheque_no",
   "cheque_date",
   "user_remark",
@@ -64,6 +67,15 @@
   "column_break3",
   "is_opening",
   "stock_entry",
+  "money_receipt_information_section",
+  "get_series",
+  "money_receipt_prefix",
+  "cb_sb_mri1",
+  "money_receipt_no",
+  "epayment_status_section",
+  "payment_status",
+  "cb_sb_ep1",
+  "bank_payment",
   "subscription_section",
   "auto_repeat",
   "amended_from",
@@ -566,6 +578,84 @@
    "fieldtype": "HTML",
    "label": "TDS Table",
    "read_only": 1
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Branch",
+   "options": "Branch",
+   "reqd": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "default": "0",
+   "depends_on": "eval:doc.naming_series=='Bank Payment Voucher'",
+   "fieldname": "use_check_lot",
+   "fieldtype": "Check",
+   "label": "Assign Using Check Lot"
+  },
+  {
+   "allow_on_submit": 1,
+   "depends_on": "eval:doc.use_check_lot==1",
+   "fieldname": "select_cheque_lot",
+   "fieldtype": "Link",
+   "label": "Select Cheque Lot",
+   "options": "Cheque Lot"
+  },
+  {
+   "depends_on": "eval:doc.docstatus==1 && (doc.naming_series=='Bank Receipt Voucher' || doc.naming_series=='Cash Receipt Voucher')",
+   "fieldname": "money_receipt_information_section",
+   "fieldtype": "Section Break",
+   "label": "Money Receipt Information"
+  },
+  {
+   "allow_on_submit": 1,
+   "depends_on": "eval:doc.money_receipt_no==0",
+   "fieldname": "get_series",
+   "fieldtype": "Button",
+   "label": "Get Series"
+  },
+  {
+   "fieldname": "money_receipt_prefix",
+   "fieldtype": "Data",
+   "label": "Money Receipt Prefix",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cb_sb_mri1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "money_receipt_no",
+   "fieldtype": "Data",
+   "label": "Money Receipt No",
+   "read_only": 1
+  },
+  {
+   "fieldname": "epayment_status_section",
+   "fieldtype": "Section Break",
+   "label": "ePayment Status"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "payment_status",
+   "fieldtype": "Select",
+   "label": "Payment Status",
+   "options": "\nPayment Under Process\nPayment Successful\nPayment Failed\nPartial Payment\nPayment Cancelled",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cb_sb_ep1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "bank_payment",
+   "fieldtype": "Data",
+   "label": "Bank Payment",
+   "read_only": 1
   }
  ],
  "icon": "fa fa-file-text",
@@ -580,7 +670,7 @@
    "table_fieldname": "payment_entries"
   }
  ],
- "modified": "2024-11-19 17:14:41.748041",
+ "modified": "2024-11-21 00:29:32.397653",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Journal Entry",

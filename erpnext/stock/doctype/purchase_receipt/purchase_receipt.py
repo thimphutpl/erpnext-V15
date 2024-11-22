@@ -371,7 +371,7 @@ class PurchaseReceipt(BuyingController):
 		# because updating ordered qty, reserved_qty_for_subcontract in bin
 		# depends upon updated ordered qty in PO
 		self.update_stock_ledger()
-		# self.make_gl_entries()
+		self.make_gl_entries()
 		self.repost_future_sle_and_gle()
 		self.set_consumed_qty_in_subcontract_order()
 		self.reserve_stock_for_sales_order()
@@ -431,7 +431,7 @@ class PurchaseReceipt(BuyingController):
 				ae.qty = a.qty
 				ae.company = self.company
 				ae.received_date = self.posting_date
-				ae.reference_type = "Purchase Receipt"
+				# ae.reference_type = "Purchase Receipt"
 				ae.ref_doc = self.name
 				ae.branch = self.branch
 				ae.cost_center = a.cost_center

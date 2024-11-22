@@ -370,19 +370,19 @@ erpnext.accounts.SalesInvoiceController = class SalesInvoiceController extends (
 			}
 		);
 
-		if (this.frm.doc.customer) {
-			frappe.call({
-				method: "erpnext.accounts.doctype.sales_invoice.sales_invoice.get_loyalty_programs",
-				args: {
-					customer: this.frm.doc.customer,
-				},
-				callback: function (r) {
-					if (r.message && r.message.length > 1) {
-						select_loyalty_program(me.frm, r.message);
-					}
-				},
-			});
-		}
+		// if (this.frm.doc.customer) {
+		// 	frappe.call({
+		// 		method: "erpnext.accounts.doctype.sales_invoice.sales_invoice.get_loyalty_programs",
+		// 		args: {
+		// 			customer: this.frm.doc.customer,
+		// 		},
+		// 		callback: function (r) {
+		// 			if (r.message && r.message.length > 1) {
+		// 				select_loyalty_program(me.frm, r.message);
+		// 			}
+		// 		},
+		// 	});
+		// }
 	}
 
 	make_inter_company_invoice() {

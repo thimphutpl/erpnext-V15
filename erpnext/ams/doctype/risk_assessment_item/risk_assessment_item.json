@@ -1,0 +1,134 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-11-21 09:14:11.074650",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "branch",
+  "audit_subject",
+  "changes",
+  "budget",
+  "staff",
+  "weightage_ce",
+  "col_break_001",
+  "posting_date",
+  "risk_factor",
+  "prior_audit_work",
+  "complexity",
+  "control_environment",
+  "operating_management",
+  "sensitivity"
+ ],
+ "fields": [
+  {
+   "fieldname": "audit_subject",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "label": "Audit Subject",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "risk_factor.prior_audit_work",
+   "fieldname": "prior_audit_work",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Prior Audit Work",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "risk_factor.control_environment",
+   "fieldname": "control_environment",
+   "fieldtype": "Data",
+   "label": "Control Environment",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "risk_factor.changes",
+   "fieldname": "changes",
+   "fieldtype": "Data",
+   "label": "Changes",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "risk_factor.budget",
+   "fieldname": "budget",
+   "fieldtype": "Data",
+   "label": "Budget ",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "risk_factor.staff",
+   "fieldname": "staff",
+   "fieldtype": "Data",
+   "label": "Staff",
+   "read_only": 1
+  },
+  {
+   "fieldname": "col_break_001",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "risk_factor",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Risk Factor",
+   "options": "Risk Factor",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "risk_factor.complexity",
+   "fieldname": "complexity",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Complexity",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "risk_factor.operating_management",
+   "fieldname": "operating_management",
+   "fieldtype": "Data",
+   "label": "Operating Management",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "risk_factor.sensitivity",
+   "fieldname": "sensitivity",
+   "fieldtype": "Data",
+   "label": "Sensitivity",
+   "read_only": 1
+  },
+  {
+   "fieldname": "weightage_ce",
+   "fieldtype": "Select",
+   "label": "Weightage (CE)",
+   "options": "\nVery Weak\nWeak\nModerate"
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "label": "Branch",
+   "options": "Branch",
+   "reqd": 1
+  },
+  {
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "label": "Posting Date",
+   "reqd": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2024-11-21 09:14:11.074650",
+ "modified_by": "Administrator",
+ "module": "AMS",
+ "name": "Risk Assessment Item",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

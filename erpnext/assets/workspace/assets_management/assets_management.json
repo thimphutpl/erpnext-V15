@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"KMRLJII0Es\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h2\\\">Masters Data, Transactions and Reports</span>\",\"col\":12}},{\"id\":\"O5b3VdawHl\",\"type\":\"card\",\"data\":{\"card_name\":\"Assets\",\"col\":4}},{\"id\":\"8b0kxvMGfF\",\"type\":\"card\",\"data\":{\"card_name\":\"Transaction\",\"col\":4}},{\"id\":\"A2zZfrLLBU\",\"type\":\"card\",\"data\":{\"card_name\":\"Reports\",\"col\":4}}]",
+ "content": "[{\"id\":\"KMRLJII0Es\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h2\\\">Masters Data, Transactions and Reports</span>\",\"col\":12}},{\"id\":\"O5b3VdawHl\",\"type\":\"card\",\"data\":{\"card_name\":\"Assets Management \",\"col\":4}},{\"id\":\"8b0kxvMGfF\",\"type\":\"card\",\"data\":{\"card_name\":\"Transaction\",\"col\":4}},{\"id\":\"A2zZfrLLBU\",\"type\":\"card\",\"data\":{\"card_name\":\"Reports\",\"col\":4}}]",
  "creation": "2020-03-02 15:43:27.634865",
  "custom_blocks": [],
  "docstatus": 0,
@@ -9,58 +9,10 @@
  "hide_custom": 0,
  "icon": "assets",
  "idx": 0,
+ "indicator_color": "",
  "is_hidden": 0,
- "label": "Assets",
+ "label": "Assets Management",
  "links": [
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Transaction",
-   "link_count": 4,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Asset Movement",
-   "link_count": 0,
-   "link_to": "Asset Movement",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Asset Issue Details",
-   "link_count": 0,
-   "link_to": "Asset Issue Details",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Asset Value Adjustment",
-   "link_count": 0,
-   "link_to": "Asset Value Adjustment",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Bulk Asset Disposal",
-   "link_count": 0,
-   "link_to": "Bulk Asset Disposal",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
   {
    "hidden": 0,
    "is_query_report": 0,
@@ -113,7 +65,56 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Assets",
+   "label": "Transaction",
+   "link_count": 4,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Asset Movement",
+   "link_count": 0,
+   "link_to": "Asset Movement",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Asset Issue Details",
+   "link_count": 0,
+   "link_to": "Asset Issue Details",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Asset Value Adjustment",
+   "link_count": 0,
+   "link_to": "Asset Value Adjustment",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Bulk Asset Disposal",
+   "link_count": 0,
+   "link_to": "Bulk Asset Disposal",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Assets Management ",
    "link_count": 3,
    "link_type": "DocType",
    "onboard": 0,
@@ -152,10 +153,10 @@
    "type": "Link"
   }
  ],
- "modified": "2024-11-20 10:25:47.979890",
- "modified_by": "tashi.wangchuk@cdcl.bt",
+ "modified": "2024-11-21 18:26:37.600984",
+ "modified_by": "kinzang.namgyal@cdcl.bt",
  "module": "Assets",
- "name": "Assets",
+ "name": "Assets Management",
  "number_cards": [],
  "owner": "Administrator",
  "parent_page": "",
@@ -170,7 +171,7 @@
    "role": "Asset User"
   }
  ],
- "sequence_id": 11.0,
+ "sequence_id": 20.0,
  "shortcuts": [],
- "title": "Assets"
+ "title": "Assets Management"
 }

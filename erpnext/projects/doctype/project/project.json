@@ -56,7 +56,7 @@
   "sb_advances",
   "project_advance_item",
   "boq_section",
-  "sb_boq",
+  "project_boq_item",
   "sb_invoices",
   "project_invoice_item",
   "section_break0",
@@ -634,13 +634,6 @@
    "label": "BOQ"
   },
   {
-   "fieldname": "sb_boq",
-   "fieldtype": "Table",
-   "label": "Project BOQ Item",
-   "options": "Project BOQ Item",
-   "read_only": 1
-  },
-  {
    "fieldname": "sb_invoices",
    "fieldtype": "Section Break",
    "label": "INVOICES"
@@ -651,6 +644,13 @@
    "label": "Project Invoice Item",
    "options": "Project Invoice Item",
    "read_only": 1
+  },
+  {
+   "fieldname": "project_boq_item",
+   "fieldtype": "Table",
+   "label": "Project BOQ Item",
+   "options": "Project BOQ Item",
+   "read_only": 1
   }
  ],
  "icon": "fa fa-puzzle-piece",
@@ -658,7 +658,7 @@
  "index_web_pages_for_search": 1,
  "links": [],
  "max_attachments": 4,
- "modified": "2024-11-12 14:53:04.986020",
+ "modified": "2024-11-21 12:46:56.457136",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Project",

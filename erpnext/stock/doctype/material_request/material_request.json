@@ -14,7 +14,6 @@
   "customer",
   "company",
   "branch",
-  "estimated_cost",
   "column_break_2",
   "transaction_date",
   "schedule_date",
@@ -384,11 +383,6 @@
    "read_only": 1
   },
   {
-   "fieldname": "estimated_cost",
-   "fieldtype": "Data",
-   "label": "Estimated Cost"
-  },
-  {
    "fieldname": "approver_details_section",
    "fieldtype": "Section Break",
    "label": "Approver Details"
@@ -413,7 +407,7 @@
    "depends_on": "eval:doc.material_request_type==\"Purchase\"",
    "fieldname": "date",
    "fieldtype": "Date",
-   "label": "Date",
+   "label": "Changed Date",
    "read_only": 1
   }
  ],
@@ -421,7 +415,7 @@
  "idx": 70,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-20 15:16:12.386596",
+ "modified": "2024-11-21 14:40:08.316103",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Material Request",

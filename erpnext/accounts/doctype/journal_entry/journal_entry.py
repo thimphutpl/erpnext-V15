@@ -54,8 +54,10 @@ class JournalEntry(AccountsController):
 		amended_from: DF.Link | None
 		apply_tds: DF.Check
 		auto_repeat: DF.Link | None
+		bank_payment: DF.Data | None
 		bill_date: DF.Date | None
 		bill_no: DF.Data | None
+		branch: DF.Link
 		business_activity: DF.Link | None
 		cheque_date: DF.Date | None
 		cheque_no: DF.Data | None
@@ -70,16 +72,20 @@ class JournalEntry(AccountsController):
 		is_system_generated: DF.Check
 		letter_head: DF.Link | None
 		mode_of_payment: DF.Link | None
+		money_receipt_no: DF.Data | None
+		money_receipt_prefix: DF.Data | None
 		multi_currency: DF.Check
 		naming_series: DF.Link
 		paid_loan: DF.Data | None
 		pay_to_recd_from: DF.Data | None
 		payment_order: DF.Link | None
+		payment_status: DF.Literal["", "Payment Under Process", "Payment Successful", "Payment Failed", "Partial Payment", "Payment Cancelled"]
 		posting_date: DF.Date
 		process_deferred_accounting: DF.Link | None
 		remark: DF.SmallText | None
 		repost_required: DF.Check
 		reversal_of: DF.Link | None
+		select_cheque_lot: DF.Link | None
 		select_print_heading: DF.Link | None
 		stock_entry: DF.Link | None
 		tax_withholding_category: DF.Link | None
@@ -89,6 +95,7 @@ class JournalEntry(AccountsController):
 		total_amount_in_words: DF.Data | None
 		total_credit: DF.Currency
 		total_debit: DF.Currency
+		use_check_lot: DF.Check
 		user_remark: DF.SmallText | None
 		voucher_type: DF.Literal["Journal Entry", "Inter Company Journal Entry", "Bank Entry", "Cash Entry", "Credit Card Entry", "Debit Note", "Credit Note", "Contra Entry", "Excise Entry", "Write Off Entry", "Opening Entry", "Depreciation Entry", "Exchange Rate Revaluation", "Exchange Gain Or Loss", "Deferred Revenue", "Deferred Expense"]
 		write_off_amount: DF.Currency

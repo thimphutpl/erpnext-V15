@@ -33,10 +33,10 @@ def get_data(filters):
 					   '''.format(d.dhi_gcoa_acc,d.dhi_gcoa_acc_code,d.is_inter_company,d.dhi_gcoa_acc),as_dict=1)
 			data += val
 	elif filters.map.strip() == "COA Unmapped":
+		cond = ""
 		if filters.is_inter_company:
 			cond = " and b.is_inter_company = 1 "
-		else:
-			cond = " and b.is_inter_company = 0 "
+			
 		data = frappe.db.sql('''
 						SELECT name as coa_acc
 						FROM `tabAccount` a

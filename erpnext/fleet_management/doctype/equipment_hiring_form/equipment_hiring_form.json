@@ -26,13 +26,7 @@
   "customer_branch",
   "customer_cost_center",
   "section_break_3",
-  "equipment",
-  "supplier",
-  "registeration_number",
   "request_items",
-  "equipment_type",
-  "equipment_model",
-  "target_hour",
   "equipment_approved_details_section",
   "approved_items",
   "advance_details_if_private_section",
@@ -105,42 +99,6 @@
    "fieldtype": "Section Break",
    "hidden": 1,
    "label": "Equipment Request Details"
-  },
-  {
-   "fieldname": "equipment",
-   "fieldtype": "Link",
-   "hidden": 1,
-   "label": "Equipment",
-   "options": "Equipment"
-  },
-  {
-   "fieldname": "supplier",
-   "fieldtype": "Link",
-   "hidden": 1,
-   "label": "Owner",
-   "options": "Supplier"
-  },
-  {
-   "fetch_from": "equipment.equipment_type",
-   "fieldname": "equipment_type",
-   "fieldtype": "Data",
-   "hidden": 1,
-   "label": "Equipment Type",
-   "read_only": 1
-  },
-  {
-   "fetch_from": "equipment.equipment_model",
-   "fieldname": "equipment_model",
-   "fieldtype": "Data",
-   "hidden": 1,
-   "label": "Equipment Model",
-   "read_only": 1
-  },
-  {
-   "fieldname": "target_hour",
-   "fieldtype": "Int",
-   "hidden": 1,
-   "label": "Target Hour"
   },
   {
    "fieldname": "section_break_15",
@@ -348,7 +306,6 @@
    "allow_on_submit": 1,
    "fieldname": "er_reference",
    "fieldtype": "Link",
-   "in_list_view": 1,
    "label": "ER Reference",
    "options": "Equipment Request"
   },
@@ -358,21 +315,12 @@
    "hidden": 1,
    "label": "Location",
    "options": "Location"
-  },
-  {
-   "fetch_from": "equipment.registeration_number",
-   "fieldname": "registeration_number",
-   "fieldtype": "Data",
-   "hidden": 1,
-   "in_list_view": 1,
-   "label": "Registration Number",
-   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-18 15:26:01.058683",
+ "modified": "2024-11-21 00:53:28.873442",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Equipment Hiring Form",

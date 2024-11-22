@@ -1,12 +1,6 @@
 // Copyright (c) 2024, Frappe Technologies Pvt. Ltd. and contributors
 // For license information, please see license.txt
 
-// frappe.ui.form.on("Hire Charge Parameter", {
-// 	refresh(frm) {
-
-// 	},
-// });
-
 frappe.ui.form.on('Hire Charge Parameter', {
 	refresh: function(frm) {
 		disable_drag_drop(frm)
@@ -14,24 +8,7 @@ frappe.ui.form.on('Hire Charge Parameter', {
 
 	onload: function(frm) {
 		disable_drag_drop(frm);
-		// Set up dynamic filter for registeration_number based on equipment_type
-        // frm.set_query("registeration_number", function() {
-        //     return {
-        //         filters: {
-        //             "equipment_type": frm.doc.equipment_type
-        //         }
-        //     };
-        // });
 	},
-
-	// registeration_number: function(frm) {
-    //     // Fetch the equipment model based on the selected registeration number
-    //     if (frm.doc.registeration_number) {
-    //         frappe.db.get_value("Equipment", frm.doc.registeration_number, "equipment_model", (value) => {
-    //             frm.set_value("equipment_model", value.equipment_model);
-    //         });
-    //     }
-    // },
 
 	"items_on_form_rendered": function(frm, grid_row, cdt, cdn) {
 		var row = cur_frm.open_grid_row();
@@ -76,17 +53,6 @@ frappe.ui.form.on('Hire Charge Parameter', {
 function disable_drag_drop(frm) {
 	frm.page.body.find('[data-fieldname="items"] [data-idx] .data-row').removeClass('sortable-handle');
 }
-
-// frappe.ui.form.on("Hire Charge Parameter", "refresh", function(frm) {
-//     cur_frm.set_query("registeration_number", function() {
-//         return {
-//             query: "erpnext.fleet_management.doctype.hire_charge_parameter.hire_charge_parameter.fetch_registeration_numbers",
-//             "filters": {
-// 		"equipment_type": frm.doc.equipment_type
-//             }
-//         };
-//     });
-// })
 
 frappe.ui.form.on("Hire Charge Parameter", "refresh", function(frm) {
     cur_frm.set_query("equipment_model", function() {

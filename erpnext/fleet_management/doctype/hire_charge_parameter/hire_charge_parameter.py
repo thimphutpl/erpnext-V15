@@ -7,7 +7,6 @@ from frappe.model.document import Document
 from frappe.utils import getdate
 from frappe.utils.data import nowdate, add_years, add_days, date_diff
 
-
 class HireChargeParameter(Document):
 	# begin: auto-generated types
 	# This code is auto-generated. Do not modify anything in this block.
@@ -88,7 +87,7 @@ def fetch_registeration_numbers(doctype, txt, searchfield, start, page_len, filt
         SELECT
             registeration_number
         FROM
-            `tabEquipment Model`
+            `tabEquipment`
         WHERE
             equipment_type = %(equipment_type)s
         AND

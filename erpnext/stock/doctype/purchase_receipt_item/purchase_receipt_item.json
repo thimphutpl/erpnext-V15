@@ -15,6 +15,7 @@
   "supplier_part_no",
   "column_break_2",
   "item_name",
+  "transporation_cost",
   "section_break_4",
   "description",
   "brand",
@@ -1131,12 +1132,18 @@
    "fieldtype": "Check",
    "label": "Return Qty from Rejected Warehouse",
    "read_only": 1
+  },
+  {
+   "fieldname": "transporation_cost",
+   "fieldtype": "Currency",
+   "label": "Transporation Cost ",
+   "set_only_once": 1
   }
  ],
  "idx": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-11-18 10:12:55.999318",
+ "modified": "2024-11-21 09:42:40.687358",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Purchase Receipt Item",

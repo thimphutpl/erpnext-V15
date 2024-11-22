@@ -18,14 +18,9 @@ class TransactionDeletionRecord(Document):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
+		from erpnext.accounts.doctype.transaction_deletion_record_details.transaction_deletion_record_details import TransactionDeletionRecordDetails
+		from erpnext.setup.doctype.transaction_deletion_record_item.transaction_deletion_record_item import TransactionDeletionRecordItem
 		from frappe.types import DF
-
-		from erpnext.accounts.doctype.transaction_deletion_record_details.transaction_deletion_record_details import (
-			TransactionDeletionRecordDetails,
-		)
-		from erpnext.setup.doctype.transaction_deletion_record_item.transaction_deletion_record_item import (
-			TransactionDeletionRecordItem,
-		)
 
 		amended_from: DF.Link | None
 		clear_notifications: DF.Check
@@ -460,8 +455,44 @@ def get_doctypes_to_be_ignored():
 		"Customer",
 		"Supplier",
 		"Item Sub Group",
-		"Branch",
 	]
+	#jai
+	doctypes_to_be_ignored.extend([
+		"Branch",
+		"DHI GCOA Mapper",
+		"DHI GCOA",
+		"DHI Company",
+		"Asset Category",
+		"Department",
+		"Designation",
+		"Employee Group",
+		"Employee Grade",
+		"Equipment Category",
+		"Equipment Type",
+		"Equipment Model",
+		"Fuelbook",
+		"Service",
+		"Project Type",
+		"Project",
+		"Task",
+		"Timesheet",
+		"Salary Structure",
+		"Salary Component",
+		"Leave Allocation",
+		"Leave Type",
+		"Leave Period",
+		"Leave Policy",
+		"Leave Policy Assignment",
+		"Holiday List",
+		"Journal Entry Series",
+		"Item Group",
+		"Item Sub Group",
+		"Muster Roll Employee",
+		"Muster Roll Application",
+		"Customer Group",
+		"Financial Institution",
+		"Financial Institution Branch",
+	])
 
 	doctypes_to_be_ignored.extend(frappe.get_hooks("company_data_to_be_ignored") or [])
 

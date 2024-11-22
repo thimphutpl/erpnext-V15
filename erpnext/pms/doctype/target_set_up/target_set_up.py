@@ -16,9 +16,9 @@ class TargetSetUp(Document):
 		self.load_pre_requirement()
 		self.check_target()
 		self.check_duplicate_entry() 
-		validate_workflow_states(self) 
-		if self.workflow_state != "Approved":
-			notify_workflow_states(self)
+		# validate_workflow_states(self) 
+		# if self.workflow_state != "Approved":
+		# 	notify_workflow_states(self)
 		if self.reference and self.reason:
 			return
 		else:  

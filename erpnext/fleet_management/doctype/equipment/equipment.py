@@ -86,7 +86,7 @@ class Equipment(Document):
 		self.set_name()
 		self.validate_asset()
 		
-	# @frappe.whitelist()
+	@frappe.whitelist()
 	def create_equipment_history(self, branch, on_date, ref_doc, purpose):
 		from_date = on_date
 		if purpose == "Cancel":

@@ -98,7 +98,7 @@ frappe.ui.form.on("Timesheet", {
 		}
 
 		let filters = {
-			status: "Open",
+			status: ["!=", "Closed"]
 		};
 
 		if (frm.doc.customer) {

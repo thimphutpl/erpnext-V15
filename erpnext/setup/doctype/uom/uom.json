@@ -36,6 +36,7 @@
    "default": "1",
    "fieldname": "enabled",
    "fieldtype": "Check",
+   "in_list_view": 1,
    "label": "Enabled"
   },
   {
@@ -46,6 +47,9 @@
    "description": "Please add the complete description",
    "fieldname": "description",
    "fieldtype": "Data",
+   "in_global_search": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Description",
    "reqd": 1
   }
@@ -53,7 +57,7 @@
  "icon": "fa fa-compass",
  "idx": 1,
  "links": [],
- "modified": "2024-11-20 11:38:17.862676",
+ "modified": "2024-11-21 12:11:03.867051",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "UOM",

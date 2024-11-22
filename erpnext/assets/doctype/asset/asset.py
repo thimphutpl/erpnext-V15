@@ -930,14 +930,14 @@ def make_sales_invoice(asset, item_code, company, serial_no=None):
 	si = frappe.new_doc("Sales Invoice")
 	si.company = company
 	si.currency = frappe.get_cached_value("Company", company, "default_currency")
-	disposal_account, depreciation_cost_center = get_disposal_account_and_cost_center(company)
+	loss_disposal_account, gain_disposal_account, depreciation_cost_center = get_disposal_account_and_cost_center(company)
 	si.append(
 		"items",
 		{
 			"item_code": item_code,
 			"is_fixed_asset": 1,
 			"asset": asset,
-			"income_account": disposal_account,
+			"income_account": gain_disposal_account,
 			"serial_no": serial_no,
 			"cost_center": depreciation_cost_center,
 			"qty": 1,
