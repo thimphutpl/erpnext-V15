@@ -136,6 +136,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "allow_on_submit": 1,
    "columns": 2,
    "fieldname": "amount",
    "fieldtype": "Float",
@@ -278,7 +279,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-11-20 10:59:44.177182",
+ "modified": "2024-11-26 10:26:43.017615",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "BOQ Item",

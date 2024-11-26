@@ -8,7 +8,9 @@
  "engine": "InnoDB",
  "field_order": [
   "stock_entry_details_tab",
+  "title",
   "branch",
+  "user_cost_center",
   "naming_series",
   "stock_entry_type",
   "outgoing_stock_entry",
@@ -22,14 +24,14 @@
   "pick_list",
   "purchase_receipt_no",
   "asset_repair",
-  "issued_by",
-  "received_by",
   "col2",
   "company",
   "posting_date",
   "posting_time",
   "column_break_eaoa",
   "set_posting_time",
+  "inspection_required",
+  "apply_putaway_rule",
   "in_transit",
   "bom_info_section",
   "from_bom",
@@ -40,26 +42,33 @@
   "get_items",
   "section_break_7qsm",
   "process_loss_percentage",
+  "column_break_uuwo",
   "column_break_e92r",
   "process_loss_qty",
   "section_break_jwgn",
   "from_warehouse",
   "source_warehouse_address",
   "source_address_display",
+  "issued_by",
   "cb0",
   "to_warehouse",
   "target_warehouse_address",
   "target_address_display",
+  "received_by",
   "sb0",
   "scan_barcode",
   "items_section",
   "items",
   "get_stock_and_rate",
+  "reason_section",
+  "text_editor_yfea",
   "section_break_19",
-  "total_outgoing_value",
+  "transporter_name",
+  "project",
+  "remarks",
   "column_break_22",
-  "total_incoming_value",
-  "value_difference",
+  "vehicle_no",
+  "vehicle_dispatch_date",
   "job_card_details",
   "job_cards",
   "additional_costs_section",
@@ -72,7 +81,6 @@
   "supplier_address",
   "address_display",
   "accounting_dimensions_section",
-  "project",
   "other_info_tab",
   "printing_settings",
   "select_print_heading",
@@ -80,14 +88,14 @@
   "letter_head",
   "more_info",
   "is_opening",
-  "remarks",
   "col5",
   "per_transferred",
   "total_amount",
   "job_card",
   "amended_from",
   "credit_note",
-  "is_return"
+  "is_return",
+  "status"
  ],
  "fields": [
   {
@@ -292,7 +300,7 @@
    "fieldtype": "Link",
    "in_list_view": 1,
    "in_standard_filter": 1,
-   "label": "Default Source Warehouse",
+   "label": "Source Warehouse",
    "no_copy": 1,
    "oldfieldname": "from_warehouse",
    "oldfieldtype": "Link",
@@ -303,12 +311,14 @@
    "depends_on": "from_warehouse",
    "fieldname": "source_warehouse_address",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Source Warehouse Address",
    "options": "Address"
   },
   {
    "fieldname": "source_address_display",
    "fieldtype": "Small Text",
+   "hidden": 1,
    "label": "Source Warehouse Address",
    "read_only": 1
   },
@@ -322,7 +332,7 @@
    "fieldtype": "Link",
    "in_list_view": 1,
    "in_standard_filter": 1,
-   "label": "Default Target Warehouse",
+   "label": "Target Warehouse",
    "no_copy": 1,
    "oldfieldname": "to_warehouse",
    "oldfieldtype": "Link",
@@ -333,23 +343,27 @@
    "depends_on": "to_warehouse",
    "fieldname": "target_warehouse_address",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Target Warehouse Address",
    "options": "Address"
   },
   {
    "fieldname": "target_address_display",
    "fieldtype": "Small Text",
+   "hidden": 1,
    "label": "Target Warehouse Address",
    "read_only": 1
   },
   {
    "fieldname": "sb0",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "options": "Simple"
   },
   {
    "fieldname": "scan_barcode",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Scan Barcode",
    "options": "Barcode"
   },
@@ -366,54 +380,35 @@
   {
    "fieldname": "get_stock_and_rate",
    "fieldtype": "Button",
+   "hidden": 1,
    "label": "Update Rate and Availability",
    "oldfieldtype": "Button",
    "options": "get_stock_and_rate",
    "print_hide": 1
   },
   {
+   "collapsible": 1,
    "fieldname": "section_break_19",
    "fieldtype": "Section Break",
+   "label": "Transporter Information ",
    "print_hide": 1
-  },
-  {
-   "fieldname": "total_incoming_value",
-   "fieldtype": "Currency",
-   "label": "Total Incoming Value (Receipt)",
-   "options": "Company:company:default_currency",
-   "print_hide": 1,
-   "read_only": 1
   },
   {
    "fieldname": "column_break_22",
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "total_outgoing_value",
-   "fieldtype": "Currency",
-   "label": "Total Outgoing Value (Consumption)",
-   "options": "Company:company:default_currency",
-   "print_hide": 1,
-   "read_only": 1
-  },
-  {
-   "fieldname": "value_difference",
-   "fieldtype": "Currency",
-   "label": "Total Value Difference (Incoming - Outgoing)",
-   "options": "Company:company:default_currency",
-   "print_hide_if_no_value": 1,
-   "read_only": 1
-  },
-  {
    "collapsible": 1,
    "collapsible_depends_on": "total_additional_costs",
    "fieldname": "additional_costs_section",
    "fieldtype": "Tab Break",
+   "hidden": 1,
    "label": "Additional Costs"
   },
   {
    "fieldname": "additional_costs",
    "fieldtype": "Table",
+   "hidden": 1,
    "label": "Additional Costs",
    "options": "Landed Cost Taxes and Charges"
   },
@@ -512,12 +507,8 @@
   },
   {
    "fieldname": "remarks",
-   "fieldtype": "Text",
-   "label": "Remarks",
-   "no_copy": 1,
-   "oldfieldname": "remarks",
-   "oldfieldtype": "Text",
-   "print_hide": 1
+   "fieldtype": "Small Text",
+   "label": "Remarks "
   },
   {
    "fieldname": "col5",
@@ -546,6 +537,7 @@
   {
    "fieldname": "job_card",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Job Card",
    "options": "Job Card",
    "print_hide": 1,
@@ -596,6 +588,7 @@
    "fetch_if_empty": 1,
    "fieldname": "add_to_transit",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "Add to Transit",
    "no_copy": 1
   },
@@ -618,11 +611,9 @@
    "label": "BOM Info"
   },
   {
-   "collapsible": 1,
    "fieldname": "section_break_jwgn",
    "fieldtype": "Section Break",
-   "hidden": 1,
-   "label": "Default Warehouse"
+   "label": "Warehouse"
   },
   {
    "fieldname": "other_info_tab",
@@ -703,9 +694,11 @@
    "default": "0",
    "fieldname": "in_transit",
    "fieldtype": "Check",
-   "label": "In transit"
+   "label": "In transit",
+   "read_only": 1
   },
   {
+   "collapsible": 1,
    "fieldname": "job_card_details",
    "fieldtype": "Section Break",
    "label": "Job Card Details"
@@ -715,6 +708,71 @@
    "fieldtype": "Link",
    "label": "Job Card",
    "options": "Job Cards"
+  },
+  {
+   "fieldname": "reason_section",
+   "fieldtype": "Section Break",
+   "label": "Reason "
+  },
+  {
+   "fieldname": "text_editor_yfea",
+   "fieldtype": "Text Editor"
+  },
+  {
+   "fieldname": "column_break_uuwo",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "vehicle_no",
+   "fieldtype": "Data",
+   "label": "Vehicle No",
+   "print_hide": 1
+  },
+  {
+   "fieldname": "transporter_name",
+   "fieldtype": "Data",
+   "label": "Transporter Name",
+   "print_hide": 1
+  },
+  {
+   "fieldname": "vehicle_dispatch_date",
+   "fieldtype": "Date",
+   "label": "Vehicle Dispactch Date",
+   "print_hide_if_no_value": 1
+  },
+  {
+   "depends_on": "eval:doc.in_transit==1 && doc.docstatus == 0",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "\nDraft\nIn Transit\nSubmitted\nCancelled",
+   "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "label": "Stock Entry Title",
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "inspection_required",
+   "fieldtype": "Check",
+   "label": "Inspection Required"
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:in_list([\"Material Transfer\", \"Material Receipt\"], doc.purpose)",
+   "fieldname": "apply_putaway_rule",
+   "fieldtype": "Check",
+   "label": "Apply Putaway Rule"
+  },
+  {
+   "fieldname": "user_cost_center",
+   "fieldtype": "Link",
+   "label": "User Cost Center",
+   "options": "Cost Center"
   }
  ],
  "icon": "fa fa-file-text",
@@ -722,7 +780,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-15 16:21:02.556628",
+ "modified": "2024-11-25 16:04:40.773400",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Stock Entry",
@@ -793,6 +851,6 @@
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],
- "title_field": "stock_entry_type",
+ "title_field": "title",
  "track_changes": 1
 }

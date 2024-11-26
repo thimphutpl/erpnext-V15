@@ -653,8 +653,9 @@
   {
    "allow_on_submit": 1,
    "fieldname": "bank_payment",
-   "fieldtype": "Data",
+   "fieldtype": "Link",
    "label": "Bank Payment",
+   "options": "Bank Payment",
    "read_only": 1
   }
  ],
@@ -670,7 +671,7 @@
    "table_fieldname": "payment_entries"
   }
  ],
- "modified": "2024-11-21 00:29:32.397653",
+ "modified": "2024-11-24 16:55:45.599343",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Journal Entry",

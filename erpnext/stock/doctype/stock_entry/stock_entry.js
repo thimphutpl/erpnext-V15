@@ -150,14 +150,44 @@ frappe.ui.form.on("Stock Entry", {
 			erpnext.accounts.dimensions.update_dimension(frm, frm.doctype);
 		}
 	},
+	// Ver2.0 Begins, onload added by SHIV on 26/11/2017
+	onload: function(frm){
+		var me = this;
+		if(frm.is_new() && frm.purpose == "Material Issue") {
+			frappe.call({
+				method: "erpnext.stock.doctype.material_request.material_request.get_cc_warehouse",
+				args: {"user": frappe.session.user},
+				callback(r) {
+					//cur_frm.set_value("temp_cc", r.message[0]);		
+					//cur_frm.set_value("temp_wh", r.message[1]);		
+					//cur_frm.set_value("approver", r.message[2]);		
+					cur_frm.set_value("from_warehouse", r.message[1])
+				}
+			})
+	
+			
+		}		
+		if(frm.is_new()) {
+			frappe.call({
+					method: "erpnext.custom_utils.get_user_info",
+					args: {"user": frappe.session.user},
+					callback(r) {
+							cur_frm.set_value("branch", r.message.branch);
+							cur_frm.set_value("from_warehouse", r.message.warehouse);
+							cur_frm.set_value("user_cost_center", r.message.cost_center);
+					}
+			});
+		}
+	},
+	// Ver2.0 Ends
 	create_custom_buttons: function (frm) {
 		if (frm.doc.__unsaved) {
 			frm.set_value("in_transit", 0);
-			//frm.set_value("status", "Draft");
+			frm.set_value("status", "Draft");
 			return;
 		}
 
-		if (frm.doc.purpose == "Material Transfer" && frm.doc.docstatus === 0) {
+		if (frm.doc.purpose == "Material Transfer" && frm.doc.from_warehouse && frm.doc.to_warehouse && frm.doc.docstatus === 0) {
 			frm.page.clear_primary_action();
 			frappe.call({
 				method: 'erpnext.stock.doctype.stock_entry.stock_entry.has_warehouse_permission',
@@ -576,6 +606,28 @@ frappe.ui.form.on("Stock Entry", {
 			});
 	},
 
+	branch: function(frm, cdt, cdn){
+		if(frm.doc.branch != null || frm.doc.branch != "" || frm.doc.branch != undefined){
+			frappe.call({
+				method: "frappe.client.get_value",
+				args: {
+					doctype: "Branch",
+					fieldname: "cost_center",
+					filters: { name: frm.doc.branch },
+				},
+				callback: function(r, rt) {
+					if(r.message) {
+						let doctype = frm.doc.items[0].doctype;
+						$.each(frm.doc.items || [], function (i, item) {
+							frappe.model.set_value(doctype, item.name, "cost_center", r.message.cost_center);
+						});
+					}
+				}
+			});
+		}
+		frm.refresh_fields();
+	},
+
 	company: function (frm) {
 		if (frm.doc.company) {
 			var company_doc = frappe.get_doc(":Company", frm.doc.company);
@@ -904,13 +956,13 @@ frappe.ui.form.on("Stock Entry", {
 });
 
 frappe.ui.form.on("Stock Entry Detail", {
-	"form_render": function (frm, cdt, cdn) {
+	// "form_render": function (frm, cdt, cdn) {
 		
-		if(frm.doc.stock_entry_type!="Material Transfer"){
-			frm.fields_dict['items'].grid.grid_rows_by_docname[cdn].docfields[4].hidden=1;
-			refresh_field("items");
-		}
-	}, 
+	// 	if(frm.doc.stock_entry_type!="Material Transfer"){
+	// 		frm.fields_dict['items'].grid.grid_rows_by_docname[cdn].docfields[4].hidden=1;
+	// 		refresh_field("items");
+	// 	}
+	// }, 
 	qty(frm, cdt, cdn) {
 		frm.events.set_basic_rate(frm, cdt, cdn);
 	},
@@ -1032,6 +1084,49 @@ frappe.ui.form.on("Stock Entry Detail", {
 		erpnext.stock.select_batch_and_serial_no(frm, child);
 	},
 });
+
+frappe.ui.form.on("Stock Entry", "refresh", function(frm) {
+	cur_frm.set_query("job_card", function() {
+		return {
+			"filters": {
+			"docstatus": 0,
+			"branch": frm.doc.branch
+			}
+		};
+	});
+	cur_frm.set_query("from_warehouse", function() {
+		return {
+			query: "erpnext.controllers.queries.filter_branch_wh",
+			filters: {'branch': frm.doc.branch}
+		}
+	});
+})
+
+frappe.ui.form.on("Stock Entry", "items_on_form_rendered", function(frm, grid_row, cdt, cdn) {
+	var row = cur_frm.open_grid_row();
+	if(!row.grid_form.fields_dict.cost_center.value) {
+			row.grid_form.fields_dict.cost_center.set_value(frm.doc.user_cost_center)
+			row.grid_form.fields_dict.cost_center.refresh()
+	}
+})
+
+// cur_frm.fields_dict['items'].grid.get_field('cost_center').get_query = function(frm, cdt, cdn) {
+// 	return {
+// 		"filters": {
+// 			"is_disabled": 0,
+// 			"is_group": 0,
+// 			"branch": frm.branch
+// 		}
+// 	};
+// }
+
+// cur_frm.fields_dict['items'].grid.get_field('uom').get_query = function(frm, cdt, cdn) {
+// 	var d = locals[cdt][cdn];
+// 	return {
+// 		query: "erpnext.controllers.queries.get_item_uom",
+// 		filters: {'item_code': d.item_code}
+// 	}
+// }
 
 var validate_sample_quantity = function (frm, cdt, cdn) {
 	var d = locals[cdt][cdn];
@@ -1367,6 +1462,20 @@ erpnext.stock.StockEntry = class StockEntry extends erpnext.stock.StockControlle
 	toggle_related_fields(doc) {
 		this.frm.toggle_enable("from_warehouse", doc.purpose != "Material Receipt");
 		this.frm.toggle_enable("to_warehouse", doc.purpose != "Material Issue");
+
+		this.frm.fields_dict["items"].grid.set_column_disp(
+			"s_warehouse",
+			doc.purpose != "Material Receipt"
+		);
+		this.frm.fields_dict["items"].grid.set_column_disp(
+			"t_warehouse",
+			doc.purpose != "Material Issue"
+		);
+		// this.frm.fields_dict["items"].grid.set_column_disp(
+		// 	"issue_to_employee",
+		// 	doc.purpose == "Material Issue"
+		// );
+		
 
 		this.frm.fields_dict["items"].grid.set_column_disp(
 			"retain_sample",

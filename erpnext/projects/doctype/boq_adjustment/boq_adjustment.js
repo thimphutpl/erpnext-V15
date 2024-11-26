@@ -74,6 +74,7 @@ var calculate_amount = function(frm, cdt, cdn){
 	}
 	else {
 		if(frm.doc.boq_type != "Milestone Based"){
+			if (!child.rate) return
 			amount = parseFloat(child.adjustment_quantity)*parseFloat(child.rate);
 			frappe.model.set_value(cdt, cdn, 'adjustment_amount', parseFloat(amount));
 		}

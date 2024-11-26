@@ -52,6 +52,7 @@ from erpnext.stock.serial_batch_bundle import (
 )
 from erpnext.stock.stock_ledger import NegativeStockError, get_previous_sle, get_valuation_rate
 from erpnext.stock.utils import get_bin, get_incoming_rate
+from frappe.model.naming import make_autoname
 
 
 class FinishedGoodError(frappe.ValidationError):
@@ -94,6 +95,7 @@ class StockEntry(StockController):
 		additional_costs: DF.Table[LandedCostTaxesandCharges]
 		address_display: DF.SmallText | None
 		amended_from: DF.Link | None
+		apply_putaway_rule: DF.Check
 		asset_repair: DF.Link | None
 		bom_no: DF.Link | None
 		branch: DF.Link
@@ -104,6 +106,7 @@ class StockEntry(StockController):
 		from_bom: DF.Check
 		from_warehouse: DF.Link | None
 		in_transit: DF.Check
+		inspection_required: DF.Check
 		is_opening: DF.Literal["No", "Yes"]
 		is_return: DF.Check
 		issued_by: DF.Data | None
@@ -124,13 +127,14 @@ class StockEntry(StockController):
 		purchase_receipt_no: DF.Link | None
 		purpose: DF.Literal["Material Issue", "Material Receipt", "Material Transfer", "Material Transfer for Manufacture", "Material Consumption for Manufacture", "Manufacture", "Repack", "Send to Subcontractor"]
 		received_by: DF.Data | None
-		remarks: DF.Text | None
+		remarks: DF.SmallText | None
 		sales_invoice_no: DF.Link | None
 		scan_barcode: DF.Data | None
 		select_print_heading: DF.Link | None
 		set_posting_time: DF.Check
 		source_address_display: DF.SmallText | None
 		source_warehouse_address: DF.Link | None
+		status: DF.Literal["", "Draft", "In Transit", "Submitted", "Cancelled"]
 		stock_entry_type: DF.Link
 		subcontracting_order: DF.Link | None
 		supplier: DF.Link | None
@@ -138,15 +142,31 @@ class StockEntry(StockController):
 		supplier_name: DF.Data | None
 		target_address_display: DF.SmallText | None
 		target_warehouse_address: DF.Link | None
+		text_editor_yfea: DF.TextEditor | None
+		title: DF.Data
 		to_warehouse: DF.Link | None
 		total_additional_costs: DF.Currency
 		total_amount: DF.Currency
-		total_incoming_value: DF.Currency
-		total_outgoing_value: DF.Currency
+		transporter_name: DF.Data | None
 		use_multi_level_bom: DF.Check
-		value_difference: DF.Currency
+		user_cost_center: DF.Link | None
+		vehicle_dispatch_date: DF.Date | None
+		vehicle_no: DF.Data | None
 		work_order: DF.Link | None
 	# end: auto-generated types
+	def autoname(self):
+		if self.stock_entry_type == 'Material Issue':
+			series = 'MI'
+			self.name = make_autoname(str(series) + ".YY.MM.####")
+		elif self.stock_entry_type == 'Material Receipt':
+			series = 'MR'
+			self.name = make_autoname(str(series) + ".YY.MM.####")
+		elif self.stock_entry_type == 'Material Transfer':
+			series = 'MT'
+			self.name = make_autoname(str(series) + ".YY.MM.DD.####")
+		else:
+			series = 'WO'
+			self.name = make_autoname(str(series) + ".YY.MM.####")
 
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
@@ -169,24 +189,24 @@ class StockEntry(StockController):
 				}
 			)
 
-	# def onload(self):
-	# 	for item in self.get("items"):
-	# 		item.update(get_bin_details(item.item_code, item.s_warehouse))
+	def onload(self):
+		for item in self.get("items"):
+			item.update(get_bin_details(item.item_code, item.s_warehouse))
 
-	# def before_validate(self):
-	# 	from erpnext.stock.doctype.putaway_rule.putaway_rule import apply_putaway_rule
+	def before_validate(self):
+		from erpnext.stock.doctype.putaway_rule.putaway_rule import apply_putaway_rule
 
-	# 	apply_rule = self.apply_putaway_rule and (self.purpose in ["Material Transfer", "Material Receipt"])
+		apply_rule = self.apply_putaway_rule and (self.purpose in ["Material Transfer", "Material Receipt"])
 
-	# 	if self.get("items") and apply_rule:
-	# 		apply_putaway_rule(self.doctype, self.get("items"), self.company, purpose=self.purpose)
+		if self.get("items") and apply_rule:
+			apply_putaway_rule(self.doctype, self.get("items"), self.company, purpose=self.purpose)
 
 	def validate(self):
 		self.pro_doc = frappe._dict()
 		if self.work_order:
 			self.pro_doc = frappe.get_doc("Work Order", self.work_order)
 
-		self.validate_duplicate_serial_and_batch_bundle("items")
+		# self.validate_duplicate_serial_and_batch_bundle("items")
 		self.validate_posting_time()
 		self.validate_purpose()
 		self.validate_item()
@@ -198,7 +218,7 @@ class StockEntry(StockController):
 		self.validate_warehouse()
 		self.validate_work_order()
 		self.validate_bom()
-		self.set_process_loss_qty()
+		# self.set_process_loss_qty()
 		self.validate_purchase_order()
 
 		if self.purpose in ("Manufacture", "Repack"):
@@ -207,8 +227,8 @@ class StockEntry(StockController):
 
 		self.validate_with_material_request()
 		self.validate_batch()
-		# self.validate_inspection()
-		self.validate_fg_completed_qty()
+		self.validate_inspection()
+		# self.validate_fg_completed_qty()
 		self.validate_difference_account()
 		self.set_job_card_data()
 		self.validate_job_card_item()
@@ -222,6 +242,7 @@ class StockEntry(StockController):
 		self.validate_serialized_batch()
 		self.calculate_rate_and_amount()
 		self.validate_putaway_capacity()
+		self.update_status()
 
 		if not self.get("purpose") == "Manufacture":
 			# ignore scrap item wh difference and empty source/target wh
@@ -244,7 +265,7 @@ class StockEntry(StockController):
 		self.repost_future_sle_and_gle()
 		self.update_cost_in_project()
 		self.update_transferred_qty()
-		# self.update_quality_inspection()
+		self.update_quality_inspection()
 
 		if self.purpose == "Material Transfer" and self.add_to_transit:
 			self.set_material_request_transfer_status("In Transit")
@@ -282,6 +303,14 @@ class StockEntry(StockController):
 		if self.purpose == "Material Transfer" and self.outgoing_stock_entry:
 			self.set_material_request_transfer_status("In Transit")
 
+	def update_status(self):
+		status = {0: "Draft",
+				1: "Submitted",
+				2: "Cancelled"}[self.docstatus]
+		if self.purpose == "Material Transfer" and self.in_transit and self.docstatus == 0:
+			status = "In Transit"
+		self.status = status
+	
 	def on_update(self):
 		self.set_serial_and_batch_bundle()
 
@@ -2551,20 +2580,20 @@ class StockEntry(StockController):
 
 			self._update_percent_field_in_targets(args, update_modified=True)
 
-	# def update_quality_inspection(self):
-	# 	if self.inspection_required:
-	# 		reference_type = reference_name = ""
-	# 		if self.docstatus == 1:
-	# 			reference_name = self.name
-	# 			reference_type = "Stock Entry"
+	def update_quality_inspection(self):
+		if self.inspection_required:
+			reference_type = reference_name = ""
+			if self.docstatus == 1:
+				reference_name = self.name
+				reference_type = "Stock Entry"
 
-	# 		for d in self.items:
-	# 			if d.quality_inspection:
-	# 				frappe.db.set_value(
-	# 					"Quality Inspection",
-	# 					d.quality_inspection,
-	# 					{"reference_type": reference_type, "reference_name": reference_name},
-	# 				)
+			for d in self.items:
+				if d.quality_inspection:
+					frappe.db.set_value(
+						"Quality Inspection",
+						d.quality_inspection,
+						{"reference_type": reference_type, "reference_name": reference_name},
+					)
 
 	def set_material_request_transfer_status(self, status):
 		material_requests = []
@@ -3190,6 +3219,52 @@ def get_batchwise_serial_nos(item_code, row):
 
 	return batchwise_serial_nos
 
+def get_permission_query_conditions(user):
+	if not user: user = frappe.session.user
+	user_roles = frappe.get_roles(user)
+
+	if user == "Administrator" or "System Manager" in user_roles:
+		return
+
+	return """(
+		`tabStock Entry`.owner = '{user}'
+		or
+		(
+			exists(select 1
+				from `tabEmployee` as e
+				where e.branch = `tabStock Entry`.branch
+				and e.user_id = '{user}')
+			or
+			exists(select 1
+				from `tabEmployee` e, `tabAssign Branch` ab, `tabBranch Item` bi
+				where e.user_id = '{user}'
+				and ab.employee = e.name
+				and bi.parent = ab.name
+				and bi.branch = `tabStock Entry`.branch)
+		)
+		or
+		(
+			`tabStock Entry`.in_transit = 1
+			  and exists(select 1
+			from `tabWarehouse` w, `tabWarehouse Branch` as wb
+			where wb.parent = w.name
+			and w.name = `tabStock Entry`.to_warehouse
+			and (
+				   exists(select 1
+						   from `tabEmployee` e
+						 where e.user_id = '{user}'
+						 and e.branch = wb.branch)
+				or
+				exists(select 1
+					from `tabEmployee` e,`tabAssign Branch` ab, `tabBranch Item` bi
+					 where e.user_id = '{user}'
+					and ab.employee = e.name
+					  and bi.parent = ab.name
+					   and bi.branch = wb.branch)
+			)
+		))
+	)""".format(user=user)
+	
 @frappe.whitelist()
 def has_warehouse_permission(warehouse):
 	user = frappe.session.user

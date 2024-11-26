@@ -75,6 +75,7 @@
    "default": "0",
    "fieldname": "is_group",
    "fieldtype": "Check",
+   "in_list_view": 1,
    "label": "Is Group"
   },
   {
@@ -186,7 +187,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-11-05 12:25:00.881345",
+ "modified": "2024-11-26 11:00:59.197173",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Additional Tasks",

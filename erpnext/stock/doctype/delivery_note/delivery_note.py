@@ -24,15 +24,12 @@ class DeliveryNote(SellingController):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
-		from frappe.types import DF
-
 		from erpnext.accounts.doctype.pricing_rule_detail.pricing_rule_detail import PricingRuleDetail
-		from erpnext.accounts.doctype.sales_taxes_and_charges.sales_taxes_and_charges import (
-			SalesTaxesandCharges,
-		)
+		from erpnext.accounts.doctype.sales_taxes_and_charges.sales_taxes_and_charges import SalesTaxesandCharges
 		from erpnext.selling.doctype.sales_team.sales_team import SalesTeam
 		from erpnext.stock.doctype.delivery_note_item.delivery_note_item import DeliveryNoteItem
 		from erpnext.stock.doctype.packed_item.packed_item import PackedItem
+		from frappe.types import DF
 
 		additional_discount_percentage: DF.Float
 		address_display: DF.SmallText | None
@@ -48,6 +45,7 @@ class DeliveryNote(SellingController):
 		base_rounding_adjustment: DF.Currency
 		base_total: DF.Currency
 		base_total_taxes_and_charges: DF.Currency
+		branch: DF.Link | None
 		campaign: DF.Link | None
 		commission_rate: DF.Float
 		company: DF.Link
@@ -90,7 +88,7 @@ class DeliveryNote(SellingController):
 		named_place: DF.Data | None
 		naming_series: DF.Literal["MAT-DN-.YYYY.-", "MAT-DN-RET-.YYYY.-"]
 		net_total: DF.Currency
-		other_charges_calculation: DF.TextEditor | None
+		other_charges: DF.Currency
 		packed_items: DF.Table[PackedItem]
 		per_billed: DF.Percent
 		per_installed: DF.Percent
@@ -136,7 +134,10 @@ class DeliveryNote(SellingController):
 		total_qty: DF.Float
 		total_taxes_and_charges: DF.Currency
 		transporter: DF.Link | None
+		transporter_nam: DF.Data | None
 		transporter_name: DF.Data | None
+		vehicle_dispatch_date: DF.Date | None
+		vehicle_n: DF.Data | None
 		vehicle_no: DF.Data | None
 	# end: auto-generated types
 

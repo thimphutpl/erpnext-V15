@@ -520,6 +520,7 @@ frappe.ui.form.on("Asset", {
 				item_code: frm.doc.item_code,
 				company: frm.doc.company,
 				serial_no: frm.doc.serial_no,
+				cost_center: frm.doc.cost_center
 			},
 			method: "erpnext.assets.doctype.asset.asset.make_sales_invoice",
 			callback: function (r) {

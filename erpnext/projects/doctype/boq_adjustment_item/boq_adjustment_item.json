@@ -50,6 +50,7 @@
   {
    "fieldname": "boq_code",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "BOQ Code"
   },
   {
@@ -69,6 +70,7 @@
    "default": "0",
    "fieldname": "is_group",
    "fieldtype": "Check",
+   "in_list_view": 1,
    "label": "Is Group Item?"
   },
   {
@@ -78,6 +80,7 @@
   {
    "fieldname": "item",
    "fieldtype": "Text",
+   "in_list_view": 1,
    "label": "Item"
   },
   {
@@ -179,6 +182,7 @@
   {
    "fieldname": "balance_amount",
    "fieldtype": "Currency",
+   "in_list_view": 1,
    "label": "Balance Amount",
    "precision": "2",
    "read_only": 1
@@ -251,6 +255,7 @@
   {
    "fieldname": "adjustment_amount",
    "fieldtype": "Float",
+   "in_list_view": 1,
    "label": "Add. Amount (+/-)",
    "precision": "2"
   },
@@ -287,7 +292,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-09-19 14:54:21.436691",
+ "modified": "2024-11-26 10:14:14.564613",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "BOQ Adjustment Item",
