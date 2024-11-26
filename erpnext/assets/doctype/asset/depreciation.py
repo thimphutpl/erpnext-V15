@@ -273,6 +273,7 @@ def _make_journal_entry_for_depreciation(
 		return
 
 	je = frappe.new_doc("Journal Entry")
+	je.branch = asset.branch
 	je.voucher_type = "Depreciation Entry"
 	je.naming_series = "Depreciation Entry"
 	je.posting_date = depr_schedule.schedule_date
