@@ -7,7 +7,9 @@
  "engine": "InnoDB",
  "field_order": [
   "budget_type",
-  "description"
+  "description",
+  "column_break_bwjd",
+  "budget_code"
  ],
  "fields": [
   {
@@ -22,11 +24,20 @@
    "fieldname": "description",
    "fieldtype": "Small Text",
    "label": "Description"
+  },
+  {
+   "fieldname": "column_break_bwjd",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "budget_code",
+   "fieldtype": "Data",
+   "label": "Budget Code"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2022-09-09 15:41:47.066335",
+ "modified": "2024-10-24 15:04:25.601443",
  "modified_by": "Administrator",
  "module": "Budget",
  "name": "Budget Type",

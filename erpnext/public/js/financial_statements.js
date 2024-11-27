@@ -155,6 +155,13 @@ function get_filters() {
 			options: "Company",
 			default: frappe.defaults.get_user_default("Company"),
 			reqd: 1,
+			on_change: function() {
+				// Clear fiscal year when company changes
+				frappe.query_report.set_filter_value('from_fiscal_year', '');
+				frappe.query_report.set_filter_value('to_fiscal_year', '');
+				// Refresh cost center filter when company is changed
+				// frappe.query_report.set_filter_value('cost_center', '');
+			}
 		},
 		{
 			fieldname: "finance_book",
@@ -170,6 +177,11 @@ function get_filters() {
 			default: ["Fiscal Year"],
 			reqd: 1,
 			on_change: function () {
+				frappe.query_report.set_filter_value('from_fiscal_year', '');
+				frappe.query_report.set_filter_value('to_fiscal_year', '');
+				frappe.query_report.set_filter_value('period_start_date', '');
+				frappe.query_report.set_filter_value('period_end_date', '');
+
 				let filter_based_on = frappe.query_report.get_filter_value("filter_based_on");
 				frappe.query_report.toggle_filter_display(
 					"from_fiscal_year",
@@ -209,6 +221,14 @@ function get_filters() {
 			options: "Fiscal Year",
 			reqd: 1,
 			depends_on: "eval:doc.filter_based_on == 'Fiscal Year'",
+			get_query: function() {
+                var company = frappe.query_report.get_filter_value('company');
+                return {
+                    filters: {
+                        "company": company
+                    }
+                };
+            }
 		},
 		{
 			fieldname: "to_fiscal_year",
@@ -217,6 +237,14 @@ function get_filters() {
 			options: "Fiscal Year",
 			reqd: 1,
 			depends_on: "eval:doc.filter_based_on == 'Fiscal Year'",
+			get_query: function() {
+                var company = frappe.query_report.get_filter_value('company');
+                return {
+                    filters: {
+                        "company": company
+                    }
+                };
+            }
 		},
 		{
 			fieldname: "periodicity",
