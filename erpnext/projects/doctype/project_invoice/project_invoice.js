@@ -1,5 +1,7 @@
 // Copyright (c) 2024, Frappe Technologies Pvt. Ltd. and contributors
 // For license information, please see license.txt
+cur_frm.add_fetch("project","branch","branch");
+cur_frm.add_fetch("project","cost_center","cost_center");
 
 frappe.ui.form.on("Project Invoice", {
 	refresh(frm) {

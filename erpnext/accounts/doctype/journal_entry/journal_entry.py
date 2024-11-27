@@ -58,7 +58,6 @@ class JournalEntry(AccountsController):
 		bill_date: DF.Date | None
 		bill_no: DF.Data | None
 		branch: DF.Link
-		business_activity: DF.Link | None
 		cheque_date: DF.Date | None
 		cheque_no: DF.Data | None
 		clearance_date: DF.Date | None
@@ -620,12 +619,12 @@ class JournalEntry(AccountsController):
 				check_credit_limit(customer, self.company)
 
 	def validate_cheque_info(self):
-		if self.voucher_type in ["Bank Entry"]:
-			if not self.cheque_no or not self.cheque_date:
-				msgprint(
-					_("Reference No & Reference Date is required for {0}").format(self.voucher_type),
-					raise_exception=1,
-				)
+		# if self.voucher_type in ["Bank Entry"]:
+		# 	if not self.cheque_no or not self.cheque_date:
+		# 		msgprint(
+		# 			_("Reference No & Reference Date is required for {0}").format(self.voucher_type),
+		# 			raise_exception=1,
+		# 		)
 
 		if self.cheque_date and not self.cheque_no:
 			msgprint(_("Reference No is mandatory if you entered Reference Date"), raise_exception=1)

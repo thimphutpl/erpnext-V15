@@ -105,6 +105,7 @@ class Item(Document):
 		is_customer_provided_item: DF.Check
 		is_fixed_asset: DF.Check
 		is_grouped_asset: DF.Check
+		is_hsd_item: DF.Check
 		is_pol_item: DF.Check
 		is_purchase_item: DF.Check
 		is_sales_item: DF.Check
@@ -117,6 +118,7 @@ class Item(Document):
 		item_sub_group: DF.Link | None
 		last_purchase_rate: DF.Float
 		lead_time_days: DF.Int
+		maintain_in_register: DF.Check
 		max_discount: DF.Float
 		min_order_qty: DF.Float
 		naming_series: DF.Literal["STO-ITEM-.YYYY.-"]

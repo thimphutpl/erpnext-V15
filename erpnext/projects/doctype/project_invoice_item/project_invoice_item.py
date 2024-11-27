@@ -16,13 +16,14 @@ class ProjectInvoiceItem(Document):
 
 		boq: DF.Link | None
 		gross_invoice_amount: DF.Currency
-		id: DF.Link | None
 		invoice_date: DF.Data | None
+		invoice_name: DF.Link | None
 		net_invoice_amount: DF.Currency
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
 		price_adjustment_amount: DF.Currency
+		subcontract: DF.Link | None
 		total_balance_amount: DF.Currency
 		total_paid_amount: DF.Currency
 		total_received_amount: DF.Currency

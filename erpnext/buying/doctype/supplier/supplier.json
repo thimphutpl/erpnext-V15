@@ -55,15 +55,16 @@
   "default_bank_account_section",
   "bank_name",
   "bank_account_type",
+  "account_number",
   "column_break_ilcg",
   "bank_branch",
-  "bank_ac_no",
+  "inr_bank_code",
+  "inr_purpose_code",
   "international_bank_details_section",
   "bank",
   "swift_code",
   "column_break_ldue",
   "bank_address",
-  "account_number",
   "dashboard_tab",
   "contact_and_address_tab",
   "address_contacts",
@@ -513,7 +514,7 @@
   {
    "fieldname": "bank_account_details_tab",
    "fieldtype": "Tab Break",
-   "label": "Bank Details"
+   "label": "Bank Information"
   },
   {
    "fieldname": "default_bank_account_section",
@@ -541,11 +542,6 @@
    "fieldtype": "Link",
    "label": "Bank Account Type",
    "options": "Bank Account Type"
-  },
-  {
-   "fieldname": "bank_ac_no",
-   "fieldtype": "Data",
-   "label": "Bank A/C No."
   },
   {
    "fieldname": "international_bank_details_section",
@@ -644,6 +640,18 @@
    "fieldname": "credit_days",
    "fieldtype": "Int",
    "label": "Payment due days"
+  },
+  {
+   "fieldname": "inr_bank_code",
+   "fieldtype": "Select",
+   "label": "Bank Code",
+   "options": "\n01 - AXIS BANK\n02- SBI\n03 -Others\n04 - SCB"
+  },
+  {
+   "fieldname": "inr_purpose_code",
+   "fieldtype": "Select",
+   "label": "Purpose Code",
+   "options": "\n01- INVT IN EQUITY SHARE\n02- INVT IN MUTUAL FUND\n03- INVT IN DEBENTURES\n04- BILL PAYMENT\n05- CREDIT TO NRE A/c\n06- PAYMENT TO HOTELS\n07- TRAVEL & TOURISM\n08- INVT IN REAL ESTATE\n09- PYMNT TO ESTATE DEVELOPER\n10- LIC PREMIUM\n11- EDUCATIONAL EXPENSES\n12- FAMILY MAINTENANCE\n13- POSTMASTER / UTI PREMIUM\n14- PROPERTY Pymnt-Co-op Hsg.Soc\n15- PROPERTY Pymnt-Govt. Hsg.Scheme\n16- MEDICAL EXPENSES\n17- UTILITY PAYMENTS\n18- TAX PAYMENTS\n19- EMI FOR LOAN REPAYMENT\n20- COMPENSATION OF EMPLOYEES\n21- SALARY"
   }
  ],
  "icon": "fa fa-user",
@@ -656,7 +664,7 @@
    "link_fieldname": "party"
   }
  ],
- "modified": "2024-11-21 09:37:10.030378",
+ "modified": "2024-11-27 23:28:44.597422",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Supplier",

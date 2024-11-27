@@ -17,13 +17,13 @@
   "finance_book",
   "process_deferred_accounting",
   "reversal_of",
-  "tax_withholding_category",
   "column_break1",
+  "mode_of_payment",
   "from_template",
   "company",
-  "business_activity",
   "posting_date",
   "apply_tds",
+  "tax_withholding_category",
   "2_add_edit_gl_entries",
   "accounts",
   "tds_table",
@@ -62,7 +62,6 @@
   "letter_head",
   "select_print_heading",
   "addtional_info",
-  "mode_of_payment",
   "payment_order",
   "column_break3",
   "is_opening",
@@ -567,13 +566,6 @@
    "read_only": 1
   },
   {
-   "fieldname": "business_activity",
-   "fieldtype": "Link",
-   "hidden": 1,
-   "label": "Business Activity",
-   "options": "Business Activity"
-  },
-  {
    "fieldname": "tds_table",
    "fieldtype": "HTML",
    "label": "TDS Table",
@@ -671,7 +663,7 @@
    "table_fieldname": "payment_entries"
   }
  ],
- "modified": "2024-11-24 16:55:45.599343",
+ "modified": "2024-11-27 18:00:53.330663",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Journal Entry",

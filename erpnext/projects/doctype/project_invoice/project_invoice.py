@@ -8,7 +8,7 @@ from frappe.utils import flt, time_diff_in_hours, get_datetime, getdate, cint, g
 from erpnext.controllers.accounts_controller import AccountsController
 
 
-class ProjectInvoice(Document):
+class ProjectInvoice(AccountsController):
 	# begin: auto-generated types
 	# This code is auto-generated. Do not modify anything in this block.
 
@@ -33,7 +33,7 @@ class ProjectInvoice(Document):
 		gross_invoice_amount: DF.Currency
 		invoice_date: DF.Date
 		invoice_title: DF.Data | None
-		invoice_type: DF.Literal[None]
+		invoice_type: DF.Literal["Direct Invoice", "MB Based Invoice"]
 		net_invoice_amount: DF.Currency
 		notes: DF.TextEditor | None
 		party: DF.DynamicLink
@@ -45,6 +45,7 @@ class ProjectInvoice(Document):
 		reference_doctype: DF.Link | None
 		reference_name: DF.DynamicLink | None
 		status: DF.Literal["Draft", "Unpaid", "Paid", "Cancelled"]
+		subcontract: DF.Link | None
 		tds_amount: DF.Currency
 		total_balance_amount: DF.Currency
 		total_paid_amount: DF.Currency
@@ -639,5 +640,26 @@ def get_mb_list(project, party_type, party):
 			and party = '{party}'
 			and total_balance_amount > 0
 			""".format(project=project, party_type=party_type, party=party), as_dict=True)
+	# result = frappe.db.sql("""
+	# 		select name as entry_name,
+	# 			entry_date,
+	# 			total_balance_amount as entry_amount,
+	# 			total_entry_amount as act_entry_amount,
+	# 			total_invoice_amount as act_invoice_amount,
+	# 			total_received_amount as act_received_amount,
+	# 			total_balance_amount as act_balance_amount,
+	# 			boq, boq_type, subcontract
+	# 		from `tabMB Entry`
+	# 		where project = '{project}'
+	# 		and docstatus = 1
+	# 		and party_type = '{party_type}'
+	# 		and party = '{party}'
+	# 		and total_balance_amount > 0
+	# 		""".format(project=project, party_type=party_type, party=party), as_dict=True)
 
+	# self.set('project_invoice_mb', [])
+	# for d in result:
+	# 	row = self.append('project_invoice_mb', {})
+	# 	row.update(d)
+	
 	return result

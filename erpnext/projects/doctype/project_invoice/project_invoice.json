@@ -23,6 +23,7 @@
   "boq_type",
   "branch",
   "cost_center",
+  "subcontract",
   "get_mb_entries",
   "sb_measurement_book_entries",
   "check_all_mb",
@@ -77,9 +78,13 @@
    "reqd": 1
   },
   {
+   "default": "MB Based Invoice",
    "fieldname": "invoice_type",
    "fieldtype": "Select",
-   "label": "Invoice Type"
+   "hidden": 1,
+   "label": "Invoice Type",
+   "options": "Direct Invoice\nMB Based Invoice",
+   "read_only": 1
   },
   {
    "fieldname": "customer",
@@ -186,6 +191,7 @@
    "options": "Project Invoice MB"
   },
   {
+   "depends_on": "eval:(doc.invoice_type === \"Direct Invoice\")\r\n",
    "fieldname": "sb_boq_items",
    "fieldtype": "Section Break",
    "label": "BOQ ITEMS"
@@ -314,12 +320,20 @@
   {
    "fieldname": "notes",
    "fieldtype": "Text Editor"
+  },
+  {
+   "fieldname": "subcontract",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Subcontract",
+   "options": "Subcontract",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-09-28 23:34:23.307164",
+ "modified": "2024-11-26 15:53:00.937392",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Project Invoice",
