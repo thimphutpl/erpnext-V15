@@ -25,8 +25,9 @@ class AbstractBill(Document):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
-		from erpnext.accounts.doctype.abstract_bill_item.abstract_bill_item import AbstractBillItem
 		from frappe.types import DF
+
+		from erpnext.accounts.doctype.abstract_bill_item.abstract_bill_item import AbstractBillItem
 
 		amended_from: DF.Link | None
 		approver: DF.Link | None
@@ -91,7 +92,7 @@ class AbstractBill(Document):
 	def validate_abstract_bill_requires(self):
 		if not frappe.db.get_value("Company", self.company, "abstract_bill_required"):
 			frappe.throw("Please check Abstract Bill Required for {} if requires Abstract Bill".format(frappe.get_desk_link("Company", self.company)))
-	
+
 	def update_reference_document(self, cancel=False):
 		for item in self.items:
 			# frappe.throw(str(item.reference_name))
@@ -103,8 +104,8 @@ class AbstractBill(Document):
 					doc.db_set("payment_status", "Paid")
 
 			# frappe.db.set_value('Purchase Invoice', item.reference_name, 'payment_status', status)
-	
-		
+
+
 	def validate_tax_exemption(self):
 		self.validate_file_index()
 		for item in self.items:
@@ -204,12 +205,21 @@ class AbstractBill(Document):
 
 	def post_journal_entry(self):
 		accounts = []
-		if self.mode_of_payment == "Bank Entry":
-			account = frappe.db.get_value("Company", self.company, "default_bank_account")
-		elif self.mode_of_payment == "Cash Entry":
-			account = frappe.db.get_value("Company", self.company, "default_cash_account")
-		if not account:
-			frappe.throw("Set Default {} Account in Company {}".format("Bank" if self.mode_of_payment=="Bank Entry" else "Cash", frappe.get_desk_link(self.company)))
+
+		# get credit account for Advance Recoup
+		if self.reference_doctype == "Advance Recoup":
+			advance_type = frappe.db.get_value("Advance Recoup", self.reference_name, "advance_type")
+			account = frappe.db.get_value("Advance Type", advance_type, "account")
+			if not account:
+				frappe.throw("Please set account in {}".format(frappe.get_desk_link("Advance Type", self.reference_name)))
+		else:
+			if self.mode_of_payment == "Bank Entry":
+				account = frappe.db.get_value("Company", self.company, "default_bank_account")
+			elif self.mode_of_payment == "Cash Entry":
+				account = frappe.db.get_value("Company", self.company, "default_cash_account")
+			if not account:
+				frappe.throw("Set Default {} Account in Company {}".format("Bank" if self.mode_of_payment=="Bank Entry" else "Cash", frappe.get_desk_link(self.company)))
+
 		for item in self.items:
 			accounts.append({
 				"account": item.account,
