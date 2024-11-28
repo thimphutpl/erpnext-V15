@@ -10,8 +10,12 @@ from frappe.utils import date_diff, flt, cint, nowdate, getdate
 # from erpnext.integrations.bps import process_files
 from erpnext.assets.doctype.asset.depreciation import make_depreciation_entry
 # import pandas as pd
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 
+def test_test():
+	today_date = date.today()
+	
+	print(today_date)
 
 def add_travel_detail():
 	claim_doc=frappe.get_doc("Travel Claim","TC241100003")

@@ -38,27 +38,27 @@ frappe.ui.form.on("Break Down Report", {
     }, 
 
 
-    cost_center: function(frm) {
-        if (frm.doc.cost_center) {
-            frappe.call({
-                method: "frappe.client.get_list",
-                args: {
-                    doctype: "Branch",
-                    filters: { cost_center: frm.doc.cost_center },
-                    fields: ["name as branch"]
-                },
-                callback: function(r) {
-                    if (r.message && r.message.length > 0) {
-                        frm.set_value("branch", r.message[0].branch);
-                    } else {
-                        frm.set_value("branch", null);
-                    }
-                }
-            });
-        } else {
-            frm.set_value("branch", null);
-        }
-    },
+    // cost_center: function(frm) {
+    //     if (frm.doc.cost_center) {
+    //         frappe.call({
+    //             method: "frappe.client.get_list",
+    //             args: {
+    //                 doctype: "Branch",
+    //                 filters: { cost_center: frm.doc.cost_center },
+    //                 fields: ["name as branch"]
+    //             },
+    //             callback: function(r) {
+    //                 if (r.message && r.message.length > 0) {
+    //                     frm.set_value("branch", r.message[0].branch);
+    //                 } else {
+    //                     frm.set_value("branch", null);
+    //                 }
+    //             }
+    //         });
+    //     } else {
+    //         frm.set_value("branch", null);
+    //     }
+    // },
 });
 
 frappe.ui.form.on("Break Down Report", "refresh", function(frm) {

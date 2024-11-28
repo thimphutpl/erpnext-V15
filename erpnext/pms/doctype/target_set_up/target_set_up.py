@@ -12,7 +12,60 @@ from frappe.model.mapper import get_mapped_doc
 from erpnext.custom_workflow import validate_workflow_states, notify_workflow_states
 
 class TargetSetUp(Document):
+	# begin: auto-generated types
+	# This code is auto-generated. Do not modify anything in this block.
+
+	from typing import TYPE_CHECKING
+
+	if TYPE_CHECKING:
+		from erpnext.pms.doctype.common_target_item.common_target_item import CommonTargetItem
+		from erpnext.pms.doctype.competency_item.competency_item import CompetencyItem
+		from erpnext.pms.doctype.negative_target.negative_target import NegativeTarget
+		from erpnext.pms.doctype.performance_target_evaluation.performance_target_evaluation import PerformanceTargetEvaluation
+		from frappe.types import DF
+
+		amended_from: DF.Link | None
+		approver: DF.Link | None
+		approver_designation: DF.Data | None
+		approver_name: DF.Data | None
+		branch: DF.Link | None
+		business_target: DF.Table[NegativeTarget]
+		comment: DF.SmallText | None
+		common_target: DF.Table[CommonTargetItem]
+		company: DF.Link | None
+		competency: DF.Table[CompetencyItem]
+		date: DF.Date | None
+		department: DF.Link | None
+		designation: DF.Link | None
+		division: DF.Link | None
+		employee: DF.Link
+		employee_name: DF.ReadOnly | None
+		end_date: DF.Date | None
+		grade: DF.Link | None
+		manual_upload: DF.Check
+		max_no_of_target: DF.Float
+		max_weightage_for_target: DF.Float
+		min_no_of_target: DF.Float
+		min_weightage_for_target: DF.Float
+		negative_target: DF.Check
+		old_employee_id: DF.Data | None
+		pms_calendar: DF.Link
+		pms_group: DF.Link
+		reason: DF.Data | None
+		reference: DF.Link | None
+		require_to_set_target: DF.Data | None
+		section: DF.Link | None
+		set_manual_approver: DF.Check
+		start_date: DF.Date | None
+		target_item: DF.Table[PerformanceTargetEvaluation]
+		total_weightage: DF.Float
+		unit: DF.Link | None
+		user_id: DF.Link | None
+		workflow_state: DF.Data | None
+	# end: auto-generated types
 	def validate(self):
+		self.get_supervisor_id()
+
 		self.load_pre_requirement()
 		self.check_target()
 		self.check_duplicate_entry() 

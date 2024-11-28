@@ -41,6 +41,7 @@ class PurchaseOrderItem(Document):
 		expense_account: DF.Link
 		fg_item: DF.Link | None
 		fg_item_qty: DF.Float
+		freight_and_insurance_charges: DF.Currency
 		from_warehouse: DF.Link | None
 		image: DF.Attach | None
 		include_exploded_items: DF.Check

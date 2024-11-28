@@ -333,7 +333,7 @@ class Project(Document):
 					set target_quantity_complete = {0},
 							work_quantity_complete = {1},
 							status = case
-											when {0} >= target_quantity then 'Closed'
+											when {0} >= target_quantity then 'Completed'
 											else status
 										end
 					where name = '{2}'

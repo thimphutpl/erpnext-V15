@@ -77,6 +77,7 @@ class Supplier(TransactionBase):
 		supplier_name: DF.Data
 		supplier_primary_address: DF.Link | None
 		supplier_primary_contact: DF.Link | None
+		supplier_tpn_no: DF.Data
 		supplier_type: DF.Literal["Domestic Vendor", "Indian Vendor", "International Vendor"]
 		swift_code: DF.Data | None
 		tax_category: DF.Link | None
@@ -84,7 +85,6 @@ class Supplier(TransactionBase):
 		tax_id: DF.Data | None
 		tax_withholding_category: DF.Link | None
 		telephone_and_fax: DF.Data | None
-		vendor_tpn_no: DF.Data
 		warn_pos: DF.Check
 		warn_rfqs: DF.Check
 		website: DF.Data | None

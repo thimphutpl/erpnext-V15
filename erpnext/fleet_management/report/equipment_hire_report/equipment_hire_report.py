@@ -38,7 +38,7 @@ def get_columns():
 	]
 
 def get_data(filters):
-	query ="""select hid.equipment, (select equipment_type FROM tabEquipment e WHERE e.name = hid.equipment), hid.equipment_number, hci.ehf_name, hci.customer, (select c.customer_group FROM tabCustomer AS c WHERE hci.customer = c.name),
+	query ="""select hid.equipment, (select equipment_type FROM tabEquipment e WHERE e.name = hid.equipment), hid.registration_number, hci.ehf_name, hci.customer, (select c.customer_group FROM tabCustomer AS c WHERE hci.customer = c.name),
         CASE hid.rate_type
         WHEN 'With Fuel' THEN (select sum(hid.total_work_hours))
         END,

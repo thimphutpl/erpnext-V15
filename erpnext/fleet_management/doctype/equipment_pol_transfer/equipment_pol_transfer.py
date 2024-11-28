@@ -1,9 +1,13 @@
 # Copyright (c) 2024, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
-# import frappe
+from __future__ import unicode_literals
+import frappe
 from frappe.model.document import Document
-
+from erpnext.accounts.utils import get_fiscal_year
+from frappe.utils import flt, getdate, nowdate
+from erpnext.custom_utils import check_future_date, get_branch_cc, prepare_gl, check_budget_available
+from erpnext.stock.stock_ledger import get_valuation_rate
 
 class EquipmentPOLTransfer(Document):
 	# begin: auto-generated types
@@ -160,11 +164,12 @@ class EquipmentPOLTransfer(Document):
 			own = 1
 		else:
 			own = 0
+		# frappe.throw(frappe.as_json(self))
 		if self.from_equipment and self.to_equipment:
 			con = frappe.new_doc("POL Entry")	
 			con.flags.ignore_permissions = 1
 			con.equipment = self.from_equipment
-			con.branch = self.from_branch
+			con.branch = self.branch
 			con.pol_type = self.pol_type
 			con.date = self.posting_date
 			con.posting_time = self.posting_time
@@ -179,7 +184,7 @@ class EquipmentPOLTransfer(Document):
 			to = frappe.new_doc("POL Entry")	
 			to.flags.ignore_permissions = 1
 			to.equipment = self.to_equipment
-			to.branch = self.to_branch
+			to.branch = self.branch
 			to.is_opening = 0
 			to.pol_type = self.pol_type
 			to.date = self.posting_date

@@ -65,7 +65,7 @@ class Task(NestedSet):
 		review_date: DF.Date | None
 		rgt: DF.Int
 		start: DF.Int
-		status: DF.Literal["Open", "Working", "Pending Review", "Overdue", "Template", "Completed", "Cancelled"]
+		status: DF.Literal["Open", "Working", "Pending Review", "Overdue", "Template", "Completed", "Cancelled", "Closed"]
 		subject: DF.Data
 		target_quantity: DF.Float
 		target_quantity_complete: DF.Float

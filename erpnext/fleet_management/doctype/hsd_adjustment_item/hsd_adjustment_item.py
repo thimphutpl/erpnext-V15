@@ -16,12 +16,12 @@ class HSDAdjustmentItem(Document):
 
 		balance: DF.Float
 		equipment: DF.Link
-		equipment_number: DF.ReadOnly | None
 		hsd_name: DF.ReadOnly | None
 		hsd_type: DF.Link | None
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
+		registration_number: DF.ReadOnly | None
 		system_balance: DF.Float
 	# end: auto-generated types
 	pass

@@ -12,7 +12,7 @@
  "field_order": [
   "naming_series",
   "supplier_name",
-  "vendor_tpn_no",
+  "supplier_tpn_no",
   "country",
   "column_break0",
   "supplier_group",
@@ -574,13 +574,6 @@
    "label": "Account Number"
   },
   {
-   "fieldname": "vendor_tpn_no",
-   "fieldtype": "Data",
-   "label": "Vendor TPN No",
-   "reqd": 1,
-   "unique": 1
-  },
-  {
    "default": "0",
    "fieldname": "inter_company",
    "fieldtype": "Check",
@@ -645,13 +638,22 @@
    "fieldname": "inr_bank_code",
    "fieldtype": "Select",
    "label": "Bank Code",
-   "options": "\n01 - AXIS BANK\n02- SBI\n03 -Others\n04 - SCB"
+   "options": "\n01 - AXIS BANK\n02- SBI\n03 -Others\n04 - SCB",
+   "read_only": 1
   },
   {
    "fieldname": "inr_purpose_code",
    "fieldtype": "Select",
    "label": "Purpose Code",
-   "options": "\n01- INVT IN EQUITY SHARE\n02- INVT IN MUTUAL FUND\n03- INVT IN DEBENTURES\n04- BILL PAYMENT\n05- CREDIT TO NRE A/c\n06- PAYMENT TO HOTELS\n07- TRAVEL & TOURISM\n08- INVT IN REAL ESTATE\n09- PYMNT TO ESTATE DEVELOPER\n10- LIC PREMIUM\n11- EDUCATIONAL EXPENSES\n12- FAMILY MAINTENANCE\n13- POSTMASTER / UTI PREMIUM\n14- PROPERTY Pymnt-Co-op Hsg.Soc\n15- PROPERTY Pymnt-Govt. Hsg.Scheme\n16- MEDICAL EXPENSES\n17- UTILITY PAYMENTS\n18- TAX PAYMENTS\n19- EMI FOR LOAN REPAYMENT\n20- COMPENSATION OF EMPLOYEES\n21- SALARY"
+   "options": "\n01- INVT IN EQUITY SHARE\n02- INVT IN MUTUAL FUND\n03- INVT IN DEBENTURES\n04- BILL PAYMENT\n05- CREDIT TO NRE A/c\n06- PAYMENT TO HOTELS\n07- TRAVEL & TOURISM\n08- INVT IN REAL ESTATE\n09- PYMNT TO ESTATE DEVELOPER\n10- LIC PREMIUM\n11- EDUCATIONAL EXPENSES\n12- FAMILY MAINTENANCE\n13- POSTMASTER / UTI PREMIUM\n14- PROPERTY Pymnt-Co-op Hsg.Soc\n15- PROPERTY Pymnt-Govt. Hsg.Scheme\n16- MEDICAL EXPENSES\n17- UTILITY PAYMENTS\n18- TAX PAYMENTS\n19- EMI FOR LOAN REPAYMENT\n20- COMPENSATION OF EMPLOYEES\n21- SALARY",
+   "read_only": 1
+  },
+  {
+   "fieldname": "supplier_tpn_no",
+   "fieldtype": "Data",
+   "label": "Supplier TPN No",
+   "reqd": 1,
+   "unique": 1
   }
  ],
  "icon": "fa fa-user",
@@ -664,7 +666,7 @@
    "link_fieldname": "party"
   }
  ],
- "modified": "2024-11-27 23:28:44.597422",
+ "modified": "2024-11-28 00:05:31.500758",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Supplier",

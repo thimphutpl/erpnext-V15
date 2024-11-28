@@ -81,14 +81,6 @@ frappe.ui.form.on("Project Payment", {
 			}
 		}
 	},
-
-    get_invoices_dummy: function(frm){
-
-	},
-	
-	get_advances_dummy: function(frm){
-
-	},
 	
 	get_invoices: function(frm, cdt, cdn){
 		get_invoice_list(frm);
@@ -336,7 +328,7 @@ function enable_disable(frm){
 		frm.set_df_property(field_name,"read_only",1);
 	});
 		
-	if(in_list(user_roles, "Accounts Manager") || in_list(user_roles, "Accounts User")){
+	if(in_list([...frappe.user_roles], 'Accounts Manager') || in_list([...frappe.user_roles], 'Accounts User')){
 		toggle_fields.forEach(function(field_name){
 				frm.set_df_property(field_name,"read_only",0);
 		});

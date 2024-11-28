@@ -30,7 +30,6 @@ class VehicleLogbook(Document):
 		ehf_name: DF.Link
 		equipment: DF.Link
 		equipment_operator: DF.Data | None
-		equipment_type: DF.Link | None
 		final_hour: DF.Float
 		final_km: DF.Int
 		from_date: DF.Date
@@ -77,10 +76,10 @@ class VehicleLogbook(Document):
 		self.check_consumed()	
 	
 	def validate_date(self):
-                from_date = get_datetime(str(self.from_date) + ' ' + str(self.from_time))
-                to_date = get_datetime(str(self.to_date) + ' ' + str(self.to_time))
-                if to_date < from_date:
-                        frappe.throw("From Date/Time cannot be greater than To Date/Time")
+		from_date = get_datetime(str(self.from_date) + ' ' + str(self.from_time))
+		to_date = get_datetime(str(self.to_date) + ' ' + str(self.to_time))
+		if to_date < from_date:
+			frappe.throw("From Date/Time cannot be greater than To Date/Time")
 
 	def set_data(self):
 		if not self.ehf_name:
@@ -93,42 +92,9 @@ class VehicleLogbook(Document):
 			if flt(self.consumption) <= 0:
 				frappe.throw("Total consumption cannot be zero or less")
 
-	# def check_hire_rate(self):
-	# 	if self.rate_type == "Without Fuel":
-	# 		return
-    #             based_on = frappe.db.get_single_value("Mechanical Settings", "hire_rate_based_on")
-    #         if not based_on:
-    #                     frappe.throw("Set the <b>Hire Rate Based On</b> in <b>Mechanical Settings</b>")
-	# 	c = frappe.get_doc("Customer", self.customer)
-	# 	wf = "a.rate_fuel"
-	# 	wof = "a.rate_wofuel"
-	# 	ir = "a.idle_rate"
-
-	# 	if c.customer_group == "Internal":
-	# 		wf = "a.rate_fuel_internal"
-	# 		wof = "a.rate_wofuel_internal"
-	# 		ir = "a.idle_rate_internal"
-
-    #             e = frappe.get_doc("Equipment", self.equipment)
-
-    #             db_query = "select {0}, {1}, {2}, a.yard_hours, a.yard_distance from `tabHire Charge Item` a, `tabHire Charge Parameter` b where a.parent = b.name and b.equipment_type = '{3}' and b.equipment_model = '{4}' and '{5}' between a.from_date and ifnull(a.to_date, now()) and '{6}' between a.from_date and ifnull(a.to_date, now()) LIMIT 1"
-    #             data = frappe.db.sql(db_query.format(wf, wof, ir, e.equipment_type, e.equipment_model, self.from_date, self.to_date), as_dict=True)
-    #             if not data:
-    #                     frappe.throw("There is either no Hire Charge defined or your logbook period overlaps with the Hire Charge period.")
-    #             if based_on == "Hire Charge Parameter":
-	# 		name = frappe.db.sql("select ha.name, ha.tender_hire_rate as thr from `tabHiring Approval Details` ha, `tabEquipment Hiring Form` h where ha.parent = h.name and h.docstatus = 1 and ha.equipment = %s and h.name = %s", (str(self.equipment), str(self.ehf_name)), as_dict=True)
-	# 		if name and name[0]['thr'] == 0:
-	# 			self.idle_rate = data[0].idle_rate
-	# 			if self.rate_type == "With Fuel":
-	# 				self.work_rate = data[0].rate_fuel
-	# 			if self.rate_type == "Without Fuel":
-	# 				self.work_rate = data[0].rate_wofuel
-    #             self.ys_km = data[0].yard_distance
-    #             self.ys_hours = data[0].yard_hours
 	def check_hire_rate(self):
 		if self.rate_type == "Without Fuel":
 			return
-
 		based_on = frappe.db.get_single_value("Mechanical Settings", "hire_rate_based_on")
 		if not based_on:
 			frappe.throw("Set the <b>Hire Rate Based On</b> in <b>Mechanical Settings</b>")
@@ -142,95 +108,22 @@ class VehicleLogbook(Document):
 			wof = "a.rate_wofuel_internal"
 			ir = "a.idle_rate_internal"
 
-		e = frappe.get_doc("Equipment", self.equipment)
+			e = frappe.get_doc("Equipment", self.equipment)
 
-		# db_query = """
-		# 	SELECT {0}, {1}, {2}, a.yard_hours, a.yard_distance
-		# 	FROM `tabHire Charge Item` a, `tabHire Charge Parameter` b
-		# 	WHERE a.parent = b.name
-		# 	AND b.equipment_type = '{3}'
-		# 	AND b.equipment_model = '{4}'
-		# 	AND '{5}' BETWEEN a.from_date AND IFNULL(a.to_date, NOW())
-		# 	AND '{6}' BETWEEN a.from_date AND IFNULL(a.to_date, NOW())
-		# 	LIMIT 1
-		# """
-		
-		# data = frappe.db.sql(
-		# 	db_query.format(
-		# 		wf, wof, ir, e.equipment_type, e.equipment_model, self.from_date, self.to_date
-		# 	),
-		# 	as_dict=True
-		# )
-
-		# if not data:
-		# 	frappe.throw(
-		# 		"There is either no Hire Charge defined or your logbook period overlaps with the Hire Charge period."
-		# 	)
-		data = frappe.db.sql('''
-			SELECT {wf}, {wof}, {ir}, a.yard_hours, a.yard_distance 
-			FROM `tabHire Charge Item` a, `tabHire Charge Parameter` b 
-			WHERE a.parent = b.name 
-			AND b.equipment_type = '{equipment_type}' 
-			AND b.equipment_model = '{model}' 
-			AND '{from_date}' BETWEEN a.from_date AND IFNULL(a.to_date, NOW()) 
-			AND '{to_date}' BETWEEN a.from_date AND IFNULL(a.to_date, NOW()) 
-			LIMIT 1;
-		'''.format(
-			wf=wf,
-			wof=wof,
-			ir=ir,
-			equipment_type=e.equipment_type,
-			model=e.equipment_model,
-			from_date=self.from_date,
-			to_date=self.to_date
-		), as_dict=True)
-
-		# if based_on == "Hire Charge Parameter":
-		# 	name = frappe.db.sql(
-		# 		"""
-		# 		SELECT ha.name, ha.tender_hire_rate AS thr
-		# 		FROM `tabHiring Approval Details` ha, `tabEquipment Hiring Form` h
-		# 		WHERE ha.parent = h.name
-		# 		AND h.docstatus = 1
-		# 		AND ha.equipment = %s
-		# 		AND h.name = %s
-		# 		""",
-		# 		(str(self.equipment), str(self.ehf_name)),
-		# 		as_dict=True
-		# 	)
-		# 	if name and name[0]["thr"] == 0:
-		# 		self.idle_rate = data[0]["idle_rate"]
-		# 		if self.rate_type == "With Fuel":
-		# 			self.work_rate = data[0]["rate_fuel"]
-		# 		if self.rate_type == "Without Fuel":
-		# 			self.work_rate = data[0]["rate_wofuel"]
-
-		# self.ys_km = data[0]["yard_distance"]
-		# self.ys_hours = data[0]["yard_hours"]
-		if based_on == "Hire Charge Parameter":
-			query = '''
-				SELECT ha.name, ha.tender_hire_rate AS thr
-				FROM `tabHiring Approval Details` ha
-				JOIN `tabEquipment Hiring Form` h ON ha.parent = h.name
-				WHERE h.docstatus = 1
-				AND ha.equipment = %(equipment)s
-				AND h.name = %(ehf_name)s
-			'''
-			params = {
-				'equipment': self.equipment,
-				'ehf_name': self.ehf_name
-			}
-			name = frappe.db.sql(query, params, as_dict=True)
-
-			if name and name[0]["thr"] == 0:
-				self.idle_rate = data[0]["idle_rate"]
+			db_query = "select {0}, {1}, {2}, a.yard_hours, a.yard_distance from `tabHire Charge Item` a, `tabHire Charge Parameter` b where a.parent = b.name and b.equipment_type = '{3}' and b.equipment_model = '{4}' and '{5}' between a.from_date and ifnull(a.to_date, now()) and '{6}' between a.from_date and ifnull(a.to_date, now()) LIMIT 1"
+			data = frappe.db.sql(db_query.format(wf, wof, ir, e.equipment_type, e.equipment_model, self.from_date, self.to_date), as_dict=True)
+			if not data:
+				frappe.throw("There is either no Hire Charge defined or your logbook period overlaps with the Hire Charge period.")
+			if based_on == "Hire Charge Parameter":
+				name = frappe.db.sql("select ha.name, ha.tender_hire_rate as thr from `tabHiring Approval Details` ha, `tabEquipment Hiring Form` h where ha.parent = h.name and h.docstatus = 1 and ha.equipment = %s and h.name = %s", (str(self.equipment), str(self.ehf_name)), as_dict=True)
+			if name and name[0]['thr'] == 0:
+				self.idle_rate = data[0].idle_rate
 				if self.rate_type == "With Fuel":
-					self.work_rate = data[0]["rate_fuel"]
-				elif self.rate_type == "Without Fuel":
-					self.work_rate = data[0]["rate_wofuel"]
-
-			self.ys_km = data[0]["yard_distance"]
-			self.ys_hours = data[0]["yard_hours"]
+					self.work_rate = data[0].rate_fuel
+				if self.rate_type == "Without Fuel":
+					self.work_rate = data[0].rate_wofuel
+			self.ys_km = data[0].yard_distance
+			self.ys_hours = data[0].yard_hours
 
 
 	def on_update(self):
@@ -255,7 +148,7 @@ class VehicleLogbook(Document):
 			frappe.throw("From Date cannot be smaller than To Date")
 
 		if getdate(self.from_date).month != getdate(self.to_date).month:
-                        frappe.throw("From Date and To Date should be in the same month")
+			frappe.throw("From Date and To Date should be in the same month")
 
 	def check_hire_form(self):
 		if self.ehf_name:
@@ -361,44 +254,14 @@ class VehicleLogbook(Document):
 			if flt(tank) < flt(self.closing_balance):
 				frappe.msgprint("Closing balance cannot be greater than the tank capacity (" + str(tank) + ")")
 
-	# def check_double_vl(self):
-	# 	from_datetime = str(get_datetime(str(self.from_date) + ' ' + str(self.from_time)))
-    #             to_datetime = str(get_datetime(str(self.to_date) + ' ' + str(self.to_time)))
-
-    #             query = "select ehf_name from `tabVehicle Logbook` where equipment = '{equipment}' and docstatus in (1, 0) and ('{from_date}' between concat(from_date, ' ', from_time) and concat(to_date, ' ', to_time) OR '{to_date}' between concat(from_date, ' ', from_time) and concat(to_date, ' ', to_time) OR ( '{from_date}' <= concat(from_date, ' ', from_time) AND '{to_date}' >= concat(to_date, ' ', to_time) )) and name != '{vl_name}'" .format(from_date=from_datetime, to_date=to_datetime, vl_name=self.name, equipment=self.equipment)
-    #             result = frappe.db.sql(query, as_dict=1)
-	# 	for a in result:
-	# 		frappe.throw("The logbook for the same equipment, date, and time has been created at " + str(a.ehf_name))
-
 	def check_double_vl(self):
 		from_datetime = str(get_datetime(str(self.from_date) + ' ' + str(self.from_time)))
 		to_datetime = str(get_datetime(str(self.to_date) + ' ' + str(self.to_time)))
 
-		query = """
-			SELECT ehf_name
-			FROM `tabVehicle Logbook`
-			WHERE equipment = '{equipment}'
-			AND docstatus IN (1, 0)
-			AND (
-				'{from_date}' BETWEEN CONCAT(from_date, ' ', from_time) AND CONCAT(to_date, ' ', to_time)
-				OR '{to_date}' BETWEEN CONCAT(from_date, ' ', from_time) AND CONCAT(to_date, ' ', to_time)
-				OR (
-					'{from_date}' <= CONCAT(from_date, ' ', from_time)
-					AND '{to_date}' >= CONCAT(to_date, ' ', to_time)
-				)
-			)
-			AND name != '{vl_name}'
-		""".format(
-			from_date=from_datetime,
-			to_date=to_datetime,
-			vl_name=self.name,
-			equipment=self.equipment
-		)
-
+		query = "select ehf_name from `tabVehicle Logbook` where equipment = '{equipment}' and docstatus in (1, 0) and ('{from_date}' between concat(from_date, ' ', from_time) and concat(to_date, ' ', to_time) OR '{to_date}' between concat(from_date, ' ', from_time) and concat(to_date, ' ', to_time) OR ( '{from_date}' <= concat(from_date, ' ', from_time) AND '{to_date}' >= concat(to_date, ' ', to_time) )) and name != '{vl_name}'" .format(from_date=from_datetime, to_date=to_datetime, vl_name=self.name, equipment=self.equipment)
 		result = frappe.db.sql(query, as_dict=1)
 		for a in result:
 			frappe.throw("The logbook for the same equipment, date, and time has been created at " + str(a.ehf_name))
-
 
 	def check_consumption(self):
 		no_own_fuel_tank = frappe.db.get_value("Equipment Type", frappe.db.get_value("Equipment", self.equipment, "equipment_type"), "no_own_tank")
@@ -467,28 +330,3 @@ def get_opening(equipment, from_date, to_date, pol_type):
 		result.append(0)'''
 
 	return result
-
-
-
-# @frappe.whitelist()
-# def get_opening(equipment, from_date, to_date, pol_type):
-#     opening_balance_query = """
-#         SELECT opening_balance, initial_km, initial_hour, hsd_received
-#         FROM `tabVehicle Logbook`
-#         WHERE equipment = %(equipment)s
-#         AND from_date >= %(from_date)s
-#         AND to_date <= %(to_date)s
-#         AND pol_type = %(pol_type)s
-#     """
-#     result = frappe.db.sql(opening_balance_query, {
-#         "equipment": equipment,
-#         "from_date": from_date,
-#         "to_date": to_date,
-#         "pol_type": pol_type
-#     }, as_dict=True)
-#     if not result:
-#         return {"opening_balance": 0, "hsd_received": 0, "initial_km": 0, "initial_hour": 0}
-#     return result[0]
-
-		
-

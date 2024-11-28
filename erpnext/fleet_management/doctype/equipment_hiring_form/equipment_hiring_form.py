@@ -166,8 +166,9 @@ class EquipmentHiringForm(Document):
 	def post_journal_entry(self):
 		advance_account = frappe.db.get_single_value("Maintenance Accounts Settings", "default_advance_account")
 		revenue_bank = frappe.db.get_value("Branch", self.branch, "revenue_bank_account")
-
+		
 		if revenue_bank and advance_account:
+			# frappe.throw("hhhhhhhhh")
 			je = frappe.new_doc("Journal Entry")
 			je.flags.ignore_permissions = 1 
 			je.title = "Advance for Equipment Hire (" + self.name + ")"
@@ -275,7 +276,7 @@ def get_rates(form, equipment):
 #                     select
 #                             e.name,
 #                             e.equipment_type,
-#                             e.registeration_number
+#                             e.registration_number
 #                     from `tabEquipment` e
 #                     where e.equipment_type = %(equipment_type)s
 #                     and e.branch = %(branch)s
@@ -284,15 +285,15 @@ def get_rates(form, equipment):
 #                             or
 #                             equipment_type like %(txt)s
 #                             or
-#                             registeration_number like %(txt)s
+#                             registration_number like %(txt)s
 #                     )
 #                     {mcond}
 #                     order by
 #                             if(locate(%(_txt)s, name), locate(%(_txt)s, name), 99999),
 #                             if(locate(%(_txt)s, equipment_type), locate(%(_txt)s, equipment_type), 99999),
-#                             if(locate(%(_txt)s, registeration_number), locate(%(_txt)s, registeration_number), 99999),
+#                             if(locate(%(_txt)s, registration_number), locate(%(_txt)s, registration_number), 99999),
 #                             idx desc,
-#                             name, equipment_type, registeration_number
+#                             name, equipment_type, registration_number
 #                     limit %(start)s, %(page_len)s
 #                     """.format(**{
 #                             'key': searchfield,
@@ -322,7 +323,7 @@ def equipment_query(doctype, txt, searchfield, start, page_len, filters):
                         select
                                 e.name,
                                 e.equipment_type,
-                                e.registeration_number
+                                e.registration_number
                         from `tabEquipment` e
                         where e.equipment_type = %s
                         and e.branch = %s
@@ -343,7 +344,7 @@ def equipment_query(doctype, txt, searchfield, start, page_len, filters):
                         select
                                 e.name,
                                 e.equipment_type,
-                                e.registeration_number
+                                e.registration_number
                         from `tabEquipment` e
                         where e.equipment_type = %(equipment_type)s
                         and e.branch = %(branch)s
@@ -353,15 +354,15 @@ def equipment_query(doctype, txt, searchfield, start, page_len, filters):
                                 or
                                 equipment_type like %(txt)s
                                 or
-                                registeration_number like %(txt)s
+                                registration_number like %(txt)s
                         )
                         {mcond}
                         order by
                                 if(locate(%(_txt)s, name), locate(%(_txt)s, name), 99999),
                                 if(locate(%(_txt)s, equipment_type), locate(%(_txt)s, equipment_type), 99999),
-                                if(locate(%(_txt)s, registeration_number), locate(%(_txt)s, registeration_number), 99999),
+                                if(locate(%(_txt)s, registration_number), locate(%(_txt)s, registration_number), 99999),
                                 idx desc,
-                                name, equipment_type, registeration_number
+                                name, equipment_type, registration_number
                         limit %(start)s, %(page_len)s
                         """.format(**{
                                 'key': searchfield,

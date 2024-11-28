@@ -20,6 +20,7 @@
   "column_break_jbro",
   "boq",
   "boq_type",
+  "subcontract",
   "sb_items",
   "check_all",
   "mb_entry_boq",
@@ -228,12 +229,19 @@
    "fieldtype": "Data",
    "hidden": 1,
    "label": "Currency"
+  },
+  {
+   "fieldname": "subcontract",
+   "fieldtype": "Link",
+   "label": "Subcontract",
+   "options": "Subcontract",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-12 15:05:59.497144",
+ "modified": "2024-11-26 15:03:19.967215",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "MB Entry",

@@ -29,10 +29,10 @@ class HSDAdjustment(Document):
 
 	def check_mandatory_fields(self):
 		for a in self.items:
-			e_no, hsd_type, branch = frappe.db.get_value("Equipment", a.equipment, ["equipment_number", "hsd_type", "branch"])
+			e_no, hsd_type, branch = frappe.db.get_value("Equipment", a.equipment, ["registration_number", "hsd_type", "branch"])
 			if branch != self.branch:
 				frappe.throw("Equipment <b>"+str(a.equipment)+"</b> doesn't belong to " + str(self.branch))
-			a.equipment_number = e_no
+			a.registration_number = e_no
 			a.hsd_type = hsd_type
 			if not hsd_type:
 				frappe.throw("HSD Type for Equipment is Mandatory on row "+ str(a.idx) +". Please set it in the Equipment Master")
@@ -77,7 +77,7 @@ class HSDAdjustment(Document):
 	def get_equipments(self):
 		if not self.branch:
 			frappe.throw("Select the Branch first")
-		query = "select name as equipment, equipment_number, hsd_type from tabEquipment where is_disabled = 0 and branch = \'" + str(self.branch) + "\'"
+		query = "select name as equipment, registration_number, hsd_type from tabEquipment where is_disabled = 0 and branch = \'" + str(self.branch) + "\'"
 		entries = frappe.db.sql(query, as_dict=True)
 		self.set('items', [])
 

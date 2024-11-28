@@ -27,6 +27,7 @@
   },
   {
    "columns": 2,
+   "fetch_from": "item_code.item_name",
    "fieldname": "item_name",
    "fieldtype": "Data",
    "in_list_view": 1,
@@ -76,7 +77,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-10-29 14:08:10.442996",
+ "modified": "2024-11-26 21:00:20.285543",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Project Sales Item",

@@ -1930,7 +1930,7 @@ class PurchaseInvoice(BuyingController):
 				self.status = "Draft"
 
 		if update:
-			self.db_set("status", self.payment_status, update_modified=update_modified)
+			self.db_set("status", self.status, update_modified=update_modified)
 
 
 # to get details of purchase invoice/receipt from which this doc was created for exchange rate difference handling

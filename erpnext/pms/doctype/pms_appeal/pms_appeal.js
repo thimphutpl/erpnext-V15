@@ -2,17 +2,17 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on('PMS Appeal', {
-	pms_calendar: function(frm) {
-		cur_frm.set_query("appeal_based_on", function(doc) {
-			return {
-				'filters': {
-					'employee': doc.employee,
-					'pms_calendar': doc.pms_calendar,
-					'docstatus': 1
-				}
-			}
-		});
-	},
+	// pms_calendar: function(frm) {
+	// 	cur_frm.set_query("appeal_based_on", function(doc) {
+	// 		return {
+	// 			'filters': {
+	// 				'employee': doc.employee,
+	// 				'pms_calendar': doc.pms_calendar,
+	// 				'docstatus': 1
+	// 			}
+	// 		}
+	// 	});
+	// },
 });
 frappe.ui.form.on('Evaluate Appeal Target Item',{
 	onload:(frm,cdt,cdn)=>{

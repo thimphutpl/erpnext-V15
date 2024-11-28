@@ -26,7 +26,7 @@
   "column_break_bape",
   "equipment_model",
   "column_break_vikw",
-  "registeration_number",
+  "registration_number",
   "engine_details_section",
   "engine_number",
   "column_break_13",
@@ -88,13 +88,6 @@
    "label": "Equipment Model",
    "options": "Equipment Model",
    "reqd": 1
-  },
-  {
-   "fieldname": "registeration_number",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Registration Number",
-   "unique": 1
   },
   {
    "fieldname": "engine_details_section",
@@ -299,11 +292,19 @@
    "fieldname": "tank_capacity",
    "fieldtype": "Data",
    "label": "Tank Capacity"
+  },
+  {
+   "fieldname": "registration_number",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Registration Number",
+   "reqd": 1,
+   "unique": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-20 22:41:42.375224",
+ "modified": "2024-11-24 14:08:49.289524",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Equipment",
@@ -363,9 +364,9 @@
    "share": 1
   }
  ],
- "search_fields": "equipment_type,registeration_number, branch",
+ "search_fields": "equipment_type,registration_number, branch",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],
- "title_field": "registeration_number"
+ "title_field": "registration_number"
 }

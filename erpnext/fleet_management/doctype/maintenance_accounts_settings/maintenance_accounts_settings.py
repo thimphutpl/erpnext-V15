@@ -15,6 +15,7 @@ class MaintenanceAccountsSettings(Document):
 		from frappe.types import DF
 
 		default_advance_account: DF.Link
+		default_advance_amount: DF.Link
 		default_goods_account: DF.Link
 		default_pol_expense_account: DF.Link
 		default_receivable_account: DF.Link

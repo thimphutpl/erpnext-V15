@@ -8,7 +8,7 @@ frappe.query_reports["Project Manpower"] = {
 			"label": 		("Project"),
 			"fieldtype": 	"Link",
 			"options":		"Project",
-			"reqd": 1,
+			"reqd": 0,
 			"width": "200"
 		}
 	]

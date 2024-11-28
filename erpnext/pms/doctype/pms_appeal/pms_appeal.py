@@ -12,6 +12,8 @@ from erpnext.custom_workflow import validate_workflow_states, notify_workflow_st
 
 class PMSAppeal(Document):
 	def validate(self):
+		action = frappe.request.form.get('action')
+
 		self.set_reference()
 		self.calculate_target_score()
 		if self.form_ii:
@@ -30,11 +32,14 @@ class PMSAppeal(Document):
 		self.set_reference(cancel=True)
 		self.update_employee_master()
 
+
 	def set_perc_approver(self):
-		approver = frappe.db.get_single_value("HR Settings","hr_approver")
-		approver_name = frappe.db.get_single_value("HR Settings","hr_approver_name")
-		self.db_set("approver", approver)
-		self.db_set("approver_name", approver_name)
+		approver = frappe.db.get_single_value("PMS Setting", "approver")
+
+		self.approver = frappe.db.get_value("Employee", approver, "user_id")
+		self.approver_name = frappe.db.get_value("Employee", approver, "employee_name")
+		self.approver_designation = frappe.db.get_value("Employee", approver, "designation")
+
 	def set_reference(self, cancel=False):
 		if self.reference:
 			if not cancel:

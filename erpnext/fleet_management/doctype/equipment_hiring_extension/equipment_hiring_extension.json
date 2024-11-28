@@ -1,6 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "HE.YY.MM.###",
  "creation": "2024-10-31 12:55:47.089789",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -17,7 +18,7 @@
   "section_break_qfzr",
   "equipment",
   "column_break_vxmw",
-  "equipment_number",
+  "registration_number",
   "column_break_zwco",
   "extension_date",
   "section_break_nekr",
@@ -98,7 +99,7 @@
    "fieldtype": "Section Break"
   },
   {
-   "depends_on": "eva:doc.ehf_name",
+   "depends_on": "eval:doc.ehf_name",
    "fieldname": "equipment",
    "fieldtype": "Link",
    "label": "Equipment ",
@@ -108,14 +109,6 @@
   {
    "fieldname": "column_break_vxmw",
    "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "equipment_number",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Registration Number",
-   "read_only": 1,
-   "reqd": 1
   },
   {
    "fieldname": "column_break_zwco",
@@ -196,15 +189,24 @@
    "options": "Equipment Hiring Extension",
    "print_hide": 1,
    "read_only": 1
+  },
+  {
+   "fieldname": "registration_number",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Registration Number",
+   "read_only": 1,
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-10-31 15:09:03.065862",
+ "modified": "2024-11-25 11:57:03.129351",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Equipment Hiring Extension",
+ "naming_rule": "Expression (old style)",
  "owner": "Administrator",
  "permissions": [
   {

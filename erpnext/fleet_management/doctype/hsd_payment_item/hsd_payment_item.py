@@ -14,8 +14,15 @@ class HSDPaymentItem(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		allocated_amount: DF.Currency
+		balance_amount: DF.Currency
+		item_name: DF.Data
+		memo_number: DF.Data | None
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
+		payable_amount: DF.Currency
+		pol: DF.Link
+		pol_item_code: DF.Link
 	# end: auto-generated types
 	pass

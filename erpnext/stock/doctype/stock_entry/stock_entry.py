@@ -120,6 +120,7 @@ class StockEntry(StockController):
 		pick_list: DF.Link | None
 		posting_date: DF.Date | None
 		posting_time: DF.Time | None
+		price_list: DF.Link | None
 		process_loss_percentage: DF.Percent
 		process_loss_qty: DF.Float
 		project: DF.Link | None
@@ -129,7 +130,6 @@ class StockEntry(StockController):
 		received_by: DF.Data | None
 		remarks: DF.SmallText | None
 		sales_invoice_no: DF.Link | None
-		scan_barcode: DF.Data | None
 		select_print_heading: DF.Link | None
 		set_posting_time: DF.Check
 		source_address_display: DF.SmallText | None
@@ -271,6 +271,8 @@ class StockEntry(StockController):
 			self.set_material_request_transfer_status("In Transit")
 		if self.purpose == "Material Transfer" and self.outgoing_stock_entry:
 			self.set_material_request_transfer_status("Completed")
+		
+		self.update_consumable_register()
 
 	def on_cancel(self):
 		self.validate_closed_subcontracting_order()
@@ -302,6 +304,8 @@ class StockEntry(StockController):
 			self.set_material_request_transfer_status("Not Started")
 		if self.purpose == "Material Transfer" and self.outgoing_stock_entry:
 			self.set_material_request_transfer_status("In Transit")
+
+		self.update_consumable_register(cancel=True)
 
 	def update_status(self):
 		status = {0: "Draft",
@@ -2681,6 +2685,23 @@ class StockEntry(StockController):
 		self.set_actual_qty()
 		self.calculate_rate_and_amount()
 
+	def update_consumable_register(self, cancel=False):
+		if cancel:
+			frappe.db.sql("delete from `tabConsumable Register Entry` where ref_doc = %s", self.name)
+		else:
+			if self.purpose == "Material Issue":
+				for a in self.items:
+					if frappe.db.get_value("Item", a.item_code, "maintain_in_register"):
+						if not a.issued_to:
+								frappe.throw(_("Row#{0} : <b>`Issued To`</b> is mandatory for item <b>{1} ({2})</b>.".format(a.idx,a.item_name,a.item_code)),title="Missing values")
+						doc = frappe.new_doc("Consumable Register Entry")
+						doc.branch = self.branch
+						doc.item_code = a.item_code
+						doc.date = self.posting_date
+						doc.issued_to = a.issued_to
+						doc.ref_doc = self.name
+						doc.qty = a.qty
+						doc.submit()
 
 @frappe.whitelist()
 def move_sample_to_retention_warehouse(company, items):

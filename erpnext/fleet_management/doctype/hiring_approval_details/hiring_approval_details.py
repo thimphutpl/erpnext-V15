@@ -44,7 +44,7 @@ class HiringApprovalDetails(Document):
 		rate5: DF.Currency
 		rate: DF.Currency
 		rate_type: DF.Literal["", "With Fuel", "Without Fuel"]
-		registeration_number: DF.Data | None
+		registration_number: DF.Data | None
 		remarks: DF.SmallText | None
 		request_reference: DF.Data | None
 		tender_hire_rate: DF.Link | None

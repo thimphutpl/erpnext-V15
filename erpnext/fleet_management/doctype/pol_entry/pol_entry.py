@@ -27,14 +27,15 @@ class POLEntry(Document):
 		km_difference: DF.Float
 		memo_number: DF.Data | None
 		mileage: DF.Float
+		own_cost_center: DF.Check
 		pol_slip_no: DF.Data | None
-		pol_type: DF.Link | None
+		pol_type: DF.Data
 		posting_date: DF.Date | None
 		posting_time: DF.Time | None
 		qty: DF.Float
 		rate: DF.Currency
 		reference_name: DF.DynamicLink | None
-		reference_type: DF.Literal["", "POL Receive", "POL Issue", "Vehicle Logbook", "HSD Adjustment"]
+		reference_type: DF.Literal["", "POL Receive", "POL Issue", "Vehicle Logbook", "HSD Adjustment", "Equipment POL Transfer"]
 		supplier: DF.Link | None
 		type: DF.Literal["Receive", "Issue", "Stock", "consumed"]
 		uom: DF.Literal["", "Hour", "KM"]

@@ -20,6 +20,7 @@
   "column_break_gyqu",
   "default_advance_account",
   "hire_expense_account",
+  "default_advance_amount",
   "section_break_grvo",
   "default_pol_expense_account",
   "column_break_agau",
@@ -135,12 +136,19 @@
    "label": "Pool Vehicle POL Expenses",
    "options": "Account",
    "reqd": 1
+  },
+  {
+   "fieldname": "default_advance_amount",
+   "fieldtype": "Link",
+   "label": "Default Advance Amount",
+   "options": "Account",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-10-15 15:53:59.775615",
+ "modified": "2024-11-24 13:14:11.137252",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Maintenance Accounts Settings",

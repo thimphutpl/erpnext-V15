@@ -52,8 +52,11 @@ class ProjectPayment(AccountsController):
 		revenue_bank_account: DF.Link | None
 		select_cheque_lot: DF.Link | None
 		status: DF.Literal["Draft", "Paid", "Received", "Cancelled"]
+		tax_withholding_category: DF.Link | None
 		tds_account: DF.Link | None
 		tds_amount: DF.Currency
+		tds_rate: DF.Int
+		tds_taxable_amount: DF.Currency
 		total_amount: DF.Currency
 		use_cheque_lot: DF.Check
 	# end: auto-generated types
@@ -119,7 +122,8 @@ class ProjectPayment(AccountsController):
 							group by concat(boq,'_',ifnull(subcontract,'x'),'_',invoice_name,'_',entry_name)
 					""".format(parent=self.name, invoice_name=inv.reference_name), as_dict=1)
 					for d in det:
-						if boq.has_key(d.key):
+						# if boq.has_key(d.key):
+						if d.key in boq:
 							boq[d.key] += flt(d.received_amount)
 						else:
 							boq.update({d.key : flt(d.received_amount)})
@@ -129,7 +133,8 @@ class ProjectPayment(AccountsController):
 						received_amount  = 0.0
 						key = str(mb.boq) + "_" + str(mb.subcontract if mb.subcontract else "x") + "_" + str(inv.reference_name) + "_" + str(mb.entry_name)
 						
-						if boq.has_key(key):
+						# if boq.has_key(key):
+						if key in boq:
 							received_amount =  flt(boq[key])
 								
 						if (flt(mb.entry_amount)+flt(mb.price_adjustment_amount)-flt(received_amount)) > 0 and flt(balance_amount) > 0:
@@ -141,7 +146,8 @@ class ProjectPayment(AccountsController):
 								balance_amount   = 0.0
 
 									
-							if items.has_key(key):
+							# if items.has_key(key):
+							if key in items:
 								items[key] += flt(allocated_amount)
 							else:
 								items.update({key : flt(allocated_amount)})
@@ -165,13 +171,14 @@ class ProjectPayment(AccountsController):
 
 					key = str(boq) + "_" + str(subcontract if subcontract else "x") + "_" + str(inv.reference_name) + "_" + "x"
 					if (flt(allocated_amount)-flt(received_amount)) > 0:
-						if items.has_key(key):
+						# if items.has_key(key):
+						if key in items:
 							items[key] += flt(allocated_amount)
 						else:
 							items.update({key : flt(allocated_amount)})
 				
 		if items:
-			for key,value in collections.OrderedDict(sorted(items.items())).iteritems():
+			for key,value in collections.OrderedDict(sorted(items.items())).items():
 				self.append("details",{
 						"boq": key.split('_')[0],
 						"subcontract": None if key.split('_')[1]=="x" else key.split('_')[1],
@@ -332,6 +339,7 @@ class ProjectPayment(AccountsController):
 	def get_advances(self):
 		return frappe.get_all("Project Advance","*",filters={"project":self.project, "docstatus":1, "balance_amount": [">",0]})
 
+	@frappe.whitelist()
 	def get_series(self):
 		fiscal_year = getdate(self.posting_date).year
 		generate_receipt_no(self.doctype, self.name, self.branch, fiscal_year)

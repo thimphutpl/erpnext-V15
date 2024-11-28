@@ -18,7 +18,7 @@
   "total_hours",
   "equipment_approved_details_section",
   "equipment",
-  "registeration_number",
+  "registration_number",
   "equipment_model",
   "column_break_cwlv",
   "rate_type",
@@ -324,7 +324,7 @@
    "read_only": 1
   },
   {
-   "fieldname": "registeration_number",
+   "fieldname": "registration_number",
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Equipment Number",
@@ -334,7 +334,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-11-20 23:01:46.461855",
+ "modified": "2024-11-24 13:04:58.377635",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Hiring Approval Details",

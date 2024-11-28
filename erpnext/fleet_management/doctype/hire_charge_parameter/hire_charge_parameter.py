@@ -28,7 +28,7 @@ class HireChargeParameter(Document):
 		items: DF.Table[HireChargeItem]
 		kph: DF.Float
 		lph: DF.Float
-		registeration_number: DF.Data
+		registration_number: DF.Data
 		with_fuel: DF.Currency
 		with_fuel_internal: DF.Currency
 		without_fuel: DF.Currency
@@ -49,17 +49,17 @@ class HireChargeParameter(Document):
 								to_date = add_days(a.from_date, -1)
 
 	def set_parameter_values(self):
-		# p = frappe.db.sql("select name from `tabHire Charge Parameter` where registeration_number = %s and equipment_type = %s and equipment_model = %s and name != %s", str(self.registeration_number), (str(self.equipment_type), str(self.equipment_model), str(self.name)), as_dict=True)
+		# p = frappe.db.sql("select name from `tabHire Charge Parameter` where registration_number = %s and equipment_type = %s and equipment_model = %s and name != %s", str(self.registeration_number), (str(self.equipment_type), str(self.equipment_model), str(self.name)), as_dict=True)
 		p = frappe.db.sql(
 			"""
 			SELECT name 
 			FROM `tabHire Charge Parameter` 
-			WHERE registeration_number = %s 
+			WHERE registration_number = %s 
 			AND equipment_type = %s 
 			AND equipment_model = %s 
 			AND name != %s
 			""", 
-			(self.registeration_number, self.equipment_type, self.equipment_model, self.name),
+			(self.registration_number, self.equipment_type, self.equipment_model, self.name),
 			as_dict=True
 		)
 		if p:
@@ -81,17 +81,17 @@ class HireChargeParameter(Document):
 
 
 @frappe.whitelist()
-def fetch_registeration_numbers(doctype, txt, searchfield, start, page_len, filters):
+def fetch_registration_numbers(doctype, txt, searchfield, start, page_len, filters):
     return frappe.db.sql(
         """
         SELECT
-            registeration_number
+            registration_number
         FROM
             `tabEquipment`
         WHERE
             equipment_type = %(equipment_type)s
         AND
-            registeration_number LIKE %(txt)s
+            registration_number LIKE %(txt)s
         LIMIT %(start)s, %(page_len)s
         """,
         {

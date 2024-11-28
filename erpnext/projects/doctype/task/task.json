@@ -135,7 +135,7 @@
    "no_copy": 1,
    "oldfieldname": "status",
    "oldfieldtype": "Select",
-   "options": "Open\nWorking\nPending Review\nOverdue\nTemplate\nCompleted\nCancelled"
+   "options": "Open\nWorking\nPending Review\nOverdue\nTemplate\nCompleted\nCancelled\nClosed"
   },
   {
    "fieldname": "priority",
@@ -528,7 +528,7 @@
  "is_tree": 1,
  "links": [],
  "max_attachments": 5,
- "modified": "2024-11-13 11:16:34.364364",
+ "modified": "2024-11-27 12:42:15.264797",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Task",

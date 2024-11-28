@@ -70,7 +70,7 @@
   },
   {
    "fieldname": "equipment",
-   "fieldtype": "Data",
+   "fieldtype": "Link",
    "label": "Equipment",
    "mandatory_depends_on": "eval:doc.type == \"Own\"",
    "options": "Equipment"
@@ -89,7 +89,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-21 11:03:05.439573",
+ "modified": "2024-11-23 12:46:39.615139",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Fuelbook",

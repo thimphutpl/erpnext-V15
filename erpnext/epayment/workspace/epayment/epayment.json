@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"m8ISqmMqsQ\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">ePayment</span>\",\"col\":12}},{\"id\":\"nF9v-lHBK3\",\"type\":\"card\",\"data\":{\"card_name\":\"Utility Bill Payment Settings\",\"col\":4}},{\"id\":\"KDqgvX11Jc\",\"type\":\"card\",\"data\":{\"card_name\":\"Transactions\",\"col\":4}},{\"id\":\"JF9_Jnc7gq\",\"type\":\"card\",\"data\":{\"card_name\":\"Bank Payment Settings\",\"col\":4}}]",
+ "content": "[{\"id\":\"m8ISqmMqsQ\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">ePayment</span>\",\"col\":12}},{\"id\":\"nF9v-lHBK3\",\"type\":\"card\",\"data\":{\"card_name\":\"Utility Bill Payment Settings\",\"col\":4}},{\"id\":\"KDqgvX11Jc\",\"type\":\"card\",\"data\":{\"card_name\":\"Transactions\",\"col\":4}},{\"id\":\"JF9_Jnc7gq\",\"type\":\"card\",\"data\":{\"card_name\":\"Bank Payment Settings\",\"col\":4}},{\"id\":\"Hy6wF2OZ81\",\"type\":\"card\",\"data\":{\"card_name\":\"Reports\",\"col\":4}}]",
  "creation": "2024-11-23 12:03:55.730002",
  "custom_blocks": [],
  "docstatus": 0,
@@ -99,9 +99,28 @@
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Reports",
+   "link_count": 1,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "e-Payment Report",
+   "link_count": 0,
+   "link_to": "e-Payment Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2024-11-23 13:11:24.220796",
+ "modified": "2024-11-26 11:48:26.346325",
  "modified_by": "Administrator",
  "module": "ePayment",
  "name": "ePayment",

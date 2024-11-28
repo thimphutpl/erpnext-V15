@@ -24,6 +24,8 @@
   "approver",
   "column_break_mtdw",
   "approver_name",
+  "column_break_spsg",
+  "approval_date",
   "warehouse_section",
   "column_break_ivqt",
   "set_warehouse",
@@ -33,10 +35,10 @@
   "items_section",
   "items",
   "repair_and_services",
-  "terms_tab",
-  "terms_section_break",
+  "terms_and_conditions_section",
   "tc_name",
   "terms",
+  "terms_tab",
   "more_info_tab",
   "status_section",
   "status",
@@ -237,14 +239,6 @@
    "print_hide": 1
   },
   {
-   "collapsible": 1,
-   "collapsible_depends_on": "terms",
-   "fieldname": "terms_section_break",
-   "fieldtype": "Section Break",
-   "oldfieldtype": "Section Break",
-   "options": "fa fa-legal"
-  },
-  {
    "fieldname": "tc_name",
    "fieldtype": "Link",
    "label": "Terms",
@@ -409,13 +403,28 @@
    "fieldtype": "Date",
    "label": "Changed Date",
    "read_only": 1
+  },
+  {
+   "fieldname": "terms_and_conditions_section",
+   "fieldtype": "Section Break",
+   "label": "Terms and Conditions"
+  },
+  {
+   "fieldname": "column_break_spsg",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "approval_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Approval Date"
   }
  ],
  "icon": "fa fa-ticket",
  "idx": 70,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-21 14:40:08.316103",
+ "modified": "2024-11-27 15:41:11.018888",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Material Request",

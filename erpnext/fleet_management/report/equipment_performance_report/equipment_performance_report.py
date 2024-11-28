@@ -180,18 +180,18 @@ def equipment_expense(filters, eq_name, eq_branch, date, filter_date):
 			and   (vl.from_date {1} or vl.to_date {1}) and (vl.from_date {2} or vl.to_date {2})
 	    """.format(eq_name, date, filter_date, eq_branch), as_dict=1)[0]
 
-	# `tabPOL`
+	# `tabPOL Receive`
 	pol = frappe.db.sql("""
 			select (sum(qty*rate)/sum(qty)) as rate
-			from `tabPOL`
+			from `tabPOL Receive`
 			where branch = '{0}'
 			and   docstatus = 1 and posting_date {1} and posting_date {2}
 		    """.format(eq_branch, date, filter_date), as_dict=1)[0]
-	 # `tabJob Card`
+	 # `tabJob Cards`
 	jc = frappe.db.sql("""
 			select sum(ifnull(jc.goods_amount,0)) as goods_amount,
 				sum(ifnull(jc.services_amount,0)) as services_amount
-			from `tabJob Card` jc
+			from `tabJob Cards` jc
 			where jc.equipment = '{0}'
 			and   jc.docstatus = 1
 			and   jc.finish_date {1} and jc.customer_branch = '{2}' and jc.finish_date {3}

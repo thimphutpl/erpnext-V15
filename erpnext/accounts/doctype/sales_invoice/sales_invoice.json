@@ -7,6 +7,7 @@
  "engine": "InnoDB",
  "field_order": [
   "customer_section",
+  "branch",
   "title",
   "naming_series",
   "customer",
@@ -59,6 +60,11 @@
   "column_break_52",
   "total",
   "net_total",
+  "advances_section",
+  "allocate_advances_automatically",
+  "only_include_allocated_payments",
+  "get_advances",
+  "advances",
   "taxes_section",
   "tax_category",
   "taxes_and_charges",
@@ -121,11 +127,6 @@
   "column_break_90",
   "change_amount",
   "account_for_change_amount",
-  "advances_section",
-  "allocate_advances_automatically",
-  "only_include_allocated_payments",
-  "get_advances",
-  "advances",
   "write_off_section",
   "write_off_amount",
   "base_write_off_amount",
@@ -1287,6 +1288,7 @@
    "default": "0",
    "fieldname": "allocate_advances_automatically",
    "fieldtype": "Check",
+   "hidden": 1,
    "hide_days": 1,
    "hide_seconds": 1,
    "label": "Allocate Advances Automatically (FIFO)"
@@ -2158,6 +2160,7 @@
    "description": "Advance payments allocated against orders will only be fetched",
    "fieldname": "only_include_allocated_payments",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "Only Include Allocated Payments"
   },
   {
@@ -2182,6 +2185,12 @@
    "label": "Update Outstanding for Self",
    "no_copy": 1,
    "print_hide": 1
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "label": "Branch",
+   "options": "Branch"
   }
  ],
  "icon": "fa fa-file-text",
@@ -2194,7 +2203,7 @@
    "link_fieldname": "consolidated_invoice"
   }
  ],
- "modified": "2024-11-21 15:18:20.841222",
+ "modified": "2024-11-23 15:00:10.141432",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Sales Invoice",

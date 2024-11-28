@@ -148,10 +148,11 @@ class ProcessMRPayment(Document):
                 
 	#Populate Budget Accounts with Expense and Fixed Asset Accounts
 	def load_employee(self):
+		#frappe.throw("hi")
 		if self.employee_type == "GEP Employee":
 			query = "select 'GEP Employee' as employee_type, name as employee, person_name, id_card, rate_per_day as daily_rate, rate_per_hour as hourly_rate from `tabGEP Employee` where status = 'Active'"
 		elif self.employee_type == "Muster Roll Employee":
-			frappe.throw("1")
+			#frappe.throw("1")
 			query = "select 'Muster Roll Employee' as employee_type, r.name as employee, r.person_name, r.id_card, m.rate_per_day as daily_rate, m.rate_per_hour as hourly_rate from `tabMuster Roll Employee` r, tabMusterroll m where r.status = 'Active' and r.name=m.parent order by m.rate_per_day desc limit 1"
 		else:
 			frappe.throw("Select employee record first!")
@@ -284,6 +285,7 @@ class ProcessMRPayment(Document):
 def get_pay_details(employee, year, month):
 	from_date = "-".join([str(year), str(month), '01'])
 	to_date   = str(get_last_day(from_date))
+	#frappe.throw(employee)
 
 	return  frappe.db.sql("""
 			SELECT
@@ -345,6 +347,7 @@ def get_pay_details(employee, year, month):
 
 @frappe.whitelist()
 def get_records(fiscal_year, fiscal_month, cost_center, branch, dn):
+	
 	''' 
 	This method updates the follwoing details for the given month 
 		1. `tabAttendance Others`.rate_per_day
@@ -437,12 +440,15 @@ def get_records(fiscal_year, fiscal_month, cost_center, branch, dn):
 			{total_days} 			AS noof_days_in_month
 		FROM (
 			SELECT DISTINCT mr_employee, date, 
-				1 AS number_of_days, 0 AS number_of_hours_regular, 0 AS number_of_hours_special,
+			CASE 
+        		WHEN status = 'Present' THEN 1
+        		WHEN status = 'Half Day' THEN 0.5
+   			END AS number_of_days, 0 AS number_of_hours_regular, 0 AS number_of_hours_special,
 				IFNULL(rate_per_day,0) AS total_wage, 0 AS total_ot
 			FROM `tabMuster Roll Attendance`
 			WHERE docstatus = 1
 			AND date BETWEEN '{from_date}' AND '{to_date}'
-			AND cost_center = '{cost_center}' AND status = 'Present'
+			AND cost_center = '{cost_center}' AND status IN ('Present', 'Half Day')
 			UNION ALL
 			SELECT DISTINCT mr_employee AS employee, date, 
 				0 AS number_of_days, ifnull(number_of_hours_regular,0) AS number_of_hours,
@@ -462,13 +468,13 @@ def get_records(fiscal_year, fiscal_month, cost_center, branch, dn):
 	#ifnull(number_of_hours,0)*ifnull(rate_per_hour_normal,0) as total_ot
 	for r in rest_list:
 		# frappe.throw(str((flt(r.total_wage)+flt(r.total_ot))))
-		# frappe.throw(str(r.total_ot))
+		#frappe.throw(str(r.number_of_days))
 		if master.get(r.mr_employee) and (flt(r.total_wage)+flt(r.total_ot)) > 0:
 		#if master.get(r.mr_employee):
 			#r.employee_type = r.type
 			master[r.mr_employee].update(r)
 			data.append(master[r.mr_employee])
-			#frappe.throw(str(data))
+			#frappe.throw("jj")
 				
      
 	

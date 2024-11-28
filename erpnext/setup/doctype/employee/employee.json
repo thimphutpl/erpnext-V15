@@ -55,12 +55,15 @@
   "unit",
   "employment_details",
   "scheduled_confirmation_date",
+  "contract_start_date",
   "column_break_32",
   "final_confirmation_date",
   "contract_end_date",
   "col_break_22",
   "notice_number_of_days",
   "date_of_retirement",
+  "section_break_vzdb",
+  "contract_summary",
   "contact_details",
   "column_break_40",
   "personal_email",
@@ -85,6 +88,7 @@
   "attendance_and_leave_details",
   "attendance_device_id",
   "casual_leave_allocated",
+  "leave_block_list",
   "column_break_44",
   "holiday_list",
   "salary_information",
@@ -129,6 +133,8 @@
   "internal_work_history",
   "adverse_record",
   "employee_disciplinary",
+  "training_records_section",
+  "train_record",
   "exit",
   "resignation_letter_date",
   "relieving_date",
@@ -1017,13 +1023,45 @@
    "ignore_user_permissions": 1,
    "label": "Scanned Signature",
    "permlevel": 1
+  },
+  {
+   "fieldname": "leave_block_list",
+   "fieldtype": "Link",
+   "label": "Leave Block List",
+   "options": "Leave Block List"
+  },
+  {
+   "fieldname": "section_break_vzdb",
+   "fieldtype": "Section Break",
+   "label": "Contract Summary"
+  },
+  {
+   "fieldname": "contract_summary",
+   "fieldtype": "Table",
+   "options": "Contract History"
+  },
+  {
+   "fieldname": "contract_start_date",
+   "fieldtype": "Date",
+   "label": "Contract Start Date"
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "training_records_section",
+   "fieldtype": "Section Break",
+   "label": "Training Records"
+  },
+  {
+   "fieldname": "train_record",
+   "fieldtype": "Table",
+   "options": "Training Records"
   }
  ],
  "icon": "fa fa-user",
  "idx": 24,
  "image_field": "image",
  "links": [],
- "modified": "2024-11-21 22:22:55.198131",
+ "modified": "2024-11-27 12:15:19.236672",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee",

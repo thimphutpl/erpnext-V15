@@ -7,7 +7,7 @@
  "engine": "InnoDB",
  "field_order": [
   "equipment",
-  "equipment_number",
+  "registration_number",
   "column_break_ianu",
   "hsd_type",
   "hsd_name",
@@ -25,14 +25,6 @@
    "reqd": 1
   },
   {
-   "fetch_from": "equipment.engine_number",
-   "fieldname": "equipment_number",
-   "fieldtype": "Read Only",
-   "in_list_view": 1,
-   "label": "Equipment Number",
-   "options": "equipment.equipment_number"
-  },
-  {
    "fieldname": "column_break_ianu",
    "fieldtype": "Column Break"
   },
@@ -45,6 +37,7 @@
    "read_only": 1
   },
   {
+   "fetch_from": "hsd_type.item_name",
    "fieldname": "hsd_name",
    "fieldtype": "Read Only",
    "in_list_view": 1,
@@ -70,12 +63,20 @@
    "in_list_view": 1,
    "label": "System Balance as of Date",
    "reqd": 1
+  },
+  {
+   "fetch_from": "equipment.engine_number",
+   "fieldname": "registration_number",
+   "fieldtype": "Read Only",
+   "in_list_view": 1,
+   "label": "Equipment Number",
+   "options": "equipment.equipment_number"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-11-15 10:40:16.336761",
+ "modified": "2024-11-26 09:56:39.123131",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "HSD Adjustment Item",

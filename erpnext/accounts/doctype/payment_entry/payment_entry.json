@@ -16,6 +16,11 @@
   "company",
   "branch",
   "mode_of_payment",
+  "sb_cheque_reference",
+  "use_cheque_lot",
+  "cheque_lot",
+  "reference_no",
+  "reference_date",
   "party_section",
   "party_type",
   "party",
@@ -77,9 +82,6 @@
   "deductions_or_loss_section",
   "deductions",
   "transaction_references",
-  "reference_no",
-  "column_break_23",
-  "reference_date",
   "clearance_date",
   "accounting_dimensions_section",
   "project",
@@ -98,6 +100,10 @@
   "bank_account_no",
   "payment_order",
   "in_words",
+  "bank_payment_detail_section",
+  "bank_payment",
+  "cb_sb_bpd1",
+  "payment_status",
   "subscription_section",
   "auto_repeat",
   "amended_from",
@@ -444,27 +450,6 @@
    "label": "Transaction ID"
   },
   {
-   "bold": 1,
-   "depends_on": "eval:(doc.paid_from && doc.paid_to)",
-   "fieldname": "reference_no",
-   "fieldtype": "Data",
-   "label": "Cheque/Reference No",
-   "mandatory_depends_on": "eval:(doc.paid_from_account_type == 'Bank' || doc.paid_to_account_type == 'Bank')"
-  },
-  {
-   "fieldname": "column_break_23",
-   "fieldtype": "Column Break"
-  },
-  {
-   "bold": 1,
-   "depends_on": "eval:(doc.paid_from && doc.paid_to)",
-   "fieldname": "reference_date",
-   "fieldtype": "Date",
-   "label": "Cheque/Reference Date",
-   "mandatory_depends_on": "eval:(doc.paid_from_account_type == 'Bank' || doc.paid_to_account_type == 'Bank')",
-   "search_index": 1
-  },
-  {
    "depends_on": "eval:doc.docstatus==1",
    "fieldname": "clearance_date",
    "fieldtype": "Date",
@@ -797,6 +782,64 @@
    "label": "Branch",
    "options": "Branch",
    "reqd": 1
+  },
+  {
+   "fieldname": "bank_payment_detail_section",
+   "fieldtype": "Section Break",
+   "label": "Bank Payment Detail"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "bank_payment",
+   "fieldtype": "Link",
+   "label": "Bank Payment",
+   "options": "Bank Payment",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cb_sb_bpd1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "payment_status",
+   "fieldtype": "Select",
+   "label": "Payment Status",
+   "options": "\nPayment Under Process\nPayment Successful\nPayment Failed\nPartial Payment\nPayment Cancelled",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.mode_of_payment == \"Cheque\"",
+   "fieldname": "sb_cheque_reference",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "use_cheque_lot",
+   "fieldtype": "Check",
+   "label": "Use Cheque Lot"
+  },
+  {
+   "depends_on": "use_cheque_lot",
+   "fieldname": "cheque_lot",
+   "fieldtype": "Link",
+   "label": "Cheque Lot",
+   "options": "Cheque Lot"
+  },
+  {
+   "bold": 1,
+   "depends_on": "eval:doc.mode_of_payment == \"Cheque\"",
+   "fieldname": "reference_no",
+   "fieldtype": "Data",
+   "label": "Reference No"
+  },
+  {
+   "bold": 1,
+   "depends_on": "eval:doc.mode_of_payment == \"Cheque\"",
+   "fieldname": "reference_date",
+   "fieldtype": "Date",
+   "label": "Reference Date",
+   "search_index": 1
   }
  ],
  "index_web_pages_for_search": 1,
@@ -810,7 +853,7 @@
    "table_fieldname": "payment_entries"
   }
  ],
- "modified": "2024-08-20 13:01:25.855430",
+ "modified": "2024-11-28 14:41:31.591782",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Payment Entry",

@@ -146,6 +146,7 @@
   {
    "fieldname": "asset_owner",
    "fieldtype": "Select",
+   "hidden": 1,
    "label": "Asset Owner",
    "options": "\nCompany\nSupplier\nCustomer"
   },
@@ -722,11 +723,6 @@
    "link_fieldname": "asset"
   },
   {
-   "group": "Activity",
-   "link_doctype": "Asset Activity",
-   "link_fieldname": "asset"
-  },
-  {
    "group": "Journal Entry",
    "link_doctype": "Journal Entry",
    "link_fieldname": "reference_name",
@@ -738,7 +734,7 @@
    "link_fieldname": "target_asset"
   }
  ],
- "modified": "2024-11-20 13:52:27.841858",
+ "modified": "2024-11-28 12:14:25.822368",
  "modified_by": "Administrator",
  "module": "Assets",
  "name": "Asset",

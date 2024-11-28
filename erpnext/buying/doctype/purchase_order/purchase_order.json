@@ -97,8 +97,12 @@
   "references_section",
   "material_request",
   "material_request_date",
-  "sec_tax_breakup",
-  "other_charges_calculation",
+  "tc_section",
+  "tc_name",
+  "terms",
+  "header_and_footer_section",
+  "header",
+  "footer",
   "address_and_contact_tab",
   "section_addresses",
   "supplier_address",
@@ -128,9 +132,6 @@
   "payment_schedule_section",
   "payment_terms_template",
   "payment_schedule",
-  "terms_section_break",
-  "tc_name",
-  "terms",
   "more_info_tab",
   "tracking_section",
   "status",
@@ -618,21 +619,6 @@
    "options": "Purchase Taxes and Charges"
   },
   {
-   "collapsible": 1,
-   "fieldname": "sec_tax_breakup",
-   "fieldtype": "Section Break",
-   "label": "Tax Breakup"
-  },
-  {
-   "fieldname": "other_charges_calculation",
-   "fieldtype": "Text Editor",
-   "label": "Taxes and Charges Calculation",
-   "no_copy": 1,
-   "oldfieldtype": "HTML",
-   "print_hide": 1,
-   "read_only": 1
-  },
-  {
    "fieldname": "totals",
    "fieldtype": "Section Break",
    "oldfieldtype": "Section Break",
@@ -868,28 +854,10 @@
    "print_hide": 1
   },
   {
-   "collapsible_depends_on": "terms",
-   "fieldname": "terms_section_break",
-   "fieldtype": "Section Break",
-   "label": "Terms & Conditions",
-   "oldfieldtype": "Section Break",
-   "options": "fa fa-legal"
-  },
-  {
    "fieldname": "tc_name",
    "fieldtype": "Link",
-   "label": "Terms",
-   "oldfieldname": "tc_name",
-   "oldfieldtype": "Link",
-   "options": "Terms and Conditions",
-   "print_hide": 1
-  },
-  {
-   "fieldname": "terms",
-   "fieldtype": "Text Editor",
    "label": "Terms and Conditions",
-   "oldfieldname": "terms",
-   "oldfieldtype": "Text Editor"
+   "options": "Terms and Conditions"
   },
   {
    "default": "Draft",
@@ -1274,17 +1242,48 @@
    "label": "References"
   },
   {
+   "fetch_from": "material_request.transaction_date",
    "fieldname": "material_request_date",
    "fieldtype": "Link",
    "label": "Material Request Date",
    "options": "Material Request"
+  },
+  {
+   "fieldname": "tc_section",
+   "fieldtype": "Section Break",
+   "label": "Terms and Conditions"
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "header_and_footer_section",
+   "fieldtype": "Section Break",
+   "label": "Header and Footer"
+  },
+  {
+   "fieldname": "header",
+   "fieldtype": "Text Editor",
+   "label": "Header"
+  },
+  {
+   "fieldname": "footer",
+   "fieldtype": "Text Editor",
+   "label": "Footer"
+  },
+  {
+   "fieldname": "terms",
+   "fieldtype": "Text Editor",
+   "in_list_view": 1,
+   "label": "Terms and Conditions Editor",
+   "no_copy": 1,
+   "oldfieldtype": "HTML",
+   "print_hide": 1
   }
  ],
  "icon": "fa fa-file-text",
  "idx": 105,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-20 09:49:16.296171",
+ "modified": "2024-11-26 10:18:06.473420",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Purchase Order",

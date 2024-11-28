@@ -39,7 +39,7 @@ frappe.query_reports["General Ledger"] = {
 			fieldtype: "MultiSelectList",
 			options: "Account",
 			get_data: function (txt) {
-				return frappe.db.get_link_option("Account");
+				return frappe.db.get_link_options("Account");
 			},
 		},
 		{

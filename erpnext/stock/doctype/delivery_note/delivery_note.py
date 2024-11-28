@@ -96,7 +96,9 @@ class DeliveryNote(SellingController):
 		pick_list: DF.Link | None
 		plc_conversion_rate: DF.Float
 		po_date: DF.Date | None
+		po_dates: DF.Date | None
 		po_no: DF.SmallText | None
+		po_nos: DF.Data | None
 		posting_date: DF.Date
 		posting_time: DF.Time
 		price_list_currency: DF.Link

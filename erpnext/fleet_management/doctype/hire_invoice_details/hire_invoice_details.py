@@ -14,17 +14,20 @@ class HireInvoiceDetails(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
-		discount_amount: DF.Currency
+		amount_idle: DF.Currency
+		amount_work: DF.Currency
 		equipment: DF.Link
-		equipment_number: DF.Data
-		hiring_rate: DF.Currency
+		idle_rate: DF.Currency
 		number_of_days: DF.Int
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
 		rate_type: DF.Data
+		registration_number: DF.Data
 		total_amount: DF.Currency
-		total_km: DF.Float
+		total_idle_hours: DF.Data
+		total_work_hours: DF.Data
 		vehicle_logbook: DF.Link
+		work_rate: DF.Currency
 	# end: auto-generated types
 	pass

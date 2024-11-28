@@ -2,76 +2,136 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on('POL Issue', {
+	onload: function(frm) {
+		if(!frm.doc.posting_date) {
+			frm.set_value("posting_date", get_today())
+		}
+	},
+
 	refresh: function(frm) {
-        if (frm.doc.docstatus === 1) {
-			frm.add_custom_button(
-				__("Ledger"),
-				function () {
-				  frappe.route_options = {
+		if(frm.doc.docstatus == 1) {
+			cur_frm.add_custom_button(__("Stock Ledger"), function() {
+				frappe.route_options = {
+					voucher_no: frm.doc.name,
+					from_date: frm.doc.posting_date,
+					to_date: frm.doc.posting_date,
+					company: frm.doc.company
+				};
+				frappe.set_route("query-report", "Stock Ledger Report");
+			}, __("View"));
+
+			cur_frm.add_custom_button(__('Accounting Ledger'), function() {
+				frappe.route_options = {
 					voucher_no: frm.doc.name,
 					from_date: frm.doc.posting_date,
 					to_date: frm.doc.posting_date,
 					company: frm.doc.company,
-					group_by_voucher: false,
-				  };
-				  frappe.set_route("query-report", "General Ledger");
-				},
-				__("View")
-			  );
-		}
-		if(frm.doc.docstatus == 1 && cint(frm.doc.out_source) == 0) {
-			cur_frm.add_custom_button(__('POL Ledger'), function() {
-				frappe.route_options = {
-					branch: frm.doc.branch,
-					from_date: frm.doc.posting_date,
-					to_date: frm.doc.posting_date,
-					equipment: frm.doc.tanker
+					group_by_voucher: false
 				};
-				frappe.set_route("query-report", "POL Ledger");
+				frappe.set_route("query-report", "General Ledger");
 			}, __("View"));
 		}
-		set_equipment_filter(frm)
 	},
-	branch:function(frm){
-		set_equipment_filter(frm)
+
+	"items_on_form_rendered": function(frm, grid_row, cdt, cdn) {
+		var row = cur_frm.open_grid_row();
+		/*if(!row.grid_form.fields_dict.pol_type.value) {
+			//row.grid_form.fields_dict.pol_type.set_value(frm.doc.pol_type)
+                	row.grid_form.fields_dict.pol_type.refresh()
+		}*/
 	},
+
+	"branch": function(frm) {
+		return frappe.call({
+			method: "erpnext.custom_utils.get_cc_warehouse",
+			args: {
+				"branch": frm.doc.branch
+			},
+			callback: function(r) {
+				cur_frm.set_value("cost_center", r.message.cc)
+				cur_frm.set_value("warehouse", r.message.wh)
+				cur_frm.refresh_fields()
+			}
+		})
+	}
 });
 
-cur_frm.set_query("pol_type", function() {
-	return {
-		"filters": {
-		"disabled": 0,
-		"is_pol_item":1
-		}
-	};
-});
+cur_frm.add_fetch("equipment", "registration_number", "equipment")
 
-var set_equipment_filter=function(frm){
-	frm.set_query("tanker", function() {
+frappe.ui.form.on("POL Issue", "refresh", function(frm) {
+    	cur_frm.set_query("pol_type", function() {
 		return {
-			query: "erpnext.fleet_management.fleet_utils.get_container_filtered",
-			filters:{}
+		    "filters": {
+			"disabled": 0,
+			"is_pol_item": 1
+		    }
 		};
-	});
-	frm.set_query('equipment', 'items', function (doc, cdt, cdn) {
+	    });
+	
+	cur_frm.set_query("tanker", function() {
 		return {
-			filters: {
-				"enabled": 1,
-				"is_container":0
-			}
+			"query": "erpnext.maintenance.doctype.pol_issue.pol_issue.equipment_query",
+			
+			filters: {'branch': frm.doc.branch}
 		}
-	});
-}
+	})
+	
+	cur_frm.set_query("warehouse", function() {
+                return {
+                        query: "erpnext.controllers.queries.filter_branch_wh",
+                        filters: {'branch': frm.doc.branch}
+                }
+            });
 
-frappe.ui.form.on('POL Issue Items', {
-	"equipment":function(frm, cdt, cdn){
-		let row = locals[cdt][cdn]
-		frm.set_query('fuelbook', 'items', function (doc, cdt, cdn) {
-			return {
-				filters: {
-					"equipment": row.equipment
-				}
+        frm.fields_dict['items'].grid.get_field('equipment_warehouse').get_query = function(doc, cdt, cdn) {
+                item = locals[cdt][cdn]
+                return {
+                        "query": "erpnext.controllers.queries.filter_branch_wh",
+                        filters: {'branch': item.equipment_branch}
+                }
+        }
+
+        frm.fields_dict['items'].grid.get_field('hiring_warehouse').get_query = function(doc, cdt, cdn) {
+                item = locals[cdt][cdn]
+                return {
+                        "query": "erpnext.controllers.queries.filter_branch_wh",
+                        filters: {'branch': item.hiring_branch}
+                }
+        }
+
+	// frm.fields_dict['items'].grid.get_field('equipment').get_query = function(doc, cdt, cdn) {
+	// 	doc = locals[cdt][cdn]
+    //             if(frm.doc.purpose == "Transfer") {
+    //                     return {
+	// 			"query": "erpnext.fleet_management.doctype.pol_issue.pol_issue.equipment_query",
+	// 			filters: {'branch': '%'}
+    //                     }
+    //             }
+    //             else {
+    //                     return {
+    //                             filters: {
+    //                                     "is_disabled": 0,
+	// 				"equipment_type": ["not in", ['Skid Tank', 'Barrel']]
+    //                             }
+    //                     }
+    //             }
+	// }
+})
+
+frappe.ui.form.on("POL Issue Items", "equipment", function(doc, cdt, cdn) {
+	doc = locals[cdt][cdn]
+	if(doc.equipment_branch) {
+		return frappe.call({
+			method: "erpnext.custom_utils.get_cc_warehouse",
+			args: {
+				"branch": doc.equipment_branch
+			},
+			callback: function(r) {
+				frappe.model.set_value(cdt, cdn, "equipment_cost_center", r.message.cc)
+				frappe.model.set_value(cdt, cdn, "equipment_warehouse", r.message.wh)
+				cur_frm.refresh_fields()
 			}
-		});
+		})
 	}
 })
+

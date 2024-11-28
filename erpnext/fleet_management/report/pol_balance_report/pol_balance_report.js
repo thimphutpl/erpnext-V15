@@ -35,7 +35,7 @@ frappe.query_reports["POL Balance Report"] = {
 				return {
 					filters: {
 						is_container:1,
-						enabled:1,
+						is_disabled:1,
 						company:frappe.query_report.get_filter_value('company')
 					}
 				}

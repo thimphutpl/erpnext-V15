@@ -28,6 +28,7 @@ frappe.ui.form.on('Vehicle Logbook', {
 				"method": "erpnext.fleet_management.doctype.equipment_hiring_form.equipment_hiring_form.get_rates",
 				args: {"form": frm.doc.ehf_name, "equipment": frm.doc.equipment},
 				callback: function(r) {
+					console.log(r.message);
 					if(r.message) {
 						cur_frm.set_value("rate_type", r.message[0].rate_type)
 						cur_frm.set_value("work_rate", r.message[0].rate)
@@ -218,10 +219,10 @@ function calculate_work_hour(frm) {
 }
 
 
-cur_frm.add_fetch("equipment", "registeration_number", "registeration_number")
+cur_frm.add_fetch("equipment", "registration_number", "registration_number")
 cur_frm.add_fetch("equipment", "hsd_type", "pol_type")
 cur_frm.add_fetch("equipment", "current_operator", "equipment_operator")
-cur_frm.add_fetch("operator", "operator_name", "driver_name")
+// cur_frm.add_fetch("operator", "operator_name", "driver_name")
 
 //Vehicle Log Item  Details
 frappe.ui.form.on("Vehicle Log", {

@@ -370,7 +370,7 @@
  "in_create": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-05 10:46:38.720882",
+ "modified": "2024-11-25 09:48:09.832942",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Muster Roll Employee",
@@ -399,6 +399,32 @@
    "read": 1,
    "report": 1,
    "role": "Approver",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "HR Manager",
+   "select": 1,
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "HR User",
+   "select": 1,
    "share": 1,
    "write": 1
   }

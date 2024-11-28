@@ -5,55 +5,41 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "section_break_uii5",
   "branch",
-  "column_break_imdd",
+  "column_break_wkkx",
   "cost_center",
-  "column_break_xkdi",
+  "column_break_htla",
   "posting_date",
   "fuelbook_information_section",
   "fuelbook",
-  "column_break_qaam",
+  "column_break_vhsv",
   "supplier",
-  "column_break_ylll",
+  "column_break_vovm",
   "get_pol_invoices",
-  "section_break_pahq",
-  "final_setlement",
+  "section_break_xfou",
+  "final_settlement",
   "bank_account",
   "amount",
   "actual_amount",
-  "column_break_ftep",
+  "column_break_yawd",
   "remarks",
-  "section_break_njsj",
+  "section_break_uvdy",
   "items",
-  "cheque_information_section",
+  "section_break_lslk",
   "assign_from_cheque_lot",
   "cheque_lot",
-  "column_break_qbrl",
-  "cheque__no",
-  "column_break_emmx",
-  "cheque_date",
   "clearance_date",
   "status",
-  "company",
-  "payment_status",
   "bank_payment",
-  "amended_from"
+  "payment_status",
+  "amended_from",
+  "column_break_2",
+  "cheque__no",
+  "column_break_ucvw",
+  "cheque_date",
+  "company"
  ],
  "fields": [
-  {
-   "fieldname": "section_break_uii5",
-   "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "amended_from",
-   "fieldtype": "Link",
-   "label": "Amended From",
-   "no_copy": 1,
-   "options": "HSD Payment",
-   "print_hide": 1,
-   "read_only": 1
-  },
   {
    "fieldname": "branch",
    "fieldtype": "Link",
@@ -63,7 +49,7 @@
    "reqd": 1
   },
   {
-   "fieldname": "column_break_imdd",
+   "fieldname": "column_break_2",
    "fieldtype": "Column Break"
   },
   {
@@ -76,32 +62,19 @@
    "reqd": 1
   },
   {
-   "fieldname": "column_break_xkdi",
-   "fieldtype": "Column Break"
-  },
-  {
    "fieldname": "posting_date",
    "fieldtype": "Date",
    "label": "Posting Date",
    "reqd": 1
   },
   {
-   "fieldname": "fuelbook_information_section",
-   "fieldtype": "Section Break",
-   "label": "Fuelbook Information"
-  },
-  {
-   "depends_on": "eva:doc.branch",
+   "depends_on": "eval:doc.branch",
    "fieldname": "fuelbook",
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Fuelbook",
    "options": "Fuelbook",
    "reqd": 1
-  },
-  {
-   "fieldname": "column_break_qaam",
-   "fieldtype": "Column Break"
   },
   {
    "fieldname": "supplier",
@@ -112,21 +85,13 @@
    "reqd": 1
   },
   {
-   "fieldname": "column_break_ylll",
-   "fieldtype": "Column Break"
-  },
-  {
    "fieldname": "get_pol_invoices",
    "fieldtype": "Button",
    "label": "Get POL Invoices"
   },
   {
-   "fieldname": "section_break_pahq",
-   "fieldtype": "Section Break"
-  },
-  {
    "default": "0",
-   "fieldname": "final_setlement",
+   "fieldname": "final_settlement",
    "fieldtype": "Check",
    "label": "Final Settlement"
   },
@@ -138,6 +103,7 @@
    "reqd": 1
   },
   {
+   "default": "0",
    "depends_on": "eval:doc.items",
    "fieldname": "amount",
    "fieldtype": "Currency",
@@ -150,28 +116,15 @@
    "label": "Actual Amount"
   },
   {
-   "fieldname": "column_break_ftep",
-   "fieldtype": "Column Break"
-  },
-  {
    "fieldname": "remarks",
    "fieldtype": "Small Text",
    "label": "Narration"
-  },
-  {
-   "fieldname": "section_break_njsj",
-   "fieldtype": "Section Break"
   },
   {
    "fieldname": "items",
    "fieldtype": "Table",
    "options": "HSD Payment Item",
    "reqd": 1
-  },
-  {
-   "fieldname": "cheque_information_section",
-   "fieldtype": "Section Break",
-   "label": "Cheque Information"
   },
   {
    "allow_on_submit": 1,
@@ -189,18 +142,10 @@
    "options": "Cheque Lot"
   },
   {
-   "fieldname": "column_break_qbrl",
-   "fieldtype": "Column Break"
-  },
-  {
    "allow_on_submit": 1,
    "fieldname": "cheque__no",
    "fieldtype": "Data",
-   "label": "Cheque No"
-  },
-  {
-   "fieldname": "column_break_emmx",
-   "fieldtype": "Column Break"
+   "label": "Cheque  No"
   },
   {
    "allow_on_submit": 1,
@@ -243,12 +188,63 @@
    "fieldtype": "Data",
    "label": "Bank payment",
    "read_only": 1
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "HSD Payment",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_wkkx",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_htla",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_lslk",
+   "fieldtype": "Section Break",
+   "label": "Cheque Information"
+  },
+  {
+   "fieldname": "column_break_ucvw",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "fuelbook_information_section",
+   "fieldtype": "Section Break",
+   "label": "Fuelbook Information"
+  },
+  {
+   "fieldname": "column_break_vhsv",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_vovm",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_xfou",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_yawd",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_uvdy",
+   "fieldtype": "Section Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-10-31 17:08:03.014935",
+ "modified": "2024-11-24 21:33:50.319127",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "HSD Payment",

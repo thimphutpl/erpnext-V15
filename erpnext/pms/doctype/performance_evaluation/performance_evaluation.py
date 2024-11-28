@@ -12,6 +12,99 @@ from frappe.model.mapper import get_mapped_doc
 from erpnext.custom_workflow import validate_workflow_states, notify_workflow_states
 
 class PerformanceEvaluation(Document):
+	# begin: auto-generated types
+	# This code is auto-generated. Do not modify anything in this block.
+
+	from typing import TYPE_CHECKING
+
+	if TYPE_CHECKING:
+		from erpnext.pms.doctype.evaluate_additional_achievements.evaluate_additional_achievements import EvaluateAdditionalAchievements
+		from erpnext.pms.doctype.evaluate_competency.evaluate_competency import EvaluateCompetency
+		from erpnext.pms.doctype.evaluate_competency_i.evaluate_competency_i import EvaluateCompetencyI
+		from erpnext.pms.doctype.evaluate_target_item.evaluate_target_item import EvaluateTargetItem
+		from erpnext.pms.doctype.evaluate_target_item_i.evaluate_target_item_i import EvaluateTargetItemI
+		from erpnext.pms.doctype.leadership_competency.leadership_competency import LeadershipCompetency
+		from erpnext.pms.doctype.leadership_competency_i.leadership_competency_i import LeadershipCompetencyI
+		from erpnext.pms.doctype.performance_evaluation_negative_target.performance_evaluation_negative_target import PerformanceEvaluationNegativeTarget
+		from erpnext.pms.doctype.supervisor_declaration.supervisor_declaration import SupervisorDeclaration
+		from frappe.types import DF
+
+		achievements_items: DF.Table[EvaluateAdditionalAchievements]
+		agreed_by_perc: DF.Literal["", "Yes", "No"]
+		amended_from: DF.Link | None
+		approver: DF.Link | None
+		approver_designation: DF.Data | None
+		approver_fl_designation: DF.Data | None
+		approver_fl_name: DF.Data | None
+		approver_in_first_level: DF.Data | None
+		approver_name: DF.Data | None
+		branch: DF.Link | None
+		business_target: DF.Table[PerformanceEvaluationNegativeTarget]
+		company: DF.Link | None
+		competency_total_weightage: DF.Percent
+		cost_center: DF.Link | None
+		date_of_joining: DF.Date | None
+		department: DF.Link | None
+		designation: DF.Link | None
+		division: DF.Link | None
+		employee: DF.Link
+		employee_comment: DF.SmallText | None
+		employee_name: DF.ReadOnly | None
+		end_date: DF.Date | None
+		eval_workflow_state: DF.Data | None
+		evaluate_competency_item: DF.Table[EvaluateCompetency]
+		evaluate_competency_item_i: DF.Table[EvaluateCompetencyI]
+		evaluate_leadership_competency: DF.Table[LeadershipCompetency]
+		evaluate_leadership_competency_i: DF.Table[LeadershipCompetencyI]
+		evaluate_target_item: DF.Table[EvaluateTargetItem]
+		evaluate_target_item_i: DF.Table[EvaluateTargetItemI]
+		evaluation_date: DF.Date | None
+		final_score: DF.Float
+		final_score_percent: DF.Percent
+		form_i: DF.Check
+		form_i_score: DF.Float
+		form_i_total_rating: DF.Float
+		form_i_total_rating_i: DF.Float
+		form_ii: DF.Check
+		form_ii_score: DF.Float
+		form_ii_total_rating: DF.Float
+		form_ii_total_rating_i: DF.Float
+		form_iii: DF.Check
+		form_iii_score: DF.Float
+		gender: DF.Data | None
+		grade: DF.Link | None
+		max_rating_limit: DF.Float
+		negative_rating: DF.Float
+		negative_rating_i: DF.Float
+		negative_target: DF.Check
+		no_of_months_served: DF.Literal["", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
+		old_employee_id: DF.Data | None
+		overall_rating: DF.Link | None
+		perc_approver: DF.Link | None
+		perc_community: DF.Data | None
+		perc_name: DF.Data | None
+		perc_required: DF.Literal["", "Yes", "No"]
+		pms_calendar: DF.Link
+		pms_group: DF.Link
+		reason: DF.SmallText | None
+		reference: DF.Link | None
+		required_to_set_target: DF.Data | None
+		review: DF.Link | None
+		section: DF.Link | None
+		set_manual_approver: DF.Check
+		star_obtained: DF.Rating
+		start_date: DF.Date | None
+		supervisor_comment: DF.SmallText | None
+		supervisor_declaration: DF.Table[SupervisorDeclaration]
+		supervisor_manager: DF.Link | None
+		supervisor_manager_comment: DF.SmallText | None
+		supervisor_manager_name: DF.Data | None
+		supervisors_manager_designation: DF.Data | None
+		target_total_weightage: DF.Percent
+		unit: DF.Link | None
+		upload_old_data: DF.Data | None
+		user_id: DF.Link | None
+	# end: auto-generated types
 	def validate(self):
 		if self.upload_old_data:
 			return 
@@ -20,11 +113,11 @@ class PerformanceEvaluation(Document):
 		self.set_dafault_values() 
 		self.check_duplicate_entry()
 		self.calculate_target_score()
-		# if self.form_ii:
-			# self.calculate_competency_score()
+		if self.form_ii:
+			self.calculate_competency_score()
 		if self.form_iii:
 			self.calculate_leadership_competency_score()
-		# self.calculate_negative_score()
+		self.calculate_negative_score()
 		self.calculate_final_score()
 		self.check_target()
 		if self.reference and self.reason:
@@ -105,112 +198,210 @@ class PerformanceEvaluation(Document):
 			
 	# calculate score and average of target
 	def calculate_target_score(self):
-		total_score = 0
-		for item in self.evaluate_target_item :
-			quality_rating, quantity_rating, timeline_rating= 0, 0, 0
-			if cint(item.reverse_formula) == 0:
-				item.accept_zero_qtyquality = 0
-			if item.timeline_achieved <= 0:
-				frappe.throw('Timeline Achieved for target <b>{}</b> must be greater than 0'.format(item.performance_target))
-			if item.qty_quality == 'Quality':
-				if item.quality_achieved <= 0:
-					frappe.throw('Quality Achieved for target <b>{}</b> must be greater than 0'.format(item.performance_target))
-				if flt(item.quality_achieved) >= flt(item.quality):
-					quality_rating = item.weightage
-				if not item.reverse_formula and flt(item.quality) != 0 and flt(item.weightage) != 0:
-					quality_rating = flt(item.quality_achieved) / flt(item.quality) * flt(item.weightage)
-				elif not item.reverse_formula and flt(item.quality) == 0 and cint(item.accept_zero_qtyquality) == 0:
-					frappe.throw("Please tick 'Apply (<=) Operator and then 'Accept Zero Qty/Quality in row {} inside Work Performance: Targets & Accompolishment table".format(row))
-				elif item.reverse_formula and  cint(item.accept_zero_qtyquality) != 1:
-					quality_rating = flt(item.quality)/flt(item.quality_achieved) * flt(item.weightage)
+		target_rating = frappe.db.get_value("PMS Group",self.pms_group,"weightage_for_target")
+
+		if (frappe.session.user==self.approver):
+			total_score = 0
+			for item in self.evaluate_target_item :
+				quality_rating, quantity_rating, timeline_rating= 0, 0, 0
+				if cint(item.reverse_formula) == 0:
+					item.accept_zero_qtyquality = 0
+				if item.timeline_achieved <= 0:
+					frappe.throw('Timeline Achieved for target <b>{}</b> must be greater than 0'.format(item.performance_target))
+				if item.qty_quality == 'Quality':
+					if item.quality_achieved <= 0:
+						frappe.throw('Quality Achieved for target <b>{}</b> must be greater than 0'.format(item.performance_target))
+					if flt(item.quality_achieved) >= flt(item.quality):
+						quality_rating = item.weightage
+					if not item.reverse_formula and flt(item.quality) != 0 and flt(item.weightage) != 0:
+						quality_rating = flt(item.quality_achieved) / flt(item.quality) * flt(item.weightage)
+					elif not item.reverse_formula and flt(item.quality) == 0 and cint(item.accept_zero_qtyquality) == 0:
+						frappe.throw("Please tick 'Apply (<=) Operator and then 'Accept Zero Qty/Quality in row {} inside Work Performance: Targets & Accompolishment table".format(row))
+					elif item.reverse_formula and  cint(item.accept_zero_qtyquality) != 1:
+						quality_rating = flt(item.quality)/flt(item.quality_achieved) * flt(item.weightage)
+					else:
+						quality_rating = flt(item.quality_achieved) / flt(item.quality) * flt(item.weightage)
+					
+					item.quality_rating = quality_rating
+
+				elif item.qty_quality == 'Quantity':
+					if item.quantity_achieved <= 0:
+						frappe.throw('Quality Achieved for target <b>{}</b> must be greater than 0'.format(item.performance_target))
+					
+					if flt(item.quantity_achieved)>= flt(item.quantity):
+						quantity_rating = flt(item.quantity)*flt(item.weightage)*0.01
+					else:
+						quantity_rating = flt(item.quantity_achieved) / flt(item.quantity) * (flt(item.weightage))
+					if not item.reverse_formula and flt(item.quantity) != 0 and flt(item.weightage) != 0:
+						quantity_rating = flt(item.quantity_achieved) / flt(item.quantity) * (flt(item.weightage))
+					elif not item.reverse_formula and flt(item.quantity) == 0 and cint(item.accept_zero_qtyquality) == 0:
+						frappe.throw("Please tick 'Apply (<=) Operator and then 'Accept Zero Qty/Quality in row {} inside Work Performance: Targets & Accompolishment table".format(row))
+					else:
+						quantity_rating = flt(item.quantity)/flt(item.quantity_achieved) * (flt(item.weightage))
+					item.quantity_rating = quantity_rating
+
+				if flt(item.timeline_achieved)<= flt(item.timeline):
+					timeline_rating = flt(item.weightage)
 				else:
-					quality_rating = flt(item.quality_achieved) / flt(item.quality) * flt(item.weightage)
+					timeline_rating = flt(item.timeline) / flt(item.timeline_achieved)  * (flt(item.weightage)*0.01)
+				item.timeline_rating = timeline_rating
 				
-				item.quality_rating = quality_rating
+				if item.qty_quality == 'Quality':
+					item.average_rating = (flt(item.timeline_rating) + flt(item.quality_rating)) / 2
 
-			elif item.qty_quality == 'Quantity':
-				if item.quantity_achieved <= 0:
-					frappe.throw('Quality Achieved for target <b>{}</b> must be greater than 0'.format(item.performance_target))
+				elif item.qty_quality == 'Quantity':
+					item.average_rating = (flt(item.timeline_rating) + flt(item.quantity_rating)) / 2
+				item.score = (flt(item.average_rating ) / flt(item.weightage))
+
+				total_score += flt(item.average_rating)
+			score =flt(total_score)/100 * flt(target_rating)
+			total_score = score
+			self.form_i_total_rating = total_score
+			self.db_set('form_i_total_rating', self.form_i_total_rating)
+		else:
+			total_score_i = 0
+			for item in self.evaluate_target_item_i :
+				quality_rating_i, quantity_rating_i, timeline_rating_i= 0, 0, 0
+				if cint(item.reverse_formula) == 0:
+					item.accept_zero_qtyquality = 0
+				if item.timeline_achieved <= 0:
+					frappe.throw('Timeline Achieved for target <b>{}</b> must be greater than 0'.format(item.performance_target))
+				if item.qty_quality == 'Quality':
+					if item.quality_achieved <= 0:
+						frappe.throw('Quality Achieved for target <b>{}</b> must be greater than 0'.format(item.performance_target))
+					if flt(item.quality_achieved) >= flt(item.quality):
+						quality_rating_i = item.weightage
+					if not item.reverse_formula and flt(item.quality) != 0 and flt(item.weightage) != 0:
+						quality_rating_i = flt(item.quality_achieved) / flt(item.quality) * flt(item.weightage)
+					elif not item.reverse_formula and flt(item.quality) == 0 and cint(item.accept_zero_qtyquality) == 0:
+						frappe.throw("Please tick 'Apply (<=) Operator and then 'Accept Zero Qty/Quality in row {} inside Work Performance: Targets & Accompolishment table".format(row))
+					elif item.reverse_formula and  cint(item.accept_zero_qtyquality) != 1:
+						quality_rating_i = flt(item.quality)/flt(item.quality_achieved) * flt(item.weightage)
+					else:
+						quality_rating_i = flt(item.quality_achieved) / flt(item.quality) * flt(item.weightage)
+					
+					item.quality_rating = quality_rating_i
+
+				elif item.qty_quality == 'Quantity':
+					if item.quantity_achieved <= 0:
+						frappe.throw('Quality Achieved for target <b>{}</b> must be greater than 0'.format(item.performance_target))
+					
+					if flt(item.quantity_achieved)>= flt(item.quantity):
+						quantity_rating_i = flt(item.quantity)*flt(item.weightage)*0.01
+					else:
+						quantity_rating_i = flt(item.quantity_achieved) / flt(item.quantity) * (flt(item.weightage))
+					if not item.reverse_formula and flt(item.quantity) != 0 and flt(item.weightage) != 0:
+						quantity_rating_i = flt(item.quantity_achieved) / flt(item.quantity) * (flt(item.weightage))
+					elif not item.reverse_formula and flt(item.quantity) == 0 and cint(item.accept_zero_qtyquality) == 0:
+						frappe.throw("Please tick 'Apply (<=) Operator and then 'Accept Zero Qty/Quality in row {} inside Work Performance: Targets & Accompolishment table".format(row))
+					else:
+						quantity_rating_i = flt(item.quantity)/flt(item.quantity_achieved) * (flt(item.weightage))
+					item.quantity_rating = quantity_rating_i
+
+				if flt(item.timeline_achieved)<= flt(item.timeline):
+					timeline_rating_i = flt(item.weightage)
+				else:
+					timeline_rating_i = flt(item.timeline) / flt(item.timeline_achieved)  * (flt(item.weightage)*0.01)
+				item.timeline_rating = timeline_rating_i
 				
-				if flt(item.quantity_achieved)>= flt(item.quantity):
-					quantity_rating = flt(item.quantity)*flt(item.weightage)*0.01
-				else:
-					quantity_rating = flt(item.quantity_achieved) / flt(item.quantity) * (flt(item.weightage))
-				if not item.reverse_formula and flt(item.quantity) != 0 and flt(item.weightage) != 0:
-					quantity_rating = flt(item.quantity_achieved) / flt(item.quantity) * (flt(item.weightage))
-				elif not item.reverse_formula and flt(item.quantity) == 0 and cint(item.accept_zero_qtyquality) == 0:
-					frappe.throw("Please tick 'Apply (<=) Operator and then 'Accept Zero Qty/Quality in row {} inside Work Performance: Targets & Accompolishment table".format(row))
-				else:
-					quantity_rating = flt(item.quantity)/flt(item.quantity_achieved) * (flt(item.weightage))
-				item.quantity_rating = quantity_rating
+				if item.qty_quality == 'Quality':
+					item.average_rating = (flt(item.timeline_rating) + flt(item.quality_rating)) / 2
 
-			if flt(item.timeline_achieved)<= flt(item.timeline):
-				timeline_rating = flt(item.weightage)
-			else:
-				timeline_rating = flt(item.timeline) / flt(item.timeline_achieved)  * (flt(item.weightage)*0.01)
-			item.timeline_rating = timeline_rating
-			
-			if item.qty_quality == 'Quality':
-				item.average_rating = (flt(item.timeline_rating) + flt(item.quality_rating)) / 2
+				elif item.qty_quality == 'Quantity':
+					item.average_rating = (flt(item.timeline_rating) + flt(item.quantity_rating)) / 2
+				item.score = (flt(item.average_rating ) / flt(item.weightage))
 
-			elif item.qty_quality == 'Quantity':
-				item.average_rating = (flt(item.timeline_rating) + flt(item.quantity_rating)) / 2
-			target_rating = frappe.db.get_value("PMS Group",self.pms_group,"weightage_for_target")
-			item.score = (flt(item.average_rating ) / flt(item.weightage))
-
-			total_score += flt(item.average_rating)
-		score =flt(total_score)/100 * flt(target_rating)
-		total_score = score
-		self.form_i_total_rating = total_score
-		self.db_set('form_i_total_rating', self.form_i_total_rating)
+				total_score_i += flt(item.average_rating)
+			score_i =flt(total_score_i)/100 * flt(target_rating)
+			total_score_i = score_i
+			self.form_i_total_rating_i = total_score_i
+			self.db_set('form_i_total_rating_i', self.form_i_total_rating_i)
 
 	#calculate negative score
-	# def calculate_negative_score(self):
-	# 	if not self.negative_target:
-	# 		pass
-	# 	else:
-	# 		total=0
-	# 		for row in self.business_target:
-	# 			total += flt(row.supervisor_rating)
-	# 		self.negative_rating = flt(total)
-	# 		self.db_set('negative_rating', self.negative_rating)
+	def calculate_negative_score(self):
+		if not self.negative_target:
+			pass
+		else:
+			total=0
+			for row in self.business_target:
+				total += flt(row.supervisor_rating)
+			self.negative_rating = flt(total)
+			self.db_set('negative_rating', self.negative_rating)
 
 	# calculate score and average of competency
 	def calculate_competency_score(self):
 		# if self.eval_workflow_state == 'Draft':
 		# 	return
-		if not self.evaluate_competency_item:
-			frappe.throw('Competency cannot be empty please use <b>Get Competency Button</b>')
-		total = 0
-		for item in self.evaluate_competency_item:
-			if not item.achievement:
-				frappe.throw('You need to rate competency at row <b>{}</b>'.format(item.idx))
+		if frappe.session.user==self.approver:
+			if not self.evaluate_competency_item:
+				frappe.throw('Competency cannot be empty please use <b>Get Competency Button</b>')
+			
+			total = 0
+			for item in self.evaluate_competency_item:
+				if not item.achievement:
+					frappe.throw('You need to rate competency at row <b>{}</b>'.format(item.idx))
 
-			tot_rating = flt(item.weightage_percent)/100 * flt(item.weightage)
-			item.average = tot_rating
+				tot_rating = flt(item.weightage_percent)/100 * flt(item.weightage)
+				item.average = tot_rating
 
-		competency_rating = frappe.db.get_value("PMS Group",self.pms_group,"weightage_for_competency")
-		for item in self.evaluate_competency_item:
-			total = item.average + total
-		self.form_ii_total_rating = flt(competency_rating)/100 * flt(total)
-		self.db_set('form_ii_total_rating', self.form_ii_total_rating)
+			competency_rating = frappe.db.get_value("PMS Group",self.pms_group,"weightage_for_competency")
+			for item in self.evaluate_competency_item:
+				total = item.average + total
+			# self.form_ii_total_rating = flt(competency_rating)/100 * flt(total)
+			self.form_ii_total_rating = flt(total)
+			self.db_set('form_ii_total_rating', self.form_ii_total_rating)
+
+		else:
+			total_i = 0
+			for item in self.evaluate_competency_item_i:
+				if not item.achievement:
+					frappe.throw('You need to rate competency at row <b>{}</b>'.format(item.idx))
+
+				tot_rating_i = flt(item.weightage_percent)/100 * flt(item.weightage)
+				item.average = tot_rating_i
+
+			competency_rating_i = frappe.db.get_value("PMS Group",self.pms_group,"weightage_for_competency")
+			for item in self.evaluate_competency_item_i:
+				total_i = item.average + total_i
+			# self.form_ii_total_rating = flt(competency_rating)/100 * flt(total)
+			self.form_ii_total_rating_i = flt(total_i)
+			self.db_set('form_ii_total_rating_i', self.form_ii_total_rating_i)
 
 	def calculate_leadership_competency_score(self):
-		if not self.evaluate_leadership_competency:
-			frappe.throw('Competency cannot be empty please use <b>Get Leadership Competency button</b>')
-		total = 0
-		for item in self.evaluate_leadership_competency:
-			if not item.achievement:
-				frappe.throw('You need to rate leadership competency at row <b>{}</b>'.format(item.idx))
+		
+		if frappe.session.user==self.approver:
+			if not self.evaluate_leadership_competency:
+				frappe.throw('Competency cannot be empty please use <b>Get Leadership Competency button</b>')
+			total = 0
+			for item in self.evaluate_leadership_competency:
+				if not item.achievement:
+					frappe.throw('You need to rate leadership competency at row <b>{}</b>'.format(item.idx))
 
-			tot_rating = flt(item.weightage_percent)/100 * flt(item.weightage)
-			item.average = tot_rating
+				tot_rating = flt(item.weightage_percent)/100 * flt(item.weightage)
+				item.average = tot_rating
 
-		leadership_competency_rating = frappe.db.get_value("PMS Group",self.pms_group,"weightage_for_form_three")
-		for item in self.evaluate_leadership_competency:
-			total = item.average + total
-		self.negative_rating = flt(leadership_competency_rating)/100 * flt(total)
-		self.db_set('negative_rating', self.negative_rating)
+			leadership_competency_rating = frappe.db.get_value("PMS Group",self.pms_group,"weightage_for_form_three")
+			for item in self.evaluate_leadership_competency:
+				total = item.average + total
+			self.negative_rating = flt(leadership_competency_rating)/100 * flt(total)
+			self.db_set('negative_rating', self.negative_rating)
+		else:
+			if not self.evaluate_leadership_competency_i:
+				frappe.throw('Competency cannot be empty please use <b>Get Leadership Competency button</b>')
+		#self
+			total_i = 0
+			for item in self.evaluate_leadership_competency_i:
+				if not item.achievement:
+					frappe.throw('You need to rate leadership competency at row <b>{}</b>'.format(item.idx))
+
+				tot_rating_i = flt(item.weightage_percent)/100 * flt(item.weightage)
+				item.average = tot_rating_i
+
+			leadership_competency_rating_i = frappe.db.get_value("PMS Group",self.pms_group,"weightage_for_form_three")
+			for item in self.evaluate_leadership_competency_i:
+				total_i = item.average + total_i
+			self.negative_rating_i = flt(leadership_competency_rating_i)/100 * flt(total_i)
+			self.db_set('negative_rating_i', self.negative_rating_i)
 
 	def calculate_final_score(self):
 		self.target_total_weightage, self.competency_total_weightage = frappe.db.get_value('PMS Group', {'name':self.pms_group}, ['weightage_for_target', 'weightage_for_competency'])
@@ -273,6 +464,7 @@ class PerformanceEvaluation(Document):
 	def set_approver_designation(self):
 		desig = frappe.db.get_value('Employee', {'user_id': self.approver}, 'designation')
 		return desig
+	
 	@frappe.whitelist()
 	def check_employee_or_supervisor(self):
 		employee = supervisor = 0
@@ -281,6 +473,26 @@ class PerformanceEvaluation(Document):
 		if frappe.session.user == frappe.db.get_value("Employee",self.approver,"user_id"):
 			supervisor = 1
 		return employee, supervisor
+	
+	@frappe.whitelist()
+	def get_target(self):
+		if len(self.evaluate_target_item_i)==0:
+			data = frappe.db.sql("""
+				SELECT 
+					rti.performance_target, rti.weightage, rti.reverse_formula, rti.qty_quality, rti.quantity, rti.quality, rti.timeline_base_on, rti.timeline
+				FROM 
+					`tabReview Target Item` rti join `tabReview` rt on rti.parent= rt.name
+				WHERE 
+					rt.reference = '{}' and rt.docstatus!=2
+				ORDER BY 
+					rti.idx
+				""".format(self.reference), as_dict=True)
+			
+			self.set('evaluate_target_item_i', [])
+			for i in data:
+				row = self.append('evaluate_target_item_i', {})
+				row.update(i)
+	
 	@frappe.whitelist()
 	def get_competency(self):
 		if self.docstatus == 1:
@@ -297,16 +509,23 @@ class PerformanceEvaluation(Document):
 		""", as_dict=True)
 		if not data:
 			frappe.throw(_('There are no Work Competency defined'))
-
+		# if len(self.evaluate_competency_item)<=1 and len(self.evaluate_competency_item_i)<=1:
+		# 	return
 		# set competency item values
 		self.set('evaluate_competency_item', [])
+		self.set('evaluate_competency_item_i', [])
 		for d in data:
 			row = self.append('evaluate_competency_item', {})
 			row.update(d)
 
+			row_i = self.append('evaluate_competency_item_i', {})
+			row_i.update(d)
+
 	@frappe.whitelist()
 	def get_leadership_competency(self):
 		if self.docstatus == 1:
+			return
+		if len(self.evaluate_leadership_competency)==0 and len(self.evaluate_leadership_competency_i)==0:
 			return
 		# get competency applicable to particular category
 		data = frappe.db.sql("""
@@ -323,9 +542,12 @@ class PerformanceEvaluation(Document):
 
 		# set competency item values
 		self.set('evaluate_leadership_competency', [])
+		self.set('evaluate_leadership_competency_i', [])
 		for d in data:
 			row = self.append('evaluate_leadership_competency', {})
+			row_i = self.append('evaluate_leadership_competency_i', {})
 			row.update(d)
+			row_i.update(d)
 
 @frappe.whitelist()
 def pms_appeal(source_name, target_doc=None):
@@ -342,7 +564,7 @@ def pms_appeal(source_name, target_doc=None):
 		"Performance Evaluation": {
 			"doctype": "PMS Appeal",
 			"field_map":{
-					"reference_name":"name"
+					"reference_name":"name",
 				},
 		},
 		"Evaluate Target Item":{

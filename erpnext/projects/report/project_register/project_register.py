@@ -5,6 +5,7 @@ import frappe
 from frappe import _
 from frappe.utils import flt, cint,add_days, cstr, flt, getdate, nowdate, rounded, date_diff
 
+#Filters = frappe._dict
 
 def execute(filters=None):
 	columns = get_columns(filters)
@@ -58,6 +59,7 @@ def get_columns(filters):
 	return cols
 
 def get_data(filters):
+	# frappe.throw(filters.get("status"))
 	cond  = get_conditions(filters)
 	if filters.get("additional_info"):
 		query = """
@@ -176,9 +178,15 @@ def get_data(filters):
 
 def get_conditions(filters):
 	cond = []
+	#frappe.throw(str(filters.get("status")))
 
 	if filters.get("project"):
 		cond.append('name = "{0}"'.format(filters.get("project")))
+
+	# if filters.get("status"):
+	# 	cond.append({"status": filters.get("status")})
+	if filters.get("status"):
+		cond.append('status = "{0}"'.format(filters.get("status")))
 
 	if filters.get("branch"):
 		cond.append('branch = "{0}"'.format(filters.get("branch")))
@@ -198,3 +206,19 @@ def get_conditions(filters):
 		query = ""
 
 	return query
+
+
+
+
+# def get_projects(filters: Filters) -> list[dict]:
+# 	Projects = frappe.qb.DocType("Projects")
+# 	query = frappe.qb.from_(Projects).select(
+# 		Projects.status,
+		
+# 	)
+
+
+# 	if filters.get("status"):
+# 		query = query.where(Projects.status == filters.get("status"))
+
+# 	return query.run(as_dict=True)

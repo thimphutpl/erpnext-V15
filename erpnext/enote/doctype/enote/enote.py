@@ -22,9 +22,9 @@ class eNote(Document):
 		amended_from: DF.Link | None
 		content: DF.TextEditor | None
 		copied: DF.TableMultiSelect[NoteCopy]
+		enote_category: DF.Link
 		enote_format: DF.Data | None
 		enote_series: DF.Data
-		enote_type: DF.Link
 		forward_to: DF.Link | None
 		note_date: DF.Date | None
 		permitted_user: DF.Link | None

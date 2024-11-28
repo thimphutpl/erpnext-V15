@@ -420,6 +420,28 @@ def create_user(employee, user=None, email=None):
 	return user.name
 
 @frappe.whitelist()
+def add_in_blocklist(emp, block_list):
+	emp_name=frappe.db.get_value("Employee", emp, "employee_name")
+	user_id=frappe.db.get_value("Employee", emp, "user_id")
+	section=frappe.db.get_value("Employee", emp, "section")
+	division=frappe.db.get_value("Employee", emp, "division")
+	unit=frappe.db.get_value("Employee", emp, "unit")
+
+	doc = frappe.get_doc("Leave Block List", block_list)
+	doc.append('blocked_user', {
+		'employee': emp,
+		'employee_name': emp_name,
+		'user_id': user_id,
+		'section': section,
+		'unit': unit,
+		'division': division
+	})
+	doc.save()
+
+
+
+
+@frappe.whitelist()
 def get_overtime_rate(employee, posting_date ):
 	basic = frappe.db.sql("select b.eligible_for_overtime_and_payment, a.amount as basic_pay from `tabSalary Detail` a, `tabSalary Structure` b where a.parent = b.name and a.salary_component = 'Basic Pay' and b.is_active = 'Yes' and b.employee = \'" + str(employee) + "\'", as_dict=True)
 	if basic:

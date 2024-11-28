@@ -29,7 +29,7 @@ class MRPaymentItem(Document):
 		hourly_rate_normal: DF.Currency
 		id_card: DF.Data
 		month: DF.Literal["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-		number_of_days: DF.Int
+		number_of_days: DF.Float
 		number_of_hours: DF.Float
 		number_of_hours_special: DF.Float
 		parent: DF.Data

@@ -35,18 +35,19 @@
   "paid_amount",
   "total_amount",
   "section_break_20",
-  "get_invoices_dummy",
   "get_invoices",
   "references",
   "section_break_30",
-  "get_advances_dummy",
   "get_advances",
   "advances",
   "section_break_40",
   "deductions",
   "section_break_50",
+  "tax_withholding_category",
+  "tds_rate",
   "tds_amount",
   "column_break_30",
+  "tds_taxable_amount",
   "tds_account",
   "status",
   "section_break_60",
@@ -225,7 +226,8 @@
   {
    "fieldname": "paid_amount",
    "fieldtype": "Currency",
-   "label": "Paid Amount"
+   "label": "Paid Amount",
+   "options": "Company:company:default_currency"
   },
   {
    "default": "0.0",
@@ -237,10 +239,6 @@
   {
    "fieldname": "section_break_20",
    "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "get_invoices_dummy",
-   "fieldtype": "Button"
   },
   {
    "fieldname": "get_invoices",
@@ -255,10 +253,6 @@
   {
    "fieldname": "section_break_30",
    "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "get_advances_dummy",
-   "fieldtype": "Button"
   },
   {
    "fieldname": "get_advances",
@@ -310,7 +304,6 @@
    "options": "Draft\nPaid\nReceived\nCancelled"
   },
   {
-   "collapsible": 1,
    "fieldname": "section_break_60",
    "fieldtype": "Section Break",
    "label": "MORE INFORMATION"
@@ -361,12 +354,32 @@
    "label": "BOQ Allocation",
    "options": "Project Payment Detail",
    "read_only": 1
+  },
+  {
+   "fieldname": "tax_withholding_category",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Tax Withholding Category",
+   "options": "Tax Withholding Category"
+  },
+  {
+   "fieldname": "tds_rate",
+   "fieldtype": "Int",
+   "hidden": 1,
+   "label": "TDS Rate",
+   "read_only": 1
+  },
+  {
+   "fieldname": "tds_taxable_amount",
+   "fieldtype": "Currency",
+   "hidden": 1,
+   "label": "TDS Taxable Amount"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-10-14 12:20:02.368484",
+ "modified": "2024-11-28 14:20:40.900924",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Project Payment",
@@ -384,6 +397,30 @@
    "role": "System Manager",
    "share": 1,
    "submit": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Admin",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Accounts Manager",
+   "share": 1,
    "write": 1
   }
  ],

@@ -8,20 +8,23 @@
  "field_order": [
   "vehicle_logbook",
   "column_break_200",
-  "equipment_number",
+  "registration_number",
   "column_break_2",
   "equipment",
   "section_break_6",
   "rate_type",
   "col_break_8",
   "number_of_days",
-  "column_break_10",
-  "total_km",
   "section_break_4",
-  "hiring_rate",
+  "total_work_hours",
+  "work_rate",
+  "amount_work",
   "column_break_20",
-  "total_amount",
-  "discount_amount"
+  "total_idle_hours",
+  "idle_rate",
+  "amount_idle",
+  "section_break_xwgy",
+  "total_amount"
  ],
  "fields": [
   {
@@ -35,14 +38,6 @@
   {
    "fieldname": "column_break_200",
    "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "equipment_number",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Equipment Number",
-   "read_only": 1,
-   "reqd": 1
   },
   {
    "fieldname": "column_break_2",
@@ -79,50 +74,82 @@
    "read_only": 1
   },
   {
-   "fieldname": "column_break_10",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "total_km",
-   "fieldtype": "Float",
-   "in_list_view": 1,
-   "label": "Total KM",
-   "reqd": 1
-  },
-  {
    "fieldname": "section_break_4",
    "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "hiring_rate",
-   "fieldtype": "Currency",
-   "label": "Hiring Rate",
-   "read_only": 1,
-   "reqd": 1
   },
   {
    "fieldname": "column_break_20",
    "fieldtype": "Column Break"
   },
   {
+   "fieldname": "total_work_hours",
+   "fieldtype": "Data",
+   "label": "Total Work Hours",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "work_rate",
+   "fieldtype": "Currency",
+   "label": "Work Rate",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "amount_work",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Amount Work",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "total_idle_hours",
+   "fieldtype": "Data",
+   "label": "Total Idle Hours",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "idle_rate",
+   "fieldtype": "Currency",
+   "label": "Idle Rate",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "amount_idle",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Amount Idle",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_xwgy",
+   "fieldtype": "Section Break"
+  },
+  {
    "fieldname": "total_amount",
    "fieldtype": "Currency",
    "in_list_view": 1,
    "label": "Total Amount",
+   "read_only": 1,
    "reqd": 1
   },
   {
-   "default": "0",
-   "fieldname": "discount_amount",
-   "fieldtype": "Currency",
-   "hidden": 1,
-   "label": "Discount Amount"
+   "fieldname": "registration_number",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Equipment Number",
+   "read_only": 1,
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-11-06 15:34:06.750437",
+ "modified": "2024-11-24 00:13:32.753101",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Hire Invoice Details",

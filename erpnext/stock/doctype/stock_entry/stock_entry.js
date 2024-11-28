@@ -1471,10 +1471,10 @@ erpnext.stock.StockEntry = class StockEntry extends erpnext.stock.StockControlle
 			"t_warehouse",
 			doc.purpose != "Material Issue"
 		);
-		// this.frm.fields_dict["items"].grid.set_column_disp(
-		// 	"issue_to_employee",
-		// 	doc.purpose == "Material Issue"
-		// );
+		this.frm.fields_dict["items"].grid.set_column_disp(
+			"issue_to_employee",
+			doc.purpose=="Material Issue"
+		);
 		
 
 		this.frm.fields_dict["items"].grid.set_column_disp(

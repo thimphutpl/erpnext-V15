@@ -111,7 +111,7 @@ function get_records(fiscal_year, month, cost_center, branch, dn) {
 						// 		row.total_wage = flt(mr['salary']);
 						// 	}
 						// } else {
-							//row.daily_rate 	= flt(mr['rate_per_day']);
+							row.daily_rate 	= flt(mr['rate_per_day']);
 							row.hourly_rate 	= flt(mr['rate_per_hour']); // Holiday Rate
 							row.hourly_rate_normal = flt(mr['rate_per_hour_normal']);
 							row.amount_regular = flt(mr['number_of_hours_regular']) * flt(mr['rate_per_hour_normal']);

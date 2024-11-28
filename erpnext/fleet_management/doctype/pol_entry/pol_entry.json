@@ -30,7 +30,8 @@
   "amount",
   "memo_number",
   "pol_slip_no",
-  "fuelbook"
+  "fuelbook",
+  "own_cost_center"
  ],
  "fields": [
   {
@@ -58,9 +59,10 @@
   },
   {
    "fieldname": "pol_type",
-   "fieldtype": "Link",
+   "fieldtype": "Data",
    "label": "POL Type",
-   "options": "Item"
+   "options": "Item",
+   "reqd": 1
   },
   {
    "fieldname": "posting_date",
@@ -70,13 +72,15 @@
   {
    "fieldname": "qty",
    "fieldtype": "Float",
-   "label": "Qty"
+   "in_list_view": 1,
+   "label": "Qty",
+   "precision": "2"
   },
   {
    "fieldname": "reference_type",
    "fieldtype": "Select",
    "label": "Reference Type",
-   "options": "\nPOL Receive\nPOL Issue\nVehicle Logbook\nHSD Adjustment"
+   "options": "\nPOL Receive\nPOL Issue\nVehicle Logbook\nHSD Adjustment\nEquipment POL Transfer"
   },
   {
    "fieldname": "type",
@@ -184,13 +188,19 @@
    "fieldtype": "Dynamic Link",
    "label": "Reference Name",
    "options": "reference_type"
+  },
+  {
+   "default": "1",
+   "fieldname": "own_cost_center",
+   "fieldtype": "Check",
+   "label": "Own Cost Center"
   }
  ],
  "in_create": 1,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-16 22:50:39.650832",
+ "modified": "2024-11-25 15:47:47.629506",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Entry",

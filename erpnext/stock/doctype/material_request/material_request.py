@@ -33,6 +33,7 @@ class MaterialRequest(BuyingController):
 		from frappe.types import DF
 
 		amended_from: DF.Link | None
+		approval_date: DF.Date | None
 		approver: DF.Link | None
 		approver_name: DF.Data | None
 		branch: DF.Link
@@ -847,3 +848,12 @@ def change_date_issue_to_purchase(name, new_date, purpose):
 	# 	if 
 	# if action == ""
 	frappe.db.sql("update `tabMaterial Request` set date = '{}', material_request_type='{}' where name = '{}' ".format(new_date, purpose, name))
+
+@frappe.whitelist()
+def get_cc_warehouse(user):
+	cc = frappe.db.get_value("Employee", {"user_id": user}, "cost_center")
+	if not cc:
+		cc = frappe.db.get_value("GEP Employee", {"user_id": user}, "cost_center")
+	wh = frappe.db.get_value("Cost Center", cc, "warehouse")
+	app = frappe.db.get_value("Approver Item", {"cost_center": cc}, "approver")
+	return [cc, wh, app]

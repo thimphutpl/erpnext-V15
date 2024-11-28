@@ -69,7 +69,7 @@ class BreakDownReport(Document):
 		if self.owned_by in ['CDCL', 'Own']:
 			doc = frappe.new_doc("Equipment Reservation Entry")
 			doc.flags.ignore_permissions = True
-			# doc.equipment = self.equipment
+			doc.equipment = self.equipment
 			doc.reason = "Maintenance"
 			doc.ehf_name = self.name
 			doc.hours = 100

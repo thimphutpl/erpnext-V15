@@ -1,12 +1,6 @@
 // Copyright (c) 2024, Frappe Technologies Pvt. Ltd. and contributors
 // For license information, please see license.txt
 
-// frappe.query_reports["Equipment Hire Report"] = {
-// 	"filters": [
-
-// 	]
-// };
-
 frappe.query_reports["Equipment Hire Report"] = {
 	"filters": [
 		{
@@ -21,7 +15,7 @@ frappe.query_reports["Equipment Hire Report"] = {
 			"label": ("From Date"),
 			"fieldtype": "Date",
 			"width": "80",
-			"default": sys_defaults.year_start_date,
+			default: frappe.datetime.month_start(),
 		},
 		{
 			"fieldname":"to_date",
@@ -49,6 +43,5 @@ frappe.query_reports["Equipment Hire Report"] = {
 			"fieldtype": "Check",
 			"default": 0
 		},
-
 	]
-}
+};

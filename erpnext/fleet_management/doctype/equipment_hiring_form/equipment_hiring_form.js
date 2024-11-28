@@ -10,21 +10,21 @@ frappe.ui.form.on('Equipment Hiring Form', {
 		if (frm.doc.advance_journal && frappe.model.can_read("Journal Entry")) {
 			cur_frm.add_custom_button(__('Bank Entries'), function() {
 				frappe.route_options = {
-					"Journal Entry Account.reference_type": me.frm.doc.doctype,
-					"Journal Entry Account.reference_name": me.frm.doc.name,
+					"Journal Entry Account.reference_type": frm.doc.doctype,
+					"Journal Entry Account.reference_name": frm.doc.name,
 				};
 				frappe.set_route("List", "Journal Entry");
 			}, __("View"));
 		}
 		cur_frm.add_custom_button(__('Logbooks'), function() {
 			frappe.route_options = {
-				"Vehicle Logbook.ehf_name": me.frm.doc.name,
+				"Vehicle Logbook.ehf_name": frm.doc.name,
 			};
 			frappe.set_route("List", "Vehicle Logbook");
 		}, __("View"));
 		cur_frm.add_custom_button(__('Invoices'), function() {
 			frappe.route_options = {
-				"Hire Charge Invoice.ehf_name": me.frm.doc.name,
+				"Hire Charge Invoice.ehf_name": frm.doc.name,
 			};
 			frappe.set_route("List", "Hire Charge Invoice");
 		}, __("View"));
@@ -154,7 +154,7 @@ function calculate_datetime(frm, cdt, cdn) {
 }
 
 //Hiring Approval Details
-cur_frm.add_fetch("equipment", "registeration_number", "registeration_number")
+cur_frm.add_fetch("equipment", "registration_number", "registration_number")
 
 frappe.ui.form.on("Hiring Approval Details", {
 	"from_date": function (frm, cdt, cdn) {

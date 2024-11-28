@@ -95,7 +95,7 @@ var get_details = function(frm){
 		method: "get_details",
 		doc: frm.doc,
 		callback: function (r, rt) {
-			if ( r.message){
+			if (r.message){
 				frm.refresh_field("items");
 				frm.set_value('total_amount',r.message[1]);
 				frm.set_value('total_tds',r.message[0]);

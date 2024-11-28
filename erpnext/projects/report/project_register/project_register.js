@@ -20,7 +20,14 @@ frappe.query_reports["Project Register"] = {
 			"label": 	("Project Category"),
 			"fieldtype": 	"Link",
 			"options":	"Project Category"
-		},		
+		},	
+		{
+			"fieldname": 	"status",
+			"label": 	("Status"),
+			"fieldtype": 	"Select",
+			options: "\nPlanning\nOngoing\nCompleted\nCancelled",
+			
+		},	
 		{
 			"fieldname":	"from_date",
 			"label":		("From Date"),

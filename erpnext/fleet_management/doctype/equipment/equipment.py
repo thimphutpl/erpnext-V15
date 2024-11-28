@@ -40,7 +40,7 @@ class Equipment(Document):
 		model_items: DF.Table[EquipmentModelHistory]
 		not_cdcl: DF.Check
 		operators: DF.Table[EquipmentOperator]
-		registeration_number: DF.Data | None
+		registration_number: DF.Data
 		supplier: DF.Link | None
 		tank_capacity: DF.Data | None
 		village: DF.Link | None
@@ -62,10 +62,10 @@ class Equipment(Document):
 	def validate(self):
 		if self.asset_code:
 			doc = frappe.get_doc("Asset", self.asset_code)
-			# doc.db_set("registeration_number", self.name)
+			# doc.db_set("registration_number", self.name)
 
-		if not self.registeration_number:
-			self.registeration_number = self.name
+		if not self.registration_number:
+			self.registration_number = self.name
 		'''if self.equipment_history:
 			self.set("equipment_history", {})'''
 		if not self.equipment_history:
@@ -155,7 +155,6 @@ class Equipment(Document):
 			if equipments:
 				frappe.throw("The Asset is already linked to another equipment")
 
-
 @frappe.whitelist()
 def get_yards(equipment):
 	t, m = frappe.db.get_value("Equipment", equipment, ['equipment_type', 'equipment_model'])
@@ -175,17 +174,17 @@ def sync_branch_asset():
 
 
 @frappe.whitelist()
-def fetch_registeration_numbers(doctype, txt, searchfield, start, page_len, filters):
+def fetch_registration_numbers(doctype, txt, searchfield, start, page_len, filters):
     return frappe.db.sql(
         """
         SELECT
-            registeration_number
+            registration_number
         FROM
             `tabEquipment Model`
         WHERE
             equipment_type = %(equipment_type)s
         AND
-            registeration_number LIKE %(txt)s
+            registration_number LIKE %(txt)s
         LIMIT %(start)s, %(page_len)s
         """,
         {

@@ -265,6 +265,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "allow_on_submit": 1,
    "description": "* Progress for the selected period",
    "fieldname": "target_quantity_complete",
    "fieldtype": "Float",
@@ -274,7 +275,7 @@
  "idx": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-11-13 11:08:40.784527",
+ "modified": "2024-11-27 11:57:42.472313",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Timesheet Detail",

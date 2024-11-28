@@ -8,241 +8,150 @@
  "engine": "InnoDB",
  "field_order": [
   "insurance_for",
-  "cb_1",
-  "equipment",
-  "asset",
-  "cb_2",
+  "column_break_urtf",
+  "insurance_type",
+  "column_break_uitv",
   "posting_date",
-  "sb_1",
-  "branch",
-  "cb_3",
-  "vehicle_type",
-  "cb_4",
-  "vehicle_model",
-  "imprest_party_detail_section",
-  "settle_from_advance",
-  "party_type",
-  "imprest_party",
-  "column_break_neoo",
-  "cost_center",
-  "sb_2",
+  "equipment_information_section",
+  "column_break_ynoi",
+  "equipment_type",
+  "equipment_model",
+  "column_break_ehro",
+  "engine_number",
+  "chassis_number",
+  "column_break_klmi",
+  "equipment_number",
+  "model",
+  "asset_information_section",
   "asset_name",
-  "cb_6",
   "asset_category",
-  "cb_5",
+  "column_break_pzid",
   "asset_sub_category",
-  "sb_3",
-  "insurance_item",
-  "sb_4",
-  "claim_item",
-  "sb_5",
-  "registration_item",
-  "bluebook_details_section",
-  "items",
-  "company",
-  "amount_section",
-  "total_amount",
-  "amended_from"
+  "plot_no",
+  "insurance_details_section",
+  "in_items",
+  "claim_details_section",
+  "claim_items",
+  "registration_details_section",
+  "reg_items",
+  "sbaa",
+  "branch",
+  "amended_from",
+  "cbbb",
+  "cbb"
  ],
  "fields": [
   {
    "fieldname": "insurance_for",
    "fieldtype": "Select",
-   "in_list_view": 1,
    "label": "Insurance For",
-   "options": "\nVehicle\nAsset"
+   "options": "\nEquipment\nAsset\nProject",
+   "reqd": 1
   },
   {
-   "fieldname": "cb_1",
+   "fieldname": "cbbb",
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "cb_2",
+   "depends_on": "eval:in_list([\"Equipment\", \"Asset\", \"Project\"], doc.insurance_for) && doc.insurance_for",
+   "fieldname": "insurance_type",
+   "fieldtype": "Dynamic Link",
+   "in_list_view": 1,
+   "label": "Asset/Equipment/Project",
+   "options": "insurance_for",
+   "reqd": 1
+  },
+  {
+   "fieldname": "cbb",
    "fieldtype": "Column Break"
   },
   {
    "fieldname": "posting_date",
    "fieldtype": "Date",
-   "label": "Posting Date"
+   "in_list_view": 1,
+   "label": "Date",
+   "reqd": 1
   },
   {
-   "depends_on": "eval:doc.insurance_for == \"Vehicle\"",
-   "fieldname": "sb_1",
-   "fieldtype": "Section Break",
-   "label": "Vehicle Information"
-  },
-  {
-   "fieldname": "cb_3",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "cb_4",
-   "fieldtype": "Column Break"
-  },
-  {
-   "depends_on": "eval:doc.insurance_for == \"Asset\"",
-   "fieldname": "sb_2",
-   "fieldtype": "Section Break",
-   "label": "Asset Information"
-  },
-  {
-   "fetch_from": "asset.item_name",
-   "fieldname": "asset_name",
-   "fieldtype": "Data",
-   "label": "Asset Name",
+   "fieldname": "equipment_type",
+   "fieldtype": "Link",
+   "label": "Equipment Type",
+   "options": "Equipment Type",
    "read_only": 1
   },
   {
-   "fetch_from": "asset.asset_category",
-   "fieldname": "asset_category",
+   "fieldname": "equipment_model",
+   "fieldtype": "Link",
+   "label": "Equipment Model",
+   "options": "Equipment Model",
+   "read_only": 1
+  },
+  {
+   "fieldname": "engine_number",
+   "fieldtype": "Read Only",
+   "label": "Engine Number"
+  },
+  {
+   "fieldname": "chassis_number",
+   "fieldtype": "Read Only",
+   "label": "Chassis Number"
+  },
+  {
+   "fieldname": "equipment_number",
+   "fieldtype": "Read Only",
+   "label": "Equipment Number",
+   "read_only": 1
+  },
+  {
+   "fieldname": "model",
    "fieldtype": "Data",
+   "label": "Model "
+  },
+  {
+   "fieldname": "asset_name",
+   "fieldtype": "Read Only",
+   "label": "Asset name"
+  },
+  {
+   "fieldname": "asset_category",
+   "fieldtype": "Read Only",
    "label": "Asset Category"
   },
   {
-   "fieldname": "cb_5",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fetch_from": "asset.asset_sub_category",
    "fieldname": "asset_sub_category",
+   "fieldtype": "Read Only",
+   "label": "Asset Sub Category"
+  },
+  {
+   "fieldname": "plot_no",
    "fieldtype": "Data",
-   "label": "Asset Sub Category",
-   "read_only": 1
+   "label": "Plot/Thram No"
   },
   {
-   "fieldname": "cb_6",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "sb_3",
+   "depends_on": "eval:doc.insurance_for == \"Project\"",
+   "fieldname": "sbaa",
    "fieldtype": "Section Break",
-   "label": "Insurance Detail"
+   "label": "Project information"
   },
   {
-   "fieldname": "insurance_item",
+   "fieldname": "branch",
+   "fieldtype": "Read Only",
+   "label": "Branch"
+  },
+  {
+   "fieldname": "in_items",
    "fieldtype": "Table",
-   "ignore_user_permissions": 1,
    "options": "Insurance Details"
   },
   {
-   "fieldname": "sb_4",
-   "fieldtype": "Section Break",
-   "label": "Claim Detail"
-  },
-  {
-   "fieldname": "claim_item",
+   "fieldname": "claim_items",
    "fieldtype": "Table",
    "options": "Claim Details"
   },
   {
-   "fieldname": "sb_5",
-   "fieldtype": "Section Break",
-   "label": "Registration Detail"
-  },
-  {
-   "fieldname": "registration_item",
+   "fieldname": "reg_items",
    "fieldtype": "Table",
    "options": "Registration Details"
-  },
-  {
-   "fetch_from": "equipment.equipment_type",
-   "fieldname": "vehicle_type",
-   "fieldtype": "Link",
-   "label": "Vehicle Type",
-   "options": "Equipment Type"
-  },
-  {
-   "fetch_from": "vehicle.equipment_model",
-   "fieldname": "vehicle_model",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Vehicle Model",
-   "read_only": 1
-  },
-  {
-   "depends_on": "eval:doc.insurance_for == \"Asset\"",
-   "fieldname": "asset",
-   "fieldtype": "Link",
-   "label": "Asset",
-   "options": "Asset"
-  },
-  {
-   "fieldname": "bluebook_details_section",
-   "fieldtype": "Section Break",
-   "label": "Registration Certificate and Emission Details"
-  },
-  {
-   "depends_on": "eval:doc.insurance_for == \"Vehicle\"",
-   "fieldname": "equipment",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "Vehicle",
-   "options": "Equipment"
-  },
-  {
-   "fetch_from": "equipment.branch",
-   "fieldname": "branch",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "Branch",
-   "options": "Branch",
-   "read_only": 1
-  },
-  {
-   "fieldname": "items",
-   "fieldtype": "Table",
-   "options": "Bluebook and Emission"
-  },
-  {
-   "fieldname": "company",
-   "fieldtype": "Link",
-   "label": "Company",
-   "options": "Company"
-  },
-  {
-   "fieldname": "amount_section",
-   "fieldtype": "Section Break",
-   "label": "Amount"
-  },
-  {
-   "fieldname": "total_amount",
-   "fieldtype": "Data",
-   "label": "Total Amount"
-  },
-  {
-   "fieldname": "imprest_party_detail_section",
-   "fieldtype": "Section Break",
-   "label": "Imprest Party Detail"
-  },
-  {
-   "default": "0",
-   "fieldname": "settle_from_advance",
-   "fieldtype": "Check",
-   "label": "Settle from Advance"
-  },
-  {
-   "fieldname": "column_break_neoo",
-   "fieldtype": "Column Break"
-  },
-  {
-   "depends_on": "eval:doc.settle_from_advance",
-   "fieldname": "party_type",
-   "fieldtype": "Select",
-   "label": "Imprest Party Type",
-   "options": "\nEmployee\nAgency"
-  },
-  {
-   "depends_on": "eval:doc.settle_from_advance",
-   "fieldname": "imprest_party",
-   "fieldtype": "Dynamic Link",
-   "label": "Imprest Party",
-   "options": "party_type"
-  },
-  {
-   "fieldname": "cost_center",
-   "fieldtype": "Link",
-   "label": "Cost Center",
-   "options": "Cost Center"
   },
   {
    "fieldname": "amended_from",
@@ -251,14 +160,61 @@
    "no_copy": 1,
    "options": "Insurance and Registration",
    "print_hide": 1,
-   "read_only": 1,
-   "search_index": 1
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_urtf",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_uitv",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "equipment_information_section",
+   "fieldtype": "Section Break",
+   "label": "Equipment Information"
+  },
+  {
+   "fieldname": "column_break_ehro",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "insurance_details_section",
+   "fieldtype": "Section Break",
+   "label": "Insurance Details"
+  },
+  {
+   "fieldname": "claim_details_section",
+   "fieldtype": "Section Break",
+   "label": "Claim Details"
+  },
+  {
+   "fieldname": "registration_details_section",
+   "fieldtype": "Section Break",
+   "label": "Registration Details"
+  },
+  {
+   "fieldname": "column_break_klmi",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_ynoi",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "asset_information_section",
+   "fieldtype": "Section Break",
+   "label": "Asset Information"
+  },
+  {
+   "fieldname": "column_break_pzid",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
- "is_submittable": 1,
  "links": [],
- "modified": "2024-08-19 14:40:18.907305",
+ "modified": "2024-11-24 22:22:55.627799",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Insurance and Registration",

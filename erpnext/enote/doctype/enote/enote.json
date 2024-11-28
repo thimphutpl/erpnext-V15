@@ -9,7 +9,7 @@
  "field_order": [
   "enote_format",
   "title",
-  "enote_type",
+  "enote_category",
   "class",
   "reviewer_required",
   "column_break_2",
@@ -85,7 +85,7 @@
   {
    "bold": 1,
    "description": "Help: To link to another record in the system, use \"/app/note/[Note Name]\" as the Link URL. (don't use \"http://\")",
-   "fetch_from": "category.template",
+   "fetch_from": "enote_category.template",
    "fetch_if_empty": 1,
    "fieldname": "content",
    "fieldtype": "Text Editor",
@@ -124,18 +124,11 @@
    "read_only": 1
   },
   {
-   "description": "** This eNote type refers to department or division or section or unit if it has different series format. EG. If ITD has BOBL/ITD/01/Year/### and HRD has BOBL/HRD/01/Year/###, then in eNote type, it must include HRD and ITD ***.",
-   "fieldname": "enote_type",
-   "fieldtype": "Link",
-   "label": "eNote Type",
-   "options": "eNote Type",
-   "reqd": 1
-  },
-  {
    "description": "*** It must be ended with /. Based on this series, it will generate your dispatch number after the eNote is approved.***",
    "fieldname": "enote_series",
    "fieldtype": "Data",
    "label": "Dispatch/Reference Series",
+   "options": "eNote Series",
    "reqd": 1
   },
   {
@@ -164,12 +157,20 @@
    "fieldtype": "Select",
    "label": "Type",
    "options": "\nProcess\nPayment"
+  },
+  {
+   "description": "** This eNote type refers to department or division or section or unit if it has different series format. EG. If ITD has BOBL/ITD/01/Year/### and HRD has BOBL/HRD/01/Year/###, then in eNote type, it must include HRD and ITD ***.",
+   "fieldname": "enote_category",
+   "fieldtype": "Link",
+   "label": "eNote  Category",
+   "options": "eNote Category",
+   "reqd": 1
   }
  ],
  "icon": "fa fa-file-text",
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-21 16:36:08.717410",
+ "modified": "2024-11-24 14:41:48.396887",
  "modified_by": "Administrator",
  "module": "eNote",
  "name": "eNote",

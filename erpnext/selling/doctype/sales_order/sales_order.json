@@ -12,6 +12,7 @@
   "customer_section",
   "column_break0",
   "title",
+  "branch",
   "naming_series",
   "customer",
   "customer_name",
@@ -87,10 +88,19 @@
   "column_break_50",
   "additional_discount_percentage",
   "discount_amount",
-  "sec_tax_breakup",
-  "other_charges_calculation",
   "packing_list",
   "packed_items",
+  "column_break_wuik",
+  "sales_header",
+  "sales_footer",
+  "terms_and_conditions_sectionbrerak",
+  "tc_name",
+  "terms",
+  "so_header_footer",
+  "column_break_kqdt",
+  "column_break_yata",
+  "header",
+  "footer",
   "pricing_rule_details",
   "pricing_rules",
   "contact_info",
@@ -119,9 +129,6 @@
   "payment_terms_section",
   "payment_terms_template",
   "payment_schedule",
-  "terms_section_break",
-  "tc_name",
-  "terms",
   "more_info",
   "section_break_78",
   "status",
@@ -769,25 +776,6 @@
    "options": "Sales Taxes and Charges"
   },
   {
-   "collapsible": 1,
-   "fieldname": "sec_tax_breakup",
-   "fieldtype": "Section Break",
-   "hide_days": 1,
-   "hide_seconds": 1,
-   "label": "Tax Breakup"
-  },
-  {
-   "fieldname": "other_charges_calculation",
-   "fieldtype": "Text Editor",
-   "hide_days": 1,
-   "hide_seconds": 1,
-   "label": "Taxes and Charges Calculation",
-   "no_copy": 1,
-   "oldfieldtype": "HTML",
-   "print_hide": 1,
-   "read_only": 1
-  },
-  {
    "fieldname": "section_break_43",
    "fieldtype": "Section Break",
    "hide_days": 1,
@@ -1091,16 +1079,6 @@
    "no_copy": 1,
    "options": "Payment Schedule",
    "print_hide": 1
-  },
-  {
-   "collapsible_depends_on": "terms",
-   "fieldname": "terms_section_break",
-   "fieldtype": "Section Break",
-   "hide_days": 1,
-   "hide_seconds": 1,
-   "label": "Terms & Conditions",
-   "oldfieldtype": "Section Break",
-   "options": "fa fa-legal"
   },
   {
    "fieldname": "tc_name",
@@ -1643,13 +1621,74 @@
    "no_copy": 1,
    "print_hide": 1,
    "report_hide": 1
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "label": "Branch",
+   "options": "Branch"
+  },
+  {
+   "fieldname": "sales_header",
+   "fieldtype": "Text Editor",
+   "hide_days": 1,
+   "hide_seconds": 1,
+   "label": "Header",
+   "no_copy": 1,
+   "oldfieldtype": "HTML",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "sales_footer",
+   "fieldtype": "Text Editor",
+   "hide_days": 1,
+   "hide_seconds": 1,
+   "label": "Footer",
+   "no_copy": 1,
+   "oldfieldtype": "HTML",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_wuik",
+   "fieldtype": "Column Break"
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "so_header_footer",
+   "fieldtype": "Section Break",
+   "label": "Sales Order Header and Footer"
+  },
+  {
+   "fieldname": "header",
+   "fieldtype": "Text Editor",
+   "label": "Header"
+  },
+  {
+   "fieldname": "footer",
+   "fieldtype": "Text Editor",
+   "label": "Footer"
+  },
+  {
+   "fieldname": "terms_and_conditions_sectionbrerak",
+   "fieldtype": "Section Break",
+   "label": "Terms and Conditions"
+  },
+  {
+   "fieldname": "column_break_kqdt",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_yata",
+   "fieldtype": "Column Break"
   }
  ],
  "icon": "fa fa-file-text",
  "idx": 105,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-18 11:22:26.263940",
+ "modified": "2024-11-28 12:10:56.430702",
  "modified_by": "Administrator",
  "module": "Selling",
  "name": "Sales Order",

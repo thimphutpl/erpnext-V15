@@ -12,7 +12,7 @@
   "equipment_type",
   "column_break_6",
   "is_container",
-  "doesnt_have_own_tank"
+  "no_own_tank"
  ],
  "fields": [
   {
@@ -39,20 +39,20 @@
    "label": "Is Container?"
   },
   {
-   "default": "0",
-   "description": "If Checked, will not allow Direct Consumption in Receive POL/Receive in Issue POL/HSD Consumption in Logbook",
-   "fieldname": "doesnt_have_own_tank",
-   "fieldtype": "Check",
-   "label": "Doesn't have Own Tank"
-  },
-  {
    "fieldname": "column_break_6",
    "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "description": "If Checked, will not allow Direct Consumption in Receive POL/Receive in Issue POL/HSD Consumption in Logbook",
+   "fieldname": "no_own_tank",
+   "fieldtype": "Check",
+   "label": "Doesn't have Own Tank"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-19 12:34:17.451712",
+ "modified": "2024-11-23 17:37:48.795496",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Equipment Type",

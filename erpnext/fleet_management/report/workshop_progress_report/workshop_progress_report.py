@@ -17,7 +17,7 @@ def execute(filters=None):
 
 def get_columns():
 	return [
-		("Job Card #") + ":Link/Job Card:120",
+		("Job Cards #") + ":Link/Job Cards:120",
 		("Repair Type") + ":data:120",
 		("Job In Date") + ":date:100",
 		("Job Out Date") + ":date:100",
@@ -30,7 +30,7 @@ def get_columns():
 	]
 
 def get_data(filters):
-	query ="""select jc.name, jc.repair_type, jc.posting_date, jc.finish_date, (select group_concat(jci.job_name separator ', ') from `tabJob Card Item` jci where jci.parent = jc.name) as description, jc.equipment_number, jc.total_amount, (select group_concat(ma.employee_name separator ', ') from `tabMechanic Assigned` ma where ma.parent = jc.name ), jc.customer from `tabJob Card` AS jc, `tabBreak Down Report` AS bdr WHERE bdr.name = jc.break_down_report and jc.docstatus = '1'"""
+	query ="""select jc.name, jc.repair_type, jc.posting_date, jc.finish_date, (select group_concat(jci.job_name separator ', ') from `tabJob Cards Item` jci where jci.parent = jc.name) as description, jc.equipment_number, jc.total_amount, (select group_concat(ma.employee_name separator ', ') from `tabMechanic Assigned` ma where ma.parent = jc.name ), jc.customer from `tabJob Cards` AS jc, `tabBreak Down Report` AS bdr WHERE bdr.name = jc.break_down_report and jc.docstatus = '1'"""
 	if filters.get("branch"):
 		query += " and jc.branch = \'" + str(filters.branch) + "\'"
 
@@ -41,6 +41,6 @@ def get_data(filters):
 		query += " and jc.owned_by = \'" + str(filters.customer) + "\'"
 
 	if filters.get("equipment"):
-		query += " and jc.equipment_number = \'" + str(frappe.db.get_value("Equipment", filters.equipment, "equipment_number")) + "\'"
+		query += " and jc.equipment_number = \'" + str(frappe.db.get_value("Equipment", filters.equipment, "registration_number")) + "\'"
 
 	return frappe.db.sql(query)

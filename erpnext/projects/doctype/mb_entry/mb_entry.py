@@ -35,6 +35,7 @@ class MBEntry(AccountsController):
 		party_type: DF.Link | None
 		project: DF.Link
 		status: DF.Literal["Draft", "Invoiced", "Uninvoiced", "Cancelled"]
+		subcontract: DF.Link | None
 		total_balance_amount: DF.Currency
 		total_entry_amount: DF.Currency
 		total_invoice_amount: DF.Currency

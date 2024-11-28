@@ -38,6 +38,10 @@
   "printing_settings",
   "select_print_heading",
   "letter_head",
+  "column_break_jfqx",
+  "quotation_header_and_footer_section",
+  "header",
+  "footer",
   "more_info",
   "opportunity"
  ],
@@ -263,6 +267,7 @@
   {
    "fieldname": "incoterm",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Incoterm",
    "options": "Incoterm"
   },
@@ -270,6 +275,7 @@
    "depends_on": "incoterm",
    "fieldname": "named_place",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Named Place"
   },
   {
@@ -306,13 +312,32 @@
    "fieldtype": "Small Text",
    "label": "Billing Address Details",
    "read_only": 1
+  },
+  {
+   "fieldname": "quotation_header_and_footer_section",
+   "fieldtype": "Section Break",
+   "label": "Quotation Header and Footer"
+  },
+  {
+   "fieldname": "header",
+   "fieldtype": "Text Editor",
+   "label": "Header"
+  },
+  {
+   "fieldname": "footer",
+   "fieldtype": "Text Editor",
+   "label": "Footer"
+  },
+  {
+   "fieldname": "column_break_jfqx",
+   "fieldtype": "Column Break"
   }
  ],
  "icon": "fa fa-shopping-cart",
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-11-06 12:45:28.898706",
+ "modified": "2024-11-23 16:11:46.375929",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Request for Quotation",

@@ -2,10 +2,26 @@
 // For license information, please see license.txt
 frappe.ui.form.on('Performance Evaluation', {
 	setup:(frm)=>{
-		apply_filter(frm)
+		apply_filter(frm);
+		
+
 	},
 	onload:(frm)=> {
-		apply_filter(frm)
+		apply_filter(frm);
+		frappe.call({
+			"method": "get_target",
+			"doc": frm.doc,
+			"args":{
+			},
+			callback: function(r){
+				if(r){
+					console.log("called");
+					frm.refresh_field("evaluate_competency_item_i");
+					frm.refresh_fields();
+	
+				}
+			}
+		});
 	},
 	
 	refresh: (frm)=>{
@@ -85,6 +101,59 @@ cur_frm.cscript.approver = function(doc){
 		}
 	})
 };
+frappe.ui.form.on('Evaluate Competency',{
+	onload:(frm,cdt,cdn)=>{
+		
+	},
+	form_render:(frm,cdt,cdn)=>{
+		var row = locals[cdt][cdn]
+		if(row.parentfield=="evaluate_competency_item" && frappe.session.user!=frm.doc.approver){
+			frm.fields_dict['evaluate_competency_item'].grid.grid_rows_by_docname[cdn].toggle_editable('achievement', false);
+
+		}
+	}
+})
+frappe.ui.form.on('Evaluate Competency I',{
+	onload:(frm,cdt,cdn)=>{
+		
+	},
+	form_render:(frm,cdt,cdn)=>{
+		var row = locals[cdt][cdn]
+
+		if(row.parentfield=="evaluate_competency_item_i" && frappe.session.user!=frm.doc.user_id){
+			frm.fields_dict['evaluate_competency_item_i'].grid.grid_rows_by_docname[cdn].toggle_editable('achievement', false);
+		}
+	}
+})
+
+frappe.ui.form.on('Leadership Competency',{
+	onload:(frm,cdt,cdn)=>{
+		
+	},
+	form_render:(frm,cdt,cdn)=>{
+		var row = locals[cdt][cdn]
+		console.log(frm.fields_dict['evaluate_target_item'].grid.grid_rows_by_docname[cdn])
+		if(row.parentfield=="evaluate_leadership_competency" && frappe.session.user!=frm.doc.approver){
+			frm.fields_dict['evaluate_leadership_competency'].grid.grid_rows_by_docname[cdn].toggle_editable('achievement', false);
+
+		}
+
+		
+	}
+})
+
+frappe.ui.form.on('Leadership Competency I',{
+	onload:(frm,cdt,cdn)=>{
+		
+	},
+	form_render:(frm,cdt,cdn)=>{
+		var row = locals[cdt][cdn]
+
+		if(row.parentfield=="evaluate_leadership_competency_i" && frappe.session.user!=frm.doc.user_id){
+			frm.fields_dict['evaluate_leadership_competency_i'].grid.grid_rows_by_docname[cdn].toggle_editable('achievement', false);
+		}
+	}
+})
 
 frappe.ui.form.on('Evaluate Target Item',{
 	onload:(frm,cdt,cdn)=>{
@@ -92,6 +161,19 @@ frappe.ui.form.on('Evaluate Target Item',{
 	},
 	form_render:(frm,cdt,cdn)=>{
 		var row = locals[cdt][cdn]
+		if(row.parentfield=="evaluate_target_item" && frappe.session.user!=frm.doc.approver){
+			frm.fields_dict['evaluate_target_item'].grid.grid_rows_by_docname[cdn].docfields[13].read_only=1
+			frm.fields_dict['evaluate_target_item'].grid.grid_rows_by_docname[cdn].docfields[14].read_only=1
+			frm.fields_dict['evaluate_target_item'].grid.grid_rows_by_docname[cdn].docfields[17].read_only=1
+
+		}
+		if(row.parentfield=="evaluate_target_item_i" && frappe.session.user!=frm.doc.user_id){
+			frm.fields_dict['evaluate_target_item_i'].grid.grid_rows_by_docname[cdn].docfields[13].read_only=1
+			frm.fields_dict['evaluate_target_item_i'].grid.grid_rows_by_docname[cdn].docfields[14].read_only=1
+			frm.fields_dict['evaluate_target_item_i'].grid.grid_rows_by_docname[cdn].docfields[17].read_only=1
+		}
+		
+
 		if ( frm.doc.docstatus == 1){
 			if (frappe.user.has_role(['HR Manager', 'HR User'])){
 				frm.fields_dict['evaluate_target_item'].grid.grid_rows_by_docname[cdn].toggle_editable('reverse_formula', true);
@@ -158,6 +240,91 @@ frappe.ui.form.on('Evaluate Target Item',{
 		if (cint(row.reverse_formula) == 0 ){
 			row.accept_zero_qtyquality = 0
 			frm.refresh_field('evaluate_target_item')
+		}
+	}
+})
+
+
+frappe.ui.form.on('Evaluate Target Item I',{
+	onload:(frm,cdt,cdn)=>{
+		toggle_reqd_qty_quality(frm,cdt,cdn)
+	},
+	form_render:(frm,cdt,cdn)=>{
+		var row = locals[cdt][cdn]
+
+		if(row.parentfield=="evaluate_target_item_i" && frappe.session.user!=frm.doc.user_id){
+			frm.fields_dict['evaluate_target_item_i'].grid.grid_rows_by_docname[cdn].docfields[13].read_only=1
+			frm.fields_dict['evaluate_target_item_i'].grid.grid_rows_by_docname[cdn].docfields[14].read_only=1
+			frm.fields_dict['evaluate_target_item_i'].grid.grid_rows_by_docname[cdn].docfields[17].read_only=1
+		}
+		
+
+		if ( frm.doc.docstatus == 1){
+			if (frappe.user.has_role(['HR Manager', 'HR User'])){
+				frm.fields_dict['evaluate_target_item_i'].grid.grid_rows_by_docname[cdn].toggle_editable('reverse_formula', true);
+				// frappe.meta.get_docfield("Evaluate Target Item","reverse_formula",cur_frm.doc.name).read_only = 0
+			}else{
+				// frappe.meta.get_docfield("Evaluate Target Item","reverse_formula",cur_frm.doc.name).read_only = 1
+				frm.fields_dict['evaluate_target_item_i'].grid.grid_rows_by_docname[cdn].toggle_editable('reverse_formula', false);
+			}
+		}
+		frappe.call({
+			method: "check_employee_or_supervisor",
+			doc: frm.doc,
+			args: {"auditor": row.employee},
+			callback: function(r){
+				// if(user_id == frm.doc.owner && row.status != 'Closed'){
+				// 	status.read_only = 1;
+				// 	audit_r.read_only = 0;
+				// 	auditee_r.read_only = 1;
+				// }else if(user_id == supervisor_email && row.status != 'Closed'){
+				// 	status.read_only = 1;
+				// 	audit_r.read_only = 1;
+				// 	auditee_r.read_only = 0;
+				// }else{
+				// 	status.read_only = 1;
+				// 	audit_r.read_only = 1;
+				// 	auditee_r.read_only = 1;
+				// }
+				if(r.message[0] == 1){
+					frm.fields_dict['evaluate_target_item_i'].grid.grid_rows_by_docname[cdn].toggle_editable('employee_remarks', true);
+					frm.fields_dict['evaluate_target_item_i'].grid.grid_rows_by_docname[cdn].toggle_editable('supervisor_remarks', false);
+				}else if(r.message[1]==1){
+					frm.fields_dict['evaluate_target_item_i'].grid.grid_rows_by_docname[cdn].toggle_editable('supervisor_remarks', true);
+					frm.fields_dict['evaluate_target_item_i'].grid.grid_rows_by_docname[cdn].toggle_editable('employee_remarks', false);
+				}
+				frm.refresh_field("evaluate_target_item_i");
+			}
+		})
+		frappe.meta.get_docfield("Evaluate Target Item I","qty_quality",cur_frm.doc.name).read_only = frm.doc.docstatus
+		frappe.meta.get_docfield("Evaluate Target Item I","timeline_base_on",cur_frm.doc.name).read_only = frm.doc.docstatus
+	},
+	refresh:(frm,cdt,cdn)=>{
+		toggle_reqd_qty_quality(frm,cdt,cdn)
+	},
+	timeline_achieved:(frm,cdt,cdn)=>{
+		toggle_reqd_qty_quality(frm,cdt,cdn)
+		calculate_timeline_rating(frm,cdt,cdn)
+		calculate_score(frm,cdt,cdn)
+	},
+	quality_achieved:(frm,cdt,cdn)=>{
+		calculate_qty_quality_rating(frm,cdt,cdn)
+		calculate_score(frm,cdt,cdn)
+	},
+	quantity_achieved:(frm,cdt,cdn)=>{
+		calculate_qty_quality_rating(frm,cdt,cdn)
+		calculate_score(frm,cdt,cdn)
+	},
+	accept_zero_qtyquality:(frm,cdt,cdn)=>{
+		var row = locals[cdt][cdn]
+		row.quality_achieved = row.quantity_achieved = 0
+		frm.refresh_field('evaluate_target_item_i')
+	},
+	reverse_formula:(frm,cdt,cdn)=>{
+		var row = locals[cdt][cdn]
+		if (cint(row.reverse_formula) == 0 ){
+			row.accept_zero_qtyquality = 0
+			frm.refresh_field('evaluate_target_item_i')
 		}
 	}
 })

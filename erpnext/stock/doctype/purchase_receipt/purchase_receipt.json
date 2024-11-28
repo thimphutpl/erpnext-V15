@@ -19,6 +19,7 @@
   "posting_date",
   "schedule_date",
   "posting_time",
+  "actual_receipt_date",
   "column_break_12",
   "company",
   "branch",
@@ -1286,13 +1287,18 @@
    "fieldname": "purchase_order_date",
    "fieldtype": "Date",
    "label": "PO Date"
+  },
+  {
+   "fieldname": "actual_receipt_date",
+   "fieldtype": "Date",
+   "label": "Actual Receipt Date"
   }
  ],
  "icon": "fa fa-truck",
  "idx": 261,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-19 15:19:50.059017",
+ "modified": "2024-11-27 12:24:24.078204",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Purchase Receipt",

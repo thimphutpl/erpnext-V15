@@ -284,6 +284,7 @@
    "fieldname": "total_balance_amount",
    "fieldtype": "Currency",
    "label": "Invoice Balance Amount",
+   "options": "Company:company:default_currency",
    "precision": "2",
    "read_only": 1
   },
@@ -333,7 +334,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-26 15:53:00.937392",
+ "modified": "2024-11-28 13:14:06.073571",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Project Invoice",

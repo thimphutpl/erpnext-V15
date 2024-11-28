@@ -498,6 +498,35 @@ frappe.ui.form.on("Asset", {
 		});
 	},
 
+	asset_category: function (frm) {
+		if (!frm.doc.asset_category) return
+		
+		frappe.call({
+			method: "erpnext.assets.doctype.asset.asset.get_account_info",
+			args: {
+				asset_category: frm.doc.asset_category
+			},
+			callback: function (r, rt) {
+				// console.log(r.message)
+				// console.log(r.message[0].fixed_asset_account)
+				if (r.message) {
+					frm.set_value("asset_account", r.message[0].fixed_asset_account);
+					// frm.set_value("credit_account", r.message);
+					frm.refresh_field('asset_account');
+					
+
+					frm.set_value("accumulated_depreciation_account", r.message[0].accumulated_depreciation_account);
+					// frm.set_value("credit_account", r.message);
+					frm.refresh_field('accumulated_depreciation_account');
+
+					frm.set_value("credit_account", r.message[0].credit_account);
+					// frm.set_value("credit_account", r.message);
+					frm.refresh_field('credit_account');
+				}
+			},
+		});
+	},
+
 	is_existing_asset: function (frm) {
 		frm.trigger("toggle_reference_doc");
 	},

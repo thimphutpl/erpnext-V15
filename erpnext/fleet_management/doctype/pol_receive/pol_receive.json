@@ -30,6 +30,7 @@
   "equipment_branch",
   "equipment_warehouse",
   "section_break_bjgc",
+  "hiring_branch",
   "hiring_cost_center",
   "column_break_ussc",
   "hiring_warehouse",
@@ -281,8 +282,9 @@
    "depends_on": "eval:doc.equipment && doc.supplier",
    "fetch_from": "equipment.fuelbook",
    "fieldname": "fuelbook",
-   "fieldtype": "Data",
+   "fieldtype": "Link",
    "label": "Fuelbook",
+   "options": "Fuelbook",
    "reqd": 1
   },
   {
@@ -485,12 +487,17 @@
    "print_hide": 1,
    "read_only": 1,
    "search_index": 1
+  },
+  {
+   "fieldname": "hiring_branch",
+   "fieldtype": "Data",
+   "label": "Hiring Branch"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-21 15:04:32.339006",
+ "modified": "2024-11-24 12:50:09.695475",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Receive",

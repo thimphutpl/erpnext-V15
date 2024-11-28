@@ -144,8 +144,8 @@
    "type": "Link"
   }
  ],
- "modified": "2024-11-21 18:26:38.936271",
- "modified_by": "kinzang.namgyal@cdcl.bt",
+ "modified": "2024-11-23 13:11:27.173058",
+ "modified_by": "Administrator",
  "module": "Quality Management",
  "name": "Quality",
  "number_cards": [],
@@ -155,7 +155,7 @@
  "quick_lists": [],
  "restrict_to_domain": "",
  "roles": [],
- "sequence_id": 32.0,
+ "sequence_id": 33.0,
  "shortcuts": [
   {
    "color": "Grey",

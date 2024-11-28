@@ -1,6 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "MP.YY.MM.####",
  "creation": "2024-09-24 14:46:08.138425",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -92,7 +93,7 @@
    "fieldname": "payment_for",
    "fieldtype": "Select",
    "label": "Payment For",
-   "options": "Job Card\nHire Charge Invoice",
+   "options": "\nJob Cards\nHire Charge Invoice",
    "reqd": 1
   },
   {
@@ -109,10 +110,11 @@
    "reqd": 1
   },
   {
+   "default": "0",
    "fieldname": "actual_amount",
    "fieldtype": "Currency",
+   "hidden": 1,
    "label": "Actual Amount",
-   "options": "o",
    "reqd": 1
   },
   {
@@ -126,10 +128,10 @@
    "fieldtype": "Column Break"
   },
   {
+   "default": "0",
    "fieldname": "net_amount",
    "fieldtype": "Currency",
    "label": "Net Amount",
-   "options": "0",
    "read_only": 1,
    "reqd": 1
   },
@@ -164,10 +166,10 @@
    "label": "TDS Details"
   },
   {
+   "default": "0",
    "fieldname": "tds_amount",
    "fieldtype": "Currency",
-   "label": "TDS Amount",
-   "options": "0"
+   "label": "TDS Amount"
   },
   {
    "fieldname": "column_break_16",
@@ -191,7 +193,8 @@
   },
   {
    "fieldname": "items",
-   "fieldtype": "Data",
+   "fieldtype": "Table",
+   "options": "Mechanical Payment Item",
    "reqd": 1
   },
   {
@@ -201,7 +204,8 @@
   },
   {
    "fieldname": "deducts",
-   "fieldtype": "Data"
+   "fieldtype": "Table",
+   "options": "Mechanical Payment Deduction"
   },
   {
    "fieldname": "section_break_18",
@@ -234,6 +238,7 @@
   },
   {
    "allow_on_submit": 1,
+   "depends_on": "eval:doc.money_receipt_no==0",
    "fieldname": "get_series",
    "fieldtype": "Button",
    "label": "Get Series"
@@ -267,10 +272,11 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-09-25 10:13:08.817474",
+ "modified": "2024-11-25 09:58:28.741299",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Mechanical Payment",
+ "naming_rule": "Expression (old style)",
  "owner": "Administrator",
  "permissions": [
   {

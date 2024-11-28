@@ -1032,6 +1032,21 @@ def get_item_details(item_code, asset_category, gross_purchase_amount, asset_sub
 
 	return books
 
+@frappe.whitelist()
+def get_account_info(asset_category):
+	asset_category_doc = frappe.get_doc("Asset Category", asset_category)
+	asset_cat = []
+	for d in asset_category_doc.accounts:
+			asset_cat.append(
+				{
+					"fixed_asset_account": d.fixed_asset_account,
+					"accumulated_depreciation_account":d.accumulated_depreciation_account,
+					"credit_account":d.credit_account,
+				}
+			)
+
+	return asset_cat
+
 
 def get_asset_account(account_name, asset=None, asset_category=None, company=None):
 	account = None

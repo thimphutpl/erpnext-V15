@@ -13,6 +13,7 @@ from erpnext.custom_workflow import validate_workflow_states, notify_workflow_st
 
 class Review(Document):
 	def validate(self):
+		self.get_supervisor_id()
 		self.check_duplicate_entry()
 		# validate_workflow_states(self)
 		# if self.workflow_state != "Approved":
@@ -100,6 +101,18 @@ class Review(Document):
 
 			self.total_weightage = total_target_weightage
 
+	def get_supervisor_id(self):
+		# get supervisor details         
+		reports_to = frappe.db.get_value("Employee",{"name":self.employee},"reports_to")
+		if not reports_to:
+			frappe.throw('You have not set report to in your master data')
+		email,name, designation = frappe.db.get_value("Employee",{"name":reports_to},["user_id","employee_name","designation"])
+		if not email:
+			frappe.throw('Your supervisor <b>{}</b> email not found in Employee Master Data, please contact your HR'.format(name))
+		self.approver = email
+		self.approver_name = name
+		self.approver_designation = designation
+
 	def set_approver_designation(self):
 		desig = frappe.db.get_value('Employee', {'user_id': self.approver}, 'designation')
 		return desig
@@ -117,7 +130,7 @@ def create_evaluation(source_name, target_doc=None):
 		"Review": {
 			"doctype": "Performance Evaluation",
 			"field_map":{
-					"review":"name"
+					"review":"name",
 				},
 		},
 		"Review Target Item":{

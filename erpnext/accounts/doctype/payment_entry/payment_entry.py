@@ -73,6 +73,7 @@ class PaymentEntry(AccountsController):
 			self.party_account_currency = self.paid_to_account_currency
 
 	def validate(self):
+		#frappe.throw("hi")
 		self.setup_party_account_field()
 		self.set_missing_values()
 		self.set_liability_account()
@@ -93,7 +94,7 @@ class PaymentEntry(AccountsController):
 		self.set_remarks()
 		self.validate_duplicate_entry()
 		self.validate_payment_type_with_outstanding()
-		# self.validate_allocated_amount()
+		self.validate_allocated_amount()
 		self.validate_paid_invoices()
 		self.ensure_supplier_is_not_blocked()
 		self.set_status()
@@ -750,6 +751,7 @@ class PaymentEntry(AccountsController):
 		self.in_words = money_in_words(amount, currency)
 
 	def set_tax_withholding(self):
+		
 		if not self.party_type == "Supplier":
 			return
 
@@ -772,7 +774,7 @@ class PaymentEntry(AccountsController):
 		)
 
 		tax_withholding_details = get_party_tax_withholding_details(args, self.tax_withholding_category)
-
+		
 		if not tax_withholding_details:
 			return
 
@@ -1024,7 +1026,7 @@ class PaymentEntry(AccountsController):
 		bank_account = self.paid_to if self.payment_type == "Receive" else self.paid_from
 		bank_account_type = frappe.get_cached_value("Account", bank_account, "account_type")
 
-		if bank_account_type == "Bank":
+		if bank_account_type == "Bank" and self.mode_of_payment == 'Cheque':
 			if not self.reference_no or not self.reference_date:
 				frappe.throw(_("Reference No and Reference Date is mandatory for Bank transaction"))
 
@@ -2242,6 +2244,14 @@ def get_payment_entry(
 			account = frappe.db.get_value("Bank Account", party_bank_account, "account")
 			bank = get_bank_cash_account(doc, account)
 
+	#jai
+	if dt == "Sales Invoice":
+		bank_acc = frappe.db.get_value("Branch", doc.branch, "revenue_bank_account")
+	elif dt == "Purchase Invoice":
+		bank_acc = frappe.db.get_value("Branch", doc.branch, "expense_bank_account")
+	else:
+		bank_acc = bank.account
+
 	paid_amount, received_amount = set_paid_amount_and_received_amount(
 		dt, party_account_currency, bank, outstanding_amount, payment_type, bank_amount, doc
 	)
@@ -2264,8 +2274,8 @@ def get_payment_entry(
 	pe.contact_email = doc.get("contact_email")
 	pe.ensure_supplier_is_not_blocked()
 
-	pe.paid_from = party_account if payment_type == "Receive" else bank.account
-	pe.paid_to = party_account if payment_type == "Pay" else bank.account
+	pe.paid_from = party_account if payment_type == "Receive" else bank_acc
+	pe.paid_to = party_account if payment_type == "Pay" else bank_acc
 	pe.paid_from_account_currency = (
 		party_account_currency if payment_type == "Receive" else bank.account_currency
 	)
@@ -2744,3 +2754,26 @@ def make_payment_order(source_name, target_doc=None):
 @erpnext.allow_regional
 def add_regional_gl_entries(gl_entries, doc):
 	return
+
+# ePayment Begins
+@frappe.whitelist()
+def make_bank_payment(source_name, target_doc=None):
+    def set_missing_values(obj, target, source_parent):
+        target.payment_type = None
+        target.transaction_type = "Payment Entry"
+        target.posting_date = get_datetime()
+        target.from_date = None
+        target.to_date = None
+
+    doc = get_mapped_doc("Payment Entry", source_name, {
+            "Payment Entry": {
+                "doctype": "Bank Payment",
+                "field_map": {
+                    "name": "transaction_no",
+                    "paid_from": "paid_from"
+                },
+                "postprocess": set_missing_values,
+            },
+    }, target_doc, ignore_permissions=True)
+    return doc
+# ePayment Ends

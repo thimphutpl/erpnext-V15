@@ -84,6 +84,7 @@ class SalesInvoice(SellingController):
 		base_total: DF.Currency
 		base_total_taxes_and_charges: DF.Currency
 		base_write_off_amount: DF.Currency
+		branch: DF.Link | None
 		campaign: DF.Link | None
 		cash_bank_account: DF.Link | None
 		change_amount: DF.Currency
@@ -1114,11 +1115,11 @@ class SalesInvoice(SellingController):
 		for d in self.get("items"):
 			if d.is_fixed_asset:
 				if not disposal_account:
-					disposal_account, depreciation_cost_center = get_disposal_account_and_cost_center(
+					loss_disposal_account, gain_disposal_account, depreciation_cost_center = get_disposal_account_and_cost_center(
 						self.company
 					)
 
-				d.income_account = disposal_account
+				d.income_account = gain_disposal_account
 				if not d.cost_center:
 					d.cost_center = depreciation_cost_center
 

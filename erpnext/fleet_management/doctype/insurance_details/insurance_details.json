@@ -5,18 +5,15 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "party",
+  "insurance_company",
   "policy_number",
-  "journal_entry",
-  "post_bank_entry",
   "cb_1",
   "insured_date",
   "due_date",
   "validity",
   "cb_2",
   "insurance_type",
-  "type",
-  "total_amount"
+  "insured_amount"
  ],
  "fields": [
   {
@@ -24,7 +21,6 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Policy Number",
-   "read_only_depends_on": "eval:doc.journal_entry",
    "reqd": 1
   },
   {
@@ -36,7 +32,6 @@
    "fieldtype": "Date",
    "in_list_view": 1,
    "label": "Insured Date",
-   "read_only_depends_on": "eval:doc.journal_entry",
    "reqd": 1
   },
   {
@@ -50,8 +45,7 @@
    "fieldname": "validity",
    "fieldtype": "Date",
    "in_list_view": 1,
-   "label": "Validity",
-   "reqd": 1
+   "label": "Validity"
   },
   {
    "fieldname": "cb_2",
@@ -66,47 +60,27 @@
    "reqd": 1
   },
   {
-   "fieldname": "journal_entry",
-   "fieldtype": "Data",
-   "label": "Journal Entry",
-   "read_only": 1
-  },
-  {
-   "fieldname": "party",
+   "fieldname": "insurance_company",
    "fieldtype": "Link",
    "ignore_user_permissions": 1,
    "in_list_view": 1,
    "label": "Party(Insurance Company)",
-   "options": "Supplier",
+   "options": "Financial Institution",
    "read_only_depends_on": "eval:doc.journal_entry",
    "reqd": 1
   },
   {
-   "default": "Insurance",
-   "fieldname": "type",
-   "fieldtype": "Select",
-   "label": "Type",
-   "options": "\nInsurance"
-  },
-  {
-   "fieldname": "post_bank_entry",
-   "fieldtype": "Button",
-   "hidden": 1,
-   "label": "Post Bank Entry"
-  },
-  {
-   "fieldname": "total_amount",
-   "fieldtype": "Data",
+   "fieldname": "insured_amount",
+   "fieldtype": "Currency",
    "in_list_view": 1,
-   "label": "Total Amount",
-   "read_only_depends_on": "eval:doc.journal_entry",
+   "label": "Premium Amount",
    "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2023-06-19 11:43:41.824128",
+ "modified": "2024-11-24 21:00:36.984191",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Insurance Details",

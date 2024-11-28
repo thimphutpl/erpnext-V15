@@ -18,15 +18,16 @@ class ProjectInvoiceMB(Document):
 		act_entry_amount: DF.Float
 		act_invoice_amount: DF.Float
 		act_received_amount: DF.Float
-		boq: DF.Link | None
+		boq: DF.Link
 		boq_type: DF.Data | None
 		entry_amount: DF.Float
 		entry_date: DF.Date | None
-		entry_name: DF.Link | None
+		entry_name: DF.Link
 		is_selected: DF.Check
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
 		price_adjustment_amount: DF.Float
+		subcontract: DF.Link | None
 	# end: auto-generated types
 	pass

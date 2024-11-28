@@ -23,6 +23,6 @@ class EquipmentStatusEntry(Document):
 		place: DF.Data | None
 		reason: DF.Literal["", "Hire", "Maintenance"]
 		to_date: DF.Date
-		to_time: DF.Datetime | None
+		to_time: DF.Time | None
 	# end: auto-generated types
 	pass

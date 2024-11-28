@@ -122,8 +122,9 @@
   },
   {
    "fieldname": "number_of_days",
-   "fieldtype": "Int",
+   "fieldtype": "Float",
    "label": "Number of Days",
+   "precision": "1",
    "read_only": 1
   },
   {
@@ -246,7 +247,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-11-07 15:43:30.166680",
+ "modified": "2024-11-26 11:10:29.899540",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "MR Payment Item",

@@ -14,7 +14,24 @@ class HRAccountsSettings(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
-
+		bonus_account: DF.Link
+		employee_advance_salary: DF.Link
+		employee_advance_travel: DF.Link
+		employee_contribution_pf: DF.Link
+		leave_encashment_account: DF.Link
+		ltc_account: DF.Link
+		meeting_and_seminars_in_account: DF.Link
+		meeting_and_seminars_out_account: DF.Link
+		overtime_account: DF.Link
+		pbva_account: DF.Link
+		salary_payable_account: DF.Link
+		salary_tax_account: DF.Link
+		sws_credit_account: DF.Link | None
+		sws_debit_account: DF.Link | None
+		training_incountry_account: DF.Link
+		training_outcountry_account: DF.Link
+		travel_incountry_account: DF.Link
+		travel_outcountry_account: DF.Link
 	# end: auto-generated types
 	pass
 

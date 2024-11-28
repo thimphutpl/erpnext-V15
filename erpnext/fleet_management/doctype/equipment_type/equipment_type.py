@@ -13,9 +13,9 @@ class EquipmentType(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
-		doesnt_have_own_tank: DF.Check
 		equipment_category: DF.Link
 		equipment_type: DF.Data
 		is_container: DF.Check
+		no_own_tank: DF.Check
 	# end: auto-generated types
 	pass

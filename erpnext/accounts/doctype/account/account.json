@@ -32,6 +32,12 @@
   "is_recovery",
   "dhi_company",
   "dhi_company_name",
+  "bank_account_details_section",
+  "bank_name",
+  "bank_branch",
+  "column_break_vohk",
+  "bank_account_type",
+  "bank_account_no",
   "budget_details",
   "ignore_budget_check",
   "is_centralized_budget",
@@ -256,13 +262,45 @@
    "fieldtype": "Data",
    "label": "DHI Company Name",
    "read_only": 1
+  },
+  {
+   "fieldname": "bank_account_details_section",
+   "fieldtype": "Section Break",
+   "label": "BANK ACCOUNT DETAILS"
+  },
+  {
+   "fieldname": "bank_name",
+   "fieldtype": "Link",
+   "label": "Bank",
+   "options": "Financial Institution"
+  },
+  {
+   "fieldname": "bank_branch",
+   "fieldtype": "Link",
+   "label": "Branch",
+   "options": "Financial Institution Branch"
+  },
+  {
+   "fieldname": "column_break_vohk",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "bank_account_type",
+   "fieldtype": "Link",
+   "label": "Bank Account Type",
+   "options": "Bank Account Type"
+  },
+  {
+   "fieldname": "bank_account_no",
+   "fieldtype": "Data",
+   "label": "Bank Account No"
   }
  ],
  "icon": "fa fa-money",
  "idx": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2024-11-19 15:49:21.540874",
+ "modified": "2024-11-23 14:54:09.316140",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Account",

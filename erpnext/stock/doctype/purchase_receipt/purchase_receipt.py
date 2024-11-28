@@ -34,6 +34,7 @@ class PurchaseReceipt(BuyingController):
 		from erpnext.stock.doctype.purchase_receipt_item.purchase_receipt_item import PurchaseReceiptItem
 		from frappe.types import DF
 
+		actual_receipt_date: DF.Date | None
 		additional_discount_percentage: DF.Float
 		address_display: DF.SmallText | None
 		amended_from: DF.Link | None

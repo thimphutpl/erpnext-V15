@@ -10,6 +10,7 @@
   "branch",
   "cost_center",
   "company",
+  "purpose",
   "column_break_2",
   "posting_date",
   "posting_time",
@@ -21,18 +22,19 @@
   "column_break_10",
   "tanker",
   "total_quantity",
+  "is_hsd_item",
   "section_break_3",
   "items",
   "section_break_5",
   "remarks",
+  "column_break_4",
+  "amended_from",
   "amended_from"
  ],
  "fields": [
   {
    "fieldname": "branch",
    "fieldtype": "Link",
-   "in_list_view": 1,
-   "in_standard_filter": 1,
    "label": "Branch",
    "options": "Branch",
    "reqd": 1
@@ -58,7 +60,13 @@
    "fieldtype": "Section Break"
   },
   {
-   "default": "Today",
+   "fieldname": "purpose",
+   "fieldtype": "Select",
+   "label": "Purpose",
+   "options": "\nIssue\nTransfer",
+   "reqd": 1
+  },
+  {
    "fieldname": "posting_date",
    "fieldtype": "Date",
    "in_list_view": 1,
@@ -66,48 +74,57 @@
    "reqd": 1
   },
   {
-   "default": "now",
    "fieldname": "posting_time",
    "fieldtype": "Time",
    "label": "Posting Time",
    "reqd": 1
   },
   {
+   "fieldname": "column_break_4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.purpose",
    "fieldname": "pol_type",
    "fieldtype": "Link",
-   "in_list_view": 1,
-   "in_standard_filter": 1,
    "label": "POL Item Code",
    "options": "Item",
    "reqd": 1
   },
   {
-   "fetch_from": "pol_type.item_name",
    "fieldname": "item_name",
    "fieldtype": "Read Only",
-   "label": "Item Name"
+   "label": "Item Name",
+   "options": "pol_type.item_name"
   },
   {
-   "fetch_from": "pol_type.stock_uom",
    "fieldname": "stock_uom",
    "fieldtype": "Read Only",
-   "label": "Stock UOM"
+   "label": "Stock UOM",
+   "options": "pol_type.stock_uom"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_hsd_item",
+   "fieldtype": "Check",
+   "label": "Is HSD Item",
+   "options": "pol_type.is_hsd_item",
+   "read_only": 1,
+   "reqd": 1
   },
   {
    "fieldname": "column_break_10",
    "fieldtype": "Column Break"
   },
   {
+   "depends_on": "eval:doc.is_hsd_item",
    "fieldname": "tanker",
    "fieldtype": "Link",
    "in_list_view": 1,
-   "in_standard_filter": 1,
    "label": "Tanker",
-   "options": "Equipment",
-   "reqd": 1
+   "options": "Equipment"
   },
   {
-   "fetch_from": "branch.cost_center",
    "fieldname": "cost_center",
    "fieldtype": "Link",
    "label": "Cost Center",
@@ -117,9 +134,9 @@
   {
    "fieldname": "warehouse",
    "fieldtype": "Link",
-   "hidden": 1,
    "label": "Warehouse",
-   "options": "Warehouse"
+   "options": "Warehouse",
+   "reqd": 1
   },
   {
    "fieldname": "total_quantity",
@@ -134,7 +151,6 @@
    "label": "POL Issue Details"
   },
   {
-   "allow_bulk_edit": 1,
    "fieldname": "items",
    "fieldtype": "Table",
    "label": "Items",
@@ -143,23 +159,25 @@
   },
   {
    "fieldname": "section_break_5",
-   "fieldtype": "Section Break",
-   "label": "Remarks"
+   "fieldtype": "Section Break"
   },
   {
    "fieldname": "amended_from",
    "fieldtype": "Link",
    "label": "Amended From",
-   "no_copy": 1,
-   "options": "POL Issue",
-   "print_hide": 1,
-   "read_only": 1
+   "options": "POL Issue"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "options": "POL Issue"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-04-26 11:33:02.654790",
+ "modified": "2024-11-24 16:10:27.855988",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Issue",

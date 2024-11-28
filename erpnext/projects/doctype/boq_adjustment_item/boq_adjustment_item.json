@@ -51,7 +51,8 @@
    "fieldname": "boq_code",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "BOQ Code"
+   "label": "BOQ Code",
+   "reqd": 1
   },
   {
    "fieldname": "currency",
@@ -81,7 +82,8 @@
    "fieldname": "item",
    "fieldtype": "Text",
    "in_list_view": 1,
-   "label": "Item"
+   "label": "Item",
+   "reqd": 1
   },
   {
    "fieldname": "sb_balance_before_adj",
@@ -292,7 +294,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-11-26 10:14:14.564613",
+ "modified": "2024-11-27 11:01:14.135709",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "BOQ Adjustment Item",

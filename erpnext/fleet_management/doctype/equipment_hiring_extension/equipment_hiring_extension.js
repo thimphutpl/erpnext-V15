@@ -1,12 +1,6 @@
 // Copyright (c) 2024, Frappe Technologies Pvt. Ltd. and contributors
 // For license information, please see license.txt
 
-// frappe.ui.form.on("Equipment Hiring Extension", {
-// 	refresh(frm) {
-
-// 	},
-// });
-
 frappe.ui.form.on('Equipment Hiring Extension', {
 	refresh: function(frm) {
 		if (frm.doc.journal && frappe.model.can_read("Journal Entry")) {
@@ -29,7 +23,7 @@ frappe.ui.form.on('Equipment Hiring Extension', {
 	},
 });
 
-cur_frm.add_fetch("equipment", "equipment_number", "equipment_number")
+cur_frm.add_fetch("equipment", "registration_number", "registration_number")
 cur_frm.add_fetch("ehf_name", "cost_center", "cost_center")
 cur_frm.add_fetch("ehf_name", "customer", "customer")
 
@@ -46,7 +40,7 @@ frappe.ui.form.on("Equipment Hiring Extension", "refresh", function(frm) {
 
     cur_frm.set_query("equipment", function() {
         return {
-	    query: "erpnext.maintenance.doctype.equipment.equipment.get_equipments",
+	    query: "erpnext.fleet_management.doctype.equipment.equipment.get_equipments",
             "filters": {
                 "ehf_name": frm.doc.ehf_name,
             }

@@ -1,12 +1,11 @@
 {
  "actions": [],
- "allow_rename": 1,
+ "autoname": "VLB.YY.MM.####",
  "creation": "2024-07-23 11:08:38.731025",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
   "branch",
-  "equipment_type",
   "column_break_1",
   "ehf_name",
   "column_break_4",
@@ -92,8 +91,7 @@
   },
   {
    "fieldname": "section_break_9",
-   "fieldtype": "Section Break",
-   "hidden": 1
+   "fieldtype": "Section Break"
   },
   {
    "fieldname": "rate_type",
@@ -222,15 +220,13 @@
    "allow_on_submit": 1,
    "fieldname": "total_idle_time",
    "fieldtype": "Float",
-   "hidden": 1,
    "in_list_view": 1,
    "label": "Total Idle Time (Hours)",
    "precision": "2"
   },
   {
    "fieldname": "section_break_22",
-   "fieldtype": "Section Break",
-   "hidden": 1
+   "fieldtype": "Section Break"
   },
   {
    "allow_on_submit": 1,
@@ -456,7 +452,7 @@
    "fieldtype": "Column Break"
   },
   {
-   "fetch_from": "equipment.registeration_number",
+   "fetch_from": "equipment.registration_number",
    "fieldname": "registration_number",
    "fieldtype": "Data",
    "in_list_view": 1,
@@ -476,23 +472,16 @@
    "label": "Customer",
    "options": "Customer",
    "read_only": 1
-  },
-  {
-   "fieldname": "equipment_type",
-   "fieldtype": "Link",
-   "hidden": 1,
-   "label": "Equipment Type",
-   "options": "Equipment Type",
-   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-21 15:48:56.011639",
+ "modified": "2024-11-24 14:00:50.116511",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Vehicle Logbook",
+ "naming_rule": "Expression (old style)",
  "owner": "Administrator",
  "permissions": [
   {

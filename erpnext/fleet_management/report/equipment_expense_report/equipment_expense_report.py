@@ -19,13 +19,13 @@ def get_data(filters):
 	data = []
 	cond = " and 1 =1"
 	if filters.get("branch"):
-                cond += " and eh.branch = '{0}'".format(filters.branch)
-
-        if filters.get("not_cdcl"):
-                cond += " and e.not_cdcl  = 0"
-
-        if filters.get("include_disabled"):
-               cond += " and e.is_disabled = 1"
+		cond += " and eh.branch = '{0}'".format(filters.branch)
+		
+		if filters.get("not_cdcl"):
+			cond += " and e.not_cdcl  = 0"
+			
+		if filters.get("include_disabled"):
+			cond += " and e.is_disabled = 1"
 
 	equipments = """
 		select * from (select e.name, eh.branch, eh.from_date, ifnull(eh.to_date, curdate()) as to_date, e.equipment_number, 
@@ -35,9 +35,9 @@ def get_data(filters):
 		from `tabEquipment Operator` eo) 
 		as opr 
 		on opr.parent = equip.name 
-        	""".format(cond)
+	""".format(cond)
 	filter_date  = " between '{0}' and '{1}'".format(filters.from_date, filters.to_date) 
-    	for eq in frappe.db.sql(equipments, as_dict = True):
+	for eq in frappe.db.sql(equipments, as_dict = True):
 		date = " between '{0}' and '{1}'".format(eq.from_date, eq.to_date)
 		gross_pay = tc = le = ot = 0.0
 		if eq.operator:
@@ -54,7 +54,7 @@ def get_data(filters):
 				""".format(eq.operator, date, eq.branch, filter_date), as_dict=1)[0]
 			gross_pay    = flt(mr_pay.mr_wage)
 			ot = flt(mr_pay.mr_ot)
-        	elif eq.employee_type == "Employee":
+		elif eq.employee_type == "Employee":
 			#get tc
 			tc = frappe.db.sql("""
 					select sum(ifnull(tc.total_claim_amount,0)) as travel_claim
@@ -90,20 +90,20 @@ def get_data(filters):
 				and ss.docstatus = 1
 				and ss.branch = '{1}' and (((ssi.from_date {2}) or (ssi.to_date {2}))  or 
 				(( '{3}' {5})  or ('{4}' {5}))) 
-                      	""".format(eq.operator, eq.branch, date, filters.from_date, filters.to_date, ss_date), as_dict = True)'''
+						""".format(eq.operator, eq.branch, date, filters.from_date, filters.to_date, ss_date), as_dict = True)'''
 
 			sal = frappe.db.sql("""
-                                select ss.name, ss.employee, ss.branch,  ss.gross_pay, ssi.from_date, ssi.to_date
-                                from `tabSalary Slip` ss, `tabSalary Slip Item` ssi 
-                                where ss.employee = '{0}' and ssi.parent = ss.name
-                                and ss.docstatus = 1
-                                and ss.branch = '{1}' and (((ssi.from_date {2}) or (ssi.to_date {2})) or (( '{3}' {5}) or ('{4}' {5}))) and '{3}' 
+								select ss.name, ss.employee, ss.branch,  ss.gross_pay, ssi.from_date, ssi.to_date
+								from `tabSalary Slip` ss, `tabSalary Slip Item` ssi 
+								where ss.employee = '{0}' and ssi.parent = ss.name
+								and ss.docstatus = 1
+								and ss.branch = '{1}' and (((ssi.from_date {2}) or (ssi.to_date {2})) or (( '{3}' {5}) or ('{4}' {5}))) and '{3}' 
 				<= '{6}' 
-                        """.format(eq.operator, eq.branch, date, eq.start_date, eq.end_date, ss_date, filters.to_date), as_dict = True)
+						""".format(eq.operator, eq.branch, date, eq.start_date, eq.end_date, ss_date, filters.to_date), as_dict = True)
 
-                        if sal:
-                                gross_pay= 0.0
-                                for s in sal:
+			if sal:
+				gross_pay= 0.0
+			for s in sal:
 					total_days = flt(date_diff(s.to_date, s.from_date) + 1)
 					s_start_date = getdate(s.from_date)
 					s_end_date = getdate(s.to_date)
@@ -142,7 +142,7 @@ def get_data(filters):
 		pol, insurance,  goods_amount, service_amount = equipment_expense(filters, eq.name, eq.branch, date, filter_date)
 		total = flt(pol) + flt(insurance) + flt(goods_amount) + flt(service_amount) + flt(gross_pay) +  flt(le) + flt(tc) + flt(ot)
 		row = [eq.name, eq.branch, eq.equipment_number, eq.equipment_type, eq.operator, pol, insurance, goods_amount, service_amount,\
-			 gross_pay, le, tc, ot, total]
+			gross_pay, le, tc, ot, total]
 		data.append(row)
 	return data
 
@@ -168,16 +168,16 @@ def equipment_expense(filters, eq_name, eq_branch, date, filter_date):
 	# `tabPOL`
 	pol = frappe.db.sql("""
 			select (sum(qty*rate)/sum(qty)) as rate
-			from `tabPOL`
+			from `tabPOL Receive`
 			where branch = '{0}'
 			and   docstatus = 1 and posting_date {1} and posting_date {2}
                     """.format(eq_branch, date, filter_date), as_dict=1)[0]
                 
-	# `tabJob Card`
+	# `tabJob Cards`
 	jc = frappe.db.sql("""
 			select sum(ifnull(jc.goods_amount,0)) as goods_amount,
 				sum(ifnull(jc.services_amount,0)) as services_amount
-			from `tabJob Card` jc
+			from `tabJob Cards` jc
 			where jc.equipment = '{0}'
 			and   jc.docstatus = 1
 			and   jc.finish_date {1} and jc.customer_branch = '{2}' and jc.finish_date {3}

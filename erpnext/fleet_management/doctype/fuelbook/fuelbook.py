@@ -16,7 +16,7 @@ class Fuelbook(Document):
 		account_number: DF.Data
 		branch: DF.Link
 		disabled: DF.Check
-		equipment: DF.Data | None
+		equipment: DF.Link | None
 		expense_limit: DF.Currency
 		fuelbook_number: DF.Data
 		security_deposit: DF.Currency

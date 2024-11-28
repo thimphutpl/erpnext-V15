@@ -24,7 +24,7 @@ class EmployeeEducation(Document):
 		parenttype: DF.Data
 		school_univ: DF.Data | None
 		trade: DF.Link | None
-		year_of_passing: DF.Int
+		year_of_passing: DF.Data | None
 	# end: auto-generated types
 
 	pass

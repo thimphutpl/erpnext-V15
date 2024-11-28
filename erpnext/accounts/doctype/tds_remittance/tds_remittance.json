@@ -58,6 +58,7 @@
    "search_index": 1
   },
   {
+   "default": "Other Invoice",
    "fieldname": "purpose",
    "fieldtype": "Select",
    "hidden": 1,
@@ -270,7 +271,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-08-22 22:44:14.684780",
+ "modified": "2024-11-28 16:23:13.830233",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "TDS Remittance",

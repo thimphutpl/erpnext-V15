@@ -31,6 +31,8 @@ frappe.ui.form.on('Equipment', {
 			return {
 				filters: {
 					"disabled": 0,
+					"equipment_type": doc.equipment_type
+
 				}
 			};
 		});
@@ -52,3 +54,5 @@ frappe.ui.form.on('Equipment', {
 		})
 	}
 });
+
+

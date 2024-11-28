@@ -230,6 +230,19 @@ def item_query(doctype, txt, searchfield, start, page_len, filters, as_dict=Fals
 		as_dict=as_dict,
 	)
 
+#filtering family members based on sws membership
+@frappe.whitelist()
+@frappe.validate_and_sanitize_search_inputs
+def filter_sws_member_item(doctype, txt, searchfield, start, page_len, filters):
+	# frappe.throw("here")
+	data = []
+	if not filters.get("employee"):
+		frappe.throw("Please select employee first.")
+	return frappe.db.sql("""
+	select a.name as name, a.full_name as full_name from `tabSWS Membership Item` a, `tabSWS Membership` b where a.parent = b.name
+	and b.employee = '{0}' and a.status != 'Claimed' and b.docstatus = 1
+	""".format(filters.get("employee")))
+
 
 @frappe.whitelist()
 @frappe.validate_and_sanitize_search_inputs
@@ -866,3 +879,15 @@ def get_filtered_child_rows(doctype, txt, searchfield, start, page_len, filters)
 		)
 
 	return query.run(as_dict=False)
+
+@frappe.whitelist()
+def get_item_uom(doctype, txt, searchfield, start, page_len, filters):
+        if not filters.get("item_code"):
+                frappe.throw("Select Item Code")
+        return frappe.db.sql("select a.name from tabUOM a, `tabUOM Conversion Detail` b where a.name = b.uom and b.parent = %s", filters.get("item_code"))
+
+@frappe.whitelist()
+def filter_branch_wh(doctype, txt, searchfield, start, page_len, filters):
+        if not filters.get("branch"):
+                frappe.throw("Select Branch First")
+        return frappe.db.sql("select a.parent from `tabWarehouse Branch` a, tabWarehouse b where a.parent = b.name and a.branch = %s and b.disabled = 0", filters.get("branch"))

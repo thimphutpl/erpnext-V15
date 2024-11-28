@@ -6,7 +6,7 @@ import frappe
 from frappe import _
 from frappe.utils.data import get_first_day, get_last_day, add_days
 from frappe.utils import flt, getdate, formatdate, cstr
-from erpnext.fleet_management.report.hsd_consumption_report.fleet_management_report import get_km_till, get_hour_till, get_pol_till, \
+from erpnext.fleet_management.report.fleet_management_report import get_km_till, get_hour_till, get_pol_till, \
 	get_pol_between, get_pol_consumed_till
 
 def execute(filters=None):
@@ -35,8 +35,9 @@ def get_data(query, filters=None):
 		d.close_km = get_km_till(d.name, filters.to_date)
 		d.close_hr = get_hour_till(d.name, filters.to_date)
 
-		d.cap = frappe.db.get_value("Equipment Model", d.equipment_model, "tank_capacity")
-		rate = frappe.db.sql("select (sum(pol.qty*pol.rate)/sum(pol.qty)) as rate from tabPOL pol where pol.branch = %s and pol.docstatus = 1 and pol.pol_type = %s", (d.branch, d.hsd_type))
+		d.cap = frappe.db.get_value("Equipment", d.equipment, "tank_capacity")
+		# rate = frappe.db.sql("select (sum(pol.qty*pol.rate)/sum(pol.qty)) as rate from tabPOL Receive pol where pol.branch = %s and pol.docstatus = 1 and pol.pol_type = %s", (d.branch, d.hsd_type))
+		rate = frappe.db.sql("""SELECT (SUM(pol.qty * pol.rate) / SUM(pol.qty)) AS rate FROM `tabPOL Receive` pol WHERE pol.branch = %s AND pol.docstatus = 1 AND pol.pol_type = %s""", (d.branch, d.hsd_type))
 		d.rate = rate and flt(rate[0][0]) or 0.0
 	
 		vl_records = frappe.db.sql("select place from `tabVehicle Logbook` where equipment = %s and docstatus = 1 order by to_date desc limit 1", d.name, as_dict=1)
@@ -66,10 +67,10 @@ def construct_query(filters):
 		
 
 	if not filters.include_disabled:
-                query += " and e.is_disabled = 0"
+		query += " and e.is_disabled = 0"
 
 	if filters.not_cdcl:
-               query += " and e.not_cdcl = 0"
+				query += " and e.not_cdcl = 0"
 
 	'''if filters.category:
 		query += " and e.equipment_category = \'" + str(filters.category) + "\'"'''	

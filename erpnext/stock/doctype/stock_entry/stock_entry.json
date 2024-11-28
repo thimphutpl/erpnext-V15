@@ -56,7 +56,7 @@
   "target_address_display",
   "received_by",
   "sb0",
-  "scan_barcode",
+  "price_list",
   "items_section",
   "items",
   "get_stock_and_rate",
@@ -357,15 +357,7 @@
   {
    "fieldname": "sb0",
    "fieldtype": "Section Break",
-   "hidden": 1,
    "options": "Simple"
-  },
-  {
-   "fieldname": "scan_barcode",
-   "fieldtype": "Data",
-   "hidden": 1,
-   "label": "Scan Barcode",
-   "options": "Barcode"
   },
   {
    "allow_bulk_edit": 1,
@@ -773,6 +765,12 @@
    "fieldtype": "Link",
    "label": "User Cost Center",
    "options": "Cost Center"
+  },
+  {
+   "fieldname": "price_list",
+   "fieldtype": "Link",
+   "label": "Price List",
+   "options": "Price List"
   }
  ],
  "icon": "fa fa-file-text",
@@ -780,7 +778,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-25 16:04:40.773400",
+ "modified": "2024-11-27 12:47:03.540829",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Stock Entry",

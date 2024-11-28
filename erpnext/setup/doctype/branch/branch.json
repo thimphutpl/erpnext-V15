@@ -9,7 +9,7 @@
  "engine": "InnoDB",
  "field_order": [
   "branch",
-  "abbreviation",
+  "abbr",
   "cost_center",
   "column_break_qvlo",
   "company",
@@ -41,11 +41,6 @@
    "oldfieldtype": "Data",
    "reqd": 1,
    "unique": 1
-  },
-  {
-   "fieldname": "abbreviation",
-   "fieldtype": "Data",
-   "label": "Abbreviation"
   },
   {
    "fieldname": "cost_center",
@@ -155,12 +150,17 @@
    "fieldname": "address",
    "fieldtype": "Long Text",
    "label": "Address"
+  },
+  {
+   "fieldname": "abbr",
+   "fieldtype": "Data",
+   "label": "Abbreviation"
   }
  ],
  "icon": "fa fa-code-fork",
  "idx": 1,
  "links": [],
- "modified": "2024-11-09 21:13:00.904973",
+ "modified": "2024-11-26 23:58:04.272374",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Branch",
