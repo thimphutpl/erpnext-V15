@@ -19,10 +19,10 @@ class JobCards(AccountsController):
 
 	if TYPE_CHECKING:
 		from erpnext.fleet_management.doctype.job_cards_item.job_cards_item import JobCardsItem
+		from erpnext.fleet_management.doctype.mechanic_assigned.mechanic_assigned import MechanicAssigned
 		from frappe.types import DF
 
 		amended_from: DF.Link | None
-		assigned_to: DF.Data | None
 		branch: DF.Link
 		break_down_report: DF.Link | None
 		break_down_report_date: DF.Data | None
@@ -56,6 +56,7 @@ class JobCards(AccountsController):
 		remarks: DF.LongText | None
 		repair_type: DF.Literal["Minor Repair", "Major Repair", "Fabrication Works", "Bailey Bridge Works"]
 		services_amount: DF.Currency
+		table_jqvd: DF.Table[MechanicAssigned]
 		total_amount: DF.Currency
 	# end: auto-generated types
 	# pass

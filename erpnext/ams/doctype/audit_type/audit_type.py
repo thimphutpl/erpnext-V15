@@ -14,6 +14,7 @@ class AuditType(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		template: DF.TextEditor | None
 		type_of_audit: DF.Data
 	# end: auto-generated types
 	pass

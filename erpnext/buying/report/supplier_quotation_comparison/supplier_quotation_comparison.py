@@ -77,84 +77,216 @@ def get_data(filters):
 	return supplier_quotation_data
 
 
+# def prepare_data(supplier_quotation_data, filters):
+# 	out, groups, qty_list, suppliers, chart_data = [], [], [], [], []
+# 	group_wise_map = defaultdict(list)
+# 	supplier_qty_price_map = {}
+
+# 	group_by_field = "supplier_name" if filters.get("group_by") == "Group by Supplier" else "item_code"
+# 	company_currency = frappe.db.get_default("currency")
+# 	float_precision = cint(frappe.db.get_default("float_precision")) or 2
+
+# 	for data in supplier_quotation_data:
+# 		group = data.get(group_by_field)  # get item or supplier value for this row
+
+# 		supplier_currency = frappe.db.get_value("Supplier", data.get("supplier_name"), "default_currency")
+
+# 		if supplier_currency:
+# 			exchange_rate = get_exchange_rate(supplier_currency, company_currency)
+# 		else:
+# 			exchange_rate = 1
+
+# 		row = {
+# 			"item_code": ""
+# 			if group_by_field == "item_code"
+# 			else data.get("item_code"),  # leave blank if group by field
+# 			"supplier_name": "" if group_by_field == "supplier_name" else data.get("supplier_name"),
+# 			"quotation": data.get("parent"),
+# 			"qty": data.get("qty"),
+# 			"price": flt(data.get("amount") * exchange_rate, float_precision),
+# 			"uom": data.get("uom"),
+# 			"price_list_currency": data.get("price_list_currency"),
+# 			"currency": data.get("currency"),
+# 			"stock_uom": data.get("stock_uom"),
+# 			"base_amount": flt(data.get("base_amount"), float_precision),
+# 			"base_rate": flt(data.get("base_rate"), float_precision),
+# 			"request_for_quotation": data.get("request_for_quotation"),
+# 			"valid_till": data.get("valid_till"),
+# 			# "lead_time_days": data.get("lead_time_days"),
+# 		}
+# 		row["price_per_unit"] = flt(row["price"]) / (flt(data.get("stock_qty")) or 1)
+
+# 		# map for report view of form {'supplier1'/'item1':[{},{},...]}
+# 		group_wise_map[group].append(row)
+
+# 		# map for chart preparation of the form {'supplier1': {'qty': 'price'}}
+# 		supplier = data.get("supplier_name")
+# 		if filters.get("item_code"):
+# 			if supplier not in supplier_qty_price_map:
+# 				supplier_qty_price_map[supplier] = {}
+# 			supplier_qty_price_map[supplier][row["qty"]] = row["price"]
+
+# 		groups.append(group)
+# 		suppliers.append(supplier)
+# 		qty_list.append(data.get("qty"))
+
+# 	groups = list(set(groups))
+# 	suppliers = list(set(suppliers))
+# 	qty_list = list(set(qty_list))
+
+# 	highlight_min_price = group_by_field == "item_code" or filters.get("item_code")
+
+# 	# final data format for report view
+# 	for group in groups:
+# 		group_entries = group_wise_map[group]  # all entries pertaining to item/supplier
+# 		group_entries[0].update({group_by_field: group})  # Add item/supplier name in first group row
+
+# 		if highlight_min_price:
+# 			prices = [group_entry["price_per_unit"] for group_entry in group_entries]
+# 			min_price = min(prices)
+
+# 		for entry in group_entries:
+# 			if highlight_min_price and entry["price_per_unit"] == min_price:
+# 				entry["min"] = 1
+# 			out.append(entry)
+
+# 	if filters.get("item_code"):
+# 		# render chart only for one item comparison
+# 		chart_data = prepare_chart_data(suppliers, qty_list, supplier_qty_price_map)
+
+# 	return out, chart_data
+
+
+
+
+
+
+
+
+
+
+
+# def prepare_data(supplier_quotation_data, filters):
+#     out, groups, chart_data = [], [], []
+#     group_wise_map = defaultdict(list)
+#     rfq_item_price_map = defaultdict(lambda: defaultdict(list))  # {rfq: {item_code: [entries]}}
+
+#     group_by_field = "supplier_name" if filters.get("group_by") == "Group by Supplier" else "item_code"
+#     company_currency = frappe.db.get_default("currency")
+#     float_precision = cint(frappe.db.get_default("float_precision")) or 2
+
+#     # Step 1: Prepare data and group by RFQ and item code
+#     for data in supplier_quotation_data:
+#         group = data.get(group_by_field)
+#         supplier_currency = frappe.db.get_value("Supplier", data.get("supplier_name"), "default_currency")
+#         exchange_rate = get_exchange_rate(supplier_currency, company_currency) if supplier_currency else 1
+
+#         row = {
+#             "item_code": data.get("item_code"),
+#             "supplier_name": data.get("supplier_name"),
+#             "quotation": data.get("parent"),
+#             "qty": data.get("qty"),
+#             "price": flt(data.get("amount") * exchange_rate, float_precision),
+#             "uom": data.get("uom"),
+#             "price_list_currency": data.get("price_list_currency"),
+#             "currency": data.get("currency"),
+#             "stock_uom": data.get("stock_uom"),
+#             "base_amount": flt(data.get("base_amount"), float_precision),
+#             "base_rate": flt(data.get("base_rate"), float_precision),
+#             "request_for_quotation": data.get("request_for_quotation"),
+#             "valid_till": data.get("valid_till"),
+#         }
+#         row["price_per_unit"] = flt(row["price"]) / (flt(data.get("stock_qty")) or 1)
+
+#         # Group by RFQ and item code
+#         rfq = data.get("request_for_quotation")
+#         item_code = data.get("item_code")
+#         rfq_item_price_map[rfq][item_code].append(row)
+
+#     # Step 2: Highlight the lowest price for each item in each RFQ
+#     for rfq, items in rfq_item_price_map.items():
+#         for item_code, entries in items.items():
+#             # Find the entry with the lowest price
+#             min_price_entry = min(entries, key=lambda x: x["price_per_unit"])
+#             min_price_entry["highlight"] = "green"  # Mark the lowest price with green
+
+#     # Step 3: Prepare the output data
+#     for rfq, items in rfq_item_price_map.items():
+#         for item_code, entries in items.items():
+#             for entry in entries:
+#                 if entry.get("highlight") == "green":
+#                     entry["highlight_color"] = "green"  # Add highlight color field
+#                 out.append(entry)
+
+#     return out, chart_data
+
+
+
+
+
+
+
 def prepare_data(supplier_quotation_data, filters):
-	out, groups, qty_list, suppliers, chart_data = [], [], [], [], []
-	group_wise_map = defaultdict(list)
-	supplier_qty_price_map = {}
+    out, groups, chart_data = [], [], []
+    group_wise_map = defaultdict(list)
+    rfq_item_price_map = defaultdict(lambda: defaultdict(list))  # {rfq: {item_code: [entries]}}
 
-	group_by_field = "supplier_name" if filters.get("group_by") == "Group by Supplier" else "item_code"
-	company_currency = frappe.db.get_default("currency")
-	float_precision = cint(frappe.db.get_default("float_precision")) or 2
+    group_by_field = "supplier_name" if filters.get("group_by") == "Group by Supplier" else "item_code"
+    company_currency = frappe.db.get_default("currency")
+    float_precision = cint(frappe.db.get_default("float_precision")) or 2
 
-	for data in supplier_quotation_data:
-		group = data.get(group_by_field)  # get item or supplier value for this row
+    # Step 1: Prepare data and group by RFQ and item code
+    for data in supplier_quotation_data:
+        group = data.get(group_by_field)
+        supplier_currency = frappe.db.get_value("Supplier", data.get("supplier_name"), "default_currency")
+        exchange_rate = get_exchange_rate(supplier_currency, company_currency) if supplier_currency else 1
 
-		supplier_currency = frappe.db.get_value("Supplier", data.get("supplier_name"), "default_currency")
+        row = {
+            "item_code": data.get("item_code"),
+            "supplier_name": data.get("supplier_name"),
+            "quotation": data.get("parent"),
+            "qty": data.get("qty"),
+            "price": flt(data.get("amount") * exchange_rate, float_precision),
+            "uom": data.get("uom"),
+            "price_list_currency": data.get("price_list_currency"),
+            "currency": data.get("currency"),
+            "stock_uom": data.get("stock_uom"),
+            "base_amount": flt(data.get("base_amount"), float_precision),
+            "base_rate": flt(data.get("base_rate"), float_precision),
+            "request_for_quotation": data.get("request_for_quotation"),
+            "valid_till": data.get("valid_till"),
+        }
+        row["price_per_unit"] = flt(row["price"]) / (flt(data.get("stock_qty")) or 1)
 
-		if supplier_currency:
-			exchange_rate = get_exchange_rate(supplier_currency, company_currency)
-		else:
-			exchange_rate = 1
+        # Group by RFQ and item code
+        rfq = data.get("request_for_quotation")
+        item_code = data.get("item_code")
+        rfq_item_price_map[rfq][item_code].append(row)
 
-		row = {
-			"item_code": ""
-			if group_by_field == "item_code"
-			else data.get("item_code"),  # leave blank if group by field
-			"supplier_name": "" if group_by_field == "supplier_name" else data.get("supplier_name"),
-			"quotation": data.get("parent"),
-			"qty": data.get("qty"),
-			"price": flt(data.get("amount") * exchange_rate, float_precision),
-			"uom": data.get("uom"),
-			"price_list_currency": data.get("price_list_currency"),
-			"currency": data.get("currency"),
-			"stock_uom": data.get("stock_uom"),
-			"base_amount": flt(data.get("base_amount"), float_precision),
-			"base_rate": flt(data.get("base_rate"), float_precision),
-			"request_for_quotation": data.get("request_for_quotation"),
-			"valid_till": data.get("valid_till"),
-			"lead_time_days": data.get("lead_time_days"),
-		}
-		row["price_per_unit"] = flt(row["price"]) / (flt(data.get("stock_qty")) or 1)
+    # Step 2: Highlight the lowest price for each item in each RFQ
+    for rfq, items in rfq_item_price_map.items():
+        for item_code, entries in items.items():
+            # Find the entry with the lowest price
+            min_price_entry = min(entries, key=lambda x: x["price_per_unit"])
+            # Mark the lowest price with green
+            min_price_entry["highlight_price"] = "green"
 
-		# map for report view of form {'supplier1'/'item1':[{},{},...]}
-		group_wise_map[group].append(row)
+    # Step 3: Prepare the output data
+    for rfq, items in rfq_item_price_map.items():
+        for item_code, entries in items.items():
+            for entry in entries:
+                if entry.get("highlight_price") == "green":
+                    entry["highlight_color"] = "green"  # Add highlight color field for front-end
+                out.append(entry)
 
-		# map for chart preparation of the form {'supplier1': {'qty': 'price'}}
-		supplier = data.get("supplier_name")
-		if filters.get("item_code"):
-			if supplier not in supplier_qty_price_map:
-				supplier_qty_price_map[supplier] = {}
-			supplier_qty_price_map[supplier][row["qty"]] = row["price"]
+    return out, chart_data
 
-		groups.append(group)
-		suppliers.append(supplier)
-		qty_list.append(data.get("qty"))
 
-	groups = list(set(groups))
-	suppliers = list(set(suppliers))
-	qty_list = list(set(qty_list))
 
-	highlight_min_price = group_by_field == "item_code" or filters.get("item_code")
 
-	# final data format for report view
-	for group in groups:
-		group_entries = group_wise_map[group]  # all entries pertaining to item/supplier
-		group_entries[0].update({group_by_field: group})  # Add item/supplier name in first group row
 
-		if highlight_min_price:
-			prices = [group_entry["price_per_unit"] for group_entry in group_entries]
-			min_price = min(prices)
 
-		for entry in group_entries:
-			if highlight_min_price and entry["price_per_unit"] == min_price:
-				entry["min"] = 1
-			out.append(entry)
 
-	if filters.get("item_code"):
-		# render chart only for one item comparison
-		chart_data = prepare_chart_data(suppliers, qty_list, supplier_qty_price_map)
-
-	return out, chart_data
 
 
 def prepare_chart_data(suppliers, qty_list, supplier_qty_price_map):
@@ -259,12 +391,12 @@ def get_columns(filters):
 			"width": 200,
 		},
 		{"fieldname": "valid_till", "label": _("Valid Till"), "fieldtype": "Date", "width": 100},
-		{
-			"fieldname": "lead_time_days",
-			"label": _("Lead Time (Days)"),
-			"fieldtype": "Int",
-			"width": 100,
-		},
+		# {
+		# 	"fieldname": "lead_time_days",
+		# 	"label": _("Lead Time (Days)"),
+		# 	"fieldtype": "Int",
+		# 	"width": 100,
+		# },
 		{
 			"fieldname": "request_for_quotation",
 			"label": _("Request for Quotation"),

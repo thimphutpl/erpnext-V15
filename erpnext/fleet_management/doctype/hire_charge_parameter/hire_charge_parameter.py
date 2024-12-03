@@ -38,15 +38,38 @@ class HireChargeParameter(Document):
 		for i, item in enumerate(sorted(self.items, key=lambda item: item.from_date), start=1):
 			item.idx = i
 
+	# def validate(self):
+	# 	self.set_dates()
+	# 	self.set_parameter_values()
+
 	def validate(self):
-                self.set_dates()
-                self.set_parameter_values()
+		self.set_dates()
+		self.set_parameter_values()
+
+		# Check if the hire charge parameter for the same equipment already exists
+		existing_parameter = frappe.db.get_value(
+			"Hire Charge Parameter",
+			{
+				"registration_number": self.registration_number,
+				"equipment_type": self.equipment_type,
+				"equipment_model": self.equipment_model,
+				"name": ["!=", self.name],  # Exclude the current document
+			},
+			"name"
+		)
+
+		if existing_parameter:
+			frappe.throw(
+				f"Hire Charge Parameter already exists for Equipment '{self.registration_number}'. "
+				f"Please update '{existing_parameter}' instead of creating a duplicate."
+			)
+
 
 	def set_dates(self):
-						to_date = self.items[len(self.items) - 1].to_date
-						for a in reversed(self.items):
-								a.to_date = to_date
-								to_date = add_days(a.from_date, -1)
+							to_date = self.items[len(self.items) - 1].to_date
+							for a in reversed(self.items):
+									a.to_date = to_date
+									to_date = add_days(a.from_date, -1)
 
 	def set_parameter_values(self):
 		# p = frappe.db.sql("select name from `tabHire Charge Parameter` where registration_number = %s and equipment_type = %s and equipment_model = %s and name != %s", str(self.registeration_number), (str(self.equipment_type), str(self.equipment_model), str(self.name)), as_dict=True)

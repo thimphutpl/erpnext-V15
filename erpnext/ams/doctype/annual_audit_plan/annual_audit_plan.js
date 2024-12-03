@@ -1,3 +1,6 @@
+// Copyright (c) 2024, Frappe Technologies Pvt. Ltd. and contributors
+// For license information, please see license.txt
+
 frappe.ui.form.on('Annual Audit Plan', {
 	onload: function(frm){
 		set_default_field_value(frm)
@@ -41,3 +44,13 @@ function set_default_field_value(frm){
 		frm.set_value("q4_end_date",new Date(frm.doc.fiscal_year, 12, 0));
 	}
 }
+
+// function open_extension(frm){
+// 	//if need to extend open aap extension doc
+// 		frm.add_custom_button('<b><span style="color: blue; font-size: 14px;">Extend</span></b>', () => {
+// 			frappe.model.open_mapped_doc({
+// 				method: "erpnext.ams.doctype.annual_audit_plan.annual_audit_plan.create_aap_extension",	
+// 				frm: cur_frm
+// 			});
+// 		})
+// 	}

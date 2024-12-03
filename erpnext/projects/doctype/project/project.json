@@ -23,11 +23,20 @@
   "expected_end_date",
   "priority",
   "department",
+  "revised_completion_date",
   "cb_1",
   "branch",
   "cost_center",
   "reference_no",
   "reference_date",
+  "defect_liability_section_section",
+  "dlp_start_date",
+  "dlp_end_date",
+  "total_no_days",
+  "remaining_days",
+  "cb_sb_dl1",
+  "sent_email_notification",
+  "email_list_items",
   "customer_details",
   "party_type",
   "party",
@@ -59,6 +68,8 @@
   "project_boq_item",
   "sb_invoices",
   "project_invoice_item",
+  "retention_money_section",
+  "retention_money_receivable",
   "section_break0",
   "notes",
   "section_break_18",
@@ -654,6 +665,72 @@
    "label": "Project BOQ Item",
    "options": "Project BOQ Item",
    "read_only": 1
+  },
+  {
+   "fieldname": "revised_completion_date",
+   "fieldtype": "Date",
+   "label": "Revised Completion Date",
+   "read_only": 1
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "defect_liability_section_section",
+   "fieldtype": "Section Break",
+   "label": "Defect Liability Section"
+  },
+  {
+   "fieldname": "dlp_start_date",
+   "fieldtype": "Date",
+   "label": "DLP Start Date"
+  },
+  {
+   "fieldname": "dlp_end_date",
+   "fieldtype": "Date",
+   "label": "DLP End Date"
+  },
+  {
+   "fieldname": "total_no_days",
+   "fieldtype": "Int",
+   "label": "Total no of Days",
+   "read_only": 1
+  },
+  {
+   "fieldname": "remaining_days",
+   "fieldtype": "Int",
+   "label": "Remaining Days",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cb_sb_dl1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "description": "*Sent email notification before 6 days of DLP expiry",
+   "fieldname": "sent_email_notification",
+   "fieldtype": "Check",
+   "label": "Sent Email Notification"
+  },
+  {
+   "depends_on": "sent_email_notification",
+   "fieldname": "email_list_items",
+   "fieldtype": "Table",
+   "label": "Email List",
+   "mandatory_depends_on": "sent_email_notification",
+   "options": "DLP Email List"
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "retention_money_section",
+   "fieldtype": "Section Break",
+   "label": "Retention Money"
+  },
+  {
+   "description": "*On project payment the retention details get auto pulled here.",
+   "fieldname": "retention_money_receivable",
+   "fieldtype": "Table",
+   "label": "Retention Money Receivable",
+   "options": "Retention Money Receivable"
   }
  ],
  "icon": "fa fa-puzzle-piece",
@@ -661,7 +738,7 @@
  "index_web_pages_for_search": 1,
  "links": [],
  "max_attachments": 4,
- "modified": "2024-11-28 14:51:16.769611",
+ "modified": "2024-12-01 21:53:50.411206",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Project",

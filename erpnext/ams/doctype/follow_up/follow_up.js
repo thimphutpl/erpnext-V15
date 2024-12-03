@@ -1,3 +1,6 @@
+// Copyright (c) 2024, Frappe Technologies Pvt. Ltd. and contributors
+// For license information, please see license.txt
+
 frappe.ui.form.on('Follow Up', {
 	onload_post_render: function(frm) {	
 		if(frm.doc.docstatus == 1){
@@ -19,13 +22,13 @@ frappe.ui.form.on('Follow Up', {
 		}
 	},
 	onload: function(frm) {		
-		frm.set_query('follow_up_by', ()=> {
-			return {
-				'filters': {
-					branch:'Internal Audit',
-				}
-			};
-		});
+		// frm.set_query('follow_up_by', ()=> {
+		// 	return {
+		// 		'filters': {
+		// 			branch:'Internal Audit',
+		// 		}
+		// 	};
+		// });
 	
 		frm.set_query('execute_audit_no', ()=> {
 			return {
@@ -75,21 +78,56 @@ frappe.ui.form.on("Follow Up Checklist Item", {
 		let user_id = frappe.session.user;
 		let supervisor_email = cur_frm.doc.supervisor_email;
 		let row = locals[cdt][cdn];
-		
-		if(user_id == frm.doc.owner && row.status != 'Closed'){
-			status.read_only = 1;
-			audit_r.read_only = 0;
-			auditee_r.read_only = 1;
-		}else if(user_id == supervisor_email && row.status != 'Closed'){
-			status.read_only = 1;
-			audit_r.read_only = 1;
-			auditee_r.read_only = 0;
-		}else{
-			status.read_only = 1;
-			audit_r.read_only = 1;
-			auditee_r.read_only = 1;
-		}
-
+		frappe.call({
+			method: "get_auditor_and_auditee",
+			doc: frm.doc,
+			callback: function(r){
+				// if(user_id == frm.doc.owner && row.status != 'Closed'){
+				// 	status.read_only = 1;
+				// 	audit_r.read_only = 0;
+				// 	auditee_r.read_only = 1;
+				// }else if(user_id == supervisor_email && row.status != 'Closed'){
+				// 	status.read_only = 1;
+				// 	audit_r.read_only = 1;
+				// 	auditee_r.read_only = 0;
+				// }else{
+				// 	status.read_only = 1;
+				// 	audit_r.read_only = 1;
+				// 	auditee_r.read_only = 1;
+				// }
+				if(row.status != 'Closed'){
+					status.read_only = 1;
+					frm.fields_dict['audit_observations'].grid.grid_rows_by_docname[cdn].toggle_editable('audit_remarks', r.message[0]);
+					frm.fields_dict['audit_observations'].grid.grid_rows_by_docname[cdn].toggle_editable('auditee_remarks', r.message[1]);
+					// audit_r.read_only = 0;
+					// auditee_r.read_only = 1;
+				}else{
+					status.read_only = 1;
+					// audit_r.read_only = 1;
+					// auditee_r.read_only = 1;
+					frm.fields_dict['audit_observations'].grid.grid_rows_by_docname[cdn].toggle_editable('audit_remarks', false);
+					frm.fields_dict['audit_observations'].grid.grid_rows_by_docname[cdn].toggle_editable('auditee_remarks', false);
+				}
+			}
+		})
+		frm.refresh_fields("audit_checklist");
+	}
+});
+frappe.ui.form.on("Follow Up DA Item", {
+	form_render: function(frm, cdt, cdn){
+		frm.fields_dict['direct_accountability'].grid.grid_rows_by_docname[cdn].toggle_editable('observation', false);
+		frm.fields_dict['direct_accountability'].grid.grid_rows_by_docname[cdn].toggle_editable('checklist', false);
+		frm.fields_dict['direct_accountability'].grid.grid_rows_by_docname[cdn].toggle_editable('observation_title', false);
+		frm.fields_dict['direct_accountability'].grid.grid_rows_by_docname[cdn].toggle_editable('employee', true);
+		frm.refresh_fields("audit_checklist");
+	}
+});
+frappe.ui.form.on("Direct Accountability Supervisor Item", {
+	form_render: function(frm, cdt, cdn){
+		frm.fields_dict['supervisor_accountability'].grid.grid_rows_by_docname[cdn].toggle_editable('observation', false);
+		frm.fields_dict['supervisor_accountability'].grid.grid_rows_by_docname[cdn].toggle_editable('checklist', false);
+		frm.fields_dict['supervisor_accountability'].grid.grid_rows_by_docname[cdn].toggle_editable('observation_title', false);
+		frm.fields_dict['supervisor_accountability'].grid.grid_rows_by_docname[cdn].toggle_editable('supervisor', true);
 		frm.refresh_fields("audit_checklist");
 	}
 });

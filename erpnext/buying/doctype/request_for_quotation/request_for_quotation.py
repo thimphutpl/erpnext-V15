@@ -37,8 +37,8 @@ class RequestforQuotation(BuyingController):
 		billing_address_display: DF.SmallText | None
 		company: DF.Link
 		email_template: DF.Link | None
-		footer: DF.TextEditor | None
-		header: DF.TextEditor | None
+		footer_text: DF.TextEditor | None
+		header_text: DF.TextEditor | None
 		incoterm: DF.Link | None
 		items: DF.Table[RequestforQuotationItem]
 		letter_head: DF.Link | None

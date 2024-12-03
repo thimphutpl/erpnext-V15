@@ -7,6 +7,28 @@ from frappe.utils import cstr, flt, fmt_money, formatdate
 
 
 class ProjectSales(Document):
+	# begin: auto-generated types
+	# This code is auto-generated. Do not modify anything in this block.
+
+	from typing import TYPE_CHECKING
+
+	if TYPE_CHECKING:
+		from erpnext.projects.doctype.project_sales_item.project_sales_item import ProjectSalesItem
+		from frappe.types import DF
+
+		amended_form: DF.Link | None
+		amended_from: DF.Link | None
+		buying_branch: DF.Link
+		buying_cost_center: DF.Link
+		buying_project: DF.Link | None
+		employee: DF.Link | None
+		items: DF.Table[ProjectSalesItem]
+		jv: DF.Data | None
+		posting_date: DF.Date
+		selling_branch: DF.Link
+		selling_cost_center: DF.Link
+		selling_project: DF.Link | None
+	# end: auto-generated types
 	def validate(self):
 		self.flags.ignore_permissions = 1
 

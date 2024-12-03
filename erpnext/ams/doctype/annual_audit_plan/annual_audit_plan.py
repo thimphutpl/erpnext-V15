@@ -1,8 +1,10 @@
 # Copyright (c) 2024, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
-# import frappe
+import frappe
+from frappe import _
 from frappe.model.document import Document
+from frappe.model.mapper import get_mapped_doc
 
 
 class AnnualAuditPlan(Document):

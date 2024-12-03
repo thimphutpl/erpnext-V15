@@ -15,6 +15,15 @@ frappe.ui.form.on('Equipment', {
 		frm.add_custom_button(__('Maintain History'), function(doc) {
 			frm.events.create_equipment_history(frm)
 		},__("Create"))
+
+		frm.set_query('fuelbook', function(doc) {
+			return {
+				filters: {
+					"equipment": doc.name
+
+				}
+			};
+		});
 	},
 	equipment_category:function(frm){
 		frm.set_query('equipment_type', function(doc) {
@@ -26,6 +35,7 @@ frappe.ui.form.on('Equipment', {
 			};
 		});
 	},
+	
 	equipment_type:function(frm){
 		frm.set_query('equipment_model', function(doc) {
 			return {

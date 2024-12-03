@@ -14,6 +14,7 @@
   "supplier_name",
   "supplier_tpn_no",
   "country",
+  "attention_person",
   "column_break0",
   "supplier_group",
   "supplier_type",
@@ -651,9 +652,14 @@
   {
    "fieldname": "supplier_tpn_no",
    "fieldtype": "Data",
-   "label": "Supplier TPN No",
+   "label": "Supplier TPN No/CID",
    "reqd": 1,
    "unique": 1
+  },
+  {
+   "fieldname": "attention_person",
+   "fieldtype": "Data",
+   "label": "Attention Person"
   }
  ],
  "icon": "fa fa-user",
@@ -666,7 +672,7 @@
    "link_fieldname": "party"
   }
  ],
- "modified": "2024-11-28 00:05:31.500758",
+ "modified": "2024-12-02 12:43:31.998909",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Supplier",
@@ -689,11 +695,7 @@
    "write": 1
   },
   {
-   "create": 1,
-   "delete": 1,
    "email": 1,
-   "export": 1,
-   "import": 1,
    "print": 1,
    "read": 1,
    "report": 1,
@@ -722,6 +724,18 @@
    "read": 1,
    "report": 1,
    "role": "Accounts Manager"
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Admin",
+   "share": 1,
+   "write": 1
   }
  ],
  "quick_entry": 1,

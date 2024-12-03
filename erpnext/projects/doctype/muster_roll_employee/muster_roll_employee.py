@@ -24,6 +24,7 @@ class MusterRollEmployee(Document):
 		from frappe.types import DF
 		from hrms.hr.doctype.wages_history.wages_history import WagesHistory
 
+		amount: DF.Currency
 		bank_ac_no: DF.Data | None
 		bank_account_type: DF.Link | None
 		bank_branch: DF.Link | None
@@ -39,6 +40,7 @@ class MusterRollEmployee(Document):
 		internal_work_history: DF.Table[EmployeeInternalWorkHistory]
 		joining_date: DF.Date
 		list_in_job_card: DF.Check
+		mess_deduction: DF.Check
 		mr_type: DF.Literal["Under CDCL", "Under Labour Contract"]
 		musterroll: DF.Table[Musterroll]
 		person_name: DF.Data

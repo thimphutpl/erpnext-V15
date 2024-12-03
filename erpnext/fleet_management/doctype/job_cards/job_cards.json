@@ -59,7 +59,7 @@
   "column_break_34",
   "outstanding_amount",
   "section_break_25",
-  "assigned_to",
+  "table_jqvd",
   "section_break_13",
   "break_down_report",
   "column_break_15",
@@ -338,11 +338,6 @@
    "label": "Technician Details"
   },
   {
-   "fieldname": "assigned_to",
-   "fieldtype": "Data",
-   "label": "Assigned To (Mechanic)"
-  },
-  {
    "fieldname": "section_break_13",
    "fieldtype": "Section Break",
    "label": "Break Down Report Details"
@@ -464,12 +459,17 @@
    "fieldname": "locations",
    "fieldtype": "Data",
    "label": "Location"
+  },
+  {
+   "fieldname": "table_jqvd",
+   "fieldtype": "Table",
+   "options": "Mechanic Assigned"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-25 09:12:59.203065",
+ "modified": "2024-11-29 14:35:21.272737",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Job Cards",

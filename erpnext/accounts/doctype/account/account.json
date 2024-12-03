@@ -2,6 +2,7 @@
  "actions": [],
  "allow_copy": 1,
  "allow_import": 1,
+ "allow_rename": 1,
  "creation": "2013-01-30 12:49:46",
  "description": "Heads (or groups) against which Accounting Entries are made and balances are maintained.",
  "doctype": "DocType",
@@ -300,26 +301,13 @@
  "idx": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2024-11-23 14:54:09.316140",
+ "modified": "2024-11-29 16:36:36.193436",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Account",
  "nsm_parent_field": "parent_account",
  "owner": "Administrator",
  "permissions": [
-  {
-   "create": 1,
-   "delete": 1,
-   "email": 1,
-   "export": 1,
-   "import": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "Accounts User",
-   "share": 1,
-   "write": 1
-  },
   {
    "email": 1,
    "print": 1,
@@ -346,13 +334,30 @@
    "delete": 1,
    "email": 1,
    "export": 1,
-   "import": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Admin",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
    "print": 1,
    "read": 1,
    "report": 1,
    "role": "Accounts Manager",
-   "share": 1,
-   "write": 1
+   "share": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Accounts Master",
+   "share": 1
   }
  ],
  "search_fields": "account_number",

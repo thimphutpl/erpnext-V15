@@ -28,6 +28,7 @@ class MRPaymentItem(Document):
 		hourly_rate: DF.Currency
 		hourly_rate_normal: DF.Currency
 		id_card: DF.Data
+		mess_deduction: DF.Currency
 		month: DF.Literal["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 		number_of_days: DF.Float
 		number_of_hours: DF.Float
@@ -40,6 +41,7 @@ class MRPaymentItem(Document):
 		qualification: DF.ReadOnly | None
 		total_amount: DF.Currency
 		total_ot_amount: DF.Currency
+		total_payable: DF.Currency
 		total_wage: DF.Currency
 		wage_payable: DF.Currency
 	# end: auto-generated types

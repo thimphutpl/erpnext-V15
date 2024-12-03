@@ -30,7 +30,8 @@ frappe.query_reports["Inventory Report"] = {
 
         switch (selected_report) {
             case "Inventory Report":
-                return this.get_inventory_report_data();
+                // return this.get_inventory_report_data();
+                return this.StockBalanceReport();
             case "Inventory Summary":
                 return this.get_inventory_summary_data();
             case "Non Moving Branch Wise":
@@ -38,13 +39,23 @@ frappe.query_reports["Inventory Report"] = {
             case "Report 4":
                 return this.get_report_4_data();
             default:
-                return this.get_inventory_report_data(); // Default to Report 1
+                // return this.get_inventory_report_data(); // Default to Report 1
+                return this.StockBalanceReport(); // Default to Report 1
         }
     },
 
-    get_inventory_report_data: function() {
+    // get_inventory_report_data: function() {
+    //     return frappe.call({
+    //         method: "erpnext.stock.report.inventory_report.inventory_report.get_inventory_report_data",
+    //         callback: function(r) {
+    //             return r.message;
+    //         }
+    //     });
+    // },
+
+    StockBalanceReport: function() {
         return frappe.call({
-            method: "erpnext.stock.report.inventory_report.inventory_report.get_inventory_report_data",
+            method: "erpnext.stock.report.inventory_report.inventory_report.StockBalanceReport",
             callback: function(r) {
                 return r.message;
             }

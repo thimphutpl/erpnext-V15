@@ -22,7 +22,7 @@ class EquipmentHiringForm(Document):
 
 		address: DF.Data | None
 		advance_amount: DF.Currency
-		advance_journal: DF.Data | None
+		advance_journal: DF.Link | None
 		amended_from: DF.Link | None
 		approved_items: DF.Table[HiringApprovalDetails]
 		branch: DF.Link
@@ -99,10 +99,10 @@ class EquipmentHiringForm(Document):
 		if action == 'Cancell':
 			ehf = ''
 		else:
-                        ehf = self.name
+			ehf = self.name
 		if self.er_reference:
-                        er = frappe.get_doc("Equipment Request", self.er_reference)
-                        er.db_set("ehf",ehf)
+			er = frappe.get_doc("Equipment Request", self.er_reference)
+			er.db_set("ehf",ehf)
 
 	def check_date_approval(self):
 		for a in self.approved_items:
@@ -406,3 +406,32 @@ def get_advance_balance(branch, customer):
 		frappe.throw("Select Equipment Hiring Form first!")	
 
 
+
+@frappe.whitelist()
+def make_vehicle_logbook(source_name, target_doc=None): 
+	def update_docs(obj, target, source_parent):
+		target.posting_date = nowdate()
+		target.payment_for = "Equipment Hiring Form"
+		target.net_amount = obj.outstanding_amount
+		target.actual_amount = obj.outstanding_amount
+		target.income_account = frappe.db.get_value("Branch", obj.branch, "revenue_bank_account")
+	
+		target.append("items", {
+			"reference_type": "Equipment Hiring Form",
+			"reference_name": obj.name,
+			"outstanding_amount": obj.outstanding_amount,
+			"allocated_amount": obj.outstanding_amount,
+			"customer": obj.customer
+		})
+
+	doc = get_mapped_doc("Equipment Hiring Form", source_name, {
+			"Equipment Hiring Form": {
+				"doctype": "Vehicle Logbook",
+				"field_map": {
+					"outstanding_amount": "receivable_amount",
+				},
+				"postprocess": update_docs,
+				"validation": {"docstatus": ["=", 1], "equipment_hiring_form": ["is", None]}
+			},
+		}, target_doc)
+	return doc

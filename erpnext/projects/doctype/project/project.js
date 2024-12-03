@@ -75,6 +75,7 @@ frappe.ui.form.on("Project", {
 			}
 			frm.add_custom_button(__("Advance"), function(){frm.trigger("make_project_advance")},__("Make"), "icon-file-alt");
 			frm.add_custom_button(__("BOQ"), function(){frm.trigger("make_boq")},__("Make"), "icon-file-alt");
+			frm.add_custom_button(__("Extension of Time"), function(){frm.trigger("extension_of_time")},__("Make"), "icon-file-alt");
 			frm.add_custom_button(__("Project Register"), function(){
 					frappe.route_options = {
 						project: frm.doc.name,
@@ -234,6 +235,13 @@ frappe.ui.form.on("Project", {
 	make_boq: function(frm){
 		frappe.model.open_mapped_doc({
 			method: "erpnext.projects.doctype.project.project.make_boq",
+			frm: frm
+		});
+	},
+
+	extension_of_time: function(frm){
+		frappe.model.open_mapped_doc({
+			method: "erpnext.projects.doctype.project.project.extension_of_time",
 			frm: frm
 		});
 	},

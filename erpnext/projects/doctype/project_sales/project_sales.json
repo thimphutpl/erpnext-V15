@@ -96,8 +96,7 @@
    "fieldname": "employee",
    "fieldtype": "Link",
    "label": "Responsible Employee",
-   "options": "Employee",
-   "reqd": 1
+   "options": "Employee"
   },
   {
    "fieldname": "section_break_bvcv",
@@ -142,7 +141,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-26 21:03:45.291909",
+ "modified": "2024-12-02 17:17:23.930294",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Project Sales",

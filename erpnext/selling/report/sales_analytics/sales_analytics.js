@@ -28,10 +28,23 @@ frappe.query_reports["Sales Analytics"] = {
 			reqd: 1,
 		},
 		{
+			fieldname: "cost_center",
+			label: __("Cost Center"),
+			fieldtype: "Link",
+			options: "Cost Center",
+		},
+		{
+			fieldname: "warehouse",
+			label: __("Warehouse"),
+			fieldtype: "Link",
+			options: "Warehouse",
+		},
+		{
 			fieldname: "value_quantity",
 			label: __("Value Or Qty"),
 			fieldtype: "Select",
 			options: [
+				{ value: "Both", label: __("Both") },
 				{ value: "Value", label: __("Value") },
 				{ value: "Quantity", label: __("Quantity") },
 			],

@@ -35,6 +35,7 @@ class Supplier(TransactionBase):
 		accounts: DF.Table[PartyAccount]
 		allow_purchase_invoice_creation_without_purchase_order: DF.Check
 		allow_purchase_invoice_creation_without_purchase_receipt: DF.Check
+		attention_person: DF.Data | None
 		bank: DF.Data | None
 		bank_account_type: DF.Link | None
 		bank_address: DF.Data | None

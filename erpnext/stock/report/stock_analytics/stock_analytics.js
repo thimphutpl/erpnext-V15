@@ -23,11 +23,12 @@ frappe.query_reports["Stock Analytics"] = {
 			label: __("Value Or Qty"),
 			fieldtype: "Select",
 			options: [
+				{ value: "Both", label: __("") },
 				{ value: "Value", label: __("Value") },
 				{ value: "Quantity", label: __("Quantity") },
 			],
-			default: "Value",
-			reqd: 1,
+			default: "Both",
+			// reqd: 1,
 		},
 		{
 			fieldname: "brand",

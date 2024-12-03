@@ -15,6 +15,7 @@ class InsuranceandRegistration(Document):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
+		from erpnext.fleet_management.doctype.bluebook_and_emission.bluebook_and_emission import BluebookandEmission
 		from erpnext.fleet_management.doctype.claim_details.claim_details import ClaimDetails
 		from erpnext.fleet_management.doctype.insurance_details.insurance_details import InsuranceDetails
 		from erpnext.fleet_management.doctype.registration_details.registration_details import RegistrationDetails
@@ -38,10 +39,12 @@ class InsuranceandRegistration(Document):
 		plot_no: DF.Data | None
 		posting_date: DF.Date
 		reg_items: DF.Table[RegistrationDetails]
+		table_quie: DF.Table[BluebookandEmission]
 	# end: auto-generated types
 	def validate(self):
 		self.validate_insuranced()
-		self.posting_date = self.in_items[-1].due_date
+		if self.in_items:
+			self.posting_date = self.in_items[-1].due_date
 
 	def validate_insuranced(self):
 		insured_list = frappe.db.sql("""select name, insurance_type from `tabInsurance and Registration` """, as_dict =1)

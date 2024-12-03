@@ -8,11 +8,14 @@
   "supplier",
   "contact",
   "quote_status",
+  "phone",
+  "location",
   "column_break_3",
   "supplier_name",
   "email_id",
   "send_email",
-  "email_sent"
+  "email_sent",
+  "attention_person"
  ],
  "fields": [
   {
@@ -76,18 +79,42 @@
   },
   {
    "columns": 3,
-   "fetch_from": "contact.email_id",
+   "fetch_from": "supplier.email_id",
    "fieldname": "email_id",
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Email Id",
    "no_copy": 1
+  },
+  {
+   "fetch_from": "supplier.telephone_and_fax",
+   "fieldname": "phone",
+   "fieldtype": "Data",
+   "label": "Phone",
+   "options": "supplier.telephone_and_fax"
+  },
+  {
+   "fetch_from": "supplier.location",
+   "fieldname": "location",
+   "fieldtype": "Read Only",
+   "label": "Location",
+   "options": "supplier.location",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "supplier.attention_person",
+   "fieldname": "attention_person",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Attention Person",
+   "options": "supplier.attention_person",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2020-11-04 22:01:43.832942",
+ "modified": "2024-12-02 12:44:40.856513",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Request for Quotation Supplier",
@@ -95,5 +122,6 @@
  "permissions": [],
  "sort_field": "modified",
  "sort_order": "DESC",
+ "states": [],
  "track_changes": 1
 }

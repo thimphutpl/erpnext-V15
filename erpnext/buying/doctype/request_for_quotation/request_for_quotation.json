@@ -40,8 +40,8 @@
   "letter_head",
   "column_break_jfqx",
   "quotation_header_and_footer_section",
-  "header",
-  "footer",
+  "header_text",
+  "footer_text",
   "more_info",
   "opportunity"
  ],
@@ -319,25 +319,25 @@
    "label": "Quotation Header and Footer"
   },
   {
-   "fieldname": "header",
+   "fieldname": "column_break_jfqx",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "header_text",
    "fieldtype": "Text Editor",
    "label": "Header"
   },
   {
-   "fieldname": "footer",
+   "fieldname": "footer_text",
    "fieldtype": "Text Editor",
    "label": "Footer"
-  },
-  {
-   "fieldname": "column_break_jfqx",
-   "fieldtype": "Column Break"
   }
  ],
  "icon": "fa fa-shopping-cart",
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-23 16:11:46.375929",
+ "modified": "2024-12-02 13:00:34.830268",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Request for Quotation",

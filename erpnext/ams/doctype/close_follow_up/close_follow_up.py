@@ -2,20 +2,11 @@
 # For license information, please see license.txt
 
 # import frappe
+import frappe
+from frappe import _
 from frappe.model.document import Document
 
-
 class CloseFollowUp(Document):
-	# begin: auto-generated types
-	# This code is auto-generated. Do not modify anything in this block.
-
-	from typing import TYPE_CHECKING
-
-	if TYPE_CHECKING:
-		from frappe.types import DF
-
-		amended_from: DF.Link | None
-	# end: auto-generated types
 	def on_submit(self):
 		self.update_follow_up()
 		self.update_execute_audit()
@@ -75,7 +66,7 @@ class CloseFollowUp(Document):
 				pap_doc.db_set("status", 'Follow Up')
 				eu_doc.db_set("status", 'Follow Up')
 			else:
-				initial_doc = frappe.get_doc("Audit Initial Report", {"execute_audit_no": self.execute_audit_no})
+				initial_doc = frappe.get_doc("Audit Report", {"execute_audit_no": self.execute_audit_no})
 				if initial_doc.docstatus == 1:
 					pap_doc.db_set("status", 'Initial Report')
 					eu_doc.db_set("status", 'Initial Report')
@@ -91,6 +82,25 @@ class CloseFollowUp(Document):
 							pap_doc.db_set("status", 'Pending')
 						eu_doc.db_set("status", 'Pending')
 
+	@frappe.whitelist()
+	def get_auditor_and_auditee(self):
+		auditor_display = auditee_display = 0
+		auditors = auditees = []
+		for auditor in self.audit_team:
+			auditors.append(frappe.db.get_value("Employee", auditor.employee, "user_id"))
+		for auditee_emp in self.direct_accountability:
+			auditees.append(frappe.db.get_vlue("Employee", auditee_emp.employee, "user_id"))
+		for auditee_sup in self.supervisor_accountability:
+				auditees.append(frappe.db.get_vlue("Employee", auditee_sup.employee, "user_id"))
+		if frappe.session.user == "Administrator":
+			auditor_display = auditee_display = 1
+		if frappe.session.user in auditors:
+			auditor_display = 1
+		if frappe.session.user in auditees:
+			auditee_display = 1
+		return auditor_display, auditee_display
+
+	@frappe.whitelist()		
 	def get_checklist(self):
 		data = frappe.db.sql("""
 			SELECT 

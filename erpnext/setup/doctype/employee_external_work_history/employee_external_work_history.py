@@ -18,10 +18,12 @@ class EmployeeExternalWorkHistory(Document):
 		company_name: DF.Data | None
 		contact: DF.Data | None
 		designation: DF.Data | None
+		from_date: DF.Date | None
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
 		salary: DF.Currency
+		to_date: DF.Date | None
 		total_experience: DF.Data | None
 	# end: auto-generated types
 

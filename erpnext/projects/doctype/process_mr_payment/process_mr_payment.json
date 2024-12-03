@@ -1,6 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "MRP.YY.MM.#####",
  "creation": "2024-10-18 17:58:05.692811",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -28,6 +29,8 @@
   "total_health_amount",
   "column_break_20",
   "total_overall_amount",
+  "deduction",
+  "total_amount_payable",
   "column_break_10",
   "load_records",
   "column_break_22",
@@ -177,7 +180,7 @@
   {
    "fieldname": "total_overall_amount",
    "fieldtype": "Currency",
-   "label": "Total Amount",
+   "label": "Gross Amount",
    "read_only": 1,
    "reqd": 1
   },
@@ -234,15 +237,28 @@
    "options": "Process MR Payment",
    "print_hide": 1,
    "read_only": 1
+  },
+  {
+   "fieldname": "deduction",
+   "fieldtype": "Currency",
+   "label": "Total Deduction",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_amount_payable",
+   "fieldtype": "Currency",
+   "label": "Net Amount ",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-26 09:10:39.704493",
+ "modified": "2024-12-03 15:34:57.010509",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Process MR Payment",
+ "naming_rule": "Expression (old style)",
  "owner": "Administrator",
  "permissions": [
   {

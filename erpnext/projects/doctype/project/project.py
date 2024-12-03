@@ -10,13 +10,14 @@ from frappe.model.document import Document
 from frappe.model.mapper import get_mapped_doc
 from frappe.query_builder import Interval
 from frappe.query_builder.functions import Count, CurDate, Date, Sum, UnixTimestamp
-from frappe.utils import add_days, flt, get_datetime, get_time, get_url, nowtime, today, getdate
+from frappe.utils import add_days, flt, get_datetime, get_time, get_url, nowtime, today, getdate, date_diff
 from frappe.utils.user import is_website_user
 
 from erpnext import get_default_company
 from erpnext.controllers.queries import get_filters_cond
 from erpnext.controllers.website_list_for_contact import get_customers_suppliers
 from erpnext.setup.doctype.holiday_list.holiday_list import is_holiday
+from frappe.utils.user import get_users_with_role
 
 
 class Project(Document):
@@ -684,81 +685,88 @@ class Project(Document):
 		if self.expected_start_date and self.expected_end_date:
 			if getdate(self.expected_end_date) < getdate(self.expected_start_date):
 				frappe.throw(_("Expected End Date can not be less than Expected Start Date"))
+		
+		if self.dlp_start_date and self.dlp_end_date:
+			if getdate(self.dlp_end_date) < getdate(self.dlp_start_date):
+				frappe.throw(_("DLP End Date can not be less than DLP Start Date"))
+			self.total_no_days = date_diff(self.dlp_end_date, self.dlp_start_date)
 				
 		# ++++++++++++++++++++ Ver 2.0 BEGINS ++++++++++++++++++++
 		# Following code added by SHIV on 20/09/2017
 		for task in self.activity_tasks:
-			prev_start_date = getdate(frappe.db.get_value("Task", task.task_id, "exp_start_date"))
-			prev_end_date = getdate(frappe.db.get_value("Task", task.task_id, "exp_end_date"))
+			if not self.revised_completion_date:
+				prev_start_date = getdate(frappe.db.get_value("Task", task.task_id, "exp_start_date"))
+				prev_end_date = getdate(frappe.db.get_value("Task", task.task_id, "exp_end_date"))
 
-			if (prev_start_date and getdate(task.start_date)) and (getdate(task.start_date) != prev_start_date):
-				msg = ""
-				ts_list = frappe.db.sql("""
-							select name
-							from `tabTimesheet`
-							where project = "{0}"
-							and task = '{1}'
-							and docstatus < 2
-					""".format(self.name, task.task_id), as_dict=1)
+				if (prev_start_date and getdate(task.start_date)) and (getdate(task.start_date) != prev_start_date):
+					msg = ""
+					ts_list = frappe.db.sql("""
+								select name
+								from `tabTimesheet`
+								where project = "{0}"
+								and task = '{1}'
+								and docstatus < 2
+						""".format(self.name, task.task_id), as_dict=1)
 
-				if len(ts_list):
-					for item in ts_list:
-						msg += 'Reference: <a href="#Form/Timesheet/{0}">{0}</a><br/>'.format(item.name,item.name)
-					
-					frappe.throw("Row# {0} : Cannot change `Start Date` for Tasks already having active Timesheets. <br/>{1}".format(task.idx, msg))
+					if len(ts_list):
+						for item in ts_list:
+							msg += 'Reference: <a href="#Form/Timesheet/{0}">{0}</a><br/>'.format(item.name,item.name)
+						
+						frappe.throw("Row# {0} : Cannot change `Start Date` for Tasks already having active Timesheets. <br/>{1}".format(task.idx, msg))
 
-			if (prev_end_date and getdate(task.end_date)) and (getdate(task.end_date) != prev_end_date):
-				msg = ""
-				ts_list = frappe.db.sql("""
-							select name
-							from `tabTimesheet`
-							where project = "{0}"
-							and task = '{1}'
-							and docstatus < 2
-					""".format(self.name, task.task_id), as_dict=1)
+				if (prev_end_date and getdate(task.end_date)) and (getdate(task.end_date) != prev_end_date):
+					msg = ""
+					ts_list = frappe.db.sql("""
+								select name
+								from `tabTimesheet`
+								where project = "{0}"
+								and task = '{1}'
+								and docstatus < 2
+						""".format(self.name, task.task_id), as_dict=1)
 
-				if len(ts_list):
-					for item in ts_list:
-						msg += 'Reference: <a href="#Form/Timesheet/{0}">{0}</a><br/>'.format(item.name,item.name)
-					
-					frappe.throw("Row# {0} : Cannot change `End Date` for Tasks already having active Timesheets. <br/>{1}".format(task.idx, msg))
+					if len(ts_list):
+						for item in ts_list:
+							msg += 'Reference: <a href="#Form/Timesheet/{0}">{0}</a><br/>'.format(item.name,item.name)
+						
+						frappe.throw("Row# {0} : Cannot change `End Date` for Tasks already having active Timesheets. <br/>{1}".format(task.idx, msg))
 
 		for task in self.additional_tasks:
-			prev_start_date = getdate(frappe.db.get_value("Task", task.task_id, "exp_start_date"))
-			prev_end_date = getdate(frappe.db.get_value("Task", task.task_id, "exp_end_date"))
+			if not self.revised_completion_date:
+				prev_start_date = getdate(frappe.db.get_value("Task", task.task_id, "exp_start_date"))
+				prev_end_date = getdate(frappe.db.get_value("Task", task.task_id, "exp_end_date"))
 
-			if (prev_start_date and getdate(task.start_date)) and (getdate(task.start_date) != prev_start_date):
-				msg = ""
-				ts_list = frappe.db.sql("""
-							select name
-							from `tabTimesheet`
-							where project = "{0}"
-							and task = '{1}'
-							and docstatus < 2
-					""".format(self.name, task.task_id), as_dict=1)
+				if (prev_start_date and getdate(task.start_date)) and (getdate(task.start_date) != prev_start_date):
+					msg = ""
+					ts_list = frappe.db.sql("""
+								select name
+								from `tabTimesheet`
+								where project = "{0}"
+								and task = '{1}'
+								and docstatus < 2
+						""".format(self.name, task.task_id), as_dict=1)
 
-				if len(ts_list):
-					for item in ts_list:
-						msg += 'Reference: <a href="#Form/Timesheet/{0}">{0}</a><br/>'.format(item.name,item.name)
-					
-					frappe.throw("Row# {0} : Cannot change `Start Date` for Tasks already having active Timesheets. <br/>{1}".format(task.idx, msg))
+					if len(ts_list):
+						for item in ts_list:
+							msg += 'Reference: <a href="#Form/Timesheet/{0}">{0}</a><br/>'.format(item.name,item.name)
+						
+						frappe.throw("Row# {0} : Cannot change `Start Date` for Tasks already having active Timesheets. <br/>{1}".format(task.idx, msg))
 
-			if (prev_end_date and getdate(task.end_date)) and (getdate(task.end_date) != prev_end_date):
-				msg = ""
-				ts_list = frappe.db.sql("""
-							select name
-							from `tabTimesheet`
-							where project = "{0}"
-							and task = '{1}'
-							and docstatus < 2
-					""".format(self.name, task.task_id), as_dict=1)
+				if (prev_end_date and getdate(task.end_date)) and (getdate(task.end_date) != prev_end_date):
+					msg = ""
+					ts_list = frappe.db.sql("""
+								select name
+								from `tabTimesheet`
+								where project = "{0}"
+								and task = '{1}'
+								and docstatus < 2
+						""".format(self.name, task.task_id), as_dict=1)
 
-				if len(ts_list):
-					for item in ts_list:
-						msg += 'Reference: <a href="#Form/Timesheet/{0}">{0}</a><br/>'.format(item.name,item.name)
-					
-					frappe.throw("Row# {0} : Cannot change `End Date` for Tasks already having active Timesheets. <br/>{1}".format(task.idx, msg))                                        
-								
+					if len(ts_list):
+						for item in ts_list:
+							msg += 'Reference: <a href="#Form/Timesheet/{0}">{0}</a><br/>'.format(item.name,item.name)
+						
+						frappe.throw("Row# {0} : Cannot change `End Date` for Tasks already having active Timesheets. <br/>{1}".format(task.idx, msg))                                        
+									
 		# +++++++++++++++++++++ Ver 1.0 ENDS +++++++++++++++++++++
 	def update_project(self):
 		#self.update_percent_complete()
@@ -1518,3 +1526,52 @@ def make_boq(source_name, target_doc=None):
 			}
 	}, target_doc)
 	return doclist
+
+@frappe.whitelist()
+def extension_of_time(source_name, target_doc=None):
+	def update_master(source_doc, target_doc, source_partent):
+		pass
+	
+	doclist = get_mapped_doc("Project", source_name, {
+		"Project": {
+				"doctype": "Extension of Time",
+				"field_map":{
+						"name": "project",
+				},
+				"postprocess": update_master
+			}
+	}, target_doc)
+	return doclist
+
+@frappe.whitelist()
+def sent_dlp_mail(project):
+	dlp_email_list = frappe.db.sql("select e.user_id from tabProject p, `tabDLP Email List` e \
+				where e.parent=p.name and p.name='{0}'".format(project), as_dict=1)
+	if dlp_email_list:
+		recipients = [a['user_id'] for a in dlp_email_list if frappe.db.get_value("User", a['user_id'], "enabled") == 1]
+		
+		if not recipients:
+			recipients = get_users_with_role("Project Manager")
+		
+		subject = _("Defect Liability Period Notification")
+		message = (
+			_("Dear Sir/Madam,")
+			+ "<br><br>"
+			+ _("The Project: {0} is left with 6 days of defect liability expiry date").format(
+				doc.name
+			)
+		)
+		frappe.sendmail(recipients=recipients, subject=subject, message=message)
+
+@frappe.whitelist()
+def update_project_dlp_date():
+	for doc in frappe.db.get_all("Project", {"docstatus": ("!=", 1)}):
+		self = frappe.get_doc("Project", doc.name)
+		if self.dlp_start_date and self.dlp_end_date:
+			if getdate(today()) > getdate(self.dlp_end_date):
+				return
+			remaining_days = date_diff(self.dlp_end_date, today())
+			# frappe.throw(f'here {remaining_days}')
+			self.db_set('remaining_days', remaining_days, update_modified=False)
+			if remaining_days == 6 and self.sent_email_notification:
+				sent_dlp_mail(self.name)

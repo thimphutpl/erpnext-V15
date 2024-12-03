@@ -162,8 +162,8 @@
    "fieldname": "equipment_type",
    "fieldtype": "Link",
    "label": "Equipment Type",
-   "options": "Equipment Type",
-   "reqd": 1
+   "mandatory_depends_on": "eval: (doc.owned_by === 'CDCL' || doc.owned_by==='Own') ",
+   "options": "Equipment Type"
   },
   {
    "depends_on": "eval:doc.client != 'Internal' && doc.customer",
@@ -222,15 +222,16 @@
   },
   {
    "fieldname": "job_cards",
-   "fieldtype": "Data",
+   "fieldtype": "Link",
    "label": "Job Card",
+   "options": "Job Cards",
    "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-24 18:35:05.632086",
+ "modified": "2024-11-29 14:39:41.101069",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Break Down Report",

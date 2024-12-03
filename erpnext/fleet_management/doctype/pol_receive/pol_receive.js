@@ -48,6 +48,15 @@ frappe.ui.form.on('POL Receive', {
 			}, __("View"));
 		}
 	},
+	book_type:function(frm) {
+		if(frm.doc.book_type == 'Own') {
+			frm.set_value("direct_consumption", 1)
+		}
+		if(frm.doc.book_type == 'Common') {
+			frm.set_value("direct_consumption", 0)
+		}
+		frm.refresh_fields("direct_consumption")
+	},
 	qty: function(frm) {
 		calculate_total(frm)
 		frm.events.reset_items()

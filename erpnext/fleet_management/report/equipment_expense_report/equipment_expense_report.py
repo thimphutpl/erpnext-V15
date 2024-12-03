@@ -28,11 +28,11 @@ def get_data(filters):
 			cond += " and e.is_disabled = 1"
 
 	equipments = """
-		select * from (select e.name, eh.branch, eh.from_date, ifnull(eh.to_date, curdate()) as to_date, e.equipment_number, 
+		select * from (select e.name, eh.branch, eh.from_date, ifnull(eh.to_date, curdate()) as to_date, e.registration_number, 
 		e.equipment_type from `tabEquipment` e, `tabEquipment History` eh  where eh.parent = e.name {0} group by e.name, eh.branch) 
 		as equip left join
 		(select eo.operator, eo.start_date, eo.employee_type, ifnull(eo.end_date, curdate()) as end_date, eo.parent 
-		from `tabEquipment Operator` eo) 
+		from `tabEquipment Operator` eo)
 		as opr 
 		on opr.parent = equip.name 
 	""".format(cond)

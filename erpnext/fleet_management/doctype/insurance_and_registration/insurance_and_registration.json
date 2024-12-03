@@ -38,7 +38,9 @@
   "branch",
   "amended_from",
   "cbbb",
-  "cbb"
+  "cbb",
+  "registration_certificate_and_emission_details_section",
+  "table_quie"
  ],
  "fields": [
   {
@@ -171,6 +173,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "depends_on": "eval: doc.insurance_for===\"Equipment\"",
    "fieldname": "equipment_information_section",
    "fieldtype": "Section Break",
    "label": "Equipment Information"
@@ -203,6 +206,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "depends_on": "eval: doc.insurance_for===\"Asset\"",
    "fieldname": "asset_information_section",
    "fieldtype": "Section Break",
    "label": "Asset Information"
@@ -210,11 +214,21 @@
   {
    "fieldname": "column_break_pzid",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "registration_certificate_and_emission_details_section",
+   "fieldtype": "Section Break",
+   "label": "Registration Certificate and Emission Details"
+  },
+  {
+   "fieldname": "table_quie",
+   "fieldtype": "Table",
+   "options": "Bluebook and Emission"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-24 22:22:55.627799",
+ "modified": "2024-11-29 11:14:07.056372",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Insurance and Registration",

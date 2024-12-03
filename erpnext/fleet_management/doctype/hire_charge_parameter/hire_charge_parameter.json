@@ -8,12 +8,12 @@
  "field_order": [
   "section_break_d2nj",
   "amended_from",
-  "equipment_type",
+  "equipment",
+  "registration_number",
   "column_break_lhne",
   "equipment_model",
   "column_break_erjd",
-  "equipment",
-  "registration_number",
+  "equipment_type",
   "external_rate_section",
   "without_fuel",
   "column_break_xfid",
@@ -53,6 +53,7 @@
    "search_index": 1
   },
   {
+   "fetch_from": "equipment.equipment_type",
    "fieldname": "equipment_type",
    "fieldtype": "Link",
    "in_list_view": 1,
@@ -66,6 +67,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "fetch_from": "equipment.equipment_model",
    "fieldname": "equipment_model",
    "fieldtype": "Link",
    "in_list_view": 1,
@@ -217,7 +219,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-24 15:55:19.558312",
+ "modified": "2024-12-02 13:16:36.675456",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Hire Charge Parameter",

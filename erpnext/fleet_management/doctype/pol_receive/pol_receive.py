@@ -31,6 +31,7 @@ class POLReceive(StockController):
 		from frappe.types import DF
 
 		amended_from: DF.Link | None
+		amended_froms: DF.Link | None
 		book_type: DF.Literal["", "Own", "Common"]
 		branch: DF.Link
 		company: DF.Link
@@ -120,7 +121,7 @@ class POLReceive(StockController):
 
 		self.db_set("jv", None)
 
-		self.cancel_budget_entry()
+		# self.cancel_budget_entry() #jai, this should handle at General Ledger process
 		self.delete_pol_entry()
 
 	def validate_dc(self):
@@ -193,6 +194,7 @@ class POLReceive(StockController):
 		if not self.is_hsd_item:
 			account = frappe.db.get_value("Item Default", {'parent': self.pol_type}, "expense_account")
 
+		# jai, its handle from General Ledger process, and have to mention in Budget Setting
 		# check_budget_available(cc, account, self.posting_date, self.total_amount)
 		# self.consume_budget(cc, account)
 

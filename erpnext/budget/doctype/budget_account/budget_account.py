@@ -42,7 +42,7 @@ class BudgetAccount(Document):
 		bs_october: DF.Data | None
 		bs_september: DF.Data | None
 		budget_amount: DF.Currency
-		budget_check: DF.Literal["Stop", "Ignore"]
+		budget_check: DF.Literal["", "Stop", "Ignore"]
 		budget_received: DF.Currency
 		budget_sent: DF.Currency
 		budget_type: DF.Link | None

@@ -31,7 +31,7 @@ def get_columns():
 
 def get_data(filters):
 
-	query = ("""select hic.branch, hic.customer, hic.name, hid.equipment, hid.equipment_number, hid. work_rate, hid.idle_rate,
+	query = ("""select hic.branch, hic.customer, hic.name, hid.equipment, hid.registration_number, hid. work_rate, hid.idle_rate,
 CASE hic.owned_by
 	WHEN 'Private' THEN SUM(hid.total_amount)
 	END as Private,
@@ -54,10 +54,10 @@ where hic.name = hid.parent and hid.equipment = e.name and hic.docstatus = 1 """
 	if filters.get("from_date") and filters.get("to_date"):
 		query += " and hic.posting_date between \'" + str(filters.from_date) + "\' and \'"+ str(filters.to_date) + "\'"
 	if filters.get("not_cdcl"):
-                query += " and e.not_cdcl = 0"
+		query += " and e.not_cdcl = 0"
 	if filters.get("include_disabled"):
-                query += " "
+		query += " "
 	else:
-    			query += " and e.is_disabled = 0"
+		query += " and e.is_disabled = 0"
 	query += " group by hic.customer, hic.name, hid.equipment "
 	return frappe.db.sql(query)

@@ -22,6 +22,7 @@ class ProcessMRPayment(Document):
 		amended_from: DF.Link | None
 		branch: DF.Link
 		cost_center: DF.Link
+		deduction: DF.Currency
 		employee_type: DF.Literal["", "Muster Roll Employee", "GEP Employee"]
 		fiscal_year: DF.Link | None
 		from_date: DF.Date | None
@@ -33,6 +34,7 @@ class ProcessMRPayment(Document):
 		posting_date: DF.Date
 		project: DF.Link | None
 		to_date: DF.Date | None
+		total_amount_payable: DF.Currency
 		total_health_amount: DF.Currency
 		total_overall_amount: DF.Currency
 		wages_amount: DF.Currency
@@ -366,7 +368,7 @@ def get_records(fiscal_year, fiscal_month, cost_center, branch, dn):
 	master  = frappe._dict()
 	emp_list = frappe.db.sql("""
 		SELECT e.name, e.person_name, e.id_card, e.status, e.designation, 
-			e.salary, bank_name AS bank, bank_ac_no AS account_no
+			e.salary, bank_name AS bank, bank_ac_no AS account_no,e.amount
 		FROM `tabMuster Roll Employee` as e
 		INNER JOIN `tabMusterroll`
 		INNER JOIN 
@@ -426,7 +428,8 @@ def get_records(fiscal_year, fiscal_month, cost_center, branch, dn):
 			"designation" : e.designation,
 			"account_no" : e.account_no,
 			"bank" : e.bank,
-			"salary": e.salary
+			"salary": e.salary,
+			"amount":e.amount
 		}))
 	
 			

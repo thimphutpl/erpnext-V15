@@ -33,6 +33,8 @@ class EquipmentPOLTransfer(Document):
 		te_number: DF.ReadOnly | None
 		to_branch: DF.ReadOnly | None
 		to_equipment: DF.Link
+		voucher_no: DF.DynamicLink | None
+		voucher_type: DF.Link | None
 	# end: auto-generated types
 	def validate(self):
 		check_future_date(self.posting_date)
@@ -42,7 +44,7 @@ class EquipmentPOLTransfer(Document):
 	def on_submit(self):
 		self.adjust_consumed_pol()
 		if self.from_branch != self.to_branch and getdate(self.posting_date) > getdate("2018-03-31"):
-			self.check_budget()
+			# self.check_budget() #it is handled in budget and it is centralized 
 			self.update_gl_entry()
 
 	def check_budget(self):
@@ -51,7 +53,10 @@ class EquipmentPOLTransfer(Document):
 		account = frappe.db.get_value("Equipment Category", frappe.db.get_value("Equipment", self.to_equipment, "equipment_category"), "budget_account")
 		if not account:
 			frappe.throw("Setup Budget Account in Equipment Category")
-		valuation_rate = get_valuation_rate(self.pol_type, frappe.db.get_value("Cost Center", from_cc, "warehouse"))
+		# valuation_rate = get_valuation_rate(self.pol_type, frappe.db.get_value("Cost Center", from_cc, "warehouse"), voucher_type="Equipment POL Transfer",
+    	# voucher_no=self.name)
+		valuation_rate = get_valuation_rate(self.pol_type, frappe.db.get_value("Cost Center", from_cc, "warehouse")
+		)
 		if not valuation_rate:
 			frappe.throw("Valuation Rate could not be calculated. Check Cost Center and Warehouse Linkage")
 
@@ -104,7 +109,7 @@ class EquipmentPOLTransfer(Document):
 			frappe.throw("Setup Intra-Company Account in Accounts Settings")
 		
 		from erpnext.stock.stock_ledger import get_valuation_rate
-		valuation_rate = get_valuation_rate(self.pol_type, frappe.db.get_value("Cost Center", from_cc, "warehouse"))
+		valuation_rate = get_valuation_rate(self.pol_type, frappe.db.get_value("Cost Center", from_cc, "warehouse"), self.doctype, self.name,)
 		if not valuation_rate:
 			frappe.throw("Valuation Rate could not be calculated. Check Cost Center and Warehouse Linkage")
 
@@ -146,7 +151,7 @@ class EquipmentPOLTransfer(Document):
 
 	def on_cancel(self):
 		if self.from_branch != self.to_branch and getdate(self.posting_date) > getdate("2018-03-31"):
-			self.cancel_budget_entry()
+			# self.cancel_budget_entry()
 			self.update_gl_entry()
 		frappe.db.sql("delete from `tabPOL Entry` where reference_name = %s", (self.name))
 
@@ -159,7 +164,7 @@ class EquipmentPOLTransfer(Document):
 	
 	def adjust_consumed_pol(self):
 		if getdate(self.posting_date) <= getdate("2018-03-31"):
-                        return
+			return
 		if self.from_branch == self.to_branch:
 			own = 1
 		else:

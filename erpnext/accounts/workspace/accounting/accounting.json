@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"tHb3yxthkR\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>                                    Masters Data &amp; Transaction</b></span>\",\"col\":12}},{\"id\":\"DnNtsmxpty\",\"type\":\"card\",\"data\":{\"card_name\":\"Accounting Masters\",\"col\":4}},{\"id\":\"nKKr6fjgjb\",\"type\":\"card\",\"data\":{\"card_name\":\"Transaction Entry\",\"col\":4}},{\"id\":\"Wn2lhs7WLn\",\"type\":\"card\",\"data\":{\"card_name\":\"Multi Currency\",\"col\":4}},{\"id\":\"QWiuI4338s\",\"type\":\"card\",\"data\":{\"card_name\":\"Taxes\",\"col\":4}},{\"id\":\"UtlUkdfGBc\",\"type\":\"card\",\"data\":{\"card_name\":\"Account Settings\",\"col\":4}},{\"id\":\"LyxwV1-dZU\",\"type\":\"card\",\"data\":{\"card_name\":\"Project Accounts\",\"col\":4}},{\"id\":\"GrOkBJJM23\",\"type\":\"card\",\"data\":{\"card_name\":\"Financial Statements\",\"col\":4}},{\"id\":\"xTKhqbI2Ad\",\"type\":\"card\",\"data\":{\"card_name\":\"Banking\",\"col\":4}},{\"id\":\"DLNAq33-qg\",\"type\":\"card\",\"data\":{\"card_name\":\"Cheque\",\"col\":4}}]",
+ "content": "[{\"id\":\"tHb3yxthkR\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>                                    Masters Data &amp; Transaction</b></span>\",\"col\":12}},{\"id\":\"DnNtsmxpty\",\"type\":\"card\",\"data\":{\"card_name\":\"Accounting Masters\",\"col\":4}},{\"id\":\"nKKr6fjgjb\",\"type\":\"card\",\"data\":{\"card_name\":\"Transaction Entry\",\"col\":4}},{\"id\":\"Wn2lhs7WLn\",\"type\":\"card\",\"data\":{\"card_name\":\"Multi Currency\",\"col\":4}},{\"id\":\"QWiuI4338s\",\"type\":\"card\",\"data\":{\"card_name\":\"Taxes\",\"col\":4}},{\"id\":\"UtlUkdfGBc\",\"type\":\"card\",\"data\":{\"card_name\":\"Account Settings\",\"col\":4}},{\"id\":\"LyxwV1-dZU\",\"type\":\"card\",\"data\":{\"card_name\":\"Project Accounts\",\"col\":4}},{\"id\":\"ogg8KsB6dA\",\"type\":\"card\",\"data\":{\"card_name\":\"Impress Transaction \",\"col\":4}},{\"id\":\"GrOkBJJM23\",\"type\":\"card\",\"data\":{\"card_name\":\"Financial Statements\",\"col\":4}},{\"id\":\"xTKhqbI2Ad\",\"type\":\"card\",\"data\":{\"card_name\":\"Banking\",\"col\":4}},{\"id\":\"DLNAq33-qg\",\"type\":\"card\",\"data\":{\"card_name\":\"Cheque\",\"col\":4}}]",
  "creation": "2020-03-02 15:41:59.515192",
  "custom_blocks": [],
  "docstatus": 0,
@@ -289,65 +289,6 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Taxes",
-   "link_count": 5,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "TDS Register ",
-   "link_count": 0,
-   "link_to": "TDS Register",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "TDS Remittance ",
-   "link_count": 0,
-   "link_to": "TDS Remittance",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "TDS Certificate",
-   "link_count": 0,
-   "link_to": "TDS Certificate",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "TDS Receipt Updated",
-   "link_count": 0,
-   "link_to": "TDS Receipt Update",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Tax Withholding Category",
-   "link_count": 0,
-   "link_to": "Tax Withholding Category",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
    "label": "Banking",
    "link_count": 5,
    "link_type": "DocType",
@@ -407,8 +348,145 @@
   {
    "hidden": 0,
    "is_query_report": 0,
+   "label": "Cheque",
+   "link_count": 3,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Create Cheque Lot",
+   "link_count": 0,
+   "link_to": "Cheque Lot",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Fund Requisition",
+   "link_count": 0,
+   "link_to": "Fund Requisition",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Cheque Register",
+   "link_count": 0,
+   "link_to": "Cheque Register",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Taxes",
+   "link_count": 5,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "TDS Register ",
+   "link_count": 0,
+   "link_to": "TDS Register",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "TDS Remittance ",
+   "link_count": 0,
+   "link_to": "TDS Remittance",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "TDS Receipt Updated",
+   "link_count": 0,
+   "link_to": "TDS Receipt Update",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Tax Withholding Category",
+   "link_count": 0,
+   "link_to": "Tax Withholding Category",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "TDS Certificate",
+   "link_count": 0,
+   "link_to": "TDS Certificate",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Impress Transaction ",
+   "link_count": 3,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Imprest Type",
+   "link_count": 0,
+   "link_to": "Imprest Type",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Imprest Recoup",
+   "link_count": 0,
+   "link_to": "Imprest Recoup",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Imprest Advance",
+   "link_count": 0,
+   "link_to": "Imprest Advance",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
    "label": "Financial Statements",
-   "link_count": 4,
+   "link_count": 5,
    "link_type": "DocType",
    "onboard": 0,
    "type": "Card Break"
@@ -455,45 +533,16 @@
   },
   {
    "hidden": 0,
-   "is_query_report": 0,
-   "label": "Cheque",
-   "link_count": 3,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Create Cheque Lot",
-   "link_count": 0,
-   "link_to": "Cheque Lot",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Fund Requisition",
-   "link_count": 0,
-   "link_to": "Fund Requisition",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
    "is_query_report": 1,
-   "label": "Cheque Register",
+   "label": "Comparative Statement",
    "link_count": 0,
-   "link_to": "Cheque Register",
+   "link_to": "Comparative Statement",
    "link_type": "Report",
    "onboard": 0,
    "type": "Link"
   }
  ],
- "modified": "2024-11-28 17:49:22.363510",
+ "modified": "2024-12-02 22:43:57.671243",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Accounting",

@@ -17,10 +17,12 @@ class TenderHireRate(Document):
 		amended_from: DF.Link | None
 		branch: DF.Link
 		customer: DF.Link
+		equipment: DF.Link
 		equipment_model: DF.Link
 		equipment_type: DF.Link
 		from_date: DF.Date
 		idle_rate: DF.Float
+		registration_number: DF.ReadOnly | None
 		to_date: DF.Date
 		with_fuel: DF.Float
 		without_fuel: DF.Float

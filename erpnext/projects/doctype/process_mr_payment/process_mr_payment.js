@@ -118,6 +118,9 @@ function get_records(fiscal_year, month, cost_center, branch, dn) {
 							row.amount_special 		= flt(mr['number_of_hours_special'])*flt(mr['rate_per_hour']);
 							row.total_ot_amount = flt(mr['number_of_hours_regular']) * flt(mr['rate_per_hour_normal']) + flt(mr['number_of_hours_special'])*flt(mr['rate_per_hour'])
 							row.total_wage 		= flt(mr['rate_per_day']) * flt(mr['number_of_days'])
+							
+							row.mess_deduction 	= flt(mr['amount']);
+							
 						//}
 						
 						/*
@@ -130,17 +133,22 @@ function get_records(fiscal_year, month, cost_center, branch, dn) {
 						*/
 						
 						row.total_amount 	= flt(row.total_ot_amount) + flt(row.total_wage);
+						row.total_payable=flt(row.total_amount)-flt(row.mess_deduction);
 						refresh_field("items");
 
 						total_overall_amount += row.total_amount;
 						ot_amount 			 += row.total_ot_amount;
 						wages_amount 		 += row.total_wage;
+						deduction 			 +=row.mess_deduction;
+						total_amount_payable=total_overall_amount-deduction;
 					}
 				});
 
 				cur_frm.set_value("total_overall_amount", total_overall_amount)
 				cur_frm.set_value("wages_amount", flt(wages_amount))
 				cur_frm.set_value("ot_amount", flt(ot_amount))
+				cur_frm.set_value("deduction", flt(deduction))
+				cur_frm.set_value("total_amount_payable", flt(total_amount_payable))
 				cur_frm.refresh_field("total_overall_amount")
 				cur_frm.refresh_field("wages_amount")
 				cur_frm.refresh_field("ot_amount")

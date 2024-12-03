@@ -650,55 +650,6 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "POL Reports",
-   "link_count": 4,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "POL Receive Report",
-   "link_count": 0,
-   "link_to": "POL Receive Report",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "POL Issue Report",
-   "link_count": 0,
-   "link_to": "POL Issue Report",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "POL Balance Report",
-   "link_count": 0,
-   "link_to": "POL Balance Report",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "POL Ledger",
-   "link_count": 0,
-   "link_to": "POL Ledger",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
    "label": "POL Transaction",
    "link_count": 4,
    "link_type": "DocType",
@@ -756,7 +707,7 @@
   },
   {
    "hidden": 0,
-   "is_query_report": 0,
+   "is_query_report": 1,
    "label": "Party Wise Billing",
    "link_count": 0,
    "link_to": "Party Wise Billing",
@@ -806,7 +757,7 @@
   },
   {
    "hidden": 0,
-   "is_query_report": 0,
+   "is_query_report": 1,
    "label": "HSD Consumption Report",
    "link_count": 0,
    "link_to": "HSD Consumption Report",
@@ -823,10 +774,59 @@
    "link_type": "Report",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "POL Reports",
+   "link_count": 4,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "POL Receive Report",
+   "link_count": 0,
+   "link_to": "POL Receive Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "POL Issue Report",
+   "link_count": 0,
+   "link_to": "POL Issue Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "POL Balance Report",
+   "link_count": 0,
+   "link_to": "POL Balance Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "POL Ledger",
+   "link_count": 0,
+   "link_to": "POL Ledger",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2024-11-28 16:20:51.206108",
- "modified_by": "Administrator",
+ "modified": "2024-11-29 13:05:06.174870",
+ "modified_by": "kinzang.namgyal@cdcl.bt",
  "module": "Fleet Management",
  "name": "Fleet Management",
  "number_cards": [],

@@ -62,7 +62,10 @@ def get_columns(filters):
 		},
 		{
 			"fieldname": "name",
-			"fieldtype": "Data",
+			# "fieldtype": "Data",
+			"fieldtype": "Link",
+			"options": "Stock Entry",
+			
 			"label": _("Stock Entry"),
 		},
 		{

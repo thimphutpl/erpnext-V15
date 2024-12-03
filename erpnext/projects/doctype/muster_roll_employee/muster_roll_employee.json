@@ -18,6 +18,8 @@
   "mr_type",
   "column_break_yhwd",
   "list_in_job_card",
+  "mess_deduction",
+  "amount",
   "section_break_bjhj",
   "work_status_column",
   "project",
@@ -365,12 +367,24 @@
    "fieldtype": "Link",
    "label": "Unit",
    "options": "Department"
+  },
+  {
+   "default": "0",
+   "fieldname": "mess_deduction",
+   "fieldtype": "Check",
+   "label": "Mess Deduction"
+  },
+  {
+   "depends_on": "eval:doc.mess_deduction==1",
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "label": "Amount"
   }
  ],
  "in_create": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-25 09:48:09.832942",
+ "modified": "2024-12-03 10:15:33.910887",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Muster Roll Employee",

@@ -5,25 +5,15 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "fiscal_year",
-  "column_break_2",
   "registration_date",
   "column_break_4",
-  "registration_amount"
+  "registration_amount",
+  "cb1",
+  "due_date",
+  "cb2",
+  "remarks"
  ],
  "fields": [
-  {
-   "fieldname": "fiscal_year",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": " Fiscal Year",
-   "options": "Fiscal Year",
-   "reqd": 1
-  },
-  {
-   "fieldname": "column_break_2",
-   "fieldtype": "Column Break"
-  },
   {
    "fieldname": "registration_date",
    "fieldtype": "Date",
@@ -36,17 +26,38 @@
    "fieldtype": "Column Break"
   },
   {
+   "fieldname": "due_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Due Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "cb1",
+   "fieldtype": "Column Break"
+  },
+  {
    "fieldname": "registration_amount",
    "fieldtype": "Currency",
    "in_list_view": 1,
    "label": "Registration Amount",
    "reqd": 1
+  },
+  {
+   "fieldname": "cb2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Text",
+   "in_list_view": 1,
+   "label": "Remarks"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2022-11-07 11:20:38.870776",
+ "modified": "2024-11-29 11:03:51.825146",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Registration Details",

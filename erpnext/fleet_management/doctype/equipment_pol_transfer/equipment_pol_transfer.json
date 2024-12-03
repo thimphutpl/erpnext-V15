@@ -1,6 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "EHT.YY.MM.###",
  "creation": "2024-10-31 15:15:33.184975",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -26,7 +27,11 @@
   "column_break_dvvz",
   "remarks",
   "section_break_dsdg",
-  "amended_from"
+  "amended_from",
+  "section_break_nmie",
+  "voucher_type",
+  "column_break_tigj",
+  "voucher_no"
  ],
  "fields": [
   {
@@ -86,12 +91,14 @@
    "reqd": 1
   },
   {
+   "fetch_from": "from_equipment.registration_number",
    "fieldname": "fe_number",
    "fieldtype": "Read Only",
    "label": "From Equipment Number",
    "options": "from_equipment.equipment_number"
   },
   {
+   "fetch_from": "from_equipment.branch",
    "fieldname": "from_branch",
    "fieldtype": "Read Only",
    "label": "From Branch",
@@ -109,12 +116,14 @@
    "reqd": 1
   },
   {
+   "fetch_from": "to_equipment.registration_number",
    "fieldname": "te_number",
    "fieldtype": "Read Only",
    "label": "To Equipment Number",
    "options": "to_equipment.equipment_number"
   },
   {
+   "fetch_from": "to_equipment.branch",
    "fieldname": "to_branch",
    "fieldtype": "Read Only",
    "label": "To Branch",
@@ -155,15 +164,43 @@
   {
    "fieldname": "section_break_dsdg",
    "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "section_break_nmie",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "voucher_type",
+   "fieldtype": "Link",
+   "in_filter": 1,
+   "in_list_view": 1,
+   "label": "Voucher Type",
+   "options": "DocType",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_tigj",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "voucher_no",
+   "fieldtype": "Dynamic Link",
+   "in_filter": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Voucher No",
+   "options": "voucher_type",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-10-31 15:48:35.720723",
+ "modified": "2024-12-02 10:07:19.055147",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Equipment POL Transfer",
+ "naming_rule": "Expression (old style)",
  "owner": "Administrator",
  "permissions": [
   {

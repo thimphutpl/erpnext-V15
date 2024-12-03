@@ -1,117 +1,121 @@
 # Copyright (c) 2023, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
+# For license information, please see license.txt
 from __future__ import unicode_literals
 import frappe
 from frappe import _
-from frappe.utils import flt, cint,add_days, cstr, flt, getdate, nowdate, rounded, date_diff
+from frappe.utils import flt, getdate, formatdate, cstr
+from erpnext.fleet_management.report.hsd_consumption_report.fleet_management_report import get_pol_till, get_pol_consumed_till
 
 def execute(filters=None):
-	columns, data = get_columns(filters), get_data(filters)
+	columns = get_columns(filters);
+	data = get_data(filters);
+
 	return columns, data
-	
-def get_tanker_details(filters):
-	if filters.get("equipment"):
-		return frappe.get_list("Equipment", fields=["name","equipment_category","registeration_number"], filters={"company": filters.company, "is_container":1, "name":filters.get("equipment") })
-	return frappe.get_list("Equipment", fields=["name","equipment_category","registeration_number"], filters={"company": filters.company, "is_container":1 })
 
-def get_data(filters):
+def get_data(filters=None):
 	data = []
-	conditions = get_conditions(filters)
+	query = "select e.name, e.branch, e.registration_number, e.hsd_type, e.equipment_type from tabEquipment e, `tabEquipment Type`et where e.equipment_type = et.name"
+	if not filters.all_equipment:
+		query += " and et.is_container = 1"
+	if filters.branch:
+		query += " and e.branch = \'" + str(filters.branch) + "\'"
+		
+	items = frappe.db.sql("select item_code, item_name, stock_uom from tabItem where is_hsd_item = 1 and disabled = 0", as_dict=True)
 
-	for t in get_tanker_details(filters):
-		opening_in_qty = opening_out_qty = in_qty = out_qty = balance_qty = 0
-		for d in frappe.db.sql('''
-				SELECT  pol_type, item_name, equipment,
-						SUM(CASE WHEN posting_date < '{from_date}' AND type = 'Stock' THEN qty ELSE 0 END) AS opening_in_qty,
-						SUM(CASE WHEN posting_date < '{from_date}' AND type = 'Issue' THEN qty ELSE 0 END) AS opening_out_qty,
-						SUM(CASE WHEN posting_date BETWEEN '{from_date}' AND '{to_date}' AND type = 'Stock' THEN qty ELSE 0 END) AS in_qty,
-						SUM(CASE WHEN posting_date BETWEEN '{from_date}' AND '{to_date}' AND type = 'Issue' THEN qty ELSE 0 END) AS out_qty
-				FROM `tabPOL Entry` WHERE docstatus = 1 {conditions} AND equipment = '{equipment}'
-				GROUP BY pol_type
-			'''.format(from_date=filters.get("from_date"), to_date=filters.get("to_date"), conditions= conditions, equipment = t.name), as_dict=1):
-			# opening_in_qty 	+= flt(d.opening_in_qty)
-			# opening_out_qty += flt(d.opening_out_qty)
-			# in_qty 			+= flt(d.in_qty)
-			# out_qty 		+= flt(d.out_qty)
-			d.update({
-				"opening_qty": flt(d.opening_in_qty) - flt(d.opening_out_qty),
-				"equipment_category":t.equipment_category,
-				"balance_qty": flt(flt(d.opening_in_qty) - flt(d.opening_out_qty),2) + flt(flt(d.in_qty) - flt(d.out_qty),2)
-			})
-			data.append(d)
-			# data.append({
-			# 	"equipment":t.name,
-			# 	"pol_type":
-			# 	"equipment_category":t.equipment_category,
-			# 	"opening_qty": flt(opening_in_qty) - flt(opening_out_qty),
-			# 	"in_qty":in_qty,
-			# 	"out_qty":out_qty,
-			# 	"balance_qty": flt(flt(opening_in_qty) - flt(opening_out_qty)) + flt(flt(in_qty) - flt(out_qty))
-			# })
+	query += " order by e.branch"
+
+	for eq in frappe.db.sql(query, as_dict=True):
+		for item in items:
+			received = issued = 0
+			if filters.all_equipment:
+				if eq.hsd_type == item.item_code:
+					received = get_pol_till("Receive", eq.name, filters.to_date, item.item_code)
+					issued = get_pol_consumed_till(eq.name, filters.to_date)
+			else:
+				received = get_pol_till("Stock", eq.name, filters.to_date, item.item_code)
+				issued = get_pol_till("Issue", eq.name, filters.to_date, item.item_code)
+
+			if received or issued:
+				row = [eq.name, eq.registration_number, eq.equipment_type, eq.branch, item.item_code, item.item_name, item.stock_uom, received, issued, flt(received) - flt(issued)]
+				data.append(row)
 	return data
 
-def get_conditions(filters):
-	conditions = []
-	if filters.get("to_date"):
-		conditions.append("posting_date <= '{}'".format(filters.get("to_date")))
-	if filters.get("branch"):
-		conditions.append("branch = '{}'".format(filters.get("branch")))
-
-	return "and {}".format(" and ".join(conditions)) if conditions else ""
-		
-
 def get_columns(filters):
-	return [
+	cols = [
 		{
-			"fieldname":"equipment",
-			"label":_("Tanker"),
-			"fieldtype":"Link",
-			"options":"Equipment",
-			"width":130
+			"fieldname": "equipment",
+			"label": _("Equipment"),
+			"fieldtype": "Link",
+			"options": "Equipment",
+			"width": 100
 		},
 		{
-			"fieldname":"pol_type",
-			"label":_("POL Type"),
-			"fieldtype":"Link",
-			"options":"Item",
-			"width":100
+			"fieldname": "eq_name",
+			"label": _("Equipment Name"),
+			"fieldtype": "Data",
+			"width": 130
 		},
 		{
-			"fieldname":"item_name",
-			"label":_("Item Name"),
-			"fieldtype":"Data",
-			"width":100
+			"fieldname": "eq_cat",
+			"label": _("Equipment Type"),
+			"fieldtype": "Data",
+			"width": 130
+        },
+		{
+			"fieldname": "branch",
+			"label": _("Branch"),
+			"fieldtype": "Link",
+			"options": "Branch",
+			"width": 200
+        },
+		{
+			"fieldname": "pol_type",
+			"label": _("Item Code"),
+			"fieldtype": "Data",
+			"width": 100
 		},
 		{
-			"fieldname":"equipment_category",
-			"label":_("Tanker Category"),
-			"fieldtype":"Link",
-			"options":"Equipment Category",
-			"width":200
-		},
+			"fieldname": "pol_name",
+			"label": _("Item Name"),
+			"fieldtype": "Data",
+			"width": 170
+        },
 		{
-			"fieldname":"opening_qty",
-			"label":_("Opening Qty"),
-			"fieldtype":"Float",
-			"width":120
-		},
+			"fieldname": "uom",
+			"label": _("UOM"),
+			"fieldtype": "Link",
+			"options": "UOM",
+			"width": 60
+        },
 		{
-			"fieldname":"in_qty",
-			"label":_("In Qty"),
-			"fieldtype":"Float",
-			"width":120
-		},
-		{
-			"fieldname":"out_qty",
-			"label":_("Out Qty"),
-			"fieldtype":"Float",
-			"width":120
-		},
-		{
-			"fieldname":"balance_qty",
-			"label":_("Balance Qty"),
-			"fieldtype":"Float",
-			"width":120
-		}
+			"fieldname": "received",
+			"label": _("Received"),
+			"fieldtype": "Float",
+			"width": 100
+        },
 	]
+
+	if filters.all_equipment:
+		cols.append({
+				"fieldname": "issued",
+				"label": _("Consumed"),
+				"fieldtype": "Float",
+				"width": 100
+			})
+	else:
+		cols.append({
+				"fieldname": "issued",
+				"label": _("Issued"),
+				"fieldtype": "Float",
+				"width": 100
+			})
+
+	cols.append({
+				"fieldname": "balance",
+				"label": _("Balance"),
+				"fieldtype": "Float",
+				"width": 100
+            })
+	return cols

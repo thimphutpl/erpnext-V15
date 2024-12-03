@@ -14,12 +14,15 @@ class RequestforQuotationSupplier(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		attention_person: DF.Data | None
 		contact: DF.Link | None
 		email_id: DF.Data | None
 		email_sent: DF.Check
+		location: DF.ReadOnly | None
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
+		phone: DF.Data | None
 		quote_status: DF.Literal["Pending", "Received"]
 		send_email: DF.Check
 		supplier: DF.Link

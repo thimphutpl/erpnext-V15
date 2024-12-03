@@ -25,6 +25,7 @@ class Branch(Document):
 		address: DF.LongText | None
 		branch: DF.Data
 		branch_bank_account: DF.Table[BranchBankAccount]
+		branch_code: DF.Data | None
 		company: DF.Link
 		cost_center: DF.Link
 		disabled: DF.Check
@@ -32,6 +33,7 @@ class Branch(Document):
 		gis_policy_number: DF.Data | None
 		holiday_list: DF.Link | None
 		imprest_limit: DF.Currency
+		is_hq_branch: DF.Check
 		items: DF.Table[BranchImprestItem]
 		letter_head: DF.Link | None
 		revenue_bank_account: DF.Link | None

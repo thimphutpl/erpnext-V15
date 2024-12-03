@@ -9,6 +9,7 @@
  "field_order": [
   "department_name",
   "parent_department",
+  "department_rating",
   "column_break_3",
   "company",
   "is_group",
@@ -18,7 +19,15 @@
   "disabled",
   "lft",
   "rgt",
-  "old_parent"
+  "old_parent",
+  "section_break_mrcz",
+  "approver_hod",
+  "column_break_mhap",
+  "approver_id",
+  "column_break_ggez",
+  "approver_name",
+  "column_break_gcak",
+  "approver_designation"
  ],
  "fields": [
   {
@@ -107,13 +116,59 @@
    "fieldname": "is_division",
    "fieldtype": "Check",
    "label": "Is Division"
+  },
+  {
+   "fieldname": "section_break_mrcz",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_mhap",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "approver_hod.user_id",
+   "fieldname": "approver_id",
+   "fieldtype": "Link",
+   "label": "Approver ID",
+   "options": "User"
+  },
+  {
+   "fieldname": "column_break_ggez",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "approver_hod.employee_name",
+   "fieldname": "approver_name",
+   "fieldtype": "Data",
+   "label": "Approver Name"
+  },
+  {
+   "fieldname": "column_break_gcak",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "approver_hod.designation",
+   "fieldname": "approver_designation",
+   "fieldtype": "Data",
+   "label": "Approver Designation"
+  },
+  {
+   "fieldname": "approver_hod",
+   "fieldtype": "Link",
+   "label": "Approver",
+   "options": "Employee"
+  },
+  {
+   "fieldname": "department_rating",
+   "fieldtype": "Percent",
+   "label": "Department Rating"
   }
  ],
  "icon": "fa fa-sitemap",
  "idx": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2024-10-31 17:09:54.329341",
+ "modified": "2024-12-03 17:03:52.150165",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Department",
@@ -121,44 +176,45 @@
  "owner": "Administrator",
  "permissions": [
   {
-   "create": 1,
-   "delete": 1,
    "email": 1,
    "print": 1,
    "read": 1,
    "report": 1,
    "role": "HR User",
-   "share": 1,
-   "write": 1
+   "share": 1
   },
   {
-   "create": 1,
-   "delete": 1,
    "email": 1,
    "export": 1,
    "print": 1,
    "read": 1,
    "report": 1,
    "role": "Academics User",
-   "share": 1,
-   "write": 1
+   "share": 1
+  },
+  {
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "HR Manager",
+   "share": 1
+  },
+  {
+   "role": "Employee",
+   "select": 1
   },
   {
    "create": 1,
    "delete": 1,
    "email": 1,
    "export": 1,
-   "import": 1,
    "print": 1,
    "read": 1,
    "report": 1,
-   "role": "HR Manager",
+   "role": "Admin",
    "share": 1,
    "write": 1
-  },
-  {
-   "role": "Employee",
-   "select": 1
   }
  ],
  "show_name_in_global_search": 1,

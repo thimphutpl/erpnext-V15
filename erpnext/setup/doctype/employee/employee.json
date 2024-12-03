@@ -18,6 +18,7 @@
   "last_name",
   "employee_name",
   "user_id",
+  "scan_sign",
   "column_break_9",
   "status",
   "gender",
@@ -25,12 +26,12 @@
   "date_of_joining",
   "image",
   "old_id",
-  "scan_sign",
   "employment_details_section",
   "employment_type",
   "employee_group",
   "pms_group",
   "designation",
+  "professional_category",
   "region",
   "reports_to",
   "reports_to_name",
@@ -119,6 +120,14 @@
   "column_break_73",
   "date_of_issue",
   "place_of_issue",
+  "permanent_details_section",
+  "country",
+  "gewog",
+  "house_number",
+  "column_break_qnni",
+  "dzongkhag",
+  "village",
+  "thram_number",
   "employee_family_details_section",
   "employee_family_details",
   "profile_tab",
@@ -1018,6 +1027,8 @@
    "label": "IP Phone Number"
   },
   {
+   "bold": 1,
+   "description": "Attach your signature",
    "fieldname": "scan_sign",
    "fieldtype": "Attach Image",
    "ignore_user_permissions": 1,
@@ -1055,13 +1066,62 @@
    "fieldname": "train_record",
    "fieldtype": "Table",
    "options": "Training Records"
+  },
+  {
+   "fieldname": "permanent_details_section",
+   "fieldtype": "Section Break",
+   "label": "Permanent Details"
+  },
+  {
+   "fieldname": "country",
+   "fieldtype": "Link",
+   "label": "Country",
+   "options": "Country"
+  },
+  {
+   "fieldname": "gewog",
+   "fieldtype": "Link",
+   "label": "Gewog",
+   "options": "Gewog"
+  },
+  {
+   "fieldname": "house_number",
+   "fieldtype": "Data",
+   "label": "House Number"
+  },
+  {
+   "fieldname": "column_break_qnni",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "dzongkhag",
+   "fieldtype": "Link",
+   "label": "Dzongkhag",
+   "options": "Dzongkhag"
+  },
+  {
+   "fieldname": "village",
+   "fieldtype": "Link",
+   "label": "Village",
+   "options": "Village"
+  },
+  {
+   "fieldname": "thram_number",
+   "fieldtype": "Data",
+   "label": "Thram Number"
+  },
+  {
+   "fieldname": "professional_category",
+   "fieldtype": "Link",
+   "label": "Professional Category",
+   "options": "Professional Category"
   }
  ],
  "icon": "fa fa-user",
  "idx": 24,
  "image_field": "image",
  "links": [],
- "modified": "2024-11-27 12:15:19.236672",
+ "modified": "2024-12-02 12:47:37.894866",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee",

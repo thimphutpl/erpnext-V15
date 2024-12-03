@@ -48,6 +48,15 @@ def employee_query(doctype, txt, searchfield, start, page_len, filters):
 		{"txt": "%%%s%%" % txt, "_txt": txt.replace("%", ""), "start": start, "page_len": page_len},
 	)
 
+#filtering auditors for prepare audit plan
+@frappe.whitelist()
+#filtering family members based on sws membership
+@frappe.whitelist()
+def filter_auditors(doctype, txt, searchfield, start, page_len, filters):
+	return frappe.db.sql("""
+	select a.name as name, a.employee_name as full_name from `tabEmployee` a, `tabHas Role` b where a.user_id = b.parent
+	and b.role = 'Audit User' and a.status = 'Active' and (a.{key} like '%{txt}%' or a.employee_name like '%{txt}%' or a.name like '%{txt}%')
+	""".format(key=searchfield, txt = txt))
 
 # searches for leads which are not converted
 @frappe.whitelist()

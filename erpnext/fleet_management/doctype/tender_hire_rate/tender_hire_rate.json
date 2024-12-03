@@ -7,11 +7,14 @@
  "engine": "InnoDB",
  "field_order": [
   "section_break_0zkp",
+  "equipment",
+  "registration_number",
+  "column_break_shhn",
   "branch",
   "customer",
-  "column_break_shhn",
-  "equipment_type",
+  "column_break_ysci",
   "equipment_model",
+  "equipment_type",
   "section_break_nozl",
   "with_fuel",
   "column_break_rgno",
@@ -40,6 +43,7 @@
    "read_only": 1
   },
   {
+   "fetch_from": "equipment.branch",
    "fieldname": "branch",
    "fieldtype": "Link",
    "in_list_view": 1,
@@ -59,6 +63,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "fetch_from": "equipment.equipment_type",
    "fieldname": "equipment_type",
    "fieldtype": "Link",
    "label": "Equipment Type",
@@ -67,6 +72,7 @@
   },
   {
    "depends_on": "eval:doc.equipment_type",
+   "fetch_from": "equipment.equipment_model",
    "fieldname": "equipment_model",
    "fieldtype": "Link",
    "label": "Equipment Model",
@@ -126,12 +132,30 @@
   {
    "fieldname": "section_break_jtea",
    "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_ysci",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "equipment",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Equipment",
+   "options": "Equipment",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "equipment.registration_number",
+   "fieldname": "registration_number",
+   "fieldtype": "Read Only",
+   "label": "Registration Number"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-03 18:59:29.311573",
+ "modified": "2024-12-02 13:21:51.086813",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Tender Hire Rate",

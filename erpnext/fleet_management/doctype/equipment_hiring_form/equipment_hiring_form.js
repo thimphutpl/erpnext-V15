@@ -60,6 +60,15 @@ frappe.ui.form.on('Equipment Hiring Form', {
 				cur_frm.cscript.update_status()
 			}, __("Status"));
 		}
+
+		// Check if the user has the PMS Compact Approver role
+		frm.add_custom_button("Create Vehicle Logbook", function() {
+			frappe.model.open_mapped_doc({
+				method: "erpnext.fleet_management.doctype.equipment_hiring_form.equipment_hiring_form.make_vehicle_logbook",
+				frm: frm
+			});
+		});
+		
 	},
 
 	onload: function (frm) {
@@ -392,6 +401,7 @@ cur_frm.cscript.update_status = function () {
 
 frappe.ui.form.on("Hiring Approval Detail", "refresh", function (frm) {
 	cur_frm.set_query("tender_hire_rate", function () {
+		console.log(frm.doc.customer)
 		return {
 			"filters": {
 				"customer": frm.doc.customer,
@@ -410,8 +420,8 @@ cur_frm.fields_dict['approved_items'].grid.get_field('tender_hire_rate').get_que
 		['Tender Hire Rate', 'docstatus', '=', 1],
 		['Tender Hire Rate', 'branch', '=', frm.branch],
 		['Tender Hire Rate', 'customer', '=', frm.customer],
-		['Tender Hire Rate', 'from_date', '<=', get_today()],
-		['Tender Hire Rate', 'to_date', '>=', get_today()],
+		['Tender Hire Rate', 'from_date', '<=', frappe.datetime.get_today()],
+		['Tender Hire Rate', 'to_date', '>=', frappe.datetime.get_today()],
 		['Tender Hire Rate', 'equipment_type', '=', d.equipment_type]
 		]
 	}

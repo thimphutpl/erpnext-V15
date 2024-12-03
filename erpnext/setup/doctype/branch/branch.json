@@ -14,6 +14,8 @@
   "column_break_qvlo",
   "company",
   "disabled",
+  "is_hq_branch",
+  "branch_code",
   "accounts_settings_section",
   "expense_bank_account",
   "column_break_6",
@@ -155,12 +157,23 @@
    "fieldname": "abbr",
    "fieldtype": "Data",
    "label": "Abbreviation"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_hq_branch",
+   "fieldtype": "Check",
+   "label": "Is Corporate Office"
+  },
+  {
+   "fieldname": "branch_code",
+   "fieldtype": "Data",
+   "label": "Branch Code"
   }
  ],
  "icon": "fa fa-code-fork",
  "idx": 1,
  "links": [],
- "modified": "2024-11-26 23:58:04.272374",
+ "modified": "2024-12-03 11:18:38.283109",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Branch",
