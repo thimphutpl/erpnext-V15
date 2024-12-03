@@ -339,7 +339,6 @@ def validate_budget_records(args, budget_records):
 				args, budget_amount, _("Accumulated Monthly"), monthly_action, budget.budget_against, amount
 			)
 		else:
-			frappe.throw("not month")
 			budget_amount = budget.budget_amount
 			if yearly_action in ("Stop", "Warn"):
 				compare_expense_with_budget(

@@ -67,7 +67,7 @@ def construct_query(filters=None):
 
 	query = ("""
 			select 
-				rt.cost_center as cost_center, rta.account as account, 
+				rta.cost_center as cost_center, rta.account as account, 
 		  		rta.account_number as account_number,
 		  		rta.{month} as monthly_amt
 			from `tabRevenue Target` rt, `tabRevenue Target Account` rta 
@@ -119,7 +119,7 @@ def get_data(query, filters):
 def get_conditions(filters):
 	conditions = ""
 	if filters.get("cost_center"):
-		conditions += """ and rt.cost_center ='{cost_center}'""".format(cost_center=filters.get("cost_center"))
+		conditions += """ and rta.cost_center ='{cost_center}'""".format(cost_center=filters.get("cost_center"))
 	if filters.get("fiscal_year"):
 		conditions += """ and rt.fiscal_year = '{year}'""".format(year=filters.get("fiscal_year"))
 

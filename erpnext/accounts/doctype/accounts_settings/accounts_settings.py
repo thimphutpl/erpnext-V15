@@ -24,6 +24,7 @@ class AccountsSettings(Document):
 
 		acc_frozen_upto: DF.Date | None
 		add_taxes_from_item_tax_template: DF.Check
+		advance_to_supplier: DF.Link | None
 		allow_multi_currency_invoices_against_single_party_account: DF.Check
 		allow_stale: DF.Check
 		auto_reconcile_payments: DF.Check
@@ -35,6 +36,7 @@ class AccountsSettings(Document):
 		book_tax_discount_loss: DF.Check
 		check_supplier_invoice_uniqueness: DF.Check
 		credit_controller: DF.Link | None
+		cwip_account: DF.Link | None
 		delete_linked_ledger_entries: DF.Check
 		determine_address_tax_category_from: DF.Literal["Billing Address", "Shipping Address"]
 		enable_common_party_accounting: DF.Check

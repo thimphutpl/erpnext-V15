@@ -17,6 +17,7 @@ class SupplementaryBudget(Document):
 		from frappe.types import DF
 
 		amended_from: DF.Link | None
+		attachment: DF.Attach | None
 		budget_against: DF.Literal["", "Cost Center", "Project"]
 		company: DF.Link
 		cost_center: DF.Link | None

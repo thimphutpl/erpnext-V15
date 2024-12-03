@@ -88,6 +88,7 @@ class ProjectPayment(AccountsController):
 		self.update_advance_balance()                
 		self.update_boq_balance()
 		self.make_gl_entries()
+		self.retention_money_item_entry()
 
 	def before_cancel(self):
 		self.set_status()
@@ -100,6 +101,7 @@ class ProjectPayment(AccountsController):
 		self.update_invoice_balance()
 		self.update_advance_balance()
 		self.update_boq_balance()
+		self.retention_money_item_entry()
 
 	def load_boq_allocation(self):
 		self.details    = []
@@ -568,6 +570,24 @@ class ProjectPayment(AccountsController):
 	
 			je.submit()
 
+	def retention_money_item_entry(self):
+		retention_acc = frappe.db.get_single_value("Projects Accounts Setting", "retention_account_receivable")
+		for ded in self.deductions:
+			if retention_acc and str(ded.account) == str(retention_acc):
+				if self.docstatus == 2:
+					frappe.db.sql("delete from `tabRetention Money Receivable` where parent='{project}' and project_payment = '{project_payment}'".format(project=self.project, project_payment=self.name))
+				else:
+					if not frappe.db.exists("Retention Money Receivable", {"parent": self.project, "project_payment": self.name}):
+						doc = frappe.get_doc("Project", self.project)
+						row = doc.append("retention_money_receivable", {})
+						row.project_payment            = self.name
+						row.retention_money            = self.invoice_date
+						row.save(ignore_permissions=True)
+					else:
+						row = frappe.get_doc("Retention Money Receivable", {"parent": self.project, "project_payment": self.name})
+						row.project_payment            = self.name
+						row.retention_money            = self.invoice_date
+						row.save(ignore_permissions=True)
 # ++++++++++++++++++++ Ver 2.0 BEGINS ++++++++++++++++++++        
 # Following method is created by SHIV on 05/09/2017
 @frappe.whitelist()

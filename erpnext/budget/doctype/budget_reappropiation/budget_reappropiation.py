@@ -8,6 +8,32 @@ from erpnext.budget.doctype.budget.budget import validate_expense_against_budget
 from erpnext.custom_workflow import validate_workflow_states, notify_workflow_states
 
 class BudgetReappropiation(Document):
+	# begin: auto-generated types
+	# This code is auto-generated. Do not modify anything in this block.
+
+	from typing import TYPE_CHECKING
+
+	if TYPE_CHECKING:
+		from erpnext.budget.doctype.budget_reappropiation_detail.budget_reappropiation_detail import BudgetReappropiationDetail
+		from frappe.types import DF
+
+		amended_from: DF.Link | None
+		appropriation_on: DF.Date
+		approver: DF.Link | None
+		approver_designation: DF.Data | None
+		approver_name: DF.Data | None
+		budget_against: DF.Literal["Cost Center", "Project"]
+		budget_type: DF.Link | None
+		company: DF.Link | None
+		fiscal_year: DF.Link
+		from_cost_center: DF.Link | None
+		from_project: DF.Link | None
+		items: DF.Table[BudgetReappropiationDetail]
+		remark: DF.Data | None
+		to_cost_center: DF.Link | None
+		to_project: DF.Link | None
+		total_reappropiation_amount: DF.Currency
+	# end: auto-generated types
 	def validate(self):
 		self.validate_budget()
 		self.budget_check()

@@ -23,6 +23,7 @@
    "description": "If Checked, we must provide the deviation percentage",
    "fieldname": "allow_budget_deviation",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "Allow Budget Deviation"
   },
   {
@@ -79,7 +80,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-04-19 14:43:53.724679",
+ "modified": "2024-12-02 11:14:54.151406",
  "modified_by": "Administrator",
  "module": "Budget",
  "name": "Budget Settings",

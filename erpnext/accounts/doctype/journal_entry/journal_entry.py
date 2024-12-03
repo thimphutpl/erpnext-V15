@@ -1226,7 +1226,7 @@ class JournalEntry(AccountsController):
 	def toggle_cheque_log(self):
 		mandatory = 0
 		cheque_required = frappe.db.get_value("Company", self.company, "cheque_required")
-		if cheque_required and self.voucher_type=="Bank Entry":
+		if cheque_required and self.voucher_type=="Bank Entry" or self.mode_of_payment == 'Cheque':
 			mandatory = 1
 		return mandatory
 

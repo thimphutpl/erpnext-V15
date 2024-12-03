@@ -243,19 +243,21 @@
   {
    "fieldname": "deviation",
    "fieldtype": "Percent",
+   "hidden": 1,
    "label": "Allow Deviation (%)",
    "precision": "2"
   },
   {
    "fieldname": "budget_type",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Budget Type"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-12 10:19:31.298964",
+ "modified": "2024-11-29 11:16:36.683920",
  "modified_by": "Administrator",
  "module": "Budget",
  "name": "Budget",

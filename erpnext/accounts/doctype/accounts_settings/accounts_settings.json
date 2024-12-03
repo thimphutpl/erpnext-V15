@@ -62,6 +62,9 @@
   "ignore_account_closing_balance",
   "column_break_25",
   "frozen_accounts_modifier",
+  "section_break_vkbb",
+  "cwip_account",
+  "advance_to_supplier",
   "tab_break_dpet",
   "show_balance_in_coa",
   "banking_tab",
@@ -469,6 +472,22 @@
    "fieldtype": "Link",
    "label": "Intra Company Account",
    "options": "Account"
+  },
+  {
+   "fieldname": "section_break_vkbb",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "cwip_account",
+   "fieldtype": "Link",
+   "label": "Capital Work In Progress Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "advance_to_supplier",
+   "fieldtype": "Link",
+   "label": "Advance to Suppliers Account",
+   "options": "Account"
   }
  ],
  "icon": "icon-cog",
@@ -476,7 +495,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-11-15 09:58:53.332623",
+ "modified": "2024-12-03 23:29:43.312156",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Accounts Settings",

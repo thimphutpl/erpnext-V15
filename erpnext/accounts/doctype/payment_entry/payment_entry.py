@@ -2224,7 +2224,23 @@ def get_payment_entry(
 	if not party_type:
 		party_type = set_party_type(dt)
 
-	party_account = set_party_account(dt, dn, doc, party_type)
+	# Ver 2.0 Begins, Following code added by SHIV on 03/01/2018
+	party_currency = ''
+	# Ver 2.0 Ends
+	# party account
+	if dt == "Sales Invoice":
+		party_account = doc.debit_to
+	elif dt == "Purchase Invoice":
+		party_account = doc.credit_to
+	elif dt == "Purchase Order" and doc.status in ["To Receive and Bill","To Bill"]:
+		party_account = frappe.db.get_single_value("Accounts Settings", "advance_to_supplier")
+		if not party_account:
+			frappe.throw("Setup Advance to Supplier Account in Accounts Settings")
+		# Ver 2.0 Begins, Following code added by SHIV on 03/01/2018
+		party_currency = doc.get("currency")
+		# Ver 2.0 Ends
+	else:
+		party_account = set_party_account(dt, dn, doc, party_type)
 	party_account_currency = set_party_account_currency(dt, party_account, doc)
 
 	if not payment_type:

@@ -9,7 +9,7 @@ frappe.query_reports["Revenue Target"] = {
 			"label": __("Fiscal Year"),
 			"fieldtype": "Link",
 			"options": "Fiscal Year",
-			"default": frappe.sys_defaults.fiscal_year, 
+			// "default": frappe.sys_defaults.fiscal_year, 
 			"reqd": 1
 		},
 		{

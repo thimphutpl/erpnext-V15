@@ -612,6 +612,7 @@
    "depends_on": "eval:doc.party_type == 'Supplier'",
    "fieldname": "apply_tax_withholding_amount",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "Apply Tax Withholding Amount"
   },
   {
@@ -853,7 +854,7 @@
    "table_fieldname": "payment_entries"
   }
  ],
- "modified": "2024-11-28 14:41:31.591782",
+ "modified": "2024-12-02 22:46:25.321448",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Payment Entry",

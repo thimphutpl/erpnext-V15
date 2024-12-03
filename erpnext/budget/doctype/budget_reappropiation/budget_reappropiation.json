@@ -44,7 +44,8 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Fiscal Year",
-   "options": "Fiscal Year"
+   "options": "Fiscal Year",
+   "reqd": 1
   },
   {
    "fieldname": "amended_from",
@@ -154,6 +155,7 @@
   {
    "fieldname": "budget_type",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Budget Type",
    "options": "Budget Type"
   },
@@ -167,7 +169,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-05-03 11:51:24.166703",
+ "modified": "2024-12-02 11:41:03.360668",
  "modified_by": "Administrator",
  "module": "Budget",
  "name": "Budget Reappropiation",
