@@ -1034,7 +1034,8 @@
    "fieldtype": "Attach Image",
    "ignore_user_permissions": 1,
    "label": "Scanned Signature",
-   "permlevel": 1
+   "permlevel": 1,
+   "width": "10"
   },
   {
    "fieldname": "leave_block_list",
@@ -1122,7 +1123,7 @@
  "idx": 24,
  "image_field": "image",
  "links": [],
- "modified": "2024-12-04 19:26:27.544355",
+ "modified": "2024-12-10 10:24:02.886348",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee",

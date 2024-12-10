@@ -47,9 +47,9 @@ class PrepareAuditPlan(Document):
 		self.validate_audit_team()
 		self.validate_audit_role()
 		self.validate_type_frequency()
-		validate_workflow_states(self) 
-		if self.workflow_state != "Approved":
-			notify_workflow_states(self)
+		# validate_workflow_states(self) 
+		# if self.workflow_state != "Approved":
+		# 	notify_workflow_states(self)
 
 
 	# def on_submit(self):

@@ -42,8 +42,7 @@ def get_data(filters):
 				pi.price_adjustment_amount, 
 				pi.net_invoice_amount,
 				pi.total_received_amount,
-				pi.total_balance_amount, 
-				pi.total_received_amount 
+				pi.total_balance_amount
 				 
 			from `tabProject Invoice` as pi, `tabProject` as p 
 			where pi.docstatus =1

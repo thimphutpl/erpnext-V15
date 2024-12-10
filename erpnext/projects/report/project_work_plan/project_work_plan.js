@@ -13,20 +13,20 @@ frappe.query_reports["Project Work Plan"] = {
 			"reqd": 1
 		}
 	],
-	"formatter": function(row, cell, value, columnDef, dataContext, default_formatter) {
-		if (columnDef.df.fieldname=="item") {
-			value = dataContext.item_name;
+	"formatter": function(value, row, column, data, default_formatter) {
+		// if (column.fieldname=="item") {
+		// 	value = data.item_name;
 
-			//console.log(dataContext)
-			columnDef.df.link_onclick =
-				"erpnext.project_statements.open_documents(" + JSON.stringify(dataContext) + ")";
+		// 	//console.log(dataContext)
+		// 	column.link_onclick =
+		// 		"erpnext.project_statements.open_documents(" + JSON.stringify(data) + ")";
 			
-			columnDef.df.is_tree = true;
-		}
+		// 		column.is_tree = true;
+		// }
 
-		value = default_formatter(row, cell, value, columnDef, dataContext);
+		value = default_formatter(row, cell, value, column, data);
 
-		if (!dataContext.parent_item || dataContext.item_name == "Time Sheets") {
+		if (!data.parent_item || data.item_name == "Time Sheets") {
 			//var $value = $(value).css("font-weight", "bold");
 			var $value = $(value).css({"font-weight": "bold", "color": "blue", "background-color": "#75ff3a"});
 
