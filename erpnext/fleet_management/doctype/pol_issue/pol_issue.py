@@ -93,24 +93,24 @@ class POLIssue(StockController):
 			if no_tank and self.purpose == "Issue":
 				frappe.throw("Cannot Issue to Equipments without own tank " + str(a.equipment))
 			if not a.equipment_warehouse or not a.equipment_cost_center:
-				frappe.throw("<b>"+str(a.equipment_number) + "</b> does have a Warehouse and Cost Center Defined")
+				frappe.throw("<b>"+str(a.registration_number) + "</b> does have a Warehouse and Cost Center Defined")
 			if not flt(a.qty) > 0:
-				frappe.throw("Quantity for <b>"+str(a.equipment_number)+"</b> should be greater than 0")
+				frappe.throw("Quantity for <b>"+str(a.registration_number)+"</b> should be greater than 0")
 			total_quantity = flt(total_quantity) + flt(a.qty)
 		self.total_quantity = total_quantity
 
 	def check_on_dry_hire(self):
-                for a in self.items:
-                        record = get_without_fuel_hire(a.equipment, self.posting_date, self.posting_time)
-                        if record:
-                                data = record[0]
-                                a.hiring_cost_center = data.cc
-                                a.hiring_branch =  data.br
-                                a.hiring_warehouse = frappe.db.get_value("Cost Center", data.cc, "warehouse")
-                        else:
-                                a.hiring_cost_center = None
-                                a.hiring_branch =  None
-                                a.hiring_warehouse = None
+		for a in self.items:
+				record = get_without_fuel_hire(a.equipment, self.posting_date, self.posting_time)
+				if record:
+						data = record[0]
+						a.hiring_cost_center = data.cc
+						a.hiring_branch =  data.br
+						a.hiring_warehouse = frappe.db.get_value("Cost Center", data.cc, "warehouse")
+				else:
+						a.hiring_cost_center = None
+						a.hiring_branch =  None
+						a.hiring_warehouse = None
 
 	def on_submit(self):
 		if not self.items:
@@ -333,7 +333,7 @@ class POLIssue(StockController):
 			frappe.throw("Not enough balance in tanker to issue. The balance is " + str(balance))	
 
 	def make_pol_entry(self):
-		if getdate(self.posting_date) <= getdate("2018-03-31"):
+		if getdate(self.posting_date) <= getdate("2024-03-31"):
 			return
 		if self.tanker:
 			con = frappe.new_doc("POL Entry")
@@ -341,7 +341,7 @@ class POLIssue(StockController):
 			con.equipment = self.tanker
 			con.pol_type = self.pol_type
 			con.branch = self.branch
-			con.date = self.posting_date
+			con.posting_date = self.posting_date
 			con.posting_time = self.posting_time
 			con.qty = self.total_quantity
 			con.reference_type = "POL Issue"
@@ -360,7 +360,7 @@ class POLIssue(StockController):
 			con.equipment = a.equipment
 			con.pol_type = self.pol_type
 			con.branch = a.equipment_branch
-			con.date = self.posting_date
+			con.Posting_date = self.posting_date
 			con.posting_time = self.posting_time
 			con.qty = a.qty
 			con.reference_type = "POL Issue"

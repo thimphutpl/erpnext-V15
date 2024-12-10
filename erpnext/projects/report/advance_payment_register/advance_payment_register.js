@@ -4,5 +4,28 @@
 frappe.query_reports["Advance Payment Register"] = {
 	"filters": [
 
+		{
+                        "fieldname":"project",
+                        "label": ("Project"),
+                        "fieldtype": "Link",
+                        "options" : "Project"
+
+                },
+
+                {
+                        "fieldname":"from_date",
+                        "label": __("From Date"),
+                        "fieldtype": "Date",
+			"default": frappe.defaults.get_user_default("year_start_date"),
+                },
+
+                {
+                        "fieldname":"to_date",
+                        "label": __("To Date"),
+                        "fieldtype": "Date",
+
+                }
+
+
 	]
-};
+}

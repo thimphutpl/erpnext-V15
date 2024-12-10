@@ -22,10 +22,14 @@ class eNote(Document):
 		amended_from: DF.Link | None
 		content: DF.TextEditor | None
 		copied: DF.TableMultiSelect[NoteCopy]
+		default_expense_account: DF.Link | None
 		enote_category: DF.Link
 		enote_format: DF.Data | None
 		enote_series: DF.Data
 		forward_to: DF.Link | None
+		material_group: DF.Link | None
+		material_name: DF.Link | None
+		material_sub_group: DF.Link | None
 		note_date: DF.Date | None
 		permitted_user: DF.Link | None
 		remark: DF.Table[NoteRemark]
@@ -33,6 +37,7 @@ class eNote(Document):
 		reviewers: DF.Table[eNoteReviewer]
 		title: DF.Data
 		type: DF.Literal["", "Process", "Payment"]
+		uom: DF.Link | None
 		workflow_state: DF.Link | None
 	# end: auto-generated types
 	

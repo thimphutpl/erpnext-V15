@@ -22,6 +22,6 @@ class ConsumedPOL(Document):
 		pol_type: DF.Data
 		qty: DF.Float
 		reference_name: DF.DynamicLink | None
-		reference_type: DF.Literal["", "POL", "Issue POL", "Equipment POL Transfer"]
+		reference_type: DF.Literal["", "POL Receive", "POL Issue", "Equipment POL Transfer"]
 	# end: auto-generated types
 	pass

@@ -35,6 +35,7 @@
   "separation_date",
   "column_break_ddzo",
   "blood_group",
+  "nationality",
   "wage_detail",
   "bank_name",
   "bank_branch",
@@ -379,12 +380,18 @@
    "fieldname": "amount",
    "fieldtype": "Currency",
    "label": "Amount"
+  },
+  {
+   "fieldname": "nationality",
+   "fieldtype": "Data",
+   "label": "Nationality",
+   "read_only": 1
   }
  ],
  "in_create": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-12-03 10:15:33.910887",
+ "modified": "2024-12-05 18:53:56.335487",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Muster Roll Employee",

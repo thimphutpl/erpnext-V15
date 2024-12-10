@@ -13,6 +13,7 @@
   "gep_html",
   "gep_overtime_account",
   "gep_wages_account",
+  "mess_deduction_account",
   "section_break_10",
   "advance_account_internal",
   "invoice_account_internal",
@@ -176,12 +177,18 @@
    "fieldtype": "Link",
    "label": "Retention Account Receivable",
    "options": "Account"
+  },
+  {
+   "fieldname": "mess_deduction_account",
+   "fieldtype": "Link",
+   "label": "Mess Deduction Account",
+   "options": "Account"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-12-01 21:59:52.471133",
+ "modified": "2024-12-05 14:37:12.577465",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Projects Accounts Settings",

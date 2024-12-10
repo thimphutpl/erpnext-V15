@@ -21,6 +21,7 @@ class EvaluateTargetItemI(Document):
 		comment: DF.SmallText | None
 		description: DF.SmallText | None
 		employee_remarks: DF.Text | None
+		from_date: DF.Date | None
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
@@ -37,10 +38,9 @@ class EvaluateTargetItemI(Document):
 		self_rating: DF.Float
 		supervisor_rating: DF.Float
 		supervisor_remarks: DF.Text | None
-		timeline: DF.Float
 		timeline_achieved: DF.Float
-		timeline_base_on: DF.Literal["", "Minute", "Hour", "Day", "Month", "Quarterly"]
 		timeline_rating: DF.Float
+		to_date: DF.Date | None
 		weightage: DF.Float
 	# end: auto-generated types
 	pass

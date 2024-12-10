@@ -20,6 +20,13 @@
   "permitted_user",
   "copied",
   "reviewers",
+  "material_request_details_section",
+  "material_name",
+  "uom",
+  "default_expense_account",
+  "column_break_xhre",
+  "material_group",
+  "material_sub_group",
   "section_break_21",
   "content",
   "seen_by_section",
@@ -165,12 +172,54 @@
    "label": "eNote  Category",
    "options": "eNote Category",
    "reqd": 1
+  },
+  {
+   "depends_on": "eval:doc.enote_category==\"Material Request\"",
+   "fieldname": "material_request_details_section",
+   "fieldtype": "Section Break",
+   "label": "Material Request Details"
+  },
+  {
+   "fieldname": "material_name",
+   "fieldtype": "Link",
+   "label": "Material Name",
+   "options": "Item"
+  },
+  {
+   "fieldname": "uom",
+   "fieldtype": "Link",
+   "label": "UoM",
+   "options": "UOM"
+  },
+  {
+   "fieldname": "default_expense_account",
+   "fieldtype": "Link",
+   "label": "Default Expense Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "column_break_xhre",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "material_name.item_group",
+   "fieldname": "material_group",
+   "fieldtype": "Link",
+   "label": "Material Group",
+   "options": "Item Group"
+  },
+  {
+   "fetch_from": "material_name.item_sub_group",
+   "fieldname": "material_sub_group",
+   "fieldtype": "Link",
+   "label": "Material Sub Group",
+   "options": "Item Sub Group"
   }
  ],
  "icon": "fa fa-file-text",
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-24 14:41:48.396887",
+ "modified": "2024-12-06 11:10:51.238310",
  "modified_by": "Administrator",
  "module": "eNote",
  "name": "eNote",

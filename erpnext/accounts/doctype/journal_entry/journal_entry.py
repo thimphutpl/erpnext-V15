@@ -96,7 +96,7 @@ class JournalEntry(AccountsController):
 		total_debit: DF.Currency
 		use_check_lot: DF.Check
 		user_remark: DF.SmallText | None
-		voucher_type: DF.Literal["Journal Entry", "Inter Company Journal Entry", "Bank Entry", "Cash Entry", "Credit Card Entry", "Debit Note", "Credit Note", "Contra Entry", "Excise Entry", "Write Off Entry", "Opening Entry", "Depreciation Entry", "Exchange Rate Revaluation", "Exchange Gain Or Loss", "Deferred Revenue", "Deferred Expense"]
+		voucher_type: DF.Literal["Journal Entry", "Inter Company Journal Entry", "Bank Entry", "Cash Entry", "Credit Card Entry", "Debit Note", "Credit Note", "Contra Entry", "Excise Entry", "Write Off Entry", "Opening Entry", "Depreciation Entry", "Exchange Rate Revaluation", "Exchange Gain Or Loss", "Deferred Revenue", "Deferred Expense", "Hire Invoice"]
 		write_off_amount: DF.Currency
 		write_off_based_on: DF.Literal["Accounts Receivable", "Accounts Payable"]
 	# end: auto-generated types
@@ -596,7 +596,8 @@ class JournalEntry(AccountsController):
 					)
 				elif (
 					d.party_type
-					and frappe.db.get_value("Party Type", d.party_type, "account_type") != account_type
+					and frappe.db.get_value("Party Type", d.party_type, "account_type") != account_type 
+					and d.party_type != "Employee"
 				):
 					frappe.throw(
 						_("Row {0}: Account {1} and Party Type {2} have different account types").format(
@@ -691,7 +692,7 @@ class JournalEntry(AccountsController):
 				against_entries = frappe.db.sql(
 					"""select * from `tabJournal Entry Account`
 					where account = %s and docstatus = 1 and parent = %s
-					and (reference_type is null or reference_type in ('', 'Sales Order', 'Purchase Order'))
+					and (reference_type is null or reference_type in ('', 'Sales Order', 'Purchase Order', 'Leave Encashment', 'Travel Claim', 'Journal Entry'))
 					""",
 					(d.account, d.reference_name),
 					as_dict=True,

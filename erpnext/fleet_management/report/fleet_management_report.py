@@ -8,6 +8,7 @@ from frappe.utils import flt, cint,add_days, cstr, flt, getdate, nowdate, rounde
 ##
 def get_pol_till(purpose, equipment, posting_date, pol_type=None, own_cc=None, posting_time="23:59:59"):
 	if not equipment or not posting_date:
+		frappe.throw(str(posting_date))
 		frappe.throw("Equipment and Till Date are Mandatory")
 	total = 0
 	posting_datetime = str(get_datetime(str(posting_date) + ' ' + str(posting_time)))
@@ -34,6 +35,7 @@ def get_pol_between(purpose, equipment, from_date, to_date, pol_type=None, own_c
 	if own_cc:
 		query += " and own_cost_center = 1"
 		
+	# frappe.throw(str(query))
 	quantity = frappe.db.sql(query, as_dict=True)
 	if quantity:
 		total = quantity[0].total

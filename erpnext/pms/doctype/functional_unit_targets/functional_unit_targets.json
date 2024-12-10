@@ -1,0 +1,62 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-12-06 13:09:29.476518",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "perspectives",
+  "key_result_areas",
+  "key_performance_indicators",
+  "deadline",
+  "target",
+  "weightage"
+ ],
+ "fields": [
+  {
+   "fieldname": "perspectives",
+   "fieldtype": "Link",
+   "label": "Perspectives",
+   "options": "Perspectives"
+  },
+  {
+   "fieldname": "key_result_areas",
+   "fieldtype": "Data",
+   "label": "Key Result Areas"
+  },
+  {
+   "fieldname": "key_performance_indicators",
+   "fieldtype": "Data",
+   "label": "Key Performance Indicators"
+  },
+  {
+   "fieldname": "deadline",
+   "fieldtype": "Select",
+   "label": "Deadline",
+   "options": "January\nFebruary\nMarch\nApril\nMay\nJune\nJuly\nAugust\nSeptember\nOctober\nNovember\nDecember"
+  },
+  {
+   "fieldname": "target",
+   "fieldtype": "Data",
+   "label": "Target "
+  },
+  {
+   "fieldname": "weightage",
+   "fieldtype": "Percent",
+   "label": "Weightage"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2024-12-06 13:16:10.954057",
+ "modified_by": "Administrator",
+ "module": "PMS",
+ "name": "Functional Unit Targets",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

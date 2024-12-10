@@ -281,6 +281,8 @@ class AssetMovement(Document):
 					frappe.throw("To Employee is Mandatory")
 				elif self.from_employee == self.to_employee:
 					frappe.throw("Select Different Employee")
+			else:
+				self.to_employee=''
 
 			condition_statement=''
 			if self.based_on == 'Custodian':
@@ -300,6 +302,7 @@ class AssetMovement(Document):
 					row = self.append("assets",{})
 					data = {"asset":x.name, 
 							"from_employee":x.custodian,
+							"to_employee":self.to_employee if self.to_single else '',
 							"from_employee_name":x.custodian_name, 
 							"source_cost_center":x.cost_center,
 							"target_cost_center":frappe.db.get_value("Employee",self.to_employee,"cost_center"),

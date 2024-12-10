@@ -423,7 +423,7 @@ class POLReceive(StockController):
 		""" ++++++++++ Ver 2.0.190509 Ends ++++++++++++ """
 
 	def get_expense_account(self):
-		if self.direct_consumption or getdate(self.posting_date) <= getdate("2018-03-31"):
+		if self.direct_consumption or getdate(self.posting_date) <= getdate("2024-03-31"):
 			if self.is_hsd_item:
 				expense_account = frappe.db.get_value("Equipment Category", self.equipment_category, "budget_account")
 			else:
@@ -501,7 +501,7 @@ class POLReceive(StockController):
 			frappe.throw("Define POL expense account in Maintenance Setting or Expense Bank in Branch")
 		
 	def make_pol_entry(self):
-		if getdate(self.posting_date) <= getdate("2018-03-31"):
+		if getdate(self.posting_date) <= getdate("2024-03-31"):
 						return
 		container = frappe.db.get_value("Equipment Type", frappe.db.get_value("Equipment", self.equipment, "equipment_type"), "is_container")
 		if self.equipment_branch == self.fuelbook_branch:
@@ -514,7 +514,7 @@ class POLReceive(StockController):
 		con.equipment = self.equipment
 		con.pol_type = self.pol_type
 		con.branch = self.equipment_branch
-		con.date = self.posting_date
+		con.posting_date = self.posting_date
 		con.posting_time = self.posting_time
 		con.qty = self.qty
 		con.reference_type = "POL Receive"
@@ -531,7 +531,7 @@ class POLReceive(StockController):
 			con1.equipment = self.equipment
 			con1.pol_type = self.pol_type
 			con1.branch = self.equipment_branch
-			con1.date = self.posting_date
+			con1.posting_date = self.posting_date
 			con1.posting_time = self.posting_time
 			con1.qty = self.qty
 			con1.reference_type = "POL Receive"
@@ -547,7 +547,7 @@ class POLReceive(StockController):
 				con2.equipment = self.equipment
 				con2.pol_type = self.pol_type
 				con2.branch = self.equipment_branch
-				con2.date = self.posting_date
+				con2.posting_date = self.posting_date
 				con2.posting_time = self.posting_time
 				con2.qty = self.qty
 				con2.reference_type = "POL Receive"

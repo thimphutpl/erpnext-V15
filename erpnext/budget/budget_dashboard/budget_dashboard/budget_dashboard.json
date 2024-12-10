@@ -1,0 +1,21 @@
+{
+ "cards": [],
+ "charts": [
+  {
+   "chart": "Budget Variance",
+   "width": "Full"
+  }
+ ],
+ "creation": "2024-12-04 14:53:12.618472",
+ "dashboard_name": "Budget Dashboard",
+ "docstatus": 0,
+ "doctype": "Dashboard",
+ "idx": 4,
+ "is_default": 1,
+ "is_standard": 1,
+ "modified": "2024-12-04 18:10:07.132192",
+ "modified_by": "kinzang.namgyal@cdcl.bt",
+ "module": "Budget",
+ "name": "Budget Dashboard",
+ "owner": "kinzang.namgyal@cdcl.bt"
+}

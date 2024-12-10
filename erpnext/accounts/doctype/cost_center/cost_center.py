@@ -26,6 +26,7 @@ class CostCenter(NestedSet):
 		cost_center_name: DF.Data
 		cost_center_number: DF.Data | None
 		disabled: DF.Check
+		holiday_list: DF.Link | None
 		is_group: DF.Check
 		lft: DF.Int
 		old_parent: DF.Link | None
@@ -46,7 +47,16 @@ class CostCenter(NestedSet):
 	def validate(self):
 		self.validate_mandatory()
 		self.validate_parent_cost_center()
+		self.update_holiday_list()
 		# self.check_ware_house()
+	
+	def update_holiday_list(self):
+		if self.holiday_list:
+			for emp in frappe.db.sql("Select name from `tabEmployee` where cost_center='{}'".format(self.name), as_dict=True):
+				doc=frappe.get_doc("Employee", emp)
+				doc.holiday_list=self.holiday_list
+				doc.save(ignore_permissions=True)
+				
 
 	def check_ware_house(self):
 		if not self.is_group and not self.warehouse:
@@ -86,6 +96,7 @@ class CostCenter(NestedSet):
 						frappe.bold(self.parent_cost_center)
 					)
 				)
+	
 
 	@frappe.whitelist()
 	def convert_group_to_ledger(self):

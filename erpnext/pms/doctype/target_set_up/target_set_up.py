@@ -7,7 +7,7 @@ import frappe
 import urllib.parse
 from frappe import _
 from frappe.model.document import Document
-from frappe.utils import flt,nowdate
+from frappe.utils import flt,nowdate, getdate
 from frappe.model.mapper import get_mapped_doc
 from erpnext.custom_workflow import validate_workflow_states, notify_workflow_states
 
@@ -99,9 +99,9 @@ class TargetSetUp(Document):
 		for r, t in zip(rev_doc.review_target_item,self.target_item):
 			r.quantity = t.quantity
 			r.quality = t.quality
-			r.timeline = t.timeline
 			r.qty_quality = t.qty_quality
-			r.timeline_base_on = t.timeline_base_on
+			r.from_date = t.from_date
+			r.to_date = t.to_date
 		
 		rev_doc.save(ignore_permissions=True)
 
@@ -113,9 +113,10 @@ class TargetSetUp(Document):
 		for e, t in zip(eval_doc.evaluate_target_item,self.target_item):
 			e.quantity = t.quantity
 			e.quality = t.quality
-			e.timeline = t.timeline
-			e.timeline_base_on = t.timeline_base_on
 			e.qty_quality = t.qty_quality
+			r.from_date = t.from_date
+			r.to_date = t.to_date
+
 		eval_doc.save(ignore_permissions = True)
 		
 	def validate_calendar(self):
@@ -179,10 +180,21 @@ class TargetSetUp(Document):
 						title=_('Error'),
 						msg="Weightage for target must be between <b>{}</b> and <b>{}</b> but you have set <b>{}</b> at row <b>{}</b>".format(self.min_weightage_for_target,self.max_weightage_for_target,t.weightage, i+1))
 
-				if flt(t.timeline) <= 0:
+				if getdate(t.from_date).year < getdate().year:
 					frappe.throw(
 						title=_("Error"),
-						msg=_("<b>{}</b> value is not allowed for <b>Timeline</b> in Target Item at Row <b>{}</b>".format(t.timeline,i+1)))
+						msg=_("<b>From Date</b> cannot be less than <b>{}</b> in Target Item at Row <b>{}</b>".format(getdate().year,i+1)))
+
+				if getdate(t.to_date).year > getdate().year:
+					frappe.throw(
+						title=_("Error"),
+						msg=_("<b>To Date</b> cannot be greater than <b>{}</b> in Target Item at Row <b>{}</b>".format(getdate().year,i+1)))	
+					
+				if t.from_date > t.to_date:
+					frappe.throw(
+						title=_("Error"),
+						msg=_(" <b>From Date</b> cannot be greater than <b>To Date</b> in Target Item at Row <b>{}</b>".format(i+1)))
+
 				
 				total_target_weightage += flt(t.weightage)
 				if t.qty_quality == 'Quantity':

@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"F4LCAkjVFv\",\"type\":\"header\",\"data\":{\"text\":\"<span style=\\\"font-size: 18px;\\\"><b>Quick Access</b></span>\",\"col\":12}},{\"id\":\"v1eN9SIcrU\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Equipment\",\"col\":3}},{\"id\":\"wgGC82GF3F\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"POL Expense\",\"col\":3}},{\"id\":\"-NuAtfS9nX\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"POL Receive\",\"col\":3}},{\"id\":\"YFS568uADQ\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Repair &amp; Services\",\"col\":3}},{\"id\":\"uQ7NSESFJP\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"R &amp; Service Invoice\",\"col\":3}},{\"id\":\"2YnzX66Mn5\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Equipment Modifier Tool\",\"col\":3}},{\"id\":\"aVaBD9XAzC\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Reports &amp; Masters</b></span>\",\"col\":12}},{\"id\":\"zAyHBMp-e1\",\"type\":\"card\",\"data\":{\"card_name\":\"Master Data\",\"col\":4}},{\"id\":\"jXcn_p3B0m\",\"type\":\"card\",\"data\":{\"card_name\":\"Settings and Tools\",\"col\":4}},{\"id\":\"rqjlK7wtEq\",\"type\":\"card\",\"data\":{\"card_name\":\"Fleet Transaction\",\"col\":4}},{\"id\":\"H9xDv81via\",\"type\":\"card\",\"data\":{\"card_name\":\"POL Transaction\",\"col\":4}},{\"id\":\"3lZeAPhxW0\",\"type\":\"card\",\"data\":{\"card_name\":\"Maintenance Transaction\",\"col\":4}},{\"id\":\"ZkfyvbntFY\",\"type\":\"card\",\"data\":{\"card_name\":\"Fleet Report\",\"col\":4}},{\"id\":\"bvleQJe82w\",\"type\":\"card\",\"data\":{\"card_name\":\"POL Reports\",\"col\":4}},{\"id\":\"aAkEB-kViN\",\"type\":\"card\",\"data\":{\"card_name\":\"Maintenance Reports\",\"col\":4}}]",
+ "content": "[{\"id\":\"F4LCAkjVFv\",\"type\":\"header\",\"data\":{\"text\":\"<span style=\\\"font-size: 18px;\\\"><b>Quick Access</b></span>\",\"col\":12}},{\"id\":\"v1eN9SIcrU\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Equipment\",\"col\":3}},{\"id\":\"wgGC82GF3F\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"POL Expense\",\"col\":3}},{\"id\":\"-NuAtfS9nX\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"POL Receive\",\"col\":3}},{\"id\":\"YFS568uADQ\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Repair &amp; Services\",\"col\":3}},{\"id\":\"uQ7NSESFJP\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"R &amp; Service Invoice\",\"col\":3}},{\"id\":\"2YnzX66Mn5\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Equipment Modifier Tool\",\"col\":3}},{\"id\":\"aVaBD9XAzC\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Reports &amp; Masters</b></span>\",\"col\":12}},{\"id\":\"zAyHBMp-e1\",\"type\":\"card\",\"data\":{\"card_name\":\"Master Data\",\"col\":4}},{\"id\":\"jXcn_p3B0m\",\"type\":\"card\",\"data\":{\"card_name\":\"Settings and Tools\",\"col\":4}},{\"id\":\"rqjlK7wtEq\",\"type\":\"card\",\"data\":{\"card_name\":\"Fleet Transaction\",\"col\":4}},{\"id\":\"H9xDv81via\",\"type\":\"card\",\"data\":{\"card_name\":\"POL Transaction\",\"col\":4}},{\"id\":\"3lZeAPhxW0\",\"type\":\"card\",\"data\":{\"card_name\":\"Maintenance Transaction\",\"col\":4}},{\"id\":\"ZkfyvbntFY\",\"type\":\"card\",\"data\":{\"card_name\":\"Fleet Report\",\"col\":4}},{\"id\":\"bvleQJe82w\",\"type\":\"card\",\"data\":{\"card_name\":\"Fleet Management Reports\",\"col\":4}},{\"id\":\"aAkEB-kViN\",\"type\":\"card\",\"data\":{\"card_name\":\"Maintenance Reports\",\"col\":4}}]",
  "creation": "2023-03-14 12:40:35.110706",
  "custom_blocks": [],
  "docstatus": 0,
@@ -374,94 +374,6 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Maintenance Reports",
-   "link_count": 2,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Job Card Imprest Report",
-   "link_count": 0,
-   "link_to": "Job Card Imprest Report",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Workshop Progress Report",
-   "link_count": 0,
-   "link_to": "Workshop Progress Report",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Settings and Tools",
-   "link_count": 5,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Mechanical Settings",
-   "link_count": 0,
-   "link_to": "Mechanical Settings",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Hire Charge Parameter",
-   "link_count": 0,
-   "link_to": "Hire Charge Parameter",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Mechanical Notification Settings",
-   "link_count": 0,
-   "link_to": "Branch Fleet Manager",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Tender Hire Rate",
-   "link_count": 0,
-   "link_to": "Tender Hire Rate",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "HSD Adjustment",
-   "link_count": 0,
-   "link_to": "HSD Adjustment",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
    "label": "Master Data",
    "link_count": 6,
    "link_type": "DocType",
@@ -778,8 +690,57 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "POL Reports",
+   "label": "Settings and Tools",
    "link_count": 4,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Mechanical Settings",
+   "link_count": 0,
+   "link_to": "Mechanical Settings",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Hire Charge Parameter",
+   "link_count": 0,
+   "link_to": "Hire Charge Parameter",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Tender Hire Rate",
+   "link_count": 0,
+   "link_to": "Tender Hire Rate",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "HSD Adjustment",
+   "link_count": 0,
+   "link_to": "HSD Adjustment",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Fleet Management Reports",
+   "link_count": 3,
    "link_type": "DocType",
    "onboard": 0,
    "type": "Card Break"
@@ -817,16 +778,45 @@
   {
    "hidden": 0,
    "is_query_report": 0,
+   "label": "Maintenance Reports",
+   "link_count": 3,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
    "label": "POL Ledger",
    "link_count": 0,
    "link_to": "POL Ledger",
    "link_type": "Report",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Job Card Imprest Report",
+   "link_count": 0,
+   "link_to": "Job Card Imprest Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Workshop Progress Report",
+   "link_count": 0,
+   "link_to": "Workshop Progress Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2024-11-29 13:05:06.174870",
- "modified_by": "kinzang.namgyal@cdcl.bt",
+ "modified": "2024-12-05 16:23:37.524059",
+ "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Fleet Management",
  "number_cards": [],

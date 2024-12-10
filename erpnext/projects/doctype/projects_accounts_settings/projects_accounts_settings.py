@@ -22,6 +22,7 @@ class ProjectsAccountsSettings(Document):
 		inventory_account: DF.Link
 		invoice_account_internal: DF.Link | None
 		invoice_account_supplier: DF.Link | None
+		mess_deduction_account: DF.Link | None
 		mr_overtime_account: DF.Link
 		mr_wages_account: DF.Link
 		project_accrued_income_account: DF.Link | None

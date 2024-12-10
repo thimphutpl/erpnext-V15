@@ -11,6 +11,42 @@ from frappe.model.document import Document
 from erpnext.custom_workflow import validate_workflow_states, notify_workflow_states
 
 class ExecuteAudit(Document):
+	# begin: auto-generated types
+	# This code is auto-generated. Do not modify anything in this block.
+
+	from typing import TYPE_CHECKING
+
+	if TYPE_CHECKING:
+		from erpnext.ams.doctype.direct_accountability_item.direct_accountability_item import DirectAccountabilityItem
+		from erpnext.ams.doctype.direct_accountability_supervisor_item.direct_accountability_supervisor_item import DirectAccountabilitySupervisorItem
+		from erpnext.ams.doctype.execute_audit_checklist_item.execute_audit_checklist_item import ExecuteAuditChecklistItem
+		from erpnext.ams.doctype.execute_audit_team_item.execute_audit_team_item import ExecuteAuditTeamItem
+		from frappe.types import DF
+
+		amended_from: DF.Link | None
+		audit_checklist: DF.Table[ExecuteAuditChecklistItem]
+		audit_engagement_letter: DF.Link | None
+		audit_team: DF.Table[ExecuteAuditTeamItem]
+		branch: DF.Link
+		direct_accountability: DF.Table[DirectAccountabilityItem]
+		from_date: DF.Date
+		iain_number: DF.Data | None
+		objective_of_audit: DF.SmallText | None
+		posting_date: DF.Date | None
+		prepare_audit_plan_no: DF.Link
+		reference_date: DF.Date | None
+		scope_of_audit: DF.SmallText | None
+		status: DF.Literal["", "Pending", "Exit Meeting", "Initial Report", "Follow Up", "Closed"]
+		supervisor_accountability: DF.Table[DirectAccountabilitySupervisorItem]
+		supervisor_designation: DF.Data | None
+		supervisor_email: DF.Data | None
+		supervisor_id: DF.Link
+		supervisor_name: DF.Data | None
+		to_date: DF.Date
+		type: DF.Data
+		workflow_state: DF.Link | None
+		workflow_status: DF.Literal["Open", "Assigned", "Rejected", "Cancelled"]
+	# end: auto-generated types
 	def validate(self):
 		pass
 		# if self.workflow_state == 'Assigned':

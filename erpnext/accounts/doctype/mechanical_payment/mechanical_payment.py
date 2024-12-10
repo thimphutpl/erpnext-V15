@@ -229,6 +229,7 @@ class MechanicalPayment(AccountsController):
         if not self.branch or not self.customer or not self.payment_for:
             frappe.throw("Branch, Customer and Payment For is Mandatory")
         transactions = frappe.db.sql("select name, outstanding_amount, customer from `tab{0}` where customer = '{1}' and branch = '{2}' and outstanding_amount > 0 and docstatus = 1 order by creation".format(self.payment_for, self.customer, self.branch), as_dict=1)
+        frappe.throw(str(transactions))
         self.set('items', [])
 
         total = 0

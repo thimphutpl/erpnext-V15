@@ -8,10 +8,59 @@ from frappe import _
 import frappe
 from frappe.model.document import Document
 from frappe.model.mapper import get_mapped_doc
-from frappe.utils import flt, nowdate
+from frappe.utils import flt, nowdate, getdate
 from erpnext.custom_workflow import validate_workflow_states, notify_workflow_states
 
 class Review(Document):
+	# begin: auto-generated types
+	# This code is auto-generated. Do not modify anything in this block.
+
+	from typing import TYPE_CHECKING
+
+	if TYPE_CHECKING:
+		from erpnext.pms.doctype.additional_achievements.additional_achievements import AdditionalAchievements
+		from erpnext.pms.doctype.negative_target_review.negative_target_review import NegativeTargetReview
+		from erpnext.pms.doctype.review_competency_item.review_competency_item import ReviewCompetencyItem
+		from erpnext.pms.doctype.review_target_item.review_target_item import ReviewTargetItem
+		from frappe.types import DF
+
+		additional_items: DF.Table[AdditionalAchievements]
+		amended_from: DF.Link | None
+		approver: DF.Link | None
+		approver_designation: DF.Data | None
+		approver_name: DF.Data | None
+		branch: DF.Link | None
+		business_target: DF.Table[NegativeTargetReview]
+		company: DF.Link | None
+		department: DF.Link | None
+		designation: DF.Link | None
+		division: DF.Link | None
+		employee: DF.Link
+		employee_name: DF.ReadOnly | None
+		end_date: DF.ReadOnly | None
+		grade: DF.Link | None
+		max_no_of_target: DF.Float
+		max_weightage_for_target: DF.Float
+		min_no_of_target: DF.Float
+		min_weightage_for_target: DF.Float
+		negative_target: DF.Check
+		pms_calendar: DF.Link
+		pms_group: DF.Link | None
+		reason: DF.SmallText | None
+		reference: DF.Link | None
+		required_to_set_target: DF.Data | None
+		rev_workflow_state: DF.Data | None
+		review_competency_item: DF.Table[ReviewCompetencyItem]
+		review_date: DF.Date | None
+		review_target_item: DF.Table[ReviewTargetItem]
+		section: DF.Link | None
+		set_manual_approver: DF.Check
+		start_date: DF.ReadOnly | None
+		target: DF.Link | None
+		total_weightage: DF.Float
+		unit: DF.Link | None
+		user_id: DF.Link | None
+	# end: auto-generated types
 	def validate(self):
 		self.get_supervisor_id()
 		self.check_duplicate_entry()
@@ -81,11 +130,21 @@ class Review(Document):
 					frappe.throw(
 						title=_('Error'),
 						msg="Weightage for target must be between <b>{}</b> and <b>{}</b> but you have set <b>{}</b> at row <b>{}</b>".format(self.min_weightage_for_target,self.max_weightage_for_target,t.weightage, i+1))
-
-				if flt(t.timeline) <= 0:
+				
+				if getdate(t.from_date).year < getdate().year:
 					frappe.throw(
 						title=_("Error"),
-						msg=_("<b>{}</b> value is not allowed for <b>Timeline</b> in Target Item at Row <b>{}</b>".format(t.timeline,i+1)))
+						msg=_("<b>From Date</b> cannot be less than <b>{}</b> in Target Item at Row <b>{}</b>".format(getdate().year,i+1)))
+
+				if getdate(t.to_date).year > getdate().year:
+					frappe.throw(
+						title=_("Error"),
+						msg=_("<b>To Date</b> cannot be greater than <b>{}</b> in Target Item at Row <b>{}</b>".format(getdate().year,i+1)))	
+					
+				if t.from_date > t.to_date:
+					frappe.throw(
+						title=_("Error"),
+						msg=_(" <b>From Date</b> cannot be greater than <b>To Date</b> in Target Item at Row <b>{}</b>".format(i+1)))
 				
 				total_target_weightage += flt(t.weightage)
 				if t.qty_quality == 'Quantity':

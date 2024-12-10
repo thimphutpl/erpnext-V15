@@ -22,6 +22,7 @@
   "daily_rate",
   "total_wage",
   "health",
+  "mess_deduction",
   "wage_payable",
   "column_break_11",
   "number_of_hours",
@@ -33,7 +34,6 @@
   "total_ot_amount",
   "section_break_15",
   "total_amount",
-  "mess_deduction",
   "total_payable",
   "ot_section",
   "bank",
@@ -58,6 +58,7 @@
    "search_index": 1
   },
   {
+   "columns": 1,
    "fieldname": "employee",
    "fieldtype": "Dynamic Link",
    "label": "Employee",
@@ -136,6 +137,7 @@
    "read_only": 1
   },
   {
+   "columns": 1,
    "fieldname": "total_wage",
    "fieldtype": "Currency",
    "in_list_view": 1,
@@ -145,12 +147,15 @@
   {
    "fieldname": "health",
    "fieldtype": "Currency",
+   "hidden": 1,
    "label": "Health Contribution",
    "read_only": 1
   },
   {
+   "columns": 2,
    "fieldname": "wage_payable",
    "fieldtype": "Currency",
+   "in_list_view": 1,
    "label": "Wage Payable Amount",
    "read_only": 1
   },
@@ -183,6 +188,7 @@
    "read_only": 1
   },
   {
+   "columns": 2,
    "fieldname": "total_ot_amount",
    "fieldtype": "Currency",
    "in_list_view": 1,
@@ -194,6 +200,7 @@
    "fieldtype": "Section Break"
   },
   {
+   "columns": 2,
    "fieldname": "total_amount",
    "fieldtype": "Currency",
    "in_list_view": 1,
@@ -246,20 +253,23 @@
    "label": "Amount Special"
   },
   {
+   "columns": 2,
    "fieldname": "mess_deduction",
    "fieldtype": "Currency",
+   "in_list_view": 1,
    "label": "Mess Deduction"
   },
   {
    "fieldname": "total_payable",
    "fieldtype": "Currency",
+   "hidden": 1,
    "label": "Total Payable"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-12-03 12:07:35.377587",
+ "modified": "2024-12-05 16:14:00.514995",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "MR Payment Item",

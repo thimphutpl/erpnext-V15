@@ -125,7 +125,7 @@ def get_columns(filters):
 			},
             {
                 "fieldname": "name",
-                "label": _("Transection"),
+                "label": _("Transaction"),
                 "fieldtype": "Link",
                 "options": "Supplementary Budget",
                 "with": 120

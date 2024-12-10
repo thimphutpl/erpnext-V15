@@ -5,9 +5,11 @@ from __future__ import unicode_literals
 import frappe
 from frappe import _
 from frappe.model.document import Document
-from frappe.utils import cstr, flt, fmt_money, formatdate, getdate, get_datetime
+from frappe.utils import cstr, flt, fmt_money, formatdate, getdate, get_datetime,nowdate
 from frappe.desk.reportview import get_match_cond
 from erpnext.custom_utils import check_uncancelled_linked_doc, check_future_date
+from frappe.model.mapper import get_mapped_doc
+
 
 class EquipmentHiringForm(Document):
 	# begin: auto-generated types
@@ -407,31 +409,31 @@ def get_advance_balance(branch, customer):
 
 
 
-@frappe.whitelist()
-def make_vehicle_logbook(source_name, target_doc=None): 
-	def update_docs(obj, target, source_parent):
-		target.posting_date = nowdate()
-		target.payment_for = "Equipment Hiring Form"
-		target.net_amount = obj.outstanding_amount
-		target.actual_amount = obj.outstanding_amount
-		target.income_account = frappe.db.get_value("Branch", obj.branch, "revenue_bank_account")
+# @frappe.whitelist()
+# def make_vehicle_logbook(source_name, target_doc=None): 
+# 	def update_docs(obj, target, source_parent):
+# 		target.posting_date = nowdate()
+# 		target.payment_for = "Equipment Hiring Form"
+# 		target.net_amount = obj.advance_amount
+# 		target.actual_amount = obj.advance_amount
+# 		target.income_account = frappe.db.get_value("Branch", obj.branch, "revenue_bank_account")
 	
-		target.append("items", {
-			"reference_type": "Equipment Hiring Form",
-			"reference_name": obj.name,
-			"outstanding_amount": obj.outstanding_amount,
-			"allocated_amount": obj.outstanding_amount,
-			"customer": obj.customer
-		})
+# 		target.append("items", {
+# 			"reference_type": "Equipment Hiring Form",
+# 			"reference_name": obj.name,
+# 			"outstanding_amount": obj.advance_amount,
+# 			"allocated_amount": obj.advance_amount,
+# 			"customer": obj.customer
+# 		})
 
-	doc = get_mapped_doc("Equipment Hiring Form", source_name, {
-			"Equipment Hiring Form": {
-				"doctype": "Vehicle Logbook",
-				"field_map": {
-					"outstanding_amount": "receivable_amount",
-				},
-				"postprocess": update_docs,
-				"validation": {"docstatus": ["=", 1], "equipment_hiring_form": ["is", None]}
-			},
-		}, target_doc)
-	return doc
+# 	doc = get_mapped_doc("Equipment Hiring Form", source_name, {
+# 			"Equipment Hiring Form": {
+# 				"doctype": "Vehicle Logbook",
+# 				"field_map": {
+# 					"outstanding_amount": "receivable_amount",
+# 				},
+# 				# "postprocess": update_docs,
+# 				"validation": {"docstatus": ["=", 1], "equipment_hiring_form": ["is", None]}
+# 			},
+# 		}, target_doc)
+# 	return doc

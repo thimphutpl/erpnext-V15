@@ -1,4 +1,5 @@
 {
+ "actions": [],
  "allow_rename": 1,
  "creation": "2021-11-23 14:53:04.214389",
  "doctype": "DocType",
@@ -8,6 +9,7 @@
   "target_accomplishment_section",
   "reference",
   "performance_target",
+  "description",
   "weightage",
   "reverse_formula",
   "column_break_9",
@@ -15,10 +17,8 @@
   "quantity",
   "quality",
   "column_break_4",
-  "timeline_base_on",
-  "timeline",
-  "section_break_9",
-  "description"
+  "from_date",
+  "to_date"
  ],
  "fields": [
   {
@@ -103,36 +103,6 @@
    "fieldtype": "Column Break"
   },
   {
-   "columns": 1,
-   "fetch_from": "reference.timeline_base_on",
-   "fieldname": "timeline_base_on",
-   "fieldtype": "Select",
-   "in_list_view": 1,
-   "label": "Timeline Base On(Minutes/Hours/Days/Months)",
-   "options": "\nMinute\nHour\nDay\nMonth",
-   "read_only": 1,
-   "reqd": 1
-  },
-  {
-   "allow_on_submit": 1,
-   "columns": 1,
-   "depends_on": "eval:doc.timeline_base_on",
-   "fetch_from": "reference.timeline",
-   "fieldname": "timeline",
-   "fieldtype": "Float",
-   "ignore_user_permissions": 1,
-   "in_list_view": 1,
-   "label": "Timeline",
-   "read_only": 1,
-   "reqd": 1
-  },
-  {
-   "description": "Provide more details of your target ",
-   "fieldname": "section_break_9",
-   "fieldtype": "Section Break",
-   "label": "Description"
-  },
-  {
    "fetch_from": "reference.description",
    "fieldname": "description",
    "fieldtype": "Small Text",
@@ -146,10 +116,21 @@
    "label": "Reference",
    "options": "Common Target Details",
    "reqd": 1
+  },
+  {
+   "fieldname": "from_date",
+   "fieldtype": "Date",
+   "label": "From Date"
+  },
+  {
+   "fieldname": "to_date",
+   "fieldtype": "Date",
+   "label": "To Date"
   }
  ],
  "istable": 1,
- "modified": "2021-11-23 16:30:49.914680",
+ "links": [],
+ "modified": "2024-12-06 16:52:04.549190",
  "modified_by": "Administrator",
  "module": "PMS",
  "name": "Common Target Item",
@@ -158,5 +139,6 @@
  "quick_entry": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
+ "states": [],
  "track_changes": 1
 }

@@ -1,0 +1,40 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-12-07 15:47:17.557227",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "table_1"
+ ],
+ "fields": [
+  {
+   "fieldname": "table_1",
+   "fieldtype": "Table",
+   "options": "Approver Item"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2024-12-07 15:48:37.014803",
+ "modified_by": "Administrator",
+ "module": "Stock",
+ "name": "Document Approver",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"B39LiLyS4q\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Budget Management</span>\",\"col\":12}},{\"id\":\"AX57UKwmU1\",\"type\":\"card\",\"data\":{\"card_name\":\"Masters and Settings\",\"col\":4}},{\"id\":\"An30Mopj0x\",\"type\":\"card\",\"data\":{\"card_name\":\"Transactions\",\"col\":4}},{\"id\":\"RhQiW1eeE0\",\"type\":\"card\",\"data\":{\"card_name\":\"Reports\",\"col\":4}}]",
+ "content": "[{\"id\":\"Pfs9YKjGJr\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Budget Dashboard\",\"col\":3}},{\"id\":\"B39LiLyS4q\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Budget Management</span>\",\"col\":12}},{\"id\":\"AX57UKwmU1\",\"type\":\"card\",\"data\":{\"card_name\":\"Masters and Settings\",\"col\":4}},{\"id\":\"An30Mopj0x\",\"type\":\"card\",\"data\":{\"card_name\":\"Transactions\",\"col\":4}},{\"id\":\"RhQiW1eeE0\",\"type\":\"card\",\"data\":{\"card_name\":\"Reports\",\"col\":4}}]",
  "creation": "2024-09-03 09:56:52.454684",
  "custom_blocks": [],
  "docstatus": 0,
@@ -171,8 +171,8 @@
    "type": "Link"
   }
  ],
- "modified": "2024-12-02 11:42:05.912789",
- "modified_by": "Administrator",
+ "modified": "2024-12-04 17:34:45.366846",
+ "modified_by": "kinzang.namgyal@cdcl.bt",
  "module": "Budget",
  "name": "Budget Management",
  "number_cards": [],
@@ -182,6 +182,14 @@
  "quick_lists": [],
  "roles": [],
  "sequence_id": 20.0,
- "shortcuts": [],
+ "shortcuts": [
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Budget Dashboard",
+   "link_to": "Budget Dashboard",
+   "type": "Dashboard"
+  }
+ ],
  "title": "Budget Management"
 }

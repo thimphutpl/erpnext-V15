@@ -14,12 +14,12 @@
   "unit",
   "workers_engaged_section",
   "workers",
-  "machine",
+  "mason",
   "carpenter",
-  "p",
+  "painter",
   "cb_sb_we1",
-  "equipment",
-  "technical",
+  "electrician",
+  "technician",
   "operator",
   "others"
  ],
@@ -69,33 +69,13 @@
    "label": "Workers"
   },
   {
-   "fieldname": "machine",
-   "fieldtype": "Int",
-   "label": "Machine"
-  },
-  {
    "fieldname": "carpenter",
    "fieldtype": "Int",
    "label": "Carpenter"
   },
   {
-   "fieldname": "p",
-   "fieldtype": "Int",
-   "label": "P"
-  },
-  {
    "fieldname": "cb_sb_we1",
    "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "equipment",
-   "fieldtype": "Int",
-   "label": "Equipment"
-  },
-  {
-   "fieldname": "technical",
-   "fieldtype": "Int",
-   "label": "Technical"
   },
   {
    "fieldname": "operator",
@@ -106,12 +86,32 @@
    "fieldname": "others",
    "fieldtype": "Int",
    "label": "Others"
+  },
+  {
+   "fieldname": "mason",
+   "fieldtype": "Int",
+   "label": "Mason"
+  },
+  {
+   "fieldname": "painter",
+   "fieldtype": "Int",
+   "label": "Painter"
+  },
+  {
+   "fieldname": "electrician",
+   "fieldtype": "Int",
+   "label": "Electrician"
+  },
+  {
+   "fieldname": "technician",
+   "fieldtype": "Int",
+   "label": "Technician"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-12-03 11:26:27.998567",
+ "modified": "2024-12-05 09:44:22.087323",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Category Works Engaged",

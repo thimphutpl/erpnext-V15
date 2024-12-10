@@ -26,9 +26,11 @@ class VehicleLogbook(Document):
 		consumption_km: DF.Float
 		customer: DF.Link | None
 		customer_type: DF.Data | None
+		customer_types: DF.Data | None
+		customers: DF.Link | None
 		distance_km: DF.Int
-		ehf_name: DF.Link
-		equipment: DF.Link
+		ehf_name: DF.Link | None
+		equipment: DF.Link | None
 		equipment_operator: DF.Data | None
 		final_hour: DF.Float
 		final_km: DF.Int
@@ -36,6 +38,7 @@ class VehicleLogbook(Document):
 		from_time: DF.Time
 		hour_adjustment_reason: DF.Data | None
 		hour_taken: DF.Int
+		hsd_amount: DF.Data | None
 		hsd_received: DF.Float
 		idle_rate: DF.Currency
 		include_hour: DF.Check
@@ -43,19 +46,24 @@ class VehicleLogbook(Document):
 		initial_hour: DF.Float
 		initial_km: DF.Int
 		invoice_created: DF.Check
+		kph: DF.Float
+		lph: DF.Float
 		opening_balance: DF.Float
 		other_consumption: DF.Float
 		payment_completed: DF.Check
 		place: DF.Data | None
 		pol_type: DF.Data | None
+		pool_equipment: DF.Link | None
+		pool_equipment_number: DF.Data | None
 		rate_type: DF.Data | None
 		reason: DF.Data | None
-		registration_number: DF.Data
+		registration_number: DF.Data | None
 		remarks: DF.TextEditor | None
 		to_date: DF.Date
 		to_time: DF.Time
 		total_idle_time: DF.Float
 		total_work_time: DF.Float
+		vehicle_logbook: DF.Literal["", "Equipment Hiring Form", "Pool Vehicle"]
 		vlogs: DF.Table[VehicleLog]
 		work_rate: DF.Currency
 		ys_hours: DF.Float
@@ -73,7 +81,8 @@ class VehicleLogbook(Document):
 		self.update_consumed()
 		self.calculate_totals()
 		self.update_operator()
-		self.check_consumed()	
+		self.check_consumed()
+		self.get_pool_equipment()	
 	
 	def validate_date(self):
 		from_date = get_datetime(str(self.from_date) + ' ' + str(self.from_time))
@@ -81,12 +90,63 @@ class VehicleLogbook(Document):
 		if to_date < from_date:
 			frappe.throw("From Date/Time cannot be greater than To Date/Time")
 
-	def set_data(self):
-		if not self.ehf_name:
-			frappe.throw("Equipment Hire Form is mandatory")
-		self.customer_type = frappe.db.get_value("Equipment Hiring Form", self.ehf_name, "private")
-		self.customer = frappe.db.get_value("Equipment Hiring Form", self.ehf_name, "customer")
+	def before_save(self):
+		if self.vehicle_logbook == "Pool Vehicle":
+			# Validate customers field
+			if not self.customers:
+				frappe.throw(_("Please select a value for 'Customers' when 'Vehicle Logbook' is set to 'Pool Vehicle'."))
+			
+			# Validate customer types field
+			if not self.customer_types:
+				frappe.throw(_("Please select a value for 'Customer Types' when 'Vehicle Logbook' is set to 'Pool Vehicle'."))
+			
+			# Map the values correctly
+			self.customer = self.customers
+			self.customer_type = self.customer_types
+		else:
+			# Ensure standard fields are used when not Pool Vehicle
+			self.customer = self.customer or None
+			self.customer_type = self.customer_type or None
+		
 
+	# def set_data(self):
+	# 	if self.vehicle_logbook == "Pool Vehicle":
+	# 		# Skip setting data for Pool Vehicle
+	# 		return	
+
+	# 	if not self.ehf_name:
+	# 		frappe.throw("Equipment Hire Form is mandatory")
+	# 	self.customer_type = frappe.db.get_value("Equipment Hiring Form", self.ehf_name, "private")
+	# 	self.customer = frappe.db.get_value("Equipment Hiring Form", self.ehf_name, "customer")
+
+	def set_data(self):
+		if self.vehicle_logbook == "Pool Vehicle":
+			# Use the new fields 'customers' and 'customer types'
+			if not self.customers:
+				frappe.throw("Customers field is mandatory for Pool Vehicle")
+			if not self.customer_types:
+				frappe.throw("Customer Types field is mandatory for Pool Vehicle")
+			
+			# Additional validation can go here if required
+			return
+
+		elif self.vehicle_logbook == "Equipment Hiring Form":
+			# Use the standard fields for Equipment Hiring Form
+			if not self.ehf_name:
+				frappe.throw("Equipment Hire Form is mandatory")
+			self.customer_type = frappe.db.get_value("Equipment Hiring Form", self.ehf_name, "private")
+			self.customer = frappe.db.get_value("Equipment Hiring Form", self.ehf_name, "customer")
+			
+			# # Fetch values for 'customer' and 'customer_type' from the Equipment Hiring Form
+			# self.customer_type = frappe.db.get_value("Equipment Hiring Form", self.ehf_name, "private")
+			# if not self.customer_type:
+			# 	frappe.throw(f"Customer type not found for Equipment Hiring Form: {self.ehf_name}")
+			
+			# self.customer = frappe.db.get_value("Equipment Hiring Form", self.ehf_name, "customer")
+			# if not self.customer:
+			# 	frappe.throw(f"Customer not found for Equipment Hiring Form: {self.ehf_name}")
+
+	
 	def check_consumed(self):
 		if self.include_hour or self.include_km:
 			if flt(self.consumption) <= 0:
@@ -151,6 +211,10 @@ class VehicleLogbook(Document):
 			frappe.throw("From Date and To Date should be in the same month")
 
 	def check_hire_form(self):
+		if self.vehicle_logbook == "Pool Vehicle":
+			# Skip setting data for Pool Vehicle
+			return
+		
 		if self.ehf_name:
 			docstatus = frappe.db.get_value("Equipment Hiring Form", self.ehf_name, "docstatus")
 			if docstatus != 1:
@@ -195,6 +259,10 @@ class VehicleLogbook(Document):
 
 		if self.include_hour:
 			self.consumption_hours = flt(self.ys_hours) * flt(self.total_work_time)
+
+		# Auto-calculate hsd_amount as ys_km * distance_km
+		if self.ys_km and self.distance_km:
+			self.hsd_amount = flt(self.ys_km) * flt(self.distance_km)	
 		
 		self.consumption = flt(self.other_consumption) + flt(self.consumption_hours) + flt(self.consumption_km)
 		self.closing_balance = flt(self.hsd_received) + flt(self.opening_balance) - flt(self.consumption)
@@ -204,6 +272,7 @@ class VehicleLogbook(Document):
 			doc = frappe.get_doc("Equipment Hiring Form", self.ehf_name)
 			doc.db_set("hiring_status", 1)
 		e = frappe.get_doc("Equipment", self.equipment)
+		
 
 		if self.final_km:
 			self.check_repair(cint(e.current_km_reading), cint(self.final_km))
@@ -234,7 +303,7 @@ class VehicleLogbook(Document):
 		et, em, branch = frappe.db.get_value("Equipment", self.equipment, ["equipment_type", "equipment_model", "branch"])
 		interval = frappe.db.get_value("Hire Charge Parameter", {"equipment_type": et, "equipment_model": em}, "interval")
 		if interval:
-			for a in xrange(start, end):
+			for a in range(start, end):
 				if (flt(a) % flt(interval)) == 0:
 					mails = frappe.db.sql("select email from `tabRegular Maintenance Item` where parent = %s", branch, as_dict=True)
 					for b in mails:
@@ -288,6 +357,16 @@ class VehicleLogbook(Document):
 				frappe.throw("Consumption is Mandatory")
 		else:
 			frappe.throw("Consumption is Mandatory")
+
+	def get_pool_equipment(self):
+		if self.vehicle_logbook == "Pool Vehicle":
+			pool_equipment = frappe.db.sql("""
+				SELECT name
+				FROM `tabEquipment`
+				WHERE equipment_category = 'Pool Vehicle'
+			""", as_dict=True)
+			return [equipment['name'] for equipment in pool_equipment]
+		return []		
 
 @frappe.whitelist()
 def get_opening(equipment, from_date, to_date, pol_type):

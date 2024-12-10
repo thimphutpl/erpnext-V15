@@ -46,10 +46,10 @@ class RevenueTarget(Document):
 					frappe.msgprint(_("Revenue Target cannot be assigned against Group Account {0}").format(d.account), raise_exception=True)
 				elif account_details.company != self.company:
 					frappe.msgprint(_("Account {0} does not belongs to company {1}").format(d.account, self.company), raise_exception=True)
-				if d.account in account_list:
-					frappe.msgprint(_("Account {0} has been entered multiple times").format(d.account), raise_exception=True)
-				else:
-					account_list.append(d.account)
+				# if d.account in account_list:
+				# 	frappe.msgprint(_("Account {0} has been entered multiple times").format(d.account), raise_exception=True)
+				# else:
+				# 	account_list.append(d.account)
 
 	def validate_mandatory(self):
 		for item in self.revenue_target_account:

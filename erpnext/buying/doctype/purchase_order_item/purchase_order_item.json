@@ -48,8 +48,6 @@
   "amount",
   "item_tax_template",
   "column_break_kwjd",
-  "freight_and_insurance_charges",
-  "col_break4",
   "base_rate",
   "base_amount",
   "pricing_rules",
@@ -335,10 +333,6 @@
    "oldfieldtype": "Currency",
    "options": "currency",
    "read_only": 1
-  },
-  {
-   "fieldname": "col_break4",
-   "fieldtype": "Column Break"
   },
   {
    "fieldname": "base_rate",
@@ -926,18 +920,13 @@
   {
    "fieldname": "column_break_kwjd",
    "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "freight_and_insurance_charges",
-   "fieldtype": "Currency",
-   "label": "Freight and insurance Charges"
   }
  ],
  "idx": 1,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-11-23 11:44:16.450651",
+ "modified": "2024-12-04 10:54:59.652509",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Purchase Order Item",

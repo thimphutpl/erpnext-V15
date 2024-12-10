@@ -1,0 +1,33 @@
+{
+ "add_total_row": 0,
+ "columns": [],
+ "creation": "2024-12-04 10:20:16.261517",
+ "disabled": 0,
+ "docstatus": 0,
+ "doctype": "Report",
+ "filters": [],
+ "idx": 0,
+ "is_standard": "Yes",
+ "letter_head": "cdcl_default",
+ "letterhead": null,
+ "modified": "2024-12-04 10:20:16.261517",
+ "modified_by": "Administrator",
+ "module": "AMS",
+ "name": "Audit Observation Report",
+ "owner": "Administrator",
+ "prepared_report": 0,
+ "ref_doctype": "Execute Audit",
+ "report_name": "Audit Observation Report",
+ "report_type": "Script Report",
+ "roles": [
+  {
+   "role": "System Manager"
+  },
+  {
+   "role": "Auditor Manager"
+  },
+  {
+   "role": "Audit User"
+  }
+ ]
+}

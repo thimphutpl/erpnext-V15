@@ -23,14 +23,13 @@
   "to_date",
   "section_break_6",
   "wages_amount",
+  "gross_amount",
   "column_break_14",
   "ot_amount",
+  "deduction",
   "column_break_8",
   "total_health_amount",
-  "column_break_20",
   "total_overall_amount",
-  "deduction",
-  "total_amount_payable",
   "column_break_10",
   "load_records",
   "column_break_22",
@@ -44,11 +43,12 @@
  ],
  "fields": [
   {
+   "default": "Muster Roll Employee",
    "fieldname": "employee_type",
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Employee Type",
-   "options": "\nMuster Roll Employee\nGEP Employee",
+   "options": "\nMuster Roll Employee",
    "reqd": 1
   },
   {
@@ -170,17 +170,14 @@
   {
    "fieldname": "total_health_amount",
    "fieldtype": "Currency",
+   "hidden": 1,
    "label": "Total Health Contribution",
    "read_only": 1
   },
   {
-   "fieldname": "column_break_20",
-   "fieldtype": "Column Break"
-  },
-  {
    "fieldname": "total_overall_amount",
    "fieldtype": "Currency",
-   "label": "Gross Amount",
+   "label": "Net Amount",
    "read_only": 1,
    "reqd": 1
   },
@@ -245,16 +242,17 @@
    "read_only": 1
   },
   {
-   "fieldname": "total_amount_payable",
+   "fieldname": "gross_amount",
    "fieldtype": "Currency",
-   "label": "Net Amount ",
+   "label": "Gross Amount",
+   "precision": "2",
    "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-12-03 15:34:57.010509",
+ "modified": "2024-12-06 16:14:21.212296",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Process MR Payment",

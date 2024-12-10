@@ -61,6 +61,23 @@ frappe.ui.form.on('Vehicle Logbook', {
 		}
 	},
 
+
+	vehicle_logbook: function(frm) {
+        if (frm.doc.vehicle_logbook === "Pool Vehicle") {
+            frm.set_query('pool_equipment', function() {
+                return {
+                    filters: {
+                        equipment_category: 'Pool Vehicle'
+                    }
+                };
+            });
+        } else {
+            frm.set_query('pool_equipment', function() {
+                return {}; // Clear filter for other types
+            });
+        }
+    },
+
 	"final_km": function(frm) {
 		if(!frm.doc.docstatus == 1) {
 			calculate_distance_km(frm)
@@ -222,6 +239,9 @@ function calculate_work_hour(frm) {
 cur_frm.add_fetch("equipment", "registration_number", "registration_number")
 cur_frm.add_fetch("equipment", "hsd_type", "pol_type")
 cur_frm.add_fetch("equipment", "current_operator", "equipment_operator")
+cur_frm.add_fetch("pool_equipment", "registration_number", "pool_equipment_number")
+cur_frm.add_fetch("pool_equipment", "lph", "lph")
+cur_frm.add_fetch("pool_equipment", "kph", "kph")
 // cur_frm.add_fetch("operator", "operator_name", "driver_name")
 
 //Vehicle Log Item  Details

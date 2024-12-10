@@ -1341,3 +1341,8 @@ def add_reference_in_jv_on_split(entry_name, new_asset_name, old_asset_name, dep
 	journal_entry.make_gl_entries(1)
 	journal_entry.docstatus = 1
 	journal_entry.make_gl_entries()
+
+@frappe.whitelist()
+def update_disable_depreciation(asset_id):
+	frappe.db.sql("Update `tabAsset` set disable_depreciation = 1 where name = '{}'".format(asset_id))
+	return 1

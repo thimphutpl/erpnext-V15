@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "format:EOT-YY-MM-##",
+ "autoname": "format:EOT-{YY}-{MM}-{###}",
  "creation": "2024-11-27 17:02:01.409907",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -41,6 +41,7 @@
   {
    "fieldname": "projects",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Projects",
    "options": "Project",
    "read_only": 1,
@@ -122,7 +123,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-12-01 18:25:53.586827",
+ "modified": "2024-12-09 10:28:56.675691",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Extension of Time",

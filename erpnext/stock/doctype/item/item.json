@@ -26,6 +26,7 @@
   "has_variants",
   "is_pol_item",
   "is_hsd_item",
+  "is_scrap_item",
   "opening_stock",
   "valuation_rate",
   "standard_rate",
@@ -920,6 +921,12 @@
    "fieldname": "maintain_in_register",
    "fieldtype": "Check",
    "label": "Maintain In Register"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_scrap_item",
+   "fieldtype": "Check",
+   "label": "Is Scrap Item"
   }
  ],
  "icon": "fa fa-tag",
@@ -928,7 +935,7 @@
  "index_web_pages_for_search": 1,
  "links": [],
  "make_attachments_public": 1,
- "modified": "2024-11-29 16:41:25.459251",
+ "modified": "2024-12-06 15:28:57.722575",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Item",

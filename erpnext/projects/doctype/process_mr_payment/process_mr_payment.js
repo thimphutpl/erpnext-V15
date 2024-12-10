@@ -66,97 +66,106 @@ function get_records(fiscal_year, month, cost_center, branch, dn) {
 	cur_frm.clear_table("items");
 	cur_frm.refresh_field("items");
 	frappe.call({
-		method: "erpnext.projects.doctype.process_mr_payment.process_mr_payment.get_records",
+		method: "get_records",
+		doc: cur_frm.doc,
 		args: {
 			"fiscal_year": fiscal_year,
 			"fiscal_month": month,
 			"cost_center": cost_center,
 			"branch": branch,
 			//"employee_type": employee_type,
-			"dn": dn
+			"dn": dn,
 		},
 		freeze: true,
 		freeze_message: "Loading wage details. Please Wait...",
 		callback: function(r) {
-			if(r.message) {
-				var total_overall_amount = 0;
-				var ot_amount = 0; 
-				var wages_amount = 0;
-				//cur_frm.clear_table("items");
-				console.log(r);
+			refresh_field("items");
+			cur_frm.refresh_field("total_overall_amount")
+			cur_frm.refresh_field("wages_amount")
+			cur_frm.refresh_field("ot_amount")
+			cur_frm.refresh_field("deduction")
+			cur_frm.refresh_field("gross_amount")
+			cur_frm.refresh_field("items");
+			// if(r.message) {
+			// 	var total_overall_amount = 0;
+			// 	var ot_amount = 0; 
+			// 	var wages_amount = 0;
+			// 	//cur_frm.clear_table("items");
+			// 	// console.log(r.message);
 				
-				r.message.forEach(function(mr) {
-					if(mr['number_of_days'] > 0 || mr['number_of_hours'] > 0) {
-						var row = frappe.model.add_child(cur_frm.doc, "MR Payment Item", "items");
+			// 	r.message.forEach(function(mr) {
+			// 		console.log("here"+mr['mr_employee'])
+			// 		if(mr['number_of_days'] > 0 || mr['number_of_hours'] > 0) {
+			// 			var row = frappe.model.add_child(cur_frm.doc, "MR Payment Item", "items");
 		
-						row.employee_type 	= "Muster Roll Employee";
-						row.employee 		= mr['mr_employee'];
-						row.person_name 	= mr['person_name'];
-						row.id_card 		= mr['id_card'];
-						row.fiscal_year 	= fiscal_year;
-						row.month 			= month;
-						row.number_of_days 	= mr['number_of_days'];
-						row.number_of_hours = flt(mr['number_of_hours_regular']);
-						row.number_of_hours_special = flt(mr['number_of_hours_special']);
-						row.bank = mr['bank'];
-						row.account_no = mr['account_no'];
-						row.designation = mr['designation'];
-						// if(mr['type'] == 'GEP Employee'){
-						// 	row.daily_rate      = flt(mr['salary'])/flt(mr['noof_days_in_month']);
-						// 	row.hourly_rate     = flt(mr['salary']*1.5)/flt(mr['noof_days_in_month']*8);
-						// 	row.total_ot_amount = flt(row.number_of_hours) * flt(row.hourly_rate);
-						// 	row.total_wage      = flt(row.daily_rate) * flt(row.number_of_days);
-						// 	console.log(row.total_ot_amount);
-						// 	if((flt(row.total_wage) > flt(mr['salary']))||(flt(mr['noof_days_in_month']) == flt(mr['number_of_days']))){
-						// 		row.total_wage = flt(mr['salary']);
-						// 	}
-						// } else {
-							row.daily_rate 	= flt(mr['rate_per_day']);
-							row.hourly_rate 	= flt(mr['rate_per_hour']); // Holiday Rate
-							row.hourly_rate_normal = flt(mr['rate_per_hour_normal']);
-							row.amount_regular = flt(mr['number_of_hours_regular']) * flt(mr['rate_per_hour_normal']);
-							row.amount_special 		= flt(mr['number_of_hours_special'])*flt(mr['rate_per_hour']);
-							row.total_ot_amount = flt(mr['number_of_hours_regular']) * flt(mr['rate_per_hour_normal']) + flt(mr['number_of_hours_special'])*flt(mr['rate_per_hour'])
-							row.total_wage 		= flt(mr['rate_per_day']) * flt(mr['number_of_days'])
+			// 			row.employee_type 	= "Muster Roll Employee";
+			// 			row.employee 		= mr['mr_employee'];
+			// 			row.person_name 	= mr['person_name'];
+			// 			row.id_card 		= mr['id_card'];
+			// 			row.fiscal_year 	= fiscal_year;
+			// 			row.month 			= month;
+			// 			row.number_of_days 	= mr['number_of_days'];
+			// 			row.number_of_hours = flt(mr['number_of_hours_regular']);
+			// 			row.number_of_hours_special = flt(mr['number_of_hours_special']);
+			// 			row.bank = mr['bank'];
+			// 			row.account_no = mr['account_no'];
+			// 			row.designation = mr['designation'];
+			// 			// if(mr['type'] == 'GEP Employee'){
+			// 			// 	row.daily_rate      = flt(mr['salary'])/flt(mr['noof_days_in_month']);
+			// 			// 	row.hourly_rate     = flt(mr['salary']*1.5)/flt(mr['noof_days_in_month']*8);
+			// 			// 	row.total_ot_amount = flt(row.number_of_hours) * flt(row.hourly_rate);
+			// 			// 	row.total_wage      = flt(row.daily_rate) * flt(row.number_of_days);
+			// 			// 	console.log(row.total_ot_amount);
+			// 			// 	if((flt(row.total_wage) > flt(mr['salary']))||(flt(mr['noof_days_in_month']) == flt(mr['number_of_days']))){
+			// 			// 		row.total_wage = flt(mr['salary']);
+			// 			// 	}
+			// 			// } else {
+			// 				row.daily_rate 	= flt(mr['rate_per_day']);
+			// 				row.hourly_rate 	= flt(mr['rate_per_hour']); // Holiday Rate
+			// 				row.hourly_rate_normal = flt(mr['rate_per_hour_normal']);
+			// 				row.amount_regular = flt(mr['number_of_hours_regular']) * flt(mr['rate_per_hour_normal']);
+			// 				row.amount_special 		= flt(mr['number_of_hours_special'])*flt(mr['rate_per_hour']);
+			// 				row.total_ot_amount = flt(mr['number_of_hours_regular']) * flt(mr['rate_per_hour_normal']) + flt(mr['number_of_hours_special'])*flt(mr['rate_per_hour'])
+			// 				row.total_wage 		= flt(mr['rate_per_day']) * flt(mr['number_of_days'])
 							
-							row.mess_deduction 	= flt(mr['amount']);
+			// 				row.mess_deduction 	= flt(mr['amount']);
 							
-						//}
+			// 			//}
 						
-						/*
-						if(mr['type'] == 'GEP Employee' && flt(row.total_wage) > flt(mr['salary'])){
-							row.total_wage = flt(mr['salary']);
-						}
-						else if(mr['type'] == 'GEP Employee' && flt(mr['noof_days_in_month']) == flt(mr['number_of_days'])){
-							row.total_wage = flt(mr['salary']);
-						}
-						*/
+			// 			/*
+			// 			if(mr['type'] == 'GEP Employee' && flt(row.total_wage) > flt(mr['salary'])){
+			// 				row.total_wage = flt(mr['salary']);
+			// 			}
+			// 			else if(mr['type'] == 'GEP Employee' && flt(mr['noof_days_in_month']) == flt(mr['number_of_days'])){
+			// 				row.total_wage = flt(mr['salary']);
+			// 			}
+			// 			*/
 						
-						row.total_amount 	= flt(row.total_ot_amount) + flt(row.total_wage);
-						row.total_payable=flt(row.total_amount)-flt(row.mess_deduction);
-						refresh_field("items");
+			// 			row.total_amount 	= flt(row.total_ot_amount) + flt(row.total_wage);
+			// 			row.total_payable=flt(row.total_amount)-flt(row.mess_deduction);
+			// 			refresh_field("items");
 
-						total_overall_amount += row.total_amount;
-						ot_amount 			 += row.total_ot_amount;
-						wages_amount 		 += row.total_wage;
-						deduction 			 +=row.mess_deduction;
-						total_amount_payable=total_overall_amount-deduction;
-					}
-				});
+			// 			total_overall_amount += row.total_amount;
+			// 			ot_amount 			 += row.total_ot_amount;
+			// 			wages_amount 		 += row.total_wage;
+			// 			deduction 			 +=row.mess_deduction;
+			// 			// total_amount_payable=total_overall_amount-deduction;
+			// 		}
+			// 	});
 
-				cur_frm.set_value("total_overall_amount", total_overall_amount)
-				cur_frm.set_value("wages_amount", flt(wages_amount))
-				cur_frm.set_value("ot_amount", flt(ot_amount))
-				cur_frm.set_value("deduction", flt(deduction))
-				cur_frm.set_value("total_amount_payable", flt(total_amount_payable))
-				cur_frm.refresh_field("total_overall_amount")
-				cur_frm.refresh_field("wages_amount")
-				cur_frm.refresh_field("ot_amount")
-				cur_frm.refresh_field("items");
-			}
-			else {
-				frappe.msgprint("No Overtime and Attendance Record Found")
-			}
+				// cur_frm.set_value("total_overall_amount", total_overall_amount)
+				// cur_frm.set_value("wages_amount", flt(wages_amount))
+				// cur_frm.set_value("ot_amount", flt(ot_amount))
+				// cur_frm.set_value("deduction", flt(deduction))
+				// cur_frm.set_value("total_amount_payable", flt(total_amount_payable))
+			// 	cur_frm.refresh_field("total_overall_amount")
+			// 	cur_frm.refresh_field("wages_amount")
+			// 	cur_frm.refresh_field("ot_amount")
+			// 	cur_frm.refresh_field("items");
+			// }
+			// else {
+			// 	frappe.msgprint("No Overtime and Attendance Record Found")
+			// }
 		}
 	})
 }

@@ -9,6 +9,31 @@ from frappe.model.document import Document
 from frappe.model.mapper import get_mapped_doc
 
 class ChangeInPerformanceEvaluation(Document):
+	# begin: auto-generated types
+	# This code is auto-generated. Do not modify anything in this block.
+
+	from typing import TYPE_CHECKING
+
+	if TYPE_CHECKING:
+		from frappe.types import DF
+
+		amended_from: DF.Link | None
+		branch: DF.Link | None
+		company: DF.Link | None
+		current_target: DF.Link | None
+		department: DF.Link | None
+		description: DF.SmallText | None
+		designation: DF.Link | None
+		employee: DF.Link
+		employee_name: DF.ReadOnly | None
+		evaluation_date: DF.Date | None
+		fiscal_year: DF.Link
+		grade: DF.Link | None
+		old_employee_id: DF.Data | None
+		pms_group: DF.Link | None
+		reason: DF.Literal["", "Change In Section/Division/Department", "Superannuation/Left", "Transfer", "Change in PMS Group"]
+		required_to_set_target: DF.Data | None
+	# end: auto-generated types
 	def on_submit(self):
 		self.send_mail()
 		self.update_target()

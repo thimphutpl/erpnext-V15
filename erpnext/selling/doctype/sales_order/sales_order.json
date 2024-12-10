@@ -600,7 +600,6 @@
   {
    "fieldname": "scan_barcode",
    "fieldtype": "Data",
-   "hidden": 1,
    "hide_days": 1,
    "hide_seconds": 1,
    "label": "Scan Barcode",
@@ -1688,7 +1687,7 @@
  "idx": 105,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-28 12:10:56.430702",
+ "modified": "2024-12-09 11:22:54.373682",
  "modified_by": "Administrator",
  "module": "Selling",
  "name": "Sales Order",

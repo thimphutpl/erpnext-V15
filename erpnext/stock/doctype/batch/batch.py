@@ -463,3 +463,8 @@ def get_batch_no(bundle_id):
 		batches[batch_id] += abs(d.get("qty"))
 
 	return batches
+
+def set_batch_nos():
+    # Add logic from the older ERPNext implementation
+    pass
+

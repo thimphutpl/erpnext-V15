@@ -34,6 +34,7 @@ def get_data(filters):
 		.select(
 			sq_item.parent,
 			sq_item.item_code,
+			sq_item.item_name,
 			sq_item.qty,
 			sq.currency,
 			sq_item.stock_qty,
@@ -243,6 +244,7 @@ def prepare_data(supplier_quotation_data, filters):
 
         row = {
             "item_code": data.get("item_code"),
+			"item_name": data.get("item_name"),
             "supplier_name": data.get("supplier_name"),
             "quotation": data.get("parent"),
             "qty": data.get("qty"),
@@ -336,52 +338,30 @@ def get_columns(filters):
 			"options": "Item",
 			"width": 150,
 		},
+		{
+			"fieldname": "item_name",
+			"label": _("Item Name"),
+			"fieldtype": "Link",
+			"options": "Item",
+			"width": 150,
+		},
 	]
 
 	columns = [
-		{"fieldname": "uom", "label": _("UOM"), "fieldtype": "Link", "options": "UOM", "width": 90},
 		{"fieldname": "qty", "label": _("Quantity"), "fieldtype": "Float", "width": 80},
 		{
-			"fieldname": "currency",
-			"label": _("Currency"),
-			"fieldtype": "Link",
-			"options": "Currency",
-			"width": 110,
-		},
-		{
-			"fieldname": "price",
-			"label": _("Price"),
-			"fieldtype": "Currency",
-			"options": "currency",
-			"width": 110,
-		},
-		{
-			"fieldname": "stock_uom",
-			"label": _("Stock UOM"),
-			"fieldtype": "Link",
-			"options": "UOM",
-			"width": 90,
-		},
-		{
 			"fieldname": "price_per_unit",
-			"label": _("Price per Unit (Stock UOM)"),
+			"label": _("Rate"),
 			"fieldtype": "Currency",
 			"options": "currency",
 			"width": 120,
 		},
 		{
-			"fieldname": "base_amount",
-			"label": _("Price ({0})").format(currency),
+			"fieldname": "price",
+			"label": _("Amount"),
 			"fieldtype": "Currency",
-			"options": "price_list_currency",
-			"width": 180,
-		},
-		{
-			"fieldname": "base_rate",
-			"label": _("Price Per Unit ({0})").format(currency),
-			"fieldtype": "Currency",
-			"options": "price_list_currency",
-			"width": 180,
+			"options": "currency",
+			"width": 110,
 		},
 		{
 			"fieldname": "quotation",
@@ -391,12 +371,6 @@ def get_columns(filters):
 			"width": 200,
 		},
 		{"fieldname": "valid_till", "label": _("Valid Till"), "fieldtype": "Date", "width": 100},
-		# {
-		# 	"fieldname": "lead_time_days",
-		# 	"label": _("Lead Time (Days)"),
-		# 	"fieldtype": "Int",
-		# 	"width": 100,
-		# },
 		{
 			"fieldname": "request_for_quotation",
 			"label": _("Request for Quotation"),

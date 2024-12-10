@@ -859,9 +859,14 @@ class PaymentEntry(AccountsController):
 				applicable_tax += amount
 				base_applicable_tax += base_amount
 
+		#jai self.references_total_amount
 		self.paid_amount_after_tax = flt(
-			flt(self.paid_amount) + flt(applicable_tax), self.precision("paid_amount_after_tax")
+			flt(self.references_total_amount) + flt(applicable_tax), self.precision("paid_amount_after_tax")
 		)
+		#below is actual amount
+		# self.paid_amount_after_tax = flt(
+		# 	flt(self.paid_amount) + flt(applicable_tax), self.precision("paid_amount_after_tax")
+		# )
 		self.base_paid_amount_after_tax = flt(
 			flt(self.paid_amount_after_tax) * flt(self.source_exchange_rate),
 			self.precision("base_paid_amount_after_tax"),
@@ -1462,7 +1467,14 @@ class PaymentEntry(AccountsController):
 			for fieldname in tax_fields:
 				tax.set(fieldname, 0.0)
 
-		self.paid_amount_after_tax = self.base_paid_amount
+		#jai update as per pralad sir, take taxable amount from items total amount
+		#same changes in js file inside same func.
+		total_amount = 0.0
+		for ded in self.get('references'):
+			total_amount = flt(total_amount) + flt(ded.total_amount)
+		self.references_total_amount = flt(total_amount)
+		self.paid_amount_after_tax = flt(total_amount)
+		# self.paid_amount_after_tax = self.base_paid_amount
 
 	def determine_exclusive_rate(self):
 		if not any(cint(tax.included_in_paid_amount) for tax in self.get("taxes")):
@@ -2253,6 +2265,7 @@ def get_payment_entry(
 	# bank or cash
 	bank = get_bank_cash_account(doc, bank_account)
 
+	#jai, below no use as it is hidden in supplier
 	# if default bank or cash account is not set in company master and party has default company bank account, fetch it
 	if party_type in ["Customer", "Supplier"] and not bank:
 		party_bank_account = get_party_bank_account(party_type, doc.get(scrub(party_type)))
@@ -2299,6 +2312,7 @@ def get_payment_entry(
 	pe.paid_amount = paid_amount
 	pe.received_amount = received_amount
 	pe.letter_head = doc.get("letter_head")
+	pe.branch = doc.branch
 
 	if dt in ["Purchase Order", "Sales Order", "Sales Invoice", "Purchase Invoice"]:
 		pe.project = doc.get("project") or reduce(
@@ -2310,6 +2324,15 @@ def get_payment_entry(
 		pe.set("bank_account", bank_account)
 		pe.set_bank_account_data()
 
+	# Ver 2.0 Begins, Following code added SHIV on 03/01/2018
+	if party_currency and bank.account_currency:
+		pe.party_currency = party_currency
+		party_exchange_rate = get_exchange_rate(party_currency, bank.account_currency)
+		if party_exchange_rate:
+			pe.party_exchange_rate = party_exchange_rate
+			pe.party_paid_amount = (paid_amount / party_exchange_rate)
+	# Ver 2.0 Ends
+	
 	# only Purchase Invoice can be blocked individually
 	if doc.doctype == "Purchase Invoice" and doc.invoice_is_blocked():
 		frappe.msgprint(_("{0} is on hold till {1}").format(doc.name, doc.release_date))

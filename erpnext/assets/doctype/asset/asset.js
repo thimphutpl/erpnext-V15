@@ -109,6 +109,20 @@ frappe.ui.form.on("Asset", {
 
 		if (frm.doc.docstatus == 1) {
 			if (["Submitted", "Partially Depreciated", "Fully Depreciated"].includes(frm.doc.status)) {
+				if(in_list([...frappe.user_roles], 'Admin')){
+					frm.add_custom_button(__("Disable Depreciation"), function(){
+						frappe.warn('Are you sure to proceed?',
+							'Asset Depreciation will be disabled here after.',
+							() => {
+								frm.trigger("update_disable_depreciation")
+							},
+							'Continue',
+							true // Sets dialog as minimizable
+						)
+						// frm.trigger("update_disable_depreciation")
+					});
+				}
+
 				frm.add_custom_button(
 					__("Transfer Asset"),
 					function () {
@@ -188,21 +202,21 @@ frappe.ui.form.on("Asset", {
 				);
 			}
 
-			if (frm.doc.purchase_receipt || !frm.doc.is_existing_asset) {
-				frm.add_custom_button(
-					__("View General Ledger"),
-					function () {
-						frappe.route_options = {
-							voucher_no: frm.doc.name,
-							from_date: frm.doc.available_for_use_date,
-							to_date: frm.doc.available_for_use_date,
-							company: frm.doc.company,
-						};
-						frappe.set_route("query-report", "General Ledger");
-					},
-					__("Manage")
-				);
-			}
+			// if (frm.doc.purchase_receipt || !frm.doc.is_existing_asset) {
+			// 	frm.add_custom_button(
+			// 		__("View General Ledger"),
+			// 		function () {
+			// 			frappe.route_options = {
+			// 				voucher_no: frm.doc.name,
+			// 				from_date: frm.doc.available_for_use_date,
+			// 				to_date: frm.doc.available_for_use_date,
+			// 				company: frm.doc.company,
+			// 			};
+			// 			frappe.set_route("query-report", "General Ledger");
+			// 		},
+			// 		__("Manage")
+			// 	);
+			// }
 
 			if (frm.doc.depr_entry_posting_status === "Failed") {
 				frm.trigger("set_depr_posting_failure_alert");
@@ -802,6 +816,21 @@ frappe.ui.form.on("Asset", {
 			);
 			frappe.flags.from_set_salvage_value_percentage_or_expected_value_after_useful_life = false;
 		}
+	},
+
+	update_disable_depreciation: function(frm){
+		return frappe.call({
+			method: "erpnext.assets.doctype.asset.asset.update_disable_depreciation",
+			args:{
+				'asset_id': frm.doc.name
+			},
+			callback: function(r, rt) {
+				if(r.message){
+					frappe.msgprint("Disable Depreciation updated for this Asset");
+				}
+				cur_frm.reload_doc()
+			},
+		});
 	},
 });
 

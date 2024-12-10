@@ -408,23 +408,25 @@ def compare_expense_with_budget(args, budget_amount, action_for, action, budget_
 def commit_budget(args):
 	amount = args.amount if args.amount else args.debit
 	if frappe.db.get_single_value("Budget Settings", "budget_commit_on") == args.doctype and args.amount > 0:
-		doc = frappe.get_doc(
-			{
-				"doctype": "Committed Budget",
-				"account": args.account,
-				"cost_center": args.cost_center,
-				"committed_cost_center": args.committed_cost_center,
-				"project": args.project,
-				"reference_type": args.doctype,
-				"reference_no": args.parent,
-				"reference_date": args.posting_date,
-				"reference_id": args.name,
-				"amount": flt(amount,2),
-				"item_code": args.item_code,
-				"company": args.company
-			}
-		)
-		doc.submit()
+		account_types = [d.account_type for d in frappe.get_all("Budget Settings Account Types", fields='account_type')]
+		if frappe.db.get_value("Account", args.account, "account_type") in account_types:
+			doc = frappe.get_doc(
+				{
+					"doctype": "Committed Budget",
+					"account": args.account,
+					"cost_center": args.cost_center,
+					"committed_cost_center": args.committed_cost_center,
+					"project": args.project,
+					"reference_type": args.doctype,
+					"reference_no": args.parent,
+					"reference_date": args.posting_date,
+					"reference_id": args.name,
+					"amount": flt(amount,2),
+					"item_code": args.item_code,
+					"company": args.company
+				}
+			)
+			doc.submit()
 
 def get_actions(args, budget):
 	yearly_action = budget.action_if_annual_budget_exceeded

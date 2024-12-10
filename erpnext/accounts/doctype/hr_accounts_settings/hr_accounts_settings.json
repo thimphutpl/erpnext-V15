@@ -10,6 +10,7 @@
   "salary_tax_account",
   "overtime_account",
   "employee_contribution_pf",
+  "muster_roll_payable_account",
   "column_break_4",
   "leave_encashment_account",
   "pbva_account",
@@ -31,7 +32,11 @@
   "sws_accounts_settings_section",
   "sws_credit_account",
   "column_break_qnkc",
-  "sws_debit_account"
+  "sws_debit_account",
+  "payable_account_section",
+  "leave_encashment_payable",
+  "column_break_jgtd",
+  "travel_claim_payable"
  ],
  "fields": [
   {
@@ -201,12 +206,39 @@
    "fieldtype": "Link",
    "label": "SWS Debit Account",
    "options": "Account"
+  },
+  {
+   "fieldname": "payable_account_section",
+   "fieldtype": "Section Break",
+   "label": "Payable Accounts Settings"
+  },
+  {
+   "fieldname": "leave_encashment_payable",
+   "fieldtype": "Link",
+   "label": "Leave Encashment Payable",
+   "options": "Account"
+  },
+  {
+   "fieldname": "column_break_jgtd",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "travel_claim_payable",
+   "fieldtype": "Link",
+   "label": "Travel Claim Payable",
+   "options": "Account"
+  },
+  {
+   "fieldname": "muster_roll_payable_account",
+   "fieldtype": "Link",
+   "label": "Muster Roll Payable Account",
+   "options": "Account"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-11-24 22:46:25.718489",
+ "modified": "2024-12-06 14:33:43.316947",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "HR Accounts Settings",

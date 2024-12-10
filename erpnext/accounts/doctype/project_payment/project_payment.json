@@ -99,6 +99,7 @@
    "in_list_view": 1,
    "label": "Project",
    "options": "Project",
+   "read_only": 1,
    "reqd": 1
   },
   {
@@ -187,7 +188,7 @@
   {
    "fieldname": "pay_to_recd_from",
    "fieldtype": "Data",
-   "label": "Pay To/Recd From"
+   "label": "Pay To/Recevied From"
   },
   {
    "default": "0",
@@ -376,10 +377,11 @@
    "label": "TDS Taxable Amount"
   }
  ],
+ "in_create": 1,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-28 14:20:40.900924",
+ "modified": "2024-12-06 10:55:02.872655",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Project Payment",

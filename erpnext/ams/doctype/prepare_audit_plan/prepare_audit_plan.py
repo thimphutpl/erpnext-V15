@@ -5,15 +5,51 @@ from frappe.utils import flt,nowdate,formatdate,cint
 from frappe import _
 from frappe.model.document import Document
 from frappe.model.mapper import get_mapped_doc
+from erpnext.custom_workflow import validate_workflow_states, notify_workflow_states
 # import pyautogui
 import os
 class PrepareAuditPlan(Document):
+	# begin: auto-generated types
+	# This code is auto-generated. Do not modify anything in this block.
+
+	from typing import TYPE_CHECKING
+
+	if TYPE_CHECKING:
+		from erpnext.ams.doctype.pap_audit_team_item.pap_audit_team_item import PAPAuditTeamItem
+		from erpnext.ams.doctype.pap_checklist_item.pap_checklist_item import PAPChecklistItem
+		from frappe.types import DF
+
+		amended_from: DF.Link | None
+		audit_checklist: DF.Table[PAPChecklistItem]
+		audit_engagement_letter: DF.Data | None
+		audit_team: DF.Table[PAPAuditTeamItem]
+		branch: DF.Link
+		company: DF.Link | None
+		creation_date: DF.Date | None
+		fiscal_year: DF.Link
+		frequency: DF.Literal["", "Quarter 1", "Quarter 2", "Quarter 3", "Quarter 4", "First Half Year", "Second Half Year", "Ad-hoc"]
+		from_date: DF.Date
+		iain_number: DF.Data | None
+		is_ho_branch: DF.Check
+		objective_of_audit: DF.SmallText | None
+		scope_of_audit: DF.SmallText | None
+		status: DF.Literal["", "Pending", "Engagement Letter", "Audit Execution", "Initial Report", "Follow Up", "Closed"]
+		supervisor_designation: DF.Data | None
+		supervisor_email: DF.Data | None
+		supervisor_id: DF.Link
+		supervisor_name: DF.Data | None
+		to_date: DF.Date
+		type: DF.Link
+	# end: auto-generated types
 	def validate(self):
 		
 		self.generate_iain_number()
 		self.validate_audit_team()
 		self.validate_audit_role()
 		self.validate_type_frequency()
+		validate_workflow_states(self) 
+		if self.workflow_state != "Approved":
+			notify_workflow_states(self)
 
 
 	# def on_submit(self):

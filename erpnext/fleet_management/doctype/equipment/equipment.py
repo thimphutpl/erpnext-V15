@@ -22,8 +22,8 @@ class Equipment(Document):
 		bluebook_date: DF.Date | None
 		branch: DF.Link
 		chasis_number: DF.Data | None
-		current_hr_reading: DF.ReadOnly | None
-		current_km_reading: DF.ReadOnly | None
+		current_hr_reading: DF.Data | None
+		current_km_reading: DF.Data | None
 		current_operator: DF.Data | None
 		details: DF.SmallText | None
 		disabled_date: DF.Date | None
@@ -37,6 +37,8 @@ class Equipment(Document):
 		gewog: DF.Link | None
 		hsd_type: DF.Link | None
 		is_disabled: DF.Check
+		kph: DF.Float
+		lph: DF.Float
 		model_items: DF.Table[EquipmentModelHistory]
 		not_cdcl: DF.Check
 		operators: DF.Table[EquipmentOperator]

@@ -441,7 +441,7 @@
    "label": "Location"
   },
   {
-   "depends_on": "eval: doc.repair_type == \"Bailey Bridge Works\" ",
+   "depends_on": " eval: doc.repair_type == \"Bailey Bridge Works\"",
    "fieldname": "job_details",
    "fieldtype": "Section Break",
    "label": "Job Details"
@@ -469,7 +469,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-29 14:35:21.272737",
+ "modified": "2024-12-05 14:46:45.715610",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Job Cards",

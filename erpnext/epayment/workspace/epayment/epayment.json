@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"m8ISqmMqsQ\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">ePayment</span>\",\"col\":12}},{\"id\":\"nF9v-lHBK3\",\"type\":\"card\",\"data\":{\"card_name\":\"Utility Bill Payment Settings\",\"col\":4}},{\"id\":\"KDqgvX11Jc\",\"type\":\"card\",\"data\":{\"card_name\":\"Transactions\",\"col\":4}},{\"id\":\"JF9_Jnc7gq\",\"type\":\"card\",\"data\":{\"card_name\":\"Bank Payment Settings\",\"col\":4}},{\"id\":\"Hy6wF2OZ81\",\"type\":\"card\",\"data\":{\"card_name\":\"Reports\",\"col\":4}}]",
+ "content": "[{\"id\":\"m8ISqmMqsQ\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">ePayment</span>\",\"col\":12}},{\"id\":\"nF9v-lHBK3\",\"type\":\"card\",\"data\":{\"card_name\":\"Utility Bill Payment Settings\",\"col\":4}},{\"id\":\"KDqgvX11Jc\",\"type\":\"card\",\"data\":{\"card_name\":\"Transactions\",\"col\":4}},{\"id\":\"JF9_Jnc7gq\",\"type\":\"card\",\"data\":{\"card_name\":\"Bank Payment Settings\",\"col\":4}},{\"id\":\"U9DwKz3FZV\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"ePayment Dashboard\",\"col\":3}}]",
  "creation": "2024-11-23 12:03:55.730002",
  "custom_blocks": [],
  "docstatus": 0,
@@ -75,7 +75,7 @@
    "hidden": 0,
    "is_query_report": 0,
    "label": "Transactions",
-   "link_count": 2,
+   "link_count": 3,
    "link_type": "DocType",
    "onboard": 0,
    "type": "Card Break"
@@ -102,15 +102,6 @@
   },
   {
    "hidden": 0,
-   "is_query_report": 0,
-   "label": "Reports",
-   "link_count": 1,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
    "is_query_report": 1,
    "label": "e-Payment Report",
    "link_count": 0,
@@ -120,8 +111,8 @@
    "type": "Link"
   }
  ],
- "modified": "2024-11-26 11:48:26.346325",
- "modified_by": "Administrator",
+ "modified": "2024-12-04 12:32:30.571108",
+ "modified_by": "kinzang.namgyal@cdcl.bt",
  "module": "ePayment",
  "name": "ePayment",
  "number_cards": [],
@@ -131,6 +122,14 @@
  "quick_lists": [],
  "roles": [],
  "sequence_id": 11.0,
- "shortcuts": [],
+ "shortcuts": [
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "ePayment Dashboard",
+   "link_to": "ePayment",
+   "type": "Dashboard"
+  }
+ ],
  "title": "ePayment"
 }

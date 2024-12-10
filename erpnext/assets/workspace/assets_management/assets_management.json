@@ -84,16 +84,6 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Asset Issue Details",
-   "link_count": 0,
-   "link_to": "Asset Issue Details",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
    "label": "Asset Value Adjustment",
    "link_count": 0,
    "link_to": "Asset Value Adjustment",
@@ -107,6 +97,16 @@
    "label": "Bulk Asset Disposal",
    "link_count": 0,
    "link_to": "Bulk Asset Disposal",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Asset Issue Details",
+   "link_count": 0,
+   "link_to": "Asset Issue Details",
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
@@ -153,8 +153,8 @@
    "type": "Link"
   }
  ],
- "modified": "2024-11-23 13:11:25.688680",
- "modified_by": "Administrator",
+ "modified": "2024-12-06 01:36:49.290053",
+ "modified_by": "pralad.rai@thimphutechpark.bt",
  "module": "Assets",
  "name": "Assets Management",
  "number_cards": [],

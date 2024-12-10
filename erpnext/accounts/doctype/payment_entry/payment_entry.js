@@ -1426,7 +1426,18 @@ frappe.ui.form.on("Payment Entry", {
 				tax[fieldname] = 0.0;
 			});
 
-			frm.doc.paid_amount_after_tax = frm.doc.base_paid_amount;
+			console.log(frm.doc.base_paid_amount)
+			var ded = frm.doc.references || [];
+			var total_amount = 0.0;
+			
+			for(var i=0; i<ded.length; i++){
+				if (ded[i].total_amount){
+					total_amount += parseFloat(ded[i].total_amount);
+				}
+			}
+			console.log(total_amount)
+			frm.doc.paid_amount_after_tax = total_amount;
+			// frm.doc.paid_amount_after_tax = frm.doc.base_paid_amount;
 		});
 	},
 

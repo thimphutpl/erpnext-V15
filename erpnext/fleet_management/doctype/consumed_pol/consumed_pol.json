@@ -65,7 +65,7 @@
    "fieldname": "reference_type",
    "fieldtype": "Select",
    "label": "Reference Type",
-   "options": "\nPOL\nIssue POL\nEquipment POL Transfer"
+   "options": "\nPOL Receive\nPOL Issue\nEquipment POL Transfer"
   },
   {
    "fieldname": "reference_name",
@@ -89,7 +89,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-06 15:34:04.323423",
+ "modified": "2024-12-05 10:28:39.410344",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Consumed POL",

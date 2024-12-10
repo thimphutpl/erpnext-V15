@@ -10,6 +10,44 @@ from frappe.model.document import Document
 from erpnext.custom_utils import sendmail
 
 class FollowUp(Document):		
+	# begin: auto-generated types
+	# This code is auto-generated. Do not modify anything in this block.
+
+	from typing import TYPE_CHECKING
+
+	if TYPE_CHECKING:
+		from erpnext.ams.doctype.direct_accountability_supervisor_item.direct_accountability_supervisor_item import DirectAccountabilitySupervisorItem
+		from erpnext.ams.doctype.follow_up_audit_team_item.follow_up_audit_team_item import FollowUpAuditTeamItem
+		from erpnext.ams.doctype.follow_up_checklist_item.follow_up_checklist_item import FollowUpChecklistItem
+		from erpnext.ams.doctype.follow_up_da_item.follow_up_da_item import FollowUpDAItem
+		from frappe.types import DF
+
+		amended_from: DF.Link | None
+		audit_engagement_letter: DF.Link | None
+		audit_observations: DF.Table[FollowUpChecklistItem]
+		audit_team: DF.Table[FollowUpAuditTeamItem]
+		auditor_designation: DF.Data | None
+		auditor_name: DF.Data | None
+		branch: DF.Link
+		cflg_follow_up: DF.Check
+		direct_accountability: DF.Table[FollowUpDAItem]
+		execute_audit_no: DF.Link
+		follow_up_by: DF.Link | None
+		from_date: DF.Date | None
+		iain_number: DF.Data | None
+		objective_of_audit: DF.SmallText | None
+		posting_date: DF.Date | None
+		prepare_audit_plan_no: DF.Link | None
+		reference_date: DF.Date | None
+		scope_of_audit: DF.SmallText | None
+		supervisor_accountability: DF.Table[DirectAccountabilitySupervisorItem]
+		supervisor_designation: DF.Data | None
+		supervisor_email: DF.Data | None
+		supervisor_id: DF.Link | None
+		supervisor_name: DF.Data | None
+		to_date: DF.Date | None
+		type: DF.Data
+	# end: auto-generated types
 	def on_submit(self):
 		self.update_execute_audit_status()
 		self.update_execute_checklist_item()

@@ -212,6 +212,7 @@ function get_vehicle_logs(form) {
 
 //Get Advance Details
 function get_advances(hire_name) {
+	console.log(hire_name)
 	frappe.call({
 		method: "erpnext.fleet_management.doctype.hire_charge_invoice.hire_charge_invoice.get_advances",
 		args: {

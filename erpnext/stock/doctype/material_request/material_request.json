@@ -21,9 +21,9 @@
   "cost_center",
   "date",
   "approver_details_section",
-  "approver",
-  "column_break_mtdw",
   "approver_name",
+  "column_break_mtdw",
+  "approver",
   "column_break_spsg",
   "approval_date",
   "warehouse_section",
@@ -384,7 +384,7 @@
   {
    "fieldname": "approver",
    "fieldtype": "Link",
-   "label": "Approver",
+   "label": "Approver Mail",
    "options": "User"
   },
   {
@@ -424,7 +424,7 @@
  "idx": 70,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-27 15:41:11.018888",
+ "modified": "2024-12-04 11:58:11.567656",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Material Request",

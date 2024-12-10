@@ -71,7 +71,7 @@ def get_pol_between(purpose, equipment, from_date, to_date, pol_type=None):
 ##
 def get_pol_consumed_till(equipment, date):
 	if not equipment or not date:
-                frappe.throw("Equipment and Till Date are Mandatory")
+		frappe.throw("Equipment and Till Date are Mandatory")
 	pol = frappe.db.sql("select sum(consumption) as total from `tabVehicle Logbook` where docstatus = 1 and equipment = %s and to_date <= %s", (equipment, date), as_dict=True)
 	if pol:
 		return pol[0].total
@@ -80,7 +80,7 @@ def get_pol_consumed_till(equipment, date):
 
 def get_km_till(equipment, date):
 	if not equipment or not date:
-                frappe.throw("Equipment and Till Date are Mandatory")
+		frappe.throw("Equipment and Till Date are Mandatory")
 	km = frappe.db.sql("select final_km from `tabVehicle Logbook` where docstatus = 1 and equipment = %s and to_date <= %s order by final_km desc limit 1", (equipment, date), as_dict=True)
 	if km:
 		return km[0].final_km
@@ -89,7 +89,7 @@ def get_km_till(equipment, date):
 	
 def get_hour_till(equipment, date):
 	if not equipment or not date:
-                frappe.throw("Equipment and Till Date are Mandatory")
+		frappe.throw("Equipment and Till Date are Mandatory")
 	hr = frappe.db.sql("select final_hour from `tabVehicle Logbook` where docstatus = 1 and equipment = %s and to_date <= %s order by final_hour desc limit 1", (equipment, date), as_dict=True)
 	if hr:
 		return hr[0].final_hour
@@ -98,7 +98,7 @@ def get_hour_till(equipment, date):
 
 def get_employee_expense(equipment, f_date, t_date):
 	if not equipment or not f_date or not t_date:
-                frappe.throw("Equipment and From/Till Date are Mandatory")
+		frappe.throw("Equipment and From/Till Date are Mandatory")
 
 	operators = frappe.db.sql("""
 			select operator, employee_type, start_date, end_date

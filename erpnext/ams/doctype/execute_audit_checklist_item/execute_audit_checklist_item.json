@@ -49,13 +49,13 @@
    "allow_on_submit": 1,
    "fieldname": "audit_remarks",
    "fieldtype": "Text Editor",
-   "label": "Audit Remarks"
+   "label": " Auditor Further Comment"
   },
   {
    "allow_on_submit": 1,
    "fieldname": "auditee_remarks",
    "fieldtype": "Text Editor",
-   "label": "Auditee Remarks"
+   "label": "Management/Auditee Response"
   },
   {
    "fieldname": "audit_area_checklist",
@@ -98,7 +98,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-12-03 13:08:34.307141",
+ "modified": "2024-12-04 21:31:49.705213",
  "modified_by": "Administrator",
  "module": "AMS",
  "name": "Execute Audit Checklist Item",

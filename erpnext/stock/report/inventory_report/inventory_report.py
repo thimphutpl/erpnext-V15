@@ -237,6 +237,35 @@ class StockBalanceReport:
         qty_dict.bal_qty += qty_diff
         qty_dict.bal_val += value_diff
 
+        # Additional calculations for consumption, value, and movement type
+        opening_receipt = qty_dict.opening_qty + qty_dict.in_qty
+        issue_value = qty_dict.out_qty
+        consumption = (opening_receipt / issue_value) if issue_value else 0
+        # stock_value = (opening_receipt - issue_value) * (entry.valuation_rate or 0)
+
+        # movement = (
+        #     "Fast Moving" if consumption > 0.6 else 
+        #     "Slow Moving" if consumption > 0 else 
+        #     "No Moving"
+        # )
+
+        # # Update the item warehouse map with additional details
+        # qty_dict.update({
+        #     "consumption": consumption,
+        #     # "value": stock_value,
+        #     "movement": movement,
+        # })
+        # Update dictionary with Nature of Movement
+        nature_of_movement = (
+            "Fast Moving" if consumption > 0.6 else
+            "Slow Moving" if 0 < consumption <= 0.6 else
+            "No Moving"
+        )
+        qty_dict.update({
+            "consumption": consumption,
+            "nature_of_movement": nature_of_movement,
+        })
+
     def initialize_data(self, item_warehouse_map, group_by_key, entry):
         opening_data = self.opening_data.get(group_by_key, {})
 
@@ -406,13 +435,13 @@ class StockBalanceReport:
                 "options": "Item Group",
                 "width": 100,
             },
-            {
-                "label": _("Warehouse"),
-                "fieldname": "warehouse",
-                "fieldtype": "Link",
-                "options": "Warehouse",
-                "width": 100,
-            },
+            # {
+            #     "label": _("Warehouse"),
+            #     "fieldname": "warehouse",
+            #     "fieldtype": "Link",
+            #     "options": "Warehouse",
+            #     "width": 100,
+            # },
         ]
 
         for dimension in get_inventory_dimensions():
@@ -428,13 +457,13 @@ class StockBalanceReport:
 
         columns.extend(
             [
-                {
-                    "label": _("Stock UOM"),
-                    "fieldname": "stock_uom",
-                    "fieldtype": "Link",
-                    "options": "UOM",
-                    "width": 90,
-                },
+                # {
+                #     "label": _("Stock UOM"),
+                #     "fieldname": "stock_uom",
+                #     "fieldtype": "Link",
+                #     "options": "UOM",
+                #     "width": 90,
+                # },
                 {
                     "label": _("Balance Qty"),
                     "fieldname": "bal_qty",
@@ -489,18 +518,36 @@ class StockBalanceReport:
                     if self.filters.valuation_field_type == "Currency"
                     else None,
                 },
+                # {
+                #     "label": _("Reserved Stock"),
+                #     "fieldname": "reserved_stock",
+                #     "fieldtype": "Float",
+                #     "width": 80,
+                #     "convertible": "qty",
+                # },
+                # {
+                #     "label": _("Company"),
+                #     "fieldname": "company",
+                #     "fieldtype": "Link",
+                #     "options": "Company",
+                #     "width": 100,
+                # },
                 {
-                    "label": _("Reserved Stock"),
-                    "fieldname": "reserved_stock",
-                    "fieldtype": "Float",
-                    "width": 80,
-                    "convertible": "qty",
+                    "label": _("Consumption"),
+                    "fieldname": "consumption",
+                    "fieldtype": "float",
+                    "width": 100,
                 },
                 {
-                    "label": _("Company"),
-                    "fieldname": "company",
-                    "fieldtype": "Link",
-                    "options": "Company",
+                    "label": _("Category"),
+                    "fieldname": "category",
+                    "fieldtype": "Data",
+                    "width": 100,
+                },
+                {
+                    "label": _("Nature of Movement"),
+                    "fieldname": "movement",
+                    "fieldtype": "Data",
                     "width": 100,
                 },
             ]

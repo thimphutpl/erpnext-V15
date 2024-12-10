@@ -8,6 +8,46 @@ from frappe.model.document import Document
 from erpnext.custom_workflow import validate_workflow_states, notify_workflow_states
 
 class AuditReport(Document):
+	# begin: auto-generated types
+	# This code is auto-generated. Do not modify anything in this block.
+
+	from typing import TYPE_CHECKING
+
+	if TYPE_CHECKING:
+		from erpnext.ams.doctype.audit_initial_report_checklist_item.audit_initial_report_checklist_item import AuditInitialReportChecklistItem
+		from erpnext.ams.doctype.audit_initial_report_da_item.audit_initial_report_da_item import AuditInitialReportDAItem
+		from erpnext.ams.doctype.audit_initial_report_team_item.audit_initial_report_team_item import AuditInitialReportTeamItem
+		from erpnext.ams.doctype.direct_accountability_supervisor_item.direct_accountability_supervisor_item import DirectAccountabilitySupervisorItem
+		from frappe.types import DF
+
+		amended_from: DF.Link | None
+		approver: DF.Link | None
+		approver_designation: DF.Link | None
+		approver_name: DF.Data | None
+		audit_checklist: DF.Table[AuditInitialReportChecklistItem]
+		audit_engagement_letter: DF.Link | None
+		audit_team: DF.Table[AuditInitialReportTeamItem]
+		branch: DF.Link
+		creation_date: DF.Date | None
+		direct_accountability: DF.Table[AuditInitialReportDAItem]
+		execute_audit_date: DF.Date | None
+		execute_audit_no: DF.Link
+		from_date: DF.Date
+		iain_number: DF.Data | None
+		objective_of_audit: DF.SmallText | None
+		prepare_audit_plan_no: DF.Link | None
+		report_status: DF.Literal["", "Pending", "Initial Report", "Follow Up", "Completed"]
+		scope_of_audit: DF.SmallText | None
+		status: DF.Literal["Open", "Approved", "Rejected", "Cancelled"]
+		supervisor_accountability: DF.Table[DirectAccountabilitySupervisorItem]
+		supervisor_designation: DF.Data | None
+		supervisor_email: DF.Data | None
+		supervisor_id: DF.Link
+		supervisor_name: DF.Data | None
+		to_date: DF.Date
+		type: DF.Data
+		workflow_state: DF.Link | None
+	# end: auto-generated types
 	def validate(self):
 		pass
 		# validate_workflow_states(self)

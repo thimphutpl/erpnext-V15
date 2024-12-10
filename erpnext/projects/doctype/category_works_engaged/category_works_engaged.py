@@ -16,16 +16,16 @@ class CategoryWorksEngaged(Document):
 
 		activity_type: DF.Link
 		carpenter: DF.Int
-		equipment: DF.Int
-		machine: DF.Int
+		electrician: DF.Int
+		mason: DF.Int
 		operator: DF.Int
 		others: DF.Int
-		p: DF.Int
+		painter: DF.Int
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
 		quantity: DF.Float
-		technical: DF.Int
+		technician: DF.Int
 		time_hrs: DF.Float
 		unit: DF.Link | None
 		workers: DF.Int

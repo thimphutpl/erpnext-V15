@@ -416,10 +416,12 @@ def get_party_account(party_type, party=None, company=None, include_advance=Fals
 
 	if include_advance and party_type in ["Customer", "Supplier", "Student"]:
 		advance_account = get_party_advance_account(party_type, party, company)
+		#jai
+		party_account = frappe.db.get_single_value("Accounts Settings", "advance_to_supplier")
 		if advance_account:
-			return [account, advance_account]
+			return [account, advance_account, party_account]
 		else:
-			return [account]
+			return [account, party_account]
 
 	return account
 
@@ -612,7 +614,7 @@ def get_due_date_from_template(template_name, posting_date, bill_date):
 
 def validate_due_date(posting_date, due_date, bill_date=None, template_name=None):
 	if getdate(due_date) < getdate(posting_date):
-		frappe.throw(_("Due Date cannot be before Posting / Supplier Invoice Date"))
+		frappe.throw(_("Due Date {} cannot be before Posting / Supplier Invoice Date {}".format(due_date, posting_date)))
 	else:
 		if not template_name:
 			return

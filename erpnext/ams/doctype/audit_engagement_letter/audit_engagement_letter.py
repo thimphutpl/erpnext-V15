@@ -119,8 +119,8 @@ class AuditEngagementLetter(Document):
 			if len(gms) > 1:
 				cc_message += str(count)+". The General Manager(s) ("+(", ".join(g for g in gms))+")BDBL, Thimphu for kind information.<br>"
 				count += 1
-		cc_message += str(count)+". Office copy"
-		self.message += cc_message
+			cc_message += str(count)+". Office copy"
+			self.message += cc_message
 
 
 

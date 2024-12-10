@@ -240,10 +240,10 @@ class PerformanceEvaluation(Document):
 						quantity_rating = flt(item.quantity)/flt(item.quantity_achieved) * (flt(item.weightage))
 					item.quantity_rating = quantity_rating
 
-				if flt(item.timeline_achieved)<= flt(item.timeline):
+				if flt(item.timeline_achieved)>= 100:
 					timeline_rating = flt(item.weightage)
 				else:
-					timeline_rating = flt(item.timeline) / flt(item.timeline_achieved)  * (flt(item.weightage)*0.01)
+					timeline_rating = flt(flt(item.timeline_achieved) / 100)  * (flt(item.weightage))
 				item.timeline_rating = timeline_rating
 				
 				if item.qty_quality == 'Quality':
@@ -298,10 +298,10 @@ class PerformanceEvaluation(Document):
 						quantity_rating_i = flt(item.quantity)/flt(item.quantity_achieved) * (flt(item.weightage))
 					item.quantity_rating = quantity_rating_i
 
-				if flt(item.timeline_achieved)<= flt(item.timeline):
+				if flt(item.timeline_achieved) >= 100:
 					timeline_rating_i = flt(item.weightage)
 				else:
-					timeline_rating_i = flt(item.timeline) / flt(item.timeline_achieved)  * (flt(item.weightage)*0.01)
+					timeline_rating_i = flt(flt(item.timeline_achieved) / 100)  * (flt(item.weightage))
 				item.timeline_rating = timeline_rating_i
 				
 				if item.qty_quality == 'Quality':
@@ -406,7 +406,7 @@ class PerformanceEvaluation(Document):
 	def calculate_final_score(self):
 		self.target_total_weightage, self.competency_total_weightage = frappe.db.get_value('PMS Group', {'name':self.pms_group}, ['weightage_for_target', 'weightage_for_competency'])
 		self.db_set('form_i_score', flt(self.form_i_total_rating))
-		self.db_set('form_ii_score', flt(self.form_ii_total_rating))
+		self.db_set('form_ii_score', (flt(self.form_ii_total_rating)/40*flt(self.competency_total_weightage)))
 		self.db_set('form_iii_score',flt(self.negative_rating))
 		self.db_set('final_score', (flt(self.form_i_score) + flt(self.form_ii_score)+ flt(self.form_iii_score)))
 		self.db_set('final_score_percent', flt(self.final_score))
@@ -479,7 +479,7 @@ class PerformanceEvaluation(Document):
 		if len(self.evaluate_target_item_i)==0:
 			data = frappe.db.sql("""
 				SELECT 
-					rti.performance_target, rti.weightage, rti.reverse_formula, rti.qty_quality, rti.quantity, rti.quality, rti.timeline_base_on, rti.timeline
+					rti.performance_target, rti.weightage, rti.reverse_formula, rti.qty_quality, rti.quantity, rti.quality, rti.from_date, rti.to_date
 				FROM 
 					`tabReview Target Item` rti join `tabReview` rt on rti.parent= rt.name
 				WHERE 

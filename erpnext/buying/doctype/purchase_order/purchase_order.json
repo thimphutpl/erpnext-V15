@@ -584,7 +584,6 @@
   {
    "fieldname": "taxes_section",
    "fieldtype": "Section Break",
-   "hidden": 1,
    "hide_border": 1,
    "label": "Taxes and Charges",
    "oldfieldtype": "Section Break",
@@ -593,7 +592,6 @@
   {
    "fieldname": "taxes_and_charges",
    "fieldtype": "Link",
-   "hidden": 1,
    "label": "Purchase Taxes and Charges Template",
    "oldfieldname": "purchase_other_charges",
    "oldfieldtype": "Link",
@@ -612,7 +610,6 @@
   {
    "fieldname": "taxes",
    "fieldtype": "Table",
-   "hidden": 1,
    "label": "Purchase Taxes and Charges",
    "oldfieldname": "purchase_tax_details",
    "oldfieldtype": "Table",
@@ -1283,7 +1280,7 @@
  "idx": 105,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-26 10:18:06.473420",
+ "modified": "2024-12-04 10:32:33.606631",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Purchase Order",

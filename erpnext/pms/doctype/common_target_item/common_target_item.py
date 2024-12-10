@@ -7,4 +7,26 @@ from __future__ import unicode_literals
 from frappe.model.document import Document
 
 class CommonTargetItem(Document):
+	# begin: auto-generated types
+	# This code is auto-generated. Do not modify anything in this block.
+
+	from typing import TYPE_CHECKING
+
+	if TYPE_CHECKING:
+		from frappe.types import DF
+
+		description: DF.SmallText | None
+		from_date: DF.Date | None
+		parent: DF.Data
+		parentfield: DF.Data
+		parenttype: DF.Data
+		performance_target: DF.Data
+		qty_quality: DF.Literal["", "Quantity", "Quality"]
+		quality: DF.Percent
+		quantity: DF.Float
+		reference: DF.Link
+		reverse_formula: DF.Check
+		to_date: DF.Date | None
+		weightage: DF.Float
+	# end: auto-generated types
 	pass

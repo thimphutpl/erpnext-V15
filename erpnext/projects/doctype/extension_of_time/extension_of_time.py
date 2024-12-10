@@ -27,15 +27,15 @@ class ExtensionofTime(Document):
 		title: DF.Data
 	# end: auto-generated types
 	
-	def validate():
+	def validate(self):
 		if not self.eot_in_days:
 			self.eot_in_days = date_diff(self.extended_end_date, self.expected_end_date)
 		
-	def on_submit():
+	def on_submit(self):
 		self.update_project()
 
 	def update_project(self):
-		doc = frappe.get_doc("Project", self.project)
+		doc = frappe.get_doc("Project", self.projects)
 		doc.db_set('revised_completion_date', self.extended_end_date, update_modified=False)
 		doc.db_set('dlp_start_date', add_days(doc.dlp_start_date, self.eot_in_days), update_modified=False)
 		doc.db_set('dlp_end_date', add_days(doc.dlp_end_date, self.eot_in_days), update_modified=False)

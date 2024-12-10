@@ -151,9 +151,9 @@ class HireChargeInvoice(AccountsController):
 				})
 				lst.append(args)
 
-		if lst:
-			from erpnext.accounts.utils import reconcile_against_document
-			reconcile_against_document(lst)
+		# if lst:
+		# 	from erpnext.accounts.utils import reconcile_against_document
+		# 	reconcile_against_document(lst)
 
 	def check_vlogs(self):
 		for a in self.items:
@@ -440,6 +440,7 @@ def get_vehicle_accessories(form, equipment):
 #Get advances
 @frappe.whitelist()
 def get_advances(hire_name):
+    
 	if hire_name:
 		return frappe.db.sql("select t1.name, t1.remark, t2.credit_in_account_currency as amount, t2.account as advance_account, t2.cost_center, t2.name as reference_row from `tabJournal Entry` t1, `tabJournal Entry Account` t2 where t1.name = t2.parent and t2.is_advance = 'Yes' and t1.docstatus = 1 and t2.reference_name = \'" + str(hire_name)  + "\'", as_dict=True)
 		# frappe.throw(str(a))

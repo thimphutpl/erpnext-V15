@@ -27,6 +27,10 @@
   "equipment_model",
   "column_break_vikw",
   "registration_number",
+  "yardstick_details_for_pool_vehicle_section",
+  "lph",
+  "column_break_peru",
+  "kph",
   "engine_details_section",
   "engine_number",
   "column_break_13",
@@ -270,7 +274,7 @@
   },
   {
    "fieldname": "current_km_reading",
-   "fieldtype": "Read Only",
+   "fieldtype": "Data",
    "label": "Current KM Reading"
   },
   {
@@ -279,7 +283,7 @@
   },
   {
    "fieldname": "current_hr_reading",
-   "fieldtype": "Read Only",
+   "fieldtype": "Data",
    "label": "Current Hour Reading"
   },
   {
@@ -300,11 +304,36 @@
    "label": "Registration Number",
    "reqd": 1,
    "unique": 1
+  },
+  {
+   "fieldname": "yardstick_details_for_pool_vehicle_section",
+   "fieldtype": "Section Break",
+   "label": "Yardstick Details (For Pool Vehicles)"
+  },
+  {
+   "fieldname": "column_break_peru",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.equipment_category == 'Pool Vehicle'",
+   "fieldname": "kph",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Based on Kilometers",
+   "precision": "2"
+  },
+  {
+   "depends_on": "eval:doc.equipment_category == 'Pool Vehicle'",
+   "fieldname": "lph",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Based on Hours",
+   "precision": "2"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-24 14:08:49.289524",
+ "modified": "2024-12-04 22:42:57.477260",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Equipment",

@@ -43,6 +43,7 @@ class MusterRollEmployee(Document):
 		mess_deduction: DF.Check
 		mr_type: DF.Literal["Under CDCL", "Under Labour Contract"]
 		musterroll: DF.Table[Musterroll]
+		nationality: DF.Data | None
 		person_name: DF.Data
 		project: DF.Link | None
 		qualification: DF.Data | None

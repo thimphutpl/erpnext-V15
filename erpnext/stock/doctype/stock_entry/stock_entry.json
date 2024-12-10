@@ -763,6 +763,7 @@
   {
    "fieldname": "user_cost_center",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "User Cost Center",
    "options": "Cost Center"
   },
@@ -778,7 +779,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-27 12:47:03.540829",
+ "modified": "2024-12-05 09:55:16.109037",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Stock Entry",

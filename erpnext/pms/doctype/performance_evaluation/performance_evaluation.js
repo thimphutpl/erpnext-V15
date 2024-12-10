@@ -161,17 +161,18 @@ frappe.ui.form.on('Evaluate Target Item',{
 	},
 	form_render:(frm,cdt,cdn)=>{
 		var row = locals[cdt][cdn]
-		if(row.parentfield=="evaluate_target_item" && frappe.session.user!=frm.doc.approver){
-			frm.fields_dict['evaluate_target_item'].grid.grid_rows_by_docname[cdn].docfields[13].read_only=1
-			frm.fields_dict['evaluate_target_item'].grid.grid_rows_by_docname[cdn].docfields[14].read_only=1
+		console.log(frm.fields_dict['evaluate_target_item'].grid.grid_rows_by_docname[cdn]);
+		if(frappe.session.user!=frm.doc.approver){
+			frm.fields_dict['evaluate_target_item'].grid.grid_rows_by_docname[cdn].docfields[16].read_only=1
 			frm.fields_dict['evaluate_target_item'].grid.grid_rows_by_docname[cdn].docfields[17].read_only=1
+			frm.fields_dict['evaluate_target_item'].grid.grid_rows_by_docname[cdn].docfields[20].read_only=1
 
 		}
-		if(row.parentfield=="evaluate_target_item_i" && frappe.session.user!=frm.doc.user_id){
-			frm.fields_dict['evaluate_target_item_i'].grid.grid_rows_by_docname[cdn].docfields[13].read_only=1
-			frm.fields_dict['evaluate_target_item_i'].grid.grid_rows_by_docname[cdn].docfields[14].read_only=1
-			frm.fields_dict['evaluate_target_item_i'].grid.grid_rows_by_docname[cdn].docfields[17].read_only=1
-		}
+		// if(row.parentfield=="evaluate_target_item_i" && frappe.session.user!=frm.doc.user_id){
+		// 	frm.fields_dict['evaluate_target_item_i'].grid.grid_rows_by_docname[cdn].docfields[13].read_only=1
+		// 	frm.fields_dict['evaluate_target_item_i'].grid.grid_rows_by_docname[cdn].docfields[14].read_only=1
+		// 	frm.fields_dict['evaluate_target_item_i'].grid.grid_rows_by_docname[cdn].docfields[17].read_only=1
+		// }
 		
 
 		if ( frm.doc.docstatus == 1){
@@ -212,7 +213,6 @@ frappe.ui.form.on('Evaluate Target Item',{
 			}
 		})
 		frappe.meta.get_docfield("Evaluate Target Item","qty_quality",cur_frm.doc.name).read_only = frm.doc.docstatus
-		frappe.meta.get_docfield("Evaluate Target Item","timeline_base_on",cur_frm.doc.name).read_only = frm.doc.docstatus
 	},
 	refresh:(frm,cdt,cdn)=>{
 		toggle_reqd_qty_quality(frm,cdt,cdn)
@@ -252,10 +252,10 @@ frappe.ui.form.on('Evaluate Target Item I',{
 	form_render:(frm,cdt,cdn)=>{
 		var row = locals[cdt][cdn]
 
-		if(row.parentfield=="evaluate_target_item_i" && frappe.session.user!=frm.doc.user_id){
-			frm.fields_dict['evaluate_target_item_i'].grid.grid_rows_by_docname[cdn].docfields[13].read_only=1
-			frm.fields_dict['evaluate_target_item_i'].grid.grid_rows_by_docname[cdn].docfields[14].read_only=1
+		if(frappe.session.user!=frm.doc.user_id){
+			frm.fields_dict['evaluate_target_item_i'].grid.grid_rows_by_docname[cdn].docfields[16].read_only=1
 			frm.fields_dict['evaluate_target_item_i'].grid.grid_rows_by_docname[cdn].docfields[17].read_only=1
+			frm.fields_dict['evaluate_target_item_i'].grid.grid_rows_by_docname[cdn].docfields[20].read_only=1
 		}
 		
 
@@ -297,7 +297,6 @@ frappe.ui.form.on('Evaluate Target Item I',{
 			}
 		})
 		frappe.meta.get_docfield("Evaluate Target Item I","qty_quality",cur_frm.doc.name).read_only = frm.doc.docstatus
-		frappe.meta.get_docfield("Evaluate Target Item I","timeline_base_on",cur_frm.doc.name).read_only = frm.doc.docstatus
 	},
 	refresh:(frm,cdt,cdn)=>{
 		toggle_reqd_qty_quality(frm,cdt,cdn)
@@ -332,21 +331,19 @@ frappe.ui.form.on('Evaluate Target Item I',{
 
 // calculate timeline rating
 var calculate_timeline_rating = (frm,cdt,cdn)=>{
-	let targeted_timeline = 0
 	let timeline_achieved = 0
-	let timeline = 0
 	let weightage = 0
 	let timeline_rating = 0
 	var row = locals[cdt][cdn]
-	targeted_timeline = row.timeline
+	// targeted_timeline = row.timeline
 	timeline_achieved = row.timeline_achieved
 	weightage =row.weightage
-	timeline = row.timeline
-	if (flt(timeline_achieved)<= flt(timeline)){
+	// timeline = row.timeline
+	if (flt(timeline_achieved)>=100){
 		timeline_rating = weightage
 	}
 	else{
-		timeline_rating = (flt(timeline) / flt(timeline_achieved)) * flt(weightage)
+		timeline_rating = (flt(timeline_achieved) / 100) * flt(weightage)
 	}
 	row.timeline_rating = timeline_rating
 	console.log('here',row.timeline_rating)
