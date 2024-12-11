@@ -688,7 +688,9 @@ def update_department():
 			print(a.name)
 
 def update_user_pwd():
-	user_list = frappe.db.sql("select name from `tabUser` where name not in ('Administrator', 'Guest')", as_dict=1)
+	user_list = frappe.db.sql("select name from `tabUser` where name not in ('Administrator', 'Guest','lhendrup.dorji@thimphutechpark.bt',\
+				'sonam.bomjan@thimphutechpark.bt','sonam.choki@thimphutechpark.bt','kalden.dorji@thimphutechpark.bt','pralad.rai@thimphutechpark.bt',\
+				'sanga.tenzin@thimphutechpark.bt','sonam.zangmo@thimphutechpark.bt','tshering.lham@thimphutechpark.bt','sonam.norbu@thimphutechpark.bt','kinzang.namgyal@cdcl.bt')", as_dict=1)
 	c = 1
 	non_employee = []
 	for i in user_list:
@@ -696,7 +698,7 @@ def update_user_pwd():
 		if not frappe.db.exists("Employee", {"user_id":i.name}):
 			non_employee.append({"User ID":i.name, "User Name":frappe.db.get_value("User",i.name,"full_name")})
 		ds = frappe.get_doc("User", i.name)
-		ds.new_password = 'erp@2024'
+		ds.new_password = 'cdcl@2024'
 		ds.save(ignore_permissions=1)
 		c += 1
 	# df = pd.DataFrame(data = non_employee) # convert dict to dataframe
