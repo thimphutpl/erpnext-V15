@@ -3,6 +3,7 @@
  "allow_events_in_timeline": 1,
  "allow_import": 1,
  "allow_rename": 1,
+ "autoname": "naming_series:",
  "creation": "2022-02-21 11:54:09.632218",
  "doctype": "DocType",
  "document_type": "Setup",
@@ -19,6 +20,7 @@
   "employee_name",
   "user_id",
   "scan_sign",
+  "naming_series",
   "column_break_9",
   "status",
   "gender",
@@ -1029,13 +1031,11 @@
   },
   {
    "bold": 1,
-   "description": "Attach your signature",
    "fieldname": "scan_sign",
    "fieldtype": "Attach Image",
    "ignore_user_permissions": 1,
    "label": "Scanned Signature",
-   "permlevel": 1,
-   "width": "10"
+   "width": "0"
   },
   {
    "fieldname": "leave_block_list",
@@ -1117,16 +1117,26 @@
    "fieldtype": "Link",
    "label": "Professional Category",
    "options": "Professional Category"
+  },
+  {
+   "default": "EMP-YY-.####",
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Naming Series",
+   "no_copy": 1,
+   "options": "\nEMP-YY-.####",
+   "reqd": 1
   }
  ],
  "icon": "fa fa-user",
  "idx": 24,
  "image_field": "image",
  "links": [],
- "modified": "2024-12-10 10:24:02.886348",
+ "modified": "2024-12-13 16:02:23.932517",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee",
+ "naming_rule": "By \"Naming Series\" field",
  "owner": "Administrator",
  "permissions": [
   {
@@ -1134,7 +1144,8 @@
    "print": 1,
    "read": 1,
    "report": 1,
-   "role": "Employee"
+   "role": "Employee",
+   "write": 1
   },
   {
    "create": 1,
