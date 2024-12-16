@@ -2,6 +2,13 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on('Vehicle Logbook', {
+	branch: function (frm) {
+        check_equipment_visibility(frm);
+    },
+    ehf_name: function (frm) {
+        check_equipment_visibility(frm);
+    },
+	
 	refresh: function(frm) {
 		total_ro = 1
 		to_ro = 0
@@ -13,7 +20,18 @@ frappe.ui.form.on('Vehicle Logbook', {
 		cur_frm.set_df_property("distance_km", "read_only", total_ro);
 		cur_frm.set_df_property("final_hour", "read_only", to_ro);
 		cur_frm.set_df_property("final_km", "read_only", to_ro);
+
+		// Check first condition: branch and ehf_name
+        if (frm.doc.branch && frm.doc.ehf_name) {
+            frm.set_df_property('equipment', 'hidden', 0);
+        }
+        else if (frm.doc.vehicle_logbook === 'Pool Vehicle') {
+            frm.set_df_property('equipment', 'hidden', 0);
+        } else {
+            frm.set_df_property('equipment', 'hidden', 1);
+        }
 	},
+
 	"vlogs_on_form_rendered": function(frm, grid_row, cdt, cdn) {
 		var row = cur_frm.open_grid_row();
 		if(!row.grid_form.fields_dict.operator.value) {
@@ -22,61 +40,68 @@ frappe.ui.form.on('Vehicle Logbook', {
 		}
 	},
 
-	"equipment": function(frm) {
-		if(frm.doc.ehf_name && frm.doc.equipment) {
+	"equipment": function (frm) {
+		if (frm.doc.ehf_name && frm.doc.equipment) {
 			frappe.call({
-				"method": "erpnext.fleet_management.doctype.equipment_hiring_form.equipment_hiring_form.get_rates",
-				args: {"form": frm.doc.ehf_name, "equipment": frm.doc.equipment},
-				callback: function(r) {
-					console.log(r.message);
-					if(r.message) {
-						cur_frm.set_value("rate_type", r.message[0].rate_type)
-						cur_frm.set_value("work_rate", r.message[0].rate)
-						cur_frm.set_value("idle_rate", r.message[0].idle_rate)
-						cur_frm.set_value("from_date", r.message[0].from_date)
-						cur_frm.set_value("to_date", r.message[0].to_date)
-						cur_frm.set_value("from_time", r.message[0].from_time)
-						cur_frm.set_value("to_time", r.message[0].to_time)
-						cur_frm.set_value("place", r.message[0].place)
-						cur_frm.refresh_fields()
+				method: "erpnext.fleet_management.doctype.equipment_hiring_form.equipment_hiring_form.get_rates",
+				args: { form: frm.doc.ehf_name, equipment: frm.doc.equipment },
+				callback: function (r) {
+					if (r.message) {
+						frm.set_value("rate_type", r.message[0].rate_type);
+						frm.set_value("work_rate", r.message[0].rate);
+						frm.set_value("idle_rate", r.message[0].idle_rate);
+						frm.set_value("from_date", r.message[0].from_date);
+						frm.set_value("to_date", r.message[0].to_date);
+						frm.set_value("from_time", r.message[0].from_time);
+						frm.set_value("to_time", r.message[0].to_time);
+						frm.set_value("place", r.message[0].place);
+						frm.refresh_fields();
 					}
 				}
-			})
-			frappe.call({
-				"method": "erpnext.fleet_management.doctype.equipment.equipment.get_yards",
-				args: {"equipment": frm.doc.equipment},
-				callback: function(r) {
-					if(r.message) {
-						cur_frm.set_value("ys_km", r.message[0].kph)
-						cur_frm.set_value("ys_hours", r.message[0].lph)
-						cur_frm.refresh_fields()
-					}
-					else {
-						msgprint("No yardsticks settings for the equipment")
-					}
-				}
-			})
+			});
 
-			get_openings(frm.doc.equipment, frm.doc.from_date, frm.doc.to_date, frm.doc.pol_type)
+			frappe.call({
+				method: "erpnext.fleet_management.doctype.equipment.equipment.get_yards",
+				args: { equipment: frm.doc.equipment },
+				callback: function (r) {
+					if (r.message) {
+						frm.set_value("ys_km", r.message[0].kph);
+						frm.set_value("ys_hours", r.message[0].lph);
+						frm.refresh_fields();
+					} else {
+						frappe.msgprint("No yardsticks settings for the equipment");
+					}
+				}
+			});
 		}
 	},
 
 
-	vehicle_logbook: function(frm) {
-        if (frm.doc.vehicle_logbook === "Pool Vehicle") {
-            frm.set_query('pool_equipment', function() {
-                return {
-                    filters: {
-                        equipment_category: 'Pool Vehicle'
-                    }
-                };
-            });
-        } else {
-            frm.set_query('pool_equipment', function() {
-                return {}; // Clear filter for other types
-            });
-        }
-    },
+    vehicle_logbook: function (frm) {
+		if (frm.doc.vehicle_logbook === 'Equipment Hiring Form') {
+			frm.set_df_property('equipment', 'hidden', 0);
+			frm.set_query('equipment', function () {
+				return {}; // No filters for Equipment Hiring Form
+			});
+			frm.trigger('equipment'); // Trigger equipment logic
+		} else if (frm.doc.vehicle_logbook === 'Pool Vehicle') {
+			frm.set_df_property('equipment', 'hidden', 0);
+			frm.set_query('equipment', function () {
+				return {
+					filters: {
+						equipment_category: 'Pool Vehicle'
+					}
+				};
+			});
+			frm.trigger('equipment'); // Trigger equipment logic
+		} else {
+			frm.set_df_property('equipment', 'hidden', 1);
+			frm.set_query('equipment', function () {
+				return {};
+			});
+		}
+	},	
+
 
 	"final_km": function(frm) {
 		if(!frm.doc.docstatus == 1) {
@@ -190,6 +215,14 @@ frappe.ui.form.on('Vehicle Logbook', {
 	}
 });
 
+function check_equipment_visibility(frm) {
+    if (frm.doc.branch && frm.doc.ehf_name) {
+        frm.set_df_property('equipment', 'hidden', 0);
+    } else {
+        frm.set_df_property('equipment', 'hidden', 1);
+    }
+}
+
 function calculate_closing(frm) {
 	frm.set_value("closing_balance", frm.doc.hsd_received + frm.doc.opening_balance - frm.doc.consumption)
 	cur_frm.refresh_field("closing_balance")
@@ -240,8 +273,9 @@ cur_frm.add_fetch("equipment", "registration_number", "registration_number")
 cur_frm.add_fetch("equipment", "hsd_type", "pol_type")
 cur_frm.add_fetch("equipment", "current_operator", "equipment_operator")
 cur_frm.add_fetch("pool_equipment", "registration_number", "pool_equipment_number")
-cur_frm.add_fetch("pool_equipment", "lph", "lph")
-cur_frm.add_fetch("pool_equipment", "kph", "kph")
+cur_frm.add_fetch("equipment", "lph", "lph")
+cur_frm.add_fetch("equipment", "kph", "kph")
+// cur_frm.add_fetch("equipment_hiring_form", "from_date", "from_date")
 // cur_frm.add_fetch("operator", "operator_name", "driver_name")
 
 //Vehicle Log Item  Details

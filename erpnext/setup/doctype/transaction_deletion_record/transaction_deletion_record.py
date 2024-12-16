@@ -458,6 +458,7 @@ def get_doctypes_to_be_ignored():
 	]
 	#jai
 	doctypes_to_be_ignored.extend([
+		"Income Tax Slab",
 		"Branch",
 		"DHI GCOA Mapper",
 		"DHI GCOA",

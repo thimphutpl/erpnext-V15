@@ -878,3 +878,21 @@ def create_asset_receive():
 	doc = frappe.get_doc("Purchase Receipt", "MAT-PRE-2024-00018")
 	doc.update_asset_receive_entries()
 	
+def delete_coa():
+	with open("/home/frappe/erp/statement_of_trial_delete_list.csv") as f:
+		reader = csv.reader(f)
+		mylist = list(reader)
+		c = 0
+		for i in mylist:
+			if not frappe.db.get_value("Account", str(i[0]), "name"):
+				continue
+			if str(i[0]) in ['BTL Project, Gasa - CDCL']:
+				continue
+			doc = frappe.get_doc("Account", str(i[0]))
+			if doc.name:
+				c += 1
+				print(doc.name)
+				frappe.delete_doc('Account', doc.name)
+				# doc.save(ignore_permissions=True)
+		print('DONE')
+		print(str(c))

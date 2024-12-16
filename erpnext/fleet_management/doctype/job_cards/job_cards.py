@@ -24,7 +24,7 @@ class JobCards(AccountsController):
 
 		amended_from: DF.Link | None
 		branch: DF.Link
-		break_down_report: DF.Link | None
+		break_down_report: DF.Data | None
 		break_down_report_date: DF.Data | None
 		company: DF.Link
 		cost_center: DF.Link

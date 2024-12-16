@@ -103,6 +103,7 @@ class PrepareAuditPlan(Document):
 			if not frappe.db.get_value("Branch", self.branch, "branch_code"):
 				frappe.throw("Please set branch code in Branch master data for branch <a href='/app/branch/{0}'>{0}</a>".format(self.branch))
 			prefix = str(self.fiscal_year)+"-"+frappe.db.get_value("Branch", self.branch, "branch_code")
+			
 			latest_prefix = frappe.db.sql("""
                                  select iain_number from `tabPrepare Audit Plan` where iain_number like '%{0}%'
                                  and name != '{1}' order by iain_number desc limit 1

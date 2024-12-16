@@ -99,42 +99,42 @@ frappe.query_reports["Inventory Report"] = {
 			width: "80",
 			options: "Warehouse Type",
 		},
-		{
-			fieldname: "valuation_field_type",
-			label: __("Valuation Field Type"),
-			fieldtype: "Select",
-			width: "80",
-			options: "Currency\nFloat",
-			default: "Currency",
-		},
-		{
-			fieldname: "include_uom",
-			label: __("Include UOM"),
-			fieldtype: "Link",
-			options: "UOM",
-		},
-		{
-			fieldname: "show_variant_attributes",
-			label: __("Show Variant Attributes"),
-			fieldtype: "Check",
-		},
-		{
-			fieldname: "show_stock_ageing_data",
-			label: __("Show Stock Ageing Data"),
-			fieldtype: "Check",
-		},
-		{
-			fieldname: "ignore_closing_balance",
-			label: __("Ignore Closing Balance"),
-			fieldtype: "Check",
-			default: 0,
-		},
-		{
-			fieldname: "include_zero_stock_items",
-			label: __("Include Zero Stock Items"),
-			fieldtype: "Check",
-			default: 0,
-		},
+		// {
+		// 	fieldname: "valuation_field_type",
+		// 	label: __("Valuation Field Type"),
+		// 	fieldtype: "Select",
+		// 	width: "80",
+		// 	options: "Currency\nFloat",
+		// 	default: "Currency",
+		// },
+		// {
+		// 	fieldname: "include_uom",
+		// 	label: __("Include UOM"),
+		// 	fieldtype: "Link",
+		// 	options: "UOM",
+		// },
+		// {
+		// 	fieldname: "show_variant_attributes",
+		// 	label: __("Show Variant Attributes"),
+		// 	fieldtype: "Check",
+		// },
+		// {
+		// 	fieldname: "show_stock_ageing_data",
+		// 	label: __("Show Stock Ageing Data"),
+		// 	fieldtype: "Check",
+		// },
+		// {
+		// 	fieldname: "ignore_closing_balance",
+		// 	label: __("Ignore Closing Balance"),
+		// 	fieldtype: "Check",
+		// 	default: 0,
+		// },
+		// {
+		// 	fieldname: "include_zero_stock_items",
+		// 	label: __("Include Zero Stock Items"),
+		// 	fieldtype: "Check",
+		// 	default: 0,
+		// },
     ],
 
     onload: function(report) {

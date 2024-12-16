@@ -1,6 +1,7 @@
 {
  "actions": [],
- "autoname": "field:fiscal_year",
+ "allow_rename": 1,
+ "autoname": "PMS-.#####",
  "creation": "2021-03-01 10:10:52.903323",
  "doctype": "DocType",
  "editable_grid": 1,
@@ -163,10 +164,11 @@
  ],
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-20 15:53:38.294474",
+ "modified": "2024-12-16 11:08:17.150957",
  "modified_by": "Administrator",
  "module": "PMS",
  "name": "PMS Calendar",
+ "naming_rule": "Expression (old style)",
  "owner": "Administrator",
  "permissions": [
   {
@@ -227,6 +229,21 @@
    "report": 1,
    "role": "Employee",
    "share": 1
+  },
+  {
+   "amend": 1,
+   "cancel": 1,
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Admin",
+   "share": 1,
+   "submit": 1,
+   "write": 1
   }
  ],
  "sort_field": "modified",

@@ -19,6 +19,7 @@
   "defaults",
   "item_group_defaults",
   "sec_break_taxes",
+  "show_subgroup_in_print",
   "taxes",
   "lft",
   "old_parent",
@@ -136,6 +137,12 @@
    "options": "\n",
    "reqd": 1,
    "unique": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "show_subgroup_in_print",
+   "fieldtype": "Check",
+   "label": "Show Subgroup in Print"
   }
  ],
  "icon": "fa fa-sitemap",
@@ -144,7 +151,7 @@
  "is_tree": 1,
  "links": [],
  "max_attachments": 3,
- "modified": "2024-07-16 12:43:40.984987",
+ "modified": "2024-12-14 14:18:20.553352",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Item Group",

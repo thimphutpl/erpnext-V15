@@ -209,7 +209,9 @@
   "inter_company_invoice_reference",
   "is_old_subcontracting_flow",
   "remarks",
-  "connections_tab"
+  "connections_tab",
+  "discount",
+  "tds_amount"
  ],
  "fields": [
   {
@@ -1721,13 +1723,23 @@
    "fieldname": "purchase_receipt_date",
    "fieldtype": "Date",
    "label": "PR Date"
+  },
+  {
+   "fieldname": "discount",
+   "fieldtype": "Currency",
+   "label": "Discount"
+  },
+  {
+   "fieldname": "tds_amount",
+   "fieldtype": "Currency",
+   "label": "TDS Amount"
   }
  ],
  "icon": "fa fa-file-text",
  "idx": 204,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-12-04 12:59:06.549324",
+ "modified": "2024-12-16 15:37:57.995837",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Purchase Invoice",

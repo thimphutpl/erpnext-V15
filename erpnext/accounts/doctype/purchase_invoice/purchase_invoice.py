@@ -113,6 +113,7 @@ class PurchaseInvoice(BuyingController):
 		credit_to: DF.Link
 		currency: DF.Link | None
 		disable_rounded_total: DF.Check
+		discount: DF.Currency
 		discount_amount: DF.Currency
 		due_date: DF.Date | None
 		from_date: DF.Date | None
@@ -191,6 +192,7 @@ class PurchaseInvoice(BuyingController):
 		taxes_and_charges_added: DF.Currency
 		taxes_and_charges_deducted: DF.Currency
 		tc_name: DF.Link | None
+		tds_amount: DF.Currency
 		terms: DF.TextEditor | None
 		title: DF.Data | None
 		to_date: DF.Date | None

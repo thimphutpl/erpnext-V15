@@ -10,12 +10,12 @@ from frappe import _
 
 def execute(filters=None):
 	data    = get_data(filters)
+	# frappe.throw(str(data))
 	columns = get_columns()
 	return columns, data
 
 def get_data(filters):
         data   = []
-
         # Projects
         prj_list = frappe.db.sql("""
                         select
@@ -33,7 +33,6 @@ def get_data(filters):
                         where name = "{0}"
                         order by creation desc
                 """.format(filters.get("project")), as_dict=1)
-
         for prj in prj_list:
                 indent = 0
                 data.append(prj)
@@ -44,7 +43,7 @@ def get_data(filters):
 
                 additional_tasks = get_additional_tasks(prj, indent)
                 data += additional_tasks
-
+        # frappe.throw("here "+str(data))
         #frappe.msgprint(_("{0}").format(data))
         return data
 
@@ -191,6 +190,7 @@ def get_data_old(filters):
                                 
                                 for ts in ts_list:
                                         data.append(ts)
+        frappe.throw(str(data))
         return data
 
 def get_columns():

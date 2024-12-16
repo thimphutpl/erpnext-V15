@@ -344,9 +344,8 @@
   },
   {
    "fieldname": "break_down_report",
-   "fieldtype": "Link",
+   "fieldtype": "Data",
    "label": "Break Down Report",
-   "options": "Break Down Report",
    "read_only": 1
   },
   {
@@ -469,7 +468,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-12-05 14:46:45.715610",
+ "modified": "2024-12-13 12:24:10.747753",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Job Cards",

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2015, Frappe Technologies Pvt. Ltd. and contributors
+# Copyright (c) 2024, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
 from __future__ import unicode_literals
@@ -92,59 +92,54 @@ class VehicleLogbook(Document):
 
 	def before_save(self):
 		if self.vehicle_logbook == "Pool Vehicle":
-			# Validate customers field
 			if not self.customers:
 				frappe.throw(_("Please select a value for 'Customers' when 'Vehicle Logbook' is set to 'Pool Vehicle'."))
 			
-			# Validate customer types field
 			if not self.customer_types:
 				frappe.throw(_("Please select a value for 'Customer Types' when 'Vehicle Logbook' is set to 'Pool Vehicle'."))
 			
-			# Map the values correctly
 			self.customer = self.customers
 			self.customer_type = self.customer_types
 		else:
-			# Ensure standard fields are used when not Pool Vehicle
 			self.customer = self.customer or None
 			self.customer_type = self.customer_type or None
 		
 
-	# def set_data(self):
-	# 	if self.vehicle_logbook == "Pool Vehicle":
-	# 		# Skip setting data for Pool Vehicle
-	# 		return	
-
-	# 	if not self.ehf_name:
-	# 		frappe.throw("Equipment Hire Form is mandatory")
-	# 	self.customer_type = frappe.db.get_value("Equipment Hiring Form", self.ehf_name, "private")
-	# 	self.customer = frappe.db.get_value("Equipment Hiring Form", self.ehf_name, "customer")
-
 	def set_data(self):
 		if self.vehicle_logbook == "Pool Vehicle":
-			# Use the new fields 'customers' and 'customer types'
-			if not self.customers:
-				frappe.throw("Customers field is mandatory for Pool Vehicle")
-			if not self.customer_types:
-				frappe.throw("Customer Types field is mandatory for Pool Vehicle")
-			
-			# Additional validation can go here if required
-			return
+			return	
 
-		elif self.vehicle_logbook == "Equipment Hiring Form":
-			# Use the standard fields for Equipment Hiring Form
-			if not self.ehf_name:
-				frappe.throw("Equipment Hire Form is mandatory")
-			self.customer_type = frappe.db.get_value("Equipment Hiring Form", self.ehf_name, "private")
-			self.customer = frappe.db.get_value("Equipment Hiring Form", self.ehf_name, "customer")
+		if not self.ehf_name:
+			frappe.throw("Equipment Hire Form is mandatory")
+		self.customer_type = frappe.db.get_value("Equipment Hiring Form", self.ehf_name, "private")
+		self.customer = frappe.db.get_value("Equipment Hiring Form", self.ehf_name, "customer")
+
+	# def set_data(self):
+	# 	if self.vehicle_logbook == "Pool Vehicle":
+	# 		# Use the new fields 'customers' and 'customer types'
+	# 		if not self.customers:
+	# 			frappe.throw("Customers field is mandatory for Pool Vehicle")
+	# 		if not self.customer_types:
+	# 			frappe.throw("Customer Types field is mandatory for Pool Vehicle")
 			
-			# # Fetch values for 'customer' and 'customer_type' from the Equipment Hiring Form
-			# self.customer_type = frappe.db.get_value("Equipment Hiring Form", self.ehf_name, "private")
-			# if not self.customer_type:
-			# 	frappe.throw(f"Customer type not found for Equipment Hiring Form: {self.ehf_name}")
+	# 		# Additional validation can go here if required
+	# 		return
+
+	# 	elif self.vehicle_logbook == "Equipment Hiring Form":
+	# 		# Use the standard fields for Equipment Hiring Form
+	# 		if not self.ehf_name:
+	# 			frappe.throw("Equipment Hire Form is mandatory")
+	# 		self.customer_type = frappe.db.get_value("Equipment Hiring Form", self.ehf_name, "private")
+	# 		self.customer = frappe.db.get_value("Equipment Hiring Form", self.ehf_name, "customer")
 			
-			# self.customer = frappe.db.get_value("Equipment Hiring Form", self.ehf_name, "customer")
-			# if not self.customer:
-			# 	frappe.throw(f"Customer not found for Equipment Hiring Form: {self.ehf_name}")
+	# 		# # Fetch values for 'customer' and 'customer_type' from the Equipment Hiring Form
+	# 		# self.customer_type = frappe.db.get_value("Equipment Hiring Form", self.ehf_name, "private")
+	# 		# if not self.customer_type:
+	# 		# 	frappe.throw(f"Customer type not found for Equipment Hiring Form: {self.ehf_name}")
+			
+	# 		# self.customer = frappe.db.get_value("Equipment Hiring Form", self.ehf_name, "customer")
+	# 		# if not self.customer:
+	# 		# 	frappe.throw(f"Customer not found for Equipment Hiring Form: {self.ehf_name}")
 
 	
 	def check_consumed(self):

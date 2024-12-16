@@ -17,8 +17,8 @@ class ProjectsAccountsSettings(Document):
 		accrued_expense_account: DF.Link | None
 		advance_account_internal: DF.Link | None
 		advance_account_supplier: DF.Link
-		gep_overtime_account: DF.Link
-		gep_wages_account: DF.Link
+		gep_overtime_account: DF.Link | None
+		gep_wages_account: DF.Link | None
 		inventory_account: DF.Link
 		invoice_account_internal: DF.Link | None
 		invoice_account_supplier: DF.Link | None

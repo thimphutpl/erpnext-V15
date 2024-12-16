@@ -55,6 +55,8 @@ def execute(filters: StockBalanceFilter | None = None):
 
 class StockBalanceReport:
     def __init__(self, filters: StockBalanceFilter | None) -> None:
+        # Ensure filters is initialized as an empty dictionary if None
+        filters = filters or {}
         self.filters = filters
         self.from_date = getdate(filters.get("from_date"))
         self.to_date = getdate(filters.get("to_date"))
@@ -123,6 +125,37 @@ class StockBalanceReport:
         for _key, report_data in self.item_warehouse_map.items():
             if variant_data := variant_values.get(report_data.item_code):
                 report_data.update(variant_data)
+
+             # Calculate Consumption
+            # report_data['consumption'] = (
+            #     (report_data.get('opening_qty', 0) + report_data.get('in_qty', 0)) / 
+            #     report_data.get('out_qty', 1)  # Avoid division by zero
+            #     if report_data.get('out_qty') else 0
+            # )
+
+            report_data['consumption'] = (
+                (
+                    (report_data.get('opening_qty', 0) + report_data.get('in_qty', 0)) / 
+                    report_data.get('out_qty', 1)  # Avoid division by zero
+                ) * 100  # Convert to percentage
+                if report_data.get('out_qty') else 0
+            )
+
+
+            #Calculate Closing balance
+            report_data['closing'] = (
+                (report_data.get('opening_qty', 0) + report_data.get('in_qty', 0)) -
+                report_data.get('out_qty', 1)  # Avoid division by zero
+                # if report_data.get('out_qty') else 0
+            )
+
+            # Determine Movement Status
+            if report_data['consumption'] > 0.6:
+                report_data['movement'] = "Fast Moving"
+            elif report_data['consumption'] < 0.6 and report_data['consumption'] > 0:
+                report_data['movement'] = "Slow Moving"
+            else:
+                report_data['movement'] = "No Moving"    
 
             if self.filters.get("show_stock_ageing_data"):
                 opening_fifo_queue = self.get_opening_fifo_queue(report_data) or []
@@ -236,35 +269,7 @@ class StockBalanceReport:
         qty_dict.val_rate = entry.valuation_rate
         qty_dict.bal_qty += qty_diff
         qty_dict.bal_val += value_diff
-
-        # Additional calculations for consumption, value, and movement type
-        opening_receipt = qty_dict.opening_qty + qty_dict.in_qty
-        issue_value = qty_dict.out_qty
-        consumption = (opening_receipt / issue_value) if issue_value else 0
-        # stock_value = (opening_receipt - issue_value) * (entry.valuation_rate or 0)
-
-        # movement = (
-        #     "Fast Moving" if consumption > 0.6 else 
-        #     "Slow Moving" if consumption > 0 else 
-        #     "No Moving"
-        # )
-
-        # # Update the item warehouse map with additional details
-        # qty_dict.update({
-        #     "consumption": consumption,
-        #     # "value": stock_value,
-        #     "movement": movement,
-        # })
-        # Update dictionary with Nature of Movement
-        nature_of_movement = (
-            "Fast Moving" if consumption > 0.6 else
-            "Slow Moving" if 0 < consumption <= 0.6 else
-            "No Moving"
-        )
-        qty_dict.update({
-            "consumption": consumption,
-            "nature_of_movement": nature_of_movement,
-        })
+        
 
     def initialize_data(self, item_warehouse_map, group_by_key, entry):
         opening_data = self.opening_data.get(group_by_key, {})
@@ -311,7 +316,8 @@ class StockBalanceReport:
             .select(table.name, table.to_date)
             .where(
                 (table.docstatus == 1)
-                & (table.company == self.filters.company)
+                # & (table.company == self.filters.company)
+                & (table.company == self.filters.get("company"))
                 & (table.to_date <= self.from_date)
                 & (table.status == "Completed")
             )
@@ -410,7 +416,7 @@ class StockBalanceReport:
         return query
 
     def apply_date_filters(self, query, sle) -> str:
-        if not self.filters.ignore_closing_balance and self.start_from:
+        if not self.filters.get("ignore_closing_balance") and self.start_from:
             query = query.where(sle.posting_date >= self.start_from)
 
         if self.to_date:
@@ -511,12 +517,18 @@ class StockBalanceReport:
                 {
                     "label": _("Valuation Rate"),
                     "fieldname": "val_rate",
-                    "fieldtype": self.filters.valuation_field_type or "Currency",
+                    "fieldtype": self.filters.get("valuation_field_type") or "Currency",
                     "width": 90,
                     "convertible": "rate",
                     "options": "Company:company:default_currency"
-                    if self.filters.valuation_field_type == "Currency"
+                    if self.filters.get("valuation_field_type") == "Currency"
                     else None,
+                },
+                {
+                    "label": _("Closing"),
+                    "fieldname": "closing",
+                    "fieldtype": "Data",
+                    "width": 100,
                 },
                 # {
                 #     "label": _("Reserved Stock"),
@@ -535,15 +547,15 @@ class StockBalanceReport:
                 {
                     "label": _("Consumption"),
                     "fieldname": "consumption",
-                    "fieldtype": "float",
+                    "fieldtype": "Percent",
                     "width": 100,
                 },
-                {
-                    "label": _("Category"),
-                    "fieldname": "category",
-                    "fieldtype": "Data",
-                    "width": 100,
-                },
+                # {
+                #     "label": _("Category"),
+                #     "fieldname": "category",
+                #     "fieldtype": "Data",
+                #     "width": 100,
+                # },
                 {
                     "label": _("Nature of Movement"),
                     "fieldname": "movement",
@@ -667,46 +679,46 @@ class StockBalanceReport:
 
 
 def filter_items_with_no_transactions(
-	iwb_map, float_precision: float, inventory_dimensions: list | None = None
+    iwb_map, float_precision: float, inventory_dimensions: list | None = None
 ):
-	pop_keys = []
-	for group_by_key in iwb_map:
-		qty_dict = iwb_map[group_by_key]
+    pop_keys = []
+    for group_by_key in iwb_map:
+        qty_dict = iwb_map[group_by_key]
 
-		no_transactions = True
-		for key, val in qty_dict.items():
-			if inventory_dimensions and key in inventory_dimensions:
-				continue
+        no_transactions = True
+        for key, val in qty_dict.items():
+            if inventory_dimensions and key in inventory_dimensions:
+                continue
 
-			if key in [
-				"item_code",
-				"warehouse",
-				"item_name",
-				"item_group",
-				"project",
-				"stock_uom",
-				"company",
-				"opening_fifo_queue",
-			]:
-				continue
+            if key in [
+                "item_code",
+                "warehouse",
+                "item_name",
+                "item_group",
+                "project",
+                "stock_uom",
+                "company",
+                "opening_fifo_queue",
+            ]:
+                continue
 
-			val = flt(val, float_precision)
-			qty_dict[key] = val
-			if key != "val_rate" and val:
-				no_transactions = False
+            val = flt(val, float_precision)
+            qty_dict[key] = val
+            if key != "val_rate" and val:
+                no_transactions = False
 
-		if no_transactions:
-			pop_keys.append(group_by_key)
+        if no_transactions:
+            pop_keys.append(group_by_key)
 
-	for key in pop_keys:
-		iwb_map.pop(key)
+    for key in pop_keys:
+        iwb_map.pop(key)
 
-	return iwb_map
+    return iwb_map
 
 
 def get_variants_attributes() -> list[str]:
-	"""Return all item variant attributes."""
-	return frappe.get_all("Item Attribute", pluck="name")
+    """Return all item variant attributes."""
+    return frappe.get_all("Item Attribute", pluck="name")
 
 
 
@@ -720,141 +732,150 @@ def get_variants_attributes() -> list[str]:
 
 
 
-# Report 1 Data (Stock Ledger)
-def get_inventory_report_data(filters):
-    validate_filters(filters)
+# def categorize_inventory_movement(entry):
+#     """
+#     Categorize inventory movement based on certain conditions.
+#     You can customize this logic as per business needs.
+#     """
+#     if entry["issue_value"] > 100000:  # Example threshold for Fast Moving
+#         return "Fast Moving"
+#     elif 10000 < entry["issue_value"] <= 100000:
+#         return "Slow Moving"
+#     else:
+#         return "No Moving"
 
-    from_date = filters["from_date"]
-    to_date = filters["to_date"]
+# def get_inventory_summary_data(filters: StockBalanceFilter | None = None):
+#     # Fetch detailed inventory report data
+#     stock_balance_report = StockBalanceReport(filters)  # Pass filters to the class
+#     report_1_columns, report_1_data = stock_balance_report.run()
 
-    columns = [
-        {"fieldname": "item_code", "label": "Item Code", "fieldtype": "Data"},
-        {"fieldname": "item_name", "label": "Item Name", "fieldtype": "Data"},
-        {"fieldname": "opening", "label": "Opening", "fieldtype": "Float"},
-        {"fieldname": "receipt", "label": "Receipt", "fieldtype": "Float"},
-        {"fieldname": "opening_receipt", "label": "Opening + Receipt", "fieldtype": "Float"},
-        {"fieldname": "issue_value", "label": "Issue Value", "fieldtype": "Float"},
-        {"fieldname": "valuation_rate", "label": "Valuation Rate", "fieldtype": "Float"},
-        {"fieldname": "value", "label": "Value", "fieldtype": "Currency"},
-        {"fieldname": "closing", "label": "Closing", "fieldtype": "Float"},
-        {"fieldname": "consumption", "label": "Consumption", "fieldtype": "Float"},
-        {"fieldname": "category", "label": "Category", "fieldtype": "Data"},
-        {"fieldname": "movement", "label": "Nature of Movement", "fieldtype": "Data"},
-    ]
+#     # Initialize summary and totals
+#     summary = {
+#         "fast_moving": {"count": 0, "value": 0},
+#         "slow_moving": {"count": 0, "value": 0},
+#         "no_moving": {"count": 0, "value": 0},
+#     }
+#     total_items = 0
+#     total_value = 0
 
-    stock_entries = frappe.db.sql(f"""
-        SELECT
-            sle.item_code,
-            i.item_name,
-            SUM(CASE WHEN sle.posting_date < %(from_date)s THEN sle.actual_qty ELSE 0 END) AS opening_qty,
-            SUM(CASE WHEN sle.posting_date BETWEEN %(from_date)s AND %(to_date)s AND sle.actual_qty > 0 THEN sle.actual_qty ELSE 0 END) AS in_qty,
-            SUM(CASE WHEN sle.posting_date BETWEEN %(from_date)s AND %(to_date)s AND sle.actual_qty < 0 THEN sle.actual_qty ELSE 0 END) AS out_qty,
-            sle.valuation_rate,
-            i.item_group AS category
-        FROM `tabStock Ledger Entry` sle
-        JOIN `tabItem` i ON i.name = sle.item_code
-        WHERE sle.posting_date <= %(to_date)s
-        GROUP BY sle.item_code
-    """, {"from_date": from_date, "to_date": to_date}, as_dict=True)
+#     # Process data and categorize inventory movement
+#     for entry in report_1_data:
+#         total_items += 1
+#         total_value += entry["out_val"]
 
-    data = []
-    total_opening_receipt = total_issue_value = total_value = 0
-    total_items = 0
+#         # Categorize movement
+#         # movement = categorize_inventory_movement(entry)
+#         # entry["movement"] = movement
 
-    for entry in stock_entries:
-        opening = entry.opening_qty
-        opening_receipt = opening + entry.in_qty
-        issue_value = abs(entry.out_qty)
-        closing = opening + (entry.in_qty - issue_value)
-        consumption = (opening_receipt / issue_value) if issue_value else 0
-        value = ((opening_receipt - issue_value) * entry.valuation_rate)
+#         if entry["movement"] == "Fast Moving":
+#             summary["fast_moving"]["count"] += 1
+#             summary["fast_moving"]["value"] += entry["out_val"]
+#         elif entry["movement"] == "Slow Moving":
+#             summary["slow_moving"]["count"] += 1
+#             summary["slow_moving"]["value"] += entry["out_val"]
+#         else:
+#             summary["no_moving"]["count"] += 1
+#             summary["no_moving"]["value"] += entry["out_val"]
 
-        movement = "Fast Moving" if consumption > 0.6 else "Slow Moving" if consumption > 0 else "No Moving"
+#         # if movement == "Fast Moving":
+#         #     summary["fast_moving"]["count"] += 1
+#         #     summary["fast_moving"]["value"] += entry["out_val"]
+#         # elif movement == "Slow Moving":
+#         #     summary["slow_moving"]["count"] += 1
+#         #     summary["slow_moving"]["value"] += entry["out_val"]
+#         # else:
+#         #     summary["no_moving"]["count"] += 1
+#         #     summary["no_moving"]["value"] += entry["out_vue"]
 
-        data.append({
-            "item_code": entry.item_code,
-            "item_name": entry.item_name,
-            "opening": opening,
-            "opening_receipt": opening_receipt,
-            "issue_value": issue_value,
-            "valuation_rate": entry.valuation_rate,
-            "value": value,
-            "closing": closing,
-            "consumption": consumption,
-            "category": entry.category,
-            "movement": movement,
-        })
+#     # Calculate stock balance (Fast + Slow Moving)
+#     stock_balance_count = summary["fast_moving"]["count"] + summary["slow_moving"]["count"]
+#     stock_balance_value = summary["fast_moving"]["value"] + summary["slow_moving"]["value"]
 
-        total_opening_receipt += opening_receipt
-        total_issue_value += issue_value
-        total_value += value
-        total_items += 1
+#     total_percent_items = 100
+#     total_percent_value = 100
 
-    if total_items > 0:
-        average_valuation_rate = total_value / total_items
-        data.append({
-            "item_code": "TOTAL",
-            "item_name": "",
-            "opening": "",
-            "opening_receipt": total_opening_receipt,
-            "issue_value": total_issue_value,
-            "valuation_rate": average_valuation_rate,
-            "value": total_value,
-            "closing": "",
-            "consumption": "",
-            "category": "",
-            "movement": "",
-        })
+#     # Define report columns
+#     columns = [
+#         {"fieldname": "movement_type", "label": "Movement Type", "fieldtype": "Data"},
+#         {"fieldname": "num_items", "label": "Number of Items", "fieldtype": "Int"},
+#         {"fieldname": "item_percent", "label": "Item Percent", "fieldtype": "Percent"},
+#         {"fieldname": "total_value", "label": "Total Value", "fieldtype": "Float"},
+#         {"fieldname": "value_percent", "label": "Value Percent", "fieldtype": "Percent"}
+#     ]
 
-    return columns, data
+#     # Populate report data
+#     data = [
+#         {
+#             "movement_type": "Fast Moving",
+#             "num_items": summary["fast_moving"]["count"],
+#             "item_percent": (summary["fast_moving"]["count"] / total_items) * 100 if total_items else 0,
+#             "total_value": summary["fast_moving"]["value"],
+#             "value_percent": (summary["fast_moving"]["value"] / total_value) * 100 if total_value else 0
+#         },
+#         {
+#             "movement_type": "Slow Moving",
+#             "num_items": summary["slow_moving"]["count"],
+#             "item_percent": (summary["slow_moving"]["count"] / total_items) * 100 if total_items else 0,
+#             "total_value": summary["slow_moving"]["value"],
+#             "value_percent": (summary["slow_moving"]["value"] / total_value) * 100 if total_value else 0
+#         },
+#         {
+#             "movement_type": "No Moving",
+#             "num_items": summary["no_moving"]["count"],
+#             "item_percent": (summary["no_moving"]["count"] / total_items) * 100 if total_items else 0,
+#             "total_value": summary["no_moving"]["value"],
+#             "value_percent": (summary["no_moving"]["value"] / total_value) * 100 if total_value else 0
+#         },
+#         {
+#             "movement_type": "Stock Balance",
+#             "num_items": stock_balance_count,
+#             "item_percent": ((stock_balance_count / total_items) * 100) if total_items else 0,
+#             "total_value": stock_balance_value,
+#             "value_percent": ((stock_balance_value / total_value) * 100) if total_value else 0
+#         },
+#         {
+#             "movement_type": "Total",
+#             "num_items": total_items,
+#             "item_percent": total_percent_items,
+#             "total_value": total_value,
+#             "value_percent": total_percent_value
+#         }
+#     ]
 
-def validate_filters(filters):
-    required_fields = ["from_date", "to_date"]
-    for field in required_fields:
-        if not filters.get(field):
-            frappe.throw(_("'{0}' is a required filter").format(field))
-
-    # Optional: Validate filter formats (e.g., date ranges)
-    from_date = getdate(filters.get("from_date"))
-    to_date = getdate(filters.get("to_date"))
-    if from_date > to_date:
-        frappe.throw(_("From Date cannot be after To Date."))
+#     return columns, data
 
 
 
-# Report 2
-def get_inventory_summary_data():
-    report_1_columns, report_1_data = get_inventory_report_data()
 
+
+
+def get_inventory_summary_data(filters: StockBalanceFilter | None = None):
+    # Fetch detailed inventory report data
+    stock_balance_report = StockBalanceReport(filters)  # Pass filters to the class
+    report_1_columns, report_1_data = stock_balance_report.run()
+
+    # Initialize summary and totals
     summary = {
-        "fast_moving": {"count": 0, "value": 0},
-        "slow_moving": {"count": 0, "value": 0},
-        "no_moving": {"count": 0, "value": 0},
+        "Fast Moving": {"count": 0, "value": 0},
+        "Slow Moving": {"count": 0, "value": 0},
+        "No Moving": {"count": 0, "value": 0},
     }
-    total_items = 0
+    total_movements = 0
     total_value = 0
 
+    # Process data and count occurrences
     for entry in report_1_data:
-        total_items += 1
-        total_value += entry["issue_value"]
+        movement_type = entry.get("Nature of Movement")  # Fetch the movement type
+        value = entry.get("out_val", 0)  # Value associated with the item
 
-        if entry["movement"] == "Fast Moving":
-            summary["fast_moving"]["count"] += 1
-            summary["fast_moving"]["value"] += entry["issue_value"]
-        elif entry["movement"] == "Slow Moving":
-            summary["slow_moving"]["count"] += 1
-            summary["slow_moving"]["value"] += entry["issue_value"]
-        else:
-            summary["no_moving"]["count"] += 1
-            summary["no_moving"]["value"] += entry["issue_value"]
+        if movement_type in summary:
+            summary[movement_type]["count"] += 1  # Increment count for the movement type
+            summary[movement_type]["value"] += value  # Add value to the movement type
 
-    # Stock Balance should only include Fast and Slow Moving
-    stock_balance_count = summary["fast_moving"]["count"] + summary["slow_moving"]["count"]
-    stock_balance_value = summary["fast_moving"]["value"] + summary["slow_moving"]["value"]
+        total_movements += 1  # Increment total movements
+        total_value += value  # Add value to the total
 
-    total_percent_items = 100
-    total_percent_value = 100
-
+    # Define report columns
     columns = [
         {"fieldname": "movement_type", "label": "Movement Type", "fieldtype": "Data"},
         {"fieldname": "num_items", "label": "Number of Items", "fieldtype": "Int"},
@@ -863,43 +884,40 @@ def get_inventory_summary_data():
         {"fieldname": "value_percent", "label": "Value Percent", "fieldtype": "Percent"}
     ]
 
-    data = [
-        {
-            "movement_type": "Fast Moving",
-            "num_items": summary["fast_moving"]["count"],
-            "item_percent": (summary["fast_moving"]["count"] / total_items) * 100 if total_items else 0,
-            "total_value": summary["fast_moving"]["value"],
-            "value_percent": (summary["fast_moving"]["value"] / total_value) * 100 if total_value else 0
-        },
-        {
-            "movement_type": "Slow Moving",
-            "num_items": summary["slow_moving"]["count"],
-            "item_percent": (summary["slow_moving"]["count"] / total_items) * 100 if total_items else 0,
-            "total_value": summary["slow_moving"]["value"],
-            "value_percent": (summary["slow_moving"]["value"] / total_value) * 100 if total_value else 0
-        },
-        {
-            "movement_type": "No Moving",
-            "num_items": summary["no_moving"]["count"],
-            "item_percent": (summary["no_moving"]["count"] / total_items) * 100 if total_items else 0,
-            "total_value": summary["no_moving"]["value"],
-            "value_percent": (summary["no_moving"]["value"] / total_value) * 100 if total_value else 0
-        },
-        {
-            "movement_type": "Stock Balance",
-            "num_items": stock_balance_count,  # Sum of Fast and Slow Moving
-            "total_value": stock_balance_value,  # Sum of Fast and Slow Moving
-        },
-        {
-            "movement_type": "Total",
-            "num_items": total_items,
-            "item_percent": total_percent_items,
-            "total_value": total_value,
-            "value_percent": total_percent_value
-        }
-    ]
+    # Populate report data
+    data = []
+    for movement_type, details in summary.items():
+        data.append({
+            "movement_type": movement_type,
+            "num_items": details["count"],
+            "item_percent": (details["count"] / total_movements) * 100 if total_movements else 0,
+            "total_value": details["value"],
+            "value_percent": (details["value"] / total_value) * 100 if total_value else 0
+        })
+
+    # Add totals row
+    data.append({
+        "movement_type": "Total",
+        "num_items": total_movements,
+        "item_percent": 100,
+        "total_value": total_value,
+        "value_percent": 100
+    })
 
     return columns, data
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # Report 3: Warehouse and Balance Value
 def get_non_moving_branch_data():
@@ -937,8 +955,11 @@ def get_non_moving_branch_data():
 
 
 # Report 4 Data
-def get_report_4_data():
-    report_1_columns, report_1_data = get_inventory_report_data()
+def get_report_4_data(filters: StockBalanceFilter | None = None):
+    # Fetch detailed inventory report data
+    stock_balance_report = StockBalanceReport(filters)  # Pass filters to the class
+    report_1_columns, report_1_data = stock_balance_report.run()
+
 
     summary = {
         "inventory1": {"count": 0, "value": 0},
@@ -951,17 +972,17 @@ def get_report_4_data():
 
     for entry in report_1_data:
         total_items += 1
-        total_value += entry["issue_value"]
+        total_value += entry["out_val"]
 
         if entry["movement"] == "Fast Moving":
             summary["inventory1"]["count"] += 1
-            summary["inventory1"]["value"] += entry["issue_value"]
+            summary["inventory1"]["value"] += entry["out_val"]
         elif entry["movement"] == "Slow Moving":
             summary["inventory2"]["count"] += 1
-            summary["inventory2"]["value"] += entry["issue_value"]
+            summary["inventory2"]["value"] += entry["out_val"]
         else:
             summary["inventory3"]["count"] += 1
-            summary["inventory3"]["value"] += entry["issue_value"]
+            summary["inventory3"]["value"] += entry["out_val"]
 
     total_percent_items = 100
     total_percent_value = 100

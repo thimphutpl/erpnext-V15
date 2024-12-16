@@ -222,16 +222,15 @@
   },
   {
    "fieldname": "job_cards",
-   "fieldtype": "Link",
+   "fieldtype": "Data",
    "label": "Job Card",
-   "options": "Job Cards",
    "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-29 14:39:41.101069",
+ "modified": "2024-12-13 12:29:54.044650",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Break Down Report",
