@@ -79,6 +79,8 @@
   "submit_err_jv",
   "budget_detail",
   "exception_budget_approver_role",
+  "additional_hr_payroll_account_section",
+  "employer_contribution_to_pf",
   "fixed_asset_defaults",
   "accumulated_depreciation_account",
   "depreciation_expense_account",
@@ -861,6 +863,17 @@
    "fieldtype": "Link",
    "label": "Loss Account on Asset Disposal",
    "options": "Account"
+  },
+  {
+   "fieldname": "additional_hr_payroll_account_section",
+   "fieldtype": "Section Break",
+   "label": "Additional HR Payroll Account"
+  },
+  {
+   "fieldname": "employer_contribution_to_pf",
+   "fieldtype": "Link",
+   "label": "Employer Contribution to PF",
+   "options": "Account"
   }
  ],
  "icon": "fa fa-building",
@@ -868,7 +881,7 @@
  "image_field": "company_logo",
  "is_tree": 1,
  "links": [],
- "modified": "2024-11-19 17:02:21.732416",
+ "modified": "2024-12-19 12:24:05.467318",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Company",
