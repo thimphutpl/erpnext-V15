@@ -27,6 +27,21 @@
   "column_break_xhre",
   "material_group",
   "material_sub_group",
+  "supplier_creation_details_section",
+  "supplier_name",
+  "supplier_type",
+  "supplier_group",
+  "supplier_tpn",
+  "country",
+  "attention_person_name",
+  "supplier_email",
+  "column_break_kdbw",
+  "bank",
+  "bank_account_type",
+  "bank_branch",
+  "account_number",
+  "contact_number",
+  "location",
   "section_break_21",
   "content",
   "seen_by_section",
@@ -63,6 +78,7 @@
    "label": "Date"
   },
   {
+   "depends_on": "eval:doc.enote_category!=\"Supplier Creation\" && doc.enote_category!=\"Material Request\"",
    "fieldname": "forward_to",
    "fieldtype": "Link",
    "label": "Approver",
@@ -70,6 +86,7 @@
    "options": "User"
   },
   {
+   "depends_on": "eval:doc.enote_category!=\"Supplier Creation\" && doc.enote_category!=\"Material Request\"",
    "fieldname": "permitted_user",
    "fieldtype": "Link",
    "label": "Permitted User",
@@ -214,12 +231,90 @@
    "fieldtype": "Link",
    "label": "Material Sub Group",
    "options": "Item Sub Group"
+  },
+  {
+   "depends_on": "eval: doc.enote_category==\"Supplier Creation\"",
+   "fieldname": "supplier_creation_details_section",
+   "fieldtype": "Section Break",
+   "label": "Supplier Creation Details"
+  },
+  {
+   "fieldname": "supplier_name",
+   "fieldtype": "Data",
+   "label": "Supplier Name"
+  },
+  {
+   "fieldname": "supplier_type",
+   "fieldtype": "Data",
+   "label": "Supplier Type"
+  },
+  {
+   "fieldname": "supplier_group",
+   "fieldtype": "Link",
+   "label": "Supplier Group",
+   "options": "Supplier Group"
+  },
+  {
+   "fieldname": "supplier_tpn",
+   "fieldtype": "Data",
+   "label": "Supplier TPN"
+  },
+  {
+   "fieldname": "country",
+   "fieldtype": "Link",
+   "label": "Country",
+   "options": "Country"
+  },
+  {
+   "fieldname": "attention_person_name",
+   "fieldtype": "Data",
+   "label": "Attention Person Name"
+  },
+  {
+   "fieldname": "supplier_email",
+   "fieldtype": "Data",
+   "label": "Supplier Email"
+  },
+  {
+   "fieldname": "column_break_kdbw",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "bank",
+   "fieldtype": "Link",
+   "label": "Bank",
+   "options": "Financial Institution"
+  },
+  {
+   "fieldname": "bank_account_type",
+   "fieldtype": "Data",
+   "label": "Bank Account Type"
+  },
+  {
+   "fieldname": "bank_branch",
+   "fieldtype": "Data",
+   "label": "Bank Branch"
+  },
+  {
+   "fieldname": "account_number",
+   "fieldtype": "Data",
+   "label": "Account Number"
+  },
+  {
+   "fieldname": "contact_number",
+   "fieldtype": "Data",
+   "label": "Contact Number"
+  },
+  {
+   "fieldname": "location",
+   "fieldtype": "Data",
+   "label": "Location"
   }
  ],
  "icon": "fa fa-file-text",
  "is_submittable": 1,
  "links": [],
- "modified": "2024-12-06 11:10:51.238310",
+ "modified": "2024-12-18 15:50:35.122532",
  "modified_by": "Administrator",
  "module": "eNote",
  "name": "eNote",

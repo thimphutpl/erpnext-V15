@@ -8,7 +8,8 @@ frappe.provide("erpnext.journal_entry");
 
 frappe.ui.form.on("Journal Entry", {
 	setup: function (frm) {
-		draw_tds_table(frm);
+		// draw_tds_table(frm);
+		render_tds_table(frm);
 		frm.add_fetch("bank_account", "account", "account");
 		frm.ignore_doctypes_on_cancel_all = [
 			"Sales Invoice",
@@ -39,7 +40,8 @@ frappe.ui.form.on("Journal Entry", {
 		
 	},
 	onload:function(frm){
-		draw_tds_table(frm);
+		// draw_tds_table(frm);
+		render_tds_table(frm);
 		create_custom_buttons(frm);
 	},
 	refresh: function (frm) {
@@ -124,7 +126,8 @@ frappe.ui.form.on("Journal Entry", {
 		}
 
 		erpnext.accounts.unreconcile_payment.add_unreconcile_btn(frm);
-		draw_tds_table(frm);
+		// draw_tds_table(frm);
+		render_tds_table(frm);
 		create_custom_buttons(frm);
 	},
 
@@ -280,7 +283,10 @@ frappe.ui.form.on("Journal Entry", {
 				frappe.model.set_value(row.doctype, row.name, "apply_tds", cint(frm.doc.apply_tds));
 			}
 		})
-		draw_tds_table(frm);
+
+		// draw_tds_table(frm);
+		render_tds_table(frm);
+		
 	},
 
 	tax_withholding_category: function(frm){
@@ -291,6 +297,70 @@ frappe.ui.form.on("Journal Entry", {
 		})
 	}
 });
+
+var render_tds_table=function(frm){
+	if(frm.doc.apply_tds==1){
+		let wrapper = $(frm.fields_dict["tds_table"].wrapper).empty();
+		let i = 1
+		let data = [];
+
+		frm.doc.accounts.map(v=>{
+			if (flt(v.apply_tds) == 1){
+				let r=[
+					i,
+					frappe.format(v["tax_account"], { fieldtype: "Link", options: "Account" }),
+					frappe.format(v["party"], { fieldtype: "Data" }),
+					frappe.format(v["cost_center"], { fieldtype: "Link", options: "Cost Center" }),
+					frappe.format(0, { fieldtype: "Currency" }),
+					frappe.format(v["tax_amount"], { fieldtype: "Currency" }),
+				]
+				i=i+1
+				data.push(r)
+			}
+		})
+		
+		
+		
+		let columns = [
+			{ name: __("No."), editable: false, resizable: false, format: (value) => value, width: 60 },
+			{ name: __("Tax Account"), editable: false, resizable: true, width: 200 },
+			{ name: __("Party"), editable: false, resizable: true, width: 180 },
+			{ name: __("Cost Center"), editable: false, resizable: true, width: 200 },
+			{ name: __("Debit"), editable: false, resizable: true, width: 164 },
+			{ name: __("Credit"), editable: false, resizable: true, width: 164 },
+		];
+		
+
+		let datatable = new frappe.DataTable(wrapper.get(0), {
+			columns: columns,
+			data: data,
+			layout: "fluid",
+			serialNoColumn: false,
+			checkboxColumn: true,
+			cellHeight: 35,
+		});
+
+		datatable.style.setStyle(`.dt-scrollable`, {
+			"font-size": "0.75rem",
+			"margin-bottom": "1rem",
+			"margin-left": "0.35rem",
+			"margin-right": "0.35rem",
+		});
+		datatable.style.setStyle(`.dt-header`, { "margin-left": "0.35rem", "margin-right": "0.35rem" });
+		datatable.style.setStyle(`.dt-cell--header .dt-cell__content`, {
+			color: "var(--gray-600)",
+			"font-size": "var(--text-sm)",
+		});
+		datatable.style.setStyle(`.dt-cell`, { color: "var(--text-color)" });
+		datatable.style.setStyle(`.dt-cell--col-1`, { "text-align": "center" });
+		datatable.style.setStyle(`.dt-cell--col-2`, { "font-weight": 600 });
+		datatable.style.setStyle(`.dt-cell--col-4`, { "font-weight": 600 });
+		datatable.style.setStyle(`.dt-cell--col-5`, { "font-weight": 600 });
+		datatable.style.setStyle(`.dt-cell--col-6`, { "font-weight": 600 });
+	}else{
+		let wrapper = $(frm.fields_dict["tds_table"].wrapper).empty();
+	}
+}
 
 var draw_tds_table = function(frm){
 	let is_tds = false
@@ -664,7 +734,7 @@ $.extend(erpnext.journal_entry, {
 
 	// added by SHIV on 2022/09/17
 	set_tax_in_company_currency: function(frm, cdt, cdn) {
-		console.log("set_tax_in_company_currency");
+		// console.log("set_tax_in_company_currency");
 		var row = locals[cdt][cdn], tax_amount = 0.0;
 
 		frappe.model.set_value(cdt, cdn, "taxable_amount",

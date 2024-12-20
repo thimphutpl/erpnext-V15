@@ -746,19 +746,19 @@ class Asset(AccountsController):
 				"branch": self.branch
 				})
 
-			#credit account update
+			#debit account update
 			je.append("accounts", {
-				"account": self.credit_account,
-				"credit_in_account_currency": self.gross_purchase_amount,
+				"account": self.asset_account,
+				"debit_in_account_currency": self.gross_purchase_amount,
 				"reference_type": "Asset",
 				"reference_name": self.name,
 				"cost_center": self.cost_center
 				})
 
-			#debit account update
+			#credit account update
 			je.append("accounts", {
-				"account": self.asset_account,
-				"debit_in_account_currency": self.gross_purchase_amount,
+				"account": self.credit_account,
+				"credit_in_account_currency": self.gross_purchase_amount,
 				"reference_type": "Asset",
 				"reference_name": self.name,
 				"cost_center": self.cost_center
@@ -777,19 +777,18 @@ class Asset(AccountsController):
 				"branch": self.branch
 				})
 
-			#credit account update
-			je.append("accounts", {
-				"account": self.accumulated_depreciation_account,
-				"credit_in_account_currency": self.opening_accumulated_depreciation,
-				"reference_type": "Asset",
-				"reference_name": self.name,
-				"cost_center": self.cost_center
-				})
-
 			#debit account update
 			je.append("accounts", {
 				"account": self.credit_account,
 				"debit_in_account_currency": self.opening_accumulated_depreciation,
+				"reference_type": "Asset",
+				"reference_name": self.name,
+				"cost_center": self.cost_center
+				})
+			#credit account update
+			je.append("accounts", {
+				"account": self.accumulated_depreciation_account,
+				"credit_in_account_currency": self.opening_accumulated_depreciation,
 				"reference_type": "Asset",
 				"reference_name": self.name,
 				"cost_center": self.cost_center

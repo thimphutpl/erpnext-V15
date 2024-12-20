@@ -10,6 +10,7 @@ from frappe.utils import cstr, flt, fmt_money, formatdate, nowdate, get_datetime
 from frappe.model.mapper import get_mapped_doc
 from erpnext.controllers.accounts_controller import AccountsController 
 from erpnext.custom_utils import check_uncancelled_linked_doc, check_future_date
+import dateutil.parser as dparser
 
 class JobCards(AccountsController):
 	# begin: auto-generated types
@@ -48,7 +49,7 @@ class JobCards(AccountsController):
 		locations: DF.Data | None
 		name_of_the_job: DF.Data | None
 		outstanding_amount: DF.Currency
-		owned_by: DF.Data
+		owned_by: DF.Data | None
 		paid: DF.Check
 		payment_jv: DF.Data | None
 		posting_date: DF.Date | None
@@ -60,10 +61,27 @@ class JobCards(AccountsController):
 		total_amount: DF.Currency
 	# end: auto-generated types
 	# pass
+	def save_without_validation(self):
+		# Directly save the document without running validations for Fabrication Works and Bailey Bridge Works
+		if self.repair_type in ["Fabrication Works", "Bailey Bridge Works"]:
+			self.db_insert()  # This will save the document without calling validate or submit methods
+			frappe.msgprint(_("Job Card saved successfully for {0}".format(self.repair_type)))
+			return True
+		else:
+			# If not Fabrication Works or Bailey Bridge Works, call the regular save
+			self.save()
+			return False
+		
 	def validate(self):
 		check_future_date(self.posting_date)
 		self.validate_owned_by()
 		self.validate_job_datetime()
+
+
+		# Skip updating breakdown report for specific repair types
+		if self.repair_type not in ["Fabrication Works", "Bailey Bridge Works"]:
+			self.update_breakdownreport()
+
 		if self.finish_date:
 			check_future_date(self.finish_date)
 			if get_datetime(self.finish_date + " " + self.job_out_time) < get_datetime(self.posting_date + " " + self.job_in_time):
@@ -91,18 +109,32 @@ class JobCards(AccountsController):
 			self.customer_branch = None
 
 	def validate_job_datetime(self):
+		# Skip validation for specific job types
+		if self.repair_type in ["Fabrication Works", "Bailey Bridge Works"]:
+			return
+		
 		if self.break_down_report_date > self.posting_date:
 			frappe.throw("The Job Card Date Cannot Be Before Break Down Report Date")
 
-		br_time = frappe.db.get_value("Break Down Report", self.break_down_report, "time")
+		br_time = frappe.db.get_value("Break Down Report", self.break_down_report, "time") 
+		frappe.log_error(f"Break Down Report Time: {br_time}", "Debug: Validate Job DateTime")
+
 		br_date_time = str(self.break_down_report_date + " " + str(br_time))
 		jc_date_time =  str(self.posting_date + " " + self.job_in_time)
+
+
 		if get_datetime(br_date_time) > get_datetime(jc_date_time):
-			frappe.throw("The Job Card Time Cannot Be Before Break Down Report Time")
+			frappe.throw("The Job Card Time Cannot Be Before Break Down Report Time")	
 	
 	def on_submit(self):
 		self.validate_owned_by()
 		self.check_items()
+		# Skip breakdown report validations for specific repair types
+		if self.repair_type not in ["Fabrication Works", "Bailey Bridge Works"]:
+			if not self.break_down_report:
+				frappe.throw("Break Down Report is mandatory for this Job Card type.")
+			self.update_breakdownreport()
+
 		if not self.repair_type:
 			frappe.throw("Specify whether the maintenance is Major or Minor")
 		if not self.finish_date:
@@ -120,6 +152,12 @@ class JobCards(AccountsController):
 		if self.owned_by == "Others":
 			self.make_gl_entries()
 		self.update_breakdownreport()
+
+		# Skip updating breakdown report for specific repair types
+		if self.repair_type in ["Fabrication Works", "Bailey Bridge Works"]:
+			self.save()  # Directly save the Job Card without needing to create a breakdown report
+		else:
+			self.update_breakdownreport()
 
 	def before_cancel(self):
 		check_uncancelled_linked_doc(self.doctype, self.name)

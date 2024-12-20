@@ -1366,6 +1366,7 @@ class JournalEntry(AccountsController):
 				doc.paid_amount = flt(doc.paid_amount) + (value["debit"] * factor)
 
 			doc.save(ignore_permissions=True)
+	
 			
 @frappe.whitelist()
 def get_default_bank_cash_account(company, account_type=None, mode_of_payment=None, account=None):

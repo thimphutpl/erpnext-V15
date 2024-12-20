@@ -102,8 +102,9 @@ def make_job_cards(source_name, target_doc=None):
 		"Break Down Report": {
 			"doctype": "Job Cards",
 			"field_map": {
-				"name": "Job_Cards",
-				"date": "break_down_report_date"
+				# "name": "Job_Cards",
+				"date": "break_down_report_date",
+				"name": "break_down_report"
 			},
 			"postprocess": update_date,
 			"validation": {

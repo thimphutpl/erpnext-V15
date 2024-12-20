@@ -11,7 +11,7 @@
  "idx": 0,
  "indicator_color": "",
  "is_hidden": 0,
- "label": "Assets Management",
+ "label": "Assets",
  "links": [
   {
    "hidden": 0,
@@ -153,10 +153,10 @@
    "type": "Link"
   }
  ],
- "modified": "2024-12-06 01:36:49.290053",
- "modified_by": "pralad.rai@thimphutechpark.bt",
+ "modified": "2024-12-18 14:02:02.163421",
+ "modified_by": "kinzang.namgyal@cdcl.bt",
  "module": "Assets",
- "name": "Assets Management",
+ "name": "Assets",
  "number_cards": [],
  "owner": "Administrator",
  "parent_page": "",
@@ -173,5 +173,5 @@
  ],
  "sequence_id": 21.0,
  "shortcuts": [],
- "title": "Assets Management"
+ "title": "Assets"
 }

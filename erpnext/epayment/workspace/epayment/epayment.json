@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"m8ISqmMqsQ\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">ePayment</span>\",\"col\":12}},{\"id\":\"nF9v-lHBK3\",\"type\":\"card\",\"data\":{\"card_name\":\"Utility Bill Payment Settings\",\"col\":4}},{\"id\":\"KDqgvX11Jc\",\"type\":\"card\",\"data\":{\"card_name\":\"Transactions\",\"col\":4}},{\"id\":\"JF9_Jnc7gq\",\"type\":\"card\",\"data\":{\"card_name\":\"Bank Payment Settings\",\"col\":4}},{\"id\":\"U9DwKz3FZV\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"ePayment Dashboard\",\"col\":3}}]",
+ "content": "[{\"id\":\"U9DwKz3FZV\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"ePayment Dashboard\",\"col\":3}},{\"id\":\"m8ISqmMqsQ\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">ePayment</span>\",\"col\":12}},{\"id\":\"nF9v-lHBK3\",\"type\":\"card\",\"data\":{\"card_name\":\"Utility Bill Payment Settings\",\"col\":4}},{\"id\":\"KDqgvX11Jc\",\"type\":\"card\",\"data\":{\"card_name\":\"Transactions\",\"col\":4}},{\"id\":\"JF9_Jnc7gq\",\"type\":\"card\",\"data\":{\"card_name\":\"Bank Payment Settings\",\"col\":4}}]",
  "creation": "2024-11-23 12:03:55.730002",
  "custom_blocks": [],
  "docstatus": 0,
@@ -111,7 +111,7 @@
    "type": "Link"
   }
  ],
- "modified": "2024-12-04 12:32:30.571108",
+ "modified": "2024-12-18 13:59:23.711356",
  "modified_by": "kinzang.namgyal@cdcl.bt",
  "module": "ePayment",
  "name": "ePayment",

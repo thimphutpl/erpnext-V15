@@ -259,7 +259,7 @@ class Item(Document):
 			self.old_item_group = frappe.db.get_value(self.doctype, self.name, "item_group")
 
 	def before_save(self):
-		if self.is_stock_item or self.is_fixed_asset or self.is_scrap_item:
+		if self.is_stock_item or self.is_fixed_asset or self.is_scrap_item or self.is_services_item:
 			return
 		if not self.is_stock_item or not self.is_fixed_asset:
 			frappe.throw("Before save Check if the Item is to Maintain Stock or Is Fixed Asset")

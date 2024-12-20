@@ -108,7 +108,9 @@
   "subscription_section",
   "auto_repeat",
   "amended_from",
-  "title"
+  "title",
+  "money_receipt_prefix",
+  "money_receipt_no"
  ],
  "fields": [
   {
@@ -852,6 +854,16 @@
    "fieldtype": "Currency",
    "label": "Taxable Total Amount",
    "read_only": 1
+  },
+  {
+   "fieldname": "money_receipt_prefix",
+   "fieldtype": "Data",
+   "label": "Money Receipt Prefix"
+  },
+  {
+   "fieldname": "money_receipt_no",
+   "fieldtype": "Data",
+   "label": "Money Receipt No"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -865,7 +877,7 @@
    "table_fieldname": "payment_entries"
   }
  ],
- "modified": "2024-12-04 16:25:19.551217",
+ "modified": "2024-12-19 12:29:19.733939",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Payment Entry",

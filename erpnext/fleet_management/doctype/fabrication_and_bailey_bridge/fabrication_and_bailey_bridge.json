@@ -1,0 +1,256 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-12-20 15:18:24.290199",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_ptvg",
+  "amended_from",
+  "owned_by",
+  "column_break_ucwx",
+  "dispatch_number",
+  "column_break_hvyb",
+  "ref_number",
+  "column_break_zngb",
+  "receive_payment",
+  "customer_details_section",
+  "cost_center",
+  "column_break_rnel",
+  "branch",
+  "column_break_wcwn",
+  "customer",
+  "intra_cdcl_customer_details_section",
+  "customer_cost_center",
+  "column_break_fzmv",
+  "customer_branch",
+  "section_break_pwdh",
+  "posting_date",
+  "job_in_time",
+  "column_break_pbfh",
+  "finish_date",
+  "job_out_time",
+  "column_break_ziad",
+  "repair_type",
+  "equipment_details_section",
+  "equipmment",
+  "column_break_jxpe",
+  "equipment_model",
+  "column_break_ypgf",
+  "equipment_number"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_ptvg",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Fabrication And Bailey Bridge",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "owned_by",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Owned By",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_ucwx",
+   "fieldtype": "Column Break"
+  },
+  {
+   "allow_on_submit": 1,
+   "depends_on": "eval:doc.owned_by=='Others'",
+   "fieldname": "dispatch_number",
+   "fieldtype": "Data",
+   "label": "Dispatch Number"
+  },
+  {
+   "fieldname": "column_break_hvyb",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.owned_by=='Others'",
+   "fieldname": "ref_number",
+   "fieldtype": "Data",
+   "label": "Reference Number"
+  },
+  {
+   "fieldname": "column_break_zngb",
+   "fieldtype": "Column Break"
+  },
+  {
+   "allow_in_quick_entry": 1,
+   "allow_on_submit": 1,
+   "depends_on": "eval:doc.docstatus == 1 && doc.paid == 0 && doc.owned_by == \"Others\"",
+   "description": "Process Payment from Customer",
+   "fieldname": "receive_payment",
+   "fieldtype": "Button",
+   "hidden": 1,
+   "label": "Receive Payment"
+  },
+  {
+   "fieldname": "customer_details_section",
+   "fieldtype": "Section Break",
+   "label": "Customer Details"
+  },
+  {
+   "fieldname": "cost_center",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Cost Center",
+   "options": "Cost Center",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_rnel",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Branch",
+   "options": "Branch",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_wcwn",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Customer",
+   "options": "Customer"
+  },
+  {
+   "fieldname": "intra_cdcl_customer_details_section",
+   "fieldtype": "Section Break",
+   "label": "Intra CDCL Customer Details"
+  },
+  {
+   "fieldname": "customer_cost_center",
+   "fieldtype": "Read Only",
+   "label": "Customer Cost Center",
+   "options": "Cost Center",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_fzmv",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "customer_branch",
+   "fieldtype": "Read Only",
+   "label": "Customer Branch",
+   "options": "Branch",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_pwdh",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "label": "Job In Date"
+  },
+  {
+   "fieldname": "job_in_time",
+   "fieldtype": "Time",
+   "label": "Job In Time"
+  },
+  {
+   "fieldname": "column_break_pbfh",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "finish_date",
+   "fieldtype": "Date",
+   "label": "Job Out Date"
+  },
+  {
+   "fieldname": "job_out_time",
+   "fieldtype": "Time",
+   "label": "Job Out Time"
+  },
+  {
+   "fieldname": "column_break_ziad",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "repair_type",
+   "fieldtype": "Select",
+   "label": "Job Type",
+   "options": "\nFabrication Works\nBailey Bridge Works"
+  },
+  {
+   "fieldname": "equipment_details_section",
+   "fieldtype": "Section Break",
+   "label": "Equipment Details"
+  },
+  {
+   "fieldname": "equipmment",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Equipment",
+   "options": "Equipment"
+  },
+  {
+   "fieldname": "column_break_jxpe",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "equipment_model",
+   "fieldtype": "Link",
+   "label": "Equipment Model",
+   "options": "Equipment Model",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_ypgf",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "equipment_number",
+   "fieldtype": "Data",
+   "label": "Equipment Number",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2024-12-20 16:00:18.684404",
+ "modified_by": "Administrator",
+ "module": "Fleet Management",
+ "name": "Fabrication And Bailey Bridge",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

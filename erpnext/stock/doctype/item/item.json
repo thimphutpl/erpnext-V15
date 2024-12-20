@@ -27,6 +27,7 @@
   "is_pol_item",
   "is_hsd_item",
   "is_scrap_item",
+  "is_services_item",
   "opening_stock",
   "valuation_rate",
   "standard_rate",
@@ -927,6 +928,12 @@
    "fieldname": "is_scrap_item",
    "fieldtype": "Check",
    "label": "Is Scrap Item"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_services_item",
+   "fieldtype": "Check",
+   "label": "Is Services Item"
   }
  ],
  "icon": "fa fa-tag",
@@ -935,7 +942,7 @@
  "index_web_pages_for_search": 1,
  "links": [],
  "make_attachments_public": 1,
- "modified": "2024-12-06 15:28:57.722575",
+ "modified": "2024-12-18 15:40:15.350954",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Item",

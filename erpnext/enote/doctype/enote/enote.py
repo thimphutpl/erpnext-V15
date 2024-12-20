@@ -19,14 +19,22 @@ class eNote(Document):
 		from erpnext.enote.doctype.note_remark.note_remark import NoteRemark
 		from frappe.types import DF
 
+		account_number: DF.Data | None
 		amended_from: DF.Link | None
+		attention_person_name: DF.Data | None
+		bank: DF.Link | None
+		bank_account_type: DF.Data | None
+		bank_branch: DF.Data | None
+		contact_number: DF.Data | None
 		content: DF.TextEditor | None
 		copied: DF.TableMultiSelect[NoteCopy]
+		country: DF.Link | None
 		default_expense_account: DF.Link | None
 		enote_category: DF.Link
 		enote_format: DF.Data | None
 		enote_series: DF.Data
 		forward_to: DF.Link | None
+		location: DF.Data | None
 		material_group: DF.Link | None
 		material_name: DF.Link | None
 		material_sub_group: DF.Link | None
@@ -35,6 +43,11 @@ class eNote(Document):
 		remark: DF.Table[NoteRemark]
 		reviewer_required: DF.Check
 		reviewers: DF.Table[eNoteReviewer]
+		supplier_email: DF.Data | None
+		supplier_group: DF.Link | None
+		supplier_name: DF.Data | None
+		supplier_tpn: DF.Data | None
+		supplier_type: DF.Data | None
 		title: DF.Data
 		type: DF.Literal["", "Process", "Payment"]
 		uom: DF.Link | None
@@ -48,6 +61,7 @@ class eNote(Document):
 		# notify_workflow_states(self)
   
 	def validate(self):	
+
 		action = frappe.request.form.get('action')
 		if action and action not in ("Save","Apply") and self.reviewer_required:
 			status = 1
@@ -57,9 +71,11 @@ class eNote(Document):
 					break
 			if status == 0:
 				frappe.throw(str('Review Not Completed'))
+
+		if self.enote_category!="Supplier Creation" and self.enote_category!="Material Request":
 			
-		self.save_forward_to()
-		self.workflow_action()
+			self.save_forward_to()
+			self.workflow_action()
 		# if we allow on action approve, it going double email to doc owner. 
 		# one form here and another from on_submit().
 		# if we allow from here, workflow state is still stays in pending which is wrong.  
@@ -78,6 +94,7 @@ class eNote(Document):
 					self.forward_to = frappe.db.get_value("Employee", doc.reports_to, "user_id")
 		
 		self.forward_to = frappe.session.user if not self.forward_to else self.forward_to
+
 	def before_update_after_submit(self):
 		self.notify_copy_to()
 

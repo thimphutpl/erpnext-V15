@@ -97,10 +97,12 @@
   "tc_name",
   "terms",
   "so_header_footer",
-  "column_break_kqdt",
   "column_break_yata",
   "header",
+  "column_break_kqdt",
   "footer",
+  "section_break_swpu",
+  "attachments",
   "pricing_rule_details",
   "pricing_rules",
   "contact_info",
@@ -1681,13 +1683,23 @@
   {
    "fieldname": "column_break_yata",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_swpu",
+   "fieldtype": "Section Break",
+   "label": "Attachments"
+  },
+  {
+   "fieldname": "attachments",
+   "fieldtype": "Attach Image",
+   "label": "Attachments"
   }
  ],
  "icon": "fa fa-file-text",
  "idx": 105,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-12-09 11:22:54.373682",
+ "modified": "2024-12-19 15:49:15.208073",
  "modified_by": "Administrator",
  "module": "Selling",
  "name": "Sales Order",

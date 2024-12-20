@@ -63,7 +63,7 @@ def validate_filters(filters):
 def get_depreciation_details(filters):
     query= """
         SELECT
-            ds.parent AS asset,
+            ads.asset AS asset,
             SUM(CASE
                 WHEN ds.schedule_date < '{from_date}' THEN ds.depreciation_amount
                 ELSE 0
@@ -80,19 +80,19 @@ def get_depreciation_details(filters):
                 WHEN ds.schedule_date BETWEEN '{from_date}' AND '{to_date}' THEN ds.income_depreciation_amount
                 ELSE 0
             END) AS depreciation_income_tax
-        FROM `tabDepreciation Schedule` as ds
-        WHERE ds.schedule_date <= '{to_date}'
+        FROM `tabDepreciation Schedule` as ds, `tabAsset Depreciation Schedule` ads
+        WHERE ads.name=ds.parent AND ds.schedule_date <= '{to_date}'
         AND (IFNULL(ds.journal_entry,'') != '' )
         GROUP BY ds.parent
     """.format(from_date=filters.from_date, to_date=filters.to_date, fiscal_year = filters.fiscal_year)
 
     query_two= """
         SELECT
-            ds.parent AS asset,
+            ads.asset AS asset,
             SUM(ds.depreciation_amount) AS dep_total_next_year
-        FROM `tabDepreciation Schedule` AS ds
-        WHERE YEAR(ds.schedule_date) = '{fiscal_year}' 
-        AND (SELECT status FROM `tabAsset` WHERE name = ds.parent) IN ('Submitted','Partially Depreciated')
+        FROM `tabDepreciation Schedule` AS ds, `tabAsset Depreciation Schedule` ads
+        WHERE ads.name=ds.parent AND YEAR(ds.schedule_date) = '{fiscal_year}' 
+        AND (SELECT status FROM `tabAsset` WHERE name = ads.asset) IN ('Submitted','Partially Depreciated')
         GROUP BY ds.parent
 
     """.format(fiscal_year = str(int(filters.fiscal_year)+1))
@@ -264,48 +264,48 @@ def get_data(filters):
             data.append(row)
     return data
 
-def get_depreciation_details(filters):
-    query= """
-        SELECT
-            ds.parent AS asset,
-            SUM(CASE
-                WHEN ds.schedule_date < '{from_date}' THEN ds.depreciation_amount
-                ELSE 0
-            END) AS dep_opening,
-            SUM(CASE
-                WHEN ds.schedule_date BETWEEN '{from_date}' AND '{to_date}' THEN ds.depreciation_amount
-                ELSE 0
-            END) AS dep_addition,
-            SUM(CASE
-                WHEN ds.schedule_date < '{from_date}' THEN ds.income_depreciation_amount
-                ELSE 0
-            END) AS opening_income,
-            SUM(CASE
-                WHEN ds.schedule_date BETWEEN '{from_date}' AND '{to_date}' THEN ds.income_depreciation_amount
-                ELSE 0
-            END) AS depreciation_income_tax
-        FROM `tabDepreciation Schedule` as ds
-        WHERE ds.schedule_date <= '{to_date}'
-        AND (IFNULL(ds.journal_entry,'') != '' )
-        GROUP BY ds.parent
-    """.format(from_date=filters.from_date, to_date=filters.to_date, fiscal_year = filters.fiscal_year)
+# def get_depreciation_details(filters):
+#     query= """
+#         SELECT
+#             ds.parent AS asset,
+#             SUM(CASE
+#                 WHEN ds.schedule_date < '{from_date}' THEN ds.depreciation_amount
+#                 ELSE 0
+#             END) AS dep_opening,
+#             SUM(CASE
+#                 WHEN ds.schedule_date BETWEEN '{from_date}' AND '{to_date}' THEN ds.depreciation_amount
+#                 ELSE 0
+#             END) AS dep_addition,
+#             SUM(CASE
+#                 WHEN ds.schedule_date < '{from_date}' THEN ds.income_depreciation_amount
+#                 ELSE 0
+#             END) AS opening_income,
+#             SUM(CASE
+#                 WHEN ds.schedule_date BETWEEN '{from_date}' AND '{to_date}' THEN ds.income_depreciation_amount
+#                 ELSE 0
+#             END) AS depreciation_income_tax
+#         FROM `tabDepreciation Schedule` as ds
+#         WHERE ds.schedule_date <= '{to_date}'
+#         AND (IFNULL(ds.journal_entry,'') != '' )
+#         GROUP BY ds.parent
+#     """.format(from_date=filters.from_date, to_date=filters.to_date, fiscal_year = filters.fiscal_year)
 
-    query_two= """
-        SELECT
-            ds.parent AS asset,
-            SUM(ds.depreciation_amount) AS dep_total_next_year
-        FROM `tabDepreciation Schedule` AS ds
-        WHERE YEAR(ds.schedule_date) = '{fiscal_year}' AND (SELECT status FROM `tabAsset` WHERE name = ds.parent) IN ('Submitted','Partially Depreciated')
-        GROUP BY ds.parent
-    """.format(fiscal_year = str(int(filters.fiscal_year)+1))
+#     query_two= """
+#         SELECT
+#             ds.parent AS asset,
+#             SUM(ds.depreciation_amount) AS dep_total_next_year
+#         FROM `tabDepreciation Schedule` AS ds
+#         WHERE YEAR(ds.schedule_date) = '{fiscal_year}' AND (SELECT status FROM `tabAsset` WHERE name = ds.parent) IN ('Submitted','Partially Depreciated')
+#         GROUP BY ds.parent
+#     """.format(fiscal_year = str(int(filters.fiscal_year)+1))
 
-    depreciation_details = frappe._dict()
-    depreciation_details_two = frappe._dict()
-    for row in frappe.db.sql(query, as_dict=True):
-        depreciation_details.setdefault(row.asset, row)
-    for row in frappe.db.sql(query_two, as_dict=True):
-        depreciation_details_two.setdefault(row.asset, row)
-    return depreciation_details, depreciation_details_two
+#     depreciation_details = frappe._dict()
+#     depreciation_details_two = frappe._dict()
+#     for row in frappe.db.sql(query, as_dict=True):
+#         depreciation_details.setdefault(row.asset, row)
+#     for row in frappe.db.sql(query_two, as_dict=True):
+#         depreciation_details_two.setdefault(row.asset, row)
+#     return depreciation_details, depreciation_details_two
 
 def get_columns():
     return [
