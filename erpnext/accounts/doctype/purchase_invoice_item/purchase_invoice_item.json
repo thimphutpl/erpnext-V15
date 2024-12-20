@@ -966,21 +966,19 @@
    "fieldname": "business_activity",
    "fieldtype": "Link",
    "label": "Business Activity",
-   "options": "Business Activity",
-   "reqd": 1
+   "options": "Business Activity"
   },
   {
    "fieldname": "sub_ledger",
    "fieldtype": "Link",
    "label": "Sub Ledger",
-   "options": "Account",
-   "reqd": 1
+   "options": "Account"
   }
  ],
  "idx": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-08-06 12:25:42.693458",
+ "modified": "2024-10-29 12:46:32.675595",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Purchase Invoice Item",
