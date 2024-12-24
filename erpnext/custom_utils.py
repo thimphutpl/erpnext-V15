@@ -175,8 +175,8 @@ def prepare_gl(d, args):
 	# frappe.throw(frappe.as_json(d))
 	gl_dict = frappe._dict({
 		'company': d.company,
-		'posting_date': d.posting_date,
-		'fiscal_year': get_fiscal_year(d.posting_date, company=d.company)[0],
+		'posting_date': d.transaction_date,
+		'fiscal_year': get_fiscal_year(d.transaction_date, company=d.company)[0],
 		'voucher_type': d.doctype,
 		'voucher_no': d.name,
 		'remarks': '',
