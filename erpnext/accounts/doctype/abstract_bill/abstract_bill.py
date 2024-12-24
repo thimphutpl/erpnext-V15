@@ -218,7 +218,7 @@ class AbstractBill(Document):
 			elif self.mode_of_payment == "Cash Entry":
 				account = frappe.db.get_value("Company", self.company, "default_cash_account")
 			if not account:
-				frappe.throw("Set Default {} Account in Company {}".format("Bank" if self.mode_of_payment=="Bank Entry" else "Cash", frappe.get_desk_link(self.company)))
+				frappe.throw("Set Default {} Account in Company {}".format("Bank" if self.mode_of_payment=="Bank Entry" else "Cash", frappe.get_desk_link('company',self.company)))
 
 		for item in self.items:
 			accounts.append({
