@@ -21,6 +21,6 @@ class MechanicalPaymentItem(Document):
 		parentfield: DF.Data
 		parenttype: DF.Data
 		reference_name: DF.DynamicLink
-		reference_type: DF.Literal["", "Job Card", "Hire Charge Invoice"]
+		reference_type: DF.Literal["", "Job Card", "Hire Charge Invoice", "Fabrication And Bailey Bridge"]
 	# end: auto-generated types
 	pass

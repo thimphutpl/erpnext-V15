@@ -23,6 +23,7 @@ class EvaluateTargetItem(Document):
 		description: DF.SmallText | None
 		employee_remarks: DF.Text | None
 		from_date: DF.Date | None
+		main_activties: DF.Data | None
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data

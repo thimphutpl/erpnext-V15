@@ -69,7 +69,7 @@
    "no_copy": 1,
    "oldfieldname": "naming_series",
    "oldfieldtype": "Select",
-   "options": "MAT-MR-.YYYY.-",
+   "options": "\nConsumables\nFixed Asset\nSales Product\nSpareparts\nServices Miscellaneous\nServices Works\nLabour Contract\nREORDER\nMAT-MR-.YYYY.-",
    "print_hide": 1,
    "reqd": 1,
    "set_only_once": 1
@@ -424,7 +424,7 @@
  "idx": 70,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-12-04 11:58:11.567656",
+ "modified": "2024-12-24 13:09:01.554403",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Material Request",

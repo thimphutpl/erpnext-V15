@@ -47,7 +47,9 @@ class VehicleLogbook(Document):
 		initial_km: DF.Int
 		invoice_created: DF.Check
 		kph: DF.Float
+		kphs: DF.Float
 		lph: DF.Float
+		lphs: DF.Float
 		opening_balance: DF.Float
 		other_consumption: DF.Float
 		payment_completed: DF.Check
@@ -68,7 +70,8 @@ class VehicleLogbook(Document):
 		work_rate: DF.Currency
 		ys_hours: DF.Float
 		ys_km: DF.Float
-	# end: auto-generated types
+	# end: auto-generated types	
+
 	def validate(self):
 		check_future_date(self.to_date)
 		self.validate_date()
@@ -91,12 +94,13 @@ class VehicleLogbook(Document):
 			frappe.throw("From Date/Time cannot be greater than To Date/Time")
 
 	def before_save(self):
+		self.calculate_totals()
 		if self.vehicle_logbook == "Pool Vehicle":
 			if not self.customers:
-				frappe.throw(_("Please select a value for 'Customers' when 'Vehicle Logbook' is set to 'Pool Vehicle'."))
+				frappe.throw(("Please select a value for 'Customers' when 'Vehicle Logbook' is set to 'Pool Vehicle'."))
 			
 			if not self.customer_types:
-				frappe.throw(_("Please select a value for 'Customer Types' when 'Vehicle Logbook' is set to 'Pool Vehicle'."))
+				frappe.throw(("Please select a value for 'Customer Types' when 'Vehicle Logbook' is set to 'Pool Vehicle'."))
 			
 			self.customer = self.customers
 			self.customer_type = self.customer_types
@@ -251,9 +255,13 @@ class VehicleLogbook(Document):
 		if self.include_km:
 			if flt(self.ys_km) > 0:
 				self.consumption_km = flt(self.distance_km) / flt(self.ys_km)
+			elif flt(self.kph) > 0:
+				self.consumption_km = flt(self.distance_km)	/ flt(self.kph)	
 
 		if self.include_hour:
 			self.consumption_hours = flt(self.ys_hours) * flt(self.total_work_time)
+		elif flt(self.lph) > 0:
+			self.consumption_hours = flt(self.lph) * flt(self.total_work_time)
 
 		# Auto-calculate hsd_amount as ys_km * distance_km
 		if self.ys_km and self.distance_km:
@@ -261,6 +269,7 @@ class VehicleLogbook(Document):
 		
 		self.consumption = flt(self.other_consumption) + flt(self.consumption_hours) + flt(self.consumption_km)
 		self.closing_balance = flt(self.hsd_received) + flt(self.opening_balance) - flt(self.consumption)
+	
 
 	def update_hire(self):
 		if self.ehf_name:

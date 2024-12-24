@@ -16,7 +16,8 @@ class PerformanceTargetEvaluation(Document):
 		from frappe.types import DF
 
 		description: DF.SmallText | None
-		from_date: DF.Date | None
+		from_date: DF.Date
+		main_activities: DF.Data
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
@@ -25,7 +26,7 @@ class PerformanceTargetEvaluation(Document):
 		quality: DF.Percent
 		quantity: DF.Float
 		reverse_formula: DF.Check
-		to_date: DF.Date | None
+		to_date: DF.Date
 		weightage: DF.Float
 	# end: auto-generated types
 	pass

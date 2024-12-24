@@ -40,6 +40,31 @@ frappe.ui.form.on('Vehicle Logbook', {
 		}
 	},
 
+    vehicle_logbook: function (frm) {
+		if (frm.doc.vehicle_logbook === 'Equipment Hiring Form') {
+			frm.set_df_property('equipment', 'hidden', 0);
+			frm.set_query('equipment', function () {
+				return {}; // No filters for Equipment Hiring Form
+			});
+			frm.trigger('equipment'); // Trigger equipment logic
+		} else if (frm.doc.vehicle_logbook === 'Pool Vehicle') {
+			frm.set_df_property('equipment', 'hidden', 0);
+			frm.set_query('equipment', function () {
+				return {
+					filters: {
+						equipment_category: 'Pool Vehicle'
+					}
+				};
+			});
+			frm.trigger('equipment'); // Trigger equipment logic
+		} else {
+			frm.set_df_property('equipment', 'hidden', 1);
+			frm.set_query('equipment', function () {
+				return {};
+			});
+		}
+	},
+	
 	"equipment": function (frm) {
 		if (frm.doc.ehf_name && frm.doc.equipment) {
 			frappe.call({
@@ -75,32 +100,6 @@ frappe.ui.form.on('Vehicle Logbook', {
 			});
 		}
 	},
-
-
-    vehicle_logbook: function (frm) {
-		if (frm.doc.vehicle_logbook === 'Equipment Hiring Form') {
-			frm.set_df_property('equipment', 'hidden', 0);
-			frm.set_query('equipment', function () {
-				return {}; // No filters for Equipment Hiring Form
-			});
-			frm.trigger('equipment'); // Trigger equipment logic
-		} else if (frm.doc.vehicle_logbook === 'Pool Vehicle') {
-			frm.set_df_property('equipment', 'hidden', 0);
-			frm.set_query('equipment', function () {
-				return {
-					filters: {
-						equipment_category: 'Pool Vehicle'
-					}
-				};
-			});
-			frm.trigger('equipment'); // Trigger equipment logic
-		} else {
-			frm.set_df_property('equipment', 'hidden', 1);
-			frm.set_query('equipment', function () {
-				return {};
-			});
-		}
-	},	
 
 
 	"final_km": function(frm) {

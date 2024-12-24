@@ -1,6 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "FB.YY.MM.####",
  "creation": "2024-12-20 15:18:24.290199",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -15,9 +16,9 @@
   "column_break_zngb",
   "receive_payment",
   "customer_details_section",
-  "cost_center",
-  "column_break_rnel",
   "branch",
+  "column_break_rnel",
+  "cost_center",
   "column_break_wcwn",
   "customer",
   "intra_cdcl_customer_details_section",
@@ -37,7 +38,30 @@
   "column_break_jxpe",
   "equipment_model",
   "column_break_ypgf",
-  "equipment_number"
+  "equipment_number",
+  "job_details_section",
+  "name_of_the_job",
+  "column_break_icnv",
+  "location",
+  "job_and_cost_details_section",
+  "get_items",
+  "items",
+  "section_break_xasc",
+  "goods_amount",
+  "column_break_ckof",
+  "services_amount",
+  "column_break_sfpz",
+  "total_amount",
+  "column_break_lovp",
+  "outstanding_amount",
+  "technician_details_section",
+  "table_jqvd",
+  "remarks_section",
+  "remarks",
+  "section_break_djxl",
+  "currency",
+  "column_break_csrn",
+  "company"
  ],
  "fields": [
   {
@@ -56,10 +80,10 @@
   },
   {
    "fieldname": "owned_by",
-   "fieldtype": "Data",
+   "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Owned By",
-   "read_only": 1
+   "options": "\nOwn\nCDCL\nOthers"
   },
   {
    "fieldname": "column_break_ucwx",
@@ -102,6 +126,7 @@
    "label": "Customer Details"
   },
   {
+   "fetch_from": "branch.cost_center",
    "fieldname": "cost_center",
    "fieldtype": "Link",
    "in_list_view": 1,
@@ -225,15 +250,133 @@
    "fieldtype": "Data",
    "label": "Equipment Number",
    "read_only": 1
+  },
+  {
+   "fieldname": "job_details_section",
+   "fieldtype": "Section Break",
+   "label": "Job Details"
+  },
+  {
+   "fieldname": "name_of_the_job",
+   "fieldtype": "Data",
+   "label": "Name of the job"
+  },
+  {
+   "fieldname": "column_break_icnv",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "location",
+   "fieldtype": "Data",
+   "label": "Location"
+  },
+  {
+   "fieldname": "job_and_cost_details_section",
+   "fieldtype": "Section Break",
+   "label": "Job and Cost Details"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "get_items",
+   "fieldtype": "Button",
+   "label": "Get Items from MIN"
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "label": "Job Card Items",
+   "options": "Job Cards Item"
+  },
+  {
+   "fieldname": "section_break_xasc",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "goods_amount",
+   "fieldtype": "Currency",
+   "label": "Goods Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_ckof",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "services_amount",
+   "fieldtype": "Currency",
+   "label": "Services Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_sfpz",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_amount",
+   "fieldtype": "Currency",
+   "label": "Total Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_lovp",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "outstanding_amount",
+   "fieldtype": "Currency",
+   "label": "Outstanding Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "technician_details_section",
+   "fieldtype": "Section Break",
+   "label": "Technician Details"
+  },
+  {
+   "fieldname": "table_jqvd",
+   "fieldtype": "Table",
+   "options": "Mechanic Assigned"
+  },
+  {
+   "fieldname": "remarks_section",
+   "fieldtype": "Section Break",
+   "label": "REMARKS"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Long Text"
+  },
+  {
+   "fieldname": "section_break_djxl",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "currency",
+   "fieldtype": "Link",
+   "label": "Currency",
+   "options": "Currency",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_csrn",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-12-20 16:00:18.684404",
+ "modified": "2024-12-22 20:32:35.140478",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Fabrication And Bailey Bridge",
+ "naming_rule": "Expression (old style)",
  "owner": "Administrator",
  "permissions": [
   {

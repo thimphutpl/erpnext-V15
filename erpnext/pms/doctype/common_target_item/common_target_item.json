@@ -9,6 +9,7 @@
   "target_accomplishment_section",
   "reference",
   "performance_target",
+  "main_activities",
   "description",
   "weightage",
   "reverse_formula",
@@ -32,7 +33,7 @@
    "fieldname": "performance_target",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Performance Target",
+   "label": "Target",
    "read_only": 1,
    "reqd": 1
   },
@@ -120,17 +121,25 @@
   {
    "fieldname": "from_date",
    "fieldtype": "Date",
-   "label": "From Date"
+   "label": "From Date",
+   "reqd": 1
   },
   {
    "fieldname": "to_date",
    "fieldtype": "Date",
-   "label": "To Date"
+   "label": "To Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "main_activities",
+   "fieldtype": "Data",
+   "label": "Main Activities",
+   "reqd": 1
   }
  ],
  "istable": 1,
  "links": [],
- "modified": "2024-12-06 16:52:04.549190",
+ "modified": "2024-12-23 15:27:43.929523",
  "modified_by": "Administrator",
  "module": "PMS",
  "name": "Common Target Item",

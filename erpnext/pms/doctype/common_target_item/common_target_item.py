@@ -16,7 +16,8 @@ class CommonTargetItem(Document):
 		from frappe.types import DF
 
 		description: DF.SmallText | None
-		from_date: DF.Date | None
+		from_date: DF.Date
+		main_activities: DF.Data
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
@@ -26,7 +27,7 @@ class CommonTargetItem(Document):
 		quantity: DF.Float
 		reference: DF.Link
 		reverse_formula: DF.Check
-		to_date: DF.Date | None
+		to_date: DF.Date
 		weightage: DF.Float
 	# end: auto-generated types
 	pass

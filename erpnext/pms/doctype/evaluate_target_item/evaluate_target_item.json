@@ -8,6 +8,7 @@
  "field_order": [
   "target_details_section",
   "performance_target",
+  "main_activties",
   "description",
   "weightage",
   "reverse_formula",
@@ -50,7 +51,7 @@
    "fieldname": "performance_target",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Performance Target",
+   "label": "Target",
    "read_only": 1
   },
   {
@@ -298,11 +299,17 @@
    "fieldname": "to_date",
    "fieldtype": "Date",
    "label": "To Date"
+  },
+  {
+   "fieldname": "main_activties",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Main Activties"
   }
  ],
  "istable": 1,
  "links": [],
- "modified": "2024-12-06 16:52:39.535740",
+ "modified": "2024-12-23 15:33:38.134121",
  "modified_by": "Administrator",
  "module": "PMS",
  "name": "Evaluate Target Item",

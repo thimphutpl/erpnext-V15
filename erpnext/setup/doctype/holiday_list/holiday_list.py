@@ -30,6 +30,7 @@ class HolidayList(Document):
 		from_date: DF.Date
 		holiday_list_name: DF.Data
 		holidays: DF.Table[Holiday]
+		saturday_half: DF.Check
 		subdivision: DF.Autocomplete | None
 		to_date: DF.Date
 		total_holidays: DF.Int

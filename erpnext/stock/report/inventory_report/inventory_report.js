@@ -196,9 +196,9 @@ frappe.query_reports["Inventory Report"] = {
         });
     },
 
-    get_report_4_data: function() {
+    get_consumption_report: function() {
         return frappe.call({
-            method: "erpnext.stock.report.inventory_report.inventory_report.get_report_4_data",
+            method: "erpnext.stock.report.inventory_report.inventory_report.get_consumption_report",
             callback: function(r) {
                 return r.message;
             }

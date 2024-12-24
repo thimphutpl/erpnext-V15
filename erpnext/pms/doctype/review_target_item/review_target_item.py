@@ -19,6 +19,7 @@ class ReviewTargetItem(Document):
 		appraisers_remark: DF.SmallText | None
 		description: DF.SmallText | None
 		from_date: DF.Date | None
+		main_activities: DF.Data | None
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data

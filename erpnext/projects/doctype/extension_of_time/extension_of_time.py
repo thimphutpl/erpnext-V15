@@ -34,8 +34,16 @@ class ExtensionofTime(Document):
 	def on_submit(self):
 		self.update_project()
 
-	def update_project(self):
+	def on_cancel(self):
+		self.update_project(cancel=1)
+
+	def update_project(self, cancel=None):
 		doc = frappe.get_doc("Project", self.projects)
-		doc.db_set('revised_completion_date', self.extended_end_date, update_modified=False)
-		doc.db_set('dlp_start_date', add_days(doc.dlp_start_date, self.eot_in_days), update_modified=False)
-		doc.db_set('dlp_end_date', add_days(doc.dlp_end_date, self.eot_in_days), update_modified=False)
+		if not cancel:
+			doc.db_set('revised_completion_date', self.extended_end_date, update_modified=False)
+			doc.db_set('dlp_start_date', add_days(doc.dlp_start_date, self.eot_in_days), update_modified=False)
+			doc.db_set('dlp_end_date', add_days(doc.dlp_end_date, self.eot_in_days), update_modified=False)
+		else:
+			doc.db_set('revised_completion_date', '0000-00-00', update_modified=False)
+			doc.db_set('dlp_start_date', add_days(doc.dlp_start_date, -self.eot_in_days), update_modified=False)
+			doc.db_set('dlp_end_date', add_days(doc.dlp_end_date, -self.eot_in_days), update_modified=False)

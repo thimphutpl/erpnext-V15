@@ -62,6 +62,7 @@ class MechanicalPayment(AccountsController):
             if total > 0 and total >= d.outstanding_amount:
                 allocated = d.outstanding_amount
                 total_actual += flt(d.outstanding_amount)
+                frappe.throw(str(total_actual))
             elif total > 0 and total < d.outstanding_amount:
                 total_actual += flt(d.outstanding_amount)
                 allocated = total
@@ -77,6 +78,7 @@ class MechanicalPayment(AccountsController):
         self.actual_amount = total_actual
 
         if self.receivable_amount > self.actual_amount:
+            frappe.throw(str(total_actual))
             frappe.throw("Receivable Amount Cannot be greater than Total Outstanding Amount")
 
     def validate_allocated(self):
@@ -91,8 +93,8 @@ class MechanicalPayment(AccountsController):
 
         if total != self.receivable_amount:
             frappe.throw("Total Allocated Amount should be equal to Receivable Amount")
-        if self.receivable_amount > self.actual_amount:
-            frappe.throw("Receivable Amount Cannot be greater than Total Outstanding Amount")
+        # if self.receivable_amount > self.actual_amount:
+        #     frappe.throw("Receivable Amount Cannot be greater than Total Outstanding Amount")
 
     def remove_unallocated_items(self):
         to_remove = []
@@ -121,6 +123,28 @@ class MechanicalPayment(AccountsController):
         if self.tds_amount < 0:
             frappe.throw("TDS Amount cannot be less than Zero")
 
+    # def update_ref_doc(self, cancel=None):
+    #     for a in self.items:
+    #         doc = frappe.get_doc(a.reference_type, a.reference_name)
+    #         if cancel:
+    #             amount = flt(doc.outstanding_amount) + flt(a.allocated_amount)
+    #         else:
+    #             amount = flt(doc.outstanding_amount) - flt(a.allocated_amount)
+
+    #         if a.reference_type == "Job Cards":
+    #             payable_amount = doc.total_amount
+    #         elif a.reference_type == "Fabrication And Bailey Bridge":
+    #             payable_amount = doc.total_amount
+    #         else:
+    #             payable_amount = doc.balance_amount
+
+    #         if amount < 0:
+    #             frappe.throw("Outstanding Amount for {0} cannot be less than 0".format(a.reference_name))
+    #         if amount > payable_amount:
+    #             frappe.throw("Outstanding Amount for {0} cannot be greater than payable amount".format(a.reference_name))
+
+    #         doc.db_set("outstanding_amount", amount)
+
     def update_ref_doc(self, cancel=None):
         for a in self.items:
             doc = frappe.get_doc(a.reference_type, a.reference_name)
@@ -129,17 +153,17 @@ class MechanicalPayment(AccountsController):
             else:
                 amount = flt(doc.outstanding_amount) - flt(a.allocated_amount)
 
-            if a.reference_type == "Job Cards":
-                payable_amount = doc.total_amount
-            else:
-                payable_amount = doc.balance_amount
+            if a.reference_type in ["Job Cards", "Fabrication And Bailey Bridge", "Hire Charge Invoice"]:
+                status = "Payment Received" if not cancel else "Pending Payment"
+                doc.db_set("status", status)
 
-            if amount < 0:
-                frappe.throw("Outstanding Amount for {0} cannot be less than 0".format(a.reference_name))
-            if amount > payable_amount:
-                frappe.throw("Outstanding Amount for {0} cannot be greater than payable amount".format(a.reference_name))
-
+            # Existing validations
+            payable_amount = doc.total_amount if hasattr(doc, 'total_amount') else doc.balance_amount
+            if amount < 0 or amount > payable_amount:
+                frappe.throw(f"Outstanding Amount for {a.reference_name} is invalid.")
+            
             doc.db_set("outstanding_amount", amount)
+    
 
     def get_series(self):
         fiscal_year = getdate(self.posting_date).year
@@ -229,7 +253,7 @@ class MechanicalPayment(AccountsController):
         if not self.branch or not self.customer or not self.payment_for:
             frappe.throw("Branch, Customer and Payment For is Mandatory")
         transactions = frappe.db.sql("select name, outstanding_amount, customer from `tab{0}` where customer = '{1}' and branch = '{2}' and outstanding_amount > 0 and docstatus = 1 order by creation".format(self.payment_for, self.customer, self.branch), as_dict=1)
-        frappe.throw(str(transactions))
+        # frappe.throw(str(transactions))
         self.set('items', [])
 
         total = 0

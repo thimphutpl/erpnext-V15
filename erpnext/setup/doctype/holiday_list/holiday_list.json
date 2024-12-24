@@ -13,6 +13,7 @@
   "to_date",
   "column_break_4",
   "total_holidays",
+  "saturday_half",
   "add_weekly_holidays",
   "weekly_off",
   "get_weekly_off_dates",
@@ -137,12 +138,18 @@
    "fieldtype": "Button",
    "label": "Add to Holidays",
    "options": "get_local_holidays"
+  },
+  {
+   "default": "0",
+   "fieldname": "saturday_half",
+   "fieldtype": "Check",
+   "label": "Saturday Not Holiday?"
   }
  ],
  "icon": "fa fa-calendar",
  "idx": 1,
  "links": [],
- "modified": "2024-08-14 14:52:26.166907",
+ "modified": "2024-12-23 16:02:09.407149",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Holiday List",

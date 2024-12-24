@@ -93,7 +93,7 @@
    "fieldname": "payment_for",
    "fieldtype": "Select",
    "label": "Payment For",
-   "options": "\nJob Cards\nHire Charge Invoice",
+   "options": "\nJob Cards\nHire Charge Invoice\nFabrication And Bailey Bridge",
    "reqd": 1
   },
   {
@@ -272,7 +272,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-25 09:58:28.741299",
+ "modified": "2024-12-23 00:42:42.803340",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Mechanical Payment",

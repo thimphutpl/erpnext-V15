@@ -61,32 +61,18 @@ class JobCards(AccountsController):
 		total_amount: DF.Currency
 	# end: auto-generated types
 	# pass
-	def save_without_validation(self):
-		# Directly save the document without running validations for Fabrication Works and Bailey Bridge Works
-		if self.repair_type in ["Fabrication Works", "Bailey Bridge Works"]:
-			self.db_insert()  # This will save the document without calling validate or submit methods
-			frappe.msgprint(_("Job Card saved successfully for {0}".format(self.repair_type)))
-			return True
-		else:
-			# If not Fabrication Works or Bailey Bridge Works, call the regular save
-			self.save()
-			return False
 		
 	def validate(self):
 		check_future_date(self.posting_date)
 		self.validate_owned_by()
 		self.validate_job_datetime()
 
-
-		# Skip updating breakdown report for specific repair types
-		if self.repair_type not in ["Fabrication Works", "Bailey Bridge Works"]:
-			self.update_breakdownreport()
-
 		if self.finish_date:
 			check_future_date(self.finish_date)
 			if get_datetime(self.finish_date + " " + self.job_out_time) < get_datetime(self.posting_date + " " + self.job_in_time):
 				frappe.throw(_("Job out date cannot be earlier than job in date."),title="Invalid Data")
 		self.update_breakdownreport()
+		
 		#Amount Segregation
 		cc_amount = {}
 		self.services_amount = self.goods_amount = 0;
@@ -109,9 +95,6 @@ class JobCards(AccountsController):
 			self.customer_branch = None
 
 	def validate_job_datetime(self):
-		# Skip validation for specific job types
-		if self.repair_type in ["Fabrication Works", "Bailey Bridge Works"]:
-			return
 		
 		if self.break_down_report_date > self.posting_date:
 			frappe.throw("The Job Card Date Cannot Be Before Break Down Report Date")
@@ -129,11 +112,6 @@ class JobCards(AccountsController):
 	def on_submit(self):
 		self.validate_owned_by()
 		self.check_items()
-		# Skip breakdown report validations for specific repair types
-		if self.repair_type not in ["Fabrication Works", "Bailey Bridge Works"]:
-			if not self.break_down_report:
-				frappe.throw("Break Down Report is mandatory for this Job Card type.")
-			self.update_breakdownreport()
 
 		if not self.repair_type:
 			frappe.throw("Specify whether the maintenance is Major or Minor")
@@ -152,12 +130,6 @@ class JobCards(AccountsController):
 		if self.owned_by == "Others":
 			self.make_gl_entries()
 		self.update_breakdownreport()
-
-		# Skip updating breakdown report for specific repair types
-		if self.repair_type in ["Fabrication Works", "Bailey Bridge Works"]:
-			self.save()  # Directly save the Job Card without needing to create a breakdown report
-		else:
-			self.update_breakdownreport()
 
 	def before_cancel(self):
 		check_uncancelled_linked_doc(self.doctype, self.name)

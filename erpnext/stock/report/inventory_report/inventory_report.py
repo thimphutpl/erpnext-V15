@@ -44,11 +44,11 @@ def execute(filters: StockBalanceFilter | None = None):
         stock_balance_report = StockBalanceReport(filters)
         columns, data = stock_balance_report.run()
     elif selected_report == "Inventory Summary":
-        columns, data = get_inventory_summary_data()
+        columns, data = get_inventory_summary_data(filters)
     elif selected_report == "Non Moving Branch Wise":
         columns, data = get_non_moving_branch_data()
     else:
-        columns, data = get_report_4_data()
+        columns, data = get_consumption_report(filters)
 
     return columns, data
 
@@ -133,14 +133,21 @@ class StockBalanceReport:
             #     if report_data.get('out_qty') else 0
             # )
 
+            # report_data['consumption'] = (
+            #     (
+            #         (report_data.get('opening_qty', 0) + report_data.get('in_qty', 0)) / 
+            #         report_data.get('out_qty', 1)  # Avoid division by zero
+            #     )  # Convert to percentage
+            #     if report_data.get('out_qty') else 0
+            # )
+
             report_data['consumption'] = (
                 (
-                    (report_data.get('opening_qty', 0) + report_data.get('in_qty', 0)) / 
-                    report_data.get('out_qty', 1)  # Avoid division by zero
+                    report_data.get('out_qty', 1)/ 
+                    (report_data.get('opening_qty', 0) + report_data.get('in_qty', 0)) * 100
                 )  # Convert to percentage
                 if report_data.get('out_qty') else 0
             )
-
 
             #Calculate Closing balance
             report_data['closing'] = (
@@ -150,9 +157,9 @@ class StockBalanceReport:
             )
 
             # Determine Movement Status
-            if report_data['consumption'] > 100:
+            if report_data['consumption'] >= 60:
                 report_data['movement'] = "Fast Moving"
-            elif report_data['consumption'] < 100 and report_data['consumption'] > 0:
+            elif report_data['consumption'] < 60 and report_data['consumption'] > 0:
                 report_data['movement'] = "Slow Moving"
             else:
                 report_data['movement'] = "No Moving"    
@@ -547,7 +554,7 @@ class StockBalanceReport:
                 {
                     "label": _("Consumption"),
                     "fieldname": "consumption",
-                    "fieldtype": "Float",
+                    "fieldtype": "Percent",
                     "width": 100,
                 },
                 # {
@@ -726,183 +733,92 @@ def get_variants_attributes() -> list[str]:
 
 
 
+def get_inventory_summary_data(filters: StockBalanceFilter):
+    stock_balance_report = StockBalanceReport(filters)
+    _, data = stock_balance_report.run()
 
-
-
-
-def get_inventory_summary_data(filters: StockBalanceFilter | None = None):
-    # Fetch detailed inventory report data
-    stock_balance_report = StockBalanceReport(filters)  # Pass filters to the class
-    report_1_columns, report_1_data = stock_balance_report.run()
-
-    # Initialize summary and totals
-    summary = {
-        "fast_moving": {"count": 0, "value": 0},
-        "slow_moving": {"count": 0, "value": 0},
-        "no_moving": {"count": 0, "value": 0},
+    summary_data = {
+        "Fast Moving": {"count": 0, "total_value": 0},
+        "Slow Moving": {"count": 0, "total_value": 0},
+        "No Moving": {"count": 0, "total_value": 0},
     }
-    total_items = 0
-    total_value = 0
 
-    # Process data and categorize inventory movement
-    for entry in report_1_data:
-        total_items += 1
-        total_value += entry["out_val"]
+    # Process data to create the summary
+    for row in data:
+        movement = row.get("movement")
+        value = row.get("bal_val", 0)  # Balance value of the item
 
-        if entry["consumption"] >= 100:
-            movement = "Fast Moving"
-        elif 0 <= entry["consumption"] <5:
-            movement = "Slow Moving"
-        else:
-            movement = "No Moving"
+        if movement in summary_data:
+            summary_data[movement]["count"] += 1
+            summary_data[movement]["total_value"] += value
 
-        # Update movement in the entry
-        entry["movement"] = movement
+    # Calculate totals for percentages
+    total_items = sum(category["count"] for category in summary_data.values())
+    total_value = sum(category["total_value"] for category in summary_data.values())
 
-        # if entry["movement"] == "Fast Moving":
-        #     summary["fast_moving"]["count"] += 1
-        #     summary["fast_moving"]["value"] += entry["out_val"]
-        # elif entry["movement"] == "Slow Moving":
-        #     summary["slow_moving"]["count"] += 1
-        #     summary["slow_moving"]["value"] += entry["out_val"]
-        # else:
-        #     summary["no_moving"]["count"] += 1
-        #     summary["no_moving"]["value"] += entry["out_val"]
+    # Calculate percentages for each category
+    for movement, details in summary_data.items():
+        details["value_percent"] = (
+            (details["total_value"] / total_value * 100) if total_value > 0 else 0
+        )
+        details["item_percent"] = (
+            (details["count"] / total_items * 100) if total_items > 0 else 0
+        )
 
-        if movement == "Fast Moving":
-            summary["fast_moving"]["count"] += 1
-            summary["fast_moving"]["value"] += entry["out_val"]
-        elif movement == "Slow Moving":
-            summary["slow_moving"]["count"] += 1
-            summary["slow_moving"]["value"] += entry["out_val"]
-        else:
-            summary["no_moving"]["count"] += 1
-            summary["no_moving"]["value"] += entry["out_vue"]
+    # Calculate Stock Balance as Fast Moving + Slow Moving
+    stock_balance_count = (
+        summary_data["Fast Moving"]["count"] + summary_data["Slow Moving"]["count"]
+    )
+    stock_balance_value = (
+        summary_data["Fast Moving"]["total_value"] + summary_data["Slow Moving"]["total_value"]
+    )
 
-    # Calculate stock balance (Fast + Slow Moving)
-    stock_balance_count = summary["fast_moving"]["count"] + summary["slow_moving"]["count"]
-    stock_balance_value = summary["fast_moving"]["value"] + summary["slow_moving"]["value"]
+    stock_balance_item_percent = (
+        (stock_balance_count / total_items * 100) if total_items > 0 else 0
+    )
+    stock_balance_value_percent = (
+        (stock_balance_value / total_value * 100) if total_value > 0 else 0
+    )
 
-    total_percent_items = 100
-    total_percent_value = 100
+    # Convert summary data to a report-friendly format
+    report_data = []
+    for movement, details in summary_data.items():
+        report_data.append({
+            "Movement": movement,
+            "Number of Items": details["count"],
+            "Total Value": details["total_value"],
+            "Value Percent": details["value_percent"],
+            "Item Percent": details["item_percent"],
+        })
 
-    # Define report columns
+    # Add Stock Balance row
+    report_data.append({
+        "Movement": "Stock Balance",
+        "Number of Items": stock_balance_count,
+        "Total Value": stock_balance_value,
+        "Value Percent": stock_balance_value_percent,
+        "Item Percent": stock_balance_item_percent,
+    })
+
+    # Add the Total row
+    report_data.append({
+        "Movement": "<b>Total</b>",
+        "Number of Items": total_items,
+        "Total Value": total_value,
+        "Value Percent": 100.0,  # Total percentage for value
+        "Item Percent": 100.0,   # Total percentage for items
+    })
+
+    # Define the columns
     columns = [
-        {"fieldname": "movement_type", "label": "Movement Type", "fieldtype": "Data"},
-        {"fieldname": "num_items", "label": "Number of Items", "fieldtype": "Int"},
-        {"fieldname": "item_percent", "label": "Item Percent", "fieldtype": "Percent"},
-        {"fieldname": "total_value", "label": "Total Value", "fieldtype": "Float"},
-        {"fieldname": "value_percent", "label": "Value Percent", "fieldtype": "Percent"}
+        {"label": "Movement", "fieldname": "Movement", "fieldtype": "HTML", "width": 150},
+        {"label": "Number of Items", "fieldname": "Number of Items", "fieldtype": "Int", "width": 200},
+        {"label": "Item Percent", "fieldname": "Item Percent", "fieldtype": "Percent", "width": 150},
+        {"label": "Total Value", "fieldname": "Total Value", "fieldtype": "Currency", "width": 150},
+        {"label": "Value Percent", "fieldname": "Value Percent", "fieldtype": "Percent", "width": 150},
     ]
 
-    # Populate report data
-    data = [
-        {
-            "movement_type": "Fast Moving",
-            "num_items": summary["fast_moving"]["count"],
-            "item_percent": (summary["fast_moving"]["count"] / total_items) * 100 if total_items else 0,
-            "total_value": summary["fast_moving"]["value"],
-            "value_percent": (summary["fast_moving"]["value"] / total_value) * 100 if total_value else 0
-        },
-        {
-            "movement_type": "Slow Moving",
-            "num_items": summary["slow_moving"]["count"],
-            "item_percent": (summary["slow_moving"]["count"] / total_items) * 100 if total_items else 0,
-            "total_value": summary["slow_moving"]["value"],
-            "value_percent": (summary["slow_moving"]["value"] / total_value) * 100 if total_value else 0
-        },
-        {
-            "movement_type": "No Moving",
-            "num_items": summary["no_moving"]["count"],
-            "item_percent": (summary["no_moving"]["count"] / total_items) * 100 if total_items else 0,
-            "total_value": summary["no_moving"]["value"],
-            "value_percent": (summary["no_moving"]["value"] / total_value) * 100 if total_value else 0
-        },
-        {
-            "movement_type": "Stock Balance",
-            "num_items": stock_balance_count,
-            "item_percent": ((stock_balance_count / total_items) * 100) if total_items else 0,
-            "total_value": stock_balance_value,
-            "value_percent": ((stock_balance_value / total_value) * 100) if total_value else 0
-        },
-        {
-            "movement_type": "Total",
-            "num_items": total_items,
-            "item_percent": total_percent_items,
-            "total_value": total_value,
-            "value_percent": total_percent_value
-        }
-    ]
-
-    return columns, data
-
-
-
-
-# def get_inventory_summary_data(filters: StockBalanceFilter | None = None):
-#     # Fetch detailed inventory report data
-#     stock_balance_report = StockBalanceReport(filters)  # Pass filters to the class
-#     report_1_columns, report_1_data = stock_balance_report.run()
-
-#     # Initialize summary and totals
-#     summary = {
-#         "Fast Moving": {"count": 0, "value": 0},
-#         "Slow Moving": {"count": 0, "value": 0},
-#         "No Moving": {"count": 0, "value": 0},
-#     }
-#     total_movements = 0
-#     total_value = 0
-
-#     # Process data and count occurrences
-#     for entry in report_1_data:
-#         movement_type = entry.get("Nature of Movement")  # Fetch the movement type
-#         value = entry.get("out_val", 0)  # Value associated with the item
-
-#         if movement_type in summary:
-#             summary[movement_type]["count"] += 1  # Increment count for the movement type
-#             summary[movement_type]["value"] += value  # Add value to the movement type
-
-#         total_movements += 1  # Increment total movements
-#         total_value += value  # Add value to the total
-
-#     # Define report columns
-#     columns = [
-#         {"fieldname": "movement_type", "label": "Movement Type", "fieldtype": "Data"},
-#         {"fieldname": "num_items", "label": "Number of Items", "fieldtype": "Int"},
-#         {"fieldname": "item_percent", "label": "Item Percent", "fieldtype": "Percent"},
-#         {"fieldname": "total_value", "label": "Total Value", "fieldtype": "Float"},
-#         {"fieldname": "value_percent", "label": "Value Percent", "fieldtype": "Percent"}
-#     ]
-
-#     # Populate report data
-#     data = []
-#     for movement_type, details in summary.items():
-#         data.append({
-#             "movement_type": movement_type,
-#             "num_items": details["count"],
-#             "item_percent": (details["count"] / total_movements) * 100 if total_movements else 0,
-#             "total_value": details["value"],
-#             "value_percent": (details["value"] / total_value) * 100 if total_value else 0
-#         })
-
-#     # Add totals row
-#     data.append({
-#         "movement_type": "Total",
-#         "num_items": total_movements,
-#         "item_percent": 100,
-#         "total_value": total_value,
-#         "value_percent": 100
-#     })
-
-#     return columns, data
-
-
-
-
-
-
-
-
+    return columns, report_data
 
 
 
@@ -944,76 +860,97 @@ def get_non_moving_branch_data():
     return columns, data
 
 
-# Report 4 Data
-def get_report_4_data(filters: StockBalanceFilter | None = None):
-    # Fetch detailed inventory report data
-    stock_balance_report = StockBalanceReport(filters)  # Pass filters to the class
-    report_1_columns, report_1_data = stock_balance_report.run()
 
 
-    summary = {
-        "inventory1": {"count": 0, "value": 0},
-        "inventory2": {"count": 0, "value": 0},
-        "inventory3": {"count": 0, "value": 0},
+
+
+
+
+
+
+
+
+
+
+def get_consumption_report(filters: StockBalanceFilter):
+    stock_balance_report = StockBalanceReport(filters)
+    _, data = stock_balance_report.run()
+
+    summary_data = {
+        "Items with Opening & Closing Balance but No Receipt & Consumption": {
+            "count": 0, "total_value": 0
+        },
+        "Items with Opening Balance, Receipt Value & No Consumption": {
+            "count": 0, "total_value": 0
+        },
+        "Purchased During the Year with No Consumption": {
+            "count": 0, "total_value": 0
+        },
     }
 
-    total_items = 0
-    total_value = 0
+    # Process data to create the summary
+    for row in data:
+        opening_qty = row.get("opening_qty", 0)
+        closing_qty = row.get("closing_qty", 0)
+        receipt_qty = row.get("in_qty", 0)
+        consumption_qty = row.get("out_qty", 0)
+        value = row.get("bal_val", 0)  # Balance value of the item
 
-    for entry in report_1_data:
-        total_items += 1
-        total_value += entry["out_val"]
-
-        if entry["movement"] == "Fast Moving":
-            summary["inventory1"]["count"] += 1
-            summary["inventory1"]["value"] += entry["out_val"]
-        elif entry["movement"] == "Slow Moving":
-            summary["inventory2"]["count"] += 1
-            summary["inventory2"]["value"] += entry["out_val"]
+        if opening_qty > 0 and closing_qty > 0 and receipt_qty == 0 and consumption_qty == 0:
+            category = "Items with Opening & Closing Balance but No Receipt & Consumption"
+        elif opening_qty > 0 and receipt_qty > 0 and consumption_qty == 0:
+            category = "Items with Opening Balance, Receipt Value & No Consumption"
+        elif opening_qty == 0 and receipt_qty > 0 and consumption_qty == 0:
+            category = "Purchased During the Year with No Consumption"
         else:
-            summary["inventory3"]["count"] += 1
-            summary["inventory3"]["value"] += entry["out_val"]
+            continue  # Skip rows that don't match any category
 
-    total_percent_items = 100
-    total_percent_value = 100
+        summary_data[category]["count"] += 1
+        summary_data[category]["total_value"] += value
 
+    # Calculate totals
+    total_items = sum(category["count"] for category in summary_data.values())
+    total_value = sum(category["total_value"] for category in summary_data.values())
+
+    # Convert summary data to a report-friendly format
+    report_data = []
+    for category, details in summary_data.items():
+        report_data.append({
+            "Category": category,
+            "Number of Items": details["count"],
+            "Total Value": details["total_value"],
+            "Value Percent": (
+                (details["total_value"] / total_value * 100) if total_value > 0 else 0
+            ),
+            "Item Percent": (
+                (details["count"] / total_items * 100) if total_items > 0 else 0
+            ),
+        })
+
+    # Add the Total row
+    report_data.append({
+        "Category": "<b>Total</b>",
+        "Number of Items": total_items,
+        "Total Value": total_value,
+        "Value Percent": 100.0,  # Total percentage for value
+        "Item Percent": 100.0,   # Total percentage for items
+    })
+
+    # Define the columns
     columns = [
-        {"fieldname": "consumption_type", "label": "Consumption Type", "fieldtype": "Data"},
-        {"fieldname": "num_items", "label": "Number of Items", "fieldtype": "Int"},
-        {"fieldname": "item_percent", "label": "Item Percent", "fieldtype": "Percent"},
-        {"fieldname": "total_value", "label": "Total Value", "fieldtype": "Float"},
-        {"fieldname": "value_percent", "label": "Value Percent", "fieldtype": "Percent"}
+        {"label": "Category", "fieldname": "Category", "fieldtype": "HTML", "width": 350},
+        {"label": "Number of Items", "fieldname": "Number of Items", "fieldtype": "Int", "width": 150},
+        {"label": "Total Value", "fieldname": "Total Value", "fieldtype": "Currency", "width": 150},
+        {"label": "Value Percent", "fieldname": "Value Percent", "fieldtype": "Percent", "width": 150},
+        {"label": "Item Percent", "fieldname": "Item Percent", "fieldtype": "Percent", "width": 150},
     ]
 
-    data = [
-        {
-            "consumption_type": "Items with opening balance & closing balance but no Receipt & Consumption",
-            "num_items": summary["inventory1"]["count"],
-            "item_percent": (summary["inventory1"]["count"] / total_items) * 100 if total_items else 0,
-            "total_value": summary["inventory1"]["value"],
-            "value_percent": (summary["inventory1"]["value"] / total_value) * 100 if total_value else 0
-        },
-        {
-            "consumption_type": "Items with Opening balance, Receipt value & no consumption",
-            "num_items": summary["inventory2"]["count"],
-            "item_percent": (summary["inventory2"]["count"] / total_items) * 100 if total_items else 0,
-            "total_value": summary["inventory2"]["value"],
-            "value_percent": (summary["inventory2"]["value"] / total_value) * 100 if total_value else 0
-        },
-        {
-            "consumption_type": "Purchased during the year with no consumption",
-            "num_items": summary["inventory3"]["count"],
-            "item_percent": (summary["inventory3"]["count"] / total_items) * 100 if total_items else 0,
-            "total_value": summary["inventory3"]["value"],
-            "value_percent": (summary["inventory3"]["value"] / total_value) * 100 if total_value else 0
-        },
-        {
-            "consumption_type": "Total",
-            "num_items": total_items,
-            "item_percent": total_percent_items,
-            "total_value": total_value,
-            "value_percent": total_percent_value
-        }
-    ]
+    return columns, report_data
 
-    return columns, data
+
+
+
+
+
+
+
