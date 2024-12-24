@@ -212,18 +212,19 @@ def get_from_and_to_date(fiscal_year):
 
 
 def get_permission_query_conditions(user):
-	if not user: user = frappe.session.user
-	user_roles = frappe.get_roles(user)
+    return
+# 	if not user: user = frappe.session.user
+# 	user_roles = frappe.get_roles(user)
 
-	if user == "Administrator" or "System Manager" in user_roles:
-		return
+# 	if user == "Administrator" or "System Manager" in user_roles:
+# 		return
 
-	return """(
-		exists(select 1
-			from `tabEmployee` as e
-			where e.company = `tabFiscal Year Company`.company
-			and e.user_id = '{user}')
-	)""".format(user=user)
+# 	return """(
+# 		exists(select 1
+# 			from `tabEmployee` as e
+# 			where e.company = `tabFiscal Year Company`.company
+# 			and e.user_id = '{user}')
+# 	)""".format(user=user)
 
 	# return """(
 	# 	exists(select 1
