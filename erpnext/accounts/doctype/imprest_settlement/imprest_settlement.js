@@ -22,11 +22,30 @@ frappe.ui.form.on("Imprest Settlement", {
 				return {};
 			}
 		});
+
+		frm.set_query("account", "items", function(doc){
+            return {
+                filters: {
+                    'company': doc.company,
+                }
+            }
+        });
     },
 
-	// refresh(frm) {
-
-	// },
+	refresh(frm) {
+		// show General Ledger
+	frm.add_custom_button(__('Accounting Ledger'), function () {
+		frappe.route_options = {
+			voucher_no: frm.doc.name,
+			from_date: frm.doc.posting_date,
+			to_date: frm.doc.posting_date,
+			company: frm.doc.company,
+			group_by_voucher: false
+		};
+		frappe.set_route("query-report", "General Ledger");
+	}, __("View"));
+	cur_frm.page.set_inner_btn_group_as_primary(__('View'));
+	},
 
 	party: function(frm) {
 		frm.events.get_imprest_advance(frm)
@@ -87,7 +106,7 @@ frappe.ui.form.on("Imprest Settlement", {
 	},
 
 	get_outstanding_documents: function(frm, filters) {
-		frm.clear_table("items");
+		frm.clear_table("references");
 
 		if(!frm.doc.party) {
 			return;
@@ -112,14 +131,15 @@ frappe.ui.form.on("Imprest Settlement", {
 			callback: function(r) {
 				if(r.message) {
 					$.each(r.message, function(i, d){						
-						var c = frm.add_child("items")
+						var c = frm.add_child("references")
 						c.reference_doctype = d.voucher_type;
 						c.reference_name = d.voucher_no;
 						c.outstanding_amount = d.outstanding_amount;
 						c.total_amount = d.invoice_amount;
 						c.allocated_amount = d.outstanding_amount;
+						c.account = d.account;
 					});	
-					frm.refresh_field("items");
+					frm.refresh_field("references");
 					frm.events.set_total_allocated_amount(frm);
 				}
 			}
@@ -128,7 +148,7 @@ frappe.ui.form.on("Imprest Settlement", {
 
 	set_total_allocated_amount: function(frm) {
 		let total_allocated = 0.0
-		$.each(frm.doc.items || [], function(i, row) {
+		$.each(frm.doc.references || [], function(i, row) {
 			if (row.allocated_amount) {
 				total_allocated += flt(row.allocated_amount);
 			}

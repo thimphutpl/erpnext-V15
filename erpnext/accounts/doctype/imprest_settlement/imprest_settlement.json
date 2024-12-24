@@ -1,6 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "IS.YYYY.MM.####",
  "creation": "2024-10-25 15:04:15.219031",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -19,11 +20,14 @@
   "total_advance_amount",
   "section_break_yzrv",
   "get_outstanding_invoices",
+  "references",
   "items",
   "section_break_rmbs",
   "total_allocated_amount",
-  "section_break_niyh",
+  "remarks",
+  "additional_information_section",
   "journal_entry",
+  "column_break_ztas",
   "amended_from"
  ],
  "fields": [
@@ -113,15 +117,6 @@
    "fieldtype": "Section Break"
   },
   {
-   "fieldname": "items",
-   "fieldtype": "Table",
-   "options": "Imprest Settlement Item"
-  },
-  {
-   "fieldname": "section_break_niyh",
-   "fieldtype": "Section Break"
-  },
-  {
    "fieldname": "journal_entry",
    "fieldtype": "Data",
    "label": "Journal Entry",
@@ -143,15 +138,41 @@
    "fieldtype": "Currency",
    "label": "Total Allocated Amount",
    "read_only": 1
+  },
+  {
+   "fieldname": "references",
+   "fieldtype": "Table",
+   "label": "Outstanding Reference",
+   "options": "Imprest Settlement Reference"
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "options": "Imprest Settlement Item"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Small Text",
+   "label": "Remarks"
+  },
+  {
+   "fieldname": "additional_information_section",
+   "fieldtype": "Section Break",
+   "label": "Additional Information"
+  },
+  {
+   "fieldname": "column_break_ztas",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-06 11:08:29.074154",
+ "modified": "2024-12-24 11:51:48.540287",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Imprest Settlement",
+ "naming_rule": "Expression (old style)",
  "owner": "Administrator",
  "permissions": [
   {
