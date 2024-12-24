@@ -37,7 +37,7 @@ frappe.ui.form.on("Payment Entry", {
 				: [frappe.boot.party_account_types[frm.doc.party_type]];
 			return {
 				filters: {
-					account_type: ["in", account_types],
+					// account_type: ["in", account_types],
 					is_group: 0,
 					company: frm.doc.company,
 				},
