@@ -2262,6 +2262,9 @@ def get_payment_entry(
     pe.mode_of_payment = doc.get("mode_of_payment")
     pe.party_type = party_type
     pe.party = doc.get(scrub(party_type))
+    # tshering wangchuk added below as above one dont work sometimes
+    if not pe.party:
+        pe.party = doc.get("party")
     pe.contact_person = doc.get("contact_person")
     pe.contact_email = doc.get("contact_email")
     pe.ensure_supplier_is_not_blocked()
