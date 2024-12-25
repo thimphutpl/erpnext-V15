@@ -1,0 +1,82 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-10-07 16:24:08.508066",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "output",
+  "target",
+  "deliverables",
+  "datelines",
+  "weighted",
+  "achieved",
+  "remarks"
+ ],
+ "fields": [
+  {
+   "columns": 3,
+   "fieldname": "target",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Target"
+  },
+  {
+   "columns": 3,
+   "fieldname": "deliverables",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Deliverables"
+  },
+  {
+   "columns": 1,
+   "fieldname": "datelines",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "DateLines"
+  },
+  {
+   "columns": 1,
+   "fieldname": "weighted",
+   "fieldtype": "Percent",
+   "in_list_view": 1,
+   "label": "Weighted"
+  },
+  {
+   "fieldname": "achieved",
+   "fieldtype": "Percent",
+   "hidden": 1,
+   "in_list_view": 1,
+   "label": "Achieved "
+  },
+  {
+   "columns": 2,
+   "fieldname": "remarks",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Remarks"
+  },
+  {
+   "columns": 1,
+   "default": "0",
+   "fieldname": "output",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "in_list_view": 1,
+   "label": "Output"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2024-10-30 14:58:51.839223",
+ "modified_by": "Administrator",
+ "module": "Compact Agreement",
+ "name": "Compact Agreement Items",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

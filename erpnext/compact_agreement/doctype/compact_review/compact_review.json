@@ -1,0 +1,103 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "CR.YY.MM.#####",
+ "creation": "2024-10-17 16:28:16.625636",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_5lr7",
+  "amended_from",
+  "company",
+  "column_break_ocok",
+  "fiscal_year",
+  "column_break_cxkp",
+  "agency",
+  "section_break_ynfh",
+  "table_uflv"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_5lr7",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Compact Review",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Company",
+   "options": "Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_ocok",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "fiscal_year",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Fiscal Year",
+   "options": "Fiscal Year",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_cxkp",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "agency",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Agency",
+   "options": "Department",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_ynfh",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "table_uflv",
+   "fieldtype": "Table",
+   "options": "Compact Agreement Items Review"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2024-10-30 15:30:38.110247",
+ "modified_by": "Administrator",
+ "module": "Compact Agreement",
+ "name": "Compact Review",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

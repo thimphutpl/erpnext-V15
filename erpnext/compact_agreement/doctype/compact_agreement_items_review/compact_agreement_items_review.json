@@ -1,0 +1,72 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-10-24 10:21:10.424642",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "target",
+  "deliverables",
+  "datelines",
+  "weighted",
+  "acheived",
+  "remarks"
+ ],
+ "fields": [
+  {
+   "columns": 3,
+   "fieldname": "target",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Target"
+  },
+  {
+   "columns": 1,
+   "fieldname": "datelines",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Datelines"
+  },
+  {
+   "columns": 1,
+   "fieldname": "weighted",
+   "fieldtype": "Percent",
+   "in_list_view": 1,
+   "label": "Weighted"
+  },
+  {
+   "fieldname": "acheived",
+   "fieldtype": "Percent",
+   "hidden": 1,
+   "in_list_view": 1,
+   "label": "Acheived"
+  },
+  {
+   "columns": 2,
+   "fieldname": "remarks",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Remarks"
+  },
+  {
+   "columns": 3,
+   "fieldname": "deliverables",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Deliverables"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2024-10-30 15:09:20.230985",
+ "modified_by": "Administrator",
+ "module": "Compact Agreement",
+ "name": "Compact Agreement Items Review",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
