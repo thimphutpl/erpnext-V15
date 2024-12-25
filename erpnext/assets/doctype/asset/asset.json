@@ -56,6 +56,7 @@
   "custodian_details_section",
   "issued_to",
   "custodian",
+  "cid_no",
   "column_break_rbqr",
   "custodian_name",
   "section_break_23",
@@ -203,6 +204,7 @@
    "reqd": 1
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "custodian",
    "fieldtype": "Link",
    "ignore_user_permissions": 1,
@@ -683,6 +685,13 @@
   {
    "fieldname": "column_break_lsnb",
    "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "custodian.passport_number",
+   "fieldname": "cid_no",
+   "fieldtype": "Data",
+   "label": "CID No.",
+   "read_only": 1
   }
  ],
  "idx": 72,
@@ -726,7 +735,7 @@
    "link_fieldname": "target_asset"
   }
  ],
- "modified": "2024-11-08 15:42:42.599961",
+ "modified": "2024-12-25 17:06:32.159832",
  "modified_by": "Administrator",
  "module": "Assets",
  "name": "Asset",

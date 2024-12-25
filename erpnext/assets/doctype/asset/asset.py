@@ -68,6 +68,7 @@ class Asset(AccountsController):
 		branch: DF.Link | None
 		calculate_depreciation: DF.Check
 		capitalized_in: DF.Link | None
+		cid_no: DF.Data | None
 		company: DF.Link
 		comprehensive_insurance: DF.Data | None
 		cost_center: DF.Link | None
