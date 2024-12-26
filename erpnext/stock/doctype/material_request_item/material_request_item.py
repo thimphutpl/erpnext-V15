@@ -49,6 +49,8 @@ class MaterialRequestItem(Document):
 		qty: DF.Float
 		rate: DF.Currency
 		received_qty: DF.Float
+		reference_name: DF.DynamicLink | None
+		reference_type: DF.Link | None
 		sales_order: DF.Link | None
 		sales_order_item: DF.Data | None
 		schedule_date: DF.Date

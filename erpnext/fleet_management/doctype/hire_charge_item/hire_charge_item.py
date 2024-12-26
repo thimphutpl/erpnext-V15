@@ -14,7 +14,7 @@ class HireChargeItem(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
-		from_date: DF.Date
+		from_date: DF.Date | None
 		idle_rate: DF.Currency
 		idle_rate_internal: DF.Currency
 		main_int: DF.Float

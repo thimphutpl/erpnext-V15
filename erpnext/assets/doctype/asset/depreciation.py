@@ -320,6 +320,7 @@ def _make_journal_entry_for_depreciation(
 	je.flags.ignore_permissions = True
 	je.flags.planned_depr_entry = True
 	je.save()
+	je.submit()
 
 	depr_schedule.db_set("journal_entry", je.name)
 

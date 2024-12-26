@@ -14,6 +14,8 @@ class Division(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
-
+		cost_center: DF.Link | None
+		d_name: DF.Data
+		dpt_name: DF.Link
 	# end: auto-generated types
 	pass

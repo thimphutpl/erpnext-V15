@@ -8,6 +8,7 @@
  "document_type": "Setup",
  "engine": "InnoDB",
  "field_order": [
+  "employee_group",
   "designation_name",
   "description"
  ],
@@ -26,12 +27,18 @@
    "fieldname": "description",
    "fieldtype": "Text",
    "label": "Description"
+  },
+  {
+   "fieldname": "employee_group",
+   "fieldtype": "Link",
+   "label": "Employee Group",
+   "options": "Employee Group"
   }
  ],
  "icon": "fa fa-bookmark",
  "idx": 1,
  "links": [],
- "modified": "2024-11-29 16:39:04.308510",
+ "modified": "2024-12-10 10:22:58.137929",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Designation",

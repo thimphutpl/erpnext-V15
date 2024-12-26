@@ -206,8 +206,7 @@
    "fieldtype": "Link",
    "ignore_user_permissions": 1,
    "label": "Custodian",
-   "options": "Employee",
-   "reqd": 1
+   "options": "Employee"
   },
   {
    "fieldname": "cost_center",
@@ -734,7 +733,7 @@
    "link_fieldname": "target_asset"
   }
  ],
- "modified": "2024-11-28 12:14:25.822368",
+ "modified": "2024-12-19 17:15:18.795607",
  "modified_by": "Administrator",
  "module": "Assets",
  "name": "Asset",

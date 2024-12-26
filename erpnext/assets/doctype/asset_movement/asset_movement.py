@@ -27,6 +27,7 @@ class AssetMovement(Document):
 		company: DF.Link
 		cost_center: DF.Link | None
 		from_employee: DF.Link | None
+		posting_date: DF.Date
 		project: DF.Link | None
 		purpose: DF.Literal["", "Transfer", "Receipt"]
 		reference_doctype: DF.Link | None
@@ -296,15 +297,27 @@ class AssetMovement(Document):
 				""".format(cond=condition_statement),as_dict = 1)
 			if asset_list:
 				self.set("assets",[])
-				for x in asset_list:
-					row = self.append("assets",{})
-					data = {"asset":x.name, 
-							"from_employee":x.custodian,
-							"from_employee_name":x.custodian_name, 
-							"source_cost_center":x.cost_center,
-							"target_cost_center":frappe.db.get_value("Employee",self.to_employee,"cost_center"),
-							}
-					row.update(data)
+				if self.to_single:
+					for x in asset_list:
+						row = self.append("assets",{})
+						data = {"asset":x.name, 
+								"from_employee":x.custodian,
+								"from_employee_name":x.custodian_name, 
+								"source_cost_center":x.cost_center,
+								"target_cost_center":frappe.db.get_value("Employee",self.to_employee,"cost_center"),
+								"to_employee":self.to_employee,
+								}
+						row.update(data)
+				else:
+					for x in asset_list:
+						row = self.append("assets",{})
+						data = {"asset":x.name, 
+								"from_employee":x.custodian,
+								"from_employee_name":x.custodian_name, 
+								"source_cost_center":x.cost_center,
+								"target_cost_center":frappe.db.get_value("Employee",self.to_employee,"cost_center"),
+								}
+						row.update(data)
 			else:
 				frappe.msgprint(f"No Assets registered with given Custodian/Cost Center", title="Notification", indicator='green')
 

@@ -3,6 +3,7 @@
  "allow_events_in_timeline": 1,
  "allow_import": 1,
  "allow_rename": 1,
+ "autoname": "naming_series:employee_name",
  "creation": "2022-02-21 11:54:09.632218",
  "doctype": "DocType",
  "document_type": "Setup",
@@ -12,6 +13,7 @@
   "basic_details_tab",
   "basic_information",
   "employee",
+  "naming_series",
   "salutation",
   "first_name",
   "middle_name",
@@ -124,6 +126,7 @@
   "country",
   "gewog",
   "house_number",
+  "phone_number",
   "column_break_qnni",
   "dzongkhag",
   "village",
@@ -1115,16 +1118,28 @@
    "fieldtype": "Link",
    "label": "Professional Category",
    "options": "Professional Category"
+  },
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Series",
+   "options": "GYAL.YY"
+  },
+  {
+   "fieldname": "phone_number",
+   "fieldtype": "Data",
+   "label": "Phone Number"
   }
  ],
  "icon": "fa fa-user",
  "idx": 24,
  "image_field": "image",
  "links": [],
- "modified": "2024-12-02 12:47:37.894866",
+ "modified": "2024-12-10 17:07:54.035083",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee",
+ "naming_rule": "By \"Naming Series\" field",
  "owner": "Administrator",
  "permissions": [
   {

@@ -6,9 +6,11 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "column_break_dphg",
   "company",
   "purpose",
   "based_on",
+  "posting_date",
   "column_break_4",
   "transaction_date",
   "from_employee",
@@ -174,12 +176,25 @@
    "label": "Cost Center",
    "mandatory_depends_on": "eval:doc.based_on == 'Cost Center'",
    "options": "Cost Center"
+  },
+  {
+   "default": "Today",
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "hidden": 1,
+   "label": "Posting Date",
+   "reqd": 1
+  },
+  {
+   "default": "Now",
+   "fieldname": "column_break_dphg",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-17 23:39:13.656932",
+ "modified": "2024-12-23 12:16:39.135659",
  "modified_by": "Administrator",
  "module": "Assets",
  "name": "Asset Movement",

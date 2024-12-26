@@ -35,8 +35,8 @@ class ItemGroup(NestedSet):
 	def before_save(self):
 		if not self.item_code_base:
 			frappe.throw(f"Missing Item Code Base")
-		if len(self.item_code_base) != 2:
-			frappe.throw(f"Length of Item Code Base has to be 2")
+		# if len(self.item_code_base) != 2:
+		# 	frappe.throw(f"Length of Item Code Base has to be 2")
 
 	def validate(self):
 		if not self.parent_item_group and not frappe.flags.in_test:
@@ -44,7 +44,7 @@ class ItemGroup(NestedSet):
 				self.parent_item_group = _("All Item Groups")
 		self.validate_item_group_defaults()
 		self.check_item_tax()
-		self.validate_item_code_base()
+		#self.validate_item_code_base()
 
 	def check_item_tax(self):
 		"""Check whether Tax Rate is not entered twice for same Tax Type"""
@@ -61,9 +61,9 @@ class ItemGroup(NestedSet):
 				else:
 					check_list.append((d.item_tax_template, d.tax_category))
 
-	def validate_item_code_base(self):
-		if not re.match(r'^[A-Z]{2}$', self.item_code_base):
-			frappe.throw("Item code base must be exactly two uppercase alphabet letters")
+	# def validate_item_code_base(self):
+	# 	if not re.match(r'^[A-Z]{2}$', self.item_code_base):
+	# 		frappe.throw("Item code base must be exactly two uppercase alphabet letters")
 
 	def on_update(self):
 		NestedSet.on_update(self)

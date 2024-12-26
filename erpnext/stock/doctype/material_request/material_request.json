@@ -92,8 +92,7 @@
    "in_standard_filter": 1,
    "label": "Purpose",
    "options": "Material Issue\nPurchase\nMaterial Transfer\nManufacture\nRequisition",
-   "permlevel": 3,
-   "reqd": 1
+   "permlevel": 3
   },
   {
    "depends_on": "eval:doc.material_request_type==\"Customer Provided\"",
@@ -424,7 +423,7 @@
  "idx": 70,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-27 15:41:11.018888",
+ "modified": "2024-12-11 15:05:32.114987",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Material Request",
@@ -432,12 +431,11 @@
  "owner": "Administrator",
  "permissions": [
   {
-   "amend": 1,
-   "create": 1,
    "delete": 1,
    "email": 1,
    "export": 1,
    "import": 1,
+   "permlevel": 3,
    "print": 1,
    "read": 1,
    "report": 1,
@@ -455,6 +453,7 @@
    "report": 1,
    "role": "Stock Manager",
    "share": 1,
+   "submit": 1,
    "write": 1
   },
   {
@@ -490,13 +489,26 @@
    "role": "Store Incharge(HQ)",
    "share": 1,
    "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Purchase Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
   }
  ],
- "quick_entry": 1,
  "search_fields": "status,transaction_date",
  "show_name_in_global_search": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],
- "title_field": "title"
+ "title_field": "title",
+ "track_changes": 1
 }

@@ -9,13 +9,14 @@
  "field_order": [
   "personal_details_section",
   "person_name",
-  "designation",
   "id_card",
+  "gender",
+  "designation",
+  "column_break_qxdm",
   "status",
   "qualification",
-  "column_break_qxdm",
-  "gender",
   "mr_type",
+  "mobile",
   "column_break_yhwd",
   "list_in_job_card",
   "mess_deduction",
@@ -27,7 +28,6 @@
   "cost_center",
   "column_break_wlay",
   "branch",
-  "column_break_gegn",
   "unit",
   "section_break_xdjd",
   "joining_date",
@@ -36,11 +36,11 @@
   "column_break_ddzo",
   "blood_group",
   "wage_detail",
-  "bank_name",
+  "bank",
   "bank_branch",
   "column_break_kaug",
   "bank_account_type",
-  "bank_ac_no",
+  "account_no",
   "sb1234",
   "rate_per_hour_normal",
   "musterroll",
@@ -51,14 +51,15 @@
   "salary",
   "rate_per_day",
   "column_break_hqgd",
-  "rate_per_hour_overtime",
+  "rate_per_hour",
   "section_break_ezva",
   "internal_work_history",
   "section_break_vbkp",
   "user_id",
   "column_break_jrut",
-  "company",
   "date_of_transfer",
+  "column_break_imov",
+  "company",
   "sb_additional_info",
   "reference_doctype",
   "column_break_eunw",
@@ -110,8 +111,9 @@
   {
    "fieldname": "mr_type",
    "fieldtype": "Select",
+   "hidden": 1,
    "label": "MR Type",
-   "options": "Under CDCL\nUnder Labour Contract"
+   "options": "\nUnder Labour Contract"
   },
   {
    "fieldname": "column_break_yhwd",
@@ -179,6 +181,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "depends_on": "eval:doc.status == 'Left'",
    "fieldname": "separation_date",
    "fieldtype": "Date",
    "label": "Separation Date"
@@ -192,12 +195,6 @@
    "fieldtype": "Link",
    "label": "Blood Group",
    "options": "Blood Group"
-  },
-  {
-   "fieldname": "bank_name",
-   "fieldtype": "Link",
-   "label": "Bank Name",
-   "options": "Financial Institution"
   },
   {
    "fieldname": "bank_branch",
@@ -216,11 +213,6 @@
    "options": "Bank Account Type"
   },
   {
-   "fieldname": "bank_ac_no",
-   "fieldtype": "Data",
-   "label": "Bank A/C No."
-  },
-  {
    "default": "0",
    "fieldname": "update_wage_history",
    "fieldtype": "Check",
@@ -233,8 +225,8 @@
   {
    "fieldname": "salary",
    "fieldtype": "Currency",
-   "hidden": 1,
-   "label": "Salary Per Month"
+   "label": "Salary Per Month",
+   "read_only": 1
   },
   {
    "fieldname": "rate_per_day",
@@ -246,12 +238,6 @@
    "fieldname": "column_break_hqgd",
    "fieldtype": "Column Break",
    "hidden": 1
-  },
-  {
-   "fieldname": "rate_per_hour_overtime",
-   "fieldtype": "Currency",
-   "hidden": 1,
-   "label": "Rate Per Hour (Overtime)(Daily Rate * 1.5 / 8)"
   },
   {
    "fieldname": "section_break_ezva",
@@ -293,7 +279,8 @@
   {
    "fieldname": "reference_doctype",
    "fieldtype": "Data",
-   "label": "Reference Doctype"
+   "label": "Reference Doctype",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_eunw",
@@ -302,17 +289,20 @@
   {
    "fieldname": "reference_docname",
    "fieldtype": "Data",
-   "label": "Reference Docname"
+   "label": "Reference Docname",
+   "read_only": 1
   },
   {
    "fieldname": "temp_doctype",
    "fieldtype": "Data",
-   "label": "Temp Doctype"
+   "label": "Temp Doctype",
+   "read_only": 1
   },
   {
    "fieldname": "temp_docname",
    "fieldtype": "Data",
-   "label": "Temp Docname"
+   "label": "Temp Docname",
+   "read_only": 1
   },
   {
    "fieldname": "wage_detail",
@@ -359,12 +349,9 @@
    "options": "Wages History"
   },
   {
-   "fieldname": "column_break_gegn",
-   "fieldtype": "Column Break"
-  },
-  {
    "fieldname": "unit",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Unit",
    "options": "Department"
   },
@@ -372,6 +359,7 @@
    "default": "0",
    "fieldname": "mess_deduction",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "Mess Deduction"
   },
   {
@@ -379,12 +367,38 @@
    "fieldname": "amount",
    "fieldtype": "Currency",
    "label": "Amount"
+  },
+  {
+   "fieldname": "mobile",
+   "fieldtype": "Data",
+   "label": "Phone Number"
+  },
+  {
+   "fieldname": "column_break_imov",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "rate_per_hour",
+   "fieldtype": "Currency",
+   "hidden": 1,
+   "label": "Rate Per Hour (Overtime)(Daily Rate * 1.5 / 8)"
+  },
+  {
+   "fieldname": "bank",
+   "fieldtype": "Link",
+   "label": "Bank Name",
+   "options": "Financial Institution"
+  },
+  {
+   "fieldname": "account_no",
+   "fieldtype": "Data",
+   "label": "Bank A/C No."
   }
  ],
  "in_create": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-12-03 10:15:33.910887",
+ "modified": "2024-12-25 11:23:51.157426",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Muster Roll Employee",

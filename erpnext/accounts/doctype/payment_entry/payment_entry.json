@@ -87,6 +87,19 @@
   "project",
   "dimension_col_break",
   "cost_center",
+  "rtgs_information",
+  "bank_name",
+  "bank_branch",
+  "dispatch_number",
+  "bank_app_ref_no",
+  "vendor_invoice_no",
+  "column_break_ybad",
+  "bank_account_number",
+  "ifdc_code",
+  "remitter_tpan_no",
+  "advance_payment",
+  "final_payment",
+  "declaration_reference_no",
   "section_break_12",
   "status",
   "custom_remarks",
@@ -841,6 +854,73 @@
    "fieldtype": "Date",
    "label": "Reference Date",
    "search_index": 1
+  },
+  {
+   "fieldname": "rtgs_information",
+   "fieldtype": "Section Break",
+   "label": "RTGS Information"
+  },
+  {
+   "fieldname": "bank_name",
+   "fieldtype": "Data",
+   "label": "Bank Name"
+  },
+  {
+   "fieldname": "bank_branch",
+   "fieldtype": "Data",
+   "label": "Bank Branch "
+  },
+  {
+   "fieldname": "dispatch_number",
+   "fieldtype": "Data",
+   "label": "Dispatch Number"
+  },
+  {
+   "fieldname": "bank_app_ref_no",
+   "fieldtype": "Data",
+   "label": "Bank application Reference No"
+  },
+  {
+   "fieldname": "vendor_invoice_no",
+   "fieldtype": "Small Text",
+   "label": "Vendor Invoice No."
+  },
+  {
+   "fieldname": "column_break_ybad",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "bank_account_number",
+   "fieldtype": "Data",
+   "label": "Bank Account Number"
+  },
+  {
+   "fieldname": "ifdc_code",
+   "fieldtype": "Data",
+   "label": "IFSC Code"
+  },
+  {
+   "fieldname": "remitter_tpan_no",
+   "fieldtype": "Data",
+   "label": "Remitter CID/TPAN No"
+  },
+  {
+   "default": "0",
+   "fieldname": "advance_payment",
+   "fieldtype": "Check",
+   "label": "Advance Payment"
+  },
+  {
+   "default": "0",
+   "fieldname": "final_payment",
+   "fieldtype": "Check",
+   "label": "Final Payment"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "declaration_reference_no",
+   "fieldtype": "Data",
+   "label": "Declaration Reference No"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -854,7 +934,7 @@
    "table_fieldname": "payment_entries"
   }
  ],
- "modified": "2024-12-02 22:46:25.321448",
+ "modified": "2024-12-20 10:39:05.016389",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Payment Entry",

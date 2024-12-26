@@ -171,6 +171,7 @@ def prepare_sl(d, args):
 # Prepre the basic accounting ledger 
 ##
 def prepare_gl(d, args):
+	# frappe.throw(str(d))
 	"""this method populates the common properties of a gl entry record"""
 	# frappe.throw(frappe.as_json(d))
 	gl_dict = frappe._dict({

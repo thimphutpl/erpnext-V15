@@ -275,6 +275,7 @@
    "label": "Warehouse Belong To"
   },
   {
+   "allow_bulk_edit": 1,
    "fieldname": "items",
    "fieldtype": "Table",
    "options": "Warehouse Branch"
@@ -284,7 +285,7 @@
  "idx": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2024-11-29 16:38:23.413540",
+ "modified": "2024-12-23 12:37:40.517761",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Warehouse",

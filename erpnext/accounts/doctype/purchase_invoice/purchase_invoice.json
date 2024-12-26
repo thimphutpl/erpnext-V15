@@ -616,8 +616,7 @@
    "default": "0",
    "fieldname": "update_stock",
    "fieldtype": "Check",
-   "label": "Update Stock",
-   "print_hide": 1
+   "label": "Update Stock"
   },
   {
    "allow_bulk_edit": 1,
@@ -1091,7 +1090,6 @@
    "print_hide": 1
   },
   {
-   "collapsible": 1,
    "collapsible_depends_on": "advances",
    "fieldname": "advances_section",
    "fieldtype": "Section Break",
@@ -1726,7 +1724,7 @@
  "idx": 204,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-12-02 22:45:47.025445",
+ "modified": "2024-12-26 10:06:33.901508",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Purchase Invoice",

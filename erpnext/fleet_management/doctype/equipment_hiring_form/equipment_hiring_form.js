@@ -61,13 +61,13 @@ frappe.ui.form.on('Equipment Hiring Form', {
 			}, __("Status"));
 		}
 
-		// Check if the user has the PMS Compact Approver role
-		frm.add_custom_button("Create Vehicle Logbook", function() {
-			frappe.model.open_mapped_doc({
-				method: "erpnext.fleet_management.doctype.equipment_hiring_form.equipment_hiring_form.make_vehicle_logbook",
-				frm: frm
-			});
-		});
+		
+		// frm.add_custom_button("Create Vehicle Logbook", function() {
+		// 	frappe.model.open_mapped_doc({
+		// 		method: "erpnext.fleet_management.doctype.equipment_hiring_form.equipment_hiring_form.make_vehicle_logbook",
+		// 		frm: frm
+		// 	});
+		// });
 		
 	},
 

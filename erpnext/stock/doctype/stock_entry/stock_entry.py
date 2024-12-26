@@ -126,7 +126,7 @@ class StockEntry(StockController):
 		project: DF.Link | None
 		purchase_order: DF.Link | None
 		purchase_receipt_no: DF.Link | None
-		purpose: DF.Literal["Material Issue", "Material Receipt", "Material Transfer", "Material Transfer for Manufacture", "Material Consumption for Manufacture", "Manufacture", "Repack", "Send to Subcontractor"]
+		purpose: DF.Literal["Material Issue", "Material Return", "Material Receipt", "Material Transfer", "Material Transfer for Manufacture", "Material Consumption for Manufacture", "Manufacture", "Repack", "Send to Subcontractor"]
 		received_by: DF.Data | None
 		remarks: DF.SmallText | None
 		sales_invoice_no: DF.Link | None
@@ -143,7 +143,7 @@ class StockEntry(StockController):
 		target_address_display: DF.SmallText | None
 		target_warehouse_address: DF.Link | None
 		text_editor_yfea: DF.TextEditor | None
-		title: DF.Data
+		title: DF.Data | None
 		to_warehouse: DF.Link | None
 		total_additional_costs: DF.Currency
 		total_amount: DF.Currency
@@ -163,6 +163,9 @@ class StockEntry(StockController):
 			self.name = make_autoname(str(series) + ".YY.MM.####")
 		elif self.stock_entry_type == 'Material Transfer':
 			series = 'MT'
+			self.name = make_autoname(str(series) + ".YY.MM.DD.####")
+		elif self.stock_entry_type == 'Material Return':
+			series = 'MTR'
 			self.name = make_autoname(str(series) + ".YY.MM.DD.####")
 		else:
 			series = 'WO'
@@ -208,6 +211,8 @@ class StockEntry(StockController):
 
 		# self.validate_duplicate_serial_and_batch_bundle("items")
 		self.validate_posting_time()
+		if self.stock_entry_type=="Material Return":
+			self.is_return=1
 		self.validate_purpose()
 		self.validate_item()
 		self.validate_customer_provided_item()
@@ -358,6 +363,7 @@ class StockEntry(StockController):
 			"Material Transfer",
 			"Material Transfer for Manufacture",
 			"Manufacture",
+			"Material Return",
 			"Repack",
 			"Send to Subcontractor",
 			"Material Consumption for Manufacture",

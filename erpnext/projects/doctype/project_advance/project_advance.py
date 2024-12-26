@@ -47,6 +47,7 @@ class ProjectAdvance(Document):
 		status: DF.Literal["Draft", "Submitted", "Cancelled"]
 		supplier: DF.Link | None
 		supplier_details: DF.Text | None
+		task: DF.Link
 	# end: auto-generated types
 	
 	def validate(self):
@@ -117,7 +118,7 @@ class ProjectAdvance(Document):
 			self.received_amount = 0
 			self.adjustment_amount = 0
 			self.balance_amount = 0
-			self.payment_type  = "Receive" if self.party_type == "Customer" else "Pay" 
+			# self.payment_type  = "Receive" if self.party_type == "Customer" else "Pay" 
 		
 		if self.project:
 			project = frappe.get_doc("Project", self.project)
@@ -130,14 +131,14 @@ class ProjectAdvance(Document):
 			self.company          = project.company
 
 			# fetch party information
-			self.party_type = self.party_type if self.party_type else project.party_type 
-			self.party      = self.party if self.party else project.party
-			if self.party_type and self.party:
-				doc = frappe.get_doc(self.party_type, self.party)
-				self.party_address = doc.get("customer_details") if self.party_type == "Customer" else doc.get("supplier_details") if self.party_type == "Supplier" else doc.get("employee_name")
+			# self.party_type = self.party_type if self.party_type else project.party_type 
+			# self.party      = self.party if self.party else project.party
+			# if self.party_type and self.party:
+			# 	doc = frappe.get_doc(self.party_type, self.party)
+			# 	self.party_address = doc.get("customer_details") if self.party_type == "Customer" else doc.get("supplier_details") if self.party_type == "Supplier" else doc.get("employee_name")
 
-				if not self.currency:
-					self.currency = get_company_currency(self.company) if self.party_type == "Employee" else doc.default_currency
+			if not self.currency:
+				self.currency = get_company_currency(self.company) if self.party_type == "Employee" else doc.default_currency
 						
 		if self.company and not self.exchange_rate:
 			company_currency = get_company_currency(self.company)

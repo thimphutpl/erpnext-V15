@@ -9,6 +9,7 @@
   "section_break_zank",
   "amended_from",
   "advance_date",
+  "task",
   "project",
   "company",
   "branch",
@@ -111,7 +112,6 @@
    "fieldtype": "Link",
    "label": "Party Type",
    "options": "DocType",
-   "read_only": 1,
    "reqd": 1
   },
   {
@@ -119,7 +119,6 @@
    "fieldtype": "Dynamic Link",
    "label": "Party",
    "options": "party_type",
-   "read_only": 1,
    "reqd": 1
   },
   {
@@ -168,8 +167,7 @@
    "fieldname": "payment_type",
    "fieldtype": "Select",
    "label": "Payment Type",
-   "options": "\nReceive\nPay",
-   "read_only": 1
+   "options": "\nReceive\nPay"
   },
   {
    "fieldname": "currency",
@@ -312,12 +310,20 @@
    "hidden": 1,
    "label": "Journal Entry Status",
    "read_only": 1
+  },
+  {
+   "fieldname": "task",
+   "fieldtype": "Link",
+   "label": "Task",
+   "options": "Task",
+   "read_only": 1,
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-10-14 10:12:15.360542",
+ "modified": "2024-12-24 16:32:15.971264",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Project Advance",

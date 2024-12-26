@@ -77,6 +77,8 @@ class PurchaseOrder(BuyingController):
 		contact_email: DF.SmallText | None
 		contact_mobile: DF.SmallText | None
 		contact_person: DF.Link | None
+		contract_delivery: DF.Date | None
+		contract_id: DF.Data | None
 		conversion_rate: DF.Float
 		cost_center: DF.Link | None
 		currency: DF.Link
@@ -89,13 +91,16 @@ class PurchaseOrder(BuyingController):
 		disable_rounded_total: DF.Check
 		discount_amount: DF.Currency
 		footer: DF.TextEditor | None
+		freight_insurance_charges: DF.Data | None
 		from_date: DF.Date | None
 		grand_total: DF.Currency
 		group_same_items: DF.Check
 		header: DF.TextEditor | None
 		ignore_pricing_rule: DF.Check
 		in_words: DF.Data | None
+		installation_charges: DF.Data | None
 		inter_company_order_reference: DF.Link | None
+		is_contract: DF.Check
 		is_internal_supplier: DF.Check
 		is_old_subcontracting_flow: DF.Check
 		items: DF.Table[PurchaseOrderItem]
@@ -193,9 +198,9 @@ class PurchaseOrder(BuyingController):
 		self.validate_minimum_order_qty()
 		validate_against_blanket_order(self)
 
-		if self.is_old_subcontracting_flow:
-			self.validate_bom_for_subcontracting_items()
-			self.create_raw_materials_supplied()
+		# if self.is_old_subcontracting_flow:
+		# 	self.validate_bom_for_subcontracting_items()
+		# 	self.create_raw_materials_supplied()
 
 		# self.validate_fg_item_for_subcontracting()
 		self.set_received_qty_for_drop_ship_items()
@@ -491,8 +496,9 @@ class PurchaseOrder(BuyingController):
 
 		# Must be called after updating ordered qty in Material Request
 		# bin uses Material Request Items to recalculate & update
-		if not self.is_subcontracted or self.is_old_subcontracting_flow:
-			self.update_requested_qty()
+
+		# if not self.is_subcontracted or self.is_old_subcontracting_flow:
+		# 	self.update_requested_qty()
 
 		self.update_ordered_qty()
 
@@ -555,11 +561,11 @@ class PurchaseOrder(BuyingController):
 				item.received_qty = item.qty
 
 	def update_reserved_qty_for_subcontract(self):
-		if self.is_old_subcontracting_flow:
-			for d in self.supplied_items:
-				if d.rm_item_code:
-					stock_bin = get_bin(d.rm_item_code, d.reserve_warehouse)
-					stock_bin.update_reserved_qty_for_sub_contracting(subcontract_doctype="Purchase Order")
+		# if self.is_old_subcontracting_flow:
+		# 	for d in self.supplied_items:
+		# 		if d.rm_item_code:
+		# 			stock_bin = get_bin(d.rm_item_code, d.reserve_warehouse)
+		# 			stock_bin.update_reserved_qty_for_sub_contracting(subcontract_doctype="Purchase Order")
 
 	def update_receiving_percentage(self):
 		total_qty, received_qty = 0.0, 0.0
@@ -572,8 +578,8 @@ class PurchaseOrder(BuyingController):
 			self.db_set("per_received", 0, update_modified=False)
 
 	def set_service_items_for_finished_goods(self):
-		if not self.is_subcontracted or self.is_old_subcontracting_flow:
-			return
+		# if not self.is_subcontracted or self.is_old_subcontracting_flow:
+		# 	return
 
 		finished_goods_without_service_item = {
 			d.fg_item for d in self.items if (not d.item_code and d.fg_item)

@@ -24,11 +24,11 @@ class MusterRollEmployee(Document):
 		from frappe.types import DF
 		from hrms.hr.doctype.wages_history.wages_history import WagesHistory
 
+		account_no: DF.Data | None
 		amount: DF.Currency
-		bank_ac_no: DF.Data | None
+		bank: DF.Link | None
 		bank_account_type: DF.Link | None
 		bank_branch: DF.Link | None
-		bank_name: DF.Link | None
 		blood_group: DF.Link | None
 		branch: DF.Link | None
 		company: DF.Link
@@ -41,14 +41,15 @@ class MusterRollEmployee(Document):
 		joining_date: DF.Date
 		list_in_job_card: DF.Check
 		mess_deduction: DF.Check
-		mr_type: DF.Literal["Under CDCL", "Under Labour Contract"]
+		mobile: DF.Data | None
+		mr_type: DF.Literal["", "Under Labour Contract"]
 		musterroll: DF.Table[Musterroll]
 		person_name: DF.Data
 		project: DF.Link | None
 		qualification: DF.Data | None
 		rate_per_day: DF.Currency
+		rate_per_hour: DF.Currency
 		rate_per_hour_normal: DF.Currency
-		rate_per_hour_overtime: DF.Currency
 		reference_docname: DF.Data | None
 		reference_doctype: DF.Data | None
 		salary: DF.Currency

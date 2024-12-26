@@ -1,24 +1,47 @@
 {
  "actions": [],
+ "allow_import": 1,
  "allow_rename": 1,
+ "autoname": "field:d_name",
  "creation": "2024-10-31 15:01:25.929298",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "section_break_bbab"
+  "dpt_name",
+  "d_name",
+  "cost_center"
  ],
  "fields": [
   {
-   "fieldname": "section_break_bbab",
-   "fieldtype": "Section Break"
+   "fieldname": "dpt_name",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Department",
+   "options": "Department",
+   "reqd": 1
+  },
+  {
+   "fieldname": "d_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Division",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "cost_center",
+   "fieldtype": "Link",
+   "label": "Cost Center",
+   "options": "Cost Center"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-10-31 15:01:25.929298",
+ "modified": "2024-12-23 12:24:19.227898",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Division",
+ "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [
   {

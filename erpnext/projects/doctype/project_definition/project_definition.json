@@ -1,0 +1,285 @@
+{
+ "actions": [],
+ "allow_import": 1,
+ "autoname": "PRD.####",
+ "creation": "2021-09-20 14:51:26.517920",
+ "doctype": "DocType",
+ "document_type": "Setup",
+ "engine": "InnoDB",
+ "field_order": [
+  "company",
+  "project_name",
+  "column_break_2",
+  "project_code_prefix",
+  "project_code",
+  "section_break_2",
+  "budget_profile",
+  "fiscal_year",
+  "cost_center",
+  "column_break_6",
+  "project_profile",
+  "status",
+  "section_break_9",
+  "start_date",
+  "column_break_11",
+  "end_date",
+  "sb_project_manager_details",
+  "project_manager",
+  "project_manager_name",
+  "project_manager_designation",
+  "ongoing_project_sites_section",
+  "project_sites",
+  "section_break_19",
+  "total_overall_project_cost",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "budget_profile",
+   "fieldtype": "Select",
+   "hidden": 1,
+   "label": "Budget Profile",
+   "options": "\nAnnually\nOverall",
+   "read_only": 1
+  },
+  {
+   "fieldname": "fiscal_year",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Fiscal Year",
+   "options": "Fiscal Year"
+  },
+  {
+   "fieldname": "column_break_6",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "project_profile",
+   "fieldtype": "Select",
+   "label": "Project Profile",
+   "options": "\nInternal\nExternal",
+   "reqd": 1
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "label": "Status",
+   "options": "Created\nBudget Released\nProject Released\nCompleted"
+  },
+  {
+   "fieldname": "section_break_9",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "start_date",
+   "fieldtype": "Date",
+   "label": "Start Date"
+  },
+  {
+   "fieldname": "column_break_11",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "end_date",
+   "fieldtype": "Date",
+   "label": "End Date"
+  },
+  {
+   "fieldname": "ongoing_project_sites_section",
+   "fieldtype": "Section Break",
+   "label": "Ongoing Project Sites"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "project_sites",
+   "fieldtype": "Table",
+   "options": "Ongoing Project Item"
+  },
+  {
+   "fieldname": "section_break_19",
+   "fieldtype": "Section Break"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "total_overall_project_cost",
+   "fieldtype": "Currency",
+   "label": "Total Overall Project Cost"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Project Definition",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Project Definition",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "project_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Project Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_2",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "project_code",
+   "fieldtype": "Data",
+   "label": "Project Code",
+   "read_only": 1
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Company",
+   "options": "Company",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sb_project_manager_details",
+   "fieldtype": "Section Break",
+   "label": "Project Manager Details"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "project_manager",
+   "fieldtype": "Link",
+   "ignore_user_permissions": 1,
+   "label": "Project Manager",
+   "options": "Employee"
+  },
+  {
+   "allow_on_submit": 1,
+   "fetch_from": "project_manager.employee_name",
+   "fieldname": "project_manager_name",
+   "fieldtype": "Data",
+   "label": "Project Manager Name",
+   "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fetch_from": "project_,manager.designation",
+   "fieldname": "project_manager_designation",
+   "fieldtype": "Link",
+   "label": "Project Manager Designation",
+   "options": "Designation",
+   "read_only": 1
+  },
+  {
+   "fieldname": "project_code_prefix",
+   "fieldtype": "Select",
+   "label": "Project Code Prefix",
+   "options": "\nGA-J\nGA-K\nGA-T\nGA-P\nGA-B\nGA",
+   "reqd": 1
+  },
+  {
+   "fieldname": "cost_center",
+   "fieldtype": "Link",
+   "label": "Cost Center",
+   "options": "Cost Center"
+  }
+ ],
+ "icon": "icon-puzzle-piece",
+ "is_submittable": 1,
+ "links": [],
+ "max_attachments": 4,
+ "modified": "2024-12-24 12:41:49.835597",
+ "modified_by": "Administrator",
+ "module": "Projects",
+ "name": "Project Definition",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Projects Readonly",
+   "share": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Project Committee",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Projects User",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Auditor",
+   "share": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Administrator",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "cancel": 1,
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Projects GM",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "search_fields": "project_name,fiscal_year,status",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "project_code",
+ "track_changes": 1,
+ "track_seen": 1
+}

@@ -28,6 +28,7 @@ class Equipment(Document):
 		details: DF.SmallText | None
 		disabled_date: DF.Date | None
 		dzongkhag: DF.Link | None
+		employee: DF.Link | None
 		engine_number: DF.Data | None
 		equipment_category: DF.Link
 		equipment_history: DF.Table[EquipmentHistory]
@@ -37,9 +38,11 @@ class Equipment(Document):
 		gewog: DF.Link | None
 		hsd_type: DF.Link | None
 		is_disabled: DF.Check
+		maintain_in_others_asset: DF.Check
 		model_items: DF.Table[EquipmentModelHistory]
 		not_cdcl: DF.Check
 		operators: DF.Table[EquipmentOperator]
+		owned_by: DF.Link | None
 		registration_number: DF.Data
 		supplier: DF.Link | None
 		tank_capacity: DF.Data | None

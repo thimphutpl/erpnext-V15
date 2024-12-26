@@ -22,11 +22,12 @@ class MRPaymentItem(Document):
 		daily_rate: DF.Currency
 		designation: DF.ReadOnly | None
 		employee: DF.DynamicLink
-		employee_type: DF.Literal["", "Muster Roll Employee", "GEP Employee"]
+		employee_type: DF.Literal["", "Muster Roll Employee", "Operator", "Open Air Prisoner", "DFG"]
 		fiscal_year: DF.Link | None
+		gratuity_amount: DF.Currency
 		health: DF.Currency
 		hourly_rate: DF.Currency
-		hourly_rate_normal: DF.Currency
+		hourly_rates: DF.Currency
 		id_card: DF.Data
 		mess_deduction: DF.Currency
 		month: DF.Literal["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]

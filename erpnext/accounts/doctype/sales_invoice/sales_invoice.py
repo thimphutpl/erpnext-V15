@@ -84,7 +84,7 @@ class SalesInvoice(SellingController):
 		base_total: DF.Currency
 		base_total_taxes_and_charges: DF.Currency
 		base_write_off_amount: DF.Currency
-		branch: DF.Link | None
+		branch: DF.Link
 		campaign: DF.Link | None
 		cash_bank_account: DF.Link | None
 		change_amount: DF.Currency
@@ -98,7 +98,7 @@ class SalesInvoice(SellingController):
 		contact_mobile: DF.SmallText | None
 		contact_person: DF.Link | None
 		conversion_rate: DF.Float
-		cost_center: DF.Link | None
+		cost_center: DF.Link
 		currency: DF.Link
 		customer: DF.Link | None
 		customer_address: DF.Link | None
@@ -164,7 +164,6 @@ class SalesInvoice(SellingController):
 		rounding_adjustment: DF.Currency
 		sales_partner: DF.Link | None
 		sales_team: DF.Table[SalesTeam]
-		scan_barcode: DF.Data | None
 		select_print_heading: DF.Link | None
 		selling_price_list: DF.Link
 		set_posting_time: DF.Check

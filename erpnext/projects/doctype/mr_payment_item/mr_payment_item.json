@@ -25,14 +25,15 @@
   "wage_payable",
   "column_break_11",
   "number_of_hours",
-  "hourly_rate_normal",
+  "hourly_rate",
+  "total_ot_amount",
   "amount_regular",
   "number_of_hours_special",
-  "hourly_rate",
+  "hourly_rates",
   "amount_special",
-  "total_ot_amount",
   "section_break_15",
   "total_amount",
+  "gratuity_amount",
   "mess_deduction",
   "total_payable",
   "ot_section",
@@ -54,7 +55,7 @@
    "fieldtype": "Select",
    "hidden": 1,
    "label": "Employee Type",
-   "options": "\nMuster Roll Employee\nGEP Employee",
+   "options": "\nMuster Roll Employee\nOperator\nOpen Air Prisoner\nDFG",
    "search_index": 1
   },
   {
@@ -161,25 +162,20 @@
   {
    "fieldname": "number_of_hours",
    "fieldtype": "Float",
-   "label": "Number of Hours(Regular)",
-   "read_only": 1
-  },
-  {
-   "fieldname": "hourly_rate_normal",
-   "fieldtype": "Currency",
-   "label": "Hourly Rate(Normal)",
+   "label": "Number of Hours",
    "read_only": 1
   },
   {
    "fieldname": "number_of_hours_special",
    "fieldtype": "Float",
+   "hidden": 1,
    "label": "Number of Hours(Special/Holiday)",
    "read_only": 1
   },
   {
    "fieldname": "hourly_rate",
    "fieldtype": "Currency",
-   "label": "Hourly Rate(Special/Holiday)",
+   "label": "Hourly Rate",
    "read_only": 1
   },
   {
@@ -224,6 +220,7 @@
    "allow_on_submit": 1,
    "fieldname": "bank_payment",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Bank Payment",
    "read_only": 1
   },
@@ -231,6 +228,7 @@
    "allow_on_submit": 1,
    "fieldname": "payment_status",
    "fieldtype": "Select",
+   "hidden": 1,
    "label": "Status",
    "options": "\nPayment Under Process\nPayment Successful\nPayment Failed\nPartial Payment\nPayment Cancelled",
    "read_only": 1
@@ -238,28 +236,47 @@
   {
    "fieldname": "amount_regular",
    "fieldtype": "Currency",
+   "hidden": 1,
    "label": "Amount Regular"
   },
   {
    "fieldname": "amount_special",
    "fieldtype": "Currency",
+   "hidden": 1,
    "label": "Amount Special"
   },
   {
    "fieldname": "mess_deduction",
    "fieldtype": "Currency",
+   "hidden": 1,
    "label": "Mess Deduction"
   },
   {
    "fieldname": "total_payable",
    "fieldtype": "Currency",
+   "hidden": 1,
    "label": "Total Payable"
+  },
+  {
+   "depends_on": "eval:doc.employee_type =='Open Air Prisoner'",
+   "fieldname": "gratuity_amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Gratuity Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "hourly_rates",
+   "fieldtype": "Currency",
+   "hidden": 1,
+   "label": "Hourly Rate(Special/Holiday)",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-12-03 12:07:35.377587",
+ "modified": "2024-12-26 11:37:06.261958",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "MR Payment Item",

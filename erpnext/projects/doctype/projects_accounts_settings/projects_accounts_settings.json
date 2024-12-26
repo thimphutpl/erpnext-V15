@@ -8,37 +8,65 @@
   "sb_mr_gep",
   "mr_html",
   "mr_overtime_account",
+  "column_break_iyty",
   "mr_wages_account",
-  "column_break_2",
   "gep_html",
+  "gep_wages_accounts",
+  "gep_overtime_accounts",
+  "section_break_zmmx",
   "gep_overtime_account",
+  "column_break_jrll",
   "gep_wages_account",
+  "section_break_ozbp",
+  "inventory_account",
+  "section_break_nvqf",
+  "project_advance_account",
+  "column_break_ydxi",
+  "project_invoice_account",
+  "column_break_xnsp",
+  "project_accrued_income_account",
+  "operator_accounts_section",
+  "operator_allowance_account",
+  "column_break_kspe",
+  "operator_overtime_account",
+  "dfg_accounts_section",
+  "dfg_wage_account",
+  "column_break_juqm",
+  "dfg_overtime_account",
+  "oap_accounts_section",
+  "oap_wage_account",
+  "column_break_oica",
+  "oap_overtime_account",
+  "column_break_sgyz",
+  "oap_gratuity_account",
   "section_break_10",
   "advance_account_internal",
+  "column_break_ashu",
   "invoice_account_internal",
   "sb_external",
   "sb_customer",
-  "project_advance_account",
-  "project_invoice_account",
-  "project_accrued_income_account",
+  "project_advance_accounts",
+  "project_invoice_accounts",
+  "project_accrued_income_accounts",
   "column_break_19",
   "sb_supplier",
   "advance_account_supplier",
   "invoice_account_supplier",
   "accrued_expense_account",
   "section_break_9",
-  "inventory_account",
+  "inventory_accounts",
   "retention_account_receivable"
  ],
  "fields": [
   {
    "fieldname": "sb_mr_gep",
    "fieldtype": "Section Break",
-   "label": "Muster Roll & GEP Payment Settings"
+   "label": "Muster Roll Accounts"
   },
   {
    "fieldname": "mr_html",
    "fieldtype": "HTML",
+   "hidden": 1,
    "options": "<h5>Muster Roll Accounts</h5>"
   },
   {
@@ -58,27 +86,22 @@
    "reqd": 1
   },
   {
-   "fieldname": "column_break_2",
-   "fieldtype": "Column Break"
-  },
-  {
    "fieldname": "gep_html",
    "fieldtype": "HTML",
+   "hidden": 1,
    "options": "<h5>GEP Accounts</h5>"
   },
   {
    "fieldname": "gep_overtime_account",
    "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "GEP Overtime Account",
+   "label": "Musteroll Overtime Account",
    "options": "Account",
    "reqd": 1
   },
   {
    "fieldname": "gep_wages_account",
    "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "GEP Wages Account",
+   "label": "Musteroll Wages Account",
    "options": "Account",
    "reqd": 1
   },
@@ -113,22 +136,23 @@
   {
    "fieldname": "project_advance_account",
    "fieldtype": "Link",
-   "label": "Advance Account",
+   "label": "Project Advance Account",
    "options": "Account",
    "reqd": 1
   },
   {
    "fieldname": "project_invoice_account",
    "fieldtype": "Link",
-   "label": "Invoice Account",
+   "label": "Project Invoice Account",
    "options": "Account",
    "reqd": 1
   },
   {
    "fieldname": "project_accrued_income_account",
    "fieldtype": "Link",
-   "label": "Accrued Income Account",
-   "options": "Account"
+   "label": "Project Accrued Income Account",
+   "options": "Account",
+   "reqd": 1
   },
   {
    "fieldname": "column_break_19",
@@ -167,8 +191,7 @@
    "fieldname": "inventory_account",
    "fieldtype": "Link",
    "label": "Sale of Inventory Account",
-   "options": "Account",
-   "reqd": 1
+   "options": "Account"
   },
   {
    "description": "*This account will be checked at Project Payment to update Retention Money section in Project.",
@@ -176,12 +199,164 @@
    "fieldtype": "Link",
    "label": "Retention Account Receivable",
    "options": "Account"
+  },
+  {
+   "fieldname": "column_break_iyty",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "gep_overtime_accounts",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "in_list_view": 1,
+   "label": "GEP Overtime Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "section_break_zmmx",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "gep_wages_accounts",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "in_list_view": 1,
+   "label": "GEP Wages Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "column_break_jrll",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_ozbp",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "inventory_accounts",
+   "fieldtype": "Link",
+   "label": "Sale of Inventory Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "section_break_nvqf",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "project_advance_accounts",
+   "fieldtype": "Link",
+   "label": "Advance Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "project_invoice_accounts",
+   "fieldtype": "Link",
+   "label": "Invoice Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "column_break_ydxi",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_ashu",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "project_accrued_income_accounts",
+   "fieldtype": "Link",
+   "label": "Accrued Income Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "column_break_xnsp",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "operator_accounts_section",
+   "fieldtype": "Section Break",
+   "label": "Operator Accounts"
+  },
+  {
+   "fieldname": "operator_allowance_account",
+   "fieldtype": "Link",
+   "label": "Operator Allowance Account",
+   "options": "Account",
+   "reqd": 1
+  },
+  {
+   "fieldname": "operator_overtime_account",
+   "fieldtype": "Link",
+   "label": "Operator Overtime Account",
+   "options": "Account",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_kspe",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "dfg_accounts_section",
+   "fieldtype": "Section Break",
+   "label": "DFG Accounts"
+  },
+  {
+   "fieldname": "dfg_wage_account",
+   "fieldtype": "Link",
+   "label": "DFG Wage Account",
+   "options": "Account",
+   "reqd": 1
+  },
+  {
+   "fieldname": "dfg_overtime_account",
+   "fieldtype": "Link",
+   "label": "DFG Overtime Account",
+   "options": "Account",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_juqm",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "oap_accounts_section",
+   "fieldtype": "Section Break",
+   "label": "OAP Accounts"
+  },
+  {
+   "fieldname": "oap_wage_account",
+   "fieldtype": "Link",
+   "label": "OAP Wage Account",
+   "options": "Account",
+   "reqd": 1
+  },
+  {
+   "fieldname": "oap_overtime_account",
+   "fieldtype": "Link",
+   "label": "OAP Overtime Account",
+   "options": "Account",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_oica",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_sgyz",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "oap_gratuity_account",
+   "fieldtype": "Link",
+   "label": "OAP Gratuity Account",
+   "options": "Account",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-12-01 21:59:52.471133",
+ "modified": "2024-12-25 16:22:38.717929",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Projects Accounts Settings",

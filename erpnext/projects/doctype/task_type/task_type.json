@@ -21,7 +21,7 @@
   }
  ],
  "links": [],
- "modified": "2022-08-29 17:46:41.342979",
+ "modified": "2024-12-20 15:11:30.844339",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Task Type",
@@ -48,7 +48,7 @@
    "print": 1,
    "read": 1,
    "report": 1,
-   "role": "Projects Manager",
+   "role": "Project Manager",
    "share": 1,
    "write": 1
   },

@@ -73,7 +73,7 @@ class Asset(AccountsController):
 		comprehensive_insurance: DF.Data | None
 		cost_center: DF.Link | None
 		credit_account: DF.Link | None
-		custodian: DF.Link
+		custodian: DF.Link | None
 		custodian_name: DF.Data | None
 		customer: DF.Link | None
 		default_finance_book: DF.Link | None
@@ -153,6 +153,7 @@ class Asset(AccountsController):
 		self.set_total_booked_depreciations()
 		self.total_asset_cost = self.gross_purchase_amount
 		self.status = self.get_status()
+		self.disable_depreciation_on_item()
 
 	def on_submit(self):
 		self.validate_in_use_date()
@@ -176,7 +177,10 @@ class Asset(AccountsController):
 		make_reverse_gl_entries(voucher_type="Asset", voucher_no=self.name)
 		self.db_set("booked_fixed_asset", 0)
 		add_asset_activity(self.name, _("Asset cancelled"))
-
+	def disable_depreciation_on_item(self):
+		if self.item_code:
+			if frappe.db.get_value("Item",self.item_code,"item_sub_group")=="Third Party Item":
+				self.disable_depreciation == 1
 	def after_insert(self):
 		if self.calculate_depreciation and not self.split_from:
 			asset_depr_schedules_names = make_draft_asset_depr_schedules(self)
@@ -310,7 +314,9 @@ class Asset(AccountsController):
 	def validate_finance_books(self):
 		if not self.calculate_depreciation or len(self.finance_books) == 1:
 			return
-
+		if frappe.db.get_value("Item",self.item_code,"item_sub_group")=="Third Party Item":
+			return
+		frappe.throw(str(self.item_code))
 		finance_books = set()
 
 		for d in self.finance_books:
@@ -425,6 +431,8 @@ class Asset(AccountsController):
 			)
 
 	def validate_asset_finance_books(self, row):
+		if frappe.db.get_value("Item",self.item_code,"item_sub_group")=="Third Party Item":
+			return
 		if flt(row.expected_value_after_useful_life) >= flt(self.gross_purchase_amount):
 			frappe.throw(
 				_("Row {0}: Expected Value After Useful Life must be less than Gross Purchase Amount").format(
@@ -745,20 +753,18 @@ class Asset(AccountsController):
 				"posting_date": self.posting_date if self.posting_date else self.purchase_date,
 				"branch": self.branch
 				})
-
-			#credit account update
-			je.append("accounts", {
-				"account": self.credit_account,
-				"credit_in_account_currency": self.gross_purchase_amount,
-				"reference_type": "Asset",
-				"reference_name": self.name,
-				"cost_center": self.cost_center
-				})
-
 			#debit account update
 			je.append("accounts", {
 				"account": self.asset_account,
 				"debit_in_account_currency": self.gross_purchase_amount,
+				"reference_type": "Asset",
+				"reference_name": self.name,
+				"cost_center": self.cost_center
+				})
+			#credit account update
+			je.append("accounts", {
+				"account": self.credit_account,
+				"credit_in_account_currency": self.gross_purchase_amount,
 				"reference_type": "Asset",
 				"reference_name": self.name,
 				"cost_center": self.cost_center
@@ -776,20 +782,18 @@ class Asset(AccountsController):
 				"posting_date": self.posting_date if self.posting_date else self.purchase_date,
 				"branch": self.branch
 				})
-
-			#credit account update
-			je.append("accounts", {
-				"account": self.accumulated_depreciation_account,
-				"credit_in_account_currency": self.opening_accumulated_depreciation,
-				"reference_type": "Asset",
-				"reference_name": self.name,
-				"cost_center": self.cost_center
-				})
-
 			#debit account update
 			je.append("accounts", {
 				"account": self.credit_account,
 				"debit_in_account_currency": self.opening_accumulated_depreciation,
+				"reference_type": "Asset",
+				"reference_name": self.name,
+				"cost_center": self.cost_center
+				})
+			#credit account update
+			je.append("accounts", {
+				"account": self.accumulated_depreciation_account,
+				"credit_in_account_currency": self.opening_accumulated_depreciation,
 				"reference_type": "Asset",
 				"reference_name": self.name,
 				"cost_center": self.cost_center

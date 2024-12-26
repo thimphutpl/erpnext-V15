@@ -291,16 +291,43 @@ frappe.ui.form.on("Project", {
 	party: function(frm){
 		update_party_info(frm.doc);
 	},
-	project_category: function(){
-		cur_frm.set_value('project_sub_category','');
-		cur_frm.fields_dict['project_sub_category'].get_query = function(doc, dt, dn) {
-		   return {
-				filters:{"project_category": doc.project_category}
-		   }
+	expected_start_date: function(cur_frm) {
+		if(cur_frm.doc.expected_end_date) {
+			calculate_duration(cur_frm, cur_frm.doc.expected_start_date, cur_frm.doc.expected_end_date);
+	//cur_frm.set_value('total_duration', frappe.datetime.get_day_diff(cur_frm.doc.expected_end_date, cur_frm.doc.expected_start_date) + 1)
 		}
-	}
+	},
+	expected_end_date: function() {
+		if(cur_frm.doc.expected_start_date) {
+			calculate_duration(cur_frm, cur_frm.doc.expected_start_date, cur_frm.doc.expected_end_date);
+	//cur_frm.set_value('total_duration', frappe.datetime.get_day_diff(cur_frm.doc.expected_end_date, cur_frm.doc.expected_start_date) + 1)
+		}
+	},
+	// project_category: function(){
+	// 	cur_frm.set_value('project_sub_category','');
+	// 	cur_frm.fields_dict['project_sub_category'].get_query = function(doc, dt, dn) {
+	// 	   return {
+	// 			filters:{"project_category": doc.project_category}
+	// 	   }
+	// 	}
+	// }
 });
 
+function calculate_duration(cur_frm, from_date, to_date) {
+	frappe.call({
+			method: "erpnext.projects.doctype.project.project.calculate_durations",
+			 args: {
+					"hol_list": cur_frm.doc.holiday_list,
+					"from_date": from_date,
+					"to_date": to_date
+			   },
+			callback: function(r) {
+					if(r.message) {
+						cur_frm.set_value('total_duration', r.message);
+		}
+	}
+	})
+}
 function open_form(frm, doctype, child_doctype, parentfield) {
 	frappe.model.with_doctype(doctype, () => {
 		let new_doc = frappe.model.get_new_doc(doctype);
@@ -334,14 +361,14 @@ var enable_disable = function(frm){
 	
 	//cur_frm.toggle_reqd("party_type", frm.doc.project_type=="External");
 	//cur_frm.toggle_reqd("party", frm.doc.party_type || frm.doc.project_type=="External");
-	cur_frm.toggle_reqd("party_type", 1);
-	cur_frm.toggle_reqd("party", 1);
+	// cur_frm.toggle_reqd("party_type", 1);
+	// cur_frm.toggle_reqd("party", 1);
 	
 	if (frm.doc.project_type == "External") {
 		frm.set_query("party_type", function() {
 			return {
 				//filters: {"name": ["in", ["Customer", "Supplier"]]}
-				filters: {"name": ["in", ["Supplier"]]}
+				filters: {"name": ["in", ["Customer"]]}
 			}
 		});
 		//cur_frm.toggle_reqd("party", frm.doc.party_type);
@@ -349,7 +376,7 @@ var enable_disable = function(frm){
 		frm.set_query("party_type", function() {
 			return {
 				//filters: {"name": ["in", ["Employee"]]}
-				filters: {"name": ["in", ["Customer"]]}
+				filters: {"name": ["in", [""]]}
 			}
 		});
 	}

@@ -584,14 +584,17 @@ class JournalEntry(AccountsController):
 			self.name,
 		)
 
+
 	def validate_party(self):
 		for d in self.get("accounts"):
 			account_type = frappe.get_cached_value("Account", d.account, "account_type")
 			if account_type in ["Receivable", "Payable"]:
-				if not (d.party_type and d.party):
+				if d.party_type == "Employee":
+					continue
+				elif not (d.party_type and d.party):
 					frappe.throw(
 						_(
-							"Row {0}: Party Type and Party is required for Receivable / Payable account {1}"
+							"Row {0}: Party Type and Party are required for Receivable / Payable account {1}"
 						).format(d.idx, d.account)
 					)
 				elif (
@@ -603,6 +606,49 @@ class JournalEntry(AccountsController):
 							d.idx, d.account, d.party_type
 						)
 					)
+		
+
+	# def validate_party(self):
+	# 	for d in self.get("accounts"):
+	# 		account_type = frappe.get_cached_value("Account", d.account, "account_type")
+	# 		if account_type in ["Receivable", "Payable"]:
+	# 			if d.party_type == "Employee":
+	# 				if not (d.party_type and d.party):
+	# 					frappe.throw(
+	# 						_(
+	# 							"Row {0}: Party Type and Party are required for Receivable / Payable account {1}"
+	# 						).format(d.idx, d.account)
+	# 					)
+	# 				elif (
+	# 					d.party_type
+	# 					and frappe.db.get_value("Party Type", d.party_type, "account_type") != account_type
+	# 				):
+	# 					frappe.throw(
+	# 						_("Row {0}: Account {1} and Party Type {2} have different account types").format(
+	# 							d.idx, d.account, d.party_type
+	# 						)
+	# 					)
+
+
+	# def validate_party(self):
+	# 	for d in self.get("accounts"):
+	# 		account_type = frappe.get_cached_value("Account", d.account, "account_type")
+	# 		if account_type in ["Receivable", "Payable"]:
+	# 			if not (d.party_type and d.party):
+	# 				frappe.throw(
+	# 					_(
+	# 						"Row {0}: Party Type and Party is required for Receivable / Payable account {1}"
+	# 					).format(d.idx, d.account)
+	# 				)
+	# 			elif (
+	# 				d.party_type
+	# 				and frappe.db.get_value("Party Type", d.party_type, "account_type") != account_type
+	# 			):
+	# 				frappe.throw(
+	# 					_("Row {0}: Account {1} and Party Type {2} have different account types").format(
+	# 						d.idx, d.account, d.party_type
+	# 					)
+	# 				)
 
 	def check_credit_limit(self):
 		customers = list(
@@ -699,6 +745,7 @@ class JournalEntry(AccountsController):
 
 				if not against_entries:
 					if self.voucher_type != "Exchange Gain Or Loss":
+						# pass
 						frappe.throw(
 							_(
 								"Journal Entry {0} does not have account {1} or already matched against other voucher"

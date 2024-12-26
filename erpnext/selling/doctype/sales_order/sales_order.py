@@ -141,7 +141,6 @@ class SalesOrder(SellingController):
 		sales_header: DF.TextEditor | None
 		sales_partner: DF.Link | None
 		sales_team: DF.Table[SalesTeam]
-		scan_barcode: DF.Data | None
 		select_print_heading: DF.Link | None
 		selling_price_list: DF.Link
 		set_warehouse: DF.Link | None

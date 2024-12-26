@@ -141,64 +141,6 @@ frappe.ui.form.on('Asset Movement Item', {
 	}
 });
 
-// frappe.ui.form.on('Asset Movement Item', {  
-//     refresh: function(frm) {  
-//         frm.fields_dict['Asset'].grid.get_field('cost_center').get_query = function(doc) {  
-//             return {  
-//                 filters: {  
-//                     'to_employee': doc.to_employee // replace with your filtering criteria  
-//                 }  
-//             };  
-//         };  
-//     }  
-// });
-
-// frappe.ui.form.on('Asset Movement Item', {  
-//     refresh: function(frm) {  
-//         frm.fields_dict['Asset'].grid.get_field('to_employee').get_query = function(doc) {  
-//             return {  
-//                 filters: {  
-//                     'to_employee': doc.to_employee // replace with your filtering criteria  
-//                 }  
-//             };  
-//         };  
-//     }  
-// });
-
-
-
-
-// frappe.ui.form.on('Sales Invoice', {  
-//     refresh: function(frm) {  
-//         frm.fields_dict['items'].grid.get_field('item_code').get_query = function(doc) {  
-//             return {  
-//                 filters: {  
-//                     'docstatus': 1 // Adjust filter according to your needs  
-//                 }  
-//             };  
-//         };  
-
-//         frm.fields_dict['items'].grid.get_field('item_code').on_change = function() {  
-//             let selected_item = this.get_value();  
-
-//             frappe.call({  
-//                 method: "frappe.client.get",  
-//                 args: {  
-//                     doctype: "Batch",  
-//                     name: selected_item  
-//                 },  
-//                 callback: function(data) {  
-//                     if (data.message) {  
-//                         // Assuming you want to set expiry date to 'expiry_date' field  
-//                         let expiry_date = data.message.expiry_date;  
-//                         frm.fields_dict['items'].grid.get_selected_item().expiry_date = expiry_date;  
-//                         frm.refresh_field('items');  
-//                     }  
-//                 }  
-//             });  
-//         };  
-//     }  
-// });
 
 
 

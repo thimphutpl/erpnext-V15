@@ -74,7 +74,9 @@ class Project(Document):
 		users: DF.Table[ProjectUser]
 		weekly_time_to_send: DF.Time | None
 	# end: auto-generated types
-
+	def autoname(self):
+		prefix = frappe.db.get_value("Project Definition", self.project_definition, "project_code_prefix")
+		self.name = self.project_name + " ("+prefix+") - GYALSUNG"
 	def onload(self):
 		if not self.get('__unsaved'):
 			if not self.get("activity_tasks"):
@@ -649,7 +651,7 @@ class Project(Document):
 			frappe.throw(_("Party Type cannot be empty"),title="Data Missing")
 		else:
 			#project_type = {"Internal": ["Employee","None"], "External": ["Supplier","Customer"]}
-			project_type = {"Internal": ["Customer"], "External": ["Supplier"]}
+			project_type = {"Internal": [""], "External": ["Customer"]}
 			for key,value in project_type.items():
 				if self.project_type == key and (self.party_type or "None") not in value:
 					frappe.throw(_("Party type should be {0} for {1} projects").format("/".join(value),key), title="Invalid Data")
@@ -1492,8 +1494,11 @@ def change_status_ongoing(project_id):
 # Following method is created by SHIV on 02/09/2017
 @frappe.whitelist()
 def make_project_advance(source_name, target_doc=None):
+	def set_missing_values(source, target):
+		target.party_type = "Supplier"
+		target.payment_type = "Pay"
+		target.party = None
 	def update_master(source_doc, target_doc, source_partent):
-		#target_doc.customer = source_doc.customer
 		pass
 	
 	doclist = get_mapped_doc("Project", source_name, {
@@ -1501,15 +1506,26 @@ def make_project_advance(source_name, target_doc=None):
 				"doctype": "Project Advance",
 				"field_map":{
 					"name": "project",
-					"party_type": "party_type",
-					"party": "party",
-					"party_address": "party_address"
 				},
 				"postprocess": update_master
 		}
-	}, target_doc)
+	}, target_doc, set_missing_values)
 	return doclist
 # +++++++++++++++++++++ Ver 2.0 ENDS +++++++++++++++++++++
+
+@frappe.whitelist()
+def calculate_durations(hol_list = None, from_date = None, to_date = None):
+	holiday = holiday_list(from_date, to_date, hol_list)
+	duration = date_diff(to_date, from_date) + 1 - flt(holiday)
+	return duration
+
+def holiday_list(from_date, to_date, hol_list):
+	holidays = 0.0
+	if hol_list:
+		holidays = frappe.db.sql("""select count(distinct holiday_date) from `tabHoliday` h1, `tabHoliday List` h2
+	where h1.parent = h2.name and h1.holiday_date between %s and %s
+	and h2.name = %s""", (from_date, to_date, hol_list))[0][0]
+	return holidays
 
 @frappe.whitelist()
 def make_boq(source_name, target_doc=None):

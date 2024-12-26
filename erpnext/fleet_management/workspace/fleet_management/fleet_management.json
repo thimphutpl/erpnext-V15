@@ -403,134 +403,6 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Settings and Tools",
-   "link_count": 5,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Mechanical Settings",
-   "link_count": 0,
-   "link_to": "Mechanical Settings",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Hire Charge Parameter",
-   "link_count": 0,
-   "link_to": "Hire Charge Parameter",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Mechanical Notification Settings",
-   "link_count": 0,
-   "link_to": "Branch Fleet Manager",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Tender Hire Rate",
-   "link_count": 0,
-   "link_to": "Tender Hire Rate",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "HSD Adjustment",
-   "link_count": 0,
-   "link_to": "HSD Adjustment",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Master Data",
-   "link_count": 6,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Equipment",
-   "link_count": 0,
-   "link_to": "Equipment",
-   "link_type": "DocType",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Equipment Category",
-   "link_count": 0,
-   "link_to": "Equipment Category",
-   "link_type": "DocType",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Equipment Type",
-   "link_count": 0,
-   "link_to": "Equipment Type",
-   "link_type": "DocType",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Equipment Model",
-   "link_count": 0,
-   "link_to": "Equipment Model",
-   "link_type": "DocType",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Fuelbook",
-   "link_count": 0,
-   "link_to": "Fuelbook",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Service List",
-   "link_count": 0,
-   "link_to": "Service",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
    "label": "Maintenance Transaction",
    "link_count": 3,
    "link_type": "DocType",
@@ -563,86 +435,6 @@
    "label": "Mechanical Payment",
    "link_count": 0,
    "link_to": "Mechanical Payment",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Fleet Transaction",
-   "link_count": 7,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Equipment Request",
-   "link_count": 0,
-   "link_to": "Equipment Request",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Equipment Hiring Form",
-   "link_count": 0,
-   "link_to": "Equipment Hiring Form",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Vehicle Logbook",
-   "link_count": 0,
-   "link_to": "Vehicle Logbook",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Hire Charge Invoice",
-   "link_count": 0,
-   "link_to": "Hire Charge Invoice",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Equipment Hiring Extension",
-   "link_count": 0,
-   "link_to": "Equipment Hiring Extension",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Mechanical Payment",
-   "link_count": 0,
-   "link_to": "Mechanical Payment",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "dependencies": "Insurance and Registration",
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Insurance and Registration",
-   "link_count": 0,
-   "link_to": "Insurance and Registration",
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
@@ -823,10 +615,183 @@
    "link_type": "Report",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Master Data",
+   "link_count": 5,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Equipment",
+   "link_count": 0,
+   "link_to": "Equipment",
+   "link_type": "DocType",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Equipment Category",
+   "link_count": 0,
+   "link_to": "Equipment Category",
+   "link_type": "DocType",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Equipment Type",
+   "link_count": 0,
+   "link_to": "Equipment Type",
+   "link_type": "DocType",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Equipment Model",
+   "link_count": 0,
+   "link_to": "Equipment Model",
+   "link_type": "DocType",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Fuelbook",
+   "link_count": 0,
+   "link_to": "Fuelbook",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Settings and Tools",
+   "link_count": 3,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Hire Charge Parameter",
+   "link_count": 0,
+   "link_to": "Hire Charge Parameter",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Tender Hire Rate",
+   "link_count": 0,
+   "link_to": "Tender Hire Rate",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "HSD Adjustment",
+   "link_count": 0,
+   "link_to": "HSD Adjustment",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Fleet Transaction",
+   "link_count": 6,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "dependencies": "Equipment Request",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Equipment Request",
+   "link_count": 0,
+   "link_to": "Equipment Request",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "dependencies": "Equipment Hiring Form",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Equipment Hiring Form",
+   "link_count": 0,
+   "link_to": "Equipment Hiring Form",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "dependencies": "Vehicle Logbook",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Vehicle Logbook",
+   "link_count": 0,
+   "link_to": "Vehicle Logbook",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "dependencies": "Hire Charge Invoice",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Hire Charge Invoice",
+   "link_count": 0,
+   "link_to": "Hire Charge Invoice",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "dependencies": "Equipment Hiring Extension",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Equipment Hiring Extension",
+   "link_count": 0,
+   "link_to": "Equipment Hiring Extension",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "dependencies": "Mechanical Payment",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Mechanical Payment",
+   "link_count": 0,
+   "link_to": "Mechanical Payment",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2024-11-29 13:05:06.174870",
- "modified_by": "kinzang.namgyal@cdcl.bt",
+ "modified": "2024-12-23 11:47:57.168100",
+ "modified_by": "tshering.lham@thimphutechpark.bt",
  "module": "Fleet Management",
  "name": "Fleet Management",
  "number_cards": [],

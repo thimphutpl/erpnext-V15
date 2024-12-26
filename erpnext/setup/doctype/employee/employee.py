@@ -24,10 +24,29 @@ class InactiveEmployeeStatusError(frappe.ValidationError):
 
 class Employee(NestedSet):
 	nsm_parent_field = "reports_to"
+	    
 	def autoname(self):
-		name = make_autoname('EMP.####')[3:]
-		if not self.employee_name:
-			self.set_employee_name()
+		naming_method = frappe.db.get_value("HR Settings", None, "emp_created_by")
+		if not naming_method:
+			throw(_("Please setup Employee Naming System in Human Resource > HR Settings"))
+		else:
+			if naming_method == 'Naming Series':
+				if not self.date_of_joining:
+					frappe.throw("Date of Joining not Set!")
+				#naming_series = str(self.naming_series) + str(getdate(self.date_of_joining).year)[2:4]
+				naming_series = str(self.naming_series)	
+				x = make_autoname(str(naming_series) + '.###')
+				y = make_autoname(str(getdate(self.date_of_joining).strftime('%m')) + ".#")
+				eid = x[:6] + y[:2] + x[6:9]
+				self.name = x
+				self.yearid = x
+			elif naming_method == 'Employee Number':
+				self.name = self.employee_number
+
+		self.employee = self.name
+		# name = make_autoname('EMP.####')[3:]
+		# if not self.employee_name:
+		# 	self.set_employee_name()
 	def validate(self):
 		from erpnext.controllers.status_updater import validate_status
 		validate_status(self.status, ["Active", "Inactive", "Suspended", "Left"])
@@ -443,7 +462,8 @@ def add_in_blocklist(emp, block_list):
 
 @frappe.whitelist()
 def get_overtime_rate(employee, posting_date ):
-	basic = frappe.db.sql("select b.eligible_for_overtime_and_payment, a.amount as basic_pay from `tabSalary Detail` a, `tabSalary Structure` b where a.parent = b.name and a.salary_component = 'Basic Pay' and b.is_active = 'Yes' and b.employee = \'" + str(employee) + "\'", as_dict=True)
+	basic = frappe.db.sql("select a.amount as basic_pay from `tabSalary Detail` a, `tabSalary Structure` b where a.parent = b.name and a.salary_component in ('GCE Basic Pay', 'Basic Pay') and b.is_active = 'Yes' and b.employee = \'" + str(employee) + "\'", as_dict=True)
+	# basic = frappe.db.sql("select b.eligible_for_overtime_and_payment, a.amount as basic_pay from `tabSalary Detail` a, `tabSalary Structure` b where a.parent = b.name and a.salary_component = 'Basic Pay' and b.is_active = 'Yes' and b.employee = \'" + str(employee) + "\'", as_dict=True)
 	if basic:
 		if not cint(basic[0].eligible_for_overtime_and_payment):
 			salary_struc=frappe.db.sql("select name from `tabSalary Structure` where employee='{}' and is_active='Yes'".format(employee), as_dict=True)[0].name

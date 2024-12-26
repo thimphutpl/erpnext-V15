@@ -15,6 +15,9 @@
   "disabled_date",
   "column_break_wbcr",
   "not_cdcl",
+  "owned_by",
+  "maintain_in_others_asset",
+  "employee",
   "column_break_wapg",
   "asset_code",
   "section_break_hvxq",
@@ -211,10 +214,10 @@
   },
   {
    "default": "0",
-   "description": "Check if the Equipment is Not CDCL's",
+   "description": "Check if the Equipment is Not Gyalsung Infra's",
    "fieldname": "not_cdcl",
    "fieldtype": "Check",
-   "label": "Not CDCL's"
+   "label": "Not Own"
   },
   {
    "fieldname": "column_break_wapg",
@@ -300,11 +303,34 @@
    "label": "Registration Number",
    "reqd": 1,
    "unique": 1
+  },
+  {
+   "depends_on": "not_cdcl",
+   "fieldname": "owned_by",
+   "fieldtype": "Link",
+   "label": "Owned By",
+   "mandatory_depends_on": "not_cdcl",
+   "options": "Supplier"
+  },
+  {
+   "default": "0",
+   "depends_on": "not_cdcl",
+   "fieldname": "maintain_in_others_asset",
+   "fieldtype": "Check",
+   "label": "Maintain in Others Asset"
+  },
+  {
+   "depends_on": "maintain_in_others_asset",
+   "fieldname": "employee",
+   "fieldtype": "Link",
+   "label": "Employee",
+   "mandatory_depends_on": "maintain_in_others_asset",
+   "options": "Employee"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-24 14:08:49.289524",
+ "modified": "2024-12-23 14:30:15.350873",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Equipment",

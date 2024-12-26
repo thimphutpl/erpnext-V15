@@ -10,6 +10,8 @@
  "field_order": [
   "naming_series",
   "project_name",
+  "parent_project",
+  "project_engineer",
   "status",
   "project_type",
   "project_category",
@@ -19,16 +21,22 @@
   "percent_complete",
   "column_break_5",
   "project_template",
-  "expected_start_date",
-  "expected_end_date",
   "priority",
   "department",
-  "revised_completion_date",
   "cb_1",
   "branch",
   "cost_center",
-  "reference_no",
-  "reference_date",
+  "project_definition",
+  "section_break_plwh",
+  "expected_start_date",
+  "total_duration",
+  "duration_sum",
+  "revised_completion_date",
+  "overall_mandays",
+  "cb_01",
+  "expected_end_date",
+  "mandays",
+  "man_power_required",
   "defect_liability_section_section",
   "dlp_start_date",
   "dlp_end_date",
@@ -103,7 +111,8 @@
   "day_to_send",
   "weekly_time_to_send",
   "column_break_45",
-  "message"
+  "message",
+  "amended_from"
  ],
  "fields": [
   {
@@ -374,7 +383,9 @@
    "fieldname": "cost_center",
    "fieldtype": "Link",
    "label": "Cost Center",
-   "options": "Cost Center"
+   "options": "Cost Center",
+   "read_only": 1,
+   "reqd": 1
   },
   {
    "collapsible": 1,
@@ -507,17 +518,9 @@
    "fieldname": "branch",
    "fieldtype": "Link",
    "label": "Branch",
-   "options": "Branch"
-  },
-  {
-   "fieldname": "reference_no",
-   "fieldtype": "Data",
-   "label": "Reference No"
-  },
-  {
-   "fieldname": "reference_date",
-   "fieldtype": "Date",
-   "label": "Reference Date"
+   "options": "Branch",
+   "read_only": 1,
+   "reqd": 1
   },
   {
    "fieldname": "party_type",
@@ -578,13 +581,13 @@
   {
    "fieldname": "project_category",
    "fieldtype": "Link",
-   "label": "Project Category",
+   "label": "Activity Category",
    "options": "Project Category"
   },
   {
    "fieldname": "project_sub_category",
    "fieldtype": "Link",
-   "label": "Project Sub Category",
+   "label": "Activity Sub Category",
    "options": "Project Sub Category"
   },
   {
@@ -731,14 +734,81 @@
    "fieldtype": "Table",
    "label": "Retention Money Receivable",
    "options": "Retention Money Receivable"
+  },
+  {
+   "fieldname": "parent_project",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Academy(Parent Activity)",
+   "options": "Project"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "project_engineer",
+   "fieldtype": "Link",
+   "label": "Project Engineer",
+   "options": "Employee"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Project",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "section_break_plwh",
+   "fieldtype": "Section Break",
+   "label": "Work Plan"
+  },
+  {
+   "fieldname": "overall_mandays",
+   "fieldtype": "Data",
+   "label": "Project Man Days"
+  },
+  {
+   "fieldname": "mandays",
+   "fieldtype": "Data",
+   "label": "Activity Man Days"
+  },
+  {
+   "fieldname": "duration_sum",
+   "fieldtype": "Data",
+   "label": "Sum(Duration)"
+  },
+  {
+   "fieldname": "total_duration",
+   "fieldtype": "Data",
+   "label": "Duration(Days)"
+  },
+  {
+   "fieldname": "man_power_required",
+   "fieldtype": "Data",
+   "label": "Man Power Required"
+  },
+  {
+   "fieldname": "project_definition",
+   "fieldtype": "Link",
+   "label": "Project Definition",
+   "options": "Project Definition",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "cb_01",
+   "fieldtype": "Column Break"
   }
  ],
  "icon": "fa fa-puzzle-piece",
  "idx": 29,
  "index_web_pages_for_search": 1,
+ "is_submittable": 1,
  "links": [],
  "max_attachments": 4,
- "modified": "2024-12-01 21:53:50.411206",
+ "modified": "2024-12-24 17:03:02.223417",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Project",
@@ -754,6 +824,7 @@
    "report": 1,
    "role": "Projects User",
    "share": 1,
+   "submit": 1,
    "write": 1
   },
   {
@@ -770,8 +841,9 @@
    "print": 1,
    "read": 1,
    "report": 1,
-   "role": "Projects Manager",
+   "role": "Project Manager",
    "share": 1,
+   "submit": 1,
    "write": 1
   },
   {
@@ -782,6 +854,19 @@
    "role": "Employee",
    "select": 1,
    "share": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
   }
  ],
  "search_fields": "project_name,customer, status, priority, is_active",

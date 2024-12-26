@@ -5,9 +5,10 @@ from __future__ import unicode_literals
 import frappe
 from frappe import _
 from frappe.model.document import Document
-from frappe.utils import cstr, flt, fmt_money, formatdate, getdate, get_datetime
+from frappe.utils import cstr, flt, fmt_money, formatdate, getdate, get_datetime, nowdate
 from frappe.desk.reportview import get_match_cond
 from erpnext.custom_utils import check_uncancelled_linked_doc, check_future_date
+from frappe.model.mapper import get_mapped_doc
 
 class EquipmentHiringForm(Document):
 	# begin: auto-generated types
@@ -36,7 +37,7 @@ class EquipmentHiringForm(Document):
 		hiring_status: DF.Check
 		location: DF.Link | None
 		payment_completed: DF.Check
-		private: DF.Literal["Private", "CDCL", "Others"]
+		private: DF.Literal["Own", "Others"]
 		private_customer_address: DF.SmallText | None
 		private_customer_name: DF.Data | None
 		rate: DF.Currency
@@ -410,17 +411,18 @@ def get_advance_balance(branch, customer):
 @frappe.whitelist()
 def make_vehicle_logbook(source_name, target_doc=None): 
 	def update_docs(obj, target, source_parent):
+		# frappe.throw(str(target))
 		target.posting_date = nowdate()
 		target.payment_for = "Equipment Hiring Form"
-		target.net_amount = obj.outstanding_amount
-		target.actual_amount = obj.outstanding_amount
+		target.net_amount = obj.advance_amount
+		target.actual_amount = obj.advance_amount
 		target.income_account = frappe.db.get_value("Branch", obj.branch, "revenue_bank_account")
 	
 		target.append("items", {
 			"reference_type": "Equipment Hiring Form",
 			"reference_name": obj.name,
-			"outstanding_amount": obj.outstanding_amount,
-			"allocated_amount": obj.outstanding_amount,
+			"outstanding_amount": obj.advance_amount,
+			"allocated_amount": obj.advance_amount,
 			"customer": obj.customer
 		})
 

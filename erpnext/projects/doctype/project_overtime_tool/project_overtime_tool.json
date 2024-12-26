@@ -1,0 +1,126 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-12-12 12:15:42.911648",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "employee_filters_section",
+  "project",
+  "column_break_eazr",
+  "cost_center",
+  "branch",
+  "overtime_details_section",
+  "date",
+  "number_of_hours",
+  "column_break_mkzj",
+  "employee_type",
+  "purpose",
+  "unassigned_muster_rolls_section",
+  "employees_html",
+  "assigned_muster_rolls_section",
+  "marked_attendance_html"
+ ],
+ "fields": [
+  {
+   "fieldname": "employee_filters_section",
+   "fieldtype": "Section Break",
+   "label": "Employee Filters"
+  },
+  {
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "label": "Project",
+   "options": "Project"
+  },
+  {
+   "fieldname": "cost_center",
+   "fieldtype": "Link",
+   "label": "Cost Center",
+   "options": "Cost Center"
+  },
+  {
+   "fieldname": "column_break_eazr",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "label": "Branch",
+   "options": "Branch"
+  },
+  {
+   "fieldname": "overtime_details_section",
+   "fieldtype": "Section Break",
+   "label": "Overtime Details"
+  },
+  {
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "label": "Date"
+  },
+  {
+   "fieldname": "number_of_hours",
+   "fieldtype": "Float",
+   "label": "Number of Hours"
+  },
+  {
+   "fieldname": "column_break_mkzj",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "employee_type",
+   "fieldtype": "Select",
+   "label": "Employee Type",
+   "options": "\nMuster Roll Employee\nOpen Air Prisoner\nOperator"
+  },
+  {
+   "fieldname": "purpose",
+   "fieldtype": "Small Text",
+   "label": "Purpose"
+  },
+  {
+   "fieldname": "unassigned_muster_rolls_section",
+   "fieldtype": "Section Break",
+   "label": "Unassigned Muster Rolls"
+  },
+  {
+   "fieldname": "employees_html",
+   "fieldtype": "HTML",
+   "label": "Employees HTML"
+  },
+  {
+   "fieldname": "assigned_muster_rolls_section",
+   "fieldtype": "Section Break",
+   "label": "Assigned Muster Rolls"
+  },
+  {
+   "fieldname": "marked_attendance_html",
+   "fieldtype": "HTML",
+   "label": "Marked Attendance HTML"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2024-12-12 12:23:35.213900",
+ "modified_by": "Administrator",
+ "module": "Projects",
+ "name": "Project Overtime Tool",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

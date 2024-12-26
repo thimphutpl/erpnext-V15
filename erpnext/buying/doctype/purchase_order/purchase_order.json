@@ -26,6 +26,9 @@
   "tax_withholding_category",
   "supplier_warehouse",
   "amended_from",
+  "is_contract",
+  "contract_id",
+  "contract_delivery",
   "accounting_dimensions_section",
   "cost_center",
   "dimension_col_break",
@@ -91,9 +94,11 @@
   "discount_section",
   "apply_discount_on",
   "base_discount_amount",
-  "column_break_45",
   "additional_discount_percentage",
   "discount_amount",
+  "column_break_45",
+  "freight_insurance_charges",
+  "installation_charges",
   "references_section",
   "material_request",
   "material_request_date",
@@ -607,12 +612,11 @@
   {
    "fieldname": "section_break_52",
    "fieldtype": "Section Break",
-   "hide_border": 1
+   "hidden": 1
   },
   {
    "fieldname": "taxes",
    "fieldtype": "Table",
-   "hidden": 1,
    "label": "Purchase Taxes and Charges",
    "oldfieldname": "purchase_tax_details",
    "oldfieldtype": "Table",
@@ -693,7 +697,6 @@
    "read_only": 1
   },
   {
-   "collapsible": 1,
    "fieldname": "discount_section",
    "fieldtype": "Section Break",
    "label": "Additional Discount"
@@ -1277,13 +1280,41 @@
    "no_copy": 1,
    "oldfieldtype": "HTML",
    "print_hide": 1
+  },
+  {
+   "fieldname": "freight_insurance_charges",
+   "fieldtype": "Data",
+   "label": "Freight and Insurance Charges"
+  },
+  {
+   "fieldname": "installation_charges",
+   "fieldtype": "Data",
+   "label": "Installation Charges"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_contract",
+   "fieldtype": "Check",
+   "label": "Is Contract"
+  },
+  {
+   "depends_on": "eval: doc.is_contract",
+   "fieldname": "contract_delivery",
+   "fieldtype": "Date",
+   "label": "Supplier Delivery Date"
+  },
+  {
+   "depends_on": "eval: doc.is_contract",
+   "fieldname": "contract_id",
+   "fieldtype": "Data",
+   "label": "Contract ID"
   }
  ],
  "icon": "fa fa-file-text",
  "idx": 105,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-26 10:18:06.473420",
+ "modified": "2024-12-26 15:20:03.764933",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Purchase Order",

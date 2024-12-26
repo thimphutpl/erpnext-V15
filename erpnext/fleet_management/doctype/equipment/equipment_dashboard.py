@@ -3,6 +3,9 @@ from frappe import _
 def get_data():
 	return {
         "fieldname": "equipment",
+		"non_standard_fieldnames": {
+			"Insurance and Registration": "equipment_number",
+		},
 		"transactions": [
 			{"label": _("POL Transaction"), "items": ["POL Receive", "POL Expense", "POL Issue","Fleet Engagement"]},
 			{"label": _("Hiring Transaction"), "items": ["Transporter Invoice", "EME Invoice", "Equipment Hiring Form", "Logbook"]},

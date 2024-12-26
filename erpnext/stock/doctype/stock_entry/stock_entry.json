@@ -12,7 +12,6 @@
   "branch",
   "user_cost_center",
   "naming_series",
-  "stock_entry_type",
   "outgoing_stock_entry",
   "purpose",
   "add_to_transit",
@@ -28,6 +27,7 @@
   "company",
   "posting_date",
   "posting_time",
+  "stock_entry_type",
   "column_break_eaoa",
   "set_posting_time",
   "inspection_required",
@@ -140,7 +140,7 @@
    "label": "Purpose",
    "oldfieldname": "purpose",
    "oldfieldtype": "Select",
-   "options": "Material Issue\nMaterial Receipt\nMaterial Transfer\nMaterial Transfer for Manufacture\nMaterial Consumption for Manufacture\nManufacture\nRepack\nSend to Subcontractor",
+   "options": "Material Issue\nMaterial Return\nMaterial Receipt\nMaterial Transfer\nMaterial Transfer for Manufacture\nMaterial Consumption for Manufacture\nManufacture\nRepack\nSend to Subcontractor",
    "read_only": 1,
    "search_index": 1
   },
@@ -295,7 +295,6 @@
    "print_hide": 1
   },
   {
-   "description": "Sets 'Source Warehouse' in each row of the items table.",
    "fieldname": "from_warehouse",
    "fieldtype": "Link",
    "in_list_view": 1,
@@ -744,13 +743,14 @@
    "allow_on_submit": 1,
    "fieldname": "title",
    "fieldtype": "Data",
-   "label": "Stock Entry Title",
-   "reqd": 1
+   "hidden": 1,
+   "label": "Stock Entry Title"
   },
   {
    "default": "0",
    "fieldname": "inspection_required",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "Inspection Required"
   },
   {
@@ -761,10 +761,12 @@
    "label": "Apply Putaway Rule"
   },
   {
+   "fetch_from": "branch.cost_center",
    "fieldname": "user_cost_center",
    "fieldtype": "Link",
-   "label": "User Cost Center",
-   "options": "Cost Center"
+   "label": "Cost Center",
+   "options": "Cost Center",
+   "read_only": 1
   },
   {
    "fieldname": "price_list",
@@ -778,7 +780,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-27 12:47:03.540829",
+ "modified": "2024-12-26 10:19:03.675327",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Stock Entry",

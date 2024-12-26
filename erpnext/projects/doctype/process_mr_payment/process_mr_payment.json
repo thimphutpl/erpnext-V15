@@ -27,6 +27,7 @@
   "ot_amount",
   "column_break_8",
   "total_health_amount",
+  "gratuity_amount",
   "column_break_20",
   "total_overall_amount",
   "deduction",
@@ -48,7 +49,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Employee Type",
-   "options": "\nMuster Roll Employee\nGEP Employee",
+   "options": "\nMuster Roll Employee\nOperator\nOpen Air Prisoner\nDFG",
    "reqd": 1
   },
   {
@@ -64,10 +65,10 @@
    "fieldtype": "Link",
    "label": "Cost Center",
    "options": "Cost Center",
+   "read_only": 1,
    "reqd": 1
   },
   {
-   "fetch_from": "project.branch",
    "fieldname": "branch",
    "fieldtype": "Link",
    "label": "Branch",
@@ -249,12 +250,18 @@
    "fieldtype": "Currency",
    "label": "Net Amount ",
    "read_only": 1
+  },
+  {
+   "fieldname": "gratuity_amount",
+   "fieldtype": "Currency",
+   "label": "Gratuity Amount",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-12-03 15:34:57.010509",
+ "modified": "2024-12-25 11:04:02.595611",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Process MR Payment",

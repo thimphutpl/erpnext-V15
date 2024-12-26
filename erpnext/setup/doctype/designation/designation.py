@@ -16,6 +16,7 @@ class Designation(Document):
 
 		description: DF.Text | None
 		designation_name: DF.Data
+		employee_group: DF.Link | None
 	# end: auto-generated types
 
 	pass

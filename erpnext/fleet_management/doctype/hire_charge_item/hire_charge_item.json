@@ -31,8 +31,7 @@
    "fieldname": "from_date",
    "fieldtype": "Date",
    "in_list_view": 1,
-   "label": "From Date",
-   "reqd": 1
+   "label": "From Date"
   },
   {
    "fieldname": "to_date",
@@ -56,8 +55,7 @@
    "fieldname": "rate_fuel",
    "fieldtype": "Currency",
    "in_list_view": 1,
-   "label": "With Fuel",
-   "reqd": 1
+   "label": "With Fuel"
   },
   {
    "fieldname": "column_break_cahz",
@@ -68,33 +66,28 @@
    "fieldname": "rate_wofuel",
    "fieldtype": "Currency",
    "in_list_view": 1,
-   "label": "Without Fuel",
-   "reqd": 1
+   "label": "Without Fuel"
   },
   {
    "fieldname": "idle_rate",
    "fieldtype": "Currency",
    "in_list_view": 1,
-   "label": "Idle Rate",
-   "reqd": 1
+   "label": "Idle Rate"
   },
   {
    "fieldname": "rate_fuel_internal",
    "fieldtype": "Currency",
-   "label": "With Fuel",
-   "reqd": 1
+   "label": "With Fuel"
   },
   {
    "fieldname": "rate_wofuel_internal",
    "fieldtype": "Currency",
-   "label": "Without Fuel",
-   "reqd": 1
+   "label": "Without Fuel"
   },
   {
    "fieldname": "idle_rate_internal",
    "fieldtype": "Currency",
-   "label": "Idle Rate",
-   "reqd": 1
+   "label": "Idle Rate"
   },
   {
    "fieldname": "section_break_xifj",
@@ -110,8 +103,7 @@
    "fieldtype": "Float",
    "in_standard_filter": 1,
    "label": "Based on Hours",
-   "precision": "2",
-   "reqd": 1
+   "precision": "2"
   },
   {
    "fieldname": "column_break_njrx",
@@ -122,29 +114,26 @@
    "fieldname": "yard_distance",
    "fieldtype": "Float",
    "label": "Based on Distance",
-   "precision": "2",
-   "reqd": 1
+   "precision": "2"
   },
   {
    "fieldname": "perf_bench",
    "fieldtype": "Int",
    "in_list_view": 1,
-   "label": "Performance Benchmark",
-   "reqd": 1
+   "label": "Performance Benchmark"
   },
   {
    "fieldname": "main_int",
    "fieldtype": "Float",
    "in_list_view": 1,
    "label": "Maintenance Interval",
-   "precision": "1",
-   "reqd": 1
+   "precision": "1"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-11-03 18:42:25.915175",
+ "modified": "2024-12-23 14:22:12.532711",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Hire Charge Item",
