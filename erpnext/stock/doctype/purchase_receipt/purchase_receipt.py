@@ -9,6 +9,8 @@ from frappe.model.mapper import get_mapped_doc
 from frappe.query_builder.functions import CombineDatetime
 from frappe.utils import cint, flt, get_datetime, getdate, nowdate
 from pypika import functions as fn
+from frappe.model.naming import make_autoname
+from erpnext.custom_autoname import get_auto_name
 
 import erpnext
 from erpnext.accounts.utils import get_account_currency
@@ -217,6 +219,9 @@ class PurchaseReceipt(BuyingController):
 					},
 				]
 			)
+
+	def autoname(self):
+		self.name = make_autoname(get_auto_name(self, self.naming_series) + ".####")		
 
 	def before_validate(self):
 		from erpnext.stock.doctype.putaway_rule.putaway_rule import apply_putaway_rule

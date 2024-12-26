@@ -252,11 +252,15 @@ class VehicleLogbook(Document):
 			self.total_work_time = total_w
 			self.total_idle_time = total_i
 
+		# if self.include_km:
+		# 	if flt(self.ys_km) > 0:
+		# 		self.consumption_km = flt(self.distance_km) / flt(self.ys_km)
+		# 	elif flt(self.kph) > 0:
+		# 		self.consumption_km = flt(self.distance_km)	/ flt(self.kph)	
 		if self.include_km:
-			if flt(self.ys_km) > 0:
-				self.consumption_km = flt(self.distance_km) / flt(self.ys_km)
-			elif flt(self.kph) > 0:
-				self.consumption_km = flt(self.distance_km)	/ flt(self.kph)	
+			self.consumption_km = flt(self.distance_km) / flt(self.ys_km)
+		elif flt(self.kph) > 0:
+			self.consumption_km = flt(self.distance_km)	/ flt(self.kph)
 
 		if self.include_hour:
 			self.consumption_hours = flt(self.ys_hours) * flt(self.total_work_time)

@@ -9,6 +9,7 @@ frappe.ui.form.on("Request for Quotation", {
 	setup: function (frm) {
 		frm.custom_make_buttons = {
 			"Supplier Quotation": "Create",
+			"Purchase Order": "Create",		
 		};
 
 		frm.fields_dict["suppliers"].grid.get_field("contact").get_query = function (doc, cdt, cdn) {
@@ -40,6 +41,14 @@ frappe.ui.form.on("Request for Quotation", {
 	},
 
 	refresh: function (frm, cdt, cdn) {
+		// Add the custom button for Purchase Order
+        // frm.add_custom_button(__('Create Purchase Order'), function() {
+        //     frappe.model.open_mapped_doc({
+        //         method: "path.to.your.server_side_function",
+        //         frm: frm
+        //     });
+        // }, __("Actions"));
+
 		if (frm.doc.docstatus === 1) {
 			frm.add_custom_button(
 				__("Supplier Quotation"),
@@ -48,6 +57,12 @@ frappe.ui.form.on("Request for Quotation", {
 				},
 				__("Create")
 			);
+			frm.add_custom_button(__('Create Purchase Order'), function() {
+				frappe.model.open_mapped_doc({
+					method: "erpnext.buying.doctype.purchase_order.purchase_order.create_purchase_order", // Update with your server-side mapping function
+					frm: frm
+				});
+			}, __("Create"));
 
 			frm.add_custom_button(
 				__("Send Emails to Suppliers"),
@@ -155,6 +170,7 @@ frappe.ui.form.on("Request for Quotation", {
 
 			frm.page.set_inner_btn_group_as_primary(__("Create"));
 		}
+		
 	},
 
 	make_supplier_quotation: function (frm) {

@@ -225,7 +225,9 @@ class MBEntry(AccountsController):
 					"debit" if self.party_type == "Supplier" else "credit": self.total_entry_amount,
 					"debit_in_account_currency" if self.party_type == "Supplier" else "credit_in_account_currency": self.total_entry_amount,
 					"project": self.project,
-					"cost_center": self.cost_center
+					"cost_center": self.cost_center,
+					"party_type": self.party_type if self.party_type == "Supplier" else "",
+					"party": self.party if self.party_type == "Supplier" else ""
 				}, self.currency)
 			)
 			make_gl_entries(gl_entries, cancel=(self.docstatus == 2),update_outstanding="No", merge_entries=False)

@@ -13,7 +13,7 @@ class Fuelbook(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
-		account_number: DF.Data
+		account_number: DF.Data | None
 		branch: DF.Link
 		disabled: DF.Check
 		equipment: DF.Link | None
@@ -21,6 +21,6 @@ class Fuelbook(Document):
 		fuelbook_number: DF.Data
 		security_deposit: DF.Currency
 		supplier: DF.Link
-		type: DF.Literal["Own", "Common"]
+		type: DF.Literal["", "Own", "Common"]
 	# end: auto-generated types
 	pass

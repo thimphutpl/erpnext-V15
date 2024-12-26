@@ -168,6 +168,11 @@ frappe.ui.form.on('Vehicle Logbook', {
 			cur_frm.set_value("consumption", flt(frm.doc.other_consumption) + flt(frm.doc.consumption_km) + flt(frm.doc.consumption_hours))
 			cur_frm.refresh_fields()
 		}
+		if(frm.doc.total_work_time && frm.doc.lph && frm.doc.include_hour) {
+			cur_frm.set_value("consumption_hours", frm.doc.total_work_time * frm.doc.lph)
+			cur_frm.set_value("consumption", flt(frm.doc.other_consumption) + flt(frm.doc.consumption_km) + flt(frm.doc.consumption_hours))
+			cur_frm.refresh_fields()
+		}
 	},
 
 	"include_km": function(frm) {
@@ -178,6 +183,11 @@ frappe.ui.form.on('Vehicle Logbook', {
 		}
 		if(frm.doc.distance_km && frm.doc.ys_km && frm.doc.include_km) {
 			cur_frm.set_value("consumption_km", frm.doc.distance_km / frm.doc.ys_km)
+			cur_frm.set_value("consumption", flt(frm.doc.other_consumption) + flt(frm.doc.consumption_km) + flt(frm.doc.consumption_hours))
+			cur_frm.refresh_fields()
+		}
+		if(frm.doc.distance_km && frm.doc.kph && frm.doc.include_km) {
+			cur_frm.set_value("consumption_km", frm.doc.distance_km / frm.doc.kph)
 			cur_frm.set_value("consumption", flt(frm.doc.other_consumption) + flt(frm.doc.consumption_km) + flt(frm.doc.consumption_hours))
 			cur_frm.refresh_fields()
 		}

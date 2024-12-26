@@ -414,6 +414,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "default": "Today",
    "fieldname": "approval_date",
    "fieldtype": "Date",
    "in_list_view": 1,
@@ -424,7 +425,7 @@
  "idx": 70,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-12-24 13:09:01.554403",
+ "modified": "2024-12-26 19:01:15.335345",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Material Request",

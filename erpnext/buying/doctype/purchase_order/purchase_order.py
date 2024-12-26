@@ -10,7 +10,7 @@ from frappe.desk.notifications import clear_doctype_notifications
 from frappe.model.mapper import get_mapped_doc
 from frappe.utils import cint, cstr, flt, get_link_to_form
 from frappe.model.naming import make_autoname
-
+from erpnext.custom_autoname import get_auto_name
 from erpnext.accounts.doctype.sales_invoice.sales_invoice import (
 	unlink_inter_company_doc,
 	update_linked_doc,
@@ -166,6 +166,9 @@ class PurchaseOrder(BuyingController):
 				"percent_join_field": "material_request",
 			}
 		]
+
+	def autoname(self):
+		self.name = make_autoname(get_auto_name(self, self.naming_series) + ".####")	
 
 	def onload(self):
 		supplier_tds = frappe.db.get_value("Supplier", self.supplier, "tax_withholding_category")
@@ -924,3 +927,35 @@ def is_subcontracting_order_created(po_name) -> bool:
 		if frappe.db.exists("Subcontracting Order", {"purchase_order": po_name, "docstatus": ["=", 1]})
 		else False
 	)
+
+@frappe.whitelist()
+def create_purchase_order(source_name, target_doc=None):
+    from frappe.model.mapper import get_mapped_doc
+
+    def set_missing_values(source, target):
+        target.run_method("set_missing_values")
+        target.run_method("calculate_taxes_and_totals")
+
+    doc = get_mapped_doc(
+        "Request for Quotation",  # Replace with your source doctype name
+        source_name,
+        {
+            "Request for Quotation": {  # Mapping for the main document
+                "doctype": "Purchase Order",  # Target doctype
+                "field_map": {
+                    "field_in_source": "field_in_target",  # Map fields as necessary
+                },
+            },
+            "Source Child Table": {  # Mapping for child tables if applicable
+                "doctype": "Purchase Order Item",
+                "field_map": {
+                    "child_field_in_source": "child_field_in_target",
+                },
+            },
+        },
+        target_doc,
+        set_missing_values,
+    )
+    return doc
+
+

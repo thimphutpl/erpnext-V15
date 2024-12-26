@@ -19,10 +19,16 @@ frappe.query_reports["Revenue Target"] = {
 			"options": "Cost Center"
 		},
 		{
+			"fieldname": "details",
+			"label": __("Monthly Details"),
+			"fieldtype": "Check",
+			"default": 0
+		},
+		{
 			"fieldname": "month",
 			"label": __("Month"),
 			"fieldtype": "Select",
-			"options": ["January","February","March","April","May","June","July","August","September","October","November","December"],
+			"options": ["All","January","February","March","April","May","June","July","August","September","October","November","December"],
 			"reqd": 1
 		}
 	]

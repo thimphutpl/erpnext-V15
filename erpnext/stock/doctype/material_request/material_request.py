@@ -154,7 +154,7 @@ class MaterialRequest(BuyingController):
 
 		self.reset_default_field_value("set_warehouse", "items", "warehouse")
 		self.reset_default_field_value("set_from_warehouse", "items", "from_warehouse")
-	
+		self.approval_date = nowdate()
 		
 	def before_update_after_submit(self):
 		self.validate_schedule_date()

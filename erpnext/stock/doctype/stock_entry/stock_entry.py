@@ -102,6 +102,7 @@ class StockEntry(StockController):
 		company: DF.Link
 		credit_note: DF.Link | None
 		delivery_note_no: DF.Link | None
+		fabrication_bailey_bridge: DF.Link | None
 		fg_completed_qty: DF.Float
 		from_bom: DF.Check
 		from_warehouse: DF.Link | None

@@ -7,6 +7,8 @@ from frappe import _, qb, throw
 from frappe.model.mapper import get_mapped_doc
 from frappe.query_builder.functions import Sum
 from frappe.utils import cint, cstr, flt, formatdate, get_link_to_form, getdate, nowdate
+from frappe.model.naming import make_autoname
+from erpnext.custom_autoname import get_auto_name
 
 import erpnext
 from erpnext.accounts.deferred_revenue import validate_service_stop_date
@@ -229,6 +231,9 @@ class PurchaseInvoice(BuyingController):
 				"overflow_type": "billing",
 			}
 		]
+
+	def autoname(self):
+		self.name = make_autoname(get_auto_name(self, self.naming_series) + ".####")	
 
 	def onload(self):
 		super().onload()

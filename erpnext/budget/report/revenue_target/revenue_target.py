@@ -67,27 +67,43 @@ def construct_query(filters=None):
 
 	query = ("""
 			select 
-				rta.cost_center as cost_center, rta.account as account, 
-		  		rta.account_number as account_number,
-		  		rta.{month} as monthly_amt
+				rta.*
 			from `tabRevenue Target` rt, `tabRevenue Target Account` rta 
 			where rta.parent = rt.name and rt.docstatus = 1 
 			{conditions}
 			""".format(month=month_lower, conditions=conditions))
 	return query
+	""" rta.cost_center as cost_center, rta.account as account, 
+		  		rta.account_number as account_number,
+		  		rta.{month} as monthly_amt """
 	
 def get_data(query, filters):
 	data = []
 	datas = frappe.db.sql(query, as_dict=True)
-	month_name = filters.get("month")
-	year = filters.get("fiscal_year")
-	month_number = list(calendar.month_name).index(month_name.capitalize())
-	_, end_day = calendar.monthrange(int(year), month_number)
 
-	start_date = f"{year}-{month_number:02d}-01"
-	end_date = f"{year}-{month_number:02d}-{end_day}"
+	# frappe.throw(f"{filters.get('details')} and here: {filters.get('month')}")
+	if filters.get('details') and filters.get('month') != 'All':
+		# frappe.throw(f"hello")
+		month_name = filters.get("month")
+		year = filters.get("fiscal_year")
+		month_number = list(calendar.month_name).index(month_name.capitalize())
+		_, end_day = calendar.monthrange(int(year), month_number)
+
+		start_date = f"{year}-{month_number:02d}-01"
+		end_date = f"{year}-{month_number:02d}-{end_day}"
+	# elif filters.get('details'):
+	# 	year = filters.get("fiscal_year")
+	# 	start_date = f"{year}-01-01"
+	# 	end_date = f"{year}-12-31"
+	else:
+		year = filters.get("fiscal_year")
+		start_date = f"{year}-01-01"
+		end_date = f"{year}-12-31"
 
 	for d in datas:
+		if filters.get('details'):
+			pass
+			
 		achieved = frappe.db.sql("""
 			select
 				ifnull(sum(gl.debit) - sum(gl.credit), 0) as achieved_amount
@@ -100,15 +116,24 @@ def get_data(query, filters):
 	
 		achieved_amount = achieved[0]['achieved_amount']
 
-		achieved_percent = 0
-		balance_amount = flt(d.monthly_amt) - flt(abs(achieved_amount))
-		if d.monthly_amt != 0:
-			achieved_percent = (flt(achieved_amount) / flt(d.monthly_amt)) * 100
+		achieved_percent,target_amount = 0,0
+		if filters.get('details') and filters.get('month') != 'All':
+			month_val = filters.get('month').lower()
+			balance_amount = flt(d[month_val]) - flt(abs(achieved_amount))
+			target_amount = flt(d[month_val])
+			if d[month_val] != 0:
+				achieved_percent = (flt(achieved_amount) / flt(d[month_val])) * 100
+		else:
+			balance_amount = flt(d.target_amount) - flt(abs(achieved_amount))
+			if d.target_amount != 0:
+				achieved_percent = (flt(achieved_amount) / flt(d.target_amount)) * 100
+			target_amount = flt(d.target_amount)
+		
 		row = {
 			"cost_center": d.cost_center,
 			"account": d.account,
 			"account_number": d.account_number,
-			"target_amount": d.monthly_amt,
+			"target_amount": target_amount,
 			"achieved_amount": abs(achieved_amount),
 			"balance_amount": balance_amount,
 			"achieved_percent": abs(achieved_percent)
@@ -117,7 +142,11 @@ def get_data(query, filters):
 	return data
 
 def get_conditions(filters):
+	# if not filters.get("details") and filters.get("month") != "All":
+	# 	frappe.throw(f"set month filter to <b>All</b>")
 	conditions = ""
+	# if filters.get("month") != 'All':
+	# 	conditions += """ and rta.{month} as monthly_amt""".format(month=filters.get("month").lower())
 	if filters.get("cost_center"):
 		conditions += """ and rta.cost_center ='{cost_center}'""".format(cost_center=filters.get("cost_center"))
 	if filters.get("fiscal_year"):
