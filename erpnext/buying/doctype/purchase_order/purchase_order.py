@@ -561,6 +561,7 @@ class PurchaseOrder(BuyingController):
 				item.received_qty = item.qty
 
 	def update_reserved_qty_for_subcontract(self):
+		pass
 		# if self.is_old_subcontracting_flow:
 		# 	for d in self.supplied_items:
 		# 		if d.rm_item_code:
