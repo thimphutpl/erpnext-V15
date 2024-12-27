@@ -382,7 +382,9 @@ erpnext.stock.PurchaseReceiptController = class PurchaseReceiptController extend
 				{	"fieldtype": "Select",
 					"label": __("Material Name"),
 					"fieldname": "item_name",
-					"options": doc.items.map(d => d.item_name),
+					"options": doc.items
+						.filter(d => d.is_fixed_asset === 1)
+						.map(d => d.idx+' '+d.item_name),
 					"reqd": 1 
 				},
 				{	"fieldtype": "Button", "label": __('Issue Asset'),
@@ -393,6 +395,9 @@ erpnext.stock.PurchaseReceiptController = class PurchaseReceiptController extend
 		
 		dialog.fields_dict.make_asset_issue_entry.$input.click(function() {
 			var args = dialog.get_values();
+			var item = args.item_name;
+			var itemIdx = item.substr(0, item.indexOf(" "));
+			var itemName = item.substr(item.indexOf(" "), item.length - 1);
 
 			frappe.call({
 				method:'frappe.client.get_value',
@@ -400,7 +405,7 @@ erpnext.stock.PurchaseReceiptController = class PurchaseReceiptController extend
 					'doctype':'Item',
 					fieldname:"is_fixed_asset",
 					filters: {
-						"item_name": args.item_name,
+						"item_name": itemName.trim(),
 						"is_fixed_asset":1
 					}
 				},
@@ -415,12 +420,10 @@ erpnext.stock.PurchaseReceiptController = class PurchaseReceiptController extend
 						if(!args) return;
 						dialog.hide();
 	
-						let business_activity = ''
 						let item_code = ''
 						let asset_rate = ''
 						cur_frm.doc.items.map(d => {
-							if (d.item_name == args.item_name){
-								business_activity = d.business_activity;
+							if (d.idx == itemIdx){
 								item_code = d.item_code;
 								asset_rate = d.valuation_rate;
 							}
@@ -429,11 +432,12 @@ erpnext.stock.PurchaseReceiptController = class PurchaseReceiptController extend
 	
 						var new_doc = frappe.model.get_new_doc('Asset Issue Details');
 						new_doc.branch = cur_frm.doc.branch;
-						new_doc.business_activity = business_activity;
 						new_doc.entry_date = new Date().toJSON().slice(0,10).replace(/-/g,'-');
 						new_doc.item_code = item_code;
 						new_doc.purchase_receipt = cur_frm.docname;
 						new_doc.asset_rate = asset_rate
+						new_doc.purchase_date = cur_frm.doc.posting_date
+						new_doc.company = cur_frm.doc.company
 						new_doc.qty = 1;
 						new_doc.amount = asset_rate * new_doc.qty
 						frappe.set_route('Form', 'Asset Issue Details', new_doc.name);
