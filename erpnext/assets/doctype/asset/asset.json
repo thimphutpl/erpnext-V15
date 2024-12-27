@@ -108,6 +108,7 @@
    "options": "ACC-ASS-.YYYY.-"
   },
   {
+   "allow_on_submit": 1,
    "depends_on": "item_code",
    "fetch_from": "item_code.item_name",
    "fetch_if_empty": 1,
@@ -187,6 +188,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "company",
    "fieldtype": "Link",
    "label": "Company",
@@ -580,6 +582,7 @@
    "options": "Asset Sub Category"
   },
   {
+   "allow_on_submit": 1,
    "depends_on": "eval:doc.is_existing_asset",
    "fieldname": "old_asset_code",
    "fieldtype": "Data",
@@ -617,12 +620,14 @@
    "label": "Serial Number"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "asset_status",
    "fieldtype": "Select",
    "label": "Asset Status",
    "options": "Usable\nUnusable\nRepairable\nAllocated\nMarked for Auction\nAuctioned"
   },
   {
+   "allow_on_submit": 1,
    "fetch_from": "custodian.employee_name",
    "fieldname": "custodian_name",
    "fieldtype": "Data",
@@ -735,7 +740,7 @@
    "link_fieldname": "target_asset"
   }
  ],
- "modified": "2024-12-25 17:06:32.159832",
+ "modified": "2024-12-27 14:54:58.958421",
  "modified_by": "Administrator",
  "module": "Assets",
  "name": "Asset",
