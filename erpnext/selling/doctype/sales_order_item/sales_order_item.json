@@ -133,6 +133,7 @@
    "default": "0",
    "fieldname": "ensure_delivery_based_on_produced_serial_no",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "Ensure Delivery Based on Produced Serial No"
   },
   {
@@ -512,6 +513,7 @@
   {
    "fieldname": "warehouse_and_reference",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Warehouse and Reference"
   },
   {
@@ -833,6 +835,7 @@
   {
    "fieldname": "inter_transfer_reference_section",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Inter Transfer Reference"
   },
   {
@@ -917,7 +920,7 @@
  "idx": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-12-05 13:09:24.483604",
+ "modified": "2024-12-27 12:25:10.946917",
  "modified_by": "Administrator",
  "module": "Selling",
  "name": "Sales Order Item",
