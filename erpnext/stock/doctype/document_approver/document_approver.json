@@ -5,19 +5,20 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "table_1"
+  "items"
  ],
  "fields": [
   {
-   "fieldname": "table_1",
+   "fieldname": "items",
    "fieldtype": "Table",
+   "label": "Map Approver",
    "options": "Approver Item"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-12-07 15:48:37.014803",
+ "modified": "2024-12-28 12:29:38.781238",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Document Approver",

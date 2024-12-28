@@ -15,6 +15,6 @@ class DocumentApprover(Document):
 		from erpnext.stock.doctype.approver_item.approver_item import ApproverItem
 		from frappe.types import DF
 
-		table_1: DF.Table[ApproverItem]
+		items: DF.Table[ApproverItem]
 	# end: auto-generated types
 	pass
