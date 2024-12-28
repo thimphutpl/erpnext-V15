@@ -92,7 +92,23 @@ frappe.ui.form.on('POL Receive', {
 				}
 			}
 		})
+		// if (frm.doc.equipment) {
+        //     frappe.call({
+        //         method: "erpnext.fleet_management.doctype.pol_receive.pol_receive.fetch_tank_balance",
+        //         args: {
+        //             equipment: frm.doc.equipment
+        //         },
+        //         callback: function(response) {
+        //             if (response.message) {
+        //                 frm.set_value('tank_balance', response.message);
+        //             }
+        //         }
+        //     });
+        // } else {
+        //     frm.set_value('tank_balance', '');
+        // }
 	},
+	
 	use_common_fuelbook:function(frm){
 		frm.set_query("fuelbook",function(){
 			return {
@@ -173,24 +189,3 @@ var set_equipment_filter=function(frm){
 		});
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -128,7 +128,7 @@ class TDSRemittance(AccountsController):
 			frappe.throw("Total TDS Amount is Zero.")
 
 
-def get_tds_invoices(tax_withholding_category, from_date, to_date, name, filter_existing = False, cond='', party_type = None):
+def get_tds_invoices(tax_withholding_category, from_date, to_date, name, filter_existing = False, cond='', party_type = None, cost_center = None):
 	accounts_cond = accounts_cond_ti = accounts_cond_eme = existing_cond = party_cond = "" 
 	entries = pi_entries = pe_entries = je_entries = []
 
@@ -180,9 +180,10 @@ def get_tds_invoices(tax_withholding_category, from_date, to_date, name, filter_
 			where t.posting_date between '{from_date}' and '{to_date}'
 			{accounts_cond}
 			and t.docstatus = 1 
+			and t.cost_center = '{cost_center}'
 			{existing_cond}
 			{cond}""".format(accounts_cond = accounts_cond, cond = cond, existing_cond = existing_cond,\
-				from_date=from_date, to_date=to_date), as_dict=True)
+				from_date=from_date, to_date=to_date, cost_center=cost_center), as_dict=True)
 
 	# Payment Entry
 	if party_type:
@@ -203,10 +204,11 @@ def get_tds_invoices(tax_withholding_category, from_date, to_date, name, filter_
 		where t.posting_date between '{from_date}' and '{to_date}'
 		{accounts_cond}
 		and t.docstatus = 1
+		and t.cost_center = '{cost_center}'
 		{existing_cond}
 		{party_cond}
 		{cond}""".format(accounts_cond = accounts_cond, cond = cond, existing_cond = existing_cond,\
-			party_cond = party_cond, from_date=from_date, to_date=to_date), as_dict=True)
+			party_cond = party_cond, from_date=from_date, to_date=to_date, cost_center=cost_center), as_dict=True)
 
 	# Journal Entry
 	if len(accounts) == 1:
@@ -243,10 +245,11 @@ def get_tds_invoices(tax_withholding_category, from_date, to_date, name, filter_
 		where t.posting_date between '{from_date}' and '{to_date}'
 		{accounts_cond}
 		and t.docstatus = 1 and t.apply_tds = 1 
+		and t1.cost_center = '{cost_center}'
 		{existing_cond}
 		{party_cond}
 		{cond}""".format(accounts_cond = accounts_cond, cond = cond, existing_cond = existing_cond,\
-			party_cond = party_cond, from_date=from_date, to_date=to_date), as_dict=True)
+			party_cond = party_cond, from_date=from_date, to_date=to_date, cost_center=cost_center), as_dict=True)
 	# Transporter Invoice
 	# ti_entries = frappe.db.sql("""select t.posting_date, t.name as invoice_no, 'Transporter Invoice' as invoice_type,
 	# 			'Supplier' as party_type, t.supplier as party, 
@@ -301,10 +304,11 @@ def get_tds_invoices(tax_withholding_category, from_date, to_date, name, filter_
 				and t.party_type = 'Supplier'
 				{accounts_cond}
 				and t.docstatus = 1
+				and t.cost_center = '{cost_center}'
 				{existing_cond}
 				{cond}
 				""".format(accounts_cond = accounts_cond_eme, cond = cond, existing_cond = existing_cond,\
-						party_cond = party_cond, from_date=from_date, to_date=to_date), as_dict=True)
+						party_cond = party_cond, from_date=from_date, to_date=to_date, cost_center=cost_center), as_dict=True)
 	entries = pi_entries + pe_entries + je_entries + r_and_s_entries
 	entries = sorted(entries, key=lambda d: (d['posting_date'], d['invoice_no']))
 	return entries

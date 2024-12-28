@@ -1,9 +1,18 @@
 // Copyright (c) 2021, Frappe Technologies Pvt. Ltd. and contributors
 // For license information, please see license.txt
-//  developed by Birendra on 15/02/2021
 frappe.ui.form.on('Review', {
+	onload: function (frm) {
+        // make_child_table_field_editable(frm);
+		let grid = frm.fields_dict['review_target_item'].grid;
+        // Disable "Add Row" button
+        grid.cannot_add_rows = true;
+        // Hide "Delete" and other row actions
+        // grid.wrapper.find('.grid-delete-row').hide();
+        // grid.wrapper.find('.grid-duplicate-row').hide();
+    },
+
 	refresh: function(frm){
-		if (frm.doc.docstatus == 1){
+		if (frm.doc.docstatus == 1) {
 			cur_frm.add_custom_button(__('Create Evaluation'), ()=>{
 				frappe.model.open_mapped_doc({
 					method: "erpnext.pms.doctype.review.review.create_evaluation",	
@@ -29,9 +38,9 @@ frappe.ui.form.on('Review', {
 		// 	}).addClass("btn-primary custom-create custom-create-css");
 		// }
 		if (frm.doc.approver == frappe.session.user){
-			frappe.meta.get_docfield("Review Target Item","appraisees_remarks",cur_frm.doc.name).read_only = frappe.session.user == frm.doc.approver
-			frappe.meta.get_docfield("Review Competency Item","appraisees_remarks",cur_frm.doc.name).read_only = frappe.session.user == frm.doc.approver
-			frappe.meta.get_docfield("Additional Achievements","appraisees_remarks",cur_frm.doc.name).read_only = frappe.session.user == frm.doc.approver
+			frappe.meta.get_docfield("Review Target Item", "appraisees_remarks", cur_frm.doc.name).read_only = frappe.session.user == frm.doc.approver
+			frappe.meta.get_docfield("Review Competency Item", "appraisees_remarks", cur_frm.doc.name).read_only = frappe.session.user == frm.doc.approver
+			frappe.meta.get_docfield("Additional Achievements", "appraisees_remarks", cur_frm.doc.name).read_only = frappe.session.user == frm.doc.approver
 		}
 		// if (frm.doc.docstatus != 1 && frappe.user.has_role(['HR Manager', 'HR User'])){
 		// 	frm.add_custom_button(__('Manual Approval'), ()=>{
@@ -58,16 +67,17 @@ frappe.ui.form.on('Review', {
 	// 		frm.set_df_property('approver', 'read_only', 1);
 	// 	}
 	// },
-	onload: function(frm){
-		apply_filter(frm)
-	},
 	get_target: function(frm){
 		get_target(frm);
 	},
-	pms_calendar: function(frm){
+	get_competency: (frm) => {
+		get_competency(frm);
+	},
+	eas_calendar: function(frm) {
 		cur_frm.refresh_fields()
 	}
 })
+
 cur_frm.cscript.approver = function(doc){
 	console.log(doc.approver)
 	frappe.call({
@@ -118,15 +128,18 @@ var hr_add_btn =function(frm){
 	}
 }
 
-var apply_filter=function(frm){
-	cur_frm.set_query('pms_calendar',  () =>{
-		return {
-			'filters': {
-				'name': frappe.defaults.get_user_default('fiscal_year'),
-				'docstatus': 1
+var get_competency = (frm) => {
+	if (frm.doc.eas_calendar) {
+		frappe.call({
+			method: "get_competency",
+			doc: frm.doc,
+			callback: (r) => {
+				cur_frm.refresh_field("review_competency_item")
 			}
-		};
-	});
+		})
+	}else{
+		frappe.throw("Select EAS Calendar to get <b>Competency</b>")
+	}
 }
 
 var get_target = function(frm){
@@ -135,22 +148,37 @@ var get_target = function(frm){
 		frappe.call({
 			method: 'get_target',
 			doc: frm.doc,
-			callback:  (r) =>{
+			callback: (r) =>{
 				frm.refresh_field("review_target_item")
 			}
 		})
 	}else{
-		frappe.throw("Select PMS Calendar to get <b>Target</b>")
+		frappe.throw("Select EAS Calendar to get <b>Target</b>")
 	}
 }
 
 frappe.ui.form.on('Review Target Item',{
 	form_render:function(frm,cdt,cdn){
 		var row = locals[cdt][cdn]
-		frappe.meta.get_docfield("Review Target Item","qty_quality",cur_frm.doc.name).read_only = frm.doc.docstatus
+		frappe.meta.get_docfield("Review Target Item", "appraisees_remarks", cur_frm.doc.name).read_only = frm.doc.docstatus
 		// frm.refresh_field('items')
 	},
 })
+
+var make_child_table_field_editable = (frm) => {
+    // frm.fields_dict["review_target_item"].grid.get_field("appraisees_remarks").df.read_only =
+    //     frappe.session.user !== "Administrator"; // Editable for Administrator
+    // frm.fields_dict["review_competency_item"].grid.get_field("appraisees_remark").df.read_only =
+    //     frappe.session.user !== frm.doc.approver; // Editable for the approver
+
+    // // Refresh the fields to apply the changes
+    // frm.refresh_field("review_target_item");
+    // frm.refresh_field("review_competency_item");
+	frappe.meta.get_docfield("Review Target Item","appraisees_remarks",cur_frm.doc.name).read_only = frappe.session.user == frm.doc.approver,
+	frappe.meta.get_docfield("Review Competency Item","appraisees_remark",cur_frm.doc.name).read_only = frappe.session.user == frm.doc.approver
+};
+
+
 
 frappe.form.link_formatters['Employee'] = function(value, doc) {
 	return value

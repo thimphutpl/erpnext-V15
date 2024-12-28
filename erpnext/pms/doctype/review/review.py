@@ -19,7 +19,6 @@ class Review(Document):
 
 	if TYPE_CHECKING:
 		from erpnext.pms.doctype.additional_achievements.additional_achievements import AdditionalAchievements
-		from erpnext.pms.doctype.negative_target_review.negative_target_review import NegativeTargetReview
 		from erpnext.pms.doctype.review_competency_item.review_competency_item import ReviewCompetencyItem
 		from erpnext.pms.doctype.review_target_item.review_target_item import ReviewTargetItem
 		from frappe.types import DF
@@ -30,25 +29,19 @@ class Review(Document):
 		approver_designation: DF.Data | None
 		approver_name: DF.Data | None
 		branch: DF.Link | None
-		business_target: DF.Table[NegativeTargetReview]
 		company: DF.Link | None
 		department: DF.Link | None
 		designation: DF.Link | None
 		division: DF.Link | None
+		eas_calendar: DF.Link
+		eas_group: DF.Link | None
 		employee: DF.Link
 		employee_name: DF.ReadOnly | None
 		end_date: DF.ReadOnly | None
 		grade: DF.Link | None
-		max_no_of_target: DF.Float
-		max_weightage_for_target: DF.Float
-		min_no_of_target: DF.Float
-		min_weightage_for_target: DF.Float
 		negative_target: DF.Check
-		pms_calendar: DF.Link
-		pms_group: DF.Link | None
 		reason: DF.SmallText | None
 		reference: DF.Link | None
-		required_to_set_target: DF.Data | None
 		rev_workflow_state: DF.Data | None
 		review_competency_item: DF.Table[ReviewCompetencyItem]
 		review_date: DF.Date | None
@@ -57,7 +50,6 @@ class Review(Document):
 		set_manual_approver: DF.Check
 		start_date: DF.ReadOnly | None
 		target: DF.Link | None
-		total_weightage: DF.Float
 		unit: DF.Link | None
 		user_id: DF.Link | None
 	# end: auto-generated types
@@ -72,65 +64,46 @@ class Review(Document):
 			return
 		else:  
 			self.validate_calendar()
+		self.validate_row_deletion()
 
 	def on_submit(self):
 		if self.reference and self.reason:
 			return
 		else:
 			self.validate_calendar()
+
+	def validate_row_deletion(self):
+		for row in self.review_target_item:
+			if row.get('delete_flag'):
+				frappe.throw("Deletion of rows is not allowed.")
 	
 	def validate_calendar(self): 
 		# check whether pms is active for review
-		if not frappe.db.exists("PMS Calendar",{"name": self.pms_calendar,"docstatus": 1,
+		if not frappe.db.exists("EAS Calendar",{"name": self.eas_calendar, "docstatus": 1,
 					"review_start_date":("<=",nowdate()),"review_end_date":(">=",nowdate())}):
-			frappe.throw(_('Review for PMS Calendar <b>{}</b> is not open please check your posting date').format(self.pms_calendar))
+			frappe.throw(_('Review for EAS Calendar <b>{}</b> is not open please check your posting date').format(self.eas_calendar))
 
-	def check_duplicate_entry(self):       
+	def check_duplicate_entry(self):
 		# check duplicate entry for particular employee
-		if self.reference and len(frappe.db.get_list('Review',filters={'employee': self.employee, 'pms_calendar': self.pms_calendar, 'docstatus': 1,'reference':self.reference})) > 2:
-			frappe.throw("You cannot set more than <b>2</b> Review for PMS Calendar <b>{}</b>".format(self.pms_calendar))
+		if self.reference and len(frappe.db.get_list('Review',filters={'employee': self.employee, 'eas_calendar': self.eas_calendar, 'docstatus': 1,'reference':self.reference})) > 2:
+			frappe.throw("You cannot set more than <b>2</b> Review for EAS Calendar <b>{}</b>".format(self.eas_calendar))
 		
-		if self.reference and frappe.db.get_list('Review',filters={'employee': self.employee, 'pms_calendar': self.pms_calendar, 'docstatus': 1,'reference':self.reference,'target':self.target}):
-			frappe.throw("You cannot set more than <b>1</b> Review for PMS Calendar <b>{}</b> for Target <b>{}</b>".format(self.pms_calendar, self.target))
+		if self.reference and frappe.db.get_list('Review',filters={'employee': self.employee, 'eas_calendar': self.eas_calendar, 'docstatus': 1,'reference':self.reference,'target':self.target}):
+			frappe.throw("You cannot set more than <b>1</b> Review for EAS Calendar <b>{}</b> for Target <b>{}</b>".format(self.eas_calendar, self.target))
 
-		if not self.reference and frappe.db.exists("Review", {'employee': self.employee, 'pms_calendar': self.pms_calendar, 'docstatus': 1}):
-				frappe.throw(_('You have already set the Review for PMS Calendar <b>{}</b>'.format(self.pms_calendar)))
+		if not self.reference and frappe.db.exists("Review", {'employee': self.employee, 'eas_calendar': self.pms_calendar, 'docstatus': 1}):
+				frappe.throw(_('You have already set the Review for EAS Calendar <b>{}</b>'.format(self.pms_calendar)))
 
 	def check_target(self):
-		check = frappe.db.get_value("PMS Group",self.pms_group,"required_to_set_target")
-		if not check:
-			frappe.throw(
-					title='Error',
-					msg="You are not required to set Target")
+		if not frappe.db.get_value("EAS Group", self.eas_group, "required_to_set_target"):
+			frappe.throw(title='Error', msg="You are not required to set Target")
 		else:
 			if not self.review_target_item:
 				frappe.throw(_('You need to <b>Set The Target</b>'))
 
-			# validate total number of target
-			target_length = flt(len(self.review_target_item))
-			if flt(target_length) > flt(self.max_no_of_target) or flt(target_length) < flt(self.min_no_of_target):
-				frappe.throw(
-					title='Error',
-					msg="Total number of target must be between <b>{}</b> and <b>{}</b> but you have set only <b>{}</b> target".format(self.min_no_of_target,self.max_no_of_target,target_length))
-
 			total_target_weightage = 0
 			# total weightage must be 100
 			for i, t in enumerate(self.review_target_item):
-				if t.qty_quality == 'Quantity' and flt(t.quantity) <= 0 :
-					frappe.throw(
-						title=_('Error'),
-						msg=_("<b>{}</b> value is not allowed for <b>Quantity</b> in Target Item at Row <b>{}</b>".format(t.quantity,i+1)))
-
-				if t.qty_quality == 'Quality' and flt(t.quality) <= 0 :
-					frappe.throw(
-						title=_("Error"),
-						msg=_("<b>{}</b> value is not allowed for <b>Quality</b> in Target Item at Row <b>{}</b>".format(t.quality,i+1)))
-
-				if flt(t.weightage) > flt(self.max_weightage_for_target) or flt(t.weightage) < flt(self.min_weightage_for_target):
-					frappe.throw(
-						title=_('Error'),
-						msg="Weightage for target must be between <b>{}</b> and <b>{}</b> but you have set <b>{}</b> at row <b>{}</b>".format(self.min_weightage_for_target,self.max_weightage_for_target,t.weightage, i+1))
-				
 				if getdate(t.from_date).year < getdate().year:
 					frappe.throw(
 						title=_("Error"),
@@ -147,11 +120,6 @@ class Review(Document):
 						msg=_(" <b>From Date</b> cannot be greater than <b>To Date</b> in Target Item at Row <b>{}</b>".format(i+1)))
 				
 				total_target_weightage += flt(t.weightage)
-				if t.qty_quality == 'Quantity':
-					t.quality = None
-
-				if t.qty_quality == 'Quality':
-					t.quantity = None
 
 			if flt(total_target_weightage) != 100:
 				frappe.throw(
@@ -161,7 +129,7 @@ class Review(Document):
 			self.total_weightage = total_target_weightage
 
 	def get_supervisor_id(self):
-		# get supervisor details         
+		# get supervisor details
 		reports_to = frappe.db.get_value("Employee",{"name":self.employee},"reports_to")
 		if not reports_to:
 			frappe.throw('You have not set report to in your master data')
@@ -175,6 +143,34 @@ class Review(Document):
 	def set_approver_designation(self):
 		desig = frappe.db.get_value('Employee', {'user_id': self.approver}, 'designation')
 		return desig
+	
+	@frappe.whitelist()
+	def get_competency(self):
+		data = frappe.db.sql("""
+			SELECT 
+				pte.competency,
+				pte.weightage,
+				pte.description
+			FROM 
+				`tabTarget Set Up` ts 
+			INNER JOIN
+				`tabCompetency Item` pte
+			ON
+				 ts.name = pte.parent 		
+			WHERE			
+				ts.employee = '{}' and ts.docstatus = 1 
+			AND 
+				ts.eas_calendar = '{}' 
+			ORDER BY 
+				pte.competency
+		""".format(self.employee,self.eas_calendar), as_dict=True)
+		if not data:
+			frappe.throw(_('There are no Competency defined for your ID <b>{}</b>'.format(self.employee)))
+
+		self.set('review_competency_item', [])
+		for d in data:
+			row = self.append('review_competency_item', {})
+			row.update(d)
  
 @frappe.whitelist()
 def create_evaluation(source_name, target_doc=None):

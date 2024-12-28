@@ -9,7 +9,7 @@
  "engine": "InnoDB",
  "field_order": [
   "employee",
-  "pms_group",
+  "eas_group",
   "required_to_set_target",
   "grade",
   "fiscal_year",
@@ -36,14 +36,6 @@
    "label": "Employee ID",
    "options": "Employee",
    "reqd": 1
-  },
-  {
-   "fetch_from": "employee.pms_group",
-   "fieldname": "pms_group",
-   "fieldtype": "Link",
-   "label": "PMS Group",
-   "options": "PMS Group",
-   "read_only": 1
   },
   {
    "fetch_from": "pms_group.required_to_set_target",
@@ -173,11 +165,19 @@
    "label": "Company",
    "options": "Company",
    "read_only": 1
+  },
+  {
+   "fetch_from": "employee.pms_group",
+   "fieldname": "eas_group",
+   "fieldtype": "Link",
+   "label": "EAS Group",
+   "options": "EAS Group",
+   "read_only": 1
   }
  ],
  "is_submittable": 1,
  "links": [],
- "modified": "2024-12-06 12:56:55.249094",
+ "modified": "2024-12-27 16:07:58.273666",
  "modified_by": "Administrator",
  "module": "PMS",
  "name": "Change In Performance Evaluation",

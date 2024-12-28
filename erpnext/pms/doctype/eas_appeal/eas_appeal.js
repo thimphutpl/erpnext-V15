@@ -1,19 +1,12 @@
-// Copyright (c) 2021, Frappe Technologies Pvt. Ltd. and contributors
+// Copyright (c) 2024, Frappe Technologies Pvt. Ltd. and contributors
 // For license information, please see license.txt
 
-frappe.ui.form.on('PMS Appeal', {
-	// pms_calendar: function(frm) {
-	// 	cur_frm.set_query("appeal_based_on", function(doc) {
-	// 		return {
-	// 			'filters': {
-	// 				'employee': doc.employee,
-	// 				'pms_calendar': doc.pms_calendar,
-	// 				'docstatus': 1
-	// 			}
-	// 		}
-	// 	});
-	// },
+frappe.ui.form.on("EAS Appeal", {
+	refresh(frm) {
+
+	},
 });
+
 frappe.ui.form.on('Evaluate Appeal Target Item',{
 	onload:(frm,cdt,cdn)=>{
 		toggle_reqd_qty_quality(frm,cdt,cdn)
@@ -121,7 +114,7 @@ var toggle_reqd_qty_quality = (frm,cdt,cdn)=>{
 }
 
 var apply_filter=(frm)=> {
-	cur_frm.set_query('pms_calendar', function () {
+	cur_frm.set_query('eas_calendar', function () {
 		return {
 			'filters': {
 				'docstatus': 1
@@ -129,4 +122,5 @@ var apply_filter=(frm)=> {
 		};
 	});
 }
+
 

@@ -9,50 +9,21 @@
   "target_accomplishment_section",
   "performance_target",
   "main_activities",
-  "description",
-  "weightage",
-  "reverse_formula",
   "column_break_9",
-  "qty_quality",
-  "quantity",
-  "quality",
+  "weightage",
+  "description",
   "column_break_4",
   "from_date",
   "to_date"
  ],
  "fields": [
   {
-   "allow_on_submit": 1,
-   "columns": 1,
+   "columns": 2,
    "fieldname": "weightage",
    "fieldtype": "Float",
    "in_list_view": 1,
    "label": "Weightage(%)",
    "reqd": 1
-  },
-  {
-   "allow_on_submit": 1,
-   "columns": 1,
-   "default": "0",
-   "depends_on": "eval:doc.qty_quality == 'Quality';",
-   "description": "In Number",
-   "fieldname": "quality",
-   "fieldtype": "Percent",
-   "ignore_user_permissions": 1,
-   "in_list_view": 1,
-   "label": "Quality(%)"
-  },
-  {
-   "allow_on_submit": 1,
-   "columns": 1,
-   "default": "0",
-   "depends_on": "eval:doc.qty_quality == 'Quantity';",
-   "description": "In Number",
-   "fieldname": "quantity",
-   "fieldtype": "Float",
-   "ignore_user_permissions": 1,
-   "in_list_view": 1,
-   "label": "Quantity"
   },
   {
    "fieldname": "column_break_4",
@@ -67,28 +38,10 @@
    "reqd": 1
   },
   {
-   "allow_on_submit": 1,
-   "columns": 1,
-   "description": "Select either Quality or Quantity",
-   "fieldname": "qty_quality",
-   "fieldtype": "Select",
-   "in_list_view": 1,
-   "label": "Quantity/Quality",
-   "options": "\nQuantity\nQuality",
-   "reqd": 1
-  },
-  {
-   "default": "0",
-   "description": "<b>Please tick this if your target is to be evaluated on saving(e.g Network Failure, OPEX, Resolving Customer Issues)</b>",
-   "fieldname": "reverse_formula",
-   "fieldtype": "Check",
-   "hidden": 1,
-   "label": "Apply (&lt;=) Operator"
-  },
-  {
    "fieldname": "description",
    "fieldtype": "Small Text",
-   "label": "Description(Optional)"
+   "label": "Description(Optional)",
+   "reqd": 1
   },
   {
    "fieldname": "target_accomplishment_section",
@@ -112,6 +65,7 @@
    "reqd": 1
   },
   {
+   "columns": 4,
    "fieldname": "main_activities",
    "fieldtype": "Data",
    "in_list_view": 1,
@@ -121,7 +75,7 @@
  ],
  "istable": 1,
  "links": [],
- "modified": "2024-12-23 15:35:14.478720",
+ "modified": "2024-12-27 15:09:01.157811",
  "modified_by": "Administrator",
  "module": "PMS",
  "name": "Performance Target Evaluation",

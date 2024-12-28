@@ -27,6 +27,9 @@ frappe.ui.form.on('Vehicle Logbook', {
         }
         else if (frm.doc.vehicle_logbook === 'Pool Vehicle') {
             frm.set_df_property('equipment', 'hidden', 0);
+        }
+		else if (frm.doc.vehicle_logbook === 'Support Equipment') {
+            frm.set_df_property('equipment', 'hidden', 0);
         } else {
             frm.set_df_property('equipment', 'hidden', 1);
         }
@@ -90,15 +93,96 @@ frappe.ui.form.on('Vehicle Logbook', {
 				args: { equipment: frm.doc.equipment },
 				callback: function (r) {
 					if (r.message) {
-						frm.set_value("ys_km", r.message[0].kph);
-						frm.set_value("ys_hours", r.message[0].lph);
+						frm.set_value("kph", r.message[0].kph);
+						frm.set_value("lph", r.message[0].lph);
 						frm.refresh_fields();
 					} else {
 						frappe.msgprint("No yardsticks settings for the equipment");
 					}
 				}
 			});
+			// frappe.call({
+			// 	method: "erpnext.fleet_management.doctype.pol_receive.pol_receive.tank_balance",
+			// 	args: { pol_receive: frm.doc.pol_receive },
+			// 	callback: function (r) {
+			// 		if (r.message) {
+			// 			frm.set_value("tank_balance", r.message[0].qty);
+			// 			frm.refresh_fields();
+			// 		} else {
+			// 			frappe.msgprint("No tank balance for the equipment");
+			// 		}
+			// 	}
+			// });
 		}
+		// if (frm.doc.equipment) {
+        //     frappe.call({
+        //         method: "erpnext.fleet_management.doctype.pol_receive.pol_receive.fetch_tank_balance", 
+        //         args: {
+        //             equipment: frm.doc.equipment
+        //         },
+        //         callback: function(response) {
+        //             if (response.message) {
+        //                 // Set the tank_balance field with the fetched qty
+        //                 frm.set_value('tank_balance', response.message);
+        //             }
+        //         }
+        //     });
+        // } else {
+        //     // Clear the tank_balance field if no equipment is selected
+        //     frm.set_value('tank_balance', '');
+        // }
+
+		// if (frm.doc.equipment) {
+        //     // Call the server-side method to fetch the closing value
+        //     frappe.call({
+        //         method: "erpnext.fleet_management.report.hsd_consumption_report.hsd_consumption_report.fetch_tank_balance_from_hsd", // Update with the correct method path
+        //         args: {
+        //             equipment: frm.doc.equipment
+        //         },
+        //         callback: function(response) {
+        //             if (response.message) {
+        //                 // Set the tank_balance field with the fetched closing value
+        //                 frm.set_value('tank_balance', response.message);
+        //             }
+        //         }
+        //     });
+        // } else {
+        //     // Clear the tank_balance field if no equipment is selected
+        //     frm.set_value('tank_balance', '');
+        // }
+		if (frm.doc.equipment) {
+            frappe.call({
+                method: "erpnext.fleet_management.doctype.vehicle_logbook.vehicle_logbook.get_equipment_data", // Update with the correct path
+                args: {
+                    equipment_name: frm.doc.equipment,
+                    to_date: frm.doc.to_date,
+                    all_equipment: frm.doc.all_equipment || 0,
+                    branch: frm.doc.branch
+                },
+                callback: function(response) {
+                    if (response.message) {
+                        let data = response.message;
+
+                        // Process and display the fetched data
+                        frappe.msgprint({
+                            title: __('Fetched Equipment Data'),
+                            message: `<pre>${JSON.stringify(data, null, 4)}</pre>`,
+                            indicator: 'green'
+                        });
+
+                        // Optional: You can set a field value with specific data
+                        if (data.length > 0) {
+                            frm.set_value('tank_balance', data[0].balance);
+                        }
+                    } else {
+                        frappe.msgprint(__('No data found for the selected equipment.'));
+                    }
+                }
+            });
+        } else {
+            // Clear related fields if no equipment is selected
+            frm.set_value('tank_balance', '');
+        }
 	},
 
 

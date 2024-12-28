@@ -24,13 +24,13 @@ class ChangeInPerformanceEvaluation(Document):
 		department: DF.Link | None
 		description: DF.SmallText | None
 		designation: DF.Link | None
+		eas_group: DF.Link | None
 		employee: DF.Link
 		employee_name: DF.ReadOnly | None
 		evaluation_date: DF.Date | None
 		fiscal_year: DF.Link
 		grade: DF.Link | None
 		old_employee_id: DF.Data | None
-		pms_group: DF.Link | None
 		reason: DF.Literal["", "Change In Section/Division/Department", "Superannuation/Left", "Transfer", "Change in PMS Group"]
 		required_to_set_target: DF.Data | None
 	# end: auto-generated types

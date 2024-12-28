@@ -10,7 +10,7 @@
   "html_1",
   "section_break_2",
   "employee",
-  "pms_group",
+  "eas_group",
   "required_to_set_target",
   "grade",
   "gender",
@@ -32,7 +32,7 @@
   "column_break_22",
   "unit",
   "pms_calendar_section",
-  "pms_calendar",
+  "eas_calendar",
   "company",
   "column_break_17",
   "start_date",
@@ -135,15 +135,6 @@
    "label": "Designation",
    "options": "Designation",
    "read_only": 1
-  },
-  {
-   "fetch_from": "employee.pms_group",
-   "fieldname": "pms_group",
-   "fieldtype": "Link",
-   "label": "PMS Group",
-   "options": "PMS Group",
-   "read_only": 1,
-   "reqd": 1
   },
   {
    "fetch_from": "employee.grade",
@@ -275,14 +266,6 @@
    "hidden": 1,
    "label": "Require to set target",
    "read_only": 1
-  },
-  {
-   "fieldname": "pms_calendar",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "PMS Calendar",
-   "options": "PMS Calendar",
-   "reqd": 1
   },
   {
    "depends_on": "eval:doc.pms_calendar || doc.docstatus != 1",
@@ -875,11 +858,28 @@
   {
    "fieldname": "column_break_jedr",
    "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "employee.eas_group",
+   "fieldname": "eas_group",
+   "fieldtype": "Link",
+   "label": "EAS Group",
+   "options": "EAS Group",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "eas_calendar",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "EAS Calendar",
+   "options": "EAS Calendar",
+   "reqd": 1
   }
  ],
  "is_submittable": 1,
  "links": [],
- "modified": "2024-12-05 12:35:32.141579",
+ "modified": "2024-12-27 15:56:43.139921",
  "modified_by": "Administrator",
  "module": "PMS",
  "name": "Performance Evaluation",

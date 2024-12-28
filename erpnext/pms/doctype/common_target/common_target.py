@@ -9,6 +9,21 @@ from frappe.utils import flt
 from frappe import _
 
 class CommonTarget(Document):
+	# begin: auto-generated types
+	# This code is auto-generated. Do not modify anything in this block.
+
+	from typing import TYPE_CHECKING
+
+	if TYPE_CHECKING:
+		from erpnext.pms.doctype.common_target_details.common_target_details import CommonTargetDetails
+		from frappe.types import DF
+
+		amended_from: DF.Link | None
+		max_weightage_for_target: DF.Float
+		min_weightage_for_target: DF.Float
+		pms_calendar: DF.Link
+		targets: DF.Table[CommonTargetDetails]
+	# end: auto-generated types
 	def validate(self):
 		self.check_target()
 

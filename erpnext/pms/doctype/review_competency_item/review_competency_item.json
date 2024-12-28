@@ -1,4 +1,5 @@
 {
+ "actions": [],
  "creation": "2021-03-09 16:43:00.631488",
  "doctype": "DocType",
  "editable_grid": 1,
@@ -8,35 +9,31 @@
   "competency",
   "sub_competency",
   "column_break_3",
-  "weightage",
-  "column_break_5",
   "is_parent",
+  "weightage",
+  "section_break_zdce",
+  "description",
   "section_break_7",
   "appraisees_remark",
   "column_break_9",
-  "appraisers_remark",
-  "top_level"
+  "appraisers_remark"
  ],
  "fields": [
   {
-   "columns": 1,
    "depends_on": "eval: !doc.is_parent ",
    "fieldname": "appraisees_remark",
    "fieldtype": "Small Text",
-   "in_list_view": 1,
    "label": "Appraisee's Remark"
   },
   {
-   "columns": 1,
    "depends_on": "eval: !doc.is_parent ",
    "fieldname": "appraisers_remark",
    "fieldtype": "Small Text",
-   "in_list_view": 1,
    "label": "Appraiser's Remark"
   },
   {
    "bold": 1,
-   "columns": 2,
+   "columns": 8,
    "fieldname": "competency",
    "fieldtype": "Data",
    "in_list_view": 1,
@@ -44,20 +41,16 @@
    "read_only": 1
   },
   {
+   "columns": 2,
    "fieldname": "weightage",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "Weightage",
    "read_only": 1
   },
   {
-   "fieldname": "column_break_5",
-   "fieldtype": "Column Break"
-  },
-  {
-   "columns": 2,
    "fieldname": "sub_competency",
    "fieldtype": "Data",
-   "in_list_view": 1,
    "label": "Sub Competency",
    "read_only": 1
   },
@@ -84,19 +77,22 @@
   },
   {
    "fieldname": "competency_details_section",
-   "fieldtype": "Section Break",
-   "label": "Competency Details"
+   "fieldtype": "Section Break"
   },
   {
-   "fieldname": "top_level",
-   "fieldtype": "Data",
-   "hidden": 1,
-   "label": "Top Level",
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Description",
    "read_only": 1
+  },
+  {
+   "fieldname": "section_break_zdce",
+   "fieldtype": "Section Break"
   }
  ],
  "istable": 1,
- "modified": "2021-10-05 16:23:22.444858",
+ "links": [],
+ "modified": "2024-12-28 12:31:34.710311",
  "modified_by": "Administrator",
  "module": "PMS",
  "name": "Review Competency Item",
@@ -105,5 +101,6 @@
  "quick_entry": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
+ "states": [],
  "track_changes": 1
 }

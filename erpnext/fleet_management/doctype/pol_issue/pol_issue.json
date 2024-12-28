@@ -29,7 +29,7 @@
   "remarks",
   "column_break_4",
   "amended_from",
-  "amended_from"
+  "amended_froms"
  ],
  "fields": [
   {
@@ -105,6 +105,7 @@
   },
   {
    "default": "0",
+   "fetch_from": "pol_type.is_hsd_item",
    "fieldname": "is_hsd_item",
    "fieldtype": "Check",
    "label": "Is HSD Item",
@@ -172,12 +173,18 @@
    "fieldtype": "Link",
    "label": "Amended From",
    "options": "POL Issue"
+  },
+  {
+   "fieldname": "amended_froms",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "options": "POL Issue"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-24 16:10:27.855988",
+ "modified": "2024-12-28 14:51:38.183876",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Issue",

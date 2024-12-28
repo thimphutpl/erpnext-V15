@@ -49,6 +49,7 @@
   "column_break_8",
   "rate",
   "is_hsd_item",
+  "tank_balance",
   "mileage_details",
   "km_difference",
   "column_break_31",
@@ -496,12 +497,18 @@
    "print_hide": 1,
    "read_only": 1,
    "search_index": 1
+  },
+  {
+   "fieldname": "tank_balance",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Tank Balance"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-29 11:41:54.712871",
+ "modified": "2024-12-27 15:54:22.613105",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Receive",

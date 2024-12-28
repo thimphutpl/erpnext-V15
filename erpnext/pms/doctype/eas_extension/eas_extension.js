@@ -1,7 +1,7 @@
-// Copyright (c) 2021, Frappe Technologies Pvt. Ltd. and contributors
+// Copyright (c) 2024, Frappe Technologies Pvt. Ltd. and contributors
 // For license information, please see license.txt
 
-frappe.ui.form.on('PMS Extension', {
+frappe.ui.form.on("EAS Extension", {
 	refresh:function(frm){
 		disable_fields(frm)
 	},

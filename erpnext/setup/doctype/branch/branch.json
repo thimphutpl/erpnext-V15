@@ -113,9 +113,9 @@
   },
   {
    "fieldname": "holiday_list",
-   "fieldtype": "Link",
+   "fieldtype": "Data",
    "label": "Holiday List",
-   "options": "Holiday List"
+   "read_only": 1
   },
   {
    "fieldname": "imprest_limit",
@@ -173,7 +173,7 @@
  "icon": "fa fa-code-fork",
  "idx": 1,
  "links": [],
- "modified": "2024-12-03 11:18:38.283109",
+ "modified": "2024-12-28 11:41:22.080873",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Branch",

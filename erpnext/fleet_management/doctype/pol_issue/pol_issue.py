@@ -32,6 +32,7 @@ class POLIssue(StockController):
 		from frappe.types import DF
 
 		amended_from: DF.Link | None
+		amended_froms: DF.Link | None
 		branch: DF.Link
 		company: DF.Link
 		cost_center: DF.Link | None

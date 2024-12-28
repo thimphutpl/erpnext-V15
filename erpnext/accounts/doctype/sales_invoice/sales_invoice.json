@@ -881,6 +881,7 @@
   {
    "fieldname": "taxes_section",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "hide_border": 1,
    "hide_days": 1,
    "hide_seconds": 1,
@@ -928,6 +929,7 @@
   {
    "fieldname": "section_break_40",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "hide_border": 1,
    "hide_days": 1,
    "hide_seconds": 1
@@ -2203,7 +2205,7 @@
    "link_fieldname": "consolidated_invoice"
   }
  ],
- "modified": "2024-11-23 15:00:10.141432",
+ "modified": "2024-12-27 16:10:02.270041",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Sales Invoice",

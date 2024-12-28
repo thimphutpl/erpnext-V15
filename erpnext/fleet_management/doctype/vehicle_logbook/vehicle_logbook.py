@@ -7,6 +7,7 @@ import frappe
 from frappe.model.document import Document
 from frappe.utils import flt, cint, getdate, add_days, get_datetime
 from erpnext.custom_utils import check_uncancelled_linked_doc, check_future_date
+from erpnext.fleet_management.report.hsd_consumption_report.fleet_management_report import get_pol_tills, get_pol_consumed_tills
 
 class VehicleLogbook(Document):
 	# begin: auto-generated types
@@ -61,11 +62,12 @@ class VehicleLogbook(Document):
 		reason: DF.Data | None
 		registration_number: DF.Data | None
 		remarks: DF.TextEditor | None
+		tank_balance: DF.Data | None
 		to_date: DF.Date
 		to_time: DF.Time
 		total_idle_time: DF.Float
 		total_work_time: DF.Float
-		vehicle_logbook: DF.Literal["", "Equipment Hiring Form", "Pool Vehicle"]
+		vehicle_logbook: DF.Literal["", "Equipment Hiring Form", "Pool Vehicle", "Support Equipment"]
 		vlogs: DF.Table[VehicleLog]
 		work_rate: DF.Currency
 		ys_hours: DF.Float
@@ -75,7 +77,7 @@ class VehicleLogbook(Document):
 	def validate(self):
 		check_future_date(self.to_date)
 		self.validate_date()
-		self.set_data()
+		# self.set_data()
 		self.check_dates()
 		self.check_double_vl()
 		self.check_hire_form()
@@ -93,30 +95,68 @@ class VehicleLogbook(Document):
 		if to_date < from_date:
 			frappe.throw("From Date/Time cannot be greater than To Date/Time")
 
+
 	def before_save(self):
-		self.calculate_totals()
-		if self.vehicle_logbook == "Pool Vehicle":
-			if not self.customers:
-				frappe.throw(("Please select a value for 'Customers' when 'Vehicle Logbook' is set to 'Pool Vehicle'."))
+        # Ensure consumption does not exceed tank balance
+		if flt(self.tank_balance) <= flt(self.consumption):
+			frappe.throw(
+                ("Tank balance ({}) should be greater than or equal to consumption ({}).").format(
+                    self.tank_balance, self.consumption
+                )
+            )	
+
+	# def before_save(self):
+	# 	self.calculate_totals()
+	# 	if self.vehicle_logbook == "Pool Vehicle":
+	# 		if not self.customers:
+	# 			frappe.throw(("Please select a value for 'Customers' when 'Vehicle Logbook' is set to 'Pool Vehicle'."))
 			
-			if not self.customer_types:
-				frappe.throw(("Please select a value for 'Customer Types' when 'Vehicle Logbook' is set to 'Pool Vehicle'."))
+	# 		if not self.customer_types:
+	# 			frappe.throw(("Please select a value for 'Customer Types' when 'Vehicle Logbook' is set to 'Pool Vehicle'."))
 			
-			self.customer = self.customers
-			self.customer_type = self.customer_types
-		else:
-			self.customer = self.customer or None
-			self.customer_type = self.customer_type or None
+	# 		self.customer = self.customers
+	# 		self.customer_type = self.customer_types
+	# 	else:
+	# 		self.customer = self.customer or None
+	# 		self.customer_type = self.customer_type or None
 		
 
-	def set_data(self):
-		if self.vehicle_logbook == "Pool Vehicle":
-			return	
+	# def set_data(self):
+	# 	if self.vehicle_logbook == "Pool Vehicle":
+	# 		return	
 
-		if not self.ehf_name:
-			frappe.throw("Equipment Hire Form is mandatory")
-		self.customer_type = frappe.db.get_value("Equipment Hiring Form", self.ehf_name, "private")
-		self.customer = frappe.db.get_value("Equipment Hiring Form", self.ehf_name, "customer")
+	# 	if not self.ehf_name:
+	# 		frappe.throw("Equipment Hire Form is mandatory")
+	# 	self.customer_type = frappe.db.get_value("Equipment Hiring Form", self.ehf_name, "private")
+	# 	self.customer = frappe.db.get_value("Equipment Hiring Form", self.ehf_name, "customer")
+
+	# def get_data(filters=None):
+	# 	data = []
+	# 	query = "select e.name, e.branch, e.registration_number, e.hsd_type, e.equipment_type from tabEquipment e, `tabEquipment Type`et where e.equipment_type = et.name"
+	# 	if not filters.all_equipment:
+	# 		query += " and et.is_container = 1"
+	# 	if filters.branch:
+	# 		query += " and e.branch = \'" + str(filters.branch) + "\'"
+			
+	# 	items = frappe.db.sql("select item_code, item_name, stock_uom from tabItem where is_hsd_item = 1 and disabled = 0", as_dict=True)
+
+	# 	query += " order by e.branch"
+
+	# 	for eq in frappe.db.sql(query, as_dict=True):
+	# 		for item in items:
+	# 			received = issued = 0
+	# 			if filters.all_equipment:
+	# 				if eq.hsd_type == item.item_code:
+	# 					received = get_pol_till("Receive", eq.name, filters.to_date, item.item_code)
+	# 					issued = get_pol_consumed_till(eq.name, filters.to_date)
+	# 			else:
+	# 				received = get_pol_till("Stock", eq.name, filters.to_date, item.item_code)
+	# 				issued = get_pol_till("Issue", eq.name, filters.to_date, item.item_code)
+
+	# 			if received or issued:
+	# 				row = [eq.name, eq.registration_number, eq.equipment_type, eq.branch, item.item_code, item.item_name, item.stock_uom, received, issued, flt(received) - flt(issued)]
+	# 				data.append(row)
+	# 	return data	
 
 	# def set_data(self):
 	# 	if self.vehicle_logbook == "Pool Vehicle":
@@ -258,14 +298,17 @@ class VehicleLogbook(Document):
 		# 	elif flt(self.kph) > 0:
 		# 		self.consumption_km = flt(self.distance_km)	/ flt(self.kph)	
 		if self.include_km:
-			self.consumption_km = flt(self.distance_km) / flt(self.ys_km)
-		elif flt(self.kph) > 0:
-			self.consumption_km = flt(self.distance_km)	/ flt(self.kph)
+			if flt(self.ys_km) > 0:
+				self.consumption_km = flt(self.distance_km) / flt(self.ys_km)
+			elif flt(self.kph) > 0:
+				self.consumption_km = flt(self.distance_km)	/ flt(self.kph)
+	
 
 		if self.include_hour:
-			self.consumption_hours = flt(self.ys_hours) * flt(self.total_work_time)
-		elif flt(self.lph) > 0:
-			self.consumption_hours = flt(self.lph) * flt(self.total_work_time)
+			if flt(self.ys_hours) > 0:
+				self.consumption_hours = flt(self.ys_hours) * flt(self.total_work_time)
+			elif flt(self.lph) > 0:
+				self.consumption_hours = flt(self.lph) * flt(self.total_work_time)
 
 		# Auto-calculate hsd_amount as ys_km * distance_km
 		if self.ys_km and self.distance_km:
@@ -301,7 +344,23 @@ class VehicleLogbook(Document):
 		doc.hours = self.total_work_time
 		doc.to_time = self.to_time
 		doc.from_time = self.from_time
-		doc.place = frappe.db.sql("select place from `tabHiring Approval Details` where parent = %s and equipment = %s", (self.ehf_name, self.equipment))[0]
+		# doc.place = frappe.db.sql("select place from `tabHiring Approval Details` where parent = %s and equipment = %s", (self.ehf_name, self.equipment))[0]
+		if self.vehicle_logbook == "Pool Vehicle":
+			# result = frappe.db.sql(
+			# 	"SELECT place FROM `tabHiring Approval Details` WHERE equipment = %s",
+			# 	(self.equipment,),
+			# )
+			pass
+		else:
+			result = frappe.db.sql(
+				"SELECT place FROM `tabHiring Approval Details` WHERE parent = %s AND equipment = %s",
+				(self.ehf_name, self.equipment),
+			)
+
+		# if result:
+		# 	doc.place = result[0][0]
+		# else:
+		# 	frappe.throw("No matching place found for the provided details.")
 		doc.submit()
 
 	def calculate_balance(self):
@@ -417,3 +476,63 @@ def get_opening(equipment, from_date, to_date, pol_type):
 		result.append(0)'''
 
 	return result
+
+
+@frappe.whitelist()
+def get_equipment_data(equipment_name, all_equipment=0, branch=None):
+    data = []
+    
+    query = """
+        SELECT e.name, e.branch, e.registration_number, e.hsd_type, e.equipment_type
+        FROM `tabEquipment` e
+        JOIN `tabEquipment Type` et ON e.equipment_type = et.name
+    """
+
+    if not all_equipment:
+        query += " WHERE et.is_container = 1"
+    else:
+        query += " WHERE 1=1"
+    
+    if branch:
+        query += " AND e.branch = %(branch)s"
+    if equipment_name:
+        query += " AND e.name = %(equipment_name)s"
+    
+    query += " ORDER BY e.branch"
+    
+    items = frappe.db.sql("""
+        SELECT item_code, item_name, stock_uom 
+        FROM `tabItem`
+        WHERE is_hsd_item = 1 AND disabled = 0
+    """, as_dict=True)
+    
+    equipment_details = frappe.db.sql(query, {
+        'branch': branch,
+        'equipment_name': equipment_name
+    }, as_dict=True)
+    
+    for eq in equipment_details:
+        for item in items:
+            received = issued = 0
+            if all_equipment:
+                if eq.hsd_type == item.item_code:
+                    received = get_pol_tills("Receive", eq.name, item.item_code)
+                    issued = get_pol_consumed_tills(eq.name,)
+            else:
+                received = get_pol_tills("Stock", eq.name, item.item_code)
+                issued = get_pol_tills("Issue", eq.name, item.item_code)
+						
+            
+            if received or issued:
+                data.append({
+                    'received': received,
+                    'issued': issued,
+                    'balance': flt(received) - flt(issued)
+                })
+
+			# if received or issued:
+			# 		row = [received, issued, flt(received) - flt(issued)]
+			# 		data.append(row)	
+    
+    return data
+

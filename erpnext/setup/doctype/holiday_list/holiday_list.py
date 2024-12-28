@@ -25,6 +25,7 @@ class HolidayList(Document):
 		from erpnext.setup.doctype.holiday.holiday import Holiday
 		from frappe.types import DF
 
+		branch: DF.Link | None
 		color: DF.Color | None
 		country: DF.Autocomplete | None
 		from_date: DF.Date
@@ -39,9 +40,14 @@ class HolidayList(Document):
 
 	def validate(self):
 		self.validate_days()
+		if self.branch:
+			self.add_holiday_list_branch()
 		self.total_holidays = len(self.holidays)
 		self.validate_duplicate_date()
 
+	def befor_save(self):
+		if self.branch:
+			self.add_holiday_list_branch
 	@frappe.whitelist()
 	def get_weekly_off_dates(self):
 		if not self.weekly_off:
@@ -119,6 +125,23 @@ class HolidayList(Document):
 						formatdate(day.holiday_date)
 					)
 				)
+	def add_holiday_list_branch(self):
+		try:
+            
+			branch_doc = frappe.get_doc("Branch", self.branch)
+            
+            
+			branch_doc.holiday_list = self.name              
+            
+			branch_doc.save()
+            
+			frappe.msgprint(
+                _("Branch '{0}' has been updated with the Holiday List '{1}'").format(self.branch, self.name)
+            )
+		except frappe.DoesNotExistError:
+			frappe.throw(_("Branch '{0}' does not exist").format(self.branch))
+		except Exception as e:
+			frappe.throw(_("An error occurred while updating the Branch: {0}").format(str(e)))
 
 	def get_weekly_off_date_list(self, start_date, end_date):
 		start_date, end_date = getdate(start_date), getdate(end_date)

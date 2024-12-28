@@ -185,14 +185,17 @@ class SalesOrder(SellingController):
 		self.validate_delivery_date()
 		self.validate_proj_cust()
 		self.validate_po()
+		self.warehouse_from_branch()
 		self.validate_uom_is_integer("stock_uom", "stock_qty")
 		self.validate_uom_is_integer("uom", "qty")
 		self.validate_for_items()
 		self.validate_warehouse()
 		self.validate_drop_ship()
 		self.validate_reserved_stock()
+
 		self.validate_serial_no_based_delivery()
 		validate_against_blanket_order(self)
+
 		validate_inter_company_party(
 			self.doctype, self.customer, self.company, self.inter_company_order_reference
 		)
@@ -257,6 +260,20 @@ class SalesOrder(SellingController):
 							get_link_to_form("Selling Settings", "Selling Settings"),
 						)
 					)
+
+	def warehouse_from_branch(doc):
+		branchname=doc.branch
+		query = """
+        SELECT parent 
+        FROM `tabWarehouse Branch` 
+        WHERE branch=%s
+        """
+
+		warehouse = frappe.db.sql(query, (branchname,), as_dict=True)
+		if warehouse:
+			doc.set_warehouse = warehouse[0].get("parent")
+		else:
+			frappe.throw(f"No warehouse found for branch {branchname}")
 
 	def validate_for_items(self):
 		for d in self.get("items"):

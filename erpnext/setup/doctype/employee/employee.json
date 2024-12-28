@@ -31,7 +31,7 @@
   "employment_details_section",
   "employment_type",
   "employee_group",
-  "pms_group",
+  "eas_group",
   "designation",
   "professional_category",
   "region",
@@ -982,12 +982,6 @@
    "read_only": 1
   },
   {
-   "fieldname": "pms_group",
-   "fieldtype": "Link",
-   "label": "PMS Category",
-   "options": "PMS Group"
-  },
-  {
    "fieldname": "employee_family_details_section",
    "fieldtype": "Section Break",
    "label": "Employee Family Details"
@@ -1126,13 +1120,19 @@
    "no_copy": 1,
    "options": "\nEMP-YY-.####",
    "reqd": 1
+  },
+  {
+   "fieldname": "eas_group",
+   "fieldtype": "Link",
+   "label": "EAS Group",
+   "options": "EAS Group"
   }
  ],
  "icon": "fa fa-user",
  "idx": 24,
  "image_field": "image",
  "links": [],
- "modified": "2024-12-13 16:02:23.932517",
+ "modified": "2024-12-27 15:21:59.536660",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee",

@@ -16,7 +16,7 @@ class ReviewTargetItem(Document):
 		from frappe.types import DF
 
 		appraisees_remarks: DF.SmallText | None
-		appraisers_remark: DF.SmallText | None
+		appraisers_remarks: DF.SmallText | None
 		description: DF.SmallText | None
 		from_date: DF.Date | None
 		main_activities: DF.Data | None
@@ -24,13 +24,6 @@ class ReviewTargetItem(Document):
 		parentfield: DF.Data
 		parenttype: DF.Data
 		performance_target: DF.Data | None
-		qty_quality: DF.Literal["", "Quantity", "Quality"]
-		quality: DF.Percent
-		quality_achieved: DF.Percent
-		quantity: DF.Float
-		quantity_achieved: DF.Float
-		reverse_formula: DF.Check
-		timeline_achieved: DF.Percent
 		to_date: DF.Date | None
 		weightage: DF.Percent
 	# end: auto-generated types

@@ -70,6 +70,7 @@ class POLReceive(StockController):
 		remarks: DF.LongText | None
 		stock_uom: DF.Link | None
 		supplier: DF.Link
+		tank_balance: DF.Data | None
 		total_amount: DF.Currency
 		warehouse: DF.Link
 	# end: auto-generated types
@@ -560,3 +561,25 @@ class POLReceive(StockController):
 
 	def delete_pol_entry(self):
 		frappe.db.sql("delete from `tabPOL Entry` where reference_name = %s", self.name)						
+
+@frappe.whitelist()
+def tank_balance(pol_receive):
+	t, m = frappe.db.get_value("POL Receive", pol_receive, ['equipment_type', 'equipment_number'])
+	data = frappe.db.sql("select qty from `tabPOL Receive` where equipment_type = %s and equipment_number = %s", (t, m), as_dict=True)
+	if not data:
+		frappe.throw("Setup yardstick for " + str(m))
+	return data
+
+
+@frappe.whitelist()
+def fetch_tank_balance(equipment):
+    if not equipment:
+        frappe.throw("Equipment is required to fetch Tank Balance.")
+
+    # Fetch the qty from POL Receive based on equipment
+    qty = frappe.db.get_value("POL Receive", {"equipment": equipment}, "qty")
+    
+    if qty is None:
+        frappe.throw(f"No POL Receive entry found for the selected equipment: {equipment}")
+
+    return qty

@@ -8,27 +8,20 @@
   "target_details_section",
   "performance_target",
   "main_activities",
-  "description",
-  "weightage",
-  "reverse_formula",
   "column_break_5",
-  "qty_quality",
-  "quantity",
-  "quality",
-  "quantity_achieved",
-  "quality_achieved",
+  "weightage",
+  "description",
   "column_break_9",
-  "timeline_achieved",
-  "from_date",
   "to_date",
+  "from_date",
   "give_your_review_section",
   "appraisees_remarks",
   "column_break_10",
-  "appraisers_remark"
+  "appraisers_remarks"
  ],
  "fields": [
   {
-   "columns": 1,
+   "columns": 2,
    "fieldname": "appraisees_remarks",
    "fieldtype": "Small Text",
    "in_list_view": 1,
@@ -36,49 +29,23 @@
   },
   {
    "columns": 1,
-   "fieldname": "appraisers_remark",
-   "fieldtype": "Small Text",
-   "in_list_view": 1,
-   "label": "Appraiser's Remark"
-  },
-  {
-   "allow_on_submit": 1,
-   "depends_on": "eval:doc.qty_quality == 'Quality'",
-   "fieldname": "quality",
-   "fieldtype": "Percent",
-   "ignore_user_permissions": 1,
-   "label": "Quality"
-  },
-  {
-   "allow_on_submit": 1,
-   "depends_on": "eval:doc.qty_quality == 'Quantity'",
-   "fieldname": "quantity",
-   "fieldtype": "Float",
-   "ignore_user_permissions": 1,
-   "label": "Quantity"
-  },
-  {
    "fieldname": "weightage",
    "fieldtype": "Percent",
-   "label": "Weightage"
+   "in_list_view": 1,
+   "label": "Weightage",
+   "read_only": 1
   },
   {
    "columns": 3,
    "fieldname": "performance_target",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Target"
+   "label": "Target",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_5",
    "fieldtype": "Column Break"
-  },
-  {
-   "allow_on_submit": 1,
-   "fieldname": "qty_quality",
-   "fieldtype": "Select",
-   "label": "Quantity/Quality",
-   "options": "\nQuantity\nQuality"
   },
   {
    "fieldname": "description",
@@ -96,14 +63,6 @@
    "fieldtype": "Column Break"
   },
   {
-   "default": "0",
-   "fieldname": "reverse_formula",
-   "fieldtype": "Check",
-   "hidden": 1,
-   "label": "Apply (&lt;=) Operator",
-   "read_only": 1
-  },
-  {
    "fieldname": "target_details_section",
    "fieldtype": "Section Break",
    "label": "Target Details"
@@ -113,48 +72,36 @@
    "fieldtype": "Column Break"
   },
   {
-   "columns": 1,
-   "depends_on": "eval:doc.qty_quality == 'Quantity';",
-   "fieldname": "quantity_achieved",
-   "fieldtype": "Float",
-   "in_list_view": 1,
-   "label": "Quantity Achieved"
-  },
-  {
-   "columns": 1,
-   "depends_on": "eval:doc.qty_quality == 'Quality'",
-   "fieldname": "quality_achieved",
-   "fieldtype": "Percent",
-   "in_list_view": 1,
-   "label": "Quality Achieved"
-  },
-  {
-   "columns": 1,
-   "fieldname": "timeline_achieved",
-   "fieldtype": "Percent",
-   "in_list_view": 1,
-   "label": "Timeline Achieved"
-  },
-  {
    "fieldname": "from_date",
    "fieldtype": "Date",
-   "label": "From Date"
+   "label": "From Date",
+   "read_only": 1
   },
   {
    "fieldname": "to_date",
    "fieldtype": "Date",
-   "label": "To Date"
+   "label": "To Date",
+   "read_only": 1
   },
   {
+   "columns": 2,
    "fieldname": "main_activities",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Main Activities"
+   "label": "Main Activities",
+   "read_only": 1
+  },
+  {
+   "columns": 2,
+   "fieldname": "appraisers_remarks",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "label": "Appraiser's Remarks"
   }
  ],
  "istable": 1,
  "links": [],
- "modified": "2024-12-23 15:34:11.195969",
+ "modified": "2024-12-28 14:36:00.230001",
  "modified_by": "Administrator",
  "module": "PMS",
  "name": "Review Target Item",

@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-# Copyright (c) 2021, Frappe Technologies Pvt. Ltd. and contributors
+# Copyright (c) 2024, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
 from __future__ import unicode_literals
@@ -8,7 +7,7 @@ from frappe import _
 from frappe.model.document import Document
 from frappe.model.mapper import get_mapped_doc
 
-class PMSCalendar(Document):
+class EASCalendar(Document):
 	# begin: auto-generated types
 	# This code is auto-generated. Do not modify anything in this block.
 
@@ -17,7 +16,6 @@ class PMSCalendar(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
-		amended_from: DF.Link | None
 		appeal_end_date: DF.Date | None
 		appeal_start_date: DF.Date | None
 		evaluation_end_date: DF.Date
@@ -47,18 +45,17 @@ class PMSCalendar(Document):
 			frappe.throw(_("Evaluation start date can not be greater than review end date"))   
 
 		if self.evaluation_start_date > self.evaluation_end_date:
-			frappe.throw(_("Evaluation start date can not be greater than evaluation end date"))   
-   
+			frappe.throw(_("Evaluation start date can not be greater than evaluation end date")) 
+
 @frappe.whitelist()
-def create_pms_extension(source_name, target_doc=None):
-	doclist = get_mapped_doc("PMS Calendar", source_name, {
+def create_eas_extension(source_name, target_doc=None):
+	doclist = get_mapped_doc("EAS Calendar", source_name, {
 		"PMS Calendar": {
-			"doctype": "PMS Extension",
+			"doctype": "EAS Extension",
 			"field_map": {
-                "pms_calendar": "name"
+                "eas_calendar": "name"
             }
 		},
 	}, target_doc)
 
 	return doclist
-

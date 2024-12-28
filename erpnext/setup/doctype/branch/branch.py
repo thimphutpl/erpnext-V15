@@ -31,7 +31,7 @@ class Branch(Document):
 		disabled: DF.Check
 		expense_bank_account: DF.Link | None
 		gis_policy_number: DF.Data | None
-		holiday_list: DF.Link | None
+		holiday_list: DF.Data | None
 		imprest_limit: DF.Currency
 		is_hq_branch: DF.Check
 		items: DF.Table[BranchImprestItem]

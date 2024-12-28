@@ -15,17 +15,13 @@ class PerformanceTargetEvaluation(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
-		description: DF.SmallText | None
+		description: DF.SmallText
 		from_date: DF.Date
 		main_activities: DF.Data
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
 		performance_target: DF.Data
-		qty_quality: DF.Literal["", "Quantity", "Quality"]
-		quality: DF.Percent
-		quantity: DF.Float
-		reverse_formula: DF.Check
 		to_date: DF.Date
 		weightage: DF.Float
 	# end: auto-generated types

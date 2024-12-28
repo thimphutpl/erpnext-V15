@@ -1,12 +1,11 @@
-# -*- coding: utf-8 -*-
-# Copyright (c) 2021, Frappe Technologies Pvt. Ltd. and contributors
+# Copyright (c) 2024, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
-from __future__ import unicode_literals
 # import frappe
 from frappe.model.document import Document
 
-class WorkCompetencyItem(Document):
+
+class EASGroup(Document):
 	# begin: auto-generated types
 	# This code is auto-generated. Do not modify anything in this block.
 
@@ -15,10 +14,10 @@ class WorkCompetencyItem(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
-		applicable: DF.Check
-		employee_group: DF.Link | None
-		parent: DF.Data
-		parentfield: DF.Data
-		parenttype: DF.Data
+		group_name: DF.Data
+		negative_target: DF.Check
+		required_to_set_target: DF.Check
+		weightage_for_competency: DF.Percent
+		weightage_for_target: DF.Percent
 	# end: auto-generated types
 	pass

@@ -588,7 +588,8 @@
    "hide_seconds": 1,
    "label": "Set Source Warehouse",
    "options": "Warehouse",
-   "print_hide": 1
+   "print_hide": 1,
+   "read_only": 1
   },
   {
    "fieldname": "items_section",
@@ -716,6 +717,7 @@
   {
    "fieldname": "taxes_section",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "hide_days": 1,
    "hide_seconds": 1,
    "label": "Taxes",
@@ -751,6 +753,7 @@
   {
    "fieldname": "section_break_40",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "hide_border": 1,
    "hide_days": 1,
    "hide_seconds": 1
@@ -1700,7 +1703,7 @@
  "idx": 105,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-12-27 12:23:08.167995",
+ "modified": "2024-12-27 16:10:52.558242",
  "modified_by": "Administrator",
  "module": "Selling",
  "name": "Sales Order",

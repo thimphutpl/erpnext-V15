@@ -463,9 +463,8 @@
   },
   {
    "fieldname": "set_warehouse",
-   "fieldtype": "Link",
+   "fieldtype": "Data",
    "label": "Set Target Warehouse",
-   "options": "Warehouse",
    "print_hide": 1
   },
   {
@@ -1282,7 +1281,7 @@
  "idx": 105,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-12-19 16:19:31.171849",
+ "modified": "2024-12-27 11:51:08.322803",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Purchase Order",

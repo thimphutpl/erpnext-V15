@@ -6,11 +6,9 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "html_1",
   "section_break_2",
   "employee",
-  "pms_group",
-  "required_to_set_target",
+  "eas_group",
   "grade",
   "department",
   "column_break_2",
@@ -26,26 +24,15 @@
   "unit",
   "user_id",
   "pms_calendar_section",
-  "pms_calendar",
-  "company",
-  "column_break_17",
+  "eas_calendar",
   "start_date",
   "negative_target",
-  "column_break_16",
+  "column_break_17",
+  "company",
   "end_date",
-  "section_break_30",
-  "max_weightage_for_target",
-  "max_no_of_target",
-  "column_break_33",
-  "min_weightage_for_target",
-  "min_no_of_target",
-  "column_break_36",
-  "total_weightage",
   "part_a_section",
   "get_target",
   "review_target_item",
-  "section_break_12",
-  "business_target",
   "part_b_section",
   "get_competency",
   "review_competency_item",
@@ -58,12 +45,12 @@
   "approver_name",
   "column_break_38",
   "approver_designation",
-  "amended_from",
-  "rev_workflow_state",
   "other_details_section",
+  "rev_workflow_state",
   "reason",
   "column_break_40",
-  "reference"
+  "reference",
+  "amended_from"
  ],
  "fields": [
   {
@@ -71,7 +58,7 @@
    "fieldtype": "Link",
    "in_list_view": 1,
    "in_standard_filter": 1,
-   "label": "Employee ID",
+   "label": "Employee",
    "options": "Employee",
    "reqd": 1
   },
@@ -87,25 +74,12 @@
    "label": "Employee Name"
   },
   {
-   "fetch_from": "employee.department",
+   "fetch_from": "employee.employee_group",
    "fieldname": "department",
    "fieldtype": "Link",
-   "label": "Department",
-   "options": "Department",
+   "label": "Employee Group",
+   "options": "Employee Group",
    "read_only": 1
-  },
-  {
-   "fetch_from": "employee.pms_group",
-   "fieldname": "pms_group",
-   "fieldtype": "Link",
-   "label": "PMS Group",
-   "options": "PMS Group",
-   "read_only": 1
-  },
-  {
-   "fieldname": "section_break_12",
-   "fieldtype": "Section Break",
-   "label": "Business Activity Target For Negative Points"
   },
   {
    "fetch_from": "employee.grade",
@@ -117,17 +91,14 @@
    "read_only": 1
   },
   {
-   "collapsible": 1,
-   "depends_on": "eval:doc.employee",
    "fieldname": "part_b_section",
    "fieldtype": "Section Break",
-   "label": "Form II:(Work-Related Competencies and Values)"
+   "label": "Part B: Review of core competencies"
   },
   {
-   "depends_on": "eval:doc.required_to_set_target == 1",
    "fieldname": "part_a_section",
    "fieldtype": "Section Break",
-   "label": "Form I: (Work Performance: Targets & Accomplishment)"
+   "label": "Part A : Review of planned performance targets"
   },
   {
    "depends_on": "eval:doc.pms_calendar",
@@ -147,35 +118,15 @@
    "read_only": 1
   },
   {
-   "fetch_from": "pms_group.required_to_set_target",
-   "fieldname": "required_to_set_target",
-   "fieldtype": "Data",
-   "hidden": 1,
-   "label": "Require to set target",
-   "read_only": 1
-  },
-  {
    "fieldname": "pms_calendar_section",
    "fieldtype": "Section Break",
-   "label": "PMS Calendar"
-  },
-  {
-   "fieldname": "pms_calendar",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "PMS Calendar",
-   "options": "PMS Calendar",
-   "reqd": 1
+   "label": "EAS Calendar"
   },
   {
    "fetch_from": "pms_calendar.review_start_date",
    "fieldname": "start_date",
    "fieldtype": "Read Only",
    "label": "Start Date"
-  },
-  {
-   "fieldname": "column_break_16",
-   "fieldtype": "Column Break"
   },
   {
    "fetch_from": "pms_calendar.review_end_date",
@@ -197,13 +148,13 @@
    "read_only": 1
   },
   {
-   "depends_on": "eval:doc.pms_calendar",
+   "depends_on": "eval:doc.eas_calendar",
    "fieldname": "get_target",
    "fieldtype": "Button",
+   "hidden": 1,
    "label": "Get Target"
   },
   {
-   "depends_on": "eval:doc.pms_calendar",
    "fieldname": "get_competency",
    "fieldtype": "Button",
    "hidden": 1,
@@ -244,10 +195,9 @@
    "read_only": 1
   },
   {
-   "collapsible": 1,
    "fieldname": "approver_details_section",
    "fieldtype": "Section Break",
-   "label": "APPROVER DETAILS"
+   "label": "Approver Details"
   },
   {
    "fieldname": "column_break_10",
@@ -349,12 +299,6 @@
    "read_only": 1
   },
   {
-   "fieldname": "html_1",
-   "fieldtype": "HTML",
-   "hidden": 1,
-   "options": "<h3 style=\"color: #5fbb49;\"> Employee Details<i class=\"fa fa-users\"></i></h3> "
-  },
-  {
    "fieldname": "section_break_2",
    "fieldtype": "Section Break",
    "label": "Employee Details"
@@ -384,13 +328,6 @@
    "read_only": 1
   },
   {
-   "depends_on": "eval:doc.negative_target==1",
-   "fieldname": "business_target",
-   "fieldtype": "Table",
-   "label": "Business Target",
-   "options": "Negative Target Review"
-  },
-  {
    "default": "0",
    "fieldname": "negative_target",
    "fieldtype": "Check",
@@ -398,46 +335,25 @@
    "read_only": 1
   },
   {
-   "fieldname": "section_break_30",
-   "fieldtype": "Section Break"
+   "fetch_from": "employee.eas_group",
+   "fieldname": "eas_group",
+   "fieldtype": "Link",
+   "label": "EAS Group",
+   "options": "EAS Group",
+   "read_only": 1
   },
   {
-   "fieldname": "max_weightage_for_target",
-   "fieldtype": "Float",
-   "label": "Max Weightage For Target"
-  },
-  {
-   "fieldname": "max_no_of_target",
-   "fieldtype": "Float",
-   "label": "Max No. of target"
-  },
-  {
-   "fieldname": "column_break_33",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "min_weightage_for_target",
-   "fieldtype": "Float",
-   "label": "Min Weightage For Target"
-  },
-  {
-   "fieldname": "min_no_of_target",
-   "fieldtype": "Float",
-   "label": "Min No. of Target"
-  },
-  {
-   "fieldname": "column_break_36",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "total_weightage",
-   "fieldtype": "Float",
-   "label": "Total Target Weightage(%)"
+   "fieldname": "eas_calendar",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "EAS Calendar",
+   "options": "EAS Calendar",
+   "reqd": 1
   }
  ],
  "is_submittable": 1,
  "links": [],
- "modified": "2024-12-06 12:56:56.181562",
+ "modified": "2024-12-28 14:42:38.380790",
  "modified_by": "Administrator",
  "module": "PMS",
  "name": "Review",

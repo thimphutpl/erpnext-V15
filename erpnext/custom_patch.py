@@ -12,6 +12,24 @@ from erpnext.assets.doctype.asset.depreciation import make_depreciation_entry
 # import pandas as pd
 from datetime import datetime, timedelta, date
 
+def delete_designation():
+	# for des in frappe.db.sql("select name from `tabDesignation`", as_dict=True):
+	# 	frappe.db.sql("delete from `tabDesignation` where name = '{}'".format(des.name))
+
+	for des in frappe.db.sql("select name from `tabEmployee`", as_dict=True):
+		doc=frappe.get_doc('Employee',des.name)
+		# doc.employee=des.employee
+		doc.holiday_list=""
+		doc.save()
+		# frappe.db.sql("update `tabSalary Structure` set designation="" where name='{}'".format(des.name))
+
+	
+
+
+
+
+	frappe.db.commit()
+
 def test_test():
 	today_date = date.today()
 	

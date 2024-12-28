@@ -16,6 +16,7 @@
   "item_code",
   "item_name",
   "engine_no",
+  "purchase_date",
   "column_break_8",
   "purchase_receipt",
   "warehouse",
@@ -242,12 +243,18 @@
    "fieldname": "create_single_asset",
    "fieldtype": "Check",
    "label": "Create Single Asset"
+  },
+  {
+   "fieldname": "purchase_date",
+   "fieldtype": "Date",
+   "label": "Purchase Date",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-03-01 16:24:24.658961",
+ "modified": "2024-12-27 10:09:53.465376",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Asset Issue Details",

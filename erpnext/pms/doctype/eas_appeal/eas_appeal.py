@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-# Copyright (c) 2021, Frappe Technologies Pvt. Ltd. and contributors
+# Copyright (c) 2024, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
 from __future__ import unicode_literals
@@ -10,7 +9,95 @@ from frappe.utils import flt,nowdate, cint
 from frappe.model.mapper import get_mapped_doc
 from erpnext.custom_workflow import validate_workflow_states, notify_workflow_states
 
-class PMSAppeal(Document):
+
+class EASAppeal(Document):
+	# begin: auto-generated types
+	# This code is auto-generated. Do not modify anything in this block.
+
+	from typing import TYPE_CHECKING
+
+	if TYPE_CHECKING:
+		from erpnext.pms.doctype.appeal_details.appeal_details import AppealDetails
+		from erpnext.pms.doctype.evaluate_additional_achievements.evaluate_additional_achievements import EvaluateAdditionalAchievements
+		from erpnext.pms.doctype.evaluate_competency.evaluate_competency import EvaluateCompetency
+		from erpnext.pms.doctype.evaluate_target_item.evaluate_target_item import EvaluateTargetItem
+		from erpnext.pms.doctype.leadership_competency.leadership_competency import LeadershipCompetency
+		from erpnext.pms.doctype.performance_evaluation_negative_target.performance_evaluation_negative_target import PerformanceEvaluationNegativeTarget
+		from erpnext.pms.doctype.supervisor_declaration.supervisor_declaration import SupervisorDeclaration
+		from frappe.types import DF
+
+		achievements_items: DF.Table[EvaluateAdditionalAchievements]
+		agreed_by_perc: DF.Literal["", "Yes", "No"]
+		amended_from: DF.Link | None
+		approver: DF.Link | None
+		approver_designation: DF.Data | None
+		approver_fl_designation: DF.Data | None
+		approver_fl_name: DF.Data | None
+		approver_in_first_level: DF.Data | None
+		approver_name: DF.Data | None
+		branch: DF.Link | None
+		business_target: DF.Table[PerformanceEvaluationNegativeTarget]
+		company: DF.Link | None
+		competency_total_weightage: DF.Percent
+		cost_center: DF.Link | None
+		date_of_joining: DF.Date | None
+		department: DF.Link | None
+		designation: DF.Link | None
+		division: DF.Link | None
+		eas_calendar: DF.Link
+		eas_group: DF.Link
+		employee: DF.Link
+		employee_appeal_record: DF.Table[AppealDetails]
+		employee_comment: DF.SmallText | None
+		employee_name: DF.ReadOnly | None
+		end_date: DF.Date | None
+		eval_workflow_state: DF.Data | None
+		evaluate_competency_item: DF.Table[EvaluateCompetency]
+		evaluate_leadership_competency: DF.Table[LeadershipCompetency]
+		evaluate_target_item: DF.Table[EvaluateTargetItem]
+		evaluation_date: DF.Date | None
+		final_score: DF.Float
+		final_score_percent: DF.Percent
+		form_i: DF.Check
+		form_i_score: DF.Float
+		form_i_total_rating: DF.Float
+		form_ii: DF.Check
+		form_ii_score: DF.Float
+		form_ii_total_rating: DF.Float
+		form_iii: DF.Check
+		form_iii_score: DF.Float
+		gender: DF.Data | None
+		grade: DF.Link | None
+		max_rating_limit: DF.Float
+		negative_rating: DF.Float
+		negative_target: DF.Check
+		no_of_months_served: DF.Literal["", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
+		old_employee_id: DF.Data | None
+		overall_rating: DF.Link | None
+		perc_approver: DF.Link | None
+		perc_community: DF.Data | None
+		perc_name: DF.Data | None
+		perc_required: DF.Literal["", "Yes", "No"]
+		reason: DF.SmallText | None
+		reference: DF.Data | None
+		reference_name: DF.Link | None
+		required_to_set_target: DF.Data | None
+		review: DF.Link | None
+		section: DF.Link | None
+		set_manual_approver: DF.Check
+		star_obtained: DF.Rating
+		start_date: DF.Date | None
+		supervisor_comment: DF.SmallText | None
+		supervisor_declaration: DF.Table[SupervisorDeclaration]
+		supervisor_manager: DF.Link | None
+		supervisor_manager_comment: DF.SmallText | None
+		supervisor_manager_name: DF.Data | None
+		supervisors_manager_designation: DF.Data | None
+		target_total_weightage: DF.Percent
+		unit: DF.Link | None
+		upload_old_data: DF.Data | None
+		user_id: DF.Link | None
+	# end: auto-generated types
 	def validate(self):
 		action = frappe.request.form.get('action')
 
@@ -27,14 +114,14 @@ class PMSAppeal(Document):
 		# if self.workflow_state != "Approved":
 		# 	notify_workflow_states(self)
 	def on_submit(self):
-		self.employee_pms_record()
+		self.employee_eas_record()
 	def on_cancel(self):
 		self.set_reference(cancel=True)
 		self.update_employee_master()
 
 
 	def set_perc_approver(self):
-		approver = frappe.db.get_single_value("PMS Setting", "approver")
+		approver = frappe.db.get_single_value("EAS Settings", "approver")
 
 		self.approver = frappe.db.get_value("Employee", approver, "user_id")
 		self.approver_name = frappe.db.get_value("Employee", approver, "employee_name")
@@ -90,11 +177,11 @@ class PMSAppeal(Document):
 
 			elif item.qty_quality == 'Quantity':
 				item.average_rating = (flt(item.timeline_rating) + flt(item.quantity_rating)) / 2
-			target_rating = frappe.db.get_value("PMS Group",self.pms_group,"weightage_for_target")
+			target_rating = frappe.db.get_value("EAS Group", self.eas_group, "weightage_for_target")
 			item.score = (flt(item.average_rating ) / flt(item.weightage)) * 100
 
 			total_score += flt(item.average_rating)
-		target_rating = frappe.db.get_value("PMS Group",self.pms_group,"weightage_for_target")
+		target_rating = frappe.db.get_value("EAS Group", self.eas_group, "weightage_for_target")
 		score =flt(total_score)/100 * flt(target_rating)
 		total_score = score
 		self.form_i_total_rating = total_score
@@ -113,7 +200,7 @@ class PMSAppeal(Document):
 			tot_rating = flt(item.weightage_percent)/100 * flt(item.weightage)
 			item.average = tot_rating
 
-		competency_rating = frappe.db.get_value("PMS Group",self.pms_group,"weightage_for_competency")
+		competency_rating = frappe.db.get_value("EAS Group", self.eas_group, "weightage_for_competency")
 		for item in self.evaluate_competency_item:
 			total = item.average + total
 		self.form_ii_total_rating = flt(competency_rating)/100 * flt(total)
@@ -130,7 +217,7 @@ class PMSAppeal(Document):
 			tot_rating = flt(item.weightage_percent)/100 * flt(item.weightage)
 			item.average = tot_rating
 
-		leadership_competency_rating = frappe.db.get_value("PMS Group",self.pms_group,"weightage_for_form_three")
+		leadership_competency_rating = frappe.db.get_value("EAS Group", self.eas_group, "weightage_for_form_three")
 		for item in self.evaluate_leadership_competency:
 			total = item.average + total
 		self.negative_rating = flt(leadership_competency_rating)/100 * flt(total)
@@ -147,7 +234,7 @@ class PMSAppeal(Document):
 			self.db_set('negative_rating', self.negative_rating)
 
 	def calculate_final_score(self):
-		self.target_total_weightage, self.competency_total_weightage = frappe.db.get_value('PMS Group', {'name':self.pms_group}, ['weightage_for_target', 'weightage_for_competency'])
+		self.target_total_weightage, self.competency_total_weightage = frappe.db.get_value('EAS Group', {'name':self.eas_group}, ['weightage_for_target', 'weightage_for_competency'])
 		self.db_set('form_i_score', flt(self.form_i_total_rating))
 		self.db_set('form_ii_score', flt(self.form_ii_total_rating))
 		self.db_set('form_iii_score',flt(self.negative_rating))
@@ -157,18 +244,18 @@ class PMSAppeal(Document):
 		self.db_set('overall_rating', self.overall_rating)
 		
 	def update_employee_master(self):
-		doc = frappe.db.get_value("Employee PMS Rating",{"performance_evaluation":self.name},"name")
+		doc = frappe.db.get_value("Employee EAS Rating",{"performance_evaluation":self.name},"name")
 		if doc:
-			frappe.delete_doc("Employee PMS Rating",doc)
+			frappe.delete_doc("Employee EAS Rating",doc)
 		else:
-			frappe.msgprint("""No PMS Appeal record found in Employee Master Data of employee <a href= "#Form/Employee/{0}">{0}</a>""".format(self.employee))
+			frappe.msgprint("""No EAS Appeal record found in Employee Master Data of employee <a href= "#Form/Employee/{0}">{0}</a>""".format(self.employee))
 		final_score = frappe.db.get_value("Performance Evaluation",self.reference,"final_score")
 		final_score_percent = frappe.db.get_value("Performance Evaluation",self.reference,"final_score_percent")
 		overall_rating = frappe.db.get_value("Performance Evaluation",self.reference,"overall_rating")
 		
 		emp = frappe.get_doc("Employee",self.employee)
 		row = emp.append("employee_pms",{})
-		row.fiscal_year = self.pms_calendar
+		row.fiscal_year = self.eas_calendar
 		row.final_score = final_score
 		row.final_score_percent = final_score_percent
 		row.overall_rating = overall_rating
@@ -176,23 +263,23 @@ class PMSAppeal(Document):
 		row.performance_evaluation = self.reference
 		emp.save(ignore_permissions=True)
 		frappe.msgprint("""Performance Evaluation record Updated in Employee Master Data of employee <a href= "#Form/Employee/{0}">{0}</a>""".format(self.employee))
-	def employee_pms_record(self):
+	def employee_eas_record(self):
 		if self.reference:
-			doc = frappe.db.get_value("Employee PMS Rating",{"performance_evaluation":self.reference},"name")
+			doc = frappe.db.get_value("Employee EAS Rating",{"performance_evaluation":self.reference},"name")
 			if doc:
-				frappe.delete_doc("Employee PMS Rating",doc)
+				frappe.delete_doc("Employee EAS Rating",doc)
 			else:
-				frappe.msgprint("""No PMS record found in Employee Master Data of employee <a href= "#Form/Employee/{0}">{0}</a>""".format(self.employee))
+				frappe.msgprint("""No EAS record found in Employee Master Data of employee <a href= "#Form/Employee/{0}">{0}</a>""".format(self.employee))
 		emp = frappe.get_doc("Employee",self.employee)
 		row = emp.append("employee_pms",{})
-		row.fiscal_year = self.pms_calendar
+		row.fiscal_year = self.eas_calendar
 		row.final_score = self.final_score
 		row.final_score_percent = self.final_score_percent
 		row.overall_rating = self.overall_rating
-		row.reference_type = 'PMS Appeal'
+		row.reference_type = 'EAS Appeal'
 		row.performance_evaluation = self.name
 		emp.save(ignore_permissions=True)
-		frappe.msgprint("""PMS Appeal record Updated in Employee Master Data of employee <a href= "#Form/Employee/{0}">{0}</a>""".format(self.employee))
+		frappe.msgprint("""EAS Appeal record Updated in Employee Master Data of employee <a href= "#Form/Employee/{0}">{0}</a>""".format(self.employee))
 
 	@frappe.whitelist()
 	def check_employee_or_supervisor(self):
@@ -214,10 +301,11 @@ def get_permission_query_conditions(user):
 		return
 
 	return """(
-		`tabPMS Appeal`.owner = '{user}'
+		`tabEAS Appeal`.owner = '{user}'
 		or
 		exists(select 1
 				from `tabEmployee`
-				where `tabEmployee`.name = `tabPMS Appeal`.employee
+				where `tabEmployee`.name = `tabEAS Appeal`.employee
 				and `tabEmployee`.user_id = '{user}')
 	)""".format(user=user)
+

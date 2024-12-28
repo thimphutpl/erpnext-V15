@@ -59,6 +59,7 @@
   "hour_taken",
   "col_break_34",
   "hour_adjustment_reason",
+  "tank_balance",
   "column_break_yzkx",
   "hsd_amount",
   "section_break_4",
@@ -499,7 +500,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Select Equipment Hiring Form/Pool Vehicle",
-   "options": "\nEquipment Hiring Form\nPool Vehicle"
+   "options": "\nEquipment Hiring Form\nPool Vehicle\nSupport Equipment"
   },
   {
    "fieldname": "section_break_qcra",
@@ -507,22 +508,24 @@
    "label": "Yardstick for Pool Vehicle"
   },
   {
-   "depends_on": "eval:doc.vehicle_logbook == 'Pool Vehicle'",
+   "depends_on": "eval:doc.equipment",
    "fieldname": "lph",
    "fieldtype": "Float",
    "label": "Based on Hours",
-   "precision": "2"
+   "precision": "2",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_xpnm",
    "fieldtype": "Column Break"
   },
   {
-   "depends_on": "eval:doc.vehicle_logbook == 'Pool Vehicle'",
+   "depends_on": "eval:doc.equipment",
    "fieldname": "kph",
    "fieldtype": "Float",
    "label": "Based on Kilometers",
-   "precision": "2"
+   "precision": "2",
+   "read_only": 1
   },
   {
    "depends_on": "eval:doc.vehicle_logbook == 'Pool Vehicle'",
@@ -574,12 +577,18 @@
    "hidden": 1,
    "label": "Based on Kilometers",
    "precision": "2"
+  },
+  {
+   "depends_on": "eval:doc.equipment",
+   "fieldname": "tank_balance",
+   "fieldtype": "Data",
+   "label": "Tank Balance"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-12-26 09:49:23.007513",
+ "modified": "2024-12-28 15:20:11.075411",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Vehicle Logbook",

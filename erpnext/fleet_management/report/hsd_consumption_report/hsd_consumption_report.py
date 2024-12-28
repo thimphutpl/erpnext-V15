@@ -243,3 +243,17 @@ def get_columns():
     return columns
 
 
+# @frappe.whitelist()
+# def fetch_tank_balance_from_hsd(equipment):
+#     if not equipment:
+#         frappe.throw("Equipment is required to fetch Tank Balance.")
+
+#     closing = frappe.db.get_value("HSD Consumption Report", {"equipment": equipment}, "closing")
+    
+#     if closing is None:
+#         frappe.throw(f"No HSD Consumption Report entry found for the selected equipment: {equipment}")
+
+#     return closing
+
+
+

@@ -15,19 +15,14 @@ class WorkCompetency(Document):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
-		from erpnext.pms.doctype.sub_competency.sub_competency import SubCompetency
 		from erpnext.pms.doctype.work_competency_item.work_competency_item import WorkCompetencyItem
 		from frappe.types import DF
 
 		apply_to_all: DF.Check
-		auto_divide_weightage: DF.Check
 		competency: DF.Data
-		description: DF.Text | None
-		employee_category_item: DF.Table[WorkCompetencyItem]
-		group: DF.Link
-		is_parent: DF.Check
-		naming_series: DF.Literal["", "Form II", "Form III"]
-		sub_competency: DF.Table[SubCompetency]
+		description: DF.SmallText | None
+		disabled: DF.Check
+		employee_group_item: DF.Table[WorkCompetencyItem]
 		weightage: DF.Float
 	# end: auto-generated types
 	def autoname(self):

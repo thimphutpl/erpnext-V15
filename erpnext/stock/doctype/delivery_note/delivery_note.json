@@ -605,6 +605,7 @@
   {
    "fieldname": "taxes_section",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "hide_border": 1,
    "label": "Taxes and Charges",
    "oldfieldtype": "Section Break",
@@ -633,6 +634,7 @@
   {
    "fieldname": "section_break_41",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "hide_border": 1
   },
   {
@@ -1434,7 +1436,7 @@
  "idx": 146,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-28 10:33:34.488490",
+ "modified": "2024-12-27 16:09:31.123665",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Delivery Note",

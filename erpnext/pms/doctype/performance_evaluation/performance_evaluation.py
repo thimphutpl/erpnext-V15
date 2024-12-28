@@ -47,6 +47,8 @@ class PerformanceEvaluation(Document):
 		department: DF.Link | None
 		designation: DF.Link | None
 		division: DF.Link | None
+		eas_calendar: DF.Link
+		eas_group: DF.Link
 		employee: DF.Link
 		employee_comment: DF.SmallText | None
 		employee_name: DF.ReadOnly | None
@@ -84,8 +86,6 @@ class PerformanceEvaluation(Document):
 		perc_community: DF.Data | None
 		perc_name: DF.Data | None
 		perc_required: DF.Literal["", "Yes", "No"]
-		pms_calendar: DF.Link
-		pms_group: DF.Link
 		reason: DF.SmallText | None
 		reference: DF.Link | None
 		required_to_set_target: DF.Data | None

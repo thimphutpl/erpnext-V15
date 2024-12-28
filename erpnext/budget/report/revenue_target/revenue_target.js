@@ -29,6 +29,7 @@ frappe.query_reports["Revenue Target"] = {
 			"label": __("Month"),
 			"fieldtype": "Select",
 			"options": ["All","January","February","March","April","May","June","July","August","September","October","November","December"],
+			"default": "All",
 			"reqd": 1
 		}
 	]

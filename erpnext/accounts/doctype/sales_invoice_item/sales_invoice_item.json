@@ -472,6 +472,7 @@
   {
    "fieldname": "item_tax_template",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Item Tax Template",
    "options": "Item Tax Template",
    "print_hide": 1
@@ -575,6 +576,7 @@
    "collapsible_depends_on": "eval:doc.serial_no || doc.batch_no",
    "fieldname": "warehouse_and_reference",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Stock Details"
   },
   {
@@ -931,7 +933,7 @@
  "idx": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-11-18 11:27:29.059262",
+ "modified": "2024-12-27 16:20:40.834950",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Sales Invoice Item",

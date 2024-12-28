@@ -1,19 +1,20 @@
 {
+ "actions": [],
  "creation": "2021-03-08 11:41:00.819284",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
   "competency",
-  "sub_competency",
   "column_break_4",
   "weightage",
-  "top_level",
-  "is_parent"
+  "section_break_efwj",
+  "description"
  ],
  "fields": [
   {
    "bold": 1,
+   "columns": 4,
    "fieldname": "competency",
    "fieldtype": "Data",
    "in_list_view": 1,
@@ -21,7 +22,7 @@
    "read_only": 1
   },
   {
-   "columns": 1,
+   "columns": 2,
    "fieldname": "weightage",
    "fieldtype": "Data",
    "in_list_view": 1,
@@ -29,35 +30,24 @@
    "read_only": 1
   },
   {
-   "columns": 5,
-   "fieldname": "sub_competency",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Sub Competency",
-   "read_only": 1
-  },
-  {
    "fieldname": "column_break_4",
    "fieldtype": "Column Break"
   },
   {
-   "default": "0",
-   "fieldname": "is_parent",
-   "fieldtype": "Check",
-   "hidden": 1,
-   "label": "Is Parent",
-   "read_only": 1
+   "columns": 3,
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "label": "Description"
   },
   {
-   "fieldname": "top_level",
-   "fieldtype": "Data",
-   "hidden": 1,
-   "label": "Top Level",
-   "read_only": 1
+   "fieldname": "section_break_efwj",
+   "fieldtype": "Section Break"
   }
  ],
  "istable": 1,
- "modified": "2021-10-05 16:24:42.014905",
+ "links": [],
+ "modified": "2024-12-27 17:46:05.907923",
  "modified_by": "Administrator",
  "module": "PMS",
  "name": "Competency Item",
@@ -65,5 +55,6 @@
  "permissions": [],
  "sort_field": "modified",
  "sort_order": "DESC",
+ "states": [],
  "track_changes": 1
 }

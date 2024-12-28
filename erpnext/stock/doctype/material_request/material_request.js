@@ -291,7 +291,7 @@ frappe.ui.form.on("Material Request", {
 		});
 	},
 
-	get_item_data: function (frm, item, overwrite_warehouse = false) {
+	get_item_data: function (frm, item, overwrite_warehouse = true) {
 		if (item && !item.item_code) {
 			return;
 		}
@@ -301,8 +301,8 @@ frappe.ui.form.on("Material Request", {
 			args: {
 				args: {
 					item_code: item.item_code,
-					from_warehouse: item.from_warehouse,
-					warehouse: item.warehouse,
+					// from_warehouse: item.from_warehouse,
+					// warehouse: item.warehouse,
 					doctype: frm.doc.doctype,
 					buying_price_list: frappe.defaults.get_default("buying_price_list"),
 					currency: frappe.defaults.get_default("Currency"),

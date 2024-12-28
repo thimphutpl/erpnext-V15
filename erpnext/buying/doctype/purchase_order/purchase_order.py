@@ -182,7 +182,7 @@ class PurchaseOrder(BuyingController):
 
 		# apply tax withholding only if checked and applicable
 		self.set_tax_withholding()
-
+		self.warehouse_from_branch()
 		self.validate_supplier()
 		self.validate_schedule_date()
 		validate_for_items(self)
@@ -206,6 +206,22 @@ class PurchaseOrder(BuyingController):
 			self.doctype, self.supplier, self.company, self.inter_company_order_reference
 		)
 		self.reset_default_field_value("set_warehouse", "items", "warehouse")
+
+	def warehouse_from_branch(doc):
+		branchname=doc.branch
+		query = """
+        SELECT parent 
+        FROM `tabWarehouse Branch` 
+        WHERE branch=%s
+        """
+
+		warehouse = frappe.db.sql(query, (branchname,), as_dict=True)
+		if warehouse:
+			doc.set_warehouse = warehouse[0].get("parent")
+		else:
+			frappe.throw(f"No warehouse found for branch {branchname}")
+
+
 
 	def validate_with_previous_doc(self):
 		mri_compare_fields = [["project", "="], ["item_code", "="]]

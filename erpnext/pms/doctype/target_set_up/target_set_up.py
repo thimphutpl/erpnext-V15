@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2021, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
-# developed by Birendra on 01/02/2021
+
 from __future__ import unicode_literals
 import frappe
 import urllib.parse
 from frappe import _
 from frappe.model.document import Document
-from frappe.utils import flt,nowdate, getdate
+from frappe.utils import flt, nowdate, getdate
 from frappe.model.mapper import get_mapped_doc
 from erpnext.custom_workflow import validate_workflow_states, notify_workflow_states
 
@@ -18,9 +18,7 @@ class TargetSetUp(Document):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
-		from erpnext.pms.doctype.common_target_item.common_target_item import CommonTargetItem
 		from erpnext.pms.doctype.competency_item.competency_item import CompetencyItem
-		from erpnext.pms.doctype.negative_target.negative_target import NegativeTarget
 		from erpnext.pms.doctype.performance_target_evaluation.performance_target_evaluation import PerformanceTargetEvaluation
 		from frappe.types import DF
 
@@ -29,66 +27,57 @@ class TargetSetUp(Document):
 		approver_designation: DF.Data | None
 		approver_name: DF.Data | None
 		branch: DF.Link | None
-		business_target: DF.Table[NegativeTarget]
-		comment: DF.SmallText | None
-		common_target: DF.Table[CommonTargetItem]
 		company: DF.Link | None
 		competency: DF.Table[CompetencyItem]
 		date: DF.Date | None
-		department: DF.Link | None
 		designation: DF.Link | None
 		division: DF.Link | None
+		eas_calendar: DF.Link
+		eas_group: DF.Link
 		employee: DF.Link
+		employee_group: DF.Link | None
 		employee_name: DF.ReadOnly | None
 		end_date: DF.Date | None
 		grade: DF.Link | None
 		manual_upload: DF.Check
-		max_no_of_target: DF.Float
-		max_weightage_for_target: DF.Float
-		min_no_of_target: DF.Float
-		min_weightage_for_target: DF.Float
-		negative_target: DF.Check
-		old_employee_id: DF.Data | None
-		pms_calendar: DF.Link
-		pms_group: DF.Link
 		reason: DF.Data | None
 		reference: DF.Link | None
-		require_to_set_target: DF.Data | None
 		section: DF.Link | None
 		set_manual_approver: DF.Check
 		start_date: DF.Date | None
 		target_item: DF.Table[PerformanceTargetEvaluation]
-		total_weightage: DF.Float
 		unit: DF.Link | None
 		user_id: DF.Link | None
 		workflow_state: DF.Data | None
 	# end: auto-generated types
 	def validate(self):
 		self.get_supervisor_id()
-
-		self.load_pre_requirement()
 		self.check_target()
 		self.check_duplicate_entry() 
 		# validate_workflow_states(self) 
-		# if self.workflow_state != "Approved":
-		# 	notify_workflow_states(self)
-		if self.reference and self.reason:
-			return
-		else:  
-			self.validate_calendar()
+		# self.validate_calendar()
 			
 	def on_submit(self):
-		if self.reference and self.reason:
-			return
-		else:
-			self.validate_calendar()
+		return
+		self.validate_calendar()
 
-	def load_pre_requirement(self):
-		doc = frappe.get_doc("PMS Setting")
-		self.max_weightage_for_target = doc.max_weightage_for_target
-		self.max_no_of_target = doc.max_no_of_target
-		self.min_weightage_for_target = doc.min_weightage_for_target
-		self.min_no_of_target = doc.min_no_of_target
+	@frappe.whitelist()
+	def get_competency(self):
+		if not self.employee_group:
+			frappe.throw(_('Employee Group is required to fetch competencies.'))
+		data = frappe.db.sql("""
+			SELECT wc.competency, wc.weightage, wc.description
+			FROM `tabWork Competency` wc 
+			INNER JOIN`tabWork Competency Item` wci 
+			ON wc.name = wci.parent 
+			WHERE wci.applicable = 1 
+			AND wci.employee_group = %s 
+			AND wc.disabled = 0
+			ORDER BY wc.competency
+		""", (self.employee_group,), as_dict=True)
+		if not data:
+			frappe.throw(_('No Work Competency records found for the selected Employee Group.'))
+		self.set('competency', data)
 
 	def on_update_after_submit(self):
 		self.check_target()
@@ -97,9 +86,6 @@ class TargetSetUp(Document):
 			return
 		rev_doc = frappe.get_doc('Review',review)
 		for r, t in zip(rev_doc.review_target_item,self.target_item):
-			r.quantity = t.quantity
-			r.quality = t.quality
-			r.qty_quality = t.qty_quality
 			r.from_date = t.from_date
 			r.to_date = t.to_date
 		
@@ -111,42 +97,39 @@ class TargetSetUp(Document):
 		eval_doc = frappe.get_doc('Performance Evaluation',evaluation)
 			
 		for e, t in zip(eval_doc.evaluate_target_item,self.target_item):
-			e.quantity = t.quantity
-			e.quality = t.quality
-			e.qty_quality = t.qty_quality
 			r.from_date = t.from_date
 			r.to_date = t.to_date
 
 		eval_doc.save(ignore_permissions = True)
 		
 	def validate_calendar(self):
-		if frappe.db.exists("Target Set Up", {"employee": self.employee, "docstatus":2, "pms_calendar": self.pms_calendar}):
+		if frappe.db.exists("Target Set Up", {"employee": self.employee, "docstatus":2, "eas_calendar": self.eas_calendar}):
 			doc = frappe.get_doc('Target Set Up', self.amended_from)
-			if self.pms_calendar == doc.pms_calendar:
+			if self.eas_calendar == doc.eas_calendar:
 				return
 			else:
-				frappe.throw(_("PMS Calendar doesnot match with the cancelled Target"))
+				frappe.throw(_("EAS Calendar doesnot match with the cancelled Target"))
 
 		elif self.workflow_state == 'Draft' or self.workflow_state == 'Rejected':
 			return   
-		# check whether pms is active for target setup       
-		elif not frappe.db.exists("PMS Calendar",{"name": self.pms_calendar, "docstatus": 1,
-					"target_start_date":("<=",nowdate()),"target_end_date":(">=",nowdate())}):
-			frappe.throw(_('Target Set Up for PMS Calendar <b>{}</b> is not open').format(self.pms_calendar))
+		# check whether eas is active for target setup       
+		elif not frappe.db.exists("EAS Calendar", {"name": self.eas_calendar, "docstatus": 1,
+					"target_start_date":("<=",nowdate()), "target_end_date": (">=",nowdate())}):
+			frappe.throw(_('Target Set Up for EAS Calendar <b>{}</b> is not open').format(self.eas_calendar))
 
 	def check_duplicate_entry(self):
 		# check duplicate entry for particular employee
-		if self.reference and len(frappe.db.get_list('Target Set Up',filters={'employee': self.employee, 'pms_calendar': self.pms_calendar, 'docstatus': 1,'reference':self.reference})) >= 2 :
-			frappe.throw("You cannot set more than <b>2</b> Target Set Up for PMS Calendar <b>{}</b>".format(self.pms_calendar))
+		if self.reference and len(frappe.db.get_list('Target Set Up',filters={'employee': self.employee, 'eas_calendar': self.eas_calendar, 'docstatus': 1,'reference':self.reference})) >= 2 :
+			frappe.throw("You cannot set more than <b>2</b> Target Set Up for EAS Calendar <b>{}</b>".format(self.eas_calendar))
 		
-		if self.reference and len(frappe.db.get_list('Target Set Up',filters={'employee': self.employee, 'pms_calendar': self.pms_calendar, 'docstatus': 1,'reference':self.reference,'section':self.section})) >= 2:
-			frappe.throw("You cannot set more than <b>2</b> Target Set Up for PMS Calendar <b>{}</b> within Section <b>{}</b>".format(self.pms_calendar,self.section))
+		if self.reference and len(frappe.db.get_list('Target Set Up',filters={'employee': self.employee, 'eas_calendar': self.eas_calendar, 'docstatus': 1,'reference':self.reference,'section':self.section})) >= 2:
+			frappe.throw("You cannot set more than <b>2</b> Target Set Up for EAS Calendar <b>{}</b> within Section <b>{}</b>".format(self.eas_calendar,self.section))
 
-		if not self.reference and frappe.db.exists("Target Set Up", {'employee': self.employee, 'pms_calendar': self.pms_calendar, 'docstatus': 1}):
-			frappe.throw(_('You have already set the Target for PMS Calendar <b>{}</b> or Route from <b><a href="#List/Change In Performance Evaluation/List">Change In Performance Evaluation</a></b> if you have 2 PMS'.format(self.pms_calendar)))
+		if not self.reference and frappe.db.exists("Target Set Up", {'employee': self.employee, 'eas_calendar': self.eas_calendar, 'docstatus': 1}):
+			frappe.throw(_('You have already set the Target for EAS Calendar <b>{}</b> or Route from <b><a href="#List/Change In Performance Evaluation/List">Change In Performance Evaluation</a></b> if you have 2 EAS'.format(self.eas_calendar)))
 
 	def check_target(self):
-		check = frappe.db.get_value("PMS Group",self.pms_group,"required_to_set_target")
+		check = frappe.db.get_value("EAS Group", self.eas_group, "required_to_set_target")
 		if not check:
 			frappe.throw(
 					title='Error',
@@ -155,31 +138,9 @@ class TargetSetUp(Document):
 			if not self.target_item:
 				frappe.throw(_('You need to <b>Set The Target</b>'))
 
-			# validate total number of target
-			target_length = flt(len(self.target_item)) + flt(len(self.common_target))
-			if flt(target_length) > flt(self.max_no_of_target) or flt(target_length) < flt(self.min_no_of_target):
-				frappe.throw(
-					title='Error',
-					msg="Total number of target must be between <b>{}</b> and <b>{}</b> but you have set only <b>{}</b> target".format(self.min_no_of_target,self.max_no_of_target,target_length))
-
 			total_target_weightage = 0
 			# total weightage must be 100
 			for i, t in enumerate(self.target_item):
-				if t.qty_quality == 'Quantity' and flt(t.quantity) <= 0 :
-					frappe.throw(
-						title=_('Error'),
-						msg=_("<b>{}</b> value is not allowed for <b>Quantity</b> in Target Item at Row <b>{}</b>".format(t.quantity,i+1)))
-
-				if t.qty_quality == 'Quality' and flt(t.quality) <= 0 :
-					frappe.throw(
-						title=_("Error"),
-						msg=_("<b>{}</b> value is not allowed for <b>Quality</b> in Target Item at Row <b>{}</b>".format(t.quality,i+1)))
-
-				if flt(t.weightage) > flt(self.max_weightage_for_target) or flt(t.weightage) < flt(self.min_weightage_for_target):
-					frappe.throw(
-						title=_('Error'),
-						msg="Weightage for target must be between <b>{}</b> and <b>{}</b> but you have set <b>{}</b> at row <b>{}</b>".format(self.min_weightage_for_target,self.max_weightage_for_target,t.weightage, i+1))
-
 				if getdate(t.from_date).year < getdate().year:
 					frappe.throw(
 						title=_("Error"),
@@ -197,24 +158,17 @@ class TargetSetUp(Document):
 
 				
 				total_target_weightage += flt(t.weightage)
-				if t.qty_quality == 'Quantity':
-					t.quality = None
-
-				if t.qty_quality == 'Quality':
-					t.quantity = None
-			for item in self.common_target:
-				total_target_weightage += flt(item.weightage)
 
 			if flt(total_target_weightage) != 100:
 				frappe.throw(
 					title=_("Error"),
-					msg=_('Sum of Weightage for Target must be 100 but your total weightage is <b>{}</b>'.format(total_target_weightage)))
+					msg=_('Sum of Weightage for Target must be <b>100</b> but your total weightage is <b>{}</b>'.format(total_target_weightage)))
 
 			self.total_weightage = total_target_weightage
 		
 	def get_supervisor_id(self):
 		# get supervisor details         
-		reports_to = frappe.db.get_value("Employee",{"name":self.employee},"reports_to")
+		reports_to = frappe.db.get_value("Employee", {"name":self.employee}, "reports_to")
 		if not reports_to:
 			frappe.throw('You have not set report to in your master data')
 		email,name, designation = frappe.db.get_value("Employee",{"name":reports_to},["user_id","employee_name","designation"])
@@ -223,12 +177,11 @@ class TargetSetUp(Document):
 		self.approver = email
 		self.approver_name = name
 		self.approver_designation = designation
+
 	@frappe.whitelist()
 	def calculate_total_weightage(self):
 		total = 0
 		for item in self.target_item :
-			total += flt(item.weightage)
-		for item in self.common_target:
 			total += flt(item.weightage)
 		self.total_weightage = total
 	
@@ -238,13 +191,11 @@ class TargetSetUp(Document):
  
 @frappe.whitelist()
 def create_review(source_name, target_doc=None):
-	if frappe.db.exists('Review',
-		{'target':source_name,
-		'docstatus':('=',1)
-		}):
+	if frappe.db.exists('Review', {'target':source_name, 'docstatus':('=',1)}):
 		frappe.throw(
 			title='Error',
 			msg="You have already created Review for this Target")
+		
 	doclist = get_mapped_doc("Target Set Up", source_name, {
 		"Target Set Up": {
 			"doctype": "Review",
@@ -252,34 +203,19 @@ def create_review(source_name, target_doc=None):
 					"target":"name"
 				},
 			},
-		"Common Target Item":{
+		"Performance Target Evaluation": {
 				"doctype":"Review Target Item"
 			},
-		"Performance Target Evaluation":{
-				"doctype":"Review Target Item"
-			},
-		"Negative Target":{
-			"doctype":"Negative Target Review"
-			},
+		"Competency Item":{
+			"doctype":"Review Competency Item"
+		}
 	}, target_doc)
 
 	return doclist
 
 @frappe.whitelist()
-def apply_target_filter(doctype, txt, searchfield, start, page_len, filters):
-	cond = " parent = '{}' ".format(filters['parent'])
-	return frappe.db.sql("""select name, performance_target from `tabCommon Target Details`
-			where {cond}
-			AND (`{key}` LIKE %(txt)s OR performance_target LIKE %(txt)s )
-			order by name limit %(start)s, %(page_len)s"""
-			.format(key=searchfield, cond = cond), {
-				'txt': '%' + txt + '%',
-				'start': start, 'page_len': page_len
-			})
-
-@frappe.whitelist()
-def manual_approval_for_hr(name, employee, pms_calendar):
-	frappe.db.sql("update `tabTarget Set Up` set workflow_state = 'Approved', docstatus = 1 where employee = '{0}' and pms_calendar = '{1}' and name = '{2}' and workflow_state = 'Waiting Approval'".format(employee, pms_calendar, name))
+def manual_approval_for_hr(name, employee, eas_calendar):
+	frappe.db.sql("update `tabTarget Set Up` set workflow_state = 'Approved', docstatus = 1 where employee = '{0}' and eas_calendar = '{1}' and name = '{2}' and workflow_state = 'Waiting Approval'".format(employee, eas_calendar, name))
 	frappe.msgprint("Document has been Approved")
 
 def get_permission_query_conditions(user):
