@@ -37,7 +37,6 @@ class MaterialRequest(BuyingController):
 		amended_from: DF.Link | None
 		approval_date: DF.Date | None
 		approver: DF.Link | None
-		approver_name: DF.Data | None
 		branch: DF.Link
 		company: DF.Link
 		cost_center: DF.Link | None
@@ -154,7 +153,8 @@ class MaterialRequest(BuyingController):
 
 		self.reset_default_field_value("set_warehouse", "items", "warehouse")
 		self.reset_default_field_value("set_from_warehouse", "items", "from_warehouse")
-		self.approval_date = nowdate()
+		if self.workflow_state == "Approved":
+			self.approval_date = nowdate()
 		
 	def before_update_after_submit(self):
 		self.validate_schedule_date()
@@ -404,17 +404,17 @@ def get_list_context(context=None):
 	)
 
 	return list_context
-@frappe.whitelist()
-def pull_material_approver(branch):
+# @frappe.whitelist()
+# def pull_material_approver(branch):
 
-	approver=frappe.db.sql("""select u.name from `tabUser` u 
-		join `tabEmployee` e on u.name=e.user_id 
-		join `tabHas Role` hr on hr.parent=u.name where hr.role='MR Approver' and e.branch='{}' limit 1""".format(branch), as_dict=True)
+# 	approver=frappe.db.sql("""select u.name from `tabUser` u 
+# 		join `tabEmployee` e on u.name=e.user_id 
+# 		join `tabHas Role` hr on hr.parent=u.name where hr.role='MR Approver' and e.branch='{}' limit 1""".format(branch), as_dict=True)
 
-	if len(approver)==0:
-		frappe.throw("There is no MR Approver for this Branch")
+# 	if len(approver)==0:
+# 		frappe.throw("There is no MR Approver for this Branch")
 		
-	return approver[0].name
+# 	return approver[0].name
 
 @frappe.whitelist()
 def update_status(name, status):

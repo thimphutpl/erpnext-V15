@@ -177,7 +177,7 @@ class Item(Document):
 
 		self.item_code = strip(self.item_code)
 		self.name = self.item_code
-
+		
 	def get_current_item_code(self):
 		# item_code = frappe.db.sql(
 		# 	"""select item_code from tabItem where item_group=%s and item_sub_group=%s order by item_code desc limit 1;""", (self.item_group, self.item_sub_group))
@@ -1034,7 +1034,7 @@ class Item(Document):
 					frappe.get_desk_link(linked_doc.doctype, linked_doc.docname)
 				)
 
-			frappe.throw(msg, title=_("Linked with submitted documents"))
+			frappe.throw(msg, title=_("Linked with submitted documents"))	
 
 	def _get_linked_submitted_documents(self, changed_fields: list[str]) -> dict[str, str] | None:
 		linked_doctypes = [
@@ -1139,7 +1139,6 @@ def make_item_price(item, price_list_name, item_price):
 		}
 	).insert()
 
-
 def get_timeline_data(doctype: str, name: str) -> dict[int, int]:
 	"""get timeline data based on Stock Ledger Entry. This is displayed as heatmap on the item page."""
 
@@ -1153,7 +1152,6 @@ def get_timeline_data(doctype: str, name: str) -> dict[int, int]:
 		.groupby(sle.posting_date)
 		.run()
 	)
-
 
 def validate_end_of_life(item_code, end_of_life=None, disabled=None):
 	if (not end_of_life) or (disabled is None):

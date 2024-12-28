@@ -84,41 +84,18 @@ frappe.ui.form.on("Material Request", {
 	},
 	
 	branch: function(frm){
-		if(frm.doc.branch != null || frm.doc.branch != "" || frm.doc.branch != undefined){
+		if(frm.is_new()) {
 			frappe.call({
-				method: "frappe.client.get_value",
-				args: {
-					doctype: "Branch",
-					fieldname: "cost_center",
-					filters: { name: frm.doc.branch },
-				},
-				callback: function(r, rt) {
-					if(r.message) {
-						frm.set_value("cost_center", r.message.cost_center);
-						frm.trigger("cost_center")
-					}
-				}
-			});
-
-			frappe.call({
-				method: "erpnext.stock.doctype.material_request.material_request.pull_material_approver",
-				args: {
-					branch: frm.doc.branch,
-				},
-				callback: function(r, rt) {
-					if(r.message) {
+					method: "erpnext.custom_utils.get_user_info",
+					args: {"branch": frm.doc.branch},
+					callback(r) {
 						console.log(r.message);
-						frm.set_value("approver", r.message);
-						frm.refresh_field("approver");
-						frm.trigger("approver");
+						frm.set_value("approver", r.message.approver);
+						// cur_frm.set_value("branch", r.message.branch);
+						frm.refresh_field('approver');
 					}
-				}
 			});
-		}
-		else{
-			frm.set_value("cost_center",null);
-		}
-		frm.refresh_fields();
+        }
 	},
 	item_group: function(frm){
 		frm.fields_dict["items"].grid.get_field("item_code").get_query = function (doc) {
@@ -628,6 +605,8 @@ frappe.ui.form.on("Material Request Item", {
 		const item = locals[doctype][name];
 		item.rate = 0;
 		item.uom = "";
+		item.expense_account = "";
+		
 		set_schedule_date(frm);
 		frm.events.get_item_data(frm, item, true);
 	},

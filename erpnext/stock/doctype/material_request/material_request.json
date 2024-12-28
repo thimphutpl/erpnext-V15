@@ -21,10 +21,8 @@
   "cost_center",
   "date",
   "approver_details_section",
-  "approver_name",
-  "column_break_mtdw",
   "approver",
-  "column_break_spsg",
+  "column_break_mtdw",
   "approval_date",
   "warehouse_section",
   "column_break_ivqt",
@@ -384,18 +382,13 @@
   {
    "fieldname": "approver",
    "fieldtype": "Link",
-   "label": "Approver Mail",
-   "options": "User"
+   "label": "Approver",
+   "options": "User",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_mtdw",
    "fieldtype": "Column Break"
-  },
-  {
-   "fetch_from": "approver.full_name",
-   "fieldname": "approver_name",
-   "fieldtype": "Data",
-   "label": "Approver Name"
   },
   {
    "depends_on": "eval:doc.material_request_type==\"Purchase\"",
@@ -410,22 +403,20 @@
    "label": "Terms and Conditions"
   },
   {
-   "fieldname": "column_break_spsg",
-   "fieldtype": "Column Break"
-  },
-  {
-   "default": "Today",
+   "allow_on_submit": 1,
+   "depends_on": "eval:parent.workflow_state == 'Approved'",
    "fieldname": "approval_date",
    "fieldtype": "Date",
    "in_list_view": 1,
-   "label": "Approval Date"
+   "label": "Approval Date",
+   "read_only": 1
   }
  ],
  "icon": "fa fa-ticket",
  "idx": 70,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-12-26 19:01:15.335345",
+ "modified": "2024-12-28 11:21:21.017540",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Material Request",

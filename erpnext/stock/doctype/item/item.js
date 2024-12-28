@@ -7,6 +7,7 @@ const SALES_DOCTYPES = ["Quotation", "Sales Order", "Delivery Note", "Sales Invo
 const PURCHASE_DOCTYPES = ["Purchase Order", "Purchase Receipt", "Purchase Invoice"];
 
 frappe.ui.form.on("Item", {
+
 	setup: function (frm) {
 		frm.add_fetch("attribute", "numeric_values", "numeric_values");
 		frm.add_fetch("attribute", "from_range", "from_range");
@@ -299,6 +300,46 @@ frappe.ui.form.on("Item", {
 		erpnext.item.toggle_attributes(frm);
 	},
 });
+
+//custom Scripts
+//Auto populate material code
+cur_frm.cscript.item_group = function(doc) {
+    cur_frm.call({
+		// method: "erpnext.stock.doctype.item.item.get_current_item_code",
+		method: "erpnext.stock.stock_custom_functions.get_current_item_code",
+        args: {
+             item_group: doc.item_group
+        },
+        callback: function(r) {
+             cur_frm.set_value("item_code", r.message.toString());
+        }
+   });
+   /*if (doc.item_group != 'All Item Groups') {
+     cur_frm.fields_dict['expense_account'].get_query = function(doc) {
+        return {
+               "filters": {
+                       "item_group": doc.item_group
+                }
+        }
+     }
+     refresh_field("expense_account");
+   }*/
+
+	if(doc.item_group) {
+		if(doc.item_group.match(/Service*/) ) {
+			cur_frm.set_value("is_stock_item", 0)
+			cur_frm.set_value("is_fixed_asset", 0)
+			cur_frm.toggle_display("is_stock_item",  !doc.item_group.match(/Service*/))
+			cur_frm.toggle_display("is_fixed_asset",  !doc.item_group.match(/Service*/))
+		}
+		else {
+			cur_frm.set_value("is_stock_item", 1)
+			cur_frm.set_value("is_fixed_asset", 0)
+			cur_frm.toggle_display("is_stock_item",  !doc.item_group.match(/Service*/))
+			cur_frm.toggle_display("is_fixed_asset",  !doc.item_group.match(/Service*/))
+		}
+	}
+}
 
 frappe.ui.form.on("Item Reorder", {
 	reorder_levels_add: function (frm, cdt, cdn) {
