@@ -384,7 +384,6 @@
    "read_only": 1
   },
   {
-   "collapsible": 1,
    "fieldname": "accounting_dimensions_section",
    "fieldtype": "Section Break",
    "label": "Accounting Dimensions"
@@ -502,7 +501,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-12-05 15:26:28.912283",
+ "modified": "2024-12-29 22:42:39.341355",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Material Request Item",

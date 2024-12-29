@@ -298,6 +298,9 @@ def get_basic_details(args, item, overwrite_warehouse=True):
  
 	
 	#jai
+	if args.get("doctype") in ("Purchase Order","Material Request"):
+		warehouse = frappe.db.get_value("Cost Center", args.get('cost_center'), "warehouse")
+		
 	if args.get("doctype") in ("Purchase Invoice","Purchase Receipt","Purchase Order","Material Request") and item.is_fixed_asset:
 		from erpnext.assets.doctype.asset_category.asset_category import get_asset_category_account
 

@@ -156,6 +156,24 @@ frappe.ui.form.on("Purchase Order", {
 				v.cost_center = frm.doc.cost_center
 			})
 		}
+
+		frappe.call({
+			method: "frappe.client.get_value",
+			args: {
+				doctype: "Cost Center",
+				fieldname: "warehouse",
+				filters: { name: frm.doc.cost_center },
+			},
+			callback: function(r, rt) {
+				if(r.message.warehouse) {
+					frm.doc.items.map(v=>{
+						v.warehouse = r.message.warehouse
+					})
+				}else{
+					frappe.throw(__('Warehouse not define in this Cost Center'))
+				}
+			}
+		});
 	}
 });
 
