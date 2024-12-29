@@ -60,6 +60,7 @@ class MaterialRequest(BuyingController):
 		title: DF.Data | None
 		transaction_date: DF.Date
 		transfer_status: DF.Literal["", "Not Started", "In Transit", "Completed"]
+		warehouse: DF.Link | None
 		work_order: DF.Link | None
 	# end: auto-generated types
 

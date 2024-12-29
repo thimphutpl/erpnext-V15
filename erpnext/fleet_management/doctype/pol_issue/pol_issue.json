@@ -21,6 +21,7 @@
   "stock_uom",
   "column_break_10",
   "tanker",
+  "tank_balance",
   "total_quantity",
   "is_hsd_item",
   "section_break_3",
@@ -92,12 +93,14 @@
    "reqd": 1
   },
   {
+   "fetch_from": "pol_type.item_name",
    "fieldname": "item_name",
    "fieldtype": "Read Only",
    "label": "Item Name",
    "options": "pol_type.item_name"
   },
   {
+   "fetch_from": "pol_type.stock_uom",
    "fieldname": "stock_uom",
    "fieldtype": "Read Only",
    "label": "Stock UOM",
@@ -133,6 +136,7 @@
    "read_only": 1
   },
   {
+   "fetch_from": "cost_center.warehouse",
    "fieldname": "warehouse",
    "fieldtype": "Link",
    "label": "Warehouse",
@@ -179,12 +183,18 @@
    "fieldtype": "Link",
    "label": "Amended From",
    "options": "POL Issue"
+  },
+  {
+   "fieldname": "tank_balance",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Tanker Balance"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-12-28 14:51:38.183876",
+ "modified": "2024-12-28 17:20:25.779769",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Issue",

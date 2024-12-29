@@ -91,8 +91,9 @@ frappe.ui.form.on("Material Request", {
 					callback(r) {
 						console.log(r.message);
 						frm.set_value("approver", r.message.approver);
-						// cur_frm.set_value("branch", r.message.branch);
+						frm.set_value("warehouse", r.message.warehouse);
 						frm.refresh_field('approver');
+						frm.refresh_field('warehouse');
 					}
 			});
         }
@@ -107,6 +108,12 @@ frappe.ui.form.on("Material Request", {
 	cost_center: function(frm){
 		frm.doc.items.map(v=>{
 			v.cost_center = frm.doc.cost_center
+		})
+		frm.refresh_field("items")
+	},
+	warehouse: function(frm){
+		frm.doc.items.map(v=>{
+			v.warehouse = frm.doc.warehouse
 		})
 		frm.refresh_field("items")
 	},
@@ -576,6 +583,11 @@ const formatDate = (date) => {
 };
 
 frappe.ui.form.on("Material Request Item", {
+	items_add: function(frm, cdt, cdn) {
+		frappe.model.set_value(cdt, cdn, "cost_center", frm.doc.cost_center);
+		frappe.model.set_value(cdt, cdn, "warehouse", frm.doc.warehouse);
+	},
+
 	qty: function (frm, doctype, name) {
 		const item = locals[doctype][name];
 		if (flt(item.qty) < flt(item.min_order_qty)) {

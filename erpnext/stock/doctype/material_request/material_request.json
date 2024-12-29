@@ -36,6 +36,7 @@
   "terms_and_conditions_section",
   "tc_name",
   "terms",
+  "warehouse",
   "terms_tab",
   "more_info_tab",
   "status_section",
@@ -410,13 +411,21 @@
    "in_list_view": 1,
    "label": "Approval Date",
    "read_only": 1
+  },
+  {
+   "fieldname": "warehouse",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Warehouse",
+   "options": "Warehouse",
+   "print_hide": 1
   }
  ],
  "icon": "fa fa-ticket",
  "idx": 70,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-12-28 11:21:21.017540",
+ "modified": "2024-12-28 18:43:39.470166",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Material Request",
