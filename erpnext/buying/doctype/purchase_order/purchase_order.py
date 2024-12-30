@@ -98,6 +98,7 @@ class PurchaseOrder(BuyingController):
 		inter_company_order_reference: DF.Link | None
 		is_internal_supplier: DF.Check
 		is_old_subcontracting_flow: DF.Check
+		is_subcontracted: DF.Check
 		items: DF.Table[PurchaseOrderItem]
 		language: DF.Data | None
 		letter_head: DF.Link | None
@@ -125,7 +126,7 @@ class PurchaseOrder(BuyingController):
 		select_print_heading: DF.Link | None
 		set_from_warehouse: DF.Link | None
 		set_reserve_warehouse: DF.Link | None
-		set_warehouse: DF.Link | None
+		set_warehouse: DF.Data | None
 		shipping_address: DF.Link | None
 		shipping_address_display: DF.SmallText | None
 		status: DF.Literal["", "Draft", "On Hold", "To Receive and Bill", "To Bill", "To Receive", "Completed", "Cancelled", "Closed", "Delivered"]

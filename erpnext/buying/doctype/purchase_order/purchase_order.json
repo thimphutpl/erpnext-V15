@@ -24,6 +24,7 @@
   "branch",
   "apply_tds",
   "tax_withholding_category",
+  "is_subcontracted",
   "supplier_warehouse",
   "amended_from",
   "accounting_dimensions_section",
@@ -465,7 +466,8 @@
    "fieldname": "set_warehouse",
    "fieldtype": "Data",
    "label": "Set Target Warehouse",
-   "print_hide": 1
+   "print_hide": 1,
+   "read_only": 1
   },
   {
    "depends_on": "eval:doc.is_subcontracted",
@@ -1275,13 +1277,21 @@
    "no_copy": 1,
    "oldfieldtype": "HTML",
    "print_hide": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_subcontracted",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Is Subcontracted",
+   "print_hide": 1
   }
  ],
  "icon": "fa fa-file-text",
  "idx": 105,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-12-27 11:51:08.322803",
+ "modified": "2024-12-30 16:03:34.387355",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Purchase Order",
