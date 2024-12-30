@@ -9,6 +9,8 @@ from frappe.desk.notifications import clear_doctype_notifications
 from frappe.model.mapper import get_mapped_doc
 from frappe.model.utils import get_fetch_values
 from frappe.utils import cint, flt
+from frappe.model.naming import make_autoname
+from erpnext.custom_autoname import get_auto_name
 
 from erpnext.controllers.accounts_controller import get_taxes_and_charges, merge_taxes
 from erpnext.controllers.selling_controller import SellingController
@@ -86,7 +88,7 @@ class DeliveryNote(SellingController):
 		lr_date: DF.Date | None
 		lr_no: DF.Data | None
 		named_place: DF.Data | None
-		naming_series: DF.Literal["MAT-DN-.YYYY.-", "MAT-DN-RET-.YYYY.-"]
+		naming_series: DF.Literal["", "Consumables", "Fixed Asset", "Sales Product", "Spareparts", "Services Miscellaneous", "Services Works", "Labour Contract", "MAT-DN-.YYYY.-", "MAT-DN-RET-.YYYY.-"]
 		net_total: DF.Currency
 		other_charges: DF.Currency
 		packed_items: DF.Table[PackedItem]
@@ -210,6 +212,9 @@ class DeliveryNote(SellingController):
 				]
 			)
 
+	def autoname(self):
+		self.name = make_autoname(get_auto_name(self, self.naming_series) + ".####")
+		
 	def onload(self):
 		if self.docstatus == 0:
 			self.set_onload("has_unpacked_items", self.has_unpacked_items())

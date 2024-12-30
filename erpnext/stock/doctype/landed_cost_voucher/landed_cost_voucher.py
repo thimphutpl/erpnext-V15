@@ -21,15 +21,10 @@ class LandedCostVoucher(Document):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
-		from frappe.types import DF
-
 		from erpnext.stock.doctype.landed_cost_item.landed_cost_item import LandedCostItem
-		from erpnext.stock.doctype.landed_cost_purchase_receipt.landed_cost_purchase_receipt import (
-			LandedCostPurchaseReceipt,
-		)
-		from erpnext.stock.doctype.landed_cost_taxes_and_charges.landed_cost_taxes_and_charges import (
-			LandedCostTaxesandCharges,
-		)
+		from erpnext.stock.doctype.landed_cost_purchase_receipt.landed_cost_purchase_receipt import LandedCostPurchaseReceipt
+		from erpnext.stock.doctype.landed_cost_taxes_and_charges.landed_cost_taxes_and_charges import LandedCostTaxesandCharges
+		from frappe.types import DF
 
 		amended_from: DF.Link | None
 		company: DF.Link
@@ -67,7 +62,7 @@ class LandedCostVoucher(Document):
 		self.validate_receipt_documents()
 		self.validate_line_items()
 		init_landed_taxes_and_totals(self)
-		self.set_total_taxes_and_charges()
+		# self.set_total_taxes_and_charges()
 		if not self.get("items"):
 			self.get_items_from_purchase_receipts()
 
@@ -141,7 +136,8 @@ class LandedCostVoucher(Document):
 		self.total_taxes_and_charges = sum(flt(d.base_amount) for d in self.get("taxes"))
 
 	def set_applicable_charges_on_item(self):
-		if self.get("taxes") and self.distribute_charges_based_on != "Distribute Manually":
+		# if self.get("taxes") and self.distribute_charges_based_on != "Distribute Manually":
+		if self.distribute_charges_based_on != "Distribute Manually":
 			total_item_cost = 0.0
 			total_charges = 0.0
 			item_count = 0
@@ -213,11 +209,15 @@ class LandedCostVoucher(Document):
 			)
 
 	def on_submit(self):
-		self.validate_applicable_charges_for_item()
-		self.update_landed_cost()
+		pass
+		""" system default code begins here, commented by Jai """
+		# self.validate_applicable_charges_for_item()
+		# self.update_landed_cost()
 
 	def on_cancel(self):
-		self.update_landed_cost()
+		pass
+		""" system default code begins here, commented by Jai """
+		# self.update_landed_cost()
 
 	def update_landed_cost(self):
 		for d in self.get("purchase_receipts"):

@@ -86,7 +86,7 @@ class PurchaseReceipt(BuyingController):
 		material_request: DF.Link | None
 		material_request_date: DF.Date | None
 		named_place: DF.Data | None
-		naming_series: DF.Literal["MAT-PRE-.YYYY.-", "MAT-PR-RET-.YYYY.-"]
+		naming_series: DF.Literal["", "Consumables", "Fixed Asset", "Sales Product", "Spareparts", "Services Miscellaneous", "Services Works", "Labour Contract", "MAT-PRE-.YYYY.-", "MAT-PR-RET-.YYYY.-"]
 		net_total: DF.Currency
 		other_charges_calculation: DF.TextEditor | None
 		per_billed: DF.Percent

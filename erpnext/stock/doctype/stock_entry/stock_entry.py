@@ -52,7 +52,9 @@ from erpnext.stock.serial_batch_bundle import (
 )
 from erpnext.stock.stock_ledger import NegativeStockError, get_previous_sle, get_valuation_rate
 from erpnext.stock.utils import get_bin, get_incoming_rate
+# from frappe.model.naming import make_autoname
 from frappe.model.naming import make_autoname
+from erpnext.custom_autoname import get_auto_name
 
 
 class FinishedGoodError(frappe.ValidationError):
@@ -115,7 +117,7 @@ class StockEntry(StockController):
 		job_card: DF.Link | None
 		job_cards: DF.Link | None
 		letter_head: DF.Link | None
-		naming_series: DF.Literal["MAT-STE-.YYYY.-"]
+		naming_series: DF.Literal["", "Consumables", "Fixed Asset", "Sales Product", "Spareparts", "Services Miscellaneous", "Services Works", "Labour Contract", "MAT-STE-.YYYY.-"]
 		outgoing_stock_entry: DF.Link | None
 		per_transferred: DF.Percent
 		pick_list: DF.Link | None
@@ -155,19 +157,22 @@ class StockEntry(StockController):
 		vehicle_no: DF.Data | None
 		work_order: DF.Link | None
 	# end: auto-generated types
+	# def autoname(self):
+	# 	if self.stock_entry_type == 'Material Issue':
+	# 		series = 'MI'
+	# 		self.name = make_autoname(str(series) + ".YY.MM.####")
+	# 	elif self.stock_entry_type == 'Material Receipt':
+	# 		series = 'MR'
+	# 		self.name = make_autoname(str(series) + ".YY.MM.####")
+	# 	elif self.stock_entry_type == 'Material Transfer':
+	# 		series = 'MT'
+	# 		self.name = make_autoname(str(series) + ".YY.MM.DD.####")
+	# 	else:
+	# 		series = 'WO'
+	# 		self.name = make_autoname(str(series) + ".YY.MM.####")
+
 	def autoname(self):
-		if self.stock_entry_type == 'Material Issue':
-			series = 'MI'
-			self.name = make_autoname(str(series) + ".YY.MM.####")
-		elif self.stock_entry_type == 'Material Receipt':
-			series = 'MR'
-			self.name = make_autoname(str(series) + ".YY.MM.####")
-		elif self.stock_entry_type == 'Material Transfer':
-			series = 'MT'
-			self.name = make_autoname(str(series) + ".YY.MM.DD.####")
-		else:
-			series = 'WO'
-			self.name = make_autoname(str(series) + ".YY.MM.####")
+		self.name = make_autoname(get_auto_name(self, self.naming_series) + ".####")
 
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)

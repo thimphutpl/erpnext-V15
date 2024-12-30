@@ -88,6 +88,12 @@ class VehicleLogbook(Document):
 		self.update_operator()
 		self.check_consumed()
 		self.get_pool_equipment()	
+
+		if self.vehicle_logbook in ["Pool Vehicle", "Support Equipment"]:
+			self.customer = None 
+			self.customer_type = None
+		elif not self.customer:
+			frappe.throw(("Customer is required for this Vehicle Logbook type."))
 	
 	def validate_date(self):
 		from_date = get_datetime(str(self.from_date) + ' ' + str(self.from_time))
@@ -103,87 +109,25 @@ class VehicleLogbook(Document):
                 ("Tank balance ({}) should be greater than or equal to consumption ({}).").format(
                     self.tank_balance, self.consumption
                 )
-            )	
+            )
+		if self.vehicle_logbook in ["Pool Vehicle", "Support Equipment"]:
+			self.customer = None 
+			self.customer_type = None
+		elif not self.customer:
+			frappe.throw(("Customer is required for this Vehicle Logbook type."))			
 
-	# def before_save(self):
-	# 	self.calculate_totals()
-	# 	if self.vehicle_logbook == "Pool Vehicle":
-	# 		if not self.customers:
-	# 			frappe.throw(("Please select a value for 'Customers' when 'Vehicle Logbook' is set to 'Pool Vehicle'."))
-			
-	# 		if not self.customer_types:
-	# 			frappe.throw(("Please select a value for 'Customer Types' when 'Vehicle Logbook' is set to 'Pool Vehicle'."))
-			
-	# 		self.customer = self.customers
-	# 		self.customer_type = self.customer_types
-	# 	else:
-	# 		self.customer = self.customer or None
-	# 		self.customer_type = self.customer_type or None
-		
+	def set_data(self):
+		if self.vehicle_logbook == "Pool Vehicle":
+			return
 
-	# def set_data(self):
-	# 	if self.vehicle_logbook == "Pool Vehicle":
-	# 		return	
+		if self.vehicle_logbook == "Support Equipment":
+			return	
 
-	# 	if not self.ehf_name:
-	# 		frappe.throw("Equipment Hire Form is mandatory")
-	# 	self.customer_type = frappe.db.get_value("Equipment Hiring Form", self.ehf_name, "private")
-	# 	self.customer = frappe.db.get_value("Equipment Hiring Form", self.ehf_name, "customer")
+		if not self.ehf_name:
+			frappe.throw("Equipment Hire Form is mandatory")
+		self.customer_type = frappe.db.get_value("Equipment Hiring Form", self.ehf_name, "private")
+		self.customer = frappe.db.get_value("Equipment Hiring Form", self.ehf_name, "customer")
 
-	# def get_data(filters=None):
-	# 	data = []
-	# 	query = "select e.name, e.branch, e.registration_number, e.hsd_type, e.equipment_type from tabEquipment e, `tabEquipment Type`et where e.equipment_type = et.name"
-	# 	if not filters.all_equipment:
-	# 		query += " and et.is_container = 1"
-	# 	if filters.branch:
-	# 		query += " and e.branch = \'" + str(filters.branch) + "\'"
-			
-	# 	items = frappe.db.sql("select item_code, item_name, stock_uom from tabItem where is_hsd_item = 1 and disabled = 0", as_dict=True)
-
-	# 	query += " order by e.branch"
-
-	# 	for eq in frappe.db.sql(query, as_dict=True):
-	# 		for item in items:
-	# 			received = issued = 0
-	# 			if filters.all_equipment:
-	# 				if eq.hsd_type == item.item_code:
-	# 					received = get_pol_till("Receive", eq.name, filters.to_date, item.item_code)
-	# 					issued = get_pol_consumed_till(eq.name, filters.to_date)
-	# 			else:
-	# 				received = get_pol_till("Stock", eq.name, filters.to_date, item.item_code)
-	# 				issued = get_pol_till("Issue", eq.name, filters.to_date, item.item_code)
-
-	# 			if received or issued:
-	# 				row = [eq.name, eq.registration_number, eq.equipment_type, eq.branch, item.item_code, item.item_name, item.stock_uom, received, issued, flt(received) - flt(issued)]
-	# 				data.append(row)
-	# 	return data	
-
-	# def set_data(self):
-	# 	if self.vehicle_logbook == "Pool Vehicle":
-	# 		# Use the new fields 'customers' and 'customer types'
-	# 		if not self.customers:
-	# 			frappe.throw("Customers field is mandatory for Pool Vehicle")
-	# 		if not self.customer_types:
-	# 			frappe.throw("Customer Types field is mandatory for Pool Vehicle")
-			
-	# 		# Additional validation can go here if required
-	# 		return
-
-	# 	elif self.vehicle_logbook == "Equipment Hiring Form":
-	# 		# Use the standard fields for Equipment Hiring Form
-	# 		if not self.ehf_name:
-	# 			frappe.throw("Equipment Hire Form is mandatory")
-	# 		self.customer_type = frappe.db.get_value("Equipment Hiring Form", self.ehf_name, "private")
-	# 		self.customer = frappe.db.get_value("Equipment Hiring Form", self.ehf_name, "customer")
-			
-	# 		# # Fetch values for 'customer' and 'customer_type' from the Equipment Hiring Form
-	# 		# self.customer_type = frappe.db.get_value("Equipment Hiring Form", self.ehf_name, "private")
-	# 		# if not self.customer_type:
-	# 		# 	frappe.throw(f"Customer type not found for Equipment Hiring Form: {self.ehf_name}")
-			
-	# 		# self.customer = frappe.db.get_value("Equipment Hiring Form", self.ehf_name, "customer")
-	# 		# if not self.customer:
-	# 		# 	frappe.throw(f"Customer not found for Equipment Hiring Form: {self.ehf_name}")
 
 	
 	def check_consumed(self):
@@ -192,6 +136,12 @@ class VehicleLogbook(Document):
 				frappe.throw("Total consumption cannot be zero or less")
 
 	def check_hire_rate(self):
+		if self.vehicle_logbook == "Pool Vehicle":
+			return
+
+		if self.vehicle_logbook == "Support Equipment":
+			return	
+		
 		if self.rate_type == "Without Fuel":
 			return
 		based_on = frappe.db.get_single_value("Mechanical Settings", "hire_rate_based_on")
@@ -252,6 +202,10 @@ class VehicleLogbook(Document):
 	def check_hire_form(self):
 		if self.vehicle_logbook == "Pool Vehicle":
 			# Skip setting data for Pool Vehicle
+			return
+		
+		if self.vehicle_logbook == "Support Equipment":
+			# Skip setting data for Support Equipment
 			return
 		
 		if self.ehf_name:

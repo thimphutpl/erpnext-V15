@@ -141,7 +141,7 @@
    "no_copy": 1,
    "oldfieldname": "naming_series",
    "oldfieldtype": "Select",
-   "options": "PUR-SQTN-.YYYY.-",
+   "options": "\nConsumables\nFixed Asset\nSales Product\nSpareparts\nServices Miscellaneous\nServices Works\nLabour Contract\nPUR-SQTN-.YYYY.-",
    "print_hide": 1,
    "reqd": 1,
    "set_only_once": 1
@@ -860,8 +860,8 @@
    "print_hide": 1
   },
   {
-    "fieldname": "column_break_zjaq",
-    "fieldtype": "Column Break"
+   "fieldname": "column_break_zjaq",
+   "fieldtype": "Column Break"
   },
   {
    "fieldname": "shipping_address_display",
@@ -928,7 +928,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-03-28 10:20:30.231915",
+ "modified": "2024-12-30 17:28:38.085520",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Supplier Quotation",

@@ -211,7 +211,7 @@
    "no_copy": 1,
    "oldfieldname": "naming_series",
    "oldfieldtype": "Select",
-   "options": "SAL-ORD-.YYYY.-",
+   "options": "\nConsumables\nFixed Asset\nSales Product\nSpareparts\nServices Miscellaneous\nServices Works\nLabour Contract\nSAL-ORD-.YYYY.-",
    "print_hide": 1,
    "reqd": 1,
    "set_only_once": 1
@@ -1703,7 +1703,7 @@
  "idx": 105,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-12-27 16:10:52.558242",
+ "modified": "2024-12-30 16:42:33.576131",
  "modified_by": "Administrator",
  "module": "Selling",
  "name": "Sales Order",

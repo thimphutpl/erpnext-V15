@@ -8,6 +8,8 @@ from frappe.contacts.doctype.address.address import get_address_display
 from frappe.model.mapper import get_mapped_doc
 from frappe.model.utils import get_fetch_values
 from frappe.utils import add_days, cint, cstr, flt, formatdate, get_link_to_form, getdate, nowdate
+from frappe.model.naming import make_autoname
+from erpnext.custom_autoname import get_auto_name
 
 import erpnext
 from erpnext.accounts.deferred_revenue import validate_service_stop_date
@@ -135,7 +137,7 @@ class SalesInvoice(SellingController):
 		loyalty_redemption_account: DF.Link | None
 		loyalty_redemption_cost_center: DF.Link | None
 		named_place: DF.Data | None
-		naming_series: DF.Literal["ACC-SINV-.YYYY.-", "ACC-SINV-RET-.YYYY.-"]
+		naming_series: DF.Literal["", "Consumables", "Fixed Asset", "Sales Product", "Spareparts", "Services Miscellaneous", "Services Works", "Labour Contract", "ACC-SINV-.YYYY.-", "ACC-SINV-RET-.YYYY.-"]
 		net_total: DF.Currency
 		only_include_allocated_payments: DF.Check
 		other_charges_calculation: DF.TextEditor | None
@@ -224,6 +226,9 @@ class SalesInvoice(SellingController):
 				"overflow_type": "billing",
 			}
 		]
+
+	def autoname(self):
+		self.name = make_autoname(get_auto_name(self, self.naming_series) + ".####")	
 
 	def set_indicator(self):
 		"""Set indicator for portal"""

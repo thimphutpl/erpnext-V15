@@ -44,12 +44,17 @@ frappe.ui.form.on('Vehicle Logbook', {
 	},
 
     vehicle_logbook: function (frm) {
+		if (["Pool Vehicle", "Support Equipment"].includes(frm.doc.vehicle_logbook)) {
+            frm.set_value("customer", null); 
+			frm.set_value("customer_type", null);
+            frm.refresh_field("customer"); 
+        }
 		if (frm.doc.vehicle_logbook === 'Equipment Hiring Form') {
 			frm.set_df_property('equipment', 'hidden', 0);
 			frm.set_query('equipment', function () {
-				return {}; // No filters for Equipment Hiring Form
+				return {}; 
 			});
-			frm.trigger('equipment'); // Trigger equipment logic
+			frm.trigger('equipment'); 
 		} else if (frm.doc.vehicle_logbook === 'Pool Vehicle') {
 			frm.set_df_property('equipment', 'hidden', 0);
 			frm.set_query('equipment', function () {
@@ -112,62 +117,15 @@ frappe.ui.form.on('Vehicle Logbook', {
 					}
 				}
 			});
-			// frappe.call({
-			// 	method: "erpnext.fleet_management.doctype.pol_receive.pol_receive.tank_balance",
-			// 	args: { pol_receive: frm.doc.pol_receive },
-			// 	callback: function (r) {
-			// 		if (r.message) {
-			// 			frm.set_value("tank_balance", r.message[0].qty);
-			// 			frm.refresh_fields();
-			// 		} else {
-			// 			frappe.msgprint("No tank balance for the equipment");
-			// 		}
-			// 	}
-			// });
 		}
-		// if (frm.doc.equipment) {
-        //     frappe.call({
-        //         method: "erpnext.fleet_management.doctype.pol_receive.pol_receive.fetch_tank_balance", 
-        //         args: {
-        //             equipment: frm.doc.equipment
-        //         },
-        //         callback: function(response) {
-        //             if (response.message) {
-        //                 // Set the tank_balance field with the fetched qty
-        //                 frm.set_value('tank_balance', response.message);
-        //             }
-        //         }
-        //     });
-        // } else {
-        //     // Clear the tank_balance field if no equipment is selected
-        //     frm.set_value('tank_balance', '');
-        // }
 
-		// if (frm.doc.equipment) {
-        //     // Call the server-side method to fetch the closing value
-        //     frappe.call({
-        //         method: "erpnext.fleet_management.report.hsd_consumption_report.hsd_consumption_report.fetch_tank_balance_from_hsd", // Update with the correct method path
-        //         args: {
-        //             equipment: frm.doc.equipment
-        //         },
-        //         callback: function(response) {
-        //             if (response.message) {
-        //                 // Set the tank_balance field with the fetched closing value
-        //                 frm.set_value('tank_balance', response.message);
-        //             }
-        //         }
-        //     });
-        // } else {
-        //     // Clear the tank_balance field if no equipment is selected
-        //     frm.set_value('tank_balance', '');
-        // }
 		if (frm.doc.equipment) {
             frappe.call({
                 method: "erpnext.fleet_management.doctype.vehicle_logbook.vehicle_logbook.get_equipment_data", // Update with the correct path
                 args: {
                     equipment_name: frm.doc.equipment,
                     to_date: frm.doc.to_date,
-                    all_equipment: frm.doc.all_equipment || 0,
+                    all_equipment: frm.doc.all_equipment || 1,
                     branch: frm.doc.branch
                 },
                 callback: function(response) {
@@ -201,6 +159,11 @@ frappe.ui.form.on('Vehicle Logbook', {
 		if(!frm.doc.docstatus == 1) {
 			calculate_distance_km(frm)
 		}
+		// Automatically check the include_km checkbox
+		if (frm.doc.final_km) {
+			cur_frm.set_value("include_km", 1);
+			frm.trigger("include_km");
+		}
 	},
 	"initial_km": function(frm) {
 		calculate_distance_km(frm)
@@ -208,6 +171,11 @@ frappe.ui.form.on('Vehicle Logbook', {
 	"final_hour": function(frm) {
 		if(!frm.doc.docstatus == 1) {
 			calculate_work_hour(frm)
+		}
+		// Automatically check the include_hour checkbox
+		if (frm.doc.final_hour) {
+			cur_frm.set_value("include_hour", 1);
+			frm.trigger("include_hour");
 		}
 	},
 	"initial_hour": function(frm) {

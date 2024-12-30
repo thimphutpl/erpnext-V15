@@ -2,36 +2,48 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on('POL Issue', {
+    setup: function (frm) {
+        frm.set_query("tanker", function () {
+            return {
+                query: "erpnext.fleet_management.doctype.pol_issue.pol_issue.get_tanker_data",
+                filters: { branch: frm.doc.branch }
+            };
+        });
+    },
+    tank_balance: function (frm) {
+        console.log("tanker function triggered");
+        // frappe.throw("tanker")
+        if (frm.doc.tanker) {
+            // frappe.throw("tankers")
+            frappe.call({
+                method: 'erpnext.fleet_management.doctype.pol_issue.pol_issue.get_tanker_details',
+                args: { 
+                    tanker: frm.doc.tanker, 
+                    posting_date: frm.doc.posting_date, 
+                    pol_type: frm.doc.pol_type 
+                },
+                callback: function (r) {
+                    if (r.message) {
+                        frm.set_value('tank_balance', r.message.balance);
+                    }
+                }
+            });
+        } else {
+            frm.set_value('tank_balance', '');
+        }
+    },
+
 	onload: function(frm) {
 		if(!frm.doc.posting_date) {
 			frm.set_value("posting_date", get_today())
 		}
+        frm.set_query("tanker", function () {
+            return {
+                query: "erpnext.fleet_management.doctype.pol_issue.pol_issue.get_tanker_data",
+                filters: { branch: frm.doc.branch }
+            };
+        });
 	},
-
-	// tanker: function (frm) {
-    //     if (frm.doc.tanker) {
-    //         frappe.call({
-    //             method: "erpnext.fleet_management.doctype.pol_issue.pol_issue.get_data",
-    //             args: {
-    //                 tanker: frm.doc.tanker,
-    //                 branch: frm.doc.branch,
-    //                 all_equipment: frm.doc.all_equipment || 0,
-    //                 to_date: frm.doc.to_date || frappe.datetime.now_date()
-    //             },
-    //             callback: function (response) {
-    //                 if (response.message) {
-    //                     // Process the data and update fields in the form
-    //                     let data = response.message;
-    //                     console.log(data); // Debugging the fetched data
-    //                     frappe.msgprint(__("Data fetched successfully for the selected tanker."));
-    //                     // Additional logic to handle or display data in the form
-    //                 } else {
-    //                     frappe.msgprint(__("No data found for the selected tanker."));
-    //                 }
-    //             }
-    //         });
-    //     }
-    // },
 
 	refresh: function(frm) {
 		if(frm.doc.docstatus == 1) {
@@ -77,65 +89,42 @@ frappe.ui.form.on('POL Issue', {
         //     };
         // });
 	},
-	// "tanker": function (frm) {
-	// 	if (frm.doc.tanker) {
-    //         frappe.call({
-    //             method: "erpnext.fleet_management.doctype.pol_issue.pol_issue.get_equipment_data", // Update with the correct path
-    //             args: {
-    //                 equipment_name: frm.doc.equipment,
-    //                 to_date: frm.doc.to_date,
-    //                 all_equipment: frm.doc.all_equipment || 1,
-    //                 branch: frm.doc.branch
-    //             },
-    //             callback: function(response) {
-    //                 if (response.message) {
-    //                     let data = response.message;
-
-    //                     // Process and display the fetched data
-    //                     frappe.msgprint({
-    //                         title: __('Fetched Equipment Data'),
-    //                         message: `<pre>${JSON.stringify(data, null, 4)}</pre>`,
-    //                         indicator: 'green'
-    //                     });
-
-    //                     // Optional: You can set a field value with specific data
-    //                     if (data.length > 0) {
-    //                         frm.set_value('tank_balance', data[0].balance);
-    //                     }
-    //                 } else {
-    //                     frappe.msgprint(__('No data found for the selected equipment.'));
-    //                 }
-    //             }
-    //         });
-    //     } else {
-    //         // Clear related fields if no equipment is selected
-    //         frm.set_value('tank_balance', '');
-    //     }
-	// },
 	tanker: function (frm) {
-        if (frm.doc.tanker) {
+        if (frm.doc.equipment) {
             frappe.call({
-                method: "erpnext.fleet_management.doctype.pol_issue.pol_issue.get_data",
+                method: "erpnext.fleet_management.doctype.pol_issue.pol_issue.get_equipment_data", // Update with the correct path
                 args: {
-                    tanker: frm.doc.tanker,
-                    branch: frm.doc.branch,
-                    all_equipment: frm.doc.all_equipment || 0,
-                    to_date: frm.doc.to_date || frappe.datetime.now_date()
+                    equipment_name: frm.doc.equipment,
+                    to_date: frm.doc.to_date,
+                    all_equipment: frm.doc.all_equipment || 1,
+                    branch: frm.doc.branch
                 },
-                callback: function (response) {
+                callback: function(response) {
                     if (response.message) {
-                        // Process the data and update fields in the form
                         let data = response.message;
-                        console.log(data); // Debugging the fetched data
-                        frappe.msgprint(__("Data fetched successfully for the selected tanker."));
-                        // Additional logic to handle or display data in the form
+
+                        // Process and display the fetched data
+                        frappe.msgprint({
+                            title: __('Fetched Equipment Data'),
+                            message: `<pre>${JSON.stringify(data, null, 4)}</pre>`,
+                            indicator: 'green'
+                        });
+
+                        // Optional: You can set a field value with specific data
+                        if (data.length > 0) {
+                            frm.set_value('tank_balance', data[0].balance);
+                        }
                     } else {
-                        frappe.msgprint(__("No data found for the selected tanker."));
+                        frappe.msgprint(__('No data found for the selected equipment.'));
                     }
                 }
             });
+        } else {
+            // Clear related fields if no equipment is selected
+            frm.set_value('tank_balance', '');
         }
     },
+
 
 	"items_on_form_rendered": function(frm, grid_row, cdt, cdn) {
 		var row = cur_frm.open_grid_row();
@@ -172,14 +161,15 @@ frappe.ui.form.on("POL Issue", "refresh", function(frm) {
 		};
 	    });
 	
-	cur_frm.set_query("tanker", function() {
-		return {
-			// "query": "erpnext.fleet_management.doctype.pol_issue.pol_issue.equipment_query",
-			"query": "erpnext.fleet_management.doctype.pol_issue.pol_issue.equipment_query",
+	// cur_frm.set_query("tanker", function() {
+	// 	return {
+	// 		"query": "erpnext.fleet_management.doctype.pol_issue.pol_issue.equipment_query",
+	// 		// "query": "erpnext.fleet_management.doctype.pol_issue.pol_issue.get_equipment_data",
 			
-			filters: {'branch': frm.doc.branch}
-		}
-	})
+	// 		filters: {'branch': frm.doc.branch}
+	// 	}
+	// })
+
 	
 	cur_frm.set_query("warehouse", function() {
                 return {

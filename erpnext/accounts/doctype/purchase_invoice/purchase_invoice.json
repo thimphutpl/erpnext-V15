@@ -231,7 +231,7 @@
    "no_copy": 1,
    "oldfieldname": "naming_series",
    "oldfieldtype": "Select",
-   "options": "ACC-PINV-.YYYY.-\nACC-PINV-RET-.YYYY.-",
+   "options": "\nConsumables\nFixed Asset\nSales Product\nSpareparts\nServices Miscellaneous\nServices Works\nLabour Contract\nACC-PINV-.YYYY.-\nACC-PINV-RET-.YYYY.-",
    "print_hide": 1,
    "reqd": 1,
    "set_only_once": 1
@@ -1739,7 +1739,7 @@
  "idx": 204,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-12-16 15:37:57.995837",
+ "modified": "2024-12-30 16:31:34.470492",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Purchase Invoice",

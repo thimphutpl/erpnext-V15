@@ -188,7 +188,7 @@
    "no_copy": 1,
    "oldfieldname": "naming_series",
    "oldfieldtype": "Select",
-   "options": "MAT-PRE-.YYYY.-\nMAT-PR-RET-.YYYY.-",
+   "options": "\nConsumables\nFixed Asset\nSales Product\nSpareparts\nServices Miscellaneous\nServices Works\nLabour Contract\nMAT-PRE-.YYYY.-\nMAT-PR-RET-.YYYY.-",
    "print_hide": 1,
    "reqd": 1,
    "set_only_once": 1
@@ -1298,7 +1298,7 @@
  "idx": 261,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-27 12:24:24.078204",
+ "modified": "2024-12-30 16:36:02.135848",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Purchase Receipt",

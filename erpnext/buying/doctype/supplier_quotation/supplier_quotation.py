@@ -6,6 +6,8 @@ import frappe
 from frappe import _
 from frappe.model.mapper import get_mapped_doc
 from frappe.utils import flt, getdate, nowdate
+from frappe.model.naming import make_autoname
+from erpnext.custom_autoname import get_auto_name
 
 from erpnext.buying.utils import validate_for_items
 from erpnext.controllers.buying_controller import BuyingController
@@ -20,15 +22,10 @@ class SupplierQuotation(BuyingController):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
-		from frappe.types import DF
-
 		from erpnext.accounts.doctype.pricing_rule_detail.pricing_rule_detail import PricingRuleDetail
-		from erpnext.accounts.doctype.purchase_taxes_and_charges.purchase_taxes_and_charges import (
-			PurchaseTaxesandCharges,
-		)
-		from erpnext.buying.doctype.supplier_quotation_item.supplier_quotation_item import (
-			SupplierQuotationItem,
-		)
+		from erpnext.accounts.doctype.purchase_taxes_and_charges.purchase_taxes_and_charges import PurchaseTaxesandCharges
+		from erpnext.buying.doctype.supplier_quotation_item.supplier_quotation_item import SupplierQuotationItem
+		from frappe.types import DF
 
 		additional_discount_percentage: DF.Float
 		address_display: DF.SmallText | None
@@ -68,7 +65,7 @@ class SupplierQuotation(BuyingController):
 		language: DF.Data | None
 		letter_head: DF.Link | None
 		named_place: DF.Data | None
-		naming_series: DF.Literal["PUR-SQTN-.YYYY.-"]
+		naming_series: DF.Literal["", "Consumables", "Fixed Asset", "Sales Product", "Spareparts", "Services Miscellaneous", "Services Works", "Labour Contract", "PUR-SQTN-.YYYY.-"]
 		net_total: DF.Currency
 		opportunity: DF.Link | None
 		other_charges_calculation: DF.TextEditor | None
@@ -102,6 +99,9 @@ class SupplierQuotation(BuyingController):
 		transaction_date: DF.Date
 		valid_till: DF.Date | None
 	# end: auto-generated types
+
+	def autoname(self):
+		self.name = make_autoname(get_auto_name(self, self.naming_series) + ".####")
 
 	def validate(self):
 		super().validate()

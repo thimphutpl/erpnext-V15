@@ -474,15 +474,15 @@
    "fetch_from": "customer.customer_group",
    "fieldname": "customer_type",
    "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Customer Type"
+   "label": "Customer Type",
+   "read_only": 1
   },
   {
    "fieldname": "customer",
    "fieldtype": "Link",
-   "in_list_view": 1,
    "label": "Customer",
-   "options": "Customer"
+   "options": "Customer",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_yzkx",
@@ -588,7 +588,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-12-28 15:20:11.075411",
+ "modified": "2024-12-30 14:14:59.038905",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Vehicle Logbook",

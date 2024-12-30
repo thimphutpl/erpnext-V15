@@ -54,7 +54,7 @@
    "no_copy": 1,
    "oldfieldname": "naming_series",
    "oldfieldtype": "Select",
-   "options": "PUR-RFQ-.YYYY.-",
+   "options": "\nConsumables\nFixed Asset\nSales Product\nSpareparts\nServices Miscellaneous\nServices Works\nLabour Contract\nPUR-RFQ-.YYYY.-",
    "print_hide": 1,
    "reqd": 1,
    "set_only_once": 1
@@ -337,7 +337,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-12-02 13:00:34.830268",
+ "modified": "2024-12-30 17:31:46.769796",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Request for Quotation",

@@ -14,6 +14,8 @@ from frappe.model.mapper import get_mapped_doc
 from frappe.model.utils import get_fetch_values
 from frappe.query_builder.functions import Sum
 from frappe.utils import add_days, cint, cstr, flt, get_link_to_form, getdate, nowdate, strip_html
+from frappe.model.naming import make_autoname
+from erpnext.custom_autoname import get_auto_name
 
 from erpnext.accounts.doctype.sales_invoice.sales_invoice import (
 	unlink_inter_company_doc,
@@ -118,7 +120,7 @@ class SalesOrder(SellingController):
 		loyalty_amount: DF.Currency
 		loyalty_points: DF.Int
 		named_place: DF.Data | None
-		naming_series: DF.Literal["SAL-ORD-.YYYY.-"]
+		naming_series: DF.Literal["", "Consumables", "Fixed Asset", "Sales Product", "Spareparts", "Services Miscellaneous", "Services Works", "Labour Contract", "SAL-ORD-.YYYY.-"]
 		net_total: DF.Currency
 		order_type: DF.Literal["", "Sales", "Maintenance", "Shopping Cart"]
 		packed_items: DF.Table[PackedItem]
@@ -171,6 +173,9 @@ class SalesOrder(SellingController):
 
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
+
+	def autoname(self):
+		self.name = make_autoname(get_auto_name(self, self.naming_series) + ".####")	
 
 	def onload(self) -> None:
 		if frappe.db.get_single_value("Stock Settings", "enable_stock_reservation"):

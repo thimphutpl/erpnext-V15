@@ -49,19 +49,19 @@ erpnext.stock.LandedCostVoucher = class LandedCostVoucher extends erpnext.stock.
 						<li>
 							${__("Remove item if charges is not applicable to that item")}
 						</li>
-						<li>
-							${__("Charges are updated in Purchase Receipt against each item")}
-						</li>
-						<li>
-							${__("Item valuation rate is recalculated considering landed cost voucher amount")}
-						</li>
-						<li>
-							${__("Stock Ledger Entries and GL Entries are reposted for the selected Purchase Receipts")}
-						</li>
+						
 					</ul>
 				</td></tr>
 			</table>`;
-
+			{/* <li>
+			${__("Charges are updated in Purchase Receipt against each item")}
+		</li>
+		<li>
+			${__("Item valuation rate is recalculated considering landed cost voucher amount")}
+		</li>
+		<li>
+			${__("Stock Ledger Entries and GL Entries are reposted for the selected Purchase Receipts")}
+		</li> */}
 		set_field_options("landed_cost_help", help_content);
 
 		if (this.frm.doc.company) {
@@ -101,7 +101,7 @@ erpnext.stock.LandedCostVoucher = class LandedCostVoucher extends erpnext.stock.
 	set_applicable_charges_for_item() {
 		var me = this;
 
-		if (this.frm.doc.taxes.length) {
+		if (this.frm.doc.taxes.length == 0) {
 			var total_item_cost = 0.0;
 			var based_on = this.frm.doc.distribute_charges_based_on.toLowerCase();
 
@@ -132,6 +132,11 @@ erpnext.stock.LandedCostVoucher = class LandedCostVoucher extends erpnext.stock.
 	}
 	distribute_charges_based_on(frm) {
 		this.set_applicable_charges_for_item();
+	}
+	total_taxes_and_charges(frm) {
+		if(this.frm.doc.total_taxes_and_charges){
+			this.set_applicable_charges_for_item();
+		}
 	}
 
 	items_remove() {

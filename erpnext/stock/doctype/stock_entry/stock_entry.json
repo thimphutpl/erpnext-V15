@@ -107,7 +107,7 @@
    "no_copy": 1,
    "oldfieldname": "naming_series",
    "oldfieldtype": "Select",
-   "options": "MAT-STE-.YYYY.-",
+   "options": "\nConsumables\nFixed Asset\nSales Product\nSpareparts\nServices Miscellaneous\nServices Works\nLabour Contract\nMAT-STE-.YYYY.-",
    "print_hide": 1,
    "reqd": 1,
    "set_only_once": 1
@@ -792,7 +792,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-12-23 09:50:07.293173",
+ "modified": "2024-12-30 17:14:47.516349",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Stock Entry",

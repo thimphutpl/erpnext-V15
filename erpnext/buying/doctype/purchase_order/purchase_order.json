@@ -185,7 +185,7 @@
    "no_copy": 1,
    "oldfieldname": "naming_series",
    "oldfieldtype": "Select",
-   "options": "PUR-ORD-.YYYY.-",
+   "options": "\nConsumables\nFixed Asset\nSales Product\nSpareparts\nServices Miscellaneous\nServices Works\nLabour Contract\nPUR-ORD-.YYYY.-",
    "print_hide": 1,
    "reqd": 1,
    "set_only_once": 1
@@ -1291,7 +1291,7 @@
  "idx": 105,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-12-30 16:03:34.387355",
+ "modified": "2024-12-30 16:13:33.696727",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Purchase Order",

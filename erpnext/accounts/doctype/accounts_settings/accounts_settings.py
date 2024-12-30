@@ -117,9 +117,8 @@ class AccountsSettings(Document):
 			check_pending_reposting(self.acc_frozen_upto)
 
 @frappe.whitelist()
-def get_bank_account(branch=None):
-	Company = "State Mining Corporation Ltd"
-	default_bank_account = frappe.db.get_value('Company',Company,'default_bank_account')
+def get_bank_account(branch=None, company=None):
+	default_bank_account = frappe.db.get_value('Company', company, 'default_bank_account')
 	expense_bank_account = None
 	if branch:
 		expense_bank_account = frappe.db.get_value('Branch', branch, 'expense_bank_account')

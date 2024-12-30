@@ -12,6 +12,8 @@ from frappe.model.mapper import get_mapped_doc
 from frappe.utils import get_url
 from frappe.utils.print_format import download_pdf
 from frappe.utils.user import get_user_fullname
+from frappe.model.naming import make_autoname
+from erpnext.custom_autoname import get_auto_name
 
 from erpnext.accounts.party import get_party_account_currency, get_party_details
 from erpnext.buying.utils import validate_for_items
@@ -44,7 +46,7 @@ class RequestforQuotation(BuyingController):
 		letter_head: DF.Link | None
 		message_for_supplier: DF.TextEditor
 		named_place: DF.Data | None
-		naming_series: DF.Literal["PUR-RFQ-.YYYY.-"]
+		naming_series: DF.Literal["", "Consumables", "Fixed Asset", "Sales Product", "Spareparts", "Services Miscellaneous", "Services Works", "Labour Contract", "PUR-RFQ-.YYYY.-"]
 		opportunity: DF.Link | None
 		schedule_date: DF.Date | None
 		select_print_heading: DF.Link | None
@@ -58,6 +60,9 @@ class RequestforQuotation(BuyingController):
 		vendor: DF.Link | None
 	# end: auto-generated types
 
+	def autoname(self):
+		self.name = make_autoname(get_auto_name(self, self.naming_series) + ".####")
+		
 	def validate(self):
 		self.validate_duplicate_supplier()
 		self.validate_supplier_list()

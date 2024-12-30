@@ -51,6 +51,16 @@ class POLIssue(StockController):
 		total_quantity: DF.Float
 		warehouse: DF.Link
 	# end: auto-generated types
+	def before_save(self):
+		if not self.tanker:
+			return
+		received_till = get_pol_till("Stock", self.tanker, self.posting_date, self.pol_type)
+		issue_till = get_pol_till("Issue", self.tanker, self.posting_date, self.pol_type)
+		balance = flt(received_till) - flt(issue_till)
+		if flt(self.total_quantity) > flt(balance):
+			frappe.throw("Not enough balance in tanker to issue. The balance is " + str(balance))
+
+
 	def validate(self):
 		check_future_date(self.posting_date)
 		self.validate_branch()
@@ -379,105 +389,54 @@ class POLIssue(StockController):
 	def delete_pol_entry(self):
 		frappe.db.sql("delete from `tabPOL Entry` where reference_name = %s", self.name)
 
+
 # @frappe.whitelist(allow_guest=True)
 # def equipment_query(doctype, txt, searchfield, start, page_len, filters):
-# 	# frappe.throw("Hyyyyyyyyyyyyyyyyyyyyyyy")
-# 	if not filters['branch']:
-# 		frappe.throw("iiiiiiiii")
-# 		filters['branch'] = '%'
-# 		frappe.throw("Hiiiiiiiii")
-# 		return frappe.db.sql("""
-#                         select
-#                                 e.name,
-#                                 e.equipment_type,
-#                                 e.registration_number
-#                         from `tabEquipment` e
-#                         where e.branch like %(branch)s
-#                         and e.is_disabled != 1
-#                         and e.not_cdcl = 0
-#                         and exists(select 1
-#                                      from `tabEquipment Type` t
-#                                     where t.name = e.equipment_type
-#                                       and t.is_container = 1)
-#                         and (
-#                                 {key} like %(txt)s
-#                                 or
-#                                 e.equipment_type like %(txt)s
-#                                 or
-#                                 e.registration_number like %(txt)s
-#                         )
-#                         {mcond}
-#                         order by
-#                                 if(locate(%(_txt)s, e.name), locate(%(_txt)s, e.name), 99999),
-#                                 if(locate(%(_txt)s, e.equipment_type), locate(%(_txt)s, e.equipment_type), 99999),
-#                                 if(locate(%(_txt)s, e.registration_number), locate(%(_txt)s, e.registration_number), 99999),
-#                                 idx desc,
-#                                 e.name, e.equipment_type, e.registration_number
-#                         limit %(start)s, %(page_len)s
-#                         """.format(**{
-#                                 'key': searchfield,
-#                                 'mcond': get_match_cond(doctype)
-#                         }),
-#                         {
-# 				"txt": "%%%s%%" % txt,
-# 				"_txt": txt.replace("%", ""),
-# 				"start": start,
-# 				"page_len": page_len,
-#                                 "branch": filters['branch']
-# 			})
+#     if not filters.get('branch'):
+#         frappe.throw(_("Branch is required to fetch the equipment."))
 
-
-
-
-
-@frappe.whitelist(allow_guest=True)
-def equipment_query(doctype, txt, searchfield, start, page_len, filters):
-    if not filters.get('branch'):
-        frappe.throw(_("Branch is required to fetch the equipment."))
-
-    return frappe.db.sql("""
-        SELECT
-            e.name,
-            e.equipment_type,
-            e.registration_number
-        FROM `tabEquipment` e
-        WHERE e.branch = %(branch)s
-          AND e.is_disabled != 1
-          AND e.not_cdcl = 0
-          AND EXISTS (
-              SELECT 1
-              FROM `tabEquipment Type` t
-              WHERE t.name = e.equipment_type
-                AND t.is_container = 1
-          )
-          AND (
-              {key} LIKE %(txt)s
-              OR e.equipment_type LIKE %(txt)s
-              OR e.registration_number LIKE %(txt)s
-          )
-        {mcond}
-        ORDER BY
-            IF(LOCATE(%(_txt)s, e.name), LOCATE(%(_txt)s, e.name), 99999),
-            IF(LOCATE(%(_txt)s, e.equipment_type), LOCATE(%(_txt)s, e.equipment_type), 99999),
-            IF(LOCATE(%(_txt)s, e.registration_number), LOCATE(%(_txt)s, e.registration_number), 99999),
-            idx DESC,
-            e.name, e.equipment_type, e.registration_number
-        LIMIT %(start)s, %(page_len)s
-    """.format(
-        key=searchfield,
-        mcond=get_match_cond(doctype)
-    ), {
-        "txt": f"%{txt}%",
-        "_txt": txt.replace("%", ""),
-        "start": start,
-        "page_len": page_len,
-        "branch": filters['branch']
-    })
-
+#     return frappe.db.sql("""
+#         SELECT
+#             e.name,
+#             e.equipment_type,
+#             e.registration_number
+#         FROM `tabEquipment` e
+#         WHERE e.branch = %(branch)s
+#           AND e.is_disabled != 1
+#           AND e.not_cdcl = 0
+#           AND EXISTS (
+#               SELECT 1
+#               FROM `tabEquipment Type` t
+#               WHERE t.name = e.equipment_type
+#                 AND t.is_container = 1
+#           )
+#           AND (
+#               {key} LIKE %(txt)s
+#               OR e.equipment_type LIKE %(txt)s
+#               OR e.registration_number LIKE %(txt)s
+#           )
+#         {mcond}
+#         ORDER BY
+#             IF(LOCATE(%(_txt)s, e.name), LOCATE(%(_txt)s, e.name), 99999),
+#             IF(LOCATE(%(_txt)s, e.equipment_type), LOCATE(%(_txt)s, e.equipment_type), 99999),
+#             IF(LOCATE(%(_txt)s, e.registration_number), LOCATE(%(_txt)s, e.registration_number), 99999),
+#             idx DESC,
+#             e.name, e.equipment_type, e.registration_number
+#         LIMIT %(start)s, %(page_len)s
+#     """.format(
+#         key=searchfield,
+#         mcond=get_match_cond(doctype)
+#     ), {
+#         "txt": f"%{txt}%",
+#         "_txt": txt.replace("%", ""),
+#         "start": start,
+#         "page_len": page_len,
+#         "branch": filters['branch']
+#     })
 
 
 @frappe.whitelist()
-def get_equipment_data(equipment_name, all_equipment=1, branch=None):
+def get_equipment_data(equipment_name, all_equipment=0, branch=None):
     data = []
     
     query = """
@@ -535,80 +494,64 @@ def get_equipment_data(equipment_name, all_equipment=1, branch=None):
     return data
 
 
-
-
-
 # @frappe.whitelist()
-# def get_data(tanker, branch=None, all_equipment=0, to_date=None):
-#     if not tanker:
-#         frappe.throw(_("Tanker is required to fetch data."))
+# def get_tanker_balance(tanker, posting_date, pol_type):
+#     received_till = get_pol_till("Stock", tanker, posting_date, pol_type)
+#     issue_till = get_pol_till("Issue", tanker, posting_date, pol_type)
+#     balance = flt(received_till) - flt(issue_till)
+#     return balance
 
-#     data = []
-#     # Base query for equipment
-#     query = """
-#         SELECT 
-#             e.name, e.branch, e.registration_number, e.hsd_type, e.equipment_type
-#         FROM 
-#             `tabEquipment` e
-#         INNER JOIN 
-#             `tabEquipment Type` et ON e.equipment_type = et.name
-#     """
-#     conditions = []
 
-#     # Add condition for tanker and branch
-#     conditions.append("e.name = %(tanker)s")
-#     if branch:
-#         conditions.append("e.branch = %(branch)s")
+@frappe.whitelist()
+def get_tanker_data(doctype, txt, searchfield, start, page_len, filters):
+    if not filters.get('branch'):
+        frappe.throw(_("Branch is required to fetch the equipment."))
+    
+    tanker_data = frappe.db.sql("""
+        SELECT
+            e.name, e.equipment_type, e.registration_number
+        FROM `tabEquipment` e
+        WHERE e.branch = %(branch)s
+          AND e.is_disabled != 1
+          AND e.not_cdcl = 0
+          AND EXISTS (
+              SELECT 1
+              FROM `tabEquipment Type` t
+              WHERE t.name = e.equipment_type
+                AND t.is_container = 1
+          )
+          AND ({key} LIKE %(txt)s
+               OR e.equipment_type LIKE %(txt)s
+               OR e.registration_number LIKE %(txt)s)
+        {mcond}
+        ORDER BY
+            IF(LOCATE(%(_txt)s, e.name), LOCATE(%(_txt)s, e.name), 99999),
+            IF(LOCATE(%(_txt)s, e.equipment_type), LOCATE(%(_txt)s, e.equipment_type), 99999),
+            IF(LOCATE(%(_txt)s, e.registration_number), LOCATE(%(_txt)s, e.registration_number), 99999),
+            idx DESC,
+            e.name, e.equipment_type, e.registration_number
+        LIMIT %(start)s, %(page_len)s
+    """.format(
+        key=searchfield,
+        mcond=get_match_cond(doctype)
+    ), {
+        "txt": f"%{txt}%",
+        "_txt": txt.replace("%", ""),
+        "start": start,
+        "page_len": page_len,
+        "branch": filters['branch']
+    })
 
-#     # Filter by container equipment if not all_equipment
-#     if not int(all_equipment):
-#         conditions.append("et.is_container = 1")
+    return tanker_data
 
-#     # Append conditions to the query
-#     if conditions:
-#         query += " WHERE " + " AND ".join(conditions)
+@frappe.whitelist()
+def get_tanker_details(tanker, posting_date, pol_type):
+    received_till = get_pol_till("Stock", tanker, posting_date, pol_type)
+    issue_till = get_pol_till("Issue", tanker, posting_date, pol_type)
+    balance = flt(received_till) - flt(issue_till)
+    return {"balance": balance}
 
-#     query += " ORDER BY e.branch"
 
-#     # Fetch items
-#     items = frappe.db.sql(
-#         """
-#         SELECT item_code, item_name, stock_uom
-#         FROM `tabItem`
-#         WHERE is_hsd_item = 1 AND disabled = 0
-#         """,
-#         as_dict=True,
-#     )
 
-#     # Execute the query
-#     equipment_data = frappe.db.sql(query, {"tanker": tanker, "branch": branch}, as_dict=True)
 
-#     # Process equipment data and calculate received and issued values
-#     for eq in equipment_data:
-#         for item in items:
-#             received = issued = 0
-#             if all_equipment:
-#                 if eq.hsd_type == item.item_code:
-#                     received = get_pol_tills("Receive", eq.name, to_date, item.item_code)
-#                     issued = get_pol_consumed_tills(eq.name, to_date)
-#             else:
-#                 received = get_pol_tills("Stock", eq.name, to_date, item.item_code)
-#                 issued = get_pol_tills("Issue", eq.name, to_date, item.item_code)
-
-#             if received or issued:
-#                 row = [
-#                     eq.name,
-#                     eq.registration_number,
-#                     eq.equipment_type,
-#                     eq.branch,
-#                     item.item_code,
-#                     item.item_name,
-#                     item.stock_uom,
-#                     received,
-#                     issued,
-#                     flt(received) - flt(issued),
-#                 ]
-#                 data.append(row)
-
-#     return data
 

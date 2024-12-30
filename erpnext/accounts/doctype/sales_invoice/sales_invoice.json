@@ -247,7 +247,7 @@
    "no_copy": 1,
    "oldfieldname": "naming_series",
    "oldfieldtype": "Select",
-   "options": "ACC-SINV-.YYYY.-\nACC-SINV-RET-.YYYY.-",
+   "options": "\nConsumables\nFixed Asset\nSales Product\nSpareparts\nServices Miscellaneous\nServices Works\nLabour Contract\nACC-SINV-.YYYY.-\nACC-SINV-RET-.YYYY.-",
    "print_hide": 1,
    "reqd": 1,
    "set_only_once": 1
@@ -2205,7 +2205,7 @@
    "link_fieldname": "consolidated_invoice"
   }
  ],
- "modified": "2024-12-27 16:10:02.270041",
+ "modified": "2024-12-30 16:56:28.998736",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Sales Invoice",
