@@ -23,9 +23,10 @@ class HolidayList(Document):
 
 	if TYPE_CHECKING:
 		from erpnext.setup.doctype.holiday.holiday import Holiday
+		from erpnext.setup.doctype.holiday_list_branch.holiday_list_branch import HolidayListBranch
 		from frappe.types import DF
 
-		branch: DF.Link | None
+		branches: DF.Table[HolidayListBranch]
 		color: DF.Color | None
 		country: DF.Autocomplete | None
 		from_date: DF.Date
@@ -40,14 +41,10 @@ class HolidayList(Document):
 
 	def validate(self):
 		self.validate_days()
-		if self.branch:
-			self.add_holiday_list_branch()
+		self.add_holiday_list_branch()
 		self.total_holidays = len(self.holidays)
 		self.validate_duplicate_date()
 
-	def befor_save(self):
-		if self.branch:
-			self.add_holiday_list_branch
 	@frappe.whitelist()
 	def get_weekly_off_dates(self):
 		if not self.weekly_off:
@@ -126,22 +123,12 @@ class HolidayList(Document):
 					)
 				)
 	def add_holiday_list_branch(self):
-		try:
-            
-			branch_doc = frappe.get_doc("Branch", self.branch)
-            
-            
-			branch_doc.holiday_list = self.name              
-            
-			branch_doc.save()
-            
-			frappe.msgprint(
-                _("Branch '{0}' has been updated with the Holiday List '{1}'").format(self.branch, self.name)
-            )
-		except frappe.DoesNotExistError:
-			frappe.throw(_("Branch '{0}' does not exist").format(self.branch))
-		except Exception as e:
-			frappe.throw(_("An error occurred while updating the Branch: {0}").format(str(e)))
+		if self.branches:
+			for a in self.branches:
+				branch_doc = frappe.get_doc("Branch", a.branch)
+				branch_doc.holiday_list = self.name
+				branch_doc.save()
+			frappe.msgprint(_("Holiday List added to Branch"))
 
 	def get_weekly_off_date_list(self, start_date, end_date):
 		start_date, end_date = getdate(start_date), getdate(end_date)

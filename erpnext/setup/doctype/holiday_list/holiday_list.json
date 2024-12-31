@@ -14,7 +14,7 @@
   "column_break_4",
   "total_holidays",
   "saturday_half",
-  "branch",
+  "branches",
   "add_weekly_holidays",
   "weekly_off",
   "get_weekly_off_dates",
@@ -144,19 +144,19 @@
    "default": "0",
    "fieldname": "saturday_half",
    "fieldtype": "Check",
-   "label": "Saturday Not Holiday?"
+   "label": "Saturday Half Day"
   },
   {
-   "fieldname": "branch",
-   "fieldtype": "Link",
+   "fieldname": "branches",
+   "fieldtype": "Table",
    "label": "Branch",
-   "options": "Branch"
+   "options": "Holiday List Branch"
   }
  ],
  "icon": "fa fa-calendar",
  "idx": 1,
  "links": [],
- "modified": "2024-12-27 17:18:04.369261",
+ "modified": "2024-12-31 20:03:54.893060",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Holiday List",
