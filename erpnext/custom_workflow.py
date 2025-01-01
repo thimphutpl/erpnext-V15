@@ -896,11 +896,16 @@ class CustomWorkflow:
 		if self.new_state.lower() in ("Waiting HR Approval".lower()):
 			if self.doc.approver != frappe.session.user:
 				frappe.throw("Only <b>{}</b> can Forward this request".format(self.doc.approver))
-			self.set_approver("HR")
+			# self.set_approver("HR")
 			
 		elif self.new_state.lower() == "Approved".lower():
-			if self.doc.approver != frappe.session.user:
-				frappe.throw("Only <b>{}</b> can Approve this request".format(self.doc.approver_name))
+			user_roles = frappe.get_roles(frappe.session.user)
+			if "HR Manager" in user_roles:
+				return
+			else:
+				frappe.throw("Only <b>{}</b> can Approve this request".format("HR Manager"))
+			# if self.doc.approver != frappe.session.user:
+			# 	frappe.throw("Only <b>{}</b> can Approve this request".format(self.doc.approver_name))
 
 		elif self.new_state.lower() in ("Rejected".lower()):
 			if self.doc.approver != frappe.session.user:
