@@ -20,6 +20,7 @@ from erpnext.controllers.buying_controller import BuyingController
 from erpnext.manufacturing.doctype.work_order.work_order import get_item_details
 from erpnext.stock.doctype.item.item import get_item_defaults
 from erpnext.stock.stock_balance import get_indented_qty, update_bin_qty
+from erpnext.custom_workflow import validate_workflow_states, notify_workflow_states
 
 form_grid_templates = {"items": "templates/form_grid/material_request_grid.html"}
 
@@ -37,6 +38,7 @@ class MaterialRequest(BuyingController):
 		amended_from: DF.Link | None
 		approval_date: DF.Date | None
 		approver: DF.Link | None
+		approver_name: DF.Data | None
 		branch: DF.Link
 		company: DF.Link
 		cost_center: DF.Link | None
@@ -109,6 +111,9 @@ class MaterialRequest(BuyingController):
 
 	def validate(self):
 		super().validate()
+		validate_workflow_states(self)
+		if self.approver and not self.approver_name:
+			self.approver_name = frappe.db.get_value("Employee", {"user_id": self.approver}, "employee_name")
 
 		self.validate_schedule_date()
 		self.check_for_on_hold_or_closed_status("Sales Order", "sales_order")
@@ -143,9 +148,9 @@ class MaterialRequest(BuyingController):
 			frappe.throw("Cannot save without items in material request")
 
 		if not self.approver:	
-			app = frappe.db.get_value("Approver Item", {"cost_center": self.temp_cc}, "approver")	
+			app = frappe.db.get_value("Approver Item", {"cost_center": self.cost_center}, "approver")	
 			if not app:
-				frappe.throw("Setup MR Approver for <b>" + str(self.temp_cc) + "</b> in Document Approver")
+				frappe.throw("Setup MR Approver for <b>" + str(self.cost_center) + "</b> in Document Approver")
 			else:
 				self.approver = app
 		# self.validate_qty_against_so()
@@ -156,6 +161,8 @@ class MaterialRequest(BuyingController):
 		self.reset_default_field_value("set_from_warehouse", "items", "from_warehouse")
 		if self.workflow_state == "Approved":
 			self.approval_date = nowdate()
+		if self.workflow_state != "Approved":
+			notify_workflow_states(self)
 		
 	def before_update_after_submit(self):
 		self.validate_schedule_date()
@@ -181,6 +188,7 @@ class MaterialRequest(BuyingController):
 			"Budget", {"applicable_on_material_request": 1, "docstatus": 1}
 		):
 			self.validate_budget()
+		notify_workflow_states(self)
 
 	def before_save(self):
 		self.set_status(update=True)
