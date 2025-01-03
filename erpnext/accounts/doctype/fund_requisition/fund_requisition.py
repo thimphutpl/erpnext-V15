@@ -29,7 +29,6 @@ class FundRequisition(Document):
 		reference: DF.Data | None
 		remarks: DF.LongText | None
 		total_amount: DF.Currency
-		workflow_state: DF.Link | None
 	# end: auto-generated types
 	def validate(self):
 		self.assign_cost_center()
