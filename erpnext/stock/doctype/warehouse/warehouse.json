@@ -16,6 +16,7 @@
   "parent_warehouse",
   "is_rejected_warehouse",
   "column_break_4",
+  "create_account_under",
   "account",
   "company",
   "address_and_contact",
@@ -279,13 +280,20 @@
    "fieldtype": "Table",
    "label": "Branch",
    "options": "Warehouse Branch"
+  },
+  {
+   "fieldname": "create_account_under",
+   "fieldtype": "Link",
+   "label": "Parent Account",
+   "options": "Account",
+   "reqd": 1
   }
  ],
  "icon": "fa fa-building",
  "idx": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2024-12-23 12:57:33.765011",
+ "modified": "2025-01-03 12:28:50.094630",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Warehouse",
