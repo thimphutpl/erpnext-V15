@@ -48,7 +48,6 @@ class TargetSetUp(Document):
 		target_item: DF.Table[PerformanceTargetEvaluation]
 		unit: DF.Link | None
 		user_id: DF.Link | None
-		workflow_state: DF.Data | None
 	# end: auto-generated types
 	def validate(self):
 		self.get_supervisor_id()

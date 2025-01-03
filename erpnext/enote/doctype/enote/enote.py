@@ -51,7 +51,6 @@ class eNote(Document):
 		title: DF.Data
 		type: DF.Literal["", "Process", "Payment"]
 		uom: DF.Link | None
-		workflow_state: DF.Link | None
 	# end: auto-generated types
 	
 	def on_submit(self):

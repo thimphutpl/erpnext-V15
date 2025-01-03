@@ -46,7 +46,6 @@
   "content",
   "seen_by_section",
   "remark",
-  "workflow_state",
   "amended_from"
  ],
  "fields": [
@@ -128,15 +127,6 @@
    "fieldtype": "Table",
    "no_copy": 1,
    "options": "Note Remark",
-   "read_only": 1
-  },
-  {
-   "fieldname": "workflow_state",
-   "fieldtype": "Link",
-   "hidden": 1,
-   "label": "Workflow State",
-   "no_copy": 1,
-   "options": "Workflow State",
    "read_only": 1
   },
   {
@@ -315,7 +305,7 @@
  "icon": "fa fa-file-text",
  "is_submittable": 1,
  "links": [],
- "modified": "2024-12-26 16:34:46.416565",
+ "modified": "2025-01-03 16:57:28.375288",
  "modified_by": "Administrator",
  "module": "eNote",
  "name": "eNote",

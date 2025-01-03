@@ -49,7 +49,6 @@
   "reference",
   "comment_section_section",
   "manual_upload",
-  "workflow_state",
   "column_break_ncso",
   "amended_from"
  ],
@@ -146,13 +145,6 @@
    "no_copy": 1,
    "options": "Target Set Up",
    "print_hide": 1,
-   "read_only": 1
-  },
-  {
-   "fieldname": "workflow_state",
-   "fieldtype": "Data",
-   "hidden": 1,
-   "label": "Workflow State",
    "read_only": 1
   },
   {
@@ -355,7 +347,7 @@
  ],
  "is_submittable": 1,
  "links": [],
- "modified": "2024-12-28 12:43:14.220118",
+ "modified": "2025-01-03 16:56:50.415488",
  "modified_by": "Administrator",
  "module": "PMS",
  "name": "Target Set Up",
