@@ -322,17 +322,18 @@ frappe.ui.form.on("Item", {
 //custom Scripts
 //Auto populate material code
 cur_frm.cscript.item_group = function(doc) {
-    cur_frm.call({
-		// method: "erpnext.stock.doctype.item.item.get_current_item_code",
-		method: "erpnext.stock.stock_custom_functions.get_current_item_code",
-        args: {
-             item_group: doc.item_group
-        },
-        callback: function(r) {
-             cur_frm.set_value("item_code", r.message.toString());
-        }
-   });
-   /*if (doc.item_group != 'All Item Groups') {
+//     cur_frm.call({
+// 		// method: "erpnext.stock.doctype.item.item.get_current_item_code",
+// 		method: "erpnext.stock.stock_custom_functions.get_current_item_code",
+//         args: {
+//              item_group: doc.item_group
+//         },
+//         callback: function(r) {
+//              cur_frm.set_value("item_code", r.message.toString());
+//         }
+//    });
+
+   if (doc.item_group != 'All Item Groups') {
      cur_frm.fields_dict['expense_account'].get_query = function(doc) {
         return {
                "filters": {
@@ -341,7 +342,7 @@ cur_frm.cscript.item_group = function(doc) {
         }
      }
      refresh_field("expense_account");
-   }*/
+   }
 
 	if(doc.item_group) {
 		if(doc.item_group.match(/Service*/) ) {
