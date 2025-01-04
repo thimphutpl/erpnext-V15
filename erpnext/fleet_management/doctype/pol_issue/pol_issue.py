@@ -373,7 +373,7 @@ class POLIssue(StockController):
 			con.equipment = a.equipment
 			con.pol_type = self.pol_type
 			con.branch = a.equipment_branch
-			con.Posting_date = self.posting_date
+			con.posting_date = self.posting_date
 			con.posting_time = self.posting_time
 			con.qty = a.qty
 			con.reference_type = "POL Issue"
@@ -551,7 +551,25 @@ def get_tanker_details(tanker, posting_date, pol_type):
     balance = flt(received_till) - flt(issue_till)
     return {"balance": balance}
 
+def get_permission_query_conditions(user):
+	if not user: user = frappe.session.user
+	user_roles = frappe.get_roles(user)
 
+	if user == "Administrator" or "System Manager" in user_roles: 
+		return
 
-
-
+	return """(
+		`tabPOL Issue`.owner = '{user}'
+		or
+		exists(select 1
+			from `tabEmployee` as e
+			where e.branch = `tabPOL Issue`.branch
+			and e.user_id = '{user}')
+		or
+		exists(select 1
+			from `tabEmployee` e, `tabAssign Branch` ab, `tabBranch Item` bi
+			where e.user_id = '{user}'
+			and ab.employee = e.name
+			and bi.parent = ab.name
+			and bi.branch = `tabPOL Issue`.branch)
+	)""".format(user=user)

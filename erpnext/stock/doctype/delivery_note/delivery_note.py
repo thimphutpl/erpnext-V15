@@ -1412,3 +1412,26 @@ def make_inter_company_transaction(doctype, source_name, target_doc=None):
 	)
 
 	return doclist
+
+def get_permission_query_conditions(user):
+	if not user: user = frappe.session.user
+	user_roles = frappe.get_roles(user)
+
+	if user == "Administrator" or "System Manager" in user_roles or "Sales Master" in user_roles: 
+		return
+
+	return """(
+		`tabDelivery Note`.owner = '{user}'
+		or
+		exists(select 1
+			from `tabEmployee` as e
+			where e.branch = `tabDelivery Note`.branch
+			and e.user_id = '{user}')
+		or
+		exists(select 1
+			from `tabEmployee` e, `tabAssign Branch` ab, `tabBranch Item` bi
+			where e.user_id = '{user}'
+			and ab.employee = e.name
+			and bi.parent = ab.name
+			and bi.branch = `tabDelivery Note`.branch)
+	)""".format(user=user)

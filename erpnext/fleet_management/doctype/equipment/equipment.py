@@ -71,7 +71,7 @@ class Equipment(Document):
 		'''if self.equipment_history:
 			self.set("equipment_history", {})'''
 		if not self.equipment_history:
-                        self.create_equipment_history(branch = self.branch, on_date = '2017-01-01', ref_doc = self.name, purpose = 'Submit')
+			self.create_equipment_history(branch = self.branch, on_date = '2017-01-01', ref_doc = self.name, purpose = 'Submit')
 		
 		if len(self.operators) > 1:
 			for a in range(len(self.operators)-1):
@@ -79,9 +79,9 @@ class Equipment(Document):
 			self.operators[len(self.operators) - 1].end_date = ''
 
 		if self.is_disabled == 1:
-                        last_row = self.equipment_history[len(self.equipment_history) - 1]
-                        if not last_row.to_date:
-                                last_row.to_date = getdate(nowdate())
+			last_row = self.equipment_history[len(self.equipment_history) - 1]
+			if not last_row.to_date:
+					last_row.to_date = getdate(nowdate())
 		if self.not_cdcl == 0:
 			if not self.asset_code:
 				frappe.throw("Asset Code is mandatory, Please Fill the Asset Code!")

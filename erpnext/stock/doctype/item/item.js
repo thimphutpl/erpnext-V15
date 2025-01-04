@@ -97,6 +97,24 @@ frappe.ui.form.on("Item", {
         //     }
         // });
 		
+		// if (frm.doc.item_group) {
+        //     frappe.db.get_value('Item Group', frm.doc.item_group, 'link', function (value) {
+        //         if (value && value.link === 'Fixed Asset') {
+        //             frm.set_value('is_fixed_asset', 1); 
+        //             frm.set_value('is_services_item', 0);
+        //         } else if (value && value.link === 'Consumables') {
+        //             frm.set_value('is_services_item', 1);
+        //             frm.set_value('is_fixed_asset', 0); 
+        //         } else {
+        //             frm.set_value('is_fixed_asset', 0);
+        //             frm.set_value('is_services_item', 0);
+        //         }
+        //     });
+        // } else {
+        //     frm.set_value('is_fixed_asset', 0);
+        //     frm.set_value('is_services_item', 0);
+        // }
+		
 		if (frm.doc.is_stock_item) {
 			frm.add_custom_button(
 				__("Stock Balance"),

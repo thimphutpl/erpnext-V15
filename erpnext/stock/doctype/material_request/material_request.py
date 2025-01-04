@@ -880,3 +880,35 @@ def get_cc_warehouse(user):
 	wh = frappe.db.get_value("Cost Center", cc, "warehouse")
 	app = frappe.db.get_value("Approver Item", {"cost_center": cc}, "approver")
 	return [cc, wh, app]
+
+def get_permission_query_conditions(user):
+    if not user: user = frappe.session.user
+    user_roles = frappe.get_roles(user)
+    # if "Administrator" in user_roles or "System Manager" in user_roles or "Purchase User" in user_roles or "CEO" in user_roles: 
+    #     return
+	if any(role in user_roles for role in {"Administrator", "System Manager", "Purchase User", "CEO", "GM", "Projects GM"}):
+		return
+
+    # ceo_or_general_manager = 1 if 'GM' in user_roles or 'CEO' in user_roles or 'Projects GM' in user_roles else 0
+	# ceo_or_general_manager = 1 if any(role in user_roles for role in {"GM", "CEO", "Projects GM"}) else 0
+	ceo_or_general_manager = int(any(role in user_roles for role in {"GM", "CEO", "Projects GM"}))
+    
+    return """(
+            `tabMaterial Request`.owner = '{user}'
+            or
+            (`tabMaterial Request`.approver = '{user}' and `tabMaterial Request`.workflow_state not in  ('Draft','Rejected','Cancelled'))
+            or 
+            (
+                {ceo_or_general_manager} = 0
+                and
+                exists (
+                    select 1 
+                    from `tabEmployee` as e, `tabWarehouse` w, `tabWarehouse Branch` wb
+                    where e.user_id = '{user}'
+                    and wb.branch = e.branch
+                    and w.name = wb.parent
+                    and (`tabMaterial Request`.set_from_warehouse = w.name or `tabMaterial Request`.set_warehouse = w.name) 
+                    and `tabMaterial Request`.workflow_state not in  ('Draft','Cancelled')
+                )
+            )
+    )""".format(user = user, ceo_or_general_manager = ceo_or_general_manager)

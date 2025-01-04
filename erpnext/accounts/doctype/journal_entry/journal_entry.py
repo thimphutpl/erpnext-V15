@@ -1834,6 +1834,27 @@ def get_tds_account(tax_withholding_category):
 		where t.name = "{}" """.format(tax_withholding_category), as_dict=True)
 	return account[0] if account else None
 
+def get_permission_query_conditions(user):
+	if not user: user = frappe.session.user
+	user_roles = frappe.get_roles(user)
+
+	if user == "Administrator" or "System Manager" in user_roles: 
+		return
+
+	return """(
+		exists(select 1
+			from `tabEmployee` as e
+			where e.branch = `tabJournal Entry`.branch
+			and e.user_id = '{user}')
+		or
+		exists(select 1
+			from `tabEmployee` e, `tabAssign Branch` ab, `tabBranch Item` bi
+			where e.user_id = '{user}'
+			and ab.employee = e.name
+			and bi.parent = ab.name
+			and bi.branch = `tabJournal Entry`.branch)
+	)""".format(user=user)
+
 # ePayment Begins
 @frappe.whitelist()
 def make_bank_payment(source_name, target_doc=None):

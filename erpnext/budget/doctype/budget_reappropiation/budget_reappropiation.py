@@ -428,13 +428,15 @@ def get_permission_query_conditions(user):
 	if not user: user = frappe.session.user
 	user_roles = frappe.get_roles(user)
 
-	if user == "Administrator":
-		return
-	if "Budget Manager" in user_roles or "GM" in user_roles or "CEO" in user_roles:
+	# if user == "Administrator":
+	# 	return
+	# if "Budget Manager" in user_roles or "GM" in user_roles or "CEO" in user_roles:
+	# 	return
+	if any(role in user_roles for role in {"Administrator", "Budget Manager", "CEO", "GM"}):
 		return
 
 	return """(
 		`tabBudget Reappropiation`.owner = '{user}'
 		or
-		(`tabBudget Reappropiation`.approver = '{user}' and `tabBudget Reappropiation`.workflow_state not in  ('Draft','Approved','Rejected','Cancelled'))
+		(`tabBudget Reappropiation`.approver = '{user}' and `tabBudget Reappropiation`.workflow_state not in  ('Draft','Rejected','Cancelled'))
 	)""".format(user=user)

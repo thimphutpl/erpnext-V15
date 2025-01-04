@@ -16,6 +16,7 @@ from erpnext.accounts.general_ledger import (
 	merge_similar_entries,
 )
 from erpnext.accounts.party import get_party_account
+from erpnext.fleet_management.report.hsd_consumption_report.fleet_management_report import get_pol_tills, get_pol_consumed_tills
 
 from erpnext.accounts.utils import get_fiscal_year
 from erpnext.custom_utils import check_future_date, get_branch_cc, prepare_gl, prepare_sl, check_budget_available
@@ -583,3 +584,84 @@ def fetch_tank_balance(equipment):
         frappe.throw(f"No POL Receive entry found for the selected equipment: {equipment}")
 
     return qty
+
+@frappe.whitelist()
+def get_equipment_data(equipment_name, all_equipment=0, branch=None):
+    data = []
+    
+    query = """
+        SELECT e.name, e.branch, e.registration_number, e.hsd_type, e.equipment_type
+        FROM `tabEquipment` e
+        JOIN `tabEquipment Type` et ON e.equipment_type = et.name
+    """
+
+    if not all_equipment:
+        query += " WHERE et.is_container = 1"
+    else:
+        query += " WHERE 1=1"
+    
+    if branch:
+        query += " AND e.branch = %(branch)s"
+    if equipment_name:
+        query += " AND e.name = %(equipment_name)s"
+    
+    query += " ORDER BY e.branch"
+    
+    items = frappe.db.sql("""
+        SELECT item_code, item_name, stock_uom 
+        FROM `tabItem`
+        WHERE is_hsd_item = 1 AND disabled = 0
+    """, as_dict=True)
+    
+    equipment_details = frappe.db.sql(query, {
+        'branch': branch,
+        'equipment_name': equipment_name
+    }, as_dict=True)
+    
+    for eq in equipment_details:
+        for item in items:
+            received = issued = 0
+            if all_equipment:
+                if eq.hsd_type == item.item_code:
+                    received = get_pol_tills("Receive", eq.name, item.item_code)
+                    issued = get_pol_consumed_tills(eq.name,)
+            else:
+                received = get_pol_tills("Stock", eq.name, item.item_code)
+                issued = get_pol_tills("Issue", eq.name, item.item_code)
+						
+            
+            if received or issued:
+                data.append({
+                    'received': received,
+                    'issued': issued,
+                    'balance': flt(received) - flt(issued)
+                })
+
+			# if received or issued:
+			# 		row = [received, issued, flt(received) - flt(issued)]
+			# 		data.append(row)	
+    
+    return data
+
+def get_permission_query_conditions(user):
+	if not user: user = frappe.session.user
+	user_roles = frappe.get_roles(user)
+
+	if user == "Administrator" or "System Manager" in user_roles: 
+		return
+
+	return """(
+		`tabPOL Receive`.owner = '{user}'
+		or
+		exists(select 1
+			from `tabEmployee` as e
+			where e.branch = `tabPOL Receive`.branch
+			and e.user_id = '{user}')
+		or
+		exists(select 1
+			from `tabEmployee` e, `tabAssign Branch` ab, `tabBranch Item` bi
+			where e.user_id = '{user}'
+			and ab.employee = e.name
+			and bi.parent = ab.name
+			and bi.branch = `tabPOL Receive`.branch)
+	)""".format(user=user)

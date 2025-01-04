@@ -35,7 +35,8 @@ frappe.ui.form.on('POL Issue', {
 
 	onload: function(frm) {
 		if(!frm.doc.posting_date) {
-			frm.set_value("posting_date", get_today())
+			// frm.set_value("posting_date", get_today())
+            frm.set_value('posting_date', frappe.datetime.now_date());
 		}
         frm.set_query("tanker", function () {
             return {

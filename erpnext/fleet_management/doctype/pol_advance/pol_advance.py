@@ -222,5 +222,5 @@ def get_permission_query_conditions(user):
 			and bi.parent = ab.name
 			and bi.branch = `tabPOL Advance`.fuelbook_branch)
 		or
-		(`tabPOL Advance`.approver = '{user}' and `tabPOL Advance`.workflow_state not in  ('Draft','Approved','Rejected','Cancelled'))
+		(`tabPOL Advance`.approver = '{user}' and `tabPOL Advance`.workflow_state not in  ('Draft','Rejected','Cancelled'))
 	)""".format(user=user)

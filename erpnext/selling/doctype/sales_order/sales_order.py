@@ -169,6 +169,7 @@ class SalesOrder(SellingController):
 		total_qty: DF.Float
 		total_taxes_and_charges: DF.Currency
 		transaction_date: DF.Date
+		warehouse: DF.Link | None
 	# end: auto-generated types
 
 	def __init__(self, *args, **kwargs):
@@ -1750,3 +1751,26 @@ def get_work_order_items(sales_order, for_raw_material_request=0):
 @frappe.whitelist()
 def get_stock_reservation_status():
 	return frappe.db.get_single_value("Stock Settings", "enable_stock_reservation")
+
+def get_permission_query_conditions(user):
+	if not user: user = frappe.session.user
+	user_roles = frappe.get_roles(user)
+
+	if user == "Administrator" or "System Manager" in user_roles or "Sales Master" in user_roles: 
+		return
+
+	return """(
+		`tabSales Order`.owner = '{user}'
+		or
+		exists(select 1
+			from `tabEmployee` as e
+			where e.branch = `tabSales Order`.branch
+			and e.user_id = '{user}')
+		or
+		exists(select 1
+			from `tabEmployee` e, `tabAssign Branch` ab, `tabBranch Item` bi
+			where e.user_id = '{user}'
+			and ab.employee = e.name
+			and bi.parent = ab.name
+			and bi.branch = `tabSales Order`.branch)
+	)""".format(user=user)

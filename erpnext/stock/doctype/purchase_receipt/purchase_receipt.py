@@ -1409,3 +1409,26 @@ def get_item_account_wise_additional_cost(purchase_document):
 @erpnext.allow_regional
 def update_regional_gl_entries(gl_list, doc):
 	return
+
+def get_permission_query_conditions(user):
+	if not user: user = frappe.session.user
+	user_roles = frappe.get_roles(user)
+
+	if user == "Administrator" or "System Manager" in user_roles or "Stock Master" in user_roles: 
+		return
+
+	return """(
+		`tabPurchase Receipt`.owner = '{user}'
+		or
+		exists(select 1
+			from `tabEmployee` as e
+			where e.branch = `tabPurchase Receipt`.branch
+			and e.user_id = '{user}')
+		or
+		exists(select 1
+			from `tabEmployee` e, `tabAssign Branch` ab, `tabBranch Item` bi
+			where e.user_id = '{user}'
+			and ab.employee = e.name
+			and bi.parent = ab.name
+			and bi.branch = `tabPurchase Receipt`.branch)
+	)""".format(user=user)

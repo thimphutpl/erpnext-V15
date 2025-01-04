@@ -945,25 +945,65 @@ def is_subcontracting_order_created(po_name) -> bool:
 		else False
 	)
 
+# @frappe.whitelist()
+# def create_purchase_order(source_name, target_doc=None):
+#     from frappe.model.mapper import get_mapped_doc
+
+#     def set_missing_values(source, target):
+#         target.run_method("set_missing_values")
+#         target.run_method("calculate_taxes_and_totals")
+
+#     doc = get_mapped_doc(
+#         "Request for Quotation",  # Replace with your source doctype name
+#         source_name,
+#         {
+#             "Request for Quotation": {  
+#                 "doctype": "Purchase Order", 
+#                 "field_map": {
+#                     "field_in_source": "field_in_target",  
+#                 },
+#             },
+# 			"Request for Quotation Item": {  
+#                 "doctype": "Purchase Order Item",
+#                 "field_map": {
+#                     "child_field_in_source": "child_field_in_target",
+#                 },
+#             },
+#             # "Request for Quotation Supplier": {  
+#             #     "doctype": "Purchase Order",
+#             #     "field_map": {
+#             #         "child_field_in_source": "field_in_target", 
+#             #     },
+#             # },
+#         },
+#         target_doc,
+#         set_missing_values,
+#     )
+#     return doc
+
+
 @frappe.whitelist()
 def create_purchase_order(source_name, target_doc=None):
     from frappe.model.mapper import get_mapped_doc
 
     def set_missing_values(source, target):
+        # Assuming the first supplier from the child table is mapped to the supplier field
+        if source.suppliers:  
+            target.supplier = source.suppliers[0].supplier  # Maps the first supplier in the list
         target.run_method("set_missing_values")
         target.run_method("calculate_taxes_and_totals")
 
     doc = get_mapped_doc(
-        "Request for Quotation",  # Replace with your source doctype name
+        "Request for Quotation",  # Source Doctype
         source_name,
         {
-            "Request for Quotation": {  # Mapping for the main document
-                "doctype": "Purchase Order",  # Target doctype
+            "Request for Quotation": {  
+                "doctype": "Purchase Order", 
                 "field_map": {
-                    "field_in_source": "field_in_target",  # Map fields as necessary
+                    "field_in_source": "field_in_target",  
                 },
             },
-            "Source Child Table": {  # Mapping for child tables if applicable
+            "Request for Quotation Item": {  
                 "doctype": "Purchase Order Item",
                 "field_map": {
                     "child_field_in_source": "child_field_in_target",
@@ -975,4 +1015,25 @@ def create_purchase_order(source_name, target_doc=None):
     )
     return doc
 
+def get_permission_query_conditions(user):
+	if not user: user = frappe.session.user
+	user_roles = frappe.get_roles(user)
 
+	if user == "Administrator" or "System Manager" in user_roles or "Purchase Master" in user_roles: 
+		return
+
+	return """(
+		`tabPurchase Order`.owner = '{user}'
+		or
+		exists(select 1
+			from `tabEmployee` as e
+			where e.branch = `tabPurchase Order`.branch
+			and e.user_id = '{user}')
+		or
+		exists(select 1
+			from `tabEmployee` e, `tabAssign Branch` ab, `tabBranch Item` bi
+			where e.user_id = '{user}'
+			and ab.employee = e.name
+			and bi.parent = ab.name
+			and bi.branch = `tabPurchase Order`.branch)
+	)""".format(user=user)
