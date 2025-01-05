@@ -43,7 +43,9 @@ class StockSettings(Document):
 		enable_stock_reservation: DF.Check
 		item_group: DF.Link | None
 		item_naming_by: DF.Literal["Item Code", "Naming Series"]
+		mr_approval_notification_template: DF.Link | None
 		mr_qty_allowance: DF.Float
+		mr_status_notification_template: DF.Link | None
 		naming_series_prefix: DF.Data | None
 		over_delivery_receipt_allowance: DF.Float
 		pick_serial_and_batch_based_on: DF.Literal["FIFO", "LIFO", "Expiry"]

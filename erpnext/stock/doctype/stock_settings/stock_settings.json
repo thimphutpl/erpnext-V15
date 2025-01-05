@@ -22,6 +22,9 @@
   "allow_to_edit_stock_uom_qty_for_sales",
   "column_break_lznj",
   "allow_to_edit_stock_uom_qty_for_purchase",
+  "sb_notificaton",
+  "mr_status_notification_template",
+  "mr_approval_notification_template",
   "stock_validations_tab",
   "section_break_9",
   "over_delivery_receipt_allowance",
@@ -437,6 +440,23 @@
    "fieldname": "do_not_update_serial_batch_on_creation_of_auto_bundle",
    "fieldtype": "Check",
    "label": "Do Not Update Serial / Batch on Creation of Auto Bundle"
+  },
+  {
+   "fieldname": "sb_notificaton",
+   "fieldtype": "Section Break",
+   "label": "Notifications"
+  },
+  {
+   "fieldname": "mr_status_notification_template",
+   "fieldtype": "Link",
+   "label": "MR Status Notification Template",
+   "options": "Email Template"
+  },
+  {
+   "fieldname": "mr_approval_notification_template",
+   "fieldtype": "Link",
+   "label": "MR Approval Notification Template",
+   "options": "Email Template"
   }
  ],
  "icon": "icon-cog",
@@ -444,7 +464,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-02-25 16:32:01.084453",
+ "modified": "2025-01-05 23:44:32.350668",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Stock Settings",
