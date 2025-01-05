@@ -38,6 +38,7 @@ class MaterialRequest(BuyingController):
 		amended_from: DF.Link | None
 		approval_date: DF.Date | None
 		approver: DF.Link | None
+		approver_designation: DF.Data | None
 		approver_name: DF.Data | None
 		branch: DF.Link
 		company: DF.Link
@@ -112,8 +113,6 @@ class MaterialRequest(BuyingController):
 	def validate(self):
 		super().validate()
 		validate_workflow_states(self)
-		if self.approver and not self.approver_name:
-			self.approver_name = frappe.db.get_value("Employee", {"user_id": self.approver}, "employee_name")
 
 		self.validate_schedule_date()
 		self.check_for_on_hold_or_closed_status("Sales Order", "sales_order")

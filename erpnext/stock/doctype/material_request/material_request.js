@@ -90,9 +90,9 @@ frappe.ui.form.on("Material Request", {
 					args: {"branch": frm.doc.branch},
 					callback(r) {
 						console.log(r.message);
-						frm.set_value("approver", r.message.approver);
+						// frm.set_value("approver", r.message.approver);
 						frm.set_value("warehouse", r.message.warehouse);
-						frm.refresh_field('approver');
+						// frm.refresh_field('approver');
 						frm.refresh_field('warehouse');
 					}
 			});

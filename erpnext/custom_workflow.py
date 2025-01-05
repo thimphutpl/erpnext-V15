@@ -137,6 +137,7 @@ class CustomWorkflow:
 		if self.doc.doctype == "Material Request":
 			# self.expense_approver = frappe.db.get_value("Employee", {"user_id":frappe.db.get_value("Employee", {"user_id":self.doc.owner}, "expense_approver")}, self.field_list)
 			self.employee = frappe.db.get_value("Employee", {"user_id":self.doc.owner}, self.field_list)
+			self.branch_approver = frappe.db.get_value("Employee",{'user_id': frappe.db.get_value("Approver Item", {"cost_center": self.doccost_center}, "approver")},self.field_list)
 			# if self.doc.material_request_type == "Material Issue":
 			# 	self.warehouse_manager = frappe.db.get_value("Employee",{'user_id':frappe.db.get_value("Warehouse",self.doc.set_warehouse,"email_id")},self.field_list)
 			# elif self.doc.material_request_type == "Material Transfer":
@@ -314,6 +315,14 @@ class CustomWorkflow:
 			vars(self.doc)[self.doc_approver[0]] = officiating[0] if officiating else self.warehouse_manager[0]
 			vars(self.doc)[self.doc_approver[1]] = officiating[1] if officiating else self.warehouse_manager[1]
 			vars(self.doc)[self.doc_approver[2]] = officiating[2] if officiating else self.warehouse_manager[2]
+		
+		elif approver_type == "Branch Approver":
+			officiating = get_officiating_employee(self.branch_approver[3])
+			if officiating:
+				officiating = frappe.db.get_value("Employee", officiating[0].officiate, self.field_list)
+			vars(self.doc)[self.doc_approver[0]] = officiating[0] if officiating else self.branch_approver[0]
+			vars(self.doc)[self.doc_approver[1]] = officiating[1] if officiating else self.branch_approver[1]
+			vars(self.doc)[self.doc_approver[2]] = officiating[2] if officiating else self.branch_approver[2]
 
 		elif approver_type == "Manager Power":
 			officiating = get_officiating_employee(self.power_section_manager[3])
@@ -1046,7 +1055,7 @@ class CustomWorkflow:
 		elif self.new_state.lower() in ("Waiting Approval".lower()):
 			if self.doc.owner != frappe.session.user and self.new_state.lower()!= self.old_state.lower():
 				frappe.throw("Only the document owner can Apply this material request")
-			# self.set_approver("Warehouse Manager")
+			self.set_approver("Branch Approver")
 
 		# elif self.new_state.lower() in ("Waiting GM Approval".lower()):
 		# 	if self.doc.approver != frappe.session.user:
