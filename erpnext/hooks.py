@@ -604,6 +604,7 @@ permission_query_conditions = {
 	"Salary Slip": "hrms.payroll.doctype.salary_slip.salary_slip.get_permission_query_conditions",
 	"Leave Application": "hrms.hr.doctype.leave_application.leave_application.get_permission_query_conditions",
 	"Travel Authorization": "hrms.hr.doctype.travel_authorization.travel_authorization.get_permission_query_conditions",
+	"Travel Claim": "hrms.hr.doctype.travel_claim.travel_claim.get_permission_query_conditions",
 	"POL Issue": "erpnext.fleet_management.doctype.pol_advance.pol_advance.get_permission_query_conditions",
 	"POL Receive": "erpnext.fleet_management.doctype.pol_receive.pol_receive.get_permission_query_conditions",
 	"Break Down Report": "erpnext.fleet_management.doctype.break_down_report.break_down_report.get_permission_query_conditions",

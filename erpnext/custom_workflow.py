@@ -903,7 +903,7 @@ class CustomWorkflow:
 				frappe.throw("Only <b>{}</b> can Apply this request".format(self.doc.owner))
 			self.set_approver("Supervisor")
 
-		if self.new_state.lower() in ("Waiting HR Approval".lower()):
+		if self.new_state.lower() in ("Waiting Hr Approval".lower()):
 			if self.doc.approver != frappe.session.user:
 				frappe.throw("Only <b>{}</b> can Forward this request".format(self.doc.approver))
 			# self.set_approver("HR")
