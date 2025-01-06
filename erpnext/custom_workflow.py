@@ -428,6 +428,7 @@ class CustomWorkflow:
 
 
 	def apply_workflow(self):
+		
 		if (self.doc.doctype not in self.field_map) or not frappe.db.exists("Workflow", {"document_type": self.doc.doctype, "is_active": 1}):
 			return
 
@@ -767,11 +768,11 @@ class CustomWorkflow:
 			self.set_approver("Supervisor")
 
 		elif self.new_state.lower() == ("Approved".lower()):
-			if self.doc.supervisor != frappe.session.user:
+			if self.doc.leave_approver != frappe.session.user:
 				frappe.throw("Only {} can Approve this Leave Application".format(self.doc.supervisor))
 
 		elif self.new_state.lower() == ("Rejected".lower()):
-			if self.doc.supervisor != frappe.session.user:
+			if self.doc.leave_approver != frappe.session.user:
 				frappe.throw("Only {} can Reject this Leave Application".format(self.doc.supervisor))
 		else:
 			frappe.throw(_("Invalid Workflow State {}").format(self.doc.workflow_state))
