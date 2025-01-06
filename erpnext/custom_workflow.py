@@ -137,7 +137,7 @@ class CustomWorkflow:
 		if self.doc.doctype == "Material Request":
 			# self.expense_approver = frappe.db.get_value("Employee", {"user_id":frappe.db.get_value("Employee", {"user_id":self.doc.owner}, "expense_approver")}, self.field_list)
 			self.employee = frappe.db.get_value("Employee", {"user_id":self.doc.owner}, self.field_list)
-			self.branch_approver = frappe.db.get_value("Employee",{'user_id': frappe.db.get_value("Approver Item", {"cost_center": self.doccost_center}, "approver")},self.field_list)
+			self.branch_approver = frappe.db.get_value("Employee",{'user_id': frappe.db.get_value("Approver Item", {"cost_center": self.doc.cost_center}, "approver")},self.field_list)
 			# if self.doc.material_request_type == "Material Issue":
 			# 	self.warehouse_manager = frappe.db.get_value("Employee",{'user_id':frappe.db.get_value("Warehouse",self.doc.set_warehouse,"email_id")},self.field_list)
 			# elif self.doc.material_request_type == "Material Transfer":
@@ -439,7 +439,7 @@ class CustomWorkflow:
 			self.salary_advance()
 		elif self.doc.doctype == "Travel Request":
 			self.travel_request()
-		elif self.doc.doctype == "Travel Authorization":
+		elif self.doc.doctype in ("Travel Authorization", "Travel Adjustment"):
 			self.travel_authorization()
 		elif self.doc.doctype == "Travel Claim":
 			self.travel_claim()		
