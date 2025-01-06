@@ -42,7 +42,7 @@ class Equipment(Document):
 		model_items: DF.Table[EquipmentModelHistory]
 		not_cdcl: DF.Check
 		operators: DF.Table[EquipmentOperator]
-		registration_number: DF.Data
+		registration_number: DF.Data | None
 		supplier: DF.Link | None
 		tank_capacity: DF.Data | None
 		village: DF.Link | None
