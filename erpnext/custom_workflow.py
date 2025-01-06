@@ -1558,6 +1558,7 @@ def get_field_map():
 		"Leave Application": ["leave_approver", "leave_approver_name", "leave_approver_designation"],
 		"Travel Request": ["supervisor", "supervisor_name", "supervisor_designation"],
 		"Travel Authorization": ["approver", "approver_name", "approver_designation"],
+		"Travel Adjustment": ["approver", "approver_name", "approver_designation"],
 		"Travel Claim": ["approver", "approver_name", "approver_designation"],
 		"SWS Application": ["supervisor", "supervisor_name", "supervisor_designation"],
 		"SWS Membership": ["supervisor", "supervisor_name", "supervisor_designation"],
