@@ -1,7 +1,6 @@
 {
  "actions": [],
  "allow_import": 1,
- "allow_rename": 1,
  "autoname": "field:model",
  "creation": "2022-10-17 14:01:59.176916",
  "doctype": "DocType",
@@ -40,7 +39,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-19 16:05:05.275095",
+ "modified": "2025-01-06 17:21:18.201137",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Equipment Model",
@@ -90,7 +89,7 @@
   }
  ],
  "quick_entry": 1,
- "search_fields": "model, equipment_type",
+ "search_fields": "model",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []

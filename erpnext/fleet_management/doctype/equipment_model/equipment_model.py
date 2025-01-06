@@ -20,5 +20,6 @@ class EquipmentModel(Document):
 	# 	self.name = self.equipment_type + "(" + self.model + ")" 
 
 	def autoname(self):
-		self.name = f"{self.equipment_type} {self.model}"
+		# self.name = f"{self.equipment_type} {self.model}"
+		self.name = f"{self.model}"
 	
