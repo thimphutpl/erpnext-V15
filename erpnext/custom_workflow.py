@@ -918,8 +918,11 @@ class CustomWorkflow:
 			# 	frappe.throw("Only <b>{}</b> can Approve this request".format(self.doc.approver_name))
 
 		elif self.new_state.lower() in ("Rejected".lower()):
-			if self.doc.approver != frappe.session.user:
-				frappe.throw("Only the <b>{}</b> can Reject this request".format(self.doc.approver_name))
+			user_roles = frappe.get_roles(frappe.session.user)
+			if "HR Manager" in user_roles:
+				return
+			else:
+				frappe.throw("Only <b>{}</b> can Approve this request".format("HR Manager"))
 
 		elif self.new_state.lower() == "Cancelled".lower():
 			if self.doc.approver != frappe.session.user:
