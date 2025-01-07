@@ -545,26 +545,29 @@ def get_permission_query_conditions(user):
 	user_roles = frappe.get_roles(user)
 	if "HR User" in user_roles or "HR Manager" in user_roles or "Accounts User" in user_roles or "CEO" in user_roles:
 		return
-	if "MR User" in user_roles:
+	if "Management" in user_roles:
 		return """(
-			exists(select 1
-				from `tabEmployee` as e
-				where e.name = `tabEmployee`.name
-				and e.user_id = '{user}')
+			name in (select e1.name
+				from `tabEmployee` as e1, `tabEmployee` as e2
+				where e1.name = e2.name
+				and e1.user_id = '{user}')
 			or
-			exists(select 1
-				from `tabEmployee` e, `tabAssign Branch` ab, `tabBranch Item` bi
-				where e.user_id = '{user}'
-				and ab.employee = e.name
-				and bi.parent = ab.name
-				and bi.branch = e.branch)
+			name in (select e.name
+				from `tabEmployee` e
+				where e.branch in (
+					select bi.branch
+					from `tabEmployee` a, `tabAssign Branch` ab, `tabBranch Item` bi
+					where a.user_id = '{user}'
+					and ab.employee = a.name
+					and bi.parent = ab.name
+				))
 		)""".format(user=user)
 	else:
 		return """(
-			exists(select 1
-				from `tabEmployee` as e
-				where e.name = `tabEmployee`.name
-				and e.user_id = '{user}')
+			name in (select e1.name
+				from `tabEmployee` as e1, `tabEmployee` as e2
+				where e1.name = e2.name
+				and e1.user_id = '{user}')
 		)""".format(user=user)
 
 def has_record_permission(doc, user):
