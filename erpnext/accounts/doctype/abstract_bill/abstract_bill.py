@@ -170,7 +170,7 @@ class AbstractBill(Document):
 
 			# Get budget type code
 			budget_type_result = frappe.db.sql("""
-				SELECT bt.code 
+				SELECT bt.budget_code 
 				FROM `tabBudget Type` bt
 				JOIN `tabAccount` a ON a.budget_type = bt.name 
 				WHERE a.name = %s
@@ -184,7 +184,9 @@ class AbstractBill(Document):
 			budget_type_code = budget_type_result[0][0]
 
 			# Get account head code
-			account_code = frappe.db.get_value("Account", item.account, "account_number")
+			
+			account_code = frappe.db.get_value("Account", item.account, "bank_account_no")
+			
 			if not account_code:
 				frappe.throw("No account code found for account {}".format(item.account))
 
