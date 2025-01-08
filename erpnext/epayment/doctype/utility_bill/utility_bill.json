@@ -97,6 +97,7 @@
    "default": "Common",
    "fieldname": "business_activity",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Business Activity",
    "options": "Business Activity"
   },
@@ -206,7 +207,7 @@
  ],
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-23 13:07:13.089516",
+ "modified": "2025-01-08 17:19:10.447830",
  "modified_by": "Administrator",
  "module": "ePayment",
  "name": "Utility Bill",
@@ -249,18 +250,6 @@
    "role": "Accounts Manager",
    "share": 1,
    "submit": 1,
-   "write": 1
-  },
-  {
-   "create": 1,
-   "delete": 1,
-   "email": 1,
-   "export": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "Unit Manager",
-   "share": 1,
    "write": 1
   },
   {

@@ -13,6 +13,35 @@ from erpnext.epayment.doctype.bank_payment.bank_payment import get_transaction_i
 
 
 class UtilityBill(Document):
+	# begin: auto-generated types
+	# This code is auto-generated. Do not modify anything in this block.
+
+	from typing import TYPE_CHECKING
+
+	if TYPE_CHECKING:
+		from erpnext.epayment.doctype.utility_bill_item.utility_bill_item import UtilityBillItem
+		from frappe.types import DF
+
+		amended_from: DF.Link | None
+		bank_account: DF.Data
+		bank_balance: DF.Currency
+		branch: DF.Link
+		business_activity: DF.Link | None
+		company: DF.Link
+		cost_center: DF.Link
+		expense_account: DF.Link
+		item: DF.Table[UtilityBillItem]
+		journal_entry: DF.Link | None
+		net_payable_amount: DF.Currency
+		payment_status: DF.Literal["Draft", "Pending", "Payment Successful", "Payment Failed", "Partial Payment"]
+		posting_date: DF.Date
+		tds_account: DF.Link | None
+		tds_percent: DF.Literal["", "2", "3", "5", "10"]
+		total_bill_amount: DF.Currency
+		total_tds_amount: DF.Currency
+		utility_services: DF.Link
+		workflow_state: DF.Link | None
+	# end: auto-generated types
 	def validate(self):
 		check_future_date(self.posting_date)
 		self.calculate_tds_net()
