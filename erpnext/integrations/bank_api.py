@@ -612,9 +612,14 @@ def fetch_balance(account_no):
                 </soapenv:Envelope>""".format(account_no)
 
     headers = {
-    'Authorization': 'Basic RVBBWVRUUDpwYXNzd29yZDEyMyQ=',
+    'Authorization': 'Basic %s' % base64.b64encode(header_credential),
     'Content-Type': 'application/xml'
     }
+
+    # headers = {
+    # 'Authorization': 'Basic RVBBWVRUUDpwYXNzd29yZDEyMyQ=',
+    # 'Content-Type': 'application/xml'
+    # }
 
     try:
         response = requests.request("POST", url, headers=headers, data=payload, timeout=5)
