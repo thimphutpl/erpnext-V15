@@ -49,6 +49,8 @@ class MaterialRequest(BuyingController):
 		job_card: DF.Link | None
 		letter_head: DF.Link | None
 		material_request_type: DF.Literal["Material Issue", "Purchase", "Material Transfer", "Manufacture", "Requisition"]
+		mr_footer: DF.TextEditor | None
+		mr_header: DF.TextEditor | None
 		naming_series: DF.Literal["", "Consumables", "Fixed Asset", "Sales Product", "Spareparts", "Services Miscellaneous", "Services Works", "Labour Contract", "REORDER", "MAT-MR-.YYYY.-"]
 		per_ordered: DF.Percent
 		per_received: DF.Percent
@@ -893,9 +895,9 @@ def get_permission_query_conditions(user):
 	ceo_or_general_manager = int(any(role in user_roles for role in {"GM", "CEO", "Projects GM"}))
 	
 	return """(
-			`tabMaterial Request`.owner = '{user}'
+			owner = '{user}'
 			or
-			(`tabMaterial Request`.approver = '{user}' and `tabMaterial Request`.workflow_state not in  ('Draft','Rejected','Cancelled'))
+			(approver = '{user}' and workflow_state not in  ('Draft','Rejected','Cancelled'))
 			or 
 			(
 				{ceo_or_general_manager} = 0

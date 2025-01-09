@@ -2708,6 +2708,8 @@ class StockEntry(StockController):
 						doc.ref_doc = self.name
 						doc.qty = a.qty
 						doc.submit()
+					if not a.issued_to:
+						frappe.throw(f"Row#{a.idx}, Issued To is mandatory for entry type Material Issue")
 
 @frappe.whitelist()
 def move_sample_to_retention_warehouse(company, items):

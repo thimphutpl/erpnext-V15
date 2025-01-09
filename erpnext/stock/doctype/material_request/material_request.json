@@ -39,6 +39,10 @@
   "tc_name",
   "terms",
   "warehouse",
+  "header_and_footer_section",
+  "mr_header",
+  "column_break_jutw",
+  "mr_footer",
   "terms_tab",
   "more_info_tab",
   "status_section",
@@ -432,13 +436,32 @@
    "fieldtype": "Data",
    "label": "Approver Designation",
    "read_only": 1
+  },
+  {
+   "fieldname": "header_and_footer_section",
+   "fieldtype": "Section Break",
+   "label": "Header and Footer"
+  },
+  {
+   "fieldname": "mr_header",
+   "fieldtype": "Text Editor",
+   "label": "Header"
+  },
+  {
+   "fieldname": "column_break_jutw",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "mr_footer",
+   "fieldtype": "Text Editor",
+   "label": "Footer"
   }
  ],
  "icon": "fa fa-ticket",
  "idx": 70,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-06 00:39:48.085395",
+ "modified": "2025-01-07 13:02:58.549739",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Material Request",

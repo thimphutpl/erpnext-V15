@@ -6,7 +6,7 @@ import frappe
 from frappe.model.document import Document
 from frappe import _
 from frappe.utils import flt, cint, nowdate, getdate, formatdate, money_in_words
-# from erpnext.custom_workflow import validate_workflow_states, notify_workflow_states
+from erpnext.custom_workflow import validate_workflow_states, notify_workflow_states
 
 class ImprestAdvance(Document):
 	# begin: auto-generated types
@@ -17,164 +17,203 @@ class ImprestAdvance(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
-		abstract_bill: DF.Data | None
 		adjusted_amount: DF.Currency
-		advance_amount: DF.Currency
 		amended_from: DF.Link | None
+		amount: DF.Currency
 		approver: DF.Link | None
 		approver_designation: DF.Link | None
 		approver_name: DF.Data | None
 		balance_amount: DF.Currency
 		branch: DF.Link
-		business_activity: DF.Link
 		company: DF.Link | None
 		cost_center: DF.Link
+		first_advance: DF.Check
 		imprest_recoup: DF.Link | None
 		imprest_type: DF.Link
 		is_opening: DF.Check
 		journal_entry: DF.Data | None
-		opening_amount: DF.Currency
 		party: DF.DynamicLink
 		party_type: DF.Literal["", "Employee", "Agency"]
 		posting_date: DF.Date
+		project: DF.Link | None
 		remarks: DF.SmallText | None
 		title: DF.Data
 	# end: auto-generated types
 
 	def validate(self):
 		if not self.is_opening:
-			self.validate_advance_amount()
-		# self.calculate_adjusted_amount()
+			self.check_imprest_amount()
+		if cint(self.first_advance) == 1:
+			self.check_for_duplicate_entry()
+			validate_workflow_states(self)
+			if self.workflow_state != "Approved":
+				notify_workflow_states(self)
+
+	def check_for_duplicate_entry(self):
+		import datetime
+
+		date_obj = datetime.datetime.strptime(str(self.posting_date), "%Y-%m-%d")
+		year = date_obj.year
+
+		filters = {
+			"branch": self.branch,
+			"imprest_type": self.imprest_type,
+			"docstatus": 1,
+			"party": self.party
+		}
+
+		if self.project:
+			filters["project"] = self.project
+
+		for d in frappe.db.get_list("Imprest Advance", filters=filters, fields=["posting_date"]):
+			date_obj = datetime.datetime.strptime(str(d.posting_date), "%Y-%m-%d")
+			year_old = date_obj.year
+			if str(year) == str(year_old):
+				frappe.throw("Imprest Advance already taken for branch <b>{}</b>, imprest type <b>{}</b>{}".format(
+					self.branch,
+					self.imprest_type,
+					", and project <b>{}</b>".format(self.project) if self.project else ""
+				))
+
+	def check_imprest_amount(self):
+		query = """
+			SELECT imp.imprest_limit, imp.project
+			FROM `tabBranch Imprest Item` imp
+			WHERE imp.parent = %(branch)s
+				AND imp.imprest_type = %(imprest_type)s
+				{project_condition}
+		"""
+		query_params = {'branch': self.branch, 'imprest_type': self.imprest_type}
+		project_condition = ''
+
+		if self.project:
+			project_condition = 'AND imp.project = %(project)s'
+			query_params['project'] = self.project
+
+		query = query.format(project_condition=project_condition)
+		result = frappe.db.sql(query, query_params, as_dict=True)
+
+		if not result or not result[0].get('imprest_limit'):
+			branch_link = frappe.utils.get_link_to_form('Branch', self.branch)
+			frappe.throw('Please assign Imprest Limit in Branch: {} under Imprest Settings Section'.format(branch_link))
+		
+		for d in result:
+			if d.project and not self.project:
+				frappe.throw("This imprest type <b>{}</b> is assigned to a Project but you have not selected a Project".format(self.imprest_type))
+		
+		imprest_limit = result[0].get('imprest_limit')
+		
+		message = "Amount requested cannot be greater than Imprest Limit <b>{}</b> for branch <b>{}</b> and imprest type <b>{}</b>".format(imprest_limit, self.branch, self.imprest_type)
+		if self.project:
+			message += " and project <b>{}</b>".format(self.project)
+
+		if self.amount > imprest_limit:
+			frappe.throw(message)
 
 	def before_cancel(self):
-		if self.abstract_bill:
-			ab_status = frappe.get_value("Abstract Bill", {"name": self.abstract_bill}, "docstatus")
-			if cint(ab_status) == 1:
-				frappe.throw("Abstract Bill {} for this transaction needs to be cancelled first".format(frappe.get_desk_link("Abstract Bill", self.abstract_bill)))
+		if self.journal_entry:
+			je_status = frappe.get_value("Journal Entry", {"name": self.journal_entry}, "docstatus")
+			if cint(je_status) == 1:
+				frappe.throw("Journal Entry {} for this transaction needs to be cancelled first".format(frappe.get_desk_link("Journal Entry", self.journal_entry)))
 			else:
-				frappe.db.sql("delete from `tabAbstract Bill` where name = '{}'".format(self.abstract_bill))
-				self.db_set("abstract_bill", None)
-
-	def validate_advance_amount(self):
-		imprest_limit = self.get_imprest_limit()
-		balance_amount = self.get_balance_amount()
-
-		message = "Advance amount requested cannot be greater than Imprest Limit <b>{}</b> for imprest type <b>{}</b>".format(imprest_limit, self.imprest_type)
-
-		bal_amt = 0
-		if balance_amount:
-			bal_amt =  flt(imprest_limit) - flt(balance_amount)
-			if bal_amt == 0:
-				frappe.throw("Your imprest advance in already reached at limit {}".format(frappe.bold(imprest_limit)))
-			elif bal_amt < flt(imprest_limit):
-				self.advance_amount = bal_amt
-				self.balance_amount = bal_amt
-		else:
-			if flt(self.advance_amount) > flt(imprest_limit):
-				frappe.throw(message)
-	
-	def get_balance_amount(self):
-		query = """
-				SELECT ia.balance_amount 
-				FROM `tabImprest Advance` ia
-				WHERE ia.party_type=%s
-				AND ia.party=%s
-				AND ia.imprest_type=%s 
-				AND ia.docstatus = 1
-				"""
-		data = frappe.db.sql(query, (self.party_type, self.party, self.imprest_type), as_dict=True)
-		total_bal_amt = 0
-		for d in data:
-			total_bal_amt += d.balance_amount
-		return total_bal_amt
-
-	@frappe.whitelist()
-	def set_advance_amount(self):
-		if not self.imprest_type:
-			frappe.throw("Please set <strong>Imprest Type</strong>.")
-		balance_amount = self.get_balance_amount()
-		imprest_limit = frappe.db.get_value("Imprest Type",  self.imprest_type, "imprest_max_limit")
-		if not imprest_limit:
-			frappe.throw("Please set Imprest Limit in {}".format(
-				frappe.get_desk_link("Imprest Type", self.imprest_type)
-			))
-		if balance_amount == imprest_limit:
-			frappe.throw("Your imprest advance in already reached at limit {}".format(frappe.bold(imprest_limit)))
-		if balance_amount:
-			return flt(imprest_limit) - flt(balance_amount)
-		else:
-			return imprest_limit
-
-	def calculate_adjusted_amount(self):
-		if self.is_opening:
-			return
-
-		if self.od_items:
-			tot_od_amt = sum(d.od_amount for d in self.od_items)
-			self.adjusted_amount = flt(tot_od_amt)  
-			self.balance_amount = flt(self.advance_amount) - flt(tot_od_amt)  
-
-	def get_imprest_limit(self):
-		imprest_limit = frappe.db.get_value("Imprest Type",  self.imprest_type, "imprest_max_limit")
-		if not imprest_limit:
-			frappe.throw("Please set Imprest Limit in {}".format(
-				frappe.get_desk_link("Imprest Type", self.imprest_type)
-			))
-
-		return imprest_limit
+				frappe.db.sql("delete from `tabJournal Entry` where name = '{}'".format(self.journal_entry))
+				self.db_set("journal_entry", None)
 
 	def on_submit(self):
+		if cint(self.first_advance) == 1:
+			notify_workflow_states(self)
 		if not self.is_opening:
-			self.create_abstract_bill()
+			self.post_journal_entry()
 
 	def on_cancel(self):
-		# if self.imprest_recoup:
-		# 	frappe.throw("Imprest Recoup <b>{}</b> needs to to cancelled first.".format(self.imprest_recoup))
-		pass
+		if self.first_advance == 0 and self.imprest_recoup:
+			frappe.throw("Imprest Recoup <b>{}</b> needs to to cancelled first.".format(self.imprest_recoup))
+		
+		self.ignore_linked_doctypes = ("GL Entry", "Payment Ledger Entry")
+		if cint(self.first_advance) == 1:
+			notify_workflow_states(self)
 
-	def get_imprest_type_account(self, imprest_type):
-		account = frappe.db.get_value(
-			"Imprest Type Account",
-			{"parent": imprest_type, "company": self.company},
-			"account",
-			cache=True,
-		)
+	def post_journal_entry(self):
+		if not self.amount:
+			frappe.throw(_("Amount should be greater than zero"))
 
-		if not account:
-			frappe.throw(
-				_("Please set account in Imprest Type {0}").format(
-					frappe.get_desk_link("Imprest Type", imprest_type)
-				)
-			)
+		query = """
+			SELECT comp.imprest_advance_account, br.expense_bank_account
+			FROM `tabCompany` comp
+			LEFT JOIN `tabBranch` br ON br.name = %(branch)s
+			WHERE comp.name = %(company)s
+		"""
+		result = frappe.db.sql(query, {'branch': self.branch, 'company': self.company}, as_dict=True)
 
-		return account
-			
-	def create_abstract_bill(self):
-		imprest_advance_account = self.get_imprest_type_account(self.imprest_type)
-		items = []
-		items.append({
-			"account": imprest_advance_account,
-			"cost_center": self.cost_center,
-			"party_type": self.party_type,
-			"party": self.party,
-			"business_activity": self.business_activity,
-			"amount": self.advance_amount,
-		})		
-		ab = frappe.new_doc("Abstract Bill")
-		ab.flags.ignore_permission = 1
-		ab.update({
-			"doctype": "Abstract Bill",
+		if not result or not result[0].get('imprest_advance_account'):
+			frappe.throw("Setup Default Imprest Advance Account in Company Settings")
+		
+		if not result[0].get('expense_bank_account'):
+			frappe.throw("Setup Expense Bank Account in <b>{}</b> Branch".format(self.branch))
+
+		debit_account = result[0].get('imprest_advance_account')
+		credit_account = result[0].get('expense_bank_account')
+
+		voucher_type = "Journal Entry"
+		voucher_series = "Journal Voucher"
+		party_type = ""
+		party = ""
+
+		debit_account_type = frappe.db.get_value("Account", debit_account, "account_type")
+		credit_account_type = frappe.db.get_value("Account", credit_account, "account_type")
+
+		if credit_account_type == "Bank":
+			voucher_type = "Bank Entry"
+			voucher_series = "Bank Payment Voucher"
+
+		if debit_account_type in ("Payable", "Receivable"):
+			party_type = self.party_type
+			party = self.party
+
+		remarks = []
+		if self.remarks:
+			remarks.append(_("Note: {0}").format(self.remarks))
+
+		remarkss = "".join(remarks)
+
+		# Posting Journal Entry
+		je = frappe.new_doc("Journal Entry")
+
+		je.update({
+			"doctype": "Journal Entry",
+			"voucher_type": voucher_type,
+			"naming_series": voucher_series,
+			"title": "Imprest Advance - " + self.name,
+			"user_remark": remarkss if remarkss else "Note: " + "Imprest Advance - " + self.name,
 			"posting_date": self.posting_date,
 			"company": self.company,
-			"branch": self.branch,
-			"reference_doctype": self.doctype,
-			"reference_name": self.name,
-			"items": items,
+			"total_amount_in_words": money_in_words(self.amount),
+			"branch": self.branch
 		})
-		ab.insert()
-		self.db_set('abstract_bill', ab.name)
-		frappe.msgprint(_('Abstarct Bill {0} posted').format(frappe.get_desk_link("Abstract Bill", ab.name)))
 
+		je.append("accounts", {
+			"account": debit_account,
+			"debit_in_account_currency": self.amount,
+			"cost_center": self.cost_center,
+			"project": self.project,
+			"reference_type": "Imprest Advance",
+			"reference_name": self.name,
+			"party_type": party_type,
+			"party": party
+		})
+		
+		je.append("accounts", {
+			"account": credit_account,
+			"credit_in_account_currency": self.amount,
+			"cost_center": self.cost_center,
+			"project": self.project,
+		})
+
+		je.insert()
+		# Set a reference to the claim journal entry
+		self.db_set("journal_entry", je.name)
+		frappe.msgprint("Journal Entry created. {}".format(frappe.get_desk_link("Journal Entry", je.name)))
+	
 def get_permission_query_conditions(user):
 	if not user: user = frappe.session.user
 	user_roles = frappe.get_roles(user)
@@ -184,17 +223,7 @@ def get_permission_query_conditions(user):
 		return
 
 	return """(
-		`tabImprest Recoup`.owner = '{user}'
+		owner = '{user}'
 		or
-		exists(select 1
-			from `tabEmployee` as e
-			where e.branch = `tabImprest Recoup`.branch
-			and e.user_id = '{user}')
-		or
-		exists(select 1
-			from `tabEmployee` e, `tabAssign Branch` ab, `tabBranch Item` bi
-			where e.user_id = '{user}'
-			and ab.employee = e.name
-			and bi.parent = ab.name
-			and bi.branch = `tabImprest Recoup`.branch)
+		(approver = '{user}' and workflow_state not in  ('Draft','Rejected','Cancelled'))
 	)""".format(user=user)

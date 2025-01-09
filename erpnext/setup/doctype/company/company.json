@@ -81,6 +81,8 @@
   "exception_budget_approver_role",
   "additional_hr_payroll_account_section",
   "employer_contribution_to_pf",
+  "cb_hr_1",
+  "imprest_advance_account",
   "fixed_asset_defaults",
   "accumulated_depreciation_account",
   "depreciation_expense_account",
@@ -874,6 +876,16 @@
    "fieldtype": "Link",
    "label": "Employer Contribution to PF",
    "options": "Account"
+  },
+  {
+   "fieldname": "cb_hr_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "imprest_advance_account",
+   "fieldtype": "Link",
+   "label": "Imprest Advance Account",
+   "options": "Account"
   }
  ],
  "icon": "fa fa-building",
@@ -881,7 +893,7 @@
  "image_field": "company_logo",
  "is_tree": 1,
  "links": [],
- "modified": "2024-12-19 12:24:05.467318",
+ "modified": "2025-01-09 18:19:38.089053",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Company",

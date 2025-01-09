@@ -494,6 +494,10 @@ class CustomWorkflow:
 			self.promotion_application()
 		elif self.doc.doctype == "PMS Appeal":
 			self.pms_appeal()
+		elif self.doc.doctype == "Imprest Advance":
+			self.imprest_advance()
+		elif self.doc.doctype == "Imprest Recoup":
+			self.imprest_recoup()
 		else:
 			frappe.throw(_("Workflow not defined for {}").format(self.doc.doctype))
 	
@@ -1079,6 +1083,42 @@ class CustomWorkflow:
 			if self.doc.approver != frappe.session.user:
 				frappe.throw("Only the {} can Reject this material request".format(self.doc.approver))
 
+	def imprest_advance(self):
+		if self.new_state.lower() in ("Draft".lower(), "Waiting for Verification".lower()):
+			if self.new_state.lower() == "Waiting for Verification".lower():
+				if frappe.session.user != self.doc.owner:
+					frappe.throw("Only {} can apply this Imprest Advance".format(self.doc.owner))
+			self.set_approver("Supervisor")
+
+		elif self.new_state.lower() in ("Waiting Approval".lower(), "Rejected".lower()) and self.old_state.lower() == "Waiting for Verification":
+			if self.doc.approver != frappe.session.user:
+				frappe.throw("Only {} can Forward or Reject this document".format(self.doc.approver_name))
+			# self.set_approver("Imprest Approver")
+		
+		elif self.new_state.lower() in ("Approved".lower(), "Rejected".lower()) and self.old_state.lower() == "Waiting Approval":
+			if not "Imprest Manager" in frappe.get_roles(frappe.session.user):
+				frappe.throw("Only users with role Imprest Manager can Recoup or Reject this document")
+		else:
+			frappe.throw(_("Invalid Workflow State {}").format(self.doc.workflow_state))
+	
+	def imprest_recoup(self):
+		if self.new_state.lower() in ("Draft".lower(), "Waiting Approval".lower()):
+			if self.new_state.lower() == "Waiting Approval".lower():
+				if frappe.session.user != self.doc.owner:
+					frappe.throw("Only {} can apply this Imprest Advance".format(self.doc.owner))
+			self.set_approver("Supervisor")
+
+		elif self.new_state.lower() in ("Waiting Recoupment".lower(), "Rejected".lower()) and self.old_state.lower() == "Waiting Approval":
+			if self.doc.approver != frappe.session.user:
+				frappe.throw("Only {} can Approve or Reject this document".format(self.doc.approver_name))
+			# self.set_approver("Imprest Approver")
+		
+		elif self.new_state.lower() in ("Recouped".lower(), "Rejected".lower()) and self.old_state.lower() == "Waiting Recoupment":
+			if not "Imprest Manager" in frappe.get_roles(frappe.session.user):
+				frappe.throw("Only users with role Imprest Manager can Recoup or Reject this document")
+		else:
+			frappe.throw(_("Invalid Workflow State {}").format(self.doc.workflow_state))
+	
 	def employee_benefit_claim(self):
 		workflow_state    = self.doc.get("workflow_state").lower()
 		if workflow_state == "Draft".lower():
@@ -1176,6 +1216,8 @@ class NotifyCustomWorkflow:
 	def notify_employee(self):
 		if self.doc.doctype not in ("Material Request","Asset Issue Details","Repair And Services","Project Capitalization","POL Expense"):
 			employee = frappe.get_doc("Employee", self.doc.employee)
+		elif self.doc.doctype in ("Imprest Advance", "Imprest Recoup"):
+			employee = frappe.get_doc("Employee", self.doc.party)
 		else:
 			employee = frappe.get_doc("Employee", frappe.db.get_value("Employee",{"user_id":self.doc.owner},"name"))
 		if not employee.user_id:
@@ -1250,6 +1292,17 @@ class NotifyCustomWorkflow:
 			template = frappe.db.get_single_value('Asset Settings', 'asset_status_notification_template')
 			if not template:
 				frappe.msgprint(_("Please set default template for Asset Status Notification in Asset Settings."))
+				return
+		elif self.doc.doctype == "Imprest Advance":
+			template = frappe.db.get_single_value('HR Settings', 'imprest_advance_status_notification_template')
+			if not template:
+				frappe.msgprint(_("Please set default template for Imprest Advance Status Notification in HR Settings."))
+				return
+
+		elif self.doc.doctype == "Imprest Recoup":
+			template = frappe.db.get_single_value('HR Settings', 'imprest_recoup_status_notification_template')
+			if not template:
+				frappe.msgprint(_("Please set default template for Imprest Recoup Status Notification in HR Settings."))
 				return
 		else:
 			template = ""
@@ -1350,6 +1403,25 @@ class NotifyCustomWorkflow:
 				if not template:
 					frappe.msgprint(_("Please set default template for Asset Approval Notification in Asset Settings."))
 					return
+			
+			elif self.doc.doctype == "Imprest Advance" and self.new_state == "Waiting For Verification":
+				template = frappe.db.get_single_value('HR Settings', 'imprest_advance_approval_notification_template')
+				if not template:
+					frappe.msgprint(_("Please set default template for Imprest Advance Status Notification in HR Settings."))
+					return
+			elif self.doc.doctype == "Imprest Advance":
+				self.notify_imprest_managers()
+				return
+
+			elif self.doc.doctype == "Imprest Recoup" and self.new_state == "Waiting Approval":
+				template = frappe.db.get_single_value('HR Settings', 'imprest_recoup_approval_notification_template')
+				if not template:
+					frappe.msgprint(_("Please set default template for Imprest Recoup Status Notification in HR Settings."))
+					return
+			elif self.doc.doctype == "Imprest Recoup":
+				self.notify_imprest_managers()
+				return
+
 			else:
 				template = ""
 
@@ -1497,19 +1569,23 @@ class NotifyCustomWorkflow:
 				"subject": email_template.subject
 			})
 
-	def notify_ta_finance(self):
+	def notify_imprest_managers(self):
 		receipients = []
-		region = frappe.db.get_value("Employee",self.doc.employee,"region")
-		email_group = "Travel Administrator, Finance"
-		ta = frappe.get_list("Email Group Member", filters={"email_group":email_group}, fields=['email'])
-		if ta:
-			receipients = [a['email'] for a in ta]
+		email_group = "Imprest Manager"
+		imprest_managers = frappe.get_list("Email Group Member", filters={"email_group":email_group}, fields=['email'])
+		if imprest_managers:
+			receipients = [a['email'] for a in imprest_managers]
 			parent_doc = frappe.get_doc(self.doc.doctype, self.doc.name)
 			args = parent_doc.as_dict()
-			if self.doc.doctype == "Travel Claim":
-				template = frappe.db.get_single_value('HR Settings', 'claim_approval_notification_template')
+			if self.doc.doctype == "Imprest Advance":
+				template = frappe.db.get_single_value('HR Settings', 'imprest_advance_approval_notification_template')
 				if not template:
-					frappe.msgprint(_("Please set default template for Claim Approval Notification in HR Settings."))
+					frappe.msgprint(_("Please set default template for Imprest Advance Approval Notification in HR Settings."))
+					return
+			if self.doc.doctype == "Imprest Recoup":
+				template = frappe.db.get_single_value('HR Settings', 'imprest_recoup_approval_notification_template')
+				if not template:
+					frappe.msgprint(_("Please set default template for Imprest Recoup Approval Notification in HR Settings."))
 					return
 			if not template:
 				frappe.msgprint(_("Please set default template for {}.").format(self.doc.doctype))
@@ -1554,9 +1630,6 @@ class NotifyCustomWorkflow:
 		if self.new_state == "Draft":
 			return
 		elif self.new_state in ("Approved", "Rejected", "Cancelled", "Claimed", "Submitted"):
-			if self.doc.doctype == "Material Request" and self.doc.owner != "Administrator":
-				self.notify_employee()
-			else:
 				self.notify_employee()
 		elif self.new_state.startswith("Waiting") and self.old_state != self.new_state and self.doc.doctype not in ("Asset Issue Details","Project Capitalization"):
 			self.notify_approver()
@@ -1597,6 +1670,8 @@ def get_field_map():
 		"Prepare Audit Plan": ["approver","approver_name","approver_designation"],
 		"PMS Appeal": ["approver","approver_name","approver_designation"],
 		"Asset Issue Details": [],
+		"Imprest Advance": ["approver","approver_name","approver_designation"],
+		"Imprest Recoup": ["approver","approver_name","approver_designation"],
 	}
 
 def validate_workflow_states(doc):

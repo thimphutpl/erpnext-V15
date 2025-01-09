@@ -3,13 +3,13 @@
 
 frappe.ui.form.on('Imprest Recoup', {
 	onload: function(frm){
-		// frm.set_query('expense_account', 'items', function() {
-		// 	return {
-		// 		"filters": {
-		// 			"account_type": "Expense Account"
-		// 		}
-		// 	};
-		// });
+		frm.set_query('expense_account', 'items', function() {
+			return {
+				"filters": {
+					"account_type": "Expense Account"
+				}
+			};
+		});
 
 		frm.set_query('account', 'items', function() {
 			return {
@@ -20,26 +20,17 @@ frappe.ui.form.on('Imprest Recoup', {
 		});
 	},
 	refresh: function(frm){
-		// 
+		frm.set_query("project", function() {
+			return {
+				"filters": {
+					"branch": frm.doc.branch
+				}
+			}
+		});
 	},
 
 	"get_imprest_advance":function(frm){
 		get_imprest_advance(frm)
-	},
-
-	"get_items":function(frm){
-		return frappe.call({
-			doc: frm.doc,
-			method: 'get_transactions_detail',
-			callback: function(r) {
-				if (r.message){
-					
-					frm.refresh_field("items");
-				}
-			},
-			freeze: true,
-			
-		});
 	},
 
 	branch: function(frm){
@@ -57,16 +48,7 @@ frappe.ui.form.on('Imprest Recoup', {
 		// 		}
 		// 	};
 		// });
-	},
-	project: function(frm){
-		frm.set_query("project", function() {
-			return {
-				"filters": {
-					"branch": frm.doc.branch
-				}
-			}
-		});
-	},
+	}
 });
 
 frappe.ui.form.on("Imprest Recoup Item", {

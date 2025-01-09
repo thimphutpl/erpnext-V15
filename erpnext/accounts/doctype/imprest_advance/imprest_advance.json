@@ -16,14 +16,14 @@
   "imprest_type",
   "column_break_001",
   "posting_date",
-  "business_activity",
+  "project",
   "is_opening",
+  "first_advance",
   "section_break_002",
   "party_type",
   "party",
   "column_break_002",
-  "advance_amount",
-  "opening_amount",
+  "amount",
   "adjusted_amount",
   "balance_amount",
   "approver_details_section",
@@ -35,7 +35,6 @@
   "section_break_001",
   "remarks",
   "journal_entry",
-  "abstract_bill",
   "column_break_23",
   "imprest_recoup",
   "amended_from"
@@ -178,7 +177,7 @@
   {
    "fieldname": "approver",
    "fieldtype": "Link",
-   "label": "Approver Email ID",
+   "label": "Approver",
    "options": "User",
    "read_only": 1
   },
@@ -204,28 +203,6 @@
    "fieldtype": "Column Break"
   },
   {
-   "depends_on": "eval:doc.is_opening != 1",
-   "fieldname": "advance_amount",
-   "fieldtype": "Currency",
-   "label": "Advance Amount",
-   "mandatory_depends_on": "eval:doc.is_opening != 1"
-  },
-  {
-   "fieldname": "business_activity",
-   "fieldtype": "Link",
-   "label": "Business Activity",
-   "options": "Business Activity",
-   "reqd": 1
-  },
-  {
-   "depends_on": "eval:doc.is_opening",
-   "fieldname": "opening_amount",
-   "fieldtype": "Currency",
-   "in_list_view": 1,
-   "label": "Opening Amount",
-   "mandatory_depends_on": "eval:doc.is_opening"
-  },
-  {
    "fieldname": "imprest_recoup",
    "fieldtype": "Link",
    "label": "Imprest Recoup",
@@ -233,16 +210,31 @@
    "read_only": 1
   },
   {
-   "fieldname": "abstract_bill",
-   "fieldtype": "Data",
-   "label": "Abstract Bill",
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "label": "Project",
+   "options": "Project"
+  },
+  {
+   "default": "1",
+   "fieldname": "first_advance",
+   "fieldtype": "Check",
+   "label": "First Advance",
    "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.is_opening",
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Opening Amount",
+   "mandatory_depends_on": "eval:doc.is_opening"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-08-19 18:30:55.967184",
+ "modified": "2025-01-09 17:30:01.835047",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Imprest Advance",
