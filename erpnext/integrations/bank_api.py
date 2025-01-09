@@ -136,9 +136,12 @@ def intra_payment(from_acc, trans_amount, promo_no, to_acc, unique_transaction_n
     'Authorization': 'Basic %s' % base64.b64encode(header_credential),
     'Content-Type': 'application/xml'
     }
+
+    # generated manually from console
+    # RVBBWUNEQ0w6cGFzc3dvcmQxMjMk
     '''
     headers = {
-    'Authorization': 'Basic RVBBWVRUUDpwYXNzd29yZDEyMyQ=',
+    'Authorization': 'Basic RVBBWUNEQ0w6cGFzc3dvcmQxMjMk',
     'Content-Type': 'application/xml'
     }
     
@@ -304,7 +307,7 @@ def inter_payment(Amt, PayeeAcctNum, BnfcryAcct, BnfcryName, BnfcryAcctTyp, Bnfc
             </soapenv:Body>
         </soapenv:Envelope>""".format(ModeOfPmt, Amt, PayeeAcctNum, BnfcryAcct, BnfcryName, BnfcryAcctTyp, BnfcryRmrk, RemitterName, BfscCode, RemitterAcctType, PEMSRefNum)
     headers = {
-    'Authorization': 'Basic RVBBWVRUUDpwYXNzd29yZDEyMyQ=',
+    'Authorization': 'Basic RVBBWUNEQ0w6cGFzc3dvcmQxMjMk',
     'Content-Type': 'application/xml'
     }
     response = requests.request("POST", url, headers=headers, data=payload)
@@ -478,7 +481,7 @@ def inr_remittance(AcctNum, Amt, BnfcryAcct, BnfcryName, BnfcryAddr1, IFSC, Bank
     </soapenv:Body>""".format(AcctNum, Amt, BnfcryAcct, BnfcryName, BnfcryAddr1, IFSC, BankCode, PurpCode, RemittersName, RemittersAddr1, ComsnOpt, PromoCode, PemsRefNum)
 
     headers = {
-    'Authorization': 'Basic RVBBWVRUUDpwYXNzd29yZDEyMyQ=',
+    'Authorization': 'Basic RVBBWUNEQ0w6cGFzc3dvcmQxMjMk',
     'Content-Type': 'application/xml'
     }
     response = requests.request("POST", url, headers=headers, data=payload)
@@ -611,15 +614,16 @@ def fetch_balance(account_no):
                 </soapenv:Body>
                 </soapenv:Envelope>""".format(account_no)
 
-    headers = {
-    'Authorization': 'Basic %s' % base64.b64encode(header_credential),
-    'Content-Type': 'application/xml'
-    }
-
     # headers = {
-    # 'Authorization': 'Basic RVBBWVRUUDpwYXNzd29yZDEyMyQ=',
+    # 'Authorization': 'Basic %s' % base64.b64encode(header_credential),
     # 'Content-Type': 'application/xml'
     # }
+    # RVBBWVRUUDpwYXNzd29yZDEyMyQ=
+
+    headers = {
+    'Authorization': 'Basic RVBBWUNEQ0w6cGFzc3dvcmQxMjMk',
+    'Content-Type': 'application/xml'
+    }
 
     try:
         response = requests.request("POST", url, headers=headers, data=payload, timeout=5)
