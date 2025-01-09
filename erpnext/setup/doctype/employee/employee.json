@@ -1097,9 +1097,8 @@
   },
   {
    "fieldname": "village",
-   "fieldtype": "Link",
-   "label": "Village",
-   "options": "Village"
+   "fieldtype": "Data",
+   "label": "Village"
   },
   {
    "fieldname": "thram_number",
@@ -1132,7 +1131,7 @@
  "idx": 24,
  "image_field": "image",
  "links": [],
- "modified": "2024-12-27 15:21:59.536660",
+ "modified": "2025-01-09 15:15:21.540687",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee",
