@@ -1079,10 +1079,10 @@ class CustomWorkflow:
 					frappe.throw("Only {} can apply this Imprest Advance".format(self.doc.owner))
 			self.set_approver("Supervisor")
 
-		elif self.new_state.lower() in ("Waiting Approval".lower(), "Rejected".lower()) and self.old_state.lower() == "Waiting for Verification":
-			if self.doc.approver != frappe.session.user:
-				frappe.throw("Only {} can Forward or Reject this document".format(self.doc.approver_name))
-			# self.set_approver("Imprest Approver")
+		# elif self.new_state.lower() in ("Waiting Approval".lower(), "Rejected".lower()) and self.old_state.lower() == "Waiting for Verification":
+		# 	if self.doc.approver != frappe.session.user:
+		# 		frappe.throw("Only {} can Forward or Reject this document".format(self.doc.approver_name))
+			
 		
 		elif self.new_state.lower() in ("Approved".lower(), "Rejected".lower()) and self.old_state.lower() == "Waiting Approval":
 			if not "Imprest Manager" in frappe.get_roles(frappe.session.user):
@@ -1400,9 +1400,9 @@ class NotifyCustomWorkflow:
 				if not template:
 					frappe.msgprint(_("Please set default template for Imprest Advance Status Notification in HR Settings."))
 					return
-			elif self.doc.doctype == "Imprest Advance":
-				self.notify_imprest_managers()
-				return
+			# elif self.doc.doctype == "Imprest Advance":
+			# 	self.notify_imprest_managers()
+			# 	return
 
 			elif self.doc.doctype == "Imprest Recoup" and self.new_state == "Waiting Approval":
 				template = frappe.db.get_single_value('HR Settings', 'imprest_recoup_approval_notification_template')
