@@ -124,7 +124,6 @@
    "reqd": 1
   },
   {
-   "default": "Today",
    "fieldname": "posting_date",
    "fieldtype": "Date",
    "label": "Posting Date",
@@ -527,6 +526,7 @@
    "depends_on": "eval: doc.book_type == 'Common' && doc.cost_center",
    "fieldname": "tanker",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Tanker",
    "options": "Equipment"
   },
@@ -542,6 +542,7 @@
    "fetch_from": "tanker.registration_number",
    "fieldname": "tanker_number",
    "fieldtype": "Data",
+   "hidden": 1,
    "in_list_view": 1,
    "label": "Tanker Number",
    "read_only": 1
@@ -550,6 +551,7 @@
    "fetch_from": "tanker.equipment_category",
    "fieldname": "tanker_category",
    "fieldtype": "Read Only",
+   "hidden": 1,
    "label": "Tanker Category"
   },
   {
@@ -560,12 +562,14 @@
    "fetch_from": "tanker.branch",
    "fieldname": "tanker_branch",
    "fieldtype": "Read Only",
+   "hidden": 1,
    "label": "Tanker Branch"
   },
   {
    "fetch_from": "cost_center.warehouse",
    "fieldname": "tank_warehouse",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Tank Warehouse",
    "options": "Warehouse"
   },
@@ -573,6 +577,7 @@
    "fetch_from": "tanker.equipment_type",
    "fieldname": "tanker_type",
    "fieldtype": "Read Only",
+   "hidden": 1,
    "label": "Tanker Type",
    "read_only": 1
   },
@@ -586,6 +591,7 @@
    "depends_on": "eval: doc.book_type == 'Common'",
    "fieldname": "tanker_quantity",
    "fieldtype": "Float",
+   "hidden": 1,
    "label": "Receive In Tanker Quantity",
    "precision": "2"
   }
@@ -593,7 +599,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-10 14:26:41.049596",
+ "modified": "2025-01-10 17:56:14.777356",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Receive",
