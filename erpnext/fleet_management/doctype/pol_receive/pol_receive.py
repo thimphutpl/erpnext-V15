@@ -228,18 +228,18 @@ class POLReceive(StockController):
 						self.hiring_warehouse = None
 
 	def validate_data(self):
-		if self.book_type == "Common":
-			# return
-			if not self.fuelbook_branch or not self.tanker_branch:
-				frappe.throw("Fuelbook and Tank Branch are mandatory")
-		else:
-			if not self.fuelbook_branch or not self.equipment_branch:
-				frappe.throw("Fuelbook and Equipment Branch are mandatory")
+		# if self.book_type == "Common":
+		# 	# return
+		# 	if not self.fuelbook_branch or not self.tanker_branch:
+		# 		frappe.throw("Fuelbook and Tank Branch are mandatory")
+		# else:
+		# 	if not self.fuelbook_branch or not self.equipment_branch:
+		# 		frappe.throw("Fuelbook and Equipment Branch are mandatory")
 
-		if self.book_type == "Common" and flt(self.rate) <= 0 and flt(self.tanker_quantity) <= 0:
-			frappe.throw("Tanker Quantity and Rate should be greater than 0")
-		elif self.book_type == "Own" and flt(self.qty) <= 0 or flt(self.rate) <= 0:
-			frappe.throw("Own Quantity and Rate should be greater than 0")	
+		# if self.book_type == "Common" and flt(self.rate) <= 0 and flt(self.tanker_quantity) <= 0:
+		# 	frappe.throw("Tanker Quantity and Rate should be greater than 0")
+		# elif self.book_type == "Own" and flt(self.qty) <= 0 or flt(self.rate) <= 0:
+		# 	frappe.throw("Own Quantity and Rate should be greater than 0")	
 
 		# if flt(self.qty) <= 0 or flt(self.rate) <= 0:
 		# 	frappe.throw("Quantity and Rate should be greater than 0")
@@ -250,13 +250,13 @@ class POLReceive(StockController):
 		# if not self.equipment_category:
 		# 	frappe.throw("Equipment Category Missing")
 		
-		if self.book_type == "Common":
-			# return
-			if not self.tanker_category:
-				frappe.throw("Fuelbook and Tank Branch are mandatory")
-		else:
-			if not self.equipment_category:
-				frappe.throw("Equipment Category Missing")
+		# if self.book_type == "Common":
+		# 	# return
+		# 	if not self.tanker_category:
+		# 		frappe.throw("Fuelbook and Tank Branch are mandatory")
+		# else:
+		# 	if not self.equipment_category:
+		# 		frappe.throw("Equipment Category Missing")
 
 		if self.branch != self.fuelbook_branch:
 			frappe.throw("Transaction Branch and Fuelbook Branch should be same")
@@ -287,8 +287,8 @@ class POLReceive(StockController):
 		
 		if self.hiring_cost_center:
 			cc = self.hiring_cost_center
-		elif self.book_type == "Common":
-			cc = get_branch_cc(self.tanker_branch)	
+		# elif self.book_type == "Common":
+		# 	cc = get_branch_cc(self.tanker_branch)	
 		else:
 			cc = get_branch_cc(self.equipment_branch)
 		account = frappe.db.get_value("Equipment Category", self.tanker_category, "budget_account")	
@@ -399,8 +399,8 @@ class POLReceive(StockController):
 
 		if self.hiring_cost_center:
 			cost_center = self.hiring_cost_center
-		elif self.book_type == "Common":
-			cost_center = get_branch_cc(self.tanker_branch)	
+		# elif self.book_type == "Common":
+		# 	cost_center = get_branch_cc(self.tanker_branch)	
 		else:
 			cost_center = get_branch_cc(self.equipment_branch)
 
@@ -426,8 +426,8 @@ class POLReceive(StockController):
 		# frappe.msgprint(self.hiring_branch)
 		if self.hiring_branch:
 			comparing_branch = self.hiring_branch
-		elif self.book_type == "Common":
-			comparing_branch = self.tanker_branch		
+		# elif self.book_type == "Common":
+		# 	comparing_branch = self.tanker_branch		
 		else:
 			comparing_branch = self.equipment_branch
 
@@ -609,8 +609,100 @@ class POLReceive(StockController):
 		else:
 			frappe.throw("Define POL expense account in Maintenance Setting or Expense Bank in Branch")
 		
+	# def make_pol_entry(self):
+	# 	if getdate(self.posting_date) <= getdate("2024-03-31"):
+	# 					return
+	# 	container = frappe.db.get_value("Equipment Type", frappe.db.get_value("Equipment", self.equipment, "equipment_type"), "is_container")
+	# 	if self.equipment_branch == self.fuelbook_branch:
+	# 		own = 1
+	# 	else:
+	# 		own = 0
+
+	# 	con = frappe.new_doc("POL Entry")
+	# 	con.flags.ignore_permissions = 1	
+	# 	con.equipment = self.equipment
+	# 	con.pol_type = self.pol_type
+	# 	con.branch = self.equipment_branch
+	# 	con.posting_date = self.posting_date
+	# 	con.posting_time = self.posting_time
+	# 	con.qty = self.qty
+	# 	con.reference_type = "POL Receive"
+	# 	con.reference_name = self.name
+	# 	con.is_opening = 0
+	# 	con.own_cost_center = own
+	# 	if container:
+	# 		con.type = "Stock"
+	# 		con.submit()
+		
+	# 	if self.direct_consumption:
+	# 		con1 = frappe.new_doc("POL Entry")
+	# 		con1.flags.ignore_permissions = 1	
+	# 		con1.equipment = self.equipment
+	# 		con1.pol_type = self.pol_type
+	# 		con1.branch = self.equipment_branch
+	# 		con1.posting_date = self.posting_date
+	# 		con1.posting_time = self.posting_time
+	# 		con1.qty = self.qty
+	# 		con1.reference_type = "POL Receive"
+	# 		con1.reference_name = self.name
+	# 		con1.type = "Receive"
+	# 		con1.is_opening = 0
+	# 		con1.own_cost_center = own
+	# 		con1.submit()
+	# 	else:
+	# 		con1 = frappe.new_doc("POL Entry")
+	# 		con1.flags.ignore_permissions = 1	
+	# 		con1.equipment = self.tanker
+	# 		con1.pol_type = self.pol_type
+	# 		con1.branch = self.tanker_branch
+	# 		con1.posting_date = self.posting_date
+	# 		con1.posting_time = self.posting_time
+	# 		con1.qty = self.qty
+	# 		con1.reference_type = "POL Receive"
+	# 		con1.reference_name = self.name
+	# 		# con1.type = "Receive"
+	# 		if container:
+	# 			con1.type = "Stock"
+	# 		con1.is_opening = 0
+	# 		con1.own_cost_center = own
+	# 		con1.submit()	
+			
+	# 		if container:
+	# 			con2 = frappe.new_doc("POL Entry")
+	# 			con2.flags.ignore_permissions = 1	
+	# 			con2.equipment = self.equipment
+	# 			con2.pol_type = self.pol_type
+	# 			con2.branch = self.equipment_branch
+	# 			con2.posting_date = self.posting_date
+	# 			con2.posting_time = self.posting_time
+	# 			con2.qty = self.qty
+	# 			con2.reference_type = "POL Receive"
+	# 			con2.reference_name = self.name
+	# 			con2.type = "Issue"
+	# 			con2.is_opening = 0
+	# 			con2.own_cost_center = own
+	# 			con2.submit()
+	# 		# else:
+	# 		# 	con2 = frappe.new_doc("POL Entry")
+	# 		# 	con2.flags.ignore_permissions = 1	
+	# 		# 	con2.equipment = self.equipment
+	# 		# 	con2.pol_type = self.pol_type
+	# 		# 	con2.branch = self.equipment_branch
+	# 		# 	con2.posting_date = self.posting_date
+	# 		# 	con2.posting_time = self.posting_time
+	# 		# 	con2.quantity = self.qty
+	# 		# 	con2.reference_type = "POL Receive"
+	# 		# 	con2.reference_name = self.name
+	# 		# 	con2.type = "Issue"
+	# 		# 	con2.is_opening = 0
+	# 		# 	con2.own_cost_center = own
+	# 		# 	con2.submit()
+	#
+	# 
+	# 
+	# 
 	def make_pol_entry(self):
-		if getdate(self.posting_date) <= getdate("2024-03-31"):
+		if getdate(self.posting_date) <= getdate("2018-03-31"):
 						return
 		container = frappe.db.get_value("Equipment Type", frappe.db.get_value("Equipment", self.equipment, "equipment_type"), "is_container")
 		if self.equipment_branch == self.fuelbook_branch:
@@ -649,21 +741,6 @@ class POLReceive(StockController):
 			con1.is_opening = 0
 			con1.own_cost_center = own
 			con1.submit()
-		else:
-			con1 = frappe.new_doc("POL Entry")
-			con1.flags.ignore_permissions = 1	
-			con1.equipment = self.tanker
-			con1.pol_type = self.pol_type
-			con1.branch = self.tanker_branch
-			con1.posting_date = self.posting_date
-			con1.posting_time = self.posting_time
-			con1.tanker_quantity = self.tanker_quantity
-			con1.reference_type = "POL Receive"
-			con1.reference_name = self.name
-			con1.type = "Receive"
-			con1.is_opening = 0
-			con1.own_cost_center = own
-			con1.submit()	
 			
 			if container:
 				con2 = frappe.new_doc("POL Entry")
@@ -679,22 +756,7 @@ class POLReceive(StockController):
 				con2.type = "Issue"
 				con2.is_opening = 0
 				con2.own_cost_center = own
-				con2.submit()
-			# else:
-			# 	con2 = frappe.new_doc("POL Entry")
-			# 	con2.flags.ignore_permissions = 1	
-			# 	con2.equipment = self.equipment
-			# 	con2.pol_type = self.pol_type
-			# 	con2.branch = self.equipment_branch
-			# 	con2.posting_date = self.posting_date
-			# 	con2.posting_time = self.posting_time
-			# 	con2.quantity = self.qty
-			# 	con2.reference_type = "POL Receive"
-			# 	con2.reference_name = self.name
-			# 	con2.type = "Issue"
-			# 	con2.is_opening = 0
-			# 	con2.own_cost_center = own
-			# 	con2.submit()	
+				con2.submit()	
 
 
 	def delete_pol_entry(self):

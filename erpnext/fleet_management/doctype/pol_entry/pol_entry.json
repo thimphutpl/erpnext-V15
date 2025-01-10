@@ -16,6 +16,7 @@
   "item_name",
   "posting_date",
   "qty",
+  "tanker_quantity",
   "reference_type",
   "reference_name",
   "type",
@@ -194,13 +195,20 @@
    "fieldname": "own_cost_center",
    "fieldtype": "Check",
    "label": "Own Cost Center"
+  },
+  {
+   "fieldname": "tanker_quantity",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Quantity",
+   "precision": "2"
   }
  ],
  "in_create": 1,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-25 15:47:47.629506",
+ "modified": "2025-01-09 16:50:11.044543",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Entry",
