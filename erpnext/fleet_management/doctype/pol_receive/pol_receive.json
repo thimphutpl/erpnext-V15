@@ -56,6 +56,7 @@
   "item_name",
   "column_break_6",
   "qty",
+  "tanker_quantity",
   "stock_uom",
   "column_break_8",
   "rate",
@@ -183,12 +184,12 @@
    "fieldtype": "Column Break"
   },
   {
+   "depends_on": "eval: doc.book_type",
    "fieldname": "qty",
    "fieldtype": "Float",
    "in_list_view": 1,
    "label": "Quantity",
-   "precision": "2",
-   "reqd": 1
+   "precision": "2"
   },
   {
    "fetch_from": "pol_type.stock_uom",
@@ -268,7 +269,7 @@
    "read_only": 1
   },
   {
-   "depends_on": "eval:doc.book_type == \"Own\" && doc.cost_center",
+   "depends_on": "eval:doc.book_type == 'Own' && doc.cost_center\neval:doc.is_hsd_item",
    "fieldname": "equipment",
    "fieldtype": "Link",
    "in_filter": 1,
@@ -292,8 +293,7 @@
    "options": "equipment.equipment_category"
   },
   {
-   "depends_on": "eval:doc.equipment && doc.supplier || doc.tanker",
-   "fetch_from": "equipment.fuelbook",
+   "depends_on": "eval:doc.equipment || doc.tanker",
    "fieldname": "fuelbook",
    "fieldtype": "Link",
    "label": "Fuelbook",
@@ -510,14 +510,14 @@
    "search_index": 1
   },
   {
-   "depends_on": "eval: doc.book_type == 'Own'",
+   "depends_on": "eval: doc.book_type == 'Own'\neval:doc.is_hsd_item",
    "fieldname": "tank_balance",
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Own Tank Balance"
   },
   {
-   "depends_on": "eval: doc.book_type == 'Common'\neval:doc.is_hsd_item",
+   "depends_on": "eval: doc.book_type == 'Common'",
    "fieldname": "tanker_balance",
    "fieldtype": "Data",
    "in_list_view": 1,
@@ -541,8 +541,10 @@
   {
    "fetch_from": "tanker.registration_number",
    "fieldname": "tanker_number",
-   "fieldtype": "Read Only",
-   "label": "Tanker Number"
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Tanker Number",
+   "read_only": 1
   },
   {
    "fetch_from": "tanker.equipment_category",
@@ -579,12 +581,19 @@
    "fieldtype": "Select",
    "label": "Is Opening",
    "options": "\nYes\nNo"
+  },
+  {
+   "depends_on": "eval: doc.book_type == 'Common'",
+   "fieldname": "tanker_quantity",
+   "fieldtype": "Float",
+   "label": "Receive In Tanker Quantity",
+   "precision": "2"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-07 17:03:58.103394",
+ "modified": "2025-01-10 14:26:41.049596",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Receive",

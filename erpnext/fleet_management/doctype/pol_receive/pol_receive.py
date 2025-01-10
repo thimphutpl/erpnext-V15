@@ -16,7 +16,7 @@ from erpnext.accounts.general_ledger import (
 	merge_similar_entries,
 )
 from erpnext.accounts.party import get_party_account
-from erpnext.fleet_management.report.hsd_consumption_report.fleet_management_report import get_pol_tills, get_pol_consumed_tills
+from erpnext.fleet_management.report.hsd_consumption_report.fleet_management_report import get_pol_tills, get_pol_consumed_tills, get_pol_till_tanker, get_pol_consumed_till_tanker
 
 from frappe.desk.reportview import get_match_cond
 from erpnext.accounts.utils import get_fiscal_year
@@ -79,14 +79,15 @@ class POLReceive(StockController):
 		tanker_balance: DF.Data | None
 		tanker_branch: DF.ReadOnly | None
 		tanker_category: DF.ReadOnly | None
-		tanker_number: DF.ReadOnly | None
+		tanker_number: DF.Data | None
+		tanker_quantity: DF.Float
 		tanker_type: DF.ReadOnly | None
 		total_amount: DF.Currency
 		warehouse: DF.Link
 	# end: auto-generated types
 	def validate(self):
 		check_future_date(self.posting_date)
-		self.validate_dc()
+		# self.validate_dc()
 		self.validate_warehouse()
 		#self.set_warehouse()
 		self.check_on_dry_hire()
@@ -96,30 +97,49 @@ class POLReceive(StockController):
 		self.validate_item()
 
 	def on_submit(self):
-		self.validate_dc()
+		# self.validate_dc()
 		self.validate_data()
 		self.check_on_dry_hire()
 		self.check_budget()
 
+		# # Skip GL Entries if is_opening is "Yes"
+		# if self.is_opening == "Yes":
+		# 	frappe.msgprint(
+		# 		("Skipping GL entries and stock ledger updates since this is an Opening Entry."),
+		# 		alert=True
+		# 	)
+		# 	return
+
+		# if getdate(self.posting_date) > getdate("2018-03-31"):
+		# 	self.update_stock_ledger()
+		# """ ++++++++++ Ver 2.0.190509 Begins ++++++++++ """
+		# # Ver 2.0.190509, Following method commented by SHIV on 2019/05/20 
+		# #self.update_general_ledger(1)
+
+		# # Ver 2.0.190509, Following method added by SHIV on 2019/05/20
+		# self.make_gl_entries()
+		# """ ++++++++++ Ver 2.0.190509 Ends ++++++++++++ """
+		
+		# self.make_pol_entry()
+
+		
+
+		if getdate(self.posting_date) > getdate("2018-03-31") and self.is_opening == "No" or self.is_opening == "":
+			self.update_stock_ledger()
+			""" ++++++++++ Ver 2.0.190509 Begins ++++++++++ """
+			self.make_pol_entry()
+			self.make_gl_entries()
+
 		# Skip GL Entries if is_opening is "Yes"
-		if self.is_opening == "Yes":
+		elif self.is_opening == "Yes":
+			self.make_pol_entry()
 			frappe.msgprint(
 				("Skipping GL entries and stock ledger updates since this is an Opening Entry."),
 				alert=True
 			)
 			return
-
-		if getdate(self.posting_date) > getdate("2018-03-31"):
-			self.update_stock_ledger()
-		""" ++++++++++ Ver 2.0.190509 Begins ++++++++++ """
-		# Ver 2.0.190509, Following method commented by SHIV on 2019/05/20 
-		#self.update_general_ledger(1)
-
-		# Ver 2.0.190509, Following method added by SHIV on 2019/05/20
 		self.make_gl_entries()
 		""" ++++++++++ Ver 2.0.190509 Ends ++++++++++++ """
-		
-		self.make_pol_entry()
 
 		#New code add on 07/01/2025
 		# if cint(self.is_opening) == 0:
@@ -128,8 +148,8 @@ class POLReceive(StockController):
 		# 	self.make_gl_entries()
 		# self.make_pol_entry()
 
-		if cint(self.is_opening) == 'Yes':
-			return
+		# if cint(self.is_opening) == 'Yes':
+		# 	return
 	
 	def before_cancel(self):
 		self.delete_pol_entry()
@@ -159,22 +179,32 @@ class POLReceive(StockController):
 		# 	self.update_stock_ledger()
 		# self.delete_pol_entry()
 
-	def validate_dc(self):
-		if self.book_type == "Common":
-			# return
-			is_container, no_own_tank = frappe.db.get_value("Equipment Type", frappe.db.get_value("Equipment", self.tanker, "equipment_type") , ["is_container", "no_own_tank"])
-		else:	
-			is_container, no_own_tank = frappe.db.get_value("Equipment Type", frappe.db.get_value("Equipment", self.equipment, "equipment_type") , ["is_container", "no_own_tank"])
+	# def validate_dc(self):
+	# 	if self.book_type == "Common":
+	# 		is_container, no_own_tank = frappe.db.get_value("Equipment Type", frappe.db.get_value("Equipment", self.tanker, "equipment_type") , ["is_container", "no_own_tank"])
+	# 	else:	
+	# 		is_container, no_own_tank = frappe.db.get_value("Equipment Type", frappe.db.get_value("Equipment", self.equipment, "equipment_type") , ["is_container", "no_own_tank"])
 
-		if not self.direct_consumption and not is_container:
-			frappe.throw("Non 'Direct Consumption' Receive POL is allowed only for Container Equipments")
+	# 	if not self.direct_consumption and not is_container:
+	# 		frappe.throw("Non 'Direct Consumption' Receive POL is allowed only for Container Equipments")
 
-		if self.direct_consumption and no_own_tank:
-						frappe.throw("Direct Consumption not permitted for Equipments without own Tank")
+	# 	if self.direct_consumption and no_own_tank:
+	# 					frappe.throw("Direct Consumption not permitted for Equipments without own Tank")
+
+	# def validate_dc(self):
+	# 	is_container, no_own_tank = frappe.db.get_value("Equipment Type", frappe.db.get_value("Equipment", self.equipment, "equipment_type") , ["is_container", "no_own_tank"])
+	# 	if not self.direct_consumption and not is_container:
+	# 		frappe.throw("Non 'Direct Consumption' Receive POL is allowed only for Container Equipments")
+
+	# 	if self.direct_consumption and no_own_tank:
+	# 					frappe.throw("Direct Consumption not permitted for Equipments without own Tank")
 
 	def validate_warehouse(self):
 				self.validate_warehouse_branch(self.warehouse, self.branch)
-				self.validate_warehouse_branch(self.equipment_warehouse, self.equipment_branch)
+				if self.book_type == "Own":
+					self.validate_warehouse_branch(self.equipment_warehouse, self.equipment_branch)
+				# if self.book_type == "Common":
+				# 	self.validate_warehouse_branch(self.tanker_warehouse, self.tanker_branch)	
 				if self.hiring_branch:
 						self.validate_warehouse_branch(self.hiring_warehouse, self.hiring_branch)
 
@@ -206,8 +236,13 @@ class POLReceive(StockController):
 			if not self.fuelbook_branch or not self.equipment_branch:
 				frappe.throw("Fuelbook and Equipment Branch are mandatory")
 
-		if flt(self.qty) <= 0 or flt(self.rate) <= 0:
-			frappe.throw("Quantity and Rate should be greater than 0")
+		if self.book_type == "Common" and flt(self.rate) <= 0 and flt(self.tanker_quantity) <= 0:
+			frappe.throw("Tanker Quantity and Rate should be greater than 0")
+		elif self.book_type == "Own" and flt(self.qty) <= 0 or flt(self.rate) <= 0:
+			frappe.throw("Own Quantity and Rate should be greater than 0")	
+
+		# if flt(self.qty) <= 0 or flt(self.rate) <= 0:
+		# 	frappe.throw("Quantity and Rate should be greater than 0")
 
 		if not self.warehouse:
 			frappe.throw("Warehouse is Mandatory. Set the Warehouse in Cost Center")
@@ -229,6 +264,12 @@ class POLReceive(StockController):
 		if self.book_type == "Own":
 			if self.fuelbook != frappe.db.get_value("Equipment", self.equipment, "fuelbook"):
 				frappe.throw("Fuelbook (<b>" + str(self.fuelbook) + "</b>) is not registered to <b>" + str(self.equipment) + "</b>")
+
+		# #New
+		# if flt(self.tanker_quantity) <= 0 or flt(self.rate) <= 0:
+		# 	return
+		# if flt(self.qty) <= 0 or flt(self.rate) <= 0:
+		# 	frappe.throw("Quantity and Rate should be greater than 0")		
 
 	def validate_item(self):
 		is_stock, is_hsd, is_pol = frappe.db.get_value("Item", self.pol_type, ["is_stock_item", "is_hsd_item", "is_pol_item"])
@@ -359,7 +400,7 @@ class POLReceive(StockController):
 		if self.hiring_cost_center:
 			cost_center = self.hiring_cost_center
 		elif self.book_type == "Common":
-			cc = get_branch_cc(self.tanker_branch)	
+			cost_center = get_branch_cc(self.tanker_branch)	
 		else:
 			cost_center = get_branch_cc(self.equipment_branch)
 
@@ -385,6 +426,8 @@ class POLReceive(StockController):
 		# frappe.msgprint(self.hiring_branch)
 		if self.hiring_branch:
 			comparing_branch = self.hiring_branch
+		elif self.book_type == "Common":
+			comparing_branch = self.tanker_branch		
 		else:
 			comparing_branch = self.equipment_branch
 
@@ -393,7 +436,10 @@ class POLReceive(StockController):
 			if not ic_account:
 				frappe.throw("Setup Intra-Company Account in Accounts Settings")
 
-			customer_cc = get_branch_cc(comparing_branch)
+			if self.book_type == "Common":
+				customer_cc = get_branch_cc(comparing_branch)
+			else:	
+				customer_cc = get_branch_cc(comparing_branch)
 
 			gl_entries.append(
 				self.get_gl_dict({"account": ic_account,
@@ -603,6 +649,21 @@ class POLReceive(StockController):
 			con1.is_opening = 0
 			con1.own_cost_center = own
 			con1.submit()
+		else:
+			con1 = frappe.new_doc("POL Entry")
+			con1.flags.ignore_permissions = 1	
+			con1.equipment = self.tanker
+			con1.pol_type = self.pol_type
+			con1.branch = self.tanker_branch
+			con1.posting_date = self.posting_date
+			con1.posting_time = self.posting_time
+			con1.tanker_quantity = self.tanker_quantity
+			con1.reference_type = "POL Receive"
+			con1.reference_name = self.name
+			con1.type = "Receive"
+			con1.is_opening = 0
+			con1.own_cost_center = own
+			con1.submit()	
 			
 			if container:
 				con2 = frappe.new_doc("POL Entry")
@@ -619,6 +680,21 @@ class POLReceive(StockController):
 				con2.is_opening = 0
 				con2.own_cost_center = own
 				con2.submit()
+			# else:
+			# 	con2 = frappe.new_doc("POL Entry")
+			# 	con2.flags.ignore_permissions = 1	
+			# 	con2.equipment = self.equipment
+			# 	con2.pol_type = self.pol_type
+			# 	con2.branch = self.equipment_branch
+			# 	con2.posting_date = self.posting_date
+			# 	con2.posting_time = self.posting_time
+			# 	con2.quantity = self.qty
+			# 	con2.reference_type = "POL Receive"
+			# 	con2.reference_name = self.name
+			# 	con2.type = "Issue"
+			# 	con2.is_opening = 0
+			# 	con2.own_cost_center = own
+			# 	con2.submit()	
 
 
 	def delete_pol_entry(self):
@@ -730,63 +806,63 @@ def get_permission_query_conditions(user):
 	)""".format(user=user)
 
 
-@frappe.whitelist()
-def get_equipment_data(equipment_name, all_equipment=0, branch=None):
-    data = []
+# @frappe.whitelist()
+# def get_equipment_datas(equipment_name, all_equipment=0, branch=None):
+#     data = []
     
-    query = """
-        SELECT e.name, e.branch, e.registration_number, e.hsd_type, e.equipment_type
-        FROM `tabEquipment` e
-        JOIN `tabEquipment Type` et ON e.equipment_type = et.name
-    """
+#     query = """
+#         SELECT e.name, e.branch, e.registration_number, e.hsd_type, e.equipment_type
+#         FROM `tabEquipment` e
+#         JOIN `tabEquipment Type` et ON e.equipment_type = et.name
+#     """
 
-    if not all_equipment:
-        query += " WHERE et.is_container = 1"
-    else:
-        query += " WHERE 1=1"
+#     if not all_equipment:
+#         query += " WHERE et.is_container = 1"
+#     else:
+#         query += " WHERE 1=1"
     
-    if branch:
-        query += " AND e.branch = %(branch)s"
-    if equipment_name:
-        query += " AND e.name = %(equipment_name)s"
+#     if branch:
+#         query += " AND e.branch = %(branch)s"
+#     if equipment_name:
+#         query += " AND e.name = %(equipment_name)s"
     
-    query += " ORDER BY e.branch"
+#     query += " ORDER BY e.branch"
     
-    items = frappe.db.sql("""
-        SELECT item_code, item_name, stock_uom 
-        FROM `tabItem`
-        WHERE is_hsd_item = 1 AND disabled = 0
-    """, as_dict=True)
+#     items = frappe.db.sql("""
+#         SELECT item_code, item_name, stock_uom 
+#         FROM `tabItem`
+#         WHERE is_hsd_item = 1 AND disabled = 0
+#     """, as_dict=True)
     
-    equipment_details = frappe.db.sql(query, {
-        'branch': branch,
-        'equipment_name': equipment_name
-    }, as_dict=True)
+#     equipment_details = frappe.db.sql(query, {
+#         'branch': branch,
+#         'equipment_name': equipment_name
+#     }, as_dict=True)
     
-    for eq in equipment_details:
-        for item in items:
-            received = issued = 0
-            if all_equipment:
-                if eq.hsd_type == item.item_code:
-                    received = get_pol_tills("Receive", eq.name, item.item_code)
-                    issued = get_pol_consumed_tills(eq.name,)
-            else:
-                received = get_pol_tills("Stock", eq.name, item.item_code)
-                issued = get_pol_tills("Issue", eq.name, item.item_code)
+#     for eq in equipment_details:
+#         for item in items:
+#             received = issued = 0
+#             if all_equipment:
+#                 if eq.hsd_type == item.item_code:
+#                     received = get_pol_till_tanker("Receive", eq.name, item.item_code)
+#                     issued = get_pol_consumed_till_tanker(eq.name,)
+#             else:
+#                 received = get_pol_till_tanker("Stock", eq.name, item.item_code)
+#                 issued = get_pol_consumed_till_tanker("Issue", eq.name, item.item_code)
 						
             
-            if received or issued:
-                data.append({
-                    'received': received,
-                    'issued': issued,
-                    'balance': flt(received) - flt(issued)
-                })
+#             if received or issued:
+#                 data.append({
+#                     'received': received,
+#                     'issued': issued,
+#                     'balance': flt(received) - flt(issued)
+#                 })
 
-			# if received or issued:
-			# 		row = [received, issued, flt(received) - flt(issued)]
-			# 		data.append(row)	
+# 			# if received or issued:
+# 			# 		row = [received, issued, flt(received) - flt(issued)]
+# 			# 		data.append(row)	
     
-    return data
+#     return data
 
 @frappe.whitelist()
 def get_tanker_data(doctype, txt, searchfield, start, page_len, filters):
@@ -832,10 +908,45 @@ def get_tanker_data(doctype, txt, searchfield, start, page_len, filters):
 
     return tanker_data
 
-@frappe.whitelist()
-def get_tanker_details(tanker, posting_date, pol_type):
-    received_till = get_pol_till("Stock", tanker, posting_date, pol_type)
-    issue_till = get_pol_till("Issue", tanker, posting_date, pol_type)
-    balance = flt(received_till) - flt(issue_till)
-    return {"balance": balance}
+# @frappe.whitelist()
+# def get_tanker_details(tanker, posting_date, pol_type):
+#     received_till = get_pol_till_tanker("Stock", tanker, posting_date, pol_type)
+#     issue_till = get_pol_till_tanker("Issue", tanker, posting_date, pol_type)
+#     balance = flt(received_till) - flt(issue_till)
+#     return {"balance": balance}
 
+
+# @frappe.whitelist()
+# def tanker_balance(pol_receive):
+# 	t, m = frappe.db.get_value("POL Receive", pol_receive, ['tanker_type', 'tanker_number'])
+# 	data = frappe.db.sql("select qty from `tabPOL Receive` where tanker_type = %s and tanker_number = %s", (t, m), as_dict=True)
+# 	if not data:
+# 		frappe.throw("Setup yardstick for " + str(m))
+# 	return data
+
+
+
+@frappe.whitelist()
+def get_balance_details(book_type, tanker=None, equipment=None, posting_date=None, pol_type=None):
+    """
+    Fetch the balance details for tanker or equipment based on the book_type.
+    """
+    if not posting_date:
+        frappe.throw("Posting Date is mandatory.")
+
+    if book_type == "Common" and tanker:
+        # Fetch tanker balances
+        received_till = get_pol_till_tanker("Stock", tanker, posting_date, pol_type)
+        issue_till = get_pol_till_tanker("Issue", tanker, posting_date, pol_type)
+        tanker_balance = flt(received_till) - flt(issue_till)
+        return {"tanker_balance": tanker_balance, "tank_balance": 0}
+
+    elif book_type == "Own" and equipment:
+        # Fetch equipment balances
+        received_till = get_pol_till_tanker("Stock", equipment, posting_date, pol_type)
+        issue_till = get_pol_till_tanker("Issue", equipment, posting_date, pol_type)
+        tank_balance = flt(received_till) - flt(issue_till)
+        return {"tanker_balance": 0, "tank_balance": tank_balance}
+
+    else:
+        frappe.throw("Invalid inputs. Please ensure the correct book_type, tanker, or equipment is provided.")

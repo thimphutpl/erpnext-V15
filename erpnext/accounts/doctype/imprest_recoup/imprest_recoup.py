@@ -35,7 +35,7 @@ class ImprestRecoup(Document):
 		journal_entry: DF.Data | None
 		opening_balance: DF.Currency
 		party: DF.DynamicLink
-		party_type: DF.Literal["", "Employee", "Agency"]
+		party_type: DF.Literal["", "Employee"]
 		posting_date: DF.Date
 		project: DF.Link | None
 		remarks: DF.SmallText | None
