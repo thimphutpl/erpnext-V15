@@ -77,7 +77,7 @@ class ImprestAdvance(Document):
 
 	def check_imprest_amount(self):
 		query = """
-			SELECT imp.imprest_limit, imp.project
+			SELECT imp.imprest_limit
 			FROM `tabBranch Imprest Item` imp
 			WHERE imp.parent = %(branch)s
 				AND imp.imprest_type = %(imprest_type)s
@@ -86,9 +86,9 @@ class ImprestAdvance(Document):
 		query_params = {'branch': self.branch, 'imprest_type': self.imprest_type}
 		project_condition = ''
 
-		if self.project:
-			project_condition = 'AND imp.project = %(project)s'
-			query_params['project'] = self.project
+		# if self.project:
+		# 	project_condition = 'AND imp.project = %(project)s'
+		# 	query_params['project'] = self.project
 
 		query = query.format(project_condition=project_condition)
 		result = frappe.db.sql(query, query_params, as_dict=True)
@@ -97,9 +97,9 @@ class ImprestAdvance(Document):
 			branch_link = frappe.utils.get_link_to_form('Branch', self.branch)
 			frappe.throw('Please assign Imprest Limit in Branch: {} under Imprest Settings Section'.format(branch_link))
 		
-		for d in result:
-			if d.project and not self.project:
-				frappe.throw("This imprest type <b>{}</b> is assigned to a Project but you have not selected a Project".format(self.imprest_type))
+		# for d in result:
+		# 	if d.project and not self.project:
+		# 		frappe.throw("This imprest type <b>{}</b> is assigned to a Project but you have not selected a Project".format(self.imprest_type))
 		
 		imprest_limit = result[0].get('imprest_limit')
 		

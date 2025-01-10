@@ -49,10 +49,11 @@
    "reqd": 1
   },
   {
+   "default": "Employee",
    "fieldname": "party_type",
    "fieldtype": "Select",
    "label": "Party Type",
-   "options": "\nEmployee\nAgency",
+   "options": "\nEmployee",
    "reqd": 1
   },
   {
@@ -212,6 +213,7 @@
   {
    "fieldname": "project",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Project",
    "options": "Project"
   },
@@ -234,7 +236,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-09 17:30:01.835047",
+ "modified": "2025-01-10 12:41:50.417693",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Imprest Advance",
