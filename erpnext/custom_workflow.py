@@ -70,7 +70,7 @@ class CustomWorkflow:
 		
 		if self.doc.doctype in ("Imprest Advance", "Imprest Recoup"):
 			self.employee		= frappe.db.get_value("Employee", self.doc.party, self.field_list)
-			self.reports_to = frappe.db.get_value("Employee", {"name":frappe.db.get_value("Employee", self.doc.employee, "reports_to")}, self.field_list)
+			self.reports_to = frappe.db.get_value("Employee", {"name":frappe.db.get_value("Employee", self.employee, "reports_to")}, self.field_list)
 
 		if self.doc.doctype in ("Budget Reappropiation"):
 			department = frappe.db.get_value("Employee", {"user_id":self.doc.owner},"department")
