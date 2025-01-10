@@ -26,7 +26,6 @@ class UtilityBill(Document):
 		bank_account: DF.Data
 		bank_balance: DF.Currency
 		branch: DF.Link
-		business_activity: DF.Link | None
 		company: DF.Link
 		cost_center: DF.Link
 		expense_account: DF.Link

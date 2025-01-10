@@ -27,7 +27,7 @@ class CustomWorkflow:
 		self.doc_approver	= self.field_map[self.doc.doctype]
 		self.field_list		= ["user_id","employee_name","designation","name"]
 
-		if self.doc.doctype != "Material Request" and self.doc.doctype not in ("Asset Issue Details", "Compile Budget","POL Expense","Vehicle Request", "Repair And Services", "Asset Movement", "Budget Reappropiation", "Employee Advance", "Prepare Audit Plan"):
+		if self.doc.doctype != "Material Request" and self.doc.doctype not in ("Asset Issue Details", "Compile Budget","POL Expense","Vehicle Request", "Repair And Services", "Asset Movement", "Budget Reappropiation", "Employee Advance", "Prepare Audit Plan", "Imprest Advance", "Imprest Recoup"):
 			self.employee		= frappe.db.get_value("Employee", self.doc.employee, self.field_list)
 			self.reports_to = frappe.db.get_value("Employee", {"name":frappe.db.get_value("Employee", self.doc.employee, "reports_to")}, self.field_list)
 			
@@ -68,21 +68,10 @@ class CustomWorkflow:
 			else:
 				self.asset_verifier = frappe.db.get_value("Employee", frappe.db.get_value("Employee", {"designation": "Chief Executive Officer", "status": "Active"},"name"), self.field_list)
 		
-		if self.doc.doctype in ("POL Expense"):
-			department = frappe.db.get_value("Employee", {"user_id":self.doc.owner},"department")
-			section = frappe.db.get_value("Employee", {"user_id":self.doc.owner},"section")
-			if section in ("Chunaikhola Dolomite Mines - SMCL","Samdrup Jongkhar - SMCL"):
-				self.pol_approver = frappe.db.get_value("Employee",{"user_id":frappe.db.get_value(
-					"Department Approver",
-					{"parent": section, "parentfield": "expense_approvers", "idx": 1},
-					"approver",
-				)},self.field_list)
-			else:
-				self.pol_approver = frappe.db.get_value("Employee",{"user_id":frappe.db.get_value(
-					"Department Approver",
-					{"parent": department, "parentfield": "expense_approvers", "idx": 1},
-					"approver",
-				)},self.field_list)
+		if self.doc.doctype in ("Imprest Advance", "Imprest Recoup"):
+			self.employee		= frappe.db.get_value("Employee", self.doc.party, self.field_list)
+			self.reports_to = frappe.db.get_value("Employee", {"name":frappe.db.get_value("Employee", self.doc.employee, "reports_to")}, self.field_list)
+
 		if self.doc.doctype in ("Budget Reappropiation"):
 			department = frappe.db.get_value("Employee", {"user_id":self.doc.owner},"department")
 			section = frappe.db.get_value("Employee", {"user_id":self.doc.owner},"section")

@@ -15,7 +15,6 @@
   "company",
   "posting_date",
   "utility_services",
-  "business_activity",
   "payment_status",
   "tds_account",
   "tds_percent",
@@ -92,14 +91,6 @@
    "label": "Utility Services",
    "options": "Utility Services",
    "reqd": 1
-  },
-  {
-   "default": "Common",
-   "fieldname": "business_activity",
-   "fieldtype": "Link",
-   "hidden": 1,
-   "label": "Business Activity",
-   "options": "Business Activity"
   },
   {
    "fieldname": "payment_status",
@@ -207,7 +198,7 @@
  ],
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-08 17:19:10.447830",
+ "modified": "2025-01-10 14:16:20.165809",
  "modified_by": "Administrator",
  "module": "ePayment",
  "name": "Utility Bill",
