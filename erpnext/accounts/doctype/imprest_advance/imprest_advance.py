@@ -123,7 +123,7 @@ class ImprestAdvance(Document):
 		if cint(self.first_advance) == 1:
 			notify_workflow_states(self)
 		if not self.is_opening:
-			self.balance_amount = flt(self.amount)
+			self.db_set('balance_amount', flt(self.amount))
 			self.post_journal_entry()
 
 	def on_cancel(self):
