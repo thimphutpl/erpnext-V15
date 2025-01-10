@@ -33,7 +33,7 @@ class ImprestAdvance(Document):
 		is_opening: DF.Check
 		journal_entry: DF.Data | None
 		party: DF.DynamicLink
-		party_type: DF.Literal["", "Employee", "Agency"]
+		party_type: DF.Literal["", "Employee"]
 		posting_date: DF.Date
 		project: DF.Link | None
 		remarks: DF.SmallText | None
