@@ -265,14 +265,22 @@ class Item(Document):
 			frappe.throw("Before save Check if the Item is to Maintain Stock or Is Fixed Asset")
 
 	def validate_duplicate(self):
-		data = frappe.db.sql('''
-            select item_name from `tabItem` where name!=%s
-			'''
-		,str(self.name), as_dict=True)
+		if self.is_fixed_asset:
+			data = frappe.db.sql('''
+				select item_name from `tabItem` where name!=%s and asset_category = %s
+				'''
+			,(str(self.name), self.asset_category), as_dict=True)
+		else:
+			data = frappe.db.sql('''
+				select item_name from `tabItem` where name!=%s
+				'''
+			,str(self.name), as_dict=True)
   
 		for d in data:
-			if d['item_name'] == self.item_name:
+			if d['item_name'] == self.item_name and self.is_fixed_asset != 1:
 				frappe.throw("The Item with the same name already exist")
+			if d['item_name'] == self.item_name and self.is_fixed_asset == 1:
+				frappe.throw("The Item with the same name and asset category already exist")
 	def on_update(self):
 		self.update_variants()
 		self.update_item_price()
