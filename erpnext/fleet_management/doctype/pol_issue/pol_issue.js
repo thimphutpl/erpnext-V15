@@ -203,14 +203,17 @@ frappe.ui.form.on("POL Issue", "refresh", function(frm) {
 				filters: {'branch': '%'}
                         }
                 }
-                else {
-                        return {
-                                filters: {
-                                        "is_disabled": 0,
-					"equipment_type": ["not in", ['Skid Tank', 'Barrel']]
-                                }
-                        }
-                }
+                else 
+                return
+            
+                // {
+                //         return {
+                //                 filters: {
+                //                         "is_disabled": 0,
+				// 	"equipment_type": ["not in", ['Skid Tank', 'Barrel']]
+                //                 }
+                //         }
+                // }
 	}
 })
 

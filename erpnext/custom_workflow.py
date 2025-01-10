@@ -1417,7 +1417,7 @@ class NotifyCustomWorkflow:
 			else:
 				template = ""
 
-			if not template:
+			if not template and self.doc.doctype not in ("Imprest Advance"):
 				frappe.msgprint(_("Please set default template for {}.").format(self.doc.doctype))
 				return
 			email_template = frappe.get_doc("Email Template", template)

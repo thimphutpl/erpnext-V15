@@ -6,10 +6,11 @@ import frappe
 from frappe import _
 from frappe.utils import flt, cint,add_days, cstr, flt, getdate, nowdate, rounded, date_diff
 
-##
+# #
 # Both recieved and issued pols can be queried with this
-##
+# #
 # def get_pol_till(purpose, equipment, date, pol_type=None):
+# 	# frappe.throw("123456789")
 # 	if not equipment or not date:
 # 		frappe.throw("Equipment and Till Date are Mandatory")
 # 	total = 0
@@ -24,43 +25,42 @@ from frappe.utils import flt, cint,add_days, cstr, flt, getdate, nowdate, rounde
 # 	return total
 
 def get_pol_till(purpose, equipment, date, pol_type=None, additional_type=None):
+	if not equipment or not date:
+		frappe.throw(_("Equipment and Till Date are Mandatory"))
 
-    if not equipment or not date:
-        frappe.throw(_("Equipment and Till Date are Mandatory"))
+	# frappe.throw("""
+	#     SELECT SUM(qty) AS total 
+	#     FROM `tabPOL Entry` 
+	#     WHERE docstatus = 1 
+	#       AND type = '{}' 
+	#       AND equipment = '{}' 
+	#       AND posting_date <= '{}'
+	# """.format(purpose, equipment, date))
 
-    # frappe.throw("""
-    #     SELECT SUM(qty) AS total 
-    #     FROM `tabPOL Entry` 
-    #     WHERE docstatus = 1 
-    #       AND type = '{}' 
-    #       AND equipment = '{}' 
-    #       AND posting_date <= '{}'
-    # """.format(purpose, equipment, date))
+	total = 0
+	query = """
+		SELECT SUM(qty) AS total 
+		FROM `tabPOL Entry` 
+		WHERE docstatus = 1 
+			AND type = %s 
+			AND equipment = %s 
+			AND posting_date <= %s
+	"""
+	args = [purpose, equipment, date]
 
-    total = 0
-    query = """
-        SELECT SUM(qty) AS total 
-        FROM `tabPOL Entry` 
-        WHERE docstatus = 1 
-          AND type = %s 
-          AND equipment = %s 
-          AND posting_date <= %s
-    """
-    args = [purpose, equipment, date]
+	if pol_type:
+		query += " AND pol_type = %s"
+		args.append(pol_type)
 
-    if pol_type:
-        query += " AND pol_type = %s"
-        args.append(pol_type)
-    
-    if additional_type:
-        query += " AND type = %s"
-        args.append(additional_type)
+	if additional_type:
+		query += " AND type = %s"
+		args.append(additional_type)
 
-    quantity = frappe.db.sql(query, args, as_dict=True)
-    if quantity and quantity[0].total:
-        total = quantity[0].total
+	quantity = frappe.db.sql(query, args, as_dict=True)
+	if quantity and quantity[0].total:
+		total = quantity[0].total
 
-    return total
+	return total
 
 def get_pol_tills(purpose, equipment, date, pol_type=None):
 	if not equipment:
@@ -75,6 +75,47 @@ def get_pol_tills(purpose, equipment, date, pol_type=None):
 	if quantity:
 		total = quantity[0].total
 	return total
+
+# def get_pol_till_tanker(purpose, tanker, date, pol_type=None):
+# 	# frappe.throw("123456789")
+# 	if not tanker or not date:
+# 		frappe.throw("Equipment and Till Date are Mandatory")
+# 	total = 0
+# 	query = "select sum(qty) as total from `tabPOL Entry` where docstatus = 1 and type = \'"+str(purpose)+"\' and equipment = \'" + str(tanker) + "\'"
+# 	if pol_type:
+# 		query += " and pol_type = \'" + str(pol_type) + "\'"
+	
+
+# 	quantity = frappe.db.sql(query, as_dict=True)
+# 	if quantity:
+# 		total = quantity[0].total
+# 	return total
+
+
+# NEW
+def get_pol_till_tanker(purpose, tanker, date, pol_type=None):
+    if not tanker or not date:
+        frappe.throw("Tanker and Date are mandatory fields.")
+
+    total = 0
+    query = """
+        SELECT SUM(qty) AS total
+        FROM `tabPOL Entry`
+        WHERE docstatus = 1
+          AND type = %s
+          AND equipment = %s
+          AND posting_date <= %s
+    """
+    args = [purpose, tanker, date]
+
+    if pol_type:
+        query += " AND pol_type = %s"
+        args.append(pol_type)
+
+    quantity = frappe.db.sql(query, args, as_dict=True)
+    if quantity and quantity[0].total:
+        total = quantity[0].total or 0  # Handle `None` totals gracefully
+    return total
 
 
 ##
@@ -112,7 +153,16 @@ def get_pol_consumed_tills(equipment):
 	if pol:
 		return pol[0].total
 	else:
-		return 0		
+		return 0
+
+def get_pol_consumed_till_tanker(equipment):
+	if not equipment:
+		frappe.throw("Equipment are Mandatory")
+	pol = frappe.db.sql("select sum(consumption) as total from `tabVehicle Logbook` where docstatus = 1 and equipment = %s", (equipment, ), as_dict=True)
+	if pol:
+		return pol[0].total
+	else:
+		return 0			
 
 def get_km_till(equipment, date):
 	if not equipment or not date:

@@ -33,6 +33,12 @@ frappe.query_reports["POL Ledger"] = {
 			"width": "80",
 			"reqd":1
 		},
+		{
+			"fieldname":"tank_balance",
+			"label" : ("Own Tank Balance of All Equipments"),
+			"fieldtype": "Check",
+			"default": 0
+		}
 	],
 	
 	"formatter": function (value, row, column, data, default_formatter) {
@@ -58,5 +64,6 @@ frappe.query_reports["POL Ledger"] = {
 		}
 
 		return value;
-	}	
+	},
+		
 }

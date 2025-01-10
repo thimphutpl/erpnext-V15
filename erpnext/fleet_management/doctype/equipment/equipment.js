@@ -37,6 +37,13 @@ frappe.ui.form.on('Equipment', {
 	},
 	
 	equipment_type:function(frm){
+        const tankerTypes = ['Fuel Tanker', 'Barrel', 'Skid Tank'];
+
+        if (tankerTypes.includes(frm.doc.equipment_type)) {
+            frm.set_df_property('tanker_capacity', 'hidden', 0);
+        } else {
+            frm.set_df_property('tanker_capacity', 'hidden', 1);
+        }
 		frm.set_query('equipment_model', function(doc) {
 			return {
 				filters: {
@@ -47,6 +54,7 @@ frappe.ui.form.on('Equipment', {
 			};
 		});
 	},
+
 	create_equipment_history:function(frm){
 		frappe.call({
 			method:"create_equipment_history",

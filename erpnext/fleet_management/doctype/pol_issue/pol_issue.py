@@ -390,49 +390,49 @@ class POLIssue(StockController):
 		frappe.db.sql("delete from `tabPOL Entry` where reference_name = %s", self.name)
 
 
-# @frappe.whitelist(allow_guest=True)
-# def equipment_query(doctype, txt, searchfield, start, page_len, filters):
-#     if not filters.get('branch'):
-#         frappe.throw(_("Branch is required to fetch the equipment."))
+@frappe.whitelist(allow_guest=True)
+def equipment_query(doctype, txt, searchfield, start, page_len, filters):
+    if not filters.get('branch'):
+        frappe.throw(_("Branch is required to fetch the equipment."))
 
-#     return frappe.db.sql("""
-#         SELECT
-#             e.name,
-#             e.equipment_type,
-#             e.registration_number
-#         FROM `tabEquipment` e
-#         WHERE e.branch = %(branch)s
-#           AND e.is_disabled != 1
-#           AND e.not_cdcl = 0
-#           AND EXISTS (
-#               SELECT 1
-#               FROM `tabEquipment Type` t
-#               WHERE t.name = e.equipment_type
-#                 AND t.is_container = 1
-#           )
-#           AND (
-#               {key} LIKE %(txt)s
-#               OR e.equipment_type LIKE %(txt)s
-#               OR e.registration_number LIKE %(txt)s
-#           )
-#         {mcond}
-#         ORDER BY
-#             IF(LOCATE(%(_txt)s, e.name), LOCATE(%(_txt)s, e.name), 99999),
-#             IF(LOCATE(%(_txt)s, e.equipment_type), LOCATE(%(_txt)s, e.equipment_type), 99999),
-#             IF(LOCATE(%(_txt)s, e.registration_number), LOCATE(%(_txt)s, e.registration_number), 99999),
-#             idx DESC,
-#             e.name, e.equipment_type, e.registration_number
-#         LIMIT %(start)s, %(page_len)s
-#     """.format(
-#         key=searchfield,
-#         mcond=get_match_cond(doctype)
-#     ), {
-#         "txt": f"%{txt}%",
-#         "_txt": txt.replace("%", ""),
-#         "start": start,
-#         "page_len": page_len,
-#         "branch": filters['branch']
-#     })
+    return frappe.db.sql("""
+        SELECT
+            e.name,
+            e.equipment_type,
+            e.registration_number
+        FROM `tabEquipment` e
+        WHERE e.branch = %(branch)s
+          AND e.is_disabled != 1
+          AND e.not_cdcl = 0
+          AND EXISTS (
+              SELECT 1
+              FROM `tabEquipment Type` t
+              WHERE t.name = e.equipment_type
+                AND t.is_container = 1
+          )
+          AND (
+              {key} LIKE %(txt)s
+              OR e.equipment_type LIKE %(txt)s
+              OR e.registration_number LIKE %(txt)s
+          )
+        {mcond}
+        ORDER BY
+            IF(LOCATE(%(_txt)s, e.name), LOCATE(%(_txt)s, e.name), 99999),
+            IF(LOCATE(%(_txt)s, e.equipment_type), LOCATE(%(_txt)s, e.equipment_type), 99999),
+            IF(LOCATE(%(_txt)s, e.registration_number), LOCATE(%(_txt)s, e.registration_number), 99999),
+            idx DESC,
+            e.name, e.equipment_type, e.registration_number
+        LIMIT %(start)s, %(page_len)s
+    """.format(
+        key=searchfield,
+        mcond=get_match_cond(doctype)
+    ), {
+        "txt": f"%{txt}%",
+        "_txt": txt.replace("%", ""),
+        "start": start,
+        "page_len": page_len,
+        "branch": filters['branch']
+    })
 
 
 @frappe.whitelist()
