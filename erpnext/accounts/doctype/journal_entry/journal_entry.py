@@ -237,6 +237,7 @@ class JournalEntry(AccountsController):
 		self.update_booked_depreciation()
 		self.update_reference_document()
 		self.update_project_advance(cancel=self.docstatus == 2)
+		self.link_je_to_imprest(cancel=self.docstatus == 2)
 
 	def on_update_after_submit(self):
 		if hasattr(self, "repost_required"):
@@ -272,6 +273,7 @@ class JournalEntry(AccountsController):
 		self.update_reference_document(cancel=True)
 		check_clearance_date(self.doctype, self.name)
 		self.update_project_advance(cancel=self.docstatus == 2)
+		self.link_je_to_imprest(cancel=self.docstatus == 2)
 
 	def get_title(self):
 		return self.pay_to_recd_from or self.accounts[0].account
@@ -1367,6 +1369,17 @@ class JournalEntry(AccountsController):
 
 			doc.save(ignore_permissions=True)
 	
+	def link_je_to_imprest(self, cancel=False):
+		ref_list = ['Imprest Advance', 'POL Advance']
+		for d in self.accounts:
+			if d.reference_type in ref_list and d.reference_name:
+				doc = frappe.get_doc(d.reference_type, d.reference_name)
+				if cancel:
+					doc.journal_entry = ""
+				else:
+					doc.journal_entry = self.name
+
+				doc.save(ignore_permissions=True)
 			
 @frappe.whitelist()
 def get_default_bank_cash_account(company, account_type=None, mode_of_payment=None, account=None):
