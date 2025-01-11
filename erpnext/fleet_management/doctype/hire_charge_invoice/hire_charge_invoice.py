@@ -9,8 +9,8 @@ from frappe.model.mapper import get_mapped_doc
 from frappe.utils import cstr, flt, fmt_money, formatdate, nowdate, cint, money_in_words
 from erpnext.controllers.accounts_controller import AccountsController
 from erpnext.custom_utils import check_uncancelled_linked_doc, check_future_date, check_budget_available
-from erpnext.fleet_management.maintenance_utils import get_equipment_ba
-from erpnext.accounts.doctype.business_activity.business_activity import get_default_ba
+# from erpnext.fleet_management.maintenance_utils import get_equipment_ba
+# from erpnext.accounts.doctype.business_activity.business_activity import get_default_ba
 from frappe import _
 
 class HireChargeInvoice(AccountsController):

@@ -90,7 +90,7 @@ class BulkAssetDisposal(Document):
 			frappe.db.sql("update `tabAsset` set status = '{}' where name = '{}'".format(a.status, a.asset))		
 
 @frappe.whitelist()
-def sale_asset(branch, business_activity, name, scrap_date, customer, posting_date):
+def sale_asset(branch, name, scrap_date, customer, posting_date):
 	item = frappe.db.sql("""select a.item_code, a.item_name, a.asset, a.uom
 						from `tabBulk Asset Disposal Item` as a, `tabBulk Asset Disposal` as b 
 						where a.parent = b.name 
@@ -101,7 +101,7 @@ def sale_asset(branch, business_activity, name, scrap_date, customer, posting_da
 						""".format(name=name, date=scrap_date),as_dict=1)
 	si = frappe.new_doc("Sales Invoice")
 	si.branch = branch
-	si.business_activity = business_activity
+	# si.business_activity = business_activity
 	si.company = frappe.defaults.get_user_default("company")
 	si.customer = customer
 	si.set_posting_time = 1
@@ -121,7 +121,7 @@ def sale_asset(branch, business_activity, name, scrap_date, customer, posting_da
 			# "serial_no": serial_no,
 			"cost_center": depreciation_cost_center,
 			"qty": 1,
-			"business_activity":business_activity, 
+			# "business_activity":business_activity, 
 			"rate": 0
 		})
 	return si

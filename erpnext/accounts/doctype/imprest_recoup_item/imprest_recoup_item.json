@@ -13,7 +13,6 @@
   "recoup_type",
   "account",
   "amount",
-  "business_activity",
   "reference_details_section",
   "reference_type",
   "column_break_ifhf",
@@ -76,13 +75,6 @@
    "reqd": 1
   },
   {
-   "fieldname": "business_activity",
-   "fieldtype": "Link",
-   "label": "Business Activity",
-   "options": "Business Activity",
-   "reqd": 1
-  },
-  {
    "fieldname": "section_break_zqpf",
    "fieldtype": "Section Break"
   },
@@ -114,7 +106,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-08-08 11:18:34.673380",
+ "modified": "2025-01-11 14:07:32.880631",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Imprest Recoup Item",

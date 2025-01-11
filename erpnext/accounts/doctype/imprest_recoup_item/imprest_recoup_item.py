@@ -15,7 +15,6 @@ class ImprestRecoupItem(Document):
 
 		account: DF.Link
 		amount: DF.Currency
-		business_activity: DF.Link
 		cost_center: DF.Link
 		invoice_date: DF.Date
 		invoice_no: DF.Data

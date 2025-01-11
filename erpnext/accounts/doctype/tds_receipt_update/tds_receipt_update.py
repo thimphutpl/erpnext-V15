@@ -196,7 +196,7 @@ class TDSReceiptUpdate(Document):
 				if not self.branch:
 					frappe.throw("Branch is required")
 				entries = frappe.db.sql("""SELECT posting_date, party_type, party, invoice_type, invoice_no, bill_amount, 
-						tax_account, tds_amount, party_name, tpn, cost_center, business_activity, parent as tds_remittance
+						tax_account, tds_amount, party_name, tpn, cost_center, parent as tds_remittance
 					FROM `tabTDS Remittance Item` t1
 					WHERE t1.posting_date BETWEEN '{from_date}' AND '{to_date}'
 					AND t1.docstatus = 1

@@ -332,12 +332,12 @@
   {
    "fieldname": "tanker_capacity",
    "fieldtype": "Data",
-   "label": "Tanker Capacity"
+   "label": "Tanker Capacity(Barrel/SkidTank/Tanker)"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-01-08 22:10:50.704783",
+ "modified": "2025-01-10 18:54:48.524678",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Equipment",

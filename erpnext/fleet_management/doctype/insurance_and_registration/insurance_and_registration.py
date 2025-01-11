@@ -5,7 +5,7 @@ import frappe
 from frappe import _
 from frappe.model.document import Document
 from frappe.utils import flt, money_in_words
-from erpnext.accounts.doctype.business_activity.business_activity import get_default_ba
+# from erpnext.accounts.doctype.business_activity.business_activity import get_default_ba
 from erpnext.accounts.party import get_party_account
 
 class InsuranceandRegistration(Document):
