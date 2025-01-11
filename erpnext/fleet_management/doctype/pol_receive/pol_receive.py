@@ -124,21 +124,18 @@ class POLReceive(StockController):
 
 		
 
+		""" ++++++++++ Ver 2.0.190509 Begins ++++++++++ """
 		if getdate(self.posting_date) > getdate("2018-03-31") and self.is_opening == "No" or self.is_opening == "":
 			self.update_stock_ledger()
-			""" ++++++++++ Ver 2.0.190509 Begins ++++++++++ """
-			self.make_pol_entry()
 			self.make_gl_entries()
 
 		# Skip GL Entries if is_opening is "Yes"
-		elif self.is_opening == "Yes":
-			self.make_pol_entry()
-			frappe.msgprint(
-				("Skipping GL entries and stock ledger updates since this is an Opening Entry."),
-				alert=True
-			)
-			return
-		self.make_gl_entries()
+		elif self.is_opening == "Yes" and self.book_type == "Common":
+			self.update_stock_ledger()
+		else:
+			pass
+		
+		self.make_pol_entry()
 		""" ++++++++++ Ver 2.0.190509 Ends ++++++++++++ """
 
 		#New code add on 07/01/2025
@@ -155,14 +152,15 @@ class POLReceive(StockController):
 		self.delete_pol_entry()
 
 	def on_cancel(self):
-		if getdate(self.posting_date) > getdate("2018-03-31"):
+		if getdate(self.posting_date) > getdate("2018-03-31") and self.is_opening == "No" or self.is_opening == "Yes" and self.book_type == "Common":
 			self.update_stock_ledger()
 		""" ++++++++++ Ver 2.0.190509 Begins ++++++++++ """
 		# Ver 2.0.190509, Following method commented by SHIV on 2019/05/20 
 		#self.update_general_ledger(1)
 
 		# Ver 2.0.190509, Following method added by SHIV on 2019/05/20
-		self.make_gl_entries_on_cancel()
+		if self.is_opening == "No":
+			self.make_gl_entries_on_cancel()
 		""" ++++++++++ Ver 2.0.190509 Ends ++++++++++++ """
 		self.ignore_linked_doctypes = (
 			"GL Entry",
@@ -177,7 +175,6 @@ class POLReceive(StockController):
 		self.db_set("jv", None)
 
 		# self.cancel_budget_entry() #jai, this should handle at General Ledger process
-		self.delete_pol_entry()
 
 		#New code add on 07/01/2025
 		# if cint(self.is_opening) == 0:
