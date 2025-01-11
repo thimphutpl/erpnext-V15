@@ -71,6 +71,7 @@ class AbstractBill(Document):
 			self.validate_fiscal_year()
 			self.validate_file_index()
 			self.validate_tax_exemption()
+		self.generate_dispatch_number()
 
 	def validate_fiscal_year(self):
 		if not self.fiscal_year:
@@ -80,7 +81,7 @@ class AbstractBill(Document):
 		if not self.mode_of_payment:
 			frappe.throw("Please set mode of payment before submit")
 		self.validate_tax_exemption()
-		self.generate_dispatch_number()
+		# self.generate_dispatch_number()
 
 	def on_submit(self):
 		self.post_journal_entry()
@@ -117,12 +118,19 @@ class AbstractBill(Document):
 				item.tax_exempted = self.check_tax_holiday(item.party_type, item.party, item.bill_date, item.idx)
 
 	def generate_dispatch_number(self):
-		current_count_series = frappe.db.get_value("Company", self.company, "count_series")
-		new_count_series = int(current_count_series) + 1
-		self.dispatch_number = f"{self.file_index}/{self.fiscal_year}/{new_count_series}"
-
-		# Atomically update the count_series in the Company document
-		frappe.db.set_value("Company", self.company, "count_series", new_count_series)
+		if not self.dispatch_number:
+			current_count_series = frappe.db.get_value("Company", self.company, "count_series")
+			new_count_series = int(current_count_series) + 1
+			self.dispatch_number = f"{self.file_index}/{self.fiscal_year}/{new_count_series}"
+			# Atomically update the count_series in the Company document
+			frappe.db.set_value("Company", self.company, "count_series", new_count_series)
+     
+     ## add below only if dispact to be generated after submit...then remove above
+		# current_count_series = frappe.db.get_value("Company", self.company, "count_series")
+		# new_count_series = int(current_count_series) + 1
+		# self.dispatch_number = f"{self.file_index}/{self.fiscal_year}/{new_count_series}"
+		# # Atomically update the count_series in the Company document
+		# frappe.db.set_value("Company", self.company, "count_series", new_count_series)
 
 	def validate_file_index(self):
 		if not self.file_index:
