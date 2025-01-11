@@ -29,7 +29,6 @@ frappe.ui.form.on('Equipment', {
 		frm.set_query('equipment_type', function(doc) {
 			return {
 				filters: {
-					"disabled": 0,
 					"equipment_category": doc.equipment_category
 				}
 			};
@@ -47,7 +46,6 @@ frappe.ui.form.on('Equipment', {
 		frm.set_query('equipment_model', function(doc) {
 			return {
 				filters: {
-					"disabled": 0,
 					"equipment_type": doc.equipment_type
 
 				}
