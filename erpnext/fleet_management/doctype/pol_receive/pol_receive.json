@@ -86,8 +86,7 @@
   "jv",
   "column_break_qnum",
   "amended_froms",
-  "expense_account",
-  "amended_from"
+  "expense_account"
  ],
  "fields": [
   {
@@ -499,16 +498,6 @@
    "search_index": 1
   },
   {
-   "fieldname": "amended_from",
-   "fieldtype": "Link",
-   "label": "Amended From",
-   "no_copy": 1,
-   "options": "POL Receive",
-   "print_hide": 1,
-   "read_only": 1,
-   "search_index": 1
-  },
-  {
    "depends_on": "eval: doc.book_type == 'Own'\neval:doc.is_hsd_item",
    "fieldname": "tank_balance",
    "fieldtype": "Data",
@@ -599,7 +588,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-11 10:21:38.584487",
+ "modified": "2025-01-11 19:52:46.612140",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Receive",

@@ -25,7 +25,23 @@ frappe.ui.form.on('POL Receive', {
         });
 	},
 	
-	
+	setup: function (frm) {
+		frm.set_query("fuelbook", function (doc) {
+			var filterArgs
+			if (!doc.book_type) return
+
+			if (doc.book_type == "Own")
+				filterArgs = [["equipment", "=", doc.equipment]]
+			else if (doc.book_type == "Common") {
+				filterArgs = [["branch", "=", doc.branch],["type", "=", doc.book_type]]
+			}
+
+			return {
+				filters: filterArgs
+			}
+		})
+	},
+
 	refresh: function(frm) {
 		// if (!frm.doc.posting_date) {
         //     frm.set_value("posting_date", frappe.datetime.get_today());
@@ -178,13 +194,13 @@ frappe.ui.form.on('POL Receive', {
 	},
 	equipment:function(frm){
 		
-		frm.set_query("fuelbook",function(){
-			return {
-				filters:{
-					"equipment":frm.doc.equipment
-				}
-			}
-		})
+		// frm.set_query("fuelbook",function(){
+		// 	return {
+		// 		filters:{
+		// 			"equipment":frm.doc.equipment
+		// 		}
+		// 	}
+		// })
 
 		// update_balances(frm);
 		
@@ -240,11 +256,11 @@ frappe.ui.form.on('POL Receive', {
 							let data = response.message;
 	
 							// Process and display the fetched data
-							frappe.msgprint({
-								title: __('Fetched Equipment Data'),
-								message: `<pre>${JSON.stringify(data, null, 4)}</pre>`,
-								indicator: 'green'
-							});
+							// frappe.msgprint({
+							// 	title: __('Fetched Equipment Data'),
+							// 	message: `<pre>${JSON.stringify(data, null, 4)}</pre>`,
+							// 	indicator: 'green'
+							// });
 	
 							// Set tank_balance field with the fetched data
 							if (data.length > 0) {
