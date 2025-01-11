@@ -15,6 +15,7 @@ class POLIssueItems(Document):
 
 		cost_center: DF.Link | None
 		equipment: DF.Link
+		equipment_balance: DF.Data | None
 		equipment_branch: DF.Data | None
 		equipment_category: DF.Link | None
 		equipment_cost_center: DF.Link | None

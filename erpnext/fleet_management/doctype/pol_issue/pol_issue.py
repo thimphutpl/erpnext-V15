@@ -434,6 +434,7 @@ def equipment_query(doctype, txt, searchfield, start, page_len, filters):
         "branch": filters['branch']
     })
 
+# Tanker Balance Query
 
 @frappe.whitelist()
 def get_equipment_data(equipment_name, all_equipment=0, branch=None):
@@ -501,7 +502,7 @@ def get_equipment_data(equipment_name, all_equipment=0, branch=None):
 #     balance = flt(received_till) - flt(issue_till)
 #     return balance
 
-
+# Tanker Balance Query
 @frappe.whitelist()
 def get_tanker_data(doctype, txt, searchfield, start, page_len, filters):
     if not filters.get('branch'):
@@ -544,6 +545,7 @@ def get_tanker_data(doctype, txt, searchfield, start, page_len, filters):
 
     return tanker_data
 
+# Tanker Balance Query
 @frappe.whitelist()
 def get_tanker_details(tanker, posting_date, pol_type):
     received_till = get_pol_till("Stock", tanker, posting_date, pol_type)
@@ -573,3 +575,118 @@ def get_permission_query_conditions(user):
 			and bi.parent = ab.name
 			and bi.branch = `tabPOL Issue`.branch)
 	)""".format(user=user)
+
+
+
+# Equipment Balance
+@frappe.whitelist()
+def get_equipment_datas(equipment_name, all_equipment=0, branch=None, book_type=None):
+    data = []
+    
+    query = """
+        SELECT e.name, e.branch, e.registration_number, e.hsd_type, e.equipment_type
+        FROM `tabEquipment` e
+        JOIN `tabEquipment Type` et ON e.equipment_type = et.name
+    """
+
+    if not all_equipment:
+        query += " WHERE et.is_container = 1"
+    else:
+        query += " WHERE 1=1"
+    
+    if branch:
+        query += " AND e.branch = %(branch)s"
+    if equipment_name:
+        query += " AND e.name = %(equipment_name)s"
+    
+    query += " ORDER BY e.branch"
+    
+    items = frappe.db.sql("""
+        SELECT item_code, item_name, stock_uom 
+        FROM `tabItem`
+        WHERE is_hsd_item = 1 AND disabled = 0
+    """, as_dict=True)
+    
+    equipment_details = frappe.db.sql(query, {
+        'branch': branch,
+        'equipment_name': equipment_name
+    }, as_dict=True)
+    
+    for eq in equipment_details:
+        for item in items:
+            received = issued = 0
+            if book_type == "Common":
+                received = get_pol_tills("Stock", eq.name, item.item_code)
+                issued = get_pol_tills("Issue", eq.name, item.item_code)
+            elif book_type == "Own": 
+                received = get_pol_till("Receive", eq.name, item.item_code)
+                issued = get_pol_consumed_tills(eq.name)
+
+            if received or issued:
+                data.append({
+                    'received': received,
+                    'issued': issued,
+                    'balance': flt(received) - flt(issued)
+                })
+
+    return data
+
+# Equipment Balance
+@frappe.whitelist()
+def get_equipment_datas(equipment_name, all_equipment=0, branch=None):
+	frappe.throw("jjjjjj")
+	data = []
+
+	query = """
+		SELECT e.name, e.branch, e.registration_number, e.hsd_type, e.equipment_type
+		FROM `tabEquipment` e
+		JOIN `tabEquipment Type` et ON e.equipment_type = et.name
+	"""
+
+	if not all_equipment:
+		query += " WHERE et.is_container = 1"
+	else:
+		query += " WHERE 1=1"
+
+	if branch:
+		query += " AND e.branch = %(branch)s"
+	if equipment_name:
+		query += " AND e.name = %(equipment_name)s"
+
+	query += " ORDER BY e.branch"
+
+	items = frappe.db.sql("""
+		SELECT item_code, item_name, stock_uom 
+		FROM `tabItem`
+		WHERE is_hsd_item = 1 AND disabled = 0
+	""", as_dict=True)
+
+	equipment_details = frappe.db.sql(query, {
+		'branch': branch,
+		'equipment_name': equipment_name
+	}, as_dict=True)
+
+	for eq in equipment_details:
+		for item in items:
+			received = issued = 0
+			if all_equipment:
+				if eq.hsd_type == item.item_code:
+					received = get_pol_tills("Receive", eq.name, item.item_code)
+					issued = get_pol_consumed_tills(eq.name,)
+			else:
+				received = get_pol_tills("Stock", eq.name, item.item_code)
+				issued = get_pol_tills("Issue", eq.name, item.item_code)
+						
+			
+			if received or issued:
+				data.append({
+					'received': received,
+					'issued': issued,
+					'balance': flt(received) - flt(issued)
+				})
+
+			# if received or issued:
+			# 		row = [received, issued, flt(received) - flt(issued)]
+			# 		data.append(row)	
+
+	return data

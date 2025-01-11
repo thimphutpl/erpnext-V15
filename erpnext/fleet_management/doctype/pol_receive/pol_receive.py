@@ -54,7 +54,7 @@ class POLReceive(StockController):
 		hiring_cost_center: DF.Data | None
 		hiring_warehouse: DF.Data | None
 		is_hsd_item: DF.Check
-		is_opening: DF.Literal["", "Yes", "No"]
+		is_opening: DF.Literal["", "Yes"]
 		item_name: DF.Data | None
 		items: DF.Table[POLReceiveItem]
 		jv: DF.Link | None
@@ -164,7 +164,12 @@ class POLReceive(StockController):
 		# Ver 2.0.190509, Following method added by SHIV on 2019/05/20
 		self.make_gl_entries_on_cancel()
 		""" ++++++++++ Ver 2.0.190509 Ends ++++++++++++ """
-		
+		self.ignore_linked_doctypes = (
+			"GL Entry",
+			"Stock Ledger Entry",
+			"Repost Item Valuation",
+			"Serial and Batch Bundle",
+		)
 		docstatus = frappe.db.get_value("Journal Entry", self.jv, "docstatus")
 		if docstatus and docstatus != 2:
 			frappe.throw("Cancel the Journal Entry " + str(self.jv) + " and proceed.")
@@ -842,6 +847,59 @@ def get_equipment_data(equipment_name, all_equipment=0, branch=None):
     
     return data
 
+# @frappe.whitelist()
+# def get_equipment_data(equipment_name, all_equipment=0, branch=None, book_type=None):
+#     data = []
+    
+#     query = """
+#         SELECT e.name, e.branch, e.registration_number, e.hsd_type, e.equipment_type
+#         FROM `tabEquipment` e
+#         JOIN `tabEquipment Type` et ON e.equipment_type = et.name
+#     """
+
+#     if not all_equipment:
+#         query += " WHERE et.is_container = 1"
+#     else:
+#         query += " WHERE 1=1"
+    
+#     if branch:
+#         query += " AND e.branch = %(branch)s"
+#     if equipment_name:
+#         query += " AND e.name = %(equipment_name)s"
+    
+#     query += " ORDER BY e.branch"
+    
+#     items = frappe.db.sql("""
+#         SELECT item_code, item_name, stock_uom 
+#         FROM `tabItem`
+#         WHERE is_hsd_item = 1 AND disabled = 0
+#     """, as_dict=True)
+    
+#     equipment_details = frappe.db.sql(query, {
+#         'branch': branch,
+#         'equipment_name': equipment_name
+#     }, as_dict=True)
+    
+#     for eq in equipment_details:
+#         for item in items:
+#             received = issued = 0
+#             if book_type == "Common":
+#                 received = get_pol_tills("Stock", eq.name, item.item_code)
+#                 issued = get_pol_tills("Issue", eq.name, item.item_code)
+#             elif book_type == "Own": 
+#                 received = get_pol_till("Receive", eq.name, item.item_code)
+#                 issued = get_pol_consumed_tills(eq.name)
+
+#             if received or issued:
+#                 data.append({
+#                     'received': received,
+#                     'issued': issued,
+#                     'balance': flt(received) - flt(issued)
+#                 })
+
+#     return data
+
+
 
 
 def get_permission_query_conditions(user):
@@ -987,7 +1045,7 @@ def get_tanker_data(doctype, txt, searchfield, start, page_len, filters):
 # 	return data
 
 
-
+# Tanker Balance
 @frappe.whitelist()
 def get_balance_details(book_type, tanker=None, equipment=None, posting_date=None, pol_type=None):
     """
@@ -996,17 +1054,17 @@ def get_balance_details(book_type, tanker=None, equipment=None, posting_date=Non
     if not posting_date:
         frappe.throw("Posting Date is mandatory.")
 
-    if book_type == "Common" and tanker:
+    if book_type == "Common" and equipment:
         # Fetch tanker balances
-        received_till = get_pol_till_tanker("Stock", tanker, posting_date, pol_type)
-        issue_till = get_pol_till_tanker("Issue", tanker, posting_date, pol_type)
+        received_till = get_pol_till("Stock", equipment, posting_date, pol_type)
+        issue_till = get_pol_till("Issue", equipment, posting_date, pol_type)
         tanker_balance = flt(received_till) - flt(issue_till)
         return {"tanker_balance": tanker_balance, "tank_balance": 0}
 
     elif book_type == "Own" and equipment:
         # Fetch equipment balances
-        received_till = get_pol_till_tanker("Stock", equipment, posting_date, pol_type)
-        issue_till = get_pol_till_tanker("Issue", equipment, posting_date, pol_type)
+        received_till = get_pol_till("Stock", equipment, posting_date, pol_type)
+        issue_till = get_pol_till("Issue", equipment, posting_date, pol_type)
         tank_balance = flt(received_till) - flt(issue_till)
         return {"tanker_balance": 0, "tank_balance": tank_balance}
 

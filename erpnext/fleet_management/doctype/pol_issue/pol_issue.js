@@ -10,6 +10,81 @@ frappe.ui.form.on('POL Issue', {
             };
         });
     },
+    equipment:function(frm){
+        frappe.throw("HGHGJGG")
+        if (frm.doc.equipment) {
+            frappe.throw('Equipment');
+            frappe.call({
+                method: "erpnext.fleet_management.doctype.pol_issue.pol_issue.get_equipment_datas",
+                args: {
+                    equipment_name: frm.doc.equipment,
+                    // to_date: frm.doc.to_date,
+                    all_equipment: frm.doc.all_equipment || 1,
+                    branch: frm.doc.branch
+                },
+                callback: function(response) {
+                    if (response.message) {
+                        let data = response.message;
+
+                        // Process and display the fetched data
+                        frappe.msgprint({
+                            title: __('Fetched Equipment Data'),
+                            message: `<pre>${JSON.stringify(data, null, 4)}</pre>`,
+                            indicator: 'green'
+                        });
+
+                        // Optional: You can set a field value with specific data
+                        if (data.length > 0) {
+                            frm.set_value('equipment_balance', data[0].balance);
+                        }
+                    } else {
+                        frappe.msgprint(__('No data found for the selected equipment.'));
+                    }
+                }
+            });
+        } else {
+            // Clear related fields if no equipment is selected
+            frm.set_value('equipment_balance', '');
+        }
+        // if (frm.doc.book_type === 'Common') {
+		// 	update_balances(frm);
+		// } else if (frm.doc.book_type === 'Own') {
+		// 	if (frm.doc.equipment) {
+		// 		// frappe.throw("Tanker");
+		// 		frappe.call({
+		// 			method: "erpnext.fleet_management.doctype.pol_issue.pol_issue.get_equipment_datas",
+		// 			args: {
+		// 				equipment_name: frm.doc.equipment,
+		// 				to_date: frm.doc.to_date,
+		// 				all_equipment: frm.doc.all_equipment || 0,
+		// 				branch: frm.doc.branch
+		// 			},
+		// 			callback: function (response) {
+		// 				if (response.message) {
+		// 					let data = response.message;
+	
+		// 					// Process and display the fetched data
+		// 					frappe.msgprint({
+		// 						title: __('Fetched Equipment Data'),
+		// 						message: `<pre>${JSON.stringify(data, null, 4)}</pre>`,
+		// 						indicator: 'green'
+		// 					});
+	
+		// 					// Set tank_balance field with the fetched data
+		// 					if (data.length > 0) {
+		// 						frm.set_value('equipment_balance', data[0].balance || 0);
+		// 					}
+		// 				} else {
+		// 					frappe.msgprint(__('No data found for the selected equipment.'));
+		// 				}
+		// 			}
+		// 		});
+		// 	} else {
+		// 		// Clear related fields if no equipment is selected
+		// 		frm.set_value('equipment_balance', '');
+		// 	}
+		// }
+    },
     tank_balance: function (frm) {
         console.log("tanker function triggered");
         // frappe.throw("tanker")
@@ -234,3 +309,29 @@ frappe.ui.form.on("POL Issue Items", "equipment", function(doc, cdt, cdn) {
 	}
 })
 
+
+
+//Equipment Balance
+function update_balances(frm) {
+    if (frm.doc.book_type && (frm.doc.tanker || frm.doc.equipment)) {
+        frappe.call({
+            method: "erpnext.fleet_management.doctype.pol_receive.pol_receive.get_balance_details",
+            args: {
+                book_type: frm.doc.book_type,
+                tanker: frm.doc.tanker,
+                equipment: frm.doc.equipment,
+                posting_date: frm.doc.posting_date,
+                pol_type: frm.doc.pol_type
+            },
+            callback: function(response) {
+                if (response.message) {
+                    frm.set_value('tanker_balance', response.message.tanker_balance);
+                    frm.set_value('tank_balance', response.message.tank_balance);
+                }
+            }
+        });
+    } else {
+        frm.set_value('tanker_balance', 0);
+        frm.set_value('tank_balance', 0);
+    }
+}
