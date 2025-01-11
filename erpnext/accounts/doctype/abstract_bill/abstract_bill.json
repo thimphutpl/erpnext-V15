@@ -26,6 +26,10 @@
   "total_amount",
   "column_break_debx",
   "base_total_amount",
+  "name_and_signature_section",
+  "name1",
+  "column_break_njra",
+  "designation",
   "approver_details_section",
   "approver",
   "column_break_faxx",
@@ -267,12 +271,31 @@
    "label": "Dispatch Number",
    "no_copy": 1,
    "read_only": 1
+  },
+  {
+   "fieldname": "name_and_signature_section",
+   "fieldtype": "Section Break",
+   "label": "Name and Signature"
+  },
+  {
+   "fieldname": "name1",
+   "fieldtype": "Data",
+   "label": "Name"
+  },
+  {
+   "fieldname": "column_break_njra",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "designation",
+   "fieldtype": "Data",
+   "label": "Designation"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-11 11:19:33.857241",
+ "modified": "2025-01-11 11:42:50.674934",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Abstract Bill",
