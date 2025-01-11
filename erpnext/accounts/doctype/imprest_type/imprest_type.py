@@ -11,12 +11,9 @@ class ImprestType(Document):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
-		from erpnext.accounts.doctype.imprest_type_account.imprest_type_account import ImprestTypeAccount
 		from frappe.types import DF
 
-		accounts: DF.Table[ImprestTypeAccount]
 		description: DF.SmallText | None
-		imprest_max_limit: DF.Currency
 		type: DF.Data
 	# end: auto-generated types
 	pass

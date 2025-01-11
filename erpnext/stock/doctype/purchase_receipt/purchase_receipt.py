@@ -108,6 +108,7 @@ class PurchaseReceipt(BuyingController):
 		rounding_adjustment: DF.Currency
 		schedule_date: DF.Date | None
 		select_print_heading: DF.Link | None
+		set_posting_time: DF.Check
 		set_warehouse: DF.Link | None
 		shipping_address: DF.Link | None
 		shipping_address_display: DF.SmallText | None

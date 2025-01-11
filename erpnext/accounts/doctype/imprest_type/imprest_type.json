@@ -8,9 +8,6 @@
  "engine": "InnoDB",
  "field_order": [
   "type",
-  "imprest_max_limit",
-  "accounts_section",
-  "accounts",
   "description"
  ],
  "fields": [
@@ -26,27 +23,11 @@
    "fieldname": "description",
    "fieldtype": "Small Text",
    "label": "Description"
-  },
-  {
-   "fieldname": "accounts",
-   "fieldtype": "Table",
-   "label": "Accounts",
-   "options": "Imprest Type Account"
-  },
-  {
-   "fieldname": "imprest_max_limit",
-   "fieldtype": "Currency",
-   "label": "Imprest Max Limit"
-  },
-  {
-   "fieldname": "accounts_section",
-   "fieldtype": "Section Break",
-   "label": "Accounts "
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-07-26 12:25:13.660722",
+ "modified": "2025-01-11 12:54:16.764581",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Imprest Type",

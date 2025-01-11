@@ -24,7 +24,6 @@
   "section_break_001",
   "get_imprest_advance",
   "imprest_advance_list",
-  "total_allocated_amount",
   "section_break_003",
   "items",
   "section_break_13",
@@ -262,12 +261,6 @@
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "total_allocated_amount",
-   "fieldtype": "Currency",
-   "label": "Total Allocated Amount",
-   "read_only": 1
-  },
-  {
    "fieldname": "project",
    "fieldtype": "Link",
    "hidden": 1,
@@ -278,7 +271,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-10 15:24:07.465044",
+ "modified": "2025-01-11 12:57:17.969252",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Imprest Recoup",

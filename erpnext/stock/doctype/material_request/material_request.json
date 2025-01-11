@@ -34,7 +34,6 @@
   "column_break5",
   "items_section",
   "items",
-  "repair_and_services",
   "terms_and_conditions_section",
   "tc_name",
   "terms",
@@ -357,12 +356,6 @@
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "repair_and_services",
-   "fieldtype": "Data",
-   "hidden": 1,
-   "label": "Repair and Services"
-  },
-  {
    "fieldname": "column_break_ivqt",
    "fieldtype": "Column Break"
   },
@@ -461,7 +454,7 @@
  "idx": 70,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-07 13:02:58.549739",
+ "modified": "2025-01-10 20:00:51.736009",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Material Request",

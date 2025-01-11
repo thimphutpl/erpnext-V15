@@ -54,7 +54,6 @@ class MaterialRequest(BuyingController):
 		naming_series: DF.Literal["", "Consumables", "Fixed Asset", "Sales Product", "Spareparts", "Services Miscellaneous", "Services Works", "Labour Contract", "REORDER", "MAT-MR-.YYYY.-"]
 		per_ordered: DF.Percent
 		per_received: DF.Percent
-		repair_and_services: DF.Data | None
 		schedule_date: DF.Date | None
 		select_print_heading: DF.Link | None
 		set_from_warehouse: DF.Link | None

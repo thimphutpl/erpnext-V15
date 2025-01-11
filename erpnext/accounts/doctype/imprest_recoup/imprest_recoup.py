@@ -40,7 +40,6 @@ class ImprestRecoup(Document):
 		project: DF.Link | None
 		remarks: DF.SmallText | None
 		title: DF.Data
-		total_allocated_amount: DF.Currency
 		total_amount: DF.Currency
 	# end: auto-generated types
 
@@ -76,7 +75,7 @@ class ImprestRecoup(Document):
 		notify_workflow_states(self)
 		self.update_advance()
 		self.post_journal_entry()
-		if self.final == "No":
+		if self.final_settlement == "No":
 			self.create_auto_imprest_advance()
 		else:
 			self.post_final_claim_je()	
@@ -247,13 +246,13 @@ class ImprestRecoup(Document):
 			if cancel == 1:
 				doc.balance_amount += allocated_amount
 				doc.adjusted_amount -= allocated_amount
-				if self.final == "Yes":
+				if self.final_settlement == "Yes":
 					doc.balance_amount += d.balance_amount
 					doc.adjusted_amount -= d.balance_amount
 			else:
 				doc.balance_amount -= allocated_amount
 				doc.adjusted_amount += allocated_amount
-				if self.final == "Yes":
+				if self.final_settlement == "Yes":
 					doc.balance_amount -= d.balance_amount
 					doc.adjusted_amount += d.balance_amount
 			
