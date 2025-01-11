@@ -32,7 +32,7 @@ class POLReceive(StockController):
 		from erpnext.fleet_management.doctype.pol_receive_item.pol_receive_item import POLReceiveItem
 		from frappe.types import DF
 
-		amended_froms: DF.Link | None
+		amended_from: DF.Link | None
 		book_type: DF.Literal["", "Own", "Common"]
 		branch: DF.Link
 		company: DF.Link
