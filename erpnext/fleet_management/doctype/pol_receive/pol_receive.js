@@ -136,7 +136,7 @@ frappe.ui.form.on('POL Receive', {
             frm.set_query('equipment', function() {
                 return {
                     filters: {
-                        equipment_type: ['in', ['Fuel Tanker', 'Barrel', 'Skid Tank', 'Trailer']],
+                        equipment_type: ['in', ['Fuel Tanker', 'Barrel', 'Skid Tank', 'Trailer', 'Pick Up Truck']],
 						branch: frm.doc.branch
                     }
                 };

@@ -13,9 +13,10 @@ frappe.ui.form.on('Imprest Recoup', {
 
 		frm.set_query('account', 'items', function() {
 			return {
-				filters: {
-					"is_group": 0,
-				}
+				filters: [
+					["is_group", "=", 0],
+					["root_type", "!=", "Asset"]
+				]
 			};
 		});
 	},
