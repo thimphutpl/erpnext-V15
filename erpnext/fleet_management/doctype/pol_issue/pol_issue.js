@@ -218,7 +218,7 @@ frappe.ui.form.on('POL Issue', {
 			},
 			callback: function(r) {
 				cur_frm.set_value("cost_center", r.message.cc)
-				cur_frm.set_value("warehouse", r.message.wh)
+				// cur_frm.set_value("warehouse", r.message.wh)
 				cur_frm.refresh_fields()
 			}
 		})

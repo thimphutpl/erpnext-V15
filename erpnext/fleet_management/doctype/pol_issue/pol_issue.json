@@ -29,9 +29,7 @@
   "section_break_5",
   "remarks",
   "column_break_4",
-  "amended_from",
-  "amended_froms",
-  "amended_fromss"
+  "amended_from"
  ],
  "fields": [
   {
@@ -179,28 +177,16 @@
    "options": "POL Issue"
   },
   {
-   "fieldname": "amended_froms",
-   "fieldtype": "Link",
-   "label": "Amended From",
-   "options": "POL Issue"
-  },
-  {
    "fieldname": "tank_balance",
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Tanker Balance"
-  },
-  {
-   "fieldname": "amended_fromss",
-   "fieldtype": "Link",
-   "label": "Amended From",
-   "options": "POL Issue"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-12-31 11:29:38.002822",
+ "modified": "2025-01-11 18:56:48.814828",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Issue",

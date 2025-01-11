@@ -33,7 +33,6 @@ class POLIssue(StockController):
 		from frappe.types import DF
 
 		amended_from: DF.Link | None
-		amended_froms: DF.Link | None
 		branch: DF.Link
 		company: DF.Link
 		cost_center: DF.Link | None
@@ -42,7 +41,7 @@ class POLIssue(StockController):
 		items: DF.Table[POLIssueItems]
 		pol_type: DF.Link
 		posting_date: DF.Date
-		posting_time: DF.Time
+		posting_time: DF.Time | None
 		purpose: DF.Literal["", "Issue", "Transfer"]
 		remarks: DF.SmallText | None
 		stock_uom: DF.ReadOnly | None
