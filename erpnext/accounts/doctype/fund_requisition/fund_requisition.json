@@ -6,7 +6,6 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "amended_from",
   "section_break_1",
   "issuing_branch",
   "column_break_2",
@@ -25,7 +24,8 @@
   "items",
   "reference",
   "column_break_18",
-  "remarks"
+  "remarks",
+  "amended_from"
  ],
  "fields": [
   {
@@ -146,21 +146,12 @@
    "fieldname": "remarks",
    "fieldtype": "Long Text",
    "label": "REMARKS"
-  },
-  {
-   "fieldname": "amended_from",
-   "fieldtype": "Link",
-   "label": "Amended From",
-   "no_copy": 1,
-   "options": "Fund Requisition",
-   "print_hide": 1,
-   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-03 17:04:19.959641",
+ "modified": "2025-01-12 22:03:08.836538",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Fund Requisition",
