@@ -29,9 +29,11 @@
   "section_break_15",
   "equipment_number",
   "equipment_category",
+  "tank_capacity",
   "column_break_vjsn",
   "equipment_branch",
   "equipment_warehouse",
+  "tanker_capacity",
   "section_break_qdbd",
   "tanker",
   "column_break_akfa",
@@ -583,12 +585,26 @@
    "print_hide": 1,
    "read_only": 1,
    "search_index": 1
+  },
+  {
+   "depends_on": "eval:doc.book_type == \"Own\"",
+   "fetch_from": "equipment.tank_capacity",
+   "fieldname": "tank_capacity",
+   "fieldtype": "Read Only",
+   "label": "Tank Capacity"
+  },
+  {
+   "depends_on": "eval:doc.book_type == \"Common\"",
+   "fetch_from": "equipment.tanker_capacity",
+   "fieldname": "tanker_capacity",
+   "fieldtype": "Read Only",
+   "label": "Tanker Capacity(Fuel Tanker/Skid Tank/Barrel)"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-11 20:15:49.887317",
+ "modified": "2025-01-12 21:31:13.759422",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Receive",

@@ -22,8 +22,9 @@
   "column_break_10",
   "tanker",
   "tank_balance",
-  "total_quantity",
   "is_hsd_item",
+  "tanker_capacity",
+  "total_quantity",
   "section_break_3",
   "items",
   "section_break_5",
@@ -144,7 +145,7 @@
   {
    "fieldname": "total_quantity",
    "fieldtype": "Float",
-   "label": "Total Quantity",
+   "label": "Total Issue Quantity",
    "read_only": 1
   },
   {
@@ -165,6 +166,7 @@
    "fieldtype": "Section Break"
   },
   {
+   "description": "Link",
    "fieldname": "amended_from",
    "fieldtype": "Link",
    "label": "Amended From",
@@ -175,12 +177,18 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Tanker Balance"
+  },
+  {
+   "fetch_from": "tanker.tanker_capacity",
+   "fieldname": "tanker_capacity",
+   "fieldtype": "Read Only",
+   "label": "Tanker Capacity"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-11 19:08:04.855682",
+ "modified": "2025-01-12 21:47:05.878969",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Issue",

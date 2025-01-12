@@ -47,6 +47,7 @@ class POLIssue(StockController):
 		stock_uom: DF.ReadOnly | None
 		tank_balance: DF.Data | None
 		tanker: DF.Link | None
+		tanker_capacity: DF.ReadOnly | None
 		total_quantity: DF.Float
 		warehouse: DF.Link
 	# end: auto-generated types
@@ -59,6 +60,13 @@ class POLIssue(StockController):
 		if flt(self.total_quantity) > flt(balance):
 			frappe.throw("Not enough balance in tanker to issue. The balance is " + str(balance))
 
+		# Ensure tank balance does not exceed tank capacity
+		if round(self.tank_balance) < round(self.total_quantity):
+			frappe.throw(
+                ("Cannot issue quantity ({}) more than the tanker quantity balance ({}).").format(
+                    self.total_quantity, self.tank_balance
+                )
+            )
 
 	def validate(self):
 		check_future_date(self.posting_date)
@@ -577,11 +585,134 @@ def get_permission_query_conditions(user):
 
 
 
-# Equipment Balance
-@frappe.whitelist()
-def get_equipment_datas(equipment_name, all_equipment=0, branch=None, book_type=None):
-    data = []
+# # Equipment Balance
+# @frappe.whitelist()
+# def get_equipment_datas(equipment_name, all_equipment=0, branch=None, book_type=None):
+#     data = []
     
+#     query = """
+#         SELECT e.name, e.branch, e.registration_number, e.hsd_type, e.equipment_type
+#         FROM `tabEquipment` e
+#         JOIN `tabEquipment Type` et ON e.equipment_type = et.name
+#     """
+
+#     if not all_equipment:
+#         query += " WHERE et.is_container = 1"
+#     else:
+#         query += " WHERE 1=1"
+    
+#     if branch:
+#         query += " AND e.branch = %(branch)s"
+#     if equipment_name:
+#         query += " AND e.name = %(equipment_name)s"
+    
+#     query += " ORDER BY e.branch"
+    
+#     items = frappe.db.sql("""
+#         SELECT item_code, item_name, stock_uom 
+#         FROM `tabItem`
+#         WHERE is_hsd_item = 1 AND disabled = 0
+#     """, as_dict=True)
+    
+#     equipment_details = frappe.db.sql(query, {
+#         'branch': branch,
+#         'equipment_name': equipment_name
+#     }, as_dict=True)
+    
+#     for eq in equipment_details:
+#         for item in items:
+#             received = issued = 0
+#             if book_type == "Common":
+#                 received = get_pol_tills("Stock", eq.name, item.item_code)
+#                 issued = get_pol_tills("Issue", eq.name, item.item_code)
+#             elif book_type == "Own": 
+#                 received = get_pol_till("Receive", eq.name, item.item_code)
+#                 issued = get_pol_consumed_tills(eq.name)
+
+#             if received or issued:
+#                 data.append({
+#                     'received': received,
+#                     'issued': issued,
+#                     'balance': flt(received) - flt(issued)
+#                 })
+
+#     return data
+
+# # Equipment Balance
+# @frappe.whitelist()
+# def get_equipment_datas(equipment_name, all_equipment=0, branch=None):
+# 	frappe.throw("jjjjjj")
+# 	data = []
+
+# 	query = """
+# 		SELECT e.name, e.branch, e.registration_number, e.hsd_type, e.equipment_type
+# 		FROM `tabEquipment` e
+# 		JOIN `tabEquipment Type` et ON e.equipment_type = et.name
+# 	"""
+
+# 	if not all_equipment:
+# 		query += " WHERE et.is_container = 1"
+# 	else:
+# 		query += " WHERE 1=1"
+
+# 	if branch:
+# 		query += " AND e.branch = %(branch)s"
+# 	if equipment_name:
+# 		query += " AND e.name = %(equipment_name)s"
+
+# 	query += " ORDER BY e.branch"
+
+# 	items = frappe.db.sql("""
+# 		SELECT item_code, item_name, stock_uom 
+# 		FROM `tabItem`
+# 		WHERE is_hsd_item = 1 AND disabled = 0
+# 	""", as_dict=True)
+
+# 	equipment_details = frappe.db.sql(query, {
+# 		'branch': branch,
+# 		'equipment_name': equipment_name
+# 	}, as_dict=True)
+
+# 	for eq in equipment_details:
+# 		for item in items:
+# 			received = issued = 0
+# 			if all_equipment:
+# 				if eq.hsd_type == item.item_code:
+# 					received = get_pol_tills("Receive", eq.name, item.item_code)
+# 					issued = get_pol_consumed_tills(eq.name,)
+# 			else:
+# 				received = get_pol_tills("Stock", eq.name, item.item_code)
+# 				issued = get_pol_tills("Issue", eq.name, item.item_code)
+						
+			
+# 			if received or issued:
+# 				data.append({
+# 					'received': received,
+# 					'issued': issued,
+# 					'balance': flt(received) - flt(issued)
+# 				})
+
+# 			# if received or issued:
+# 			# 		row = [received, issued, flt(received) - flt(issued)]
+# 			# 		data.append(row)	
+
+# 	return data
+
+
+
+
+
+
+
+@frappe.whitelist()
+def get_equipment_datas(equipment_name, all_equipment=0, branch=None):
+    """
+    Fetch equipment balance details based on the provided parameters.
+    """
+    frappe.throw("Fetching Equipment Data")
+    data = []
+
+    # Query to fetch equipment details
     query = """
         SELECT e.name, e.branch, e.registration_number, e.hsd_type, e.equipment_type
         FROM `tabEquipment` e
@@ -592,35 +723,38 @@ def get_equipment_datas(equipment_name, all_equipment=0, branch=None, book_type=
         query += " WHERE et.is_container = 1"
     else:
         query += " WHERE 1=1"
-    
+
     if branch:
         query += " AND e.branch = %(branch)s"
     if equipment_name:
         query += " AND e.name = %(equipment_name)s"
-    
+
     query += " ORDER BY e.branch"
-    
+
+    # Query to fetch items
     items = frappe.db.sql("""
         SELECT item_code, item_name, stock_uom 
         FROM `tabItem`
         WHERE is_hsd_item = 1 AND disabled = 0
     """, as_dict=True)
-    
+
     equipment_details = frappe.db.sql(query, {
         'branch': branch,
         'equipment_name': equipment_name
     }, as_dict=True)
-    
+
     for eq in equipment_details:
         for item in items:
             received = issued = 0
-            if book_type == "Common":
+            if all_equipment:
+                if eq.hsd_type == item.item_code:
+                    received = get_pol_tills("Receive", eq.name, item.item_code)
+                    issued = get_pol_consumed_tills(eq.name)
+            else:
                 received = get_pol_tills("Stock", eq.name, item.item_code)
                 issued = get_pol_tills("Issue", eq.name, item.item_code)
-            elif book_type == "Own": 
-                received = get_pol_till("Receive", eq.name, item.item_code)
-                issued = get_pol_consumed_tills(eq.name)
 
+            # Append balance details
             if received or issued:
                 data.append({
                     'received': received,
@@ -630,62 +764,20 @@ def get_equipment_datas(equipment_name, all_equipment=0, branch=None, book_type=
 
     return data
 
-# Equipment Balance
-@frappe.whitelist()
-def get_equipment_datas(equipment_name, all_equipment=0, branch=None):
-	frappe.throw("jjjjjj")
-	data = []
+def get_pol_tills(transaction_type, equipment_name, item_code=None):
+    """
+    Fetch received or issued data based on transaction type.
+    """
+    if transaction_type == "Receive":
+        # Example query for received data
+        return frappe.db.get_value("Receive Doctype", {
+            "equipment_name": equipment_name,
+            "item_code": item_code
+        }, "sum(quantity)")
 
-	query = """
-		SELECT e.name, e.branch, e.registration_number, e.hsd_type, e.equipment_type
-		FROM `tabEquipment` e
-		JOIN `tabEquipment Type` et ON e.equipment_type = et.name
-	"""
-
-	if not all_equipment:
-		query += " WHERE et.is_container = 1"
-	else:
-		query += " WHERE 1=1"
-
-	if branch:
-		query += " AND e.branch = %(branch)s"
-	if equipment_name:
-		query += " AND e.name = %(equipment_name)s"
-
-	query += " ORDER BY e.branch"
-
-	items = frappe.db.sql("""
-		SELECT item_code, item_name, stock_uom 
-		FROM `tabItem`
-		WHERE is_hsd_item = 1 AND disabled = 0
-	""", as_dict=True)
-
-	equipment_details = frappe.db.sql(query, {
-		'branch': branch,
-		'equipment_name': equipment_name
-	}, as_dict=True)
-
-	for eq in equipment_details:
-		for item in items:
-			received = issued = 0
-			if all_equipment:
-				if eq.hsd_type == item.item_code:
-					received = get_pol_tills("Receive", eq.name, item.item_code)
-					issued = get_pol_consumed_tills(eq.name,)
-			else:
-				received = get_pol_tills("Stock", eq.name, item.item_code)
-				issued = get_pol_tills("Issue", eq.name, item.item_code)
-						
-			
-			if received or issued:
-				data.append({
-					'received': received,
-					'issued': issued,
-					'balance': flt(received) - flt(issued)
-				})
-
-			# if received or issued:
-			# 		row = [received, issued, flt(received) - flt(issued)]
-			# 		data.append(row)	
-
-	return data
+    elif transaction_type == "Issue":
+        # Example query for issued data
+        return frappe.db.get_value("Issue Doctype", {
+            "equipment_name": equipment_name,
+            "item_code": item_code
+        }, "sum(quantity)")

@@ -73,10 +73,12 @@ class POLReceive(StockController):
 		stock_uom: DF.Link | None
 		supplier: DF.Link
 		tank_balance: DF.Data | None
+		tank_capacity: DF.ReadOnly | None
 		tank_warehouse: DF.Link | None
 		tanker: DF.Link | None
 		tanker_balance: DF.Data | None
 		tanker_branch: DF.ReadOnly | None
+		tanker_capacity: DF.ReadOnly | None
 		tanker_category: DF.ReadOnly | None
 		tanker_number: DF.Data | None
 		tanker_quantity: DF.Float
@@ -84,6 +86,23 @@ class POLReceive(StockController):
 		total_amount: DF.Currency
 		warehouse: DF.Link
 	# end: auto-generated types
+	def before_save(self):
+        # Ensure tank balance does not exceed tank capacity
+		if self.book_type == "Own" and round(self.tank_capacity) < round(self.tank_balance + self.qty):
+			frappe.throw(
+                ("Tank capacity ({}) should be greater than or equal to sum of tank balance and quantity ({}).").format(
+                    self.tank_capacity, round(self.tank_balance + self.qty)
+                )
+            )
+
+		# Ensure tank balance does not exceed tank capacity
+		if self.book_type == "Common" and round(self.tanker_capacity) < round(self.tanker_balance + qty):
+			frappe.throw(
+                ("Tanker capacity ({}) should be greater than or equal to sum of tanker balance and quantity ({}).").format(
+                    self.tanker_capacity, round(self.tanker_balance + self.qty)
+                )
+            )	
+			
 	def validate(self):
 		check_future_date(self.posting_date)
 		# self.validate_dc()
