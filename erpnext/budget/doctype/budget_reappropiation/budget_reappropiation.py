@@ -35,14 +35,18 @@ class BudgetReappropiation(Document):
 		total_reappropiation_amount: DF.Currency
 	# end: auto-generated types
 	def validate(self):
+		validate_workflow_states(self)
 		self.validate_budget()
 		self.budget_check()
-		# validate_workflow_states(self)
+		if self.workflow_state != "Submitted":
+			notify_workflow_states(self)
 	def on_submit(self):
+		notify_workflow_states(self)
 		self.budget_appropriate(cancel=False)
 
 	def on_cancel(self):
 		self.budget_appropriate(cancel=True)
+		notify_workflow_states(self)
 	
 	#Added by Thukten on 13th Sept, 2023
 	def validate_budget(self):
@@ -432,7 +436,7 @@ def get_permission_query_conditions(user):
 	# 	return
 	# if "Budget Manager" in user_roles or "GM" in user_roles or "CEO" in user_roles:
 	# 	return
-	if any(role in user_roles for role in {"Administrator", "Budget Manager", "CEO", "GM"}):
+	if any(role in user_roles for role in {"Administrator", "Budget Manager", "CEO"}):
 		return
 
 	return """(

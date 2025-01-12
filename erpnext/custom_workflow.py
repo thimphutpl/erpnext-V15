@@ -27,7 +27,7 @@ class CustomWorkflow:
 		self.doc_approver	= self.field_map[self.doc.doctype]
 		self.field_list		= ["user_id","employee_name","designation","name"]
 
-		if self.doc.doctype != "Material Request" and self.doc.doctype not in ("Asset Issue Details", "Compile Budget","POL Expense","Vehicle Request", "Repair And Services", "Asset Movement", "Budget Reappropiation", "Employee Advance", "Prepare Audit Plan", "Imprest Advance", "Imprest Recoup"):
+		if self.doc.doctype != "Material Request" and self.doc.doctype not in ("Asset Issue Details", "Compile Budget","POL Expense","Vehicle Request", "Repair And Services", "Asset Movement", "Budget Reappropiation", "Supplementary Budget", "Employee Advance", "Prepare Audit Plan", "Imprest Advance", "Imprest Recoup"):
 			self.employee		= frappe.db.get_value("Employee", self.doc.employee, self.field_list)
 			self.reports_to = frappe.db.get_value("Employee", {"name":frappe.db.get_value("Employee", self.doc.employee, "reports_to")}, self.field_list)
 			
@@ -72,28 +72,32 @@ class CustomWorkflow:
 			self.employee		= frappe.db.get_value("Employee", self.doc.party, self.field_list)
 			self.reports_to = frappe.db.get_value("Employee", {"name":frappe.db.get_value("Employee", self.employee, "reports_to")}, self.field_list)
 
-		if self.doc.doctype in ("Budget Reappropiation"):
-			department = frappe.db.get_value("Employee", {"user_id":self.doc.owner},"department")
-			section = frappe.db.get_value("Employee", {"user_id":self.doc.owner},"section")
+		if self.doc.doctype in ("Budget Reappropiation", "Supplementary Budget"):
+			self.employee = frappe.db.get_value("Employee", {"user_id":self.doc.owner}, self.field_list)
+			self.branch_approver = frappe.db.get_value("Employee",{'user_id': frappe.db.get_value("Approver Item", {"cost_center": self.doc.from_cost_center if self.doc.doctype == "Budget Reappropiation" else self.doc.cost_center}, "approver")},self.field_list)
+			self.reports_to	= frappe.db.get_value("Employee", frappe.db.get_value("Employee", {'user_id':self.doc.owner}, "reports_to"), self.field_list)
+
+			# department = frappe.db.get_value("Employee", {"user_id":self.doc.owner},"department")
+			# section = frappe.db.get_value("Employee", {"user_id":self.doc.owner},"section")
 			self.ceo= frappe.db.get_value("Employee", frappe.db.get_value("Employee", {"designation": "Chief Executive Officer", "status": "Active"},"name"), self.field_list)
-			if section in ("Chunaikhola Dolomite Mines - SMCL","Samdrup Jongkhar - SMCL"):
-				self.budget_reappropiation_approver = frappe.db.get_value("Employee",{"user_id":frappe.db.get_value(
-					"Department Approver",
-					{"parent": section, "parentfield": "expense_approvers", "idx": 1},
-					"approver",
-				)},self.field_list)
-			else:
-				self.budget_reappropiation_approver = frappe.db.get_value("Employee",{"user_id":frappe.db.get_value(
-					"Department Approver",
-					{"parent": department, "parentfield": "expense_approvers", "idx": 1},
-					"approver",
-				)},self.field_list)
-			if not self.budget_reappropiation_approver:
-				frappe.throw("No employee found for user id(expense approver) {}".format(frappe.db.get_value(
-					"Department Approver",
-					{"parent": department, "parentfield": "expense_approvers", "idx": 1},
-					"approver",
-				)))
+			# if section in ("Chunaikhola Dolomite Mines - SMCL","Samdrup Jongkhar - SMCL"):
+			# 	self.budget_reappropiation_approver = frappe.db.get_value("Employee",{"user_id":frappe.db.get_value(
+			# 		"Department Approver",
+			# 		{"parent": section, "parentfield": "expense_approvers", "idx": 1},
+			# 		"approver",
+			# 	)},self.field_list)
+			# else:
+			# 	self.budget_reappropiation_approver = frappe.db.get_value("Employee",{"user_id":frappe.db.get_value(
+			# 		"Department Approver",
+			# 		{"parent": department, "parentfield": "expense_approvers", "idx": 1},
+			# 		"approver",
+			# 	)},self.field_list)
+			# if not self.budget_reappropiation_approver:
+			# 	frappe.throw("No employee found for user id(expense approver) {}".format(frappe.db.get_value(
+			# 		"Department Approver",
+			# 		{"parent": department, "parentfield": "expense_approvers", "idx": 1},
+			# 		"approver",
+			# 	)))
 		if self.doc.doctype == "Employee Advance":
 			if self.doc.advance_type != "Imprest Advance":
 				self.hr_approver	= frappe.db.get_value("Employee", frappe.db.get_single_value("HR Settings", "hr_approver"), self.field_list)
@@ -405,13 +409,13 @@ class CustomWorkflow:
 			vars(self.doc)[self.doc_approver[1]] = officiating[1] if officiating else self.pms_appealer[1]
 			vars(self.doc)[self.doc_approver[2]] = officiating[2] if officiating else self.pms_appealer[2]
 		
-		elif approver_type == "Budget Reappropiation":
-			officiating = get_officiating_employee(self.budget_reappropiation_approver[3])
+		elif approver_type == "Budget Approver":
+			officiating = get_officiating_employee(self.branch_approver[3])
 			if officiating:
 				officiating = frappe.db.get_value("Employee", officiating[0].officiate, self.field_list)
-			vars(self.doc)[self.doc_approver[0]] = officiating[0] if officiating else self.budget_reappropiation_approver[0]
-			vars(self.doc)[self.doc_approver[1]] = officiating[1] if officiating else self.budget_reappropiation_approver[1]
-			vars(self.doc)[self.doc_approver[2]] = officiating[2] if officiating else self.budget_reappropiation_approver[2]
+			vars(self.doc)[self.doc_approver[0]] = officiating[0] if officiating else self.branch_approver[0]
+			vars(self.doc)[self.doc_approver[1]] = officiating[1] if officiating else self.branch_approver[1]
+			vars(self.doc)[self.doc_approver[2]] = officiating[2] if officiating else self.branch_approver[2]
 		else:
 			frappe.throw(_("Invalid approver type for Workflow"))
 
@@ -451,6 +455,8 @@ class CustomWorkflow:
 			self.pol_expenses()
 		elif self.doc.doctype == "Budget Reappropiation":
 			self.budget_reappropiation()
+		elif self.doc.doctype == "Supplementary Budget":
+			self.supplementary_budget()
 		elif self.doc.doctype == "Employee Separation":
 			self.employee_separation()
 		elif self.doc.doctype == "Employee Benefits":
@@ -978,25 +984,58 @@ class CustomWorkflow:
 		user_roles = frappe.get_roles(frappe.session.user)
 		if self.new_state and self.old_state and self.new_state.lower() == self.old_state.lower():
 			return
-		if self.new_state.lower() in ("Draft".lower(),"Waiting for Verification".lower()):
+		if self.new_state.lower() in ("Draft".lower(),"Waiting Approval".lower()):
 			if self.doc.owner != frappe.session.user:
 				frappe.throw("Only the document owner can Apply this document")
+			self.set_approver("Budget Approver")
 
-		if self.new_state.lower() in ("Waiting Approval".lower()):
+		if self.new_state.lower() in ("Waiting Accounts Approval".lower()):
+			if self.doc.approver != frappe.session.user:
+				frappe.throw("Only {} can approve this document".format(self.doc.approver))
+
+		# if self.new_state.lower() in ("Waiting CEO Approval".lower()):
+		# 	if self.doc.approver != frappe.session.user:
+		# 		frappe.throw("Only {} can forward this document".format(self.doc.approver))
+		# 	self.set_approver("CEO")
+
+		# if self.new_state.lower() in ("Approved".lower()):
+		# 	if self.old_state.lower() in ("Waiting CEO Approval".lower()) and  "CEO" not in user_roles:
+		# 		frappe.throw("Only CEO can approve this document")
+		# 	elif self.doc.approver != frappe.session.user :
+		# 		frappe.throw("Only {} or CEO can approve this document".format(self.doc.approver))
+		if self.new_state.lower() in ("Submitted".lower()):
 			if "Budget Manager" not in user_roles:
-				frappe.throw("Only Budget Manager Can verify this document")
-			self.set_approver("Budget Reappropiation")
+				frappe.throw("Only Budget Manager Can submit this document")
+
+		if self.new_state.lower() in ("Rejected".lower()):
+			if "Budget Manager" in user_roles or "CEO" in user_roles or self.doc.approver == frappe.session.user:
+				return
+			else:
+				frappe.throw("Only Budget Manager or {} Can reject this document".format(self.doc.approver))
+	
+	def supplementary_budget(self):
+		user_roles = frappe.get_roles(frappe.session.user)
+		if self.new_state and self.old_state and self.new_state.lower() == self.old_state.lower():
+			return
+		if self.new_state.lower() in ("Draft".lower(),"Waiting For Verification".lower()):
+			if self.doc.owner != frappe.session.user:
+				frappe.throw("Only the document owner can Apply this document")
+			self.set_approver("Budget Approver")
 
 		if self.new_state.lower() in ("Waiting CEO Approval".lower()):
 			if self.doc.approver != frappe.session.user:
-				frappe.throw("Only {} can forward this document".format(self.doc.approver))
+				frappe.throw("Only {} can verify this document".format(self.doc.approver))
 			self.set_approver("CEO")
 
-		if self.new_state.lower() in ("Approved".lower()):
-			if self.old_state.lower() in ("Waiting CEO Approval".lower()) and  "CEO" not in user_roles:
+		if self.new_state.lower() in ("Waiting Accounts Approval".lower()):
+			if self.old_state.lower() in ("Waiting CEO Approval".lower()) and "CEO" not in user_roles:
 				frappe.throw("Only CEO can approve this document")
 			elif self.doc.approver != frappe.session.user :
 				frappe.throw("Only {} or CEO can approve this document".format(self.doc.approver))
+		
+		if self.new_state.lower() in ("Submitted".lower()):
+			if "Budget Manager" not in user_roles:
+				frappe.throw("Only Budget Manager Can submit this document")
 
 		if self.new_state.lower() in ("Rejected".lower()):
 			if "Budget Manager" in user_roles or "CEO" in user_roles or self.doc.approver == frappe.session.user:
@@ -1296,6 +1335,17 @@ class NotifyCustomWorkflow:
 			if not template:
 				frappe.msgprint(_("Please set default template for Imprest Recoup Status Notification in HR Settings."))
 				return
+		
+		elif self.doc.doctype == "Budget Reappropiation":
+			template = frappe.db.get_single_value('HR Settings', 'budget_reappropiation_status_notification_template')
+			if not template:
+				frappe.msgprint(_("Please set default template for Budget Reappropiation Status Notification in HR Settings."))
+				return
+		elif self.doc.doctype == "Supplementary Budget":
+			template = frappe.db.get_single_value('HR Settings', 'supplementary_budget_status_notification')
+			if not template:
+				frappe.msgprint(_("Please set default template for Supplementary Budget Status Notification in HR Settings."))
+				return
 		else:
 			template = ""
 
@@ -1399,7 +1449,7 @@ class NotifyCustomWorkflow:
 			elif self.doc.doctype == "Imprest Advance" and self.new_state == "Waiting For Verification":
 				template = frappe.db.get_single_value('HR Settings', 'imprest_advance_approval_notification_template')
 				if not template:
-					frappe.msgprint(_("Please set default template for Imprest Advance Status Notification in HR Settings."))
+					frappe.msgprint(_("Please set default template for Imprest Advance approval Notification in HR Settings."))
 					return
 			# elif self.doc.doctype == "Imprest Advance":
 			# 	self.notify_imprest_managers()
@@ -1408,10 +1458,28 @@ class NotifyCustomWorkflow:
 			elif self.doc.doctype == "Imprest Recoup" and self.new_state == "Waiting Approval":
 				template = frappe.db.get_single_value('HR Settings', 'imprest_recoup_approval_notification_template')
 				if not template:
-					frappe.msgprint(_("Please set default template for Imprest Recoup Status Notification in HR Settings."))
+					frappe.msgprint(_("Please set default template for Imprest Recoup approval Notification in HR Settings."))
 					return
 			elif self.doc.doctype == "Imprest Recoup":
 				self.notify_imprest_managers()
+				return
+
+			elif self.doc.doctype == "Budget Reappropiation" and self.new_state == "Waiting Approval":
+				template = frappe.db.get_single_value('HR Settings', 'budget_reappropiation_approval_notification_template')
+				if not template:
+					frappe.msgprint(_("Please set default template for Budget Reappropiation approval Notification in HR Settings."))
+					return
+			elif self.doc.doctype == "Budget Reappropiation":
+				self.notify_budget_managers()
+				return
+			
+			elif self.doc.doctype == "Supplementary Budget" and self.new_state in ("Waiting For Verification", "Waiting CEO Approval"):
+				template = frappe.db.get_single_value('HR Settings', 'supplementary_budget_approval_notification')
+				if not template:
+					frappe.msgprint(_("Please set default template for Suppliementary Budget approval Notification in HR Settings."))
+					return
+			elif self.doc.doctype == "Supplementary Budget":
+				self.notify_budget_managers()
 				return
 
 			else:
@@ -1592,6 +1660,38 @@ class NotifyCustomWorkflow:
 				# for email
 				"subject": email_template.subject
 			})
+
+	def notify_budget_managers(self):
+		receipients = []
+		email_group = "Budget Manager"
+		budget_managers = frappe.get_list("Email Group Member", filters={"email_group":email_group}, fields=['email'])
+		if budget_managers:
+			receipients = [a['email'] for a in budget_managers]
+			parent_doc = frappe.get_doc(self.doc.doctype, self.doc.name)
+			args = parent_doc.as_dict()
+			if self.doc.doctype == "Budget Reappropiation":
+				template = frappe.db.get_single_value('HR Settings', 'budget_reappropiation_approval_notification_template')
+				if not template:
+					frappe.msgprint(_("Please set default template for Budget Reappropiation Approval Notification in HR Settings."))
+					return
+			if self.doc.doctype == "Supplementary Budget":
+				template = frappe.db.get_single_value('HR Settings', 'supplementary_budget_approval_notification')
+				if not template:
+					frappe.msgprint(_("Please set default template for Supplementary Budget Approval Notification in HR Settings."))
+					return
+			if not template:
+				frappe.msgprint(_("Please set default template for {}.").format(self.doc.doctype))
+				return
+			email_template = frappe.get_doc("Email Template", template)
+			message = frappe.render_template(email_template.response, args)
+			# frappe.throw(self.doc.get(self.doc_approver[0]))
+			self.notify({
+				# for post in messages
+				"message": message,
+				"message_to": receipients,
+				# for email
+				"subject": email_template.subject
+			})
 					
 	def notify(self, args):
 		args = frappe._dict(args)
@@ -1649,6 +1749,7 @@ def get_field_map():
 		"Material Request": ["approver","approver_name","approver_designation"],
 		"Asset Movement": ["approver", "approver_name", "approver_designation"],
 		"Budget Reappropiation": ["approver", "approver_name", "approver_designation"],
+		"Supplementary Budget": ["approver", "approver_name", "approver_designation"],
 		"Employee Transfer": ["supervisor", "supervisor_name", "supervisor_designation"],
 		"Employee Benefits": ["benefit_approver","benefit_approver_name","benefit_approver_designation"],
 		"Compile Budget": ["approver","approver_name"],

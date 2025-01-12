@@ -610,7 +610,7 @@ permission_query_conditions = {
 	"Break Down Report": "erpnext.fleet_management.doctype.break_down_report.break_down_report.get_permission_query_conditions",
 	"Job Cards": "erpnext.fleet_management.doctype.job_cards.job_cards.get_permission_query_conditions",
 	"Vehicle Logbook": "erpnext.fleet_management.doctype.vehicle_logbook.vehicle_logbook.get_permission_query_conditions",
-	"Equipment Request": "erpnext.fleet_management.doctype.equipment_request.equipment_request.get_permission_query_conditions",
+	# "Equipment Request": "erpnext.fleet_management.doctype.equipment_request.equipment_request.get_permission_query_conditions",
 	# "Asset Movement": "erpnext.asset.doctype.asset_movement.asset_movement.get_permission_query_conditions",
 	"Imprest Advance": "erpnext.accounts.doctype.imprest_advance.imprest_advance.get_permission_query_conditions",
 	"Imprest Recoup": "erpnext.accounts.doctype.imprest_recoup.imprest_recoup.get_permission_query_conditions",

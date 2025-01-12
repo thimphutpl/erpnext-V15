@@ -5,6 +5,7 @@ import frappe
 from frappe import _, msgprint, scrub
 from frappe.model.document import Document
 from frappe.utils import cint, cstr, flt, fmt_money, formatdate, get_link_to_form, nowdate
+from erpnext.custom_workflow import validate_workflow_states, notify_workflow_states
 
 class SupplementaryBudget(Document):
 	# begin: auto-generated types
@@ -17,6 +18,9 @@ class SupplementaryBudget(Document):
 		from frappe.types import DF
 
 		amended_from: DF.Link | None
+		approver: DF.Link | None
+		approver_designation: DF.Data | None
+		approver_name: DF.Data | None
 		attachment: DF.Attach | None
 		budget_against: DF.Literal["", "Cost Center", "Project"]
 		company: DF.Link
@@ -28,13 +32,18 @@ class SupplementaryBudget(Document):
 		remarks: DF.SmallText | None
 	# end: auto-generated types
 	def validate(self):
+		validate_workflow_states(self)
 		self.validate_budget()
+		if self.workflow_state != "Submitted":
+			notify_workflow_states(self)
 
 	def on_submit(self):
+		notify_workflow_states(self)
 		self.supplement_budget(cancel=False)
 
 	def on_cancel(self):
 		self.supplement_budget(cancel=True)
+		notify_workflow_states(self)
 
 	#Added by Thukten on 13th Sept, 2023
 	def validate_budget(self):

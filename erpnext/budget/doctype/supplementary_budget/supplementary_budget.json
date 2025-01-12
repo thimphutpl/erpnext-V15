@@ -18,7 +18,12 @@
   "section_break_21",
   "items",
   "amended_from",
-  "attachment"
+  "attachment",
+  "approver_details_section",
+  "approver",
+  "approver_designation",
+  "cb_sb_ad1",
+  "approver_name"
  ],
  "fields": [
   {
@@ -109,12 +114,40 @@
    "fieldname": "attachment",
    "fieldtype": "Attach",
    "label": "Attachment"
+  },
+  {
+   "fieldname": "approver_details_section",
+   "fieldtype": "Section Break",
+   "label": "Approver Details"
+  },
+  {
+   "fieldname": "approver",
+   "fieldtype": "Link",
+   "label": "Approver",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "approver_designation",
+   "fieldtype": "Data",
+   "label": "Approver Designation",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cb_sb_ad1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "approver_name",
+   "fieldtype": "Data",
+   "label": "Approver Name",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-12-03 11:44:44.555457",
+ "modified": "2025-01-13 00:01:39.420793",
  "modified_by": "Administrator",
  "module": "Budget",
  "name": "Supplementary Budget",
