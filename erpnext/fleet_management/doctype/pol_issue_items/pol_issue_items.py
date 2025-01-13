@@ -30,6 +30,7 @@ class POLIssueItems(Document):
 		parentfield: DF.Data
 		parenttype: DF.Data
 		qty: DF.Float
+		tank_capacity: DF.ReadOnly | None
 		warehouse: DF.Link | None
 	# end: auto-generated types
 	pass

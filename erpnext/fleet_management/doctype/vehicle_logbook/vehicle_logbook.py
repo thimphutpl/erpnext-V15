@@ -435,7 +435,7 @@ def get_opening(equipment, from_date, to_date, pol_type):
 @frappe.whitelist()
 def get_equipment_data(equipment_name, all_equipment=0, branch=None):
     data = []
-    
+
     query = """
         SELECT e.name, e.branch, e.registration_number, e.hsd_type, e.equipment_type
         FROM `tabEquipment` e
