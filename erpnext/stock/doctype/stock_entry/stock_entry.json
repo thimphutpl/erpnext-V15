@@ -780,11 +780,10 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-12-26 10:19:03.675327",
+ "modified": "2024-12-30 14:18:27.621185",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Stock Entry",
- "naming_rule": "By \"Naming Series\" field",
  "owner": "Administrator",
  "permissions": [
   {

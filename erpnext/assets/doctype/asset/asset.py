@@ -433,6 +433,7 @@ class Asset(AccountsController):
 	def validate_asset_finance_books(self, row):
 		if frappe.db.get_value("Item",self.item_code,"item_sub_group")=="Third Party Item":
 			return
+		
 		if flt(row.expected_value_after_useful_life) >= flt(self.gross_purchase_amount):
 			frappe.throw(
 				_("Row {0}: Expected Value After Useful Life must be less than Gross Purchase Amount").format(
@@ -984,8 +985,10 @@ def create_asset_capitalization(asset):
 
 @frappe.whitelist()
 def create_asset_value_adjustment(asset, asset_category, company):
+	fixed_acc = frappe.db.get_value("Asset Category Account",{"parent":asset_category},"fixed_asset_account")
+	credit_account =frappe.db.get_value("Asset Category Account",{"parent":asset_category},"credit_account")
 	asset_value_adjustment = frappe.new_doc("Asset Value Adjustment")
-	asset_value_adjustment.update({"asset": asset, "company": company, "asset_category": asset_category})
+	asset_value_adjustment.update({"asset": asset, "company": company, "asset_category": asset_category, "fixed_asset_account":fixed_acc,"credit_account":credit_account})
 	return asset_value_adjustment
 
 

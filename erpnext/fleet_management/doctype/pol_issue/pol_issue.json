@@ -21,6 +21,7 @@
   "stock_uom",
   "column_break_10",
   "tanker",
+  "tank_balance",
   "total_quantity",
   "is_hsd_item",
   "section_break_3",
@@ -28,7 +29,6 @@
   "section_break_5",
   "remarks",
   "column_break_4",
-  "amended_from",
   "amended_from"
  ],
  "fields": [
@@ -105,10 +105,10 @@
   },
   {
    "default": "0",
+   "fetch_from": "pol_type.is_hsd_item",
    "fieldname": "is_hsd_item",
    "fieldtype": "Check",
    "label": "Is HSD Item",
-   "options": "pol_type.is_hsd_item",
    "read_only": 1,
    "reqd": 1
   },
@@ -172,12 +172,18 @@
    "fieldtype": "Link",
    "label": "Amended From",
    "options": "POL Issue"
+  },
+  {
+   "fieldname": "tank_balance",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Tank Balance"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-24 16:10:27.855988",
+ "modified": "2025-01-04 19:08:48.529776",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Issue",

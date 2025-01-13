@@ -31,7 +31,10 @@ class ActivityTasks(Document):
 		target_quantity_complete: DF.Float
 		target_uom: DF.Link | None
 		task: DF.Data
+		task_achievement_percent: DF.Data | None
+		task_duration: DF.Data | None
 		task_id: DF.Link | None
+		task_weightage: DF.Data | None
 		work_quantity: DF.Float
 		work_quantity_complete: DF.Float
 	# end: auto-generated types

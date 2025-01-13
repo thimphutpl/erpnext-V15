@@ -21,6 +21,8 @@
   "status",
   "section_break_9",
   "start_date",
+  "overall_mandays",
+  "project_man_days",
   "column_break_11",
   "end_date",
   "sb_project_manager_details",
@@ -57,8 +59,7 @@
    "fieldname": "project_profile",
    "fieldtype": "Select",
    "label": "Project Profile",
-   "options": "\nInternal\nExternal",
-   "reqd": 1
+   "options": "\nInternal\nExternal"
   },
   {
    "fieldname": "status",
@@ -196,13 +197,24 @@
    "fieldtype": "Link",
    "label": "Cost Center",
    "options": "Cost Center"
+  },
+  {
+   "fieldname": "overall_mandays",
+   "fieldtype": "Data",
+   "label": "Overall Man Days",
+   "read_only": 1
+  },
+  {
+   "fieldname": "project_man_days",
+   "fieldtype": "Data",
+   "label": "Project Man Days"
   }
  ],
  "icon": "icon-puzzle-piece",
  "is_submittable": 1,
  "links": [],
  "max_attachments": 4,
- "modified": "2024-12-24 12:41:49.835597",
+ "modified": "2025-01-10 16:33:18.926155",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Project Definition",

@@ -70,7 +70,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Equipment Owned By",
-   "options": "\nOwn\nCDCL\nOthers",
+   "options": "\nOwn\nOthers",
    "reqd": 1
   },
   {
@@ -231,7 +231,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-29 14:39:41.101069",
+ "modified": "2025-01-04 20:59:54.240114",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Break Down Report",

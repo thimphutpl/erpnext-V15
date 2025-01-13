@@ -13,7 +13,7 @@ class Fuelbook(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
-		account_number: DF.Data
+		account_number: DF.Data | None
 		branch: DF.Link
 		disabled: DF.Check
 		equipment: DF.Link | None

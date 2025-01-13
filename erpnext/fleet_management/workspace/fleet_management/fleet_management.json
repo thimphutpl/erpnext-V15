@@ -718,7 +718,7 @@
    "hidden": 0,
    "is_query_report": 0,
    "label": "Fleet Transaction",
-   "link_count": 6,
+   "link_count": 7,
    "link_type": "DocType",
    "onboard": 0,
    "type": "Card Break"
@@ -788,9 +788,20 @@
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "dependencies": "Insurance and Registration",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Insurance and Registration",
+   "link_count": 0,
+   "link_to": "Insurance and Registration",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2024-12-23 11:47:57.168100",
+ "modified": "2025-01-09 10:30:42.290670",
  "modified_by": "tshering.lham@thimphutechpark.bt",
  "module": "Fleet Management",
  "name": "Fleet Management",

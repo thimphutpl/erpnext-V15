@@ -16,5 +16,6 @@ class EquipmentCategory(Document):
 		allow_hire: DF.Check
 		budget_account: DF.Link | None
 		equipment_category: DF.Data
+		insurance_account: DF.Link | None
 	# end: auto-generated types
 	pass

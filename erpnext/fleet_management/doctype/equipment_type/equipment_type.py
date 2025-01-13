@@ -13,6 +13,7 @@ class EquipmentType(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		disabled: DF.Check
 		equipment_category: DF.Link
 		equipment_type: DF.Data
 		is_container: DF.Check

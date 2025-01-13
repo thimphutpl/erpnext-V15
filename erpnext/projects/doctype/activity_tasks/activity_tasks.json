@@ -16,10 +16,13 @@
   "is_group",
   "start_date",
   "end_date",
+  "task_duration",
   "sb_project_contribution",
-  "work_quantity",
-  "cb_pc",
   "work_quantity_complete",
+  "task_weightage",
+  "cb_pc",
+  "work_quantity",
+  "task_achievement_percent",
   "sb_target_quantity",
   "target_uom",
   "cb_tq",
@@ -97,6 +100,7 @@
   {
    "fieldname": "work_quantity",
    "fieldtype": "Float",
+   "hidden": 1,
    "in_list_view": 1,
    "label": "Work Quantity in Percentage"
   },
@@ -108,8 +112,7 @@
    "fieldname": "work_quantity_complete",
    "fieldtype": "Float",
    "in_list_view": 1,
-   "label": "Work Quantity Complete",
-   "read_only": 1
+   "label": "Work Quantity Complete(%)"
   },
   {
    "fieldname": "sb_target_quantity",
@@ -182,12 +185,30 @@
    "fieldtype": "Percent",
    "hidden": 1,
    "label": "Group Work Quantity Complete"
+  },
+  {
+   "fieldname": "task_duration",
+   "fieldtype": "Data",
+   "label": "Duration(Days)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "task_weightage",
+   "fieldtype": "Data",
+   "label": "Task Weightage",
+   "read_only": 1
+  },
+  {
+   "fieldname": "task_achievement_percent",
+   "fieldtype": "Data",
+   "label": "Task Achievement(%)",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-11-13 10:39:02.224312",
+ "modified": "2025-01-10 00:20:55.120030",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Activity Tasks",

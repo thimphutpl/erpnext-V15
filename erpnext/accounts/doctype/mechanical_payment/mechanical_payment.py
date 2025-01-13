@@ -17,7 +17,7 @@ class MechanicalPayment(AccountsController):
     def validate(self):
         check_future_date(self.posting_date)
         self.set_status()
-        # self.validate_allocated_amount()
+        self.validate_allocated_amount()
         total = 0
         for a in self.deducts:
             total += flt(a.amount)

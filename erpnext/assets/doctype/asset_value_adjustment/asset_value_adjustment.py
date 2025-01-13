@@ -166,11 +166,12 @@ class AssetValueAdjustment(Document):
 
 		self.db_set("journal_entry", je.name)
 		doc = frappe.get_doc("Asset", self.asset)
+		# doc.db_set("gross_purchase_amount", self.new_asset_value)
 		doc.db_set("additional_value", self.difference_amount)
 
 	def update_asset(self, asset_value):
 		asset = frappe.get_doc("Asset", self.asset)
-
+		# asset.gross_purchase_amount = self.asset
 		if not asset.calculate_depreciation:
 			asset.value_after_depreciation = asset_value
 			asset.save()

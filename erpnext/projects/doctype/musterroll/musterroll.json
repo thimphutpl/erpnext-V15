@@ -40,7 +40,7 @@
   {
    "fieldname": "rate_per_hour",
    "fieldtype": "Currency",
-   "in_list_view": 1,
+   "hidden": 1,
    "label": "Rate Per Hour (Holiday)(Rate * 1.5 / 8)",
    "read_only": 1
   },
@@ -48,14 +48,14 @@
    "fieldname": "rate_per_hour_normal",
    "fieldtype": "Currency",
    "in_list_view": 1,
-   "label": "Rate Per Hour (Normal) (Rate/ 8))",
+   "label": "Rate Per Hour  (Rate/ 8))",
    "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-10-08 16:48:41.122947",
+ "modified": "2025-01-09 14:21:07.130856",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Musterroll",

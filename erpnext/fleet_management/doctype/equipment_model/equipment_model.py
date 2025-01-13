@@ -13,6 +13,7 @@ class EquipmentModel(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		disabled: DF.Check
 		equipment_type: DF.Link
 		model: DF.Data
 	# end: auto-generated types

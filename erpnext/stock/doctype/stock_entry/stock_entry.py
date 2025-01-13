@@ -156,20 +156,16 @@ class StockEntry(StockController):
 	# end: auto-generated types
 	def autoname(self):
 		if self.stock_entry_type == 'Material Issue':
-			series = 'MI'
-			self.name = make_autoname(str(series) + ".YY.MM.####")
+			series = 'SEMI'
 		elif self.stock_entry_type == 'Material Receipt':
-			series = 'MR'
-			self.name = make_autoname(str(series) + ".YY.MM.####")
+			series = 'SEME'
 		elif self.stock_entry_type == 'Material Transfer':
-			series = 'MT'
-			self.name = make_autoname(str(series) + ".YY.MM.DD.####")
+			series = 'SEMT'
 		elif self.stock_entry_type == 'Material Return':
-			series = 'MTR'
-			self.name = make_autoname(str(series) + ".YY.MM.DD.####")
+			series ='SEMR'
 		else:
-			series = 'WO'
-			self.name = make_autoname(str(series) + ".YY.MM.####")
+			series = 'SE'
+		self.name = make_autoname(str(series) + ".YY.MM.####")
 
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)

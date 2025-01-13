@@ -21,6 +21,7 @@
   "posting_date",
   "schedule_date",
   "posting_time",
+  "set_posting_time",
   "column_break_12",
   "company",
   "is_return",
@@ -88,9 +89,13 @@
   "in_words",
   "disable_rounded_total",
   "section_break_42",
+  "discount",
+  "total_add_ded",
   "apply_discount_on",
   "base_discount_amount",
   "column_break_44",
+  "freight_insurance_charges",
+  "other_charges",
   "additional_discount_percentage",
   "discount_amount",
   "sec_tax_breakup",
@@ -226,14 +231,13 @@
    "width": "50%"
   },
   {
-   "default": "Today",
    "fieldname": "posting_date",
    "fieldtype": "Date",
    "in_list_view": 1,
    "label": "Date",
-   "no_copy": 1,
    "oldfieldname": "posting_date",
    "oldfieldtype": "Date",
+   "options": "Today",
    "print_width": "100px",
    "reqd": 1,
    "search_index": 1,
@@ -428,11 +432,13 @@
    "fieldtype": "Link",
    "label": "Accepted Warehouse",
    "options": "Warehouse",
-   "print_hide": 1
+   "print_hide": 1,
+   "read_only": 1
   },
   {
    "fieldname": "rejected_warehouse",
    "fieldtype": "Link",
+   "hidden": 1,
    "ignore_user_permissions": 1,
    "label": "Rejected Warehouse",
    "no_copy": 1,
@@ -468,6 +474,7 @@
    "options": "Warehouse",
    "print_hide": 1,
    "print_width": "50px",
+   "read_only": 1,
    "width": "50px"
   },
   {
@@ -736,6 +743,7 @@
    "default": "Grand Total",
    "fieldname": "apply_discount_on",
    "fieldtype": "Select",
+   "hidden": 1,
    "label": "Apply Additional Discount On",
    "options": "\nGrand Total\nNet Total",
    "print_hide": 1
@@ -755,12 +763,14 @@
   {
    "fieldname": "additional_discount_percentage",
    "fieldtype": "Float",
+   "hidden": 1,
    "label": "Additional Discount Percentage",
    "print_hide": 1
   },
   {
    "fieldname": "discount_amount",
    "fieldtype": "Currency",
+   "hidden": 1,
    "label": "Additional Discount Amount",
    "options": "currency",
    "print_hide": 1
@@ -855,7 +865,7 @@
    "read_only": 1
   },
   {
-   "default": "0",
+   "default": "1",
    "fieldname": "disable_rounded_total",
    "fieldtype": "Check",
    "label": "Disable Rounded Total"
@@ -1247,6 +1257,7 @@
   {
    "fieldname": "schedule_date",
    "fieldtype": "Date",
+   "hidden": 1,
    "label": "Required By",
    "options": "1"
   },
@@ -1292,13 +1303,43 @@
    "fieldname": "actual_receipt_date",
    "fieldtype": "Date",
    "label": "Actual Receipt Date"
+  },
+  {
+   "default": "0",
+   "fieldname": "discount",
+   "fieldtype": "Currency",
+   "label": "Discount"
+  },
+  {
+   "fieldname": "total_add_ded",
+   "fieldtype": "Currency",
+   "label": "Net Charges & Discount",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "freight_insurance_charges",
+   "fieldtype": "Currency",
+   "label": "Freight and Insurance Charges"
+  },
+  {
+   "default": "0",
+   "fieldname": "other_charges",
+   "fieldtype": "Currency",
+   "label": "Installation Charges"
+  },
+  {
+   "default": "0",
+   "fieldname": "set_posting_time",
+   "fieldtype": "Check",
+   "label": "Edit Date and Time"
   }
  ],
  "icon": "fa fa-truck",
  "idx": 261,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-12-10 11:39:07.432096",
+ "modified": "2025-01-10 12:11:45.397339",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Purchase Receipt",

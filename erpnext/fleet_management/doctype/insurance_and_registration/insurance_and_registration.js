@@ -2,38 +2,124 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on('Insurance and Registration', {
-	refresh: function(frm){
-		disable_drag_drop(frm)		
-            }, 
-	onload: function(frm) {
-		disable_drag_drop(frm)
+	onload: function (frm) {
 		if (!frm.doc.posting_date) {
 			frm.set_value("posting_date", get_today());
-		}	
+		}
 	},
-	
-	insurance_for: function(frm){
-		if (frm.doc.insurance_for == "Equipment"){
-			cur_frm.add_fetch("insurance_type", "equipment_type", "equipment_type")
-			cur_frm.add_fetch("insurance_type", "registration_number", "equipment_number")
-			cur_frm.add_fetch("insurance_type", "equipment_model", "equipment_model")
-			cur_frm.add_fetch("insurance_type", "engine_number", "engine_number")
-            cur_frm.add_fetch("insurance_type", "chasis_number", "chassis_number")
-	
+	settle_imprest_advance: function (frm) {
+		if (frm.doc.settle_imprest_advance == 0 || frm.doc.settle_imprest_advance == undefined) {
+			frm.set_value("imprest_party", null);
+			frm.refresh_field("imprest_party");
 		}
-		 if(frm.doc.insurance_for == "Project"){
-			cur_frm.add_fetch("insurance_type", "branch", "branch");
-		
-		}
-		if(frm.doc.insurance_for == "Asset"){
-			cur_frm.add_fetch("insurance_type", "asset_category", "asset_category")
-            cur_frm.add_fetch("insurance_type", "asset_name", "asset_name")
-            cur_frm.add_fetch("insurance_type", "asset_sub_category", "asset_sub_category")
-		}
-		}
-			
-	});
+	},
+	refresh: function (frm) {
+		frm.set_query("equipment", function (doc) {
+			return {
+				filters: {
+					"hired_equipment": 0
+				}
+			}
+		})
+		frm.add_custom_button(
+			__("Journal Entry"),
+			function () {
+				frappe.route_options = {
+					"Journal Entry Account.reference_type": frm.doc.doctype,
+					"Journal Entry Account.reference_name": frm.doc.name,
+					company: frm.doc.company,
+				};
+				frappe.set_route("List", "Journal Entry");
+			},
+			__("View")
+		);
+	},
 
-function disable_drag_drop(frm) {
-        frm.page.body.find('[data-fieldname="in_items"] [data-idx] .data-row').removeClass('sortable-handle');
+	post_je: function (frm) { 
+		frappe.call({
+			method: "post_je",
+			doc: frm.doc,
+			callback: function (r) {
+				if (r.message) {
+					frm.refresh_field("insurance_item")
+				}
+			}
+		})
+	}
+});
+frappe.ui.form.on("Insurance Details", {
+	"post_bank_entry": function (frm, cdt, cdn) {
+		let row = locals[cdt][cdn]
+		frappe.call({
+			method: "create_je",
+			doc: frm.doc,
+			args: row,
+			callback: function (r) {
+				if (r.message) {
+					frappe.model.set_value(cdt, cdn, "journal_entry", r.message);
+					frm.refresh_field("insurance_item")
+					frm.dirty()
+				}
+			}
+		})
+	},
+});
+
+frappe.ui.form.on("Registration Details", {
+	"post_bank_entry": function (frm, cdt, cdn) {
+		let row = locals[cdt][cdn]
+		frappe.call({
+			method: "post_to_account",
+			doc: frm.doc,
+			args: row,
+			callback: function (r) {
+				if (r.message) {
+					frappe.model.set_value(cdt, cdn, "journal_entry", r.message);
+					frm.refresh_field("registration_item")
+					frm.dirty()
+				}
+			}
+		})
+	},
+});
+
+
+frappe.ui.form.on("Bluebook and Emission", {
+	"amount": function (frm, cdt, cdn) {
+		set_total_amount(frm, cdt, cdn);
+	},
+	"penalty_amount": function (frm, cdt, cdn) {
+		set_total_amount(frm, cdt, cdn);
+	},
+	"post_bank_entry": function (frm, cdt, cdn) {
+		let row = locals[cdt][cdn]
+		frappe.call({
+			method: "create_je",
+			doc: frm.doc,
+			args: row,
+			callback: function (r) {
+				if (r.message) {
+					frappe.model.set_value(cdt, cdn, "journal_entry", r.message);
+					frm.refresh_field("items")
+					frm.dirty()
+				}
+			}
+		})
+	},
+});
+var set_total_amount = function (frm, cdt, cdn) {
+	var item = locals[cdt][cdn];
+	if (flt(item.amount) > 0) {
+		if (flt(item.penalty_amount) > 0) {
+			var total = 0
+			total = flt(item.amount) + flt(item.penalty_amount)
+			frappe.model.set_value(cdt, cdn, "total_amount", total);
+		}
+		else {
+			frappe.model.set_value(cdt, cdn, "total_amount", item.amount);
+		}
+	} else {
+		frappe.throw("Amount Cannot be less than 0")
+	}
+
 }

@@ -108,7 +108,16 @@ frappe.ui.form.on("Project", {
 		}
 		// +++++++++++++++++++++ Ends +++++++++++++++++++++
 	},
-
+	mandays: function() {
+		cur_frm.set_value("physical_progress_weightage", (parseFloat(cur_frm.doc.mandays)/parseFloat(cur_frm.doc.overall_mandays)*100).toFixed(3))
+		cur_frm.set_value("man_power_required", Math.round(parseFloat(cur_frm.doc.mandays)/parseFloat(cur_frm.doc.total_duration)))
+	},
+	overall_mandays: function() {
+		cur_frm.set_value("physical_progress_weightage", (parseFloat(cur_frm.doc.mandays)/parseFloat(cur_frm.doc.overall_mandays)*100).toFixed(3))
+	},
+	total_duration: function() {
+		cur_frm.set_value("man_power_required", Math.round(parseFloat(cur_frm.doc.mandays)/parseFloat(cur_frm.doc.total_duration)))
+	},
 	set_custom_buttons: function (frm) {
 		if (!frm.is_new()) {
 			frm.add_custom_button(
@@ -388,6 +397,11 @@ frappe.ui.form.on("Activity Tasks", {
 	activity_tasks_remove: function(frm, doctype, name){
 		calculate_work_quantity(frm);
 	},
+	work_quantity_complete: function(frm, cdt, cdn){
+		var item = locals[cdt][cdn];
+		calculate_duration1(frm, cdt, cdn, item.start_date, item.end_date);
+		cur_frm.refresh_fields();
+	},
 	edit_task: function(frm, doctype, name) {
 		var doc = frappe.get_doc(doctype, name);
 		if(doc.task_id) {
@@ -411,8 +425,61 @@ frappe.ui.form.on("Activity Tasks", {
 	work_quantity: function(frm, doctype, name){
 		calculate_work_quantity(frm);
 	},
-});
+	start_date: function(frm, doctype, name) {
+		var item = locals[doctype][name]
+		var at = frm.doc.activity_tasks || [];
+        	var task_duration = 0.0
+        	if(item.end_date) {
+			calculate_duration1(frm, doctype, name, item.start_date, item.end_date);
+		}
+		for(var i=0; i<at.length; i++){
+                        task_duration += parseFloat(at[i].task_duration || 0.0);
+                }
+		// cur_frm.set_value('duration_sum', task_duration)
+		//frappe.model.set_value(doctype, name, "task_weightage", (parseFloat(item.task_duration)/parseFloat(task_duration) * parseFloat(cur_frm.doc.physical_progress_weightage)).toFixed(7));
+		// frappe.model.set_value(doctype, name, "task_weightage", (parseFloat(item.task_duration)/parseFloat(task_duration)*100).toFixed(7));
+		// frappe.model.set_value(doctype, name, "one_day_weightage", (parseFloat(item.task_weightage)/parseFloat(item.task_duration)).toFixed(7))
+	},
+	end_date: function(frm, doctype, name) {
+		var item = locals[doctype][name]
+		var at = frm.doc.activity_tasks || [];
+                var task_duration = 0.0
+		if(item.start_date) {
+			calculate_duration1(frm, doctype, name, item.start_date, item.end_date);
+		}
+                for(var i=0; i<at.length; i++){
+                        task_duration += parseFloat(at[i].task_duration || 0.0);
+                }
+		cur_frm.set_value('duration_sum', task_duration);
+                //frappe.model.set_value(doctype, name, "task_weightage", (parseFloat(item.task_duration)/parseFloat(task_duration)* parseFloat(cur_frm.doc.physical_progress_weightage)).toFixed(7));
+                frappe.model.set_value(doctype, name, "task_weightage", (parseFloat(item.task_duration)/parseFloat(task_duration)*100).toFixed(7));
+		frappe.model.set_value(doctype, name, "one_day_weightage", (parseFloat(item.task_weightage)/parseFloat(item.task_duration)).toFixed(7))
 
+},
+});
+function calculate_duration1(cur_frm, doctype, name, from_date, to_date) {
+	frappe.call({
+			method: "erpnext.projects.doctype.project.project.calculate_durations",
+			 args: {
+					"hol_list": cur_frm.doc.holiday_list,
+					"from_date": from_date,
+					"to_date": to_date
+			   },
+			callback: function(r) {
+				   if(r.message){
+					   frappe.model.set_value(doctype, name, 'task_duration', r.message);
+					}
+			}
+	})
+	frappe.call({
+		method: "calculate_task_weightage",
+		doc: cur_frm.doc,
+		callback: function(m) {
+			cur_frm.refresh_fields();
+		}
+	})
+	cur_frm.refresh_fields();
+}
 frappe.ui.form.on("Additional Tasks", {
 	activity_tasks_remove: function(frm, doctype, name){
 		calculate_work_quantity(frm);

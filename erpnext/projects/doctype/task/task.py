@@ -72,6 +72,7 @@ class Task(NestedSet):
 		target_uom: DF.Link | None
 		task_idx: DF.Int
 		task_weight: DF.Float
+		task_weightage: DF.Data | None
 		template_task: DF.Data | None
 		total_billing_amount: DF.Currency
 		total_costing_amount: DF.Currency
@@ -140,6 +141,7 @@ class Task(NestedSet):
 			for fieldname in ("exp_start_date", "exp_end_date", "act_start_date", "act_end_date"):
 				task_date = self.get(fieldname)
 				if task_date and date_diff(project_end_date, getdate(task_date)) < 0:
+					frappe.throw(str(task_date)+" "+str(project_end_date)+" "+str(date_diff(project_end_date, getdate(task_date))))
 					frappe.throw(
 						_("{0}'s {1} cannot be after {2}'s Expected End Date.").format(
 							frappe.bold(frappe.get_desk_link("Task", self.name)),

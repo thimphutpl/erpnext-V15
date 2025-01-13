@@ -6,7 +6,7 @@ from __future__ import unicode_literals
 import frappe
 from frappe import _
 from frappe.model.document import Document
-from frappe.utils import flt, cint
+from frappe.utils import flt, cint,get_last_day
 from calendar import monthrange
 import pymysql
 from erpnext.custom_utils import check_budget_available, get_branch_cc
@@ -531,3 +531,18 @@ def get_records(employee_type, fiscal_year, fiscal_month, from_date, to_date, co
 		return data
 	else:
 		frappe.throw(_("No data found!"),title="No Data Found!")
+def get_pay_details(employee, year, month):
+	from_date = "-".join([str(year), str(month), '01'])
+	to_date   = str(get_last_day(from_date))
+	#frappe.throw(employee)
+
+	return  frappe.db.sql("""
+			SELECT
+				rate_per_day, rate_per_hour, rate_per_hour_normal
+			FROM `tabMusterroll`
+			WHERE parent = '{employee}'
+			AND '{from_date}' <= IFNULL(to_date, '{to_date}')
+			AND '{to_date}' >= IFNULL(from_date, '{from_date}')
+			ORDER BY IFNULL(to_date,'{to_date}') DESC
+			LIMIT 1
+		""".format(employee=employee, from_date=from_date, to_date=to_date), as_dict = True)

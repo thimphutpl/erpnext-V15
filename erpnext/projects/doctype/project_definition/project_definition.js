@@ -37,6 +37,15 @@ frappe.ui.form.on('Project Definition', {
 					frm: cur_frm
 				})
 			}).addClass("btn-primary");
+			frm.add_custom_button("Update Progress", function () {
+				frappe.call({
+					method: "update_project_progress",
+					doc: frm.doc,
+					callback: function(){
+						window.location.reload();
+					}
+				})
+			}).addClass("btn-primary");
 		}
 		if (frm.doc.docstatus == 1 && frm.doc.project_profile == "Internal") {
 			frm.add_custom_button("Monthly Settlement", function () {

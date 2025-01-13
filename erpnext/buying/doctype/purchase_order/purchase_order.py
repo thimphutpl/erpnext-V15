@@ -192,7 +192,7 @@ class PurchaseOrder(BuyingController):
 
 		self.validate_uom_is_integer("uom", "qty")
 		self.validate_uom_is_integer("stock_uom", "stock_qty")
-
+		self.warehouse_from_branch()
 		# self.validate_with_previous_doc()
 		# self.validate_for_subcontracting()
 		self.validate_minimum_order_qty()
@@ -276,6 +276,19 @@ class PurchaseOrder(BuyingController):
 
 		# calculate totals again after applying TDS
 		self.calculate_taxes_and_totals()
+	def warehouse_from_branch(doc):
+		branchname=doc.branch
+		query = """
+        SELECT parent 
+        FROM `tabWarehouse Branch` 
+        WHERE branch=%s
+        """
+
+		warehouse = frappe.db.sql(query, (branchname,), as_dict=True)
+		if warehouse:
+			doc.set_warehouse = warehouse[0].get("parent")
+		else:
+			frappe.throw(f"No warehouse found for branch {branchname}")
 
 	def validate_supplier(self):
 		prevent_po = frappe.db.get_value("Supplier", self.supplier, "prevent_pos")

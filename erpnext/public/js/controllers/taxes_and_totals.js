@@ -564,6 +564,10 @@ erpnext.taxes_and_totals = class TaxesAndTotals extends erpnext.payments {
 			? this.frm.doc["taxes"][tax_count - 1].total + flt(this.frm.doc.rounding_adjustment)
 			: this.frm.doc.net_total);
 
+		if(in_list(["Purchase Receipt", "Purchase Invoice"], this.frm.doc.doctype)) {
+			this.frm.doc.grand_total = this.frm.doc.total + this.frm.doc.total_tax_amount + this.frm.doc.total_add_ded
+		}
+		
 		if(["Quotation", "Sales Order", "Delivery Note", "Sales Invoice", "POS Invoice"].includes(this.frm.doc.doctype)) {
 			this.frm.doc.base_grand_total = (this.frm.doc.total_taxes_and_charges) ?
 				flt(this.frm.doc.grand_total * this.frm.doc.conversion_rate) : this.frm.doc.base_net_total;

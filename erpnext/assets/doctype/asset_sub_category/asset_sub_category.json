@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "allow_import": 1,
  "allow_rename": 1,
  "autoname": "field:asset_sub_category",
  "creation": "2024-08-07 12:25:03.746828",
@@ -29,7 +30,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-08-14 13:39:57.773810",
+ "modified": "2025-01-09 16:38:34.866413",
  "modified_by": "Administrator",
  "module": "Assets",
  "name": "Asset Sub Category",

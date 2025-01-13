@@ -64,7 +64,9 @@ class PurchaseReceipt(BuyingController):
 		cost_center: DF.Link | None
 		currency: DF.Link
 		disable_rounded_total: DF.Check
+		discount: DF.Currency
 		discount_amount: DF.Currency
+		freight_insurance_charges: DF.Currency
 		grand_total: DF.Currency
 		group_same_items: DF.Check
 		ignore_pricing_rule: DF.Check
@@ -86,6 +88,7 @@ class PurchaseReceipt(BuyingController):
 		named_place: DF.Data | None
 		naming_series: DF.Literal["MAT-PRE-.YYYY.-", "MAT-PR-RET-.YYYY.-"]
 		net_total: DF.Currency
+		other_charges: DF.Currency
 		other_charges_calculation: DF.TextEditor | None
 		per_billed: DF.Percent
 		per_returned: DF.Percent
@@ -106,6 +109,7 @@ class PurchaseReceipt(BuyingController):
 		rounding_adjustment: DF.Currency
 		schedule_date: DF.Date | None
 		select_print_heading: DF.Link | None
+		set_posting_time: DF.Check
 		set_warehouse: DF.Link | None
 		shipping_address: DF.Link | None
 		shipping_address_display: DF.SmallText | None
@@ -126,6 +130,7 @@ class PurchaseReceipt(BuyingController):
 		terms: DF.TextEditor | None
 		title: DF.Data | None
 		total: DF.Currency
+		total_add_ded: DF.Currency
 		total_net_weight: DF.Float
 		total_qty: DF.Float
 		total_taxes_and_charges: DF.Currency
@@ -237,6 +242,7 @@ class PurchaseReceipt(BuyingController):
 		self.validate_uom_is_integer()
 		self.validate_cwip_accounts()
 		self.validate_provisional_expense_account()
+		self.warehouse_from_branch()
 
 		self.check_on_hold_or_closed_status()
 
@@ -328,6 +334,20 @@ class PurchaseReceipt(BuyingController):
 					msg = f"""Row #{item.idx}: Please select a valid Quality Inspection with Item Code
 						{frappe.bold(item.item_code)}."""
 					frappe.throw(_(msg))
+	
+	def warehouse_from_branch(doc):
+		branchname=doc.branch
+		query = """
+        SELECT parent 
+        FROM `tabWarehouse Branch` 
+        WHERE branch=%s
+        """
+
+		warehouse = frappe.db.sql(query, (branchname,), as_dict=True)
+		if warehouse:
+			doc.set_warehouse = warehouse[0].get("parent")
+		else:
+			frappe.throw(f"No warehouse found for branch {branchname}")
 
 	def get_already_received_qty(self, po, po_detail):
 		qty = frappe.db.sql(
@@ -1181,6 +1201,15 @@ def make_purchase_invoice(source_name, target_doc=None, args=None):
 		doc.run_method("calculate_taxes_and_totals")
 		doc.set_payment_schedule()
 
+	def update_other_charges(source, target, sp):
+		target.discount = flt(target.discount) + flt(source.discount)
+		# target.tax = flt(target.tax) + flt(source.tax)
+		target.other_charges = flt(source.other_charges)
+		target.freight_insurance_charges = flt(source.freight_insurance_charges)
+		# target.total_add_ded = flt(target.freight_insurance_charges) - flt(target.discount) + flt(target.tax) + flt(target.other_charges)
+		target.total_add_ded = flt(target.freight_insurance_charges) - flt(target.discount) + flt(target.other_charges)
+		target.discount_amount = -1 * flt(target.total_add_ded) 
+		
 	def update_item(source_doc, target_doc, source_parent):
 		target_doc.qty, returned_qty = get_pending_qty(source_doc)
 		if frappe.db.get_single_value("Buying Settings", "bill_for_rejected_quantity_in_purchase_invoice"):
@@ -1228,6 +1257,7 @@ def make_purchase_invoice(source_name, target_doc=None, args=None):
 				"validation": {
 					"docstatus": ["=", 1],
 				},
+				"postprocess": update_other_charges,
 			},
 			"Purchase Receipt Item": {
 				"doctype": "Purchase Invoice Item",

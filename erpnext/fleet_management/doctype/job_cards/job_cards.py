@@ -10,6 +10,7 @@ from frappe.utils import cstr, flt, fmt_money, formatdate, nowdate, get_datetime
 from frappe.model.mapper import get_mapped_doc
 from erpnext.controllers.accounts_controller import AccountsController 
 from erpnext.custom_utils import check_uncancelled_linked_doc, check_future_date
+import dateutil.parser as dparser
 
 class JobCards(AccountsController):
 	# begin: auto-generated types
@@ -24,7 +25,7 @@ class JobCards(AccountsController):
 
 		amended_from: DF.Link | None
 		branch: DF.Link
-		break_down_report: DF.Link | None
+		break_down_report: DF.Data | None
 		break_down_report_date: DF.Data | None
 		company: DF.Link
 		cost_center: DF.Link
@@ -48,7 +49,7 @@ class JobCards(AccountsController):
 		locations: DF.Data | None
 		name_of_the_job: DF.Data | None
 		outstanding_amount: DF.Currency
-		owned_by: DF.Data
+		owned_by: DF.Data | None
 		paid: DF.Check
 		payment_jv: DF.Data | None
 		posting_date: DF.Date | None
@@ -60,15 +61,18 @@ class JobCards(AccountsController):
 		total_amount: DF.Currency
 	# end: auto-generated types
 	# pass
+		
 	def validate(self):
 		check_future_date(self.posting_date)
 		self.validate_owned_by()
 		self.validate_job_datetime()
+
 		if self.finish_date:
 			check_future_date(self.finish_date)
 			if get_datetime(self.finish_date + " " + self.job_out_time) < get_datetime(self.posting_date + " " + self.job_in_time):
 				frappe.throw(_("Job out date cannot be earlier than job in date."),title="Invalid Data")
 		self.update_breakdownreport()
+		
 		#Amount Segregation
 		cc_amount = {}
 		self.services_amount = self.goods_amount = 0;
@@ -91,18 +95,24 @@ class JobCards(AccountsController):
 			self.customer_branch = None
 
 	def validate_job_datetime(self):
+		
 		if self.break_down_report_date > self.posting_date:
 			frappe.throw("The Job Card Date Cannot Be Before Break Down Report Date")
 
-		br_time = frappe.db.get_value("Break Down Report", self.break_down_report, "time")
+		br_time = frappe.db.get_value("Break Down Report", self.break_down_report, "time") 
+		frappe.log_error(f"Break Down Report Time: {br_time}", "Debug: Validate Job DateTime")
+
 		br_date_time = str(self.break_down_report_date + " " + str(br_time))
 		jc_date_time =  str(self.posting_date + " " + self.job_in_time)
+
+
 		if get_datetime(br_date_time) > get_datetime(jc_date_time):
-			frappe.throw("The Job Card Time Cannot Be Before Break Down Report Time")
+			frappe.throw("The Job Card Time Cannot Be Before Break Down Report Time")	
 	
 	def on_submit(self):
 		self.validate_owned_by()
 		self.check_items()
+
 		if not self.repair_type:
 			frappe.throw("Specify whether the maintenance is Major or Minor")
 		if not self.finish_date:
@@ -112,14 +122,15 @@ class JobCards(AccountsController):
 				frappe.throw(_("Job out date cannot be earlier than job in date."),title="Invalid Data")
 			self.update_reservation()
 		#self.check_items()
-		if self.owned_by == "Own":
-			self.db_set("outstanding_amount", 0)
-		if self.owned_by == "CDCL":
-			self.post_journal_entry()
-			self.db_set("outstanding_amount", 0)
-		if self.owned_by == "Others":
-			self.make_gl_entries()
+		# if self.owned_by == "Own":
+		# 	self.db_set("outstanding_amount", 0)
+		# if self.owned_by == "CDCL":
+		# 	self.post_journal_entry()
+		# 	self.db_set("outstanding_amount", 0)
+		# if self.owned_by == "Others":
+		self.make_gl_entries()
 		self.update_breakdownreport()
+		
 
 	def before_cancel(self):
 		check_uncancelled_linked_doc(self.doctype, self.name)
@@ -446,3 +457,26 @@ def make_payment_entry(source_name, target_doc=None):
 			},
 		}, target_doc)
 	return doc
+
+def get_permission_query_conditions(user):
+	if not user: user = frappe.session.user
+	user_roles = frappe.get_roles(user)
+
+	if user == "Administrator" or "System Manager" in user_roles: 
+		return
+
+	return """(
+		`tabJob Cards`.owner = '{user}'
+		or
+		exists(select 1
+			from `tabEmployee` as e
+			where e.branch = `tabJob Cards`.branch
+			and e.user_id = '{user}')
+		or
+		exists(select 1
+			from `tabEmployee` e, `tabAssign Branch` ab, `tabBranch Item` bi
+			where e.user_id = '{user}'
+			and ab.employee = e.name
+			and bi.parent = ab.name
+			and bi.branch = `tabJob Cards`.branch)
+	)""".format(user=user)

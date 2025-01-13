@@ -188,21 +188,21 @@ frappe.ui.form.on("Asset", {
 				);
 			}
 
-			if (frm.doc.purchase_receipt || !frm.doc.is_existing_asset) {
-				frm.add_custom_button(
-					__("View General Ledger"),
-					function () {
-						frappe.route_options = {
-							voucher_no: frm.doc.name,
-							from_date: frm.doc.available_for_use_date,
-							to_date: frm.doc.available_for_use_date,
-							company: frm.doc.company,
-						};
-						frappe.set_route("query-report", "General Ledger");
-					},
-					__("Manage")
-				);
-			}
+			// if (frm.doc.purchase_receipt || !frm.doc.is_existing_asset) {
+			// 	frm.add_custom_button(
+			// 		__("View General Ledger"),
+			// 		function () {
+			// 			frappe.route_options = {
+			// 				voucher_no: frm.doc.name,
+			// 				from_date: frm.doc.available_for_use_date,
+			// 				to_date: frm.doc.available_for_use_date,
+			// 				company: frm.doc.company,
+			// 			};
+			// 			frappe.set_route("query-report", "General Ledger");
+			// 		},
+			// 		__("Manage")
+			// 	);
+			// }
 
 			if (frm.doc.depr_entry_posting_status === "Failed") {
 				frm.trigger("set_depr_posting_failure_alert");

@@ -587,25 +587,26 @@ class JournalEntry(AccountsController):
 
 	def validate_party(self):
 		for d in self.get("accounts"):
-			account_type = frappe.get_cached_value("Account", d.account, "account_type")
-			if account_type in ["Receivable", "Payable"]:
-				if d.party_type == "Employee":
-					continue
-				elif not (d.party_type and d.party):
-					frappe.throw(
-						_(
-							"Row {0}: Party Type and Party are required for Receivable / Payable account {1}"
-						).format(d.idx, d.account)
-					)
-				elif (
-					d.party_type
-					and frappe.db.get_value("Party Type", d.party_type, "account_type") != account_type
-				):
-					frappe.throw(
-						_("Row {0}: Account {1} and Party Type {2} have different account types").format(
-							d.idx, d.account, d.party_type
+			if cint(d.party_check):
+				account_type = frappe.get_cached_value("Account", d.account, "account_type")
+				if account_type in ["Receivable", "Payable"]:
+					if d.party_type == "Employee":
+						continue
+					elif not (d.party_type and d.party):
+						frappe.throw(
+							_(
+								"Row {0}: Party Type and Party are required for Receivable / Payable account {1}"
+							).format(d.idx, d.account)
 						)
-					)
+					elif (
+						d.party_type
+						and frappe.db.get_value("Party Type", d.party_type, "account_type") != account_type
+					):
+						frappe.throw(
+							_("Row {0}: Account {1} and Party Type {2} have different account types").format(
+								d.idx, d.account, d.party_type
+							)
+						)
 		
 
 	# def validate_party(self):
@@ -737,7 +738,7 @@ class JournalEntry(AccountsController):
 				against_entries = frappe.db.sql(
 					"""select * from `tabJournal Entry Account`
 					where account = %s and docstatus = 1 and parent = %s
-					and (reference_type is null or reference_type in ('', 'Sales Order', 'Purchase Order'))
+					and (reference_type is null or reference_type in ('', 'Sales Order', 'Purchase Order', 'Leave Encashment'))
 					""",
 					(d.account, d.reference_name),
 					as_dict=True,
@@ -746,6 +747,7 @@ class JournalEntry(AccountsController):
 				if not against_entries:
 					if self.voucher_type != "Exchange Gain Or Loss":
 						# pass
+						# frappe.throw(d.reference_name)
 						frappe.throw(
 							_(
 								"Journal Entry {0} does not have account {1} or already matched against other voucher"
@@ -941,9 +943,9 @@ class JournalEntry(AccountsController):
 					accounts_debited.append(d.party or d.account)
 				if flt(d.credit) > 0:
 					accounts_credited.append(d.party or d.account)
-
 			for d in self.get("accounts"):
 				if flt(d.debit) > 0:
+					# d.against_account = ", ".join(str(account) for account in set(accounts_credited) if account is not None)
 					d.against_account = ", ".join(list(set(accounts_credited)))
 				if flt(d.credit) > 0:
 					d.against_account = ", ".join(list(set(accounts_debited)))
@@ -1238,7 +1240,8 @@ class JournalEntry(AccountsController):
 								"remarks": remarks,
 								"voucher_detail_no": d.reference_detail_no,
 								"cost_center": d.cost_center,
-								"project": d.project,
+								"project": d.project, # Added by Kinley on 2024/12/26
+								"party_check": d.party_check,
 								"finance_book": self.finance_book,
 								# "business_activity": d.business_activity,
 							},

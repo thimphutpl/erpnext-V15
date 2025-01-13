@@ -12,7 +12,8 @@ def get_pol_till(purpose, equipment, posting_date, pol_type=None, posting_time="
 		frappe.throw("Equipment and Till Date are Mandatory")
 	total = 0
 	posting_datetime = str(get_datetime(str(posting_date) + ' ' + str(posting_time)))
-	query = "select sum(ifnull(qty,0)) as total from `tabPOL Entry` where docstatus = 1 and type = \'"+str(purpose)+"\' and equipment = \'" + str(equipment) + "\' and cast(concat(posting_date, ' ' , posting_time) as datetime) <= \'" + str(posting_datetime) + "\'"
+	# query = "select sum(ifnull(qty,0)) as total from `tabPOL Entry` where docstatus = 1 and type = \'"+str(purpose)+"\' and equipment = \'" + str(equipment) + "\' and cast(concat(posting_date, ' ' , posting_time) as datetime) <= \'" + str(posting_datetime) + "\'"
+	query = "select sum(ifnull(qty,0)) as total from `tabPOL Entry` where docstatus = 1 and type = \'"+str(purpose)+"\' and equipment = \'" + str(equipment) + "\'"
 	if pol_type:
 		query += " and pol_type = \'" + str(pol_type) + "\'"
 	

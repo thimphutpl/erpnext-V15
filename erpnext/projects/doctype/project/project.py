@@ -75,6 +75,8 @@ class Project(Document):
 		weekly_time_to_send: DF.Time | None
 	# end: auto-generated types
 	def autoname(self):
+		if not frappe.db.get_value("Project Definition", self.project_definition, "project_code_prefix"):
+			frappe.throw("Project Code Prefix is not set for Project Definition {}".format(self.project_definition))
 		prefix = frappe.db.get_value("Project Definition", self.project_definition, "project_code_prefix")
 		self.name = self.project_name + " ("+prefix+") - GYALSUNG"
 	def onload(self):
@@ -107,10 +109,11 @@ class Project(Document):
 		self.validate_branch_cc()
 		self.validate_project_type_and_party()
 		self.update_party_info()
+		self.update_tasks()
 		# set_status method created by SHIV on 03/11/2017
 		self.set_status()
-		self.validate_target_quantity()
-		self.validate_work_quantity()
+		# self.validate_target_quantity()
+		# self.validate_work_quantity()
 		
 		if self.status in ('Planning','Ongoing'):
 			self.sync_activity_tasks()
@@ -150,6 +153,10 @@ class Project(Document):
 					doc.branch      = self.branch
 					doc.cost_center = self.cost_center
 					doc.save(ignore_permissions = True)
+
+	def update_tasks(self):
+		for t in self.activity_tasks:
+			pass
 
 	def update_group_tasks(self):
 		if self.flags.dont_sync_tasks: return
@@ -345,7 +352,7 @@ class Project(Document):
 	def load_activity_tasks(self):
 		#frappe.msgprint(_("load_activity_task is called from onload"))
 		"""Load `activity_tasks` from the database"""
-		self.activity_tasks = []
+		# self.activity_tasks = []
 		for task in self.get_activity_tasks():
 			self.append("activity_tasks", {
 				"activity": task.activity,
@@ -356,7 +363,7 @@ class Project(Document):
 				"end_date": task.exp_end_date,
 				"description": task.description,
 				"work_quantity": task.work_quantity,
-				"work_quantity_complete": task.work_quantity_complete,
+				# "work_quantity_complete": task.work_quantity_complete,
 				"target_uom": task.target_uom,
 				"target_quantity": task.target_quantity,
 				"target_quantity_complete": task.target_quantity_complete,
@@ -584,7 +591,25 @@ class Project(Document):
 						msg += 'Reference: <a href="#Form/Timesheet/{0}">{0}</a><br/>'.format(item.name,item.name)
 					
 					frappe.throw("Row# {0} : Cannot change `Target Work Quantity` for Tasks already having active Timesheets. <br/>{1}".format(task.idx, msg))
-                                        
+
+	@frappe.whitelist()
+	def calculate_task_weightage(self):
+		total_duration = 0
+		for t in self.activity_tasks:
+			holiday = holiday_list(t.start_date, t.end_date, self.holiday_list)
+			if t.end_date and t.start_date:
+				t.task_duration = date_diff(t.end_date, t.start_date) + 1 - flt(holiday)
+				total_duration += t.task_duration
+
+		for task in self.activity_tasks:
+			task.task_weightage = flt((task.task_duration/total_duration) * 100,7)
+			if task.work_quantity_complete:
+				task.task_achievement_percent = task.task_weightage * (task.work_quantity_complete/100)
+			frappe.db.sql("""
+                 update `tabActivity Tasks` set task_weightage = '{}', task_achievement_percent = '{}' where name = '{}'
+                 """.format(task.task_weightage, task.task_achievement_percent, task.name))
+		self.duration_sum = total_duration
+                        
 	def validate_target_quantity(self):
 		if self.flags.dont_sync_tasks: return
 		
@@ -645,28 +670,28 @@ class Project(Document):
 
 		if not self.project_type:
 			frappe.throw(_("Project type cannot be empty"), title="Data Missing")
-		elif self.party_type and not self.party:
-			frappe.throw(_("Party cannot be empty"),title="Data Missing")
-		elif not self.party_type and self.party:
-			frappe.throw(_("Party Type cannot be empty"),title="Data Missing")
-		else:
-			#project_type = {"Internal": ["Employee","None"], "External": ["Supplier","Customer"]}
-			project_type = {"Internal": [""], "External": ["Customer"]}
-			for key,value in project_type.items():
-				if self.project_type == key and (self.party_type or "None") not in value:
-					frappe.throw(_("Party type should be {0} for {1} projects").format("/".join(value),key), title="Invalid Data")
+		# elif self.party_type and not self.party:
+		# 	frappe.throw(_("Party cannot be empty"),title="Data Missing")
+		# elif not self.party_type and self.party:
+		# 	frappe.throw(_("Party Type cannot be empty"),title="Data Missing")
+		# else:
+		# 	#project_type = {"Internal": ["Employee","None"], "External": ["Supplier","Customer"]}
+		# 	project_type = {"External": ["Customer"]}
+		# 	for key,value in project_type.items():
+		# 		if self.project_type == key and (self.party_type or "None") not in value:
+		# 			frappe.throw(_("Party type should be {0} for {1} projects").format("/".join(value),key), title="Invalid Data")
 
-			prev_project_type = self.get_db_value("project_type") 
-			prev_party        = self.get_db_value("party")
+		# 	prev_project_type = self.get_db_value("project_type") 
+		# 	prev_party        = self.get_db_value("party")
 
-			fields = []
-			if prev_project_type and prev_project_type != self.project_type:
-				fields.append("Project Type")
-			elif prev_party and prev_party != self.party:
-				fields.append("Party")
+		# 	fields = []
+		# 	if prev_project_type and prev_project_type != self.project_type:
+		# 		fields.append("Project Type")
+		# 	elif prev_party and prev_party != self.party:
+		# 		fields.append("Party")
 			
-			if fields:
-				self.check_dependencies(fields[0])
+		# 	if fields:
+		# 		self.check_dependencies(fields[0])
 
 	def check_dependencies(self, field):
 		for dt in ["Project Advance", "Project Invoice"]:
@@ -705,7 +730,7 @@ class Project(Document):
 					ts_list = frappe.db.sql("""
 								select name
 								from `tabTimesheet`
-								where project = "{0}"
+								where parent_project = "{0}"
 								and task = '{1}'
 								and docstatus < 2
 						""".format(self.name, task.task_id), as_dict=1)
@@ -721,7 +746,7 @@ class Project(Document):
 					ts_list = frappe.db.sql("""
 								select name
 								from `tabTimesheet`
-								where project = "{0}"
+								where parent_project = "{0}"
 								and task = '{1}'
 								and docstatus < 2
 						""".format(self.name, task.task_id), as_dict=1)
@@ -742,7 +767,7 @@ class Project(Document):
 					ts_list = frappe.db.sql("""
 								select name
 								from `tabTimesheet`
-								where project = "{0}"
+								where parent_project = "{0}"
 								and task = '{1}'
 								and docstatus < 2
 						""".format(self.name, task.task_id), as_dict=1)
@@ -758,7 +783,7 @@ class Project(Document):
 					ts_list = frappe.db.sql("""
 								select name
 								from `tabTimesheet`
-								where project = "{0}"
+								where parent_project = "{0}"
 								and task = '{1}'
 								and docstatus < 2
 						""".format(self.name, task.task_id), as_dict=1)

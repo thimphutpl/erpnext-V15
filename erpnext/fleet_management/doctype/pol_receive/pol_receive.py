@@ -44,7 +44,7 @@ class POLReceive(StockController):
 		equipment_category: DF.ReadOnly | None
 		equipment_number: DF.Data | None
 		equipment_type: DF.ReadOnly | None
-		equipment_warehouse: DF.Link
+		equipment_warehouse: DF.Link | None
 		expense_account: DF.Link | None
 		fuelbook: DF.Link
 		fuelbook_branch: DF.ReadOnly | None
@@ -71,7 +71,7 @@ class POLReceive(StockController):
 		stock_uom: DF.Link | None
 		supplier: DF.Link
 		total_amount: DF.Currency
-		warehouse: DF.Link
+		warehouse: DF.Link | None
 	# end: auto-generated types
 	def validate(self):
 		check_future_date(self.posting_date)
@@ -80,7 +80,7 @@ class POLReceive(StockController):
 		#self.set_warehouse()
 		self.check_on_dry_hire()
 		self.validate_data()
-		self.validate_posting_time()
+		# self.validate_posting_time()
 		self.validate_uom_is_integer("stock_uom", "qty")
 		self.validate_item()
 

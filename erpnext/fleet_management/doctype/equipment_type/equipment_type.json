@@ -10,6 +10,7 @@
  "field_order": [
   "equipment_category",
   "equipment_type",
+  "disabled",
   "column_break_6",
   "is_container",
   "no_own_tank"
@@ -48,11 +49,17 @@
    "fieldname": "no_own_tank",
    "fieldtype": "Check",
    "label": "Doesn't have Own Tank"
+  },
+  {
+   "default": "0",
+   "fieldname": "disabled",
+   "fieldtype": "Check",
+   "label": "Disabled"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-23 17:37:48.795496",
+ "modified": "2025-01-04 20:04:43.804310",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Equipment Type",

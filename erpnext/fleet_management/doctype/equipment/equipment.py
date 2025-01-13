@@ -36,8 +36,11 @@ class Equipment(Document):
 		equipment_type: DF.Link
 		fuelbook: DF.Link | None
 		gewog: DF.Link | None
+		hired_equipment: DF.Check
 		hsd_type: DF.Link | None
 		is_disabled: DF.Check
+		kph: DF.Float
+		lph: DF.Float
 		maintain_in_others_asset: DF.Check
 		model_items: DF.Table[EquipmentModelHistory]
 		not_cdcl: DF.Check

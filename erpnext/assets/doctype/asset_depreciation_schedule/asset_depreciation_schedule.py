@@ -368,32 +368,34 @@ class AssetDepreciationSchedule(Document):
 			# 	break
 
 			# For first row
-			if (
-				n == 0
-				and (has_pro_rata or has_wdv_or_dd_non_yearly_pro_rata)
-				and not self.opening_accumulated_depreciation
-				and not self.flags.wdv_it_act_applied
-			):
-				from_date = add_days(
-					asset_doc.available_for_use_date, -1
-				)  # needed to calc depr amount for available_for_use_date too
-				depreciation_amount, days, months = _get_pro_rata_amt(
-					row,
-					depreciation_amount,
-					from_date,
-					row.depreciation_start_date,
-					has_wdv_or_dd_non_yearly_pro_rata,
-				)
-				if flt(depreciation_amount, asset_doc.precision("gross_purchase_amount")) <= 0:
-					frappe.throw(
-						_(
-							"Gross Purchase Amount Too Low: {0} cannot be depreciated over {1} cycles with a frequency of {2} depreciations."
-						).format(
-							frappe.bold(asset_doc.gross_purchase_amount),
-							frappe.bold(row.total_number_of_depreciations),
-							frappe.bold(row.frequency_of_depreciation),
-						)
-					)
+			# frappe.throw(str(has_pro_rata))
+			# if (
+			# 	n == 0
+			# 	and (has_pro_rata or has_wdv_or_dd_non_yearly_pro_rata)
+			# 	and not self.opening_accumulated_depreciation
+			# 	and not self.flags.wdv_it_act_applied
+			# ):
+			# 	from_date = add_days(
+			# 		asset_doc.available_for_use_date, -1
+			# 	)  
+			# 	depreciation_amount, days, months = _get_pro_rata_amt(
+			# 		row,
+			# 		depreciation_amount,
+			# 		from_date,
+			# 		row.depreciation_start_date,
+			# 		has_wdv_or_dd_non_yearly_pro_rata,
+			# 	)
+			# 	if flt(depreciation_amount, asset_doc.precision("gross_purchase_amount")) <= 0:
+			# 		frappe.throw(
+			# 			_(
+			# 				"Gross Purchase Amount Too Low: {0} cannot be depreciated over {1} cycles with a frequency of {2} depreciations."
+			# 			).format(
+			# 				frappe.bold(asset_doc.gross_purchase_amount),
+			# 				frappe.bold(row.total_number_of_depreciations),
+			# 				frappe.bold(row.frequency_of_depreciation),
+			# 			)
+			# 		)
+			
 			# elif n == 0 and has_wdv_or_dd_non_yearly_pro_rata and self.opening_accumulated_depreciation:
 			# 	if not is_first_day_of_the_month(getdate(asset_doc.available_for_use_date)):
 			# 		from_date = get_last_day(

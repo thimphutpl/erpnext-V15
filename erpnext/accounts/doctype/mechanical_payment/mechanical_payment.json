@@ -136,6 +136,7 @@
    "reqd": 1
   },
   {
+   "fetch_from": "branch.revenue_bank_account",
    "fieldname": "income_account",
    "fieldtype": "Link",
    "label": "Incoming Account",
@@ -176,7 +177,6 @@
    "fieldtype": "Column Break"
   },
   {
-   "default": "TDS - wittheld by Client - CDCL",
    "fieldname": "tds_account",
    "fieldtype": "Link",
    "label": "TDS Account",
@@ -272,7 +272,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-25 09:58:28.741299",
+ "modified": "2025-01-04 22:26:15.469730",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Mechanical Payment",

@@ -14,7 +14,7 @@ from erpnext.accounts.doctype.accounting_dimension.accounting_dimension import (
 	get_checks_for_pl_and_bs_accounts,
 )
 from erpnext.accounts.party import validate_party_frozen_disabled, validate_party_gle_currency
-from erpnext.accounts.utils import get_account_currency, get_fiscal_year
+from erpnext.accounts.utils import get_account_currency, get_fiscal_year, cint
 from erpnext.exceptions import InvalidAccountCurrency
 
 exclude_from_linked_with = True
@@ -50,6 +50,7 @@ class GLEntry(Document):
 		is_cancelled: DF.Check
 		is_opening: DF.Literal["No", "Yes"]
 		party: DF.DynamicLink | None
+		party_check: DF.Check
 		party_type: DF.Link | None
 		posting_date: DF.Date | None
 		project: DF.Link | None
@@ -128,19 +129,20 @@ class GLEntry(Document):
 
 		if not (self.party_type and self.party):
 			account_type = frappe.get_cached_value("Account", self.account, "account_type")
-			if account_type == "Receivable":
-				frappe.throw(
-					_("{0} {1}: Customer is required against Receivable account {2}").format(
-						self.voucher_type, self.voucher_no, self.account
+			if cint(self.party_check):
+				if account_type == "Receivable":
+					frappe.throw(
+						_("{0} {1}: Customer is required against Receivable account {2}").format(
+							self.voucher_type, self.voucher_no, self.account
+						)
 					)
-				)
-			elif account_type == "Payable":
-				# frappe.throw(str(self.account))
-				frappe.throw(
-					_("{0} {1}: Supplier is required against Payable account {2}").format(
-						self.voucher_type, self.voucher_no, self.account
+				elif account_type == "Payable":
+					# frappe.throw(str(self.account))
+					frappe.throw(
+						_("{0} {1}: Supplier is required against Payable account {2}").format(
+							self.voucher_type, self.voucher_no, self.account
+						)
 					)
-				)
 
 		# Zero value transaction is not allowed
 		if not (

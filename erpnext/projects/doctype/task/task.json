@@ -18,6 +18,7 @@
   "work_quantity",
   "work_quantity_complete",
   "activity",
+  "task_weightage",
   "column_break0",
   "status",
   "priority",
@@ -189,6 +190,7 @@
    "fetch_from": "type.weight",
    "fieldname": "task_weight",
    "fieldtype": "Float",
+   "hidden": 1,
    "label": "Weight"
   },
   {
@@ -521,6 +523,12 @@
    "fieldtype": "Percent",
    "hidden": 1,
    "label": "Group Work Quantity Complete"
+  },
+  {
+   "fieldname": "task_weightage",
+   "fieldtype": "Data",
+   "label": "Task Weightage",
+   "read_only": 1
   }
  ],
  "icon": "fa fa-check",
@@ -528,7 +536,7 @@
  "is_tree": 1,
  "links": [],
  "max_attachments": 5,
- "modified": "2024-12-20 15:10:28.687830",
+ "modified": "2025-01-09 12:22:54.798832",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Task",

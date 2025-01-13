@@ -232,7 +232,7 @@
    "fieldname": "repair_type",
    "fieldtype": "Select",
    "label": "Job Type",
-   "options": "Minor Repair\nMajor Repair\nFabrication Works\nBailey Bridge Works"
+   "options": "Minor Repair\nMajor Repair\nPreventive Maintenance\nRegular Maintenance\nBreakdown"
   },
   {
    "fieldname": "section_break_5",
@@ -469,7 +469,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-29 14:35:21.272737",
+ "modified": "2025-01-04 21:24:58.137577",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Job Cards",

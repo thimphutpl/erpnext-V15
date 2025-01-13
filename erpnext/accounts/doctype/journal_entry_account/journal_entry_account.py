@@ -35,13 +35,14 @@ class JournalEntryAccount(Document):
 		parentfield: DF.Data
 		parenttype: DF.Data
 		party: DF.DynamicLink | None
+		party_check: DF.Check
 		party_type: DF.Link | None
 		project: DF.Link | None
 		rate: DF.Float
 		reference_detail_no: DF.Data | None
 		reference_due_date: DF.Date | None
 		reference_name: DF.DynamicLink | None
-		reference_type: DF.Literal["", "Bonus", "PBVA", "Sales Invoice", "SWS Application", "Purchase Invoice", "Journal Entry", "Sales Order", "Purchase Order", "Expense Claim", "Asset", "Loan", "Payroll Entry", "Employee Advance", "Exchange Rate Revaluation", "Invoice Discounting", "Fees", "Full and Final Statement", "Payment Entry", "Abstract Bill", "Imprest Advance", "Imprest Recoup", "POL Advance", "Process MR Payment", "Travel Claim", "Travel Authorization", "Fund Requisition", "Leave Encashment", "Bulk Leave Encashment", "Leave Travel Concession", "Equipment Hiring Form", "Job Cards", "Employee Benefits"]
+		reference_type: DF.Literal["", "Bonus", "PBVA", "Sales Invoice", "SWS Application", "Purchase Invoice", "Journal Entry", "Sales Order", "Purchase Order", "Expense Claim", "Asset", "Loan", "Payroll Entry", "Employee Advance", "Exchange Rate Revaluation", "Invoice Discounting", "Fees", "Full and Final Statement", "Payment Entry", "Abstract Bill", "Imprest Advance", "Imprest Recoup", "POL Advance", "Process MR Payment", "Travel Claim", "Travel Authorization", "Fund Requisition", "Leave Encashment", "Bulk Leave Encashment", "Leave Travel Concession", "Equipment Hiring Form", "Job Cards", "Employee Benefits", "Insurance and Registration"]
 		tax_account: DF.Link | None
 		tax_amount: DF.Currency
 		tax_amount_in_account_currency: DF.Currency

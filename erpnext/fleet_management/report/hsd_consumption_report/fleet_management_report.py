@@ -78,6 +78,15 @@ def get_pol_consumed_till(equipment, date):
 	else:
 		return 0	
 
+def get_pol_consumed_tills(equipment):
+	if not equipment:
+		frappe.throw("Equipment are Mandatory")
+	pol = frappe.db.sql("select sum(consumption) as total from `tabVehicle Logbook` where docstatus = 1 and equipment = %s", (equipment, ), as_dict=True)
+	if pol:
+		return pol[0].total
+	else:
+		return 0		
+
 def get_km_till(equipment, date):
 	if not equipment or not date:
                 frappe.throw("Equipment and Till Date are Mandatory")

@@ -113,8 +113,10 @@ class PurchaseInvoice(BuyingController):
 		credit_to: DF.Link
 		currency: DF.Link | None
 		disable_rounded_total: DF.Check
+		discount: DF.Currency
 		discount_amount: DF.Currency
 		due_date: DF.Date | None
+		freight_insurance_charges: DF.Currency
 		from_date: DF.Date | None
 		grand_total: DF.Currency
 		group_same_items: DF.Check
@@ -132,6 +134,7 @@ class PurchaseInvoice(BuyingController):
 		is_subcontracted: DF.Check
 		items: DF.Table[PurchaseInvoiceItem]
 		language: DF.Data | None
+		ld_days: DF.Data | None
 		letter_head: DF.Link | None
 		material_request: DF.Link | None
 		material_request_date: DF.Date | None
@@ -140,6 +143,7 @@ class PurchaseInvoice(BuyingController):
 		net_total: DF.Currency
 		on_hold: DF.Check
 		only_include_allocated_payments: DF.Check
+		other_charges: DF.Currency
 		other_charges_calculation: DF.TextEditor | None
 		outstanding_amount: DF.Currency
 		paid_amount: DF.Currency
@@ -195,6 +199,7 @@ class PurchaseInvoice(BuyingController):
 		title: DF.Data | None
 		to_date: DF.Date | None
 		total: DF.Currency
+		total_add_ded: DF.Currency
 		total_advance: DF.Currency
 		total_net_weight: DF.Float
 		total_qty: DF.Float
@@ -244,6 +249,7 @@ class PurchaseInvoice(BuyingController):
 		return self.on_hold and (not self.release_date or self.release_date > getdate(nowdate()))
 
 	def validate(self):
+		self.adjust_add_ded()
 		if not self.is_opening:
 			self.is_opening = "No"
 
@@ -286,7 +292,26 @@ class PurchaseInvoice(BuyingController):
 		self.reset_default_field_value("rejected_warehouse", "items", "rejected_warehouse")
 		self.reset_default_field_value("set_from_warehouse", "items", "from_warehouse")
 		self.set_percentage_received()
+		self.warehouse_from_branch()
 
+	def adjust_add_ded(self):
+		# self.total_add_ded = flt(self.freight_insurance_charges) - flt(self.discount) + flt(self.tax) + flt(self.other_charges)
+		self.total_add_ded = flt(self.freight_insurance_charges) - flt(self.discount) + flt(self.other_charges)
+		self.discount_amount = -1 * flt(self.total_add_ded)
+	def warehouse_from_branch(doc):
+		branchname=doc.branch
+		query = """
+        SELECT parent 
+        FROM `tabWarehouse Branch` 
+        WHERE branch=%s
+        """
+
+		warehouse = frappe.db.sql(query, (branchname,), as_dict=True)
+		if warehouse:
+			doc.set_warehouse = warehouse[0].get("parent")
+		else:
+			frappe.throw(f"No warehouse found for branch {branchname}")
+		
 	def set_percentage_received(self):
 		total_billed_qty = 0.0
 		total_received_qty = 0.0
@@ -969,6 +994,23 @@ class PurchaseInvoice(BuyingController):
 		self.make_payment_gl_entries(gl_entries)
 		self.make_write_off_gl_entry(gl_entries)
 		self.make_gle_for_rounding_adjustment(gl_entries)
+		total_debit = total_credit = 0
+		gls = {}
+		for a in gl_entries:
+			if not a.account in gls:
+				gls.update({a.account: {"Debit": a.debit, "Credit": a.credit}})
+			else:
+				gls[a.account]["Debit"] += a.debit
+				gls[a.account]["Credit"] += a.credit
+			if a.debit > 0:
+				total_debit += a.debit
+				# gls.update({a.account: {"Debit": a.debit}})
+			else:
+				total_credit += a.credit
+				# gls.update({a.account: {"Credit": a.credit}})
+
+		frappe.throw("debit = "+str(total_debit)+" credit = "+str(total_credit)+" "+str(gls))
+
 		return gl_entries
 
 	def check_asset_cwip_enabled(self):
@@ -1015,7 +1057,7 @@ class PurchaseInvoice(BuyingController):
 						"against_voucher_type": self.doctype,
 						"project": self.project,
 						"cost_center": self.cost_center,
-						"business_activity": self.business_activity,
+						# "business_activity": self.business_activity,
 					},
 					self.party_account_currency,
 					item=self,
@@ -1085,7 +1127,7 @@ class PurchaseInvoice(BuyingController):
 									"project": item.project or self.project,
 									"remarks": self.get("remarks") or _("Accounting Entry for Stock"),
 									"debit": warehouse_debit_amount,
-									"business_activity": self.business_activity,
+									# "business_activity": self.business_activity,
 								},
 								warehouse_account[item.warehouse]["account_currency"],
 								item=item,
@@ -1106,7 +1148,7 @@ class PurchaseInvoice(BuyingController):
 									"project": item.project or self.project,
 									"remarks": self.get("remarks") or _("Accounting Entry for Stock"),
 									"debit": -1 * flt(credit_amount, item.precision("base_net_amount")),
-									"business_activity": self.business_activity,
+									# "business_activity": self.business_activity,
 								},
 								warehouse_account[item.from_warehouse]["account_currency"],
 								item=item,
@@ -1124,7 +1166,7 @@ class PurchaseInvoice(BuyingController):
 										"remarks": self.get("remarks") or _("Accounting Entry for Stock"),
 										"cost_center": item.cost_center,
 										"project": item.project,
-										"business_activity": self.business_activity,
+										# "business_activity": self.business_activity,
 									},
 									account_currency,
 									item=item,
@@ -1142,7 +1184,7 @@ class PurchaseInvoice(BuyingController):
 										"remarks": self.get("remarks") or _("Accounting Entry for Stock"),
 										"cost_center": item.cost_center,
 										"project": item.project or self.project,
-										"business_activity": self.business_activity,
+										# "business_activity": self.business_activity,
 									},
 									account_currency,
 									item=item,
@@ -1163,7 +1205,7 @@ class PurchaseInvoice(BuyingController):
 											"credit": flt(amount["base_amount"]),
 											"credit_in_account_currency": flt(amount["amount"]),
 											"project": item.project or self.project,
-											"business_activity": self.business_activity,
+											# "business_activity": self.business_activity,
 										},
 										item=item,
 									)
@@ -1185,7 +1227,7 @@ class PurchaseInvoice(BuyingController):
 									"project": item.project or self.project,
 									"remarks": self.get("remarks") or _("Accounting Entry for Stock"),
 									"credit": flt(item.rm_supp_cost),
-									"business_activity": self.business_activity,
+									# "business_activity": self.business_activity,
 								},
 								warehouse_account[self.supplier_warehouse]["account_currency"],
 								item=item,
@@ -1238,7 +1280,7 @@ class PurchaseInvoice(BuyingController):
 											"debit": discrepancy_caused_by_exchange_rate_difference,
 											"cost_center": item.cost_center,
 											"project": item.project or self.project,
-											"business_activity": self.business_activity,
+											# "business_activity": self.business_activity,
 										},
 										account_currency,
 										item=item,
@@ -1252,7 +1294,7 @@ class PurchaseInvoice(BuyingController):
 											"credit": discrepancy_caused_by_exchange_rate_difference,
 											"cost_center": item.cost_center,
 											"project": item.project or self.project,
-											"business_activity": self.business_activity,
+											# "business_activity": self.business_activity,
 										},
 										account_currency,
 										item=item,
@@ -1498,6 +1540,7 @@ class PurchaseInvoice(BuyingController):
 							item=tax,
 						)
 					)
+		# frappe.throw(str(gl_entries))
 
 	def make_internal_transfer_gl_entries(self, gl_entries):
 		if self.is_internal_transfer() and flt(self.base_total_taxes_and_charges):
@@ -1829,7 +1872,7 @@ class PurchaseInvoice(BuyingController):
 
 		if not accounts or tax_withholding_details.get("account_head") not in accounts:
 			self.append("taxes", tax_withholding_details)
-		frappe.throw(str(self.taxes))
+		# frappe.throw(str(self.taxes))
 		to_remove = [
 			d
 			for d in self.taxes

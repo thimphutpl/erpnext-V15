@@ -19,7 +19,6 @@ class PurchaseReceiptItem(Document):
 		apply_tds: DF.Check
 		asset_category: DF.Link | None
 		asset_location: DF.Link | None
-		barcode: DF.Data | None
 		base_amount: DF.Currency
 		base_net_amount: DF.Currency
 		base_net_rate: DF.Currency
@@ -38,7 +37,6 @@ class PurchaseReceiptItem(Document):
 		discount_percentage: DF.Percent
 		expense_account: DF.Link | None
 		from_warehouse: DF.Link | None
-		has_item_scanned: DF.Check
 		image: DF.Attach | None
 		include_exploded_items: DF.Check
 		is_fixed_asset: DF.Check

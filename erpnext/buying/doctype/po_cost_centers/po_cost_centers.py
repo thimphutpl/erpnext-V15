@@ -1,11 +1,11 @@
-# Copyright (c) 2024, Frappe Technologies Pvt. Ltd. and contributors
+# Copyright (c) 2025, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
 # import frappe
 from frappe.model.document import Document
 
 
-class MechanicalPaymentItem(Document):
+class POCostCenters(Document):
 	# begin: auto-generated types
 	# This code is auto-generated. Do not modify anything in this block.
 
@@ -14,13 +14,9 @@ class MechanicalPaymentItem(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
-		allocated_amount: DF.Currency
-		customer: DF.Data | None
-		outstanding_amount: DF.Currency
+		cost_center: DF.Link | None
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
-		reference_name: DF.DynamicLink
-		reference_type: DF.Literal["", "Job Cards", "Hire Charge Invoice"]
 	# end: auto-generated types
 	pass

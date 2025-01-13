@@ -171,7 +171,17 @@ frappe.ui.form.on("Employee", {
 cur_frm.cscript = new erpnext.setup.EmployeeController({
 	frm: cur_frm
 });
+cur_frm.fields_dict['gewog'].get_query = function(doc, dt, dn) {
+	return {
+			filters:{"dzongkhag": doc.dzongkhag}
+	}
+}
 
+cur_frm.fields_dict['village'].get_query = function(doc, dt, dn) {
+	return {
+			filters:{"gewog": doc.gewog}
+	}
+}
 
 frappe.tour['Employee'] = [
 	{

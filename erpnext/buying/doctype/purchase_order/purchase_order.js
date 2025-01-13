@@ -156,8 +156,46 @@ frappe.ui.form.on("Purchase Order", {
 				v.cost_center = frm.doc.cost_center
 			})
 		}
-	}
+
+		frappe.call({
+			method: "frappe.client.get_value",
+			args: {
+				doctype: "Cost Center",
+				fieldname: "warehouse",
+				filters: { name: frm.doc.cost_center },
+			},
+			callback: function(r, rt) {
+				if(r.message.warehouse) {
+					frm.doc.items.map(v=>{
+						v.warehouse = r.message.warehouse
+					})
+				}else{
+					frappe.throw(__('Warehouse not define in this Cost Center'))
+				}
+			}
+		});
+	},
+
+	// freight_insurance_charges: function(frm) {
+	// 	calculate_discount(frm)
+	// },
+
+	discount: function(frm) {
+		calculate_discount(frm)
+	},
+
+	// other_charges: function(frm) {
+	// 	calculate_discount(frm)
+	// }
 });
+
+function calculate_discount(frm) {
+	console.log(frm.doc.freight_insurance_charges + frm.doc.other_charges - frm.doc.discount);
+	frm.set_value("total_add_ded", flt(frm.doc.freight_insurance_charges + frm.doc.other_charges - frm.doc.discount)??0);
+	frm.set_value("discount_amount", flt(-frm.doc.freight_insurance_charges - frm.doc.other_charges + frm.doc.discount)??0);
+	frm.refresh_field("discount_amount");
+	frm.refresh_field("total_add_ded");
+}
 
 frappe.ui.form.on("Purchase Order Item", {
 	schedule_date: function (frm, cdt, cdn) {

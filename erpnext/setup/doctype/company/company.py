@@ -34,6 +34,7 @@ class Company(NestedSet):
 		asset_received_but_not_billed: DF.Link | None
 		auto_err_frequency: DF.Literal["Daily", "Weekly"]
 		auto_exchange_rate_revaluation: DF.Check
+		bluebook_account: DF.Link | None
 		book_advance_payments_in_separate_party_account: DF.Check
 		capital_work_in_progress_account: DF.Link | None
 		chart_of_accounts: DF.Literal[None]
@@ -75,6 +76,7 @@ class Company(NestedSet):
 		disposal_account: DF.Link | None
 		domain: DF.Data | None
 		email: DF.Data | None
+		emission_account: DF.Link | None
 		enable_perpetual_inventory: DF.Check
 		enable_provisional_accounting_for_non_stock_items: DF.Check
 		exception_budget_approver_role: DF.Link | None
@@ -83,17 +85,22 @@ class Company(NestedSet):
 		expenses_included_in_asset_valuation: DF.Link | None
 		expenses_included_in_valuation: DF.Link | None
 		fax: DF.Data | None
+		fine_and_penalty_account: DF.Link | None
+		fitness_account: DF.Link | None
 		gain_disposal_account: DF.Link | None
+		imprest_advance_account: DF.Link | None
 		is_group: DF.Check
 		lft: DF.Int
 		loss_disposal_account: DF.Link | None
 		monthly_sales_target: DF.Currency
+		offense_account: DF.Link | None
 		old_parent: DF.Data | None
 		parent_company: DF.Link | None
 		payment_terms: DF.Link | None
 		phone_no: DF.Data | None
 		pol_advance_account: DF.Link | None
 		reconcile_on_advance_payment_date: DF.Check
+		registration_account: DF.Link | None
 		registration_details: DF.Code | None
 		repair_and_service_account: DF.Link | None
 		rgt: DF.Int

@@ -569,8 +569,7 @@
   {
    "fieldname": "tds_table",
    "fieldtype": "HTML",
-   "label": "TDS Table",
-   "read_only": 1
+   "label": "TDS Table"
   },
   {
    "fieldname": "branch",
@@ -668,7 +667,7 @@
    "table_fieldname": "payment_entries"
   }
  ],
- "modified": "2024-12-20 11:56:48.258095",
+ "modified": "2025-01-13 14:31:06.532186",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Journal Entry",

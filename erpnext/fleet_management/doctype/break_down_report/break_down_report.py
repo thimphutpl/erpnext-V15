@@ -31,7 +31,7 @@ class BreakDownReport(Document):
 		equipment_type: DF.Link | None
 		fleet_comment: DF.SmallText | None
 		job_cards: DF.Link | None
-		owned_by: DF.Literal["", "Own", "CDCL", "Others"]
+		owned_by: DF.Literal["", "Own", "Others"]
 		private_customer_address: DF.SmallText | None
 		private_customer_name: DF.Data | None
 		time: DF.Time

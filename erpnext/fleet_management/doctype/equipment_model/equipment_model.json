@@ -11,7 +11,8 @@
   "column_break_antj",
   "equipment_type",
   "column_break_3",
-  "model"
+  "model",
+  "disabled"
  ],
  "fields": [
   {
@@ -36,11 +37,17 @@
   {
    "fieldname": "column_break_antj",
    "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "disabled",
+   "fieldtype": "Check",
+   "label": "Disabled"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-19 16:05:05.275095",
+ "modified": "2025-01-04 20:06:23.346590",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Equipment Model",

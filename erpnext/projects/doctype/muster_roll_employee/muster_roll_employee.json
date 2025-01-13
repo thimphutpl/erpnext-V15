@@ -398,7 +398,7 @@
  "in_create": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-12-25 11:23:51.157426",
+ "modified": "2025-01-09 11:53:11.118934",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Muster Roll Employee",
@@ -415,6 +415,7 @@
    "read": 1,
    "report": 1,
    "role": "System Manager",
+   "select": 1,
    "share": 1,
    "write": 1
   },

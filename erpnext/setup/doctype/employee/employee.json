@@ -31,18 +31,25 @@
   "employment_details_section",
   "employment_type",
   "employee_group",
+  "employee_subgroup",
   "pms_group",
   "designation",
   "professional_category",
   "region",
-  "reports_to",
   "reports_to_name",
+  "job_type",
   "column_break_22",
   "employment_status",
   "probation_end_date",
   "increment_cycle",
   "promotion_cycle",
   "promotion_due_date",
+  "leave_and_expense_claim_section",
+  "reports_to",
+  "second_approver",
+  "column_break_magp",
+  "approver_name",
+  "second_approver_name",
   "erpnext_user",
   "create_user_permission",
   "create_user",
@@ -62,6 +69,7 @@
   "column_break_32",
   "final_confirmation_date",
   "contract_end_date",
+  "contract_renewal_date",
   "col_break_22",
   "notice_number_of_days",
   "date_of_retirement",
@@ -124,11 +132,11 @@
   "place_of_issue",
   "permanent_details_section",
   "country",
-  "gewog",
   "house_number",
   "phone_number",
   "column_break_qnni",
   "dzongkhag",
+  "gewog",
   "village",
   "thram_number",
   "employee_family_details_section",
@@ -377,10 +385,7 @@
   {
    "fieldname": "reports_to",
    "fieldtype": "Link",
-   "ignore_user_permissions": 1,
-   "label": "Reports to",
-   "oldfieldname": "reports_to",
-   "oldfieldtype": "Link",
+   "label": "Verifier",
    "options": "Employee"
   },
   {
@@ -863,19 +868,12 @@
    "fieldname": "promotion_cycle",
    "fieldtype": "Select",
    "label": "Promotion Cycle",
-   "options": "\nJanuary\nJuly"
+   "options": "\nJanuary\nFebruary\nMarch\nApril\nMay\nJune\nJuly\nAugust\nSeptember\nOctober\nNovember\nDecember"
   },
   {
    "fieldname": "promotion_due_date",
    "fieldtype": "Date",
-   "label": "Promotion Due Date"
-  },
-  {
-   "fetch_from": "reports_to.employee_name",
-   "fieldname": "reports_to_name",
-   "fieldtype": "Data",
-   "label": "Reports to Name",
-   "read_only": 1
+   "label": "Promotion Date"
   },
   {
    "fieldname": "bank_branch",
@@ -1082,6 +1080,7 @@
    "options": "Country"
   },
   {
+   "depends_on": "eval:doc.dzongkhag",
    "fieldname": "gewog",
    "fieldtype": "Link",
    "label": "Gewog",
@@ -1103,6 +1102,7 @@
    "options": "Dzongkhag"
   },
   {
+   "depends_on": "eval:doc.gewog",
    "fieldname": "village",
    "fieldtype": "Link",
    "label": "Village",
@@ -1129,13 +1129,63 @@
    "fieldname": "phone_number",
    "fieldtype": "Data",
    "label": "Phone Number"
+  },
+  {
+   "fieldname": "employee_subgroup",
+   "fieldtype": "Link",
+   "label": "Grade",
+   "options": "Employee Grade",
+   "reqd": 1
+  },
+  {
+   "fieldname": "leave_and_expense_claim_section",
+   "fieldtype": "Section Break",
+   "label": "Leave and Expense Claim"
+  },
+  {
+   "fieldname": "second_approver",
+   "fieldtype": "Link",
+   "label": "Approver",
+   "options": "Employee"
+  },
+  {
+   "fieldname": "column_break_magp",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "approver_name",
+   "fieldtype": "Read Only",
+   "label": "Verifier Name"
+  },
+  {
+   "fieldname": "second_approver_name",
+   "fieldtype": "Read Only",
+   "label": "Approver Name"
+  },
+  {
+   "fieldname": "reports_to_name",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Reports to Name"
+  },
+  {
+   "depends_on": "contract_end_date",
+   "fieldname": "contract_renewal_date",
+   "fieldtype": "Date",
+   "label": "Contract Renewal Date"
+  },
+  {
+   "fieldname": "job_type",
+   "fieldtype": "Select",
+   "label": "Job Type",
+   "options": "\nCivil Servant\nCorporate"
   }
  ],
  "icon": "fa fa-user",
  "idx": 24,
  "image_field": "image",
  "links": [],
- "modified": "2024-12-10 17:07:54.035083",
+ "modified": "2025-01-09 15:42:30.998213",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee",

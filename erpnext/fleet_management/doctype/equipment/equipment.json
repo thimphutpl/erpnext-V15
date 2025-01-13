@@ -19,6 +19,7 @@
   "maintain_in_others_asset",
   "employee",
   "column_break_wapg",
+  "hired_equipment",
   "asset_code",
   "section_break_hvxq",
   "equipment_category",
@@ -30,6 +31,10 @@
   "equipment_model",
   "column_break_vikw",
   "registration_number",
+  "yardstick_details_for_pool_vehicles_section",
+  "lph",
+  "column_break_cfqm",
+  "kph",
   "engine_details_section",
   "engine_number",
   "column_break_13",
@@ -326,11 +331,38 @@
    "label": "Employee",
    "mandatory_depends_on": "maintain_in_others_asset",
    "options": "Employee"
+  },
+  {
+   "default": "0",
+   "fieldname": "hired_equipment",
+   "fieldtype": "Check",
+   "label": "hired_equipment"
+  },
+  {
+   "fieldname": "yardstick_details_for_pool_vehicles_section",
+   "fieldtype": "Section Break",
+   "label": "Yardstick Details (For Pool Vehicles)"
+  },
+  {
+   "fieldname": "lph",
+   "fieldtype": "Float",
+   "label": "Based on Hours",
+   "precision": "2"
+  },
+  {
+   "fieldname": "column_break_cfqm",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "kph",
+   "fieldtype": "Float",
+   "label": "Based on Kilometers",
+   "precision": "2"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-12-23 14:30:15.350873",
+ "modified": "2025-01-08 22:57:56.111450",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Equipment",

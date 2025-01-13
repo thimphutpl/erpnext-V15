@@ -12,7 +12,7 @@ from frappe import _, msgprint
 from frappe.model.mapper import get_mapped_doc
 from frappe.query_builder.functions import Sum
 from frappe.utils import cint, cstr, flt, get_link_to_form, getdate, new_line_sep, nowdate
-
+from frappe.model.naming import make_autoname
 from erpnext.buying.utils import check_on_hold_or_closed_status, validate_for_items
 from erpnext.controllers.buying_controller import BuyingController
 from erpnext.manufacturing.doctype.work_order.work_order import get_item_details
@@ -33,7 +33,7 @@ class MaterialRequest(BuyingController):
 		from frappe.types import DF
 
 		amended_from: DF.Link | None
-		approval_date: DF.Date | None
+		approval_date: DF.Data | None
 		approver: DF.Link | None
 		approver_name: DF.Data | None
 		branch: DF.Link
@@ -44,16 +44,19 @@ class MaterialRequest(BuyingController):
 		items: DF.Table[MaterialRequestItem]
 		job_card: DF.Link | None
 		letter_head: DF.Link | None
-		material_request_type: DF.Literal["Material Issue", "Purchase", "Material Transfer", "Manufacture", "Requisition"]
-		naming_series: DF.Literal["MAT-MR-.YYYY.-"]
+		material_request_type: DF.Literal["Material Issue", "Purchase"]
+		mr_footer: DF.TextEditor | None
+		mr_header: DF.TextEditor | None
 		per_ordered: DF.Percent
 		per_received: DF.Percent
 		repair_and_services: DF.Data | None
-		schedule_date: DF.Date | None
+		schedule_date: DF.Date
 		select_print_heading: DF.Link | None
+		series: DF.Literal["", "Consumables", "Fixed Asset", "Sales Product", "Spare parts", "Services Miscellaneous", "Services Works"]
 		set_from_warehouse: DF.Link | None
 		set_warehouse: DF.Link | None
 		status: DF.Literal["", "Draft", "Submitted", "Stopped", "Cancelled", "Pending", "Partially Ordered", "Partially Received", "Ordered", "Issued", "Transferred", "Received"]
+		store_type: DF.Literal["Electrical", "Plumbing", "General", "Workshop"]
 		tc_name: DF.Link | None
 		terms: DF.TextEditor | None
 		title: DF.Data | None
@@ -61,6 +64,24 @@ class MaterialRequest(BuyingController):
 		transfer_status: DF.Literal["", "Not Started", "In Transit", "Completed"]
 		work_order: DF.Link | None
 	# end: auto-generated types
+	def autoname(self):
+		if self.series == 'Consumables':
+			series = 'MRCO'
+		elif self.series == 'Fixed Asset':
+			series = 'SEFA'
+		elif self.series == 'Sales Product':
+			series = 'SESA'
+		elif self.series == 'Spare parts':
+			series ='SESP'
+		elif self.series == 'Services Miscellaneous':
+			series = 'SESM'
+		elif self.series == 'Services Works':
+			series ='SESW'
+		elif self.series == 'REORDER PR':
+			series ='SERE'
+		else:
+			series = 'MRMR'
+		self.name = make_autoname(str(series) + ".YY.MM.####")
 
 	def check_if_already_pulled(self):
 		pass
@@ -109,6 +130,7 @@ class MaterialRequest(BuyingController):
 		self.check_for_on_hold_or_closed_status("Sales Order", "sales_order")
 		self.validate_uom_is_integer("uom", "qty")
 		self.validate_material_request_type()
+		self.warehouse_from_branch()
 
 		if not self.status:
 			self.status = "Draft"
@@ -178,6 +200,19 @@ class MaterialRequest(BuyingController):
 		check_on_hold_or_closed_status(self.doctype, self.name)
 
 		self.set_status(update=True, status="Cancelled")
+	def warehouse_from_branch(doc):
+		branchname=doc.branch
+		query = """
+        SELECT parent 
+        FROM `tabWarehouse Branch` 
+        WHERE branch=%s
+        """
+
+		warehouse = frappe.db.sql(query, (branchname,), as_dict=True)
+		if warehouse:
+			doc.set_warehouse = warehouse[0].get("parent")
+		else:
+			frappe.throw(f"No warehouse found for branch {branchname}")
 
 	def check_modified_date(self):
 		mod_db = frappe.db.sql("""select modified from `tabMaterial Request` where name = %s""", self.name)

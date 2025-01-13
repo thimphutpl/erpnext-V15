@@ -244,7 +244,17 @@ erpnext.accounts.PurchaseInvoice = class PurchaseInvoice extends erpnext.buying.
 		this.frm.set_df_property("tax_withholding_category", "hidden", doc.apply_tds ? 0 : 1);
 		erpnext.accounts.unreconcile_payment.add_unreconcile_btn(me.frm);
 	}
-
+	ld_days(frm) {
+		console.log("here "+String(cur_frm.doc.ld_days))
+		if(cur_frm.doc.ld_days && flt(cur_frm.doc.ld_days) > 0){
+			if(flt(cur_frm.doc.ld_days) < 1000){
+				cur_frm.set_value("write_off_amount", flt((flt(cur_frm.doc.ld_days)/1000)*0.1 * flt(cur_frm.doc.grand_total),2))
+			}
+			else{
+				cur_frm.set_value("write_off_amount", flt((0.1) * flt(cur_frm.doc.grand_total),2))
+			}
+		}
+	}
 	unblock_invoice() {
 		const me = this;
 		frappe.call({

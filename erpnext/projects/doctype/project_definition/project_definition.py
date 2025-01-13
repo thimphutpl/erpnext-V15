@@ -28,8 +28,10 @@ class ProjectDefinition(Document):
 		cost_center: DF.Link | None
 		end_date: DF.Date | None
 		fiscal_year: DF.Link | None
+		overall_mandays: DF.Data | None
 		project_code: DF.Data | None
 		project_code_prefix: DF.Literal["", "GA-J", "GA-K", "GA-T", "GA-P", "GA-B", "GA"]
+		project_man_days: DF.Data | None
 		project_manager: DF.Link | None
 		project_manager_designation: DF.Link | None
 		project_manager_name: DF.Data | None
@@ -41,7 +43,7 @@ class ProjectDefinition(Document):
 		total_overall_project_cost: DF.Currency
 	# end: auto-generated types
 	def autoname(self):
-		self.name = self.project_code_prefix+"-"+self.project_code+" - GYALSUNG"
+		self.name = "GA-"+self.project_code+" - GYALSUNG"
 
 	def validate(self):
 		self.validate_project_profile()
@@ -54,6 +56,26 @@ class ProjectDefinition(Document):
 	def validate_project_profile(self):
 		if self.project_profile == "External" and "Accounts Manager" not in frappe.get_roles(frappe.session.user):
 			frappe.throw("Please select project profile as Internal.", title = "Invalid Selection")
+
+	@frappe.whitelist()
+	def update_project_progress(self):
+		project_man_days = overall_mandays = 0
+		for prj in frappe.db.get_all("Project", {"project_definition": self.name}, ["mandays"]):
+			if not prj.mandays:
+				prj.mandays = 0
+			project_man_days += flt(prj.mandays,2)
+		frappe.db.sql("""
+                update `tabProject Definition` set project_man_days = {} where name = '{}'
+                """.format(project_man_days, self.name))
+		for pd in frappe.db.get_all("Project Definition", {"docstatus": 1}, ["project_man_days"]):
+			if not pd.project_man_days:
+				pd.project_man_days = 0
+			overall_mandays += flt(pd.project_man_days,2)
+		frappe.db.sql("""
+                update `tabProject Definition` set overall_mandays = {} where name = '{}'
+                """.format(overall_mandays, self.name))
+		# frappe.db.commit()
+			
 
 # ADDED BY Kinley ON 04-06-2024
 @frappe.whitelist()

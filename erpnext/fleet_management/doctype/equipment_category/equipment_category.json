@@ -11,7 +11,8 @@
   "equipment_category",
   "budget_account",
   "column_break_vuta",
-  "allow_hire"
+  "allow_hire",
+  "insurance_account"
  ],
  "fields": [
   {
@@ -38,11 +39,17 @@
    "fieldtype": "Check",
    "in_list_view": 1,
    "label": "Allow Multiple Hire Forms"
+  },
+  {
+   "fieldname": "insurance_account",
+   "fieldtype": "Link",
+   "label": "Insurance Account",
+   "options": "Account"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-08 16:53:06.429722",
+ "modified": "2025-01-04 23:51:24.450690",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Equipment Category",
