@@ -113,6 +113,13 @@ class POLReceive(StockController):
 		self.validate_posting_time()
 		self.validate_uom_is_integer("stock_uom", "qty")
 		self.validate_item()
+		self.validate_balance()
+
+	def validate_balance(self):
+		balances = get_balance_details(self.book_type, self.tanker, self.equipment, self.posting_date, self.pol_type)
+		# frappe.throw(str(balances))
+		self.db_set("tanker_balance", flt(balances['tanker_balance']))
+		self.db_set("tank_balance", flt(balances['tank_balance']))
 
 	def on_submit(self):
 		# self.validate_dc()
