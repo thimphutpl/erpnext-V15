@@ -1326,12 +1326,14 @@ class NotifyCustomWorkflow:
 				return
 		elif self.doc.doctype == "Imprest Advance":
 			template = frappe.db.get_single_value('HR Settings', 'imprest_advance_status_notification_template')
+			args.update({'current_status': self.doc.workflow_state})
 			if not template:
 				frappe.msgprint(_("Please set default template for Imprest Advance Status Notification in HR Settings."))
 				return
 
 		elif self.doc.doctype == "Imprest Recoup":
 			template = frappe.db.get_single_value('HR Settings', 'imprest_recoup_status_notification_template')
+			args.update({'current_status': self.doc.workflow_state})
 			if not template:
 				frappe.msgprint(_("Please set default template for Imprest Recoup Status Notification in HR Settings."))
 				return
