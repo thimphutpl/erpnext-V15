@@ -1448,20 +1448,22 @@ class NotifyCustomWorkflow:
 			
 			elif self.doc.doctype == "Imprest Advance" and self.new_state == "Waiting For Verification":
 				template = frappe.db.get_single_value('HR Settings', 'imprest_advance_approval_notification_template')
+				args.update({'current_status': self.doc.workflow_state})
 				if not template:
 					frappe.msgprint(_("Please set default template for Imprest Advance approval Notification in HR Settings."))
 					return
-			# elif self.doc.doctype == "Imprest Advance":
-			# 	self.notify_imprest_managers()
-			# 	return
+			elif self.doc.doctype == "Imprest Advance":
+				args.update({'current_status': self.doc.workflow_state})
+				return
 
 			elif self.doc.doctype == "Imprest Recoup" and self.new_state == "Waiting Approval":
 				template = frappe.db.get_single_value('HR Settings', 'imprest_recoup_approval_notification_template')
+				args.update({'current_status': self.doc.workflow_state})
 				if not template:
 					frappe.msgprint(_("Please set default template for Imprest Recoup approval Notification in HR Settings."))
 					return
 			elif self.doc.doctype == "Imprest Recoup":
-				self.notify_imprest_managers()
+				args.update({'current_status': self.doc.workflow_state})
 				return
 
 			elif self.doc.doctype == "Budget Reappropiation" and self.new_state == "Waiting Approval":
@@ -1637,6 +1639,7 @@ class NotifyCustomWorkflow:
 			receipients = [a['email'] for a in imprest_managers]
 			parent_doc = frappe.get_doc(self.doc.doctype, self.doc.name)
 			args = parent_doc.as_dict()
+			args.update({'current_status': self.doc.workflow_state})
 			if self.doc.doctype == "Imprest Advance":
 				template = frappe.db.get_single_value('HR Settings', 'imprest_advance_approval_notification_template')
 				if not template:
