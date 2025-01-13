@@ -1112,19 +1112,19 @@ class CustomWorkflow:
 				frappe.throw("Only the {} can Reject this material request".format(self.doc.approver))
 
 	def imprest_advance(self):
-		if self.new_state.lower() in ("Draft".lower(), "Waiting for Verification".lower()):
-			if self.new_state.lower() == "Waiting for Verification".lower():
+		if self.new_state.lower() in ("Draft".lower(), "Waiting Approval".lower()):
+			if self.new_state.lower() == "Waiting Approval".lower():
 				if frappe.session.user != self.doc.owner:
 					frappe.throw("Only {} can apply this Imprest Advance".format(self.doc.owner))
 			self.set_approver("Supervisor")
 
-		elif self.new_state.lower() in ("Waiting Approval".lower(), "Rejected".lower()) and self.old_state.lower() == "Waiting for Verification".lower():
+		elif self.new_state.lower() in ("Waiting for Submitting".lower(), "Rejected".lower()) and self.old_state.lower() == "Waiting Approval".lower():
 			if not "Imprest Manager" in frappe.get_roles(frappe.session.user):
 				if self.doc.approver != frappe.session.user:
 					frappe.throw("Only {} can Forward or Reject this document".format(self.doc.approver_name))
 			# self.set_approver("Imprest Approver")
 		
-		elif self.new_state.lower() in ("Approved".lower(), "Rejected".lower()) and self.old_state.lower() == "Waiting Approval".lower():
+		elif self.new_state.lower() in ("Submitted".lower(), "Rejected".lower()) and self.old_state.lower() == "Waiting for Submitting".lower():
 			if not "Imprest Manager" in frappe.get_roles(frappe.session.user):
 				frappe.throw("Only users with role Imprest Manager can Recoup or Reject this document")
 		else:
