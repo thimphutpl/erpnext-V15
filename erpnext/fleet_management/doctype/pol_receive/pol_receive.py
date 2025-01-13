@@ -88,18 +88,18 @@ class POLReceive(StockController):
 	# end: auto-generated types
 	def before_save(self):
         # Ensure tank balance does not exceed tank capacity
-		if self.book_type == "Own" and round(self.tank_capacity) < round(self.tank_balance + self.qty):
+		if self.book_type == "Own" and flt(self.tank_capacity) < flt(self.tank_balance + self.qty):
 			frappe.throw(
                 ("Tank capacity ({}) should be greater than or equal to sum of tank balance and quantity ({}).").format(
-                    self.tank_capacity, round(self.tank_balance + self.qty)
+                    self.tank_capacity, flt(self.tank_balance + self.qty)
                 )
             )
 
 		# Ensure tank balance does not exceed tank capacity
-		if self.book_type == "Common" and round(self.tanker_capacity) < round(self.tanker_balance + qty):
+		if self.book_type == "Common" and flt(self.tanker_capacity) < flt(self.tanker_balance + qty):
 			frappe.throw(
                 ("Tanker capacity ({}) should be greater than or equal to sum of tanker balance and quantity ({}).").format(
-                    self.tanker_capacity, round(self.tanker_balance + self.qty)
+                    self.tanker_capacity, flt(self.tanker_balance + self.qty)
                 )
             )	
 			
