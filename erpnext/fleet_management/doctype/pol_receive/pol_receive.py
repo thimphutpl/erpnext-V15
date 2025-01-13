@@ -96,7 +96,7 @@ class POLReceive(StockController):
             )
 
 		# Ensure tank balance does not exceed tank capacity
-		if self.book_type == "Common" and flt(self.tanker_capacity) < flt(self.tanker_balance + qty):
+		if self.book_type == "Common" and flt(self.tanker_capacity) < flt(self.tanker_balance + self.qty):
 			frappe.throw(
                 ("Tanker capacity ({}) should be greater than or equal to sum of tanker balance and quantity ({}).").format(
                     self.tanker_capacity, flt(self.tanker_balance + self.qty)
