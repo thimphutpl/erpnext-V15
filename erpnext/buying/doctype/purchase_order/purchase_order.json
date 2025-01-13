@@ -1260,11 +1260,13 @@
    "label": "Header and Footer"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "header",
    "fieldtype": "Text Editor",
    "label": "Header"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "footer",
    "fieldtype": "Text Editor",
    "label": "Footer"
@@ -1291,7 +1293,7 @@
  "idx": 105,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-12-30 16:13:33.696727",
+ "modified": "2025-01-13 16:50:06.234120",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Purchase Order",
