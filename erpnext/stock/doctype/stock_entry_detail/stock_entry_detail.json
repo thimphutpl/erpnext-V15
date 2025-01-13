@@ -371,12 +371,12 @@
    "allow_on_submit": 1,
    "fieldname": "actual_qty",
    "fieldtype": "Float",
+   "in_list_view": 1,
    "label": "Stock Balance",
    "no_copy": 1,
    "oldfieldname": "actual_qty",
    "oldfieldtype": "Read Only",
    "print_hide": 1,
-   "read_only": 1,
    "search_index": 1
   },
   {
@@ -638,14 +638,15 @@
    "fieldname": "issued_to",
    "fieldtype": "Link",
    "label": "Issued To",
-   "options": "Employee"
+   "options": "Employee",
+   "reqd": 1
   }
  ],
  "idx": 1,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-11-26 22:11:12.814507",
+ "modified": "2025-01-13 12:15:31.642085",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Stock Entry Detail",
