@@ -685,7 +685,7 @@ class BankPayment(Document):
 							"amount": amount,
 						}
 					)
-				supplier, employee = None, None
+				supplier, employee, customer = None, None, None
 				for i in payment_dtl:
 					if i["party_type"] == "Supplier":
 						query = """select s.bank_name, s.bank_branch, s.bank_account_type, 
@@ -715,6 +715,17 @@ class BankPayment(Document):
 									""".format(
 							party=i["party"]
 						)
+					#added by cety on 5-09-2022 for customer
+					elif i["party_type"] == "Customer":
+						query = """select c.bank_name, c.bank_branch, c.bank_account_type, 
+										c.account_number as bank_account_no, c.name as beneficiary_name,
+										(CASE WHEN c.bank_name = "INR" THEN c.inr_bank_code ELSE NULL END) inr_bank_code,
+										(CASE WHEN c.bank_name = "INR" THEN c.inr_purpose_code ELSE NULL END) inr_purpose_code
+										from `tabCustomer` c
+										WHERE c.name = '{party}'
+									""".format(party = i["party"])
+						customer = i["party"]
+
 					dtl = frappe.db.sql(query, as_dict=True)
 					data.append(
 						frappe._dict(
@@ -722,6 +733,7 @@ class BankPayment(Document):
 								"transaction_type": "Journal Entry",
 								"transaction_id": a.transaction_id,
 								"transaction_date": a.transaction_date,
+								"customer": customer,
 								"employee": employee,
 								"supplier": supplier,
 								"beneficiary_name": dtl[0]["beneficiary_name"],
