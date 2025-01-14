@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "allow_import": 1,
  "allow_rename": 1,
  "autoname": "S1.####",
  "creation": "2024-11-12 15:50:43.758746",
@@ -50,7 +51,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-12 16:01:19.568305",
+ "modified": "2025-01-14 16:02:06.812054",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Service",
