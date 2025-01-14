@@ -24,10 +24,33 @@ class InactiveEmployeeStatusError(frappe.ValidationError):
 
 class Employee(NestedSet):
 	nsm_parent_field = "reports_to"
-	def autoname(self):
-		name = make_autoname('EMP.####')[3:]
-		if not self.employee_name:
-			self.set_employee_name()
+	# def autoname(self):
+	# 	name = make_autoname('EMP.####')[3:]
+	# 	if not self.employee_name:
+	# 		self.set_employee_name()
+
+	# def autoname(self):
+	# 	frappe.throw("hi")
+	# 	naming_method = frappe.db.get_value("HR Settings", None, "emp_created_by")
+	# 	if not naming_method:
+	# 		throw(_("Please setup Employee Naming System in Human Resource > HR Settings"))
+	# 	else:
+	# 		if naming_method == 'Naming Series':
+	# 			if not self.date_of_joining:
+	# 				frappe.throw("Date of Joining not Set!")
+	# 			abbr = frappe.db.get_value("Company", self.company, "abbr")
+	# 			naming_series = str(abbr) + "." + str(getdate(self.date_of_joining).year)[2:4]	
+	# 			x = make_autoname(str(naming_series) + '.###')
+	# 			y = make_autoname(str(getdate(self.date_of_joining).strftime('%m')) + ".#")
+	# 			start_id = cint(len(str(abbr))) + 2
+	# 			eid = x[:start_id] + y[:2] + x[start_id:start_id + 3]
+	# 			self.name = eid
+	# 			self.yearid = x
+	# 		elif naming_method == 'Employee Number':
+	# 			self.name = self.employee_number
+
+	# 	self.employee = self.name
+		
 	def validate(self):
 		from erpnext.controllers.status_updater import validate_status
 		validate_status(self.status, ["Active", "Inactive", "Suspended", "Left"])
@@ -41,6 +64,7 @@ class Employee(NestedSet):
 		self.validate_status()
 		self.validate_reports_to()
 		self.validate_preferred_email()
+		self.custom_autoname()
 
 		if self.user_id:
 			self.validate_user_details()
@@ -49,6 +73,32 @@ class Employee(NestedSet):
 			if existing_user_id:
 				remove_user_permission("Employee", self.name, existing_user_id)
 
+	def custom_autoname(self):
+		#frappe.throw("hi")
+		naming_method = frappe.db.get_value("HR Settings", None, "emp_created_by")
+		if not naming_method:
+			throw(_("Please setup Employee Naming System in Human Resource > HR Settings"))
+		else:
+			if naming_method == 'Naming Series':
+				if not self.date_of_joining:
+					frappe.throw("Date of Joining not Set!")
+					
+				#naming_series = str(self.naming_series) + str(getdate(self.date_of_joining).strftime("%m"))[2:4]
+				month_two_digit = getdate(self.date_of_joining).strftime("%m")
+				#frappe.throw(str(naming_series))
+				naming_series = str(self.naming_series)	
+				naming_series_with_month = f"{naming_series}.{month_two_digit}.###"
+				x = make_autoname(naming_series_with_month)
+				
+				#frappe.throw(x)
+				#y = make_autoname(str(getdate(self.date_of_joining).strftime('%m')) + ".#")
+				#eid = x[:6] + y[:2] + x[6:9]
+				self.name = x
+				
+			elif naming_method == 'Employee Number':
+				self.name = self.employee_number
+
+		self.employee = self.name
 	def after_rename(self, old, new, merge):
 		self.db_set("employee", new)
 
