@@ -1137,12 +1137,12 @@ class CustomWorkflow:
 					frappe.throw("Only {} can apply this Imprest Advance".format(self.doc.owner))
 			self.set_approver("Supervisor")
 
-		elif self.new_state.lower() in ("Waiting Recoupment".lower(), "Rejected".lower()) and self.old_state.lower() == "Waiting Approval":
+		elif self.new_state.lower() in ("Waiting Recoupment".lower(), "Rejected".lower()) and self.old_state.lower() == "Waiting Approval".lower():
 			if self.doc.approver != frappe.session.user:
 				frappe.throw("Only {} can Approve or Reject this document".format(self.doc.approver_name))
 			# self.set_approver("Imprest Approver")
 		
-		elif self.new_state.lower() in ("Recouped".lower(), "Rejected".lower()) and self.old_state.lower() == "Waiting Recoupment":
+		elif self.new_state.lower() in ("Recouped".lower(), "Rejected".lower()) and self.old_state.lower() == "Waiting Recoupment".lower():
 			if not "Imprest Manager" in frappe.get_roles(frappe.session.user):
 				frappe.throw("Only users with role Imprest Manager can Recoup or Reject this document")
 		else:
