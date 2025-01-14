@@ -60,18 +60,28 @@ class POLIssue(StockController):
 		if flt(self.total_quantity) > flt(balance):
 			frappe.throw("Not enough balance in tanker to issue. The balance is " + str(balance))
 
-		# Ensure tank balance does not exceed tank capacity
-		if round(self.tank_balance) < round(self.total_quantity):
+		# # Ensure tank balance does not exceed tank capacity
+		if flt(self.tank_balance) < flt(self.total_quantity):
 			frappe.throw(
                 ("Cannot issue quantity ({}) more than the tanker quantity balance ({}).").format(
                     self.total_quantity, self.tank_balance
                 )
             )
 
+		# # Ensure tank balance does not exceed tank capacity
+		# if round(flt(self.tank_balance)) < round(flt(self.total_quantity)):
+		# 	frappe.throw(
+		# 		("Cannot issue quantity ({0}) more than the tanker quantity balance ({1}).").format(
+		# 			flt(self.total_quantity), flt(self.tank_balance)
+		# 		)
+		# 	)
+
+
+
 		
 		for item in self.get("items"):
 			# Ensure tank capacity is greater than or equal to the sum of equipment balance and quantity
-			if flt(item.tank_capacity) < flt(item.equipment_balance + item.qty):
+			if flt(item.tank_capacity) < flt(cint(item.equipment_balance) + cint(item.qty)):
 				frappe.throw(
 					("Tank capacity ({0}) should be greater than or equal to the sum of equipment balance and quantity ({1}) in row {2}.").format(
 						item.tank_capacity, flt(item.equipment_balance + item.qty), item.idx
