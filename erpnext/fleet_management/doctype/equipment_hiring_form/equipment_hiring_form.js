@@ -356,7 +356,7 @@ frappe.ui.form.on("Equipment Hiring Form", "refresh", function(frm) {
 		};
 	});
 	cur_frm.set_query("customer", function() {
-		if(frm.doc.private == "Own Company") {
+		if(frm.doc.private == "CDCL") {
 			return {
 			    "filters": {
 				"disabled": 0,
