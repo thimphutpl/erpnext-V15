@@ -19,6 +19,7 @@
   "column_break_7",
   "transaction_date",
   "schedule_date",
+  "method_of_procurement",
   "column_break1",
   "company",
   "branch",
@@ -1287,13 +1288,20 @@
    "hidden": 1,
    "label": "Is Subcontracted",
    "print_hide": 1
+  },
+  {
+   "fieldname": "method_of_procurement",
+   "fieldtype": "Select",
+   "label": "Method of Procurement",
+   "options": "\nOpen Bidding\nLimited Bidding\nLimited Enquiry\nWork Order/Direct Contacting\nSpot Purchase",
+   "reqd": 1
   }
  ],
  "icon": "fa fa-file-text",
  "idx": 105,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-13 16:50:06.234120",
+ "modified": "2025-01-15 13:01:25.009690",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Purchase Order",

@@ -105,6 +105,7 @@ class PurchaseOrder(BuyingController):
 		material_request: DF.Link | None
 		material_request_date: DF.Link | None
 		material_requst: DF.Link | None
+		method_of_procurement: DF.Literal["", "Open Bidding", "Limited Bidding", "Limited Enquiry", "Work Order/Direct Contacting", "Spot Purchase"]
 		naming_series: DF.Literal["", "Consumables", "Fixed Asset", "Sales Product", "Spareparts", "Services Miscellaneous", "Services Works", "Labour Contract", "PUR-ORD-.YYYY.-"]
 		net_total: DF.Currency
 		order_confirmation_date: DF.Date | None
