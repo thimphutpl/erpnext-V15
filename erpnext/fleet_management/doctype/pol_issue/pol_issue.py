@@ -176,7 +176,14 @@ class POLIssue(StockController):
 
 		# Following lines added by SHIV on 2019/05/09
 		self.update_stock_ledger()
-		self.make_gl_entries_on_cancel()        
+		self.make_gl_entries_on_cancel()
+		self.ignore_linked_doctypes = (
+			"GL Entry",
+			"Payment Ledger Entry",
+			"Stock Ledger Entry",
+			"Repost Item Valuation",
+			"Serial and Batch Bundle",
+		)     
 		self.delete_pol_entry()
 
         # Ver 2.0.190509, following method created by SHIV on 2019/05/21
