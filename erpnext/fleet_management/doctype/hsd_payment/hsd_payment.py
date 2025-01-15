@@ -18,6 +18,37 @@ from erpnext.custom_utils import prepare_gl, check_future_date
 from frappe.model.mapper import get_mapped_doc
 
 class HSDPayment(Document):
+	# begin: auto-generated types
+	# This code is auto-generated. Do not modify anything in this block.
+
+	from typing import TYPE_CHECKING
+
+	if TYPE_CHECKING:
+		from erpnext.fleet_management.doctype.hsd_payment_item.hsd_payment_item import HSDPaymentItem
+		from frappe.types import DF
+
+		actual_amount: DF.Currency
+		amended_from: DF.Link | None
+		amount: DF.Currency
+		assign_from_cheque_lot: DF.Check
+		bank_account: DF.Link
+		bank_payment: DF.Data | None
+		branch: DF.Link
+		cheque__no: DF.Data | None
+		cheque_date: DF.Date | None
+		cheque_lot: DF.Link | None
+		clearance_date: DF.Date | None
+		company: DF.Link
+		cost_center: DF.Link
+		final_settlement: DF.Check
+		fuelbook: DF.Link
+		items: DF.Table[HSDPaymentItem]
+		payment_status: DF.Data | None
+		posting_date: DF.Date
+		remarks: DF.SmallText | None
+		status: DF.Literal["Draft", "Submitted", "Cancelled"]
+		supplier: DF.Link
+	# end: auto-generated types
 	def validate(self):
 		check_future_date(self.posting_date)
 		self.set_status()
