@@ -150,7 +150,7 @@ class POLReceive(StockController):
 		
 
 		""" ++++++++++ Ver 2.0.190509 Begins ++++++++++ """
-		if getdate(self.posting_date) > getdate("2018-03-31") and self.is_opening == "No" or self.is_opening == "":
+		if getdate(self.posting_date) > getdate("2018-03-31") and (self.is_opening == "No" or self.is_opening == ""):
 			self.update_stock_ledger()
 			self.make_gl_entries()
 
@@ -167,7 +167,7 @@ class POLReceive(StockController):
 		self.delete_pol_entry()
 
 	def on_cancel(self):
-		if getdate(self.posting_date) > getdate("2018-03-31") and self.is_opening == "No" or self.is_opening == "Yes" and self.book_type == "Common":
+		if getdate(self.posting_date) > getdate("2018-03-31") and (self.is_opening == "No" or self.is_opening == "") or self.is_opening == "Yes" and self.book_type == "Common":
 			self.update_stock_ledger()
 		""" ++++++++++ Ver 2.0.190509 Begins ++++++++++ """
 		# Ver 2.0.190509, Following method commented by SHIV on 2019/05/20 
