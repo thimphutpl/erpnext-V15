@@ -87,8 +87,9 @@
   "column_break_tmap",
   "jv",
   "column_break_qnum",
-  "amended_from",
-  "expense_account"
+  "expense_account",
+  "sb_more_info",
+  "amended_from"
  ],
  "fields": [
   {
@@ -563,10 +564,12 @@
    "read_only": 1
   },
   {
+   "default": "No",
    "fieldname": "is_opening",
    "fieldtype": "Select",
    "label": "Is Opening",
-   "options": "\nYes"
+   "options": "\nNo\nYes",
+   "permlevel": 1
   },
   {
    "depends_on": "eval: doc.book_type == 'Common'",
@@ -599,12 +602,18 @@
    "fieldname": "tanker_capacity",
    "fieldtype": "Read Only",
    "label": "Tanker Capacity(Fuel Tanker/Skid Tank/Barrel)"
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "sb_more_info",
+   "fieldtype": "Section Break",
+   "label": "More Information"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-12 21:31:13.759422",
+ "modified": "2025-01-15 18:12:53.649103",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Receive",

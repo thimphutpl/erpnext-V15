@@ -53,7 +53,7 @@ class POLReceive(StockController):
 		hiring_cost_center: DF.Data | None
 		hiring_warehouse: DF.Data | None
 		is_hsd_item: DF.Check
-		is_opening: DF.Literal["", "Yes"]
+		is_opening: DF.Literal["", "No", "Yes"]
 		item_name: DF.Data | None
 		items: DF.Table[POLReceiveItem]
 		jv: DF.Link | None
