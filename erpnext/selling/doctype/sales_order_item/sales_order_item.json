@@ -15,6 +15,7 @@
   "col_break1",
   "delivery_date",
   "item_name",
+  "actual_qty",
   "section_break_5",
   "description",
   "item_group",
@@ -82,7 +83,6 @@
   "bom_no",
   "planning_section",
   "projected_qty",
-  "actual_qty",
   "ordered_qty",
   "planned_qty",
   "production_plan_qty",
@@ -174,7 +174,6 @@
    "depends_on": "eval: !parent.skip_delivery_note",
    "fieldname": "delivery_date",
    "fieldtype": "Date",
-   "in_list_view": 1,
    "label": "Delivery Date",
    "no_copy": 1,
    "print_hide": 1
@@ -462,7 +461,6 @@
    "collapsible_depends_on": "eval:doc.delivered_by_supplier==1||doc.supplier",
    "fieldname": "drop_ship_section",
    "fieldtype": "Section Break",
-   "hidden": 1,
    "label": "Drop Ship",
    "print_hide": 1
   },
@@ -513,7 +511,6 @@
   {
    "fieldname": "warehouse_and_reference",
    "fieldtype": "Section Break",
-   "hidden": 1,
    "label": "Warehouse and Reference"
   },
   {
@@ -921,7 +918,7 @@
  "idx": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-12-27 16:16:58.163241",
+ "modified": "2025-01-15 19:10:13.106007",
  "modified_by": "Administrator",
  "module": "Selling",
  "name": "Sales Order Item",
