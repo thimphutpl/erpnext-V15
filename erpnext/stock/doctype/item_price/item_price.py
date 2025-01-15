@@ -40,7 +40,7 @@ class ItemPrice(Document):
 		supplier: DF.Link | None
 		uom: DF.Link
 		valid_from: DF.Date | None
-		valid_upto: DF.Date
+		valid_upto: DF.Date | None
 	# end: auto-generated types
 
 	def validate(self):

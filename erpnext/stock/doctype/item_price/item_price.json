@@ -195,8 +195,7 @@
   {
    "fieldname": "valid_upto",
    "fieldtype": "Date",
-   "label": "Valid Upto",
-   "reqd": 1
+   "label": "Valid Upto"
   },
   {
    "fieldname": "section_break_24",
@@ -225,7 +224,7 @@
  "idx": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-12-27 12:45:38.537228",
+ "modified": "2025-01-15 16:05:09.047352",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Item Price",
