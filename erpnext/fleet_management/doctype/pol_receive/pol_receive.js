@@ -202,42 +202,6 @@ frappe.ui.form.on('POL Receive', {
 		// 	}
 		// })
 
-		// update_balances(frm);
-		
-		// if (frm.doc.equipment) {
-		// 	frappe.throw("Tanker")
-        //     frappe.call({
-        //         method: "erpnext.fleet_management.doctype.pol_issue.pol_issue.get_equipment_data", // Update with the correct path
-        //         args: {
-        //             equipment_name: frm.doc.equipment,
-        //             to_date: frm.doc.to_date,
-        //             all_equipment: frm.doc.all_equipment || 0,
-        //             branch: frm.doc.branch
-        //         },
-        //         callback: function(response) {
-        //             if (response.message) {
-        //                 let data = response.message;
-
-        //                 // Process and display the fetched data
-        //                 frappe.msgprint({
-        //                     title: __('Fetched Equipment Data'),
-        //                     message: `<pre>${JSON.stringify(data, null, 4)}</pre>`,
-        //                     indicator: 'green'
-        //                 });
-
-        //                 // Optional: You can set a field value with specific data
-        //                 if (data.length > 0) {
-        //                     frm.set_value('tank_balance', data[0].balance);
-        //                 }
-        //             } else {
-        //                 frappe.msgprint(__('No data found for the selected equipment.'));
-        //             }
-        //         }
-        //     });
-        // } else {
-        //     // Clear related fields if no equipment is selected
-        //     frm.set_value('tank_balance', '');
-        // }
 		if (frm.doc.book_type === 'Common') {
 			update_balances(frm);
 		} else if (frm.doc.book_type === 'Own') {
@@ -276,45 +240,6 @@ frappe.ui.form.on('POL Receive', {
 				frm.set_value('tank_balance', '');
 			}
 		}
-
-		// if (frm.doc.equipment) {
-		// 	frappe.throw("Tanker")
-		// 	frappe.call({
-		// 		method: "erpnext.fleet_management.doctype.pol_issue.pol_issue.get_equipment_data",
-		// 		args: {
-		// 			equipment_name: frm.doc.equipment,
-		// 			to_date: frm.doc.to_date,
-		// 			all_equipment: frm.doc.all_equipment || 0,
-		// 			branch: frm.doc.branch,
-		// 			book_type: frm.doc.book_type  // Pass book_type
-		// 		},
-		// 		callback: function (response) {
-		// 			if (response.message) {
-		// 				let data = response.message;
-	
-		// 				// Process and display the fetched data
-		// 				frappe.msgprint({
-		// 					title: __('Fetched Equipment Data'),
-		// 					message: `<pre>${JSON.stringify(data, null, 4)}</pre>`,
-		// 					indicator: 'green'
-		// 				});
-	
-		// 				if (data.length > 0) {
-		// 					if (frm.doc.book_type === 'Common') {
-		// 						frm.set_value('tanker_balance', data[0].balance || 0);
-		// 					} else if (frm.doc.book_type === 'Own') {
-		// 						frm.set_value('tank_balance', data[0].balance || 0);
-		// 					}
-		// 				}
-		// 			} else {
-		// 				frappe.msgprint(__('No data found for the selected equipment.'));
-		// 			}
-		// 		}
-		// 	});
-		// } else {
-		// 	frm.set_value('tank_balance', '');
-		// 	frm.set_value('tanker_balance', '');
-		// }
 
 		const tankerTypes = ['Fuel Tanker', 'Barrel', 'Skid Tank'];
 
@@ -407,17 +332,6 @@ var populate_child_table=(frm)=>{
 		})
 	}
 }
-// function calculate_total(frm) {
-// 	if(frm.doc.qty && frm.doc.rate) {
-// 		frm.set_value("total_amount", frm.doc.qty * frm.doc.rate)
-// 		frm.set_value("outstanding_amount", frm.doc.qty * frm.doc.rate)
-// 	}
-
-// 	if(frm.doc.qty && frm.doc.rate && frm.doc.discount_amount) {
-// 		frm.set_value("total_amount", (frm.doc.qty * frm.doc.rate) - frm.doc.discount_amount)
-// 		frm.set_value("outstanding_amount", (frm.doc.qty * frm.doc.rate) - frm.doc.discount_amount)
-// 	}
-// }
 
 function calculate_total(frm) {
     if (frm.doc.is_opening === "Yes") {
@@ -431,6 +345,7 @@ function calculate_total(frm) {
         if (frm.doc.qty && frm.doc.rate) {
             frm.set_value("total_amount", frm.doc.qty * frm.doc.rate);
             frm.set_value("outstanding_amount", frm.doc.qty * frm.doc.rate);
+			frm.set_value("paid_amount", 0);
         }
 
         if (frm.doc.qty && frm.doc.rate && frm.doc.discount_amount) {
