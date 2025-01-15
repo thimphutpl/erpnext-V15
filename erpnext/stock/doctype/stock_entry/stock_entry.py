@@ -293,6 +293,7 @@ class StockEntry(StockController):
 
 		self.ignore_linked_doctypes = (
 			"GL Entry",
+			"Payment Ledger Entry",
 			"Stock Ledger Entry",
 			"Repost Item Valuation",
 			"Serial and Batch Bundle",
