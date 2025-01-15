@@ -174,7 +174,7 @@ class POLReceive(StockController):
 		#self.update_general_ledger(1)
 
 		# Ver 2.0.190509, Following method added by SHIV on 2019/05/20
-		if self.is_opening == "No":
+		if self.is_opening != "Yes":
 			self.make_gl_entries_on_cancel()
 		""" ++++++++++ Ver 2.0.190509 Ends ++++++++++++ """
 		self.ignore_linked_doctypes = (
