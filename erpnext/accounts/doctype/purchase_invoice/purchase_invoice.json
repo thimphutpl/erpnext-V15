@@ -76,6 +76,7 @@
   "tax_withholding_net_total",
   "base_tax_withholding_net_total",
   "taxes_section",
+  "tax_category",
   "taxes_and_charges",
   "column_break_58",
   "column_break_49",
@@ -1733,13 +1734,20 @@
    "fieldname": "tds_amount",
    "fieldtype": "Currency",
    "label": "TDS Amount"
+  },
+  {
+   "fieldname": "tax_category",
+   "fieldtype": "Link",
+   "label": "Tax Category",
+   "options": "Tax Category",
+   "print_hide": 1
   }
  ],
  "icon": "fa fa-file-text",
  "idx": 204,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-12-30 16:31:34.470492",
+ "modified": "2025-01-15 17:45:23.557150",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Purchase Invoice",

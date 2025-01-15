@@ -185,6 +185,7 @@ class PurchaseInvoice(BuyingController):
 		supplier_group: DF.Link | None
 		supplier_name: DF.Data | None
 		supplier_warehouse: DF.Link | None
+		tax_category: DF.Link | None
 		tax_id: DF.ReadOnly | None
 		tax_withheld_vouchers: DF.Table[TaxWithheldVouchers]
 		tax_withholding_category: DF.Link | None
