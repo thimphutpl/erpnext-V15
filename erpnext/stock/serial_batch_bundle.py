@@ -208,6 +208,9 @@ class SerialBatchBundle:
 
 		if self.sle.voucher_type == "Asset Repair":
 			child_doctype = "Asset Repair Consumed Item"
+		
+		if self.sle.voucher_type == "POL Issue":
+			child_doctype = "POL Issue Items"
 
 		return child_doctype
 
