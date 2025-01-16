@@ -218,9 +218,8 @@
   }
  ],
  "index_web_pages_for_search": 1,
- "is_submittable": 1,
  "links": [],
- "modified": "2025-01-07 16:11:39.256711",
+ "modified": "2025-01-16 10:44:24.838416",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Hire Charge Parameter",
@@ -237,7 +236,6 @@
    "report": 1,
    "role": "System Manager",
    "share": 1,
-   "submit": 1,
    "write": 1
   }
  ],
