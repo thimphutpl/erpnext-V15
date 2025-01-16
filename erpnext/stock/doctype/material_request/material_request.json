@@ -20,6 +20,7 @@
   "amended_from",
   "cost_center",
   "purpose",
+  "commentsaccountsprocurementsi",
   "warehouse_section",
   "column_break_ivqt",
   "set_warehouse",
@@ -414,13 +415,18 @@
    "fieldtype": "Data",
    "label": "Purpose",
    "reqd": 1
+  },
+  {
+   "fieldname": "commentsaccountsprocurementsi",
+   "fieldtype": "Data",
+   "label": "Comments/Accounts/Procurement/SI"
   }
  ],
  "icon": "fa fa-ticket",
  "idx": 70,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-16 16:27:00.843034",
+ "modified": "2025-01-16 17:02:34.722639",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Material Request",
