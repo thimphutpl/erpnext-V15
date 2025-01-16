@@ -243,7 +243,7 @@ function get_rates(frm, cdt, cdn) {
 	if (doc.equipment && doc.rate_type && doc.from_date) {
 		return frappe.call({
 			method: "erpnext.fleet_management.doctype.equipment_hiring_form.equipment_hiring_form.get_hire_rates",
-			args: { customer:frm.doc.customer, equipment: doc.equipment, from_date: doc.from_date },
+			args: { customer:frm.doc.customer, hire_charge_parameter:frm.doc.hire_charge_parameter, equipment: doc.equipment, from_date: doc.from_date },
 			callback: function (r) {
 				if (r.message) {
 					if (doc.rate_type == "Without Fuel") {
@@ -265,6 +265,7 @@ function get_rates(frm, cdt, cdn) {
 		})
 	}
 }
+
 
 function get_diff_rates(frm, cdt, cdn) {
 	doc = locals[cdt][cdn]
