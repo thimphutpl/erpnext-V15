@@ -19,6 +19,7 @@
   "schedule_date",
   "amended_from",
   "cost_center",
+  "purpose",
   "warehouse_section",
   "column_break_ivqt",
   "set_warehouse",
@@ -407,13 +408,19 @@
    "fieldname": "approver_email",
    "fieldtype": "Data",
    "label": "Approver Email"
+  },
+  {
+   "fieldname": "purpose",
+   "fieldtype": "Data",
+   "label": "Purpose",
+   "reqd": 1
   }
  ],
  "icon": "fa fa-ticket",
  "idx": 70,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-10-21 17:58:52.219306",
+ "modified": "2025-01-16 16:27:00.843034",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Material Request",
