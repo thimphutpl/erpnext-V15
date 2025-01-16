@@ -51,7 +51,7 @@ frappe.ui.form.on('Asset Movement', {
 		frm.set_query("asset", "assets", () => {
 			return {
 				filters: {
-					status: ["not in", ["Draft"]]
+					status: ["not in", ["Draft","Sold"]]
 				}
 			}
 		})
