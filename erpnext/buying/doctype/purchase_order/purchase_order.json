@@ -92,13 +92,15 @@
   "in_words",
   "advance_paid",
   "discount_section",
+  "discount",
+  "additional_discount_percentage",
+  "total_add_ded",
   "apply_discount_on",
   "base_discount_amount",
-  "additional_discount_percentage",
   "discount_amount",
   "column_break_45",
   "freight_insurance_charges",
-  "installation_charges",
+  "other_charges",
   "references_section",
   "material_request",
   "material_request_date",
@@ -107,6 +109,7 @@
   "terms",
   "header_and_footer_section",
   "header",
+  "column_break_rudx",
   "footer",
   "address_and_contact_tab",
   "section_addresses",
@@ -258,6 +261,7 @@
    "allow_on_submit": 1,
    "fieldname": "schedule_date",
    "fieldtype": "Date",
+   "hidden": 1,
    "label": "Required By"
   },
   {
@@ -471,7 +475,8 @@
    "fieldtype": "Link",
    "label": "Set Target Warehouse",
    "options": "Warehouse",
-   "print_hide": 1
+   "print_hide": 1,
+   "read_only": 1
   },
   {
    "depends_on": "eval:doc.is_subcontracted",
@@ -492,11 +497,7 @@
    "allow_bulk_edit": 1,
    "fieldname": "items",
    "fieldtype": "Table",
-   "label": "Items",
-   "oldfieldname": "po_details",
-   "oldfieldtype": "Table",
-   "options": "Purchase Order Item",
-   "reqd": 1
+   "options": "Purchase Order Item"
   },
   {
    "collapsible": 1,
@@ -518,6 +519,7 @@
    "label": "Raw Materials Supplied"
   },
   {
+   "allow_bulk_edit": 1,
    "fieldname": "supplied_items",
    "fieldtype": "Table",
    "label": "Supplied Items",
@@ -615,6 +617,7 @@
    "hidden": 1
   },
   {
+   "allow_bulk_edit": 1,
    "fieldname": "taxes",
    "fieldtype": "Table",
    "label": "Purchase Taxes and Charges",
@@ -705,6 +708,7 @@
    "default": "Grand Total",
    "fieldname": "apply_discount_on",
    "fieldtype": "Select",
+   "hidden": 1,
    "label": "Apply Additional Discount On",
    "options": "\nGrand Total\nNet Total",
    "print_hide": 1
@@ -813,7 +817,7 @@
    "read_only": 1
   },
   {
-   "default": "0",
+   "default": "1",
    "fieldname": "disable_rounded_total",
    "fieldtype": "Check",
    "label": "Disable Rounded Total"
@@ -1248,6 +1252,7 @@
    "fetch_from": "material_request.transaction_date",
    "fieldname": "material_request_date",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Material Request Date",
    "options": "Material Request"
   },
@@ -1282,14 +1287,10 @@
    "print_hide": 1
   },
   {
+   "default": "0",
    "fieldname": "freight_insurance_charges",
-   "fieldtype": "Data",
+   "fieldtype": "Currency",
    "label": "Freight and Insurance Charges"
-  },
-  {
-   "fieldname": "installation_charges",
-   "fieldtype": "Data",
-   "label": "Installation Charges"
   },
   {
    "default": "0",
@@ -1308,13 +1309,35 @@
    "fieldname": "contract_id",
    "fieldtype": "Data",
    "label": "Contract ID"
+  },
+  {
+   "default": "0",
+   "fieldname": "discount",
+   "fieldtype": "Currency",
+   "label": "Discount"
+  },
+  {
+   "fieldname": "total_add_ded",
+   "fieldtype": "Currency",
+   "label": "Net Charges & Discount",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "other_charges",
+   "fieldtype": "Currency",
+   "label": "Installation Charges"
+  },
+  {
+   "fieldname": "column_break_rudx",
+   "fieldtype": "Column Break"
   }
  ],
  "icon": "fa fa-file-text",
  "idx": 105,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-12-26 15:20:03.764933",
+ "modified": "2025-01-16 11:39:10.540582",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Purchase Order",
