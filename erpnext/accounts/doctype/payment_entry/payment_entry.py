@@ -7,7 +7,7 @@ from functools import reduce
 
 import frappe
 from frappe import ValidationError, _, qb, scrub, throw
-from frappe.utils import cint, comma_or, flt, getdate, nowdate
+from frappe.utils import cint, comma_or, flt, getdate, nowdate, get_datetime
 from frappe.utils.data import comma_and, fmt_money
 from pypika import Case
 from pypika.functions import Coalesce, Sum
@@ -2797,6 +2797,7 @@ def add_regional_gl_entries(gl_entries, doc):
 # ePayment Begins
 @frappe.whitelist()
 def make_bank_payment(source_name, target_doc=None):
+    from frappe.model.mapper import get_mapped_doc
     def set_missing_values(obj, target, source_parent):
         target.payment_type = None
         target.transaction_type = "Payment Entry"
