@@ -16,6 +16,7 @@ class RequestforQuotationItem(Document):
 
 		brand: DF.Link | None
 		conversion_factor: DF.Float
+		cost_center: DF.Link | None
 		description: DF.TextEditor | None
 		image: DF.Attach | None
 		item_code: DF.Link
