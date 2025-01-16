@@ -46,6 +46,10 @@ class CustomWorkflow:
 			# self.dept_approver	= frappe.db.get_value("Employee", frappe.db.get_value("Department", str(frappe.db.get_value("Employee", self.doc.employee, "department")), "approver"), self.field_list)
 			self.gm_approver	= frappe.db.get_value("Employee", frappe.db.get_value("Department",{"department_name":str(frappe.db.get_value("Employee", self.doc.employee, "division"))}, "approver_hod"),self.field_list)
 			self.general_manager = frappe.db.get_value("Employee", frappe.db.get_value("Department",str(frappe.db.get_value("Employee",self.doc.employee,"division")),"approver_hod"),self.field_list)
+			if not self.general_manager:
+				frappe.throw("Please set Approver in {}".format(
+					frappe.get_desk_link("Department", frappe.db.get_value("Department", str(frappe.db.get_value("Employee",self.doc.employee,"division"))))
+				))
 
 			if self.doc.doctype in ["Leave Encashment","POL","Leave Application","Vehicle Request"]:
 				self.adm_section_manager = frappe.db.get_value("Employee",{"user_id":frappe.db.get_value(
