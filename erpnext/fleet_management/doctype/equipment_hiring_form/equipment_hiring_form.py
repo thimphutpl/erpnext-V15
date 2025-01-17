@@ -65,8 +65,9 @@ class EquipmentHiringForm(Document):
 			frappe.throw("From Date/Time cannot be greater than To Date/Time")
 
 	def before_submit(self):
-		if self.private == "Private" and self.advance_amount <= 0:
-			frappe.throw("For Private Customers, Advance Amount is Required!")
+		#jai
+		# if self.private == "Private" and self.advance_amount <= 0:
+		# 	frappe.throw("For Private Customers, Advance Amount is Required!")
 
 		if not self.approved_items:
 			frappe.throw("Cannot submit hiring form without Approved Items")
@@ -122,8 +123,8 @@ class EquipmentHiringForm(Document):
 			for a in self.approved_items:
 				total += flt(a.grand_total)
 			self.total_hiring_amount = total
-			if self.private == "Private" and not self.advance_amount:
-				self.advance_amount = total	
+			# if self.private == "Private" and not self.advance_amount:
+			# 	self.advance_amount = total	
 
 	def assign_hire_form_to_equipment(self):
 		for a in self.approved_items:
