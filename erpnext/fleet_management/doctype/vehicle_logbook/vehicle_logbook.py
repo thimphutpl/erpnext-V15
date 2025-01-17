@@ -104,7 +104,7 @@ class VehicleLogbook(Document):
 
 	def before_save(self):
         # Ensure consumption does not exceed tank balance
-		if flt(self.tank_balance) <= flt(self.consumption):
+		if flt(self.tank_balance) < flt(self.consumption):
 			frappe.throw(
                 ("Tank balance ({}) should be greater than or equal to consumption ({}).").format(
                     self.tank_balance, self.consumption
