@@ -3,9 +3,9 @@
 
 frappe.ui.form.on('Equipment Hiring Form', {
 	refresh: function (frm) {
-		if(frm.doc.private == "Private") {
-			cur_frm.set_df_property("advance_amount", "reqd", 1)
-		}
+		// if(frm.doc.private == "Private") {
+		// 	cur_frm.set_df_property("advance_amount", "reqd", 1)
+		// }
 
 		if (frm.doc.advance_journal && frappe.model.can_read("Journal Entry")) {
 			cur_frm.add_custom_button(__('Bank Entries'), function() {
@@ -101,7 +101,7 @@ frappe.ui.form.on('Equipment Hiring Form', {
 	"private": function(frm) {
 		cur_frm.toggle_reqd("customer_cost_center", frm.doc.private == 'Own Company')
 		cur_frm.toggle_reqd("customer_branch", frm.doc.private == 'Own Company')
-		cur_frm.toggle_reqd("advance_amount", frm.doc.private == 'Private')
+		// cur_frm.toggle_reqd("advance_amount", frm.doc.private == 'Private')
 	},
 
 	/*"advance_required": function(frm) {
@@ -305,8 +305,8 @@ function calculate_total(frm) {
 	frm.set_value("total_hiring_amount", total)
 	frm.refresh_field("total_hiring_amount")
 	
-	frm.set_value("advance_amount", frm.doc.total_hiring_amount);	
-	frm.refresh_field("advance_amount");
+	// frm.set_value("advance_amount", frm.doc.total_hiring_amount);	
+	// frm.refresh_field("advance_amount");
 }
 
 function calculate_amount(frm, cdt, cdn) {
