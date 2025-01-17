@@ -77,7 +77,7 @@ class VehicleLogbook(Document):
 	def validate(self):
 		check_future_date(self.to_date)
 		self.validate_date()
-		# self.set_data()
+		self.set_data()
 		self.check_dates()
 		self.check_double_vl()
 		self.check_hire_form()
@@ -128,8 +128,6 @@ class VehicleLogbook(Document):
 		self.customer_type = frappe.db.get_value("Equipment Hiring Form", self.ehf_name, "private")
 		self.customer = frappe.db.get_value("Equipment Hiring Form", self.ehf_name, "customer")
 
-
-	
 	def check_consumed(self):
 		if self.include_hour or self.include_km:
 			if flt(self.consumption) <= 0:
