@@ -174,6 +174,15 @@ frappe.ui.form.on("Purchase Order", {
 				}
 			}
 		});
+	},
+
+	/* jai added */
+	schedule_date: function (frm) {
+		if (frm.doc.schedule_date){
+			frm.doc.items.map(v=>{
+				v.schedule_date = frm.doc.schedule_date
+			})
+		}
 	}
 });
 
