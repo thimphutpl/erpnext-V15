@@ -198,10 +198,13 @@ class AbstractBill(Document):
 			
 			if not account_code:
 				frappe.throw("No account code found for account {}".format(item.account))
+			account_number = frappe.db.get_value("Account", item.account, "account_number")
+			if not account_number:
+				frappe.throw("No account number found for account {}".format(item.account))
 
 			# Construct object code
 			# object_code = f"{cc_code}.{sub_activity_code}/{budget_type_code}/{account_code}"
-			object_code = f"{cc_code}.{sub_activity_code}/{budget_type_code}/"
+			object_code = f"{cc_code}.{sub_activity_code}/{budget_type_code}/{account_number}"
 			
 			item.activity_head = object_code
 
