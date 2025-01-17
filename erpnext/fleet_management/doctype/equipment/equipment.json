@@ -363,6 +363,7 @@
   {
    "fieldname": "current_operator",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Current Operator"
   },
   {
@@ -380,7 +381,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-08 14:31:28.087197",
+ "modified": "2025-01-17 16:07:07.029901",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Equipment",
