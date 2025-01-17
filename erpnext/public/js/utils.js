@@ -187,7 +187,8 @@ $.extend(erpnext.utils, {
 		if (d[fieldname]) {
 			var cl = doc[table_fieldname] || [];
 			for (var i = 0; i < cl.length; i++) {
-				if (!cl[i][fieldname]) cl[i][fieldname] = d[fieldname];
+				// if (!cl[i][fieldname]) cl[i][fieldname] = d[fieldname]; jai
+				cl[i][fieldname] = d[fieldname];
 			}
 		}
 		refresh_field(table_fieldname);
