@@ -145,7 +145,12 @@ frappe.ui.form.on("Sales Order", {
 			frm.set_df_property("reserve_stock", "description", null);
 		}
 	},
-
+    warehouse: function(frm){
+		frm.doc.items.map(v=>{
+			v.warehouse = frm.doc.warehouse
+		})
+		frm.refresh_field("items")
+	},
 	get_items_from_internal_purchase_order(frm) {
 		if (!frappe.model.can_read("Purchase Order")) {
 			return;
@@ -240,6 +245,14 @@ frappe.ui.form.on("Sales Order", {
 		refresh_field("items");
 	},
 
+	item_group: function(frm){
+		frm.fields_dict["items"].grid.get_field("item_code").get_query = function (doc) {
+			return {
+				filters: { 'item_group': frm.doc.item_group}
+			};
+		};
+	},
+	
 	create_stock_reservation_entries(frm) {
 		const dialog = new frappe.ui.Dialog({
 			title: __("Stock Reservation"),
@@ -566,6 +579,10 @@ frappe.ui.form.on("Sales Order", {
 });
 
 frappe.ui.form.on("Sales Order Item", {
+	items_add: function(frm, cdt, cdn) {
+		
+		frappe.model.set_value(cdt, cdn, "warehouse", frm.doc.warehouse);
+	},
 	item_code: function (frm, cdt, cdn) {
 		var row = locals[cdt][cdn];
 		if (frm.doc.delivery_date) {
@@ -579,6 +596,10 @@ frappe.ui.form.on("Sales Order Item", {
 		if (!frm.doc.delivery_date) {
 			erpnext.utils.copy_value_in_all_rows(frm.doc, cdt, cdn, "items", "delivery_date");
 		}
+	},
+	warehouse: function (frm, doctype, name) {
+		const item = locals[doctype][name];
+		frm.events.get_item_data(frm, item, false);
 	},
 });
 

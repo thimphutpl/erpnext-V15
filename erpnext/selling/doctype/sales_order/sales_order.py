@@ -114,6 +114,7 @@ class SalesOrder(SellingController):
 		incoterm: DF.Link | None
 		inter_company_order_reference: DF.Link | None
 		is_internal_customer: DF.Check
+		item_group: DF.Link | None
 		items: DF.Table[SalesOrderItem]
 		language: DF.Data | None
 		letter_head: DF.Link | None
