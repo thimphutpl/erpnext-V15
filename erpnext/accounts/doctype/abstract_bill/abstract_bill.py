@@ -25,9 +25,8 @@ class AbstractBill(Document):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
-		from frappe.types import DF
-
 		from erpnext.accounts.doctype.abstract_bill_item.abstract_bill_item import AbstractBillItem
+		from frappe.types import DF
 
 		amended_from: DF.Link | None
 		approver: DF.Link | None
@@ -37,6 +36,7 @@ class AbstractBill(Document):
 		company: DF.Link
 		cost_center: DF.Link
 		currency: DF.Link | None
+		designation: DF.Data | None
 		dispatch_number: DF.Data | None
 		exchange_rate: DF.Float
 		fetch_other_transactions: DF.Check
@@ -47,6 +47,7 @@ class AbstractBill(Document):
 		journal_entry: DF.Data | None
 		journal_entry_status: DF.Data | None
 		mode_of_payment: DF.Literal["", "Bank Entry", "Cash Entry"]
+		name1: DF.Data | None
 		posting_date: DF.Date
 		reference: DF.SmallText | None
 		reference_doctype: DF.Link | None
@@ -199,7 +200,8 @@ class AbstractBill(Document):
 				frappe.throw("No account code found for account {}".format(item.account))
 
 			# Construct object code
-			object_code = f"{cc_code}.{sub_activity_code}/{budget_type_code}/{account_code}"
+			# object_code = f"{cc_code}.{sub_activity_code}/{budget_type_code}/{account_code}"
+			object_code = f"{cc_code}.{sub_activity_code}/{budget_type_code}/"
 			
 			item.activity_head = object_code
 
