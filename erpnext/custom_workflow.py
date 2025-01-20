@@ -1132,7 +1132,8 @@ class CustomWorkflow:
 			if not "Imprest Manager" in frappe.get_roles(frappe.session.user):
 				frappe.throw("Only users with role Imprest Manager can Recoup or Reject this document")
 		else:
-			frappe.throw(_("Invalid Workflow State {}").format(self.doc.workflow_state))
+			pass
+			# frappe.throw(_("Invalid Workflow State {}").format(self.doc.workflow_state))
 	
 	def imprest_recoup(self):
 		if self.new_state.lower() in ("Draft".lower(), "Waiting Approval".lower()):
@@ -1150,7 +1151,8 @@ class CustomWorkflow:
 			if not "Imprest Manager" in frappe.get_roles(frappe.session.user):
 				frappe.throw("Only users with role Imprest Manager can Recoup or Reject this document")
 		else:
-			frappe.throw(_("Invalid Workflow State {}").format(self.doc.workflow_state))
+			pass
+			# frappe.throw(_("Invalid Workflow State {}").format(self.doc.workflow_state))
 	
 	def employee_benefit_claim(self):
 		workflow_state    = self.doc.get("workflow_state").lower()
