@@ -49,9 +49,8 @@
   }
  ],
  "index_web_pages_for_search": 1,
- "is_submittable": 1,
  "links": [],
- "modified": "2025-01-14 16:02:06.812054",
+ "modified": "2025-01-20 10:33:44.691817",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Service",
@@ -68,7 +67,6 @@
    "report": 1,
    "role": "System Manager",
    "share": 1,
-   "submit": 1,
    "write": 1
   }
  ],
