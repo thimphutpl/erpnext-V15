@@ -204,7 +204,7 @@ class AbstractBill(Document):
 
 			# Construct object code
 			# object_code = f"{cc_code}.{sub_activity_code}/{budget_type_code}/{account_code}"
-			object_code = f"{cc_code}.{sub_activity_code}/{budget_type_code}/{account_number}"
+			object_code = f"{sub_activity_code}/{budget_type_code}/{account_number}"
 			
 			item.activity_head = object_code
 
