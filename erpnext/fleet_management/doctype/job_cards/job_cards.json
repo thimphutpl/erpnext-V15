@@ -15,9 +15,9 @@
   "col_break_100",
   "receive_payment",
   "section_break_1",
-  "cost_center",
-  "column_break_7",
   "branch",
+  "column_break_7",
+  "cost_center",
   "column_break_3",
   "customer",
   "sec_break_5",
@@ -141,6 +141,7 @@
    "label": "Customer Details"
   },
   {
+   "fetch_from": "branch.cost_center",
    "fieldname": "cost_center",
    "fieldtype": "Link",
    "in_list_view": 1,
@@ -467,7 +468,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-12-20 15:40:55.421326",
+ "modified": "2025-01-20 11:34:29.010780",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Job Cards",

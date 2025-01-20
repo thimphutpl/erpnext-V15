@@ -3,12 +3,27 @@
 
 frappe.ui.form.on('Job Cards', {
 	// setup: function(frm){
-	// 	frm.get_field('assigned_to').grid.editable_fields = [
-	// 		{fieldname: 'mechanic', columns: 3},
-	// 		{fieldname: 'start_time', columns: 3},
-	// 		{fieldname: 'end_time', columns: 3},
-	// 		{fieldname: 'total_time', columns: 1},
-	// 	];		
+		// frm.get_field('assigned_to').grid.editable_fields = [
+		// 	{fieldname: 'mechanic', columns: 3},
+		// 	{fieldname: 'start_time', columns: 3},
+		// 	{fieldname: 'end_time', columns: 3},
+		// 	{fieldname: 'total_time', columns: 1},
+		// ];		
+		// frm.set_query("job", "items", function(frm,cdt,cdn) {
+		// 	var row = locals[cdt][cdn];
+		// 	// var is_service_item = (row.type == 'Service')? 1:0;
+		// 	if (row.which == undefined || row.which == '') return
+		// 	var filters
+		// 	if (row.which == 'Service') {
+		// 		filters = [["is_services_item", "=", 1], ["disabled", "=", 0]]
+		// 	} else {
+		// 		filters = [["is_services_item", "=", 0], ["is_fixed_asset", "=", 0], ["disabled", "=", 0]]
+		// 	}
+			
+		// 	return {
+		// 		filters: filters
+		// 	}
+		// });
 	// },
 	refresh: function(frm) {
 		if(frm.doc.docstatus===1){
@@ -94,7 +109,14 @@ frappe.ui.form.on('Job Cards', {
 });
 
 //Job Card Item  Details
-frappe.ui.form.on("Job Card Item", {
+frappe.ui.form.on("Job Cards Item", {
+	"which": function(frm,cdt,cdn) {
+		var item = locals[cdt][cdn];
+		frappe.model.set_value(cdt, cdn, "job_name", '')
+		frappe.model.set_value(cdt, cdn, "job", '')
+		frm.refresh_field("job_name")
+		frm.refresh_field("job")
+	},
 	"start_time": function(frm, cdt, cdn) {
 		calculate_datetime(frm, cdt, cdn)
 	},
@@ -103,20 +125,25 @@ frappe.ui.form.on("Job Card Item", {
 	},
 	"job": function(frm, cdt, cdn) {
 		var item = locals[cdt][cdn]
-		
+		var fields
+		if (item.which == 'Service') {
+			fields = ["item_name", "cost"]
+		} else if (item.which == 'Item') {
+			fields = ["item_name"]
+		}
 		if(item.job) {
 			frappe.call({
 				method: "frappe.client.get_value",
 				args: {
 					doctype: item.which,
-					fieldname: ["item_name", "cost"],
+					fieldname: fields,
 					filters: {
 						name: item.job
 					}
 				},
 				callback: function(r) {
 					frappe.model.set_value(cdt, cdn, "job_name", r.message.item_name)
-					frappe.model.set_value(cdt, cdn, "amount", r.message.cost)
+					frappe.model.set_value(cdt, cdn, "amount", r.message.cost ?? 0.0)
 					cur_frm.refresh_field("job_name")
 					cur_frm.refresh_field("amount")
 				}
