@@ -31,7 +31,7 @@ class AssetIssueDetails(Document):
         entry_date: DF.Date
         equipment_type: DF.Link | None
         issued_date: DF.Date
-        issued_to: DF.Link | None
+        issued_to: DF.Link
         item_code: DF.Link
         item_name: DF.Data
         location: DF.Link | None
