@@ -96,7 +96,10 @@ def get_data(query, filters=None):
         #     round(d.hsd_amount, 2),  # HSD Amount
         # ]
         dlph = d.lph if d.lph > 0 else 1
-        consumed_lph = round(flt(round(d.close_hr - d.open_hr, 2)) / dlph, 2)
+        if d.close_hr == 0 and d.open_hr == 0:
+            consumed_lph=0
+        else:
+            consumed_lph = round(flt(round(d.close_hr - d.open_hr, 2)) / dlph, 2)
         row = [
             d.name, d.equipment_category, d.equipment_type, d.registration_number, d.place,
             "{0}/{1}".format(d.open_km, d.open_hr), 
