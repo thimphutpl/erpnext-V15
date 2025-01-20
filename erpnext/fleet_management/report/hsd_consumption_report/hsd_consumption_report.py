@@ -49,6 +49,8 @@ def get_data(query, filters=None):
         
         # Fetch additional values with defaults
         d.cap = flt(frappe.db.get_value("Equipment", d.equipment, "tank_capacity"), 0.0)
+        d.cap = flt(frappe.db.get_value("Equipment", d.equipment, "kph"), 0.0)
+        d.cap = flt(frappe.db.get_value("Equipment", d.equipment, "lph"), 0.0)
         
         rate = frappe.db.sql("""
             SELECT (SUM(pol.qty * pol.rate) / SUM(pol.qty)) AS rate 
@@ -80,13 +82,22 @@ def get_data(query, filters=None):
         # Calculate HSD Amount safely
         d.hsd_amount = flt(d.consumed) * flt(d.rate)
         
+        # row = [
+        #     d.name, d.equipment_category, d.equipment_type, d.registration_number, d.place,
+        #     "{0}/{1}".format(d.open_km, d.open_hr), "{0}/{1}".format(d.close_km, d.close_hr),
+        #     round(d.close_km - d.open_km, 2), round(d.close_hr - d.open_hr, 2),
+        #     round(flt(d.drawn), 2), round(flt(d.opening), 2), round(flt(d.drawn + d.opening), 2),
+        #     d.yskm, d.yshour, round(d.consumed, 2), round(flt(d.closing), 2),
+        #     flt(d.cap), round(flt(d.rate), 2), round(flt(d.rate) * flt(d.consumed), 2),
+        #     round(d.hsd_amount, 2),  # HSD Amount
+        # ]
         row = [
             d.name, d.equipment_category, d.equipment_type, d.registration_number, d.place,
             "{0}/{1}".format(d.open_km, d.open_hr), "{0}/{1}".format(d.close_km, d.close_hr),
             round(d.close_km - d.open_km, 2), round(d.close_hr - d.open_hr, 2),
             round(flt(d.drawn), 2), round(flt(d.opening), 2), round(flt(d.drawn + d.opening), 2),
-            d.yskm, d.yshour, round(d.consumed, 2), round(flt(d.closing), 2),
-            flt(d.cap), round(flt(d.rate), 2), round(flt(d.rate) * flt(d.consumed), 2),
+            d.kph, d.lph, round(d.consumed, 2), round(flt(d.closing), 2),
+            d.tank_capacity, round(flt(d.rate), 2), round(flt(d.rate) * flt(d.consumed), 2),
             round(d.hsd_amount, 2),  # HSD Amount
         ]
         data.append(row)
@@ -96,7 +107,7 @@ def get_data(query, filters=None):
 
 
 def construct_query(filters):
-    query = """SELECT e.name, eh.branch, e.equipment_category, e.hsd_type, 
+    query = """SELECT e.name, eh.branch, e.equipment_category, e.hsd_type, e.tank_capacity, e.lph, e.kph,
         e.registration_number, e.equipment_type, e.equipment_model 
         FROM `tabEquipment History` eh, `tabEquipment` e 
         WHERE eh.parent = e.name """
@@ -191,15 +202,27 @@ def get_columns():
             "fieldtype": "Data",
             "width": 100,
         },
+        # {
+        #     "label": _("Per KM"),
+        #     "fieldname": "per_km",
+        #     "fieldtype": "Data",
+        #     "width": 110,
+        # },
+        # {
+        #     "label": _("Per Hour"),
+        #     "fieldname": "per_hour",
+        #     "fieldtype": "Data",
+        #     "width": 110,
+        # },
         {
             "label": _("Per KM"),
-            "fieldname": "per_km",
+            "fieldname": "kph",
             "fieldtype": "Data",
             "width": 110,
         },
         {
             "label": _("Per Hour"),
-            "fieldname": "per_hour",
+            "fieldname": "lph",
             "fieldtype": "Data",
             "width": 110,
         },
