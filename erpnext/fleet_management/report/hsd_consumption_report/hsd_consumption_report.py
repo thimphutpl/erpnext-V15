@@ -12,6 +12,8 @@ from erpnext.fleet_management.report.fleet_management_report import (
     get_pol_till,
     get_pol_between,
     get_pol_consumed_till,
+    get_ini_km_till,
+    get_ini_hour_till
 )
 
 
@@ -42,8 +44,10 @@ def get_data(query, filters=None):
         d.consumed = flt(consumed_till_end) - flt(consumed_till)
         d.opening = flt(received_till) - flt(consumed_till)
         d.closing = flt(d.opening) + flt(d.drawn) - flt(d.consumed)
-        d.open_km = flt(get_km_till(d.name, add_days(getdate(filters.from_date), -1)))
-        d.open_hr = flt(get_hour_till(d.name, add_days(getdate(filters.from_date), -1)))
+        # d.open_km = flt(get_km_till(d.name, add_days(getdate(filters.from_date), -1)))
+        # d.open_hr = flt(get_hour_till(d.name, add_days(getdate(filters.from_date), -1)))
+        d.open_km = flt(get_ini_km_till(d.name, getdate(filters.from_date)))
+        d.open_hr = flt(get_ini_hour_till(d.name, getdate(filters.from_date)))
         d.close_km = flt(get_km_till(d.name, filters.to_date))
         d.close_hr = flt(get_hour_till(d.name, filters.to_date))
         
@@ -91,13 +95,25 @@ def get_data(query, filters=None):
         #     flt(d.cap), round(flt(d.rate), 2), round(flt(d.rate) * flt(d.consumed), 2),
         #     round(d.hsd_amount, 2),  # HSD Amount
         # ]
+        dlph = d.lph if d.lph > 0 else 1
+        consumed_lph = round(flt(round(d.close_hr - d.open_hr, 2)) / dlph, 2)
         row = [
             d.name, d.equipment_category, d.equipment_type, d.registration_number, d.place,
-            "{0}/{1}".format(d.open_km, d.open_hr), "{0}/{1}".format(d.close_km, d.close_hr),
-            round(d.close_km - d.open_km, 2), round(d.close_hr - d.open_hr, 2),
-            round(flt(d.drawn), 2), round(flt(d.opening), 2), round(flt(d.drawn + d.opening), 2),
-            d.kph, d.lph, round(d.consumed, 2), round(flt(d.closing), 2),
-            d.tank_capacity, round(flt(d.rate), 2), round(flt(d.rate) * flt(d.consumed), 2),
+            "{0}/{1}".format(d.open_km, d.open_hr), 
+            "{0}/{1}".format(d.close_km, d.close_hr),
+            round(d.close_km - d.open_km, 2), 
+            round(d.close_hr - d.open_hr, 2),
+            round(flt(d.drawn), 2), 
+            round(flt(d.opening), 2), 
+            round(flt(d.drawn + d.opening), 2),
+            d.kph, d.lph, 
+            round(d.consumed, 2), 
+            consumed_lph, 
+            round(consumed_lph + round(d.consumed, 2), 2), 
+            round(flt(d.closing), 2),
+            d.tank_capacity, 
+            round(flt(d.rate), 2), 
+            round(flt(d.rate) * flt(d.consumed), 2),
             round(d.hsd_amount, 2),  # HSD Amount
         ]
         data.append(row)
@@ -227,7 +243,19 @@ def get_columns():
             "width": 110,
         },
         {
-            "label": _("HSD Consumption (L)"),
+            "label": _("HSD Consumption (Km)"),
+            "fieldname": "hsd_consumption_km",
+            "fieldtype": "Data",
+            "width": 110,
+        },
+        {
+            "label": _("HSD Consumption (Hr)"),
+            "fieldname": "hsd_consumption_hr",
+            "fieldtype": "Data",
+            "width": 110,
+        },
+        {
+            "label": _("HSD Consumption"),
             "fieldname": "hsd_consumption",
             "fieldtype": "Data",
             "width": 110,
