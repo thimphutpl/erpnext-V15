@@ -76,4 +76,20 @@ def get_hour_till(equipment, posting_date):
 	else:
 		return 0	
 
-
+def get_ini_km_till(equipment, date):
+	if not equipment or not date:
+		frappe.throw("Equipment and Till Date are Mandatory")
+	km = frappe.db.sql("select initial_km from `tabVehicle Logbook` where docstatus = 1 and equipment = %s and from_date <= %s order by from_date desc limit 1", (equipment, date), as_dict=True)
+	if km:
+		return km[0].initial_km
+	else:
+		return 0	
+	
+def get_ini_hour_till(equipment, date):
+	if not equipment or not date:
+		frappe.throw("Equipment and Till Date are Mandatory")
+	hr = frappe.db.sql("select initial_hour from `tabVehicle Logbook` where docstatus = 1 and equipment = %s and from_date <= %s order by from_date desc limit 1", (equipment, date), as_dict=True)
+	if hr:
+		return hr[0].initial_hour
+	else:
+		return 0	
