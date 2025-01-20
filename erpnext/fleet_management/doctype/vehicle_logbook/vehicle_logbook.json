@@ -190,7 +190,7 @@
   {
    "fieldname": "section_break_8",
    "fieldtype": "Section Break",
-   "label": "Time Details"
+   "label": "HSD Consumption Details(Not for invoice)"
   },
   {
    "allow_on_submit": 1,
@@ -589,7 +589,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-17 12:39:22.725836",
+ "modified": "2025-01-20 20:20:43.624651",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Vehicle Logbook",
