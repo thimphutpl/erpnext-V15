@@ -20,6 +20,18 @@ frappe.ui.form.on("Journal Entry", {
 			"Unreconcile Payment Entries",
 			"Bank Transaction",
 		];
+
+		// filter naming base on entry type
+		frm.set_query("naming_series", function() {
+			var entry_type = in_list(["Journal Entry", "Opening Entry", "Depreciation Entry"], frm.doc.voucher_type) ?
+				"Journal Entry" : frm.doc.voucher_type;
+			
+			return {
+				filters: {
+					"entry_type": entry_type,
+				}
+			}
+		});
 	},
 
 	refresh: function (frm) {

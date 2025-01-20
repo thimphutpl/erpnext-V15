@@ -39,7 +39,6 @@
   "plc_conversion_rate",
   "ignore_pricing_rule",
   "before_items_section",
-  "scan_barcode",
   "set_from_warehouse",
   "items_col_break",
   "set_warehouse",
@@ -464,7 +463,8 @@
    "fieldtype": "Link",
    "label": "Set Target Warehouse",
    "options": "Warehouse",
-   "print_hide": 1
+   "print_hide": 1,
+   "reqd": 1
   },
   {
    "default": "0",
@@ -487,12 +487,6 @@
    "hide_border": 1,
    "oldfieldtype": "Section Break",
    "options": "fa fa-shopping-cart"
-  },
-  {
-   "fieldname": "scan_barcode",
-   "fieldtype": "Data",
-   "label": "Scan Barcode",
-   "options": "Barcode"
   },
   {
    "allow_bulk_edit": 1,
@@ -1275,7 +1269,7 @@
  "idx": 105,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-03-20 16:03:31.611808",
+ "modified": "2025-01-07 13:22:28.082576",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Purchase Order",

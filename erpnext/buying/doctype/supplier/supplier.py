@@ -26,17 +26,20 @@ class Supplier(TransactionBase):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
+		from erpnext.accounts.doctype.allowed_to_transact_with.allowed_to_transact_with import AllowedToTransactWith
+		from erpnext.accounts.doctype.party_account.party_account import PartyAccount
+		from erpnext.buying.doctype.supplier_bank_account.supplier_bank_account import SupplierBankAccount
+		from erpnext.utilities.doctype.portal_user.portal_user import PortalUser
 		from frappe.types import DF
 
-		from erpnext.accounts.doctype.allowed_to_transact_with.allowed_to_transact_with import (
-			AllowedToTransactWith,
-		)
-		from erpnext.accounts.doctype.party_account.party_account import PartyAccount
-		from erpnext.utilities.doctype.portal_user.portal_user import PortalUser
-
+		account_number: DF.Data | None
 		accounts: DF.Table[PartyAccount]
 		allow_purchase_invoice_creation_without_purchase_order: DF.Check
 		allow_purchase_invoice_creation_without_purchase_receipt: DF.Check
+		bank_account_type: DF.Link | None
+		bank_branch: DF.Data | None
+		bank_items: DF.Table[SupplierBankAccount]
+		bank_name: DF.Data | None
 		companies: DF.Table[AllowedToTransactWith]
 		country: DF.Link | None
 		default_bank_account: DF.Link | None
@@ -139,6 +142,22 @@ class Supplier(TransactionBase):
 		self.validate_internal_supplier()
 		self.add_role_for_user()
 		self.validate_currency_for_receivable_payable_and_advance_account()
+		self.set_default_bank_account()
+
+	def set_default_bank_account(self):
+		if self.get("bank_items"):
+			default_bank_account = 0
+			for a in self.get("bank_items"):
+				if a.default:
+					default_bank_account += 1
+					self.bank_name = a.bank
+					self.bank_branch  = a.bank_branch
+					self.bank_account_type = a.bank_account_type
+					self.account_number = a.account_number
+			if default_bank_account == 0:
+				frappe.throw("Please set a default bank account under Bank Information")
+			elif default_bank_account > 1:
+				frappe.throw("Only one bank account is allowed to set a default")
 
 	@frappe.whitelist()
 	def get_supplier_group_details(self):

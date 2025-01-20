@@ -18,9 +18,10 @@
   "reversal_of",
   "tax_withholding_category",
   "column_break1",
+  "posting_date",
   "from_template",
   "company",
-  "posting_date",
+  "branch",
   "apply_tds",
   "2_add_edit_gl_entries",
   "accounts",
@@ -95,12 +96,12 @@
   },
   {
    "fieldname": "naming_series",
-   "fieldtype": "Select",
+   "fieldtype": "Link",
    "label": "Series",
    "no_copy": 1,
    "oldfieldname": "naming_series",
    "oldfieldtype": "Select",
-   "options": "ACC-JV-.YYYY.-",
+   "options": "Journal Entry Series",
    "print_hide": 1,
    "reqd": 1,
    "set_only_once": 1
@@ -499,6 +500,7 @@
   {
    "fieldname": "from_template",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "From Template",
    "no_copy": 1,
    "options": "Journal Entry Template",
@@ -543,6 +545,12 @@
    "label": "Is System Generated",
    "no_copy": 1,
    "read_only": 1
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "label": "Branch",
+   "options": "Branch"
   }
  ],
  "icon": "fa fa-file-text",
@@ -557,7 +565,7 @@
    "table_fieldname": "payment_entries"
   }
  ],
- "modified": "2024-07-18 15:32:29.413598",
+ "modified": "2024-12-25 21:27:53.364638",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Journal Entry",

@@ -39,7 +39,7 @@
   "plc_conversion_rate",
   "ignore_pricing_rule",
   "sec_warehouse",
-  "scan_barcode",
+  "column_break_elui",
   "column_break_31",
   "set_warehouse",
   "set_from_warehouse",
@@ -1084,12 +1084,6 @@
    "read_only": 1
   },
   {
-   "fieldname": "scan_barcode",
-   "fieldtype": "Data",
-   "label": "Scan Barcode",
-   "options": "Barcode"
-  },
-  {
    "fieldname": "billing_address",
    "fieldtype": "Link",
    "label": "Billing Address",
@@ -1267,13 +1261,17 @@
    "no_copy": 1,
    "print_hide": 1,
    "read_only": 1
+  },
+  {
+   "fieldname": "column_break_elui",
+   "fieldtype": "Column Break"
   }
  ],
  "icon": "fa fa-truck",
  "idx": 261,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-13 16:55:14.129055",
+ "modified": "2025-01-07 13:20:44.794513",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Purchase Receipt",

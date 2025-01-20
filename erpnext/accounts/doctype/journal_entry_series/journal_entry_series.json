@@ -1,0 +1,81 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:journal_entry_series",
+ "creation": "2024-12-25 21:12:57.971812",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "journal_entry_series",
+  "prefix",
+  "entry_type",
+  "column_break_qogn",
+  "disabled",
+  "description"
+ ],
+ "fields": [
+  {
+   "fieldname": "journal_entry_series",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Journal Entry Series",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "prefix",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Prefix",
+   "reqd": 1
+  },
+  {
+   "fieldname": "entry_type",
+   "fieldtype": "Select",
+   "label": "Entry Type",
+   "options": "Journal Entry\nInter Company Journal Entry\nBank Entry\nCash Entry\nCredit Card Entry\nDebit Note\nCredit Note\nContra Entry\nExcise Entry\nWrite Off Entry\nOpening Entry\nDepreciation Entry\nExchange Rate Revaluation\nExchange Gain Or Loss\nDeferred Revenue\nDeferred Expense",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_qogn",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "disabled",
+   "fieldtype": "Check",
+   "label": "Disabled"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Description"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-12-25 21:21:53.256807",
+ "modified_by": "Administrator",
+ "module": "Accounts",
+ "name": "Journal Entry Series",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

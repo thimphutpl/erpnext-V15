@@ -39,6 +39,15 @@ frappe.ui.form.on("Supplier", {
 			};
 		});
 
+		frm.set_query("bank_branch", "bank_items", function(doc, cdt, cdn) {
+			let d = locals[cdt][cdn];
+			return {
+				filters: {
+					'bank': d.bank
+				}
+			};
+		});
+
 		frm.set_query("supplier_primary_contact", function (doc) {
 			return {
 				query: "erpnext.buying.doctype.supplier.supplier.get_supplier_primary_contact",

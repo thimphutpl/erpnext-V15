@@ -5,6 +5,7 @@
 import json
 
 import frappe
+from frappe.model.naming import make_autoname
 from frappe import _, msgprint, scrub
 from frappe.utils import comma_and, cstr, flt, fmt_money, formatdate, get_link_to_form, nowdate
 
@@ -45,9 +46,8 @@ class JournalEntry(AccountsController):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
-		from frappe.types import DF
-
 		from erpnext.accounts.doctype.journal_entry_account.journal_entry_account import JournalEntryAccount
+		from frappe.types import DF
 
 		accounts: DF.Table[JournalEntryAccount]
 		amended_from: DF.Link | None
@@ -55,6 +55,7 @@ class JournalEntry(AccountsController):
 		auto_repeat: DF.Link | None
 		bill_date: DF.Date | None
 		bill_no: DF.Data | None
+		branch: DF.Link | None
 		cheque_date: DF.Date | None
 		cheque_no: DF.Data | None
 		clearance_date: DF.Date | None
@@ -69,7 +70,7 @@ class JournalEntry(AccountsController):
 		letter_head: DF.Link | None
 		mode_of_payment: DF.Link | None
 		multi_currency: DF.Check
-		naming_series: DF.Literal["ACC-JV-.YYYY.-"]
+		naming_series: DF.Link
 		paid_loan: DF.Data | None
 		pay_to_recd_from: DF.Data | None
 		payment_order: DF.Link | None
@@ -87,30 +88,21 @@ class JournalEntry(AccountsController):
 		total_credit: DF.Currency
 		total_debit: DF.Currency
 		user_remark: DF.SmallText | None
-		voucher_type: DF.Literal[
-			"Journal Entry",
-			"Inter Company Journal Entry",
-			"Bank Entry",
-			"Cash Entry",
-			"Credit Card Entry",
-			"Debit Note",
-			"Credit Note",
-			"Contra Entry",
-			"Excise Entry",
-			"Write Off Entry",
-			"Opening Entry",
-			"Depreciation Entry",
-			"Exchange Rate Revaluation",
-			"Exchange Gain Or Loss",
-			"Deferred Revenue",
-			"Deferred Expense",
-		]
+		voucher_type: DF.Literal["Journal Entry", "Inter Company Journal Entry", "Bank Entry", "Cash Entry", "Credit Card Entry", "Debit Note", "Credit Note", "Contra Entry", "Excise Entry", "Write Off Entry", "Opening Entry", "Depreciation Entry", "Exchange Rate Revaluation", "Exchange Gain Or Loss", "Deferred Revenue", "Deferred Expense"]
 		write_off_amount: DF.Currency
 		write_off_based_on: DF.Literal["Accounts Receivable", "Accounts Payable"]
 	# end: auto-generated types
 
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
+
+	def autoname(self):
+		prefix = frappe.db.get_value("Journal Entry Series", self.naming_series, "prefix")
+		if not prefix:
+			frappe.throw("Please set prefix {}".format(
+				frappe.get_desk_link("Journal Entry Series", self.naming_series)
+			))
+		self.name = make_autoname(str(prefix) + ".YYYY.MM.####")
 
 	def validate(self):
 		if self.voucher_type == "Opening Entry":

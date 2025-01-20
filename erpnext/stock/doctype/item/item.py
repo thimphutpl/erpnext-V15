@@ -33,6 +33,7 @@ from erpnext.controllers.item_variant import (
 	validate_item_variant_attributes,
 )
 from erpnext.stock.doctype.item_default.item_default import ItemDefault
+from frappe.model.naming import make_autoname
 
 
 class DuplicateReorderRows(frappe.ValidationError):
@@ -58,8 +59,6 @@ class Item(Document):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
-		from frappe.types import DF
-
 		from erpnext.stock.doctype.item_barcode.item_barcode import ItemBarcode
 		from erpnext.stock.doctype.item_customer_detail.item_customer_detail import ItemCustomerDetail
 		from erpnext.stock.doctype.item_default.item_default import ItemDefault
@@ -68,6 +67,7 @@ class Item(Document):
 		from erpnext.stock.doctype.item_tax.item_tax import ItemTax
 		from erpnext.stock.doctype.item_variant_attribute.item_variant_attribute import ItemVariantAttribute
 		from erpnext.stock.doctype.uom_conversion_detail.uom_conversion_detail import UOMConversionDetail
+		from frappe.types import DF
 
 		allow_alternative_item: DF.Check
 		allow_negative_stock: DF.Check
@@ -87,9 +87,7 @@ class Item(Document):
 		default_bom: DF.Link | None
 		default_item_manufacturer: DF.Link | None
 		default_manufacturer_part_no: DF.Data | None
-		default_material_request_type: DF.Literal[
-			"Purchase", "Material Transfer", "Material Issue", "Manufacture", "Customer Provided"
-		]
+		default_material_request_type: DF.Literal["Purchase", "Material Transfer", "Material Issue", "Manufacture", "Customer Provided"]
 		delivered_by_supplier: DF.Check
 		description: DF.TextEditor | None
 		disabled: DF.Check
@@ -112,10 +110,10 @@ class Item(Document):
 		is_sales_item: DF.Check
 		is_stock_item: DF.Check
 		is_sub_contracted_item: DF.Check
-		item_code: DF.Data
+		item_code: DF.Data | None
 		item_defaults: DF.Table[ItemDefault]
 		item_group: DF.Link
-		item_name: DF.Data | None
+		item_name: DF.Data
 		last_purchase_rate: DF.Float
 		lead_time_days: DF.Int
 		max_discount: DF.Float
@@ -155,19 +153,37 @@ class Item(Document):
 		self.set_onload("asset_naming_series", get_asset_naming_series())
 
 	def autoname(self):
-		if frappe.db.get_default("item_naming_by") == "Naming Series":
-			if self.variant_of:
-				if not self.item_code:
-					template_item_name = frappe.db.get_value("Item", self.variant_of, "item_name")
-					make_variant_item_code(self.variant_of, template_item_name, self)
-			else:
-				from frappe.model.naming import set_name_by_naming_series
-
-				set_name_by_naming_series(self)
-				self.item_code = self.name
-
+		base = frappe.db.get_value("Item Group", self.item_group, "item_code_base")
+		if not base:
+			frappe.throw(
+				_("Setup Item Code Base in Item Group '{}'").format(
+					frappe.get_desk_link("Item Group", self.item_group)
+				),
+				title=_("Missing Item Code Base")
+			)
+		self.item_code = make_autoname(f"{base}.#######")
+		
+		if not self.item_code:
+			frappe.throw(
+				_("Item Code is mandatory because Item is not automatically numbered."),
+				title=_("Missing Item Code")
+			)
 		self.item_code = strip(self.item_code)
 		self.name = self.item_code
+
+		# if frappe.db.get_default("item_naming_by") == "Naming Series":
+		# 	if self.variant_of:
+		# 		if not self.item_code:
+		# 			template_item_name = frappe.db.get_value("Item", self.variant_of, "item_name")
+		# 			make_variant_item_code(self.variant_of, template_item_name, self)
+		# 	else:
+		# 		from frappe.model.naming import set_name_by_naming_series
+
+		# 		set_name_by_naming_series(self)
+		# 		self.item_code = self.name
+
+		# self.item_code = strip(self.item_code)
+		# self.name = self.item_code
 
 	def after_insert(self):
 		"""set opening stock and item price"""

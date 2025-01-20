@@ -15,6 +15,7 @@
   "is_group",
   "image",
   "column_break_5",
+  "item_code_base",
   "defaults",
   "item_group_defaults",
   "sec_break_taxes",
@@ -127,6 +128,14 @@
    "options": "Item Group",
    "print_hide": 1,
    "report_hide": 1
+  },
+  {
+   "depends_on": "eval:doc.is_group",
+   "fieldname": "item_code_base",
+   "fieldtype": "Data",
+   "label": "Item Code Base",
+   "length": 2,
+   "mandatory_depends_on": "eval:doc.is_group"
   }
  ],
  "icon": "fa fa-sitemap",
@@ -135,7 +144,7 @@
  "is_tree": 1,
  "links": [],
  "max_attachments": 3,
- "modified": "2024-01-30 14:08:38.485616",
+ "modified": "2025-01-07 14:03:52.559068",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Item Group",

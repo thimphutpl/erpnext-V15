@@ -74,7 +74,7 @@ doctype_series_map = {
 	"Tax Rule": "ACC-TAX-RULE-.YYYY.-.#####",
 	"Training Feedback": "HR-TRF-.YYYY.-.#####",
 	"Training Result": "HR-TRR-.YYYY.-.#####",
-	"Travel Request": "HR-TRQ-.YYYY.-.#####",
+	# "Travel Request": "HR-TRQ-.YYYY.-.#####",
 	"UOM Conversion Factor": "MAT-UOM-CNV-.#####",
 	"Water Analysis": "HR-WAT-.YYYY.-.#####",
 	"Workflow Action": "SYS-WACT-.#####",

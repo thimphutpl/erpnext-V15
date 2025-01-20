@@ -23,6 +23,16 @@ frappe.ui.form.on("Bank", {
 			});
 		}
 	},
+	bank_name: function (frm) {
+		if (frm.doc.__islocal) {
+			// add missing " " arg in split method
+			let parts = frm.doc.bank_name.split(" ");
+			let abbr = $.map(parts, function (p) {
+				return p ? p.substr(0, 1) : null;
+			}).join("");
+			frm.set_value("abbr", abbr);
+		}
+	},
 });
 
 let add_fields_to_mapping_table = function (frm) {

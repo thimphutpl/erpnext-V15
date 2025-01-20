@@ -1,11 +1,6 @@
 {
- "charts": [
-  {
-   "chart_name": "Asset Value Analytics",
-   "label": "Asset Value Analytics"
-  }
- ],
- "content": "[{\"type\":\"onboarding\",\"data\":{\"onboarding_name\":\"Assets\",\"col\":12}},{\"type\":\"chart\",\"data\":{\"chart_name\":\"Asset Value Analytics\",\"col\":12}},{\"type\":\"spacer\",\"data\":{\"col\":12}},{\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Your Shortcuts</b></span>\",\"col\":12}},{\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Asset\",\"col\":3}},{\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Asset Category\",\"col\":3}},{\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Fixed Asset Register\",\"col\":3}},{\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Dashboard\",\"col\":3}},{\"type\":\"spacer\",\"data\":{\"col\":12}},{\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Reports & Masters</b></span>\",\"col\":12}},{\"type\":\"card\",\"data\":{\"card_name\":\"Assets\",\"col\":4}},{\"type\":\"card\",\"data\":{\"card_name\":\"Maintenance\",\"col\":4}},{\"type\":\"card\",\"data\":{\"card_name\":\"Reports\",\"col\":4}}]",
+ "charts": [],
+ "content": "[{\"id\":\"g5E129mjiP\",\"type\":\"onboarding\",\"data\":{\"onboarding_name\":\"Assets\",\"col\":12}},{\"id\":\"LXqffVtht3\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Your Shortcuts</b></span>\",\"col\":12}},{\"id\":\"0WZSTM-D4x\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Asset\",\"col\":3}},{\"id\":\"sS7EEYIM-0\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Asset Category\",\"col\":3}},{\"id\":\"R3ciLE2Yvv\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Fixed Asset Register\",\"col\":3}},{\"id\":\"hYQVxLDMSz\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Dashboard\",\"col\":3}},{\"id\":\"nH4nEblWqN\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"5O_M8S06QV\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Reports &amp; Masters</b></span>\",\"col\":12}},{\"id\":\"rcLzi8sXkD\",\"type\":\"card\",\"data\":{\"card_name\":\"Assets\",\"col\":4}},{\"id\":\"z6iPhkHOjF\",\"type\":\"card\",\"data\":{\"card_name\":\"Maintenance\",\"col\":4}},{\"id\":\"1H4KxQuI0E\",\"type\":\"card\",\"data\":{\"card_name\":\"Reports\",\"col\":4}}]",
  "creation": "2020-03-02 15:43:27.634865",
  "custom_blocks": [],
  "docstatus": 0,
@@ -182,6 +177,7 @@
    "link_to": "Asset Maintenance",
    "link_type": "Report",
    "onboard": 0,
+   "report_ref_doctype": "Asset Maintenance",
    "type": "Link"
   },
   {
@@ -193,10 +189,11 @@
    "link_to": "Asset Activity",
    "link_type": "Report",
    "onboard": 0,
+   "report_ref_doctype": "Asset Activity",
    "type": "Link"
   }
  ],
- "modified": "2024-01-05 17:40:34.570041",
+ "modified": "2025-01-14 00:45:40.300398",
  "modified_by": "Administrator",
  "module": "Assets",
  "name": "Assets",
@@ -207,7 +204,7 @@
  "quick_lists": [],
  "restrict_to_domain": "",
  "roles": [],
- "sequence_id": 7.0,
+ "sequence_id": 10.0,
  "shortcuts": [
   {
    "label": "Asset",

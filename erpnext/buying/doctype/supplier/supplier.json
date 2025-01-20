@@ -18,6 +18,14 @@
   "supplier_type",
   "is_transporter",
   "image",
+  "section_break_yhma",
+  "bank_items",
+  "section_break_hwoe",
+  "bank_name",
+  "bank_branch",
+  "column_break_gxxz",
+  "bank_account_type",
+  "account_number",
   "defaults_section",
   "default_currency",
   "default_bank_account",
@@ -33,12 +41,12 @@
   "column_break_30",
   "website",
   "language",
-  "dashboard_tab",
   "tax_tab",
   "tax_id",
   "column_break_27",
   "tax_category",
   "tax_withholding_category",
+  "dashboard_tab",
   "contact_and_address_tab",
   "address_contacts",
   "address_html",
@@ -56,6 +64,9 @@
   "payment_terms",
   "default_accounts_section",
   "accounts",
+  "portal_users_tab",
+  "portal_users",
+  "column_break_1mqv",
   "settings_tab",
   "allow_purchase_invoice_creation_without_purchase_order",
   "allow_purchase_invoice_creation_without_purchase_receipt",
@@ -70,10 +81,7 @@
   "on_hold",
   "hold_type",
   "column_break_59",
-  "release_date",
-  "portal_users_tab",
-  "portal_users",
-  "column_break_1mqv"
+  "release_date"
  ],
  "fields": [
   {
@@ -473,6 +481,49 @@
   {
    "fieldname": "column_break_mglr",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "account_number",
+   "fieldtype": "Data",
+   "label": "Account Number",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_hwoe",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "bank_name",
+   "fieldtype": "Data",
+   "label": "Bank Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "bank_branch",
+   "fieldtype": "Data",
+   "label": "Bank Branch",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_gxxz",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "bank_account_type",
+   "fieldtype": "Link",
+   "label": "Bank Account Type",
+   "options": "Bank Account Type",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_yhma",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "bank_items",
+   "fieldtype": "Table",
+   "label": "Accounts",
+   "options": "Supplier Bank Account"
   }
  ],
  "icon": "fa fa-user",
@@ -485,7 +536,7 @@
    "link_fieldname": "party"
   }
  ],
- "modified": "2024-05-08 18:02:57.342931",
+ "modified": "2025-01-08 18:35:49.559364",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Supplier",
@@ -543,7 +594,6 @@
    "role": "Accounts Manager"
   }
  ],
- "quick_entry": 1,
  "search_fields": "supplier_group",
  "show_name_in_global_search": 1,
  "sort_field": "modified",

@@ -1,0 +1,224 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:registration_number",
+ "creation": "2025-01-08 16:02:15.683995",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "registration_number",
+  "branch",
+  "cost_center",
+  "column_break_glbw",
+  "company",
+  "disabled",
+  "section_break_qvyl",
+  "equipment_name",
+  "fuelbook",
+  "engine_number",
+  "chasis_number",
+  "column_break_pnyd",
+  "model",
+  "category",
+  "type",
+  "fuel_type",
+  "other_details_tab",
+  "asset_code",
+  "column_break_vpgc",
+  "initial_reading",
+  "reading_uom",
+  "section_break_wunf",
+  "table_qptk"
+ ],
+ "fields": [
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Branch",
+   "options": "Branch",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_glbw",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "branch.cost_center",
+   "fieldname": "cost_center",
+   "fieldtype": "Link",
+   "label": "Cost Center",
+   "options": "Cost Center",
+   "read_only": 1
+  },
+  {
+   "fieldname": "registration_number",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Registration Number",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "section_break_qvyl",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "fuelbook",
+   "fieldtype": "Link",
+   "label": "Fuelbook",
+   "options": "Fuelbook"
+  },
+  {
+   "default": "0",
+   "fieldname": "disabled",
+   "fieldtype": "Check",
+   "label": "Disabled"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_pnyd",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "model",
+   "fieldtype": "Data",
+   "label": "Model",
+   "reqd": 1
+  },
+  {
+   "fieldname": "category",
+   "fieldtype": "Link",
+   "label": "Category",
+   "options": "Equipment Category",
+   "reqd": 1
+  },
+  {
+   "fieldname": "type",
+   "fieldtype": "Link",
+   "label": "Type",
+   "options": "Equipment Type",
+   "reqd": 1
+  },
+  {
+   "fieldname": "asset_code",
+   "fieldtype": "Link",
+   "label": "Asset Code",
+   "options": "Asset"
+  },
+  {
+   "fieldname": "fuel_type",
+   "fieldtype": "Link",
+   "label": "Fuel Type",
+   "options": "Item"
+  },
+  {
+   "fieldname": "engine_number",
+   "fieldtype": "Data",
+   "label": "Engine Number"
+  },
+  {
+   "fieldname": "chasis_number",
+   "fieldtype": "Data",
+   "label": "Chasis Number"
+  },
+  {
+   "fieldname": "other_details_tab",
+   "fieldtype": "Tab Break",
+   "label": "Additional Information"
+  },
+  {
+   "fieldname": "table_qptk",
+   "fieldtype": "Table",
+   "options": "Equipment Operator Item"
+  },
+  {
+   "fieldname": "section_break_wunf",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_vpgc",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "initial_reading",
+   "fieldtype": "Float",
+   "label": "Initial Reading"
+  },
+  {
+   "fieldname": "reading_uom",
+   "fieldtype": "Link",
+   "label": "Reading UOM",
+   "options": "UOM"
+  },
+  {
+   "fieldname": "equipment_name",
+   "fieldtype": "Data",
+   "label": "Equipment Name"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-01-08 21:28:50.197839",
+ "modified_by": "Administrator",
+ "module": "Fleet Management",
+ "name": "Equipment",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Fleet Master",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Fleet Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Fleet User",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
