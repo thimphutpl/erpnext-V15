@@ -76,15 +76,16 @@ class StockSettings(Document):
 		]:
 			frappe.db.set_default(key, self.get(key, ""))
 
-		from erpnext.utilities.naming import set_by_naming_series
+		# jai commented 12 Jan 2025
+		# from erpnext.utilities.naming import set_by_naming_series
 
-		set_by_naming_series(
-			"Item",
-			"item_code",
-			self.get("item_naming_by") == "Naming Series",
-			hide_name_field=True,
-			make_mandatory=0,
-		)
+		# set_by_naming_series(
+		# 	"Item",
+		# 	"item_code",
+		# 	self.get("item_naming_by") == "Naming Series",
+		# 	hide_name_field=True,
+		# 	make_mandatory=0,
+		# )
 
 		# show/hide barcode field
 		for name in ["barcode", "barcodes", "scan_barcode"]:

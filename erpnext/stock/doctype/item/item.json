@@ -810,6 +810,7 @@
    "depends_on": "is_fixed_asset",
    "fieldname": "auto_create_assets",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "Auto Create Assets on Purchase"
   },
   {
@@ -942,7 +943,7 @@
  "index_web_pages_for_search": 1,
  "links": [],
  "make_attachments_public": 1,
- "modified": "2024-12-18 15:40:15.350954",
+ "modified": "2025-01-22 00:00:40.727272",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Item",
