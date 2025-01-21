@@ -24,35 +24,10 @@ class InactiveEmployeeStatusError(frappe.ValidationError):
 
 class Employee(NestedSet):
 	nsm_parent_field = "reports_to"
-	# def autoname(self):
-	# 	name = make_autoname('EMP.####')[3:]
-	# 	if not self.employee_name:
-	# 		self.set_employee_name()
-
-	# def autoname(self):
-	# 	frappe.throw("hi")
-	# 	naming_method = frappe.db.get_value("HR Settings", None, "emp_created_by")
-	# 	if not naming_method:
-	# 		throw(_("Please setup Employee Naming System in Human Resource > HR Settings"))
-	# 	else:
-	# 		if naming_method == 'Naming Series':
-	# 			if not self.date_of_joining:
-	# 				frappe.throw("Date of Joining not Set!")
-	# 			abbr = frappe.db.get_value("Company", self.company, "abbr")
-	# 			naming_series = str(abbr) + "." + str(getdate(self.date_of_joining).year)[2:4]	
-	# 			x = make_autoname(str(naming_series) + '.###')
-	# 			y = make_autoname(str(getdate(self.date_of_joining).strftime('%m')) + ".#")
-	# 			start_id = cint(len(str(abbr))) + 2
-	# 			eid = x[:start_id] + y[:2] + x[start_id:start_id + 3]
-	# 			self.name = eid
-	# 			self.yearid = x
-	# 		elif naming_method == 'Employee Number':
-	# 			self.name = self.employee_number
-
-	# 	self.employee = self.name
+	
 		
 	def validate(self):
-		self.custom_autoname()
+		
 		from erpnext.controllers.status_updater import validate_status
 		validate_status(self.status, ["Active", "Inactive", "Suspended", "Left"])
 		# naming done with combination with joining year, month and 4 digits series
@@ -73,29 +48,13 @@ class Employee(NestedSet):
 			if existing_user_id:
 				remove_user_permission("Employee", self.name, existing_user_id)
 
-	def custom_autoname(self):
-		naming_method = frappe.db.get_value("HR Settings", None, "emp_created_by")
-		if not naming_method:
-			throw(_("Please setup Employee Naming System in Human Resource > HR Settings"))
-		else:
-			if naming_method == 'Naming Series':
-				if not self.date_of_joining:
-					frappe.throw("Date of Joining not Set!")
-				abbr = frappe.db.get_value("Company", self.company, "abbr")
-				naming_series = str(abbr) + "." + str(getdate(self.date_of_joining).year)[2:4]	
-				x = make_autoname(str(naming_series) + '.###')
-				y = make_autoname(str(getdate(self.date_of_joining).strftime('%m')) + ".#")
-				start_id = cint(len(str(abbr))) + 2
-				eid = x[:start_id] + y[:2] + x[start_id:start_id + 3]
-				self.name = eid
-				# self.yearid = x
-			elif naming_method == 'Employee Number':
-				self.name = self.employee_number
-			
-		self.employee = self.name
+	
+		
+	
 
 	def after_rename(self, old, new, merge):
 		self.db_set("employee", new)
+
 
 	def set_employee_name(self):
 		self.employee_name = " ".join(
