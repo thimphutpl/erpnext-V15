@@ -550,19 +550,24 @@ class CustomWorkflow:
 	def promotion_application(self):
 		if self.new_state.lower() == ("Waiting Supervisor Approval".lower()):
 			self.set_approver("Supervisor")
+		elif self.new_state.lower() == ("Waiting GM Approval".lower()):
+			if self.doc.approver != frappe.session.user:
+				frappe.throw("Only {} can Forward this Application".format(self.doc.approver_name))
+			self.set_approver("General Manager")
 		elif self.new_state.lower() == ("Waiting Hr Approval".lower()):
 			if self.doc.approver != frappe.session.user:
 				frappe.throw("Only {} can Forward this Application".format(self.doc.approver_name))
-			self.set_approver("HR")
+			# self.set_approver("HR")
 		elif self.new_state.lower() == ("Approved".lower()):
-			if self.doc.approver != frappe.session.user:
-				frappe.throw("Only {} can Approve this Application".format(self.doc.approver_name))
+			if not "HR Manager" in frappe.get_roles(frappe.session.user):
+				frappe.throw("Only HR Manager role can Approve this Application")
 
 		elif self.new_state.lower() == ("Rejected".lower()):
-			if self.doc.approver != frappe.session.user:
-				frappe.throw("Only {} can Reject this Application".format(self.doc.approver_name))
+			if self.doc.approver != frappe.session.user or "HR Manager" not in frappe.get_roles(frappe.session.user):
+				frappe.throw("Only {}/HR Manager role can Reject this Application".format(self.doc.approver_name))
 		else:
-			frappe.throw(_("Invalid Workflow State {}").format(self.doc.workflow_state))
+			pass
+			# frappe.throw(_("Invalid Workflow State {}").format(self.doc.workflow_state))
 	
 	def prepare_audit_plan(self):
 		if self.new_state.lower() == ("Waiting Approval".lower()):
