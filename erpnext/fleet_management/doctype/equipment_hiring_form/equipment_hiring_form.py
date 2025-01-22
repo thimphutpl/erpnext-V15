@@ -57,12 +57,18 @@ class EquipmentHiringForm(Document):
 		self.check_date_approval()
 		self.check_duplicate()
 		self.calculate_totals()
+		self.validate_private_others()
 
 	def validate_date(self, a):
 		from_date = get_datetime(str(a.from_date) + ' ' + str(a.from_time))
 		to_date = get_datetime(str(a.to_date) + ' ' + str(a.to_time))
 		if to_date < from_date:
 			frappe.throw("From Date/Time cannot be greater than To Date/Time")
+
+	def validate_private_others(self):
+		if self.private == 'CDCL' and self.customer:
+			if not self.customer_cost_center:
+				frappe.throw("Missing value for Customer Cost Center.")
 
 	def before_submit(self):
 		#jai
