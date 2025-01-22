@@ -328,6 +328,7 @@
   {
    "fieldname": "rate_per_hour_normal",
    "fieldtype": "Currency",
+   "hidden": 1,
    "label": "Rate Per Hour (Normal) (Rate/ 8)"
   },
   {
@@ -391,7 +392,7 @@
  "in_create": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-12-05 18:53:56.335487",
+ "modified": "2025-01-22 19:25:18.510967",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Muster Roll Employee",
