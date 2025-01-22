@@ -18,10 +18,10 @@ frappe.ui.form.on('Hire Charge Invoice', {
 
 		frm.set_df_property("discount_amount", "read_only", frm.doc.owned_by == "CDCL")
 		if (frm.doc.invoice_jv && frappe.model.can_read("Journal Entry")) {
-			cur_frm.add_custom_button(__('Bank Entries'), function() {
+			cur_frm.add_custom_button(__('Journal Entry'), function() {
 				frappe.route_options = {
-					"Journal Entry Account.reference_type": me.frm.doc.doctype,
-					"Journal Entry Account.reference_name": me.frm.doc.name,
+					"Journal Entry Account.reference_type": frm.doc.doctype,
+					"Journal Entry Account.reference_name": frm.doc.name,
 				};
 				frappe.set_route("List", "Journal Entry");
 			}, __("View"));
