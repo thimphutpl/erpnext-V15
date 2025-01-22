@@ -521,8 +521,14 @@ class PurchaseOrder(BuyingController):
 
 		unlink_inter_company_doc(self.doctype, self.name, self.inter_company_order_reference)
 
+		self.cancel_consumed_budget()
+
 	def on_update(self):
 		pass
+
+	def cancel_consumed_budget(self):
+		frappe.db.sql("delete from `tabCommitted Budget` where reference_type='{}' and reference_no='{}'".format(self.doctype, self.name))
+		frappe.db.sql("delete from `tabConsumed Budget` where reference_type='{}' and reference_no='{}'".format(self.doctype, self.name))
 
 	def update_status_updater(self):
 		self.status_updater.append(
