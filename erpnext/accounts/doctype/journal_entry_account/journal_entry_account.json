@@ -97,7 +97,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Party Type",
-   "options": "\nCustomer\nSupplier\nEmployee\nMuster Roll Employee",
+   "options": "\nCustomer\nSupplier\nEmployee\nMuster Roll Employee\nAgency\nBeneficiary",
    "search_index": 1
   },
   {
@@ -196,7 +196,7 @@
    "fieldtype": "Select",
    "label": "Reference Type",
    "no_copy": 1,
-   "options": "\nSales Invoice\nPurchase Invoice\nJournal Entry\nSales Order\nPurchase Order\nExpense Claim\nAsset\nLoan\nPayroll Entry\nEmployee Advance\nExchange Rate Revaluation\nInvoice Discounting\nFees\nFull and Final Statement\nPayment Entry\nAbstract Bill\nImprest Advance\nImprest Settlement\nPOL Advance",
+   "options": "\nSales Invoice\nPurchase Invoice\nJournal Entry\nSales Order\nPurchase Order\nExpense Claim\nAsset\nLoan\nPayroll Entry\nEmployee Advance\nExchange Rate Revaluation\nInvoice Discounting\nFees\nFull and Final Statement\nPayment Entry\nAbstract Bill\nImprest Advance\nImprest Settlement\nPOL Advance\nInsurance and Registration",
    "search_index": 1
   },
   {
@@ -369,7 +369,7 @@
  "idx": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-10-30 12:58:49.809703",
+ "modified": "2025-01-22 13:12:07.591966",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Journal Entry Account",
