@@ -382,8 +382,11 @@ def compare_expense_with_budget(args, budget_amount, action_for, action, budget_
 	if total_expense_amount > budget_amount:
 		diff = total_expense_amount - budget_amount
 		currency = frappe.get_cached_value("Company", args.company, "default_currency")
+		message = ''
+		if args.doctype in ("Purchase Order", "Purchase Invoice"):
+			message = f" until #Row. {args.idx} with Item Code #{args.item_code}."
 
-		msg = _("{0} Budget for Account {1} against {2} {3} is {4} and available budget is {5} Including (Supplementary Budget,Budget Received,Budget Sent). It exceed by {6}").format(
+		msg = _("{0} Budget for Account {1} against {2} {3} is {4} and available budget is {5} Including (Supplementary Budget,Budget Received,Budget Sent). It exceed by {6}{7}").format(
 			_(action_for),
 			frappe.bold(args.account),
 			args.budget_against_field,
@@ -391,6 +394,7 @@ def compare_expense_with_budget(args, budget_amount, action_for, action, budget_
 			frappe.bold(fmt_money(budget_amount, currency=currency)),
 			frappe.bold(fmt_money(available_budget, currency=currency)),
 			frappe.bold(fmt_money(diff, currency=currency)),
+			message,
 		)
 
 		if (
