@@ -1313,9 +1313,10 @@ class PaymentEntry(AccountsController):
 
 	def add_bank_gl_entries(self, gl_entries):
 		total_deductions = 0
-			for d in self.get("deductions"):
-				if d.amount:
-					total_deductions += flt(d.amount)
+		for d in self.get("deductions"):
+			if d.amount:
+				total_deductions += flt(d.amount)
+		
 		if self.payment_type in ("Pay", "Internal Transfer"):
 			gl_entries.append(
 				self.get_gl_dict(
