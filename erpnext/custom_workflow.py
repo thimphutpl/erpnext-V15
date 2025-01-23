@@ -1088,9 +1088,9 @@ class CustomWorkflow:
 		''' Material Request Workflow
 			1. Employee -> MR Manager
 		'''
-		if self.new_state.lower() in ("Draft".lower()):
-			if self.doc.owner != frappe.session.user:
-				frappe.throw("Only the document owner can Apply this material request")
+		# if self.new_state.lower() in ("Draft".lower()):
+		# 	if self.doc.owner != frappe.session.user:
+		# 		frappe.throw("Only the document owner can Apply this material request")
 
 		# elif self.new_state.lower() in ("Waiting Supervisor Approval".lower()):
 		# 	if self.doc.owner != frappe.session.user and self.new_state.lower()!= self.old_state.lower():
