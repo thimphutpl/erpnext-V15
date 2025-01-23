@@ -266,5 +266,6 @@ class MechanicalPayment(AccountsController):
             row.update(d)
             total += flt(d.outstanding_amount)
         self.receivable_amount = total
+        self.actual_amount = total
 
 

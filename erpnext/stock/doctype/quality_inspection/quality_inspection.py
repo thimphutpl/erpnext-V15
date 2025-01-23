@@ -7,6 +7,8 @@ from frappe import _
 from frappe.model.document import Document
 from frappe.model.mapper import get_mapped_doc
 from frappe.utils import cint, cstr, flt, get_number_format_info
+from frappe.model.naming import make_autoname
+from erpnext.custom_autoname import get_auto_name
 
 from erpnext.stock.doctype.quality_inspection_template.quality_inspection_template import (
 	get_template_details,
@@ -57,6 +59,9 @@ class QualityInspection(Document):
 		verified_by: DF.Data | None
 	# end: auto-generated types
 
+	def autoname(self):
+		self.name = make_autoname(get_auto_name(self, self.naming_series) + ".####")
+	
 	def validate(self):
 		if not self.readings and self.item_code:
 			self.get_item_specification_details()

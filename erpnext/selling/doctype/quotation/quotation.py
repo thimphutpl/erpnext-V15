@@ -6,6 +6,8 @@ import frappe
 from frappe import _
 from frappe.model.mapper import get_mapped_doc
 from frappe.utils import flt, getdate, nowdate
+from frappe.model.naming import make_autoname
+from erpnext.custom_autoname import get_auto_name
 
 from erpnext.controllers.selling_controller import SellingController
 
@@ -108,6 +110,9 @@ class Quotation(SellingController):
 		transaction_date: DF.Date
 		valid_till: DF.Date | None
 	# end: auto-generated types
+
+	def autoname(self):
+		self.name = make_autoname(get_auto_name(self, self.naming_series) + ".####")
 
 	def set_indicator(self):
 		if self.docstatus == 1:

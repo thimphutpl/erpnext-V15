@@ -45,6 +45,8 @@ from erpnext.controllers.accounts_controller import (
 	validate_taxes_and_charges,
 )
 from erpnext.setup.utils import get_exchange_rate
+from frappe.model.naming import make_autoname
+from erpnext.custom_autoname import get_auto_name
 
 
 class InvalidPaymentEntry(ValidationError):
@@ -56,6 +58,9 @@ class PaymentEntry(AccountsController):
 		super().__init__(*args, **kwargs)
 		if not self.is_new():
 			self.setup_party_account_field()
+	
+	def autoname(self):
+		self.name = make_autoname(get_auto_name(self, self.naming_series) + ".####")
 
 	def setup_party_account_field(self):
 		self.party_account_field = None
