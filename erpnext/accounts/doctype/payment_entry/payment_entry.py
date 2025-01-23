@@ -1312,6 +1312,10 @@ class PaymentEntry(AccountsController):
 		gl_entries.append(gle)
 
 	def add_bank_gl_entries(self, gl_entries):
+		total_deductions = 0
+			for d in self.get("deductions"):
+				if d.amount:
+					total_deductions += flt(d.amount)
 		if self.payment_type in ("Pay", "Internal Transfer"):
 			gl_entries.append(
 				self.get_gl_dict(
@@ -1319,8 +1323,8 @@ class PaymentEntry(AccountsController):
 						"account": self.paid_from,
 						"account_currency": self.paid_from_account_currency,
 						"against": self.party if self.payment_type == "Pay" else self.paid_to,
-						"credit_in_account_currency": self.paid_amount,
-						"credit": self.base_paid_amount,
+						"credit_in_account_currency": self.paid_amount + total_deductions,
+						"credit": self.base_paid_amount + total_deductions,
 						"cost_center": self.cost_center,
 						"post_net_value": True,
 					},
@@ -1334,8 +1338,8 @@ class PaymentEntry(AccountsController):
 						"account": self.paid_to,
 						"account_currency": self.paid_to_account_currency,
 						"against": self.party if self.payment_type == "Receive" else self.paid_from,
-						"debit_in_account_currency": self.received_amount,
-						"debit": self.base_received_amount,
+						"debit_in_account_currency": self.received_amount - total_deductions,
+						"debit": self.base_received_amount - total_deductions,
 						"cost_center": self.cost_center,
 					},
 					item=self,
