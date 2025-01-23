@@ -1179,29 +1179,48 @@ frappe.ui.form.on("Payment Entry", {
 
 	set_difference_amount: function (frm) {
 		var difference_amount = 0;
-		var base_unallocated_amount =
-			flt(frm.doc.unallocated_amount) *
-			(frm.doc.payment_type == "Receive" ? frm.doc.source_exchange_rate : frm.doc.target_exchange_rate);
-
-		var base_party_amount = flt(frm.doc.base_total_allocated_amount) + base_unallocated_amount;
-
-		if (frm.doc.payment_type == "Receive") {
-			difference_amount = base_party_amount - flt(frm.doc.base_received_amount);
-		} else if (frm.doc.payment_type == "Pay") {
-			difference_amount = flt(frm.doc.base_paid_amount) - base_party_amount;
-		} else {
-			difference_amount = flt(frm.doc.base_paid_amount) - flt(frm.doc.base_received_amount);
+		if(frm.doc.party) {
+			var party_amount = frm.doc.payment_type=="Receive" ?
+				frm.doc.paid_amount : frm.doc.received_amount;
 		}
 
-		var total_deductions = frappe.utils.sum(
-			$.map(frm.doc.deductions || [], function (d) {
-				return flt(d.amount);
-			})
-		);
+		// var base_unallocated_amount =
+		// 	flt(frm.doc.unallocated_amount) *
+		// 	(frm.doc.payment_type == "Receive" ? frm.doc.source_exchange_rate : frm.doc.target_exchange_rate);
+
+		// var base_party_amount = flt(frm.doc.base_total_allocated_amount) + base_unallocated_amount;
+
+		// if (frm.doc.payment_type == "Receive") {
+		// 	difference_amount = base_party_amount - flt(frm.doc.base_received_amount);
+		// } else if (frm.doc.payment_type == "Pay") {
+		// 	difference_amount = flt(frm.doc.base_paid_amount) - base_party_amount;
+		// } else {
+		// 	difference_amount = flt(frm.doc.base_paid_amount) - flt(frm.doc.base_received_amount);
+		// }
+
+		// Ver 1.0 Begins added by SSK on 15/08/2016, following code is added
+		if(frm.doc.payment_type == "Receive"){
+			difference_amount = frm.doc.total_allocated_amount - party_amount;
+		}
+		else{
+			difference_amount = party_amount - frm.doc.total_allocated_amount;
+		}
+		// Ver 1.0 Ends
+
+		// var total_deductions = frappe.utils.sum(
+		// 	$.map(frm.doc.deductions || [], function (d) {
+		// 		return flt(d.amount);
+		// 	})
+		// );
+
+		// frm.set_value(
+		// 	"difference_amount",
+		// 	difference_amount - total_deductions + flt(frm.doc.base_total_taxes_and_charges)
+		// );
 
 		frm.set_value(
 			"difference_amount",
-			difference_amount - total_deductions + flt(frm.doc.base_total_taxes_and_charges)
+			difference_amount + flt(frm.doc.base_total_taxes_and_charges)
 		);
 
 		frm.events.hide_unhide_fields(frm);

@@ -988,17 +988,26 @@ class PaymentEntry(AccountsController):
 		base_party_amount = flt(self.base_total_allocated_amount) + flt(base_unallocated_amount)
 		included_taxes = self.get_included_taxes()
 
-		if self.payment_type == "Receive":
+		""" if self.payment_type == "Receive":
 			self.difference_amount = base_party_amount - self.base_received_amount + included_taxes
 		elif self.payment_type == "Pay":
 			self.difference_amount = self.base_paid_amount - base_party_amount - included_taxes
 		else:
-			self.difference_amount = self.base_paid_amount - flt(self.base_received_amount) - included_taxes
+			self.difference_amount = self.base_paid_amount - flt(self.base_received_amount) - included_taxes """
+		# Following line is added
+		if self.payment_type == "Receive":
+			self.difference_amount = self.total_allocated_amount - self.paid_amount + included_taxes
+		else:
+			self.difference_amount = self.paid_amount - self.total_allocated_amount - included_taxes
 
-		total_deductions = sum(flt(d.amount) for d in self.get("deductions"))
+		# total_deductions = sum(flt(d.amount) for d in self.get("deductions"))
 
+		# self.difference_amount = flt(
+		# 	self.difference_amount - total_deductions, self.precision("difference_amount")
+		# )
+		
 		self.difference_amount = flt(
-			self.difference_amount - total_deductions, self.precision("difference_amount")
+			self.difference_amount, self.precision("difference_amount")
 		)
 
 	def get_included_taxes(self):
