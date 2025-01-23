@@ -34,6 +34,52 @@ from datetime import datetime
 
 
 class BankPayment(Document):
+	# begin: auto-generated types
+	# This code is auto-generated. Do not modify anything in this block.
+
+	from typing import TYPE_CHECKING
+
+	if TYPE_CHECKING:
+		from erpnext.epayment.doctype.bank_payment_debit_note.bank_payment_debit_note import BankPaymentDebitNote
+		from erpnext.epayment.doctype.bank_payment_item.bank_payment_item import BankPaymentItem
+		from erpnext.epayment.doctype.bank_payment_summary.bank_payment_summary import BankPaymentSummary
+		from erpnext.epayment.doctype.bank_payment_upload.bank_payment_upload import BankPaymentUpload
+		from frappe.types import DF
+
+		amended_from: DF.Link | None
+		approver: DF.Data | None
+		bank_account_no: DF.Data | None
+		bank_account_type: DF.Data | None
+		bank_balance: DF.Currency
+		bank_branch: DF.Link | None
+		bank_name: DF.Link | None
+		banks: DF.Table[BankPaymentSummary]
+		beneficiary: DF.Link | None
+		branch: DF.Link
+		company: DF.Link
+		debit_notes: DF.Table[BankPaymentDebitNote]
+		department: DF.Link | None
+		division: DF.Link | None
+		employee: DF.Link | None
+		fiscal_year: DF.Link | None
+		from_date: DF.Date | None
+		institution_name: DF.Link | None
+		items: DF.Table[BankPaymentItem]
+		month: DF.Literal["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+		paid_from: DF.Link
+		payment_type: DF.Literal["", "One-One Payment", "Bulk Payment"]
+		posting_date: DF.Datetime | None
+		region: DF.Link | None
+		remarks: DF.SmallText
+		select_beneficiary: DF.Check
+		status: DF.Literal["Draft", "Pending", "In progress", "Upload Failed", "Waiting Acknowledgement", "Processing Acknowledgement", "Failed", "Partial Payment", "Completed", "Cancelled"]
+		to_date: DF.Date | None
+		total_amount: DF.Currency
+		transaction_no: DF.DynamicLink | None
+		transaction_type: DF.Literal["", "Salary", "Journal Entry", "Payment Entry", "Employee Loan Payment", "Bonus", "Imprest Recoup", "Leave Travel Concession", "PBVA", "Process MR Payment", "Bulk Leave Encashment"]
+		uploads: DF.Table[BankPaymentUpload]
+		workflow_state: DF.Link | None
+	# end: auto-generated types
 	def validate(self):
 		self.update_status()
 		self.set_defaults()
