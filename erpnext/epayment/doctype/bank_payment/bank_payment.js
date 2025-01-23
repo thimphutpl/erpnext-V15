@@ -154,7 +154,7 @@ var create_custom_buttons = function(frm){
 }
 
 var enable_disable = function(frm){
-	var permitted_doctypes = ['Bonus', 'Employee Loan Payment', 'LTC', 'PBVA', 'Salary', 'Bulk Leave Encashment'];
+	var permitted_doctypes = ['Bonus', 'Employee Loan Payment', 'Leave Travel Concession', 'PBVA', 'Salary', 'Bulk Leave Encashment'];
 	frm.toggle_display(['fiscal_year', 'region', 'employee', 'department', 'division'], permitted_doctypes.includes(frm.doc.transaction_type));
 	frm.toggle_display(['month'], ['Employee Loan Payment', 'Salary'].includes(frm.doc.transaction_type));
 	frm.toggle_display(['transaction_no', 'from_date', 'to_date'], !permitted_doctypes.includes(frm.doc.transaction_type) && frm.doc.transaction_type);
