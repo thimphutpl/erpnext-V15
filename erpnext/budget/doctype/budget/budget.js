@@ -12,6 +12,15 @@ frappe.ui.form.on('Budget', {
 				}
 			};
 		});
+		
+		frm.set_query("cost_center", function() {
+			return {
+				filters: {
+					company: frm.doc.company,
+					is_group: 0
+				}
+			};
+		});
 
 		frm.set_query("monthly_distribution", function() {
 			return {
