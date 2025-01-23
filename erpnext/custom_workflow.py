@@ -1097,7 +1097,7 @@ class CustomWorkflow:
 		# 		frappe.throw("Only the document owner can Apply this material request")
 		# 	self.set_approver("Supervisor")
 			
-		elif self.new_state.lower() in ("Waiting Approval".lower()):
+		if self.new_state.lower() in ("Waiting Approval".lower()):
 			if self.doc.owner != frappe.session.user and self.new_state.lower()!= self.old_state.lower():
 				frappe.throw("Only the document owner can Apply this material request")
 			self.set_approver("Branch Approver")
