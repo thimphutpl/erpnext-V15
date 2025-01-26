@@ -559,6 +559,9 @@ class calculate_taxes_and_totals:
 		else:
 			self.doc.grand_total = flt(self.doc.net_total)
 
+		if self.doc.doctype in ['Purchase Receipt','Purchase Invoice']:
+			self.doc.grand_total = flt(self.doc.total) + flt(self.doc.total_taxes_and_charges) + flt(self.doc.total_taxes_and_charges)
+
 		if self.doc.get("taxes"):
 			self.doc.total_taxes_and_charges = flt(
 				self.doc.grand_total - self.doc.net_total - flt(self.doc.rounding_adjustment),

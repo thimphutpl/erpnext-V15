@@ -87,8 +87,10 @@ class PurchaseOrder(BuyingController):
 		customer_contact_person: DF.Link | None
 		customer_name: DF.Data | None
 		disable_rounded_total: DF.Check
+		discount: DF.Currency
 		discount_amount: DF.Currency
 		footer: DF.TextEditor | None
+		freight_and_insurance_charges: DF.Currency
 		from_date: DF.Date | None
 		grand_total: DF.Currency
 		group_same_items: DF.Check
@@ -110,6 +112,7 @@ class PurchaseOrder(BuyingController):
 		net_total: DF.Currency
 		order_confirmation_date: DF.Date | None
 		order_confirmation_no: DF.Data | None
+		other_charges: DF.Currency
 		party_account_currency: DF.Link | None
 		payment_schedule: DF.Table[PaymentSchedule]
 		payment_terms_template: DF.Link | None
@@ -136,6 +139,7 @@ class PurchaseOrder(BuyingController):
 		supplier_address: DF.Link | None
 		supplier_name: DF.Data | None
 		supplier_warehouse: DF.Link | None
+		tax: DF.Currency
 		tax_withholding_category: DF.Link | None
 		tax_withholding_net_total: DF.Currency
 		taxes: DF.Table[PurchaseTaxesandCharges]
@@ -147,6 +151,7 @@ class PurchaseOrder(BuyingController):
 		title: DF.Data
 		to_date: DF.Date | None
 		total: DF.Currency
+		total_add_ded: DF.Currency
 		total_net_weight: DF.Float
 		total_qty: DF.Float
 		total_taxes_and_charges: DF.Currency

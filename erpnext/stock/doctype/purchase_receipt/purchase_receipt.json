@@ -89,9 +89,14 @@
   "in_words",
   "disable_rounded_total",
   "section_break_42",
+  "freight_and_insurance_charges",
+  "discount",
   "apply_discount_on",
   "base_discount_amount",
   "column_break_44",
+  "tax",
+  "other_charges",
+  "total_add_ded",
   "additional_discount_percentage",
   "discount_amount",
   "sec_tax_breakup",
@@ -737,6 +742,7 @@
    "default": "Grand Total",
    "fieldname": "apply_discount_on",
    "fieldtype": "Select",
+   "hidden": 1,
    "label": "Apply Additional Discount On",
    "options": "\nGrand Total\nNet Total",
    "print_hide": 1
@@ -744,6 +750,7 @@
   {
    "fieldname": "base_discount_amount",
    "fieldtype": "Currency",
+   "hidden": 1,
    "label": "Additional Discount Amount (Company Currency)",
    "options": "Company:company:default_currency",
    "print_hide": 1,
@@ -756,12 +763,14 @@
   {
    "fieldname": "additional_discount_percentage",
    "fieldtype": "Float",
+   "hidden": 1,
    "label": "Additional Discount Percentage",
    "print_hide": 1
   },
   {
    "fieldname": "discount_amount",
    "fieldtype": "Currency",
+   "hidden": 1,
    "label": "Additional Discount Amount",
    "options": "currency",
    "print_hide": 1
@@ -1299,13 +1308,38 @@
    "fieldname": "set_posting_time",
    "fieldtype": "Check",
    "label": "Edit Date and Time"
+  },
+  {
+   "fieldname": "freight_and_insurance_charges",
+   "fieldtype": "Currency",
+   "label": "Freight and Insurance Charges"
+  },
+  {
+   "fieldname": "discount",
+   "fieldtype": "Currency",
+   "label": "Discount"
+  },
+  {
+   "fieldname": "tax",
+   "fieldtype": "Currency",
+   "label": "Tax"
+  },
+  {
+   "fieldname": "other_charges",
+   "fieldtype": "Currency",
+   "label": "Other Charges"
+  },
+  {
+   "fieldname": "total_add_ded",
+   "fieldtype": "Currency",
+   "label": "Net Charges & Discount"
   }
  ],
  "icon": "fa fa-truck",
  "idx": 261,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-11 12:26:05.699204",
+ "modified": "2025-01-23 21:54:41.797073",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Purchase Receipt",

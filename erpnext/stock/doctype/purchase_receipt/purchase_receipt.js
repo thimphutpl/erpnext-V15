@@ -180,7 +180,30 @@ frappe.ui.form.on("Purchase Receipt", {
 		var enabled = erpnext.is_perpetual_inventory_enabled(frm.doc.company);
 		frm.fields_dict["items"].grid.set_column_disp(["cost_center"], enabled);
 	},
+
+	freight_and_insurance_charges: function(frm) {
+		calculate_discount(frm)
+	},
+
+	discount: function(frm) {
+		calculate_discount(frm)
+	},
+
+	other_charges: function(frm) {
+		calculate_discount(frm)
+	},
+
+	tax: function(frm) {
+		calculate_discount(frm)
+	},
 });
+
+function calculate_discount(frm) {
+	cur_frm.set_value("total_add_ded", frm.doc.freight_and_insurance_charges + frm.doc.other_charges + frm.doc.tax - frm.doc.discount)
+	cur_frm.set_value("discount_amount", -frm.doc.freight_and_insurance_charges - frm.doc.other_charges - frm.doc.tax + frm.doc.discount)
+	cur_frm.refresh_field("discount_amount")
+	cur_frm.refresh_field("total_add_ded")
+}
 
 erpnext.stock.PurchaseReceiptController = class PurchaseReceiptController extends (
 	erpnext.buying.BuyingController

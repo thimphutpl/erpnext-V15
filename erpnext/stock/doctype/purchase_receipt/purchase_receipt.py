@@ -66,7 +66,9 @@ class PurchaseReceipt(BuyingController):
 		cost_center: DF.Link | None
 		currency: DF.Link
 		disable_rounded_total: DF.Check
+		discount: DF.Currency
 		discount_amount: DF.Currency
+		freight_and_insurance_charges: DF.Currency
 		grand_total: DF.Currency
 		group_same_items: DF.Check
 		ignore_pricing_rule: DF.Check
@@ -88,6 +90,7 @@ class PurchaseReceipt(BuyingController):
 		named_place: DF.Data | None
 		naming_series: DF.Literal["", "Consumables", "Fixed Asset", "Sales Product", "Spareparts", "Services Miscellaneous", "Services Works", "Labour Contract", "MAT-PRE-.YYYY.-", "MAT-PR-RET-.YYYY.-"]
 		net_total: DF.Currency
+		other_charges: DF.Currency
 		other_charges_calculation: DF.TextEditor | None
 		per_billed: DF.Percent
 		per_returned: DF.Percent
@@ -119,6 +122,7 @@ class PurchaseReceipt(BuyingController):
 		supplier_address: DF.Link | None
 		supplier_name: DF.Data | None
 		supplier_warehouse: DF.Link | None
+		tax: DF.Currency
 		tax_category: DF.Link | None
 		tax_withholding_net_total: DF.Currency
 		taxes: DF.Table[PurchaseTaxesandCharges]
@@ -129,6 +133,7 @@ class PurchaseReceipt(BuyingController):
 		terms: DF.TextEditor | None
 		title: DF.Data | None
 		total: DF.Currency
+		total_add_ded: DF.Currency
 		total_net_weight: DF.Float
 		total_qty: DF.Float
 		total_taxes_and_charges: DF.Currency
@@ -1187,6 +1192,14 @@ def make_purchase_invoice(source_name, target_doc=None, args=None):
 		doc.run_method("calculate_taxes_and_totals")
 		doc.set_payment_schedule()
 
+	def update_other_charges(source, target, sp):
+		target.discount = flt(target.discount) + flt(source.discount)
+		target.tax = flt(target.tax) + flt(source.tax)
+		target.other_charges = flt(target.other_charges) + flt(source.other_charges)
+		target.freight_and_insurance_charges = flt(target.freight_and_insurance_charges) + flt(source.freight_and_insurance_charges)
+		target.total_add_ded = flt(target.freight_and_insurance_charges) - flt(target.discount) + flt(target.tax) + flt(target.other_charges)
+		target.discount_amount = -1 * flt(target.total_add_ded) 
+
 	def update_item(source_doc, target_doc, source_parent):
 		target_doc.qty, returned_qty = get_pending_qty(source_doc)
 		if frappe.db.get_single_value("Buying Settings", "bill_for_rejected_quantity_in_purchase_invoice"):
@@ -1234,6 +1247,7 @@ def make_purchase_invoice(source_name, target_doc=None, args=None):
 				"validation": {
 					"docstatus": ["=", 1],
 				},
+				"postprocess": update_other_charges,
 			},
 			"Purchase Receipt Item": {
 				"doctype": "Purchase Invoice Item",

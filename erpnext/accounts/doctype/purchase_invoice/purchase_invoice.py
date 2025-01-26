@@ -118,6 +118,7 @@ class PurchaseInvoice(BuyingController):
 		discount: DF.Currency
 		discount_amount: DF.Currency
 		due_date: DF.Date | None
+		freight_and_insurance_charges: DF.Currency
 		from_date: DF.Date | None
 		grand_total: DF.Currency
 		group_same_items: DF.Check
@@ -143,6 +144,7 @@ class PurchaseInvoice(BuyingController):
 		net_total: DF.Currency
 		on_hold: DF.Check
 		only_include_allocated_payments: DF.Check
+		other_charges: DF.Currency
 		other_charges_calculation: DF.TextEditor | None
 		outstanding_amount: DF.Currency
 		paid_amount: DF.Currency
@@ -185,6 +187,7 @@ class PurchaseInvoice(BuyingController):
 		supplier_group: DF.Link | None
 		supplier_name: DF.Data | None
 		supplier_warehouse: DF.Link | None
+		tax: DF.Currency
 		tax_category: DF.Link | None
 		tax_id: DF.ReadOnly | None
 		tax_withheld_vouchers: DF.Table[TaxWithheldVouchers]
@@ -200,6 +203,7 @@ class PurchaseInvoice(BuyingController):
 		title: DF.Data | None
 		to_date: DF.Date | None
 		total: DF.Currency
+		total_add_ded: DF.Currency
 		total_advance: DF.Currency
 		total_net_weight: DF.Float
 		total_qty: DF.Float
