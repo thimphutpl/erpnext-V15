@@ -46,7 +46,8 @@
   "content",
   "seen_by_section",
   "remark",
-  "amended_from"
+  "amended_from",
+  "workflow_state"
  ],
  "fields": [
   {
@@ -77,10 +78,8 @@
    "label": "Date"
   },
   {
-   "depends_on": "eval:doc.enote_category!=\"Supplier Creation\" && doc.enote_category!=\"Material Request\"",
    "fieldname": "forward_to",
    "fieldtype": "Link",
-   "hidden": 1,
    "label": "Approver",
    "no_copy": 1,
    "options": "User"
@@ -300,12 +299,18 @@
    "fieldname": "location",
    "fieldtype": "Data",
    "label": "Location"
+  },
+  {
+   "fieldname": "workflow_state",
+   "fieldtype": "Link",
+   "label": "Workflow State",
+   "options": "Workflow State"
   }
  ],
  "icon": "fa fa-file-text",
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-03 16:57:28.375288",
+ "modified": "2025-01-24 23:01:02.253039",
  "modified_by": "Administrator",
  "module": "eNote",
  "name": "eNote",

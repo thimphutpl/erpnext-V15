@@ -51,6 +51,7 @@ class eNote(Document):
 		title: DF.Data
 		type: DF.Literal["", "Process", "Payment"]
 		uom: DF.Link | None
+		workflow_state: DF.Link | None
 	# end: auto-generated types
 	
 	def on_submit(self):
@@ -63,6 +64,7 @@ class eNote(Document):
 
 		action = frappe.request.form.get('action')
 		if action and action not in ("Save","Apply") and self.reviewer_required:
+		#if action not in ("Aprrove") and not self.reviewer_required:
 			status = 1
 			for i in self.reviewers: 
 				if i.status != "Reviewed": 
@@ -104,6 +106,7 @@ class eNote(Document):
 		self.permitted_user = frappe.session.user if not self.permitted_user else self.permitted_user
 
 		if self.get_db_value("workflow_state") != "Waiting For Reviewer":
+			#frappe.throw("hi")
 			if self.permitted_user != frappe.session.user:
 				frappe.throw(" Only <b>{}</b> is allowed to make changes and perform actions to this Note".format(self.permitted_user))
 		
