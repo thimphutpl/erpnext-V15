@@ -1175,10 +1175,10 @@ class JournalEntry(AccountsController):
 					gl_map.append(
 						self.get_gl_dict(
 							{
-								"account": d.account,
-								"party_type": d.party_type,
+								"account": acc,
+								"party_type": party_type,
 								"due_date": self.due_date,
-								"party": d.party,
+								"party": party,
 								"against": d.against_account,
 								"debit": flt(abs(tax_amount_dr), d.precision("tax_amount")) if tax_account \
 									else flt(d.debit, d.precision("debit")),
