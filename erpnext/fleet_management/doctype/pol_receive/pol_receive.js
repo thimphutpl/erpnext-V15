@@ -86,7 +86,7 @@ frappe.ui.form.on('POL Receive', {
 		// 	}, __("View"));
 		// }
 
-		if (frm.doc.docstatus == 1 && frm.doc.is_opening !== "Yes") {
+		if (frm.doc.docstatus == 1) {
 
 			cur_frm.add_custom_button(__("Stock Ledger"), function() {
 				frappe.route_options = {
