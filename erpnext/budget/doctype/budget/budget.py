@@ -228,11 +228,12 @@ def delete_committed_consumed_budget(reference=None, reference_no=None):
 						and reference_no='{reference_no}'
 						""".format(reference_type=reference, reference_no=reference_no))
 
-def validate_expense_against_budget(args):
+def validate_expense_against_budget(args, throw_error=True):
 	args = frappe._dict(args)
 	if args.is_cancelled:
 		delete_committed_consumed_budget(args.voucher_type, args.voucher_no)
 		return
+	error=[]
 	if args.get("company") and not args.fiscal_year:
 		args.fiscal_year = get_fiscal_year(args.get("posting_date"), company=args.get("company"))[0]
 		frappe.flags.exception_approver_role = frappe.get_cached_value(
@@ -313,15 +314,23 @@ def validate_expense_against_budget(args):
 			)  # nosec
 			# frappe.throw(str(budget_records))
 			if budget_records:
-				validate_budget_records(args, budget_records)
-			else:
+				validate_budget_records(args, error, budget_records, throw_error)
+			elif throw_error:
 				frappe.msgprint(_("Budget allocation not available for <b>%s </b> in %s <b>%s</b>" % (
 								args.account, budget_against, frappe.db.escape(args.get(budget_against))
 							)), raise_exception=True
 						)
+			else:
+				error.append("Budget allocation not available for <b>%s </b> in %s <b>%s</b>" % (
+								args.account, budget_against, frappe.db.escape(args.get(budget_against))
+							))
+				return error[0]
+			if len(error)>0:
+				return error[0]
+				
 	commit_budget(args)
 
-def validate_budget_records(args, budget_records):
+def validate_budget_records(args, error, budget_records, throw_error):
 	for budget in budget_records:
 		amount = get_amount(args, budget)
 		yearly_action, monthly_action = get_actions(args, budget)
@@ -336,16 +345,16 @@ def validate_budget_records(args, budget_records):
 			)
 			args["month_end_date"] = get_last_day(args.posting_date)
 			compare_expense_with_budget(
-				args, budget_amount, _("Accumulated Monthly"), monthly_action, budget.budget_against, amount
+				args, error, budget_amount, _("Accumulated Monthly"), monthly_action, budget.budget_against, amount, throw_error
 			)
 		else:
 			budget_amount = budget.budget_amount
 			if yearly_action in ("Stop", "Warn"):
 				compare_expense_with_budget(
-					args, flt(budget.budget_amount), _("Annual"), yearly_action, budget.budget_against, amount
+					args, error, flt(budget.budget_amount), _("Annual"), yearly_action, budget.budget_against, amount, throw_error
 				)
 
-def compare_expense_with_budget(args, budget_amount, action_for, action, budget_against, amount=0):
+def compare_expense_with_budget(args, error, budget_amount, action_for, action, budget_against, amount=0, throw_error=None):
 	actual_expense = amount or args.amount
 	if args.project:
 		condition = " and cb.project = '{}'".format(budget_against)
@@ -402,12 +411,17 @@ def compare_expense_with_budget(args, budget_amount, action_for, action, budget_
 			and frappe.flags.exception_approver_role in frappe.get_roles(frappe.session.user)
 		):
 			action = "Warn"
-		if action == "Stop":
-			frappe.msgprint(msg, raise_exception=True)
-			frappe.throw(str(msg))
+		
+		error.append(msg)
+		if throw_error:
+			if action == "Stop":
+				frappe.msgprint(msg, raise_exception=True)
+				frappe.throw(str(msg))
+			else:
+				frappe.msgprint(msg, indicator="orange")
+				frappe.throw(str(msg))
 		else:
-			frappe.msgprint(msg, indicator="orange")
-			frappe.throw(str(msg))
+			return error[0]
 
 def commit_budget(args):
 	amount = args.amount if args.amount else args.debit
