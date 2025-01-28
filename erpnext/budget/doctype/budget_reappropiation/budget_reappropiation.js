@@ -8,6 +8,26 @@ frappe.ui.form.on('Budget Reappropiation', {
 	onlaod:function(frm){
 		apply_account_filter(frm)
 	},
+	setup: function(frm){
+		frm.set_query("from_cost_center", function() {
+			return {
+				filters: {
+					company: frm.doc.company,
+					disabled: 0,
+					is_group: 0
+				}
+			}
+		});
+		frm.set_query("to_cost_center", function() {
+			return {
+				filters: {
+					company: frm.doc.company,
+					disabled: 0,
+					is_group: 0
+				}
+			}
+		});
+	},
 	budget_type:function(frm){
 		apply_account_filter(frm)
 	}

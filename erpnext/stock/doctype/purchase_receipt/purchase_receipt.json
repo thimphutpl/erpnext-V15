@@ -733,7 +733,6 @@
    "read_only": 1
   },
   {
-   "collapsible": 1,
    "fieldname": "section_break_42",
    "fieldtype": "Section Break",
    "label": "Additional Discount"
@@ -1310,26 +1309,31 @@
    "label": "Edit Date and Time"
   },
   {
+   "default": "0",
    "fieldname": "freight_and_insurance_charges",
    "fieldtype": "Currency",
    "label": "Freight and Insurance Charges"
   },
   {
+   "default": "0",
    "fieldname": "discount",
    "fieldtype": "Currency",
    "label": "Discount"
   },
   {
+   "default": "0",
    "fieldname": "tax",
    "fieldtype": "Currency",
    "label": "Tax"
   },
   {
+   "default": "0",
    "fieldname": "other_charges",
    "fieldtype": "Currency",
    "label": "Other Charges"
   },
   {
+   "default": "0",
    "fieldname": "total_add_ded",
    "fieldtype": "Currency",
    "label": "Net Charges & Discount"
@@ -1339,7 +1343,7 @@
  "idx": 261,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-23 21:54:41.797073",
+ "modified": "2025-01-28 18:15:33.116904",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Purchase Receipt",
