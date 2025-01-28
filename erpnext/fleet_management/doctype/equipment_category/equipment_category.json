@@ -10,6 +10,8 @@
  "field_order": [
   "equipment_category",
   "budget_account",
+  "pol_advance_account",
+  "r_m_expense_account",
   "column_break_vuta",
   "allow_hire",
   "insurance_account"
@@ -45,11 +47,23 @@
    "fieldtype": "Link",
    "label": "Insurance Account",
    "options": "Account"
+  },
+  {
+   "fieldname": "pol_advance_account",
+   "fieldtype": "Link",
+   "label": "POL Expense Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "r_m_expense_account",
+   "fieldtype": "Link",
+   "label": "R & M Expense Account",
+   "options": "Account"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-01-04 23:51:24.450690",
+ "modified": "2025-01-27 18:02:38.271649",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Equipment Category",

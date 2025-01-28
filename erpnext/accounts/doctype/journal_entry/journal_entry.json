@@ -667,7 +667,7 @@
    "table_fieldname": "payment_entries"
   }
  ],
- "modified": "2025-01-13 14:31:06.532186",
+ "modified": "2025-01-14 12:53:53.657885",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Journal Entry",
@@ -710,6 +710,20 @@
    "read": 1,
    "report": 1,
    "role": "Auditor"
+  },
+  {
+   "cancel": 1,
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
   }
  ],
  "search_fields": "voucher_type,posting_date, due_date, cheque_no",

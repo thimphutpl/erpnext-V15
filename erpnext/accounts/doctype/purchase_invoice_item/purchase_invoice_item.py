@@ -27,7 +27,7 @@ class PurchaseInvoiceItem(Document):
 		base_rate_with_margin: DF.Currency
 		batch_no: DF.Link | None
 		bom: DF.Link | None
-		brand: DF.Link | None
+		brand: DF.Data | None
 		business_activity: DF.Link | None
 		conversion_factor: DF.Float
 		cost_center: DF.Link | None
@@ -55,6 +55,7 @@ class PurchaseInvoiceItem(Document):
 		margin_type: DF.Literal["", "Percentage", "Amount"]
 		material_request: DF.Link | None
 		material_request_item: DF.Data | None
+		model: DF.Data | None
 		net_amount: DF.Currency
 		net_rate: DF.Currency
 		page_break: DF.Check
@@ -90,6 +91,7 @@ class PurchaseInvoiceItem(Document):
 		stock_uom: DF.Link | None
 		stock_uom_rate: DF.Currency
 		sub_ledger: DF.Link | None
+		task: DF.Link | None
 		total_weight: DF.Float
 		uom: DF.Link
 		use_serial_batch_fields: DF.Check

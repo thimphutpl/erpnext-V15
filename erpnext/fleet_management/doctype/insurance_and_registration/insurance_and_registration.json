@@ -18,6 +18,7 @@
   "cb_2",
   "posting_date",
   "designation",
+  "project",
   "sb_1",
   "branch",
   "cb_3",
@@ -246,11 +247,16 @@
    "fieldname": "post_je",
    "fieldtype": "Button",
    "label": "Post Bluebook Fitness & Emission JE"
+  },
+  {
+   "fieldname": "project",
+   "fieldtype": "Read Only",
+   "label": "Project"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-01-09 10:37:10.752599",
+ "modified": "2025-01-19 11:03:11.446339",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Insurance and Registration",

@@ -17,6 +17,7 @@
   "start_date",
   "end_date",
   "task_duration",
+  "parent_task",
   "sb_project_contribution",
   "work_quantity_complete",
   "task_weightage",
@@ -84,13 +85,15 @@
    "fieldname": "start_date",
    "fieldtype": "Date",
    "in_list_view": 1,
-   "label": "Start Date"
+   "label": "Start Date",
+   "reqd": 1
   },
   {
    "fieldname": "end_date",
    "fieldtype": "Date",
    "in_list_view": 1,
-   "label": "End Date"
+   "label": "End Date",
+   "reqd": 1
   },
   {
    "fieldname": "sb_project_contribution",
@@ -158,9 +161,9 @@
   {
    "fieldname": "task_id",
    "fieldtype": "Link",
-   "hidden": 1,
    "label": "Task ID",
-   "options": "Task"
+   "options": "Task",
+   "read_only": 1
   },
   {
    "fieldname": "grp_exp_start_date",
@@ -203,12 +206,19 @@
    "fieldtype": "Data",
    "label": "Task Achievement(%)",
    "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.is_group == 0;",
+   "fieldname": "parent_task",
+   "fieldtype": "Link",
+   "label": "Parent Task",
+   "options": "Task"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-01-10 00:20:55.120030",
+ "modified": "2025-01-23 17:41:45.125631",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Activity Tasks",

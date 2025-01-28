@@ -27,7 +27,7 @@ frappe.ui.form.on("Project", {
 				project_name: frm.doc.name,
 			};
 		};
-
+		frm.events.update_project_work_plan(frm);
 		frm.set_query("user", "users", function () {
 			return {
 				query: "erpnext.projects.doctype.project.project.get_users_for_project",
@@ -93,7 +93,41 @@ frappe.ui.form.on("Project", {
 			);
 		}
 		// +++++++++++++++++++++ Ver 1.0 ENDS +++++++++++++++++++++
-
+		if ((frm.doc.status == "Planning" || frm.doc.status == "Ongoing") && frm.doc.docstatus < 1) {
+			frm.add_custom_button("Make Purchase Requistion", function () {
+				frappe.model.open_mapped_doc({
+					method: "erpnext.projects.doctype.project.project.make_purchase_requisition",
+					frm: cur_frm
+				})
+			},
+				__("Make")
+			)
+			frm.add_custom_button("Make Material Issue Request", function () {
+				frappe.model.open_mapped_doc({
+					method: "erpnext.projects.doctype.project.project.make_material_issue_request",
+					frm: cur_frm
+				})
+			},
+				__("Make")
+			)
+			cur_frm.add_custom_button("Make Stock Issue Entry",
+				function (){
+					frappe.model.open_mapped_doc({
+						method: "erpnext.projects.doctype.project.project.make_stock_issue_entry",
+						frm: cur_frm
+					})
+				},
+				__("Make")
+			)
+			frm.add_custom_button("Make Stock Return Entry", function () {
+				frappe.model.open_mapped_doc({
+					method: "erpnext.projects.doctype.project.project.make_stock_return_entry",
+					frm: cur_frm
+				})
+			},
+				__("Make")
+			)
+		}
 		if (frm.doc.__islocal) {
 			frm.web_link && frm.web_link.remove();
 		} else {
@@ -108,15 +142,25 @@ frappe.ui.form.on("Project", {
 		}
 		// +++++++++++++++++++++ Ends +++++++++++++++++++++
 	},
-	mandays: function() {
-		cur_frm.set_value("physical_progress_weightage", (parseFloat(cur_frm.doc.mandays)/parseFloat(cur_frm.doc.overall_mandays)*100).toFixed(3))
-		cur_frm.set_value("man_power_required", Math.round(parseFloat(cur_frm.doc.mandays)/parseFloat(cur_frm.doc.total_duration)))
+	mandays: function(frm) {
+		if(cur_frm.doc.overall_mandays > 0){
+			cur_frm.set_value("physical_progress_weightage", (parseFloat(cur_frm.doc.mandays)/parseFloat(cur_frm.doc.overall_mandays)*100).toFixed(3))
+			cur_frm.set_value("man_power_required", Math.round(parseFloat(cur_frm.doc.mandays)/parseFloat(cur_frm.doc.total_duration)))
+		}
+		frm.events.update_project_work_plan(frm);
+		frm.refresh_fields();
 	},
 	overall_mandays: function() {
-		cur_frm.set_value("physical_progress_weightage", (parseFloat(cur_frm.doc.mandays)/parseFloat(cur_frm.doc.overall_mandays)*100).toFixed(3))
+		if(cur_frm.doc.overall_mandays > 0){
+			cur_frm.set_value("physical_progress_weightage", (parseFloat(cur_frm.doc.mandays)/parseFloat(cur_frm.doc.overall_mandays)*100).toFixed(3))
+		}
+		frm.events.update_project_work_plan(frm);
+		frm.refresh_fields();
 	},
 	total_duration: function() {
 		cur_frm.set_value("man_power_required", Math.round(parseFloat(cur_frm.doc.mandays)/parseFloat(cur_frm.doc.total_duration)))
+		frm.events.update_project_work_plan(frm);
+		frm.refresh_fields();
 	},
 	set_custom_buttons: function (frm) {
 		if (!frm.is_new()) {
@@ -181,6 +225,15 @@ frappe.ui.form.on("Project", {
 					frappe.msgprint(__("Total Purchase Cost has been updated"));
 					frm.refresh();
 				}
+			},
+		});
+	},
+	update_project_work_plan: function (frm) {
+		frappe.call({
+			method: "sync_project_details",
+			doc: frm.doc,
+			callback: function (r) {
+					frm.refresh();
 			},
 		});
 	},
@@ -390,7 +443,16 @@ var enable_disable = function(frm){
 		});
 	}
 }
-
+cur_frm.fields_dict["activity_tasks"].grid.get_field("parent_task").get_query = function (doc, cdt, cdn) {
+	var item = locals[cdt][cdn]
+	return {
+		filters: {
+			"is_group": 1,
+			"project": ["=", cur_frm.doc.name],
+			"name": ["!=", item.task_id]
+		}
+	};
+};
 // ++++++++++++++++++++ Ver 1.0 BEGINS ++++++++++++++++++++
 // Following block of code added by SHIV on 11/08/2017
 frappe.ui.form.on("Activity Tasks", {
@@ -428,13 +490,17 @@ frappe.ui.form.on("Activity Tasks", {
 	start_date: function(frm, doctype, name) {
 		var item = locals[doctype][name]
 		var at = frm.doc.activity_tasks || [];
-        	var task_duration = 0.0
+        	// var task_duration = 0.0
         	if(item.end_date) {
 			calculate_duration1(frm, doctype, name, item.start_date, item.end_date);
 		}
-		for(var i=0; i<at.length; i++){
-                        task_duration += parseFloat(at[i].task_duration || 0.0);
-                }
+		//for project duration: uncomment when required
+		// for(var i=0; i<at.length; i++){
+        //                 task_duration += parseFloat(at[i].task_duration || 0.0);
+        //         }
+		frappe.model.set_value(doctype, name, "grp_exp_start_date", item.start_date);
+		frappe.model.set_value(doctype, name, "grp_exp_end_date", item.end_date);
+		frm.refresh_fields();
 		// cur_frm.set_value('duration_sum', task_duration)
 		//frappe.model.set_value(doctype, name, "task_weightage", (parseFloat(item.task_duration)/parseFloat(task_duration) * parseFloat(cur_frm.doc.physical_progress_weightage)).toFixed(7));
 		// frappe.model.set_value(doctype, name, "task_weightage", (parseFloat(item.task_duration)/parseFloat(task_duration)*100).toFixed(7));
@@ -443,18 +509,20 @@ frappe.ui.form.on("Activity Tasks", {
 	end_date: function(frm, doctype, name) {
 		var item = locals[doctype][name]
 		var at = frm.doc.activity_tasks || [];
-                var task_duration = 0.0
+                // var task_duration = 0.0
 		if(item.start_date) {
 			calculate_duration1(frm, doctype, name, item.start_date, item.end_date);
 		}
-                for(var i=0; i<at.length; i++){
-                        task_duration += parseFloat(at[i].task_duration || 0.0);
-                }
-		cur_frm.set_value('duration_sum', task_duration);
+        //         for(var i=0; i<at.length; i++){
+        //                 task_duration += parseFloat(at[i].task_duration || 0.0);
+        //         }
+		// cur_frm.set_value('duration_sum', task_duration);
                 //frappe.model.set_value(doctype, name, "task_weightage", (parseFloat(item.task_duration)/parseFloat(task_duration)* parseFloat(cur_frm.doc.physical_progress_weightage)).toFixed(7));
-                frappe.model.set_value(doctype, name, "task_weightage", (parseFloat(item.task_duration)/parseFloat(task_duration)*100).toFixed(7));
-		frappe.model.set_value(doctype, name, "one_day_weightage", (parseFloat(item.task_weightage)/parseFloat(item.task_duration)).toFixed(7))
-
+		// frappe.model.set_value(doctype, name, "task_weightage", (parseFloat(item.task_duration)/parseFloat(task_duration)*100).toFixed(7));
+		// frappe.model.set_value(doctype, name, "one_day_weightage", (parseFloat(item.task_weightage)/parseFloat(item.task_duration)).toFixed(7))
+		frappe.model.set_value(doctype, name, "grp_exp_start_date", item.start_date);
+		frappe.model.set_value(doctype, name, "grp_exp_end_date", item.end_date);
+		frm.refresh_fields();
 },
 });
 function calculate_duration1(cur_frm, doctype, name, from_date, to_date) {
@@ -468,6 +536,7 @@ function calculate_duration1(cur_frm, doctype, name, from_date, to_date) {
 			callback: function(r) {
 				   if(r.message){
 					   frappe.model.set_value(doctype, name, 'task_duration', r.message);
+					   cur_frm.refresh_fields();
 					}
 			}
 	})
@@ -475,10 +544,10 @@ function calculate_duration1(cur_frm, doctype, name, from_date, to_date) {
 		method: "calculate_task_weightage",
 		doc: cur_frm.doc,
 		callback: function(m) {
-			cur_frm.refresh_fields();
+			cur_frm.refresh_fields()
 		}
 	})
-	cur_frm.refresh_fields();
+	// cur_frm.refresh_fields();
 }
 frappe.ui.form.on("Additional Tasks", {
 	activity_tasks_remove: function(frm, doctype, name){

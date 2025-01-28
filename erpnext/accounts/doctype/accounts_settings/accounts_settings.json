@@ -75,7 +75,13 @@
   "general_ledger_remarks_length",
   "column_break_lvjk",
   "receivable_payable_remarks_length",
-  "intra_company_account"
+  "intra_company_account",
+  "approver_tab",
+  "approver_name",
+  "verifier_name",
+  "column_break_ztux",
+  "approver",
+  "verifier"
  ],
  "fields": [
   {
@@ -488,6 +494,43 @@
    "fieldtype": "Link",
    "label": "Advance to Suppliers Account",
    "options": "Account"
+  },
+  {
+   "fieldname": "approver_tab",
+   "fieldtype": "Tab Break",
+   "label": "Approver"
+  },
+  {
+   "fieldname": "approver_name",
+   "fieldtype": "Link",
+   "label": "Accounts Approver",
+   "options": "Employee"
+  },
+  {
+   "fieldname": "verifier_name",
+   "fieldtype": "Link",
+   "label": "Accounts Verifier",
+   "options": "Employee"
+  },
+  {
+   "fieldname": "column_break_ztux",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "approver_name.user_id",
+   "fieldname": "approver",
+   "fieldtype": "Link",
+   "label": "Approver",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "verifier_name.user_id",
+   "fieldname": "verifier",
+   "fieldtype": "Link",
+   "label": "Verifier",
+   "options": "User",
+   "read_only": 1
   }
  ],
  "icon": "icon-cog",
@@ -495,7 +538,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-12-03 23:29:43.312156",
+ "modified": "2025-01-14 18:50:43.742673",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Accounts Settings",

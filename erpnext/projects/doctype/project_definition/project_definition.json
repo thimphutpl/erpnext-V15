@@ -25,6 +25,12 @@
   "project_man_days",
   "column_break_11",
   "end_date",
+  "progress_details_section",
+  "physical_progress_weightage",
+  "column_break_yuor",
+  "physical_progress",
+  "column_break_odxn",
+  "percent_completed",
   "sb_project_manager_details",
   "project_manager",
   "project_manager_name",
@@ -67,11 +73,12 @@
    "in_list_view": 1,
    "in_preview": 1,
    "label": "Status",
-   "options": "Created\nBudget Released\nProject Released\nCompleted"
+   "options": "Created\nOngoing\nCompleted"
   },
   {
    "fieldname": "section_break_9",
-   "fieldtype": "Section Break"
+   "fieldtype": "Section Break",
+   "label": "Work Plan"
   },
   {
    "fieldname": "start_date",
@@ -208,13 +215,45 @@
    "fieldname": "project_man_days",
    "fieldtype": "Data",
    "label": "Project Man Days"
+  },
+  {
+   "fieldname": "progress_details_section",
+   "fieldtype": "Section Break",
+   "label": "Progress Details"
+  },
+  {
+   "fieldname": "physical_progress_weightage",
+   "fieldtype": "Percent",
+   "label": "Activity Contribution(Physical Weightage)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_yuor",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "physical_progress",
+   "fieldtype": "Percent",
+   "label": "Contributed(%)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_odxn",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "percent_completed",
+   "fieldtype": "Percent",
+   "in_list_view": 1,
+   "label": "Activity Completion (%)",
+   "read_only": 1
   }
  ],
  "icon": "icon-puzzle-piece",
  "is_submittable": 1,
  "links": [],
  "max_attachments": 4,
- "modified": "2025-01-10 16:33:18.926155",
+ "modified": "2025-01-18 14:49:20.453496",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Project Definition",
@@ -291,7 +330,6 @@
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],
- "title_field": "project_code",
  "track_changes": 1,
  "track_seen": 1
 }

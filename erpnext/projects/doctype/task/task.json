@@ -19,6 +19,7 @@
   "work_quantity_complete",
   "activity",
   "task_weightage",
+  "task_achievement_percent",
   "column_break0",
   "status",
   "priority",
@@ -51,10 +52,18 @@
   "actual_time",
   "column_break_15",
   "act_end_date",
+  "material_section",
+  "task_material_item",
+  "section_break_wuvz",
+  "other_doc_item",
   "sb_costing",
   "total_costing_amount",
+  "material_cost",
+  "services_cost",
+  "other_expenses",
   "column_break_20",
   "total_billing_amount",
+  "total_cost",
   "sb_more_info",
   "review_date",
   "closing_date",
@@ -79,6 +88,7 @@
    "fieldname": "subject",
    "fieldtype": "Data",
    "in_global_search": 1,
+   "in_preview": 1,
    "in_standard_filter": 1,
    "label": "Subject",
    "reqd": 1,
@@ -291,7 +301,6 @@
    "collapsible": 1,
    "fieldname": "sb_costing",
    "fieldtype": "Section Break",
-   "hidden": 1,
    "label": "Costing"
   },
   {
@@ -529,6 +538,56 @@
    "fieldtype": "Data",
    "label": "Task Weightage",
    "read_only": 1
+  },
+  {
+   "fieldname": "task_achievement_percent",
+   "fieldtype": "Data",
+   "label": "Task Achievement (%)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_cost",
+   "fieldtype": "Currency",
+   "label": "Total Cost"
+  },
+  {
+   "fieldname": "material_section",
+   "fieldtype": "Section Break",
+   "label": "Material "
+  },
+  {
+   "fieldname": "task_material_item",
+   "fieldtype": "Table",
+   "options": "Task Material Item",
+   "read_only": 1
+  },
+  {
+   "fieldname": "material_cost",
+   "fieldtype": "Currency",
+   "label": "Material Cost",
+   "read_only": 1
+  },
+  {
+   "fieldname": "services_cost",
+   "fieldtype": "Currency",
+   "label": "Services Cost",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_wuvz",
+   "fieldtype": "Section Break",
+   "label": "Other Document References"
+  },
+  {
+   "fieldname": "other_doc_item",
+   "fieldtype": "Table",
+   "options": "Project Expense Item"
+  },
+  {
+   "fieldname": "other_expenses",
+   "fieldtype": "Currency",
+   "label": "Other Expenses",
+   "read_only": 1
   }
  ],
  "icon": "fa fa-check",
@@ -536,7 +595,7 @@
  "is_tree": 1,
  "links": [],
  "max_attachments": 5,
- "modified": "2025-01-09 12:22:54.798832",
+ "modified": "2025-01-26 18:58:53.529548",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Task",

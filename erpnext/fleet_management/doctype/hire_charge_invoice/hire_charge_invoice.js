@@ -91,7 +91,7 @@ function calculate_balance(frm) {
 	}	
 }
 
-cur_frm.add_fetch("ehf_name","customer","customer")
+cur_frm.add_fetch("ehf_name","supplier","supplier")
 cur_frm.add_fetch("ehf_name","private","owned_by")
 cur_frm.add_fetch("branch","branch","cost_center")
 //cur_frm.add_fetch("ehf_name","advance_amount","advance_amount")
@@ -162,10 +162,12 @@ function get_vehicle_logs(form) {
 					row.amount_idle = logbook['total_idle_time'] * logbook['idle_rate']
 					row.amount_work = logbook['total_work_time'] * logbook['work_rate']
 					row.number_of_days = logbook['no_of_days']
-					row.total_amount = (row.amount_idle + row.amount_work)
+					row.total_amount = logbook['total_amount']
+					// row.total_amount = (row.amount_idle + row.amount_work)
 					refresh_field("items");
 
-					total_invoice_amount += (row.amount_idle + row.amount_work)
+					// total_invoice_amount += (row.amount_idle + row.amount_work)
+					total_invoice_amount += (row.total_amount)
 					
 					frappe.call({
 						method: "erpnext.fleet_management.doctype.hire_charge_invoice.hire_charge_invoice.get_vehicle_accessories",
@@ -190,9 +192,11 @@ function get_vehicle_logs(form) {
 									row.amount_work = logbook['total_work_time'] * access['work']
 									row.number_of_days = logbook['no_of_days']
 									row.total_amount = (row.amount_idle + row.amount_work)
+									row.total_amount = logbook['total_amount']
 									refresh_field("items");
 
-									total_invoice_amount += (row.amount_idle + row.amount_work)
+									// total_invoice_amount += (row.amount_idle + row.amount_work)
+									total_invoice_amount += (row.total_amount)
 								})
 							}
 						}

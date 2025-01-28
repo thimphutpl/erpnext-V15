@@ -7,9 +7,9 @@ from frappe import _, throw
 from frappe.desk.notifications import clear_doctype_notifications
 from frappe.model.mapper import get_mapped_doc
 from frappe.query_builder.functions import CombineDatetime
-from frappe.utils import cint, flt, get_datetime, getdate, nowdate
+from frappe.utils import cint, flt, get_datetime, getdate, nowdate, date_diff
 from pypika import functions as fn
-
+from frappe.model.naming import make_autoname
 import erpnext
 from erpnext.accounts.utils import get_account_currency
 from erpnext.assets.doctype.asset.asset import get_asset_account, is_cwip_accounting_enabled
@@ -85,8 +85,9 @@ class PurchaseReceipt(BuyingController):
 		lr_no: DF.Data | None
 		material_request: DF.Link | None
 		material_request_date: DF.Date | None
+		n_series: DF.Literal["", "Consumables", "Fixed Asset", "Sales Product", "Spare Parts", "Services Miscellaneous", "Services Works"]
 		named_place: DF.Data | None
-		naming_series: DF.Literal["MAT-PRE-.YYYY.-", "MAT-PR-RET-.YYYY.-"]
+		naming_series: DF.Literal["MAT-PRE-.YYYY.-"]
 		net_total: DF.Currency
 		other_charges: DF.Currency
 		other_charges_calculation: DF.TextEditor | None
@@ -120,6 +121,7 @@ class PurchaseReceipt(BuyingController):
 		supplier_address: DF.Link | None
 		supplier_name: DF.Data | None
 		supplier_warehouse: DF.Link | None
+		tax: DF.Currency
 		tax_category: DF.Link | None
 		tax_withholding_net_total: DF.Currency
 		taxes: DF.Table[PurchaseTaxesandCharges]
@@ -136,6 +138,22 @@ class PurchaseReceipt(BuyingController):
 		total_taxes_and_charges: DF.Currency
 		transporter_name: DF.Data | None
 	# end: auto-generated types
+	def autoname(self):
+		if self.n_series == 'Consumables':
+			series = 'PRCO'
+		elif self.n_series == 'Fixed Asset':
+			series = 'PRFA'
+		elif self.n_series == 'Sales Product':
+			series = 'PRSA'
+		elif self.n_series == 'Spare Parts':
+			series ='PRSP'
+		elif self.n_series == 'Services Miscellaneous':
+			series = 'PRSM'
+		elif self.n_series == 'Services Works':
+			series ='PRSW'
+		else:
+			series = 'PRPR'
+		self.name = make_autoname(str(series) + ".YY.MM.####")
 
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
@@ -607,6 +625,7 @@ class PurchaseReceipt(BuyingController):
 							credit_in_account_currency=flt(amount["amount"]),
 							account_currency=account_currency,
 							project=item.project,
+							task=item.task,
 							item=item,
 						)
 
@@ -623,6 +642,7 @@ class PurchaseReceipt(BuyingController):
 					against_account=stock_asset_account_name,
 					account_currency=account_currency,
 					project=item.project,
+					task=item.task,
 					item=item,
 				)
 
@@ -678,6 +698,7 @@ class PurchaseReceipt(BuyingController):
 					against_account=stock_asset_account_name,
 					account_currency=account_currency,
 					project=item.project,
+					task=item.task,
 					item=item,
 				)
 
@@ -797,6 +818,7 @@ class PurchaseReceipt(BuyingController):
 			against_account=expense_account,
 			account_currency=credit_currency,
 			project=item.project,
+			task=item.task,
 			voucher_detail_no=item.name,
 			item=item,
 			posting_date=posting_date,
@@ -812,6 +834,7 @@ class PurchaseReceipt(BuyingController):
 			against_account=provisional_account,
 			account_currency=debit_currency,
 			project=item.project,
+			task=item.task,
 			voucher_detail_no=item.name,
 			item=item,
 			posting_date=posting_date,
@@ -1197,17 +1220,33 @@ def make_purchase_invoice(source_name, target_doc=None, args=None):
 
 		if args and args.get("merge_taxes"):
 			merge_taxes(source.get("taxes") or [], doc)
-
+		delivery_dates = []
+		delivery_date = None
+		for dd in source.items:
+			if dd.schedule_date not in delivery_dates:
+				delivery_dates.append(dd.schedule_date)
+				delivery_date = dd.schedule_date
+		if len(delivery_dates) != len(set(delivery_dates)):
+			frappe.throw("Multiple delivery dates in Items Table. Same delivery date required to calculate LD days")
+		if delivery_date:
+			if source.actual_receipt_date > delivery_date:
+				ld_days = date_diff(source.actual_receipt_date, delivery_date)
+				target.ld_days = ld_days
+				target.ld_days = flt(ld_days)
+				if flt(ld_days) < 100:
+					target.write_off_amount = flt((flt(ld_days)/100)*0.1 * flt(source.grand_total),2)
+				else:
+					target.write_off_amount = flt((0.1) * flt(source.grand_total),2)
+				target.write_off_account = frappe.db.get_value("Company", source.company, "write_off_account")
 		doc.run_method("calculate_taxes_and_totals")
 		doc.set_payment_schedule()
 
 	def update_other_charges(source, target, sp):
-		target.discount = flt(target.discount) + flt(source.discount)
-		# target.tax = flt(target.tax) + flt(source.tax)
+		target.discount = flt(source.discount)
+		target.tax = flt(target.tax) + flt(source.tax)
 		target.other_charges = flt(source.other_charges)
 		target.freight_insurance_charges = flt(source.freight_insurance_charges)
-		# target.total_add_ded = flt(target.freight_insurance_charges) - flt(target.discount) + flt(target.tax) + flt(target.other_charges)
-		target.total_add_ded = flt(target.freight_insurance_charges) - flt(target.discount) + flt(target.other_charges)
+		target.total_add_ded = flt(target.freight_insurance_charges) - flt(target.discount) + flt(target.tax) + flt(target.other_charges)
 		target.discount_amount = -1 * flt(target.total_add_ded) 
 		
 	def update_item(source_doc, target_doc, source_parent):
@@ -1434,3 +1473,15 @@ def get_item_account_wise_additional_cost(purchase_document):
 @erpnext.allow_regional
 def update_regional_gl_entries(gl_list, doc):
 	return
+@frappe.whitelist()
+def get_permission_query_conditions(user):
+	if not user: user = frappe.session.user
+	user_roles = frappe.get_roles(user)
+	employee=frappe.db.get_value("Employee",{"user_id": user},"name")
+
+	if user == "Administrator":
+		return
+	if "HR Master" in user_roles or "Auditor" in user_roles or "HR User" in user_roles or "HR Manager" in user_roles:
+		return
+	else:
+		return

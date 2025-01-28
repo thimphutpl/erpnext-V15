@@ -2,7 +2,7 @@
  "actions": [],
  "allow_import": 1,
  "allow_rename": 1,
- "autoname": "naming_series:",
+ "autoname": "ASSET.YY.######",
  "creation": "2022-01-18 02:26:55.975005",
  "doctype": "DocType",
  "document_type": "Document",
@@ -733,11 +733,11 @@
    "link_fieldname": "target_asset"
   }
  ],
- "modified": "2024-12-19 17:15:18.795607",
+ "modified": "2025-01-23 11:33:45.705403",
  "modified_by": "Administrator",
  "module": "Assets",
  "name": "Asset",
- "naming_rule": "By \"Naming Series\" field",
+ "naming_rule": "Expression (old style)",
  "owner": "Administrator",
  "permissions": [
   {

@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "allow_import": 1,
  "allow_rename": 1,
  "autoname": "field:employee_group_name",
  "creation": "2018-11-19 12:33:31.351364",
@@ -104,6 +105,7 @@
   {
    "fieldname": "limit_multiplier",
    "fieldtype": "Float",
+   "hidden": 1,
    "label": "Limit Multiplier"
   },
   {
@@ -213,7 +215,7 @@
   }
  ],
  "links": [],
- "modified": "2024-11-14 15:52:09.354840",
+ "modified": "2025-01-27 09:43:32.518824",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee Group",

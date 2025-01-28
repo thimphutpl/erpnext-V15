@@ -17,6 +17,7 @@
   "posting_date",
   "section_break_qfzr",
   "equipment",
+  "project",
   "column_break_vxmw",
   "registration_number",
   "column_break_zwco",
@@ -197,12 +198,18 @@
    "label": "Registration Number",
    "read_only": 1,
    "reqd": 1
+  },
+  {
+   "fetch_from": "equipment.project",
+   "fieldname": "project",
+   "fieldtype": "Read Only",
+   "label": "Project"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-25 11:57:03.129351",
+ "modified": "2025-01-19 11:01:14.125230",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Equipment Hiring Extension",

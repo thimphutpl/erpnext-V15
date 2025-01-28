@@ -50,6 +50,7 @@
   "bom_no",
   "accounting_dimensions_section",
   "project",
+  "task",
   "dimension_col_break",
   "cost_center",
   "more_info",
@@ -79,7 +80,6 @@
    "options": "Item",
    "print_width": "100px",
    "reqd": 1,
-   "search_index": 1,
    "width": "100px"
   },
   {
@@ -217,8 +217,7 @@
    "fieldtype": "Float",
    "label": "Stock Qty",
    "no_copy": 1,
-   "print_hide": 1,
-   "read_only": 1
+   "print_hide": 1
   },
   {
    "collapsible": 1,
@@ -281,8 +280,11 @@
   {
    "fieldname": "project",
    "fieldtype": "Link",
+   "in_filter": 1,
+   "in_standard_filter": 1,
    "label": "Project",
-   "options": "Project"
+   "options": "Project",
+   "read_only_depends_on": "eval:parent.reference_type == \"Project\" || parent.reference_type == \"Task\";"
   },
   {
    "fieldname": "production_plan",
@@ -337,9 +339,7 @@
    "in_list_view": 1,
    "label": "Stock Balance",
    "no_copy": 1,
-   "print_hide": 1,
-   "read_only": 1,
-   "report_hide": 1
+   "read_only": 1
   },
   {
    "depends_on": "eval:doc.docstatus==1",
@@ -387,7 +387,6 @@
    "read_only": 1
   },
   {
-   "collapsible": 1,
    "fieldname": "accounting_dimensions_section",
    "fieldtype": "Section Break",
    "label": "Accounting Dimensions"
@@ -510,13 +509,20 @@
    "fieldtype": "Dynamic Link",
    "label": "Reference Name",
    "options": "reference_type"
+  },
+  {
+   "fieldname": "task",
+   "fieldtype": "Link",
+   "label": "Task",
+   "options": "Task",
+   "read_only_depends_on": "eval:parent.reference_type == \"Task\";"
   }
  ],
  "idx": 1,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-01-10 11:37:53.661991",
+ "modified": "2025-01-23 11:47:29.310754",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Material Request Item",

@@ -6,44 +6,37 @@ frappe.query_reports["POL Receive Report"] = {
 	"filters": [
 		{
 			"fieldname":"branch",
-			"label": __("Branch"),
+			"label": ("Branch"),
 			"fieldtype": "Link",
 			"options": "Branch",
 			"width": "100",
+			"reqd": 1
 		},
 		{
 			"fieldname":"from_date",
-			"label": __("From Date"),
+			"label": ("From Date"),
 			"fieldtype": "Date",
 			"width": "80",
-			"default":frappe.datetime.month_start()
+			"reqd": 1
 		},
 		{
 			"fieldname":"to_date",
-			"label": __("To Date"),
+			"label": ("To Date"),
 			"fieldtype": "Date",
 			"width": "80",
-			"default":frappe.datetime.month_end()
+			"reqd": 1
 		},
 		{
-			"fieldname":"item_name",
-			"label": __("Item Name"),
-			"fieldtype": "Select",
-			"options": ["Petrol","Diesel"],
-			"width": "80",
-		},
+                        "fieldname": "direct",
+                        "label": ("Show Only Direct Consumption"),
+                        "fieldtype": "Check",
+                        "default": 0
+                },
 		{
-			"fieldname":"equipment",
-			"label": __("Equipment"),
-			"fieldtype":"Link",
-			"options":"Equipment",
-			"width": "80",
-		},
-		{
-			"fieldname":"aggregate",
-			"label": __("Aggregate Data"),
-			"fieldtype":"Check",
-			"default":1
-		}
+                        "fieldname": "own_cc",
+                        "label": ("Show Own CC Issue/Receive Only"),
+                        "fieldtype": "Check",
+                        "default": 0
+                },
 	]
 };

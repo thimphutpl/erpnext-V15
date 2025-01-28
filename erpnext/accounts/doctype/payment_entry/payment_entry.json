@@ -68,11 +68,12 @@
   "difference_amount",
   "write_off_difference_amount",
   "taxes_and_charges_section",
-  "purchase_taxes_and_charges_template",
-  "sales_taxes_and_charges_template",
   "column_break_55",
   "apply_tax_withholding_amount",
   "tax_withholding_category",
+  "column_break_jyec",
+  "purchase_taxes_and_charges_template",
+  "sales_taxes_and_charges_template",
   "section_break_56",
   "taxes",
   "section_break_60",
@@ -629,7 +630,6 @@
    "label": "Apply Tax Withholding Amount"
   },
   {
-   "collapsible": 1,
    "fieldname": "taxes_and_charges_section",
    "fieldtype": "Section Break",
    "label": "Taxes and Charges"
@@ -921,6 +921,10 @@
    "fieldname": "declaration_reference_no",
    "fieldtype": "Data",
    "label": "Declaration Reference No"
+  },
+  {
+   "fieldname": "column_break_jyec",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -934,7 +938,7 @@
    "table_fieldname": "payment_entries"
   }
  ],
- "modified": "2024-12-20 10:39:05.016389",
+ "modified": "2025-01-23 16:33:01.191778",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Payment Entry",

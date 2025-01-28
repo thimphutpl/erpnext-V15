@@ -32,7 +32,7 @@
    "label": "Qualification Level",
    "oldfieldname": "level",
    "oldfieldtype": "Select",
-   "options": "Graduate\nPost Graduate\nUnder Graduate\nDiploma\nCertificate\nPGD\nClass XII\nOthers"
+   "options": "Masters Degree\nGraduate\nPost Graduate\nUnder Graduate\nPost Graduate Diploma\nDiploma\nCertificate\nPGD\nHigher Secondary (7+2+2+2)\nMiddle Secondary (7+2+2)\nPrimary (7 Years)\nLower Secondary (7+2)\nClass XII\nOthers"
   },
   {
    "fieldname": "year_of_passing",
@@ -90,7 +90,7 @@
  "idx": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-12-02 12:30:00.378854",
+ "modified": "2025-01-20 09:30:49.929853",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee Education",

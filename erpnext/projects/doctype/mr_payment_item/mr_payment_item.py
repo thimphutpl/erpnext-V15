@@ -22,7 +22,7 @@ class MRPaymentItem(Document):
 		daily_rate: DF.Currency
 		designation: DF.ReadOnly | None
 		employee: DF.DynamicLink
-		employee_type: DF.Literal["", "Muster Roll Employee", "Operator", "Open Air Prisoner", "DFG"]
+		employee_type: DF.Literal["", "Muster Roll Employee", "Operator", "Open Air Prisoner", "DFG AND GFG"]
 		fiscal_year: DF.Link | None
 		gratuity_amount: DF.Currency
 		health: DF.Currency

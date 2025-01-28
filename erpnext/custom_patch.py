@@ -9,9 +9,12 @@ from frappe.query_builder.functions import Sum
 from frappe.utils import date_diff, flt, cint, nowdate, getdate
 # from erpnext.integrations.bps import process_files
 from erpnext.assets.doctype.asset.depreciation import make_depreciation_entry
+from hrms.hr.hr_custom_functions import post_leave_credits
 # import pandas as pd
 from datetime import datetime, timedelta, date
-
+def ttttttt():
+	post_leave_credits()
+	print("Done")
 def test_test():
 	today_date = date.today()
 	
@@ -818,7 +821,16 @@ def repair_and_services_update_invoice():
 				where name='{}'
 			""".format(x.repair_and_services))
 			print(x.repair_and_services)
-
+def update_user_pwd():
+	user_list = frappe.db.sql("select name from `tabUser` where name not in ('Administrator')", as_dict=1)
+	c = 1
+	# print(user_list)
+	for i in user_list:
+		print("NAME '{}':  '{}'".format(c,str(i.name)))
+		ds = frappe.get_doc("User", i.name)
+		ds.new_password = 'erp@2025'
+		ds.save(ignore_permissions=1)
+		c += 1
 def create_attendance_for_approved_travel_request():
 	name = frappe.db.sql("""
 		select name

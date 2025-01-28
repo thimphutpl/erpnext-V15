@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_import": 1,
- "autoname": "PI.YY.MM.######",
+ "autoname": "naming_series:",
  "creation": "2013-05-21 16:16:39",
  "doctype": "DocType",
  "document_type": "Document",
@@ -9,6 +9,7 @@
  "field_order": [
   "title",
   "payment_status",
+  "n_series",
   "naming_series",
   "supplier",
   "supplier_name",
@@ -120,6 +121,7 @@
   "apply_discount_on",
   "base_discount_amount",
   "column_break_46",
+  "tax",
   "freight_insurance_charges",
   "other_charges",
   "additional_discount_percentage",
@@ -228,14 +230,11 @@
   {
    "fieldname": "naming_series",
    "fieldtype": "Select",
+   "hidden": 1,
    "label": "Series",
-   "no_copy": 1,
    "oldfieldname": "naming_series",
    "oldfieldtype": "Select",
-   "options": "ACC-PINV-.YYYY.-\nACC-PINV-RET-.YYYY.-",
-   "print_hide": 1,
-   "reqd": 1,
-   "set_only_once": 1
+   "options": "ACC-PINV-.YYYY.-\nACC-PINV-RET-.YYYY.-"
   },
   {
    "fieldname": "supplier",
@@ -1737,17 +1736,31 @@
    "fieldtype": "Currency",
    "label": "Installation Charges",
    "read_only": 1
+  },
+  {
+   "fieldname": "tax",
+   "fieldtype": "Currency",
+   "label": "Tax",
+   "read_only": 1
+  },
+  {
+   "fieldname": "n_series",
+   "fieldtype": "Select",
+   "label": "Naming Series",
+   "options": "\nConsumables\nFixed Asset\nSales Product\nSpare Parts\nServices Miscellaneous\nServices Works",
+   "reqd": 1,
+   "set_only_once": 1
   }
  ],
  "icon": "fa fa-file-text",
  "idx": 204,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-10 12:43:07.187424",
+ "modified": "2025-01-27 18:10:15.355958",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Purchase Invoice",
- "naming_rule": "Expression (old style)",
+ "naming_rule": "By \"Naming Series\" field",
  "owner": "Administrator",
  "permissions": [
   {

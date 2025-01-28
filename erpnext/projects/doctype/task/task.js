@@ -25,7 +25,51 @@ frappe.ui.form.on("Task", {
 				frm.set_value("exp_end_date", frappe.datetime.add_days(new Date(), 7));
 			}
 		}
-
+		if (frm.doc.status != "Closed" && frm.doc.status != "Completed" && frm.doc.status != "Cancelled" && frm.doc.status != "Template") {
+			// added by phuntsho on november 20,2021
+			// if (frm.doc.project_type == "Internal"){
+			// 	frm.add_custom_button("Monthly Settlement", function () {
+			// 		frappe.model.open_mapped_doc({
+			// 			method: "erpnext.projects.doctype.task.task.monthly_settlement",
+			// 			frm: cur_frm
+			// 		})
+			// 	}).addClass("btn-primary");
+			// }
+			
+			frm.add_custom_button("Make Purchase Requistion", function () {
+				frappe.model.open_mapped_doc({
+					method: "erpnext.projects.doctype.task.task.make_purchase_requisition",
+					frm: cur_frm
+				})
+			},
+				__("Make")
+			)
+			frm.add_custom_button("Make Material Issue Request", function () {
+				frappe.model.open_mapped_doc({
+					method: "erpnext.projects.doctype.task.task.make_material_issue_request",
+					frm: cur_frm
+				})
+			},
+				__("Make")
+			)
+			cur_frm.add_custom_button("Make Stock Issue Entry",
+				function (){
+					frappe.model.open_mapped_doc({
+						method: "erpnext.projects.doctype.task.task.make_stock_issue_entry",
+						frm: cur_frm
+					})
+				},
+				__("Make")
+			)
+			frm.add_custom_button("Make Stock Return Entry", function () {
+				frappe.model.open_mapped_doc({
+					method: "erpnext.projects.doctype.task.task.make_stock_return_entry",
+					frm: cur_frm
+				})
+			},
+				__("Make")
+			)
+		}
 		if(!doc.__islocal) {
 			// ++++++++++++++++++++ Ver 1.0 BEGINS ++++++++++++++++++++
 			// Follwoing view option added by SHIV on 2017/08/17

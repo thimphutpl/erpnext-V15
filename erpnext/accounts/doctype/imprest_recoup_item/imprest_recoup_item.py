@@ -16,16 +16,21 @@ class ImprestRecoupItem(Document):
 		account: DF.Link
 		amount: DF.Currency
 		business_activity: DF.Link
-		cost_center: DF.Link
 		invoice_date: DF.Date
-		invoice_no: DF.Data
+		invoice_no: DF.Data | None
+		item_code: DF.Link | None
+		item_name: DF.Data | None
+		maintain_stock: DF.Check
 		name: DF.Int | None
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
-		recoup_type: DF.Link | None
+		project: DF.Link | None
+		quantity: DF.Float
+		rate: DF.Data
 		reference_name: DF.DynamicLink | None
 		reference_type: DF.Link | None
 		remarks: DF.SmallText | None
+		uom: DF.Link | None
 	# end: auto-generated types
 	pass

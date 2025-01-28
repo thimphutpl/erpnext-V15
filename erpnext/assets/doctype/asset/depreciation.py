@@ -488,7 +488,7 @@ def restore_asset(asset_name):
 		get_link_to_form(asset.doctype, asset.name)
 	)
 
-	reset_depreciation_schedule(asset, asset.disposal_date, notes)
+	reset_depreciation_schedule(asset, None, notes)
 
 	asset.db_set("disposal_date", None)
 	asset.db_set("journal_entry_for_scrap", None)
@@ -526,7 +526,6 @@ def reset_depreciation_schedule(asset_doc, date, notes):
 		return
 
 	asset_doc.flags.ignore_validate_update_after_submit = True
-
 	make_new_active_asset_depr_schedules_and_cancel_current_ones(asset_doc, notes, date_of_return=date)
 
 	modify_depreciation_schedule_for_asset_repairs(asset_doc, notes)

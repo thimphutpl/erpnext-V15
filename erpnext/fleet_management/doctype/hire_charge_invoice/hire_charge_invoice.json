@@ -20,6 +20,7 @@
   "ehf_name",
   "column_break_4",
   "customer",
+  "supplier",
   "column_break_6",
   "posting_date",
   "section_break_12",
@@ -75,7 +76,7 @@
    "fieldname": "receive_payment",
    "fieldtype": "Button",
    "hidden": 1,
-   "label": "Receive Payment"
+   "label": "Payment"
   },
   {
    "fieldname": "section_break_5",
@@ -125,10 +126,10 @@
   {
    "fieldname": "customer",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Customer",
    "options": "Customer",
-   "read_only": 1,
-   "reqd": 1
+   "read_only": 1
   },
   {
    "fieldname": "column_break_6",
@@ -313,12 +314,19 @@
   {
    "fieldname": "column_break_ssxe",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "supplier",
+   "fieldtype": "Link",
+   "label": "Supplier",
+   "options": "Supplier",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-24 16:08:23.029447",
+ "modified": "2025-01-28 09:59:47.385657",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Hire Charge Invoice",

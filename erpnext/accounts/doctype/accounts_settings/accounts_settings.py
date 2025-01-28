@@ -27,6 +27,8 @@ class AccountsSettings(Document):
 		advance_to_supplier: DF.Link | None
 		allow_multi_currency_invoices_against_single_party_account: DF.Check
 		allow_stale: DF.Check
+		approver: DF.Link | None
+		approver_name: DF.Link | None
 		auto_reconcile_payments: DF.Check
 		automatically_fetch_payment_terms: DF.Check
 		automatically_process_deferred_accounting_entry: DF.Check
@@ -62,6 +64,8 @@ class AccountsSettings(Document):
 		submit_journal_entries: DF.Check
 		unlink_advance_payment_on_cancelation_of_order: DF.Check
 		unlink_payment_on_cancellation_of_invoice: DF.Check
+		verifier: DF.Link | None
+		verifier_name: DF.Link | None
 	# end: auto-generated types
 
 	def validate(self):
@@ -117,9 +121,8 @@ class AccountsSettings(Document):
 			check_pending_reposting(self.acc_frozen_upto)
 
 @frappe.whitelist()
-def get_bank_account(branch=None):
-	Company = "State Mining Corporation Ltd"
-	default_bank_account = frappe.db.get_value('Company',Company,'default_bank_account')
+def get_bank_account(branch=None, company=None):
+	default_bank_account = frappe.db.get_value('Company', company, 'default_bank_account')
 	expense_bank_account = None
 	if branch:
 		expense_bank_account = frappe.db.get_value('Branch', branch, 'expense_bank_account')

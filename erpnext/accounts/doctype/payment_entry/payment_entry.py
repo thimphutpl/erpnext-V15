@@ -98,6 +98,7 @@ class PaymentEntry(AccountsController):
 		self.validate_paid_invoices()
 		self.ensure_supplier_is_not_blocked()
 		self.set_status()
+		self.check_party_advance_balance()
 		self.set_total_in_words()
 
 	def on_submit(self):
@@ -252,7 +253,10 @@ class PaymentEntry(AccountsController):
 					"Payment Terms Template", template, "allocate_payment_based_on_payment_terms"
 				)
 		return False
+	def check_party_advance_balance(self):
+		if self.paid_to == frappe.db.get_value("Company",self.company,"supplier_advance_account") and self.party_balance >=1:
 
+			frappe.msgprint("This Supplier '{supplier}' already has Advance of amount '{amount}'".format(supplier=self.party, amount=self.party_balance))
 	def validate_allocated_amount_with_latest_data(self):
 		if self.references:
 			uniq_vouchers = set([(x.reference_doctype, x.reference_name) for x in self.references])

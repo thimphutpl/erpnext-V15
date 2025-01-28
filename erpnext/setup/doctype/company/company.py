@@ -42,6 +42,7 @@ class Company(NestedSet):
 		company_description: DF.TextEditor | None
 		company_logo: DF.AttachImage | None
 		company_name: DF.Data
+		contract_employee: DF.Link | None
 		cost_center: DF.Link | None
 		country: DF.Link
 		create_chart_of_accounts_based_on: DF.Literal["", "Standard Template", "Existing Company"]
@@ -73,6 +74,7 @@ class Company(NestedSet):
 		default_warehouse_for_sales_return: DF.Link | None
 		depreciation_cost_center: DF.Link | None
 		depreciation_expense_account: DF.Link | None
+		dfg_soelra: DF.Link | None
 		disposal_account: DF.Link | None
 		domain: DF.Data | None
 		email: DF.Data | None
@@ -88,13 +90,23 @@ class Company(NestedSet):
 		fine_and_penalty_account: DF.Link | None
 		fitness_account: DF.Link | None
 		gain_disposal_account: DF.Link | None
+		gce: DF.Link | None
+		hire_charge: DF.Link | None
+		hsd: DF.Link | None
 		imprest_advance_account: DF.Link | None
+		indian_operators_salary: DF.Link | None
 		is_group: DF.Check
 		lft: DF.Int
 		loss_disposal_account: DF.Link | None
+		lubricant: DF.Link | None
 		monthly_sales_target: DF.Currency
+		muster_roll_employee: DF.Link | None
+		oap_salary: DF.Link | None
 		offense_account: DF.Link | None
+		ojt: DF.Link | None
 		old_parent: DF.Data | None
+		operator_allowance: DF.Link | None
+		overtime_payment: DF.Link | None
 		parent_company: DF.Link | None
 		payment_terms: DF.Link | None
 		phone_no: DF.Data | None
@@ -102,6 +114,7 @@ class Company(NestedSet):
 		reconcile_on_advance_payment_date: DF.Check
 		registration_account: DF.Link | None
 		registration_details: DF.Code | None
+		repair_and_maintenance: DF.Link | None
 		repair_and_service_account: DF.Link | None
 		rgt: DF.Int
 		round_off_account: DF.Link | None
@@ -111,7 +124,9 @@ class Company(NestedSet):
 		stock_adjustment_account: DF.Link | None
 		stock_received_but_not_billed: DF.Link | None
 		submit_err_jv: DF.Check
+		supplier_advance_account: DF.Link | None
 		tax_id: DF.Data | None
+		thai_salary: DF.Link | None
 		total_monthly_sales: DF.Currency
 		transactions_annual_history: DF.Code | None
 		unrealized_exchange_gain_loss_account: DF.Link | None

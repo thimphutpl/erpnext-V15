@@ -16,6 +16,7 @@ from frappe.model.naming import make_autoname
 from erpnext.buying.utils import check_on_hold_or_closed_status, validate_for_items
 from erpnext.controllers.buying_controller import BuyingController
 from erpnext.manufacturing.doctype.work_order.work_order import get_item_details
+from erpnext.custom_workflow import validate_workflow_states, notify_workflow_states
 from erpnext.stock.doctype.item.item import get_item_defaults
 from erpnext.stock.stock_balance import get_indented_qty, update_bin_qty
 
@@ -33,14 +34,15 @@ class MaterialRequest(BuyingController):
 		from frappe.types import DF
 
 		amended_from: DF.Link | None
-		approval_date: DF.Data | None
 		approver: DF.Link | None
+		approver_designation: DF.Data | None
 		approver_name: DF.Data | None
 		branch: DF.Link
 		company: DF.Link
 		cost_center: DF.Link | None
 		customer: DF.Link | None
 		date: DF.Date | None
+		for_project: DF.Check
 		items: DF.Table[MaterialRequestItem]
 		job_card: DF.Link | None
 		letter_head: DF.Link | None
@@ -49,6 +51,8 @@ class MaterialRequest(BuyingController):
 		mr_header: DF.TextEditor | None
 		per_ordered: DF.Percent
 		per_received: DF.Percent
+		reference_name: DF.DynamicLink | None
+		reference_type: DF.Link | None
 		repair_and_services: DF.Data | None
 		schedule_date: DF.Date
 		select_print_heading: DF.Link | None
@@ -71,7 +75,7 @@ class MaterialRequest(BuyingController):
 			series = 'SEFA'
 		elif self.series == 'Sales Product':
 			series = 'SESA'
-		elif self.series == 'Spare parts':
+		elif self.series == 'Spare Parts':
 			series ='SESP'
 		elif self.series == 'Services Miscellaneous':
 			series = 'SESM'
@@ -124,6 +128,7 @@ class MaterialRequest(BuyingController):
 					)
 
 	def validate(self):
+		validate_workflow_states(self)
 		super().validate()
 
 		self.validate_schedule_date()
@@ -154,7 +159,8 @@ class MaterialRequest(BuyingController):
 		)
 
 		validate_for_items(self)
-
+		if self.for_project:
+			self.validate_project()
 		self.set_title()
 		# self.validate_qty_against_so()
 		# NOTE: Since Item BOM and FG quantities are combined, using current data, it cannot be validated
@@ -167,11 +173,33 @@ class MaterialRequest(BuyingController):
 	def before_update_after_submit(self):
 		self.validate_schedule_date()
 
+	def validate_project(self):
+		if self.for_project == 1 and (self.material_request_type == "Material Issue" or (self.material_request_type == "Purchase" and self.series in ("Services Miscellaneous", "Services Works"))):
+			row = 1
+			for a in self.items:
+				if not a.project:
+					frappe.throw("Project is Mandatory in row {} in Items table.".format(row))
+				if not a.task:
+					frappe.throw("Task is Mandatory in row {} in Items table.".format(row))
+				if a.project and not a.task:
+					frappe.throw("Task is Mandatory in row {} in Items table.".format(row))
+				if not a.project and a.task:
+					frappe.throw("Project is Mandatory in row {} in Items table.".format(row))
+				row += 1
+
 	def validate_material_request_type(self):
 		"""Validate fields in accordance with selected type"""
 
 		if self.material_request_type != "Customer Provided":
 			self.customer = None
+
+	@frappe.whitelist()
+	def get_projects(self):
+		projects = []
+		if self.reference_type == "Project Definition" and self.reference_name:
+			for p in frappe.db.get_all("Project", {"project_definition": self.reference_name, "status": ["in", ["Ongoing", "Planning"]]}):
+				projects.append(p.name)
+		return projects
 
 	def set_title(self):
 		"""Set title as comma separated list of items"""
@@ -184,10 +212,10 @@ class MaterialRequest(BuyingController):
 	def on_submit(self):
 		self.update_requested_qty_in_production_plan()
 		self.update_requested_qty()
-		if self.material_request_type == "Purchase" and frappe.db.exists(
-			"Budget", {"applicable_on_material_request": 1, "docstatus": 1}
-		):
-			self.validate_budget()
+		# if self.material_request_type == "Purchase" and frappe.db.exists(
+		# 	"Budget", {"applicable_on_material_request": 1, "docstatus": 1}
+		# ):
+			# self.validate_budget()
 
 	def before_save(self):
 		self.set_status(update=True)
@@ -425,17 +453,6 @@ def get_list_context(context=None):
 	)
 
 	return list_context
-@frappe.whitelist()
-def pull_material_approver(branch):
-
-	approver=frappe.db.sql("""select u.name from `tabUser` u 
-		join `tabEmployee` e on u.name=e.user_id 
-		join `tabHas Role` hr on hr.parent=u.name where hr.role='MR Approver' and e.branch='{}' limit 1""".format(branch), as_dict=True)
-
-	if len(approver)==0:
-		frappe.throw("There is no MR Approver for this Branch")
-		
-	return approver[0].name
 
 @frappe.whitelist()
 def update_status(name, status):
@@ -729,6 +746,7 @@ def make_stock_entry(source_name, target_doc=None):
 		target.set_actual_qty()
 		target.calculate_rate_and_amount(raise_error_if_no_rate=False)
 		target.stock_entry_type = target.purpose
+		target.branch = source.branch
 		target.set_job_card_data()
 
 		if source.job_card:
@@ -892,3 +910,42 @@ def get_cc_warehouse(user):
 	wh = frappe.db.get_value("Cost Center", cc, "warehouse")
 	app = frappe.db.get_value("Approver Item", {"cost_center": cc}, "approver")
 	return [cc, wh, app]
+@frappe.whitelist()
+def has_record_permission(doc, user):
+	if not user: user = frappe.session.user
+	user_roles = frappe.get_roles(user)
+
+	if "HR User" in user_roles or "HR Manager" in user_roles:
+		return True
+	else:			
+		if frappe.db.exists("Employee", {"name":doc.name, "user_id": user}):
+			return True
+		else:
+			return True 
+@frappe.whitelist()
+def get_permission_query_conditions(user):
+	if not user: user = frappe.session.user
+	user_roles = frappe.get_roles(user)
+	employee=frappe.db.get_value("Employee",{"user_id": user},"name")
+
+	if user == "Administrator":
+		return
+	if "HR Master" in user_roles or "Auditor" in user_roles or "HR User" in user_roles or "HR Manager" in user_roles:
+		return
+	else:
+		return
+	# return """(
+	# 	exists(select 1
+	# 		from `tabEmployee` e
+	# 		inner join
+	# 		`tabLeave Application` l 
+	# 		on e.name = l.employee
+	# 		where e.name = '{employee}'
+	# 		and e.user_id = '{user}')
+	# 	or
+	# 	exists(select 1 
+	# 		from `tabLeave Application` l
+	# 		where l.leave_approver = '{user}' 
+	# 		and l.workflow_state not in  ('Draft','Approved','Rejected','Cancelled'))
+		
+	# )""".format(user=user, employee=employee)

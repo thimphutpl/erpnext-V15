@@ -247,8 +247,8 @@ erpnext.accounts.PurchaseInvoice = class PurchaseInvoice extends erpnext.buying.
 	ld_days(frm) {
 		console.log("here "+String(cur_frm.doc.ld_days))
 		if(cur_frm.doc.ld_days && flt(cur_frm.doc.ld_days) > 0){
-			if(flt(cur_frm.doc.ld_days) < 1000){
-				cur_frm.set_value("write_off_amount", flt((flt(cur_frm.doc.ld_days)/1000)*0.1 * flt(cur_frm.doc.grand_total),2))
+			if(flt(cur_frm.doc.ld_days) < 100){
+				cur_frm.set_value("write_off_amount", flt((flt(cur_frm.doc.ld_days)/100)*0.1 * flt(cur_frm.doc.grand_total),2))
 			}
 			else{
 				cur_frm.set_value("write_off_amount", flt((0.1) * flt(cur_frm.doc.grand_total),2))
@@ -604,7 +604,54 @@ cur_frm.fields_dict["items"].grid.get_field("project").get_query = function (doc
 		filters: [["Project", "status", "not in", "Completed, Cancelled"]],
 	};
 };
-
+frappe.ui.form.on("Purchase Invoice Item", {
+	refresh: function(frm, cdt, cdn){
+		var i = locals[cdt][cdn];
+		frappe.call({
+			method:'frappe.client.get_value',
+			args:{
+				'doctype':'Item',
+				fieldname:"is_fixed_asset",
+				filters: {
+					"name": i.name
+				}
+			},
+			callback:(r)=>{
+				if(r.message.is_fixed_asset){
+					frm.toggle_display(['brand', 'model'], r.message.is_fixed_asset);
+				}
+				else{
+					frm.toggle_display(['brand', 'model'], 0);
+					
+				}
+			}
+		})
+		frm.refresh_fields();
+	},
+	item_code: function (frm, cdt, cdn) {
+		var d = locals[cdt][cdn];
+		frappe.call({
+			method:'frappe.client.get_value',
+			args:{
+				'doctype':'Item',
+				fieldname:"is_fixed_asset",
+				filters: {
+					"name": d.name
+				}
+			},
+			callback:(r)=>{
+				if(r.message.is_fixed_asset){
+					frm.toggle_display(['brand', 'model'], r.message.is_fixed_asset);
+				}
+				else{
+					frm.toggle_display(['brand', 'model'], 0);
+					
+				}
+			}
+		})
+		frm.refresh_fields();
+	}
+});
 frappe.ui.form.on("Purchase Invoice", {
 	setup: function (frm) {
 		frm.custom_make_buttons = {

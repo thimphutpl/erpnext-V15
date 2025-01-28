@@ -250,7 +250,6 @@ class AssetDepreciationSchedule(Document):
 			else:
 				start = num_of_depreciations_completed
 				break
-
 		self.depreciation_schedule = depr_schedule
 
 		return start
@@ -283,6 +282,7 @@ class AssetDepreciationSchedule(Document):
 				self.opening_number_of_booked_depreciations
 			)
 			final_number_of_depreciations += 1
+		# frappe.throw(str(final_number_of_depreciations))
 		has_pro_rata = _check_is_pro_rata(asset_doc, row)
 		# if has_pro_rata:
 		# 	final_number_of_depreciations += 1
@@ -485,12 +485,15 @@ class AssetDepreciationSchedule(Document):
 				schedule_date = add_months(
 					row.depreciation_start_date, n * cint(row.frequency_of_depreciation)
 				)
-
+				frappe.errprint(str(schedule_date))
 				if should_get_last_day:
 					schedule_date = get_last_day(schedule_date)
 
 				monthly_schedule_date = add_months(schedule_date, - row.frequency_of_depreciation + 1)
-
+			if n != 0:
+				no_of_days_in_a_schedule = date_diff(schedule_date, get_first_day(schedule_date))
+			else:
+				no_of_days_in_a_schedule = date_diff(schedule_date, asset_doc.available_for_use_date)
 			# if asset is being sold or scrapped
 			if date_of_disposal and getdate(schedule_date) >= getdate(date_of_disposal):
 				from_date = add_months(
@@ -601,7 +604,8 @@ class AssetDepreciationSchedule(Document):
 					row.expected_value_after_useful_life
 				)
 				skip_row = True
-
+			if schedule_date == '2025-02-28':
+				frappe.erpprint(str(n)+". "+str(depreciation_amount)+" "+str(schedule_date))
 			if flt(depreciation_amount, asset_doc.precision("gross_purchase_amount")) > 0:
 				self.add_depr_schedule_row(
 					schedule_date, 
@@ -612,6 +616,7 @@ class AssetDepreciationSchedule(Document):
 					income_accumulated_depreciation,
 					asset_doc.available_for_use_date
      )
+		# frappe.throw("here")
 		# frappe.throw("here "+str(skip_row)+" "+str(schedule_date)+" "+str(depreciation_amount))
 
 	# to ensure that final accumulated depreciation amount is accurate
@@ -643,7 +648,6 @@ class AssetDepreciationSchedule(Document):
 			)
 		else:
 			shift = None
-
 		self.append(
 			"depreciation_schedule",
 			{

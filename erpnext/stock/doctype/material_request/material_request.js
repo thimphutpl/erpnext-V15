@@ -99,21 +99,6 @@ frappe.ui.form.on("Material Request", {
 					}
 				}
 			});
-
-			frappe.call({
-				method: "erpnext.stock.doctype.material_request.material_request.pull_material_approver",
-				args: {
-					branch: frm.doc.branch,
-				},
-				callback: function(r, rt) {
-					if(r.message) {
-						console.log(r.message);
-						frm.set_value("approver", r.message);
-						frm.refresh_field("approver");
-						frm.trigger("approver");
-					}
-				}
-			});
 		}
 		else{
 			frm.set_value("cost_center",null);
@@ -162,6 +147,11 @@ frappe.ui.form.on("Material Request", {
 				() => frm.events.get_items_from_bom(frm),
 				__("Get Items From")
 			);
+			// frm.add_custom_button(
+			// 	__("BOQ"),
+			// 	() => frm.events.get_items_from_boq(frm),
+			// 	__("Get Items From")
+			// );
 		}
 
 		if (frm.doc.docstatus == 1 && frm.doc.status != "Stopped") {
@@ -387,7 +377,52 @@ frappe.ui.form.on("Material Request", {
 					options: "BOM",
 					reqd: 1,
 					get_query: function () {
-						return { filters: { docstatus: 1, is_active: 1 } };
+						if(frm.doc.reference_type == "Project Definition" && frm.doc.reference_name){
+							var projects = [];
+							frappe.call({
+								method: "get_projects",
+								doc: frm.doc,
+								async: false,
+								callback: function(r){
+									if(r.message){
+										$.each(r.message, function (i, value) {
+											projects.push(value);
+										});
+									}
+								}
+							})
+							return { filters: { docstatus: 1, is_active: 1, project: ["in", projects]} };
+						}
+						else if(frm.doc.reference_type == "Project" && frm.doc.reference_name){
+							return { filters: { docstatus: 1, is_active: 1, project: frm.doc.reference_name} };
+						}
+						else if(frm.doc.reference_type == "Task" && frm.doc.reference_name){
+							var project = "";
+							frappe.call({
+								method: "frappe.client.get",
+								args: {
+									doctype: "Task",
+									name: frm.doc.reference_name,
+								},
+								async: false,
+								callback: function (data) {
+									if (data.message.project) {
+										project = data.message.project
+									}
+								},
+							});
+							if(project && project != "" && project != undefined){
+								return { filters: { docstatus: 1, is_active: 1, project: project}};
+							}
+							else{
+								return { name: ""};
+							}
+						}
+						else if(!frm.doc.reference_type && !frm.doc.reference_name){
+							return {
+								filters: {name: ""}
+							};
+						}
 					},
 				},
 				{
@@ -429,6 +464,9 @@ frappe.ui.form.on("Material Request", {
 								d.conversion_factor = 1;
 								d.qty = item.qty;
 								d.project = item.project;
+								if(frm.doc.reference_type == "Task"){
+									d.task = frm.doc.reference_name
+								}
 							});
 						}
 						d.hide();
@@ -440,7 +478,118 @@ frappe.ui.form.on("Material Request", {
 
 		d.show();
 	},
+	get_items_from_boq: function (frm) {
+		var d = new frappe.ui.Dialog({
+			title: __("Get Items from BOQ"),
+			fields: [
+				{
+					fieldname: "boq",
+					fieldtype: "Link",
+					label: __("BOQ"),
+					options: "BOQ",
+					reqd: 1,
+					get_query: function () {
+						if(frm.doc.reference_type == "Project Definition" && frm.doc.reference_name){
+							var projects = [];
+							frappe.call({
+								method: "get_projects",
+								doc: frm.doc,
+								async: false,
+								callback: function(r){
+									if(r.message){
+										$.each(r.message, function (i, value) {
+											projects.push(value);
+										});
+									}
+								}
+							})
+							return { filters: { docstatus: 1, project: ["in", projects]} };
+						}
+						else if(frm.doc.reference_type == "Project" && frm.doc.reference_name){
+							return { filters: { docstatus: 1, project: frm.doc.reference_name} };
+						}
+						// else if(frm.doc.reference_type == "Task" && frm.doc.reference_name){
+						// 	var project = "";
+						// 	frappe.call({
+						// 		method: "frappe.client.get",
+						// 		args: {
+						// 			doctype: "Task",
+						// 			name: frm.doc.reference_name,
+						// 		},
+						// 		async: false,
+						// 		callback: function (data) {
+						// 			if (data.message.project) {
+						// 				project = data.message.project
+						// 			}
+						// 		},
+						// 	});
+						// 	if(project && project != "" && project != undefined){
+						// 		return { filters: { docstatus: 1, is_active: 1, project: project}};
+						// 	}
+						// 	else{
+						// 		return { name: ""};
+						// 	}
+						// }
+						else if(!frm.doc.reference_type && !frm.doc.reference_name){
+							return {
+								filters: {name: ""}
+							};
+						}
+					},
+				},
+				{
+					fieldname: "warehouse",
+					fieldtype: "Link",
+					label: __("For Warehouse"),
+					options: "Warehouse",
+					reqd: 1,
+				},
+				{ fieldname: "qty", fieldtype: "Float", label: __("Quantity"), reqd: 1, default: 1 },
+				{
+					fieldname: "fetch_exploded",
+					fieldtype: "Check",
+					label: __("Fetch exploded BOM (including sub-assemblies)"),
+					default: 1,
+				},
+			],
+			primary_action_label: "Get Items",
+			primary_action(values) {
+				if (!values) return;
+				values["company"] = frm.doc.company;
+				if (!frm.doc.company) frappe.throw(__("Company field is required"));
+				frappe.call({
+					method: "erpnext.manufacturing.doctype.bom.bom.get_bom_items",
+					args: values,
+					callback: function (r) {
+						if (!r.message) {
+							frappe.throw(__("BOM does not contain any stock item"));
+						} else {
+							erpnext.utils.remove_empty_first_row(frm, "items");
+							$.each(r.message, function (i, item) {
+								var d = frappe.model.add_child(cur_frm.doc, "Material Request Item", "items");
+								d.item_code = item.item_code;
+								d.item_name = item.item_name;
+								d.description = item.description;
+								d.warehouse = values.warehouse;
+								d.uom = item.stock_uom;
+								d.stock_uom = item.stock_uom;
+								d.conversion_factor = 1;
+								d.qty = item.qty;
+								d.project = item.project;
+								if(frm.doc.reference_type == "Task"){
+									d.task = frm.doc.reference_name
+								}
+							});
+						}
+						d.hide();
+						refresh_field("items");
+					},
+				});
+			},
+		});
 
+		d.show();
+	},
 	make_purchase_order: function (frm) {
 		frappe.model.open_mapped_doc({
 			method: "erpnext.stock.doctype.material_request.material_request.make_purchase_order",
@@ -591,6 +740,24 @@ frappe.ui.form.on("Material Request", {
 		}
 	},
 });
+cur_frm.fields_dict["items"].grid.get_field("project").get_query = function (doc) {
+	if(cur_frm.doc.reference_type == "Project Definition"){
+		return {
+			filters: { 'project_definition': cur_frm.doc.reference_name, "status": ["in", ["Ongoing", "Planning"]]}
+		};
+	}
+	if(cur_frm.doc.reference_type == "Project"){
+		return {
+			filters: { 'name': cur_frm.doc.reference_name, "status": ["in", ["Ongoing", "Planning"]]}
+		};
+	}
+};
+cur_frm.fields_dict["items"].grid.get_field("task").get_query = function (doc, cdt, cdn) {
+	var row = locals[cdt][cdn];
+	return {
+		filters: { 'project': row.project, "status": ["not in", ["Closed", "Completed", "Cancelled"]],  "is_group": 0}
+	};
+};
 const formatDate = (date) => {
 	const year = date.getFullYear();
 	const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-based
@@ -599,6 +766,28 @@ const formatDate = (date) => {
 };
 
 frappe.ui.form.on("Material Request Item", {
+	items_add: function(frm, cdt, cdn){
+		if(frm.doc.reference_type == "Project" && frm.doc.reference_name){
+			frappe.model.set_value(cdt, cdn, "project", frm.doc.reference_name);
+			frm.refresh_field("items");
+		}
+		else if (frm.doc.reference_type == "Task" && frm.doc.reference_name){
+			frappe.call({
+				method: "frappe.client.get",
+				args: {
+					doctype: "Task",
+					name: frm.doc.reference_name,
+				},
+				callback: function (data) {
+					if (data.message.project) {
+						frappe.model.set_value(cdt, cdn, "project", data.message.project);
+						frappe.model.set_value(cdt, cdn, "task", frm.doc.reference_name);
+						frm.refresh_field("items");
+					}
+				},
+			});
+		}
+	},
 	qty: function (frm, doctype, name) {
 		const item = locals[doctype][name];
 		if (flt(item.qty) < flt(item.min_order_qty)) {

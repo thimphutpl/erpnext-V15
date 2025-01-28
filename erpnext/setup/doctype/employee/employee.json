@@ -2,8 +2,7 @@
  "actions": [],
  "allow_events_in_timeline": 1,
  "allow_import": 1,
- "allow_rename": 1,
- "autoname": "naming_series:employee_name",
+ "autoname": "naming_series:",
  "creation": "2022-02-21 11:54:09.632218",
  "doctype": "DocType",
  "document_type": "Setup",
@@ -141,6 +140,8 @@
   "thram_number",
   "employee_family_details_section",
   "employee_family_details",
+  "employee_benefits_nominees_section",
+  "nominees",
   "profile_tab",
   "pms_records_section",
   "employee_pms",
@@ -270,7 +271,8 @@
    "fieldtype": "Date",
    "label": "Date of Joining",
    "oldfieldname": "date_of_joining",
-   "oldfieldtype": "Date"
+   "oldfieldtype": "Date",
+   "reqd": 1
   },
   {
    "bold": 1,
@@ -846,7 +848,8 @@
    "fieldname": "employee_group",
    "fieldtype": "Link",
    "label": "Employee Group",
-   "options": "Employee Group"
+   "options": "Employee Group",
+   "reqd": 1
   },
   {
    "fieldname": "column_break_22",
@@ -946,7 +949,8 @@
    "fieldname": "employment_type",
    "fieldtype": "Link",
    "label": "Employment Type",
-   "options": "Employment Type"
+   "options": "Employment Type",
+   "reqd": 1
   },
   {
    "depends_on": "eval:doc.employment_status == \"Probation\";",
@@ -993,6 +997,7 @@
   {
    "fieldname": "employee_family_details",
    "fieldtype": "Table",
+   "label": "Family Details",
    "options": "Employee Family Details"
   },
   {
@@ -1122,8 +1127,11 @@
   {
    "fieldname": "naming_series",
    "fieldtype": "Select",
+   "hidden": 1,
    "label": "Series",
-   "options": "GYAL.YY"
+   "no_copy": 1,
+   "options": "GYAL.YY",
+   "read_only": 1
   },
   {
    "fieldname": "phone_number",
@@ -1178,14 +1186,25 @@
    "fieldname": "job_type",
    "fieldtype": "Select",
    "label": "Job Type",
-   "options": "\nCivil Servant\nCorporate"
+   "options": "\nCivil Servant\nCorporate\nOperation and Maintenance"
+  },
+  {
+   "fieldname": "employee_benefits_nominees_section",
+   "fieldtype": "Section Break",
+   "label": "Employee Benefits Nominees"
+  },
+  {
+   "fieldname": "nominees",
+   "fieldtype": "Table",
+   "label": "Retirement Benefits Nominees Name",
+   "options": "Retirement Benefits Nominees"
   }
  ],
  "icon": "fa fa-user",
  "idx": 24,
  "image_field": "image",
  "links": [],
- "modified": "2025-01-09 15:42:30.998213",
+ "modified": "2025-01-25 14:56:58.423847",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee",

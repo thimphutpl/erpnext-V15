@@ -20,6 +20,7 @@ class StockEntryDetail(Document):
 		allow_alternative_item: DF.Check
 		allow_zero_valuation_rate: DF.Check
 		amount: DF.Currency
+		balance_qty: DF.Data | None
 		barcode: DF.Data | None
 		basic_amount: DF.Currency
 		basic_rate: DF.Currency
@@ -28,6 +29,7 @@ class StockEntryDetail(Document):
 		conversion_factor: DF.Float
 		cost_center: DF.Link | None
 		description: DF.TextEditor | None
+		equipment_no: DF.Link | None
 		expense_account: DF.Link | None
 		has_item_scanned: DF.Check
 		image: DF.Attach | None
@@ -35,10 +37,12 @@ class StockEntryDetail(Document):
 		is_scrap_item: DF.Check
 		issue_to_employee: DF.Check
 		issue_to_employee_name: DF.Data | None
+		issue_to_vehicle: DF.Check
 		issued_to: DF.Link | None
 		item_code: DF.Link
 		item_group: DF.Data | None
 		item_name: DF.Data | None
+		item_ref: DF.Data | None
 		job_card_item: DF.Data | None
 		material_request: DF.Link | None
 		material_request_item: DF.Link | None
@@ -63,6 +67,7 @@ class StockEntryDetail(Document):
 		stock_uom: DF.Link
 		subcontracted_item: DF.Link | None
 		t_warehouse: DF.Link | None
+		task: DF.Link | None
 		transfer_qty: DF.Float
 		transferred_qty: DF.Float
 		uom: DF.Link

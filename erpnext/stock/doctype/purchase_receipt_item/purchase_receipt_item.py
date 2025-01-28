@@ -28,7 +28,7 @@ class PurchaseReceiptItem(Document):
 		batch_no: DF.Link | None
 		billed_amt: DF.Currency
 		bom: DF.Link | None
-		brand: DF.Link | None
+		brand: DF.Data | None
 		conversion_factor: DF.Float
 		cost_center: DF.Link | None
 		delivery_note_item: DF.Data | None
@@ -54,6 +54,7 @@ class PurchaseReceiptItem(Document):
 		margin_type: DF.Literal["", "Percentage", "Amount"]
 		material_request: DF.Link | None
 		material_request_item: DF.Data | None
+		model: DF.Data | None
 		net_amount: DF.Currency
 		net_rate: DF.Currency
 		page_break: DF.Check
@@ -97,6 +98,7 @@ class PurchaseReceiptItem(Document):
 		stock_uom_rate: DF.Currency
 		subcontracting_receipt_item: DF.Data | None
 		supplier_part_no: DF.Data | None
+		task: DF.Link | None
 		total_weight: DF.Float
 		transporation_cost: DF.Currency
 		uom: DF.Link

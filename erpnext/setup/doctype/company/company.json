@@ -66,6 +66,7 @@
   "allow_account_creation_against_child_company",
   "default_payable_account",
   "default_expense_account",
+  "supplier_advance_account",
   "default_income_account",
   "default_deferred_revenue_account",
   "default_deferred_expense_account",
@@ -74,6 +75,22 @@
   "cost_center",
   "default_finance_book",
   "registration_account",
+  "cost_appropriation_settings_section",
+  "hire_charge",
+  "lubricant",
+  "oap_salary",
+  "overtime_payment",
+  "thai_salary",
+  "indian_operators_salary",
+  "ojt",
+  "column_break_ybdc",
+  "hsd",
+  "operator_allowance",
+  "gce",
+  "muster_roll_employee",
+  "dfg_soelra",
+  "repair_and_maintenance",
+  "contract_employee",
   "advance_payments_section",
   "book_advance_payments_in_separate_party_account",
   "reconcile_on_advance_payment_date",
@@ -903,6 +920,105 @@
    "fieldtype": "Link",
    "label": "Offense Account",
    "options": "Account"
+  },
+  {
+   "fieldname": "cost_appropriation_settings_section",
+   "fieldtype": "Section Break",
+   "label": "Cost Appropriation Settings"
+  },
+  {
+   "fieldname": "hire_charge",
+   "fieldtype": "Link",
+   "label": "Hire Charge",
+   "options": "Account"
+  },
+  {
+   "fieldname": "column_break_ybdc",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "hsd",
+   "fieldtype": "Link",
+   "label": "HSD",
+   "options": "Account"
+  },
+  {
+   "fieldname": "lubricant",
+   "fieldtype": "Link",
+   "label": "Lubricant",
+   "options": "Account"
+  },
+  {
+   "fieldname": "operator_allowance",
+   "fieldtype": "Link",
+   "label": "Operator Allowance",
+   "options": "Account"
+  },
+  {
+   "fieldname": "oap_salary",
+   "fieldtype": "Link",
+   "label": "OAP Salary",
+   "options": "Account"
+  },
+  {
+   "fieldname": "overtime_payment",
+   "fieldtype": "Link",
+   "label": "Overtime Payment",
+   "options": "Account"
+  },
+  {
+   "fieldname": "thai_salary",
+   "fieldtype": "Link",
+   "label": "Thai Salary",
+   "options": "Account"
+  },
+  {
+   "fieldname": "indian_operators_salary",
+   "fieldtype": "Link",
+   "label": "Indian Operators Salary",
+   "options": "Account"
+  },
+  {
+   "fieldname": "ojt",
+   "fieldtype": "Link",
+   "label": "OJT",
+   "options": "Account"
+  },
+  {
+   "fieldname": "gce",
+   "fieldtype": "Link",
+   "label": "GCE",
+   "options": "Account"
+  },
+  {
+   "fieldname": "muster_roll_employee",
+   "fieldtype": "Link",
+   "label": "Muster Roll Employee",
+   "options": "Account"
+  },
+  {
+   "fieldname": "dfg_soelra",
+   "fieldtype": "Link",
+   "label": "DFG Soelra",
+   "options": "Account"
+  },
+  {
+   "fieldname": "repair_and_maintenance",
+   "fieldtype": "Link",
+   "label": "Repair and Maintenance",
+   "options": "Account"
+  },
+  {
+   "fieldname": "contract_employee",
+   "fieldtype": "Link",
+   "label": "Contract Employee",
+   "options": "Account"
+  },
+  {
+   "fieldname": "supplier_advance_account",
+   "fieldtype": "Link",
+   "label": "Default Advance To Supplier Account",
+   "options": "Account"
   }
  ],
  "icon": "fa fa-building",
@@ -910,7 +1026,7 @@
  "image_field": "company_logo",
  "is_tree": 1,
  "links": [],
- "modified": "2025-01-05 00:16:29.211671",
+ "modified": "2025-01-21 20:51:10.908302",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Company",

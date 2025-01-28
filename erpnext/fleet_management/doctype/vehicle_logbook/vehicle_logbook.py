@@ -7,7 +7,7 @@ import frappe
 from frappe.model.document import Document
 from frappe.utils import flt, cint, getdate, add_days, get_datetime
 from erpnext.custom_utils import check_uncancelled_linked_doc, check_future_date
-from erpnext.fleet_management.report.hsd_consumption_report.fleet_management_report import get_pol_till, get_pol_consumed_tills
+from erpnext.fleet_management.report.hsd_consumption_report.fleet_management_report import get_pol_till, get_pol_tills, get_pol_consumed_tills
 
 class VehicleLogbook(Document):
 	# begin: auto-generated types
@@ -27,8 +27,6 @@ class VehicleLogbook(Document):
 		consumption_km: DF.Float
 		customer: DF.Link | None
 		customer_type: DF.Data | None
-		customer_types: DF.Data | None
-		customers: DF.Link | None
 		distance_km: DF.Int
 		ehf_name: DF.Link | None
 		equipment: DF.Link | None
@@ -58,6 +56,7 @@ class VehicleLogbook(Document):
 		pol_type: DF.Data | None
 		pool_equipment: DF.Link | None
 		pool_equipment_number: DF.Data | None
+		project: DF.ReadOnly | None
 		rate_type: DF.Data | None
 		reason: DF.Data | None
 		registration_number: DF.Data | None
@@ -102,19 +101,19 @@ class VehicleLogbook(Document):
 			frappe.throw("From Date/Time cannot be greater than To Date/Time")
 
 
-	def before_save(self):
+	# def before_save(self):
         # Ensure consumption does not exceed tank balance
-		if flt(self.tank_balance) <= flt(self.consumption):
-			frappe.throw(
-                ("Tank balance ({}) should be greater than or equal to consumption ({}).").format(
-                    self.tank_balance, self.consumption
-                )
-            )
-		if self.vehicle_logbook in ["Pool Vehicle", "Support Equipment"]:
-			self.customer = None 
-			self.customer_type = None
-		elif not self.customer:
-			frappe.throw(("Customer is required for this Vehicle Logbook type."))			
+		# if flt(self.tank_balance) <= flt(self.consumption):
+		# 	frappe.throw(
+        #         ("Tank balance ({}) should be greater than or equal to consumption ({}).").format(
+        #             self.tank_balance, self.consumption
+        #         )
+        #     )
+		# if self.vehicle_logbook in ["Pool Vehicle", "Support Equipment"]:
+		# 	self.customer = None 
+		# 	self.customer_type = None
+		# elif not self.customer:
+		# 	frappe.throw(("Customer is required for this Vehicle Logbook type."))			
 
 	def set_data(self):
 		if self.vehicle_logbook == "Pool Vehicle":
@@ -239,12 +238,27 @@ class VehicleLogbook(Document):
 
 	def calculate_totals(self):
 		if self.vlogs:
-			total_w = total_i = 0
-			for a in self.vlogs:
-				total_w += flt(a.work_time)
-				total_i += flt(a.idle_time)
+			# total_w = total_i = 0
+			# total_hsd_amount = 0 
+			total_w = total_i = total_operator_salary = total_hsd_amount = 0
+
+			for vlog in self.vlogs:
+				total_w += flt(vlog.work_time)
+				total_i += flt(vlog.idle_time)
+
+				# Sum operator salaries
+				if flt(vlog.operator_salary):
+					total_operator_salary += flt(vlog.operator_salary)
+
+				# Calculate HSD amount for each row in vlogs
+				if flt(vlog.pol_issued) and flt(vlog.hsd_rate):
+					total_hsd_amount += flt(vlog.pol_issued) * flt(vlog.hsd_rate)
+
 			self.total_work_time = total_w
 			self.total_idle_time = total_i
+			self.operator_salary = total_operator_salary
+			self.hsd_amount = total_hsd_amount  
+				
 
 		# if self.include_km:
 		# 	if flt(self.ys_km) > 0:
@@ -271,6 +285,23 @@ class VehicleLogbook(Document):
 		self.consumption = flt(self.other_consumption) + flt(self.consumption_hours) + flt(self.consumption_km)
 		self.closing_balance = flt(self.hsd_received) + flt(self.opening_balance) - flt(self.consumption)
 	
+		# if self.ys_km and self.distance_km:
+		# 	self.hsd_amount = flt(self.ys_km) * flt(self.distance_km)	
+		
+		self.consumption = flt(self.other_consumption) + flt(self.consumption_hours) + flt(self.consumption_km)
+		self.closing_balance = flt(self.hsd_received) + flt(self.opening_balance) - flt(self.consumption)
+
+		# for item in self.get("vlogs"):
+		# 	# Ensure tank capacity is greater than or equal to the sum of equipment balance and quantity
+		# 	if flt(item.pol_issued) and flt((item.hsd_rate)):
+		# 		item.hsd_amount = flt(item.pol_issued) * flt(item.hsd_rate)
+
+		if flt(self.hire_charge_amount) and flt((self.operator_salary)) and flt((self.consumption)):
+				self.total_amount = flt(self.hire_charge_amount) + flt(self.operator_salary) + flt((self.consumption))	
+
+		# Auto-calculate hsd_amount as ys_km * distance_km
+		if flt(self.hire_charge_rate) and flt(self.total_work_time):
+			self.hire_charge_amount = flt(self.hire_charge_rate) * flt(self.total_work_time)				
 
 	def update_hire(self):
 		if self.ehf_name:
@@ -471,11 +502,11 @@ def get_equipment_data(equipment_name, all_equipment=0, branch=None):
 			received = issued = 0
 			if all_equipment:
 				if eq.hsd_type == item.item_code:
-					received = get_pol_till("Receive", eq.name, item.item_code)
+					received = get_pol_tills("Receive", eq.name, item.item_code)
 					issued = get_pol_consumed_tills(eq.name,)
 			else:
-				received = get_pol_till("Stock", eq.name, item.item_code)
-				issued = get_pol_till("Issue", eq.name, item.item_code)
+				received = get_pol_tills("Stock", eq.name, item.item_code)
+				issued = get_pol_tills("Issue", eq.name, item.item_code)
 						
 			
 			if received or issued:

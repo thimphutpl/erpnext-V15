@@ -19,6 +19,7 @@
   "posting_date",
   "posting_time",
   "set_posting_time",
+  "bulk_asset_disposal",
   "column_break_14",
   "is_pos",
   "due_date",
@@ -680,7 +681,7 @@
    "print_hide": 1
   },
   {
-   "depends_on": "update_stock",
+   "depends_on": "update stock",
    "fieldname": "set_warehouse",
    "fieldtype": "Link",
    "hide_days": 1,
@@ -703,6 +704,7 @@
    "default": "0",
    "fieldname": "update_stock",
    "fieldtype": "Check",
+   "hidden": 1,
    "hide_days": 1,
    "hide_seconds": 1,
    "label": "Update Stock",
@@ -2193,6 +2195,13 @@
    "label": "Branch",
    "options": "Branch",
    "reqd": 1
+  },
+  {
+   "fieldname": "bulk_asset_disposal",
+   "fieldtype": "Link",
+   "label": "Bulk Asset Disposal",
+   "options": "Bulk Asset Disposal",
+   "read_only": 1
   }
  ],
  "icon": "fa fa-file-text",
@@ -2205,7 +2214,7 @@
    "link_fieldname": "consolidated_invoice"
   }
  ],
- "modified": "2024-12-26 10:47:11.678182",
+ "modified": "2025-01-23 12:39:27.567531",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Sales Invoice",

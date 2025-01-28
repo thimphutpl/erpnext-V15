@@ -12,7 +12,7 @@ from frappe.utils import add_days, cstr, date_diff, flt, get_link_to_form, getda
 from frappe.utils.data import format_date
 from frappe.utils.nestedset import NestedSet
 from frappe.model.naming import make_autoname
-
+from datetime import date
 
 class CircularReferenceError(frappe.ValidationError):
 	pass
@@ -25,7 +25,9 @@ class Task(NestedSet):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
+		from erpnext.projects.doctype.project_expense_item.project_expense_item import ProjectExpenseItem
 		from erpnext.projects.doctype.task_depends_on.task_depends_on import TaskDependsOn
+		from erpnext.projects.doctype.task_material_item.task_material_item import TaskMaterialItem
 		from frappe.types import DF
 
 		act_end_date: DF.Date | None
@@ -57,24 +59,31 @@ class Task(NestedSet):
 		is_template: DF.Check
 		issue: DF.Link | None
 		lft: DF.Int
+		material_cost: DF.Currency
 		old_parent: DF.Data | None
+		other_doc_item: DF.Table[ProjectExpenseItem]
+		other_expenses: DF.Currency
 		parent_task: DF.Link | None
 		priority: DF.Literal["Low", "Medium", "High", "Urgent"]
 		progress: DF.Percent
 		project: DF.Link | None
 		review_date: DF.Date | None
 		rgt: DF.Int
+		services_cost: DF.Currency
 		start: DF.Int
 		status: DF.Literal["Open", "Working", "Pending Review", "Overdue", "Template", "Completed", "Cancelled", "Closed"]
 		subject: DF.Data
 		target_quantity: DF.Float
 		target_quantity_complete: DF.Float
 		target_uom: DF.Link | None
+		task_achievement_percent: DF.Data | None
 		task_idx: DF.Int
+		task_material_item: DF.Table[TaskMaterialItem]
 		task_weight: DF.Float
 		task_weightage: DF.Data | None
 		template_task: DF.Data | None
 		total_billing_amount: DF.Currency
+		total_cost: DF.Currency
 		total_costing_amount: DF.Currency
 		type: DF.Link | None
 		work_quantity: DF.Percent
@@ -127,8 +136,8 @@ class Task(NestedSet):
 		if getdate(self.exp_end_date) > getdate(parent_exp_end_date):
 			frappe.throw(
 				_(
-					"Expected End Date should be less than or equal to parent task's Expected End Date {0}."
-				).format(format_date(parent_exp_end_date)),
+					"Expected End Date should be less than or equal to parent task's({2}: {3}) Expected End Date {0} for Task {1}"
+				).format(format_date(parent_exp_end_date), self.name+": "+self.subject, self.parent_task, frappe.db.get_value("Task", self.parent_task, "subject")),
 				frappe.exceptions.InvalidDates,
 			)
 
@@ -141,7 +150,7 @@ class Task(NestedSet):
 			for fieldname in ("exp_start_date", "exp_end_date", "act_start_date", "act_end_date"):
 				task_date = self.get(fieldname)
 				if task_date and date_diff(project_end_date, getdate(task_date)) < 0:
-					frappe.throw(str(task_date)+" "+str(project_end_date)+" "+str(date_diff(project_end_date, getdate(task_date))))
+					# frappe.throw(str(task_date)+" "+str(project_end_date)+" "+str(date_diff(project_end_date, getdate(task_date))))
 					frappe.throw(
 						_("{0}'s {1} cannot be after {2}'s Expected End Date.").format(
 							frappe.bold(frappe.get_desk_link("Task", self.name)),
@@ -457,6 +466,123 @@ def add_node():
 
 	frappe.get_doc(args).insert()
 
+# ADDED BY Kinley ON 20-01-2025
+@frappe.whitelist()
+def make_purchase_requisition(source_name, target_doc=None):
+	def set_missing_values(source, target):
+		target.material_request_type = "Purchase"
+		target.reference_type = "Task"
+		target.reference_name = source.name
+		target.creation_date = date.today()
+		target.requesting_warehouse = frappe.db.get_single_value("Stock Settings", "default_warehouse")
+		target.branch = frappe.db.get_value("Project", source.project, "branch")
+	doc = get_mapped_doc("Task", source_name,	{
+		"Task": {
+			"doctype": "Material Request",
+			"field_map": {
+				"name" : "task",
+				"project": "reference_name",
+			},
+		},
+	}, target_doc, set_missing_values)
+
+	return doc
+
+# ADDED BY Kinley ON 04-06-2024
+@frappe.whitelist()
+def make_purchase_requisition(source_name, target_doc=None):
+	def set_missing_values(source, target):
+		target.material_request_type = "Purchase"
+		target.reference_type = "Task"
+		target.reference_name = source.name
+		target.creation_date = date.today()
+		target.for_project = 1
+		target.requesting_warehouse = frappe.db.get_single_value("Stock Settings", "default_warehouse")
+		target.branch = frappe.db.get_value("Project", source.project, "branch")
+		# target.site = frappe.db.get_value("Project", source.project, "site")
+
+	doc = get_mapped_doc("Task", source_name,	{
+		"Task": {
+			"doctype": "Material Request",
+			"field_map": {
+				"name" : "reference_name",
+			},
+		},
+	}, target_doc, set_missing_values)
+
+	return doc
+
+@frappe.whitelist()
+def make_material_issue_request(source_name, target_doc=None):
+	def set_missing_values(source, target):
+		target.material_request_type  = "Material Issue"
+		target.reference_type = "Task"
+		target.reference_name = source.name
+		target.creation_date = date.today()
+		target.for_project = 1
+		target.branch = source.branch
+		target.requesting_warehouse = frappe.db.get_single_value("Stock Settings", "default_warehouse")
+		target.branch = frappe.db.get_value("Project", source.project, "branch")
+		# target.site = frappe.db.get_value("Project", source.project, "site")
+
+	doc = get_mapped_doc("Task", source_name,	{
+		"Task": {
+			"doctype": "Material Request",
+			"field_map": {
+				"name" : "reference_name",
+			},
+		},
+	}, target_doc, set_missing_values)
+
+	return doc
+
+@frappe.whitelist()
+def make_stock_issue_entry(source_name, target_doc=None):
+	def set_missing_values(source, target):
+		target.stock_entry_type  = "Material Issue"
+		target.reference_type = "Task"
+		target.reference_name = source.name
+		target.creation_date = date.today()
+		target.for_project = 1
+		target.branch = source.branch
+		target.requesting_warehouse = frappe.db.get_single_value("Stock Settings", "default_warehouse")
+		target.branch = frappe.db.get_value("Project", source.project, "branch")
+		# target.site = frappe.db.get_value("Project", source.project, "site")
+
+	doc = get_mapped_doc("Task", source_name,	{
+		"Task": {
+			"doctype": "Stock Entry",
+			"field_map": {
+				"name" : "reference_name",
+			},
+		},
+	}, target_doc, set_missing_values)
+
+	return doc
+
+@frappe.whitelist()
+def make_stock_return_entry(source_name, target_doc=None):
+	def set_missing_values(source, target):
+		target.stock_entry_type  = "Material Return"
+		target.reference_type = "Task"
+		target.reference_name = source.name
+		target.creation_date = date.today()
+		target.for_project = 1
+		target.branch = source.branch
+		target.requesting_warehouse = frappe.db.get_single_value("Stock Settings", "default_warehouse")
+		target.branch = frappe.db.get_value("Project", source.project, "branch")
+		# target.site = frappe.db.get_value("Project", source.project, "site")
+
+	doc = get_mapped_doc("Task", source_name,	{
+		"Task": {
+			"doctype": "Stock Entry",
+			"field_map": {
+				"name" : "reference_name",
+			},
+		},
+	}, target_doc, set_missing_values)
+
+	return doc
 
 @frappe.whitelist()
 def add_multiple_tasks(data, parent):

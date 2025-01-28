@@ -27,7 +27,7 @@ class CustomWorkflow:
 		self.field_map 		= get_field_map()
 		self.doc_approver	= self.field_map[self.doc.doctype]
 		self.field_list		= ["user_id","employee_name","designation","name"]
-		self.general_manager = frappe.db.get_value("Employee", frappe.db.get_value("Department",str(frappe.db.get_value("Employee",self.doc.employee,"division")),"approver_hod"),self.field_list)
+		# self.general_manager = frappe.db.get_value("Employee", frappe.db.get_value("Department",str(frappe.db.get_value("Employee",self.doc.employee,"division")),"approver_hod"),self.field_list)
 
 		if self.doc.doctype != "Material Request" and self.doc.doctype not in ("Asset Issue Details", "Compile Budget","POL Expense","Vehicle Request", "Repair And Services", "Asset Movement", "Budget Reappropiation", "Employee Advance"):
 			self.employee		= frappe.db.get_value("Employee", self.doc.employee, self.field_list)
@@ -135,15 +135,9 @@ class CustomWorkflow:
 						frappe.throw("Set expense approver for SALES & LOGISTICS DEPARTMENT - SMCL department")
 
 		if self.doc.doctype == "Material Request":
-			self.expense_approver = frappe.db.get_value("Employee", {"user_id":frappe.db.get_value("Employee", {"user_id":self.doc.owner}, "expense_approver")}, self.field_list)
-			self.employee = frappe.db.get_value("Employee", {"user_id":self.doc.owner}, self.field_list)
-			if self.doc.material_request_type == "Material Issue":
-				self.warehouse_manager = frappe.db.get_value("Employee",{'user_id':frappe.db.get_value("Warehouse",self.doc.set_warehouse,"email_id")},self.field_list)
-			elif self.doc.material_request_type == "Material Transfer":
-				self.warehouse_manager = frappe.db.get_value("Employee",{'user_id':frappe.db.get_value("Warehouse",self.doc.set_from_warehouse,"email_id")},self.field_list)
+			self.user_supervisor = frappe.db.get_value("Employee", frappe.db.get_value("Employee", {'user_id':self.doc.owner}, "reports_to"), self.field_list)
+			self.user_approver = frappe.db.get_value("Employee", frappe.db.get_value("Employee", {'user_id':self.doc.owner}, "second_approver"), self.field_list)
 			
-			self.reports_to	= frappe.db.get_value("Employee", frappe.db.get_value("Employee", {'user_id':self.doc.owner}, "reports_to"), self.field_list)
-			self.general_manager = frappe.db.get_value("Employee", frappe.db.get_value("Department",{"department_name":str(frappe.db.get_value("Employee",{"user_id":self.doc.owner},"division")).split(" - ")[0]},"approver"),self.field_list)
 		
 		if self.doc.doctype == "Employee Benefits":
 			self.hrgm = frappe.db.get_value("Employee",frappe.db.get_single_value("HR Settings","hrgm"), self.field_list)	
@@ -164,7 +158,7 @@ class CustomWorkflow:
 
 		self.login_user		= frappe.db.get_value("Employee", {"user_id": frappe.session.user}, self.field_list)
 
-		if not self.login_user and frappe.session.user != "Administrator":
+		if not self.login_user and frappe.session.user not in ("Administrator", "sonam.zangmo@thimphutechpark.bt"):
 			if "PERC Member" in frappe.get_roles(frappe.session.user):
 				return
 			frappe.throw("{0} is not added as the employee".format(frappe.session.user))
@@ -176,17 +170,14 @@ class CustomWorkflow:
 
 		if self.doc.doctype == "Leave Application":
 			self.leave_application()	
-		elif self.doc.doctype == "Leave Encashment":
+		elif self.doc.doctype == "Leave Encashment":			
 			self.leave_encashment()
 		elif self.doc.doctype == "Salary Advance":
 			self.salary_advance()
 		elif self.doc.doctype == "Travel Request":
 			self.travel_request()
-		elif self.doc.doctype == "Travel Authorization":
-			
-			self.travel_authorization()
-		elif self.doc.doctype == "Travel Claim":
-			self.travel_claim()		
+		elif self.doc.doctype == "Travel Authorization":					
+			self.travel_authorization()			
 		elif self.doc.doctype == "Vehicle Request":
 			self.vehicle_request()
 		elif self.doc.doctype == "Repair And Services":
@@ -240,17 +231,8 @@ class CustomWorkflow:
 
 	def set_approver(self, approver_type):
 		if approver_type == "Supervisor":
-			# if self.doc.doctype in ("Travel Request","Employee Separation","Vehicle Request", "Material Request", "Repair And Services","Overtime Application"):
-			# 	officiating = get_officiating_employee(self.expense_approver[3])
-			# 	if officiating:
-			# 		officiating = frappe.db.get_value("Employee", officiating[0].officiate, self.field_list)
-			# 	vars(self.doc)[self.doc_approver[0]] = officiating[0] if officiating else self.expense_approver[0]
-			# 	vars(self.doc)[self.doc_approver[1]] = officiating[1] if officiating else self.expense_approver[1]
-			# 	if self.doc.doctype != "Vehicle Request":
-			# 		vars(self.doc)[self.doc_approver[2]] = officiating[2] if officiating else self.expense_approver[2]
-			# else:
-			if not self.reports_to:
-				frappe.throw("Reports To not set for Employee {}".format(self.doc.employee if self.doc.employee else frappe.db.get_value("Employee",{"user_id",self.doc.owner},"name")))
+			# if not self.reports_to:
+			# 	frappe.throw("Reports To not set for Employee {}".format(self.doc.employee if self.doc.employee else frappe.db.get_value("Employee",{"user_id",self.doc.owner},"name")))
 			officiating = get_officiating_employee(self.reports_to[3])
 			if officiating:
 				officiating = frappe.db.get_value("Employee", officiating[0].officiate, self.field_list)
@@ -264,7 +246,23 @@ class CustomWorkflow:
 			vars(self.doc)[self.doc_approver[0]] = officiating[0] if officiating else self.approver_approver[0]
 			vars(self.doc)[self.doc_approver[1]] = officiating[1] if officiating else self.approver_approver[1]
 			vars(self.doc)[self.doc_approver[2]] = officiating[2] if officiating else self.approver_approver[2]
+		
+		elif approver_type =="User Supervisor":
+			officiating = get_officiating_employee(self.user_supervisor[3])
+			if officiating:
+				officiating = frappe.db.get_value("Employee", officiating[0].officiate, self.field_list)
+			vars(self.doc)[self.doc_approver[0]] = officiating[0] if officiating else self.user_supervisor[0]
+			vars(self.doc)[self.doc_approver[1]] = officiating[1] if officiating else self.user_supervisor[1]
+			vars(self.doc)[self.doc_approver[2]] = officiating[2] if officiating else self.user_supervisor[2]
 
+		elif approver_type =="User Approver":
+			officiating = get_officiating_employee(self.user_approver[3])
+			if officiating:
+				officiating = frappe.db.get_value("Employee", officiating[0].officiate, self.field_list)
+			vars(self.doc)[self.doc_approver[0]] = officiating[0] if officiating else self.user_approver[0]
+			vars(self.doc)[self.doc_approver[1]] = officiating[1] if officiating else self.user_approver[1]
+			vars(self.doc)[self.doc_approver[2]] = officiating[2] if officiating else self.user_approver[2]
+		
 		elif approver_type =="POL Approver":
 			officiating = get_officiating_employee(self.pol_approver[3])
 			if officiating:
@@ -371,14 +369,14 @@ class CustomWorkflow:
 			vars(self.doc)[self.doc_approver[1]] = officiating[1] if officiating else self.adm_section_manager[1]
 			vars(self.doc)[self.doc_approver[2]] = officiating[2] if officiating else self.adm_section_manager[2]
 		
-		elif approver_type == "General Manager":
+		# elif approver_type == "General Manager":
 			# frappe.throw(str(self.general_manager))
-			officiating = get_officiating_employee(self.general_manager[3])
-			if officiating:
-				officiating = frappe.db.get_value("Employee", officiating[0].officiate, self.field_list)
-			vars(self.doc)[self.doc_approver[0]] = officiating[0] if officiating else self.general_manager[0]
-			vars(self.doc)[self.doc_approver[1]] = officiating[1] if officiating else self.general_manager[1]
-			vars(self.doc)[self.doc_approver[2]] = officiating[2] if officiating else self.general_manager[2]
+			# officiating = get_officiating_employee(self.general_manager[3])
+			# if officiating:
+			# 	officiating = frappe.db.get_value("Employee", officiating[0].officiate, self.field_list)
+			# vars(self.doc)[self.doc_approver[0]] = officiating[0] if officiating else self.general_manager[0]
+			# vars(self.doc)[self.doc_approver[1]] = officiating[1] if officiating else self.general_manager[1]
+			# vars(self.doc)[self.doc_approver[2]] = officiating[2] if officiating else self.general_manager[2]
 		
 		elif approver_type == "GMM":
 			officiating = get_officiating_employee(self.gm_marketing[3])
@@ -455,7 +453,6 @@ class CustomWorkflow:
 		else:
 			frappe.throw(_("Invalid approver type for Workflow"))
 
-
 	def leave_application(self):
 		
 		''' Leave Application Workflow
@@ -494,13 +491,42 @@ class CustomWorkflow:
 				frappe.throw(f"Only {self.doc.leave_approver} can Reject this Leave Application.")
 		else:
 			frappe.throw(_("Invalid Workflow State {}").format(self.doc.workflow_state))
+	
+	def leave_encashment(self):
+		''' Leave Encashment Workflow
+			1. Employee -> HR
+		'''
+		if self.new_state.lower() in ("Draft".lower()):
+			if frappe.session.user != self.doc.owner:
+				frappe.throw("Only {} can apply this leave Encashemnt".format(self.doc.owner))
+
+		elif self.new_state.lower() == ("Waiting For Verification".lower()):
+			self.set_approver("Supervisor")
+
+		elif self.new_state.lower() == ("Waiting Approval".lower()):
+			if frappe.session.user != self.doc.approver:
+				frappe.throw(f"Only '{self.doc.approver}' can Verify this Leave Encashment.")
+			approver_approver = frappe.db.get_value("Employee",self.doc.employee,"second_approver")
+			if not approver_approver:
+				frappe.throw("Please Set Approver for employee " +self.doc.employee)
+			self.set_approver("Approver Approver")
+
+		elif self.new_state.lower() == ("Approved".lower()):
+			if frappe.session.user != self.doc.approver:
+				frappe.throw(f"Only {self.doc.approver} can Approved this Leave Encashment.")
+	
+		elif self.new_state.lower() == ("Rejected".lower()):
+			if frappe.session.user != self.doc.approver:
+				frappe.throw(f"Only {self.doc.approver} can Reject this Leave Encashment.")
+		else:
+			frappe.throw(_("Invalid Workflow State {}").format(self.doc.workflow_state))
 
 	def travel_authorization(self):
-		# frappe.throw("hi111")
 		''' Travel Authorization Workflow
 				1. Employee -> Supervisor -> Approved
 		'''
 		if self.new_state.lower() in ("Draft".lower()):
+			# frappe.throw('hi')
 			if frappe.session.user != self.doc.owner:
 				frappe.throw("Only {} can apply this Request".format(self.doc.owner))
 
@@ -508,77 +534,113 @@ class CustomWorkflow:
 			self.set_approver("Supervisor")
 
 		elif self.new_state.lower() == ("Verified".lower()):
-			if frappe.session.user != self.doc.supervisor:
-				frappe.throw(f"Only {self.doc.supervisor} can Verify this Request.")
+			if frappe.session.user != self.doc.approver:
+				frappe.throw(f"Only {self.doc.approver} can Verify this Request.")
 			approver_approver = frappe.db.get_value("Employee",self.doc.employee,"second_approver")
 			if not approver_approver:
 				frappe.throw("Please Set Approver for employee " +self.doc.employee)
 			self.set_approver("Approver Approver")
 
 		elif self.new_state.lower() == ("Approved".lower()):
-			if frappe.session.user != self.doc.supervisor:
-				frappe.throw(f"Only {self.doc.supervisor} can Approved this Request.")
-			
+			if frappe.session.user != self.doc.approver:
+				frappe.throw(f"Only {self.doc.approver} can Approved this Request.")			
 
 		elif self.new_state.lower() == ("Rejected".lower()):
-			if frappe.session.user != self.doc.supervisor:
-				frappe.throw(f"Only {self.doc.supervisor} can Reject this Request.")
+			if frappe.session.user != self.doc.approver:
+				frappe.throw(f"Only {self.doc.approver} can Reject this Request.")
 		else:
-			frappe.throw(_("Invalid Workflow State {}").format(self.doc.workflow_state))
+			frappe.throw(_("Invalid Workflow State {}").format(self.doc.workflow_state))			
 	
 	def employee_transfer(self):
-		frappe.throw('hi')
-		workflow_state    = self.doc.get("workflow_state").lower()
-		if workflow_state == "Draft".lower():
-			# if doc.purpose == "Separation":
+		if self.new_state.lower() in ("Draft".lower()):
 			if not "HR User" in frappe.get_roles(frappe.session.user):
-				frappe.throw("Only role with HR user can create this Employee Transfer")		
+				frappe.throw("Only role with HR user can create this Employee Transfer")					 
 
-		elif self.new_state.lower() == "Waiting Hr Approval".lower():
-			# frappe.throw(str(self.hrgm))
-			if self.general_manager[0] != frappe.session.user:
-				frappe.throw("Only {} can Approve this document.".format(self.general_manager[0]))
-			self.set_approver("HR Manager")
+		elif self.new_state.lower() == ("Waiting HR Approval".lower()):
+			self.set_approver("Supervisor")
    
 		elif self.new_state.lower() =="Rejected".lower():
-			if (self.hr_approver[0] != frappe.session.user):
-				frappe.throw("Only {} or {} can reject this document.".format(self.hr_approver[0]))
+			if self.hr_approver[0] != frappe.session.user:
+				frappe.throw("Only {} can Reject this document.".format(self.hr_approver[0]))
    
 		elif self.new_state.lower() =="Approved".lower():
 			if self.hr_approver[0] != frappe.session.user:
 				frappe.throw("Only {} can approve or edit this document.".format(self.hr_approver[0]))
-
-	def travel_claim(self):
-		''' Travel Claim Workflow
-			1. Employee -> Supervisor -> Approved
-		'''
-		if self.new_state.lower() in ("Waiting Supervisor Approval".lower()):
-			# self.doc.check_advance_and_report()
-			self.set_approver("Supervisor")
-			self.doc.document_status = "Draft"
-		
-		elif self.new_state == "Waiting Hr Approval":
-			if self.doc.supervisor != frappe.session.user:
-				frappe.throw("Only {} can Forward this request".format(self.doc.supervisor))
-			# self.set_approver("HR")
-			
-		elif self.new_state.lower() == "Approved".lower():
-			# self.doc.check_date()
-
-			if "HR User" not in frappe.get_roles():
-				frappe.throw("Only HR User can Approve this request")
-			self.doc.document_status = "Approved"
-			
-		elif self.new_state.lower() == 'Rejected'.lower():
-			if self.doc.supervisor != frappe.session.user and self.new_state.lower() != self.old_state.lower():
-				frappe.throw("Only {} can Reject this request".format(self.doc.supervisor_name))
-			self.doc.document_status = "Rejected"
 		elif self.new_state.lower() == "Cancelled".lower():
-			if "HR User" not in frappe.get_roles(frappe.session.user):
-				frappe.throw(_("Only {} can Cancel this Travel Claim").format(self.doc.supervisor_name))
+			if "HR Manager" not in frappe.get_roles(frappe.session.user):
+				frappe.throw(_("Only {} can Cancel this Employee Transfer").format(self.doc.supervisor_name))
 			self.doc.document_status = "Cancelled"
+
+	
+	def overtime_application(self):
+		
+		''' Leave Application Workflow
+			1. Casual Leave, Earned Leave & Paternity Leave: 
+				* Employee -> Supervisor
+			2. Medical Leave:
+				* Employee -> Department Head (if the leave is within 5 days)
+				* Employee -> CEO (more than 5 days)
+			3. Bereavement & Maternity:
+				* Employee -> Department Head
+			4. Extraordinary Leave:
+				* Employee -> CEO 
+		'''
+		if self.new_state.lower() in ("Draft".lower()):
+			if frappe.session.user != self.doc.owner:
+				frappe.throw("Only {} can apply this leave".format(self.doc.owner))
+
+		elif self.new_state.lower() == ("Waiting Approval".lower()):
+			self.set_approver("Supervisor")
+
+		elif self.new_state.lower() == ("Verified".lower()):
+			if frappe.session.user != self.doc.ot_approver:
+				frappe.throw(f"Only {self.doc.ot_approver} can Verify this Overtime Application.")
+			approver_approver = frappe.db.get_value("Employee",self.doc.employee,"second_approver")
+			if not approver_approver:
+				frappe.throw("Please Set Approver for employee " +self.doc.employee)
+			self.set_approver("Approver Approver")
+
+		elif self.new_state.lower() == ("Approved".lower()):
+			if frappe.session.user != self.doc.ot_approver:
+				frappe.throw(f"Only {self.doc.ot_approver} can Approve this Overtime Application.")			
+
+		elif self.new_state.lower() == ("Rejected".lower()):
+			if frappe.session.user != self.doc.ot_approver:
+				frappe.throw(f"Only {self.doc.ot_approver} can Reject this Overtime Application.")
+		else:
+			frappe.throw(_("Invalid Workflow State {}").format(self.doc.workflow_state))
+
+	def material_request(self):
+		if self.new_state.lower() in ("Draft".lower()):
+			if frappe.session.user != self.doc.owner:
+				frappe.throw("Only {} can apply this Material Request".format(self.doc.owner))
+
+		elif self.new_state.lower() == ("Waiting For Verification".lower()):
+			self.set_approver("User Supervisor")
+		elif self.new_state.lower() == ("Waiting Approval".lower()):
+			if self.doc.material_request_type =="Purchase":
+				frappe.throw("Contact Admin with this regards")
+		elif self.new_state.lower() == ("Verified".lower()):
+			if self.doc.material_request_type =="Purchase":
+				frappe.throw("Contact Admin with this regards")
+		elif self.new_state.lower() == ("Verified By Supervisor".lower()):
+			# if frappe.session.user != self.doc.approver:
+			# 	frappe.throw(f"Only '{self.doc.approver}' can Verify this Material Request")
+			self.set_approver("User Approver")
+
+		elif self.new_state.lower() == ("Approved".lower()):
+			# if self.doc.material_request_type =="Purchase" and frappe.session.user != self.doc.approver:
+			# 	frappe.throw(f"Only {self.doc.approver} can Approved this Material Request")
+			pass
+		elif self.new_state.lower() == ("Rejected".lower()):
+			# if self.doc.material_request_type =="Purchase" and frappe.session.user != self.doc.approver:
+			# 	frappe.throw(f"Only {self.doc.approver} can reject this Material Request")
+			pass
+		else:
+			frappe.throw(_("Invalid Workflow State {}").format(self.doc.workflow_state))
 		
 #LA, TA, OT 
+# commented by rinzin to remove it if not required 
 def verify_workflow(doc):
 	reports_to  = frappe.db.get_value("Employee", frappe.db.get_value("Employee", doc.employee, "reports_to"), ["user_id","employee_name","designation","name"])
 	if not reports_to:
@@ -598,7 +660,7 @@ def verify_workflow(doc):
 	
 	hr_approver = frappe.db.get_value("Employee", frappe.db.get_single_value("HR Settings", "hr_approver"), "user_id")
 	if not hr_approver:
-			frappe.throw(_("Missing HR Approver user set from HR Setting."))
+		frappe.throw(_("Missing HR Approver user set from HR Setting."))
 	
 	if doc.workflow_state == "Waiting Approval":
 			if frappe.session.user not in (doc.owner, hr_approver, "Administrator"):
@@ -638,7 +700,71 @@ def verify_workflow(doc):
 					if frappe.session.user not in (approver, hr_approver, "Administrator"):
 							doc.workflow_state = doc.get_db_value("workflow_state")
 							frappe.throw("Only Mr/Mrs. <b> {0} </b> can reject/cancel this Document".format(frappe.get_doc("User", approver).full_name))
-			doc.rejector = frappe.session.user			
+			doc.rejector = frappe.session.user	
+
+# Travel Claim workflow
+def verify_workflow_tc(doc):
+        reports_to  = frappe.db.get_value("Employee", frappe.db.get_value("Employee", doc.employee, "reports_to"), ["user_id","employee_name","designation","name"])
+        if not reports_to:
+                frappe.throw("Set Up Reports to in Employee Master")
+
+        final_approver  = frappe.db.get_value("Employee", frappe.db.get_value("Employee", doc.employee, "second_approver"), ["user_id","employee_name","designation","name"])
+        if not final_approver:
+                frappe.throw("Set Up Reports to in Employee Master")
+
+        hr_user = frappe.db.get_single_value("HR Settings", "hr_approver")
+        if not hr_user:
+                frappe.throw("Set Up HR Approver in HR Settings")
+        hr_approver = frappe.db.get_value("Employee", hr_user, ["user_id","employee_name","designation","name"])
+
+        verifier_officiating = get_officiating_employee(reports_to[3])
+        approver_officiating = get_officiating_employee(final_approver[3])
+        hr_officiating = get_officiating_employee(hr_approver[3])
+
+        verifier = frappe.get_doc("Employee", verifier_officiating[0].officiate).user_id if verifier_officiating else reports_to[0]
+        approver = frappe.get_doc("Employee", approver_officiating[0].officiate).user_id if approver_officiating else final_approver[0]    
+        approver_hr = frappe.get_doc("Employee", hr_officiating[0].officiate).user_id if hr_officiating else  hr_approver[0]
+
+        if doc.workflow_state == "Waiting Approval":
+                if doc.owner != frappe.session.user:
+                        doc.workflow_state = "Draft"
+                        frappe.throw("Only Mr/Mrs. <b> {0} </b>  can Apply/Reapply this Document".format(frappe.get_doc("User", doc.owner).full_name))
+                doc.workflow_state = "Waiting Approval"
+                doc.docstatus = 0
+
+        if doc.workflow_state == "Verified By Supervisor":
+                if frappe.session.user not in (verifier, hr_approver[3]):
+                        doc.workflow_state = "Waiting Approval"
+                        frappe.throw("Only Mr/Mrs. <b> {0} </b> can verify this Document".format(frappe.get_doc("User", verifier).full_name))
+                doc.workflow_state = "Verified By Supervisor"
+                doc.docstatus = 0
+                doc.verifier = verifier
+
+        if doc.workflow_state == "Waiting HR Verification":
+                doc.workflow_state = "Waiting HR Verification"
+                doc.docstatus = 0
+                doc.approver = approver
+
+        if doc.workflow_state == "Approved":
+                if frappe.session.user not in ('phuntsho@gyalsunginfra.bt'):
+                        doc.workflow_state = "Waiting HR Verification"
+                        frappe.throw("Only Mr. <b> Phuntsho  </b> can approve this Document")
+                doc.workflow_state = "Approved"
+                doc.docstatus = 1
+                doc.hr_approver = approver_hr
+
+        if doc.workflow_state in ("Rejected", "Cancelled"):
+                if doc.get_db_value("workflow_state") == 'Waiting Approval':
+                        if frappe.session.user not in (verifier, hr_approver[3]):
+                                doc.workflow_state = 'Waiting Approval'
+                                frappe.throw("Only Mr/Mrs. <b> {0} </b> can Reject this Document".format(frappe.get_doc("User", verifier).full_name))
+
+                elif doc.get_db_value("workflow_state") in ('Verified', 'Approved'):
+                        if frappe.session.user not in (approver, hr_approver[3]):
+                                doc.workflow_state = doc.get_db_value("workflow_state")
+                        frappe.throw("Only <b> Mr/Mrs. {0} </b> can reject/cancel this Document".format(frappe.get_doc("User", approver).full_name))
+                doc.rejector = frappe.session.user
+
 
 @frappe.whitelist()
 #def approver_list(doctype, txt, searchfield, start, page_len, filters):	
@@ -706,815 +832,115 @@ def approver_list(doc, employee, action):
 
 @frappe.whitelist()
 def validate_separation_workflow(doc):
-    user = frappe.session.user
-    user_roles = frappe.get_roles(user)
-    reports_to = frappe.db.get_value(
-        "Employee",
-        frappe.db.get_value("Employee", doc.employee, "reports_to"),
-        ["user_id", "employee_name", "designation", "name"]
-    )
-    if not reports_to:
-        frappe.throw("Set Up Reports to in Employee Master")
+	user = frappe.session.user
+	user_roles = frappe.get_roles(user)
+	reports_to = frappe.db.get_value(
+		"Employee",
+		frappe.db.get_value("Employee", doc.employee, "reports_to"),
+		["user_id", "employee_name", "designation", "name"]
+	)
+	if not reports_to:
+		frappe.throw("Set Up Reports to in Employee Master")
 
-    verifier_officiating = get_officiating_employee(reports_to[3])
-    verifier = frappe.get_doc("Employee", verifier_officiating[0].officiate).user_id if verifier_officiating else reports_to[0]
-    
-    subject = "Employee Separation(ERP)"
-
-    if doc.workflow_state == "Draft":
-        if doc.owner != frappe.session.user:
-            frappe.throw(
-                "Only Mr/Mrs. <b> '{0}' </b> can Save this Document".format(
-                    frappe.get_doc("User", doc.owner).full_name
-                )
-            )
-
-    if doc.workflow_state == "Waiting Approval":
-        doc.workflow_state = "Waiting Approval"
-        doc.docstatus = 0
-        doc.approver = reports_to[0]
-        doc.approver_name = reports_to[1]
-        message = """Dear Sir/Madam, <br>  {0} has requested you to Approve the Employee Separation <b> {1}. Check ERP System for More Info. </b> <br> Thank You""".format(
-            frappe.get_doc("User", doc.owner).full_name, 
-            str(get_link_to_form("Employee Separation", doc.name))
-        )
-        try:
-            frappe.sendmail(recipients=verifier, sender=None, subject=subject, message=message)
-            frappe.sendmail(
-                recipients=doc.owner, 
-                sender=None, 
-                subject=subject, 
-                message="Employee Separation {0} verified".format(
-                    str(get_link_to_form("Employee Separation", doc.name))
-                )
-            )
-        except:
-            pass
-
-    if doc.workflow_state == "Approved":
-        if verifier != frappe.session.user:
-            doc.workflow_state = "Waiting Approval"
-            doc.docstatus = 0
-            frappe.throw(
-                "Only Mr/Mrs. <b> {0} </b> can approve this Document".format(
-                    frappe.get_doc("User", verifier).full_name
-                )
-            )
-        doc.workflow_state = "Approved"
-        doc.docstatus = 1
-        doc.approver = frappe.session.user
-        message = """Dear Sir/Madam, <br>  {0} has requested you to Approve the Employee Separation <b> {1}. Check ERP System for More Info. </b> <br> Thank You""".format(
-            frappe.get_doc("User", doc.owner).full_name, 
-            str(get_link_to_form("Employee Separation", doc.name))
-        )
-        try:
-            frappe.sendmail(
-                recipients=doc.owner, 
-                sender=None, 
-                subject=subject, 
-                message="Employee Separation {0} verified".format(
-                    str(get_link_to_form("Employee Separation", doc.name))
-                )
-            )
-        except:
-            pass
-
-    if doc.workflow_state == "Rejected":
-        message = """Dear Sir/Madam, <br> {0} has rejected the Employee Separation <b> {1}. Check ERP System for More Info. </b> <br> Thank You""".format(
-            frappe.get_doc("User", doc.owner).full_name, 
-            str(get_link_to_form("Employee Separation", doc.name))
-        )
-        if verifier != frappe.session.user:
-            doc.workflow_state = "Waiting Approval"
-            doc.docstatus = 0
-            frappe.throw(
-                "Only Mr/Mrs. <b> {0} </b> can reject this Document".format(
-                    frappe.get_doc("User", verifier).full_name
-                )
-            )
-        try:
-            frappe.sendmail(recipients=doc.owner, sender=None, subject=subject, message=message)
-        except:
-            pass
-
-    if doc.workflow_state == "Cancelled":
-        message = """Dear Sir/Madam, <br> {0} has Cancelled the Employee Separation <b> {1}. Check ERP System for More Info. </b> <br> Thank You""".format(
-            frappe.get_doc("User", doc.owner).full_name, 
-            str(get_link_to_form("Employee Separation", doc.name))
-        )
-        if "HR Manager" not in user_roles:
-            doc.workflow_state = 'Waiting Approval'
-            frappe.throw("Only HR Manager role can reject this document")
-
-        try:
-            frappe.sendmail(recipients=doc.owner, sender=None, subject=subject, message=message)
-        except:
-            pass
-
-
-
-# @frappe.whitelist()
-# def validate_separation_workflow(doc):
-# 	user = frappe.session.user
-# 	user_roles = frappe.get_roles(user)
-# 	reports_to  = frappe.db.get_value("Employee", frappe.db.get_value("Employee", doc.employee, "reports_to"), ["user_id","employee_name","designation","name"])
-# 	if not reports_to:
-# 		frappe.throw("Set Up Reports to in Employee Master")
-
-
-# 		verifier_officiating = get_officiating_employee(reports_to[3])
-# 		verifier = frappe.get_doc("Employee", verifier_officiating[0].officiate).user_id if verifier_officiating else reports_to[0]
-		
-# 		subject = "Employee Separation(ERP)"
-# 	if doc.workflow_state == "Draft":
-# 				if doc.owner != frappe.session.user:
-# 						frappe.throw("Only Mr/Mrs. <b> '{0}' </b>  can Save this Document".format(frappe.get_doc("User", doc.owner).full_name))
+	verifier_officiating = get_officiating_employee(reports_to[3])
+	verifier = frappe.get_doc("Employee", verifier_officiating[0].officiate).user_id if verifier_officiating else reports_to[0]
 	
-# 	if doc.workflow_state == "Waiting Approval":
-# 		# if doc.owner != frappe.session.user:
-# 		#         doc.workflow_state = "Draft"
-# 		#         frappe.throw("Only Mr/Mrs. <b> '{0}' </b>  can Apply/Reapply this Document".format(frappe.get_doc("User", doc.owner).full_name))
-# 		doc.workflow_state = "Waiting Approval"
-# 		doc.docstatus = 0
-# 		doc.approver = reports_to[0]
-# 		doc.approver_name = reports_to[1]
-# 		message = """Dear Sir/Madam, <br>  {0} has requested you to Approve the Employee Separation <b> {1}. Check ERP System for More Info. </b> <br> Thank You""".format(frappe.get_doc("User", doc.owner).full_name, str(get_link_to_form("Employee Separation", doc.name)))
-# 		try:
-# 			frappe.sendmail(recipients=verifier, sender=None, subject=subject, message=message)
-# 			frappe.sendmail(recipients= doc.owner, sender = None, subject = subject, message = "Employee Separation {0} verified".format(str(get_link_to_form("Employee Separation", doc.name))))
-# 		except:
-# 			pass
+	subject = "Employee Separation(ERP)"
 
-# 	if doc.workflow_state == "Approved":					
-# 		if verifier != frappe.session.user:
-# 			doc.workflow_state = "Waiting Approval"
-# 			doc.docstatus = 0
-# 			frappe.throw("Only Mr/Mrs. <b> {0} </b> can approve this Documentmt".format(frappe.get_doc("User", verifier).full_name))
-# 			doc.workflow_state == "Approved"
-# 			doc.docstatus = 1
-# 			doc.approver = frappe.session.user
-# 			message = """Dear Sir/Madam, <br>  {0} has requested you to Approve the Employee Separation <b> {1}. Check ERP System for More Info. </b> <br> Thank You""".format(frappe.get_doc("User", doc.owner).full_name, str(get_link_to_form("Employee Separation", doc.name)))
-# 			try:
-# 				frappe.sendmail(recipients= doc.owner, sender = None, subject = subject, message = "Employee Separation {0} verified".format(str(get_link_to_form("Employee Separation", doc.name))))
-# 			except:
-# 				pass
-# 	if doc.workflow_state == "Rejected":
-# 			message = """Dear Sir/Madam, <br> {0} has rejected the Employee Separation <b> {1}. Check ERP System for More Info. </b> <br> Thank You""".format(frappe.get_doc("User", doc.owner).full_name, str(get_link_to_form("Employee Separation", doc.name)))
-# 			if verifier != frappe.session.user:
-# 					doc.workflow_state = "Waiting Approval"
-# 					doc.docstatus = 0
-# 					frappe.throw("Only Mr/Mrs. <b> {0} </b> can reject this Documentmt".format(frappe.get_doc("User", verifier).full_name))
-# 			try:
-# 					frappe.sendmail(recipients=doc.owner, sender=None, subject=subject, message=message)
-# 			except:
-# 					pass
-# 	if doc.workflow_state == "Cancelled":
-# 			message = """Dear Sir/Madam, <br> {0} has Cancelled the Employee Separation <b> {1}. Check ERP System for More Info. </b> <br> Thank You""".format(frappe.get_doc("User", doc.owner).full_name, str(get_link_to_form("Employee Separation", doc.name)))
-# 			if "HR Manager" not in user_roles:
-# 					doc.workflow_state = 'Waiting Approval'
-# 					frappe.throw("Only HR Manager role can reject this document")
+	if doc.workflow_state == "Draft":
+		if doc.owner != frappe.session.user:
+			frappe.throw(
+				"Only Mr/Mrs. <b> '{0}' </b> can Save this Document".format(
+					frappe.get_doc("User", doc.owner).full_name
+				)
+			)
 
-# 			try:
-# 					frappe.sendmail(recipients=doc.owner, sender=None, subject=subject, message=message)
-# 			except:
-# 					pass	
+	if doc.workflow_state == "Waiting Approval":
+		doc.workflow_state = "Waiting Approval"
+		doc.docstatus = 0
+		doc.approver = reports_to[0]
+		doc.approver_name = reports_to[1]
+		message = """Dear Sir/Madam, <br>  {0} has requested you to Approve the Employee Separation <b> {1}. Check ERP System for More Info. </b> <br> Thank You""".format(
+			frappe.get_doc("User", doc.owner).full_name, 
+			str(get_link_to_form("Employee Separation", doc.name))
+		)
+		try:
+			frappe.sendmail(recipients=verifier, sender=None, subject=subject, message=message)
+			frappe.sendmail(
+				recipients=doc.owner, 
+				sender=None, 
+				subject=subject, 
+				message="Employee Separation {0} verified".format(
+					str(get_link_to_form("Employee Separation", doc.name))
+				)
+			)
+		except:
+			pass
+
+	if doc.workflow_state == "Approved":
+		if verifier != frappe.session.user:
+			doc.workflow_state = "Waiting Approval"
+			doc.docstatus = 0
+			frappe.throw(
+				"Only Mr/Mrs. <b> {0} </b> can approve this Document".format(
+					frappe.get_doc("User", verifier).full_name
+				)
+			)
+		doc.workflow_state = "Approved"
+		doc.docstatus = 1
+		doc.approver = frappe.session.user
+		message = """Dear Sir/Madam, <br>  {0} has requested you to Approve the Employee Separation <b> {1}. Check ERP System for More Info. </b> <br> Thank You""".format(
+			frappe.get_doc("User", doc.owner).full_name, 
+			str(get_link_to_form("Employee Separation", doc.name))
+		)
+		try:
+			frappe.sendmail(
+				recipients=doc.owner, 
+				sender=None, 
+				subject=subject, 
+				message="Employee Separation {0} verified".format(
+					str(get_link_to_form("Employee Separation", doc.name))
+				)
+			)
+		except:
+			pass
+
+	if doc.workflow_state == "Rejected":
+		message = """Dear Sir/Madam, <br> {0} has rejected the Employee Separation <b> {1}. Check ERP System for More Info. </b> <br> Thank You""".format(
+			frappe.get_doc("User", doc.owner).full_name, 
+			str(get_link_to_form("Employee Separation", doc.name))
+		)
+		if verifier != frappe.session.user:
+			doc.workflow_state = "Waiting Approval"
+			doc.docstatus = 0
+			frappe.throw(
+				"Only Mr/Mrs. <b> {0} </b> can reject this Document".format(
+					frappe.get_doc("User", verifier).full_name
+				)
+			)
+		try:
+			frappe.sendmail(recipients=doc.owner, sender=None, subject=subject, message=message)
+		except:
+			pass
+
+	if doc.workflow_state == "Cancelled":
+		message = """Dear Sir/Madam, <br> {0} has Cancelled the Employee Separation <b> {1}. Check ERP System for More Info. </b> <br> Thank You""".format(
+			frappe.get_doc("User", doc.owner).full_name, 
+			str(get_link_to_form("Employee Separation", doc.name))
+		)
+		if "HR Manager" not in user_roles:
+			doc.workflow_state = 'Waiting Approval'
+			frappe.throw("Only HR Manager role can reject this document")
+
+		try:
+			frappe.sendmail(recipients=doc.owner, sender=None, subject=subject, message=message)
+		except:
+			pass
 
 @frappe.whitelist()
 def verify_mr_workflow(doc):
 	user = frappe.session.user
 	user_roles = frappe.get_roles(user)
-
-	employee = frappe.db.get_value("Employee", {'user_id': doc.owner}, 'name')
-	reports_to  = frappe.db.get_value("Employee", frappe.db.get_value("Employee", employee, "reports_to"), ["user_id","employee_name","designation","name"])
-	if not reports_to:
-			frappe.throw("Set Up Reports to in Employee Master")
-
-	final_approver  = frappe.db.get_value("Employee", frappe.db.get_value("Employee", employee, "second_approver"), ["user_id","employee_name","designation","name"])
-	if not final_approver:
-			frappe.throw("Set Up Reports to in Employee Master")
-
-
-	verifier_officiating = get_officiating_employee(reports_to[3])
-	approver_officiating = get_officiating_employee(final_approver[3])
-
-	verifier = frappe.get_doc("Employee", verifier_officiating[0].officiate).user_id if verifier_officiating else reports_to[0]
-	approver = frappe.get_doc("Employee", approver_officiating[0].officiate).user_id if approver_officiating else final_approver[0]
-	
-	#Email
-	subject = "Material Request(ERP)"
-	if doc.workflow_state == "Draft":
-                if doc.owner != frappe.session.user:
-                        frappe.throw("Only Mr/Mrs. <b> '{0}' </b>  can Save this Document".format(frappe.get_doc("User", doc.owner).full_name))
-	
-	if doc.workflow_state == "Waiting Approval":
-		# if doc.owner != frappe.session.user:
-		#         doc.workflow_state = "Draft"
-		#         frappe.throw("Only Mr/Mrs. <b> '{0}' </b>  can Apply/Reapply this Document".format(frappe.get_doc("User", doc.owner).full_name))
-		if doc.title1 =="Material Request":
-			doc.workflow_state = "Waiting Approval"
-		else:
-			doc.workflow_state = "Waiting For Verification"
-			doc.docstatus = 0
-		
-			if doc.workflow_state =="Verified":
-				if verifier != frappe.session.user:
-					doc.workflow_state = "Verified By Supervisor"
-					doc.docstatus = 0
-					frappe.throw("Only Mr/Mrs. <b> {0} </b> can verify this Documentmt".format(frappe.get_doc("User", verifier).full_name))
-				doc.workflow_state = "Verified"
-				doc.docstatus = 0
-				doc.verifier = frappe.session.user
-				message = """Dear Sir/Madam, <br>  {0} has requested you to Verified the Material Request <b> {1}. Check ERP System for More Info. </b> <br> Thank You""".format(frappe.get_doc("User", doc.owner).full_name, str(get_link_to_form("Material Request", doc.name)))
-				try:
-					frappe.sendmail(recipients=approver, sender=None, subject=subject, message=message)
-					frappe.sendmail(recipients= doc.owner, sender = None, subject = subject, message = "Material Request {0} verified".format(str(get_link_to_form("Material Request", doc.name))))
-				except:
-					pass
-
-			if doc.workflow_state == "Verified By Supervisor":
-				if "MR Verifier" not in user_roles:
-					doc.workflow_state = "Waiting Approval"
-					frappe.throw("Only MR Verifier role can verify this Document")
-					doc.workflow_state == "Verified By Supervisor"
-					doc.docstatus = 0
-					doc.verifier = frappe.session.user
-					message = """Dear Sir/Madam, <br>  {0} has requested you to Verified the Material Request <b> {1}. Check ERP System for More Info. </b> <br> Thank You""".format(frappe.get_doc("User", doc.owner).full_name, str(get_link_to_form("Material Request", doc.name)))
-					try:
-						frappe.sendmail(recipients=approver, sender=None, subject=subject, message=message)
-						frappe.sendmail(recipients= doc.owner, sender = None, subject = subject, message = "Material Request {0} verified".format(str(get_link_to_form("Material Request", doc.name))))
-					except:
-						pass
-
-	if doc.workflow_state == "Approved":
-		if doc.title1 =="Material Request":
-			if "MR Approver" not in user_roles:
-				doc.workflow_state = "Waiting Approval"
-				frappe.throw("Only MR Approver role can Approved this Document")
-	else:
-		if approver != frappe.session.user:
-			doc.workflow_state = "Verified"
-			doc.docstatus = 0
-			frappe.throw("Only Mr/Mrs. <b> {0} </b> can approve this Documentmt".format(frappe.get_doc("User", approver).full_name))
-			if doc.get_db_value("workflow_state") != "Verified":
-				doc.docstatus = 0
-				frappe.throw("Only Verified Document Can be approved")
-	doc.workflow_state == "Approved"
-	doc.docstatus = 1
-	doc.w_approver = frappe.session.user
-	message = """Dear Sir/Madam, <br>  {0} has requested you to Approve the Material Request <b> {1}. Check ERP System for More Info. </b> <br> Thank You""".format(frappe.get_doc("User", doc.owner).full_name, str(get_link_to_form("Material Request", doc.name)))
-	try:
-		frappe.sendmail(recipients=approver, sender=None, subject=subject, message=message)
-		frappe.sendmail(recipients= doc.owner, sender = None, subject = subject, message = "Material Request {0} verified".format(str(get_link_to_form("Material Request", doc.name))))
-	except:
-		pass
-
-	if doc.workflow_state in ("Rejected", "Cancelled"):
-		if doc.get_db_value("workflow_state") == 'Waiting Approval':
-			if "MR Verifier" not in user_roles:
-				doc.workflow_state = 'Waiting Approval'
-				frappe.throw("Only MR Verifier role can reject this document")
-                
-			elif doc.get_db_value("workflow_state") == 'Waiting For Verification':
-				if verifier != frappe.session.user:
-					frappe.throw("Only Mr/Mrs. <b> {0} </b> can reject/cancel this Document".format(frappe.get_doc("User", verifier).full_name))
-
-			elif doc.get_db_value("workflow_state") in ('Verified By Supervisor', 'Approved'):
-				if doc.title1 =="Material Request":
-					if "MR Approver" not in user_roles:
-						doc.workflow_state = 'Approved'
-						frappe.throw("Only MR Approver role can reject this document")
-				else:
-					if approver != frappe.session.user:
-						doc.workflow_state = doc.get_db_value("workflow_state")
-						frappe.throw("Only Mr/Mrs. <b> {0} </b> can reject/cancel this Document".format(frappe.get_doc("User", approver).full_name))
-						doc.rejector = frappe.session.user
-						message = """Dear {0},  Your Material Request {1} is <b> {2} </b>. Check ERP System for More Info. <br> Thank You""".format(frappe.get_doc("User", doc.owner).full_name, str(get_link_to_form("Material Request", doc.name)), doc.workflow_state)
-				try:
-					frappe.sendmail(recipients=doc.owner, sender=None, subject=subject, message=message)
-				except:
-					pass							
-
-	
-
-	
-	def compile_budget(self):
-		if not self.old_state:
-			return
-		elif self.old_state.lower() == "Draft".lower() and self.new_state.lower() != "Draft".lower():
-			if self.new_state.lower() == "Waiting RD Approval".lower() or self.new_state.lower() == "Waiting GM Approval".lower():
-				if self.doc.budget_level == "Region":
-					approver = frappe.db.get_value("Employee", frappe.db.sql("select approver from tabDepartment where name like '%{}%' and is_region=1".format(self.doc.region))[0][0], self.field_list)
-				elif self.doc.budget_level == "Division":
-					approver = frappe.db.get_value("Employee", frappe.db.get_value("Department", self.doc.division, "approver"), self.field_list)
-				officiating = get_officiating_employee(approver[3])
-				if officiating:
-					officiating = frappe.db.get_value("Employee", officiating[0].officiate, self.field_list)
-				vars(self.doc)[self.doc_approver[0]] = officiating[0] if officiating else approver[0]
-				vars(self.doc)[self.doc_approver[1]] = officiating[1] if officiating else approver[1]
-			else:
-				pass
-		elif self.old_state.lower() in ("Waiting RD Approval".lower(), "Rejected by GMO".lower()) and self.new_state.lower() == "Waiting GMO Approval".lower():
-			if self.doc.approver != frappe.session.user:
-				frappe.throw("Only <b>{}</b> can Forward/Reject".format(self.doc.approver_name))
-			self.doc.old_approver_id = self.doc.approver
-			self.doc.old_approver = self.doc.approver_name
-			self.doc.rejected_remarks = ""
-
-			approver = frappe.db.get_value("Employee", frappe.db.get_value("Department", "Operations Division - BTL", "approver"), self.field_list)
-			officiating = get_officiating_employee(approver[3])
-			if officiating:
-				officiating = frappe.db.get_value("Employee", officiating[0].officiate, self.field_list)
-			vars(self.doc)[self.doc_approver[0]] = officiating[0] if officiating else approver[0]
-			vars(self.doc)[self.doc_approver[1]] = officiating[1] if officiating else approver[1]
-		elif self.old_state.lower() in ("Waiting GM Approval".lower(),"Waiting RD Approval".lower()) and self.new_state.lower() in ("Rejected by GM".lower(), "Rejected by RD".lower()):
-			if self.doc.approver != frappe.session.user:
-				frappe.throw("Only <b>{}</b> can Forward/Reject".format(self.doc.approver_name))
-		elif self.old_state.lower() == "Waiting GMO Approval".lower() and self.new_state.lower() == "Rejected by GMO".lower():
-			self.doc.old_approver_id = ""
-			self.doc.old_approver = ""
-			approver = frappe.db.get_value("Employee", frappe.db.sql("select approver from tabDepartment where name like '%{}%' and is_region=1".format(self.doc.region))[0][0], self.field_list)
-			officiating = get_officiating_employee(approver[3])
-			if officiating:
-				officiating = frappe.db.get_value("Employee", officiating[0].officiate, self.field_list)
-			vars(self.doc)[self.doc_approver[0]] = officiating[0] if officiating else approver[0]
-			vars(self.doc)[self.doc_approver[1]] = officiating[1] if officiating else approver[1]
-		elif self.new_state.lower() == "Waiting Finance Department Approval".lower():
-			if self.doc.approver != frappe.session.user:
-				frappe.throw("Only <b>{}</b> can Forward/Reject".format(self.doc.approver_name))
-		elif self.old_state.lower() in ("Rejected by GM".lower(), "Rejected by RD".lower(), "Rejected by Finance Department".lower(), "Rejected by Management".lower(), "Rejected by Board".lower()):
-			self.doc.rejected_remarks = ""
-	
-	def promotion_application(self):
-		if self.new_state.lower() == ("Waiting Supervisor Approval".lower()):
-			self.set_approver("Supervisor")
-		elif self.new_state.lower() == ("Waiting Hr Approval".lower()):
-			if self.doc.approver != frappe.session.user:
-				frappe.throw("Only {} can Forward this Application".format(self.doc.approver_name))
-			self.set_approver("HR")
-		elif self.new_state.lower() == ("Approved".lower()):
-			if self.doc.approver != frappe.session.user:
-				frappe.throw("Only {} can Approve this Application".format(self.doc.approver_name))
-
-		elif self.new_state.lower() == ("Rejected".lower()):
-			if self.doc.approver != frappe.session.user:
-				frappe.throw("Only {} can Reject this Application".format(self.doc.approver_name))
-		else:
-			frappe.throw(_("Invalid Workflow State {}").format(self.doc.workflow_state))
-		
-	
-	def target_set_up_and_review(self):
-		if self.new_state.lower() in ("Draft".lower()):
-			if frappe.session.user != self.doc.owner:
-				frappe.throw("Only {} can apply this leave".format(self.doc.owner))
-
-		elif self.new_state.lower() == ("Waiting Supervisor Approval".lower()):
-			self.set_approver("Supervisor")
-
-		elif self.new_state.lower() == ("Approved".lower()):
-			if self.doc.approver != frappe.session.user:
-				frappe.throw("Only {} can Approve this Application".format(self.doc.approver_name))
-
-		elif self.new_state.lower() == ("Rejected".lower()):
-			employee_user = frappe.db.get_value("Employee", self.employee, "user_id")
-			if frappe.session.user not in (self.doc_approver, self.doc_owner, employee_user):
-				frappe.throw("Only {}, {}, {} can Reject this Application".format(self.doc_approver, self.doc_owner, employee_user))
-		else:
-			frappe.throw(_("Invalid Workflow State {}").format(self.doc.workflow_state))
-
-	def performance_evaluation(self):
-		if self.new_state.lower() in ("Draft".lower()):
-			if frappe.session.user != self.doc.owner:
-				frappe.throw("Only {} can apply this leave".format(self.doc.owner))
-
-		elif self.new_state.lower() == ("Waiting Supervisor Approval".lower()):
-			self.set_approver("Supervisor")
-
-		elif self.new_state.lower() == ("Waiting Approval".lower()):
-			if self.doc.approver != frappe.session.user:
-				frappe.throw("Only {} can Forward this Application".format(self.doc.approver_name))
-			self.set_approver("Supervisors Supervisor")
-		elif self.new_state.lower() == ("Approved".lower()):
-			if self.doc.approver != frappe.session.user:
-				frappe.throw("Only {} can Approve this Application".format(self.doc.approver_name))
-
-		elif self.new_state.lower() == ("Rejected".lower()):
-			if self.doc.approver != frappe.session.user:
-				frappe.throw("Only {} can Reject this Application".format(self.doc.approver_name))
-		else:
-			frappe.throw(_("Invalid Workflow State {}").format(self.doc.workflow_state))
-
-	def pms_appeal(self):
-		if self.new_state.lower() == ("Waiting Approval".lower()):
-			self.set_approver("PMS Appealer")
-
-		elif self.new_state.lower() == ("Approved".lower()):
-			if self.doc.approver != frappe.session.user:
-				frappe.throw("Only {} can Approve this Application".format(self.doc.approver_name))
-
-		elif self.new_state.lower() == ("Rejected".lower()):
-			if self.doc.approver != frappe.session.user:
-				frappe.throw("Only {} can Reject this Application".format(self.doc.approver_name))
-		else:
-			frappe.throw(_("Invalid Workflow State {}").format(self.doc.workflow_state))
-	
-	def contract_renewal_application(self):
-	
-		if self.new_state.lower() == ("Waiting Supervisor Approval".lower()):
-			self.set_approver("Supervisor")
-		elif self.new_state.lower() == ("Waiting Hr Approval".lower()):
-			if self.doc.approver != frappe.session.user:
-				frappe.throw("Only {} can Forward this Application".format(self.doc.approver_name))
-			self.set_approver("HR")
-		elif self.new_state.lower() == ("Approved".lower()):
-			if self.doc.approver != frappe.session.user:
-				frappe.throw("Only {} can Approve this Application".format(self.doc.approver_name))
-
-		elif self.new_state.lower() == ("Rejected".lower()):
-			if self.doc.approver != frappe.session.user:
-				frappe.throw("Only {} can Reject this Application".format(self.doc.approver_name))
-		else:
-			frappe.throw(_("Invalid Workflow State {}").format(self.doc.workflow_state))
-	
-
-
-
-	def pol_expenses(self):
-		if self.new_state and self.old_state and self.new_state.lower() == self.old_state.lower():
-			return
-		if self.new_state.lower() in ("Waiting GM Approval".lower()):
-			if self.doc.owner != frappe.session.user:
-				frappe.throw("Only {} can Apply this Document".format(self.doc.owner))
-			self.set_approver("POL Approver")
-		if self.new_state.lower() in ("Approved".lower()):
-			if self.doc.approver != frappe.session.user:
-				frappe.throw("Only {} can Approve this Document".format(self.doc.approver))
-		if self.new_state.lower() in ("Rejected".lower()):
-			if self.doc.approver != frappe.session.user:
-				frappe.throw("Only {} can reject this Document".format(self.doc.approver))
-
-	def employee_separation(self):
-		if self.new_state.lower() in ("Waiting Approval".lower()):
-			self.set_approver("Supervisor")
-		
-		# elif self.new_state.lower() in ("Waiting GM Approval".lower()):
-		# 	if self.doc.approver != frappe.session.user:
-		# 		frappe.throw("Only {} can Forward this document".format(self.doc.approver))
-		# 	self.set_approver("General Manager")
-		
-		# elif self.new_state.lower() in ("Waiting CEO Approval".lower()):
-		# 	if self.doc.approver != frappe.session.user:
-		# 		frappe.throw("Only {} can Forward this document".format(self.doc.approver))
-		# 	self.set_approver("CEO")
-
-		elif self.new_state.lower() in ("Approved".lower()):
-			if self.doc.approver != frappe.session.user:
-				frappe.throw("Only {} can edit/submit this document".format(self.doc.approver))
-
-	def employee_benefits(self):
-		if self.new_state.lower() in ("Waiting HR Approval".lower()):
-			self.set_approver("HR")
-		if self.new_state.lower() in ("Waiting GM Approval".lower()):
-			# if self.new_state.lower() == "Waiting GM Approval".lower():
-			# 	if "HR User" not in frappe.get_roles(frappe.session.user):
-			# 		frappe.throw("Only HR can Apply this Appeal")
-			if self.hr_approver[0] != frappe.session.user:
-				frappe.throw("Only {} can edit/approve this documents".format(self.hr_approver[0]))
-			self.set_approver("HRGM")
-
-		elif self.new_state.lower() in ("Approved".lower()):
-			if self.hrgm[0] != frappe.session.user:
-				frappe.throw("Only {} can edit/submit this document".format(self.hrgm[0]))
-					
-	def coal_raising_payment(self):
-		if self.new_state.lower() in ("Draft".lower(), "Waiting Supervisor Approval".lower()):
-			if self.new_state.lower() == "Waiting Supervisor Approval".lower() and self.doc.owner != frappe.session.user:
-				if "Production User" not in frappe.get_roles(frappe.session.user):
-					frappe.throw("Only {} can Apply this Appeal".format(self.doc.employee_name))
-			self.set_approver("Production Manager")
-		elif self.new_state.lower() in ("Submitted".lower()):
-			if "Production User" not in frappe.get_roles(frappe.session.user):
-				if self.doc.approver != frappe.session.user:
-					frappe.throw("Only {} can edit/submit this documents".format(self.doc.approver))
-	def pol(self):
-		if self.new_state.lower() in ("Waiting Supervisor Approval".lower()):
-			self.set_approver("Supervisor")
-		elif self.new_state.lower() in ("Waiting Approval".lower()):
-			if self.doc.approver and self.doc.approver != frappe.session.user:
-				frappe.throw("Only {} can approve this document".format(self.doc.approver))
-			if self.doc.region and self.doc.region != "Corporate Head Quarter":
-				self.set_approver("Regional Director")
-			else:
-				if self.doc.equipment_category == "POWER EQUIPMENT":
-					self.set_approver("Manager Power")
-				else:
-					if self.doc.branch == "Marketing Division, CHQ":
-						self.set_approver("GMM")
-					else:
-						self.set_approver("ADM")
-		elif self.new_state.lower() in ("Approved".lower()):
-			if self.doc.approver != frappe.session.user:
-				frappe.throw("Only {} can edit/approve this documents".format(self.doc.approver))
-		elif self.new_state.lower() in ("Cancelled".lower()):
-			if self.doc.approver != frappe.session.user:
-				frappe.throw("Only {} can cancel this documents".format(self.doc.approver))
-
-	def asset(self):
-		if self.new_state.lower() in ("Waiting Verification".lower()):
-			if frappe.session.user != self.doc.owner:
-				if self.doc.doctype == "Project Capitalization" and "Projects Manager" not in frappe.get_roles(frappe.session.user):
-					frappe.throw("Only {} can forward this Asset for verification.".format(self.doc.owner))
-				if self.doc.doctype == "Asset Issue Details" and "Stock User" not in frappe.get_roles(frappe.session.user):
-					frappe.throw("Only {} can forward this Asset for verification.".format(self.doc.owner))
-		if self.new_state.lower() in ("Verified".lower()):
-			if "Accounts User" not in frappe.get_roles(frappe.session.user) and "Projects Manager" not in frappe.get_roles(frappe.session.user):
-				if self.old_state.lower() != self.new_state.lower():
-					frappe.throw("Only Accounts User can verify for this Asset.")
-		if self.new_state.lower() in ("Submitted".lower()):
-			if frappe.session.user != self.doc.owner:
-				frappe.throw("Only {} can submit this Asset".format(self.doc.owner))
-		if self.new_state.lower() in ("Rejected".lower()):
-			if "Accounts User" not in frappe.get_roles(frappe.session.user):
-				frappe.throw("Only Accounts User can reject this Asset.")
-
-	
-
-
-	def leave_encashment(self):
-		''' Leave Encashment Workflow
-			1. Employee -> HR
-		'''
-		if self.new_state.lower() == "Waiting Approval".lower():
-			self.set_approver("HR")
-		elif self.new_state.lower() == "Approved".lower():
-			if self.doc.approver != frappe.session.user:
-				frappe.throw("Only {} can Approve this Encashment".format(self.doc.approver_name))
-		elif self.new_state.lower() in ('Rejected'):
-			if self.doc.approver != frappe.session.user:
-				frappe.throw("Only {} can Reject this Encashment".format(self.doc.approver_name))
-
-	def sws_application(self):
-		if self.new_state.lower() in ("Draft".lower(), "Waiting Supervisor Approval".lower()):
-			self.set_approver("Supervisor")
-			try:
-				eid = frappe.db.get_value("Employee",self.doc.employee,"user_id")
-			except:
-				frappe.throw("User ID not set for Employee '{0}'".format(self.doc.employee))
-	
-		if self.new_state.lower() == "Waiting SWS User Approval".lower():
-			if frappe.session.user != self.doc.supervisor:
-						frappe.throw("Only {} can edit/approve this document".format(self.doc.supervisor))
-
-		if self.new_state.lower() == "Verified".lower():
-			self.doc.verified = 1
-   
-		if self.new_state.lower() =="Rejected".lower():
-			self.doc.verified = 0
-			self.doc.approval_status = "Rejected"
-   
-		if self.new_state.lower() =="Approved".lower():
-			self.doc.approval_status = "Approved"
-	
-	def sws_membership(self):
-		if self.new_state.lower() in ("Draft".lower(), "Waiting Supervisor Approval".lower()):
-			self.set_approver("Supervisor")
-		if self.new_state.lower() == "Waiting SWS User Approval".lower() and self.old_state.lower() != "Waiting SWS User Approval".lower():
-			if frappe.session.user != self.doc.supervisor:
-				frappe.throw("Only {} can approver this document.".format(self.doc.supervisor))
-
-	def salary_advance(self):
-		''' Salary Advance Workflow
-			1. Employee -> GM -> CEO -> HR
-		'''	
-		if self.new_state.lower() in ("Waiting CEO Approval".lower()):
-			if "Director" not in frappe.get_roles(frappe.session.user) and "General Manager" not in frappe.get_roles(frappe.session.user):
-				if self.doc.advance_approver != frappe.session.user:
-					frappe.throw(_("Only {} can Verify this request").format(self.doc.advance_approver_name))	
-			self.set_approver("CEO")
-			self.doc.db_set("status",self.new_state)
-		elif self.new_state.lower() in ("Waiting HR Approval".lower()):
-			self.set_approver("HR")
-			self.doc.db_set("status",self.new_state)
-		elif self.new_state.lower() in ("Waiting GM Approval".lower()):
-			self.set_approver("GM")
-			self.doc.db_set("status",self.new_state)
-		elif self.new_state.lower() == "Approved".lower():
-			if self.doc.advance_approver != frappe.session.user:
-				frappe.throw(_("Only {} can Approve this request").format(self.doc.advance_approver_name))	
-			self.doc.db_set("status",self.new_state)	
-		elif self.new_state.lower() == "Rejected":
-			if self.doc.advance_approver != frappe.session.user:
-				frappe.throw(_("Only {} can Reject this request").format(self.doc.advance_approver_name))
-			self.doc.db_set("status",self.new_state)		
-		elif self.new_state.lower() == "Cancelled".lower():
-			if frappe.session.user not in (self.doc.advance_approver,"Administrator"):
-				frappe.throw(_("Only {} can Cancel this document.").format(self.doc.advance_approver_name))
-			self.doc.db_set("status",self.new_state)
-	
-	def travel_request(self):
-		''' Travel Request Workflow
-			1. Employee -> Supervisor -> HR Manager
-		'''
-		if self.new_state and self.old_state and self.new_state.lower() == self.old_state.lower():
-			return
-
-		if self.new_state.lower() in ("Waiting Approval".lower()):
-			self.doc.check_advance_and_report()
-			self.doc.check_date()
-			self.set_approver("Supervisor")
-			self.doc.document_status = "Draft"
-		elif self.new_state == "Waiting Hr Approval":
-			if self.doc.supervisor != frappe.session.user:
-				frappe.throw("Only {} can Forware this request".format(self.doc.supervisor_name))
-			self.set_approver("HR")	
-		elif self.new_state.lower() == "Approved".lower():
-			if self.doc.supervisor != frappe.session.user:
-				frappe.throw("Only {} can Approve this request".format(self.doc.supervisor_name))
-			self.doc.document_status = "Approved"
-		elif self.new_state.lower() == 'Rejected'.lower():
-			if self.doc.supervisor != frappe.session.user and self.new_state.lower() != self.old_state.lower():
-				frappe.throw("Only {} can Reject this request".format(self.doc.supervisor_name))
-			self.doc.document_status = "Rejected"
-		elif self.new_state.lower() == "Cancelled".lower():
-			if "HR User" not in frappe.get_roles(frappe.session.user):
-				frappe.throw(_("Only {} can Cancel this Travel Request").format(self.doc.supervisor_name))
-			self.doc.document_status = "Cancelled"
-
-	
-	
-	
-
-			
-	def employee_advance(self):
-		if self.new_state and self.old_state and self.new_state.lower() == self.old_state.lower():
-			return
-		if self.new_state.lower() in ("Waiting Hr Approval".lower()):
-			if self.doc.owner != frappe.session.user:
-				frappe.throw("Only {} can Apply this document".format(self.doc.owner))
-			self.set_approver("HR")
-
-		if self.new_state.lower() in ("Waiting Supervisor Approval".lower()):
-			if self.doc.owner != frappe.session.user:
-				frappe.throw("Only {} can Apply this document".format(self.doc.owner))
-			self.set_approver("Imprest Verifier")
-
-		if self.new_state.lower() in ("Waiting Approval".lower()):
-			if self.doc.advance_approver_name != frappe.session.user:
-				frappe.throw("Only {} can Forward this document".format(self.doc.advance_approver_name))
-			self.set_approver("Imprest Approver")
-
-		if self.new_state.lower() in ("Approved".lower()):
-			if self.doc.advance_approver_name != frappe.session.user:
-				frappe.throw("Only {} can Approve this document".format(self.doc.advance_approver_name))
-
-	def vehicle_request(self):
-		if self.new_state.lower() in ("Draft".lower()):
-			if self.doc.owner != frappe.session.user:
-				frappe.throw("Only {} can Apply this material request".format(self.doc.owner))
-			self.set_approver("Supervisor")
-		elif self.new_state.lower() in ("Waiting Supervisor Approval".lower()):
-			if self.doc.owner != frappe.session.user and self.new_state != self.old_state:
-				frappe.throw("Only {} can Apply this Vehicle Request".format(self.doc.owner))
-			self.set_approver("Supervisor")
-		elif self.new_state.lower() in ("Waiting MTO Approval".lower()):
-			if self.doc.approver_id != frappe.session.user:
-				frappe.throw("Only {} can forward this request".format(self.doc.approver_id))
-			self.set_approver("Fleet MTO")
-		elif self.new_state.lower() in ("Approved".lower()):
-			if self.doc.approver_id != frappe.session.user:
-				frappe.throw("Only {} can Approve this Vehicle Request".format(self.doc.approver_id))
-	
-	def asset_movement(self):
-		if self.new_state and self.old_state and self.new_state.lower() == self.old_state.lower():
-			return
-		if self.new_state.lower() in ("Draft".lower()):
-			if self.doc.owner != frappe.session.user:
-				frappe.throw("Only the document owner can Apply this material request")
-			self.set_approver("Asset Verifier")
-
-		if self.new_state.lower() in ("Waiting for Verification".lower()):
-			if self.doc.owner != frappe.session.user:
-				frappe.throw("Only {} can Apply this request".format(self.doc.owner))
-			self.set_approver("Asset Verifier")
-			
-	def budget_reappropiation(self):
-		user_roles = frappe.get_roles(frappe.session.user)
-		if self.new_state and self.old_state and self.new_state.lower() == self.old_state.lower():
-			return
-		if self.new_state.lower() in ("Draft".lower(),"Waiting for Verification".lower()):
-			if self.doc.owner != frappe.session.user:
-				frappe.throw("Only the document owner can Apply this document")
-
-		if self.new_state.lower() in ("Waiting Approval".lower()):
-			if "Budget Manager" not in user_roles:
-				frappe.throw("Only Budget Manager Can verify this document")
-			self.set_approver("Budget Reappropiation")
-
-		if self.new_state.lower() in ("Waiting CEO Approval".lower()):
-			if self.doc.approver != frappe.session.user:
-				frappe.throw("Only {} can forward this document".format(self.doc.approver))
-			self.set_approver("CEO")
-
-		if self.new_state.lower() in ("Approved".lower()):
-			if self.old_state.lower() in ("Waiting CEO Approval".lower()) and  "CEO" not in user_roles:
-				frappe.throw("Only CEO can approve this document")
-			elif self.doc.approver != frappe.session.user :
-				frappe.throw("Only {} or CEO can approve this document".format(self.doc.approver))
-
-		if self.new_state.lower() in ("Rejected".lower()):
-			if "Budget Manager" in user_roles or "CEO" in user_roles or self.doc.approver == frappe.session.user:
-				return
-			else:
-				frappe.throw("Only Budget Manager or {} Can reject this document".format(self.doc.approver))
-	def repair_services(self):
-		if self.new_state.lower() in ("Draft".lower()):
-			cost_center = frappe.db.get_value("Employee",{"user_id":self.doc.owner},"cost_center")
-			if cost_center == "CORPORATE HEAD OFFICE - SMCL":
-				self.set_approver("ADM")
-			else:
-				self.set_approver("Supervisor")
-		elif self.new_state.lower() in ("Waiting Supervisor Approval".lower()):
-			if self.doc.owner != frappe.session.user and self.new_state != self.old_state:
-				frappe.throw("Only {} can Apply".format(self.doc.owner))
-		elif self.new_state.lower() in ("Waiting Approval".lower()):
-			if self.doc.approver != frappe.session.user:
-				frappe.throw("Only {} can forward this request".format(self.doc.approver))
-			self.set_approver("HRGM")
-		elif self.new_state.lower() in ("Approved".lower()):
-			if self.doc.approver != frappe.session.user:
-				frappe.throw("Only {} can Approve this document".format(self.doc.approver_id))
-
-	def overtime_application(self):
-		if self.new_state.lower() in ("Draft".lower(), "Waiting Supervisor Approval".lower()):
-			self.set_approver("Supervisor")
-		elif self.new_state.lower() == "Approved".lower():
-			if self.doc.approver != frappe.session.user and "HR User" not in frappe.get_roles(frappe.session.user):
-				frappe.throw("Only {} can Approve this request".format(self.doc.approver_name))
-			self.doc.status = 'Approved'
-		elif self.new_state.lower() in ('Rejected'.lower(), 'Rejected By Supervisor'.lower()):
-			if self.doc.approver != frappe.session.user:
-				frappe.throw("Only {} can Reject this request".format(self.doc.approver_name))
-		elif self.new_state.lower() == "Cancelled".lower():
-			if "HR User" not in frappe.get_roles(frappe.session.user):
-				if self.doc.approver != frappe.session.user:
-					frappe.throw("Only {} can Cancel this request".format(self.doc.approver_name))
-
-	def material_request(self):
-		''' Material Request Workflow
-			1. Employee -> MR Manager
-		'''
-		if self.new_state.lower() in ("Draft".lower()):
-			if self.doc.owner != frappe.session.user:
-				frappe.throw("Only the document owner can Apply this material request")
-
-		elif self.new_state.lower() in ("Waiting Supervisor Approval".lower()):
-			if self.doc.owner != frappe.session.user and self.new_state.lower()!= self.old_state.lower():
-				frappe.throw("Only the document owner can Apply this material request")
-			self.set_approver("Supervisor")
-			
-		elif self.new_state.lower() in ("Waiting Approval".lower()):
-			self.set_approver("Warehouse Manager")
-
-		elif self.new_state.lower() in ("Waiting GM Approval".lower()):
-			if self.doc.approver != frappe.session.user:
-				frappe.throw("Only the {} can Approve this material request".format(self.doc.approver))
-			self.set_approver("General Manager")
-
-		elif self.new_state.lower() in ("Waiting CEO Approval".lower()):
-			if self.doc.approver != frappe.session.user:
-				frappe.throw("Only the {} can Approve this material request".format(self.doc.approver))
-			self.set_approver("MR CEO") 
-
-		elif self.new_state.lower() in ("Rejected".lower()):
-			if self.doc.approver != frappe.session.user:
-				frappe.throw("Only the {} can Reject this material request".format(self.doc.approver))
-
-	def employee_benefit_claim(self):
-		workflow_state    = self.doc.get("workflow_state").lower()
-		if workflow_state == "Draft".lower():
-			# if doc.purpose == "Separation":
-			if not "HR Manager" in frappe.get_roles(frappe.session.user):
-				frappe.throw("Only HR user with role HR Manager can create the employee benefit with purpose Separation")
-
-		elif workflow_state == "Waiting Approval".lower():
-			# if doc.purpose == "Separation":
-			self.set_approver("HR")
-			if not "HR Manager" in frappe.get_roles(frappe.session.user):
-				frappe.throw("Only HR user with role HR Manager can create the employee benefit with purpose Separation")
-
-		elif workflow_state == "Approved".lower():
-			if self.doc.docstatus == 0 and self.doc.workflow_state == "Approved":
-				self.doc.workflow_state == "Waiting Approval"
-			if not "Chief PCD" in frappe.get_roles(frappe.session.user):
-				frappe.throw(_("Only Chief PCD can approve this application").format(title="Invalid Operation"))
-			vars(self.doc)[self.doc_approver[0]] = self.login_user[0]
-			vars(self.doc)[self.doc_approver[1]] = self.login_user[1]
-	
-		elif workflow_state == "Rejected".lower():
-			if not "Chief PCD" in frappe.get_roles(frappe.session.user):
-				if workflow_state != self.doc.get_db_value("workflow_state"):
-					frappe.throw(_("Only Cheif PCD can reject this application").format(title="Invalid Operation"))
-		else:
-			pass	
 
 	
 	def notify(self, args):
@@ -1796,77 +1222,6 @@ class NotifyCustomWorkflow:
 				"subject": email_template.subject
 			})
 
-	def notify_finance_users(self):
-		receipients = ["finance@smcl.bt"]
-		parent_doc = frappe.get_doc(self.doc.doctype, self.doc.name)
-		args = parent_doc.as_dict()
-
-		if self.doc.doctype in ("Project Capitalization"):
-			template = frappe.db.get_single_value('Asset Settings', 'asset_approval_notification_template')
-			if not template:
-				frappe.msgprint(_("Please set default template for Asset Approval Notification in Asset Settings."))
-				return
-		elif self.doc.doctype in ("Asset Issue Details"):
-			template = frappe.db.get_single_value('Asset Settings', 'asset_issue_approval_notification_template')
-			if not template:
-				frappe.msgprint(_("Please set default template for Asset Issue Approval Notification in Asset Settings."))
-				return
-		else:
-			template = ""
-
-		if not template:
-			frappe.msgprint(_("Please set default template for {}.").format(self.doc.doctype))
-			return
-		email_template = frappe.get_doc("Email Template", template)
-		message = frappe.render_template(email_template.response, args)
-		# frappe.throw(self.doc.get(self.doc_approver[0]))
-		self.notify({
-			# for post in messages
-			"message": message,
-			"message_to": receipients,
-			# for email
-			"subject": email_template.subject
-		})
-
-	def notify_travel_administrators(self):
-		receipients = []
-		region = frappe.db.get_value("Employee",self.doc.employee,"region")
-		if region == "Western Region":
-			email_group = "Travel Adminstrator, Western Region"
-		elif region == "South Western Region":
-			email_group = "Travel Administrator, South Western Region"
-		elif region == "Eastern Region":
-			email_group = "Travel Administrator, Eastern Region"
-		elif region == "Central Region":
-			email_group = "Travel Administrator, Central Region"
-		else:
-			email_group = "Travel Administrator, CHQ"
-		if self.doc.doctype == "Travel Claim":
-			if self.doc.travel_type in ("Training","Meeting and Seminars","BT DAY","Pilgrimage"):
-				email_group = "Travel Administrator, CHQ"
-		ta = frappe.get_list("Email Group Member", filters={"email_group":email_group}, fields=['email'])
-		if ta:
-			receipients = [a['email'] for a in ta]
-			parent_doc = frappe.get_doc(self.doc.doctype, self.doc.name)
-			args = parent_doc.as_dict()
-			if self.doc.doctype == "Travel Claim":
-				template = frappe.db.get_single_value('HR Settings', 'claim_approval_notification_template')
-				if not template:
-					frappe.msgprint(_("Please set default template for Claim Approval Notification in HR Settings."))
-					return
-			if not template:
-				frappe.msgprint(_("Please set default template for {}.").format(self.doc.doctype))
-				return
-			email_template = frappe.get_doc("Email Template", template)
-			message = frappe.render_template(email_template.response, args)
-			# frappe.throw(self.doc.get(self.doc_approver[0]))
-			self.notify({
-				# for post in messages
-				"message": message,
-				"message_to": receipients,
-				# for email
-				"subject": email_template.subject
-			})
 
 	def notify_ta_finance(self):
 		receipients = []
@@ -1942,14 +1297,14 @@ def get_field_map():
 		"Leave Encashment": ["approver","approver_name","approver_designation"],
 		"Leave Application": ["leave_approver", "leave_approver_name", "leave_approver_designation"],
 		"Travel Request": ["supervisor", "supervisor_name", "supervisor_designation"],
-		"Travel Authorization": ["supervisor", "supervisor_name", "supervisor_designation"],
-		"Travel Claim": ["supervisor", "supervisor_name", "supervisor_designation"],
+		"Travel Authorization": ["approver", "approver_name", "approver_designation"],
+		"Travel Claim": ["approver", "approver_name", "approver_designation"],
 		"SWS Application": ["supervisor", "supervisor_name", "supervisor_designation"],
 		"SWS Membership": ["supervisor", "supervisor_name", "supervisor_designation"],
 		"Employee Advance": ["advance_approver_name", "advance_approver", "advance_approver_designation"],
 		"Vehicle Request": ["approver_id", "approver"],
 		"Repair And Services": ["approver", "approver_name", "aprover_designation"],
-		"Overtime Application": ["approver", "approver_name", "approver_designation"],
+		"Overtime Application": ["ot_approver", "ot_approver_name", "approver_designation"],
 		"POL Expense": ["approver", "approver_name", "approver_designation"],
 		"Material Request": ["approver","approver_name","approver_designation"],
 		"Asset Movement": ["approver", "approver_name", "approver_designation"],

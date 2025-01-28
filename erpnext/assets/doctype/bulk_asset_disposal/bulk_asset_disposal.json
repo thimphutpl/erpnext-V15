@@ -14,6 +14,8 @@
   "column_break_xosw",
   "scrap",
   "customer",
+  "journal_entry",
+  "sales_invoice",
   "section_break_zrkq",
   "item",
   "amended_form"
@@ -37,7 +39,7 @@
    "fieldname": "scrap_date",
    "fieldtype": "Date",
    "in_list_view": 1,
-   "label": "Scrap Date",
+   "label": "Scrap/Sale Date",
    "reqd": 1
   },
   {
@@ -62,8 +64,8 @@
    "fieldname": "scrap",
    "fieldtype": "Select",
    "in_list_view": 1,
-   "label": "Scrap",
-   "options": "\nScrap Asset",
+   "label": "Scrap/Sale",
+   "options": "\nScrap Asset\nSale Asset",
    "reqd": 1
   },
   {
@@ -91,12 +93,24 @@
    "options": "Bulk Asset Disposal",
    "print_hide": 1,
    "read_only": 1
+  },
+  {
+   "fieldname": "journal_entry",
+   "fieldtype": "Data",
+   "label": "Journal Entry",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sales_invoice",
+   "fieldtype": "Data",
+   "label": "Sales Invoice",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-21 15:59:12.552799",
+ "modified": "2025-01-23 12:16:30.622605",
  "modified_by": "Administrator",
  "module": "Assets",
  "name": "Bulk Asset Disposal",

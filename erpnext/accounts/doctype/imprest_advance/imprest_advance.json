@@ -16,14 +16,14 @@
   "imprest_type",
   "column_break_001",
   "posting_date",
-  "business_activity",
+  "project",
   "is_opening",
+  "first_advance",
   "section_break_002",
   "party_type",
   "party",
   "column_break_002",
-  "advance_amount",
-  "opening_amount",
+  "amount",
   "adjusted_amount",
   "balance_amount",
   "approver_details_section",
@@ -35,7 +35,6 @@
   "section_break_001",
   "remarks",
   "journal_entry",
-  "abstract_bill",
   "column_break_23",
   "imprest_recoup",
   "amended_from"
@@ -50,10 +49,11 @@
    "reqd": 1
   },
   {
+   "default": "Employee",
    "fieldname": "party_type",
    "fieldtype": "Select",
    "label": "Party Type",
-   "options": "\nEmployee\nAgency",
+   "options": "\nEmployee",
    "reqd": 1
   },
   {
@@ -143,6 +143,7 @@
    "default": "0",
    "fieldname": "is_opening",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "Is Opening"
   },
   {
@@ -178,7 +179,7 @@
   {
    "fieldname": "approver",
    "fieldtype": "Link",
-   "label": "Approver Email ID",
+   "label": "Approver",
    "options": "User",
    "read_only": 1
   },
@@ -204,28 +205,6 @@
    "fieldtype": "Column Break"
   },
   {
-   "depends_on": "eval:doc.is_opening != 1",
-   "fieldname": "advance_amount",
-   "fieldtype": "Currency",
-   "label": "Advance Amount",
-   "mandatory_depends_on": "eval:doc.is_opening != 1"
-  },
-  {
-   "fieldname": "business_activity",
-   "fieldtype": "Link",
-   "label": "Business Activity",
-   "options": "Business Activity",
-   "reqd": 1
-  },
-  {
-   "depends_on": "eval:doc.is_opening",
-   "fieldname": "opening_amount",
-   "fieldtype": "Currency",
-   "in_list_view": 1,
-   "label": "Opening Amount",
-   "mandatory_depends_on": "eval:doc.is_opening"
-  },
-  {
    "fieldname": "imprest_recoup",
    "fieldtype": "Link",
    "label": "Imprest Recoup",
@@ -233,10 +212,25 @@
    "read_only": 1
   },
   {
-   "fieldname": "abstract_bill",
-   "fieldtype": "Data",
-   "label": "Abstract Bill",
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Project",
+   "options": "Project"
+  },
+  {
+   "default": "1",
+   "fieldname": "first_advance",
+   "fieldtype": "Check",
+   "label": "First Advance",
    "read_only": 1
+  },
+  {
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Opening Amount",
+   "mandatory_depends_on": "eval:doc.is_opening"
   }
  ],
  "index_web_pages_for_search": 1,

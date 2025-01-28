@@ -47,7 +47,7 @@ def get_data(query, filters=None):
 		d.yskm = ys_records and flt(ys_records[0].yard_distance) or 0
 		d.yshour = ys_records and flt(ys_records[0].yard_hours) or 0
 	
-		row = [d.name, d.equipment_category, d.equipment_type, d.equipment_number, d.place, ("{0}" '/' "{1}".format(d.open_km, d.open_hr)), ("{0}" '/' "{1}".format(d.close_km,d.close_hr)), round(d.close_km-d.open_km,2), round(d.close_hr-d.open_hr,2),
+		row = [d.name, d.equipment_category, d.equipment_type, d.registration_number, d.place, ("{0}" '/' "{1}".format(d.open_km, d.open_hr)), ("{0}" '/' "{1}".format(d.close_km,d.close_hr)), round(d.close_km-d.open_km,2), round(d.close_hr-d.open_hr,2),
 		round(flt(d.drawn),2), round(flt(d.opening),2), round((flt(d.drawn)+flt(d.opening)),2),
 		d.yskm, d.yshour, round(d.consumed,2), round(flt(d.closing),2), flt(d.cap), round(flt(d.rate),2), round((flt(d.rate)*flt(d.consumed)),2)]
 		data.append(row);
@@ -55,7 +55,7 @@ def get_data(query, filters=None):
 	#KM and Hour value is changed from consumption_km and consumption_hours to diference between the final and initial after discussing with Project Lead
 def construct_query(filters):
 	#(select (sum(pol.qty*pol.rate)/sum(pol.qty)) from tabPOL pol where pol.branch = vl.branch and pol.docstatus = 1 and pol.pol_type = e.hsd_type) as rate, e.hsd_type,
-	query = """select e.name, eh.branch, e.equipment_category, e.hsd_type, e.equipment_number, e.equipment_type, e.equipment_model 
+	query = """select e.name, eh.branch, e.equipment_category, e.hsd_type, e.registration_number, e.equipment_type, e.equipment_model 
 		from `tabEquipment History` eh, tabEquipment e 
 		where eh.parent = e.name """
 	if filters.get("branch"):

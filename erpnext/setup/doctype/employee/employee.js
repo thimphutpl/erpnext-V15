@@ -15,9 +15,9 @@ erpnext.setup.EmployeeController = class EmployeeController extends frappe.ui.fo
 		}
 	}
 
-	refresh() {
-		erpnext.toggle_naming_series();
-	}
+	// refresh() {
+	// 	erpnext.toggle_naming_series();
+	// }
 
 	salutation() {
 		if (this.frm.doc.salutation) {
@@ -27,13 +27,13 @@ erpnext.setup.EmployeeController = class EmployeeController extends frappe.ui.fo
 			}[this.frm.doc.salutation]);
 		}
 	}
-
-	
-
 };
 
 frappe.ui.form.on("Employee", {
 	onload: function (frm) {
+
+		frm.set_df_property('naming_series', 'hidden', 1);
+
 		frm.set_query("department", function () {
 			return {
 				"filters": {

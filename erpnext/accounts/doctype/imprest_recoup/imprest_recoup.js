@@ -1,116 +1,52 @@
 // Copyright (c) 2023, Frappe Technologies Pvt. Ltd. and contributors
 // For license information, please see license.txt
-
+erpnext.buying.setup_buying_controller();
 frappe.ui.form.on('Imprest Recoup', {
 	onload: function(frm){
-		// frm.set_query('expense_account', 'items', function() {
-		// 	return {
-		// 		"filters": {
-		// 			"account_type": "Expense Account"
-		// 		}
-		// 	};
-		// });
-
-		frm.set_query('account', 'items', function() {
+		frm.set_query('item_code', 'items', function() {
 			return {
-				filters: {
-					"is_group": 0,
-				}
+				filters: [
+					["is_fixed_asset", "=", 0]
+				]
 			};
 		});
 	},
-	refresh: function(frm){
-		// 
-	},
-
-	"get_imprest_advance":function(frm){
-		get_imprest_advance(frm)
-	},
-
-	"get_items":function(frm){
-		return frappe.call({
-			doc: frm.doc,
-			method: 'get_transactions_detail',
-			callback: function(r) {
-				if (r.message){
-					
-					frm.refresh_field("items");
-				}
-			},
-			freeze: true,
-			
-		});
-	},
-
-	branch: function(frm){
-		frm.set_value('party_type', '');
-		frm.set_value('party', '');
-		frm.set_value('items', '');
-		frm.refresh_field('items')
-		frm.set_value('imprest_advance_list', '');
-		frm.refresh_field('imprest_advance_list')
-
-		// frm.set_query('party', function() {
-		// 	return {
-		// 		filters: {
-		// 			"branch": frm.doc.branch
-		// 		}
-		// 	};
-		// });
-	},
-	project: function(frm){
-		frm.set_query("project", function() {
-			return {
-				"filters": {
-					"branch": frm.doc.branch
-				}
-			}
-		});
+	refresh: function(frm) {
+		// enable_disable(frm);
+		if(frm.doc.docstatus===1){
+			cur_frm.add_custom_button(__("Stock Ledger"), function() {
+				frappe.route_options = {
+					voucher_no: frm.doc.name,
+					from_date: frm.doc.posting_date,
+					to_date: frm.doc.posting_date,
+					company: frm.doc.company
+				};
+				frappe.set_route("query-report", "Stock Ledger Report");
+			}, __("View"));
+			frm.add_custom_button(__('Accounting Ledger'), function(){
+				frappe.route_options = {
+					voucher_no: frm.doc.name,
+					company: frm.doc.company,
+					from_date: frm.doc.posting_date,
+					to_date: frm.doc.posting_date,
+					group_by_voucher: false
+				};
+			frappe.set_route("query-report", "General Ledger");
+			}, __("View"));
+		}
 	},
 });
 
 frappe.ui.form.on("Imprest Recoup Item", {
-	amount: function(frm, cdt, cdn){
-		get_imprest_advance(frm)
+	quantity: function (frm, cdt, cdn) {
+		let row = frappe.get_doc(cdt, cdn);
+		frappe.model.set_value(cdt, cdn, "amount", flt(row.quantity)*flt(row.rate));
 	},
-	recoup_type: function(frm, cdt, cdn) {
-		var d = locals[cdt][cdn];
-		if (!frm.doc.company) {
-			d.recoup_type = "";
-			frappe.msgprint(__("Please set the Company"));
-			this.frm.refresh_fields();
-			return;
-		}
-
-		if(!d.recoup_type) {
-			return;
-		}
-		return frappe.call({
-			method: "erpnext.accounts.doctype.imprest_recoup.imprest_recoup.get_imprest_recoup_account",
-			args: {
-				"recoup_type": d.recoup_type,
-				"company": frm.doc.company
-			},
-			callback: function(r) {
-				if (r.message) {
-					d.account = r.message.account;
-				}
-				frm.refresh_field("items")
-				frm.refresh_fields();
-			}
-		});
-	}
+	rate: function (frm, cdt, cdn) {
+		let row = frappe.get_doc(cdt, cdn);
+		frappe.model.set_value(cdt, cdn, "amount", flt(row.quantity)*flt(row.rate));
+	},
 })
 
-var get_imprest_advance = function(frm){
-	frm.set_value('total_amount', 0);
-	frappe.call({
-		method: 'populate_imprest_advance',
-		doc: frm.doc,
-		callback:  () =>{
-			frm.refresh_field('imprest_advance_list')
-			frm.refresh_fields()
-		}
-	})
-}
+
 

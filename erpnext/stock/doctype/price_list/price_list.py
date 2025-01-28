@@ -15,9 +15,8 @@ class PriceList(Document):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
-		from frappe.types import DF
-
 		from erpnext.stock.doctype.price_list_country.price_list_country import PriceListCountry
+		from frappe.types import DF
 
 		buying: DF.Check
 		countries: DF.Table[PriceListCountry]

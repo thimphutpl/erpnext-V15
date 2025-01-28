@@ -126,8 +126,8 @@ frappe.ui.form.on('Vehicle Logbook', {
                 method: "erpnext.fleet_management.doctype.vehicle_logbook.vehicle_logbook.get_equipment_data", // Update with the correct path
                 args: {
                     equipment_name: frm.doc.equipment,
-                    to_date: frm.doc.to_date,
-                    all_equipment: frm.doc.all_equipment || 1,
+                    // to_date: frm.doc.to_date,
+                    // all_equipment: frm.doc.all_equipment || 1,
                     branch: frm.doc.branch
                 },
                 callback: function(response) {
@@ -135,11 +135,11 @@ frappe.ui.form.on('Vehicle Logbook', {
                         let data = response.message;
 
                         // Process and display the fetched data
-                        // frappe.msgprint({
-                        //     title: __('Fetched Equipment Data'),
-                        //     message: `<pre>${JSON.stringify(data, null, 4)}</pre>`,
-                        //     indicator: 'green'
-                        // });
+                        frappe.msgprint({
+                            title: __('Fetched Equipment Data'),
+                            message: `<pre>${JSON.stringify(data, null, 4)}</pre>`,
+                            indicator: 'green'
+                        });
 
                         // Optional: You can set a field value with specific data
                         if (data.length > 0) {
@@ -156,6 +156,23 @@ frappe.ui.form.on('Vehicle Logbook', {
         }
 	},
 
+	// "hsd_rate": function(frm) {
+	// 	calculate_distance_km(frm)
+	// },
+	// "pol_issued": function(frm) {
+	// 	calculate_distance_km(frm)
+	// },
+	// "hsd_amount": function(frm) {
+	// 	calculate_distance_km(frm)
+	// },
+	
+	// pol_issued: function (frm) {
+	// 	frm.trigger("calculate_distance_km");
+	// },
+	// hsd_rate: function (frm) {
+	// 	frm.trigger("calculate_distance_km");
+	// },
+	
 
 	"final_km": function(frm) {
 		if(!frm.doc.docstatus == 1) {
@@ -320,6 +337,10 @@ function calculate_distance_km(frm) {
 		cur_frm.set_value("final_km", flt(frm.doc.distance_km) + flt(frm.doc.initial_km))
 		cur_frm.refresh_fields()
 	}
+	// if(flt(frm.doc.pol_issued) && flt(frm.doc.hsd_rate)) {
+	// 	cur_frm.set_value("hsd_amount", flt(frm.doc.pol_issued) * flt(frm.doc.hsd_rate))
+	// 		frm.refresh_fields()
+	// }
 }
 
 function calculate_work_hour(frm) {

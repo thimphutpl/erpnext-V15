@@ -15,6 +15,7 @@
   "posting_date",
   "posting_time",
   "warehouse",
+  "project",
   "section_break_2",
   "pol_type",
   "item_name",
@@ -175,15 +176,21 @@
   },
   {
    "fieldname": "tank_balance",
-   "fieldtype": "Data",
+   "fieldtype": "Float",
    "in_list_view": 1,
    "label": "Tank Balance"
+  },
+  {
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "label": "Project",
+   "options": "Project"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-04 19:08:48.529776",
+ "modified": "2025-01-23 16:16:19.901549",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Issue",

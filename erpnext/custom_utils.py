@@ -3,7 +3,7 @@ import frappe
 from frappe import _
 from frappe.model.document import Document
 from frappe import msgprint
-from frappe.utils import flt, cint, nowdate, getdate, formatdate
+from frappe.utils import flt, cint, nowdate, getdate, formatdate,nowtime
 from erpnext.accounts.utils import get_fiscal_year
 from frappe.utils.data import get_first_day, get_last_day, add_years
 from frappe.desk.form.linked_with import get_linked_doctypes, get_linked_docs
@@ -193,6 +193,27 @@ def prepare_gl(d, args):
 	gl_dict.update(args)
 
 	return gl_dict
+	
+def prepare_sli(d, args):
+	# frappe.msgprint(str(args))
+	sl_dict = frappe._dict({
+		"posting_date": d.posting_date,
+		"posting_time": nowtime(),
+		"warehouse":args.get('warehouse'),
+		'fiscal_year': get_fiscal_year(d.posting_date, company=d.company)[0],
+		"voucher_type": d.doctype,
+		"voucher_no": d.name,
+		"actual_qty": args.get('qty'),
+		"incoming_rate": args.get('incoming_rate'),
+		"company": d.company,
+		"batch_no": "",
+		"serial_no": "",
+		"project": "",
+		"is_cancelled": d.docstatus==2 and "Yes" or "No"
+	})
+
+	sl_dict.update(args)
+	return sl_dict
 
 def cancel_budget_entry(reference_type, reference_no):
 	if frappe.db.exists("Consumed Budget", {"reference_type":str(reference_type), "reference_no":str(reference_no)}):

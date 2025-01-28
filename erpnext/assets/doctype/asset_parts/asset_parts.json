@@ -1,0 +1,45 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-01-23 16:46:21.918081",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "part_name",
+  "column_break_yzuf",
+  "quanitty"
+ ],
+ "fields": [
+  {
+   "fieldname": "part_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Part Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_yzuf",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "quanitty",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Quanitty",
+   "reqd": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-01-23 16:47:29.757811",
+ "modified_by": "Administrator",
+ "module": "Assets",
+ "name": "Asset Parts",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

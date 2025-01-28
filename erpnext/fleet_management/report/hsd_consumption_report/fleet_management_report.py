@@ -49,6 +49,19 @@ def get_pol_till(purpose, equipment, date, pol_type=None):
 
     return total
 
+def get_pol_tills(purpose, equipment, date, pol_type=None):
+	if not equipment:
+		frappe.throw("Equipment and Till Date are Mandatory")
+	total = 0
+	query = "select sum(qty) as total from `tabPOL Entry` where docstatus = 1 and type = \'"+str(purpose)+"\' and equipment = \'" + str(equipment) + "\'"
+	if pol_type:
+		query += " and pol_type = \'" + str(pol_type) + "\'"
+	
+
+	quantity = frappe.db.sql(query, as_dict=True)
+	if quantity:
+		total = quantity[0].total
+	return total
 
 ##
 # Both recieved and issued pols can be queried with this
@@ -85,7 +98,7 @@ def get_pol_consumed_tills(equipment):
 	if pol:
 		return pol[0].total
 	else:
-		return 0		
+		return 0				
 
 def get_km_till(equipment, date):
 	if not equipment or not date:

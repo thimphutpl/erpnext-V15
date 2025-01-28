@@ -1142,11 +1142,9 @@ class AccountsController(TransactionBase):
 	@frappe.whitelist()
 	def set_advances(self):
 		"""Returns list of advances against Account, Party, Reference"""
-
 		res = self.get_advance_entries(
 			include_unallocated=not cint(self.get("only_include_allocated_payments"))
 		)
-
 		self.set("advances", [])
 		advance_allocated = 0
 		for d in res:
@@ -1189,14 +1187,15 @@ class AccountsController(TransactionBase):
 			amount_field = "debit_in_account_currency"
 			order_field = "purchase_order"
 			order_doctype = "Purchase Order"
-			party_account.append(self.credit_to)
+			# party_account.append(self.credit_to)
+			party_account.append(frappe.db.get_value("Company", self.company, "supplier_advance_account"))
 
-		party_account.extend(
-			get_party_account(party_type, party=party, company=self.company, include_advance=True)
-		)
+		# party_account.extend(
+		# 	get_party_account(party_type, party=party, company=self.company, include_advance=True)
+		# )
 
 		order_list = list(set(d.get(order_field) for d in self.get("items") if d.get(order_field)))
-
+		# frappe.throw(str(order_list))
 		journal_entries = get_advance_journal_entries(
 			party_type, party, party_account, amount_field, order_doctype, order_list, include_unallocated
 		)
@@ -1204,7 +1203,6 @@ class AccountsController(TransactionBase):
 		payment_entries = get_advance_payment_entries_for_regional(
 			party_type, party, party_account, order_doctype, order_list, include_unallocated
 		)
-
 		res = journal_entries + payment_entries
 
 		return res
@@ -2268,8 +2266,9 @@ class AccountsController(TransactionBase):
 
 	def set_due_date(self):
 		due_dates = [d.due_date for d in self.get("payment_schedule") if d.due_date]
-		if due_dates:
-			self.due_date = max(due_dates)
+		if not self.due_date:
+			if due_dates:
+				self.due_date = max(due_dates)
 
 	def validate_payment_schedule_dates(self):
 		dates = []
@@ -2749,8 +2748,18 @@ def get_advance_payment_entries(
 ):
 	payment_entries = []
 	payment_entry = frappe.qb.DocType("Payment Entry")
-
 	if order_list or against_all_orders:
+		# query = """
+		# 			select pr.allocated_amount as amount,
+		# 			pr.name as reference_row,
+		# 			pr.reference_name as against_order
+		# 			from `tabPayment Entry Reference` pr, `tabPayment Entry` pe
+		# 			where pr.parent = pe.name
+		# 			and pr.reference_doctype = '{}'
+		# 			and pr.docstatus = 1
+  		# 		""".format(order_doctype)
+		# if order_list:
+		# 	query += " and pr.reference_name in ({})".format(", ".join("'"+d+"'" for d in order_list))
 		q = get_common_query(
 			party_type,
 			party,
@@ -2767,11 +2776,13 @@ def get_advance_payment_entries(
 			(payment_ref.reference_name).as_("against_order"),
 		)
 
-		q = q.where(payment_ref.reference_doctype == order_doctype)
+		q = q.where((payment_ref.reference_doctype == order_doctype) & (payment_ref.docstatus == 1))
 		if order_list:
+			# frappe.throw(str(order_list))
 			q = q.where(payment_ref.reference_name.isin(order_list))
 
 		allocated = list(q.run(as_dict=True))
+		# allocated = list(frappe.db.sql(query, as_dict=1))
 		payment_entries += allocated
 	if include_unallocated:
 		q = get_common_query(

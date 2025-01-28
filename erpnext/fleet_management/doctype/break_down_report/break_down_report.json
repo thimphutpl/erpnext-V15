@@ -27,6 +27,8 @@
   "equipment_type",
   "equipment_model",
   "equipment_number",
+  "equipment_category",
+  "project",
   "nature_of_break_down",
   "defect",
   "section_break_15",
@@ -96,10 +98,10 @@
    "depends_on": "eval:doc.owned_by == \"CDCL\"",
    "fieldname": "section_break_8",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Intra-CDCL Transaction Details"
   },
   {
-   "fetch_from": "customer.cost_center",
    "fieldname": "customer_cost_center",
    "fieldtype": "Read Only",
    "label": "Customer Cost Center",
@@ -110,7 +112,6 @@
    "fieldtype": "Column Break"
   },
   {
-   "fetch_from": "customer.branch",
    "fieldname": "customer_branch",
    "fieldtype": "Read Only",
    "label": "Customer Branch",
@@ -119,14 +120,14 @@
   {
    "fieldname": "section_break_2",
    "fieldtype": "Section Break",
-   "label": "Customer & Equipment Details"
+   "label": "Supplier & Equipment Details"
   },
   {
    "fieldname": "customer",
    "fieldtype": "Link",
    "in_list_view": 1,
-   "label": "Customer",
-   "options": "Customer",
+   "label": "Supplier",
+   "options": "Supplier",
    "reqd": 1
   },
   {
@@ -139,7 +140,7 @@
    "depends_on": "eval:doc.owned_by == 'Others' && doc.customer",
    "fieldname": "private_customer_name",
    "fieldtype": "Data",
-   "label": "Customer Name"
+   "label": "Supplier Name"
   },
   {
    "depends_on": "eval:doc.owned_by == 'Others' && doc.customer",
@@ -226,12 +227,26 @@
    "label": "Job Card",
    "options": "Job Cards",
    "read_only": 1
+  },
+  {
+   "fetch_from": "equipment.project",
+   "fieldname": "project",
+   "fieldtype": "Read Only",
+   "hidden": 1,
+   "label": "Project"
+  },
+  {
+   "fetch_from": "equipment.equipment_category",
+   "fieldname": "equipment_category",
+   "fieldtype": "Link",
+   "label": "Equipment Category",
+   "options": "Equipment Category"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-04 20:59:54.240114",
+ "modified": "2025-01-27 18:32:33.341508",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Break Down Report",

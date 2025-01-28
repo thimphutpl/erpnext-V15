@@ -6,7 +6,6 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "column_break_dphg",
   "company",
   "purpose",
   "based_on",
@@ -184,17 +183,12 @@
    "hidden": 1,
    "label": "Posting Date",
    "reqd": 1
-  },
-  {
-   "default": "Now",
-   "fieldname": "column_break_dphg",
-   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-12-23 12:16:39.135659",
+ "modified": "2025-01-16 12:49:04.019714",
  "modified_by": "Administrator",
  "module": "Assets",
  "name": "Asset Movement",

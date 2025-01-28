@@ -29,6 +29,7 @@ class EquipmentHiringExtension(Document):
         hours: DF.Float
         journal: DF.Data | None
         posting_date: DF.Date
+        project: DF.ReadOnly | None
         rate: DF.Currency
         receiable_amount: DF.Currency
         registration_number: DF.Data

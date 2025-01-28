@@ -21,17 +21,28 @@ def get_data(filters):
 			SUM(IFNULL(t.received_qty,0)) total_qty,
 			SUM(IFNULL(t.issued_qty,0)) issued_qty,
 			SUM(IFNULL(t.received_qty,0))-SUM(IFNULL(t.issued_qty,0)) balance_qty,
+			SUM(IFNULL(t.received_amount,0)) total_val,
+			SUM(IFNULL(t.issued_amount,0)) issued_val,
+			SUM(IFNULL(t.received_amount,0))-SUM(IFNULL(t.issued_amount,0)) balance_val,
 			GROUP_CONCAT(IF(IFNULL(t.received_qty, 0)-IFNULL(t.issued_qty, 0) > 0, CONCAT('<a href="desk#Form/Purchase Receipt/',t.ref_doc,'">',t.ref_doc,'(',IFNULL(t.received_qty,0)-IFNULL(t.issued_qty, 0),')','</a>'),NULL)) purchase_receipt
 			FROM(
 			SELECT ar.item_code, ar.ref_doc, ar.cost_center, (select distinct pr.warehouse from `tabPurchase Receipt Item` pr where pr.name = ar.child_ref) as warehouse,
 				SUM(ar.qty) received_qty,
+				(SELECT SUM(pri.amount) from `tabPurchase Receipt Item` pri where pri.name = ar.child_ref) received_amount,
 				IFNULL((SELECT SUM(ai.qty)
 					FROM `tabAsset Issue Details` ai
 					WHERE ai.item_code = ar.item_code
 					AND ai.issued_date BETWEEN '{from_date}' AND '{to_date}' 
 					AND ai.purchase_receipt = ar.ref_doc
 					AND ai.docstatus = 1
-					),0) issued_qty
+					),0) issued_qty,
+				IFNULL((SELECT SUM(ai.amount)
+					FROM `tabAsset Issue Details` ai
+					WHERE ai.item_code = ar.item_code
+					AND ai.issued_date BETWEEN '{from_date}' AND '{to_date}' 
+					AND ai.purchase_receipt = ar.ref_doc
+					AND ai.docstatus = 1
+					),0) issued_amount
 			FROM `tabAsset Received Entries` ar
 			WHERE ar.received_date BETWEEN '{from_date}' AND '{to_date}'
 			AND ar.docstatus = 1
@@ -94,15 +105,33 @@ def get_columns():
 		  "width": 120
 		},
 		{
+		  "fieldname": "total_val",
+		  "label": "Total Value",
+		  "fieldtype": "Currency",
+		  "width": 120
+		},
+		{
 		  "fieldname": "issued_qty",
 		  "label": "Issued Quantity",
 		  "fieldtype": "Int",
 		  "width": 120
 		},
 		{
+		  "fieldname": "issued_val",
+		  "label": "Issued Value",
+		  "fieldtype": "Currency",
+		  "width": 120
+		},
+		{
 		  "fieldname": "balance_qty",
 		  "label": "Balance Quantity",
 		  "fieldtype": "Int",
+		  "width": 120
+		},
+		{
+		  "fieldname": "balance_val",
+		  "label": "Balance Value",
+		  "fieldtype": "Currency",
 		  "width": 120
 		},
 		{

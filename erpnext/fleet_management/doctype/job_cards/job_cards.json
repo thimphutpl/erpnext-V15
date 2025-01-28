@@ -37,8 +37,10 @@
   "equipment_type",
   "column_break_4",
   "equipment_model",
+  "project",
   "column_break_6",
   "equipment_number",
+  "equipment_category",
   "job_details_section",
   "name_of_the_job",
   "column_break_yuxf",
@@ -109,6 +111,7 @@
    "depends_on": "eval:doc.owned_by=='Others'",
    "fieldname": "dispatch_number",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Dispatch Number"
   },
   {
@@ -120,6 +123,7 @@
    "depends_on": "eval:doc.owned_by=='Others'",
    "fieldname": "ref_number",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Reference Number"
   },
   {
@@ -168,8 +172,8 @@
    "fieldname": "customer",
    "fieldtype": "Link",
    "in_list_view": 1,
-   "label": "Customer",
-   "options": "Customer",
+   "label": "Supplier",
+   "options": "Supplier",
    "read_only": 1
   },
   {
@@ -464,12 +468,24 @@
    "fieldname": "table_jqvd",
    "fieldtype": "Table",
    "options": "Mechanic Assigned"
+  },
+  {
+   "fetch_from": "equipment.project",
+   "fieldname": "project",
+   "fieldtype": "Read Only",
+   "label": "Project"
+  },
+  {
+   "fieldname": "equipment_category",
+   "fieldtype": "Link",
+   "label": "Equipment Category",
+   "options": "Equipment Category"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-04 21:24:58.137577",
+ "modified": "2025-01-27 19:42:12.318700",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Job Cards",

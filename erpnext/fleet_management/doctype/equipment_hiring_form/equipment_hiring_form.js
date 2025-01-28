@@ -179,6 +179,11 @@ frappe.ui.form.on("Hiring Approval Details", {
 		}
 	},
 	"rate": function (frm, cdt, cdn) {
+		// frappe.throw("hello")
+		calculate_amount(frm, cdt, cdn)
+	},
+	"lumpsum_rate": function (frm, cdt, cdn) {
+		// frappe.throw("hello")
 		calculate_amount(frm, cdt, cdn)
 	},
 	"cft_qty": function (frm, cdt, cdn) {
@@ -239,33 +244,33 @@ function calculate_time(frm, cdt, cdn) {
 	}
 }
 
-function get_rates(frm, cdt, cdn) {
-	doc = locals[cdt][cdn]
-	if (doc.equipment && doc.rate_type && doc.from_date) {
-		return frappe.call({
-			method: "erpnext.fleet_management.doctype.equipment_hiring_form.equipment_hiring_form.get_hire_rates",
-			args: { customer:frm.doc.customer, equipment: doc.equipment, from_date: doc.from_date },
-			callback: function (r) {
-				if (r.message) {
-					if (doc.rate_type == "Without Fuel") {
-						frappe.model.set_value(cdt, cdn, "rate", r.message[0].without_fuel)
-					}
-					else if (doc.rate_type == "With Fuel") {
-						frappe.model.set_value(cdt, cdn, "rate", r.message[0].with_fuel)
-					}
-					else if (doc.rate_type == "Cft - Broadleaf") {
-						frappe.model.set_value(cdt, cdn, "rate", r.message[0].cft_rate_bf)
-					}
-					else if (doc.rate_type == "Cft - Conifer") {
-						frappe.model.set_value(cdt, cdn, "rate", r.message[0].cft_rate_co)
-					}
-					frappe.model.set_value(cdt, cdn, "idle_rate", r.message[0].idle)
-				}
-				cur_frm.refresh_fields()
-			}
-		})
-	}
-}
+// function get_rates(frm, cdt, cdn) {
+// 	doc = locals[cdt][cdn]
+// 	if (doc.equipment && doc.rate_type && doc.from_date) {
+// 		return frappe.call({
+// 			method: "erpnext.fleet_management.doctype.equipment_hiring_form.equipment_hiring_form.get_hire_rates",
+// 			args: { customer:frm.doc.customer, equipment: doc.equipment, from_date: doc.from_date },
+// 			callback: function (r) {
+// 				if (r.message) {
+// 					if (doc.rate_type == "Without Fuel") {
+// 						frappe.model.set_value(cdt, cdn, "rate", r.message[0].without_fuel)
+// 					}
+// 					else if (doc.rate_type == "With Fuel") {
+// 						frappe.model.set_value(cdt, cdn, "rate", r.message[0].with_fuel)
+// 					}
+// 					else if (doc.rate_type == "Cft - Broadleaf") {
+// 						frappe.model.set_value(cdt, cdn, "rate", r.message[0].cft_rate_bf)
+// 					}
+// 					else if (doc.rate_type == "Cft - Conifer") {
+// 						frappe.model.set_value(cdt, cdn, "rate", r.message[0].cft_rate_co)
+// 					}
+// 					frappe.model.set_value(cdt, cdn, "idle_rate", r.message[0].idle)
+// 				}
+// 				cur_frm.refresh_fields()
+// 			}
+// 		})
+// 	}
+// }
 
 function get_diff_rates(frm, cdt, cdn) {
 	doc = locals[cdt][cdn]
@@ -300,7 +305,15 @@ function get_diff_rates(frm, cdt, cdn) {
 function calculate_total(frm) {
 	var total = 0;
 	frm.doc.approved_items.forEach(function (d) {
-		total += d.grand_total
+		// frappe.throw("qqqqqqqqq")
+		if (frm.doc.lumpsum_rate){
+			frappe.throw("1234")
+			total = d.grand_total
+		}else{
+			frappe.throw("jjjjj")
+			total += d.grand_total
+		}
+		
 	})
 	frm.set_value("total_hiring_amount", total)
 	frm.refresh_field("total_hiring_amount")
@@ -312,8 +325,12 @@ function calculate_total(frm) {
 function calculate_amount(frm, cdt, cdn) {
 	var item = locals[cdt][cdn]
 	if (item.rate) {
+		// frappe.throw("hhhhhh")
 		if (item.rate_type == "Cft - Broadleaf" || item.rate_type == "Cft - Conifer") {
 			grand_amount = item.rate * item.cft_qty
+		}
+		else if (item.lumpsum_rate){
+			grand_amount = lumpsum_rate
 		}
 		else {
 			grand_amount = item.rate * item.total_hours

@@ -10,6 +10,7 @@
  "field_order": [
   "supplier_section",
   "title",
+  "n_series",
   "naming_series",
   "supplier",
   "supplier_name",
@@ -19,6 +20,7 @@
   "column_break_7",
   "transaction_date",
   "schedule_date",
+  "for_project",
   "column_break1",
   "company",
   "branch",
@@ -99,6 +101,7 @@
   "base_discount_amount",
   "discount_amount",
   "column_break_45",
+  "tax",
   "freight_insurance_charges",
   "other_charges",
   "references_section",
@@ -176,10 +179,9 @@
   },
   {
    "allow_on_submit": 1,
-   "default": "{supplier_name}",
    "fieldname": "title",
    "fieldtype": "Data",
-   "hidden": 1,
+   "in_list_view": 1,
    "label": "Title",
    "no_copy": 1,
    "print_hide": 1,
@@ -188,13 +190,12 @@
   {
    "fieldname": "naming_series",
    "fieldtype": "Select",
+   "hidden": 1,
    "label": "Series",
    "no_copy": 1,
    "oldfieldname": "naming_series",
    "oldfieldtype": "Select",
    "options": "PUR-ORD-.YYYY.-",
-   "print_hide": 1,
-   "reqd": 1,
    "set_only_once": 1
   },
   {
@@ -202,6 +203,7 @@
    "fieldname": "supplier",
    "fieldtype": "Link",
    "in_global_search": 1,
+   "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Supplier",
    "oldfieldname": "supplier",
@@ -1114,6 +1116,7 @@
   {
    "fieldname": "project",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Project",
    "options": "Project"
   },
@@ -1331,13 +1334,32 @@
   {
    "fieldname": "column_break_rudx",
    "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "for_project",
+   "fieldtype": "Check",
+   "label": "For Project"
+  },
+  {
+   "fieldname": "tax",
+   "fieldtype": "Currency",
+   "label": "Tax"
+  },
+  {
+   "fieldname": "n_series",
+   "fieldtype": "Select",
+   "label": "Naming Series",
+   "options": "\nConsumables\nFixed Asset\nSales Product\nSpare Parts\nServices Miscellaneous\nServices Works",
+   "reqd": 1,
+   "set_only_once": 1
   }
  ],
  "icon": "fa fa-file-text",
  "idx": 105,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-16 11:39:10.540582",
+ "modified": "2025-01-27 17:51:35.400410",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Purchase Order",

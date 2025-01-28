@@ -260,7 +260,7 @@ class Item(Document):
 	def before_save(self):
 		if self.is_stock_item or self.is_fixed_asset:
 			return
-		if not self.is_stock_item or not self.is_fixed_asset:
+		if (not self.is_stock_item or not self.is_fixed_asset) and "Service" not in self.item_group:
 			frappe.throw("Before save Check if the Item is to Maintain Stock or Is Fixed Asset")
 
 	def validate_duplicate(self):

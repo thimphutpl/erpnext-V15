@@ -25,7 +25,9 @@ class BulkAssetDisposal(Document):
 		branch: DF.Link | None
 		customer: DF.Link | None
 		item: DF.Table[BulkAssetDisposalItem]
-		scrap: DF.Literal["", "Scrap Asset"]
+		journal_entry: DF.Data | None
+		sales_invoice: DF.Data | None
+		scrap: DF.Literal["", "Scrap Asset", "Sale Asset"]
 		scrap_date: DF.Date
 	# end: auto-generated types
 	
@@ -74,7 +76,38 @@ class BulkAssetDisposal(Document):
 
 	def on_cancel(self):
 		self.revert_asset()
-	
+
+	# def before_cancel(self):
+	# 	if self.scrap == "Scrap Asset":
+	# 		for a in self.item:
+	# 			vad_reverse = 0
+	# 			jv = frappe.get_doc("Journal Entry", frappe.db.get_value("Asset", a.asset, "journal_entry_for_scrap"))
+	# 			jede = frappe.db.sql("""
+	# 						select journal_entry, name, depreciation_amount from `tabDepreciation Schedule` where parent = '{0}' and year(schedule_date) = year('{1}')
+	# 						and month(schedule_date) = month('{1}') and journal_entry is not NULL
+    #                      """.format(a.asset, self.scrap_date), as_dict=1)
+	# 			if jede:
+	# 				vad_reverse += flt(jede[0].depreciation_amount,2)
+	# 				jede_doc = frappe.get_doc("Journal Entry", jede[0].journal_entry)
+	# 				frappe.db.sql("update `tabDepreciation Schedule` set journal_entry = NULL where name = '{}'".format(jede[0].journal_entry))
+	# 				jede_doc.cancel()
+					
+	# 			frappe.db.sql("update `tabAsset` set journal_entry_for_scrap = NULL, disposal_date = NULL, value_after_depreciation = value_after_depreciation+{} where name = '{}'".format(vad_reverse, a.asset))
+	# 			jv.cancel()
+	# 			# vad_reverse = 0
+	# 			# jv = frappe.get_doc("Journal Entry", frappe.db.get_value("Asset", a.asset, "journal_entry_for_scrap"))
+	# 			# jede = frappe.db.sql("""
+	# 			# 			select journal_entry, name, depreciation_amount from `tabDepreciation Schedule` where parent = '{0}' and year(schedule_date) = year('{1}')
+	# 			# 			and month(schedule_date) = month('{1}') and journal_entry is not NULL
+    #             #          """.format(a.asset, self.scrap_date), as_dict=1)
+	# 			# if jede:
+	# 			# 	vad_reverse += flt(jede[0].depreciation_amount,2)
+	# 			# 	jede_doc = frappe.get_doc("Journal Entry", jede[0].journal_entry)
+	# 			# 	frappe.db.sql("update `tabDepreciation Schedule` set journal_entry = NULL where name = '{}'".format(jede[0].journal_entry))
+	# 			# 	jede_doc.cancel()
+					
+	# 			# frappe.db.sql("update `tabAsset` set journal_entry_for_scrap = NULL, disposal_date = NULL, value_after_depreciation = value_after_depreciation+{} where name = '{}'".format(vad_reverse, a.asset))
+	# 			# jv.cancel()
 	def scrap_asset(self):
 		for data in self.item: 
 			scrap_asset(data.asset, self.scrap_date)
@@ -101,6 +134,7 @@ def sale_asset(branch, business_activity, name, scrap_date, customer, posting_da
 						""".format(name=name, date=scrap_date),as_dict=1)
 	si = frappe.new_doc("Sales Invoice")
 	si.branch = branch
+	si.cost_center = frappe.db.get_value("Branch", branch, "cost_center")
 	si.business_activity = business_activity
 	si.company = frappe.defaults.get_user_default("company")
 	si.customer = customer
@@ -108,8 +142,9 @@ def sale_asset(branch, business_activity, name, scrap_date, customer, posting_da
 	si.posting_date = posting_date
 	company = frappe.defaults.get_user_default("company")
 	si.currency = frappe.get_cached_value('Company', company ,  "default_currency")
-	disposal_account, depreciation_cost_center = get_disposal_account_and_cost_center(company)
+	loss_disposal_account, gain_disposal_account, depreciation_cost_center = get_disposal_account_and_cost_center(company)
 	si.bulk_asset_disposal = name
+
 	for data in item:
 		si.append("items", {
 			"item_code": data.item_code,
@@ -117,7 +152,7 @@ def sale_asset(branch, business_activity, name, scrap_date, customer, posting_da
 			"is_fixed_asset": 1,
 			"asset": data.asset,
 			"uom": data.uom,
-			"income_account": disposal_account,
+			"income_account": gain_disposal_account,
 			# "serial_no": serial_no,
 			"cost_center": depreciation_cost_center,
 			"qty": 1,

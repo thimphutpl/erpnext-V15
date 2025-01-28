@@ -92,6 +92,7 @@ class PurchaseOrder(BuyingController):
 		discount: DF.Currency
 		discount_amount: DF.Currency
 		footer: DF.TextEditor | None
+		for_project: DF.Check
 		freight_insurance_charges: DF.Currency
 		from_date: DF.Date | None
 		grand_total: DF.Currency
@@ -109,6 +110,7 @@ class PurchaseOrder(BuyingController):
 		material_request: DF.Link | None
 		material_request_date: DF.Link | None
 		material_requst: DF.Link | None
+		n_series: DF.Literal["", "Consumables", "Fixed Asset", "Sales Product", "Spare Parts", "Services Miscellaneous", "Services Works"]
 		naming_series: DF.Literal["PUR-ORD-.YYYY.-"]
 		net_total: DF.Currency
 		order_confirmation_date: DF.Date | None
@@ -140,6 +142,7 @@ class PurchaseOrder(BuyingController):
 		supplier_address: DF.Link | None
 		supplier_name: DF.Data | None
 		supplier_warehouse: DF.Link | None
+		tax: DF.Currency
 		tax_withholding_category: DF.Link | None
 		tax_withholding_net_total: DF.Currency
 		taxes: DF.Table[PurchaseTaxesandCharges]
@@ -157,6 +160,22 @@ class PurchaseOrder(BuyingController):
 		total_taxes_and_charges: DF.Currency
 		transaction_date: DF.Date
 	# end: auto-generated types
+	def autoname(self):
+		if self.n_series == 'Consumables':
+			series = 'POCO'
+		elif self.n_series == 'Fixed Asset':
+			series = 'POFA'
+		elif self.n_series == 'Sales Product':
+			series = 'POSA'
+		elif self.n_series == 'Spare Parts':
+			series ='POSP'
+		elif self.n_series == 'Services Miscellaneous':
+			series = 'POSM'
+		elif self.n_series == 'Services Works':
+			series ='POSW'
+		else:
+			series = 'POPO'
+		self.name = make_autoname(str(series) + ".YY.MM.####")
 
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
@@ -186,7 +205,7 @@ class PurchaseOrder(BuyingController):
 
 		# apply tax withholding only if checked and applicable
 		self.set_tax_withholding()
-
+		self.validate_project()
 		self.validate_supplier()
 		self.validate_schedule_date()
 		validate_for_items(self)
@@ -464,7 +483,9 @@ class PurchaseOrder(BuyingController):
 
 	def on_submit(self):
 		super().on_submit()
-
+		if self.for_project == 1:
+			self.update_project_task()
+			self.update_project_maintenance_cost()
 		if self.is_against_so():
 			self.update_status_updater()
 
@@ -473,7 +494,7 @@ class PurchaseOrder(BuyingController):
 		# 	self.update_requested_qty()
 
 		self.update_ordered_qty()
-		self.validate_budget()
+		# self.validate_budget()
 		self.update_reserved_qty_for_subcontract()
 
 		frappe.get_doc("Authorization Control").validate_approving_authority(
@@ -518,7 +539,8 @@ class PurchaseOrder(BuyingController):
 		self.update_ordered_qty()
 
 		self.update_blanket_order()
-
+		self.update_project_task()
+		self.update_project_maintenance_cost()
 		unlink_inter_company_doc(self.doctype, self.name, self.inter_company_order_reference)
 
 	def on_update(self):
@@ -582,6 +604,115 @@ class PurchaseOrder(BuyingController):
 		# 		if d.rm_item_code:
 		# 			stock_bin = get_bin(d.rm_item_code, d.reserve_warehouse)
 		# 			stock_bin.update_reserved_qty_for_sub_contracting(subcontract_doctype="Purchase Order")
+	# added by phuntsho and kinley on oct 12, 2021
+
+	def validate_project(self):
+		if self.for_project == 1:
+			row = 1
+			for a in self.items:
+				if not a.project:
+					frappe.throw("Project is Mandatory in row {} in Items table.".format(row))
+				if not a.task:
+					frappe.throw("Task is Mandatory in row {} in Items table.".format(row))
+				if a.project and not a.task:
+					frappe.throw("Task is Mandatory in row {} in Items table.".format(row))
+				if not a.project and a.task:
+					frappe.throw("Project is Mandatory in row {} in Items table.".format(row))
+				row += 1
+
+	def update_project_task(self):
+		""" update the items child table for the respective doctype: Task or Maintenance order """
+		if self.docstatus == 1:
+			for d in self.items:
+				if d.project and "Service" in frappe.db.get_value("Item", d.item_code, "item_group"):
+					project = frappe.get_doc("Project",d.project)
+					task = frappe.get_doc("Task",d.task)
+					p_row = project.append("task_material_item", {})
+					t_row = task.append("task_material_item", {})
+					#Project Update
+					p_row.item = d.item_code
+					p_row.item_name = d.item_name
+					p_row.item_uom = d.uom
+					p_row.item_quantity = d.qty
+					p_row.reference_type = "Purchase Order"
+					p_row.reference_name = self.name
+					#Task Update
+					t_row.item = d.item_code
+					t_row.item_name = d.item_name
+					t_row.item_uom = d.uom
+					t_row.item_quantity = d.qty
+					t_row.reference_type = "Purchase Order"
+					t_row.reference_name = self.name
+					if d.net_rate > 0:
+						#Project
+						p_row.item_rate = d.base_net_rate if d.base_net_rate > 0 else d.net_rate
+						p_row.item_rate = d.base_net_rate if d.base_net_rate > 0 else d.net_rate
+						#Task
+						t_row.item_rate = d.base_net_rate if d.base_net_rate > 0 else d.net_rate
+						t_row.item_rate = d.base_net_rate if d.base_net_rate > 0 else d.net_rate
+					else:
+						#Project
+						p_row.item_rate = d.base_rate if d.base_rate > 0 else d.rate
+						#Task
+						t_row.item_rate = d.base_rate if d.base_rate > 0 else d.rate
+					if d.net_amount > 0:
+						#Project
+						p_row.item_amount = d.base_net_amount if d.base_net_amount > 0 else d.net_amount
+						#Task
+						t_row.item_amount = d.base_net_amount if d.base_net_amount > 0 else d.net_amount
+					else:
+						#Project
+						p_row.item_amount = d.base_amount if d.base_amount > 0 else d.amount
+						#Task
+						t_row.item_amount = d.base_amount if d.base_amount > 0 else d.amount
+					task.save(ignore_permissions=True)
+					project.save(ignore_permissions=True)
+		elif self.docstatus == 2:
+			for item in self.items:
+				if "Service" in frappe.db.get_value("Item", item.item_code, "item_group"):
+					frappe.db.sql("""
+						DELETE FROM
+							`tabTask Material Item` 
+						WHERE 
+							reference_name = '{mr}' and 
+							item = '{item_code}'
+					""".format(
+						mr = self.name, 
+						item_code = item.item_code, 
+					))
+	# added by phuntsho on september 28, 2021
+	def update_project_maintenance_cost(self):
+		""" update the cost of project/task or maintenance """
+		for a in self.items:
+			if "Service" in frappe.db.get_value("Item", item.item_code, "item_group"):
+				stores_cost = service_cost = 0
+				if a.net_amount > 0:
+					amount = a.base_net_amount if a.base_net_amount > 0 else a.net_amount
+				else:
+					amount = a.base_amount if a.base_amount > 0 else a.amount
+				if "Service" in a.item_group:
+					service_cost = amount
+				else:
+					stores_cost = amount
+				if a.project:
+					project = frappe.get_doc("Project", a.project)
+					task = frappe.get_doc("Task", a.task)
+					# total_previous_cost = frappe.db.get_value("Project", a.project, ["material_cost", "services_cost", "total_cost"], as_dict=1)
+					# task_previous_cost = frappe.db.get_value("Task", a.task, ["material_cost", "services_cost", "total_cost"],as_dict=1)
+					project_service_cost = (flt(project.services_cost) + flt(service_cost)) if self.docstatus == 1 else (flt(project.services_cost) - flt(service_cost))
+					task_service_cost = (flt(task.services_cost) + flt(service_cost)) if self.docstatus == 1 else (flt(task.services_cost) - flt(service_cost))
+					project_store_cost = (flt(project.material_cost) + flt(stores_cost)) if self.docstatus == 1 else (flt(project.material_cost) - flt(stores_cost))
+					task_store_cost = (flt(task.material_cost) + flt(stores_cost)) if self.docstatus == 1 else (flt(task.material_cost) - flt(stores_cost))
+					total_task_cost = (flt(task.total_cost) + flt(amount)) if self.docstatus == 1 else (flt(task.total_cost) - flt(amount))
+					total_overall_cost = (flt(project.total_cost) + flt(amount)) if self.docstatus == 1 else (flt(project.total_cost) - flt(amount))
+					project.db_set("total_cost",total_overall_cost)
+					project.db_set("services_cost",project_service_cost)
+					project.db_set("material_cost",project_store_cost)
+					task.db_set("total_cost",total_task_cost)
+					task.db_set("services_cost",task_service_cost)
+					task.db_set("material_cost",task_store_cost)
+					# frappe.db.sql("update `tabProject` set total_cost={} where name ='{}'".format(total_overall_cost, self.reference_name))
+					# frappe.db.sql("""UPDATE `tabTask` SET total_cost={tot_cost}, service_cost={ser_cost}, material_cost={mat_cost} WHERE name='{task}'""".format(tot_cost=total_task_cost, ser_cost=total_service_cost, mat_cost=total_store_cost, task =self.task))
 
 	def update_receiving_percentage(self):
 		total_qty, received_qty = 0.0, 0.0
@@ -783,7 +914,8 @@ def get_mapped_purchase_invoice(source_name, target_doc=None, ignore_permissions
 		target.qty = (
 			target.amount / flt(obj.rate) if (flt(obj.rate) and flt(obj.billed_amt)) else flt(obj.qty)
 		)
-
+		target.purchase_order = source_parent.name
+		target.po_detail = obj.name
 		item = get_item_defaults(target.item_code, source_parent.company)
 		item_group = get_item_group_defaults(target.item_code, source_parent.company)
 		target.cost_center = (
@@ -946,3 +1078,15 @@ def is_subcontracting_order_created(po_name) -> bool:
 		if frappe.db.exists("Subcontracting Order", {"purchase_order": po_name, "docstatus": ["=", 1]})
 		else False
 	)
+@frappe.whitelist()
+def get_permission_query_conditions(user):
+	if not user: user = frappe.session.user
+	user_roles = frappe.get_roles(user)
+	employee=frappe.db.get_value("Employee",{"user_id": user},"name")
+
+	if user == "Administrator":
+		return
+	if "HR Master" in user_roles or "Auditor" in user_roles or "HR User" in user_roles or "HR Manager" in user_roles:
+		return
+	else:
+		return

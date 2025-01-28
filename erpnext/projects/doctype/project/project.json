@@ -11,7 +11,6 @@
   "naming_series",
   "project_name",
   "parent_project",
-  "project_engineer",
   "status",
   "project_type",
   "project_category",
@@ -24,6 +23,9 @@
   "priority",
   "department",
   "old_project_id",
+  "project_engineer",
+  "project_engineer_name",
+  "project_engineer_designation",
   "cb_1",
   "branch",
   "cost_center",
@@ -41,14 +43,32 @@
   "duration_sum",
   "revised_completion_date",
   "overall_mandays",
+  "tot_wq_percent_complete",
+  "tot_wq_percent",
   "cb_01",
   "expected_end_date",
   "mandays",
   "man_power_required",
+  "holiday_list",
   "sb_progress",
   "physical_progress_weightage",
-  "physical_progress",
   "completion_date",
+  "column_break_uayw",
+  "physical_progress",
+  "column_break_xzuk",
+  "percent_completed",
+  "sb_material_details",
+  "task_material_item",
+  "other_document_references_section",
+  "other_doc_item",
+  "sb_cost_details",
+  "opening_balance",
+  "material_cost",
+  "services_cost",
+  "other_expenses",
+  "column_break_sirl",
+  "column_break_yuaa",
+  "total_cost",
   "defect_liability_section_section",
   "dlp_start_date",
   "dlp_end_date",
@@ -60,11 +80,6 @@
   "users_section",
   "users",
   "copied_from",
-  "activity_and_tasks",
-  "tot_wq_percent",
-  "cb_at",
-  "tot_wq_percent_complete",
-  "cb_at_1",
   "sb_activity_task",
   "activity_tasks",
   "sb_additional_tasks",
@@ -106,7 +121,6 @@
   "per_gross_margin",
   "monitor_progress",
   "collect_progress",
-  "holiday_list",
   "frequency",
   "from_time",
   "to_time",
@@ -438,7 +452,6 @@
    "search_index": 1
   },
   {
-   "depends_on": "collect_progress",
    "fieldname": "holiday_list",
    "fieldtype": "Link",
    "label": "Holiday List",
@@ -547,31 +560,20 @@
    "read_only": 1
   },
   {
-   "fieldname": "activity_and_tasks",
-   "fieldtype": "Section Break",
-   "label": "WORK PLAN"
-  },
-  {
    "fieldname": "tot_wq_percent",
    "fieldtype": "Percent",
+   "hidden": 1,
    "label": "% Work Quantity",
    "read_only": 1
-  },
-  {
-   "fieldname": "cb_at",
-   "fieldtype": "Column Break"
   },
   {
    "bold": 1,
    "fieldname": "tot_wq_percent_complete",
    "fieldtype": "Percent",
+   "hidden": 1,
    "label": "% Work Quantity Completed",
    "no_copy": 1,
    "read_only": 1
-  },
-  {
-   "fieldname": "cb_at_1",
-   "fieldtype": "Column Break"
   },
   {
    "fieldname": "sb_activity_task",
@@ -599,6 +601,7 @@
   {
    "fieldname": "sb_additional_tasks",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "ADDITIONAL TASKS"
   },
   {
@@ -630,7 +633,8 @@
   },
   {
    "fieldname": "sb_tab_additional_tasks",
-   "fieldtype": "Section Break"
+   "fieldtype": "Section Break",
+   "hidden": 1
   },
   {
    "allow_bulk_edit": 1,
@@ -685,6 +689,7 @@
    "collapsible": 1,
    "fieldname": "defect_liability_section_section",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Defect Liability Section"
   },
   {
@@ -773,7 +778,8 @@
   {
    "fieldname": "overall_mandays",
    "fieldtype": "Data",
-   "label": "Project Man Days"
+   "label": "Project Man Days",
+   "read_only": 1
   },
   {
    "fieldname": "mandays",
@@ -826,7 +832,6 @@
    "allow_on_submit": 1,
    "fieldname": "physical_progress",
    "fieldtype": "Percent",
-   "in_list_view": 1,
    "label": "Contributed(%)",
    "read_only": 1
   },
@@ -841,6 +846,102 @@
    "fieldname": "old_project_id",
    "fieldtype": "Data",
    "label": "Old Project ID"
+  },
+  {
+   "fieldname": "total_cost",
+   "fieldtype": "Currency",
+   "label": "Total Cost",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "project_engineer.employee_name",
+   "fieldname": "project_engineer_name",
+   "fieldtype": "Data",
+   "label": "Project Engineer Name",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "project_engineer.designation",
+   "fieldname": "project_engineer_designation",
+   "fieldtype": "Link",
+   "label": "Project Engineer Designation",
+   "options": "Designation",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_uayw",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_xzuk",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "percent_completed",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Activity Completion (%)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sb_cost_details",
+   "fieldtype": "Section Break",
+   "label": "Cost Details"
+  },
+  {
+   "fieldname": "opening_balance",
+   "fieldtype": "Currency",
+   "label": "Opening Balance"
+  },
+  {
+   "fieldname": "column_break_sirl",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_yuaa",
+   "fieldtype": "Column Break"
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "sb_material_details",
+   "fieldtype": "Section Break",
+   "label": "Material Details"
+  },
+  {
+   "fieldname": "task_material_item",
+   "fieldtype": "Table",
+   "options": "Task Material Item",
+   "read_only": 1
+  },
+  {
+   "fieldname": "material_cost",
+   "fieldtype": "Currency",
+   "label": "Material Cost",
+   "read_only": 1
+  },
+  {
+   "fieldname": "services_cost",
+   "fieldtype": "Currency",
+   "label": "Services Cost",
+   "read_only": 1
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "other_document_references_section",
+   "fieldtype": "Section Break",
+   "label": "Other Document References"
+  },
+  {
+   "fieldname": "other_doc_item",
+   "fieldtype": "Table",
+   "options": "Project Expense Item"
+  },
+  {
+   "fieldname": "other_expenses",
+   "fieldtype": "Currency",
+   "label": "Other Expenses",
+   "read_only": 1
   }
  ],
  "icon": "fa fa-puzzle-piece",
@@ -848,7 +949,7 @@
  "index_web_pages_for_search": 1,
  "links": [],
  "max_attachments": 4,
- "modified": "2025-01-06 16:15:49.972264",
+ "modified": "2025-01-26 18:57:42.323741",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Project",

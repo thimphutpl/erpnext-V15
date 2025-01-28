@@ -70,7 +70,9 @@ class AbstractBill(Document):
 			# Return the new name
 			return abbr + year_month + incremented_number
 		else:
-			abbreviation = frappe.db.get_value("Branch", self.branch, "abbreviation")
+			abbreviation = frappe.db.get_value("Branch", self.branch, "abbr")
+			if not abbreviation:
+				abbreviation ="NON"
 			year_month = str(self.posting_date)[:7].replace('-', '')
 			if not abbreviation:
 				frappe.throw("Setup Abbreviation in {}".format(frappe.get_desk_link("Branch", self.branch)))

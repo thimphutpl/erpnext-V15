@@ -22,10 +22,13 @@
   "equipment_model",
   "column_break_cwlv",
   "rate_type",
+  "lumpsum",
+  "hourly",
+  "project",
   "place",
   "column_break_pvzv",
+  "lumpsum_rate",
   "rate",
-  "idle_rate",
   "column_break_qeii",
   "diff_rate",
   "tender_hire_rate",
@@ -138,10 +141,9 @@
    "depends_on": "eval: doc.equipment",
    "fieldname": "rate_type",
    "fieldtype": "Select",
-   "hidden": 1,
    "in_list_view": 1,
    "label": "Rate Type",
-   "options": "\nWith Fuel\nWithout Fuel"
+   "options": "\nLumpsum\nHourly"
   },
   {
    "depends_on": "eval:doc.equipment",
@@ -155,17 +157,11 @@
    "hidden": 1
   },
   {
+   "depends_on": "eval:doc.hourly",
    "fieldname": "rate",
    "fieldtype": "Currency",
    "in_list_view": 1,
-   "label": "Rate (Work)",
-   "read_only": 1
-  },
-  {
-   "fieldname": "idle_rate",
-   "fieldtype": "Currency",
-   "label": "Rate (Idle)",
-   "read_only": 1
+   "label": "Hourly Rate"
   },
   {
    "fieldname": "column_break_qeii",
@@ -332,12 +328,41 @@
    "in_list_view": 1,
    "label": "Equipment Number",
    "read_only": 1
+  },
+  {
+   "fetch_from": "equipment.project",
+   "fieldname": "project",
+   "fieldtype": "Read Only",
+   "label": "Project"
+  },
+  {
+   "depends_on": "eval: doc.rate_type == 'Hourly'",
+   "fieldname": "hourly",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Hourly",
+   "options": "\nWith Fuel\nWithout Fuel"
+  },
+  {
+   "depends_on": "eval: doc.rate_type == 'Lumpsum'",
+   "fieldname": "lumpsum",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Lumpsum",
+   "options": "\nWith Fuel\nWithout Fuel"
+  },
+  {
+   "depends_on": "eval:doc.lumpsum",
+   "fieldname": "lumpsum_rate",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Lumpsum Rate"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-12-23 14:37:15.133916",
+ "modified": "2025-01-22 16:18:42.514047",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Hiring Approval Details",

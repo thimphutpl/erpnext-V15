@@ -17,5 +17,7 @@ class EquipmentCategory(Document):
 		budget_account: DF.Link | None
 		equipment_category: DF.Data
 		insurance_account: DF.Link | None
+		pol_advance_account: DF.Link | None
+		r_m_expense_account: DF.Link | None
 	# end: auto-generated types
 	pass

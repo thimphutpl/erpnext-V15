@@ -15,6 +15,7 @@ class POLIssueItems(Document):
 
 		cost_center: DF.Link | None
 		equipment: DF.Link
+		equipment_balance: DF.ReadOnly | None
 		equipment_branch: DF.Data | None
 		equipment_category: DF.Link | None
 		equipment_cost_center: DF.Link | None
@@ -29,6 +30,7 @@ class POLIssueItems(Document):
 		parentfield: DF.Data
 		parenttype: DF.Data
 		qty: DF.Float
+		tank_capacity: DF.ReadOnly | None
 		warehouse: DF.Link | None
 	# end: auto-generated types
 	pass

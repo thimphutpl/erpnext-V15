@@ -25,6 +25,8 @@
   "is_scrap_item",
   "quality_inspection",
   "subcontracted_item",
+  "issue_to_vehicle",
+  "equipment_no",
   "section_break_8",
   "description",
   "column_break_10",
@@ -32,9 +34,11 @@
   "image",
   "image_view",
   "quantity_section",
+  "balance_qty",
   "qty",
   "transfer_qty",
   "retain_sample",
+  "item_ref",
   "column_break_20",
   "uom",
   "stock_uom",
@@ -63,6 +67,7 @@
   "accounting_dimensions_section",
   "cost_center",
   "project",
+  "task",
   "dimension_col_break",
   "more_info",
   "actual_qty",
@@ -500,7 +505,8 @@
    "fieldname": "project",
    "fieldtype": "Link",
    "label": "Project",
-   "options": "Project"
+   "options": "Project",
+   "read_only_depends_on": "eval:parent.stock_entry_type==\"Material Return\""
   },
   {
    "fieldname": "po_detail",
@@ -638,13 +644,44 @@
    "fieldtype": "Link",
    "label": "Issued To",
    "options": "Employee"
+  },
+  {
+   "fieldname": "balance_qty",
+   "fieldtype": "Data",
+   "label": "Balance Qty",
+   "read_only": 1
+  },
+  {
+   "fieldname": "item_ref",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Item Reference"
+  },
+  {
+   "default": "0",
+   "fieldname": "issue_to_vehicle",
+   "fieldtype": "Check",
+   "label": "Is Vehicle"
+  },
+  {
+   "depends_on": "issue_to_vehicle",
+   "fieldname": "equipment_no",
+   "fieldtype": "Link",
+   "label": "Equipment No",
+   "options": "Equipment"
+  },
+  {
+   "fieldname": "task",
+   "fieldtype": "Link",
+   "label": "Task",
+   "options": "Task"
   }
  ],
  "idx": 1,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-01-10 16:20:10.734614",
+ "modified": "2025-01-22 14:56:20.501758",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Stock Entry Detail",

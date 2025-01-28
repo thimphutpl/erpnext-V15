@@ -169,12 +169,10 @@ def process_gl_map(gl_map, merge_entries=True, precision=None):
 
 	if gl_map[0].voucher_type != "Period Closing Voucher":
 		gl_map = distribute_gl_based_on_cost_center_allocation(gl_map, precision)
-
 	if merge_entries:
 		gl_map = merge_similar_entries(gl_map, precision)
 
 	gl_map = toggle_debit_credit_if_negative(gl_map)
-
 	return gl_map
 
 
@@ -285,6 +283,7 @@ def get_merge_properties(dimensions=None):
 		"against_voucher",
 		"against_voucher_type",
 		"project",
+		"task",
 		"finance_book",
 		"voucher_no",
 	]
@@ -368,13 +367,13 @@ def save_entries(gl_map, adv_adj, update_outstanding, from_repost=False):
 		is_opening = any(d.get("is_opening") == "Yes" for d in gl_map)
 		if gl_map[0]["voucher_type"] != "Period Closing Voucher":
 			validate_against_pcv(is_opening, gl_map[0]["posting_date"], gl_map[0]["company"])
-
 	for entry in gl_map:
 		validate_allowed_dimensions(entry, dimension_filter_map)
 		make_entry(entry, adv_adj, update_outstanding, from_repost)
 
 
 def make_entry(args, adv_adj, update_outstanding, from_repost=False):
+	# frappe.msgprint(str(args))
 	gle = frappe.new_doc("GL Entry")
 	gle.update(args)
 	gle.flags.ignore_permissions = 1
@@ -401,6 +400,7 @@ def make_entry(args, adv_adj, update_outstanding, from_repost=False):
 						"cost_center": budget_cost_center,
 						"committed_cost_center": args.cost_center,
 						"project": args.project,
+						"task": args.task,
 						"reference_type": args.voucher_type,
 						"reference_no": args.voucher_no,
 						"reference_date": args.posting_date,
@@ -419,6 +419,7 @@ def make_entry(args, adv_adj, update_outstanding, from_repost=False):
 						"cost_center": budget_cost_center,
 						"consumed_cost_center": args.cost_center,
 						"project": args.project,
+						"task": args.task,
 						"reference_type": args.voucher_type,
 						"reference_no": args.voucher_no,
 						"reference_date": args.posting_date,

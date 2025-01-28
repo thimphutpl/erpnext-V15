@@ -25,7 +25,7 @@ class JobCards(AccountsController):
 
 		amended_from: DF.Link | None
 		branch: DF.Link
-		break_down_report: DF.Data | None
+		break_down_report: DF.Link | None
 		break_down_report_date: DF.Data | None
 		company: DF.Link
 		cost_center: DF.Link
@@ -35,6 +35,7 @@ class JobCards(AccountsController):
 		customer_cost_center: DF.ReadOnly | None
 		dispatch_number: DF.Data | None
 		equipment: DF.Link | None
+		equipment_category: DF.Link | None
 		equipment_model: DF.Link | None
 		equipment_number: DF.Data | None
 		equipment_type: DF.Link | None
@@ -49,13 +50,14 @@ class JobCards(AccountsController):
 		locations: DF.Data | None
 		name_of_the_job: DF.Data | None
 		outstanding_amount: DF.Currency
-		owned_by: DF.Data | None
+		owned_by: DF.Data
 		paid: DF.Check
 		payment_jv: DF.Data | None
 		posting_date: DF.Date | None
+		project: DF.ReadOnly | None
 		ref_number: DF.Data | None
 		remarks: DF.LongText | None
-		repair_type: DF.Literal["Minor Repair", "Major Repair", "Fabrication Works", "Bailey Bridge Works"]
+		repair_type: DF.Literal["Minor Repair", "Major Repair", "Preventive Maintenance", "Regular Maintenance", "Breakdown"]
 		services_amount: DF.Currency
 		table_jqvd: DF.Table[MechanicAssigned]
 		total_amount: DF.Currency
@@ -77,10 +79,14 @@ class JobCards(AccountsController):
 		cc_amount = {}
 		self.services_amount = self.goods_amount = 0;
 		for a in self.items:
-			if a.which in cc_amount:
-				cc_amount[a.which] = flt(cc_amount[a.which]) + flt(a.amount)
+			if a.stock_entry:
+				continue
 			else:
-				cc_amount[a.which] = flt(a.amount);
+				if a.which in cc_amount:
+					cc_amount[a.which] = flt(cc_amount[a.which]) + flt(a.amount)
+				else:
+					cc_amount[a.which] = flt(a.amount);
+		
 		if "Service" in cc_amount:
 			self.services_amount = cc_amount['Service']
 		if 'Item' in cc_amount:
@@ -298,24 +304,26 @@ class JobCards(AccountsController):
 			gl_entries = []
 			self.posting_date = self.finish_date
 
-		goods_account = frappe.db.get_single_value("Maintenance Accounts Settings", "default_goods_account")
-		services_account = frappe.db.get_single_value("Maintenance Accounts Settings", "default_services_account")
-		receivable_account = frappe.db.get_single_value("Maintenance Accounts Settings", "default_receivable_account")
-		if not goods_account:
-			frappe.throw("Setup Default Goods Account in Maintenance Setting")
-		if not services_account:
-			frappe.throw("Setup Default Services Account in Maintenance Setting")
-		if not receivable_account:
-			frappe.throw("Setup Default Receivable Account in Maintenance Setting")
+		# goods_account = frappe.db.get_single_value("Maintenance Accounts Settings", "default_goods_account")
+		# services_account = frappe.db.get_single_value("Maintenance Accounts Settings", "default_services_account")
+		# receivable_account = frappe.db.get_single_value("Maintenance Accounts Settings", "default_receivable_account")
+		equipment_account = frappe.db.get_value("Equipment Category", self.equipment_category,'r_m_expense_account')
+		payable_account = frappe.db.get_value("Company", "GYALSUNG INFRA","default_payable_account")
+		# if not goods_account:
+		# 	frappe.throw("Setup Default Goods Account in Maintenance Setting")
+		# if not services_account:
+		# 	frappe.throw("Setup Default Services Account in Maintenance Setting")
+		if not payable_account:
+			frappe.throw("Setup Default Payable Account in Company")
 		
 		gl_entries.append(
 				self.get_gl_dict({
-						"account":  receivable_account,
-						"party_type": "Customer",
+						"account":  payable_account,
+						"party_type": "Supplier",
 						"party": self.customer,
-						"against": receivable_account,
-						"debit": self.total_amount,
-						"debit_in_account_currency": self.total_amount,
+						"against": payable_account,
+						"credit": self.total_amount,
+						"credit_in_account_currency": self.total_amount,
 						"against_voucher": self.name,
 						"against_voucher_type": self.doctype,
 						"cost_center": self.cost_center
@@ -325,20 +333,20 @@ class JobCards(AccountsController):
 		if self.goods_amount:
 			gl_entries.append(
 				self.get_gl_dict({
-						"account": goods_account,
+						"account": equipment_account,
 						"against": self.customer,
-						"credit": self.goods_amount,
-						"credit_in_account_currency": self.goods_amount,
+						"debit": self.goods_amount,
+						"debit_in_account_currency": self.goods_amount,
 						"cost_center": self.cost_center
 				}, self.currency)
 			)
 		if self.services_amount:
 			gl_entries.append(
 				self.get_gl_dict({
-						"account": services_account,
+						"account": equipment_account,
 						"against": self.customer,
-						"credit": self.services_amount,
-						"credit_in_account_currency": self.services_amount,
+						"debit": self.services_amount,
+						"debit_in_account_currency": self.services_amount,
 						"cost_center": self.cost_center
 				}, self.currency)
 			)

@@ -18,7 +18,7 @@ class EmployeeEducation(Document):
 		country: DF.Link | None
 		course_name: DF.Link | None
 		from_date: DF.Date | None
-		level: DF.Literal["Graduate", "Post Graduate", "Under Graduate", "Diploma", "Certificate", "PGD", "Class XII", "Others"]
+		level: DF.Literal["Masters Degree", "Graduate", "Post Graduate", "Under Graduate", "Post Graduate Diploma", "Diploma", "Certificate", "PGD", "Higher Secondary (7+2+2+2)", "Middle Secondary (7+2+2)", "Primary (7 Years)", "Lower Secondary (7+2)", "Class XII", "Others"]
 		maj_opt_subj: DF.Text | None
 		parent: DF.Data
 		parentfield: DF.Data

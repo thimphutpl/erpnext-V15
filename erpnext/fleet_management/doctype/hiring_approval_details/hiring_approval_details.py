@@ -27,23 +27,26 @@ class HiringApprovalDetails(Document):
 		from_date: DF.Date
 		from_time: DF.Time | None
 		grand_total: DF.Currency
-		idle_rate: DF.Currency
+		hourly: DF.Literal["", "With Fuel", "Without Fuel"]
 		irate1: DF.Currency
 		irate2: DF.Currency
 		irate3: DF.Currency
 		irate4: DF.Currency
 		irate5: DF.Currency
+		lumpsum: DF.Literal["", "With Fuel", "Without Fuel"]
+		lumpsum_rate: DF.Currency
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
 		place: DF.Data | None
+		project: DF.ReadOnly | None
 		rate1: DF.Currency
 		rate2: DF.Currency
 		rate3: DF.Currency
 		rate4: DF.Currency
 		rate5: DF.Currency
 		rate: DF.Currency
-		rate_type: DF.Literal["", "With Fuel", "Without Fuel"]
+		rate_type: DF.Literal["", "Lumpsum", "Hourly"]
 		registration_number: DF.Data | None
 		remarks: DF.SmallText | None
 		request_reference: DF.Data | None

@@ -10,6 +10,7 @@
   "section_break_1",
   "branch",
   "cost_center",
+  "is_opening",
   "column_break_3",
   "warehouse",
   "company",
@@ -20,15 +21,19 @@
   "book_type",
   "direct_consumption",
   "section_break_6",
+  "pol_type",
   "equipment",
   "own_fb",
   "equipment_type",
+  "project",
   "section_break_15",
   "equipment_number",
   "equipment_category",
+  "tank_capacity",
   "column_break_vjsn",
   "equipment_branch",
   "equipment_warehouse",
+  "tanker_capacity",
   "section_break_bjgc",
   "hiring_branch",
   "hiring_cost_center",
@@ -41,7 +46,6 @@
   "column_break_ghae",
   "fuelbook_branch",
   "section_break_4",
-  "pol_type",
   "item_name",
   "column_break_6",
   "qty",
@@ -49,6 +53,8 @@
   "column_break_8",
   "rate",
   "is_hsd_item",
+  "tank_balance",
+  "tanker_balance",
   "mileage_details",
   "km_difference",
   "column_break_31",
@@ -110,7 +116,6 @@
    "reqd": 1
   },
   {
-   "default": "Today",
    "fieldname": "posting_date",
    "fieldtype": "Date",
    "label": "Posting Date",
@@ -280,8 +285,7 @@
    "options": "equipment.equipment_category"
   },
   {
-   "depends_on": "eval:doc.equipment && doc.supplier",
-   "fetch_from": "equipment.fuelbook",
+   "depends_on": "eval:doc.supplier",
    "fieldname": "fuelbook",
    "fieldtype": "Link",
    "label": "Fuelbook",
@@ -411,6 +415,7 @@
   },
   {
    "default": "0",
+   "fetch_from": "pol_type.is_hsd_item",
    "fieldname": "is_hsd_item",
    "fieldtype": "Check",
    "label": "Is HSD Item",
@@ -493,12 +498,52 @@
    "print_hide": 1,
    "read_only": 1,
    "search_index": 1
+  },
+  {
+   "depends_on": "eval: doc.book_type == 'Own'\neval:doc.is_hsd_item",
+   "fieldname": "tank_balance",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Own Tank Balance"
+  },
+  {
+   "depends_on": "eval: doc.book_type == 'Common'\neval:doc.is_hsd_item",
+   "fieldname": "tanker_balance",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Tanker Balance"
+  },
+  {
+   "fetch_from": "equipment.tank_capacity",
+   "fieldname": "tank_capacity",
+   "fieldtype": "Data",
+   "label": "Tank Capacity",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "equipment.tanker_capacity",
+   "fieldname": "tanker_capacity",
+   "fieldtype": "Read Only",
+   "label": "Tanker Capacity",
+   "read_only": 1
+  },
+  {
+   "fieldname": "is_opening",
+   "fieldtype": "Select",
+   "label": "Is Opening",
+   "options": "\nYes\nNo"
+  },
+  {
+   "fetch_from": "equipment.project",
+   "fieldname": "project",
+   "fieldtype": "Read Only",
+   "label": "Project"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-09 11:37:14.105156",
+ "modified": "2025-01-19 11:14:56.314787",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Receive",

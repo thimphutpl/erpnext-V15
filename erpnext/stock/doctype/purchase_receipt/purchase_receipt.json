@@ -13,6 +13,7 @@
   "column_break0",
   "branch",
   "title",
+  "n_series",
   "naming_series",
   "supplier",
   "actual_receipt_date",
@@ -94,6 +95,7 @@
   "apply_discount_on",
   "base_discount_amount",
   "column_break_44",
+  "tax",
   "freight_insurance_charges",
   "other_charges",
   "additional_discount_percentage",
@@ -189,13 +191,13 @@
   {
    "fieldname": "naming_series",
    "fieldtype": "Select",
+   "hidden": 1,
    "label": "Series",
    "no_copy": 1,
    "oldfieldname": "naming_series",
    "oldfieldtype": "Select",
-   "options": "MAT-PRE-.YYYY.-\nMAT-PR-RET-.YYYY.-",
+   "options": "MAT-PRE-.YYYY.-",
    "print_hide": 1,
-   "reqd": 1,
    "set_only_once": 1
   },
   {
@@ -1123,6 +1125,7 @@
    "collapsible": 1,
    "fieldname": "accounting_dimensions_section",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Accounting Dimensions"
   },
   {
@@ -1333,13 +1336,27 @@
    "fieldname": "set_posting_time",
    "fieldtype": "Check",
    "label": "Edit Date and Time"
+  },
+  {
+   "fieldname": "tax",
+   "fieldtype": "Currency",
+   "label": "Tax",
+   "precision": "2"
+  },
+  {
+   "fieldname": "n_series",
+   "fieldtype": "Select",
+   "label": "Naming Series",
+   "options": "\nConsumables\nFixed Asset\nSales Product\nSpare Parts\nServices Miscellaneous\nServices Works",
+   "reqd": 1,
+   "set_only_once": 1
   }
  ],
  "icon": "fa fa-truck",
  "idx": 261,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-10 12:11:45.397339",
+ "modified": "2025-01-27 18:05:04.884562",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Purchase Receipt",

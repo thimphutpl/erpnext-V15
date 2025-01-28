@@ -84,7 +84,7 @@
  "idx": 1,
  "links": [],
  "max_attachments": 1,
- "modified": "2024-01-30 14:39:26.328837",
+ "modified": "2025-01-20 14:03:39.112346",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Price List",
@@ -124,6 +124,15 @@
   {
    "read": 1,
    "role": "Manufacturing User"
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "MR User",
+   "share": 1
   }
  ],
  "search_fields": "currency",

@@ -33,6 +33,7 @@ from erpnext.accounts.general_ledger import (
 	merge_similar_entries,
 )
 from erpnext.accounts.party import get_due_date, get_party_account
+from frappe.model.naming import make_autoname
 from erpnext.accounts.utils import get_account_currency, get_fiscal_year
 from erpnext.assets.doctype.asset.asset import is_cwip_accounting_enabled
 from erpnext.assets.doctype.asset_category.asset_category import get_asset_category_account
@@ -139,6 +140,7 @@ class PurchaseInvoice(BuyingController):
 		material_request: DF.Link | None
 		material_request_date: DF.Date | None
 		mode_of_payment: DF.Link | None
+		n_series: DF.Literal["", "Consumables", "Fixed Asset", "Sales Product", "Spare Parts", "Services Miscellaneous", "Services Works"]
 		naming_series: DF.Literal["ACC-PINV-.YYYY.-", "ACC-PINV-RET-.YYYY.-"]
 		net_total: DF.Currency
 		on_hold: DF.Check
@@ -186,6 +188,7 @@ class PurchaseInvoice(BuyingController):
 		supplier_group: DF.Link | None
 		supplier_name: DF.Data | None
 		supplier_warehouse: DF.Link | None
+		tax: DF.Currency
 		tax_id: DF.ReadOnly | None
 		tax_withheld_vouchers: DF.Table[TaxWithheldVouchers]
 		tax_withholding_category: DF.Link | None
@@ -215,6 +218,22 @@ class PurchaseInvoice(BuyingController):
 		write_off_amount: DF.Currency
 		write_off_cost_center: DF.Link | None
 	# end: auto-generated types
+	def autoname(self):
+		if self.n_series == 'Consumables':
+			series = 'PICO'
+		elif self.n_series == 'Fixed Asset':
+			series = 'PIFA'
+		elif self.n_series == 'Sales Product':
+			series = 'PISA'
+		elif self.n_series == 'Spare Parts':
+			series ='PISP'
+		elif self.n_series == 'Services Miscellaneous':
+			series = 'PISM'
+		elif self.n_series == 'Services Works':
+			series ='PISW'
+		else:
+			series = 'PIPI'
+		self.name = make_autoname(str(series) + ".YY.MM.####")
 
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
@@ -295,8 +314,7 @@ class PurchaseInvoice(BuyingController):
 		self.warehouse_from_branch()
 
 	def adjust_add_ded(self):
-		# self.total_add_ded = flt(self.freight_insurance_charges) - flt(self.discount) + flt(self.tax) + flt(self.other_charges)
-		self.total_add_ded = flt(self.freight_insurance_charges) - flt(self.discount) + flt(self.other_charges)
+		self.total_add_ded = flt(self.freight_insurance_charges) - flt(self.discount) + flt(self.tax) + flt(self.other_charges)
 		self.discount_amount = -1 * flt(self.total_add_ded)
 	def warehouse_from_branch(doc):
 		branchname=doc.branch
@@ -995,21 +1013,15 @@ class PurchaseInvoice(BuyingController):
 		self.make_write_off_gl_entry(gl_entries)
 		self.make_gle_for_rounding_adjustment(gl_entries)
 		total_debit = total_credit = 0
-		gls = {}
+		gls = []
 		for a in gl_entries:
-			if not a.account in gls:
-				gls.update({a.account: {"Debit": a.debit, "Credit": a.credit}})
-			else:
-				gls[a.account]["Debit"] += a.debit
-				gls[a.account]["Credit"] += a.credit
+			gls.append({"account":a.account, "Debit":a.debit, "Credit":a.credit})
 			if a.debit > 0:
 				total_debit += a.debit
 				# gls.update({a.account: {"Debit": a.debit}})
 			else:
 				total_credit += a.credit
 				# gls.update({a.account: {"Credit": a.credit}})
-
-		frappe.throw("debit = "+str(total_debit)+" credit = "+str(total_credit)+" "+str(gls))
 
 		return gl_entries
 
@@ -1034,7 +1046,34 @@ class PurchaseInvoice(BuyingController):
 			else self.base_grand_total,
 			self.precision("base_grand_total"),
 		)
+		if self.taxes_and_charges_deducted > 0:
+			base_grand_total -= self.taxes_and_charges_deducted
+		advance_amount = 0.00
+		# advance_amount_pe_currency = 0.00
+		if self.get("advances"):
+			for a in self.get("advances"):
+				if a.allocated_amount > 0:
+					advance_amount += flt(a.allocated_amount)
+					# advance_amount_pe_currency == flt(a.advance_amount_pe_currency,2)
+					# base_grand_total -= flt(a.allocated_amount)
 
+		if advance_amount > 0:
+			base_grand_total -= flt(advance_amount)
+			
+			gl_entries.append(
+				self.get_gl_dict({
+					"account": frappe.db.get_single_value("Accounts Settings", "advance_to_supplier"),
+					"party_type": "Supplier",
+					"party": self.supplier,
+					"against": self.against_expense_account,
+					"credit": flt(advance_amount),
+					"credit_in_account_currency": flt(advance_amount),
+					"against_voucher": self.return_against if cint(self.is_return) and self.return_against else self.name,
+					"against_voucher_type": self.doctype,
+					"cost_center": self.cost_center,
+					# "business_activity": self.business_activity
+				}, self.party_account_currency, item=self)
+			)
 		if grand_total and not self.is_internal_transfer():
 			against_voucher = self.name
 			if self.is_return and self.return_against and not self.update_outstanding_for_self:
@@ -2129,3 +2168,15 @@ def make_purchase_receipt(source_name, target_doc=None):
 	)
 
 	return doc
+@frappe.whitelist()
+def get_permission_query_conditions(user):
+	if not user: user = frappe.session.user
+	user_roles = frappe.get_roles(user)
+	employee=frappe.db.get_value("Employee",{"user_id": user},"name")
+
+	if user == "Administrator":
+		return
+	if "HR Master" in user_roles or "Auditor" in user_roles or "HR User" in user_roles or "HR Manager" in user_roles:
+		return
+	else:
+		return

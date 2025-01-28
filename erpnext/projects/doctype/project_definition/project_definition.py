@@ -29,6 +29,9 @@ class ProjectDefinition(Document):
 		end_date: DF.Date | None
 		fiscal_year: DF.Link | None
 		overall_mandays: DF.Data | None
+		percent_completed: DF.Percent
+		physical_progress: DF.Percent
+		physical_progress_weightage: DF.Percent
 		project_code: DF.Data | None
 		project_code_prefix: DF.Literal["", "GA-J", "GA-K", "GA-T", "GA-P", "GA-B", "GA"]
 		project_man_days: DF.Data | None
@@ -39,7 +42,7 @@ class ProjectDefinition(Document):
 		project_profile: DF.Literal["", "Internal", "External"]
 		project_sites: DF.Table[OngoingProjectItem]
 		start_date: DF.Date | None
-		status: DF.Literal["Created", "Budget Released", "Project Released", "Completed"]
+		status: DF.Literal["Created", "Ongoing", "Completed"]
 		total_overall_project_cost: DF.Currency
 	# end: auto-generated types
 	def autoname(self):
@@ -56,26 +59,41 @@ class ProjectDefinition(Document):
 	def validate_project_profile(self):
 		if self.project_profile == "External" and "Accounts Manager" not in frappe.get_roles(frappe.session.user):
 			frappe.throw("Please select project profile as Internal.", title = "Invalid Selection")
-
+	#added by Kinley 16/01/2025
 	@frappe.whitelist()
 	def update_project_progress(self):
-		project_man_days = overall_mandays = 0
-		for prj in frappe.db.get_all("Project", {"project_definition": self.name}, ["mandays"]):
-			if not prj.mandays:
-				prj.mandays = 0
-			project_man_days += flt(prj.mandays,2)
-		frappe.db.sql("""
-                update `tabProject Definition` set project_man_days = {} where name = '{}'
-                """.format(project_man_days, self.name))
-		for pd in frappe.db.get_all("Project Definition", {"docstatus": 1}, ["project_man_days"]):
-			if not pd.project_man_days:
-				pd.project_man_days = 0
-			overall_mandays += flt(pd.project_man_days,2)
-		frappe.db.sql("""
-                update `tabProject Definition` set overall_mandays = {} where name = '{}'
-                """.format(overall_mandays, self.name))
-		# frappe.db.commit()
-			
+		if self.docstatus == 1:
+			project_man_days = overall_mandays = physical_progress_weightage = physical_progress = no_of_projects = no_of_project_definitions = 0
+			contribution_per_prj = frappe.db.sql("""
+								select sum(ifnull(percent_completed, 0)) as wqc from `tabProject` where project_definition = '{}'
+								""".format(self.name), as_dict=1)[0].wqc
+
+			for prj in frappe.db.get_all("Project", {"project_definition": self.name}, ["mandays", "physical_progress"]):
+				if not prj.mandays:
+					prj.mandays = 0
+				project_man_days += flt(prj.mandays,2)
+				if not prj.physical_progress:
+					prj.physical_progress = 0
+				physical_progress += flt(prj.physical_progress,4)
+				no_of_projects += 1
+			frappe.db.sql("""
+					update `tabProject Definition` set project_man_days = {} where name = '{}'
+					""".format(project_man_days, self.name))
+			for pd in frappe.db.get_all("Project Definition", {"docstatus": 1}, ["project_man_days"]):
+				if not pd.project_man_days:
+					pd.project_man_days = 0
+				overall_mandays += flt(pd.project_man_days,2)
+				no_of_project_definitions += 1
+			physical_progress_weightage = flt(flt(project_man_days) / flt(overall_mandays)*100,3)
+			if no_of_projects > 0:
+				contribution_per_prj = flt(contribution_per_prj/flt(no_of_projects),4)
+			physical_progress = flt(flt(physical_progress_weightage) * (contribution_per_prj * 0.01),4)
+
+
+			frappe.db.sql("""
+					update `tabProject Definition` set overall_mandays = {}, physical_progress_weightage = {}, physical_progress = {}, percent_completed = {} where name = '{}'
+					""".format(overall_mandays, physical_progress_weightage, physical_progress, contribution_per_prj, self.name))
+			# frappe.db.commit()	
 
 # ADDED BY Kinley ON 04-06-2024
 @frappe.whitelist()
@@ -83,14 +101,81 @@ def make_purchase_requisition(source_name, target_doc=None):
 	def set_missing_values(source, target):
 		target.material_request_type = "Purchase"
 		target.reference_type = "Project Definition"
+		target.reference_name = source.name
 		target.creation_date = date.today()
-		target.abbreviation = "PRJ"
-		target.naming_series = "Fixed Assets"
+		target.for_project = 1
+		target.branch = frappe.db.get_value("Branch", {"cost_center":source.cost_center}, "name")
 		# target.site = frappe.db.get_value("Project", source.project, "site")
 
 	doc = get_mapped_doc("Project Definition", source_name,	{
 		"Project Definition": {
 			"doctype": "Material Request",
+			"field_map": {
+				"name" : "reference_name",
+			},
+		},
+	}, target_doc, set_missing_values)
+
+	return doc
+
+@frappe.whitelist()
+def make_material_issue_request(source_name, target_doc=None):
+	def set_missing_values(source, target):
+		target.material_request_type  = "Material Issue"
+		target.reference_type = "Project Definition"
+		target.reference_name = source.name
+		target.creation_date = date.today()
+		target.for_project = 1
+		target.branch = frappe.db.get_value("Branch", {"cost_center":source.cost_center}, "name")
+		# target.site = frappe.db.get_value("Project", source.project, "site")
+
+	doc = get_mapped_doc("Project Definition", source_name,	{
+		"Project Definition": {
+			"doctype": "Material Request",
+			"field_map": {
+				"name" : "reference_name",
+			},
+		},
+	}, target_doc, set_missing_values)
+
+	return doc
+
+@frappe.whitelist()
+def make_stock_issue_entry(source_name, target_doc=None):
+	def set_missing_values(source, target):
+		target.stock_entry_type  = "Material Issue"
+		target.reference_type = "Project Definition"
+		target.reference_name = source.name
+		target.creation_date = date.today()
+		target.for_project = 1
+		target.branch = frappe.db.get_value("Branch", {"cost_center":source.cost_center}, "name")
+		# target.site = frappe.db.get_value("Project", source.project, "site")
+
+	doc = get_mapped_doc("Project Definition", source_name,	{
+		"Project Definition": {
+			"doctype": "Stock Entry",
+			"field_map": {
+				"name" : "reference_name",
+			},
+		},
+	}, target_doc, set_missing_values)
+
+	return doc
+
+@frappe.whitelist()
+def make_stock_return_entry(source_name, target_doc=None):
+	def set_missing_values(source, target):
+		target.stock_entry_type  = "Material Return"
+		target.reference_type = "Project Definition"
+		target.reference_name = source.name
+		target.creation_date = date.today()
+		target.for_project = 1
+		target.branch = frappe.db.get_value("Branch", {"cost_center":source.cost_center}, "name")
+		# target.site = frappe.db.get_value("Project", source.project, "site")
+
+	doc = get_mapped_doc("Project Definition", source_name,	{
+		"Project Definition": {
+			"doctype": "Stock Entry",
 			"field_map": {
 				"name" : "reference_name",
 			},

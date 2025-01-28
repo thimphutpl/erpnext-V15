@@ -191,7 +191,7 @@
    "hidden": 0,
    "is_query_report": 0,
    "label": "Key Reports",
-   "link_count": 8,
+   "link_count": 6,
    "link_type": "DocType",
    "onboard": 0,
    "type": "Card Break"
@@ -210,29 +210,19 @@
   {
    "hidden": 0,
    "is_query_report": 1,
+   "label": "Item-wise Purchase Register",
+   "link_count": 0,
+   "link_to": "Item-wise Purchase Register",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
    "label": "Item Wise Purchase History",
    "link_count": 0,
    "link_to": "Item-wise Purchase History",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Procurement Tracker",
-   "link_count": 0,
-   "link_to": "Procurement Tracker",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Purchase Order Analysis",
-   "link_count": 0,
-   "link_to": "Purchase Order Analysis",
    "link_type": "Report",
    "onboard": 0,
    "type": "Link"
@@ -266,20 +256,10 @@
    "link_type": "Report",
    "onboard": 0,
    "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Item-wise Purchase Register",
-   "link_count": 0,
-   "link_to": "Item-wise Purchase Register",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
   }
  ],
- "modified": "2024-11-29 11:25:15.475051",
- "modified_by": "kinzang.namgyal@cdcl.bt",
+ "modified": "2025-01-15 10:25:25.013856",
+ "modified_by": "kalden.dorji@thimphutechpark.bt",
  "module": "Buying",
  "name": "Buying",
  "number_cards": [],

@@ -7,6 +7,7 @@ import math
 
 import frappe
 from frappe import _
+from frappe.model.naming import make_autoname
 from frappe.utils import (
 	cint,
 	flt,
@@ -121,7 +122,9 @@ class Asset(AccountsController):
 		value_after_depreciation: DF.Currency
 		vehicle_number: DF.Data | None
 	# end: auto-generated types
-
+	def autoname(self):
+			if self.old_asset_code:
+				self.name = self.old_asset_code
 	def validate(self):
 		self.validate_asset_values()
 		self.validate_asset_and_reference()
@@ -316,7 +319,7 @@ class Asset(AccountsController):
 			return
 		if frappe.db.get_value("Item",self.item_code,"item_sub_group")=="Third Party Item":
 			return
-		frappe.throw(str(self.item_code))
+		# frappe.throw(str(self.item_code))
 		finance_books = set()
 
 		for d in self.finance_books:

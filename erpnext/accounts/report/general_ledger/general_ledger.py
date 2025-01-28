@@ -647,6 +647,7 @@ def get_columns(filters):
 		{"label": _("Party Type"), "fieldname": "party_type", "width": 100},
 		{"label": _("Party"), "fieldname": "party", "width": 100},
 		{"label": _("Project"), "options": "Project", "fieldname": "project", "width": 100},
+		{"label": _("Task"), "options": "Task", "fieldname": "task", "width": 100},
 	]
 
 	if filters.get("include_dimensions"):

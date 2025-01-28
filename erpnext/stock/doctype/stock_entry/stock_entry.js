@@ -44,6 +44,15 @@ frappe.ui.form.on("Stock Entry", {
 				},
 			};
 		});
+		frm.set_query("issue_ref", function () {
+			return {
+				filters: {
+					"stock_entry_type": "Material Issue",
+					"docstatus": 1
+				},
+			};
+		});
+
 
 		frm.set_query("target_warehouse_address", function () {
 			return {
@@ -172,9 +181,12 @@ frappe.ui.form.on("Stock Entry", {
 					method: "erpnext.custom_utils.get_user_info",
 					args: {"user": frappe.session.user},
 					callback(r) {
-							cur_frm.set_value("branch", r.message.branch);
-							cur_frm.set_value("from_warehouse", r.message.warehouse);
-							cur_frm.set_value("user_cost_center", r.message.cost_center);
+							if(frm.doc.for_project == 0){
+								cur_frm.set_value("branch", r.message.branch);
+								cur_frm.set_value("from_warehouse", r.message.warehouse);
+								cur_frm.set_value("user_cost_center", r.message.cost_center);
+							}
+
 					}
 			});
 		}
@@ -417,6 +429,30 @@ frappe.ui.form.on("Stock Entry", {
 				},
 				__("Get Items From")
 			);
+			
+			frm.add_custom_button(
+				__("Material Return"),
+				function () {
+					if(!frm.doc.branch){
+						frappe.throw("Please select Branch first")
+					}
+					erpnext.utils.map_current_doc({
+						method: "erpnext.stock.doctype.stock_entry.stock_entry.make_material_return",
+						source_doctype: "Stock Entry",
+						target: frm,
+						date_field: "posting_date",
+						setters: {
+							stock_entry_type:"Material Issue",
+						},
+						get_query_filters: {
+							docstatus: 1,
+							stock_entry_type:"Material Issue",
+							branch:frm.doc.branch,
+						},
+					});
+				},
+				__("Get Items From")
+			);
 
 			frm.add_custom_button(
 				__("Material Request"),
@@ -609,14 +645,14 @@ frappe.ui.form.on("Stock Entry", {
 	branch: function(frm, cdt, cdn){
 		if(frm.doc.branch != null || frm.doc.branch != "" || frm.doc.branch != undefined){
 			frappe.call({
-				method: "frappe.client.get_value",
+				method: "erpnext.stock.doctype.stock_entry.stock_entry.get_cc_warehouse",
 				args: {
-					doctype: "Branch",
-					fieldname: "cost_center",
-					filters: { name: frm.doc.branch },
+					"branch": frm.doc.branch,
 				},
 				callback: function(r, rt) {
+					// console.log(r.message)
 					if(r.message) {
+						frm.set_value("from_warehouse", r.message.warehouse);
 						let doctype = frm.doc.items[0].doctype;
 						$.each(frm.doc.items || [], function (i, item) {
 							frappe.model.set_value(doctype, item.name, "cost_center", r.message.cost_center);
@@ -1109,7 +1145,38 @@ frappe.ui.form.on("Stock Entry", "items_on_form_rendered", function(frm, grid_ro
 			row.grid_form.fields_dict.cost_center.refresh()
 	}
 })
+cur_frm.fields_dict["items"].grid.get_field("project").get_query = function (doc) {
+	if(cur_frm.doc.reference_type == "Project Definition"){
+		return {
+			filters: { 'project_definition': cur_frm.doc.reference_name, "status": ["in", ["Ongoing", "Planning"]]}
+		};
+	}
+	else if(cur_frm.doc.reference_type == "Project"){
+		return {
+			filters: { 'name': cur_frm.doc.reference_name, "status": ["in", ["Ongoing", "Planning"]]}
+		};
+	}
+	else{
+		return {
+			filters: { 'name': ""}
+		};
+	}
+	
+};
+cur_frm.fields_dict["items"].grid.get_field("task").get_query = function (doc, cdt, cdn) {
+	var row = locals[cdt][cdn];
+	if(row.project){
+		return {
+			filters: { 'project': row.project, "status": ["not in", ["Closed", "Completed", "Cancelled"]],  "is_group": 0}
+		};
+	}
+	else{
+		return {
+			filters: { 'name': ""}
+		};
+	}
 
+};
 // cur_frm.fields_dict['items'].grid.get_field('cost_center').get_query = function(frm, cdt, cdn) {
 // 	return {
 // 		"filters": {
@@ -1428,7 +1495,26 @@ erpnext.stock.StockEntry = class StockEntry extends erpnext.stock.StockControlle
 
 	items_add(doc, cdt, cdn) {
 		var row = frappe.get_doc(cdt, cdn);
-
+		if(cur_frm.doc.reference_type == "Project" && cur_frm.doc.reference_name){
+			frappe.model.set_value(cdt, cdn, "project", cur_frm.doc.reference_name);
+			cur_frm.refresh_field("items");
+		}
+		else if (cur_frm.doc.reference_type == "Task" && cur_frm.doc.reference_name){
+			frappe.call({
+				method: "frappe.client.get",
+				args: {
+					doctype: "Task",
+					name: cur_frm.doc.reference_name,
+				},
+				callback: function (data) {
+					if (data.message.project) {
+						frappe.model.set_value(cdt, cdn, "project", data.message.project);
+						frappe.model.set_value(cdt, cdn, "task", frm.doc.reference_name);
+						cur_frm.refresh_field("items");
+					}
+				},
+			});
+		}
 		if (!(row.expense_account && row.cost_center)) {
 			this.frm.script_manager.copy_from_first_row("items", row, ["expense_account", "cost_center"]);
 		}

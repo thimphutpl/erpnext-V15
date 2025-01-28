@@ -147,16 +147,17 @@ class MechanicalPayment(AccountsController):
 
     def make_gl_entry(self):
         from erpnext.accounts.general_ledger import make_gl_entries
-        receivable_account = frappe.db.get_single_value("Maintenance Accounts Settings", "default_receivable_account")
-        if not receivable_account:
-            frappe.throw("Setup Default Receivable Account in Maintenance Setting")
+        # receivable_account = frappe.db.get_single_value("Maintenance Accounts Settings", "default_receivable_account")
+        payable_account = frappe.db.get_value("Company", "GYALSUNG INFRA","default_payable_account")
+        if not payable_account:
+            frappe.throw("Setup Default Payable Account in Company")
 
         gl_entries = []
         if flt(self.net_amount) > 0:
             gl_entries.append(
                 self.get_gl_dict({"account": self.income_account,
-                                  "debit": flt(self.net_amount),
-                                  "debit_in_account_currency": flt(self.net_amount),
+                                  "credit": flt(self.net_amount),
+                                  "credit_in_account_currency": flt(self.net_amount),
                                   "cost_center": self.cost_center,
                                   "party_check": 1,
                                   "reference_type": self.doctype,
@@ -168,11 +169,11 @@ class MechanicalPayment(AccountsController):
         if self.tds_amount:
             gl_entries.append(
                 self.get_gl_dict({"account": self.tds_account,
-                                  "debit": flt(self.tds_amount),
-                                  "debit_in_account_currency": flt(self.tds_amount),
+                                  "credit": flt(self.tds_amount),
+                                  "credit_in_account_currency": flt(self.tds_amount),
                                   "cost_center": self.cost_center,
                                   "party_check": 1,
-                                  "party_type": "Customer",
+                                  "party_type": "Supplier",
                                   "party": self.customer,
                                   "reference_type": self.doctype,
                                   "reference_name": self.name,
@@ -191,12 +192,12 @@ class MechanicalPayment(AccountsController):
                 frappe.throw(" {} customer selected but the customer must be {} as per {} {}. ".format(a.customer, doc.customer, a.reference_type, a.reference_name))
 
             gl_entries.append(
-                self.get_gl_dict({"account": receivable_account,
-                                  "credit": flt(a.allocated_amount),
-                                  "credit_in_account_currency": flt(a.allocated_amount),
+                self.get_gl_dict({"account": payable_account,
+                                  "debit": flt(a.allocated_amount),
+                                  "debit_in_account_currency": flt(a.allocated_amount),
                                   "cost_center": self.cost_center,
                                   "party_check": 1,
-                                  "party_type": "Customer",
+                                  "party_type": "Supplier",
                                   "party": a.customer if a.customer else self.customer,
                                   "reference_type": self.doctype,
                                   "reference_name": self.name,
@@ -210,8 +211,8 @@ class MechanicalPayment(AccountsController):
             for a in self.deducts:
                 gl_entries.append(
                     self.get_gl_dict({"account": a.accounts,
-                                      "debit": flt(a.amount),
-                                      "debit_in_account_currency": flt(a.amount),
+                                      "credit": flt(a.amount),
+                                      "credit_in_account_currency": flt(a.amount),
                                       "cost_center": self.cost_center,
                                       "party_check": 1,
                                       "party_type": a.party_type,

@@ -18,6 +18,7 @@ from erpnext.controllers.queries import get_filters_cond
 from erpnext.controllers.website_list_for_contact import get_customers_suppliers
 from erpnext.setup.doctype.holiday_list.holiday_list import is_holiday
 from frappe.utils.user import get_users_with_role
+from datetime import date
 
 
 class Project(Document):
@@ -79,7 +80,9 @@ class Project(Document):
 			frappe.throw("Project Code Prefix is not set for Project Definition {}".format(self.project_definition))
 		prefix = frappe.db.get_value("Project Definition", self.project_definition, "project_code_prefix")
 		self.name = self.project_name + " ("+prefix+") - GYALSUNG"
+
 	def onload(self):
+		self.sync_project_details()
 		if not self.get('__unsaved'):
 			if not self.get("activity_tasks"):
 				self.load_activity_tasks()
@@ -109,9 +112,10 @@ class Project(Document):
 		self.validate_branch_cc()
 		self.validate_project_type_and_party()
 		self.update_party_info()
-		self.update_tasks()
+		# self.update_tasks()
 		# set_status method created by SHIV on 03/11/2017
 		self.set_status()
+		self.update_project_definition()
 		# self.validate_target_quantity()
 		# self.validate_work_quantity()
 		
@@ -138,10 +142,44 @@ class Project(Document):
 		if self.status in ('Planning','Ongoing'):
 			self.sync_activity_tasks()
 			self.sync_additional_tasks()
-		self.update_task_progress()
-		self.update_project_progress()
-		self.update_group_tasks()
+		self.load_activity_tasks()
+		self.load_additional_tasks()
+		# self.update_task_progress()
+		# self.update_project_progress()
+		# self.update_group_tasks()
 		self.update_branch_change()
+	@frappe.whitelist()
+	def sync_project_details(self):
+		if not self.is_new():
+			overall_mandays = physical_progress_weightage = 0
+			for prj in frappe.db.get_all("Project", {"project_definition": self.project_definition}, ["mandays"]):
+				if prj.mandays:
+					overall_mandays += flt(prj.mandays)
+			self.overall_mandays = overall_mandays
+			if flt(self.mandays) > 0 and flt(self.total_duration) > 0:
+				self.man_power_required = flt(flt(self.mandays) / flt(self.total_duration),0)
+				self.physical_progress_weightage = flt(flt(self.mandays) / flt(self.overall_mandays)*100,3)
+			contribution_per = 0
+			# no_of_group_tasks = frappe.db.sql("""
+			# 					select ifnull(count(name), 0) as count from `tabTask` where project = '{}'
+			# 					and is_group = 1
+			# 					""".format(self.name), as_dict=1)[0].count
+			contribution_per = frappe.db.sql("""
+								select sum(ifnull(task_achievement_percent, 0)) as wqc from `tabTask` where project = '{}'
+								and is_group = 0
+								""".format(self.name), as_dict=1)[0].wqc
+			# if no_of_group_tasks > 0:
+			# 	contribution_per = flt(contribution_per/flt(no_of_group_tasks),4)
+			self.percent_completed = flt(contribution_per,2)
+			if not self.physical_progress_weightage:
+				self.physical_progress_weightage = 0
+			if not contribution_per:
+				contribution_per = 0
+			self.physical_progress = flt(flt(self.physical_progress_weightage) * (contribution_per * 0.01),4)
+
+			frappe.db.sql("""
+					update `tabProject` set overall_mandays = {}, man_power_required = {}, physical_progress_weightage = {}, physical_progress = {}, percent_completed = {} where name = '{}'
+					""".format(overall_mandays, self.man_power_required, self.physical_progress_weightage, self.physical_progress,  self.percent_completed, self.name))
 
 	def update_branch_change(self):
 		if self.flags.dont_sync_tasks: return
@@ -352,8 +390,9 @@ class Project(Document):
 	def load_activity_tasks(self):
 		#frappe.msgprint(_("load_activity_task is called from onload"))
 		"""Load `activity_tasks` from the database"""
-		# self.activity_tasks = []
-		for task in self.get_activity_tasks():
+		self.activity_tasks = []
+		for task in self.get_parent_activity_tasks():
+			# frappe.msgprint("here "+str(task.work_quantity_complete))
 			self.append("activity_tasks", {
 				"activity": task.activity,
 				"task": task.subject,
@@ -361,8 +400,13 @@ class Project(Document):
 				"status": task.status,
 				"start_date": task.exp_start_date,
 				"end_date": task.exp_end_date,
+				"task_duration": task.duration,
 				"description": task.description,
 				"work_quantity": task.work_quantity,
+				"work_quantity_complete": task.work_quantity_complete,
+				"task_weightage": task.task_weightage,
+				"task_achievement_percent": task.task_achievement_percent,
+				"parent_task": task.parent_task,
 				# "work_quantity_complete": task.work_quantity_complete,
 				"target_uom": task.target_uom,
 				"target_quantity": task.target_quantity,
@@ -373,9 +417,33 @@ class Project(Document):
 				"grp_work_quantity": task.grp_work_quantity,
 				"grp_work_quantity_complete": task.grp_work_quantity_complete
 			})
-
+			for c_task in self.get_child_activity_tasks(task.name):
+				self.append("activity_tasks", {
+					"activity": c_task.activity,
+					"task": c_task.subject,
+					"is_group": c_task.is_group,
+					"status": c_task.status,
+					"start_date": c_task.exp_start_date,
+					"end_date": c_task.exp_end_date,
+					"task_duration": c_task.duration,
+					"description": c_task.description,
+					"work_quantity": c_task.work_quantity,
+					"work_quantity_complete": c_task.work_quantity_complete,
+					"task_weightage": c_task.task_weightage,
+					"task_achievement_percent": c_task.task_achievement_percent,
+					"parent_task": c_task.parent_task,
+					# "work_quantity_complete": task.work_quantity_complete,
+					"target_uom": c_task.target_uom,
+					"target_quantity": c_task.target_quantity,
+					"target_quantity_complete": c_task.target_quantity_complete,
+					"task_id": c_task.name,
+					"grp_exp_start_date": c_task.grp_exp_start_date,
+					"grp_exp_end_date": c_task.grp_exp_end_date,
+					"grp_work_quantity": c_task.grp_work_quantity,
+					"grp_work_quantity_complete": c_task.grp_work_quantity_complete
+				})
 	def load_additional_tasks(self):
-		#frappe.msgprint(_("load_activity_task is called from onload"))
+		# frappe.msgprint(_("load_activity_task is called from onload"))
 		"""Load `additional_tasks` from the database"""
 		self.additional_tasks = []
 		for task in self.get_additional_tasks():
@@ -399,8 +467,12 @@ class Project(Document):
 				"grp_work_quantity_complete": task.grp_work_quantity_complete
 			})
 
-	def get_activity_tasks(self):
-		return frappe.get_all("Task", "*", {"project": self.name, "additional_task": 0}, order_by="task_idx, exp_start_date")
+	def get_parent_activity_tasks(self):
+		# return frappe.get_all("Task", "*", {"project": self.name, "additional_task": 0}, order_by="task_idx, exp_start_date")
+		return frappe.get_all("Task", "*", {"project": self.name, "additional_task": 0, "is_group": 1})
+	def get_child_activity_tasks(self, parent_task):
+		# return frappe.get_all("Task", "*", {"project": self.name, "additional_task": 0}, order_by="task_idx, exp_start_date")
+		return frappe.get_all("Task", "*", {"project": self.name, "additional_task": 0, "is_group": 0, "parent_task": parent_task})
 
 	def get_additional_tasks(self):
 		return frappe.get_all("Task", "*", {"project": self.name, "additional_task": 1}, order_by="task_idx, exp_start_date")	
@@ -456,7 +528,7 @@ class Project(Document):
 			else:
 				task = frappe.new_doc("Task")
 				task.project = self.name
-
+			# frappe.msgprint(str(t.work_quantity_complete))
 			task.update({
 				"activity": t.activity,
 				"subject": t.task,
@@ -510,21 +582,36 @@ class Project(Document):
 			else:
 				task = frappe.new_doc("Task")
 				task.project = self.name
+			group_weightage = group_wqc = sum_wqc = group_achievement_percent = 0
+			if t.is_group == 1:
+				total_duration = frappe.db.sql("""
+                                    select sum(ifnull(duration,0)) as total_duration from `tabTask` where parent_task = '{}' and is_group = 0
+                                    """.format(t.task_id), as_dict=1)[0].total_duration
+				for tsk in frappe.db.get_all("Task", {"parent_task": t.task_id}, ["duration", "work_quantity_complete", "task_achievement_percent"]):
+					group_weightage += (flt(tsk.duration,7)/flt(total_duration,7))*t.work_quantity_complete
+					sum_wqc += flt(tsk.work_quantity_complete,2)
+					group_achievement_percent += flt(tsk.task_achievement_percent,7)
+				# if no_of_sub_tasks > 0:
+				group_wqc = flt(group_weightage,2)
 
 			task.update({
 				"activity": t.activity,
 				"subject": t.task,
 				"is_group": t.is_group,
 				"work_quantity": t.work_quantity,
-				"work_quantity_complete": t.work_quantity_complete,
+				"work_quantity_complete": t.work_quantity_complete if t.is_group == 0 else group_wqc,
+				"task_weightage": t.task_weightage if t.is_group == 0 else group_weightage,
+				"task_achievement_percent": t.task_achievement_percent if t.is_group == 0 else group_achievement_percent,
 				"target_uom": t.target_uom,
 				"target_quantity": t.target_quantity,
+				"parent_task": t.parent_task,
 				"status": t.status,
 				"exp_start_date": t.start_date,
 				"exp_end_date": t.end_date,
 				"description": t.description,
 				"target_quantity_complete": t.target_quantity_complete,
 				"task_idx": task_idx,
+				"duration": t.task_duration,
 				"grp_exp_start_date": t.grp_exp_start_date,
 				"grp_exp_end_date": t.grp_exp_end_date,
 				"grp_work_quantity": t.grp_work_quantity,
@@ -539,7 +626,10 @@ class Project(Document):
 			task_names.append(task.name)
 
 		# delete
+
 		for t in frappe.get_all("Task", ["name"], {"project": self.name, "name": ("not in", task_names), "additional_task": 0}):
+			if frappe.db.get_value("Task", t.name, "parent_task") != None:
+				frappe.db.sql("""update `tabTask` set parent_task = NULL where name = '{}'""".format(t.name))
 			frappe.delete_doc("Task", t.name)
 
 		# self.update_percent_complete()
@@ -597,17 +687,39 @@ class Project(Document):
 		total_duration = 0
 		for t in self.activity_tasks:
 			holiday = holiday_list(t.start_date, t.end_date, self.holiday_list)
-			if t.end_date and t.start_date:
+			if t.end_date and t.start_date and t.is_group == 0:
 				t.task_duration = date_diff(t.end_date, t.start_date) + 1 - flt(holiday)
 				total_duration += t.task_duration
+			elif t.end_date and t.start_date and t.is_group == 1:
+				t.task_duration = date_diff(t.end_date, t.start_date) + 1 - flt(holiday)
 
 		for task in self.activity_tasks:
-			task.task_weightage = flt((task.task_duration/total_duration) * 100,7)
-			if task.work_quantity_complete:
-				task.task_achievement_percent = task.task_weightage * (task.work_quantity_complete/100)
+			if task.is_group == 0:
+				task.task_weightage = flt((task.task_duration/total_duration) * 100,7)
+				if task.work_quantity_complete:
+					task.task_achievement_percent = task.task_weightage * (task.work_quantity_complete/100)
 			frappe.db.sql("""
-                 update `tabActivity Tasks` set task_weightage = '{}', task_achievement_percent = '{}' where name = '{}'
-                 """.format(task.task_weightage, task.task_achievement_percent, task.name))
+				update `tabActivity Tasks` set task_duration = {}, task_weightage = '{}', task_achievement_percent = '{}' where name = '{}'
+				""".format(task.task_duration, task.task_weightage, task.task_achievement_percent, task.name))
+		for task in self.activity_tasks:
+			if task.is_group == 1:
+				group_weightage = sum_wqc = group_wqc = group_achievement_percent = 0
+				no_of_sub_tasks = frappe.db.sql("""
+                                    select ifnull(count(name), 0) as count from `tabTask` where parent_task = '{}'
+                                    """.format(task.task_id), as_dict=1)[0].count
+				for tsk in self.activity_tasks:
+					if tsk.parent_task == task.task_id:
+						group_weightage += flt(tsk.task_weightage,7)
+						sum_wqc += flt(tsk.work_quantity_complete,2)
+						group_achievement_percent += flt(tsk.task_achievement_percent,7)
+				if no_of_sub_tasks > 0:
+					group_wqc = flt(sum_wqc/no_of_sub_tasks,2)
+				task.task_weightage = group_weightage
+				task.task_achievement_percent = group_achievement_percent
+				task.work_quantity_complete = group_wqc
+				frappe.db.sql("""
+					update `tabActivity Tasks` set task_duration = {}, task_weightage = '{}', task_achievement_percent = '{}' where name = '{}'
+					""".format(task.task_duration, task.task_weightage, task.task_achievement_percent, task.name))
 		self.duration_sum = total_duration
                         
 	def validate_target_quantity(self):
@@ -664,6 +776,26 @@ class Project(Document):
 			"Completed": 1,
 			"Cancelled": 2
 		}[str(self.status) or "Planning"]
+
+	def update_project_definition(self):
+		""" update the child table in project definition with the current project. """
+
+		exist = frappe.db.exists({'doctype': 'Ongoing Project Item', 'parent': self.project_definition,'site_name': self.name})
+		if not exist and not self.is_new():
+			site = frappe.get_doc({
+				"doctype": 'Ongoing Project Item',
+				"parenttype": 'Project Definition',
+				"parentfield": 'project_sites',
+				"parent": self.project_definition,
+				"site_name": self.name, 
+				"project_name": self.project_name,
+				"cost_center": self.cost_center, 
+				"status": "Ongoing", 
+				"branch": self.branch, 
+				"total_cost": self.total_cost
+			})
+			site.flags.ignore_permissions=1
+			site.insert()
 
 	def validate_project_type_and_party(self):
 		""" Restrict user from changing party if there are advance/invoice transactions """
@@ -913,7 +1045,18 @@ class Project(Document):
 			frappe.db.set_value("Sales Order", self.sales_order, "project", self.name)
 
 	def on_trash(self):
+		self.remove_project_definition_link()
 		frappe.db.set_value("Sales Order", {"project": self.name}, "project", "")
+
+	def remove_project_definition_link(self):
+		project_item = frappe.db.sql("""
+			select name from `tabOngoing Project Item` where site_name = '{}' 
+		""".format(self.name), as_dict=1)
+		if project_item:
+			for a in project_item:
+				frappe.db.sql("""
+					delete from `tabOngoing Project Item` where name = '{}'
+				""".format(a.name))
 
 	def update_percent_complete(self):
 		if self.percent_complete_method == "Manual":
@@ -1218,6 +1361,95 @@ def hourly_reminder():
 		):
 			send_project_update_email_to_users(project.name)
 
+
+# ADDED BY Kinley ON 04-06-2024
+@frappe.whitelist()
+def make_purchase_requisition(source_name, target_doc=None):
+	def set_missing_values(source, target):
+		target.material_request_type = "Purchase"
+		target.reference_type = "Project"
+		target.reference_name = source.name
+		target.creation_date = date.today()
+		target.for_project = 1
+		target.branch = source.branch
+		# target.site = frappe.db.get_value("Project", source.project, "site")
+
+	doc = get_mapped_doc("Project", source_name,	{
+		"Project": {
+			"doctype": "Material Request",
+			"field_map": {
+				"name" : "reference_name",
+			},
+		},
+	}, target_doc, set_missing_values)
+
+	return doc
+
+@frappe.whitelist()
+def make_material_issue_request(source_name, target_doc=None):
+	def set_missing_values(source, target):
+		target.material_request_type  = "Material Issue"
+		target.reference_type = "Project"
+		target.reference_name = source.name
+		target.creation_date = date.today()
+		target.for_project = 1
+		target.branch = source.branch
+		# target.site = frappe.db.get_value("Project", source.project, "site")
+
+	doc = get_mapped_doc("Project", source_name,	{
+		"Project": {
+			"doctype": "Material Request",
+			"field_map": {
+				"name" : "reference_name",
+			},
+		},
+	}, target_doc, set_missing_values)
+
+	return doc
+
+@frappe.whitelist()
+def make_stock_issue_entry(source_name, target_doc=None):
+	def set_missing_values(source, target):
+		target.stock_entry_type  = "Material Issue"
+		target.reference_type = "Project"
+		target.reference_name = source.name
+		target.creation_date = date.today()
+		target.for_project = 1
+		target.branch = source.branch
+		# target.site = frappe.db.get_value("Project", source.project, "site")
+
+	doc = get_mapped_doc("Project", source_name,	{
+		"Project": {
+			"doctype": "Stock Entry",
+			"field_map": {
+				"name" : "reference_name",
+			},
+		},
+	}, target_doc, set_missing_values)
+
+	return doc
+
+@frappe.whitelist()
+def make_stock_return_entry(source_name, target_doc=None):
+	def set_missing_values(source, target):
+		target.stock_entry_type  = "Material Return"
+		target.reference_type = "Project"
+		target.reference_name = source.name
+		target.creation_date = date.today()
+		target.for_project = 1
+		target.branch = source.branch
+		# target.site = frappe.db.get_value("Project", source.project, "site")
+
+	doc = get_mapped_doc("Project", source_name,	{
+		"Project": {
+			"doctype": "Stock Entry",
+			"field_map": {
+				"name" : "reference_name",
+			},
+		},
+	}, target_doc, set_missing_values)
+
+	return doc
 
 def project_status_update_reminder():
 	daily_reminder()

@@ -1,0 +1,259 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "ASSETO.YY.######",
+ "creation": "2025-01-23 16:27:55.177196",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "asset_category",
+  "brand",
+  "gross_purchase_amount",
+  "is_existing_asset",
+  "old_asset_id",
+  "column_break_scxq",
+  "asset_name",
+  "serial_number",
+  "from_date",
+  "column_break_lwbp",
+  "model",
+  "status",
+  "to_date",
+  "section_break_xlkm",
+  "custodian",
+  "contact_details",
+  "column_break_rgfd",
+  "employee_name",
+  "branch",
+  "column_break_wiss",
+  "owned_by",
+  "section_break_krpd",
+  "additional_value",
+  "asset_parts_section",
+  "part_items",
+  "section_break_decw",
+  "company"
+ ],
+ "fields": [
+  {
+   "fieldname": "asset_category",
+   "fieldtype": "Link",
+   "label": "Asset Category",
+   "options": "Asset Category"
+  },
+  {
+   "fieldname": "brand",
+   "fieldtype": "Data",
+   "label": "Brand"
+  },
+  {
+   "fieldname": "gross_purchase_amount",
+   "fieldtype": "Currency",
+   "label": "Asset Value"
+  },
+  {
+   "fieldname": "column_break_scxq",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "asset_name",
+   "fieldtype": "Data",
+   "label": "Asset Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "serial_number",
+   "fieldtype": "Data",
+   "label": "Identification Number"
+  },
+  {
+   "fieldname": "from_date",
+   "fieldtype": "Date",
+   "label": "From Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_lwbp",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "model",
+   "fieldtype": "Data",
+   "label": "Model"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "In-Use\nReturned\nDamaged"
+  },
+  {
+   "depends_on": "eval:doc.status == \"Returned\";",
+   "fieldname": "to_date",
+   "fieldtype": "Date",
+   "label": "To Date"
+  },
+  {
+   "fieldname": "section_break_xlkm",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "custodian",
+   "fieldtype": "Link",
+   "label": "Custodian",
+   "options": "Employee"
+  },
+  {
+   "fieldname": "contact_details",
+   "fieldtype": "Data",
+   "label": "Contact Details"
+  },
+  {
+   "fieldname": "column_break_rgfd",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "custodian.employee_name",
+   "fieldname": "employee_name",
+   "fieldtype": "Data",
+   "label": "Employee Name",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "custodian.branch",
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "label": "Branch",
+   "options": "Branch",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_wiss",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "owned_by",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Owned By",
+   "options": "Organization",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_krpd",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "additional_value",
+   "fieldtype": "Currency",
+   "label": "Additional Value",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_decw",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company"
+  },
+  {
+   "fieldname": "asset_parts_section",
+   "fieldtype": "Section Break",
+   "label": "Asset Parts"
+  },
+  {
+   "fieldname": "part_items",
+   "fieldtype": "Table",
+   "options": "Asset Parts"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_existing_asset",
+   "fieldtype": "Check",
+   "label": "Is Existing Asset"
+  },
+  {
+   "depends_on": "eval:doc.is_existing_asset == 1;",
+   "fieldname": "old_asset_id",
+   "fieldtype": "Data",
+   "label": "Old Asset ID",
+   "mandatory_depends_on": "eval:doc.is_existing_asset == 1;"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-01-23 17:00:29.877681",
+ "modified_by": "Administrator",
+ "module": "Assets",
+ "name": "Asset Others",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "CEO",
+   "share": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Auditor",
+   "share": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Accounts Master",
+   "share": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Asset Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Asset User",
+   "share": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

@@ -103,12 +103,14 @@ class StockEntry(StockController):
 		credit_note: DF.Link | None
 		delivery_note_no: DF.Link | None
 		fg_completed_qty: DF.Float
+		for_project: DF.Check
 		from_bom: DF.Check
 		from_warehouse: DF.Link | None
 		in_transit: DF.Check
 		inspection_required: DF.Check
 		is_opening: DF.Literal["No", "Yes"]
 		is_return: DF.Check
+		issue_ref: DF.Link | None
 		issued_by: DF.Data | None
 		items: DF.Table[StockEntryDetail]
 		job_card: DF.Link | None
@@ -128,6 +130,8 @@ class StockEntry(StockController):
 		purchase_receipt_no: DF.Link | None
 		purpose: DF.Literal["Material Issue", "Material Return", "Material Receipt", "Material Transfer", "Material Transfer for Manufacture", "Material Consumption for Manufacture", "Manufacture", "Repack", "Send to Subcontractor"]
 		received_by: DF.Data | None
+		reference_name: DF.DynamicLink | None
+		reference_type: DF.Link | None
 		remarks: DF.SmallText | None
 		sales_invoice_no: DF.Link | None
 		select_print_heading: DF.Link | None
@@ -143,7 +147,7 @@ class StockEntry(StockController):
 		target_address_display: DF.SmallText | None
 		target_warehouse_address: DF.Link | None
 		text_editor_yfea: DF.TextEditor | None
-		title: DF.Data | None
+		title: DF.Data
 		to_warehouse: DF.Link | None
 		total_additional_costs: DF.Currency
 		total_amount: DF.Currency
@@ -158,11 +162,11 @@ class StockEntry(StockController):
 		if self.stock_entry_type == 'Material Issue':
 			series = 'SEMI'
 		elif self.stock_entry_type == 'Material Receipt':
-			series = 'SEME'
+			series = 'SER'
 		elif self.stock_entry_type == 'Material Transfer':
 			series = 'SEMT'
 		elif self.stock_entry_type == 'Material Return':
-			series ='SEMR'
+			series ='SERE'
 		else:
 			series = 'SE'
 		self.name = make_autoname(str(series) + ".YY.MM.####")
@@ -209,6 +213,11 @@ class StockEntry(StockController):
 		self.validate_posting_time()
 		if self.stock_entry_type=="Material Return":
 			self.is_return=1
+			self.validate_material_transfer()
+		else:
+			self.is_return=0
+		if self.stock_entry_type=="Material Return" or self.stock_entry_type=="Material Issue":
+			self.validate_project()
 		self.validate_purpose()
 		self.validate_item()
 		self.validate_customer_provided_item()
@@ -255,12 +264,14 @@ class StockEntry(StockController):
 		self.validate_closed_subcontracting_order()
 		self.make_bundle_using_old_serial_batch_fields()
 		self.update_stock_ledger()
+		if self.stock_entry_type=="Material Return" or self.stock_entry_type=="Material Issue":
+			self.update_project_task()
+			self.update_project_cost()
 		self.update_work_order()
 		self.validate_subcontract_order()
 		self.update_subcontract_order_supplied_items()
 		self.update_subcontracting_order_status()
 		self.update_pick_list_status()
-
 		self.make_gl_entries()
 
 		self.repost_future_sle_and_gle()
@@ -282,7 +293,9 @@ class StockEntry(StockController):
 
 		if self.work_order and self.purpose == "Material Consumption for Manufacture":
 			self.validate_work_order_status()
-
+		if self.stock_entry_type=="Material Return" or self.stock_entry_type=="Material Issue":
+			self.update_project_task()
+			self.update_project_cost()
 		self.update_work_order()
 		self.update_stock_ledger()
 
@@ -386,7 +399,13 @@ class StockEntry(StockController):
 				},
 			):
 				frappe.delete_doc("Stock Entry", d.name)
+	def validate_material_transfer(self):
 
+		for a in  self.get("items"):
+			if not a.item_ref:
+				frappe.throw("Material Return should be routed from Get Items Form")
+			if flt(a.qty) > flt(a.balance_qty):
+				frappe.throw("qty should be less than balance qty")
 	def set_transfer_qty(self):
 		for item in self.get("items"):
 			if not flt(item.qty):
@@ -435,7 +454,21 @@ class StockEntry(StockController):
 
 			amount += additional_cost_amt
 			frappe.db.set_value("Project", self.project, "total_consumed_material_cost", amount)
-
+	def validate_project(self):
+		count = 1
+		for row in self.get("items"):
+			if self.for_project == 1 and self.stock_entry_type in ("Material Issue", "Material Return"):
+				if not row.project:
+					frappe.throw("Project is Mandatory in row {} in Items table.".format(count))
+				if not row.task:
+					frappe.throw("Task is Mandatory in row {} in Items table.".format(count))
+				if row.project and not row.task:
+					frappe.throw("Task is Mandatory in row {} in Items table.".format(count))
+				if not row.project and row.task:
+					frappe.throw("Project is Mandatory in row {} in Items table.".format(count))
+			if row.item_ref and self.stock_entry_type !="Material Return":
+				frappe.throw("Choose Stock Entry Type as Material Return or Delete all data from Row")
+			count += 1
 	def validate_item(self):
 		stock_items = self.get_stock_items()
 		for item in self.get("items"):
@@ -631,6 +664,7 @@ class StockEntry(StockController):
 			if cstr(d.s_warehouse) == cstr(d.t_warehouse) and self.purpose not in [
 				"Material Transfer for Manufacture",
 				"Material Transfer",
+				"Material Return",
 			]:
 				frappe.throw(_("Source and target warehouse cannot be same for row {0}").format(d.idx))
 
@@ -726,6 +760,158 @@ class StockEntry(StockController):
 					),
 					DuplicateEntryForWorkOrderError,
 				)
+
+	# def validate_project(self):
+	# 	if self.for_project == 1:
+	# 		row = 1
+	# 		for a in self.items:
+	# 			if not a.project:
+	# 				frappe.throw("Project is Mandatory in row {} in Items table.".format(row))
+	# 			if not a.task:
+	# 				frappe.throw("Task is Mandatory in row {} in Items table.".format(row))
+	# 			if a.project and not a.task:
+	# 				frappe.throw("Task is Mandatory in row {} in Items table.".format(row))
+	# 			if not a.project and a.task:
+	# 				frappe.throw("Project is Mandatory in row {} in Items table.".format(row))
+	# 			row += 1
+
+	def update_project_task(self):
+		""" update the items child table for the respective doctype: Task or Maintenance order """
+		if self.docstatus == 1 and self.for_project == 1:
+			for d in self.items:
+				if d.project:
+					project = frappe.get_doc("Project",d.project)
+					task = frappe.get_doc("Task",d.task)
+					if self.stock_entry_type == "Material Issue":
+						p_row = project.append("task_material_item", {})
+						t_row = task.append("task_material_item", {})
+						#Project Update
+						p_row.item = d.item_code
+						p_row.item_name = d.item_name
+						p_row.item_uom = d.uom
+						p_row.item_quantity = d.qty
+						p_row.reference_type = "Stock Entry"
+						p_row.reference_name = self.name
+						p_row.child_reference = d.name
+						#Task Update
+						t_row.item = d.item_code
+						t_row.item_name = d.item_name
+						t_row.item_uom = d.uom
+						t_row.item_quantity = d.qty
+						t_row.reference_type = "Stock Entry"
+						t_row.reference_name = self.name
+						t_row.child_reference = d.name
+						#Project
+						p_row.item_rate = d.basic_rate
+						#Task
+						t_row.item_rate = d.basic_rate
+						#Project
+						p_row.item_amount = d.amount
+						#Task
+						t_row.item_amount = d.amount
+					elif self.stock_entry_type == "Material Return":
+						p_row = frappe.get_doc("Task Material Item", {"child_reference": d.item_ref, "parent": d.project, "item": d.item_code})
+						# frappe.throw(str(p_row.item_quantity)+" "+str(d.balance_qty))
+						# frappe.throw("Here "+str(p_row.name))
+						# #Project Update
+						# p_row.item_quantity = p_row.item_quantity - d.qty
+						# #Task Update
+						# t_row.item_quantity = t_row.item_quantity - d.qty
+						# t_row.reference_type = "Stock Entry"
+						# t_row.reference_name = self.name
+						# t_row.child_reference = d.name
+						# if d.amount > 0:
+						# 	#Project
+						# 	p_row.item_amount = p_row.item_amount - d.amount
+						# 	#Task
+						# 	t_row.item_amount = t_row.item_amount - d.amount
+						frappe.db.sql("""
+							UPDATE
+								`tabTask Material Item` 
+							SET item_quantity = item_quantity - {}, item_amount = item_amount - {}
+							WHERE 
+								child_reference = '{}' and item = '{}'
+						""".format(
+							flt(d.qty), flt(d.amount),
+							d.item_ref, d.item_code
+						))
+					task.save(ignore_permissions=True)
+					project.load_activity_tasks()
+					project.save(ignore_permissions=True)
+		elif self.docstatus == 2 and self.for_project == 1 and self.stock_entry_type == "Material Issue":
+			for item in self.items:
+				frappe.db.sql("""
+					DELETE FROM
+						`tabTask Material Item` 
+					WHERE 
+						reference_name = '{mr}' and 
+						item = '{item_code}'
+				""".format(
+					mr = self.name, 
+					item_code = item.item_code, 
+				))
+		elif self.docstatus == 2 and self.for_project == 1 and self.stock_entry_type == "Material Return":
+			for item in self.items:
+				frappe.db.sql("""
+					UPDATE
+						`tabTask Material Item` 
+					SET item_quantity = item_quantity + {}, item_amount = item_amount + {}
+					WHERE 
+						child_reference = '{}' and 
+						item = '{}'
+				""".format(
+					item.qty,
+					item.amount,
+					item.item_ref, 
+					item.item_code, 
+				))
+	# added by phuntsho on september 28, 2021
+	def update_project_cost(self):
+		""" update the cost of project/task or maintenance """
+		for a in self.items:
+			stores_cost = service_cost = 0
+			amount = a.amount
+			if "Service" in a.item_group:
+				service_cost = amount
+			else:
+				stores_cost = amount
+			if a.project:
+				if self.stock_entry_type == "Material Issue":
+					project = frappe.get_doc("Project", a.project)
+					task = frappe.get_doc("Task", a.task)
+					# total_previous_cost = frappe.db.get_value("Project", a.project, ["material_cost", "services_cost", "total_cost"], as_dict=1)
+					# task_previous_cost = frappe.db.get_value("Task", a.task, ["material_cost", "services_cost", "total_cost"],as_dict=1)
+					project_service_cost = (flt(project.services_cost) + flt(service_cost)) if self.docstatus == 1 else (flt(project.services_cost) - flt(service_cost))
+					task_service_cost = (flt(task.services_cost) + flt(service_cost)) if self.docstatus == 1 else (flt(task.services_cost) - flt(service_cost))
+					project_store_cost = (flt(project.material_cost) + flt(stores_cost)) if self.docstatus == 1 else (flt(project.material_cost) - flt(stores_cost))
+					task_store_cost = (flt(task.material_cost) + flt(stores_cost)) if self.docstatus == 1 else (flt(task.material_cost) - flt(stores_cost))
+					total_task_cost = (flt(task.total_cost) + flt(amount)) if self.docstatus == 1 else (flt(task.total_cost) - flt(amount))
+					total_overall_cost = (flt(project.total_cost) + flt(amount)) if self.docstatus == 1 else (flt(project.total_cost) - flt(amount))
+					project.db_set("total_cost",total_overall_cost)
+					project.db_set("services_cost",project_service_cost)
+					project.db_set("material_cost",project_store_cost)
+					task.db_set("total_cost",total_task_cost)
+					task.db_set("services_cost",task_service_cost)
+					task.db_set("material_cost",task_store_cost)
+					# frappe.db.sql("update `tabProject` set total_cost={} where name ='{}'".format(total_overall_cost, self.reference_name))
+					# frappe.db.sql("""UPDATE `tabTask` SET total_cost={tot_cost}, service_cost={ser_cost}, material_cost={mat_cost} WHERE name='{task}'""".format(tot_cost=total_task_cost, ser_cost=total_service_cost, mat_cost=total_store_cost, task =self.task))
+				elif self.stock_entry_type == "Material Return":
+					project = frappe.get_doc("Project", a.project)
+					task = frappe.get_doc("Task", a.task)
+					# total_previous_cost = frappe.db.get_value("Project", a.project, ["material_cost", "services_cost", "total_cost"], as_dict=1)
+					# task_previous_cost = frappe.db.get_value("Task", a.task, ["material_cost", "services_cost", "total_cost"],as_dict=1)
+					project_service_cost = (flt(project.services_cost) - flt(service_cost)) if self.docstatus == 1 else (flt(project.services_cost) + flt(service_cost))
+					task_service_cost = (flt(task.services_cost) - flt(service_cost)) if self.docstatus == 1 else (flt(task.services_cost) + flt(service_cost))
+					project_store_cost = (flt(project.material_cost) - flt(stores_cost)) if self.docstatus == 1 else (flt(project.material_cost) + flt(stores_cost))
+					task_store_cost = (flt(task.material_cost) - flt(stores_cost)) if self.docstatus == 1 else (flt(task.material_cost) + flt(stores_cost))
+					total_task_cost = (flt(task.total_cost) - flt(amount)) if self.docstatus == 1 else (flt(task.total_cost) + flt(amount))
+					total_overall_cost = (flt(project.total_cost) - flt(amount)) if self.docstatus == 1 else (flt(project.total_cost) + flt(amount))
+					project.db_set("total_cost",total_overall_cost)
+					project.db_set("services_cost",project_service_cost)
+					project.db_set("material_cost",project_store_cost)
+					task.db_set("total_cost",total_task_cost)
+					task.db_set("services_cost",task_service_cost)
+					task.db_set("material_cost",task_store_cost)
 
 	def set_actual_qty(self):
 		from erpnext.stock.stock_ledger import is_negative_stock_allowed
@@ -1364,10 +1550,10 @@ class StockEntry(StockController):
 	def update_stock_ledger(self):
 		sl_entries = []
 		finished_item_row = self.get_finished_item_row()
-
+		# frappe.throw(str(finished_item_row))
 		# make sl entries for source warehouse first
 		self.get_sle_for_source_warehouse(sl_entries, finished_item_row)
-
+		# frappe.throw(str(sl_entries))
 		# SLE for target warehouse
 		self.get_sle_for_target_warehouse(sl_entries, finished_item_row)
 
@@ -1403,15 +1589,24 @@ class StockEntry(StockController):
 			if cstr(d.s_warehouse):
 				if d.serial_and_batch_bundle and self.docstatus == 1:
 					self.validate_serial_batch_bundle_type(d.serial_and_batch_bundle)
-
-				sle = self.get_sl_entries(
-					d,
-					{
-						"warehouse": cstr(d.s_warehouse),
-						"actual_qty": -flt(d.transfer_qty),
-						"incoming_rate": 0,
-					},
-				)
+				if self.is_return:
+					sle = self.get_sl_entries(
+						d,
+						{
+							"warehouse": cstr(d.s_warehouse),
+							"actual_qty": flt(d.transfer_qty),
+							"incoming_rate": 0,
+						},
+					)
+				else:
+					sle = self.get_sl_entries(
+						d,
+						{
+							"warehouse": cstr(d.s_warehouse),
+							"actual_qty": -flt(d.transfer_qty),
+							"incoming_rate": 0,
+						},
+					)
 				if cstr(d.t_warehouse):
 					sle.dependant_sle_voucher_detail_no = d.name
 				elif finished_item_row and (
@@ -3039,7 +3234,45 @@ def get_supplied_items(
 
 	return supplied_item_details
 
+@frappe.whitelist()
+def make_material_return(source_name, target_doc=None):
+	def set_missing_values(source, target):
+		source.to_warehouse = target.from_warehouse
+		for b in source.items:
+			for a in target.items:
+				returned_qty = 0
+				for c in frappe.db.get_all("Stock Entry Detail",{"item_ref":b.name, "docstatus":1}, ['qty']):
+					returned_qty += c.qty
+				# frappe.msgprint(str(a.item_code) +" Project" +str(a.project))
+				a.item_ref = b.name
+				a.balance_qty = b.qty - returned_qty
+				a.qty = a.balance_qty
+				a.t_warehouse = b.s_warehouse
+		target.stock_entry_type = "Material Return"
+	
+	doc = get_mapped_doc(
+		"Stock Entry",
+		source_name,
+		{
+			"Stock Entry": {"doctype": "Stock Entry", "validation": {"docstatus": ["=", 1]}},
+			"Stock Entry Detail": {
+				"doctype": "Stock Entry Detail",
+				"field_map": {"stock_qty": "stock_qty", "batch_no": "batch_no"},
+			},
+		},
+		target_doc,
+		set_missing_values
+	)
 
+	return doc
+@frappe.whitelist()
+def get_cc_warehouse(branch):
+	cc, wh = '',''
+	cc = frappe.db.get_value("Branch", branch, "cost_center")
+	for d in frappe.db.sql("select w.name as name from `tabWarehouse` w, `tabWarehouse Branch` as wb \
+		where wb.parent = w.name and wb.branch = '{}'".format(branch), as_dict=1):
+		wh = d.name
+	return {'cost_center': cc, 'warehouse':wh}
 @frappe.whitelist()
 def get_items_from_subcontract_order(source_name, target_doc=None):
 	from erpnext.controllers.subcontracting_controller import make_rm_stock_entry
@@ -3054,7 +3287,7 @@ def get_items_from_subcontract_order(source_name, target_doc=None):
 
 	return target_doc
 
-
+@frappe.whitelist()
 def get_available_materials(work_order) -> dict:
 	data = get_stock_entry_data(work_order)
 
@@ -3111,7 +3344,7 @@ def get_available_materials(work_order) -> dict:
 
 	return available_materials
 
-
+@frappe.whitelist()
 def get_stock_entry_data(work_order):
 	from erpnext.stock.doctype.serial_and_batch_bundle.serial_and_batch_bundle import (
 		get_voucher_wise_serial_batch_from_bundle,
@@ -3174,7 +3407,7 @@ def get_stock_entry_data(work_order):
 
 	return data
 
-
+@frappe.whitelist()
 def create_serial_and_batch_bundle(parent_doc, row, child, type_of_transaction=None):
 	item_details = frappe.get_cached_value(
 		"Item", child.item_code, ["has_serial_no", "has_batch_no"], as_dict=1
@@ -3227,7 +3460,7 @@ def create_serial_and_batch_bundle(parent_doc, row, child, type_of_transaction=N
 
 	return doc.insert(ignore_permissions=True).name
 
-
+@frappe.whitelist()
 def get_batchwise_serial_nos(item_code, row):
 	batchwise_serial_nos = {}
 
@@ -3241,7 +3474,7 @@ def get_batchwise_serial_nos(item_code, row):
 			batchwise_serial_nos[batch_no] = sorted([serial_no.name for serial_no in serial_nos])
 
 	return batchwise_serial_nos
-
+@frappe.whitelist()
 def get_permission_query_conditions(user):
 	if not user: user = frappe.session.user
 	user_roles = frappe.get_roles(user)

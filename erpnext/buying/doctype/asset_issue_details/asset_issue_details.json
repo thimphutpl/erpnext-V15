@@ -99,7 +99,8 @@
   {
    "fieldname": "brand",
    "fieldtype": "Data",
-   "label": "Brand"
+   "label": "Brand",
+   "reqd": 1
   },
   {
    "fieldname": "item_name",
@@ -212,9 +213,9 @@
   },
   {
    "fieldname": "model",
-   "fieldtype": "Link",
+   "fieldtype": "Data",
    "label": "Model",
-   "options": "Equipment Model"
+   "reqd": 1
   },
   {
    "fieldname": "engine_no",
@@ -247,7 +248,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-03-01 16:24:24.658961",
+ "modified": "2025-01-24 10:17:37.155461",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Asset Issue Details",

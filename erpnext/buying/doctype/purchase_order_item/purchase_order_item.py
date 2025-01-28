@@ -29,7 +29,7 @@ class PurchaseOrderItem(Document):
 		blanket_order: DF.Link | None
 		blanket_order_rate: DF.Currency
 		bom: DF.Link | None
-		brand: DF.Link | None
+		brand: DF.Data | None
 		company_total_stock: DF.Float
 		conversion_factor: DF.Float
 		cost_center: DF.Link | None
@@ -42,7 +42,6 @@ class PurchaseOrderItem(Document):
 		fg_item: DF.Link | None
 		fg_item_qty: DF.Float
 		from_warehouse: DF.Link | None
-		image: DF.Attach | None
 		include_exploded_items: DF.Check
 		is_fixed_asset: DF.Check
 		is_free_item: DF.Check
@@ -58,6 +57,7 @@ class PurchaseOrderItem(Document):
 		margin_type: DF.Literal["", "Percentage", "Amount"]
 		material_request: DF.Link | None
 		material_request_item: DF.Data | None
+		model: DF.Data | None
 		net_amount: DF.Currency
 		net_rate: DF.Currency
 		page_break: DF.Check
@@ -66,7 +66,6 @@ class PurchaseOrderItem(Document):
 		parenttype: DF.Data
 		price_list_rate: DF.Currency
 		pricing_rules: DF.SmallText | None
-		product_bundle: DF.Link | None
 		production_plan: DF.Link | None
 		production_plan_item: DF.Data | None
 		production_plan_sub_assembly_item: DF.Data | None
@@ -86,6 +85,7 @@ class PurchaseOrderItem(Document):
 		supplier_part_no: DF.Data | None
 		supplier_quotation: DF.Link | None
 		supplier_quotation_item: DF.Link | None
+		task: DF.Link | None
 		total_weight: DF.Float
 		uom: DF.Link
 		warehouse: DF.Link | None

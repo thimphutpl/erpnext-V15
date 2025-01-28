@@ -16,16 +16,17 @@ class ActivityTasks(Document):
 
 		activity: DF.Data | None
 		description: DF.TextEditor | None
-		end_date: DF.Date | None
+		end_date: DF.Date
 		grp_exp_end_date: DF.Date | None
 		grp_exp_start_date: DF.Date | None
 		grp_work_quantity: DF.Percent
 		grp_work_quantity_complete: DF.Percent
 		is_group: DF.Check
 		parent: DF.Data
+		parent_task: DF.Link | None
 		parentfield: DF.Data
 		parenttype: DF.Data
-		start_date: DF.Date | None
+		start_date: DF.Date
 		status: DF.Literal["Open", "Working", "Pending Review", "Closed", "Cancelled"]
 		target_quantity: DF.Float
 		target_quantity_complete: DF.Float

@@ -1,51 +1,48 @@
-// Copyright (c) 2023, Frappe Technologies Pvt. Ltd. and contributors
+// Copyright (c) 2024, Frappe Technologies Pvt. Ltd. and contributors
 // For license information, please see license.txt
-/* eslint-disable */
 
 frappe.query_reports["POL Issue Report"] = {
 	"filters": [
 		{
-			fieldname:"company", 
-			label:__("Company"), 
-			fieldtype:"Link", 
-			options:"Company", 
-			default: frappe.defaults.get_default("company"),
-			reqd:1
+			"fieldname":"branch",
+			"label": ("Branch"),
+			"fieldtype": "Link",
+			"options": "Branch",
+			"width": "100",
+			"reqd": 1
 		},
 		{
-			fieldname:"from_date",
-			label: __("From Date"),
-			fieldtype: "Date",
-			reqd: 1,
-			default: frappe.datetime.month_start(),
+			"fieldname":"from_date",
+			"label": ("From Date"),
+			"fieldtype": "Date",
+			"width": "80",
+			"reqd": 1
 		},
 		{
-			fieldname:"to_date",
-			label: __("To Date"),
-			fieldtype: "Date",
-			reqd: 1,
-			default: frappe.datetime.get_today()
+			"fieldname":"to_date",
+			"label": ("To Date"),
+			"fieldtype": "Date",
+			"width": "80",
+			"reqd": 1
+		},
+		
+		{
+			"fieldname": "not_cdcl",
+			"label": ("Include Only CDCL Equipments"),
+			"fieldtype": "Check",
+			"default": 1
 		},
 		{
-			fieldname:"equipment",
-			label: __("Equipment"),
-			fieldtype: "Link",
-			options:"Equipment",
-			get_query: () => {
-				return {
-					filters: {
-						is_container:0,
-						enabled:1,
-						company:frappe.query_report.get_filter_value('company')
-					}
-				}
-			}
+			"fieldname": "include_disabled",
+			"label": ("Include Disbaled Equipments"),
+			"fieldtype": "Check",
+			"default": 0
 		},
 		{
-			fieldname:"branch", 
-			label:__("Branch"), 
-			fieldtype:"Link", 
-			options:"Branch"
-		},
+			"fieldname": "own_cc",
+			"label": ("Show Only Received/Issued from Own Branch"),
+			"fieldtype": "Check",
+			"default": 0
+		}
 	]
 };

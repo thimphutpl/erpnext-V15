@@ -15,8 +15,10 @@
   "private",
   "section_break_fxma",
   "customer",
+  "supplier",
   "address",
   "location",
+  "project",
   "column_break_cmcm",
   "private_customer_name",
   "private_customer_address",
@@ -198,10 +200,10 @@
   {
    "fieldname": "customer",
    "fieldtype": "Link",
+   "hidden": 1,
    "in_list_view": 1,
    "label": "Customer",
-   "options": "Customer",
-   "reqd": 1
+   "options": "Customer"
   },
   {
    "fieldname": "address",
@@ -316,12 +318,26 @@
    "hidden": 1,
    "label": "Location",
    "options": "Location"
+  },
+  {
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Project",
+   "options": "Project"
+  },
+  {
+   "fieldname": "supplier",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Supplier",
+   "options": "Supplier"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-12-23 14:23:19.314019",
+ "modified": "2025-01-27 17:08:55.255904",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Equipment Hiring Form",

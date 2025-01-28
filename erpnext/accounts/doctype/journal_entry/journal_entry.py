@@ -110,49 +110,7 @@ class JournalEntry(AccountsController):
 			frappe.throw("Please set prefix {}".format(
 				frappe.get_desk_link("Journal Entry Series", self.naming_series)
 			))
-		self.name = make_autoname(str(prefix) + ".YYYY.MM.####")
-
-	    # Ver 1.0 by SSK on 09/08/2016, autoname() method is added
-	# def autoname(self):
-    #             series_seq = ""
-    #             if self.voucher_type == 'Journal Entry':
-    #                     series_seq = 'JEJV'
-    #             elif self.voucher_type == 'Bank Entry':
-    #                     if self.naming_series == 'Bank Payment Voucher':
-    #                             series_seq = 'JEBP'
-    #                     elif self.naming_series == 'Bank Receipt Voucher':
-    #                             series_seq = 'JEBR'
-    #                     else:
-    #                             series_seq = 'JEBE'
-    #             elif self.voucher_type == 'Cash Entry':
-    #                     if self.naming_series == 'Cash Payment Voucher':
-    #                             series_seq = 'JECP'
-    #                     elif self.naming_series == 'Cash Receipt Voucher':
-    #                             series_seq = 'JECR'
-    #                     else:
-    #                             series_seq = 'JECA'
-    #             elif self.voucher_type == 'Debit Note':
-    #                     series_seq = 'JEDN'
-    #             elif self.voucher_type == 'Credit Note':
-    #                     series_seq = 'JECN'
-    #             elif self.voucher_type == 'Contra Entry':
-    #                     series_seq = 'JECE'
-    #             elif self.voucher_type == 'Excise Entry':
-    #                     series_seq = 'JEEE'
-    #             elif self.voucher_type == 'Write Off Entry':
-    #                     series_seq = 'JEWE'
-    #             elif self.voucher_type == 'Opening Entry':
-    #                     series_seq = 'JEOP'
-    #             elif self.voucher_type == 'Depreciation Entry':
-    #                     series_seq = 'JEDE'
-    #             elif self.voucher_type == 'Maintenance Invoice':
-    #                     series_seq = 'JEMA'
-    #             elif self.voucher_type == 'Hire Invoice':
-    #                     series_seq = 'JEHI'
-	# 			else:
-	# 				series_seq = 'JEJE'
-
-    #             self.name = make_autoname(str(series_seq) + '.YY.MM.#####')	
+		self.name = make_autoname(str(prefix) + ".YYYY.MM.####")	
 
 	def validate(self):
 		if self.voucher_type == "Opening Entry":
@@ -187,13 +145,19 @@ class JournalEntry(AccountsController):
 		self.validate_inter_company_accounts()
 		self.validate_depr_entry_voucher_type()
 		self.validate_advance_accounts()
-
+		for a in self.accounts:
+			# if a.project:
+			if a.project:
+				if self.voucher_type != "Opening Entry" and not a.task:
+					frappe.throw("Task is andatory in row {}".format(row))
+				if not a.business_activity:
+					frappe.throw("Business Activity is mandatory")
 		if self.docstatus == 0:
 			self.apply_tax_withholding()
 
 		if not self.title:
 			self.title = self.get_title()
-
+				
 	def validate_advance_accounts(self):
 		journal_accounts = set([x.account for x in self.accounts])
 		advance_accounts = set()
@@ -237,6 +201,31 @@ class JournalEntry(AccountsController):
 		self.update_booked_depreciation()
 		self.update_reference_document()
 		self.update_project_advance(cancel=self.docstatus == 2)
+		travel_claim = frappe.db.sql("""select name from `tabTravel Claim` where claim_journal like '%{}%'""".format(self.name),as_dict=1)
+		if travel_claim == [] and "Travel Payable" not in self.title:
+			row = 1
+			for_project = 0
+			for a in self.accounts:
+				# if a.project:
+				if a.project and self.is_opening == "No" and not a.task:
+					frappe.throw("Task is mandatory in row {}".format(row))
+				if a.project:
+					for_project = 1
+					if self.voucher_type != "Opening Entry" and not a.task:
+						frappe.throw("Task is andatory in row {}".format(row))
+					if not a.business_activity:
+						frappe.throw("Business Activity is mandatory")
+					# self.update_project_cost(a.reference_name, a.is_advance, a.is_settlement, a.debit_in_account_currency, a.advance_settlement_id) // why debit in account currency
+					self.update_project_cost(a.project, a.is_advance, a.credit, a.debit, a.task)
+				# if a.task:
+				# 	# self.update_project_task(a.reference_name, a.is_advance, a.is_settlement, a.debit_in_account_currency, a.advance_settlement_id)
+				# 	self.update_project_task(a.reference_name, a.is_advance, a.actual_amount, a.is_settlement, a.debit, a.advance_settlement_id)
+				# elif a.reference_type == "Job Card":
+				# 	self.update_job_card(a.reference_name)
+				row += 1
+			if for_project == 1:
+				self.update_project_task()
+
 
 	def on_update_after_submit(self):
 		if hasattr(self, "repost_required"):
@@ -272,9 +261,133 @@ class JournalEntry(AccountsController):
 		self.update_reference_document(cancel=True)
 		check_clearance_date(self.doctype, self.name)
 		self.update_project_advance(cancel=self.docstatus == 2)
+		travel_claim = frappe.db.sql("""select name from `tabTravel Claim` where claim_journal like '%{}%'""".format(self.name),as_dict=1)
+		if travel_claim == [] and "Travel Payable" not in self.title:
+			row = 1
+			for_project = 0
+			for a in self.accounts:
+				# if a.project:
+				if a.task and not a.project:
+					frappe.throw("Project is Mandatory in row {}".format(row))
+				if not a.task and a.project:
+					frappe.throw("Task is Mandatory in row {}".format(row))
+				for_project = 1
+				if a.project:
+					if self.voucher_type != "Opening Entry" and not a.task:
+						frappe.throw("Task is Mandatory in row {}".format(row))
+					# self.update_project_cost(a.reference_name, a.is_advance, a.is_settlement, a.debit_in_account_currency, a.advance_settlement_id) // why debit in account currency
+					self.update_project_cost(a.project, a.is_advance, a.credit, a.debit, a.task)
+				# if a.task:
+				# 	# self.update_project_task(a.reference_name, a.is_advance, a.is_settlement, a.debit_in_account_currency, a.advance_settlement_id)
+				# 	self.update_project_task(a.reference_name, a.is_advance, a.actual_amount, a.is_settlement, a.debit, a.advance_settlement_id)
+				# elif a.reference_type == "Job Card":
+				# 	self.update_job_card(a.reference_name)
+				row += 1
+			if for_project == 1:
+				self.update_project_task()
+				# self.update_project_cost()
+				# self.update_project_maintenance_cost()
+
+	def update_project_task(self):
+		""" update the items child table for the respective doctype: Task or Maintenance order """
+		if self.docstatus == 1:
+			for d in self.accounts:
+				if d.project:
+					project = frappe.get_doc("Project",d.project)
+					task = frappe.get_doc("Task",d.task)
+					p_row = project.append("other_doc_item", {})
+					t_row = task.append("other_doc_item", {})
+					#Project Update
+					p_row.reference_type = "Journal Entry"
+					p_row.reference_name = self.name
+					p_row.voucher_type = self.voucher_type
+					#Task Update
+					t_row.reference_type = "Journal Entry"
+					t_row.reference_name = self.name
+					t_row.voucher_type = self.voucher_type
+					if d.debit > 0:
+						#Project
+						p_row.amount = d.debit
+						#Task
+						t_row.amount = d.debit
+					elif d.credit > 0:
+						#Project
+						p_row.amount = -1 * d.credit
+						#Task
+						t_row.amount = -1 * d.credit
+					task.save(ignore_permissions=True)
+					project.load_activity_tasks()
+					project.save(ignore_permissions=True)
+		elif self.docstatus == 2:
+			for item in self.accounts:
+				if item.project:
+					frappe.db.sql("""
+						DELETE FROM
+							`tabProject Expense Item` 
+						WHERE 
+							reference_name = '{mr}'
+					""".format(
+						mr = self.name, 
+					))
 
 	def get_title(self):
 		return self.pay_to_recd_from or self.accounts[0].account
+
+	def update_project_cost(self, reference_name, is_advance, credit_in_account_currency, debit_in_account_currency, task):
+		""" update other expenses and total cost in project """
+		# if is_advance == 'No' and is_settlement == 0 and is_opening_adjustment == 0 and self.voucher_type != "Credit Note":
+		# 	total_previous_cost = frappe.db.get_value("Project", reference_name, "total_cost", as_dict=1)
+		# 	other_previous_cost = frappe.db.get_value("Project", reference_name, "other_expenses",as_dict=1)
+		# 	total_other_cost = (flt(other_previous_cost.other_expenses) + flt(debit_in_account_currency)) if self.docstatus == 1 else (flt(other_previous_cost.other_expenses) - flt(debit_in_account_currency))
+		# 	total_overall_cost = (flt(total_previous_cost.total_cost) + flt(debit_in_account_currency)) if self.docstatus == 1 else (flt(total_previous_cost.total_cost) - flt(debit_in_account_currency))
+		# 	frappe.db.sql("update `tabProject` set total_cost={}, other_expenses={} where name ='{}'".format(total_overall_cost, total_other_cost, reference_name))
+		# elif is_settlement == 1 and is_advance == "No" and is_opening_adjustment == 0 and self.voucher_type != "Credit Note":
+		# 	# frappe.throw(str(total_advance))
+		# 	project_previous = frappe.db.get_value("Project", reference_name, ["advance","total_cost","other_expenses"], as_dict=1)
+		# 	project_total_cost = (flt(project_previous.total_cost) + flt(debit_in_account_currency)) if self.docstatus == 1 else (flt(project_previous.total_cost) - flt(debit_in_account_currency))
+		# 	if flt(debit_in_account_currency,2) == flt(actual_amount,2):
+		# 		project_advance = (flt(project_previous.advance) - flt(debit_in_account_currency)) if self.docstatus == 1 else (flt(project_previous.advance) + flt(debit_in_account_currency))
+		# 	elif datetime.datetime.strptime(str(self.creation).split(" ")[0],"%Y-%m-%d") >= datetime.datetime.strptime("2022-01-07", "%Y-%m-%d"):
+		# 		project_advance = (flt(project_previous.advance) - flt(actual_amount,2)) if self.docstatus == 1 else (flt(project_previous.advance) + flt(actual_amount,2))
+		# 	else:
+		# 		project_advance = (flt(project_previous.advance) - flt(debit_in_account_currency)) if self.docstatus == 1 else (flt(project_previous.advance) + flt(debit_in_account_currency))
+		# 	project_other_cost = (flt(project_previous.other_expenses) + flt(debit_in_account_currency)) if self.docstatus == 1 else (flt(project_previous.other_expenses) - flt(debit_in_account_currency))
+		# 	project = frappe.get_doc("Project",reference_name)
+		# 	advance_settlement = frappe.get_doc("Advance Settlement", advance_settlement_id)
+		# 	if self.docstatus == 1:
+		# 		advance_settlement.db_set("journal_entry_ref", self.name)
+		# 	elif self.docstatus == 2:
+		# 		advance_settlement.db_set("journal_entry_ref", None)
+		# 	project.db_set("advance",project_advance)
+		# 	project.db_set("total_cost",project_total_cost)
+		# 	project.db_set("other_expenses",project_other_cost)
+		# elif is_advance == "Yes" and is_settlement == 0 and is_opening_adjustment == 0 and self.voucher_type != "Credit Note":
+		# 	advance_previous_cost = frappe.db.get_value("Project", reference_name, "advance",as_dict=1)
+		# 	total_advance_cost = (flt(advance_previous_cost.advance) + flt(debit_in_account_currency)) if self.docstatus == 1 else (flt(advance_previous_cost.advance) - flt(debit_in_account_currency))
+		# 	frappe.db.sql("update `tabProject` set advance={} where name ='{}'".format(total_advance_cost, reference_name))
+		if self.is_opening == 'Yes' and is_advance == "No" and self.voucher_type != "Credit Note":
+			previous_opening = frappe.db.get_value("Project", reference_name, ["opening_balance","total_cost"],as_dict=1)
+			total_opening_balance = (flt(previous_opening.opening_balance) + flt(debit_in_account_currency)) if self.docstatus == 1 else (flt(previous_opening.opening_balance) - flt(debit_in_account_currency))
+			# total_opening_adjustment = (flt(previous_opening.opening_adjustment) + flt(credit_in_account_currency)) if self.docstatus == 1 else (flt(previous_opening.opening_adjustment) - flt(credit_in_account_currency))
+			total_project_cost = (flt(previous_opening.total_cost) + flt(debit_in_account_currency)) if self.docstatus == 1 else (flt(previous_opening.total_cost) - flt(debit_in_account_currency))
+			frappe.db.sql("update `tabProject` set opening_balance = {}, total_cost = {} where name ='{}'".format(total_opening_balance, total_project_cost, reference_name))
+		elif self.is_opening == 'No' and is_advance == "No" and self.voucher_type != "Credit Note":
+			previous_other_expenses = frappe.db.get_value("Project", reference_name, ["other_expenses","total_cost"],as_dict=1)
+			previous_task_other_expenses = frappe.db.get_value("Task", task, ["other_expenses","total_cost"],as_dict=1)
+			total_other_expenses = (flt(previous_other_expenses.other_expenses) + flt(debit_in_account_currency)) if self.docstatus == 1 else (flt(previous_other_expenses.other_expenses) - flt(debit_in_account_currency))
+			total_task_other_expenses = (flt(previous_task_other_expenses.other_expenses) + flt(debit_in_account_currency)) if self.docstatus == 1 else (flt(previous_task_other_expenses.other_expenses) - flt(debit_in_account_currency))
+			# total_opening_adjustment = (flt(previous_opening.opening_adjustment) + flt(credit_in_account_currency)) if self.docstatus == 1 else (flt(previous_opening.opening_adjustment) - flt(credit_in_account_currency))
+			total_project_cost = (flt(previous_other_expenses.total_cost) + flt(debit_in_account_currency)) if self.docstatus == 1 else (flt(previous_other_expenses.total_cost) - flt(debit_in_account_currency))
+			total_task_cost = (flt(previous_task_other_expenses.total_cost) + flt(debit_in_account_currency)) if self.docstatus == 1 else (flt(previous_task_other_expenses.total_cost) - flt(debit_in_account_currency))
+			frappe.db.sql("update `tabProject` set other_expenses = {}, total_cost = {} where name ='{}'".format(total_other_expenses, total_project_cost, reference_name))
+			frappe.db.sql("update `tabTask` set other_expenses = {}, total_cost = {} where name ='{}'".format(total_task_other_expenses, total_task_cost, task))
+		# elif is_advance == "No" and is_opening_adjustment == 0 and is_settlement == 0 and self.voucher_type == "Credit Note":
+		# 	total_previous_cost = frappe.db.get_value("Project", reference_name, "total_cost", as_dict=1)
+		# 	adjustment_previous = frappe.db.get_value("Project", reference_name, "adjustments_made",as_dict=1)
+		# 	total_adjustment = (flt(adjustment_previous.adjustments_made) + flt(credit_in_account_currency)) if self.docstatus == 1 else (flt(adjustment_previous.adjustments_made) - flt(credit_in_account_currency))
+		# 	total_overall_cost = (flt(total_previous_cost.total_cost) - flt(credit_in_account_currency)) if self.docstatus == 1 else (flt(total_previous_cost.total_cost) + flt(credit_in_account_currency))
+		# 	frappe.db.sql("update `tabProject` set total_cost={}, adjustments_made={} where name ='{}'".format(total_overall_cost, total_adjustment, reference_name))
+		frappe.db.commit()
 
 	def update_advance_paid(self):
 		advance_paid = frappe._dict()
@@ -1197,6 +1310,7 @@ class JournalEntry(AccountsController):
 					tax_amount_in_account_currency, tax_amount = 0, 0
 					tax_amount_in_account_currency_dr, tax_amount_in_account_currency_cr = 0, 0
 					tax_amount_dr, tax_amount_cr = 0, 0
+					tax_account_name = d.tax_account if (acc == d.tax_account) else None
 					
 					if tax_account:
 						tax_amount_in_account_currency = flt(d.tax_amount_in_account_currency)
@@ -1221,7 +1335,7 @@ class JournalEntry(AccountsController):
 					gl_map.append(
 						self.get_gl_dict(
 							{
-								"account": d.account,
+								"account": d.account if not tax_account_name else tax_account_name,
 								"party_type": d.party_type,
 								"due_date": self.due_date,
 								"party": d.party,
@@ -1905,3 +2019,15 @@ def make_bank_payment(source_name, target_doc=None):
 	}, target_doc, ignore_permissions=True)
 	return doc
 # ePayment Ends
+@frappe.whitelist()
+def get_permission_query_conditions(user):
+	if not user: user = frappe.session.user
+	user_roles = frappe.get_roles(user)
+	employee=frappe.db.get_value("Employee",{"user_id": user},"name")
+
+	if user == "Administrator":
+		return
+	if "HR Master" in user_roles or "Auditor" in user_roles or "HR User" in user_roles or "HR Manager" in user_roles:
+		return
+	else:
+		return

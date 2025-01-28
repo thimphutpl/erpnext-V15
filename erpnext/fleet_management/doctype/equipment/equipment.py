@@ -46,9 +46,11 @@ class Equipment(Document):
 		not_cdcl: DF.Check
 		operators: DF.Table[EquipmentOperator]
 		owned_by: DF.Link | None
+		project: DF.Link | None
 		registration_number: DF.Data
 		supplier: DF.Link | None
 		tank_capacity: DF.Data | None
+		tanker_capacity: DF.Data | None
 		village: DF.Link | None
 	# end: auto-generated types
 	# def validate(self):

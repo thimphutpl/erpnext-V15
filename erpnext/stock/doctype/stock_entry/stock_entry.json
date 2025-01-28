@@ -28,11 +28,15 @@
   "posting_date",
   "posting_time",
   "stock_entry_type",
+  "issue_ref",
   "column_break_eaoa",
   "set_posting_time",
   "inspection_required",
   "apply_putaway_rule",
   "in_transit",
+  "for_project",
+  "reference_type",
+  "reference_name",
   "bom_info_section",
   "from_bom",
   "use_multi_level_bom",
@@ -602,6 +606,7 @@
    "label": "BOM Info"
   },
   {
+   "depends_on": "eval:doc.stock_entry_type !=\"Material Return\"",
    "fieldname": "section_break_jwgn",
    "fieldtype": "Section Break",
    "label": "Warehouse"
@@ -743,8 +748,9 @@
    "allow_on_submit": 1,
    "fieldname": "title",
    "fieldtype": "Data",
-   "hidden": 1,
-   "label": "Stock Entry Title"
+   "in_list_view": 1,
+   "label": "Stock Entry Title",
+   "reqd": 1
   },
   {
    "default": "0",
@@ -773,6 +779,33 @@
    "fieldtype": "Link",
    "label": "Price List",
    "options": "Price List"
+  },
+  {
+   "fieldname": "issue_ref",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Material Issue ID",
+   "options": "Stock Entry"
+  },
+  {
+   "default": "0",
+   "fieldname": "for_project",
+   "fieldtype": "Check",
+   "label": "For Project"
+  },
+  {
+   "fieldname": "reference_type",
+   "fieldtype": "Link",
+   "label": "Reference Type",
+   "options": "DocType",
+   "read_only": 1
+  },
+  {
+   "fieldname": "reference_name",
+   "fieldtype": "Dynamic Link",
+   "label": "Reference Name",
+   "options": "reference_type",
+   "read_only": 1
   }
  ],
  "icon": "fa fa-file-text",
@@ -780,10 +813,11 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-12-30 14:18:27.621185",
+ "modified": "2025-01-22 16:37:16.790350",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Stock Entry",
+ "naming_rule": "By \"Naming Series\" field",
  "owner": "Administrator",
  "permissions": [
   {

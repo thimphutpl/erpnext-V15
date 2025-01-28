@@ -158,13 +158,54 @@ frappe.query_reports["General Ledger"] = {
 			},
 		},
 		{
+			fieldname: "project_definition",
+			label: __("Project Definition"),
+			fieldtype: "MultiSelectList",
+			get_data: function (txt) {
+				return frappe.db.get_link_options("Project Definition", txt, {
+					company: frappe.query_report.get_filter_value("company"),
+					docstatus: 1,
+				});
+			},
+		},
+		{
 			fieldname: "project",
 			label: __("Project"),
 			fieldtype: "MultiSelectList",
 			get_data: function (txt) {
-				return frappe.db.get_link_options("Project", txt, {
-					company: frappe.query_report.get_filter_value("company"),
+				var pds = [];
+
+				$.each(Object.keys(frappe.query_report.get_filter_value("project_definition")), function (i, fname) {
+					pds.push(frappe.query_report.get_filter_value("project_definition")[i])
 				});
+				if(pds.length > 0){
+					return frappe.db.get_link_options("Project", txt, {
+						project_definition: ["in", pds],
+					});
+				}
+				else{
+					return frappe.db.get_link_options("Project", txt, {
+					});
+				}
+			},
+		},
+		{
+			fieldname: "task",
+			label: __("Task"),
+			fieldtype: "MultiSelectList",
+			get_data: function (txt) {
+				var projects = [];
+				$.each(Object.keys(frappe.query_report.get_filter_value("project")), function (i, fname) {
+					projects.push(frappe.query_report.get_filter_value("project")[i])
+				});
+				if(projects.length > 0){
+					return frappe.db.get_link_options("Task", txt, {
+						project: ["in", projects],
+					});
+				}
+				else{
+					return []
+				}
 			},
 		},
 		{

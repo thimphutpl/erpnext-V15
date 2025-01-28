@@ -24,7 +24,7 @@ frappe.ui.form.on('Project Definition', {
 			frm.set_df_property("total_overall_project_cost","read_only",1);
 		}
 		frm.set_df_property("project_code", "read_only", frm.is_new() ? 0 : 1);
-		if (frm.doc.docstatus == 1) {
+		if (frm.doc.docstatus == 1 && (frm.doc.status == "Created" || frm.doc.status == "Ongoing")) {
 			frm.add_custom_button("Create Project Branch", function () {
 				frappe.model.open_mapped_doc({
 					method: "erpnext.projects.doctype.project_definition.project_definition.make_project",
@@ -36,7 +36,34 @@ frappe.ui.form.on('Project Definition', {
 					method: "erpnext.projects.doctype.project_definition.project_definition.make_purchase_requisition",
 					frm: cur_frm
 				})
-			}).addClass("btn-primary");
+			},
+				__("Make")
+			)
+			frm.add_custom_button("Make Material Issue Request", function () {
+				frappe.model.open_mapped_doc({
+					method: "erpnext.projects.doctype.project_definition.project_definition.make_material_issue_request",
+					frm: cur_frm
+				})
+			},
+				__("Make")
+			)
+			cur_frm.add_custom_button("Make Stock Issue Entry",
+				function (){
+					frappe.model.open_mapped_doc({
+						method: "erpnext.projects.doctype.project_definition.project_definition.make_stock_issue_entry",
+						frm: cur_frm
+					})
+				},
+				__("Make")
+			)
+			frm.add_custom_button("Make Stock Return Entry", function () {
+				frappe.model.open_mapped_doc({
+					method: "erpnext.projects.doctype.project_definition.project_definition.make_stock_return_entry",
+					frm: cur_frm
+				})
+			},
+				__("Make")
+			)
 			frm.add_custom_button("Update Progress", function () {
 				frappe.call({
 					method: "update_project_progress",
@@ -47,14 +74,14 @@ frappe.ui.form.on('Project Definition', {
 				})
 			}).addClass("btn-primary");
 		}
-		if (frm.doc.docstatus == 1 && frm.doc.project_profile == "Internal") {
-			frm.add_custom_button("Monthly Settlement", function () {
-				frappe.model.open_mapped_doc({
-					method: "erpnext.projects.doctype.project_definition.project_definition.monthly_settlement",
-					frm: cur_frm
-				})
-			}).addClass("btn-primary");
-		}
+		// if (frm.doc.docstatus == 1 && frm.doc.project_profile == "Internal") {
+		// 	frm.add_custom_button("Monthly Settlement", function () {
+		// 		frappe.model.open_mapped_doc({
+		// 			method: "erpnext.projects.doctype.project_definition.project_definition.monthly_settlement",
+		// 			frm: cur_frm
+		// 		})
+		// 	}).addClass("btn-primary");
+		// }
 		frappe.call({
 			method: "erpnext.projects.doctype.project_definition.project_definition.get_project_cost",
 			args: {
@@ -71,6 +98,5 @@ frappe.ui.form.on('Project Definition', {
 			},
 		});
 		frm.refresh_fields();
-	},
-
+	}
 });

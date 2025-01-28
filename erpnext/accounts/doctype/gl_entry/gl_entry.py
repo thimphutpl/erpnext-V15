@@ -55,6 +55,7 @@ class GLEntry(Document):
 		posting_date: DF.Date | None
 		project: DF.Link | None
 		remarks: DF.Text | None
+		task: DF.Link | None
 		to_rename: DF.Check
 		transaction_currency: DF.Link | None
 		transaction_date: DF.Date | None
@@ -82,7 +83,7 @@ class GLEntry(Document):
 		if not self.flags.from_repost and self.voucher_type != "Period Closing Voucher":
 			self.check_mandatory()
 			self.validate_cost_center()
-			self.check_pl_account()
+			# self.check_pl_account()
 			self.validate_party()
 			self.validate_currency()
 
@@ -101,25 +102,25 @@ class GLEntry(Document):
 			):
 				return
 
-			if frappe.get_cached_value("Account", self.account, "account_type") not in [
-				"Receivable",
-				"Payable",
-			]:
+			# if frappe.get_cached_value("Account", self.account, "account_type") not in [
+			# 	"Receivable",
+			# 	"Payable",
+			# ]:
 				# Update outstanding amt on against voucher
-				if (
-					self.against_voucher_type
-					in ["Journal Entry", "Sales Invoice", "Purchase Invoice", "Fees"]
-					and self.against_voucher
-					and self.flags.update_outstanding == "Yes"
-					and not frappe.flags.is_reverse_depr_entry
-				):
-					update_outstanding_amt(
-						self.account,
-						self.party_type,
-						self.party,
-						self.against_voucher_type,
-						self.against_voucher,
-					)
+			if (
+				self.against_voucher_type
+				in ["Journal Entry", "Sales Invoice", "Purchase Invoice", "Fees"]
+				and self.against_voucher
+				and self.flags.update_outstanding == "Yes"
+				and not frappe.flags.is_reverse_depr_entry
+			):
+				update_outstanding_amt(
+					self.account,
+					self.party_type,
+					self.party,
+					self.against_voucher_type,
+					self.against_voucher,
+				)
 
 	def check_mandatory(self):
 		mandatory = ["account", "voucher_type", "voucher_no", "company"]
@@ -334,6 +335,7 @@ def update_outstanding_amt(
 		account_condition = f"and account in ({frappe.db.escape(account)}, {frappe.db.escape(party_account)})"
 	else:
 		account_condition = f" and account = {frappe.db.escape(account)}"
+		# account_condition = ""
 
 	# get final outstanding amt
 	bal = flt(
@@ -348,7 +350,7 @@ def update_outstanding_amt(
 		)[0][0]
 		or 0.0
 	)
-
+	# frappe.throw("here "+str(bal))
 	if against_voucher_type == "Purchase Invoice":
 		bal = -bal
 	elif against_voucher_type == "Journal Entry":

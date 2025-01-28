@@ -176,28 +176,76 @@ frappe.ui.form.on("Purchase Order", {
 		});
 	},
 
-	// freight_insurance_charges: function(frm) {
-	// 	calculate_discount(frm)
-	// },
+	freight_insurance_charges: function(frm) {
+		calculate_discount(frm)
+	},
 
 	discount: function(frm) {
 		calculate_discount(frm)
 	},
 
-	// other_charges: function(frm) {
-	// 	calculate_discount(frm)
-	// }
+	other_charges: function(frm) {
+		calculate_discount(frm)
+	},
+
+	tax: function(frm) {
+		calculate_discount(frm)
+	},
 });
 
 function calculate_discount(frm) {
 	console.log(frm.doc.freight_insurance_charges + frm.doc.other_charges - frm.doc.discount);
-	frm.set_value("total_add_ded", flt(frm.doc.freight_insurance_charges + frm.doc.other_charges - frm.doc.discount)??0);
-	frm.set_value("discount_amount", flt(-frm.doc.freight_insurance_charges - frm.doc.other_charges + frm.doc.discount)??0);
+	frm.set_value("total_add_ded", flt(frm.doc.freight_insurance_charges + frm.doc.other_charges + frm.doc.tax - frm.doc.discount)??0);
+	frm.set_value("discount_amount", flt(-frm.doc.freight_insurance_charges - frm.doc.other_charges - frm.doc.tax + frm.doc.discount)??0);
 	frm.refresh_field("discount_amount");
 	frm.refresh_field("total_add_ded");
 }
 
 frappe.ui.form.on("Purchase Order Item", {
+	refresh: function(frm, cdt, cdn){
+		var i = locals[cdt][cdn];
+		frappe.call({
+			method:'frappe.client.get_value',
+			args:{
+				'doctype':'Item',
+				fieldname:"is_fixed_asset",
+				filters: {
+					"name": i.name
+				}
+			},
+			callback:(r)=>{
+				if(r.message.is_fixed_asset){
+					frm.toggle_display(['brand', 'model'], r.message.is_fixed_asset);
+				}
+				else{
+					frm.toggle_display(['brand', 'model'], 0);	
+				}
+			}
+		})
+		frm.refresh_fields();
+	},
+	items_add: function(frm, cdt, cdn){
+		if (frm.doc.cost_center){
+			frappe.model.set_value(cdt, cdn, "cost_center", frm.doc.cost_center)
+		}
+
+		frappe.call({
+			method: "frappe.client.get_value",
+			args: {
+				doctype: "Cost Center",
+				fieldname: "warehouse",
+				filters: { name: frm.doc.cost_center },
+			},
+			callback: function(r, rt) {
+				if(r.message.warehouse) {
+					frappe.model.set_value("warehouse", r.message.warehouse)
+				}else{
+					frappe.throw(__('Warehouse not define in this Cost Center'))
+				}
+			}
+		});
+		frm.refresh_fields();
+	},
 	schedule_date: function (frm, cdt, cdn) {
 		var row = locals[cdt][cdn];
 		if (row.schedule_date) {
@@ -210,6 +258,28 @@ frappe.ui.form.on("Purchase Order Item", {
 	},
 
 	item_code: async function (frm, cdt, cdn) {
+		var i = locals[cdt][cdn];
+		frappe.call({
+			method:'frappe.client.get_value',
+			args:{
+				'doctype':'Item',
+				fieldname:"is_fixed_asset",
+				filters: {
+					"name": i.name
+				}
+			},
+			callback:(r)=>{
+				if(r.message.is_fixed_asset){
+					console.log("here")
+					frm.toggle_display(['brand', 'model'], r.message.is_fixed_asset);
+				}
+				else{
+					frm.toggle_display(['brand', 'model'], 0);
+					
+				}
+			}
+		})
+		frm.refresh_fields();
 		if (frm.doc.is_subcontracted && !frm.doc.is_old_subcontracting_flow) {
 			var row = locals[cdt][cdn];
 
@@ -256,7 +326,24 @@ frappe.ui.form.on("Purchase Order Item", {
 			}
 		}
 	},
-
+	cost_center:function(frm, cdt, cdn){
+		frappe.call({
+			method: "frappe.client.get_value",
+			args: {
+				doctype: "Cost Center",
+				fieldname: "warehouse",
+				filters: { name: frm.doc.cost_center },
+			},
+			callback: function(r, rt) {
+				if(r.message.warehouse) {
+					frappe.model.set_value("warehouse", r.message.warehouse)
+				}else{
+					frappe.throw(__('Warehouse not define in this Cost Center'))
+				}
+			}
+		});
+		frm.refresh_fields();
+	},
 	fg_item: async function (frm, cdt, cdn) {
 		if (frm.doc.is_subcontracted && !frm.doc.is_old_subcontracting_flow) {
 			var row = locals[cdt][cdn];
@@ -476,7 +563,7 @@ erpnext.buying.PurchaseOrderController = class PurchaseOrderController extends (
 		} else if (doc.docstatus === 0) {
 			cur_frm.cscript.add_from_mappers();
 		}
-	}
+	}d
 
 	get_items_from_open_material_requests() {
 		erpnext.utils.map_current_doc({

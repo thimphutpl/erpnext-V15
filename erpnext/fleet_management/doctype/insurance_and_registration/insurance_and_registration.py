@@ -38,6 +38,7 @@ class InsuranceandRegistration(Document):
         insurance_item: DF.Table[InsuranceDetails]
         items: DF.Table[BluebookandEmission]
         posting_date: DF.Date
+        project: DF.ReadOnly | None
         reference: DF.Data | None
         registration_item: DF.Table[RegistrationDetails]
         settle_imprest_advance: DF.Check

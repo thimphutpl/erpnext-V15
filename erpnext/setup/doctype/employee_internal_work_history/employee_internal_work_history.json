@@ -26,8 +26,7 @@
    "label": "Branch",
    "oldfieldname": "branch",
    "oldfieldtype": "Select",
-   "options": "Branch",
-   "read_only": 1
+   "options": "Branch"
   },
   {
    "fieldname": "department",
@@ -108,7 +107,7 @@
  "idx": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-12-25 17:46:47.681761",
+ "modified": "2025-01-20 15:19:42.225066",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee Internal Work History",

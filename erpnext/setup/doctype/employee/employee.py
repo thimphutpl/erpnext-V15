@@ -25,35 +25,9 @@ class InactiveEmployeeStatusError(frappe.ValidationError):
 class Employee(NestedSet):
 	nsm_parent_field = "reports_to"
 	    
-	def autoname(self):
-		naming_method = frappe.db.get_value("HR Settings", None, "emp_created_by")
-		if not naming_method:
-			throw(_("Please setup Employee Naming System in Human Resource > HR Settings"))
-		else:
-			if naming_method == 'Naming Series':
-				if not self.date_of_joining:
-					frappe.throw("Date of Joining not Set!")
-				#naming_series = str(self.naming_series) + str(getdate(self.date_of_joining).year)[2:4]
-				naming_series = str(self.naming_series)	
-				x = make_autoname(str(naming_series) + '.###')
-				y = make_autoname(str(getdate(self.date_of_joining).strftime('%m')) + ".#")
-				eid = x[:6] + y[:2] + x[6:9]
-				self.name = x
-				self.yearid = x
-			elif naming_method == 'Employee Number':
-				self.name = self.employee_number
-
-		self.employee = self.name
-		# name = make_autoname('EMP.####')[3:]
-		# if not self.employee_name:
-		# 	self.set_employee_name()
 	def validate(self):
 		from erpnext.controllers.status_updater import validate_status
 		validate_status(self.status, ["Active", "Inactive", "Suspended", "Left"])
-		# naming done with combination with joining year, month and 4 digits series
-		if self.old_id:
-			self.employee =	self.name = self.old_id
-			return
 		year_month = str(self.date_of_joining)[2:4] + str(self.date_of_joining)[5:7]
 		self.validate_date()
 		self.validate_email()
@@ -92,7 +66,7 @@ class Employee(NestedSet):
 	def update_nsm_model(self):
 		frappe.utils.nestedset.update_nsm(self)
 
-	def on_update(self):
+	def on_update(self):		
 		self.update_nsm_model()
 		if self.user_id:
 			self.update_user()
@@ -100,30 +74,22 @@ class Employee(NestedSet):
 		self.reset_employee_emails_cache()
 		self.post_casual_leave()
 
+
 	def post_casual_leave(self):
-		from_date = getdate(self.date_of_joining)
-		to_date = get_year_end_date(from_date)
-
+		
 		if not cint(self.casual_leave_allocated):
-			if frappe.db.exists("Leave Allocation", {"leave_type": "Casual Leave", "employee": self.name, "from_date": ("<=",str(to_date)), "to_date": (">=", str(from_date))}):
-				# self.add_comments("Auto allocation of CL is skipped as an allocation already exists for the period {} - {}".format(from_date, to_date))
-				self.db_set("casual_leave_allocated", 1)
-				return
-				
-			if not frappe.db.sql("""select count(*) as counts from `tabFiscal Year` where now() between year_start_date and year_end_date
-				and '{}' <= year_end_date and '{}' >= year_start_date""".format(from_date, to_date))[0][0]:
-				# self.add_comments("Auto allocation of CL is skipped as the Employee's Date of Joing is not in current Fiscal Year")
-				self.db_set("casual_leave_allocated", 1)
-				return
-
-			credits_per_year = frappe.db.get_value("Employee Group Item", {"parent": self.employee_group, "leave_type": 'Casual Leave'}, "credits_per_year")
+			credits_per_year = frappe.db.get_value("Employee Group Item", {"parent": self.employee_group, "leave_type": ('in',['Casual Leave','GCE Casual Leave'])}, "credits_per_year")
+			# frappe.throw(str(credits_per_year))
 			if flt(credits_per_year):
+				from_date = getdate(self.date_of_joining)
+				to_date = get_year_end_date(from_date);
+
 				no_of_months = frappe.db.sql("""
 						select (
 								case
 										when day('{0}') > 1 and day('{0}') <= 15
-										then timestampdiff(MONTH,'{0}','{1}')+1
-										else timestampdiff(MONTH,'{0}','{1}')
+										then timestampdiff(MONTH,'{0}','{1}')+1 
+										else timestampdiff(MONTH,'{0}','{1}')       
 								end
 								) as no_of_months
 				""".format(str(self.date_of_joining),str(add_days(to_date,1))))[0][0]
@@ -131,19 +97,79 @@ class Employee(NestedSet):
 				new_leaves_allocated = round5((flt(no_of_months)/12)*flt(credits_per_year))
 				new_leaves_allocated = new_leaves_allocated if new_leaves_allocated <= flt(credits_per_year) else flt(credits_per_year)
 
+				if self.employment_type == 'GCE':
+					if not self.contract_end_date:
+						frappe.throw("Missing value for Contract End Date")
+					to_date = self.contract_end_date
+					new_leaves_allocated = cint(5)
+					leave_allocation = frappe.db.sql("""
+						select name, from_date, to_date
+						from `tabLeave Allocation`
+						where employee=%s and leave_type=%s and docstatus=1
+						and to_date >= %s and from_date <= %s""", 
+						(self.name, "GCE Casual Leave", from_date, to_date))
+					if leave_allocation:
+						return
+
+				
 				if flt(new_leaves_allocated):
 					la = frappe.new_doc("Leave Allocation")
 					la.employee = self.employee
 					la.employee_name = self.employee_name
-					la.leave_type = "Casual Leave"
+					la.leave_type = "GCE Casual Leave" if self.employment_type == 'GCE' else "Casual Leave"
 					la.from_date = str(from_date)
 					la.to_date = str(to_date)
 					la.carry_forward = cint(0)
 					la.new_leaves_allocated = flt(new_leaves_allocated)
 					la.submit()
-					self.db_set("casual_leave_allocated", 1)
-					if la.name:
-						frappe.msgprint("Causal Leave Allocated {} for this Employee ".format(frappe.get_desk_link("Leave Allocation",la.name)))
+					if self.employment_type != 'GCE':
+						self.db_set("casual_leave_allocated", 1)
+				frappe.db.commit()
+
+	# def post_casual_leave(self):
+	# 	from_date = getdate(self.date_of_joining)
+	# 	to_date = get_year_end_date(from_date)
+
+	# 	if not cint(self.casual_leave_allocated):
+	# 		if frappe.db.exists("Leave Allocation", {"leave_type": "Casual Leave", "employee": self.name, "from_date": ("<=",str(to_date)), "to_date": (">=", str(from_date))}):
+	# 			# self.add_comments("Auto allocation of CL is skipped as an allocation already exists for the period {} - {}".format(from_date, to_date))
+	# 			self.db_set("casual_leave_allocated", 1)
+	# 			return
+				
+	# 		if not frappe.db.sql("""select count(*) as counts from `tabFiscal Year` where now() between year_start_date and year_end_date
+	# 			and '{}' <= year_end_date and '{}' >= year_start_date""".format(from_date, to_date))[0][0]:
+	# 			# self.add_comments("Auto allocation of CL is skipped as the Employee's Date of Joing is not in current Fiscal Year")
+	# 			self.db_set("casual_leave_allocated", 1)
+	# 			return
+
+	# 		credits_per_year = frappe.db.get_value("Employee Group Item", {"parent": self.employee_group, "leave_type": 'Casual Leave'}, "credits_per_year")
+	# 		if flt(credits_per_year):
+	# 			no_of_months = frappe.db.sql("""
+	# 					select (
+	# 							case
+	# 									when day('{0}') > 1 and day('{0}') <= 15
+	# 									then timestampdiff(MONTH,'{0}','{1}')+1
+	# 									else timestampdiff(MONTH,'{0}','{1}')
+	# 							end
+	# 							) as no_of_months
+	# 			""".format(str(self.date_of_joining),str(add_days(to_date,1))))[0][0]
+
+	# 			new_leaves_allocated = round5((flt(no_of_months)/12)*flt(credits_per_year))
+	# 			new_leaves_allocated = new_leaves_allocated if new_leaves_allocated <= flt(credits_per_year) else flt(credits_per_year)
+
+	# 			if flt(new_leaves_allocated):
+	# 				la = frappe.new_doc("Leave Allocation")
+	# 				la.employee = self.employee
+	# 				la.employee_name = self.employee_name
+	# 				la.leave_type = "Casual Leave"
+	# 				la.from_date = str(from_date)
+	# 				la.to_date = str(to_date)
+	# 				la.carry_forward = cint(0)
+	# 				la.new_leaves_allocated = flt(new_leaves_allocated)
+	# 				la.submit()
+	# 				self.db_set("casual_leave_allocated", 1)
+	# 				if la.name:
+	# 					frappe.msgprint("Causal Leave Allocated {} for this Employee ".format(frappe.get_desk_link("Leave Allocation",la.name)))
 
 	def update_user_permissions(self):
 		if not self.create_user_permission:
@@ -570,27 +596,31 @@ def get_permission_query_conditions(user):
 	user_roles = frappe.get_roles(user)
 	if "HR User" in user_roles or "HR Manager" in user_roles or "Accounts User" in user_roles or "CEO" in user_roles:
 		return
-	if "MR User" in user_roles:
+	if "Management" in user_roles:
 		return """(
-			exists(select 1
-				from `tabEmployee` as e
-				where e.name = `tabEmployee`.name
-				and e.user_id = '{user}')
+			name in (select e1.name
+				from `tabEmployee` as e1, `tabEmployee` as e2
+				where e1.name = e2.name
+				and e1.user_id = '{user}')
 			or
-			exists(select 1
-				from `tabEmployee` e, `tabAssign Branch` ab, `tabBranch Item` bi
-				where e.user_id = '{user}'
-				and ab.employee = e.name
-				and bi.parent = ab.name
-				and bi.branch = e.branch)
+			name in (select e.name
+				from `tabEmployee` e
+				where e.branch in (
+					select bi.branch
+					from `tabEmployee` a, `tabAssign Branch` ab, `tabBranch Item` bi
+					where a.user_id = '{user}'
+					and ab.employee = a.name
+					and bi.parent = ab.name
+				))
 		)""".format(user=user)
 	else:
 		return """(
-			exists(select 1
-				from `tabEmployee` as e
-				where e.name = `tabEmployee`.name
-				and e.user_id = '{user}')
+			name in (select e1.name
+				from `tabEmployee` as e1, `tabEmployee` as e2
+				where e1.name = e2.name
+				and e1.user_id = '{user}')
 		)""".format(user=user)
+
 
 def has_record_permission(doc, user):
 	if not user: user = frappe.session.user

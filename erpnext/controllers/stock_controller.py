@@ -497,6 +497,7 @@ class StockController(AccountsController):
 									"against": expense_account,
 									"cost_center": item_row.cost_center,
 									"project": item_row.project or self.get("project"),
+									"task": item_row.task or self.get("task"),
 									"remarks": self.get("remarks") or _("Accounting Entry for Stock"),
 									"debit": flt(sle.stock_value_difference, precision),
 									"is_opening": item_row.get("is_opening")
@@ -517,6 +518,7 @@ class StockController(AccountsController):
 									"remarks": self.get("remarks") or _("Accounting Entry for Stock"),
 									"debit": -1 * flt(sle.stock_value_difference, precision),
 									"project": item_row.get("project") or self.get("project"),
+									"task": item_row.get("task") or self.get("task"),
 									"is_opening": item_row.get("is_opening")
 									or self.get("is_opening")
 									or "No",
@@ -549,6 +551,7 @@ class StockController(AccountsController):
 							"against": warehouse_asset_account,
 							"cost_center": item_row.cost_center,
 							"project": item_row.project or self.get("project"),
+							"task": item_row.task or self.get("task"),
 							"remarks": _("Rounding gain/loss Entry for Stock Transfer"),
 							"debit": sle_rounding_diff,
 							"is_opening": item_row.get("is_opening") or self.get("is_opening") or "No",
@@ -567,6 +570,7 @@ class StockController(AccountsController):
 							"remarks": _("Rounding gain/loss Entry for Stock Transfer"),
 							"credit": sle_rounding_diff,
 							"project": item_row.get("project") or self.get("project"),
+							"task": item_row.get("task") or self.get("task"),
 							"is_opening": item_row.get("is_opening") or self.get("is_opening") or "No",
 						},
 						item=item_row,
@@ -779,6 +783,7 @@ class StockController(AccountsController):
 				"incoming_rate": 0,
 				"company": self.company,
 				"project": d.get("project") or self.get("project"),
+				"task": d.get("task") or self.get("task"),
 				"is_cancelled": 1 if self.docstatus == 2 else 0,
 			}
 		)
@@ -1290,6 +1295,7 @@ class StockController(AccountsController):
 		credit_in_account_currency=None,
 		account_currency=None,
 		project=None,
+		task=None,
 		voucher_detail_no=None,
 		item=None,
 		posting_date=None,
