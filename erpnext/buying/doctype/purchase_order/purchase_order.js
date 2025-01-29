@@ -528,15 +528,15 @@ erpnext.buying.PurchaseOrderController = class PurchaseOrderController extends (
 						);
 					}
 
-					if (flt(doc.per_billed, 2) < 100) {
-						this.frm.add_custom_button(
-							__("Payment Request"),
-							function () {
-								me.make_payment_request();
-							},
-							__("Create")
-						);
-					}
+					// if (flt(doc.per_billed, 2) < 100) {
+					// 	this.frm.add_custom_button(
+					// 		__("Payment Request"),
+					// 		function () {
+					// 			me.make_payment_request();
+					// 		},
+					// 		__("Create")
+					// 	);
+					// }
 
 					if (doc.docstatus === 1 && !doc.inter_company_order_reference) {
 						let me = this;

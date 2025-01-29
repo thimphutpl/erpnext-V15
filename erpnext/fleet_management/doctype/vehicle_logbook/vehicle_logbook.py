@@ -296,7 +296,7 @@ class VehicleLogbook(Document):
 		# 	if flt(item.pol_issued) and flt((item.hsd_rate)):
 		# 		item.hsd_amount = flt(item.pol_issued) * flt(item.hsd_rate)
 
-		if flt(self.hire_charge_amount) and flt((self.operator_salary)) and flt((self.consumption)):
+		if flt(self.hire_charge_amount) or flt((self.operator_salary)) or flt((self.consumption)):
 				self.total_amount = flt(self.hire_charge_amount) + flt(self.operator_salary) + flt((self.consumption))	
 
 		# Auto-calculate hsd_amount as ys_km * distance_km

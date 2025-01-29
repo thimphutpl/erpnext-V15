@@ -306,68 +306,93 @@ class HireChargeInvoice(AccountsController):
 			gl_entries = []
 			self.posting_date = self.posting_date
 
-		receivable_account = frappe.db.get_single_value("Maintenance Accounts Settings", "default_receivable_account")
-		if not receivable_account:
-			frappe.throw("Setup Reveivable Account in Maintenance Accounts Settings")
-		advance_account = frappe.db.get_single_value("Maintenance Accounts Settings", "default_advance_account")
-		if not advance_account:
-			frappe.throw("Setup Advance Account in Maintenance Accounts Settings")
-		hire_account = frappe.db.get_single_value("Maintenance Accounts Settings", "hire_revenue_account")
+		payable_account = frappe.db.get_value("Company", "GYALSUNG INFRA", "default_payable_account")
+		if not payable_account:
+			frappe.throw("Setup Payable Account in Company")
+		# advance_account = frappe.db.get_single_value("Maintenance Accounts Settings", "default_advance_account")
+		# if not advance_account:
+		# 	frappe.throw("Setup Advance Account in Maintenance Accounts Settings")
+		hire_account = frappe.db.get_value("Company", "GYALSUNG INFRA",  "hire_charge")
 		if not hire_account:
-			frappe.throw("Setup Hire Account in Maintenance Accounts Settings")
-		discount_account = frappe.db.get_single_value("Maintenance Accounts Settings", "discount_account")
-		if not discount_account:
-			frappe.throw("Setup Discount Account in Maintenance Accounts Settings")  
-		gl_entries.append(
-			self.get_gl_dict({
-								"account": hire_account,
-				"               against_voucher_type": "Equipment Hiring Form",
-								"against": self.ehf_name,
-								"credit": self.total_invoice_amount,
-								"credit_in_account_currency": self.total_invoice_amount,
+			frappe.throw("Setup Hire Account in Company")
+		operator_account = frappe.db.get_value("Company", "GYALSUNG INFRA", "operator_allowance")
+		if not operator_account:
+			frappe.throw("Setup Operator Account in Company")
+		hsd_account = frappe.db.get_value("Company", "GYALSUNG INFRA", "hsd")
+		if not hsd_account:
+			frappe.throw("Setup Hsd Account in Company")		
+		# discount_account = frappe.db.get_single_value("Maintenance Accounts Settings", "discount_account")
+		# if not discount_account:
+		# 	frappe.throw("Setup Discount Account in Maintenance Accounts Settings") 
+		for item in self.get("items"):
+			if item.total_amount: 
+				gl_entries.append(
+					self.get_gl_dict({
+								"account": payable_account,
+								# "against_voucher_type": "Equipment Hiring Form",
+								# "against": self.ehf_name,
+								# for item in items:
+								"credit": item.total_amount,
+								"credit_in_account_currency": item.total_amount,
 								"cost_center": self.cost_center
 						}, self.currency)
 		)
+		# for item in self.get("items"):
+		# 	if item.operator_salary:
+		# 		gl_entries.append(
+		# 			self.get_gl_dict({
+		# 					"account": operator_account,
+		# 					"against": self.supplier,
+		# 					"party_type": "supplier",
+		# 					"party": self.supplier,
+		# 					"debit": self.operator_salary,
+		# 					"debit_in_account_currency": self.operator_salary,
+		# 					"cost_center": self.cost_center
+		# 			}, self.currency)
+		# 		)
 
-		if self.advance_amount:
-			gl_entries.append(
-				self.get_gl_dict({
-						"account": advance_account,
-						"against": self.customer,
-						"party_type": "Customer",
-						"party": self.customer,
-						"debit": self.advance_amount,
-						"debit_in_account_currency": self.advance_amount,
+		for item in self.get("items"):
+			if item.operator_salary:
+				gl_entries.append(
+					self.get_gl_dict({
+						"account": operator_account,
+						"against": self.supplier,
+						# "party_type": "supplier",
+						# "party": self.supplier,
+						"debit": item.operator_salary,
+						"debit_in_account_currency": item.operator_salary,
 						"cost_center": self.cost_center
-				}, self.currency)
-			)
+					}, self.currency)
+				)
 
-		if self.discount_amount:
-			gl_entries.append(
-				self.get_gl_dict({
-						"account": discount_account,
-						"against": self.customer,
-						"debit": self.discount_amount,
-						"debit_in_account_currency": self.discount_amount,
-						"cost_center": self.cost_center
-				}, self.currency)
-			)
-		if self.balance_amount:
-			gl_entries.append(
-				self.get_gl_dict({
-						"account": receivable_account,
-						"against": self.customer,
-						"party_type": "Customer",
-						"party": self.customer,
-						"against_voucher": self.name,
-						"against_voucher_type": self.doctype,
-						"debit": self.balance_amount,
-						"debit_in_account_currency": self.balance_amount,
-						"cost_center": self.cost_center
-				}, self.currency)
-			)
-		# frappe.msgprint(format(gl_entries))
-		make_gl_entries(gl_entries, cancel=(self.docstatus == 2),update_outstanding="No", merge_entries=False)
+
+			if item.hire_charge_amount:
+				gl_entries.append(
+					self.get_gl_dict({
+							"account": hire_account,
+							"against": self.supplier,
+							"debit": item.hire_charge_amount,
+							"debit_in_account_currency": item.hire_charge_amount,
+							"cost_center": self.cost_center
+					}, self.currency)
+				)
+
+			if item.hsd_consumption:
+				gl_entries.append(
+					self.get_gl_dict({
+							"account": hsd_account,
+							"against": self.supplier,
+							# "party_type": "supplier",
+							# "party": self.supplier,
+							# "against_voucher": self.name,
+							# "against_voucher_type": self.doctype,
+							"debit": item.hsd_consumption,
+							"debit_in_account_currency": item.hsd_consumption,
+							"cost_center": self.cost_center
+					}, self.currency)
+				)
+			# frappe.msgprint(format(gl_entries))
+			make_gl_entries(gl_entries, cancel=(self.docstatus == 2),update_outstanding="No", merge_entries=False)
 
 	def refund_of_excess_advance(self):
 		revenue_bank_account = frappe.db.get_value("Branch", self.branch, "revenue_bank_account")
@@ -412,12 +437,46 @@ class HireChargeInvoice(AccountsController):
 
 			frappe.msgprint("Bill processed to accounts through journal voucher " + je.name)
 
+# @frappe.whitelist()
+# def get_vehicle_logs(form=None):
+# 	if form:
+# 		return frappe.db.sql("select a.name, a.equipment, a.total_amount, a.hire_charge_amount, a.consumption, a.operator_salary, a.rate_type, a.registration_number, (a.total_work_time + a.hour_taken) as total_work_time, a.total_idle_time, a.work_rate, a.idle_rate, b.project, (select count(1) from `tabVehicle Log` b where b.parent = a.name) as no_of_days from `tabVehicle Logbook` a where a.docstatus = 1 and a.invoice_created = 0 and a.ehf_name = \'" + str(form) + "\'", as_dict=True)
+# 	else:
+# 		frappe.throw("Select Equipment Hiring Form first!")
+
 @frappe.whitelist()
 def get_vehicle_logs(form=None):
-	if form:
-		return frappe.db.sql("select a.name, a.equipment, a.total_amount, a.rate_type, a.registration_number, (a.total_work_time + a.hour_taken) as total_work_time, a.total_idle_time, a.work_rate, a.idle_rate, (select count(1) from `tabVehicle Log` b where b.parent = a.name) as no_of_days from `tabVehicle Logbook` a where a.docstatus = 1 and a.invoice_created = 0 and a.ehf_name = \'" + str(form) + "\'", as_dict=True)
-	else:
-		frappe.throw("Select Equipment Hiring Form first!")
+    if form:
+        return frappe.db.sql("""
+            SELECT 
+                a.name, 
+                a.equipment, 
+                a.total_amount, 
+                a.hire_charge_amount, 
+                a.consumption, 
+                a.operator_salary, 
+                a.rate_type, 
+                a.registration_number, 
+                (a.total_work_time + a.hour_taken) AS total_work_time, 
+                a.total_idle_time, 
+                a.work_rate, 
+                a.idle_rate, 
+                b.project, 
+                (SELECT COUNT(1) 
+                 FROM `tabVehicle Log` b 
+                 WHERE b.parent = a.name) AS no_of_days 
+            FROM 
+                `tabVehicle Logbook` a
+            LEFT JOIN
+                `tabVehicle Log` b ON b.parent = a.name
+            WHERE 
+                a.docstatus = 1 
+                AND a.invoice_created = 0 
+                AND a.ehf_name = %s
+        """, (form,), as_dict=True)
+    else:
+        frappe.throw("Select Equipment Hiring Form first!")
+
 
 @frappe.whitelist()
 def get_vehicle_accessories(form, equipment):

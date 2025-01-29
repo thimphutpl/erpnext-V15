@@ -29,6 +29,8 @@ class StockEntryDetail(Document):
 		conversion_factor: DF.Float
 		cost_center: DF.Link | None
 		description: DF.TextEditor | None
+		dessup_gyalsup_id: DF.Link | None
+		dfg_gfg: DF.Check
 		equipment_no: DF.Link | None
 		expense_account: DF.Link | None
 		has_item_scanned: DF.Check

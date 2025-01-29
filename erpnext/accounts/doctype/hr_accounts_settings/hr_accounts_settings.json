@@ -10,6 +10,7 @@
   "salary_tax_account",
   "overtime_account",
   "employee_contribution_pf",
+  "travel_claim_payable",
   "column_break_4",
   "leave_encashment_account",
   "pbva_account",
@@ -201,12 +202,18 @@
    "fieldtype": "Link",
    "label": "SWS Debit Account",
    "options": "Account"
+  },
+  {
+   "fieldname": "travel_claim_payable",
+   "fieldtype": "Link",
+   "label": "Travel Claim Payable",
+   "options": "Account"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-11-24 22:46:25.718489",
+ "modified": "2025-01-28 17:16:42.156597",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "HR Accounts Settings",

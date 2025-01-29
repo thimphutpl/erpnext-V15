@@ -80,6 +80,7 @@ class DeliveryNoteItem(Document):
 		stock_uom: DF.Link
 		stock_uom_rate: DF.Currency
 		target_warehouse: DF.Link | None
+		task: DF.Link | None
 		total_weight: DF.Float
 		uom: DF.Link
 		use_serial_batch_fields: DF.Check

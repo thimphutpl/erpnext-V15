@@ -34,7 +34,7 @@ class PurchaseReceipt(BuyingController):
 		from erpnext.stock.doctype.purchase_receipt_item.purchase_receipt_item import PurchaseReceiptItem
 		from frappe.types import DF
 
-		actual_receipt_date: DF.Date | None
+		actual_receipt_date: DF.Date
 		additional_discount_percentage: DF.Float
 		address_display: DF.SmallText | None
 		amended_from: DF.Link | None
@@ -271,7 +271,7 @@ class PurchaseReceipt(BuyingController):
 		self.reset_default_field_value("set_warehouse", "items", "warehouse")
 		self.reset_default_field_value("rejected_warehouse", "items", "rejected_warehouse")
 		self.reset_default_field_value("set_from_warehouse", "items", "from_warehouse")
-
+		self.calculate_total_add_ded()
 	def validate_uom_is_integer(self):
 		super().validate_uom_is_integer("uom", ["qty", "received_qty"], "Purchase Receipt Item")
 		super().validate_uom_is_integer("stock_uom", "stock_qty", "Purchase Receipt Item")
@@ -288,7 +288,8 @@ class PurchaseReceipt(BuyingController):
 					company=self.company,
 				)
 				break
-
+	def calculate_total_add_ded(self):
+		self.total_add_ded = flt(self.freight_insurance_charges) - flt(self.discount) + flt(self.tax) + flt(self.other_charges)
 	def validate_provisional_expense_account(self):
 		provisional_accounting_for_non_stock_items = cint(
 			frappe.db.get_value("Company", self.company, "enable_provisional_accounting_for_non_stock_items")

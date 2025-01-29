@@ -307,10 +307,10 @@ function calculate_total(frm) {
 	frm.doc.approved_items.forEach(function (d) {
 		// frappe.throw("qqqqqqqqq")
 		if (frm.doc.lumpsum_rate){
-			frappe.throw("1234")
+			// frappe.throw("1234")
 			total = d.grand_total
 		}else{
-			frappe.throw("jjjjj")
+			// frappe.throw("jjjjj")
 			total += d.grand_total
 		}
 		

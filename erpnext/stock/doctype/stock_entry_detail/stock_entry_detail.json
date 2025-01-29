@@ -16,6 +16,8 @@
   "t_warehouse",
   "sec_break1",
   "item_code",
+  "dfg_gfg",
+  "dessup_gyalsup_id",
   "col_break2",
   "item_name",
   "issue_to_employee",
@@ -675,13 +677,26 @@
    "fieldtype": "Link",
    "label": "Task",
    "options": "Task"
+  },
+  {
+   "default": "0",
+   "fieldname": "dfg_gfg",
+   "fieldtype": "Check",
+   "label": "Is DFG/GFG"
+  },
+  {
+   "depends_on": "dfg_gfg",
+   "fieldname": "dessup_gyalsup_id",
+   "fieldtype": "Link",
+   "label": "Dessup/Gyalsup ID",
+   "options": "DFG AND GFG"
   }
  ],
  "idx": 1,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-01-22 14:56:20.501758",
+ "modified": "2025-01-28 14:21:53.685735",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Stock Entry Detail",

@@ -31,12 +31,12 @@ frappe.ui.form.on('Hire Charge Invoice', {
 			cur_frm.add_custom_button(__('Payment'), function() {
 				cur_frm.cscript.receive_payment()
 			}, __("Receive")); */
-			frm.add_custom_button("Receive Payment", function() {
+			frm.add_custom_button("Payment", function() {
 				frappe.model.open_mapped_doc({
 					method: "erpnext.fleet_management.doctype.hire_charge_invoice.hire_charge_invoice.make_payment_entry",
 					frm: cur_frm
 				})
-			}, __("Receive"));
+			}, __("Payment"));
 		}
 		else {
 			cur_frm.toggle_display("receive_payment", 0)
@@ -163,6 +163,10 @@ function get_vehicle_logs(form) {
 					row.amount_work = logbook['total_work_time'] * logbook['work_rate']
 					row.number_of_days = logbook['no_of_days']
 					row.total_amount = logbook['total_amount']
+					row.hire_charge_amount = logbook['hire_charge_amount']
+					row.hsd_consumption = logbook['consumption']
+					row.operator_salary = logbook['operator_salary']
+					row.project = logbook['project']
 					// row.total_amount = (row.amount_idle + row.amount_work)
 					refresh_field("items");
 
@@ -193,6 +197,10 @@ function get_vehicle_logs(form) {
 									row.number_of_days = logbook['no_of_days']
 									row.total_amount = (row.amount_idle + row.amount_work)
 									row.total_amount = logbook['total_amount']
+									row.hire_charge_amount = logbook['hire_charge_amount']
+									row.hsd_consumption = logbook['consumption']
+									row.operator_salary = logbook['operator_salary']
+									row.project = logbook['project']
 									refresh_field("items");
 
 									// total_invoice_amount += (row.amount_idle + row.amount_work)

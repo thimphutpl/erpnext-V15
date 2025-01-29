@@ -69,8 +69,10 @@ class DeliveryNote(SellingController):
 		driver: DF.Link | None
 		driver_name: DF.Data | None
 		excise_page: DF.Data | None
+		footer: DF.SmallText | None
 		grand_total: DF.Currency
 		group_same_items: DF.Check
+		header: DF.SmallText | None
 		ignore_pricing_rule: DF.Check
 		in_words: DF.Data | None
 		incoterm: DF.Link | None
@@ -111,7 +113,6 @@ class DeliveryNote(SellingController):
 		rounding_adjustment: DF.Currency
 		sales_partner: DF.Link | None
 		sales_team: DF.Table[SalesTeam]
-		scan_barcode: DF.Data | None
 		select_print_heading: DF.Link | None
 		selling_price_list: DF.Link
 		set_posting_time: DF.Check

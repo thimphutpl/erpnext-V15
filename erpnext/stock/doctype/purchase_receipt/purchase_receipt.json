@@ -16,12 +16,12 @@
   "n_series",
   "naming_series",
   "supplier",
-  "actual_receipt_date",
   "supplier_name",
   "column_break1",
   "posting_date",
   "schedule_date",
   "posting_time",
+  "actual_receipt_date",
   "set_posting_time",
   "column_break_12",
   "company",
@@ -1305,7 +1305,8 @@
   {
    "fieldname": "actual_receipt_date",
    "fieldtype": "Date",
-   "label": "Actual Receipt Date"
+   "label": "Actual Receipt Date",
+   "reqd": 1
   },
   {
    "default": "0",
@@ -1356,7 +1357,7 @@
  "idx": 261,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-27 18:05:04.884562",
+ "modified": "2025-01-28 17:18:49.301936",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Purchase Receipt",

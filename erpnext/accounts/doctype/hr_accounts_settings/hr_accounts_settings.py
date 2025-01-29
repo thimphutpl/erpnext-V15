@@ -30,6 +30,7 @@ class HRAccountsSettings(Document):
 		sws_debit_account: DF.Link | None
 		training_incountry_account: DF.Link
 		training_outcountry_account: DF.Link
+		travel_claim_payable: DF.Link | None
 		travel_incountry_account: DF.Link
 		travel_outcountry_account: DF.Link
 	# end: auto-generated types

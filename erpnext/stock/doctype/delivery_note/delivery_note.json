@@ -41,7 +41,6 @@
   "ignore_pricing_rule",
   "items_section",
   "set_target_warehouse",
-  "scan_barcode",
   "pick_list",
   "col_break_warehouse",
   "set_warehouse",
@@ -92,6 +91,10 @@
   "transporter_name",
   "vehicle_no",
   "vehicle_dispatch_date",
+  "header_and_footer_section",
+  "header",
+  "column_break_wgmp",
+  "footer",
   "pricing_rule_details",
   "pricing_rules",
   "packing_list_section",
@@ -516,12 +519,6 @@
    "label": "Items",
    "oldfieldtype": "Section Break",
    "options": "fa fa-shopping-cart"
-  },
-  {
-   "fieldname": "scan_barcode",
-   "fieldtype": "Data",
-   "label": "Scan Barcode",
-   "options": "Barcode"
   },
   {
    "allow_bulk_edit": 1,
@@ -1428,13 +1425,32 @@
    "label": "Customer's Purchase Order Date",
    "print_hide": 1,
    "read_only": 1
+  },
+  {
+   "fieldname": "header_and_footer_section",
+   "fieldtype": "Section Break",
+   "label": "Header and Footer"
+  },
+  {
+   "fieldname": "header",
+   "fieldtype": "Small Text",
+   "label": "Header"
+  },
+  {
+   "fieldname": "column_break_wgmp",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "footer",
+   "fieldtype": "Small Text",
+   "label": "Footer"
   }
  ],
  "icon": "fa fa-truck",
  "idx": 146,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-28 10:33:34.488490",
+ "modified": "2025-01-28 15:31:32.920423",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Delivery Note",

@@ -18,14 +18,14 @@ class HireInvoiceDetails(Document):
 		amount_work: DF.Currency
 		equipment: DF.Link
 		hire_charge_amount: DF.Float
-		hsd_consumption: DF.Currency
+		hsd_consumption: DF.Float
 		idle_rate: DF.Currency
 		number_of_days: DF.Int
-		operator_salary: DF.Data
+		operator_salary: DF.Float
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
-		project: DF.ReadOnly | None
+		project: DF.Link | None
 		rate_type: DF.Data | None
 		registration_number: DF.Data
 		total_amount: DF.Currency
