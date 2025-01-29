@@ -33,7 +33,7 @@ class eNote(Document):
 		enote_category: DF.Link
 		enote_format: DF.Data | None
 		enote_series: DF.Data
-		forward_to: DF.Data | None
+		forward_to: DF.Link | None
 		location: DF.Data | None
 		material_group: DF.Link | None
 		material_name: DF.Link | None
@@ -58,7 +58,7 @@ class eNote(Document):
 		self.enote_format = make_autoname(str(self.enote_series)+".YYYY./.#####")
 		frappe.db.set_value("eNote", self.name, "enote_format", self.enote_format)
 		self.send_notification()
-		# notify_workflow_states(self)
+		#notify_workflow_states(self)
   
 	def validate(self):	
 
@@ -75,7 +75,7 @@ class eNote(Document):
 
 		if self.enote_category!="Supplier Creation" and self.enote_category!="Material Request":
 			
-			self.save_forward_to()
+			#self.save_forward_to()
 			self.workflow_action()
 		# if we allow on action approve, it going double email to doc owner. 
 		# one form here and another from on_submit().
@@ -87,14 +87,14 @@ class eNote(Document):
 			# notify_workflow_states(self)   
 
 
-	def save_forward_to(self):
-		if not self.forward_to:
-			if frappe.db.exists("Employee", {"user_id":frappe.session.user}):
-				doc = frappe.get_doc("Employee", {"user_id":frappe.session.user})
-				if doc.reports_to:
-					self.forward_to = frappe.db.get_value("Employee", doc.reports_to, "user_id")
+	# def save_forward_to(self):
+	# 	if not self.forward_to:
+	# 		if frappe.db.exists("Employee", {"user_id":frappe.session.user}):
+	# 			doc = frappe.get_doc("Employee", {"user_id":frappe.session.user})
+	# 			if doc.reports_to:
+	# 				self.forward_to = frappe.db.get_value("Employee", doc.reports_to, "user_id")
 		
-		self.forward_to = frappe.session.user if not self.forward_to else self.forward_to
+	# 	self.forward_to = frappe.session.user if not self.forward_to else self.forward_to
 
 	def before_update_after_submit(self):
 		self.notify_copy_to()
