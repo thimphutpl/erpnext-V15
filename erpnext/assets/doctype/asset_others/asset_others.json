@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "ASSETO.YY.######",
+ "autoname": "ASSETO.YY.#####",
  "creation": "2025-01-23 16:27:55.177196",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -58,6 +58,9 @@
   {
    "fieldname": "asset_name",
    "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "in_standard_filter": 1,
    "label": "Asset Name",
    "reqd": 1
   },
@@ -104,6 +107,7 @@
    "options": "Employee"
   },
   {
+   "fetch_from": "custodian.phone_number",
    "fieldname": "contact_details",
    "fieldtype": "Data",
    "label": "Contact Details"
@@ -123,6 +127,9 @@
    "fetch_from": "custodian.branch",
    "fieldname": "branch",
    "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "in_standard_filter": 1,
    "label": "Branch",
    "options": "Branch",
    "read_only": 1,
@@ -186,7 +193,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-01-23 17:00:29.877681",
+ "modified": "2025-01-29 12:02:46.598995",
  "modified_by": "Administrator",
  "module": "Assets",
  "name": "Asset Others",

@@ -37,5 +37,5 @@ class AssetOthers(Document):
 	# end: auto-generated types
 	# end: auto-generated types
 	def autoname(self):
-			if self.old_asset_code:
-				self.name = self.old_asset_code
+		if self.old_asset_id:
+			self.name = self.old_asset_id

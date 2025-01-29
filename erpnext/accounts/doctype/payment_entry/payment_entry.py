@@ -100,6 +100,10 @@ class PaymentEntry(AccountsController):
 		self.set_status()
 		self.check_party_advance_balance()
 		self.set_total_in_words()
+		if self.workflow_state=="Verified":
+			self.verifier=frappe.session.user
+		if self.workflow_state=="Approved":
+			self.approver=frappe.session.user
 
 	def on_submit(self):
 		if self.difference_amount:

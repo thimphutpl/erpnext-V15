@@ -30,7 +30,7 @@ def make_gl_entries(
 	update_outstanding="Yes",
 	from_repost=False,
 ):
-	frappe.throw(str(gl_map))
+	# frappe.throw(str(gl_map))
 	if gl_map:
 		if not cancel:
 			make_acc_dimensions_offsetting_entry(gl_map)

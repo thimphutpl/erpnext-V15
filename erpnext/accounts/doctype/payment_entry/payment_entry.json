@@ -107,6 +107,8 @@
   "remarks",
   "base_in_words",
   "is_opening",
+  "verifier",
+  "approver",
   "column_break_16",
   "letter_head",
   "print_heading",
@@ -925,6 +927,20 @@
   {
    "fieldname": "column_break_jyec",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "verifier",
+   "fieldtype": "Link",
+   "label": "Verifier",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "approver",
+   "fieldtype": "Link",
+   "label": "Approver",
+   "options": "User",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
@@ -938,7 +954,7 @@
    "table_fieldname": "payment_entries"
   }
  ],
- "modified": "2025-01-23 16:33:01.191778",
+ "modified": "2025-01-29 11:30:26.058881",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Payment Entry",

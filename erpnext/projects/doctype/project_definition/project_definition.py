@@ -7,7 +7,6 @@ from frappe import _
 from frappe.model.document import Document
 from frappe.model.mapper import get_mapped_doc
 import datetime
-from frappe.model.naming import make_autoname
 from erpnext.custom_utils import get_branch_cc
 from frappe.model.naming import make_autoname
 from datetime import date
@@ -33,7 +32,7 @@ class ProjectDefinition(Document):
 		physical_progress: DF.Percent
 		physical_progress_weightage: DF.Percent
 		project_code: DF.Data | None
-		project_code_prefix: DF.Literal["", "GA-J", "GA-K", "GA-T", "GA-P", "GA-B", "GA"]
+		project_code_prefix: DF.Literal["", "GI-J", "GI-K", "GI-T", "GI-P", "GI-G", "GI"]
 		project_man_days: DF.Data | None
 		project_manager: DF.Link | None
 		project_manager_designation: DF.Link | None
@@ -46,7 +45,7 @@ class ProjectDefinition(Document):
 		total_overall_project_cost: DF.Currency
 	# end: auto-generated types
 	def autoname(self):
-		self.name = "GA-"+self.project_code+" - GYALSUNG"
+		self.name = "GI-"+self.project_code+" - GYALSUNG"
 
 	def validate(self):
 		self.validate_project_profile()
