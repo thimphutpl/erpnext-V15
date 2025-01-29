@@ -33,7 +33,7 @@ class eNote(Document):
 		enote_category: DF.Link
 		enote_format: DF.Data | None
 		enote_series: DF.Data
-		forward_to: DF.Link | None
+		forward_to: DF.Data | None
 		location: DF.Data | None
 		material_group: DF.Link | None
 		material_name: DF.Link | None

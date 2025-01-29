@@ -79,10 +79,9 @@
   },
   {
    "fieldname": "forward_to",
-   "fieldtype": "Link",
+   "fieldtype": "Data",
    "label": "Approver",
-   "no_copy": 1,
-   "options": "User"
+   "no_copy": 1
   },
   {
    "depends_on": "eval:doc.enote_category!=\"Supplier Creation\" && doc.enote_category!=\"Material Request\"",
@@ -310,7 +309,7 @@
  "icon": "fa fa-file-text",
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-24 23:01:02.253039",
+ "modified": "2025-01-29 11:53:24.423253",
  "modified_by": "Administrator",
  "module": "eNote",
  "name": "eNote",
