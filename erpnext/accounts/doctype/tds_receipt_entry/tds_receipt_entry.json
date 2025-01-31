@@ -16,6 +16,7 @@
   "invoice_type",
   "invoice_no",
   "bill_no",
+  "region",
   "sb_receipt_details",
   "receipt_number",
   "receipt_date",
@@ -129,11 +130,17 @@
    "label": "TDS Remittance",
    "options": "TDS Remittance",
    "read_only": 1
+  },
+  {
+   "fieldname": "region",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Region"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-26 14:11:06.256006",
+ "modified": "2025-01-29 14:44:26.691779",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "TDS Receipt Entry",

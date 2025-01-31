@@ -96,7 +96,7 @@
   "vendor_invoice_no",
   "column_break_ybad",
   "bank_account_number",
-  "ifdc_code",
+  "ifsc_code",
   "remitter_tpan_no",
   "advance_payment",
   "final_payment",
@@ -897,11 +897,6 @@
    "label": "Bank Account Number"
   },
   {
-   "fieldname": "ifdc_code",
-   "fieldtype": "Data",
-   "label": "IFSC Code"
-  },
-  {
    "fieldname": "remitter_tpan_no",
    "fieldtype": "Data",
    "label": "Remitter CID/TPAN No"
@@ -941,6 +936,11 @@
    "label": "Approver",
    "options": "User",
    "read_only": 1
+  },
+  {
+   "fieldname": "ifsc_code",
+   "fieldtype": "Data",
+   "label": "IFSC Code"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -954,7 +954,7 @@
    "table_fieldname": "payment_entries"
   }
  ],
- "modified": "2025-01-29 11:30:26.058881",
+ "modified": "2025-01-29 12:36:12.105207",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Payment Entry",

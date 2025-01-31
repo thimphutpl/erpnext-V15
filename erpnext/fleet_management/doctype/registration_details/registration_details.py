@@ -13,12 +13,13 @@ class RegistrationDetails(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
-		due_date: DF.Date
+		fiscal_year: DF.Link
+		journal_entry: DF.Link | None
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
+		party: DF.Link
 		registration_amount: DF.Currency
 		registration_date: DF.Date
-		remarks: DF.Text | None
 	# end: auto-generated types
 	pass

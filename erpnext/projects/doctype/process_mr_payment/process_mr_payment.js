@@ -151,13 +151,34 @@ function get_records(employee_type, fiscal_year, month, from_date, to_date, cost
 						}
 
 						else if(mr['type'] == 'Open Air Prisoner') {
+							//alert(mr['gratuity'])
+							//gratuity=0.0
+							frappe.db.get_value('Open Air Prisoner', { name: mr['employee'] }, 'is_lifer')
+   								 .then((r) => {
+        										if (r && r.message) {
+													//alert(r.message.is_lifer)
+													if (r.message.is_lifer==1){
+                                                         //alert(message.is_lifer)
+														gratuity=0.0
+														}
+														else{
+															//alert("pl")
+															gratuity=mr['gratuity']
+														}
+														
+            										//alert(r.message.is_lifer);  // Accessing the returned field correctly
+       												 } else {
+            											alert("No data found for this employee.");
+        										}
+ 										   });
+								//alert(mr['employee'])
 						//row.daily_rate = parseFloat(mr['salary'])/parseFloat(mr['noof_days_in_month']);
 							//row.hourly_rate = parseFloat(mr['salary']*1.0)/parseFloat(mr['noof_days_in_month']*8);
 							row.daily_rate  = mr['rate_per_day'];
 							row.hourly_rate = mr['rate_per_hour']
 							row.total_ot_amount = parseFloat(row.number_of_hours) * parseFloat(row.hourly_rate);
 							row.total_wage = parseFloat(row.daily_rate) * parseFloat(row.number_of_days);
-							row.gratuity_amount = mr['gratuity']
+							row.gratuity_amount = gratuity
 						}
 						 else {
 							// frappe.throw('hi')

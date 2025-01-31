@@ -611,12 +611,15 @@ def get_records(employee_type, fiscal_year, fiscal_month, from_date, to_date, co
 
 	for r in rest_list:
 		gratuity = 0.0
-		#frappe.throw(str(r.total_ot))
+		#frappe.throw(str(r.gratuity))
 		gratuity_percent = frappe.db.get_single_value("HR Settings", "gratuity_percent")
 		if master.get(r.employee) and (flt(r.total_wage)+flt(r.total_ot)):
+			#frappe.throw(str(mr['type']))
 			r.employee_type = r.type
+			# frappe.throw(str(master[r.employee]['type']))
 			r.gratuity = flt(gratuity_percent)/100 * flt(r.total_wage)
 			master[r.employee].update(r)
+			
 			data.append(master[r.employee])
 				   
 	if data:

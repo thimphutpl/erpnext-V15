@@ -419,9 +419,9 @@ erpnext.accounts.JournalEntry = class JournalEntry extends frappe.ui.form.Contro
 
 			return {
 				query: "erpnext.setup.doctype.party_type.party_type.get_party_type",
-				filters: {
-					account: row.account,
-				},
+				// filters: {
+				// 	account: row.account,
+				// },
 			};
 		});
 

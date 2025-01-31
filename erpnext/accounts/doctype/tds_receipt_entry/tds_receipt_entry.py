@@ -14,7 +14,23 @@ class TDSReceiptEntry(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		bill_no: DF.Data | None
+		branch: DF.Link | None
+		cheque_date: DF.Date | None
+		cheque_no: DF.Data | None
+		cost_center: DF.Link | None
+		fiscal_year: DF.Data | None
+		invoice_no: DF.Data | None
+		invoice_type: DF.Data | None
+		month: DF.Data | None
+		pbva: DF.Data | None
+		posting_date: DF.Date | None
 		purpose: DF.Data | None
+		receipt_date: DF.Date | None
+		receipt_number: DF.Data | None
+		region: DF.Data | None
+		tds_receipt_update: DF.Link | None
+		tds_remittance: DF.Link | None
 	# end: auto-generated types
 	pass
 

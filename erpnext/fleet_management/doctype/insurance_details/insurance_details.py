@@ -14,14 +14,16 @@ class InsuranceDetails(Document):
 		from frappe.types import DF
 
 		due_date: DF.Date
-		insurance_company: DF.Link
-		insurance_type: DF.Literal["", "Third Party", "Comprehensive"]
-		insured_amount: DF.Currency
+		insurance_type: DF.Literal["", "Third Party", "Comprehensive", "Fire Insurance"]
 		insured_date: DF.Date
+		journal_entry: DF.Data | None
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
+		party: DF.Link
 		policy_number: DF.Data
-		validity: DF.Date | None
+		total_amount: DF.Data
+		type: DF.Literal["", "Insurance"]
+		validity: DF.Date
 	# end: auto-generated types
 	pass

@@ -22,7 +22,7 @@ class ItemGroup(NestedSet):
 
 		image: DF.AttachImage | None
 		is_group: DF.Check
-		item_code_base: DF.Data
+		item_code_base: DF.Data | None
 		item_group_defaults: DF.Table[ItemDefault]
 		item_group_name: DF.Data
 		lft: DF.Int

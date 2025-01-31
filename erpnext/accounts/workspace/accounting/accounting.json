@@ -534,35 +534,6 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Tools",
-   "link_count": 2,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Expense Allocation",
-   "link_count": 0,
-   "link_to": "Expense Allocation",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Cost Appropriation",
-   "link_count": 0,
-   "link_to": "Cost Appropriation",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
    "label": "Mechanical Accounts",
    "link_count": 1,
    "link_type": "DocType",
@@ -637,9 +608,48 @@
    "link_type": "Report",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Tools",
+   "link_count": 3,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Expense Allocation",
+   "link_count": 0,
+   "link_to": "Expense Allocation",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Cost Appropriation",
+   "link_count": 0,
+   "link_to": "Cost Appropriation",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "RRCO Receipt Tool",
+   "link_count": 0,
+   "link_to": "TDS Receipt Update",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2025-01-22 18:09:09.196177",
+ "modified": "2025-01-29 14:49:40.105499",
  "modified_by": "kalden.dorji@thimphutechpark.bt",
  "module": "Accounts",
  "name": "Accounting",
