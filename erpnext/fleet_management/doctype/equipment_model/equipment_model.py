@@ -1,7 +1,7 @@
 # Copyright (c) 2022, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
-# import frappe
+import frappe
 from frappe.model.document import Document
 
 class EquipmentModel(Document):
@@ -21,5 +21,5 @@ class EquipmentModel(Document):
 	# 	self.name = self.equipment_type + "(" + self.model + ")" 
 
 	def autoname(self):
-		self.name = f"{self.equipment_type} {self.model}"
+		self.name = self.model
 	
