@@ -31,7 +31,7 @@ class CustomWorkflow:
 			self.employee		= frappe.db.get_value("Employee", self.doc.employee, self.field_list)
 			self.reports_to = frappe.db.get_value("Employee", {"name":frappe.db.get_value("Employee", self.doc.employee, "reports_to")}, self.field_list)
 			
-			if self.doc.doctype in ("Travel Request","Travel Authorization", "Travel Claim","Employee Separation","Overtime Application"):
+			if self.doc.doctype in ("Travel Request","Travel Authorization", "Travel Claim","Employee Separation","Overtime Application", "Employee Transfer"):
 				if frappe.db.get_value("Employee", self.doc.employee, "expense_approver"):
 					self.expense_approver = frappe.db.get_value("Employee", {"user_id":frappe.db.get_value("Employee", self.doc.employee, "expense_approver")}, self.field_list)
 				else:
@@ -690,21 +690,43 @@ class CustomWorkflow:
 			if self.doc.approver != frappe.session.user:
 				frappe.throw("Only {} can edit/submit this document".format(self.doc.approver))
 
+	#def employee_benefits(self):
+		#frappe.throw("hi")
+		# action = frappe.request.form.get('action')
+		# if action in ("Forward to GM"):
+		# 	self.set_approver("HR")
+		# 	#pass
+		# if self.new_state.lower() in ("Waiting HR Approval".lower()):
+		# 	pass
+		# if self.new_state.lower() in ("Waiting GM Approval".lower()):
+		# 	# if self.new_state.lower() == "Waiting GM Approval".lower():
+		# 	# 	if "HR User" not in frappe.get_roles(frappe.session.user):
+		# 	# 		frappe.throw("Only HR can Apply this Appeal")
+		# 	self.set_approver("HR")
+		# 	if self.hr_approver[0] != frappe.session.user:
+		# 		frappe.throw("Only {} can edit/approve this documents".format(self.hr_approver[0]))
+		# 	self.set_approver("HRGM")
+
+		# elif self.new_state.lower() in ("Approved".lower()):
+		# 	if self.hrgm[0] != frappe.session.user:
+		# 		frappe.throw("Only {} can edit/submit this document".format(self.hrgm[0]))
+					
 	def employee_benefits(self):
 		if self.new_state.lower() in ("Waiting HR Approval".lower()):
 			self.set_approver("HR")
-		if self.new_state.lower() in ("Waiting GM Approval".lower()):
-			# if self.new_state.lower() == "Waiting GM Approval".lower():
-			# 	if "HR User" not in frappe.get_roles(frappe.session.user):
-			# 		frappe.throw("Only HR can Apply this Appeal")
-			if self.hr_approver[0] != frappe.session.user:
-				frappe.throw("Only {} can edit/approve this documents".format(self.hr_approver[0]))
-			self.set_approver("HRGM")
 
+		if self.new_state.lower() in ("Waiting GM Approval".lower()):
+			self.set_approver("HR")	
+		
+		elif self.new_state.lower() in ("Waiting GM Approval".lower()):
+			if self.doc.benefit_approver != frappe.session.user:
+				frappe.throw("Only {} can Forward this document".format(self.doc.benefit_approver))
+			self.set_approver("General Manager")
+		
 		elif self.new_state.lower() in ("Approved".lower()):
-			if self.hrgm[0] != frappe.session.user:
-				frappe.throw("Only {} can edit/submit this document".format(self.hrgm[0]))
-					
+			if self.doc.benefit_approver != frappe.session.user:
+				frappe.throw("Only {} can edit/submit this document".format(self.doc.benefit_approver))
+
 	def coal_raising_payment(self):
 		if self.new_state.lower() in ("Draft".lower(), "Waiting Supervisor Approval".lower()):
 			if self.new_state.lower() == "Waiting Supervisor Approval".lower() and self.doc.owner != frappe.session.user:
@@ -1162,6 +1184,7 @@ class CustomWorkflow:
 	def employee_benefit_claim(self):
 		workflow_state    = self.doc.get("workflow_state").lower()
 		if workflow_state == "Draft".lower():
+			#frappe.throw("hi")
 			# if doc.purpose == "Separation":
 			if not "HR Manager" in frappe.get_roles(frappe.session.user):
 				frappe.throw("Only HR user with role HR Manager can create the employee benefit with purpose Separation")
