@@ -55,7 +55,7 @@ class JobCards(AccountsController):
 		posting_date: DF.Date | None
 		ref_number: DF.Data | None
 		remarks: DF.LongText | None
-		repair_type: DF.Literal["Minor Repair", "Major Repair", "Fabrication Works", "Bailey Bridge Works"]
+		repair_type: DF.Literal["Minor Repair", "Major Repair"]
 		services_amount: DF.Currency
 		table_jqvd: DF.Table[MechanicAssigned]
 		total_amount: DF.Currency

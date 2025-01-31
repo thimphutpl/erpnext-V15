@@ -41,7 +41,7 @@ frappe.ui.form.on("Fabrication And Bailey Bridge", {
 			cur_frm.toggle_display("receive_payment", 0)
 		}
 		
-		cur_frm.toggle_display("owned_by", 0)
+		cur_frm.toggle_display("owned_by", 1)
 	},
 	"receive_payment": function(frm) {
 		if(frm.doc.paid == 0) {

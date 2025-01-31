@@ -52,7 +52,7 @@ class FabricationAndBaileyBridge(AccountsController):
 		table_jqvd: DF.Table[MechanicAssigned]
 		total_amount: DF.Currency
 	# end: auto-generated types
-	pass
+	# pass
 
 	def validate(self):
 		self.validate_owned_by()
@@ -79,9 +79,9 @@ class FabricationAndBaileyBridge(AccountsController):
 			self.customer_branch = None	
 
 	def on_submit(self):
+		
 		self.validate_owned_by()
 		self.check_items()
-
 		if not self.repair_type:
 			frappe.throw("Specify whether the maintenance is Major or Minor")
 		if not self.finish_date:
@@ -91,8 +91,9 @@ class FabricationAndBaileyBridge(AccountsController):
 				frappe.throw(_("Job out date cannot be earlier than job in date."),title="Invalid Data")
 			self.update_reservation()
 		#self.check_items()
+		# frappe.throw(str(self.owned_by))
 		if self.owned_by == "Own":
-			self.db_set("outstanding_amount", 0)
+			self.db_set("outstanding_amount", 0)	
 		if self.owned_by == "CDCL":
 			self.post_journal_entry()
 			self.db_set("outstanding_amount", 0)
