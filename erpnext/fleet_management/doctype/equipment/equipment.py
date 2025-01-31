@@ -88,7 +88,7 @@ class Equipment(Document):
                         last_row = self.equipment_history[len(self.equipment_history) - 1]
                         if not last_row.to_date:
                                 last_row.to_date = getdate(nowdate())
-		if self.not_cdcl == 0:
+		# if self.not_cdcl == 0:
 			# if not self.asset_code:
 			# 	frappe.throw("Asset Code is mandatory, Please Fill the Asset Code!")
 		self.set_name()
