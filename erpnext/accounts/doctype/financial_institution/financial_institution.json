@@ -10,6 +10,7 @@
   "bank_name",
   "short_form",
   "column_break_kasp",
+  "loan_payment_in_bob_account",
   "enabled",
   "employee_loan_payment_in_single_account",
   "account_bank_name",
@@ -117,11 +118,17 @@
    "in_list_view": 1,
    "label": "Bank Status",
    "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "loan_payment_in_bob_account",
+   "fieldtype": "Check",
+   "label": "Employee Loan Payment in BOB Account"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-19 19:39:18.785309",
+ "modified": "2025-01-31 12:31:42.057886",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Financial Institution",
