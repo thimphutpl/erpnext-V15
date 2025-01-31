@@ -171,6 +171,7 @@ function get_records(employee_type, fiscal_year, month, from_date, to_date, cost
             											alert("No data found for this employee.");
         										}
  										   });
+										  // alert(gratuity)
 								//alert(mr['employee'])
 						//row.daily_rate = parseFloat(mr['salary'])/parseFloat(mr['noof_days_in_month']);
 							//row.hourly_rate = parseFloat(mr['salary']*1.0)/parseFloat(mr['noof_days_in_month']*8);
