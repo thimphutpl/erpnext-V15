@@ -50,14 +50,13 @@
    "in_global_search": 1,
    "in_list_view": 1,
    "in_standard_filter": 1,
-   "label": "Description",
-   "reqd": 1
+   "label": "Description"
   }
  ],
  "icon": "fa fa-compass",
  "idx": 1,
  "links": [],
- "modified": "2024-11-29 16:42:30.724917",
+ "modified": "2025-02-01 18:56:55.870127",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "UOM",
