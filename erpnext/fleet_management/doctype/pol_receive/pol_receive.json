@@ -31,6 +31,7 @@
   "equipment_number",
   "equipment_category",
   "tank_capacity",
+  "serial_and_batch_bundle",
   "column_break_vjsn",
   "equipment_branch",
   "equipment_warehouse",
@@ -539,12 +540,18 @@
    "fieldname": "project",
    "fieldtype": "Read Only",
    "label": "Project"
+  },
+  {
+   "fieldname": "serial_and_batch_bundle",
+   "fieldtype": "Link",
+   "label": "Serial and Batch Bundle",
+   "options": "Serial and Batch Bundle"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-02-01 11:52:33.819021",
+ "modified": "2025-02-01 12:19:04.124012",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Receive",

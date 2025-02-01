@@ -71,6 +71,7 @@ class POLReceive(StockController):
 		qty: DF.Float
 		rate: DF.Currency
 		remarks: DF.LongText | None
+		serial_and_batch_bundle: DF.Link | None
 		stock_uom: DF.Link | None
 		supplier: DF.Link
 		tank_balance: DF.Float
@@ -162,13 +163,34 @@ class POLReceive(StockController):
 		# self.cancel_budget_entry() #jai, this should handle at General Ledger process
 		self.delete_pol_entry()
 
+	# def validate_dc(self):
+	# 	is_container, no_own_tank = frappe.db.get_value("Equipment Type", frappe.db.get_value("Equipment", self.equipment, "equipment_type") , ["is_container", "no_own_tank"])
+		# if not self.direct_consumption and not is_container:
+		# 	frappe.throw("Non 'Direct Consumption' Receive POL is allowed only for Container Equipments")
+
+		# if self.direct_consumption and no_own_tank:
+		# 				frappe.throw("Direct Consumption not permitted for Equipments without own Tank")
+
+	# Fetch equipment_type from Equipment
 	def validate_dc(self):
-		is_container, no_own_tank = frappe.db.get_value("Equipment Type", frappe.db.get_value("Equipment", self.equipment, "equipment_type") , ["is_container", "no_own_tank"])
+		equipment_type = frappe.db.get_value("Equipment", self.equipment, "equipment_type")
+		if equipment_type:
+			result = frappe.db.get_value("Equipment Type", equipment_type, ["is_container", "no_own_tank"])
+			
+			if result:
+				is_container, no_own_tank = result
+			else:
+				is_container = 0
+				no_own_tank = 0
+		else:
+			is_container = 0
+			no_own_tank = 0
+
 		if not self.direct_consumption and not is_container:
 			frappe.throw("Non 'Direct Consumption' Receive POL is allowed only for Container Equipments")
 
 		if self.direct_consumption and no_own_tank:
-						frappe.throw("Direct Consumption not permitted for Equipments without own Tank")
+			frappe.throw("Direct Consumption not permitted for Equipments without own Tank")	
 
 	def validate_warehouse(self):
 				self.validate_warehouse_branch(self.warehouse, self.branch)
@@ -281,7 +303,7 @@ class POLReceive(StockController):
 
 		sl_entries = []
 		sl_entries.append(self.get_sl_entries(self, {
-										"item_code": self.pol_type,
+					"item_code": self.pol_type,
 					"actual_qty": flt(self.qty), 
 					"warehouse": wh, 
 					"incoming_rate": round(flt(self.total_amount) / flt(self.qty) , 2)
