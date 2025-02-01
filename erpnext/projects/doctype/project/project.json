@@ -948,7 +948,7 @@
  "index_web_pages_for_search": 1,
  "links": [],
  "max_attachments": 4,
- "modified": "2025-02-01 12:03:22.644947",
+ "modified": "2025-02-01 12:44:44.078972",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Project",
@@ -1012,6 +1012,5 @@
  "sort_order": "DESC",
  "states": [],
  "timeline_field": "customer",
- "title_field": "project_name",
  "track_seen": 1
 }
