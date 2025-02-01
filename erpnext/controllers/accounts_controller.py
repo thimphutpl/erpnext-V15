@@ -984,6 +984,7 @@ class AccountsController(TransactionBase):
 				"party_type": None,
 				"party": None,
 				"project": self.get("project"),
+				"task": self.get("task"),
 				"post_net_value": args.get("post_net_value"),
 				"voucher_detail_no": args.get("voucher_detail_no"),
 				"voucher_subtype": self.get_voucher_subtype(),
@@ -1712,6 +1713,7 @@ class AccountsController(TransactionBase):
 								),
 								"cost_center": item.cost_center,
 								"project": item.project,
+								"task": item.task,
 							},
 							account_currency,
 							item=item,
@@ -1733,6 +1735,7 @@ class AccountsController(TransactionBase):
 								),
 								"cost_center": item.cost_center,
 								"project": item.project or self.project,
+								"task": item.task or self.task,
 							},
 							account_currency,
 							item=item,
@@ -2469,7 +2472,7 @@ class AccountsController(TransactionBase):
 	def check_if_fields_updated(self, fields_to_check, child_tables):
 		# Check if any field affecting accounting entry is altered
 		doc_before_update = self.get_doc_before_save()
-		accounting_dimensions = [*get_accounting_dimensions(), "cost_center", "project"]
+		accounting_dimensions = [*get_accounting_dimensions(), "cost_center", "project", "task"]
 
 		# Parent Level Accounts excluding party account
 		fields_to_check += accounting_dimensions
@@ -3514,7 +3517,7 @@ def update_child_qty_rate(parent_doctype, trans_items, parent_doctype_name, chil
 
 
 def check_if_child_table_updated(child_table_before_update, child_table_after_update, fields_to_check):
-	fields_to_check = list(fields_to_check) + get_accounting_dimensions() + ["cost_center", "project"]
+	fields_to_check = list(fields_to_check) + get_accounting_dimensions() + ["cost_center", "project", "task"]
 
 	# Check if any field affecting accounting entry is altered
 	for index, item in enumerate(child_table_before_update):
