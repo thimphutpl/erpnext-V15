@@ -782,33 +782,32 @@ class StockEntry(StockController):
 				if d.project:
 					project = frappe.get_doc("Project",d.project)
 					task = frappe.get_doc("Task",d.task)
-					if self.stock_entry_type == "Material Issue":
-						p_row = project.append("task_material_item", {})
-						t_row = task.append("task_material_item", {})
-						#Project Update
-						p_row.item = d.item_code
-						p_row.item_name = d.item_name
-						p_row.item_uom = d.uom
-						p_row.item_quantity = d.qty
-						p_row.reference_type = "Stock Entry"
-						p_row.reference_name = self.name
-						p_row.child_reference = d.name
-						#Task Update
-						t_row.item = d.item_code
-						t_row.item_name = d.item_name
-						t_row.item_uom = d.uom
-						t_row.item_quantity = d.qty
-						t_row.reference_type = "Stock Entry"
-						t_row.reference_name = self.name
-						t_row.child_reference = d.name
-						#Project
-						p_row.item_rate = d.basic_rate
-						#Task
-						t_row.item_rate = d.basic_rate
-						#Project
-						p_row.item_amount = d.amount
-						#Task
-						t_row.item_amount = d.amount
+					p_row = project.append("task_material_item", {})
+					t_row = task.append("task_material_item", {})
+					#Project Update
+					p_row.item = d.item_code
+					p_row.item_name = d.item_name
+					p_row.item_uom = d.uom
+					p_row.item_quantity = d.qty
+					p_row.reference_type = "Stock Entry"
+					p_row.reference_name = self.name
+					p_row.child_reference = d.name
+					#Task Update
+					t_row.item = d.item_code
+					t_row.item_name = d.item_name
+					t_row.item_uom = d.uom
+					t_row.item_quantity = d.qty
+					t_row.reference_type = "Stock Entry"
+					t_row.reference_name = self.name
+					t_row.child_reference = d.name
+					#Project
+					p_row.item_rate = d.basic_rate
+					#Task
+					t_row.item_rate = d.basic_rate
+					#Project
+					p_row.item_amount = d.amount
+					#Task
+					t_row.item_amount = d.amount
 					task.save(ignore_permissions=True)
 					project.load_activity_tasks()
 					project.save(ignore_permissions=True)
