@@ -218,17 +218,17 @@ class POLReceive(StockController):
 						self.hiring_warehouse = None
 
 	def validate_data(self):
-		if not self.fuelbook_branch or not self.equipment_branch:
-			frappe.throw("Fuelbook and Equipment Branch are mandatory")
+		# if not self.fuelbook_branch or not self.equipment_branch:
+		# 	frappe.throw("Fuelbook and Equipment Branch are mandatory")
 
-		if flt(self.qty) <= 0 or flt(self.rate) <= 0:
-			frappe.throw("Quantity and Rate should be greater than 0")
+		# if flt(self.qty) <= 0 or flt(self.rate) <= 0:
+		# 	frappe.throw("Quantity and Rate should be greater than 0")
 
 		if not self.warehouse:
 			frappe.throw("Warehouse is Mandatory. Set the Warehouse in Cost Center")
 
-		if not self.equipment_category:
-			frappe.throw("Equipment Category Missing")
+		# if not self.equipment_category:
+		# 	frappe.throw("Equipment Category Missing")
 
 		if self.branch != self.fuelbook_branch:
 			frappe.throw("Transaction Branch and Fuelbook Branch should be same")
