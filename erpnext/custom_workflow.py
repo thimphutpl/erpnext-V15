@@ -673,13 +673,17 @@ class CustomWorkflow:
 				frappe.throw("Only {} can reject this Document".format(self.doc.approver))
 
 	def employee_separation(self):
-		if self.new_state.lower() in ("Waiting Supervisor Approval".lower()):
+		# if self.new_state.lower() in ("Waiting Supervisor Approval".lower()):
+		# 	self.set_approver("HR")
+		if self.new_state.lower() in ("Rejected".lower()):
+			if self.doc.approver != frappe.session.user:
+				frappe.throw("Only {} can Rejected this document".format(self.doc.approver))
 			self.set_approver("Supervisor")
 		
-		elif self.new_state.lower() in ("Waiting GM Approval".lower()):
+		if self.new_state.lower() in ("Waiting GM Approval".lower()):
 			if self.doc.approver != frappe.session.user:
 				frappe.throw("Only {} can Forward this document".format(self.doc.approver))
-			self.set_approver("General Manager")
+			self.set_approver("HR")
 		
 		elif self.new_state.lower() in ("Waiting CEO Approval".lower()):
 			if self.doc.approver != frappe.session.user:
@@ -712,18 +716,18 @@ class CustomWorkflow:
 		# 		frappe.throw("Only {} can edit/submit this document".format(self.hrgm[0]))
 					
 	def employee_benefits(self):
-		if self.new_state.lower() in ("Waiting HR Approval".lower()):
-			self.set_approver("HR")
+		# if self.new_state.lower() in ("Waiting HR Approval".lower()):
+		# 	self.set_approver("HR")
 
 		if self.new_state.lower() in ("Waiting GM Approval".lower()):
 			self.set_approver("HR")	
 		
-		elif self.new_state.lower() in ("Waiting GM Approval".lower()):
-			if self.doc.benefit_approver != frappe.session.user:
-				frappe.throw("Only {} can Forward this document".format(self.doc.benefit_approver))
-			self.set_approver("General Manager")
-		
 		elif self.new_state.lower() in ("Approved".lower()):
+			if self.doc.benefit_approver != frappe.session.user:
+				frappe.throw("Only {} can Approve this document".format(self.doc.benefit_approver))
+			
+		
+		elif self.new_state.lower() in ("Rejected".lower()):
 			if self.doc.benefit_approver != frappe.session.user:
 				frappe.throw("Only {} can edit/submit this document".format(self.doc.benefit_approver))
 
