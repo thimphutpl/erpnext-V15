@@ -18,10 +18,10 @@ frappe.ui.form.on('Equipment', {
 
 		frm.set_query('fuelbook', function(doc) {
 			return {
-				filters: {
-					"equipment": doc.name
+				// filters: {
+				// 	"equipment": doc.name
 
-				}
+				// }
 			};
 		});
 	},

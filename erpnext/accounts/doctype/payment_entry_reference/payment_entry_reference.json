@@ -18,7 +18,9 @@
   "allocated_amount",
   "exchange_rate",
   "exchange_gain_loss",
-  "account"
+  "account",
+  "project",
+  "task"
  ],
  "fields": [
   {
@@ -120,12 +122,26 @@
    "fieldname": "payment_type",
    "fieldtype": "Data",
    "label": "Payment Type"
+  },
+  {
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "label": "Project",
+   "options": "Project",
+   "read_only": 1
+  },
+  {
+   "fieldname": "task",
+   "fieldtype": "Link",
+   "label": "Task",
+   "options": "Task",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-04-05 09:44:08.310593",
+ "modified": "2025-02-01 11:33:43.483429",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Payment Entry Reference",
