@@ -73,10 +73,10 @@ class POLReceive(StockController):
 		remarks: DF.LongText | None
 		stock_uom: DF.Link | None
 		supplier: DF.Link
-		tank_balance: DF.Data | None
-		tank_capacity: DF.Data | None
-		tanker_balance: DF.Data | None
-		tanker_capacity: DF.ReadOnly | None
+		tank_balance: DF.Float
+		tank_capacity: DF.Float
+		tanker_balance: DF.Float
+		tanker_capacity: DF.Float
 		total_amount: DF.Currency
 		warehouse: DF.Link | None
 	# end: auto-generated types
