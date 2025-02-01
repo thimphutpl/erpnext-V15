@@ -82,6 +82,8 @@ class POLReceive(StockController):
 		warehouse: DF.Link | None
 	# end: auto-generated types
 	def before_save(self):
+		if not self.tank_balance:
+			self.tank_balance = 0
         # Ensure tank balance does not exceed tank capacity
 		if self.book_type == "Own" and flt(self.tank_capacity) < flt(self.tank_balance + self.qty):
 			frappe.throw(
