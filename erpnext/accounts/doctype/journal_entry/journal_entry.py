@@ -149,7 +149,7 @@ class JournalEntry(AccountsController):
 			# if a.project:
 			if a.project:
 				if self.voucher_type != "Opening Entry" and not a.task:
-					frappe.throw("Task is andatory in row {}".format(row))
+					frappe.throw("Task is mandatory in row {}".format(row))
 				# if not a.business_activity:
 				# 	frappe.throw("Business Activity is mandatory")
 		if self.docstatus == 0:
@@ -207,7 +207,7 @@ class JournalEntry(AccountsController):
 			for_project = 0
 			for a in self.accounts:
 				# if a.project:
-				if a.project and self.is_opening == "No" and not a.task:
+				if a.project and self.voucher_type != "Opening Entry" and not a.task:
 					frappe.throw("Task is mandatory in row {}".format(row))
 				if a.project:
 					for_project = 1
@@ -269,7 +269,7 @@ class JournalEntry(AccountsController):
 				# if a.project:
 				if a.task and not a.project:
 					frappe.throw("Project is Mandatory in row {}".format(row))
-				if not a.task and a.project:
+				if not a.task and a.project and self.is_opening == "No":
 					frappe.throw("Task is Mandatory in row {}".format(row))
 				for_project = 1
 				if a.project:
