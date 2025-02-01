@@ -139,8 +139,7 @@
    "fieldtype": "Data",
    "label": "Project Name",
    "oldfieldtype": "Data",
-   "reqd": 1,
-   "unique": 1
+   "reqd": 1
   },
   {
    "default": "Planning",
@@ -949,7 +948,7 @@
  "index_web_pages_for_search": 1,
  "links": [],
  "max_attachments": 4,
- "modified": "2025-01-26 18:57:42.323741",
+ "modified": "2025-02-01 12:03:22.644947",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Project",
