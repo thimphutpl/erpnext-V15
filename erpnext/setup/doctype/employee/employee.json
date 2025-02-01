@@ -30,7 +30,7 @@
   "employment_details_section",
   "employment_type",
   "employee_group",
-  "employee_subgroup",
+  "grade",
   "pms_group",
   "designation",
   "professional_category",
@@ -1141,13 +1141,6 @@
    "label": "Phone Number"
   },
   {
-   "fieldname": "employee_subgroup",
-   "fieldtype": "Link",
-   "label": "Grade",
-   "options": "Employee Grade",
-   "reqd": 1
-  },
-  {
    "fieldname": "leave_and_expense_claim_section",
    "fieldtype": "Section Break",
    "label": "Leave and Expense Claim"
@@ -1200,13 +1193,20 @@
    "fieldtype": "Table",
    "label": "Retirement Benefits Nominees Name",
    "options": "Retirement Benefits Nominees"
+  },
+  {
+   "fieldname": "grade",
+   "fieldtype": "Link",
+   "label": "Grade",
+   "options": "Employee Grade",
+   "reqd": 1
   }
  ],
  "icon": "fa fa-user",
  "idx": 24,
  "image_field": "image",
  "links": [],
- "modified": "2025-01-31 13:00:55.890433",
+ "modified": "2025-02-01 15:15:39.937666",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee",
