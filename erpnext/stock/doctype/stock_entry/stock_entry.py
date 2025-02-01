@@ -777,7 +777,7 @@ class StockEntry(StockController):
 
 	def update_project_task(self):
 		""" update the items child table for the respective doctype: Task or Maintenance order """
-		if self.docstatus == 1 and self.for_project == 1:
+		if self.docstatus == 1 and self.for_project == 1 and self.stock_entry_type == "Material Issue":
 			for d in self.items:
 				if d.project:
 					project = frappe.get_doc("Project",d.project)
@@ -809,35 +809,21 @@ class StockEntry(StockController):
 						p_row.item_amount = d.amount
 						#Task
 						t_row.item_amount = d.amount
-					elif self.stock_entry_type == "Material Return":
-						p_row = frappe.get_doc("Task Material Item", {"child_reference": d.item_ref, "parent": d.project, "item": d.item_code})
-						# frappe.throw(str(p_row.item_quantity)+" "+str(d.balance_qty))
-						# frappe.throw("Here "+str(p_row.name))
-						# #Project Update
-						# p_row.item_quantity = p_row.item_quantity - d.qty
-						# #Task Update
-						# t_row.item_quantity = t_row.item_quantity - d.qty
-						# t_row.reference_type = "Stock Entry"
-						# t_row.reference_name = self.name
-						# t_row.child_reference = d.name
-						# if d.amount > 0:
-						# 	#Project
-						# 	p_row.item_amount = p_row.item_amount - d.amount
-						# 	#Task
-						# 	t_row.item_amount = t_row.item_amount - d.amount
-						frappe.db.sql("""
-							UPDATE
-								`tabTask Material Item` 
-							SET item_quantity = item_quantity - {}, item_amount = item_amount - {}
-							WHERE 
-								child_reference = '{}' and item = '{}'
-						""".format(
-							flt(d.qty), flt(d.amount),
-							d.item_ref, d.item_code
-						))
 					task.save(ignore_permissions=True)
 					project.load_activity_tasks()
 					project.save(ignore_permissions=True)
+		elif self.docstatus == 1 and self.for_project == 1 and self.stock_entry_type == "Material Return":
+			for item in self.items:
+					frappe.db.sql("""
+						UPDATE
+							`tabTask Material Item` 
+						SET item_quantity = item_quantity - {}, item_amount = item_amount - {}
+						WHERE 
+							child_reference = '{}' and item = '{}'
+					""".format(
+						flt(item.qty), flt(item.amount),
+						item.item_ref, item.item_code
+					))
 		elif self.docstatus == 2 and self.for_project == 1 and self.stock_entry_type == "Material Issue":
 			for item in self.items:
 				frappe.db.sql("""
