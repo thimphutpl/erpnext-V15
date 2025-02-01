@@ -197,7 +197,7 @@ def get_gl_entries(filters, accounting_dimensions):
 		select
 			name as gl_entry, posting_date, account, party_type, party,
 			voucher_type, voucher_subtype, voucher_no, {dimension_fields}
-			cost_center, project, {transaction_currency_fields}
+			cost_center, project, task, {transaction_currency_fields}
 			against_voucher_type, against_voucher, account_currency,
 			against, is_opening, creation {select_fields}
 		from `tabGL Entry`
@@ -265,9 +265,16 @@ def get_conditions(filters):
 		conditions.append("(posting_date >=%(from_date)s or is_opening = 'Yes')")
 
 	conditions.append("(posting_date <=%(to_date)s or is_opening = 'Yes')")
-
+	if filters.get("project_definition"):
+		project_cond = ", "
+		project_cond.join("'"+prj.name+"'" for prj in frappe.db.get_all("Project", {"project_definition": filters.get("project_definition")}))
+		conditions.appned("project in ({})".format(project_cond))
+			
 	if filters.get("project"):
 		conditions.append("project in %(project)s")
+
+	if filters.get("task"):
+		conditions.append("task in %(task)s")
 
 	if filters.get("include_default_book_entries"):
 		if filters.get("finance_book"):
