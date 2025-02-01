@@ -155,6 +155,8 @@ class Project(Document):
 			for prj in frappe.db.get_all("Project", {"project_definition": self.project_definition}, ["mandays"]):
 				if prj.mandays:
 					overall_mandays += flt(prj.mandays)
+			if not self.total_duration:
+				self.total_duration = date_diff(self.expected_end_date, self.expected_start_date)+1
 			self.overall_mandays = overall_mandays
 			if flt(self.mandays) > 0 and flt(self.total_duration) > 0:
 				self.man_power_required = flt(flt(self.mandays) / flt(self.total_duration),0)
@@ -175,8 +177,10 @@ class Project(Document):
 				self.physical_progress_weightage = 0
 			if not contribution_per:
 				contribution_per = 0
+			if not self.man_power_required:
+				self.man_power_required = 0
 			self.physical_progress = flt(flt(self.physical_progress_weightage) * (contribution_per * 0.01),4)
-
+			# frappe.throw(str(overall_mandays)+" "+str(self.man_power_required)+" "+str(self.physical_progress_weightage)+" "+str(self.physical_progress)+" "+str(self.percent_completed)+" "+str(self.name))
 			frappe.db.sql("""
 					update `tabProject` set overall_mandays = {}, man_power_required = {}, physical_progress_weightage = {}, physical_progress = {}, percent_completed = {} where name = '{}'
 					""".format(overall_mandays, self.man_power_required, self.physical_progress_weightage, self.physical_progress,  self.percent_completed, self.name))
