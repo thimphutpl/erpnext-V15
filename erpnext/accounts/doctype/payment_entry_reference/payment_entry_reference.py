@@ -27,8 +27,10 @@ class PaymentEntryReference(Document):
 		parenttype: DF.Data
 		payment_term: DF.Link | None
 		payment_type: DF.Data | None
+		project: DF.Link | None
 		reference_doctype: DF.Link
 		reference_name: DF.DynamicLink
+		task: DF.Link | None
 		total_amount: DF.Float
 	# end: auto-generated types
 
