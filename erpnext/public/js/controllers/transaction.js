@@ -1350,7 +1350,8 @@ erpnext.TransactionController = class TransactionController extends erpnext.taxe
 			"grand_total", "taxes_and_charges_added", "taxes_and_charges_deducted","tax_withholding_net_total",
 			"rounded_total", "in_words", "paid_amount", "write_off_amount", "operating_cost",
 			"scrap_material_cost", "rounding_adjustment", "raw_material_cost",
-			"total_cost"], this.frm.doc.currency);
+			"total_cost", "discount",
+			"tax", "other_charges", "total_add_ded", "freight_insurance_charges"], this.frm.doc.currency);
 
 		this.frm.set_currency_labels(["outstanding_amount", "total_advance"],
 			this.frm.doc.party_account_currency);

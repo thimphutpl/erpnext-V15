@@ -718,6 +718,7 @@
   {
    "fieldname": "base_discount_amount",
    "fieldtype": "Currency",
+   "hidden": 1,
    "label": "Additional Discount Amount (Company Currency)",
    "options": "Company:company:default_currency",
    "print_hide": 1,
@@ -730,12 +731,14 @@
   {
    "fieldname": "additional_discount_percentage",
    "fieldtype": "Float",
+   "hidden": 1,
    "label": "Additional Discount Percentage",
    "print_hide": 1
   },
   {
    "fieldname": "discount_amount",
    "fieldtype": "Currency",
+   "hidden": 1,
    "label": "Additional Discount Amount",
    "options": "currency",
    "print_hide": 1
@@ -1320,6 +1323,7 @@
    "label": "Discount"
   },
   {
+   "default": "0",
    "fieldname": "total_add_ded",
    "fieldtype": "Currency",
    "label": "Net Charges & Discount",
@@ -1342,6 +1346,7 @@
    "label": "For Project"
   },
   {
+   "default": "0",
    "fieldname": "tax",
    "fieldtype": "Currency",
    "label": "Tax"
@@ -1359,7 +1364,7 @@
  "idx": 105,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-27 17:51:35.400410",
+ "modified": "2025-02-02 16:26:49.895238",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Purchase Order",

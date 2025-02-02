@@ -753,6 +753,7 @@
   {
    "fieldname": "base_discount_amount",
    "fieldtype": "Currency",
+   "hidden": 1,
    "label": "Additional Discount Amount (Company Currency)",
    "options": "Company:company:default_currency",
    "print_hide": 1,
@@ -1315,6 +1316,7 @@
    "label": "Discount"
   },
   {
+   "default": "0",
    "fieldname": "total_add_ded",
    "fieldtype": "Currency",
    "label": "Net Charges & Discount",
@@ -1339,6 +1341,7 @@
    "label": "Edit Date and Time"
   },
   {
+   "default": "0",
    "fieldname": "tax",
    "fieldtype": "Currency",
    "label": "Tax",
@@ -1357,7 +1360,7 @@
  "idx": 261,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-28 17:18:49.301936",
+ "modified": "2025-02-02 16:28:11.849491",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Purchase Receipt",
