@@ -343,7 +343,6 @@
   {
    "fieldname": "estimated_costing",
    "fieldtype": "Currency",
-   "in_list_view": 1,
    "label": "Estimated Cost",
    "oldfieldname": "project_value",
    "oldfieldtype": "Currency",
@@ -849,6 +848,7 @@
   {
    "fieldname": "total_cost",
    "fieldtype": "Currency",
+   "in_list_view": 1,
    "label": "Total Cost",
    "precision": "2",
    "read_only": 1
@@ -948,7 +948,7 @@
  "index_web_pages_for_search": 1,
  "links": [],
  "max_attachments": 4,
- "modified": "2025-02-01 12:44:44.078972",
+ "modified": "2025-02-02 12:24:57.074396",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Project",
