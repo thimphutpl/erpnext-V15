@@ -1244,7 +1244,7 @@ def make_purchase_invoice(source_name, target_doc=None, args=None):
 
 	def update_other_charges(source, target, sp):
 		target.discount = flt(source.discount)
-		target.tax = flt(target.tax) + flt(source.tax)
+		target.tax = flt(source.tax)
 		target.other_charges = flt(source.other_charges)
 		target.freight_insurance_charges = flt(source.freight_insurance_charges)
 		target.total_add_ded = flt(target.freight_insurance_charges) - flt(target.discount) + flt(target.tax) + flt(target.other_charges)
