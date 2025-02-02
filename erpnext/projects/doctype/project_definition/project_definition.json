@@ -113,6 +113,7 @@
    "allow_on_submit": 1,
    "fieldname": "total_overall_project_cost",
    "fieldtype": "Currency",
+   "in_list_view": 1,
    "label": "Total Overall Project Cost"
   },
   {
@@ -136,7 +137,6 @@
   {
    "fieldname": "project_name",
    "fieldtype": "Data",
-   "in_list_view": 1,
    "label": "Project Name",
    "reqd": 1
   },
@@ -253,7 +253,7 @@
  "is_submittable": 1,
  "links": [],
  "max_attachments": 4,
- "modified": "2025-01-29 12:01:41.648008",
+ "modified": "2025-02-02 12:34:41.306916",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Project Definition",
