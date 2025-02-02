@@ -28,7 +28,7 @@ class FabricationAndBaileyBridge(AccountsController):
 		company: DF.Link
 		cost_center: DF.Link
 		currency: DF.Link
-		customer: DF.Link | None
+		customer: DF.Link
 		customer_branch: DF.ReadOnly | None
 		customer_cost_center: DF.ReadOnly | None
 		dispatch_number: DF.Data | None
@@ -40,6 +40,7 @@ class FabricationAndBaileyBridge(AccountsController):
 		items: DF.Table[JobCardsItem]
 		job_in_time: DF.Time | None
 		job_out_time: DF.Time | None
+		jv: DF.Link | None
 		location: DF.Data | None
 		name_of_the_job: DF.Data | None
 		outstanding_amount: DF.Currency

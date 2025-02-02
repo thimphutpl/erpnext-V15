@@ -56,6 +56,8 @@
   "outstanding_amount",
   "technician_details_section",
   "table_jqvd",
+  "section_break_shui",
+  "jv",
   "remarks_section",
   "remarks",
   "section_break_djxl",
@@ -83,7 +85,8 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Owned By",
-   "options": "\nOwn\nCDCL\nOthers"
+   "options": "\nOwn\nCDCL\nOthers",
+   "reqd": 1
   },
   {
    "fieldname": "column_break_ucwx",
@@ -157,7 +160,8 @@
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Customer",
-   "options": "Customer"
+   "options": "Customer",
+   "reqd": 1
   },
   {
    "fieldname": "intra_cdcl_customer_details_section",
@@ -369,12 +373,23 @@
    "label": "Company",
    "options": "Company",
    "reqd": 1
+  },
+  {
+   "fieldname": "section_break_shui",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "jv",
+   "fieldtype": "Link",
+   "label": "Journal Entry",
+   "options": "Journal Entry",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-31 18:39:38.681331",
+ "modified": "2025-01-31 21:30:49.211494",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Fabrication And Bailey Bridge",
