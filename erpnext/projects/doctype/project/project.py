@@ -184,6 +184,7 @@ class Project(Document):
 			frappe.db.sql("""
 					update `tabProject` set overall_mandays = {}, man_power_required = {}, physical_progress_weightage = {}, physical_progress = {}, percent_completed = {} where name = '{}'
 					""".format(overall_mandays, self.man_power_required, self.physical_progress_weightage, self.physical_progress,  self.percent_completed, self.name))
+			self.update_project_definition()
 
 	def update_branch_change(self):
 		if self.flags.dont_sync_tasks: return
