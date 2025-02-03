@@ -652,8 +652,7 @@
   {
    "fieldname": "supplier_tpn_no",
    "fieldtype": "Data",
-   "label": "Supplier TPN No/CID",
-   "unique": 1
+   "label": "Supplier TPN No/CID"
   },
   {
    "fieldname": "attention_person",
@@ -671,7 +670,7 @@
    "link_fieldname": "party"
   }
  ],
- "modified": "2025-01-29 09:56:12.130345",
+ "modified": "2025-02-03 12:08:40.135711",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Supplier",
