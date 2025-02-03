@@ -34,7 +34,7 @@ class InsuranceandRegistration(Document):
         employee_name: DF.Data | None
         equipment: DF.Link | None
         imprest_party: DF.Link | None
-        insurance_for: DF.Literal["", "Vehicle", "Transit", "Asset", "GPA"]
+        insurance_for: DF.Literal["", "Vehicle", "Asset"]
         insurance_item: DF.Table[InsuranceDetails]
         items: DF.Table[BluebookandEmission]
         posting_date: DF.Date

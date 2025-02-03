@@ -185,6 +185,7 @@
   {
    "fieldname": "accessory_details_section",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Accessory Details"
   },
   {
@@ -362,7 +363,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-01-22 16:18:42.514047",
+ "modified": "2025-02-02 19:30:46.249835",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Hiring Approval Details",
