@@ -82,6 +82,9 @@ class Project(Document):
 		self.name = self.project_name + " ("+prefix+") - GYALSUNG"
 
 	def onload(self):
+		# self.load_activity_tasks()
+		# self.sync_activity_tasks()
+		# self.load_activity_tasks()
 		self.sync_project_details()
 		if not self.get('__unsaved'):
 			if not self.get("activity_tasks"):
@@ -122,6 +125,7 @@ class Project(Document):
 		if self.status in ('Planning','Ongoing'):
 			self.sync_activity_tasks()
 			self.sync_additional_tasks()
+			# self.load_activity_tasks()
 		self.activity_tasks = []
 		self.additional_tasks = []
 
@@ -571,7 +575,6 @@ class Project(Document):
 	def sync_activity_tasks(self):
 		"""sync tasks and remove table"""
 		if self.flags.dont_sync_tasks: return
-
 		task_names = []
 		task_idx = 0
 		for t in self.activity_tasks:
@@ -593,12 +596,11 @@ class Project(Document):
                                     select sum(ifnull(duration,0)) as total_duration from `tabTask` where parent_task = '{}' and is_group = 0
                                     """.format(t.task_id), as_dict=1)[0].total_duration
 				for tsk in frappe.db.get_all("Task", {"parent_task": t.task_id}, ["duration", "work_quantity_complete", "task_achievement_percent"]):
-					group_weightage += (flt(tsk.duration,7)/flt(total_duration,7))*t.work_quantity_complete
+					group_weightage += (flt(tsk.duration,7)/flt(total_duration,7))*tsk.work_quantity_complete
 					sum_wqc += flt(tsk.work_quantity_complete,2)
 					group_achievement_percent += flt(tsk.task_achievement_percent,7)
 				# if no_of_sub_tasks > 0:
 				group_wqc = flt(group_weightage,2)
-
 			task.update({
 				"activity": t.activity,
 				"subject": t.task,
@@ -633,8 +635,8 @@ class Project(Document):
 		# delete
 
 		for t in frappe.get_all("Task", ["name"], {"project": self.name, "name": ("not in", task_names), "additional_task": 0}):
-			if frappe.db.get_value("Task", t.name, "parent_task") != None:
-				frappe.db.sql("""update `tabTask` set parent_task = NULL where name = '{}'""".format(t.name))
+			# if frappe.db.get_value("Task", t.name, "parent_task") != None:
+			# 	frappe.db.sql("""update `tabTask` set parent_task = NULL where name = '{}'""".format(t.name))
 			frappe.delete_doc("Task", t.name)
 
 		# self.update_percent_complete()
@@ -709,22 +711,24 @@ class Project(Document):
 		for task in self.activity_tasks:
 			if task.is_group == 1:
 				group_weightage = sum_wqc = group_wqc = group_achievement_percent = 0
-				no_of_sub_tasks = frappe.db.sql("""
-                                    select ifnull(count(name), 0) as count from `tabTask` where parent_task = '{}'
+				total_weightage = frappe.db.sql("""
+                                    select ifnull(sum(duration), 0) as count from `tabTask` where parent_task = '{}'
                                     """.format(task.task_id), as_dict=1)[0].count
 				for tsk in self.activity_tasks:
 					if tsk.parent_task == task.task_id:
-						group_weightage += flt(tsk.task_weightage,7)
-						sum_wqc += flt(tsk.work_quantity_complete,2)
-						group_achievement_percent += flt(tsk.task_achievement_percent,7)
-				if no_of_sub_tasks > 0:
-					group_wqc = flt(sum_wqc/no_of_sub_tasks,2)
-				task.task_weightage = group_weightage
-				task.task_achievement_percent = group_achievement_percent
+						group_wqc += flt((flt(tsk.task_duration)/flt(total_weightage))*flt(tsk.work_quantity_complete),2)
+						# sum_wqc += flt(tsk.work_quantity_complete,2)
+						# group_achievement_percent += flt(tsk.task_achievement_percent,7)
+				# group_wqc = flt(sum_wqc,2)
+				# task.task_weightage = group_weightage
+				# task.task_achievement_percent = flt(flt(group_wqc) * flt()
 				task.work_quantity_complete = group_wqc
+				# frappe.db.sql("""
+				# 	update `tabActivity Tasks` set task_duration = {}, task_weightage = '{}', task_achievement_percent = '{}' where name = '{}'
+				# 	""".format(task.task_duration, task.task_weightage, task.task_achievement_percent, task.name))
 				frappe.db.sql("""
-					update `tabActivity Tasks` set task_duration = {}, task_weightage = '{}', task_achievement_percent = '{}' where name = '{}'
-					""".format(task.task_duration, task.task_weightage, task.task_achievement_percent, task.name))
+					update `tabActivity Tasks` set work_quantity_complete =  '{}' where name = '{}'
+					""".format(group_wqc, task.name))
 		self.duration_sum = total_duration
                         
 	def validate_target_quantity(self):

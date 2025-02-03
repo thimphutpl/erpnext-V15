@@ -548,6 +548,7 @@
   {
    "fieldname": "total_cost",
    "fieldtype": "Currency",
+   "in_list_view": 1,
    "label": "Total Cost"
   },
   {
@@ -595,7 +596,7 @@
  "is_tree": 1,
  "links": [],
  "max_attachments": 5,
- "modified": "2025-01-26 18:58:53.529548",
+ "modified": "2025-02-02 12:25:26.299549",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Task",
