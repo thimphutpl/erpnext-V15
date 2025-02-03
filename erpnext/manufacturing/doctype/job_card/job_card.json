@@ -115,6 +115,7 @@
   },
   {
    "default": "Today",
+   "description": "Current Date",
    "fieldname": "posting_date",
    "fieldtype": "Date",
    "label": "Posting Date"
@@ -511,7 +512,7 @@
  ],
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-29 14:34:43.603821",
+ "modified": "2025-02-03 16:16:19.973987",
  "modified_by": "Administrator",
  "module": "Manufacturing",
  "name": "Job Card",
