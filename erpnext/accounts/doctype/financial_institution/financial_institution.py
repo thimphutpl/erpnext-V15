@@ -26,7 +26,6 @@ class FinancialInstitution(Document):
 		employee_loan_payment_in_single_account: DF.Check
 		enabled: DF.Check
 		items: DF.Table[FinancialInstitutionItem]
-		loan_payment_in_bob_account: DF.Check
 		short_form: DF.Data
 	# end: auto-generated types
 	
