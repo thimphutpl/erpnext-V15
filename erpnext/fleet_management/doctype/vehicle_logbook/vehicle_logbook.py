@@ -35,9 +35,11 @@ class VehicleLogbook(Document):
 		final_km: DF.Int
 		from_date: DF.Date
 		from_time: DF.Time
+		hire_charge_amount: DF.Float
+		hire_charge_rate: DF.Float
 		hour_adjustment_reason: DF.Data | None
 		hour_taken: DF.Int
-		hsd_amount: DF.Data | None
+		hsd_amount: DF.Float
 		hsd_received: DF.Float
 		idle_rate: DF.Currency
 		include_hour: DF.Check
@@ -50,20 +52,22 @@ class VehicleLogbook(Document):
 		lph: DF.Float
 		lphs: DF.Float
 		opening_balance: DF.Float
+		operator_salary: DF.Float
 		other_consumption: DF.Float
 		payment_completed: DF.Check
 		place: DF.Data | None
 		pol_type: DF.Data | None
 		pool_equipment: DF.Link | None
 		pool_equipment_number: DF.Data | None
-		project: DF.ReadOnly | None
+		project: DF.Link | None
 		rate_type: DF.Data | None
 		reason: DF.Data | None
 		registration_number: DF.Data | None
 		remarks: DF.TextEditor | None
-		tank_balance: DF.Data | None
+		tank_balance: DF.Float
 		to_date: DF.Date
 		to_time: DF.Time
+		total_amount: DF.Float
 		total_idle_time: DF.Float
 		total_work_time: DF.Float
 		vehicle_logbook: DF.Literal["", "Equipment Hiring Form", "Pool Vehicle", "Support Equipment"]
