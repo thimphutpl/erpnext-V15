@@ -569,7 +569,7 @@ class BankPayment(Document):
 			frappe.throw("Please select Financial Institution")
 
 		doc = frappe.get_doc("Financial Institution", self.institution_name)
-		if not doc.loan_payment_in_bob_account:
+		if not doc.employee_loan_payment_in_single_account:
 			return frappe.db.sql(
 				"""SELECT "Salary Slip" transaction_type, t1.name transaction_id, 
 							t2.name transaction_reference, t1.modified transaction_date,
@@ -706,13 +706,16 @@ class BankPayment(Document):
 						debit_bank_account += 1
 			elif a.voucher_type == "Bank Entry":
 				party_type = party = reference_type = reference_name = ""
-				party_count = frappe.db.sql(
+				party_count = 0
+				party_query = frappe.db.sql(
 							"""select count(distinct party) as party_count
 											from `tabJournal Entry Account` 
 											where parent = '{journal_entry}'
 											AND party!="" AND party is NOT NULL
 											group by party
-										""".format(journal_entry=a.transaction_id))[0][0]
+										""".format(journal_entry=a.transaction_id))
+				if len(party_query):
+					party_count = party_query[0][0]
 				non_bank_entries = 0
 				non_bank_entries_amount = 0.00
 				payable_amt = 0.00 
