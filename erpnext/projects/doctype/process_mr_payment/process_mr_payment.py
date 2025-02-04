@@ -296,8 +296,8 @@ class ProcessMRPayment(Document):
 					"reference_type": "Process MR Payment",
 					"reference_name": self.name,
 					"cost_center": self.cost_center,
-					"debit_in_account_currency": flt(self.wages_amount) + flt(self.deduction) if self.deduction else flt(total_amount),
-					"debit": flt(self.wages_amount) + flt(self.deduction) if self.deduction else flt(total_amount),
+					"debit_in_account_currency": flt(self.wages_amount) + flt(self.deduction) if self.deduction else flt(total_amount) - flt(self.ot_amount),
+					"debit": flt(self.wages_amount) + flt(self.deduction) if self.deduction else flt(total_amount) - flt(self.ot_amount),
 				})
 
 		je.append("accounts", {
