@@ -37,6 +37,7 @@
   "region",
   "reports_to_name",
   "job_type",
+  "parent_agency_eid",
   "column_break_22",
   "employment_status",
   "probation_end_date",
@@ -1200,13 +1201,19 @@
    "label": "Grade",
    "options": "Employee Grade",
    "reqd": 1
+  },
+  {
+   "depends_on": "eval:doc.job_type == 'Civil Servant' || doc.job_type == 'Corporate'\r\n",
+   "fieldname": "parent_agency_eid",
+   "fieldtype": "Data",
+   "label": "Parent Agency EID"
   }
  ],
  "icon": "fa fa-user",
  "idx": 24,
  "image_field": "image",
  "links": [],
- "modified": "2025-02-01 15:15:39.937666",
+ "modified": "2025-02-04 16:34:03.174947",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee",
