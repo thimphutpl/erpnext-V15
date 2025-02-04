@@ -1414,6 +1414,10 @@ class PaymentEntry(AccountsController):
 				account_currency = get_account_currency(d.account)
 				if account_currency != self.company_currency:
 					frappe.throw(_("Currency for {0} must be {1}").format(d.account, self.company_currency))
+				party, party_type = '', ''
+				if frappe.db.get_value("Account", d.account, "account_type") in ('Payable', 'Receivable'):
+					party = self.party
+					party_type = self.party_type
 
 				gl_entries.append(
 					self.get_gl_dict(
@@ -1424,6 +1428,8 @@ class PaymentEntry(AccountsController):
 							"debit_in_account_currency": d.amount,
 							"debit": d.amount,
 							"cost_center": d.cost_center,
+							"party": party,
+							"party_type": party_type,
 						},
 						item=d,
 					)
