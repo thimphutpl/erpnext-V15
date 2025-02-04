@@ -110,7 +110,7 @@ frappe.ui.form.on('Vehicle Logbook', {
 				callback: function (r) {
 					if (r.message) {
 						frm.set_value("kph", r.message[0].kph);
-						frm.set_value("lph", r.message[0].lph);
+						frm.set_value("lph", flt(r.message[0].lph));
 						frm.refresh_fields();
 					} else {
 						frappe.msgprint("No yardsticks settings for the equipment");
