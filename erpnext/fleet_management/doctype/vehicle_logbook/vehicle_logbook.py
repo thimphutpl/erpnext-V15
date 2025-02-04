@@ -48,9 +48,7 @@ class VehicleLogbook(Document):
 		initial_km: DF.Int
 		invoice_created: DF.Check
 		kph: DF.Float
-		kphs: DF.Float
 		lph: DF.Float
-		lphs: DF.Float
 		opening_balance: DF.Float
 		other_consumption: DF.Float
 		payment_completed: DF.Check
@@ -385,7 +383,15 @@ class VehicleLogbook(Document):
 				WHERE equipment_category = 'Pool Vehicle'
 			""", as_dict=True)
 			return [equipment['name'] for equipment in pool_equipment]
-		return []		
+		return []
+
+@frappe.whitelist()
+def get_yards(equipment):
+	t, m = frappe.db.get_value("Equipment", equipment, ['equipment_type', 'registration_number'])
+	data = frappe.db.sql("select lph, kph from `tabEquipment` where equipment_type = %s and registration_number = %s", (t, m), as_dict=True)
+	if not data:
+		frappe.throw("Setup yardstick for " + str(m))
+	return data			
 
 @frappe.whitelist()
 def get_opening(equipment, from_date, to_date, pol_type):

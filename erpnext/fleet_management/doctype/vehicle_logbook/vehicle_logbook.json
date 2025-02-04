@@ -68,12 +68,10 @@
   "include_km",
   "ys_km",
   "consumption_km",
-  "kphs",
   "column_break_34",
   "include_hour",
   "ys_hours",
   "consumption_hours",
-  "lphs",
   "column_break_37",
   "other_consumption",
   "hsd_received",
@@ -345,7 +343,7 @@
   {
    "fieldname": "ys_hours",
    "fieldtype": "Float",
-   "label": "Based on Hours",
+   "label": "Based on H",
    "read_only": 1
   },
   {
@@ -565,22 +563,6 @@
    "read_only": 1
   },
   {
-   "depends_on": "eval:doc.vehicle_logbook == 'Pool Vehicle'",
-   "fieldname": "lphs",
-   "fieldtype": "Float",
-   "hidden": 1,
-   "label": "Based on Hours",
-   "precision": "2"
-  },
-  {
-   "depends_on": "eval:doc.vehicle_logbook == 'Pool Vehicle'",
-   "fieldname": "kphs",
-   "fieldtype": "Float",
-   "hidden": 1,
-   "label": "Based on Kilometers",
-   "precision": "2"
-  },
-  {
    "depends_on": "eval:doc.equipment",
    "fieldname": "tank_balance",
    "fieldtype": "Data",
@@ -590,7 +572,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-23 11:49:56.139433",
+ "modified": "2025-02-04 15:52:50.822068",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Vehicle Logbook",

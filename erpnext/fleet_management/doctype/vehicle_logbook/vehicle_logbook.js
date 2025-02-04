@@ -105,7 +105,7 @@ frappe.ui.form.on('Vehicle Logbook', {
 			});
 
 			frappe.call({
-				method: "erpnext.fleet_management.doctype.equipment.equipment.get_yards",
+				method: "erpnext.fleet_management.doctype.vehicle_logbook.vehicle_logbook.get_yards",
 				args: { equipment: frm.doc.equipment },
 				callback: function (r) {
 					if (r.message) {

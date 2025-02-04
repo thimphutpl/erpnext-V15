@@ -150,6 +150,7 @@
   {
    "fieldname": "lph",
    "fieldtype": "Float",
+   "hidden": 1,
    "label": "Based on Hours",
    "precision": "2",
    "read_only": 1
@@ -161,6 +162,7 @@
   {
    "fieldname": "kph",
    "fieldtype": "Float",
+   "hidden": 1,
    "label": "Based on Kilometers",
    "precision": "2",
    "read_only": 1
@@ -219,7 +221,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-01-16 10:44:24.838416",
+ "modified": "2025-02-04 15:53:36.591502",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Hire Charge Parameter",
