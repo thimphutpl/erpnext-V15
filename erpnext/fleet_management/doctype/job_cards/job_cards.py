@@ -57,6 +57,7 @@ class JobCards(AccountsController):
 		remarks: DF.LongText | None
 		repair_type: DF.Literal["Minor Repair", "Major Repair"]
 		services_amount: DF.Currency
+		status: DF.Literal["", "Payment Received", "Pending Payment"]
 		table_jqvd: DF.Table[MechanicAssigned]
 		total_amount: DF.Currency
 	# end: auto-generated types
