@@ -75,7 +75,7 @@ class CustomWorkflow:
 		
 		if self.doc.doctype in ("Imprest Advance", "Imprest Recoup"):
 			self.employee = frappe.db.get_value("Employee", self.doc.party, self.field_list)
-			self.reports_to = frappe.db.get_value("Employee", {"name":frappe.db.get_value("Employee", self.employee, "expense_approver")}, self.field_list)
+			self.reports_to = frappe.db.get_value("Employee", {"user_id":frappe.db.get_value("Employee", self.employee, "expense_approver")}, self.field_list)
 
 		if self.doc.doctype in ("Budget Reappropiation", "Supplementary Budget"):
 			self.employee = frappe.db.get_value("Employee", {"user_id":self.doc.owner}, self.field_list)
@@ -680,6 +680,32 @@ class CustomWorkflow:
 			if self.doc.approver != frappe.session.user:
 				frappe.throw("Only {} can reject this Document".format(self.doc.approver))
 
+	# def employee_separation(self):
+	# 	# if self.new_state.lower() in ("Waiting Supervisor Approval".lower()):
+	# 	# 	self.set_approver("HR")
+	# 	if self.new_state.lower() in ("Rejected".lower()):
+	# 		if self.doc.approver != frappe.session.user:
+	# 			frappe.throw("Only {} can Rejected this document".format(self.doc.approver))
+	# 		self.set_approver("report to")
+	# 	if self.new_state.lower() in ("Waiting Supervisor Approval".lower()):
+	# 		# if self.doc.approver != frappe.session.user:
+	# 		# 	frappe.throw("Only {} can Forward this document".format(self.doc.approver))
+	# 		self.set_approver("report to")
+	# 	if self.new_state.lower() in ("Waiting GM Approval".lower()):
+	# 		if self.doc.approver != frappe.session.user:
+	# 			frappe.throw("Only {} can Forward this document".format(self.doc.approver))
+	# 		self.set_approver("Supervisor")
+		
+	# 	elif self.new_state.lower() in ("Waiting CEO Approval".lower()):
+	# 		if self.doc.approver != frappe.session.user:
+	# 			frappe.throw("Only {} can Forward this document".format(self.doc.approver))
+	# 		self.set_approver("CEO")
+
+	# 	elif self.new_state.lower() in ("Approved".lower()):
+	# 		if self.doc.approver != frappe.session.user:
+	# 			frappe.throw("Only {} can edit/submit this document".format(self.doc.approver))
+
+
 	def employee_separation(self):
 		# if self.new_state.lower() in ("Waiting Supervisor Approval".lower()):
 		# 	self.set_approver("HR")
@@ -699,11 +725,15 @@ class CustomWorkflow:
 		elif self.new_state.lower() in ("Waiting CEO Approval".lower()):
 			if self.doc.approver != frappe.session.user:
 				frappe.throw("Only {} can Forward this document".format(self.doc.approver))
-			self.set_approver("CEO")
+			# self.set_approver("CEO")
 
 		elif self.new_state.lower() in ("Approved".lower()):
-			if self.doc.approver != frappe.session.user:
-				frappe.throw("Only {} can edit/submit this document".format(self.doc.approver))
+			user_roles = frappe.get_roles(frappe.session.user)
+			if "CEO" in user_roles:
+				return
+			else:
+				frappe.throw("Only <b>{}</b> can Approve this request".format("CEO"))
+		
 
 	#def employee_benefits(self):
 		#frappe.throw("hi")
@@ -725,7 +755,7 @@ class CustomWorkflow:
 		# elif self.new_state.lower() in ("Approved".lower()):
 		# 	if self.hrgm[0] != frappe.session.user:
 		# 		frappe.throw("Only {} can edit/submit this document".format(self.hrgm[0]))
-					
+
 	def employee_benefits(self):
 		# if self.new_state.lower() in ("Waiting HR Approval".lower()):
 		# 	self.set_approver("HR")
