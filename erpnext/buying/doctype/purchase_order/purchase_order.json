@@ -58,7 +58,6 @@
   "tax_withholding_net_total",
   "base_tax_withholding_net_total",
   "column_break_svkp",
-  "material_requst",
   "section_break_48",
   "pricing_rules",
   "raw_material_details",
@@ -103,6 +102,7 @@
   "discount_amount",
   "references_section",
   "material_request",
+  "material_request_date",
   "tc_section",
   "tc_name",
   "terms",
@@ -1222,18 +1222,6 @@
    "reqd": 1
   },
   {
-   "depends_on": "eval:doc.against_blanket_order",
-   "fieldname": "material_requst",
-   "fieldtype": "Link",
-   "label": "Material Request",
-   "mandatory_depends_on": "eval: doc.material_request_item",
-   "options": "Material Request",
-   "print_hide": 1,
-   "print_width": "120px",
-   "search_index": 1,
-   "width": "120px"
-  },
-  {
    "fieldname": "material_request",
    "fieldtype": "Link",
    "label": "Material Request",
@@ -1326,13 +1314,19 @@
    "fieldtype": "Currency",
    "label": "Net Charges & Discount",
    "read_only": 1
+  },
+  {
+   "fetch_from": "material_request.transaction_date",
+   "fieldname": "material_request_date",
+   "fieldtype": "Date",
+   "label": "Material Request Date"
   }
  ],
  "icon": "fa fa-file-text",
  "idx": 105,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-02-05 10:31:00.474763",
+ "modified": "2025-02-05 10:48:29.277797",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Purchase Order",
