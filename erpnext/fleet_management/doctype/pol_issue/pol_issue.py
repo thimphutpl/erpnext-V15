@@ -278,9 +278,28 @@ class POLIssue(StockController):
 						"cost_center": a.cost_center,
 					})
 				)
+			elif self.purpose == "Transfer":
+				gl_entries.append(
+					self.get_gl_dict({
+						"account": wh_account,
+						"credit": flt(valuation_rate),
+						"credit_in_account_currency": flt(valuation_rate),
+						"cost_center": self.cost_center,
+					})
+				)
+				debit_account = frappe.db.get_value("Warehouse", {"name": a.warehouse}, "account")
+				gl_entries.append(
+					self.get_gl_dict({
+						"account": debit_account,
+						"debit": flt(valuation_rate),
+						"debit_in_account_currency": flt(valuation_rate),
+						"cost_center": a.cost_center,
+					})
+				)
+				# frappe.throw(frappe.as_json(gl_entries))
 
 			# Do IC Accounting Entry if different branch
-			if comparing_branch != self.branch:
+			elif comparing_branch != self.branch:
 				ic_account = frappe.db.get_single_value("Accounts Settings", "intra_company_account")
 				if not ic_account:
 					frappe.throw("Setup Intra-Company Account in Accounts Settings")
@@ -302,7 +321,7 @@ class POLIssue(StockController):
 						"cost_center": a.cost_center,
 					})
 				)
-			
+				
 			else:  # Do IC Accounting Entry if different warehouse within same branch
 				if comparing_branch != self.branch:
 					ic_account = frappe.db.get_single_value("Accounts Settings", "intra_company_account")
