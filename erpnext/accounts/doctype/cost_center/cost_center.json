@@ -24,6 +24,7 @@
   "branch_created",
   "use_budget_from_parent",
   "budget_cost_center",
+  "project_cost_center",
   "section_break_hefj",
   "sub_activity"
  ],
@@ -163,13 +164,19 @@
    "fieldtype": "Link",
    "label": "Warehouse",
    "options": "Warehouse"
+  },
+  {
+   "default": "0",
+   "fieldname": "project_cost_center",
+   "fieldtype": "Check",
+   "label": "Project Cost Center"
   }
  ],
  "icon": "fa fa-money",
  "idx": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2024-11-29 16:37:20.128395",
+ "modified": "2025-02-03 17:42:32.000481",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Cost Center",

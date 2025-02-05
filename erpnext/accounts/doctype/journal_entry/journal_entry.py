@@ -703,7 +703,7 @@ class JournalEntry(AccountsController):
 			if cint(d.party_check):
 				account_type = frappe.get_cached_value("Account", d.account, "account_type")
 				if account_type in ["Receivable", "Payable"]:
-					if d.party_type == "Employee":
+					if d.party_type in ("Employee", "Supplier"):
 						continue
 					elif not (d.party_type and d.party):
 						frappe.throw(

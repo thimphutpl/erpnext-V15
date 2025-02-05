@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "allow_import": 1,
  "allow_rename": 1,
  "autoname": "ASSETO.YY.#####",
  "creation": "2025-01-23 16:27:55.177196",
@@ -193,7 +194,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-01-29 12:02:46.598995",
+ "modified": "2025-02-05 16:29:07.944144",
  "modified_by": "Administrator",
  "module": "Assets",
  "name": "Asset Others",
