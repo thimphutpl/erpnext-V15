@@ -336,16 +336,19 @@
   {
    "fieldname": "internal_work_history",
    "fieldtype": "Table",
+   "label": "INTERNAL WORK HISTORY",
    "options": "Employee Internal Work History"
   },
   {
    "fieldname": "musterroll",
    "fieldtype": "Table",
+   "label": "Wages",
    "options": "Musterroll"
   },
   {
    "fieldname": "wage_history",
    "fieldtype": "Table",
+   "label": "Wage History",
    "options": "Wages History"
   },
   {
@@ -398,7 +401,7 @@
  "in_create": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-01-23 12:58:48.794987",
+ "modified": "2025-02-05 15:00:41.968501",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Muster Roll Employee",
@@ -450,6 +453,18 @@
    "read": 1,
    "report": 1,
    "role": "HR User",
+   "select": 1,
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "HR Support",
    "select": 1,
    "share": 1,
    "write": 1
