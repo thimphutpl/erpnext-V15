@@ -865,13 +865,13 @@ class PaymentEntry(AccountsController):
 				base_applicable_tax += base_amount
 
 		#jai self.references_total_amount
-		self.paid_amount_after_tax = flt(
-			flt(self.references_total_amount) + flt(applicable_tax), self.precision("paid_amount_after_tax")
-		)
-		#below is actual amount
 		# self.paid_amount_after_tax = flt(
-		# 	flt(self.paid_amount) + flt(applicable_tax), self.precision("paid_amount_after_tax")
+		# 	flt(self.references_total_amount) + flt(applicable_tax), self.precision("paid_amount_after_tax")
 		# )
+		#below is actual amount
+		self.paid_amount_after_tax = flt(
+			flt(self.paid_amount) + flt(applicable_tax), self.precision("paid_amount_after_tax")
+		)
 		self.base_paid_amount_after_tax = flt(
 			flt(self.paid_amount_after_tax) * flt(self.source_exchange_rate),
 			self.precision("base_paid_amount_after_tax"),
@@ -1494,12 +1494,12 @@ class PaymentEntry(AccountsController):
 
 		#jai update as per pralad sir, take taxable amount from items total amount
 		#same changes in js file inside same func.
-		total_amount = 0.0
-		for ded in self.get('references'):
-			total_amount = flt(total_amount) + flt(ded.total_amount)
-		self.references_total_amount = flt(total_amount)
-		self.paid_amount_after_tax = flt(total_amount)
-		# self.paid_amount_after_tax = self.base_paid_amount
+		# total_amount = 0.0
+		# for ded in self.get('references'):
+		# 	total_amount = flt(total_amount) + flt(ded.total_amount)
+		# self.references_total_amount = flt(total_amount)
+		# self.paid_amount_after_tax = flt(total_amount)
+		self.paid_amount_after_tax = self.base_paid_amount
 
 	def determine_exclusive_rate(self):
 		if not any(cint(tax.included_in_paid_amount) for tax in self.get("taxes")):
