@@ -103,7 +103,6 @@
   "discount_amount",
   "references_section",
   "material_request",
-  "material_request_date",
   "tc_section",
   "tc_name",
   "terms",
@@ -1238,7 +1237,8 @@
    "fieldname": "material_request",
    "fieldtype": "Link",
    "label": "Material Request",
-   "options": "Material Request"
+   "options": "Material Request",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_svkp",
@@ -1248,13 +1248,6 @@
    "fieldname": "references_section",
    "fieldtype": "Section Break",
    "label": "References"
-  },
-  {
-   "fetch_from": "material_request.transaction_date",
-   "fieldname": "material_request_date",
-   "fieldtype": "Link",
-   "label": "Material Request Date",
-   "options": "Material Request"
   },
   {
    "fieldname": "tc_section",
@@ -1339,7 +1332,7 @@
  "idx": 105,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-28 18:16:43.862628",
+ "modified": "2025-02-05 10:31:00.474763",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Purchase Order",
