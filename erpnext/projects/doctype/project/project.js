@@ -461,6 +461,9 @@ frappe.ui.form.on("Activity Tasks", {
 	},
 	work_quantity_complete: function(frm, cdt, cdn){
 		var item = locals[cdt][cdn];
+		if(flt(item.work_quantity_complete) > 100){
+			frappe.throw("Work Quantity Complete cannot be greater than 100 percent in row "+String(item.idx))
+		}
 		calculate_duration1(frm, cdt, cdn, item.start_date, item.end_date);
 		cur_frm.refresh_fields();
 	},

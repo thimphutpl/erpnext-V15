@@ -577,9 +577,10 @@ class Project(Document):
 		if self.flags.dont_sync_tasks: return
 		task_names = []
 		task_idx = 0
-		for t in self.activity_tasks:
+		for idx, t in enumerate(self.activity_tasks):
 			task_idx += 1
-
+			if flt(t.work_quantity_complete) > 100:
+				frappe.throw("Work Quantity Complete cannot be greater than 100 percent in row "+str(idx+1))
 			if not t.target_uom:
 				t.target_uom = 'Percent'
 				if not t.target_quantity:
