@@ -44,6 +44,7 @@ class HireChargeInvoice(AccountsController):
 		owned_by: DF.Data | None
 		payment_jv: DF.Data | None
 		posting_date: DF.Date
+		status: DF.Literal["", "Payment Received", "Pending Payment"]
 		total_invoice_amount: DF.Currency
 		workflow_state: DF.Link | None
 	# end: auto-generated types
