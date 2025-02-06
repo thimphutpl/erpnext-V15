@@ -100,6 +100,10 @@ class HireChargeInvoice(AccountsController):
 		self.check_close()
 
 	def on_cancel(self):
+		self.ignore_linked_doctypes = (
+			"GL Entry",
+			"Payment Ledger Entry",
+		)
 		# if frappe.session.user == "Administrator":
 		#     frappe.throw('Dont cancel')
 		if self.owned_by != "CDCL":
