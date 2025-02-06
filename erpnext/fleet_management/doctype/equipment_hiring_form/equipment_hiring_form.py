@@ -53,7 +53,7 @@ class EquipmentHiringForm(Document):
 		workflow_state: DF.Link | None
 	# end: auto-generated types
 	def validate(self):
-		check_future_date(self.request_date)
+		# check_future_date(self.request_date)
 		self.check_date_approval()
 		self.check_duplicate()
 		self.calculate_totals()

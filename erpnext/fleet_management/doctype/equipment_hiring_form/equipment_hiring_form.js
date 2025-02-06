@@ -138,9 +138,9 @@ frappe.ui.form.on("Hiring Request Details", {
 	"from_date": function (frm, cdt, cdn) {
 		calculate_datetime(frm, cdt, cdn)
 	},
-	"to_date": function (frm, cdt, cdn) {
-		calculate_datetime(frm, cdt, cdn)
-	},
+	// "to_date": function (frm, cdt, cdn) {
+	// 	calculate_datetime(frm, cdt, cdn)
+	// },
 	"tender_hire_rate": function (frm, cdt, cdn) {
 
 	}
@@ -219,11 +219,11 @@ frappe.ui.form.on("Hiring Approval Details", {
 		get_rates(frm, cdt, cdn)
 		calculate_amount(frm, cdt, cdn)
 	},
-	"to_time": function (frm, cdt, cdn) {
-		calculate_time(frm, cdt, cdn)
-		get_rates(frm, cdt, cdn)
-		calculate_amount(frm, cdt, cdn)
-	},
+	// "to_time": function (frm, cdt, cdn) {
+	// 	calculate_time(frm, cdt, cdn)
+	// 	get_rates(frm, cdt, cdn)
+	// 	calculate_amount(frm, cdt, cdn)
+	// },
 	"tender_hire_rate": function (frm, cdt, cdn) {
 		get_diff_rates(frm, cdt, cdn)
 		calculate_amount(frm, cdt, cdn)
