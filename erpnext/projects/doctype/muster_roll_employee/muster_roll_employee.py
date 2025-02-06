@@ -99,8 +99,8 @@ class MusterRollEmployee(Document):
 			self.docstatus = 1
 
 	# Following method introducted by SHIV on 04/10/2017
-	def populate_work_history(self):
-		if not self.internal_work_history:
+	def populate_work_history(self):		
+		if self.is_new() or len(self.internal_work_history) == 0:
 			self.append("internal_work_history",{
 						"branch": self.branch,
 						"cost_center": self.cost_center,
