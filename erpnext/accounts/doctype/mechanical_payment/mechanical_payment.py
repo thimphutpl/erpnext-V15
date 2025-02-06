@@ -113,7 +113,10 @@ class MechanicalPayment(AccountsController):
     def on_cancel(self):
         if self.clearance_date:
             frappe.throw("Already done bank reconciliation.")
-
+        self.ignore_linked_doctypes = (
+			"GL Entry",
+			"Payment Ledger Entry",
+		)
         self.make_gl_entry()
         self.update_ref_doc(cancel=1)
 
@@ -153,6 +156,11 @@ class MechanicalPayment(AccountsController):
             else:
                 amount = flt(doc.outstanding_amount) - flt(a.allocated_amount)
 
+            if a.reference_type == "Job Cards":
+                payable_amount = doc.total_amount
+            else:
+                payable_amount = doc.balance_amount
+                    
             if a.reference_type in ["Job Cards", "Fabrication And Bailey Bridge", "Hire Charge Invoice"]:
                 status = "Payment Received" if not cancel else "Pending Payment"
                 doc.db_set("status", status)
