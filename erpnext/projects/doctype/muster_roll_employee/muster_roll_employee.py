@@ -32,7 +32,7 @@ class MusterRollEmployee(Document):
 		blood_group: DF.Link | None
 		branch: DF.Link | None
 		company: DF.Link
-		cost_center: DF.Link
+		cost_center: DF.Link | None
 		date_of_transfer: DF.Date | None
 		designation: DF.Data | None
 		gender: DF.Literal["Male", "Female", "Other"]
