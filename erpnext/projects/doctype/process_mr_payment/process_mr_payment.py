@@ -486,16 +486,19 @@ def get_records(employee_type, fiscal_year, fiscal_month, from_date, to_date, co
 	for e in emp_list:
 		
 		#frappe.throw(str(e.id_card))
+		salary=0
 		if employee_type == 'DFG AND GFG':
 			pay_details=get_pay_details_dfg_gfg_opa_opt(e.id_card,employee_type)
 			#frappe.throw(str(pay_details))
 			rate_per_day 		 = flt(pay_details[0]['rate_per_day'])
 			rate_per_hour_normal = flt(pay_details[0]['rate_per_hour'])
+			salary=flt(pay_details[0]['salary'])
 		
 		elif employee_type=='Operator':
 			pay_details=get_pay_details_dfg_gfg_opa_opt(e.id_card,employee_type)
 			rate_per_day=flt(pay_details[0]['rate_per_day'])
 			rate_per_hour_normal=flt(pay_details[0]['rate_per_hour'])
+			salary=flt(pay_details[0]['salary'])
 			#frappe.throw(str(pay_details))
 		elif employee_type=='Open Air Prisoner':
 			pay_details=get_pay_details_dfg_gfg_opa_opt(e.id_card,employee_type)
@@ -522,7 +525,7 @@ def get_records(employee_type, fiscal_year, fiscal_month, from_date, to_date, co
 			"designation" : e.designation,
 			"account_no" : e.account_no,
 			"bank" : e.bank,
-			"salary": e.salary
+			"salary":salary
 		}))
 		if employee_type == "Muster Roll Employee":
 			update_mr_rates(employee_type, e.name, cost_center, from_date, to_date)
@@ -628,15 +631,25 @@ def get_records(employee_type, fiscal_year, fiscal_month, from_date, to_date, co
 	else:
 		frappe.throw(_("No data found!"),title="No Data Found!")
 
-def get_pay_details(employee, year, month):
-	
 
-	data = {}
-	# frappe.throw('hi')
+
+@frappe.whitelist()
+def get_is_lifer_status(employee):	
+	"""
+	Get 'is_lifer' status for a given employee.
+	"""	
+	is_lifer = frappe.db.get_value("Open Air Prisoner", {"name": employee}, "is_lifer")
+	if is_lifer is not None:
+		return {"is_lifer": is_lifer}
+	else:
+		return {"error": "No data found for this employee."}
+
+
+def get_pay_details(employee, year, month):
+	data = {}	
 	from_date = "-".join([str(year), str(month), '01'])
 	to_date   = str(get_last_day(from_date))
-	
-	# frappe.throw(str(from_date))	
+		
 	for d in  frappe.db.sql("""
 			SELECT
 				rate_per_day, rate_per_hour, rate_per_hour_normal, parent
@@ -659,7 +672,7 @@ def get_pay_details_dfg_gfg_opa_opt(employee,employee_type):
 		
 	return  frappe.db.sql("""
 			SELECT
-				rate_per_day, rate_per_hour
+				rate_per_day, rate_per_hour,salary
 			FROM `tab{employee_type}`
 			WHERE id_card = '{employee}'
 			LIMIT 1
