@@ -16,6 +16,7 @@ frappe.ui.form.on('POL Receive', {
 		// }
 	},
 	setup: function (frm) {
+		frm.ignore_doctypes_on_cancel_all = ["Serial and Batch Bundle"];
 		frm.set_query("fuelbook", function (doc) {
 			var filterArgs
 			if (!doc.book_type) return
