@@ -1482,7 +1482,14 @@ def get_permission_query_conditions(user):
 
 	if user == "Administrator":
 		return
-	if "HR Master" in user_roles or "Auditor" in user_roles or "HR User" in user_roles or "HR Manager" in user_roles:
+	if "Purchase Master Manager" in user_roles:
 		return
-	else:
-		return
+	
+	return """(
+		`tabPurchase Receipt`.owner = '{user}'
+		or
+		exists(select 1
+				from `tabEmployee`
+				where `tabEmployee`.branch = `tabPurchase Receipt`.branch
+				and `tabEmployee`.user_id = '{user}')
+	)""".format(user=user)

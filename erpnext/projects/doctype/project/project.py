@@ -712,13 +712,17 @@ class Project(Document):
 				""".format(task.task_duration, task.task_weightage, task.task_achievement_percent, task.name))
 		for task in self.activity_tasks:
 			if task.is_group == 1:
-				group_weightage = sum_wqc = group_wqc = group_achievement_percent = 0
-				total_weightage = frappe.db.sql("""
-                                    select ifnull(sum(duration), 0) as count from `tabTask` where parent_task = '{}'
-                                    """.format(task.task_id), as_dict=1)[0].count
+				group_weightage = sum_wqc = group_wqc = group_achievement_percent = total_weightage = 0
+				# total_weightage = frappe.db.sql("""
+                #                     select ifnull(sum(duration), 0) as count from `tabTask` where parent_task = '{}'
+                #                     """.format(task.task_id), as_dict=1)[0].count
+				for tsk1 in self.activity_tasks:
+					if tsk1.parent_task == task.task_id and tsk1.is_group == 0:
+						total_weightage += date_diff(tsk1.end_date, tsk1.start_date)+1
 				if total_weightage:
 					for tsk in self.activity_tasks:
 						if tsk.parent_task == task.task_id:
+							frappe.throw(str(total_weightage))
 							group_wqc += flt((flt(tsk.task_duration)/flt(total_weightage))*flt(tsk.work_quantity_complete),2)
 							# sum_wqc += flt(tsk.work_quantity_complete,2)
 							# group_achievement_percent += flt(tsk.task_achievement_percent,7)
@@ -1871,12 +1875,10 @@ def get_permission_query_conditions(user):
 		return
 
 	return """(
-		`tabLeave Application`.owner = '{user}'
+		`tabProject`.owner = '{user}'
 		or
 		exists(select 1
 				from `tabEmployee`
-				where `tabEmployee`.name = `tabLeave Application`.employee
-				and `tabEmployee`.user_id = '{user}' and `tabLeave Application`.docstatus != 2)
-		or
-		(`tabLeave Application`.leave_approver = '{user}' and `tabLeave Application`.workflow_state not in ('Draft','Approved','Rejected','Cancelled'))
+				where `tabEmployee`.name = `tabProject`.project_engineer
+				and `tabEmployee`.user_id = '{user}')
 	)""".format(user=user)

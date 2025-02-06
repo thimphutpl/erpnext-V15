@@ -199,7 +199,7 @@ class PurchaseInvoice(BuyingController):
 		taxes_and_charges_deducted: DF.Currency
 		tc_name: DF.Link | None
 		terms: DF.TextEditor | None
-		title: DF.Data | None
+		title: DF.Data
 		to_date: DF.Date | None
 		total: DF.Currency
 		total_add_ded: DF.Currency
@@ -2176,7 +2176,34 @@ def get_permission_query_conditions(user):
 
 	if user == "Administrator":
 		return
-	if "HR Master" in user_roles or "Auditor" in user_roles or "HR User" in user_roles or "HR Manager" in user_roles:
+	if "Purchase Master Manager" in user_roles:
 		return
-	else:
-		return
+	if "Accounts User" in user_roles:
+		return """(
+		exists(select 1
+				from `tabAssign Branch`, `tabBranch Item`
+				where `tabAssign Branch`.name = `tabBranch Item`.parent 
+				and `tabBranch Item`.branch = `tabPurchase Invoice`.branch
+				and `tabAssign Branch`.user = '{user}')
+		or
+		exists(select 1
+				from `tabEmployee`
+				where `tabEmployee`.branch = `tabPurchase Invoice`.branch
+				and `tabEmployee`.user_id = '{user}')
+		)""".format(user=user)
+		
+	return """(
+		`tabPurchase Invoice`.owner = '{user}'
+		or
+		exists(select 1
+				from `tabEmployee`
+				where `tabEmployee`.branch = `tabPurchase Invoice`.branch
+				and `tabEmployee`.user_id = '{user}')
+	)""".format(user=user)
+
+# exists(select 1
+		# 		from `tabAssign Branch`, `tabAssign Project`
+		# 		where `tabAssign Branch`.name = `tabAssign Project`.parent
+		# 		and `tabAssign Project`.project = `tabPurchase Invoice`.reference_name
+		# 		and `tabAssign Branch`.user = '{user}')
+		# or

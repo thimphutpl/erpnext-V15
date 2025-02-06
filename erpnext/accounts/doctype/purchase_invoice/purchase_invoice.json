@@ -222,10 +222,9 @@
    "default": "{supplier_name}",
    "fieldname": "title",
    "fieldtype": "Data",
-   "hidden": 1,
    "label": "Title",
    "no_copy": 1,
-   "print_hide": 1
+   "reqd": 1
   },
   {
    "fieldname": "naming_series",
@@ -1356,7 +1355,8 @@
    "fieldname": "project",
    "fieldtype": "Link",
    "label": "Project",
-   "options": "Project"
+   "options": "Project",
+   "read_only": 1
   },
   {
    "allow_on_submit": 1,
@@ -1622,6 +1622,10 @@
   {
    "fieldname": "branch",
    "fieldtype": "Link",
+   "in_filter": 1,
+   "in_list_view": 1,
+   "in_preview": 1,
+   "in_standard_filter": 1,
    "label": "Branch",
    "options": "Branch",
    "reqd": 1
@@ -1756,7 +1760,7 @@
  "idx": 204,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-27 18:10:15.355958",
+ "modified": "2025-02-06 17:39:15.596552",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Purchase Invoice",

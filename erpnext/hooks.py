@@ -607,9 +607,9 @@ permission_query_conditions = {
 	# "eNote": "erpnext.enote.doctype.enote.enote.get_permission_query_conditions",
 	# "Journal Entry": "erpnext.accounts.doctype.journal_entry.journal_entry.get_permission_query_conditions",
 	# "Payment Entry": "erpnext.accounts.doctype.payment_entry.payment_entry.get_permission_query_conditions",
-	# "Purchase Order": "erpnext.buying.doctype.purchase_order.purchase_order.get_permission_query_conditions",
-	# "Purchase Invoice": "erpnext.accounts.doctype.purchase_invoice.purchase_invoice.get_permission_query_conditions",
-	# "Purchase Receipt": "erpnext.stock.doctype.purchase_receipt.purchase_receipt.get_permission_query_conditions",
+	"Purchase Order": "erpnext.buying.doctype.purchase_order.purchase_order.get_permission_query_conditions",
+	"Purchase Invoice": "erpnext.accounts.doctype.purchase_invoice.purchase_invoice.get_permission_query_conditions",
+	"Purchase Receipt": "erpnext.stock.doctype.purchase_receipt.purchase_receipt.get_permission_query_conditions",
 	# "Sales Order": "erpnext.selling.doctype.sales_order.sales_order.get_permission_query_conditions",
 	# "Target Set Up": "erpnext.pms.doctype.target_set_up.target_set_up.get_permission_query_conditions",
 	# "Review": "erpnext.pms.doctype.review.review.get_permission_query_conditions",
@@ -619,6 +619,7 @@ permission_query_conditions = {
 	# "Material Request": "erpnext.stock.doctype.material_request.material_request.get_permission_query_conditions",
 	# "Stock Entry": "erpnext.stock.doctype.stock_entry.stock_entry.get_permission_query_conditions",
 	"Employee": "erpnext.setup.doctype.employee.employee.get_permission_query_conditions",
+	"Project": "erpnext.projects.doctype.project.project.get_permission_query_conditions",
 	
 	
 	

@@ -1086,7 +1086,27 @@ def get_permission_query_conditions(user):
 
 	if user == "Administrator":
 		return
-	if "HR Master" in user_roles or "Auditor" in user_roles or "HR User" in user_roles or "HR Manager" in user_roles:
+	if "Purchase Master Manager" in user_roles:
 		return
-	else:
-		return
+	if "Accounts User" in user_roles:
+		return """(
+		exists(select 1
+				from `tabAssign Branch`, `tabBranch Item`
+				where `tabAssign Branch`.name = `tabBranch Item`.parent 
+				and `tabBranch Item`.branch = `tabPurchase Order`.branch
+				and `tabAssign Branch`.user = '{user}')
+		or
+		exists(select 1
+				from `tabEmployee`
+				where `tabEmployee`.branch = `tabPurchase Order`.branch
+				and `tabEmployee`.user_id = '{user}')
+		)""".format(user=user)
+		
+	return """(
+		`tabPurchase Invoice`.owner = '{user}'
+		or
+		exists(select 1
+				from `tabEmployee`
+				where `tabEmployee`.branch = `tabPurchase Order`.branch
+				and `tabEmployee`.user_id = '{user}')
+	)""".format(user=user)

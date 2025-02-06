@@ -25,7 +25,7 @@ class ProjectDefinition(Document):
 		budget_profile: DF.Literal["", "Annually", "Overall"]
 		company: DF.Link | None
 		cost_center: DF.Link | None
-		end_date: DF.Date | None
+		end_date: DF.Date
 		fiscal_year: DF.Link | None
 		overall_mandays: DF.Data | None
 		percent_completed: DF.Percent
@@ -40,7 +40,7 @@ class ProjectDefinition(Document):
 		project_name: DF.Data
 		project_profile: DF.Literal["", "Internal", "External"]
 		project_sites: DF.Table[OngoingProjectItem]
-		start_date: DF.Date | None
+		start_date: DF.Date
 		status: DF.Literal["Created", "Ongoing", "Completed"]
 		total_overall_project_cost: DF.Currency
 	# end: auto-generated types

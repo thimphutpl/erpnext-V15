@@ -81,18 +81,22 @@
    "label": "Work Plan"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "start_date",
    "fieldtype": "Date",
-   "label": "Start Date"
+   "label": "Start Date",
+   "reqd": 1
   },
   {
    "fieldname": "column_break_11",
    "fieldtype": "Column Break"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "end_date",
    "fieldtype": "Date",
-   "label": "End Date"
+   "label": "End Date",
+   "reqd": 1
   },
   {
    "fieldname": "ongoing_project_sites_section",
@@ -253,7 +257,7 @@
  "is_submittable": 1,
  "links": [],
  "max_attachments": 4,
- "modified": "2025-02-02 12:34:41.306916",
+ "modified": "2025-02-03 17:51:17.651413",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Project Definition",
