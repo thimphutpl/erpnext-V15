@@ -94,6 +94,7 @@ class Asset(AccountsController):
 		is_composite_asset: DF.Check
 		is_existing_asset: DF.Check
 		is_fully_depreciated: DF.Check
+		is_opening_asset: DF.Check
 		item_code: DF.Link
 		item_name: DF.ReadOnly | None
 		journal_entry_for_scrap: DF.Link | None
@@ -374,7 +375,7 @@ class Asset(AccountsController):
 			frappe.throw(_("Available-for-use Date should be after purchase date"))
 
 	def validate_gross_and_purchase_amount(self):
-		if self.is_existing_asset:
+		if self.is_existing_asset or self.is_opening_asset:
 			return
 
 		if self.gross_purchase_amount and self.gross_purchase_amount != self.purchase_amount:
@@ -764,7 +765,7 @@ class Asset(AccountsController):
 				"cost_center": self.cost_center
 				})
 			je.submit()
-		if self.is_existing_asset:
+		if self.is_existing_asset and flt(self.opening_accumulated_depreciation) > 0:
 			je = frappe.new_doc("Journal Entry")
 			je.flags.ignore_permissions = 1 
 			je.update({
@@ -925,9 +926,11 @@ def get_asset_naming_series():
 
 
 @frappe.whitelist()
-def make_sales_invoice(asset, item_code, company, serial_no=None, cost_center=None):
+def make_sales_invoice(asset, item_code, company, serial_no=None, cost_center=None, branch=None):
 	si = frappe.new_doc("Sales Invoice")
 	si.company = company
+	si.branch = branch
+	si.cost_center = cost_center
 	si.currency = frappe.get_cached_value("Company", company, "default_currency")
 	loss_disposal_account, gain_disposal_account, depreciation_cost_center = get_disposal_account_and_cost_center(company)
 	si.append(

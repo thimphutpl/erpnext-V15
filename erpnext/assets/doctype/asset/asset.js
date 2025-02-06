@@ -275,7 +275,7 @@ frappe.ui.form.on("Asset", {
 		if (frm.doc.purchase_receipt && frm.doc.purchase_invoice && frm.doc.docstatus === 1) {
 			frm.set_df_property("purchase_invoice", "read_only", 1);
 			frm.set_df_property("purchase_receipt", "read_only", 1);
-		} else if (frm.doc.is_existing_asset || frm.doc.is_composite_asset) {
+		} else if (frm.doc.is_existing_asset || frm.doc.is_composite_asset || frm.doc.is_opening_asset) {
 			frm.toggle_reqd("purchase_receipt", 0);
 			frm.toggle_reqd("purchase_invoice", 0);
 		} else if (frm.doc.purchase_receipt) {
@@ -544,6 +544,10 @@ frappe.ui.form.on("Asset", {
 	is_existing_asset: function (frm) {
 		frm.trigger("toggle_reference_doc");
 	},
+	
+	is_opening_asset: function (frm) {
+		frm.trigger("toggle_reference_doc");
+	},
 
 	is_composite_asset: function (frm) {
 		if (frm.doc.is_composite_asset) {
@@ -563,7 +567,8 @@ frappe.ui.form.on("Asset", {
 				item_code: frm.doc.item_code,
 				company: frm.doc.company,
 				serial_no: frm.doc.serial_no,
-				cost_center: frm.doc.cost_center
+				cost_center: frm.doc.cost_center,
+				branch: frm.doc.branch
 			},
 			method: "erpnext.assets.doctype.asset.asset.make_sales_invoice",
 			callback: function (r) {
