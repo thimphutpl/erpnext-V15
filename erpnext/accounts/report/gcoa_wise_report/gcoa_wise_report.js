@@ -24,21 +24,24 @@ frappe.query_reports["GCOA Wise Report"] = {
 			"options":'DHI GCOA Mapper',
 			"on_change": (query_report)=>{
 				account_name = query_report.get_values().gcoa_name
-				frappe.call({
-					method: "frappe.client.get",
-					args:{
-						doctype:'DHI GCOA Mapper',
-						filters:{
-							'name': account_name
+				if(!account_name){
+					query_report.set_filter_value("gcoa_code", "");
+				} else {
+					frappe.call({
+						method: "frappe.client.get",
+						args:{
+							doctype:'DHI GCOA Mapper',
+							filters:{
+								'name': account_name
+							},
+							fieldname:['account_code']
 						},
-						fieldname:['account_code']
-					},
-					callback:(r)=>{
-						query_report.filters_by_name.gcoa_code.set_input(r.message.account_code)
-						// query_report.filters_by_name.is_inter_company.set_input(r.message.is_inter_company)
-						query_report.trigger_refresh();
-					}					
-				})
+						callback:(r)=>{
+							query_report.set_filter_value("gcoa_code", r.message.account_code);
+							// query_report.filters_by_name.is_inter_company.set_input(r.message.is_inter_company)
+						}					
+					})
+				}
 			},
 			"reqd":1
 		},
