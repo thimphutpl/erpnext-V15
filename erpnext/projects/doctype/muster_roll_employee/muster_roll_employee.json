@@ -150,8 +150,7 @@
    "fieldtype": "Link",
    "label": "Cost Center",
    "options": "Cost Center",
-   "read_only": 1,
-   "reqd": 1
+   "read_only": 1
   },
   {
    "fieldname": "column_break_wlay",
@@ -401,7 +400,7 @@
  "in_create": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-02-05 15:00:41.968501",
+ "modified": "2025-02-06 13:14:15.962430",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Muster Roll Employee",
