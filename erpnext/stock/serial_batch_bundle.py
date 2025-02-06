@@ -252,8 +252,10 @@ class SerialBatchBundle:
 
 		if is_rejected(self.sle.voucher_type, self.sle.voucher_detail_no, self.sle.warehouse):
 			update_values["rejected_serial_and_batch_bundle"] = ""
-
-		frappe.db.set_value(self.child_doctype, self.sle.voucher_detail_no, update_values)
+		if self.sle.voucher_type != "POL Receive":
+			frappe.db.set_value(self.child_doctype, self.sle.voucher_detail_no, update_values)
+		else:
+			frappe.db.set_value(self.sle.voucher_type, self.sle.voucher_no, update_values)
 
 		frappe.db.set_value(
 			"Serial and Batch Bundle",
