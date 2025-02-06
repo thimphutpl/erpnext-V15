@@ -29,16 +29,18 @@ def get_columns():
 		("No. of Hours") + ":Data:60",
 		("Hourly Rate") + ":Data:60",
 		("Total OT ") + ":Data:60",
-		("Health Contribution") + ":Data:60",
 		("Gross Pay ") + ":Data:80",
+		("Mess Deduction") + ":Data:60",
 		("Net Pay") + ":Data:90"
 	]
-	
+
 def get_data(filters):
 	query = """select p.branch, p.employee_type, i.employee, i.person_name, i.id_card, i.designation, i.qualification, i.bank,
 			i.account_no, i.fiscal_year, i.month, i.number_of_days, i.daily_rate,i.total_wage,  i.number_of_hours, 
-			i.hourly_rate, i.total_ot_amount, i.health, i.wage_payable, i.total_amount from `tabMR Payment Item` as i, 
-			`tabProcess MR Payment` as p where i.parent = p.name and p.docstatus = 1 """
+			i.hourly_rate, i.total_ot_amount, 
+			(i.total_wage + i.total_ot_amount), i.mess_deduction, i.total_amount 
+			from `tabMR Payment Item` as i, `tabProcess MR Payment` as p 
+			where i.parent = p.name and p.docstatus = 1 """
 
 	if filters.get("branch"):
 		query += " and p.branch = \'" + str(filters.branch) + "\'"
