@@ -173,7 +173,7 @@ def get_data(filters):
             0 AS depreciation_income_tax
                 FROM 
             `tabAsset` AS a
-            INNER JOIN `tabAsset Finance Book` AS f ON f.parent = a.name       
+            LEFT JOIN `tabAsset Finance Book` AS f ON f.parent = a.name       
         WHERE a.docstatus = 1 
         AND a.purchase_date <= '{to_date}'
         AND (
