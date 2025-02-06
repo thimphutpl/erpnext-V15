@@ -157,7 +157,8 @@ class MaterialRequest(BuyingController):
 				"Received",
 			],
 		)
-
+		if self.branch and self.material_request_type =="Purchase":
+			self.set_warehouse=frappe.db.get_value("Cost Center",self.cost_center,"warehouse")
 		validate_for_items(self)
 		if self.for_project:
 			self.validate_project()
