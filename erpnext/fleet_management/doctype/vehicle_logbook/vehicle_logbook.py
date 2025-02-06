@@ -85,7 +85,7 @@ class VehicleLogbook(Document):
 		self.check_double_vl()
 		# self.check_hire_form()
 		# self.check_hire_rate()
-		self.check_duplicate()
+		# self.check_duplicate()
 		self.update_consumed()
 		self.calculate_totals()
 		self.update_operator()
@@ -223,11 +223,11 @@ class VehicleLogbook(Document):
 	def update_operator(self):
 		self.equipment_operator = frappe.db.get_value("Equipment", self.equipment, "current_operator")
 
-	def check_duplicate(self):		
-		for a in self.vlogs:
-			for b in self.vlogs:
-				if a.date == b.date and a.idx != b.idx:
-					frappe.throw("Duplicate Dates in Vehicle Logs in row " + str(a.idx) + " and " + str(b.idx))
+	# def check_duplicate(self):		
+	# 	for a in self.vlogs:
+	# 		for b in self.vlogs:
+	# 			if a.date == b.date and a.idx != b.idx:
+	# 				frappe.throw("Duplicate Dates in Vehicle Logs in row " + str(a.idx) + " and " + str(b.idx))
 
 	def update_consumed(self):
 		pol_type = frappe.db.get_value("Equipment", self.equipment, "hsd_type")
