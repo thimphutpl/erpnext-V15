@@ -138,7 +138,7 @@ function get_records(employee_type, fiscal_year, month, from_date, to_date, cost
 							//row.total_wage 		= parseFloat(mr['total_wage']);
 							//row.total_wage = parseFloat(mr['rate_per_day'])*parseFloat(mr['number_of_days'])
 							 row.daily_rate      = parseFloat(mr['salary'])/parseFloat(mr['noof_days_in_month']);
-							 row.daily_rate  = mr['rate_per_day']
+							 //row.daily_rate  = mr['rate_per_day']
 							//  row.hourly_rate     = parseFloat(mr['salary']*1.0)/parseFloat(mr['noof_days_in_month']*8);
 							//  row.total_ot_amount = parseFloat(row.number_of_hours) * parseFloat(row.hourly_rate);
 							 row.total_wage      = parseFloat(row.daily_rate) * parseFloat(row.number_of_days);
