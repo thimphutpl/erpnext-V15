@@ -109,7 +109,7 @@ class HireChargeInvoice(AccountsController):
 		if self.owned_by != "CDCL":
 			self.make_gl_entries()
 			#self.make_gl_entries_on_cancel()
-		check_uncancelled_linked_doc(self.doctype, self.name)
+		# check_uncancelled_linked_doc(self.doctype, self.name) #comment by Jai
 		cl_status = frappe.db.get_value("Journal Entry", self.invoice_jv, "docstatus")
 		if cl_status and cl_status != 2:
 			frappe.throw("You need to cancel the journal entry ("+ str(self.invoice_jv) + ")related to this invoice first!")
