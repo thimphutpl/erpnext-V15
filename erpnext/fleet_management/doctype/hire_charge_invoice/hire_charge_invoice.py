@@ -37,7 +37,7 @@ class HireChargeInvoice(AccountsController):
 		customer: DF.Link | None
 		discount_amount: DF.Currency
 		discount_reason: DF.Text | None
-		ehf_name: DF.Link
+		ehf_name: DF.Link | None
 		invoice_jv: DF.Data | None
 		items: DF.Table[HireInvoiceDetails]
 		outstanding_amount: DF.Currency
