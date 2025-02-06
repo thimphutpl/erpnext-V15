@@ -597,7 +597,7 @@ class Project(Document):
                                     select sum(ifnull(duration,0)) as total_duration from `tabTask` where parent_task = '{}' and is_group = 0
                                     """.format(t.task_id), as_dict=1)[0].total_duration
 				for tsk in frappe.db.get_all("Task", {"parent_task": t.task_id}, ["duration", "work_quantity_complete", "task_achievement_percent"]):
-					if total_duration > 0:
+					if total_duration:
 						group_weightage += (flt(tsk.duration,7)/flt(total_duration,7))*tsk.work_quantity_complete
 						sum_wqc += flt(tsk.work_quantity_complete,2)
 						group_achievement_percent += flt(tsk.task_achievement_percent,7)
