@@ -716,21 +716,22 @@ class Project(Document):
 				total_weightage = frappe.db.sql("""
                                     select ifnull(sum(duration), 0) as count from `tabTask` where parent_task = '{}'
                                     """.format(task.task_id), as_dict=1)[0].count
-				for tsk in self.activity_tasks:
-					if tsk.parent_task == task.task_id:
-						group_wqc += flt((flt(tsk.task_duration)/flt(total_weightage))*flt(tsk.work_quantity_complete),2)
-						# sum_wqc += flt(tsk.work_quantity_complete,2)
-						# group_achievement_percent += flt(tsk.task_achievement_percent,7)
-				# group_wqc = flt(sum_wqc,2)
-				# task.task_weightage = group_weightage
-				# task.task_achievement_percent = flt(flt(group_wqc) * flt()
-				task.work_quantity_complete = group_wqc
-				# frappe.db.sql("""
-				# 	update `tabActivity Tasks` set task_duration = {}, task_weightage = '{}', task_achievement_percent = '{}' where name = '{}'
-				# 	""".format(task.task_duration, task.task_weightage, task.task_achievement_percent, task.name))
-				frappe.db.sql("""
-					update `tabActivity Tasks` set work_quantity_complete =  '{}' where name = '{}'
-					""".format(group_wqc, task.name))
+				if total_weightage:
+					for tsk in self.activity_tasks:
+						if tsk.parent_task == task.task_id:
+							group_wqc += flt((flt(tsk.task_duration)/flt(total_weightage))*flt(tsk.work_quantity_complete),2)
+							# sum_wqc += flt(tsk.work_quantity_complete,2)
+							# group_achievement_percent += flt(tsk.task_achievement_percent,7)
+					# group_wqc = flt(sum_wqc,2)
+					# task.task_weightage = group_weightage
+					# task.task_achievement_percent = flt(flt(group_wqc) * flt()
+					task.work_quantity_complete = group_wqc
+					# frappe.db.sql("""
+					# 	update `tabActivity Tasks` set task_duration = {}, task_weightage = '{}', task_achievement_percent = '{}' where name = '{}'
+					# 	""".format(task.task_duration, task.task_weightage, task.task_achievement_percent, task.name))
+					frappe.db.sql("""
+						update `tabActivity Tasks` set work_quantity_complete =  '{}' where name = '{}'
+						""".format(group_wqc, task.name))
 		self.duration_sum = total_duration
                         
 	def validate_target_quantity(self):
@@ -1859,3 +1860,23 @@ def update_project_dlp_date():
 			self.db_set('remaining_days', remaining_days, update_modified=False)
 			if remaining_days == 6 and self.sent_email_notification:
 				sent_dlp_mail(self.name)
+
+def get_permission_query_conditions(user):
+	if not user: user = frappe.session.user
+	user_roles = frappe.get_roles(user)
+
+	if user == "Administrator":
+		return
+	if "Projects GM" in user_roles or "Project Manager" in user_roles:
+		return
+
+	return """(
+		`tabLeave Application`.owner = '{user}'
+		or
+		exists(select 1
+				from `tabEmployee`
+				where `tabEmployee`.name = `tabLeave Application`.employee
+				and `tabEmployee`.user_id = '{user}' and `tabLeave Application`.docstatus != 2)
+		or
+		(`tabLeave Application`.leave_approver = '{user}' and `tabLeave Application`.workflow_state not in ('Draft','Approved','Rejected','Cancelled'))
+	)""".format(user=user)
