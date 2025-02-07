@@ -39,7 +39,7 @@ var apply_account_filter = function(frm){
 			filters: {
 				company: frm.doc.company,
 				is_group: 0,
-				root_type:["in",["Expense","Asset"]],
+				// account_type:["in",["Expense Account","Fixed Asset"]],
 				budget_type:frm.doc.budget_type
 			}
 		};
