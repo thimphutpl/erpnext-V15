@@ -150,7 +150,8 @@ function get_records(employee_type, fiscal_year, month, from_date, to_date, cost
 							 }
 							// row.gratuity_amount = 0
 						}
-						else if(mr['type'] == 'Open Air Prisoner') {							
+						else if(mr['type'] == 'Open Air Prisoner') {	
+								//alert(mr["gratuity"])						
 							 frappe.call({
 								method: "erpnext.projects.doctype.process_mr_payment.process_mr_payment.get_is_lifer_status",
 								args: {
@@ -159,9 +160,14 @@ function get_records(employee_type, fiscal_year, month, from_date, to_date, cost
 								callback: function (r) {
 									if (r.message) {
 										if (r.message.is_lifer == 1) {
+											row.daily_rate  = mr['rate_per_day'];
+											total_wages = parseFloat(row.daily_rate) * parseFloat(row.number_of_days);
 											gratuity = 0.0;
 										} else {
-											gratuity = mr["gratuity"];
+
+											row.daily_rate  = mr['rate_per_day'];
+											total_wages = parseFloat(row.daily_rate) * parseFloat(row.number_of_days);
+											gratuity = total_wages/2;
 										}
 									} else {
 										frappe.msgprint("No data found for this employee.");
@@ -173,10 +179,10 @@ function get_records(employee_type, fiscal_year, month, from_date, to_date, cost
 								//alert(mr['employee'])
 						//row.daily_rate = parseFloat(mr['salary'])/parseFloat(mr['noof_days_in_month']);
 							//row.hourly_rate = parseFloat(mr['salary']*1.0)/parseFloat(mr['noof_days_in_month']*8);
-							row.daily_rate  = mr['rate_per_day'];
+							//row.daily_rate  = mr['rate_per_day'];
 							row.hourly_rate = mr['rate_per_hour']
 							row.total_ot_amount = parseFloat(row.number_of_hours) * parseFloat(row.hourly_rate);
-							row.total_wage = parseFloat(row.daily_rate) * parseFloat(row.number_of_days);
+							row.total_wage = total_wages;
 							row.gratuity_amount = gratuity
 						}
 						 else {
