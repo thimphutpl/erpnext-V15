@@ -225,8 +225,8 @@
    "fetch_from": "supplier.supplier_name",
    "fieldname": "supplier_name",
    "fieldtype": "Data",
-   "in_global_search": 1,
    "label": "Supplier Name",
+   "print_hide": 1,
    "read_only": 1
   },
   {
@@ -1223,6 +1223,10 @@
   {
    "fieldname": "branch",
    "fieldtype": "Link",
+   "in_filter": 1,
+   "in_global_search": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Branch",
    "options": "Branch",
    "reqd": 1
@@ -1364,7 +1368,7 @@
  "idx": 105,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-02-02 16:26:49.895238",
+ "modified": "2025-02-07 08:30:35.320468",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Purchase Order",

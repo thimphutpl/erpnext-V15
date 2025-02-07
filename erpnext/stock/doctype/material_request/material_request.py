@@ -929,22 +929,23 @@ def get_permission_query_conditions(user):
 
 	if user == "Administrator":
 		return
-	if "HR Master" in user_roles or "Auditor" in user_roles or "HR User" in user_roles or "HR Manager" in user_roles:
+	if "Stock Manager" in user_roles:
 		return
-	else:
-		return
-	# return """(
-	# 	exists(select 1
-	# 		from `tabEmployee` e
-	# 		inner join
-	# 		`tabLeave Application` l 
-	# 		on e.name = l.employee
-	# 		where e.name = '{employee}'
-	# 		and e.user_id = '{user}')
-	# 	or
-	# 	exists(select 1 
-	# 		from `tabLeave Application` l
-	# 		where l.leave_approver = '{user}' 
-	# 		and l.workflow_state not in  ('Draft','Approved','Rejected','Cancelled'))
 		
-	# )""".format(user=user, employee=employee)
+	return """(
+		`tabMaterial Request`.owner = '{user}'
+		or
+		exists(select 1
+				from `tabAssign Branch`, `tabBranch Item`
+				where `tabAssign Branch`.name = `tabBranch Item`.parent 
+				and `tabBranch Item`.branch = `tabMaterial Request`.branch
+				and `tabAssign Branch`.user = '{user}')
+		or
+		exists(select 1
+				from `tabEmployee`
+				where `tabEmployee`.branch = `tabMaterial Request`.branch
+				and `tabEmployee`.user_id = '{user}')
+		or
+		(`tabMaterial Request`.approver = '{user}' and `tabMaterial Request`.workflow_state not in ('Draft','Approved','Rejected','Cancelled'))
+
+	)""".format(user=user)

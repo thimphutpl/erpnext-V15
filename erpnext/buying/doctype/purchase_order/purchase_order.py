@@ -1088,7 +1088,7 @@ def get_permission_query_conditions(user):
 		return
 	if "Purchase Master Manager" in user_roles:
 		return
-	if "Accounts User" in user_roles:
+	if "Accounts User" in user_roles or "Purchase User" in user_roles:
 		return """(
 		exists(select 1
 				from `tabAssign Branch`, `tabBranch Item`
@@ -1103,7 +1103,7 @@ def get_permission_query_conditions(user):
 		)""".format(user=user)
 		
 	return """(
-		`tabPurchase Invoice`.owner = '{user}'
+		`tabPurchase Order`.owner = '{user}'
 		or
 		exists(select 1
 				from `tabEmployee`
