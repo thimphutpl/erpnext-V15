@@ -484,7 +484,7 @@ def get_records(employee_type, fiscal_year, fiscal_month, from_date, to_date, co
 
 
 	for e in emp_list:
-		
+		is_lifer=0
 		#frappe.throw(str(e.id_card))
 		salary=0
 		if employee_type == 'DFG AND GFG':
