@@ -201,8 +201,7 @@ function get_records(employee_type, fiscal_year, month, from_date, to_date, cost
 				cur_frm.refresh_field("wages_amount")
 				cur_frm.refresh_field("ot_amount")
 				cur_frm.refresh_field("gratuity_amount")
-				cur_frm.refresh_field("items");
-				cur_frm.set_dirty();
+				cur_frm.refresh_field("items");				
 			}
 			else {
 				frappe.msgprint("No Overtime and Attendance Record Found")

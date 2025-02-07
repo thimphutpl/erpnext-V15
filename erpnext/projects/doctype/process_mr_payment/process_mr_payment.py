@@ -216,7 +216,7 @@ class ProcessMRPayment(Document):
 		je.title = "Payment for " + self.employee_type  + " (" + self.branch + ")" + "(" + self.month + ")"
 		je.voucher_type = 'Bank Entry'
 		je.naming_series = 'Bank Payment Voucher'
-		je.remark = 'Payment against : ' + self.name;
+		je.remark = 'Payment against : ' + self.name
 		je.posting_date = self.posting_date
 		je.branch = self.branch
 		total_amount = self.total_overall_amount
@@ -507,7 +507,7 @@ def get_records(employee_type, fiscal_year, fiscal_month, from_date, to_date, co
 			is_lifer=flt(pay_details[0]['is_lifer'])
 
 		else:
-			pay_details=get_pay_details(e.name, fiscal_year, month)
+			pay_details=get_pay_details(e.name)
 			if not pay_details:
 				# Log a warning and skip processing for this employee
 				frappe.throw(f"No pay details found for Employee: {e.name} for Fiscal Year: {fiscal_year}, Month: {month}")
@@ -648,7 +648,8 @@ def get_is_lifer_status(employee):
 
 
 def get_pay_details(employee):
-	data = {}		
+	data = {}	
+		
 	for d in  frappe.db.sql("""
 			SELECT
 				rate_per_day, rate_per_hour, rate_per_hour_normal, parent
