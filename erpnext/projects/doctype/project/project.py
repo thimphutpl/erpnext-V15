@@ -722,7 +722,6 @@ class Project(Document):
 				if total_weightage:
 					for tsk in self.activity_tasks:
 						if tsk.parent_task == task.task_id:
-							frappe.throw(str(total_weightage))
 							group_wqc += flt((flt(tsk.task_duration)/flt(total_weightage))*flt(tsk.work_quantity_complete),2)
 							# sum_wqc += flt(tsk.work_quantity_complete,2)
 							# group_achievement_percent += flt(tsk.task_achievement_percent,7)
