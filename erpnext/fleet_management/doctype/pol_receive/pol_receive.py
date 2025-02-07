@@ -812,3 +812,18 @@ def get_permission_query_conditions(user):
 			and bi.parent = ab.name
 			and bi.branch = `tabPOL Receive`.branch)
 	)""".format(user=user)
+ 
+@frappe.whitelist()
+def get_filtered_equipment(doctype, txt, searchfield, start, page_len, filters):
+    if not filters or 'equipment_type' not in filters or 'branch' not in filters:
+        return []
+
+    return frappe.db.sql("""
+        SELECT e.name 
+        FROM `tabEquipment` e 
+        INNER JOIN `tabEquipment Type` et ON e.equipment_type = et.name 
+        WHERE et.is_container = 1 
+        AND e.branch = %(branch)s
+    """, {
+        "branch": filters["branch"]
+    })

@@ -783,7 +783,7 @@
    "fieldname": "mandays",
    "fieldtype": "Data",
    "label": "Activity Man Days",
-   "read_only": 1
+   "permlevel": 1
   },
   {
    "fieldname": "duration_sum",
@@ -949,7 +949,7 @@
  "index_web_pages_for_search": 1,
  "links": [],
  "max_attachments": 4,
- "modified": "2025-02-05 14:10:38.445292",
+ "modified": "2025-02-07 12:57:46.510592",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Project",

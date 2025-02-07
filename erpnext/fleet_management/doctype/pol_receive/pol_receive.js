@@ -88,14 +88,22 @@ frappe.ui.form.on('POL Receive', {
         }
 		// Check if book_type is 'Common'
         if (frm.doc.book_type === 'Common') {
-            frm.set_query('equipment', function() {
-                return {
-                    filters: {
-                        equipment_type: ['in', ['Fuel Tanker', 'Barrel', 'Skid Tank', 'Skid Tank (HSD)', 'Trailer', 'Pick Up Truck', 'Excavator']],
+            // frm.set_query('equipment', function() {
+            //     return {
+            //         filters: {
+            //             equipment_type: ['in', ['Fuel Tanker', 'Barrel', 'Skid Tank', 'Skid Tank (HSD)', 'Trailer', 'Pick Up Truck', 'Excavator']],
+			// 			branch: frm.doc.branch
+            //         }
+            //     };
+            // });
+			frm.set_query('equipment', function() {
+				return {
+					query: "erpnext.fleet_management.doctype.pol_receive.pol_receive.get_filtered_equipment",
+					filters: {
 						branch: frm.doc.branch
-                    }
-                };
-            });
+					}
+				};
+			});
         } else {
             // Clear filter for equipment if book_type is not 'Common'
             frm.set_query('equipment', function() {
