@@ -27,12 +27,12 @@ class VehicleLogbook(Document):
 		consumption_km: DF.Float
 		customer: DF.Link | None
 		customer_type: DF.Data | None
-		customer_types: DF.Data | None
-		customers: DF.Link | None
 		distance_km: DF.Int
 		ehf_name: DF.Link | None
 		equipment: DF.Link | None
+		equipment_non_consumption: DF.Check
 		equipment_operator: DF.Data | None
+		equipment_run_by_electric: DF.Check
 		final_hour: DF.Float
 		final_km: DF.Int
 		from_date: DF.Date
@@ -41,6 +41,7 @@ class VehicleLogbook(Document):
 		hour_taken: DF.Int
 		hsd_amount: DF.Data | None
 		hsd_received: DF.Float
+		idle_charge: DF.Check
 		idle_rate: DF.Currency
 		include_hour: DF.Check
 		include_km: DF.Check
@@ -68,12 +69,13 @@ class VehicleLogbook(Document):
 		vehicle_logbook: DF.Literal["", "Equipment Hiring Form", "Pool Vehicle", "Support Equipment"]
 		vlogs: DF.Table[VehicleLog]
 		work_rate: DF.Currency
+		working_hours: DF.Int
 		ys_hours: DF.Float
 		ys_km: DF.Float
 	# end: auto-generated types	
 
 	def validate(self):
-		check_future_date(self.to_date)
+		# check_future_date(self.to_date)
 		self.validate_date()
 		self.set_data()
 		self.check_dates()
@@ -101,6 +103,10 @@ class VehicleLogbook(Document):
 
 
 	def before_save(self):
+
+		if self.lph or self.kph and self.equipment_run_by_electric:
+			frappe.throw("Non HSD Consumption cannot be used when yardstick {} is given.".format(self.lph or self.kph))
+
         # Ensure consumption does not exceed tank balance
 		if flt(self.tank_balance) < flt(self.consumption):
 			frappe.throw(
@@ -112,7 +118,10 @@ class VehicleLogbook(Document):
 			self.customer = None 
 			self.customer_type = None
 		elif not self.customer:
-			frappe.throw(("Customer is required for this Vehicle Logbook type."))			
+			frappe.throw(("Customer is required for this Vehicle Logbook type."))	
+
+		# if self.lph or self.kph and self.equipment_run_by_electric:
+		# 	frappe.throw("Non HSD Consumption cannot be used when yardstick {} is given.".format(self.lph or self.kph))
 
 	def set_data(self):
 		if self.vehicle_logbook == "Pool Vehicle":
@@ -120,6 +129,7 @@ class VehicleLogbook(Document):
 
 		if self.vehicle_logbook == "Support Equipment":
 			return	
+		
 
 		if not self.ehf_name:
 			frappe.throw("Equipment Hire Form is mandatory")
@@ -128,6 +138,9 @@ class VehicleLogbook(Document):
 
 	def check_consumed(self):
 		if self.include_hour or self.include_km:
+			if self.equipment_run_by_electric:
+				return
+			
 			if flt(self.consumption) <= 0:
 				frappe.throw("Total consumption cannot be zero or less")
 
@@ -140,6 +153,13 @@ class VehicleLogbook(Document):
 		
 		if self.rate_type == "Without Fuel":
 			return
+		
+		if self.working_hours:
+			return
+		
+		if self.equipment_run_by_electric:
+			return
+		
 		based_on = frappe.db.get_single_value("Mechanical Settings", "hire_rate_based_on")
 		if not based_on:
 			frappe.throw("Set the <b>Hire Rate Based On</b> in <b>Mechanical Settings</b>")
@@ -203,7 +223,14 @@ class VehicleLogbook(Document):
 		if self.vehicle_logbook == "Support Equipment":
 			# Skip setting data for Support Equipment
 			return
-		
+		if self.working_hours:
+			return
+
+		if self.equipment_run_by_electric:
+			return	
+		# if self.lph or self.kph and self.equipment_run_by_electric:
+		# 	frappe.throw("Non HSD Consumption cannot be used when {self.lph} {self.kph} is there.")
+			
 		if self.ehf_name:
 			docstatus = frappe.db.get_value("Equipment Hiring Form", self.ehf_name, "docstatus")
 			if docstatus != 1:
@@ -364,7 +391,13 @@ class VehicleLogbook(Document):
 				if flt(self.consumption_km) == 0 and flt(self.consumption_hours) == 0 and flt(self.consumption) == 0:
 					self.check_condition()	
 
-	def check_condition(self):
+	def check_condition(self): 
+		if self.working_hours:
+			return
+	
+		if self.equipment_run_by_electric:
+			return
+		
 		if self.include_km or self.include_hour:
 			if self.include_km and self.initial_km == self.final_km:
 				pass

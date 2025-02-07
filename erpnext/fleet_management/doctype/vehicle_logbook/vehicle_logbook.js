@@ -168,6 +168,9 @@ frappe.ui.form.on('Vehicle Logbook', {
 	"initial_km": function(frm) {
 		calculate_distance_km(frm)
 	},
+	"working_hours": function(frm) {
+		calculate_work_hour(frm)
+	},
 	"final_hour": function(frm) {
 		if(!frm.doc.docstatus == 1) {
 			calculate_work_hour(frm)
@@ -322,17 +325,22 @@ function calculate_distance_km(frm) {
 
 function calculate_work_hour(frm) {
 	if(frm.doc.docstatus == 0) {
+		if (frm.doc.working_hours) {
+			cur_frm.set_value("total_work_time", (frm.doc.working_hours))
+			frm.refresh_fields()
+		}
+
 		if(flt(frm.doc.final_hour) > flt(frm.doc.initial_hour)) {
 			cur_frm.set_value("total_work_time", flt(frm.doc.final_hour) - flt(frm.doc.initial_hour))
 			frm.refresh_fields()
 		}
-		else {
-			cur_frm.set_value("total_work_time", "0")
-			frm.refresh_fields()
-			if(frm.doc.final_hour) {
-				frappe.msgprint("Final Hour should be greater than Initial Hour")
-			}
-		}
+		// else {
+		// 	cur_frm.set_value("total_work_time", "0")
+		// 	frm.refresh_fields()
+		// 	if(frm.doc.final_hour) {
+		// 		frappe.msgprint("Final Hour should be greater than Initial Hour")
+		// 	}
+		// }
 	}
 	if(frm.doc.docstatus == 1) {
 		cur_frm.set_value("final_hour", flt(frm.doc.total_work_time) + flt(frm.doc.initial_hour))
