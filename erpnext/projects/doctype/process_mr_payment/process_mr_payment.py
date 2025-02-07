@@ -509,7 +509,7 @@ class ProcessMRPayment(Document):
 				row.mess_deduction 	= flt(master.get(r.mr_employee).amount)
 				row.wage_payable=flt(row.total_wage)-flt(row.mess_deduction)
 				
-				row.total_amount 	= flt(row.total_ot_amount) + flt(row.total_wage)
+				row.total_amount 	= flt(row.total_ot_amount) + flt(row.wage_payable)
 				#row.total_payable=flt(row.total_amount)-flt(row.mess_deduction)
 				total_overall_amount += row.total_amount
 				ot_amount 			 += row.total_ot_amount
@@ -523,7 +523,7 @@ class ProcessMRPayment(Document):
 		self.ot_amount 			 = ot_amount
 		self.wages_amount 		 = wages_amount
 		self.deduction 			 = deduction
-		self.gross_amount		 =  total_overall_amount
+		self.gross_amount		 =  flt(total_overall_amount) + flt(deduction)
 		# if data:
 		# 	# frappe.msgprint(str(data))
 
