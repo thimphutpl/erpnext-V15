@@ -97,7 +97,7 @@ frappe.ui.form.on("Fabrication And Bailey Bridge", {
 });
 
 //Job Card Item  Details
-frappe.ui.form.on("Job Card Item", {
+frappe.ui.form.on("Job Cards Item", {
 	"start_time": function(frm, cdt, cdn) {
 		calculate_datetime(frm, cdt, cdn)
 	},
