@@ -501,9 +501,10 @@ def get_records(employee_type, fiscal_year, fiscal_month, from_date, to_date, co
 			salary=flt(pay_details[0]['salary'])
 			#frappe.throw(str(pay_details))
 		elif employee_type=='Open Air Prisoner':
-			pay_details=get_pay_details_dfg_gfg_opa_opt(e.name,employee_type)
+			pay_details=get_pay_opa(e.name,employee_type)
 			rate_per_day=flt(pay_details[0]['rate_per_day'])
 			rate_per_hour_normal=flt(pay_details[0]['rate_per_hour'])
+			is_lifer=flt(pay_details[0]['is_lifer'])
 
 		else:
 			pay_details=get_pay_details(e.name, fiscal_year, month)
@@ -525,7 +526,8 @@ def get_records(employee_type, fiscal_year, fiscal_month, from_date, to_date, co
 			"designation" : e.designation,
 			"account_no" : e.account_no,
 			"bank" : e.bank,
-			"salary":salary
+			"salary":salary,
+			"is_lifer":is_lifer
 		}))
 		if employee_type == "Muster Roll Employee":
 			update_mr_rates(employee_type, e.name, cost_center, from_date, to_date)
@@ -673,6 +675,19 @@ def get_pay_details_dfg_gfg_opa_opt(employee,employee_type):
 	return  frappe.db.sql("""
 			SELECT
 				rate_per_day, rate_per_hour,salary
+			FROM `tab{employee_type}`
+			WHERE name = '{employee}'
+			LIMIT 1
+		""".format(employee_type=employee_type, employee=employee), as_dict = True)
+
+def get_pay_opa(employee,employee_type):
+	
+
+	
+		
+	return  frappe.db.sql("""
+			SELECT
+				rate_per_day, rate_per_hour,salary,is_lifer
 			FROM `tab{employee_type}`
 			WHERE name = '{employee}'
 			LIMIT 1
