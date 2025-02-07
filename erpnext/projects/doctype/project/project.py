@@ -1873,6 +1873,19 @@ def get_permission_query_conditions(user):
 		return
 	if "Projects GM" in user_roles or "Project Manager" in user_roles:
 		return
+	if "Purchase User" in user_roles or "Accounts User" in user_roles:
+		return """(
+			exists(select 1
+				from `tabAssign Branch`, `tabBranch Item`
+				where `tabAssign Branch`.name = `tabBranch Item`.parent 
+				and `tabBranch Item`.branch = `tabProject`.branch
+				and `tabAssign Branch`.user = '{user}')
+			or
+			exists(select 1
+					from `tabEmployee`
+					where `tabEmployee`.branch = `tabProject`.branch
+					and `tabEmployee`.user_id = '{user}')
+		)""".format(user=user)
 
 	return """(
 		`tabProject`.owner = '{user}'

@@ -616,7 +616,7 @@ permission_query_conditions = {
 	# "Performance Evaluation": "erpnext.pms.doctype.performance_evaluation.performance_evaluation.get_permission_query_conditions",
 	# "Delivery Note": "erpnext.stock.doctype.delivery_note.delivery_note.get_permission_query_conditions",
 	# "Sales Invoice": "erpnext.accounts.doctype.sales_invoice.sales_invoice.get_permission_query_conditions",
-	# "Material Request": "erpnext.stock.doctype.material_request.material_request.get_permission_query_conditions",
+	"Material Request": "erpnext.stock.doctype.material_request.material_request.get_permission_query_conditions",
 	# "Stock Entry": "erpnext.stock.doctype.stock_entry.stock_entry.get_permission_query_conditions",
 	"Employee": "erpnext.setup.doctype.employee.employee.get_permission_query_conditions",
 	"Project": "erpnext.projects.doctype.project.project.get_permission_query_conditions",

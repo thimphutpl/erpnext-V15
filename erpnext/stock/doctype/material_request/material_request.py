@@ -929,6 +929,7 @@ def get_permission_query_conditions(user):
 
 	if user == "Administrator":
 		return
+		
 	if "Stock Manager" in user_roles:
 		return
 		
