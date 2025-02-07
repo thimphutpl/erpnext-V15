@@ -488,20 +488,20 @@ def get_records(employee_type, fiscal_year, fiscal_month, from_date, to_date, co
 		#frappe.throw(str(e.id_card))
 		salary=0
 		if employee_type == 'DFG AND GFG':
-			pay_details=get_pay_details_dfg_gfg_opa_opt(e.id_card,employee_type)
+			pay_details=get_pay_details_dfg_gfg_opa_opt(e.name,employee_type)
 			#frappe.throw(str(pay_details))
 			rate_per_day 		 = flt(pay_details[0]['rate_per_day'])
 			rate_per_hour_normal = flt(pay_details[0]['rate_per_hour'])
 			salary=flt(pay_details[0]['salary'])
 		
 		elif employee_type=='Operator':
-			pay_details=get_pay_details_dfg_gfg_opa_opt(e.id_card,employee_type)
+			pay_details=get_pay_details_dfg_gfg_opa_opt(e.name,employee_type)
 			rate_per_day=flt(pay_details[0]['rate_per_day'])
 			rate_per_hour_normal=flt(pay_details[0]['rate_per_hour'])
 			salary=flt(pay_details[0]['salary'])
 			#frappe.throw(str(pay_details))
 		elif employee_type=='Open Air Prisoner':
-			pay_details=get_pay_details_dfg_gfg_opa_opt(e.id_card,employee_type)
+			pay_details=get_pay_details_dfg_gfg_opa_opt(e.name,employee_type)
 			rate_per_day=flt(pay_details[0]['rate_per_day'])
 			rate_per_hour_normal=flt(pay_details[0]['rate_per_hour'])
 
@@ -674,7 +674,7 @@ def get_pay_details_dfg_gfg_opa_opt(employee,employee_type):
 			SELECT
 				rate_per_day, rate_per_hour,salary
 			FROM `tab{employee_type}`
-			WHERE id_card = '{employee}'
+			WHERE name = '{employee}'
 			LIMIT 1
 		""".format(employee_type=employee_type, employee=employee), as_dict = True)
 
