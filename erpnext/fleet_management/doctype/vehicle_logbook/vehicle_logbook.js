@@ -165,6 +165,12 @@ frappe.ui.form.on('Vehicle Logbook', {
 			frm.trigger("include_km");
 		}
 	},
+	equipment_run_by_electric: function(frm) {
+        if (frm.doc.lph || frm.doc.kph) {
+            frm.set_value('equipment_run_by_electric', 0); // Uncheck the checkbox
+            frappe.msgprint("Non HSD Consumption cannot be used when yardstick is given.");
+        }
+    },
 	"initial_km": function(frm) {
 		calculate_distance_km(frm)
 	},

@@ -101,11 +101,21 @@ class VehicleLogbook(Document):
 		if to_date < from_date:
 			frappe.throw("From Date/Time cannot be greater than To Date/Time")
 
+		if self.lph or self.kph and self.equipment_run_by_electric:
+			frappe.throw("Non HSD Consumption cannot be used when yardstick {} is given.".format(self.lph or self.kph))	
+
+		if self.lph or self.kph:
+			self.equipment_run_by_electric = 0
 
 	def before_save(self):
-
+		if self.working_hours:
+			return
+		
 		if self.lph or self.kph and self.equipment_run_by_electric:
 			frappe.throw("Non HSD Consumption cannot be used when yardstick {} is given.".format(self.lph or self.kph))
+
+		if self.lph or self.kph:
+			self.equipment_run_by_electric = 0	
 
         # Ensure consumption does not exceed tank balance
 		if flt(self.tank_balance) < flt(self.consumption):
@@ -228,8 +238,9 @@ class VehicleLogbook(Document):
 
 		if self.equipment_run_by_electric:
 			return	
-		# if self.lph or self.kph and self.equipment_run_by_electric:
-		# 	frappe.throw("Non HSD Consumption cannot be used when {self.lph} {self.kph} is there.")
+		
+		if self.lph or self.kph and self.equipment_run_by_electric:
+			frappe.throw("Non HSD Consumption cannot be used when {self.lph} {self.kph} is there.")
 			
 		if self.ehf_name:
 			docstatus = frappe.db.get_value("Equipment Hiring Form", self.ehf_name, "docstatus")
