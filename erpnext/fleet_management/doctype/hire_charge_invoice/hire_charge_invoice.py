@@ -447,6 +447,33 @@ class HireChargeInvoice(AccountsController):
 @frappe.whitelist()
 def get_vehicle_logs(form=None):
     if form:
+        # return frappe.db.sql("""
+        #     SELECT 
+        #         a.name, 
+        #         a.equipment, 
+        #         a.total_amount, 
+        #         a.hire_charge_amount, 
+        #         a.consumption, 
+        #         a.operator_salary, 
+        #         a.rate_type, 
+        #         a.registration_number, 
+        #         (a.total_work_time + a.hour_taken) AS total_work_time, 
+        #         a.total_idle_time, 
+        #         a.work_rate, 
+        #         a.idle_rate, 
+        #         b.project, 
+        #         (SELECT COUNT(1) 
+        #          FROM `tabVehicle Log` b 
+        #          WHERE b.parent = a.name) AS no_of_days 
+        #     FROM 
+        #         `tabVehicle Logbook` a
+        #     LEFT JOIN
+        #         `tabVehicle Log` b ON b.parent = a.name
+        #     WHERE 
+        #         a.docstatus = 1 
+        #         AND a.invoice_created = 0 
+        #         AND a.ehf_name = %s
+        # """, (form,), as_dict=True)
         return frappe.db.sql("""
             SELECT 
                 a.name, 
@@ -460,15 +487,11 @@ def get_vehicle_logs(form=None):
                 (a.total_work_time + a.hour_taken) AS total_work_time, 
                 a.total_idle_time, 
                 a.work_rate, 
-                a.idle_rate, 
-                b.project, 
-                (SELECT COUNT(1) 
-                 FROM `tabVehicle Log` b 
-                 WHERE b.parent = a.name) AS no_of_days 
+                a.idle_rate
+                
+
             FROM 
                 `tabVehicle Logbook` a
-            LEFT JOIN
-                `tabVehicle Log` b ON b.parent = a.name
             WHERE 
                 a.docstatus = 1 
                 AND a.invoice_created = 0 
