@@ -21,7 +21,7 @@ def get_data(filters):
 			SUM(IFNULL(t.received_qty,0)) total_qty,
 			SUM(IFNULL(t.issued_qty,0)) issued_qty,
 			SUM(IFNULL(t.received_qty,0))-SUM(IFNULL(t.issued_qty,0)) balance_qty,
-			GROUP_CONCAT(IF(IFNULL(t.received_qty, 0)-IFNULL(t.issued_qty, 0) > 0, CONCAT('<a href="desk#Form/Purchase Receipt/',t.ref_doc,'">',t.ref_doc,'(',IFNULL(t.received_qty,0)-IFNULL(t.issued_qty, 0),')','</a>'),NULL)) purchase_receipt
+			GROUP_CONCAT(IF(IFNULL(t.received_qty, 0)-IFNULL(t.issued_qty, 0) > 0, CONCAT('<a href="/app/purchase-receipt/',t.ref_doc,'">',t.ref_doc,'(',IFNULL(t.received_qty,0)-IFNULL(t.issued_qty, 0),')','</a>'),NULL)) purchase_receipt
 			FROM(
 			SELECT ar.item_code, ar.ref_doc, ar.cost_center, (select distinct pr.warehouse from `tabPurchase Receipt Item` pr where pr.name = ar.child_ref) as warehouse,
 				SUM(ar.qty) received_qty,
