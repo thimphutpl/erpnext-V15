@@ -173,7 +173,7 @@
   {
    "fieldname": "target_cost_center",
    "fieldtype": "Link",
-   "label": "Target Cost Center",
+   "label": "Expense Target Cost Center",
    "options": "Cost Center",
    "reqd": 1
   }
@@ -181,7 +181,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-02-07 14:38:09.451303",
+ "modified": "2025-02-07 16:36:49.808192",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Issue Items",
