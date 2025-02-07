@@ -32,6 +32,7 @@ class POLIssueItems(Document):
 		qty: DF.Float
 		serial_and_batch_bundle: DF.Link | None
 		tank_capacity: DF.ReadOnly | None
+		target_cost_center: DF.Link
 		warehouse: DF.Link | None
 	# end: auto-generated types
 	pass

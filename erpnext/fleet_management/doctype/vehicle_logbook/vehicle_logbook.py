@@ -103,7 +103,7 @@ class VehicleLogbook(Document):
 
 		if self.working_hours:
 			return
-		elif self.lph or self.kph and self.equipment_run_by_electric:
+		elif self.equipment_run_by_electric:
 			frappe.throw("Non HSD Consumption cannot be used when yardstick {} is given.".format(self.lph or self.kph))	
 
 		if self.lph or self.kph:
@@ -114,7 +114,7 @@ class VehicleLogbook(Document):
 		if self.working_hours:
 			return
 		
-		if self.lph or self.kph and self.equipment_run_by_electric:
+		if self.equipment_run_by_electric:
 			frappe.throw("Non HSD Consumption cannot be used when yardstick {} is given.".format(self.lph or self.kph))
 
 		if self.lph or self.kph:

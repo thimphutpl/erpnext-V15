@@ -292,7 +292,7 @@ class POLIssue(StockController):
 						"account": a.expense_account,
 						"debit": flt(valuation_rate),
 						"debit_in_account_currency": flt(valuation_rate),
-						"cost_center": a.cost_center,
+						"cost_center": a.target_cost_center,
 					})
 				)
 
