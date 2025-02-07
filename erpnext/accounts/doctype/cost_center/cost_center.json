@@ -15,6 +15,7 @@
   "parent_cost_center",
   "company",
   "warehouse",
+  "expense_account",
   "cb0",
   "is_group",
   "disabled",
@@ -170,13 +171,19 @@
    "fieldname": "project_cost_center",
    "fieldtype": "Check",
    "label": "Project Cost Center"
+  },
+  {
+   "fieldname": "expense_account",
+   "fieldtype": "Link",
+   "label": "Muster Roll Expense Account",
+   "options": "Account"
   }
  ],
  "icon": "fa fa-money",
  "idx": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2025-02-03 17:42:32.000481",
+ "modified": "2025-02-07 16:24:55.452448",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Cost Center",

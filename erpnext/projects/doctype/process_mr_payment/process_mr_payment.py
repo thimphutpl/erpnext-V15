@@ -210,7 +210,9 @@ class ProcessMRPayment(Document):
 
 	def post_journal_entry(self):
 		expense_bank_account, ot_account, wage_account, gratuity_account = self.prepare_gls()
-
+		expense_bank_account=frappe.db.get_value("Cost Center",self.cost_center,"expense_account")
+		if not expense_bank_account:
+			frappe.throw("Set Expense Account In Cost Center for '{}'".format(self.cost_center))
 		je = frappe.new_doc("Journal Entry")
 		je.flags.ignore_permissions = 1 
 		je.title = "Payment for " + self.employee_type  + " (" + self.branch + ")" + "(" + self.month + ")"
@@ -269,11 +271,11 @@ class ProcessMRPayment(Document):
 
 
 			hjv.append("accounts", {
-										"account": expense_bank_account,
-										"cost_center": self.cost_center,
-										"credit_in_account_currency": flt(self.gratuity_amount),
-										"credit": flt(self.gratuity_amount),
-								})
+				"account": expense_bank_account,
+				"cost_center": self.cost_center,
+				"credit_in_account_currency": flt(self.gratuity_amount),
+				"credit": flt(self.gratuity_amount),
+			})
 
 
 			hjv.append("accounts", {

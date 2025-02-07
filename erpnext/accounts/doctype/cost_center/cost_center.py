@@ -26,6 +26,7 @@ class CostCenter(NestedSet):
 		cost_center_name: DF.Data
 		cost_center_number: DF.Data | None
 		disabled: DF.Check
+		expense_account: DF.Link | None
 		is_group: DF.Check
 		lft: DF.Int
 		old_parent: DF.Link | None
