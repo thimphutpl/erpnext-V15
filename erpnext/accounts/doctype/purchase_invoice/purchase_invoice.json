@@ -8,6 +8,7 @@
  "engine": "InnoDB",
  "field_order": [
   "title",
+  "dispatch",
   "payment_status",
   "n_series",
   "naming_series",
@@ -1754,13 +1755,18 @@
    "options": "\nConsumables\nFixed Asset\nSales Product\nSpare Parts\nServices Miscellaneous\nServices Works",
    "reqd": 1,
    "set_only_once": 1
+  },
+  {
+   "fieldname": "dispatch",
+   "fieldtype": "Data",
+   "label": "Dispatch"
   }
  ],
  "icon": "fa fa-file-text",
  "idx": 204,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-02-06 17:39:15.596552",
+ "modified": "2025-02-07 15:06:35.744075",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Purchase Invoice",

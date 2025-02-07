@@ -116,6 +116,7 @@ class PurchaseInvoice(BuyingController):
 		disable_rounded_total: DF.Check
 		discount: DF.Currency
 		discount_amount: DF.Currency
+		dispatch: DF.Data | None
 		due_date: DF.Date | None
 		freight_insurance_charges: DF.Currency
 		from_date: DF.Date | None
