@@ -33,6 +33,12 @@
   "column_break_vlgp",
   "journal_entry",
   "final_je",
+  "payment_details_section",
+  "cheque_no",
+  "cheque_date",
+  "clearance_date",
+  "column_break_uqdz",
+  "pay_torecd_from",
   "approver_details_section",
   "approver",
   "column_break_27",
@@ -265,12 +271,41 @@
    "fieldname": "dispatch",
    "fieldtype": "Data",
    "label": "Dispatch"
+  },
+  {
+   "fieldname": "payment_details_section",
+   "fieldtype": "Section Break",
+   "label": "Payment Details"
+  },
+  {
+   "fieldname": "cheque_no",
+   "fieldtype": "Data",
+   "label": "Cheque No."
+  },
+  {
+   "fieldname": "cheque_date",
+   "fieldtype": "Date",
+   "label": "Cheque Date"
+  },
+  {
+   "fieldname": "clearance_date",
+   "fieldtype": "Date",
+   "label": "Clearance Date"
+  },
+  {
+   "fieldname": "column_break_uqdz",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "pay_torecd_from",
+   "fieldtype": "Data",
+   "label": "Pay To/Recd From"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-27 14:17:27.916659",
+ "modified": "2025-02-07 11:54:50.661247",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Imprest Recoup",

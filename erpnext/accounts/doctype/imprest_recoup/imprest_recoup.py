@@ -29,6 +29,9 @@ class ImprestRecoup(StockController):
 		approver_name: DF.Data | None
 		balance_amount: DF.Currency
 		branch: DF.Link
+		cheque_date: DF.Date | None
+		cheque_no: DF.Data | None
+		clearance_date: DF.Date | None
 		company: DF.Link
 		cost_center: DF.Link
 		dispatch: DF.Data | None
@@ -41,6 +44,7 @@ class ImprestRecoup(StockController):
 		opening_balance: DF.Currency
 		party: DF.DynamicLink | None
 		party_type: DF.Literal["", "Employee"]
+		pay_torecd_from: DF.Data | None
 		posting_date: DF.Date
 		project: DF.Link | None
 		remarks: DF.SmallText
