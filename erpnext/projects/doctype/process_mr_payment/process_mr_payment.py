@@ -647,21 +647,16 @@ def get_is_lifer_status(employee):
 		return {"error": "No data found for this employee."}
 
 
-def get_pay_details(employee, year, month):
-	data = {}	
-	from_date = "-".join([str(year), str(month), '01'])
-	to_date   = str(get_last_day(from_date))
-		
+def get_pay_details(employee):
+	data = {}		
 	for d in  frappe.db.sql("""
 			SELECT
 				rate_per_day, rate_per_hour, rate_per_hour_normal, parent
 			FROM `tabMusterroll`
-			WHERE parent = '{employee}'
-			AND '{from_date}' <= IFNULL(to_date, '{to_date}')
-			AND '{to_date}' >= IFNULL(from_date, '{from_date}')
-			ORDER BY IFNULL(to_date,'{to_date}') DESC
+			WHERE parent = '{employee}'			
+			ORDER BY name DESC
 			LIMIT 1
-		""".format(employee=employee, from_date=from_date, to_date=to_date), as_dict = True):
+		""".format(employee=employee), as_dict = True):
 
 		data.setdefault(d.parent, frappe._dict(d))
 
