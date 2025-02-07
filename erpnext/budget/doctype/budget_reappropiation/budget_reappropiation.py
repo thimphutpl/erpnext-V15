@@ -440,7 +440,29 @@ def get_permission_query_conditions(user):
 		return
 
 	return """(
-		`tabBudget Reappropiation`.owner = '{user}'
+		owner = '{user}'
 		or
-		(`tabBudget Reappropiation`.approver = '{user}' and `tabBudget Reappropiation`.workflow_state not in  ('Draft','Rejected','Cancelled'))
+		name in (select e.name
+				from `tabBudget Reappropiation` e
+				where e.from_cost_center in (
+					select b.cost_center
+					from `tabEmployee` a, `tabAssign Branch` ab, `tabBranch Item` bi, tabBranch b
+					where a.user_id = '{user}'
+					and ab.employee = a.name
+					and bi.parent = ab.name
+					and b.name = bi.branch
+				))
+		or
+		name in (select e.name
+				from `tabBudget Reappropiation` e
+				where e.to_cost_center in (
+					select b.cost_center
+					from `tabEmployee` a, `tabAssign Branch` ab, `tabBranch Item` bi, tabBranch b
+					where a.user_id = '{user}'
+					and ab.employee = a.name
+					and bi.parent = ab.name
+					and b.name = bi.branch
+				))
+		or
+		(approver = '{user}' and workflow_state not in  ('Draft','Rejected','Cancelled'))
 	)""".format(user=user)
