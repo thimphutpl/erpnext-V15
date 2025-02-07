@@ -101,11 +101,14 @@ class VehicleLogbook(Document):
 		if to_date < from_date:
 			frappe.throw("From Date/Time cannot be greater than To Date/Time")
 
-		if self.lph or self.kph and self.equipment_run_by_electric:
+		if self.working_hours:
+			return
+		elif self.lph or self.kph and self.equipment_run_by_electric:
 			frappe.throw("Non HSD Consumption cannot be used when yardstick {} is given.".format(self.lph or self.kph))	
 
 		if self.lph or self.kph:
 			self.equipment_run_by_electric = 0
+	
 
 	def before_save(self):
 		if self.working_hours:
