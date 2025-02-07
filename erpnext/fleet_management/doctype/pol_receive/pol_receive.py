@@ -110,7 +110,7 @@ class POLReceive(StockController):
 		#self.set_warehouse()
 		self.check_on_dry_hire()
 		self.validate_data()
-		self.validate_posting_time()
+		# self.validate_posting_time()
 		self.validate_uom_is_integer("stock_uom", "qty")
 		self.validate_item()
 		self.validate_balance()

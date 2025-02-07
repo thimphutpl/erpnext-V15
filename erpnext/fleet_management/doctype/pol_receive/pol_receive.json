@@ -495,14 +495,16 @@
    "fieldname": "tank_balance",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Own Tank Balance"
+   "label": "Own Tank Balance",
+   "read_only": 1
   },
   {
    "depends_on": "eval: doc.book_type == 'Common'\neval:doc.is_hsd_item",
    "fieldname": "tanker_balance",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Tanker Balance"
+   "label": "Tanker Balance",
+   "read_only": 1
   },
   {
    "depends_on": "eval: doc.book_type == 'Common' && doc.cost_center",
@@ -613,7 +615,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-15 18:12:53.649103",
+ "modified": "2025-02-07 15:28:31.740767",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Receive",
