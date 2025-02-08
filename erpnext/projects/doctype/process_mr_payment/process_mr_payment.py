@@ -507,6 +507,7 @@ def get_records(employee_type, fiscal_year, fiscal_month, from_date, to_date, co
 			rate_per_day=flt(pay_details[0]['rate_per_day'])
 			rate_per_hour_normal=flt(pay_details[0]['rate_per_hour'])
 			is_lifer=flt(pay_details[0]['is_lifer'])
+			salary=flt(pay_details[0]['salary'])
 
 		else:
 			pay_details=get_pay_details(e.name)
@@ -665,10 +666,7 @@ def get_pay_details(employee):
 
 	return data
 
-def get_pay_details_dfg_gfg_opa_opt(employee,employee_type):
-	
-
-	
+def get_pay_details_dfg_gfg_opa_opt(employee,employee_type):	
 		
 	return  frappe.db.sql("""
 			SELECT
@@ -678,11 +676,7 @@ def get_pay_details_dfg_gfg_opa_opt(employee,employee_type):
 			LIMIT 1
 		""".format(employee_type=employee_type, employee=employee), as_dict = True)
 
-def get_pay_opa(employee,employee_type):
-	
-
-	
-		
+def get_pay_opa(employee,employee_type):		
 	return  frappe.db.sql("""
 			SELECT
 				rate_per_day, rate_per_hour,salary,is_lifer
