@@ -1881,6 +1881,12 @@ def get_permission_query_conditions(user):
 				and `tabAssign Branch`.user = '{user}')
 			or
 			exists(select 1
+				from `tabAssign Branch`, `tabAssign Project`
+				where `tabAssign Branch`.name = `tabAssign Project`.parent 
+				and `tabAssign Project`.project = `tabProject`.name
+				and `tabAssign Branch`.user = '{user}')
+			or
+			exists(select 1
 					from `tabEmployee`
 					where `tabEmployee`.branch = `tabProject`.branch
 					and `tabEmployee`.user_id = '{user}')
@@ -1888,6 +1894,12 @@ def get_permission_query_conditions(user):
 
 	return """(
 		`tabProject`.owner = '{user}'
+		or
+		exists(select 1
+				from `tabAssign Branch`, `tabAssign Project`
+				where `tabAssign Branch`.name = `tabAssign Project`.parent 
+				and `tabAssign Project`.project = `tabProject`.name
+				and `tabAssign Branch`.user = '{user}')
 		or
 		exists(select 1
 				from `tabEmployee`
