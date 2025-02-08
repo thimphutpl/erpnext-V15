@@ -81,10 +81,11 @@ class ProcessMRPayment(Document):
 							a.total_wage = flt(salary)
 						
 				elif round(flt(a.number_of_days), 2) >= 28 and self.employee_type !="Muster Roll Employee":
-					salary = frappe.db.get_value("Employee", a.employee, "salary")
-					if salary:
-						a.total_wage = flt(salary)
-				elif a.employee_type == 'Open Air Prisoner':
+					pass
+					# salary = frappe.db.get_value("Employee", a.employee, "salary")
+					# if salary:
+					# 	a.total_wage = flt(salary)
+				elif a.employee_type == 'Open Air Prisoner':					
 					salary = flt(total_days) * flt(a.daily_rate)
 					if flt(a.total_wage) > flt(salary):
 						a.total_wage = flt(salary)
