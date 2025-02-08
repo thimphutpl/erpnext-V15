@@ -395,6 +395,7 @@ def update_mr_rates(employee_type, employee, cost_center, from_date, to_date):
 
 @frappe.whitelist()
 def get_records(employee_type, fiscal_year, fiscal_month, from_date, to_date, cost_center, branch, dn):	
+	#frappe.throw(dn)
 	month = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"].index(fiscal_month) + 1
 	month = str(month) if cint(month) > 9 else str("0" + str(month))
 	if employee_type == 'DFG' or employee_type =='GFG':
@@ -532,8 +533,8 @@ def get_records(employee_type, fiscal_year, fiscal_month, from_date, to_date, co
 			"salary":salary,
 			"is_lifer":is_lifer
 		}))
-		if employee_type == "Muster Roll Employee":
-			update_mr_rates(employee_type, e.name, cost_center, from_date, to_date)
+		# if employee_type == "Muster Roll Employee":
+		# 	update_mr_rates(employee_type, e.name, cost_center, from_date, to_date)
 		if employee_type in ('Operator', 'Open Air Prisoner', 'DFG AND GFG'):
 		
 			frappe.db.sql("""
