@@ -244,8 +244,8 @@ class VehicleLogbook(Document):
 		if self.equipment_run_by_electric:
 			return	
 		
-		if self.lph or self.kph and self.equipment_run_by_electric:
-			frappe.throw("Non HSD Consumption cannot be used when {self.lph} {self.kph} is there.")
+		# if self.lph or self.kph and self.equipment_run_by_electric:
+		# 	frappe.throw("Non HSD Consumption cannot be used when {self.lph} {self.kph} is there.")
 			
 		if self.ehf_name:
 			docstatus = frappe.db.get_value("Equipment Hiring Form", self.ehf_name, "docstatus")
