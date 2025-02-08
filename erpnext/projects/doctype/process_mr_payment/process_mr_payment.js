@@ -152,7 +152,7 @@ function get_records(employee_type, fiscal_year, month, from_date, to_date, cost
 							// row.gratuity_amount = 0
 						}
 						else if(mr['type'] == 'DFG AND GFG'){
-							alert(mr['noof_days_in_month'])
+							//alert(mr['noof_days_in_month'])
 							row.daily_rate 	= mr['rate_per_day'];
 							// frappe.throw(row.daily_rate)
 							row.hourly_rate 	= mr['rate_per_hour'];
