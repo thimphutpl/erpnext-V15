@@ -35,6 +35,9 @@
   "company",
   "department",
   "employee_number",
+  "increment_cycle",
+  "promotion_cycle",
+  "promotion_due_date",
   "column_break_25",
   "designation",
   "reports_to",
@@ -80,9 +83,13 @@
   "ctc",
   "salary_currency",
   "salary_mode",
+  "section_break_teny",
+  "employee_bank_accounts",
   "bank_details_section",
   "bank_name",
+  "bank_branch",
   "column_break_heye",
+  "bank_account_type",
   "bank_ac_no",
   "iban",
   "personal_details",
@@ -251,8 +258,7 @@
    "fieldtype": "Date",
    "label": "Date of Joining",
    "oldfieldname": "date_of_joining",
-   "oldfieldtype": "Date",
-   "reqd": 1
+   "oldfieldtype": "Date"
   },
   {
    "allow_in_quick_entry": 1,
@@ -359,7 +365,8 @@
    "label": "Department",
    "oldfieldname": "department",
    "oldfieldtype": "Link",
-   "options": "Department"
+   "options": "Department",
+   "reqd": 1
   },
   {
    "fieldname": "designation",
@@ -370,6 +377,7 @@
    "oldfieldname": "designation",
    "oldfieldtype": "Link",
    "options": "Designation",
+   "reqd": 1,
    "search_index": 1
   },
   {
@@ -387,7 +395,8 @@
    "label": "Branch",
    "oldfieldname": "branch",
    "oldfieldtype": "Link",
-   "options": "Branch"
+   "options": "Branch",
+   "reqd": 1
   },
   {
    "description": "Applicable Holiday List",
@@ -418,10 +427,11 @@
   {
    "depends_on": "eval:doc.salary_mode == 'Bank'",
    "fieldname": "bank_name",
-   "fieldtype": "Data",
+   "fieldtype": "Link",
    "label": "Bank Name",
    "oldfieldname": "bank_name",
-   "oldfieldtype": "Link"
+   "oldfieldtype": "Link",
+   "options": "Bank"
   },
   {
    "depends_on": "eval:doc.salary_mode == 'Bank'",
@@ -519,7 +529,7 @@
   {
    "fieldname": "passport_number",
    "fieldtype": "Data",
-   "label": "Passport Number"
+   "label": "CID/Passport Number"
   },
   {
    "fieldname": "date_of_issue",
@@ -739,7 +749,7 @@
   {
    "fieldname": "company_details_section",
    "fieldtype": "Section Break",
-   "label": "Company Details"
+   "label": "Employee Details"
   },
   {
    "fieldname": "column_break_18",
@@ -771,8 +781,7 @@
   },
   {
    "fieldname": "bank_details_section",
-   "fieldtype": "Section Break",
-   "label": "Bank Details"
+   "fieldtype": "Section Break"
   },
   {
    "fieldname": "column_break_9",
@@ -839,13 +848,57 @@
    "fieldname": "grade",
    "fieldtype": "Link",
    "label": "Grade",
-   "options": "Employee Grade"
+   "options": "Employee Grade",
+   "reqd": 1
   },
   {
    "fieldname": "employee_group",
    "fieldtype": "Link",
    "label": "Employee Group",
-   "options": "Employee Group"
+   "options": "Employee Group",
+   "reqd": 1
+  },
+  {
+   "depends_on": "eval:doc.salary_mode == 'Bank'",
+   "fieldname": "bank_branch",
+   "fieldtype": "Link",
+   "label": "Bank Branch",
+   "options": "Bank Branch"
+  },
+  {
+   "depends_on": "eval:doc.salary_mode == 'Bank'",
+   "fieldname": "bank_account_type",
+   "fieldtype": "Link",
+   "label": "Bank Account Type",
+   "options": "Bank Account Type"
+  },
+  {
+   "fieldname": "section_break_teny",
+   "fieldtype": "Section Break"
+  },
+  {
+   "depends_on": "eval:doc.salary_mode == 'Bank'",
+   "fieldname": "employee_bank_accounts",
+   "fieldtype": "Table",
+   "label": "Bank Details",
+   "options": "Employee Bank Account"
+  },
+  {
+   "fieldname": "increment_cycle",
+   "fieldtype": "Select",
+   "label": "Increment Cycle",
+   "options": "\nJanuary\nFebruary\nMarch\nApril\nMay\nJune\nJuly\nAugust\nSeptember\nOctober\nNovember\nDecember"
+  },
+  {
+   "fieldname": "promotion_due_date",
+   "fieldtype": "Date",
+   "label": "Promotion Due Date"
+  },
+  {
+   "fieldname": "promotion_cycle",
+   "fieldtype": "Select",
+   "label": "Promotion Cycle",
+   "options": "\nJanuary\nJuly"
   }
  ],
  "icon": "fa fa-user",
@@ -853,7 +906,7 @@
  "image_field": "image",
  "is_tree": 1,
  "links": [],
- "modified": "2025-01-10 00:36:21.890216",
+ "modified": "2025-02-06 15:03:48.676086",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee",

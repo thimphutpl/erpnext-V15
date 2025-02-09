@@ -42,6 +42,7 @@ class Employee(NestedSet):
 		self.validate_status()
 		self.validate_reports_to()
 		self.validate_preferred_email()
+		self.set_default_bank_account()
 
 		if self.user_id:
 			self.validate_user_details()
@@ -52,6 +53,21 @@ class Employee(NestedSet):
 				validate_employee_role(user, ignore_emp_check=True)
 				user.save(ignore_permissions=True)
 				remove_user_permission("Employee", self.name, existing_user_id)
+	
+	def set_default_bank_account(self):
+		if self.get("employee_bank_accounts"):
+			default_bank_account = 0
+			for a in self.get("employee_bank_accounts"):
+				if a.default:
+					default_bank_account += 1
+					self.bank_name = a.bank
+					self.bank_branch  = a.bank_branch
+					self.bank_account_type = a.bank_account_type
+					self.bank_ac_no = a.account_number
+			if default_bank_account == 0:
+				frappe.throw("Please set a default bank account under Bank Information")
+			elif default_bank_account > 1:
+				frappe.throw("Only one bank account is allowed to set a default")
 
 	def after_rename(self, old, new, merge):
 		self.db_set("employee", new)

@@ -105,6 +105,13 @@
   "default_warehouse_for_sales_return",
   "credit_limit",
   "transactions_annual_history",
+  "hr_payroll_tab",
+  "hr_payroll_settings_column",
+  "default_expense_claim_payable_account",
+  "default_employee_advance_account",
+  "column_break_fbah",
+  "default_payroll_payable_account",
+  "employer_contribution_pf_account",
   "stock_tab",
   "auto_accounting_for_stock_settings",
   "enable_perpetual_inventory",
@@ -841,6 +848,44 @@
   {
    "fieldname": "column_break_dcdl",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "hr_payroll_tab",
+   "fieldtype": "Tab Break",
+   "label": "HR & Payroll"
+  },
+  {
+   "fieldname": "hr_payroll_settings_column",
+   "fieldtype": "Column Break",
+   "label": "HR & Payroll Settings"
+  },
+  {
+   "fieldname": "default_expense_claim_payable_account",
+   "fieldtype": "Link",
+   "label": "Default Expense Claim Payable Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "default_employee_advance_account",
+   "fieldtype": "Link",
+   "label": "Default Employee Advance Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "column_break_fbah",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "default_payroll_payable_account",
+   "fieldtype": "Link",
+   "label": "Default Payroll Payable Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "employer_contribution_pf_account",
+   "fieldtype": "Link",
+   "label": "Employer Contribution PF Account",
+   "options": "Account"
   }
  ],
  "icon": "fa fa-building",
@@ -848,7 +893,7 @@
  "image_field": "company_logo",
  "is_tree": 1,
  "links": [],
- "modified": "2024-12-02 15:37:32.723176",
+ "modified": "2025-02-05 12:59:40.366671",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Company",

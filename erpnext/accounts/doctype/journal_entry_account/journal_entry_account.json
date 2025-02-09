@@ -206,6 +206,7 @@
    "allow_on_submit": 1,
    "fieldname": "project",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Project",
    "options": "Project"
   },
@@ -241,7 +242,6 @@
    "print_hide": 1
   },
   {
-   "collapsible": 1,
    "fieldname": "accounting_dimensions_section",
    "fieldtype": "Section Break",
    "label": "Accounting Dimensions"
@@ -268,7 +268,7 @@
  "idx": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-02-05 01:10:50.224840",
+ "modified": "2025-02-05 15:40:27.358846",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Journal Entry Account",

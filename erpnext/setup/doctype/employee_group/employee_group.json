@@ -12,7 +12,9 @@
   "column_break_kxht",
   "health_contribution",
   "section_break_00",
-  "employee_list"
+  "employee_list",
+  "annual_increment_settings_section",
+  "minimum_months"
  ],
  "fields": [
   {
@@ -52,10 +54,21 @@
    "fieldname": "employer_pf",
    "fieldtype": "Percent",
    "label": "Employer PF Contribution (%)"
+  },
+  {
+   "fieldname": "annual_increment_settings_section",
+   "fieldtype": "Section Break",
+   "label": "ANNUAL INCREMENT SETTINGS"
+  },
+  {
+   "fieldname": "minimum_months",
+   "fieldtype": "Float",
+   "label": "Minimum No. of Months in Service Required For Full Increment",
+   "precision": "2"
   }
  ],
  "links": [],
- "modified": "2025-01-10 00:42:38.973305",
+ "modified": "2025-02-03 20:01:11.730529",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee Group",

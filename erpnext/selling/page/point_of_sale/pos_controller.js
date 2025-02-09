@@ -687,10 +687,14 @@ erpnext.PointOfSale.Controller = class {
 		const is_stock_item = resp[1];
 
 		frappe.dom.unfreeze();
-		const bold_uom = item_row.stock_uom.bold();
-		const bold_item_code = item_row.item_code.bold();
-		const bold_warehouse = warehouse.bold();
-		const bold_available_qty = available_qty.toString().bold();
+		// const bold_uom = item_row.stock_uom.bold();
+		// const bold_item_code = item_row.item_code.bold();
+		// const bold_warehouse = warehouse.bold();
+		// const bold_available_qty = available_qty.toString().bold();
+		const bold_uom = item_row.stock_uom;
+		const bold_item_code = item_row.item_code;
+		const bold_warehouse = warehouse;
+		const bold_available_qty = available_qty.toString();
 		if (!(available_qty > 0)) {
 			if (is_stock_item) {
 				frappe.model.clear_doc(item_row.doctype, item_row.name);
@@ -726,7 +730,7 @@ erpnext.PointOfSale.Controller = class {
 			frappe.throw({
 				title: __("Not Available"),
 				message: __("Serial No: {0} has already been transacted into another POS Invoice.", [
-					serial_no.bold(),
+					serial_no,
 				]),
 			});
 		}

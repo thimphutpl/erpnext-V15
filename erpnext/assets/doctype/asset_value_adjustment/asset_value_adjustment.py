@@ -96,7 +96,8 @@ class AssetValueAdjustment(Document):
 
 		je = frappe.new_doc("Journal Entry")
 		je.voucher_type = "Depreciation Entry"
-		je.naming_series = depreciation_series
+		je.naming_series = "Depreciation Voucher"
+		# je.naming_series = depreciation_series
 		je.posting_date = self.date
 		je.company = self.company
 		je.remark = f"Depreciation Entry against {self.asset} worth {self.difference_amount}"

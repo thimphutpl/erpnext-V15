@@ -20,6 +20,7 @@ class EmployeeGroup(Document):
 		employee_pf: DF.Percent
 		employer_pf: DF.Percent
 		health_contribution: DF.Currency
+		minimum_months: DF.Float
 	# end: auto-generated types
 
 	pass
