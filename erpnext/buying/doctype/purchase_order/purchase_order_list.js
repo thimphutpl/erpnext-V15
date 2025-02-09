@@ -8,6 +8,7 @@ frappe.listview_settings["Purchase Order"] = {
 		"per_received",
 		"per_billed",
 		"status",
+		"advance_payment_status",
 	],
 	get_indicator: function (doc) {
 		// Please do not add precision in the flt function
@@ -17,6 +18,8 @@ frappe.listview_settings["Purchase Order"] = {
 			return [__("On Hold"), "orange", "status,=,On Hold"];
 		} else if (doc.status === "Delivered") {
 			return [__("Delivered"), "green", "status,=,Closed"];
+		} else if (doc.advance_payment_status == "Initiated") {
+			return [__("To Pay"), "gray", "advance_payment_status,=,Initiated"];
 		} else if (flt(doc.per_received) < 100 && doc.status !== "Closed") {
 			if (flt(doc.per_billed) < 100) {
 				return [
@@ -44,16 +47,22 @@ frappe.listview_settings["Purchase Order"] = {
 			listview.call_for_selected_items(method, { status: "Submitted" });
 		});
 
-		listview.page.add_action_item(__("Purchase Invoice"), () => {
-			erpnext.bulk_transaction_processing.create(listview, "Purchase Order", "Purchase Invoice");
-		});
+		if (frappe.model.can_create("Purchase Invoice")) {
+			listview.page.add_action_item(__("Purchase Invoice"), () => {
+				erpnext.bulk_transaction_processing.create(listview, "Purchase Order", "Purchase Invoice");
+			});
+		}
 
-		listview.page.add_action_item(__("Purchase Receipt"), () => {
-			erpnext.bulk_transaction_processing.create(listview, "Purchase Order", "Purchase Receipt");
-		});
+		if (frappe.model.can_create("Purchase Receipt")) {
+			listview.page.add_action_item(__("Purchase Receipt"), () => {
+				erpnext.bulk_transaction_processing.create(listview, "Purchase Order", "Purchase Receipt");
+			});
+		}
 
-		listview.page.add_action_item(__("Advance Payment"), () => {
-			erpnext.bulk_transaction_processing.create(listview, "Purchase Order", "Payment Entry");
-		});
+		if (frappe.model.can_create("Payment Entry")) {
+			listview.page.add_action_item(__("Advance Payment"), () => {
+				erpnext.bulk_transaction_processing.create(listview, "Purchase Order", "Payment Entry");
+			});
+		}
 	},
 };

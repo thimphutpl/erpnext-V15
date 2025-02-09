@@ -36,7 +36,7 @@ from erpnext.assets.doctype.asset_depreciation_schedule.asset_depreciation_sched
 def post_depreciation_entries(date=None):
 	# Return if automatic booking of asset depreciation is disabled
 	if not cint(
-		frappe.db.get_value("Accounts Settings", None, "book_asset_depreciation_entry_automatically")
+		frappe.db.get_single_value("Accounts Settings", "book_asset_depreciation_entry_automatically")
 	):
 		return
 
@@ -431,15 +431,19 @@ def get_comma_separated_links(names, doctype):
 
 
 @frappe.whitelist()
-def scrap_asset(asset_name):
+def scrap_asset(asset_name, scrap_date=None):
 	asset = frappe.get_doc("Asset", asset_name)
 
 	if asset.docstatus != 1:
 		frappe.throw(_("Asset {0} must be submitted").format(asset.name))
-	elif asset.status in ("Cancelled", "Sold", "Scrapped", "Capitalized", "Decapitalized"):
+	elif asset.status in ("Cancelled", "Sold", "Scrapped", "Capitalized"):
 		frappe.throw(_("Asset {0} cannot be scrapped, as it is already {1}").format(asset.name, asset.status))
 
-	date = today()
+	today_date = getdate(today())
+	date = getdate(scrap_date) or today_date
+	purchase_date = getdate(asset.purchase_date)
+
+	validate_scrap_date(date, today_date, purchase_date, asset.calculate_depreciation, asset_name)
 
 	notes = _("This schedule was created when Asset {0} was scrapped.").format(
 		get_link_to_form(asset.doctype, asset.name)
@@ -471,6 +475,36 @@ def scrap_asset(asset_name):
 	add_asset_activity(asset_name, _("Asset scrapped"))
 
 	frappe.msgprint(_("Asset scrapped via Journal Entry {0}").format(je.name))
+
+
+def validate_scrap_date(scrap_date, today_date, purchase_date, calculate_depreciation, asset_name):
+	if scrap_date > today_date:
+		frappe.throw(_("Future date is not allowed"))
+	elif scrap_date < purchase_date:
+		frappe.throw(_("Scrap date cannot be before purchase date"))
+
+	if calculate_depreciation:
+		asset_depreciation_schedules = frappe.db.get_all(
+			"Asset Depreciation Schedule", filters={"asset": asset_name, "docstatus": 1}, fields=["name"]
+		)
+
+		for depreciation_schedule in asset_depreciation_schedules:
+			last_booked_depreciation_date = frappe.db.get_value(
+				"Depreciation Schedule",
+				{
+					"parent": depreciation_schedule["name"],
+					"docstatus": 1,
+					"journal_entry": ["!=", ""],
+				},
+				"schedule_date",
+				order_by="schedule_date desc",
+			)
+			if (
+				last_booked_depreciation_date
+				and scrap_date < last_booked_depreciation_date
+				and scrap_date > purchase_date
+			):
+				frappe.throw(_("Asset cannot be scrapped before the last depreciation entry."))
 
 
 @frappe.whitelist()
