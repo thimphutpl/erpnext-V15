@@ -210,9 +210,9 @@ def trigger_reconciliation_for_queued_docs():
 
 		docs_to_trigger = []
 		unique_filters = set()
-		queue_size = 5
+		queue_size = frappe.db.get_single_value("Accounts Settings", "reconciliation_queue_size") or 5
 
-		fields = ["company", "party_type", "party", "receivable_payable_account"]
+		fields = ["company", "party_type", "party", "receivable_payable_account", "default_advance_account"]
 
 		def get_filters_as_tuple(fields, doc):
 			filters = ()
@@ -476,9 +476,7 @@ def reconcile(doc: None | str = None) -> None:
 						frappe.db.set_value("Process Payment Reconciliation Log", log, "reconciled", True)
 						frappe.db.set_value("Process Payment Reconciliation", doc, "status", "Completed")
 					else:
-						if not (
-							frappe.db.get_value("Process Payment Reconciliation", doc, "status") == "Paused"
-						):
+						if frappe.db.get_value("Process Payment Reconciliation", doc, "status") != "Paused":
 							# trigger next batch in job
 							# generate reconcile job name
 							allocation = get_next_allocation(log)

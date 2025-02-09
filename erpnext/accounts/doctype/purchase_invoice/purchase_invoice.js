@@ -113,17 +113,21 @@ erpnext.accounts.PurchaseInvoice = class PurchaseInvoice extends erpnext.buying.
 
 		if (doc.docstatus == 1 && doc.outstanding_amount != 0 && !doc.on_hold) {
 			this.frm.add_custom_button(__("Payment"), () => this.make_payment_entry(), __("Create"));
-			cur_frm.page.set_inner_btn_group_as_primary(__("Create"));
+			this.frm.page.set_inner_btn_group_as_primary(__("Create"));
 		}
 
 		if (!doc.is_return && doc.docstatus == 1) {
 			if (doc.outstanding_amount >= 0 || Math.abs(flt(doc.outstanding_amount)) < flt(doc.grand_total)) {
-				cur_frm.add_custom_button(__("Return / Debit Note"), this.make_debit_note, __("Create"));
+				this.frm.add_custom_button(
+					__("Return / Debit Note"),
+					this.make_debit_note.bind(this),
+					__("Create")
+				);
 			}
 		}
 
 		if (doc.outstanding_amount > 0 && !cint(doc.is_return) && !doc.on_hold) {
-			cur_frm.add_custom_button(
+			this.frm.add_custom_button(
 				__("Payment Request"),
 				function () {
 					me.make_payment_request();
@@ -332,6 +336,8 @@ erpnext.accounts.PurchaseInvoice = class PurchaseInvoice extends erpnext.buying.
 
 		if (this.frm.doc.__onload && this.frm.doc.__onload.load_after_mapping) return;
 
+		let payment_terms_template = this.frm.doc.payment_terms_template;
+
 		erpnext.utils.get_party_details(
 			this.frm,
 			"erpnext.accounts.party.get_party_details",
@@ -352,6 +358,12 @@ erpnext.accounts.PurchaseInvoice = class PurchaseInvoice extends erpnext.buying.
 				me.frm.doc.tax_withholding_category = me.frm.supplier_tds;
 				me.frm.set_df_property("apply_tds", "read_only", me.frm.supplier_tds ? 0 : 1);
 				me.frm.set_df_property("tax_withholding_category", "hidden", me.frm.supplier_tds ? 0 : 1);
+
+				// while duplicating, don't change payment terms
+				if (me.frm.doc.__run_link_triggers === false) {
+					me.frm.set_value("payment_terms_template", payment_terms_template);
+					me.frm.refresh_field("payment_terms_template");
+				}
 			}
 		);
 	}
@@ -366,6 +378,18 @@ erpnext.accounts.PurchaseInvoice = class PurchaseInvoice extends erpnext.buying.
 			me.frm.set_value("tax_withholding_category", me.frm.supplier_tds);
 			me.frm.set_df_property("tax_withholding_category", "hidden", 0);
 		}
+	}
+
+	tax_withholding_category(frm) {
+		var me = this;
+		let filtered_taxes = (me.frm.doc.taxes || []).filter((row) => !row.is_tax_withholding_account);
+		me.frm.clear_table("taxes");
+
+		filtered_taxes.forEach((row) => {
+			me.frm.add_child("taxes", row);
+		});
+
+		me.frm.refresh_field("taxes");
 	}
 
 	credit_to() {
@@ -399,6 +423,8 @@ erpnext.accounts.PurchaseInvoice = class PurchaseInvoice extends erpnext.buying.
 		hide_fields(this.frm.doc);
 		if (cint(this.frm.doc.is_paid)) {
 			this.frm.set_value("allocate_advances_automatically", 0);
+			this.frm.set_value("payment_terms_template", "");
+			this.frm.set_value("payment_schedule", []);
 			if (!this.frm.doc.company) {
 				this.frm.set_value("is_paid", 0);
 				frappe.msgprint(__("Please specify Company to proceed"));
@@ -446,7 +472,7 @@ erpnext.accounts.PurchaseInvoice = class PurchaseInvoice extends erpnext.buying.
 	make_debit_note() {
 		frappe.model.open_mapped_doc({
 			method: "erpnext.accounts.doctype.purchase_invoice.purchase_invoice.make_debit_note",
-			frm: cur_frm,
+			frm: this.frm,
 		});
 	}
 };

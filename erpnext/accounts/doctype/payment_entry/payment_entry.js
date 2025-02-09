@@ -27,6 +27,18 @@ frappe.ui.form.on("Payment Entry", {
 
 		erpnext.accounts.dimensions.setup_dimension_filters(frm, frm.doctype);
 
+		// project excluded in setup_dimension_filters
+		frm.set_query("project", function (doc) {
+			let filters = {
+				company: doc.company,
+			};
+			if (doc.party_type == "Customer") filters.customer = doc.party;
+			return {
+				query: "erpnext.controllers.queries.get_project_name",
+				filters,
+			};
+		});
+
 		if (frm.is_new()) {
 			set_default_party_type(frm);
 		}
@@ -370,13 +382,13 @@ frappe.ui.form.on("Payment Entry", {
 			"references"
 		);
 
-		cur_frm.set_df_property(
+		frm.set_df_property(
 			"source_exchange_rate",
 			"description",
 			"1 " + frm.doc.paid_from_account_currency + " = [?] " + company_currency
 		);
 
-		cur_frm.set_df_property(
+		frm.set_df_property(
 			"target_exchange_rate",
 			"description",
 			"1 " + frm.doc.paid_to_account_currency + " = [?] " + company_currency

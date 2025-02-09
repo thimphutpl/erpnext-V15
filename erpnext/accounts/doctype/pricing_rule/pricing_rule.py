@@ -200,7 +200,7 @@ class PricingRule(Document):
 
 	def validate_applicable_for_selling_or_buying(self):
 		if not self.selling and not self.buying:
-			throw(_("Atleast one of the Selling or Buying must be selected"))
+			throw(_("At least one of the Selling or Buying must be selected"))
 
 		if not self.selling and self.applicable_for in [
 			"Customer",
@@ -293,7 +293,7 @@ class PricingRule(Document):
 	def validate_price_list_with_currency(self):
 		if self.currency and self.for_price_list:
 			price_list_currency = frappe.db.get_value("Price List", self.for_price_list, "currency", True)
-			if not self.currency == price_list_currency:
+			if self.currency != price_list_currency:
 				throw(_("Currency should be same as Price List Currency: {0}").format(price_list_currency))
 
 	def validate_dates(self):
@@ -415,8 +415,6 @@ def get_pricing_rule_for_item(args, doc=None, for_validate=False):
 			"parent": args.parent,
 			"parenttype": args.parenttype,
 			"child_docname": args.get("child_docname"),
-			"discount_percentage": 0.0,
-			"discount_amount": 0,
 		}
 	)
 
