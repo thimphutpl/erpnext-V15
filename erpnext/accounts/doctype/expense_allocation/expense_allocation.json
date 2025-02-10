@@ -104,7 +104,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-23 11:16:57.586415",
+ "modified": "2025-02-10 12:09:59.244757",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Expense Allocation",
@@ -133,6 +133,18 @@
    "role": "HR User",
    "share": 1,
    "submit": 1,
+   "write": 1
+  },
+  {
+   "amend": 1,
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "HR Support",
+   "share": 1,
    "write": 1
   }
  ],
