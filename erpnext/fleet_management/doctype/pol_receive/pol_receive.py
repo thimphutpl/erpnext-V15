@@ -763,6 +763,31 @@ def get_equipment_data(equipment_name, all_equipment=0, branch=None):
 
 
 # Tanker Balance
+# @frappe.whitelist()
+# def get_balance_details(book_type, tanker=None, equipment=None, posting_date=None, pol_type=None):
+#     """
+#     Fetch the balance details for tanker or equipment based on the book_type.
+#     """
+#     if not posting_date:
+#         frappe.throw("Posting Date is mandatory.")
+
+#     if book_type == "Common" and equipment:
+#         # Fetch tanker balances
+#         received_till = get_pol_tills("Stock", equipment, posting_date, pol_type)
+#         issue_till = get_pol_tills("Issue", equipment, posting_date, pol_type)
+#         tanker_balance = flt(received_till) - flt(issue_till)
+#         return {"tanker_balance": tanker_balance, "tank_balance": 0}
+
+#     elif book_type == "Own" and equipment:
+#         # Fetch equipment balances
+#         received_till = get_pol_tills("Receive", equipment, posting_date, pol_type)
+#         issue_till = get_pol_tills("Issue", equipment, posting_date, pol_type)
+#         tank_balance = flt(received_till) - flt(issue_till)
+#         return {"tanker_balance": 0, "tank_balance": tank_balance}
+
+#     else:
+#         frappe.throw("Invalid inputs. Please ensure the correct book_type, tanker, or equipment is provided.")
+
 @frappe.whitelist()
 def get_balance_details(book_type, tanker=None, equipment=None, posting_date=None, pol_type=None):
     """
@@ -771,24 +796,34 @@ def get_balance_details(book_type, tanker=None, equipment=None, posting_date=Non
     if not posting_date:
         frappe.throw("Posting Date is mandatory.")
 
+    data = {}  # Initialize data dictionary to store results
+
     if book_type == "Common" and equipment:
         # Fetch tanker balances
-        received_till = get_pol_till("Stock", equipment, posting_date, pol_type)
-        issue_till = get_pol_till("Issue", equipment, posting_date, pol_type)
+        received_till = get_pol_tills("Stock", equipment, posting_date, pol_type)
+        issue_till = get_pol_tills("Issue", equipment, posting_date, pol_type)
         tanker_balance = flt(received_till) - flt(issue_till)
-        return {"tanker_balance": tanker_balance, "tank_balance": 0}
+        data = {"tanker_balance": tanker_balance, "tank_balance": 0}
 
     elif book_type == "Own" and equipment:
         # Fetch equipment balances
-        received_till = get_pol_till("Stock", equipment, posting_date, pol_type)
-        issue_till = get_pol_till("Issue", equipment, posting_date, pol_type)
+        received_till = get_pol_tills("Receive", equipment, posting_date, pol_type)
+        issue_till = get_pol_tills("Issue", equipment, posting_date, pol_type)
         tank_balance = flt(received_till) - flt(issue_till)
-        return {"tanker_balance": 0, "tank_balance": tank_balance}
+        data = {"tanker_balance": 0, "tank_balance": tank_balance}
 
     else:
         frappe.throw("Invalid inputs. Please ensure the correct book_type, tanker, or equipment is provided.")
 
+    # Optional: If you want to include detailed balance data
+    if received_till or issue_till:
+        data.update({
+            'received': received_till,
+            'issued': issue_till,
+            'balance': flt(received_till) - flt(issue_till)
+        })
 
+    return data
 
 def get_permission_query_conditions(user):
 	if not user: user = frappe.session.user
