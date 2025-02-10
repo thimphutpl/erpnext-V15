@@ -1,0 +1,122 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-01-20 11:27:49.474167",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "project",
+  "expense_for",
+  "business_activity",
+  "column_break_fmvm",
+  "expense_type",
+  "id_card",
+  "equipment_number",
+  "time",
+  "column_break_daur",
+  "rate",
+  "quantity",
+  "amount",
+  "section_break_nutk",
+  "remarks"
+ ],
+ "fields": [
+  {
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Project",
+   "options": "Project",
+   "reqd": 1
+  },
+  {
+   "fieldname": "expense_for",
+   "fieldtype": "Select",
+   "hidden": 1,
+   "label": "Expense For",
+   "options": "HSD\nHire Charge\nLubricant\nOperator Allowance\nOAP Salary\nMuster Roll Employee\nGCE\nOvertime Payment\nDFG Soelra\nThai Salary\nIndian Operators Salary\nRepair and Maintenance\nOJT\nContract Employee"
+  },
+  {
+   "fieldname": "business_activity",
+   "fieldtype": "Link",
+   "label": "Business Activity",
+   "options": "Business Activity",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_fmvm",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "expense_type",
+   "fieldtype": "Dynamic Link",
+   "label": "Equipment/OAP/GCE/MR",
+   "options": "expense_for"
+  },
+  {
+   "depends_on": "eval:doc.expense_for == \"Employee\"",
+   "fieldname": "id_card",
+   "fieldtype": "Data",
+   "label": "CID No."
+  },
+  {
+   "depends_on": "eval:doc.expense_for == \"Equipment\"",
+   "fieldname": "equipment_number",
+   "fieldtype": "Data",
+   "label": "Registration Number",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.expense_for == \"Equipment\"",
+   "fieldname": "time",
+   "fieldtype": "Float",
+   "label": "Time"
+  },
+  {
+   "fieldname": "column_break_daur",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "rate",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Rate",
+   "reqd": 1
+  },
+  {
+   "fieldname": "quantity",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Quantity/No of days"
+  },
+  {
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_nutk",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Long Text",
+   "label": "Remarks"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-02-10 12:34:02.583254",
+ "modified_by": "Administrator",
+ "module": "Accounts",
+ "name": "Expense Allocation Item",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
