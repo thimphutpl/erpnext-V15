@@ -25,6 +25,6 @@ class ImprestRecoupItem(Document):
 		recoup_type: DF.Link | None
 		reference_name: DF.DynamicLink | None
 		reference_type: DF.Link | None
-		remarks: DF.SmallText | None
+		remarks: DF.Data
 	# end: auto-generated types
 	pass
