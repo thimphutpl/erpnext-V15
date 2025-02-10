@@ -775,34 +775,35 @@ class Asset(AccountsController):
 				})
 			je.submit()
 		if self.is_existing_asset:
-			je = frappe.new_doc("Journal Entry")
-			je.flags.ignore_permissions = 1 
-			je.update({
-				"voucher_type": "Journal Entry",
-				"naming_series": "Adjustment",
-				"company": self.company,
-				"remark": self.name + " (" + self.asset_name + ") Asset Issued",
-				"user_remark": self.name + " (" + self.asset_name + ") Asset Issued",
-				"posting_date": self.posting_date if self.posting_date else self.purchase_date,
-				"branch": self.branch
-				})
-			#debit account update
-			je.append("accounts", {
-				"account": self.credit_account,
-				"debit_in_account_currency": self.opening_accumulated_depreciation,
-				"reference_type": "Asset",
-				"reference_name": self.name,
-				"cost_center": self.cost_center
-				})
-			#credit account update
-			je.append("accounts", {
-				"account": self.accumulated_depreciation_account,
-				"credit_in_account_currency": self.opening_accumulated_depreciation,
-				"reference_type": "Asset",
-				"reference_name": self.name,
-				"cost_center": self.cost_center
-				})
-			je.submit()
+			if self.opening_accumulated_depreciation > 0:
+				je = frappe.new_doc("Journal Entry")
+				je.flags.ignore_permissions = 1 
+				je.update({
+					"voucher_type": "Journal Entry",
+					"naming_series": "Adjustment",
+					"company": self.company,
+					"remark": self.name + " (" + self.asset_name + ") Asset Issued",
+					"user_remark": self.name + " (" + self.asset_name + ") Asset Issued",
+					"posting_date": self.posting_date if self.posting_date else self.purchase_date,
+					"branch": self.branch
+					})
+				#debit account update
+				je.append("accounts", {
+					"account": self.credit_account,
+					"debit_in_account_currency": self.opening_accumulated_depreciation,
+					"reference_type": "Asset",
+					"reference_name": self.name,
+					"cost_center": self.cost_center
+					})
+				#credit account update
+				je.append("accounts", {
+					"account": self.accumulated_depreciation_account,
+					"credit_in_account_currency": self.opening_accumulated_depreciation,
+					"reference_type": "Asset",
+					"reference_name": self.name,
+					"cost_center": self.cost_center
+					})
+				je.submit()
 
 	def make_gl_entries(self):
 		gl_entries = []
@@ -840,7 +841,6 @@ class Asset(AccountsController):
 					item=self,
 				)
 			)
-
 		if gl_entries:
 			from erpnext.accounts.general_ledger import make_gl_entries
 
