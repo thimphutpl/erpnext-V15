@@ -626,9 +626,11 @@ class PurchaseOrder(BuyingController):
 			for d in self.items:
 				if d.project and "Service" in frappe.db.get_value("Item", d.item_code, "item_group"):
 					project = frappe.get_doc("Project",d.project)
-					task = frappe.get_doc("Task",d.task)
+					if d.task:
+						task = frappe.get_doc("Task",d.task)
 					p_row = project.append("task_material_item", {})
-					t_row = task.append("task_material_item", {})
+					if d.task:
+						t_row = task.append("task_material_item", {})
 					#Project Update
 					p_row.item = d.item_code
 					p_row.item_name = d.item_name
@@ -637,35 +639,41 @@ class PurchaseOrder(BuyingController):
 					p_row.reference_type = "Purchase Order"
 					p_row.reference_name = self.name
 					#Task Update
-					t_row.item = d.item_code
-					t_row.item_name = d.item_name
-					t_row.item_uom = d.uom
-					t_row.item_quantity = d.qty
-					t_row.reference_type = "Purchase Order"
-					t_row.reference_name = self.name
+					if d.task:
+						t_row.item = d.item_code
+						t_row.item_name = d.item_name
+						t_row.item_uom = d.uom
+						t_row.item_quantity = d.qty
+						t_row.reference_type = "Purchase Order"
+						t_row.reference_name = self.name
 					if d.net_rate > 0:
 						#Project
 						p_row.item_rate = d.base_net_rate if d.base_net_rate > 0 else d.net_rate
 						p_row.item_rate = d.base_net_rate if d.base_net_rate > 0 else d.net_rate
 						#Task
-						t_row.item_rate = d.base_net_rate if d.base_net_rate > 0 else d.net_rate
-						t_row.item_rate = d.base_net_rate if d.base_net_rate > 0 else d.net_rate
+						if d.task:
+							t_row.item_rate = d.base_net_rate if d.base_net_rate > 0 else d.net_rate
+							t_row.item_rate = d.base_net_rate if d.base_net_rate > 0 else d.net_rate
 					else:
 						#Project
 						p_row.item_rate = d.base_rate if d.base_rate > 0 else d.rate
 						#Task
-						t_row.item_rate = d.base_rate if d.base_rate > 0 else d.rate
+						if d.task:
+							t_row.item_rate = d.base_rate if d.base_rate > 0 else d.rate
 					if d.net_amount > 0:
 						#Project
 						p_row.item_amount = d.base_net_amount if d.base_net_amount > 0 else d.net_amount
 						#Task
-						t_row.item_amount = d.base_net_amount if d.base_net_amount > 0 else d.net_amount
+						if d.task:
+							t_row.item_amount = d.base_net_amount if d.base_net_amount > 0 else d.net_amount
 					else:
 						#Project
 						p_row.item_amount = d.base_amount if d.base_amount > 0 else d.amount
 						#Task
-						t_row.item_amount = d.base_amount if d.base_amount > 0 else d.amount
-					task.save(ignore_permissions=True)
+						if d.task:
+							t_row.item_amount = d.base_amount if d.base_amount > 0 else d.amount
+					if d.task:
+						task.save(ignore_permissions=True)
 					project.save(ignore_permissions=True)
 		elif self.docstatus == 2:
 			for item in self.items:
@@ -684,7 +692,7 @@ class PurchaseOrder(BuyingController):
 	def update_project_maintenance_cost(self):
 		""" update the cost of project/task or maintenance """
 		for a in self.items:
-			if "Service" in frappe.db.get_value("Item", item.item_code, "item_group"):
+			if "Service" in frappe.db.get_value("Item", a.item_code, "item_group"):
 				stores_cost = service_cost = 0
 				if a.net_amount > 0:
 					amount = a.base_net_amount if a.base_net_amount > 0 else a.net_amount
@@ -696,21 +704,27 @@ class PurchaseOrder(BuyingController):
 					stores_cost = amount
 				if a.project:
 					project = frappe.get_doc("Project", a.project)
-					task = frappe.get_doc("Task", a.task)
+					if a.task:
+						task = frappe.get_doc("Task", a.task)
+
 					# total_previous_cost = frappe.db.get_value("Project", a.project, ["material_cost", "services_cost", "total_cost"], as_dict=1)
 					# task_previous_cost = frappe.db.get_value("Task", a.task, ["material_cost", "services_cost", "total_cost"],as_dict=1)
 					project_service_cost = (flt(project.services_cost) + flt(service_cost)) if self.docstatus == 1 else (flt(project.services_cost) - flt(service_cost))
-					task_service_cost = (flt(task.services_cost) + flt(service_cost)) if self.docstatus == 1 else (flt(task.services_cost) - flt(service_cost))
+					# task_service_cost = (flt(task.services_cost) + flt(service_cost)) if self.docstatus == 1 else (flt(task.services_cost) - flt(service_cost))
 					project_store_cost = (flt(project.material_cost) + flt(stores_cost)) if self.docstatus == 1 else (flt(project.material_cost) - flt(stores_cost))
-					task_store_cost = (flt(task.material_cost) + flt(stores_cost)) if self.docstatus == 1 else (flt(task.material_cost) - flt(stores_cost))
-					total_task_cost = (flt(task.total_cost) + flt(amount)) if self.docstatus == 1 else (flt(task.total_cost) - flt(amount))
+					# task_store_cost = (flt(task.material_cost) + flt(stores_cost)) if self.docstatus == 1 else (flt(task.material_cost) - flt(stores_cost))
+					# total_task_cost = (flt(task.total_cost) + flt(amount)) if self.docstatus == 1 else (flt(task.total_cost) - flt(amount))
 					total_overall_cost = (flt(project.total_cost) + flt(amount)) if self.docstatus == 1 else (flt(project.total_cost) - flt(amount))
 					project.db_set("total_cost",total_overall_cost)
 					project.db_set("services_cost",project_service_cost)
 					project.db_set("material_cost",project_store_cost)
-					task.db_set("total_cost",total_task_cost)
-					task.db_set("services_cost",task_service_cost)
-					task.db_set("material_cost",task_store_cost)
+					if a.task:
+						task_service_cost = (flt(task.services_cost) + flt(service_cost)) if self.docstatus == 1 else (flt(task.services_cost) - flt(service_cost))
+						task_store_cost = (flt(task.material_cost) + flt(stores_cost)) if self.docstatus == 1 else (flt(task.material_cost) - flt(stores_cost))
+						total_task_cost = (flt(task.total_cost) + flt(amount)) if self.docstatus == 1 else (flt(task.total_cost) - flt(amount))
+						task.db_set("total_cost",total_task_cost)
+						task.db_set("services_cost",task_service_cost)
+						task.db_set("material_cost",task_store_cost)
 					# frappe.db.sql("update `tabProject` set total_cost={} where name ='{}'".format(total_overall_cost, self.reference_name))
 					# frappe.db.sql("""UPDATE `tabTask` SET total_cost={tot_cost}, service_cost={ser_cost}, material_cost={mat_cost} WHERE name='{task}'""".format(tot_cost=total_task_cost, ser_cost=total_service_cost, mat_cost=total_store_cost, task =self.task))
 
