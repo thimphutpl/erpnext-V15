@@ -460,12 +460,12 @@ class StockEntry(StockController):
 			if self.for_project == 1 and self.stock_entry_type in ("Material Issue", "Material Return"):
 				if not row.project:
 					frappe.throw("Project is Mandatory in row {} in Items table.".format(count))
-				if not row.task:
-					frappe.throw("Task is Mandatory in row {} in Items table.".format(count))
-				if row.project and not row.task:
-					frappe.throw("Task is Mandatory in row {} in Items table.".format(count))
-				if not row.project and row.task:
-					frappe.throw("Project is Mandatory in row {} in Items table.".format(count))
+				# if not row.task:
+				# 	frappe.throw("Task is Mandatory in row {} in Items table.".format(count))
+				# if row.project and not row.task:
+				# 	frappe.throw("Task is Mandatory in row {} in Items table.".format(count))
+				# if not row.project and row.task:
+				# 	frappe.throw("Project is Mandatory in row {} in Items table.".format(count))
 			if row.item_ref and self.stock_entry_type !="Material Return":
 				frappe.throw("Choose Stock Entry Type as Material Return or Delete all data from Row")
 			count += 1

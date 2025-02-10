@@ -178,12 +178,12 @@ class MaterialRequest(BuyingController):
 			for a in self.items:
 				if not a.project:
 					frappe.throw("Project is Mandatory in row {} in Items table.".format(row))
-				if not a.task:
-					frappe.throw("Task is Mandatory in row {} in Items table.".format(row))
-				if a.project and not a.task:
-					frappe.throw("Task is Mandatory in row {} in Items table.".format(row))
-				if not a.project and a.task:
-					frappe.throw("Project is Mandatory in row {} in Items table.".format(row))
+				# if not a.task:
+				# 	frappe.throw("Task is Mandatory in row {} in Items table.".format(row))
+				# if a.project and not a.task:
+				# 	frappe.throw("Task is Mandatory in row {} in Items table.".format(row))
+				# if not a.project and a.task:
+				# 	frappe.throw("Project is Mandatory in row {} in Items table.".format(row))
 				row += 1
 
 	def validate_material_request_type(self):
