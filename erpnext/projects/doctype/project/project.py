@@ -603,6 +603,8 @@ class Project(Document):
 						group_achievement_percent += flt(tsk.task_achievement_percent,7)
 				# if no_of_sub_tasks > 0:
 				group_wqc = flt(group_weightage,2)
+				if group_wqc > 100:
+					group_wqc = 100.00
 			task.update({
 				"activity": t.activity,
 				"subject": t.task,
@@ -728,6 +730,8 @@ class Project(Document):
 					# group_wqc = flt(sum_wqc,2)
 					# task.task_weightage = group_weightage
 					# task.task_achievement_percent = flt(flt(group_wqc) * flt()
+					if group_wqc > 100:
+						group_wqc = 100.00
 					task.work_quantity_complete = group_wqc
 					# frappe.db.sql("""
 					# 	update `tabActivity Tasks` set task_duration = {}, task_weightage = '{}', task_achievement_percent = '{}' where name = '{}'
