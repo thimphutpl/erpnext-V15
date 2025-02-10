@@ -108,7 +108,7 @@ def get_depreciation_details(filters):
 def get_data(filters):
     query = """
             SELECT
-            a.name, a.asset_name, a.asset_category, a.asset_sub_category,
+            a.name, a.asset_name, a.asset_category, a.asset_sub_category, "No" AS is_free_asset,
             a.vehicle_number, a.serial_number, a.old_asset_code,
             a.cost_center, a.purchase_date, a.posting_date as date_of_issue, a.status, a.asset_status, 
             a.disposal_date, a.journal_entry_for_scrap,
@@ -176,6 +176,39 @@ def get_data(filters):
             INNER JOIN `tabAsset Finance Book` AS f ON f.parent = a.name       
         WHERE a.docstatus = 1 
         AND a.purchase_date <= '{to_date}'
+        AND a.is_free_asset = 0
+        AND (
+            a.status not in ('Scrapped', 'Sold')
+            OR
+            (a.status in ('Scrapped', 'Sold') AND a.disposal_date >= '{from_date}')
+        )
+        UNION
+        SELECT
+            a.name, a.asset_name, a.asset_category, a.asset_sub_category, "Yes" AS is_free_asset,
+            a.vehicle_number, a.serial_number, a.old_asset_code,
+            a.cost_center, a.purchase_date, a.posting_date as date_of_issue, a.status, a.asset_status, 
+            a.disposal_date, a.journal_entry_for_scrap,
+            a.custodian as issued_to, a.custodian_name as employee_name,
+            a.asset_quantity, a.asset_rate, a.additional_value,
+            a.gross_purchase_amount, 0 AS expected_value_after_useful_life,
+                        a.opening_accumulated_depreciation, 0 AS value_after_depreciation,
+                        a.income_tax_opening_depreciation_amount as iopening,
+            a.residual_value, a.remarks,
+            0 AS gross_opening,
+            0 AS gross_addition,
+            0 AS gross_adjustment,
+            0 AS dep_opening,
+            0 AS dep_addition,
+            0 AS dep_adjustment,
+            0 AS opening_income,
+            0 AS total_number_of_depreciations,
+            0 as depreciation_percent,
+            0 AS depreciation_income_tax
+                FROM 
+            `tabAsset` AS a      
+        WHERE a.docstatus = 1 
+        AND a.available_for_use_date <= '{to_date}'
+        AND a.is_free_asset = 1
         AND (
             a.status not in ('Scrapped', 'Sold')
             OR
@@ -232,6 +265,7 @@ def get_data(filters):
                 "serial_number": a.serial_number,
                 "asset_category": a.asset_category,
                 "asset_sub_category": a.asset_sub_category,
+                "is_free_asset": a.is_free_asset,
                 "issued_to": a.issued_to,
                 "employee_name": a.employee_name,
                 "designation": a.designation,
@@ -334,6 +368,13 @@ def get_columns():
             "fieldtype": "Link",
             "options":"Asset Category",
             "width": 150
+        },
+        {
+            "fieldname": "is_free_asset",
+            "label": _("Is Free Asset"),
+            "fieldtype": "Select",
+            "options": ["Yes", "No"],
+            "width": 80
         },
         # {
         #     "fieldname": "asset_sub_category",

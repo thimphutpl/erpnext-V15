@@ -83,6 +83,7 @@ class Asset(AccountsController):
 		depreciation_method: DF.Literal["", "Straight Line", "Double Declining Balance", "Manual"]
 		disable_depreciation: DF.Check
 		disposal_date: DF.Date | None
+		equity_account: DF.Link | None
 		finance_books: DF.Table[AssetFinanceBook]
 		frequency_of_depreciation: DF.Int
 		gross_purchase_amount: DF.Currency
@@ -94,6 +95,7 @@ class Asset(AccountsController):
 		insurer: DF.Data | None
 		is_composite_asset: DF.Check
 		is_existing_asset: DF.Check
+		is_free_asset: DF.Check
 		is_fully_depreciated: DF.Check
 		item_code: DF.Link
 		item_name: DF.ReadOnly | None
@@ -126,6 +128,7 @@ class Asset(AccountsController):
 			if self.old_asset_code:
 				self.name = self.old_asset_code
 	def validate(self):
+		self.validate_free_asset()
 		self.validate_asset_values()
 		self.validate_asset_and_reference()
 		self.validate_item()
@@ -138,7 +141,7 @@ class Asset(AccountsController):
 		if not self.split_from:
 			self.prepare_depreciation_data()
 
-			if self.calculate_depreciation:
+			if self.calculate_depreciation and self.is_free_asset == 1:
 				update_draft_asset_depr_schedules(self)
 
 				if frappe.db.exists("Asset", self.name):
@@ -208,6 +211,12 @@ class Asset(AccountsController):
 
 	def after_delete(self):
 		add_asset_activity(self.name, _("Asset deleted"))
+
+	def validate_free_asset(self):
+		if self.is_free_asset == 1:
+			self.disable_depreciation = 1
+			if not self.gross_purchase_amount or self.gross_purchase_amount == 0:
+				self.gross_purchase_amount = self.asset_rate
 
 	def validate_asset_and_reference(self):
 		if self.purchase_invoice or self.purchase_receipt:
@@ -386,7 +395,7 @@ class Asset(AccountsController):
 		if self.is_existing_asset:
 			return
 
-		if self.gross_purchase_amount and self.gross_purchase_amount != self.purchase_amount:
+		if self.gross_purchase_amount and self.gross_purchase_amount != self.purchase_amount and self.is_free_asset == 0:
 			error_message = _(
 				"Gross Purchase Amount should be <b>equal</b> to purchase amount of one single Asset."
 			)
@@ -767,14 +776,14 @@ class Asset(AccountsController):
 				})
 			#credit account update
 			je.append("accounts", {
-				"account": self.credit_account,
+				"account": self.credit_account if self.is_free_asset == 0 else self.equity_account,
 				"credit_in_account_currency": self.gross_purchase_amount,
 				"reference_type": "Asset",
 				"reference_name": self.name,
 				"cost_center": self.cost_center
 				})
 			je.submit()
-		if self.is_existing_asset:
+		if self.is_existing_asset and self.is_free_asset == 0:
 			if self.opening_accumulated_depreciation > 0:
 				je = frappe.new_doc("Journal Entry")
 				je.flags.ignore_permissions = 1 
@@ -1043,17 +1052,30 @@ def get_item_details(item_code, asset_category, gross_purchase_amount, asset_sub
 	return books
 
 @frappe.whitelist()
-def get_account_info(asset_category):
+def get_account_info(asset_category, is_free_asset, company):
 	asset_category_doc = frappe.get_doc("Asset Category", asset_category)
 	asset_cat = []
+	if is_free_asset == 1 and not frappe.db.exists("Company", company, "asset_equity_account"):
+		frappe.throw("Asset Equity Account not set in Company Settings.")
+	equity_account = frappe.db.get_value("Company", company, "asset_equity_account")
 	for d in asset_category_doc.accounts:
-			asset_cat.append(
-				{
-					"fixed_asset_account": d.fixed_asset_account,
-					"accumulated_depreciation_account":d.accumulated_depreciation_account,
-					"credit_account":d.credit_account,
-				}
-			)
+			if is_free_asset == 0:
+				asset_cat.append(
+					{
+						"fixed_asset_account": d.fixed_asset_account,
+						"accumulated_depreciation_account":d.accumulated_depreciation_account,
+						"credit_account":d.credit_account,
+					}
+				)
+			else:
+				asset_cat.append(
+					{
+						"fixed_asset_account": d.fixed_asset_account,
+						"accumulated_depreciation_account":d.accumulated_depreciation_account,
+						"credit_account":d.credit_account,
+						"equity_account": equity_account
+					}
+				)
 
 	return asset_cat
 

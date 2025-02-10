@@ -261,7 +261,7 @@ frappe.ui.form.on("Asset", {
 		if (frm.doc.purchase_receipt && frm.doc.purchase_invoice && frm.doc.docstatus === 1) {
 			frm.set_df_property("purchase_invoice", "read_only", 1);
 			frm.set_df_property("purchase_receipt", "read_only", 1);
-		} else if (frm.doc.is_existing_asset || frm.doc.is_composite_asset) {
+		} else if (frm.doc.is_existing_asset || frm.doc.is_composite_asset || frm.doc.is_free_asset == 1) {
 			frm.toggle_reqd("purchase_receipt", 0);
 			frm.toggle_reqd("purchase_invoice", 0);
 		} else if (frm.doc.purchase_receipt) {
@@ -277,6 +277,11 @@ frappe.ui.form.on("Asset", {
 			frm.set_df_property("purchase_receipt", "read_only", 0);
 			frm.toggle_reqd("purchase_invoice", 1);
 			frm.set_df_property("purchase_invoice", "read_only", 0);
+		}
+		if (frm.doc.is_existing_asset || frm.doc.is_composite_asset || frm.doc.is_free_asset == 1) {
+			frm.toggle_reqd("purchase_receipt", 0);
+			frm.toggle_reqd("purchase_invoice", 0);
+			frm.toggle_reqd("purchase_date", 0);
 		}
 	},
 
@@ -497,14 +502,15 @@ frappe.ui.form.on("Asset", {
 			},
 		});
 	},
-
-	asset_category: function (frm) {
+	is_free_asset: function(frm){
+		frm.trigger("toggle_reference_doc");
 		if (!frm.doc.asset_category) return
-		
 		frappe.call({
 			method: "erpnext.assets.doctype.asset.asset.get_account_info",
 			args: {
-				asset_category: frm.doc.asset_category
+				asset_category: frm.doc.asset_category,
+				is_free_asset: frm.doc.is_free_asset,
+				company: frm.doc.company
 			},
 			callback: function (r, rt) {
 				// console.log(r.message)
@@ -520,6 +526,41 @@ frappe.ui.form.on("Asset", {
 					frm.refresh_field('accumulated_depreciation_account');
 
 					frm.set_value("credit_account", r.message[0].credit_account);
+					if(frm.doc.is_free_asset == 1){
+						frm.set_value("equity_account", r.message[0].equity_account);
+					}
+					// frm.set_value("credit_account", r.message);
+					frm.refresh_field('credit_account');
+				}
+			},
+		});
+	},
+	asset_category: function (frm) {
+		if (!frm.doc.asset_category) return
+		frappe.call({
+			method: "erpnext.assets.doctype.asset.asset.get_account_info",
+			args: {
+				asset_category: frm.doc.asset_category,
+				is_free_asset: frm.doc.is_free_asset,
+				company: frm.doc.company
+			},
+			callback: function (r, rt) {
+				// console.log(r.message)
+				// console.log(r.message[0].fixed_asset_account)
+				if (r.message) {
+					frm.set_value("asset_account", r.message[0].fixed_asset_account);
+					// frm.set_value("credit_account", r.message);
+					frm.refresh_field('asset_account');
+					
+
+					frm.set_value("accumulated_depreciation_account", r.message[0].accumulated_depreciation_account);
+					// frm.set_value("credit_account", r.message);
+					frm.refresh_field('accumulated_depreciation_account');
+
+					frm.set_value("credit_account", r.message[0].credit_account);
+					if(frm.doc.is_free_asset == 1){
+						frm.set_value("equity_account", r.message[0].equity_account);
+					}
 					// frm.set_value("credit_account", r.message);
 					frm.refresh_field('credit_account');
 				}

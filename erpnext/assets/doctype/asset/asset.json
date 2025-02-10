@@ -15,6 +15,7 @@
   "asset_owner",
   "asset_owner_company",
   "is_existing_asset",
+  "is_free_asset",
   "old_asset_code",
   "is_composite_asset",
   "supplier",
@@ -41,6 +42,7 @@
   "asset_account",
   "credit_account",
   "accumulated_depreciation_account",
+  "equity_account",
   "purchase_details_section",
   "purchase_receipt",
   "purchase_invoice",
@@ -225,8 +227,8 @@
    "fieldname": "purchase_date",
    "fieldtype": "Date",
    "label": "Purchase Date",
-   "mandatory_depends_on": "eval:!doc.is_existing_asset && !doc.is_composite_asset",
-   "read_only_depends_on": "eval:!doc.is_existing_asset && !doc.is_composite_asset"
+   "mandatory_depends_on": "eval:!doc.is_existing_asset && !doc.is_composite_asset && !doc.is_free_asset;",
+   "read_only_depends_on": "eval:!doc.is_existing_asset && !doc.is_composite_asset && !doc.is_free_asset"
   },
   {
    "fieldname": "disposal_date",
@@ -419,7 +421,7 @@
    "fieldtype": "Column Break"
   },
   {
-   "depends_on": "eval:!doc.is_composite_asset && !doc.is_existing_asset",
+   "depends_on": "eval:!doc.is_composite_asset && !doc.is_existing_asset && !doc.is_free_asset",
    "fieldname": "purchase_receipt",
    "fieldtype": "Link",
    "label": "Purchase Receipt",
@@ -428,7 +430,7 @@
    "print_hide": 1
   },
   {
-   "depends_on": "eval:!doc.is_composite_asset && !doc.is_existing_asset",
+   "depends_on": "eval:!doc.is_composite_asset && !doc.is_existing_asset && !doc.is_free_asset",
    "fieldname": "purchase_invoice",
    "fieldtype": "Link",
    "label": "Purchase Invoice",
@@ -695,6 +697,19 @@
    "fieldtype": "Link",
    "label": "Accumulated Depreciation Account",
    "options": "Account"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_free_asset",
+   "fieldtype": "Check",
+   "label": "Is Free Asset"
+  },
+  {
+   "depends_on": "eval:doc.is_free_asset == 1;",
+   "fieldname": "equity_account",
+   "fieldtype": "Link",
+   "label": "Equity Account",
+   "options": "Account"
   }
  ],
  "idx": 72,
@@ -733,7 +748,7 @@
    "link_fieldname": "target_asset"
   }
  ],
- "modified": "2025-01-23 11:33:45.705403",
+ "modified": "2025-02-10 14:41:23.850262",
  "modified_by": "Administrator",
  "module": "Assets",
  "name": "Asset",
