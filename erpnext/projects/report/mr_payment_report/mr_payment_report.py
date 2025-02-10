@@ -35,8 +35,8 @@ def get_columns():
 	]
 
 def get_data(filters):
-	query = """select p.branch, p.employee_type, i.employee, i.person_name, i.id_card, i.designation, i.qualification, i.bank,
-			i.account_no, i.fiscal_year, i.month, i.number_of_days, i.daily_rate,i.total_wage,  i.number_of_hours, 
+	query = """select p.branch, p.employee_type, i.employee, i.person_name, i.id_card, i.designation, i.qualification, (select bank_name from `tabMuster Roll Employee` where name=i.employee) bank,
+			(select bank_ac_no from `tabMuster Roll Employee` where name=i.employee) bank_acc, i.fiscal_year, i.month, i.number_of_days, i.daily_rate,i.total_wage,  i.number_of_hours, 
 			i.hourly_rate, i.total_ot_amount, 
 			(i.total_wage + i.total_ot_amount), i.mess_deduction, i.total_amount 
 			from `tabMR Payment Item` as i, `tabProcess MR Payment` as p 
