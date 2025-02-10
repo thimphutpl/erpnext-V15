@@ -21,6 +21,8 @@
   "user_id",
   "scan_sign",
   "naming_series",
+  "start_grade",
+  "maximum_grade",
   "column_break_9",
   "status",
   "gender",
@@ -1123,13 +1125,28 @@
    "fieldtype": "Link",
    "label": "EAS Group",
    "options": "EAS Group"
+  },
+  {
+   "fieldname": "start_grade",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Start Grade",
+   "options": "Employee Grade"
+  },
+  {
+   "fieldname": "maximum_grade",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Maximum Grade",
+   "options": "Employee Grade",
+   "read_only": 1
   }
  ],
  "icon": "fa fa-user",
  "idx": 24,
  "image_field": "image",
  "links": [],
- "modified": "2025-01-14 11:46:42.199622",
+ "modified": "2025-02-10 13:32:18.431987",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee",

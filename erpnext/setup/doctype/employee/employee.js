@@ -165,7 +165,29 @@ frappe.ui.form.on("Employee", {
 				frm.set_value("user_id", r.message);
 			}
 		});
-	}
+	},
+	start_grade: function(frm) {
+        // Fetch the maximum_grade when start_grade is selected
+        if (frm.doc.start_grade) {
+            frappe.call({
+                method: 'frappe.client.get_value',
+                args: {
+                    'doctype': 'Employee Grade',
+                    'filters': { 'name': frm.doc.start_grade },
+                    'fieldname': 'maximum_grade'
+                },
+                callback: function(r) {
+                    if (r.message) {
+                        // Set the maximum_grade field in the Employee form
+                        frm.set_value('maximum_grade', r.message.maximum_grade);
+                    }
+                }
+            });
+        } else {
+            // Clear the maximum_grade field if start_grade is empty
+            frm.set_value('maximum_grade', '');
+        }
+    }
 });
 
 cur_frm.cscript = new erpnext.setup.EmployeeController({
