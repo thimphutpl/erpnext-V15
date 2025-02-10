@@ -116,8 +116,8 @@ class ImprestRecoup(StockController):
 				gl_entries.append(
 					self.get_gl_dict({
 						"account": a.account,
-						"credit": round(flt(a.amount) ,2),
-						"credit_in_account_currency": round(flt(a.amount) ,2),
+						"debit": round(flt(a.amount) ,2),
+						"debit_in_account_currency":round(flt(a.amount) ,2),
 						"voucher_no": self.name,
 						"voucher_type": self.doctype,
 						"project":a.project,
@@ -130,8 +130,9 @@ class ImprestRecoup(StockController):
 			gl_entries.append(
 				self.get_gl_dict({
 					"account": bank_account,
-					"debit": self.total_amount,
-					"debit_in_account_currency": self.total_amount,
+					"debit": ,
+					"credit": self.total_amount,
+					"credit_in_account_currency": self.total_amount,
 					"voucher_no": self.name,
 					"voucher_type": self.doctype,
 					"cost_center": self.cost_center,
