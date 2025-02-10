@@ -145,13 +145,13 @@ class JournalEntry(AccountsController):
 		self.validate_inter_company_accounts()
 		self.validate_depr_entry_voucher_type()
 		self.validate_advance_accounts()
-		for a in self.accounts:
-			# if a.project:
-			if a.project:
-				if self.voucher_type != "Opening Entry" and not a.task:
-					frappe.throw("Task is mandatory in row {}".format(row))
-				# if not a.business_activity:
-				# 	frappe.throw("Business Activity is mandatory")
+		# for a in self.accounts:
+		# 	# if a.project:
+		# 	if a.project:
+		# 		if self.voucher_type != "Opening Entry" and not a.task:
+		# 			frappe.throw("Task is mandatory in row {}".format(row))
+		# 		# if not a.business_activity:
+		# 		# 	frappe.throw("Business Activity is mandatory")
 		if self.docstatus == 0:
 			self.apply_tax_withholding()
 
@@ -269,12 +269,12 @@ class JournalEntry(AccountsController):
 				# if a.project:
 				if a.task and not a.project:
 					frappe.throw("Project is Mandatory in row {}".format(row))
-				if not a.task and a.project and self.is_opening == "No":
-					frappe.throw("Task is Mandatory in row {}".format(row))
+				# if not a.task and a.project and self.is_opening == "No":
+				# 	frappe.throw("Task is Mandatory in row {}".format(row))
 				for_project = 1
 				if a.project:
-					if self.voucher_type != "Opening Entry" and not a.task:
-						frappe.throw("Task is Mandatory in row {}".format(row))
+					# if self.voucher_type != "Opening Entry" and not a.task:
+					# 	frappe.throw("Task is Mandatory in row {}".format(row))
 					# self.update_project_cost(a.reference_name, a.is_advance, a.is_settlement, a.debit_in_account_currency, a.advance_settlement_id) // why debit in account currency
 					self.update_project_cost(a.project, a.is_advance, a.credit, a.debit, a.task)
 				# if a.task:
@@ -294,28 +294,32 @@ class JournalEntry(AccountsController):
 			for d in self.accounts:
 				if d.project:
 					project = frappe.get_doc("Project",d.project)
-					task = frappe.get_doc("Task",d.task)
 					p_row = project.append("other_doc_item", {})
-					t_row = task.append("other_doc_item", {})
 					#Project Update
 					p_row.reference_type = "Journal Entry"
 					p_row.reference_name = self.name
 					p_row.voucher_type = self.voucher_type
-					#Task Update
-					t_row.reference_type = "Journal Entry"
-					t_row.reference_name = self.name
-					t_row.voucher_type = self.voucher_type
+					if d.task:
+						task = frappe.get_doc("Task",d.task)
+						t_row = task.append("other_doc_item", {})
+						#Task Update
+						t_row.reference_type = "Journal Entry"
+						t_row.reference_name = self.name
+						t_row.voucher_type = self.voucher_type
 					if d.debit > 0:
 						#Project
 						p_row.amount = d.debit
 						#Task
-						t_row.amount = d.debit
+						if d.task:
+							t_row.amount = d.debit
 					elif d.credit > 0:
 						#Project
 						p_row.amount = -1 * d.credit
 						#Task
-						t_row.amount = -1 * d.credit
-					task.save(ignore_permissions=True)
+						if d.task:
+							t_row.amount = -1 * d.credit
+					if d.task:
+						task.save(ignore_permissions=True)
 					project.load_activity_tasks()
 					project.save(ignore_permissions=True)
 		elif self.docstatus == 2:
@@ -373,14 +377,15 @@ class JournalEntry(AccountsController):
 			frappe.db.sql("update `tabProject` set opening_balance = {}, total_cost = {} where name ='{}'".format(total_opening_balance, total_project_cost, reference_name))
 		elif self.is_opening == 'No' and is_advance == "No" and self.voucher_type != "Credit Note":
 			previous_other_expenses = frappe.db.get_value("Project", reference_name, ["other_expenses","total_cost"],as_dict=1)
-			previous_task_other_expenses = frappe.db.get_value("Task", task, ["other_expenses","total_cost"],as_dict=1)
 			total_other_expenses = (flt(previous_other_expenses.other_expenses) + flt(debit_in_account_currency)) if self.docstatus == 1 else (flt(previous_other_expenses.other_expenses) - flt(debit_in_account_currency))
-			total_task_other_expenses = (flt(previous_task_other_expenses.other_expenses) + flt(debit_in_account_currency)) if self.docstatus == 1 else (flt(previous_task_other_expenses.other_expenses) - flt(debit_in_account_currency))
 			# total_opening_adjustment = (flt(previous_opening.opening_adjustment) + flt(credit_in_account_currency)) if self.docstatus == 1 else (flt(previous_opening.opening_adjustment) - flt(credit_in_account_currency))
 			total_project_cost = (flt(previous_other_expenses.total_cost) + flt(debit_in_account_currency)) if self.docstatus == 1 else (flt(previous_other_expenses.total_cost) - flt(debit_in_account_currency))
-			total_task_cost = (flt(previous_task_other_expenses.total_cost) + flt(debit_in_account_currency)) if self.docstatus == 1 else (flt(previous_task_other_expenses.total_cost) - flt(debit_in_account_currency))
 			frappe.db.sql("update `tabProject` set other_expenses = {}, total_cost = {} where name ='{}'".format(total_other_expenses, total_project_cost, reference_name))
-			frappe.db.sql("update `tabTask` set other_expenses = {}, total_cost = {} where name ='{}'".format(total_task_other_expenses, total_task_cost, task))
+			if task:
+				previous_task_other_expenses = frappe.db.get_value("Task", task, ["other_expenses","total_cost"],as_dict=1)
+				total_task_other_expenses = (flt(previous_task_other_expenses.other_expenses) + flt(debit_in_account_currency)) if self.docstatus == 1 else (flt(previous_task_other_expenses.other_expenses) - flt(debit_in_account_currency))
+				total_task_cost = (flt(previous_task_other_expenses.total_cost) + flt(debit_in_account_currency)) if self.docstatus == 1 else (flt(previous_task_other_expenses.total_cost) - flt(debit_in_account_currency))
+				frappe.db.sql("update `tabTask` set other_expenses = {}, total_cost = {} where name ='{}'".format(total_task_other_expenses, total_task_cost, task))
 		# elif is_advance == "No" and is_opening_adjustment == 0 and is_settlement == 0 and self.voucher_type == "Credit Note":
 		# 	total_previous_cost = frappe.db.get_value("Project", reference_name, "total_cost", as_dict=1)
 		# 	adjustment_previous = frappe.db.get_value("Project", reference_name, "adjustments_made",as_dict=1)
