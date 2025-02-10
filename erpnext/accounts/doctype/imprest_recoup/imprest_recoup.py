@@ -130,7 +130,6 @@ class ImprestRecoup(StockController):
 			gl_entries.append(
 				self.get_gl_dict({
 					"account": bank_account,
-					"debit": ,
 					"credit": self.total_amount,
 					"credit_in_account_currency": self.total_amount,
 					"voucher_no": self.name,
