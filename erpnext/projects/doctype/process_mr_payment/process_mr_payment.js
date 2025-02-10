@@ -153,27 +153,25 @@ function get_records(employee_type, fiscal_year, month, from_date, to_date, cost
 						}
 						else if(mr['type'] == 'DFG AND GFG'){
 							//alert(mr['noof_days_in_month'])
-							row.daily_rate 	= mr['rate_per_day'];
-							// frappe.throw(row.daily_rate)
-							row.hourly_rate 	= mr['rate_per_hour'];
+							
 							
 							row.gratuity_amount = 0
 							row.total_ot_amount = parseFloat(mr['total_ot']);
 							//row.total_wage 		= parseFloat(mr['total_wage']);
 							//row.total_wage = parseFloat(mr['rate_per_day'])*parseFloat(mr['number_of_days'])
-							 row.daily_rate      = parseFloat(mr['salary'])/parseFloat(mr['noof_days_in_month']);
+							 row.daily_rate      = parseFloat(mr['salary'])/30;
 							 //row.daily_rate  = mr['rate_per_day']
 							//  row.hourly_rate     = parseFloat(mr['salary']*1.0)/parseFloat(mr['noof_days_in_month']*8);
 							//  row.total_ot_amount = parseFloat(row.number_of_hours) * parseFloat(row.hourly_rate);
 							 row.total_wage      = parseFloat(row.daily_rate) * parseFloat(row.number_of_days);
-							 if((parseFloat(row.total_wage) > parseFloat(mr['salary']))||(parseFloat(mr['noof_days_in_month']) == parseFloat(mr['number_of_days']))){
+							 if(parseFloat(parseFloat(mr['number_of_days'])) > 27 && parseFloat(mr['noof_days_in_month'])==31 || parseFloat(mr['noof_days_in_month'])==30 ){
 							 	row.total_wage = parseFloat(mr['salary']);
-							 	if(row.total_wage> 14000) {
-							 		row.total_wage = 14000
-							 	}
+							 }else if(parseFloat(parseFloat(mr['number_of_days'])) > 25 && parseFloat(mr['noof_days_in_month'])==28 || parseFloat(mr['noof_days_in_month'])==29 ){
+								row.total_wage = parseFloat(mr['salary']);
 							 }
 							// row.gratuity_amount = 0
 						}
+					
 						else if(mr['type'] == 'Open Air Prisoner') {	
 								//alert(mr["is_lifer"])
 								if(mr["is_lifer"]==1){

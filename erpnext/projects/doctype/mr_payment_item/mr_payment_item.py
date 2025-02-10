@@ -28,7 +28,7 @@ class MRPaymentItem(Document):
 		health: DF.Currency
 		hourly_rate: DF.Currency
 		hourly_rates: DF.Currency
-		id_card: DF.Data
+		id_card: DF.Data | None
 		mess_deduction: DF.Currency
 		month: DF.Literal["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 		number_of_days: DF.Float
