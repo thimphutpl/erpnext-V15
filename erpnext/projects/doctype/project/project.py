@@ -1705,8 +1705,8 @@ def set_project_status(project, status):
 	"""
 	set status for project and all related tasks
 	"""
-	if status not in ("Completed", "Cancelled"):
-		frappe.throw(_("Status must be Cancelled or Completed"))
+	if status not in ("Completed", "Cancelled", "Ongoing", "Planning"):
+		frappe.throw(_("Status cannot be {}".format(status)))
 
 	project = frappe.get_doc("Project", project)
 	frappe.has_permission(doc=project, throw=True)

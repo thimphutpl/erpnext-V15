@@ -782,6 +782,8 @@
   {
    "fieldname": "mandays",
    "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Activity Man Days",
    "permlevel": 1
   },
@@ -949,7 +951,7 @@
  "index_web_pages_for_search": 1,
  "links": [],
  "max_attachments": 4,
- "modified": "2025-02-07 12:57:46.510592",
+ "modified": "2025-02-10 11:53:59.236739",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Project",

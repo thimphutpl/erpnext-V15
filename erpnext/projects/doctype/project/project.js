@@ -70,7 +70,7 @@ frappe.ui.form.on("Project", {
 		enable_disable(frm);
 		// ++++++++++++++++++++ Ver 1.0 BEGINS ++++++++++++++++++++
 		if(!frm.doc.__islocal){
-			if(in_list([...frappe.user_roles], 'Admin')){
+			if(in_list([...frappe.user_roles], ['Admin', 'Project Engineer'])){
 				frm.add_custom_button(__("Change Status"), function(){frm.trigger("change_status_ongoing")});
 			}
 			frm.add_custom_button(__("Advance"), function(){frm.trigger("make_project_advance")},__("Make"), "icon-file-alt");
@@ -250,7 +250,7 @@ frappe.ui.form.on("Project", {
 							fieldtype: "Select",
 							label: "Status",
 							reqd: 1,
-							options: "Completed\nCancelled",
+							options: "Completed\nCancelled\nOngoing\nPlanning",
 						},
 					],
 					primary_action: function () {
