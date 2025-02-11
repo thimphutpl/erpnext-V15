@@ -86,7 +86,8 @@
    "label": "Cost Center",
    "oldfieldname": "cost_center_other_charges",
    "oldfieldtype": "Link",
-   "options": "Cost Center"
+   "options": "Cost Center",
+   "reqd": 1
   },
   {
    "fieldname": "dimension_col_break",
@@ -179,12 +180,13 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2021-11-25 11:10:10.945027",
+ "modified": "2025-02-11 16:33:40.004778",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Advance Taxes and Charges",
  "owner": "Administrator",
  "permissions": [],
  "sort_field": "modified",
- "sort_order": "ASC"
+ "sort_order": "ASC",
+ "states": []
 }
