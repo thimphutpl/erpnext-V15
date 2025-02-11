@@ -565,7 +565,7 @@ def get_records(employee_type, fiscal_year, fiscal_month, from_date, to_date, co
 
 		frappe.db.commit()  
 
-	# frappe.throw('hi')	
+	#	
 	rest_list = frappe.db.sql("""
 								select employee,
 										sum(number_of_days)     as number_of_days,
@@ -660,7 +660,7 @@ def get_pay_details(employee):
 				rate_per_day, rate_per_hour, rate_per_hour_normal, parent
 			FROM `tabMusterroll`
 			WHERE parent = '{employee}'			
-			ORDER BY name DESC
+			ORDER BY from_date DESC
 			LIMIT 1
 		""".format(employee=employee), as_dict = True):
 
