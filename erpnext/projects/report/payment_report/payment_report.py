@@ -35,21 +35,37 @@ def get_columns():
                 ("Net Pay") + ":Data:90"
 
         ]
-def get_data(filters):	
-	query = """select p.branch, p.employee_type, i.employee, i.person_name, i.id_card, i.designation, i.qualification, i.bank,
-                         i.account_no, i.fiscal_year, i.month, i.number_of_days, i.daily_rate,i.total_wage,  i.number_of_hours, 
-                         i.hourly_rate, i.total_ot_amount, i.health, i.wage_payable, i.total_amount from `tabMR Payment Item` as i, 
-                          `tabProcess MR Payment` as p where i.parent = p.name and p.docstatus = 1 """
 
-	if filters.get("branch"):
-		query += " and p.branch = \'" + str(frappe.db.escape(filters.branch)) + "\'"
-	if filters.get("year"):
-		query += " and i.fiscal_year = \'" + str(filters.year) + "\'"
-	if filters.get("month"):
-                query += " and i.month = \'" + str(filters.month) + "\'"
-	if filters.get("employee_type"):
-			query += " and p.employee_type = '{0}'".format(filters.get("employee_type"))
-	return frappe.db.sql(query)
+def get_data(filters):
+    query = """SELECT 
+                    p.branch, p.employee_type, i.employee, i.person_name, i.id_card, 
+                    i.designation, i.qualification, i.bank, i.account_no, i.fiscal_year, 
+                    i.month, i.number_of_days, i.daily_rate, i.total_wage,  
+                    i.number_of_hours, i.hourly_rate, i.total_ot_amount, 
+                    i.health, i.wage_payable, i.total_amount  
+               FROM `tabMR Payment Item` AS i
+               INNER JOIN `tabProcess MR Payment` AS p ON i.parent = p.name
+               WHERE p.docstatus = 1"""
 
+    conditions = []
+    values = []
 
+    if filters.get("branch"):
+        conditions.append("p.branch = %s")
+        values.append(filters.get("branch"))
 
+    if filters.get("year"):
+        conditions.append("i.fiscal_year = %s")
+        values.append(filters.get("year"))
+
+    if filters.get("month"):
+        conditions.append("i.month = %s")
+        values.append(filters.get("month"))
+
+    if filters.get("employee_type"):
+        conditions.append("p.employee_type = %s")
+        values.append(filters.get("employee_type"))
+
+    if conditions:
+        query += " AND " + " AND ".join(conditions)
+    return frappe.db.sql(query, tuple(values), as_list=True)
