@@ -175,7 +175,7 @@
   {
    "fieldname": "expense_account",
    "fieldtype": "Link",
-   "label": "Muster Roll Expense Account",
+   "label": "Muster Roll Expense Bank Account",
    "options": "Account"
   }
  ],
@@ -183,7 +183,7 @@
  "idx": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2025-02-07 16:24:55.452448",
+ "modified": "2025-02-11 10:02:10.642998",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Cost Center",
