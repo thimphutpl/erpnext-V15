@@ -46,7 +46,7 @@ class VehicleRequest(Document):
 		vehicle: DF.Link | None
 		vehicle_model: DF.Link | None
 		vehicle_number: DF.Data | None
-		vehicle_type: DF.Link
+		vehicle_type: DF.Link | None
 		workflow_state: DF.Link | None
 	# end: auto-generated types
 	def validate(self):

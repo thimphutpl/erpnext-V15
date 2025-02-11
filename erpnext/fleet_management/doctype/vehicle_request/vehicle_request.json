@@ -23,7 +23,6 @@
   "posting_date",
   "travel_information",
   "from_date",
-  "vehicle_type",
   "approver",
   "columb_break04",
   "to_date",
@@ -33,6 +32,7 @@
   "purpose",
   "total_days_and_hours",
   "fleet_details_section",
+  "vehicle_type",
   "vehicle",
   "vehicle_model",
   "vehicle_number",
@@ -226,9 +226,9 @@
    "fetch_from": "vehicle.equipment_type",
    "fieldname": "vehicle_type",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Vehicle Type",
-   "options": "Equipment Type",
-   "reqd": 1
+   "options": "Equipment Type"
   },
   {
    "fieldname": "vehicle",
@@ -245,7 +245,7 @@
    "read_only": 1
   },
   {
-   "fetch_from": "vehicle.registeration_number",
+   "fetch_from": "vehicle.registration_number",
    "fieldname": "vehicle_number",
    "fieldtype": "Data",
    "in_list_view": 1,
@@ -253,6 +253,7 @@
    "read_only": 1
   },
   {
+   "fetch_from": "vehicle.owned_by",
    "fieldname": "driver",
    "fieldtype": "Link",
    "ignore_user_permissions": 1,
@@ -308,7 +309,7 @@
  ],
  "is_submittable": 1,
  "links": [],
- "modified": "2024-07-19 09:54:55.078407",
+ "modified": "2025-02-11 15:34:30.665288",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Vehicle Request",

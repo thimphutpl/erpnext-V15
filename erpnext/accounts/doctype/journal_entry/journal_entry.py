@@ -53,6 +53,7 @@ class JournalEntry(AccountsController):
 		accounts: DF.Table[JournalEntryAccount]
 		amended_from: DF.Link | None
 		apply_tds: DF.Check
+		approver: DF.Link | None
 		auto_repeat: DF.Link | None
 		bank_payment: DF.Link | None
 		bill_date: DF.Date | None
@@ -98,6 +99,7 @@ class JournalEntry(AccountsController):
 		total_debit: DF.Currency
 		use_check_lot: DF.Check
 		user_remark: DF.SmallText | None
+		verifier: DF.Link | None
 		voucher_type: DF.Literal["Journal Entry", "Inter Company Journal Entry", "Bank Entry", "Cash Entry", "Credit Card Entry", "Debit Note", "Credit Note", "Contra Entry", "Excise Entry", "Write Off Entry", "Opening Entry", "Depreciation Entry", "Exchange Rate Revaluation", "Exchange Gain Or Loss", "Deferred Revenue", "Deferred Expense"]
 		write_off_amount: DF.Currency
 		write_off_based_on: DF.Literal["Accounts Receivable", "Accounts Payable"]
@@ -159,6 +161,8 @@ class JournalEntry(AccountsController):
 
 		if not self.title:
 			self.title = self.get_title()
+		if self.workflow_state=="Waiting Approval":
+			self.verifier=frappe.session.user
 				
 	def validate_advance_accounts(self):
 		journal_accounts = set([x.account for x in self.accounts])
@@ -228,7 +232,7 @@ class JournalEntry(AccountsController):
 			if for_project == 1:
 				self.update_project_task()
 
-
+		self.approver=frappe.session.user
 	def on_update_after_submit(self):
 		if hasattr(self, "repost_required"):
 			self.needs_repost = self.check_if_fields_updated(

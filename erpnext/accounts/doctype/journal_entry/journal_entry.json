@@ -83,7 +83,9 @@
   "subscription_section",
   "auto_repeat",
   "amended_from",
-  "repost_required"
+  "repost_required",
+  "approver",
+  "verifier"
  ],
  "fields": [
   {
@@ -678,6 +680,20 @@
    "fieldtype": "Select",
    "label": "Remit Purpose",
    "options": "\nSalary Remittance\nFinancial Institution Loan\nGroup Insurance Scheme\nProvident Fund\nSalary Saving Scheme"
+  },
+  {
+   "fieldname": "approver",
+   "fieldtype": "Link",
+   "label": "Approver",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "verifier",
+   "fieldtype": "Link",
+   "label": "Verifier",
+   "options": "User",
+   "read_only": 1
   }
  ],
  "icon": "fa fa-file-text",
@@ -692,7 +708,7 @@
    "table_fieldname": "payment_entries"
   }
  ],
- "modified": "2025-02-11 12:59:14.840654",
+ "modified": "2025-02-11 15:40:10.728518",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Journal Entry",
