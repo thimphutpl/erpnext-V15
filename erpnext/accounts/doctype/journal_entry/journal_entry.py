@@ -82,6 +82,8 @@ class JournalEntry(AccountsController):
 		posting_date: DF.Date
 		process_deferred_accounting: DF.Link | None
 		remark: DF.SmallText | None
+		remit_bank: DF.Literal["", "Bank of Bhutan Limited", "Bhutan National Bank Limited", "Bhutan Development Bank Limited", "National Pension and Provident Fund", "Royal Insurance Corporation of Bhutan Limited", "Bhutan Insurance Limited"]
+		remit_purpose: DF.Literal["", "Salary Remittance", "Financial Institution Loan", "Group Insurance Scheme", "Provident Fund", "Salary Saving Scheme"]
 		repost_required: DF.Check
 		reversal_of: DF.Link | None
 		select_cheque_lot: DF.Link | None

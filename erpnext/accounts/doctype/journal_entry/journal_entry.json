@@ -62,6 +62,10 @@
   "column_break_35",
   "letter_head",
   "select_print_heading",
+  "remit_details_section",
+  "remit_bank",
+  "column_break_znnn",
+  "remit_purpose",
   "addtional_info",
   "payment_order",
   "column_break3",
@@ -653,6 +657,27 @@
   {
    "fieldname": "column_break_wvbk",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "remit_details_section",
+   "fieldtype": "Section Break",
+   "label": "Remit Details"
+  },
+  {
+   "fieldname": "remit_bank",
+   "fieldtype": "Select",
+   "label": "Bank List",
+   "options": "\nBank of Bhutan Limited\nBhutan National Bank Limited\nBhutan Development Bank Limited\nNational Pension and Provident Fund\nRoyal Insurance Corporation of Bhutan Limited\nBhutan Insurance Limited"
+  },
+  {
+   "fieldname": "column_break_znnn",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "remit_purpose",
+   "fieldtype": "Select",
+   "label": "Remit Purpose",
+   "options": "\nSalary Remittance\nFinancial Institution Loan\nGroup Insurance Scheme\nProvident Fund\nSalary Saving Scheme"
   }
  ],
  "icon": "fa fa-file-text",
@@ -667,7 +692,7 @@
    "table_fieldname": "payment_entries"
   }
  ],
- "modified": "2025-01-14 12:53:53.657885",
+ "modified": "2025-02-11 12:59:14.840654",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Journal Entry",
