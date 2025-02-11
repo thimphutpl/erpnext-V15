@@ -163,6 +163,8 @@ class JournalEntry(AccountsController):
 			self.title = self.get_title()
 		if self.workflow_state=="Waiting Approval":
 			self.verifier=frappe.session.user
+		if self.workflow_state=="Approved":
+			self.approver=frappe.session.user
 				
 	def validate_advance_accounts(self):
 		journal_accounts = set([x.account for x in self.accounts])
@@ -231,8 +233,6 @@ class JournalEntry(AccountsController):
 				row += 1
 			if for_project == 1:
 				self.update_project_task()
-
-		self.approver=frappe.session.user
 	def on_update_after_submit(self):
 		if hasattr(self, "repost_required"):
 			self.needs_repost = self.check_if_fields_updated(
