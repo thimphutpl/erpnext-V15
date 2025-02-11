@@ -1158,7 +1158,7 @@ cur_frm.fields_dict["items"].grid.get_field("project").get_query = function (doc
 	}
 	else{
 		return {
-			filters: { 'name': ""}
+			filters: { "status": ["in", ["Ongoing", "Planning",]]}
 		};
 	}
 	
