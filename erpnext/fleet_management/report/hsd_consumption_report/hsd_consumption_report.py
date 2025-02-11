@@ -43,7 +43,6 @@ def get_data(query, filters=None):
         # Calculations
         d.consumed = flt(consumed_till_end) - flt(consumed_till)
         d.opening = flt(received_till) - flt(consumed_till)
-        d.closing = flt(d.opening) + flt(d.drawn) - flt(d.consumed)
         # d.open_km = flt(get_km_till(d.name, add_days(getdate(filters.from_date), -1)))
         # d.open_hr = flt(get_hour_till(d.name, add_days(getdate(filters.from_date), -1)))
         d.open_km = flt(get_ini_km_till(d.name, getdate(filters.from_date)))
@@ -96,6 +95,7 @@ def get_data(query, filters=None):
         #     round(d.hsd_amount, 2),  # HSD Amount
         # ]
         consumed_lph = round(round(d.close_hr - d.open_hr, 2) * d.lph, 2)
+        d.closing = flt(d.opening) + flt(d.drawn) - flt(d.consumed) - flt(consumed_lph)
         row = [
             d.name, d.equipment_category, d.equipment_type, d.registration_number, d.place,
             "{0}/{1}".format(d.open_km, d.open_hr), 
