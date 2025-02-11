@@ -981,7 +981,8 @@
    "depends_on": "grand_total",
    "fieldname": "disable_rounded_total",
    "fieldtype": "Check",
-   "label": "Disable Rounded Total"
+   "label": "Disable Rounded Total",
+   "read_only": 1
   },
   {
    "collapsible": 1,
@@ -1753,8 +1754,7 @@
    "fieldtype": "Select",
    "label": "Naming Series",
    "options": "\nConsumables\nFixed Asset\nSales Product\nSpare Parts\nServices Miscellaneous\nServices Works",
-   "reqd": 1,
-   "set_only_once": 1
+   "reqd": 1
   },
   {
    "fieldname": "dispatch",
@@ -1766,7 +1766,7 @@
  "idx": 204,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-02-07 15:06:35.744075",
+ "modified": "2025-02-11 10:15:14.770129",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Purchase Invoice",
