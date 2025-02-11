@@ -38,7 +38,10 @@
   "cheque__no",
   "column_break_ucvw",
   "cheque_date",
-  "company"
+  "company",
+  "section_break_hjjr",
+  "approver",
+  "verifier"
  ],
  "fields": [
   {
@@ -82,7 +85,6 @@
    "fieldtype": "Link",
    "label": "Supplier",
    "options": "Supplier",
-   "read_only": 1,
    "reqd": 1
   },
   {
@@ -240,12 +242,30 @@
   {
    "fieldname": "section_break_uvdy",
    "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "section_break_hjjr",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "approver",
+   "fieldtype": "Link",
+   "label": "Approver",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "verifier",
+   "fieldtype": "Link",
+   "label": "Verifier",
+   "options": "User",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-23 16:18:41.391921",
+ "modified": "2025-02-11 13:27:10.724152",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "HSD Payment",

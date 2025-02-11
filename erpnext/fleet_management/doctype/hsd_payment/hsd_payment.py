@@ -30,6 +30,7 @@ class HSDPayment(Document):
 		actual_amount: DF.Currency
 		amended_from: DF.Link | None
 		amount: DF.Currency
+		approver: DF.Link | None
 		assign_from_cheque_lot: DF.Check
 		bank_account: DF.Link
 		bank_payment: DF.Data | None
@@ -48,12 +49,15 @@ class HSDPayment(Document):
 		remarks: DF.SmallText | None
 		status: DF.Literal["Draft", "Submitted", "Cancelled"]
 		supplier: DF.Link
+		verifier: DF.Link | None
 	# end: auto-generated types
 	def validate(self):
 		check_future_date(self.posting_date)
 		self.set_status()
 		self.validate_allocated_amount()
 		self.clearance_date = None
+		if self.workflow_state=="Verified":
+			self.verifier=frappe.session.user
 
 	def set_status(self):
                 self.status = {
@@ -108,6 +112,7 @@ class HSDPayment(Document):
 	def on_submit(self):
 		self.adjust_outstanding()
 		self.update_general_ledger()
+		self.approver=self.verifier=frappe.session.user
 
 	def on_cancel(self):
 		if self.clearance_date:
