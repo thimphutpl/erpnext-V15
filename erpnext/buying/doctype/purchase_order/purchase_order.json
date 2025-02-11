@@ -183,8 +183,6 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Title",
-   "no_copy": 1,
-   "print_hide": 1,
    "reqd": 1
   },
   {
@@ -202,9 +200,6 @@
    "bold": 1,
    "fieldname": "supplier",
    "fieldtype": "Link",
-   "in_global_search": 1,
-   "in_list_view": 1,
-   "in_standard_filter": 1,
    "label": "Supplier",
    "oldfieldname": "supplier",
    "oldfieldtype": "Link",
@@ -252,7 +247,6 @@
    "default": "Today",
    "fieldname": "transaction_date",
    "fieldtype": "Date",
-   "in_list_view": 1,
    "label": "Date",
    "oldfieldname": "transaction_date",
    "oldfieldtype": "Date",
@@ -797,7 +791,6 @@
   {
    "fieldname": "grand_total",
    "fieldtype": "Currency",
-   "in_list_view": 1,
    "label": "Grand Total",
    "oldfieldname": "grand_total_import",
    "oldfieldtype": "Currency",
@@ -1120,6 +1113,7 @@
    "fieldname": "project",
    "fieldtype": "Link",
    "hidden": 1,
+   "in_list_view": 1,
    "label": "Project",
    "options": "Project"
   },
@@ -1290,7 +1284,6 @@
   {
    "fieldname": "terms",
    "fieldtype": "Text Editor",
-   "in_list_view": 1,
    "label": "Terms and Conditions Editor",
    "no_copy": 1,
    "oldfieldtype": "HTML",
@@ -1368,7 +1361,7 @@
  "idx": 105,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-02-07 08:30:35.320468",
+ "modified": "2025-02-11 15:11:09.995357",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Purchase Order",
