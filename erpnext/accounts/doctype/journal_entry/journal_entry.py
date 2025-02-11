@@ -207,12 +207,12 @@ class JournalEntry(AccountsController):
 			for_project = 0
 			for a in self.accounts:
 				# if a.project:
-				if a.project and self.voucher_type != "Opening Entry" and not a.task:
-					frappe.throw("Task is mandatory in row {}".format(row))
+				# if a.project and self.voucher_type != "Opening Entry" and not a.task:
+				# 	frappe.throw("Task is mandatory in row {}".format(row))
 				if a.project:
 					for_project = 1
-					if self.voucher_type != "Opening Entry" and not a.task:
-						frappe.throw("Task is andatory in row {}".format(row))
+					# if self.voucher_type != "Opening Entry" and not a.task:
+					# 	frappe.throw("Task is andatory in row {}".format(row))
 					# if not a.business_activity:
 					# 	frappe.throw("Business Activity is mandatory")
 					# self.update_project_cost(a.reference_name, a.is_advance, a.is_settlement, a.debit_in_account_currency, a.advance_settlement_id) // why debit in account currency
