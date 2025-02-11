@@ -108,6 +108,7 @@
   "depreciation_expense_account",
   "series_for_depreciation_entry",
   "expenses_included_in_asset_valuation",
+  "asset_equity_account",
   "column_break_40",
   "disposal_account",
   "gain_disposal_account",
@@ -1019,6 +1020,12 @@
    "fieldtype": "Link",
    "label": "Default Advance To Supplier Account",
    "options": "Account"
+  },
+  {
+   "fieldname": "asset_equity_account",
+   "fieldtype": "Link",
+   "label": "Asset Equity Account",
+   "options": "Account"
   }
  ],
  "icon": "fa fa-building",
@@ -1026,7 +1033,7 @@
  "image_field": "company_logo",
  "is_tree": 1,
  "links": [],
- "modified": "2025-01-21 20:51:10.908302",
+ "modified": "2025-02-10 14:16:27.786742",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Company",
