@@ -781,9 +781,7 @@ class StockEntry(StockController):
 			for d in self.items:
 				if d.project:
 					project = frappe.get_doc("Project",d.project)
-					task = frappe.get_doc("Task",d.task)
 					p_row = project.append("task_material_item", {})
-					t_row = task.append("task_material_item", {})
 					#Project Update
 					p_row.item = d.item_code
 					p_row.item_name = d.item_name
@@ -792,23 +790,26 @@ class StockEntry(StockController):
 					p_row.reference_type = "Stock Entry"
 					p_row.reference_name = self.name
 					p_row.child_reference = d.name
-					#Task Update
-					t_row.item = d.item_code
-					t_row.item_name = d.item_name
-					t_row.item_uom = d.uom
-					t_row.item_quantity = d.qty
-					t_row.reference_type = "Stock Entry"
-					t_row.reference_name = self.name
-					t_row.child_reference = d.name
 					#Project
 					p_row.item_rate = d.basic_rate
-					#Task
-					t_row.item_rate = d.basic_rate
 					#Project
 					p_row.item_amount = d.amount
-					#Task
-					t_row.item_amount = d.amount
-					task.save(ignore_permissions=True)
+					if d.task:
+						task = frappe.get_doc("Task",d.task)
+						t_row = task.append("task_material_item", {})
+						#Task Update
+						t_row.item = d.item_code
+						t_row.item_name = d.item_name
+						t_row.item_uom = d.uom
+						t_row.item_quantity = d.qty
+						t_row.reference_type = "Stock Entry"
+						t_row.reference_name = self.name
+						t_row.child_reference = d.name
+						#Task
+						t_row.item_rate = d.basic_rate
+						#Task
+						t_row.item_amount = d.amount
+						task.save(ignore_permissions=True)
 					project.load_activity_tasks()
 					project.save(ignore_permissions=True)
 		elif self.docstatus == 1 and self.for_project == 1 and self.stock_entry_type == "Material Return":
@@ -863,40 +864,42 @@ class StockEntry(StockController):
 			if a.project:
 				if self.stock_entry_type == "Material Issue":
 					project = frappe.get_doc("Project", a.project)
-					task = frappe.get_doc("Task", a.task)
 					# total_previous_cost = frappe.db.get_value("Project", a.project, ["material_cost", "services_cost", "total_cost"], as_dict=1)
 					# task_previous_cost = frappe.db.get_value("Task", a.task, ["material_cost", "services_cost", "total_cost"],as_dict=1)
 					project_service_cost = (flt(project.services_cost) + flt(service_cost)) if self.docstatus == 1 else (flt(project.services_cost) - flt(service_cost))
-					task_service_cost = (flt(task.services_cost) + flt(service_cost)) if self.docstatus == 1 else (flt(task.services_cost) - flt(service_cost))
 					project_store_cost = (flt(project.material_cost) + flt(stores_cost)) if self.docstatus == 1 else (flt(project.material_cost) - flt(stores_cost))
-					task_store_cost = (flt(task.material_cost) + flt(stores_cost)) if self.docstatus == 1 else (flt(task.material_cost) - flt(stores_cost))
-					total_task_cost = (flt(task.total_cost) + flt(amount)) if self.docstatus == 1 else (flt(task.total_cost) - flt(amount))
 					total_overall_cost = (flt(project.total_cost) + flt(amount)) if self.docstatus == 1 else (flt(project.total_cost) - flt(amount))
 					project.db_set("total_cost",total_overall_cost)
 					project.db_set("services_cost",project_service_cost)
 					project.db_set("material_cost",project_store_cost)
-					task.db_set("total_cost",total_task_cost)
-					task.db_set("services_cost",task_service_cost)
-					task.db_set("material_cost",task_store_cost)
+					if a.task:
+						task = frappe.get_doc("Task", a.task)
+						task_service_cost = (flt(task.services_cost) + flt(service_cost)) if self.docstatus == 1 else (flt(task.services_cost) - flt(service_cost))
+						task_store_cost = (flt(task.material_cost) + flt(stores_cost)) if self.docstatus == 1 else (flt(task.material_cost) - flt(stores_cost))
+						total_task_cost = (flt(task.total_cost) + flt(amount)) if self.docstatus == 1 else (flt(task.total_cost) - flt(amount))
+						task.db_set("total_cost",total_task_cost)
+						task.db_set("services_cost",task_service_cost)
+						task.db_set("material_cost",task_store_cost)
 					# frappe.db.sql("update `tabProject` set total_cost={} where name ='{}'".format(total_overall_cost, self.reference_name))
 					# frappe.db.sql("""UPDATE `tabTask` SET total_cost={tot_cost}, service_cost={ser_cost}, material_cost={mat_cost} WHERE name='{task}'""".format(tot_cost=total_task_cost, ser_cost=total_service_cost, mat_cost=total_store_cost, task =self.task))
 				elif self.stock_entry_type == "Material Return":
 					project = frappe.get_doc("Project", a.project)
-					task = frappe.get_doc("Task", a.task)
 					# total_previous_cost = frappe.db.get_value("Project", a.project, ["material_cost", "services_cost", "total_cost"], as_dict=1)
 					# task_previous_cost = frappe.db.get_value("Task", a.task, ["material_cost", "services_cost", "total_cost"],as_dict=1)
 					project_service_cost = (flt(project.services_cost) - flt(service_cost)) if self.docstatus == 1 else (flt(project.services_cost) + flt(service_cost))
-					task_service_cost = (flt(task.services_cost) - flt(service_cost)) if self.docstatus == 1 else (flt(task.services_cost) + flt(service_cost))
 					project_store_cost = (flt(project.material_cost) - flt(stores_cost)) if self.docstatus == 1 else (flt(project.material_cost) + flt(stores_cost))
-					task_store_cost = (flt(task.material_cost) - flt(stores_cost)) if self.docstatus == 1 else (flt(task.material_cost) + flt(stores_cost))
-					total_task_cost = (flt(task.total_cost) - flt(amount)) if self.docstatus == 1 else (flt(task.total_cost) + flt(amount))
 					total_overall_cost = (flt(project.total_cost) - flt(amount)) if self.docstatus == 1 else (flt(project.total_cost) + flt(amount))
 					project.db_set("total_cost",total_overall_cost)
 					project.db_set("services_cost",project_service_cost)
 					project.db_set("material_cost",project_store_cost)
-					task.db_set("total_cost",total_task_cost)
-					task.db_set("services_cost",task_service_cost)
-					task.db_set("material_cost",task_store_cost)
+					if a.task:
+						task = frappe.get_doc("Task", a.task)
+						task_service_cost = (flt(task.services_cost) - flt(service_cost)) if self.docstatus == 1 else (flt(task.services_cost) + flt(service_cost))
+						task_store_cost = (flt(task.material_cost) - flt(stores_cost)) if self.docstatus == 1 else (flt(task.material_cost) + flt(stores_cost))
+						total_task_cost = (flt(task.total_cost) - flt(amount)) if self.docstatus == 1 else (flt(task.total_cost) + flt(amount))
+						task.db_set("total_cost",total_task_cost)
+						task.db_set("services_cost",task_service_cost)
+						task.db_set("material_cost",task_store_cost)
 
 	def set_actual_qty(self):
 		from erpnext.stock.stock_ledger import is_negative_stock_allowed
