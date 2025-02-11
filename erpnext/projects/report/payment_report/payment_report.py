@@ -2,11 +2,14 @@
 # For license information, please see license.txt
 
 import frappe
-
-
+# def execute(filters=None):
+# 	columns, data = [], []
+# 	return columns, data
 def execute(filters=None):
-	columns, data = [], []
-	return columns, data
+	columns = get_columns()
+	data = get_data(filters)
+
+	return columns, data	
 
 def get_columns():
         return [
@@ -32,7 +35,7 @@ def get_columns():
                 ("Net Pay") + ":Data:90"
 
         ]
-def get_data(filters):
+def get_data(filters):	
 	query = """select p.branch, p.employee_type, i.employee, i.person_name, i.id_card, i.designation, i.qualification, i.bank,
                          i.account_no, i.fiscal_year, i.month, i.number_of_days, i.daily_rate,i.total_wage,  i.number_of_hours, 
                          i.hourly_rate, i.total_ot_amount, i.health, i.wage_payable, i.total_amount from `tabMR Payment Item` as i, 
