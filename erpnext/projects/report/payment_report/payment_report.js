@@ -33,7 +33,7 @@ frappe.query_reports["Payment Report"] = {
 			"fieldname":"employee_type",
 			"label": __("Employee Type"),
 			"fieldtype": "Select",
-			"options": [" ", "Muster Roll Employee", "Operator", "Open Air Prisoner", "DFG AND GFG"]
+			"options": [" ", "Muster Roll Employee", "Operator", "Open Air Prisoner", "DFG", "GFG"]
 		},
 				
 	]
