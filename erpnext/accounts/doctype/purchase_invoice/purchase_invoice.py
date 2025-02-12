@@ -1048,7 +1048,7 @@ class PurchaseInvoice(BuyingController):
 			self.precision("base_grand_total"),
 		)
 		if self.taxes_and_charges_deducted > 0:
-			base_grand_total -= self.taxes_and_charges_deducted
+			base_grand_total = (self.total) -(self.taxes_and_charges_deducted)
 		advance_amount = 0.00
 		# advance_amount_pe_currency = 0.00
 		if self.get("advances"):
