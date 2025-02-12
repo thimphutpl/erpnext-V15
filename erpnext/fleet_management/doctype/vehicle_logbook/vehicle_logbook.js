@@ -154,6 +154,17 @@ frappe.ui.form.on('Vehicle Logbook', {
             // Clear related fields if no equipment is selected
             frm.set_value('tank_balance', '');
         }
+		if (frm.doc.equipment && frm.doc.ehf_name) {
+            frm.call({
+                method: 'fetch_lumpsum_rate',
+                doc: frm.doc,
+                callback: function(r) {
+                    if (r.message) {
+                        frm.refresh_field('lumpsum_rate');
+                    }
+                }
+            });
+        }
 	},
 
 	// "hsd_rate": function(frm) {

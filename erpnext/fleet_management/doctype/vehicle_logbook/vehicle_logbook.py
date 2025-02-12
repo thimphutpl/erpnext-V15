@@ -51,6 +51,7 @@ class VehicleLogbook(Document):
 		kphs: DF.Float
 		lph: DF.Float
 		lphs: DF.Float
+		lumpsum_rate: DF.Float
 		opening_balance: DF.Float
 		operator_salary: DF.Float
 		other_consumption: DF.Float
@@ -83,6 +84,7 @@ class VehicleLogbook(Document):
 		# self.set_data()
 		self.check_dates()
 		self.check_double_vl()
+		# self.fetch_lumpsum_rate()
 		# self.check_hire_form()
 		# self.check_hire_rate()
 		# self.check_duplicate()
@@ -103,6 +105,23 @@ class VehicleLogbook(Document):
 		to_date = get_datetime(str(self.to_date) + ' ' + str(self.to_time))
 		if to_date < from_date:
 			frappe.throw("From Date/Time cannot be greater than To Date/Time")
+
+	@frappe.whitelist()
+	def fetch_lumpsum_rate(self):
+		if self.ehf_name and self.equipment:
+			# Fetch the lumpsum_rate from the approved_items child table in the Equipment Hiring Form
+			lumpsum_rate = frappe.db.sql("""
+				SELECT lumpsum_rate 
+				FROM `tabHiring Approval Details` 
+				WHERE parent = %s AND equipment = %s
+			""", (self.ehf_name, self.equipment), as_dict=True)
+
+			if lumpsum_rate:
+				self.lumpsum_rate = lumpsum_rate[0].lumpsum_rate
+			else:
+				self.lumpsum_rate = 0
+		else:
+			self.lumpsum_rate = 0		
 
 
 	# def before_save(self):
