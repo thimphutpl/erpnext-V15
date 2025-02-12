@@ -94,12 +94,14 @@
    "reqd": 1
   },
   {
+   "fetch_from": "pol_type.item_name",
    "fieldname": "item_name",
    "fieldtype": "Read Only",
    "label": "Item Name",
    "options": "pol_type.item_name"
   },
   {
+   "fetch_from": "pol_type.stock_uom",
    "fieldname": "stock_uom",
    "fieldtype": "Read Only",
    "label": "Stock UOM",
@@ -197,7 +199,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-02-12 09:28:34.701393",
+ "modified": "2025-02-12 15:19:11.031267",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Issue",
