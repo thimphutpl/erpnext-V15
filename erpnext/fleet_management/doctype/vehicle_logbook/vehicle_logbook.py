@@ -89,7 +89,7 @@ class VehicleLogbook(Document):
 		self.update_consumed()
 		self.calculate_totals()
 		self.update_operator()
-		self.check_consumed()
+		# self.check_consumed()
 		# self.get_pool_equipment()	
 
 		if self.vehicle_logbook in ["Pool Vehicle", "Support Equipment"]:
@@ -133,10 +133,10 @@ class VehicleLogbook(Document):
 
 
 	
-	def check_consumed(self):
-		if self.include_hour or self.include_km:
-			if flt(self.consumption) <= 0:
-				frappe.throw("Total consumption cannot be zero or less")
+	# def check_consumed(self):
+	# 	if self.include_hour or self.include_km:
+	# 		if flt(self.consumption) <= 0:
+	# 			frappe.throw("Total consumption cannot be zero or less")
 
 	def check_hire_rate(self):
 		if self.vehicle_logbook == "Pool Vehicle":
@@ -409,10 +409,10 @@ class VehicleLogbook(Document):
 				pass
 			elif self.include_hour and self.initial_hour == self.final_hour:
 				pass
-			else:
-				frappe.throw("Consumption is Mandatory")
-		else:
-			frappe.throw("Consumption is Mandatory")
+			# else:
+			# 	frappe.throw("Consumption is Mandatory")
+		# else:
+		# 	frappe.throw("Consumption is Mandatory")
 
 	def get_pool_equipment(self):
 		if self.vehicle_logbook == "Pool Vehicle":
