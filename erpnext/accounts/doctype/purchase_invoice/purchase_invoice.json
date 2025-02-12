@@ -23,6 +23,7 @@
   "set_posting_time",
   "business_activity",
   "due_date",
+  "for_project",
   "column_break1",
   "is_paid",
   "is_return",
@@ -978,7 +979,6 @@
   },
   {
    "default": "1",
-   "depends_on": "grand_total",
    "fieldname": "disable_rounded_total",
    "fieldtype": "Check",
    "label": "Disable Rounded Total",
@@ -1759,13 +1759,20 @@
    "fieldname": "dispatch",
    "fieldtype": "Data",
    "label": "Dispatch"
+  },
+  {
+   "default": "0",
+   "fieldname": "for_project",
+   "fieldtype": "Check",
+   "label": "For Project",
+   "read_only": 1
   }
  ],
  "icon": "fa fa-file-text",
  "idx": 204,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-02-11 15:58:55.842219",
+ "modified": "2025-02-12 14:52:36.765849",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Purchase Invoice",

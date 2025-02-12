@@ -612,12 +612,12 @@ class PurchaseOrder(BuyingController):
 			for a in self.items:
 				if not a.project:
 					frappe.throw("Project is Mandatory in row {} in Items table.".format(row))
-				if not a.task:
-					frappe.throw("Task is Mandatory in row {} in Items table.".format(row))
-				if a.project and not a.task:
-					frappe.throw("Task is Mandatory in row {} in Items table.".format(row))
-				if not a.project and a.task:
-					frappe.throw("Project is Mandatory in row {} in Items table.".format(row))
+				# if not a.task:
+				# 	frappe.throw("Task is Mandatory in row {} in Items table.".format(row))
+				# if a.project and not a.task:
+				# 	frappe.throw("Task is Mandatory in row {} in Items table.".format(row))
+				# if not a.project and a.task:
+				# 	frappe.throw("Project is Mandatory in row {} in Items table.".format(row))
 				row += 1
 
 	def update_project_task(self):
@@ -865,6 +865,7 @@ def make_purchase_receipt(source_name, target_doc=None):
 					"material_request_date": "material_request_date",
 					"purchase_order_date": "transaction_date",
 					"material_request": "material_request",
+					"for_project": "for_project",
 				},
 				"validation": {
 					"docstatus": ["=", 1],
@@ -1100,27 +1101,31 @@ def get_permission_query_conditions(user):
 
 	if user == "Administrator":
 		return
-	if "Purchase Master Manager" in user_roles:
+	if frappe.session.user == user:
 		return
-	if "Accounts User" in user_roles or "Purchase User" in user_roles:
-		return """(
-		exists(select 1
-				from `tabAssign Branch`, `tabBranch Item`
-				where `tabAssign Branch`.name = `tabBranch Item`.parent 
-				and `tabBranch Item`.branch = `tabPurchase Order`.branch
-				and `tabAssign Branch`.user = '{user}')
-		or
-		exists(select 1
-				from `tabEmployee`
-				where `tabEmployee`.branch = `tabPurchase Order`.branch
-				and `tabEmployee`.user_id = '{user}')
-		)""".format(user=user)
+	# if "Purchase Master Manager" in user_roles:
+	# 	return
+	# else:
+	# 	return
+	# if "Accounts User" in user_roles or "Purchase User" in user_roles:
+	# 	return """(
+	# 		exists(select 1
+	# 			from `tabAssign Branch`, `tabBranch Item`
+	# 			where `tabAssign Branch`.name = `tabBranch Item`.parent 
+	# 			and `tabBranch Item`.branch = `tabPurchase Order`.branch
+	# 			and `tabAssign Branch`.user = '{user}')
+	# 		or
+	# 		exists(select 1
+	# 			from `tabEmployee`
+	# 			where `tabEmployee`.branch = `tabPurchase Order`.branch
+	# 			and `tabEmployee`.user_id = '{user}')
+	# 	)""".format(user=user)
 		
-	return """(
-		`tabPurchase Order`.owner = '{user}'
-		or
-		exists(select 1
-				from `tabEmployee`
-				where `tabEmployee`.branch = `tabPurchase Order`.branch
-				and `tabEmployee`.user_id = '{user}')
-	)""".format(user=user)
+	# return """(
+	# 	`tabPurchase Order`.owner = '{user}'
+	# 	or
+	# 	exists(select 1
+	# 			from `tabEmployee`
+	# 			where `tabEmployee`.branch = `tabPurchase Order`.branch
+	# 			and `tabEmployee`.user_id = '{user}')
+	# )""".format(user=user)

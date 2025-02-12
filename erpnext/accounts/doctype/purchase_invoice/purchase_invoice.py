@@ -118,6 +118,7 @@ class PurchaseInvoice(BuyingController):
 		discount_amount: DF.Currency
 		dispatch: DF.Data | None
 		due_date: DF.Date | None
+		for_project: DF.Check
 		freight_insurance_charges: DF.Currency
 		from_date: DF.Date | None
 		grand_total: DF.Currency
@@ -270,6 +271,7 @@ class PurchaseInvoice(BuyingController):
 
 	def validate(self):
 		self.adjust_add_ded()
+		self.validate_project()
 		if not self.is_opening:
 			self.is_opening = "No"
 
@@ -303,6 +305,7 @@ class PurchaseInvoice(BuyingController):
 		self.validate_write_off_account()
 		self.validate_multiple_billing("Purchase Receipt", "pr_detail", "amount")
 		self.create_remarks()
+		self.calculate_taxes_and_totals()
 		self.set_status()
 		self.validate_purchase_receipt_if_update_stock()
 		validate_inter_company_party(
@@ -312,7 +315,7 @@ class PurchaseInvoice(BuyingController):
 		self.reset_default_field_value("rejected_warehouse", "items", "rejected_warehouse")
 		self.reset_default_field_value("set_from_warehouse", "items", "from_warehouse")
 		self.set_percentage_received()
-		self.warehouse_from_branch()
+		# self.warehouse_from_branch()
 
 	def adjust_add_ded(self):
 		self.total_add_ded = flt(self.freight_insurance_charges) - flt(self.discount) + flt(self.tax) + flt(self.other_charges)
@@ -426,6 +429,20 @@ class PurchaseInvoice(BuyingController):
 			)
 
 		self.party_account_currency = account.account_currency
+
+	def validate_project(self):
+		if self.for_project == 1:
+			row = 1
+			for a in self.items:
+				if not a.project:
+					frappe.throw("Project is Mandatory in row {} in Items table.".format(row))
+				# if not a.task:
+				# 	frappe.throw("Task is Mandatory in row {} in Items table.".format(row))
+				# if a.project and not a.task:
+				# 	frappe.throw("Task is Mandatory in row {} in Items table.".format(row))
+				# if not a.project and a.task:
+				# 	frappe.throw("Project is Mandatory in row {} in Items table.".format(row))
+				row += 1
 
 	def check_on_hold_or_closed_status(self):
 		check_list = []

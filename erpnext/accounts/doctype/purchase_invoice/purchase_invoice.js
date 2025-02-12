@@ -79,7 +79,6 @@ erpnext.accounts.PurchaseInvoice = class PurchaseInvoice extends erpnext.buying.
 	refresh(doc) {
 		const me = this;
 		super.refresh();
-
 		hide_fields(this.frm.doc);
 		// Show / Hide button
 		this.show_general_ledger();

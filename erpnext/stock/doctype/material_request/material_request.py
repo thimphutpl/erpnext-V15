@@ -494,6 +494,7 @@ def make_purchase_order(source_name, target_doc=None, args=None):
 				"field_map": {
 					"material_request_date":"transaction_date" ,
 					"material_request":"name",
+					"for_project":"for_project",
 				},
 				"validation": {"docstatus": ["=", 1]},
 				# "validation": {"docstatus": ["=", 1], "material_request_type": ["=", "Purchase"]}, [Remarks]: didn't allow requisition to make purchase

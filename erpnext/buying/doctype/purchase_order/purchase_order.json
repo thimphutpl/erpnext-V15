@@ -1340,7 +1340,8 @@
    "default": "0",
    "fieldname": "for_project",
    "fieldtype": "Check",
-   "label": "For Project"
+   "label": "For Project",
+   "read_only": 1
   },
   {
    "default": "0",
@@ -1361,7 +1362,7 @@
  "idx": 105,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-02-11 15:11:09.995357",
+ "modified": "2025-02-12 14:53:15.247523",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Purchase Order",

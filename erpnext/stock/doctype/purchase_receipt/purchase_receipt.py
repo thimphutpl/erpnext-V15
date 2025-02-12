@@ -66,6 +66,7 @@ class PurchaseReceipt(BuyingController):
 		disable_rounded_total: DF.Check
 		discount: DF.Currency
 		discount_amount: DF.Currency
+		for_project: DF.Check
 		freight_insurance_charges: DF.Currency
 		grand_total: DF.Currency
 		group_same_items: DF.Check
@@ -253,6 +254,7 @@ class PurchaseReceipt(BuyingController):
 
 		if self._action != "submit":
 			self.set_status()
+		self.validate_project()
 		self.po_required()
 		self.validate_items_quality_inspection()
 		self.validate_with_previous_doc()
@@ -271,6 +273,20 @@ class PurchaseReceipt(BuyingController):
 		self.reset_default_field_value("rejected_warehouse", "items", "rejected_warehouse")
 		self.reset_default_field_value("set_from_warehouse", "items", "from_warehouse")
 		self.calculate_total_add_ded()
+
+	def validate_project(self):
+		if self.for_project == 1:
+			row = 1
+			for a in self.items:
+				if not a.project:
+					frappe.throw("Project is Mandatory in row {} in Items table.".format(row))
+				# if not a.task:
+				# 	frappe.throw("Task is Mandatory in row {} in Items table.".format(row))
+				# if a.project and not a.task:
+				# 	frappe.throw("Task is Mandatory in row {} in Items table.".format(row))
+				# if not a.project and a.task:
+				# 	frappe.throw("Project is Mandatory in row {} in Items table.".format(row))
+				row += 1
 
 	def validate_uom_is_integer(self):
 		super().validate_uom_is_integer("uom", ["qty", "received_qty"], "Purchase Receipt Item")
@@ -614,38 +630,66 @@ class PurchaseReceipt(BuyingController):
 
 						if not account:
 							validate_account("Landed Cost Account")
-
-						self.add_gl_entry(
-							gl_entries=gl_entries,
-							account=account,
-							cost_center=item.cost_center,
-							debit=0.0,
-							credit=credit_amount,
-							remarks=remarks,
-							against_account=stock_asset_account_name,
-							credit_in_account_currency=flt(amount["amount"]),
-							account_currency=account_currency,
-							project=item.project if project else "",
-							task=item.task,
-							item=item,
-						)
+						if self.for_project == 1:
+							self.add_gl_entry(
+								gl_entries=gl_entries,
+								account=account,
+								cost_center=item.cost_center,
+								debit=0.0,
+								credit=credit_amount,
+								remarks=remarks,
+								against_account=stock_asset_account_name,
+								credit_in_account_currency=flt(amount["amount"]),
+								account_currency=account_currency,
+								project=item.project,
+								task=item.task,
+								item=item,
+							)
+						else:
+							self.add_gl_entry(
+								gl_entries=gl_entries,
+								account=account,
+								cost_center=item.cost_center,
+								debit=0.0,
+								credit=credit_amount,
+								remarks=remarks,
+								against_account=stock_asset_account_name,
+								credit_in_account_currency=flt(amount["amount"]),
+								account_currency=account_currency,
+								task=item.task,
+								item=item,
+							)
 
 		def make_rate_difference_entry(item):
 			if item.rate_difference_with_purchase_invoice and stock_asset_rbnb:
 				account_currency = get_account_currency(stock_asset_rbnb)
-				self.add_gl_entry(
-					gl_entries=gl_entries,
-					account=stock_asset_rbnb,
-					cost_center=item.cost_center,
-					debit=0.0,
-					credit=flt(item.rate_difference_with_purchase_invoice),
-					remarks=_("Adjustment based on Purchase Invoice rate"),
-					against_account=stock_asset_account_name,
-					account_currency=account_currency,
-					project=item.project if item.project else "",
-					task=item.task,
-					item=item,
-				)
+				if self.for_project == 1
+					self.add_gl_entry(
+						gl_entries=gl_entries,
+						account=stock_asset_rbnb,
+						cost_center=item.cost_center,
+						debit=0.0,
+						credit=flt(item.rate_difference_with_purchase_invoice),
+						remarks=_("Adjustment based on Purchase Invoice rate"),
+						against_account=stock_asset_account_name,
+						account_currency=account_currency,
+						project=item.project,
+						task=item.task,
+						item=item,
+					)
+				else:
+					self.add_gl_entry(
+						gl_entries=gl_entries,
+						account=stock_asset_rbnb,
+						cost_center=item.cost_center,
+						debit=0.0,
+						credit=flt(item.rate_difference_with_purchase_invoice),
+						remarks=_("Adjustment based on Purchase Invoice rate"),
+						against_account=stock_asset_account_name,
+						account_currency=account_currency,
+						task=item.task,
+						item=item,
+					)
 
 		def make_sub_contracting_gl_entries(item):
 			# sub-contracting warehouse
@@ -689,19 +733,33 @@ class PurchaseReceipt(BuyingController):
 					"Company", self.company, "cost_center"
 				)
 				account_currency = get_account_currency(loss_account)
-				self.add_gl_entry(
-					gl_entries=gl_entries,
-					account=loss_account,
-					cost_center=cost_center,
-					debit=divisional_loss,
-					credit=0.0,
-					remarks=remarks,
-					against_account=stock_asset_account_name,
-					account_currency=account_currency,
-					project=item.project if item.project else "",
-					task=item.task,
-					item=item,
-				)
+				if self.for_project == 1:
+					self.add_gl_entry(
+						gl_entries=gl_entries,
+						account=loss_account,
+						cost_center=cost_center,
+						debit=divisional_loss,
+						credit=0.0,
+						remarks=remarks,
+						against_account=stock_asset_account_name,
+						account_currency=account_currency,
+						project=item.project,
+						task=item.task,
+						item=item,
+					)
+				else:
+					self.add_gl_entry(
+						gl_entries=gl_entries,
+						account=loss_account,
+						cost_center=cost_center,
+						debit=divisional_loss,
+						credit=0.0,
+						remarks=remarks,
+						against_account=stock_asset_account_name,
+						account_currency=account_currency,
+						task=item.task,
+						item=item,
+					)
 
 		stock_items = self.get_stock_items()
 		warehouse_with_no_account = []
@@ -808,38 +866,66 @@ class PurchaseReceipt(BuyingController):
 			expense_account = frappe.db.get_value(
 				"Purchase Receipt Item", {"name": item.get("pr_detail")}, ["expense_account"]
 			)
+		if self.for_project == 1:
+			self.add_gl_entry(
+				gl_entries=gl_entries,
+				account=provisional_account,
+				cost_center=item.cost_center,
+				debit=0.0,
+				credit=multiplication_factor * amount,
+				remarks=remarks,
+				against_account=expense_account,
+				account_currency=credit_currency,
+				project=item.project,
+				task=item.task,
+				voucher_detail_no=item.name,
+				item=item,
+				posting_date=posting_date,
+			)
 
-		self.add_gl_entry(
-			gl_entries=gl_entries,
-			account=provisional_account,
-			cost_center=item.cost_center,
-			debit=0.0,
-			credit=multiplication_factor * amount,
-			remarks=remarks,
-			against_account=expense_account,
-			account_currency=credit_currency,
-			project=item.project if item.project else "",
-			task=item.task,
-			voucher_detail_no=item.name,
-			item=item,
-			posting_date=posting_date,
-		)
+			self.add_gl_entry(
+				gl_entries=gl_entries,
+				account=expense_account,
+				cost_center=item.cost_center,
+				debit=multiplication_factor * amount,
+				credit=0.0,
+				remarks=remarks,
+				against_account=provisional_account,
+				account_currency=debit_currency,
+				project=item.project,
+				task=item.task,
+				voucher_detail_no=item.name,
+				item=item,
+				posting_date=posting_date,
+			)
+		else:
+			self.add_gl_entry(
+				gl_entries=gl_entries,
+				account=provisional_account,
+				cost_center=item.cost_center,
+				debit=0.0,
+				credit=multiplication_factor * amount,
+				remarks=remarks,
+				against_account=expense_account,
+				account_currency=credit_currency,
+				task=item.task,
+				item=item,
+				posting_date=posting_date,
+			)
 
-		self.add_gl_entry(
-			gl_entries=gl_entries,
-			account=expense_account,
-			cost_center=item.cost_center,
-			debit=multiplication_factor * amount,
-			credit=0.0,
-			remarks=remarks,
-			against_account=provisional_account,
-			account_currency=debit_currency,
-			project=item.project if item.project else "",
-			task=item.task,
-			voucher_detail_no=item.name,
-			item=item,
-			posting_date=posting_date,
-		)
+			self.add_gl_entry(
+				gl_entries=gl_entries,
+				account=expense_account,
+				cost_center=item.cost_center,
+				debit=multiplication_factor * amount,
+				credit=0.0,
+				remarks=remarks,
+				against_account=provisional_account,
+				account_currency=debit_currency,
+				voucher_detail_no=item.name,
+				item=item,
+				posting_date=posting_date,
+			)
 
 	def is_landed_cost_booked_for_any_item(self) -> bool:
 		for x in self.items:
@@ -1292,7 +1378,8 @@ def make_purchase_invoice(source_name, target_doc=None, args=None):
 					"bill_date": "bill_date",
 					"material_request_date":"material_request_date",
 					"purchase_order_date":"purchase_order_date",
-					"purchase_receipt_date":"posting_date"
+					"purchase_receipt_date":"posting_date",
+					"for_project":"for_project",
 				},
 				"validation": {
 					"docstatus": ["=", 1],
