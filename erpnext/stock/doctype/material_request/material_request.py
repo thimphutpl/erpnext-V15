@@ -39,6 +39,7 @@ class MaterialRequest(BuyingController):
 		approver_email: DF.Data | None
 		approver_name: DF.Data | None
 		branch: DF.Link
+		commentsaccountsprocurementsi: DF.Data | None
 		company: DF.Link
 		cost_center: DF.Link | None
 		customer: DF.Link | None
@@ -49,6 +50,7 @@ class MaterialRequest(BuyingController):
 		naming_series: DF.Literal["MAT-MR-.YYYY.-"]
 		per_ordered: DF.Percent
 		per_received: DF.Percent
+		purpose: DF.Data
 		schedule_date: DF.Date | None
 		select_print_heading: DF.Link | None
 		set_from_warehouse: DF.Link | None
@@ -134,6 +136,7 @@ class MaterialRequest(BuyingController):
 
 		validate_for_items(self)
 		
+		
 
 		self.set_title()
 		# self.validate_qty_against_so()
@@ -142,9 +145,9 @@ class MaterialRequest(BuyingController):
 
 		self.reset_default_field_value("set_warehouse", "items", "warehouse")
 		self.reset_default_field_value("set_from_warehouse", "items", "from_warehouse")
+		self.add_initial_qty()
   
-
- 
+  
 	def before_update_after_submit(self):
 		self.validate_schedule_date()
 
@@ -180,6 +183,12 @@ class MaterialRequest(BuyingController):
 
 		self.set_status(update=True, status="Cancelled")
 
+	def add_initial_qty(self):
+		if self.get_db_value("workflow_state") == "Draft":
+			for i in self.items:
+				if i.qty:
+					i.initial_quantity = i.qty
+     
 	def check_modified_date(self):
 		mod_db = frappe.db.sql("""select modified from `tabMaterial Request` where name = %s""", self.name)
 		date_diff = frappe.db.sql(f"""select TIMEDIFF('{mod_db[0][0]}', '{cstr(self.modified)}')""")

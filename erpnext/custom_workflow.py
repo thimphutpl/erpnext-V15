@@ -214,7 +214,7 @@ class CustomWorkflow:
                     vars(self.doc)[self.doc_approver[2]] = officiating[2] if officiating else self.expense_approver[2]
             else:
                 if not self.reports_to:
-                    frappe.throw("Reports To not set for Employee {}".format(self.doc.employee if self.doc.employee else frappe.db.get_value("Employee",{"user_id",self.doc.owner},"name")))
+                    frappe.throw("Reports To not set for Employee {}".format( frappe.db.get_value("Employee",{"user_id",self.doc.owner},"name")))
                 officiating = get_officiating_employee(self.reports_to[3])
                 if officiating:
                     officiating = frappe.db.get_value("Employee", officiating[0].officiate, self.field_list)
@@ -923,9 +923,11 @@ class CustomWorkflow:
             self.set_approver("Supervisor")
             
         elif self.new_state.lower() in ("Waiting AFD Procurement Head".lower()):
-            if self.doc.approver_email != frappe.session.user and self.new_state.lower()!= self.old_state.lower():
-                frappe.throw("Only approver can forward this material request")
+            if not self.old_state.lower() in ("Draft".lower()):
+                if self.doc.approver_email != frappe.session.user and self.new_state.lower()!= self.old_state.lower():
+                    frappe.throw("Only approver can forward this material request")
             self.set_approver("AFD Procurement Head")
+            
         
         elif self.new_state.lower() in ("Waiting AFD Head Approval".lower()):
             if self.doc.approver_email != frappe.session.user and self.new_state.lower()!= self.old_state.lower():

@@ -19,6 +19,7 @@
   "image",
   "quantity_and_warehouse",
   "qty",
+  "initial_quantity",
   "stock_uom",
   "from_warehouse",
   "warehouse",
@@ -487,13 +488,24 @@
    "options": "currency",
    "print_hide": 1,
    "read_only": 1
+  },
+  {
+   "columns": 1,
+   "fieldname": "initial_quantity",
+   "fieldtype": "Float",
+   "label": "Initial Quantity",
+   "oldfieldname": "qty",
+   "oldfieldtype": "Currency",
+   "print_width": "80px",
+   "read_only": 1,
+   "width": "80px"
   }
  ],
  "idx": 1,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-10-09 15:18:25.020492",
+ "modified": "2025-02-12 17:31:23.741617",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Material Request Item",
