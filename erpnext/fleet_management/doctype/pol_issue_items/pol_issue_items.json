@@ -11,7 +11,6 @@
   "qty",
   "column_break_11",
   "equipment_balance",
-  "registration_number",
   "section_break_9",
   "warehouse",
   "cost_center",
@@ -49,6 +48,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "fetch_from": "equipment.registration_number",
    "fieldname": "equipment_number",
    "fieldtype": "Data",
    "in_list_view": 1,
@@ -159,20 +159,14 @@
   {
    "fetch_from": "equipment.tank_capacity",
    "fieldname": "tank_capacity",
-   "fieldtype": "Data",
+   "fieldtype": "Float",
    "label": "Tank Capacity"
-  },
-  {
-   "fetch_from": "equipment.registration_number",
-   "fieldname": "registration_number",
-   "fieldtype": "Read Only",
-   "label": "Registration Number"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-02-12 09:46:05.690224",
+ "modified": "2025-02-12 15:06:53.711442",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Issue Items",
