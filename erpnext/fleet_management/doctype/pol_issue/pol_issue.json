@@ -20,6 +20,7 @@
   "pol_type",
   "item_name",
   "stock_uom",
+  "registration_number",
   "column_break_10",
   "tanker",
   "tank_balance",
@@ -185,12 +186,18 @@
    "fieldtype": "Link",
    "label": "Project",
    "options": "Project"
+  },
+  {
+   "fetch_from": "tanker.registration_number",
+   "fieldname": "registration_number",
+   "fieldtype": "Read Only",
+   "label": "Registration Number"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-23 16:16:19.901549",
+ "modified": "2025-02-12 09:28:34.701393",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Issue",
