@@ -663,7 +663,7 @@ class PurchaseReceipt(BuyingController):
 		def make_rate_difference_entry(item):
 			if item.rate_difference_with_purchase_invoice and stock_asset_rbnb:
 				account_currency = get_account_currency(stock_asset_rbnb)
-				if self.for_project == 1
+				if self.for_project == 1:
 					self.add_gl_entry(
 						gl_entries=gl_entries,
 						account=stock_asset_rbnb,
