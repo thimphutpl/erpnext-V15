@@ -1414,6 +1414,7 @@ frappe.ui.form.on("Payment Entry", {
 							if (tax.charge_type === "On Net Total") {
 								tax.charge_type = "On Paid Amount";
 							}
+							tax.cost_center = frm.doc.cost_center ?? '';
 							frm.add_child("taxes", tax);
 						}
 						frm.events.apply_taxes(frm);
