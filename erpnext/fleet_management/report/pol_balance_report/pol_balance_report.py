@@ -6,7 +6,7 @@ from __future__ import unicode_literals
 import frappe
 from frappe import _
 from frappe.utils import flt, getdate, formatdate, cstr
-from erpnext.fleet_management.report.hsd_consumption_report.fleet_management_report import get_pol_till, get_pol_consumed_till
+from erpnext.fleet_management.report.hsd_consumption_report.fleet_management_report import get_pol_till, get_pol_tills, get_pol_consumed_till
 
 def execute(filters=None):
 	columns = get_columns(filters);
@@ -31,11 +31,11 @@ def get_data(filters=None):
 			received = issued = 0
 			if filters.all_equipment:
 				if eq.hsd_type == item.item_code:
-					received = get_pol_till("Receive", eq.name, filters.to_date, item.item_code)
+					received = get_pol_tills("Receive", eq.name, filters.to_date, item.item_code)
 					issued = get_pol_consumed_till(eq.name, filters.to_date)
 			else:
-				received = get_pol_till("Stock", eq.name, filters.to_date, item.item_code)
-				issued = get_pol_till("Issue", eq.name, filters.to_date, item.item_code)
+				received = get_pol_tills("Stock", eq.name, filters.to_date, item.item_code)
+				issued = get_pol_tills("Issue", eq.name, filters.to_date, item.item_code)
 
 			if received or issued:
 				row = [eq.name, eq.registration_number, eq.equipment_type, eq.branch, item.item_code, item.item_name, item.stock_uom, received, issued, flt(received) - flt(issued)]
