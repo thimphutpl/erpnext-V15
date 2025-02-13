@@ -516,7 +516,7 @@
    "label": "Tanker Balance"
   },
   {
-   "fetch_from": "equipment.tank_capacity",
+   "fetch_from": "equipment.tanks_capacity",
    "fieldname": "tank_capacity",
    "fieldtype": "Float",
    "hidden": 1,
@@ -553,7 +553,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-02-13 15:45:59.088036",
+ "modified": "2025-02-13 16:45:19.557472",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Receive",
