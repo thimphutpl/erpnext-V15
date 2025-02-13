@@ -60,7 +60,6 @@
    "label": "End Date"
   },
   {
-   "fetch_from": "operator.cell_number",
    "fieldname": "contact_number",
    "fieldtype": "Data",
    "label": "Contact Number"
@@ -83,7 +82,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-11-20 21:26:46.107038",
+ "modified": "2025-02-13 10:49:08.907291",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Equipment Operator",
