@@ -35,8 +35,40 @@ frappe.ui.form.on('Vehicle Request', {
         check_date(frm);
     },
 
-    vehicle: function(frm){
+    // vehicle: function(frm){
+    //     get_previous_km(frm)
+    // },
+    
+    vehicle: function(frm) {
         get_previous_km(frm)
+        if (frm.doc.vehicle) {
+            frappe.call({
+                method: "frappe.client.get",
+                args: {
+                    doctype: "Equipment",
+                    name: frm.doc.vehicle
+                },
+                callback: function(r) {
+                    if (r.message) {
+                        let equipment = r.message;
+                        
+                        // Ensure the Operators child table exists
+                        if (equipment.operators && equipment.operators.length > 0) {
+                            let operator_details = equipment.operators[0];  // Fetch the first operator
+
+                            frm.set_value("driver", operator_details.operator);
+                            frm.set_value("driver_name", operator_details.operator_name);
+                            frm.set_value("contact_number", operator_details.contact_number);
+                        } else {
+                            frappe.msgprint(__("No operators found for this vehicle."));
+                            frm.set_value("driver", "");
+                            frm.set_value("driver_name", "");
+                            frm.set_value("contact_number", "");
+                        }
+                    }
+                }
+            });
+        }
     },
     
 	onload:function(frm){
@@ -44,7 +76,8 @@ frappe.ui.form.on('Vehicle Request', {
 			return {
 				filters: {
 					equipment_type: frm.doc.vehicle_type,
-                    hired_equipment: 0
+                    hired_equipment: 0,
+                    branch: frm.doc.branch // Add branch filter
 				}
 			}
 		})

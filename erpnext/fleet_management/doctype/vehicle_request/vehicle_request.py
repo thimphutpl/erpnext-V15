@@ -25,7 +25,7 @@ class VehicleRequest(Document):
 		contact_number: DF.Data | None
 		cost_center: DF.Link | None
 		designation: DF.ReadOnly | None
-		driver: DF.Link | None
+		driver: DF.Data | None
 		driver_name: DF.Data | None
 		employee: DF.Link
 		employee_name: DF.ReadOnly | None
