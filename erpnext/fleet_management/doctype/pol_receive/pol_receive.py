@@ -77,7 +77,6 @@ class POLReceive(StockController):
 		tank_balance: DF.Float
 		tank_capacity: DF.Float
 		tanker_balance: DF.Float
-		tanker_capacity: DF.Float
 		total_amount: DF.Currency
 		warehouse: DF.Link | None
 	# end: auto-generated types

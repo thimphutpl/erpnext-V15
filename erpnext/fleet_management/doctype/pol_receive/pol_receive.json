@@ -35,7 +35,6 @@
   "column_break_vjsn",
   "equipment_branch",
   "equipment_warehouse",
-  "tanker_capacity",
   "section_break_bjgc",
   "hiring_branch",
   "hiring_cost_center",
@@ -540,19 +539,12 @@
    "fieldtype": "Link",
    "label": "Serial and Batch Bundle",
    "options": "Serial and Batch Bundle"
-  },
-  {
-   "fetch_from": "equipment.tanker_capacity",
-   "fieldname": "tanker_capacity",
-   "fieldtype": "Float",
-   "hidden": 1,
-   "label": "Tanker Capacity"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-02-13 17:00:22.239235",
+ "modified": "2025-02-13 17:06:33.007266",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Receive",
