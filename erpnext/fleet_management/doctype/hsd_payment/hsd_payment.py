@@ -177,23 +177,72 @@ class HSDPayment(Document):
 		from erpnext.accounts.general_ledger import make_gl_entries
 		make_gl_entries(gl_entries, cancel=(self.docstatus == 2), update_outstanding="No", merge_entries=False)
   
+	# @frappe.whitelist()
+	# def get_invoices(self):
+	# 	if not self.fuelbook:
+	# 		frappe.throw("Select a Fuelbook to Proceed")
+	# 	query = "select name as pol, pol_type as pol_item_code, outstanding_amount as payable_amount, item_name, memo_number from `tabPOL Receive` where docstatus = 1 and outstanding_amount > 0 and fuelbook = %s and is_opening =! Yes order by posting_date, posting_time"
+	# 	entries = frappe.db.sql(query, self.fuelbook, as_dict=True)
+	# 	self.set('items', [])
+
+	# 	total_amount = 0
+	# 	for d in entries:
+	# 		total_amount+=flt(d.payable_amount)
+	# 		d.allocated_amount = d.payable_amount
+	# 		d.balance_amount = 0
+	# 		row = self.append('items', {})
+	# 		row.update(d)
+	# 	self.amount = total_amount
+	# 	self.actual_amount = total_amount
+
 	@frappe.whitelist()
 	def get_invoices(self):
+		# Check if fuelbook is selected
 		if not self.fuelbook:
 			frappe.throw("Select a Fuelbook to Proceed")
-		query = "select name as pol, pol_type as pol_item_code, outstanding_amount as payable_amount, item_name, memo_number from `tabPOL Receive` where docstatus = 1 and outstanding_amount > 0 and fuelbook = %s order by posting_date, posting_time"
+
+		# SQL query to fetch POL Receive entries
+		query = """
+			SELECT 
+				name AS pol, 
+				pol_type AS pol_item_code, 
+				outstanding_amount AS payable_amount, 
+				item_name, 
+				memo_number 
+			FROM 
+				`tabPOL Receive` 
+			WHERE 
+				docstatus = 1 
+				AND outstanding_amount > 0 
+				AND fuelbook = %s 
+				AND is_opening != 'Yes' 
+			ORDER BY 
+				posting_date, 
+				posting_time
+		"""
+
+		# Execute the query
 		entries = frappe.db.sql(query, self.fuelbook, as_dict=True)
+
+		# Clear existing items in the child table
 		self.set('items', [])
 
+		# Initialize total amount
 		total_amount = 0
+
+		# Process each entry
 		for d in entries:
-			total_amount+=flt(d.payable_amount)
+			total_amount += flt(d.payable_amount)
 			d.allocated_amount = d.payable_amount
 			d.balance_amount = 0
+
+			# Append the entry to the child table
 			row = self.append('items', {})
 			row.update(d)
+
+		# Update total amount and actual amount
 		self.amount = total_amount
-		self.actual_amount = total_amount
+		self.actual_amount = total_amount	
   
   
   
