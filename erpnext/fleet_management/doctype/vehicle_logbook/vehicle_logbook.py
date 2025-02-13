@@ -210,9 +210,43 @@ class VehicleLogbook(Document):
 		self.post_equipment_status_entry()
 		#self.check_tank_capacity()
 	
+	# def on_cancel(self):
+	# 	check_uncancelled_linked_doc(self.doctype, self.name)
+	# 	frappe.db.sql("delete from `tabEquipment Status Entry` where ehf_name = \'"+str(self.name)+"\'")
+
 	def on_cancel(self):
+		# Check for uncancelled linked documents
 		check_uncancelled_linked_doc(self.doctype, self.name)
-		frappe.db.sql("delete from `tabEquipment Status Entry` where ehf_name = \'"+str(self.name)+"\'")
+		
+		# Delete Equipment Status Entry
+		frappe.db.sql("delete from `tabEquipment Status Entry` where ehf_name = %s", self.name)
+		
+		# Cancel linked Payment Ledger Entries
+		self.cancel_linked_documents("Payment Ledger Entry", "vehicle_logbook", self.name)
+		
+		# Cancel linked Hire Charge Invoices
+		self.cancel_linked_documents("Hire Charge Invoice", "vehicle_logbook", self.name)
+		
+		# Add more linked document types as needed
+		# self.cancel_linked_documents("Other Doctype", "vehicle_logbook", self.name)
+
+	def cancel_linked_documents(self, doctype, link_fieldname, link_value):
+		"""
+		Cancel all linked documents of a specific type.
+		"""
+		linked_docs = frappe.get_all(
+			doctype,
+			filters={link_fieldname: link_value, "docstatus": 1},  # Only submitted documents
+			fields=["name"]
+		)
+		
+		for doc in linked_docs:
+			try:
+				linked_doc = frappe.get_doc(doctype, doc.name)
+				linked_doc.cancel()
+				frappe.msgprint(f"Cancelled {doctype}: {doc.name}")
+			except Exception as e:
+				frappe.msgprint(f"Failed to cancel {doctype} {doc.name}: {str(e)}", alert=True)			
 
 	def check_dates(self):
 		if getdate(self.from_date) > getdate(self.to_date):

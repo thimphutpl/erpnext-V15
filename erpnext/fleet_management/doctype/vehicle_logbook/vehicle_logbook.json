@@ -329,6 +329,7 @@
   {
    "fieldname": "ys_km",
    "fieldtype": "Float",
+   "hidden": 1,
    "label": "Based on KM",
    "read_only": 1
   },
@@ -352,6 +353,7 @@
   {
    "fieldname": "ys_hours",
    "fieldtype": "Float",
+   "hidden": 1,
    "label": "Based on Hours",
    "read_only": 1
   },
@@ -625,7 +627,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-02-12 11:01:23.022340",
+ "modified": "2025-02-13 15:36:24.746691",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Vehicle Logbook",
