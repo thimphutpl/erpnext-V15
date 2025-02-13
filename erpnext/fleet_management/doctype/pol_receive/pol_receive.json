@@ -524,14 +524,6 @@
    "read_only": 1
   },
   {
-   "fetch_from": "equipment.tanker_capacity",
-   "fieldname": "tanker_capacity",
-   "fieldtype": "Float",
-   "hidden": 1,
-   "label": "Tanker Capacity",
-   "read_only": 1
-  },
-  {
    "fieldname": "is_opening",
    "fieldtype": "Select",
    "label": "Is Opening",
@@ -548,12 +540,19 @@
    "fieldtype": "Link",
    "label": "Serial and Batch Bundle",
    "options": "Serial and Batch Bundle"
+  },
+  {
+   "fetch_from": "equipment.tanker_capacity",
+   "fieldname": "tanker_capacity",
+   "fieldtype": "Float",
+   "hidden": 1,
+   "label": "Tanker Capacity"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-02-13 16:45:19.557472",
+ "modified": "2025-02-13 17:00:22.239235",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Receive",
