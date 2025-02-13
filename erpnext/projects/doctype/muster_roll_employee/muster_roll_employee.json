@@ -223,8 +223,7 @@
   {
    "fieldname": "salary",
    "fieldtype": "Currency",
-   "label": "Salary Per Month",
-   "read_only": 1
+   "label": "Salary Per Month"
   },
   {
    "fieldname": "rate_per_day",
@@ -399,7 +398,7 @@
  "in_create": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-02-06 13:39:49.991351",
+ "modified": "2025-02-13 16:35:45.162470",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Muster Roll Employee",
