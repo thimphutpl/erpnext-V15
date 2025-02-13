@@ -537,6 +537,7 @@
   {
    "fieldname": "serial_and_batch_bundle",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Serial and Batch Bundle",
    "options": "Serial and Batch Bundle"
   }
@@ -544,7 +545,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-02-13 17:06:33.007266",
+ "modified": "2025-02-13 17:12:57.657099",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Receive",
