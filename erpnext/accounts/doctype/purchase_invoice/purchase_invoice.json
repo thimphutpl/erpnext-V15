@@ -118,16 +118,16 @@
   "outstanding_amount",
   "disable_rounded_total",
   "section_break_44",
-  "discount",
-  "total_add_ded",
-  "apply_discount_on",
-  "base_discount_amount",
-  "column_break_46",
   "tax",
   "freight_insurance_charges",
   "other_charges",
+  "total_add_ded",
+  "column_break_46",
+  "apply_discount_on",
+  "discount",
   "additional_discount_percentage",
   "discount_amount",
+  "base_discount_amount",
   "references_section",
   "material_request",
   "purchase_order",
@@ -828,7 +828,7 @@
    "collapsible": 1,
    "fieldname": "section_break_44",
    "fieldtype": "Section Break",
-   "label": "Additional Discount"
+   "label": "Additional Charges and Discount"
   },
   {
    "default": "Grand Total",
@@ -859,6 +859,7 @@
   {
    "fieldname": "discount_amount",
    "fieldtype": "Currency",
+   "hidden": 1,
    "label": "Additional Discount Amount",
    "options": "currency",
    "print_hide": 1
@@ -1039,7 +1040,7 @@
   {
    "fieldname": "write_off",
    "fieldtype": "Section Break",
-   "label": "Liquidity Damages/Late Delivery"
+   "label": "Liquidity Damages/Write Off"
   },
   {
    "fieldname": "write_off_amount",
@@ -1726,7 +1727,6 @@
   {
    "fieldname": "total_add_ded",
    "fieldtype": "Currency",
-   "hidden": 1,
    "label": "Net Charges & Discount",
    "read_only": 1
   },
@@ -1772,7 +1772,7 @@
  "idx": 204,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-02-12 14:52:36.765849",
+ "modified": "2025-02-13 15:31:28.912356",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Purchase Invoice",
