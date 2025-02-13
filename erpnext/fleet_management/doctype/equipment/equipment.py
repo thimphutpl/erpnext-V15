@@ -32,7 +32,7 @@ class Equipment(Document):
 		engine_number: DF.Data | None
 		equipment_category: DF.Link
 		equipment_history: DF.Table[EquipmentHistory]
-		equipment_model: DF.Link
+		equipment_model: DF.Link | None
 		equipment_type: DF.Link
 		fuelbook: DF.Link | None
 		gewog: DF.Link | None
@@ -49,8 +49,8 @@ class Equipment(Document):
 		project: DF.Link | None
 		registration_number: DF.Data
 		supplier: DF.Link | None
-		tank_capacity: DF.Data | None
-		tanker_capacity: DF.Data | None
+		tankers_capacity: DF.Float
+		tanks_capacity: DF.Float
 		village: DF.Link | None
 	# end: auto-generated types
 	# def validate(self):

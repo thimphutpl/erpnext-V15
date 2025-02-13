@@ -27,10 +27,10 @@
   "bluebook_date",
   "column_break_qcgk",
   "equipment_type",
-  "tank_capacity",
+  "tanks_capacity",
   "column_break_bape",
   "equipment_model",
-  "tanker_capacity",
+  "tankers_capacity",
   "column_break_vikw",
   "registration_number",
   "yardstick_details_for_pool_vehicles_section",
@@ -96,8 +96,7 @@
    "fieldname": "equipment_model",
    "fieldtype": "Link",
    "label": "Equipment Model",
-   "options": "Equipment Model",
-   "reqd": 1
+   "options": "Equipment Model"
   },
   {
    "fieldname": "engine_details_section",
@@ -128,7 +127,7 @@
    "label": "Owner Details"
   },
   {
-   "depends_on": "eval:doc.not_cdcl==0",
+   "depends_on": "eval:doc.not_cdcl==1 || doc.not_cdcl==1",
    "fieldname": "asset_code",
    "fieldtype": "Link",
    "in_filter": 1,
@@ -299,11 +298,6 @@
    "options": "Equipment Operator"
   },
   {
-   "fieldname": "tank_capacity",
-   "fieldtype": "Data",
-   "label": "Tank Capacity"
-  },
-  {
    "fieldname": "registration_number",
    "fieldtype": "Data",
    "in_list_view": 1,
@@ -343,7 +337,7 @@
   {
    "fieldname": "yardstick_details_for_pool_vehicles_section",
    "fieldtype": "Section Break",
-   "label": "Yardstick Details (For Pool Vehicles)"
+   "label": "Yardstick Details"
   },
   {
    "fieldname": "lph",
@@ -362,21 +356,29 @@
    "precision": "2"
   },
   {
-   "fieldname": "tanker_capacity",
-   "fieldtype": "Data",
-   "label": "Tanker Capacity"
-  },
-  {
    "fieldname": "project",
    "fieldtype": "Link",
+   "hidden": 1,
    "in_list_view": 1,
    "label": "Project",
    "options": "Project"
+  },
+  {
+   "fieldname": "tanks_capacity",
+   "fieldtype": "Float",
+   "hidden": 1,
+   "label": "Tank Capacity"
+  },
+  {
+   "fieldname": "tankers_capacity",
+   "fieldtype": "Float",
+   "hidden": 1,
+   "label": "Tanker Capacity"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-01-17 09:53:53.522684",
+ "modified": "2025-02-13 15:58:30.911349",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Equipment",
