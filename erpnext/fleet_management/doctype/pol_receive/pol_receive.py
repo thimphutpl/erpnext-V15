@@ -81,24 +81,24 @@ class POLReceive(StockController):
 		total_amount: DF.Currency
 		warehouse: DF.Link | None
 	# end: auto-generated types
-	def before_save(self):
-		if not self.tank_balance:
-			self.tank_balance = 0
-        # Ensure tank balance does not exceed tank capacity
-		if self.book_type == "Own" and flt(self.tank_capacity) < flt(self.tank_balance + self.qty):
-			frappe.throw(
-                ("Tank capacity ({}) should be greater than or equal to sum of tank balance and quantity ({}).").format(
-                    self.tank_capacity, flt(self.tank_balance + self.qty)
-                )
-            )
+	# def before_save(self):
+	# 	if not self.tank_balance:
+	# 		self.tank_balance = 0
+    #     # Ensure tank balance does not exceed tank capacity
+	# 	if self.book_type == "Own" and flt(self.tank_capacity) < flt(self.tank_balance + self.qty):
+	# 		frappe.throw(
+    #             ("Tank capacity ({}) should be greater than or equal to sum of tank balance and quantity ({}).").format(
+    #                 self.tank_capacity, flt(self.tank_balance + self.qty)
+    #             )
+    #         )
 
-		# Ensure tank balance does not exceed tank capacity
-		if self.book_type == "Common" and flt(cint(self.tanker_capacity)) < flt(cint(self.tanker_balance + self.qty)):
-			frappe.throw(
-                ("Tanker capacity ({}) should be greater than or equal to sum of tanker balance and quantity ({}).").format(
-                    self.tanker_capacity, flt(self.tanker_balance + self.qty)
-                )
-            )
+	# 	# Ensure tank balance does not exceed tank capacity
+	# 	if self.book_type == "Common" and flt(cint(self.tanker_capacity)) < flt(cint(self.tanker_balance + self.qty)):
+	# 		frappe.throw(
+    #             ("Tanker capacity ({}) should be greater than or equal to sum of tanker balance and quantity ({}).").format(
+    #                 self.tanker_capacity, flt(self.tanker_balance + self.qty)
+    #             )
+    #         )
 
 	def validate(self):
 		check_future_date(self.posting_date)

@@ -69,14 +69,14 @@ class POLIssue(StockController):
                 )
             )
 
-		for item in self.get("items"):
-			# Ensure tank capacity is greater than or equal to the sum of equipment balance and quantity
-			if flt(item.tank_capacity) < flt(cint(item.equipment_balance) + cint(item.qty)):
-				frappe.throw(
-					("Tank capacity ({0}) should be greater than or equal to the sum of equipment balance and quantity ({1}) in row {2}.").format(
-						item.tank_capacity, flt(item.equipment_balance + item.qty), item.idx
-					)
-				)			
+		# for item in self.get("items"):
+		# 	# Ensure tank capacity is greater than or equal to the sum of equipment balance and quantity
+		# 	if flt(item.tank_capacity) < flt(cint(item.equipment_balance) + cint(item.qty)):
+		# 		frappe.throw(
+		# 			("Tank capacity ({0}) should be greater than or equal to the sum of equipment balance and quantity ({1}) in row {2}.").format(
+		# 				item.tank_capacity, flt(item.equipment_balance + item.qty), item.idx
+		# 			)
+		# 		)			
 
 
 	def validate(self):
