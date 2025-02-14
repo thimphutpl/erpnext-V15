@@ -46,6 +46,7 @@
   "rejection_reason",
   "section_break03",
   "items",
+  "employee_details",
   "reason_for_extension",
   "workflow_state",
   "amended_from"
@@ -186,6 +187,7 @@
    "bold": 1,
    "fieldname": "items",
    "fieldtype": "Table",
+   "hidden": 1,
    "ignore_user_permissions": 1,
    "label": "Duty for (Name of the Official):",
    "options": "Vehicle Request Item"
@@ -306,11 +308,17 @@
    "fieldname": "fleet_details_section",
    "fieldtype": "Section Break",
    "label": "Fleet Details"
+  },
+  {
+   "fieldname": "employee_details",
+   "fieldtype": "Table",
+   "label": "Employee Details",
+   "options": "Vehicle Request Employee"
   }
  ],
  "is_submittable": 1,
  "links": [],
- "modified": "2025-02-14 15:43:10.293934",
+ "modified": "2025-02-14 17:03:41.867868",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Vehicle Request",

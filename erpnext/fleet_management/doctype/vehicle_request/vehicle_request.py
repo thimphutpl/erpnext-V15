@@ -15,6 +15,7 @@ class VehicleRequest(Document):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
+		from erpnext.fleet_management.doctype.vehicle_request_employee.vehicle_request_employee import VehicleRequestEmployee
 		from erpnext.fleet_management.doctype.vehicle_request_item.vehicle_request_item import VehicleRequestItem
 		from frappe.types import DF
 
@@ -28,6 +29,7 @@ class VehicleRequest(Document):
 		driver: DF.Data | None
 		driver_name: DF.Data | None
 		employee: DF.Link
+		employee_details: DF.Table[VehicleRequestEmployee]
 		employee_name: DF.ReadOnly | None
 		from_date: DF.Datetime
 		grade: DF.ReadOnly | None
