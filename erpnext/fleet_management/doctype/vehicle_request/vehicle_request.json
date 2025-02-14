@@ -186,6 +186,7 @@
    "bold": 1,
    "fieldname": "items",
    "fieldtype": "Table",
+   "ignore_user_permissions": 1,
    "label": "Duty for (Name of the Official):",
    "options": "Vehicle Request Item"
   },
@@ -301,7 +302,7 @@
    "read_only": 1
   },
   {
-   "depends_on": "eval:doc.workflow_state ==\"Waiting Approval\" && doc.workflow_state ==\"Approved\"",
+   "depends_on": "eval:doc.workflow_state !=\"Draft\"",
    "fieldname": "fleet_details_section",
    "fieldtype": "Section Break",
    "label": "Fleet Details"
@@ -309,7 +310,7 @@
  ],
  "is_submittable": 1,
  "links": [],
- "modified": "2025-02-14 15:11:27.461369",
+ "modified": "2025-02-14 15:43:10.293934",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Vehicle Request",
