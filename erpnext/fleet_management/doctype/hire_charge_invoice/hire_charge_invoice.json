@@ -33,6 +33,12 @@
   "column_break_16",
   "balance_amount",
   "outstanding_amount",
+  "section_break_gknp",
+  "total_hire_charge_amount",
+  "column_break_byjn",
+  "total_hsd_consumption",
+  "column_break_yrjr",
+  "total_operator_salary",
   "section_break_25",
   "get_vehicle_logbooks",
   "section_break_18",
@@ -320,12 +326,45 @@
    "label": "Supplier",
    "options": "Supplier",
    "read_only": 1
+  },
+  {
+   "fieldname": "section_break_gknp",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "total_hire_charge_amount",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Total Hire Charge Amount",
+   "precision": "4"
+  },
+  {
+   "fieldname": "column_break_byjn",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_hsd_consumption",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Total HSD Consumption",
+   "precision": "4"
+  },
+  {
+   "fieldname": "column_break_yrjr",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_operator_salary",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Total Operator Salary",
+   "precision": "4"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-02-06 10:47:19.676220",
+ "modified": "2025-02-14 13:35:39.688375",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Hire Charge Invoice",
