@@ -35,6 +35,7 @@ class Task(NestedSet):
 		activity: DF.Data | None
 		actual_time: DF.Float
 		additional_task: DF.Check
+		advances: DF.Currency
 		branch: DF.Link | None
 		closing_date: DF.Date | None
 		color: DF.Color | None
@@ -50,6 +51,7 @@ class Task(NestedSet):
 		exp_end_date: DF.Date | None
 		exp_start_date: DF.Date | None
 		expected_time: DF.Float
+		expenses: DF.Currency
 		grp_exp_end_date: DF.Date | None
 		grp_exp_start_date: DF.Date | None
 		grp_work_quantity: DF.Percent

@@ -61,9 +61,11 @@
   "material_cost",
   "services_cost",
   "other_expenses",
+  "expenses",
   "column_break_20",
   "total_billing_amount",
   "total_cost",
+  "advances",
   "sb_more_info",
   "review_date",
   "closing_date",
@@ -589,6 +591,18 @@
    "fieldtype": "Currency",
    "label": "Other Expenses",
    "read_only": 1
+  },
+  {
+   "fieldname": "expenses",
+   "fieldtype": "Currency",
+   "label": "Expenses",
+   "read_only": 1
+  },
+  {
+   "fieldname": "advances",
+   "fieldtype": "Currency",
+   "label": "Advances",
+   "read_only": 1
   }
  ],
  "icon": "fa fa-check",
@@ -596,7 +610,7 @@
  "is_tree": 1,
  "links": [],
  "max_attachments": 5,
- "modified": "2025-02-02 12:25:26.299549",
+ "modified": "2025-02-14 17:57:14.957614",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Task",
@@ -624,6 +638,5 @@
  "sort_order": "DESC",
  "states": [],
  "timeline_field": "project",
- "title_field": "subject",
- "track_seen": 1
+ "title_field": "subject"
 }
