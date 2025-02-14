@@ -17,17 +17,17 @@ frappe.ui.form.on('Vehicle Request', {
         }
     },
 
-	setup: function (frm) {
-        frm.get_field('items').grid.editable_fields = [
-            { fieldname: 'employee', columns: 2 },
-            { fieldname: 'employee_name', columns: 2 },
-            { fieldname: 'designation', columns: 2 },
-            { fieldname: 'division', columns: 3 },
-        ];
-        frappe.form.link_formatters['Employee'] = function(value) {
-                return value;
-        }
-    },
+	// setup: function (frm) {
+    //     frm.get_field('items').grid.editable_fields = [
+    //         { fieldname: 'employee', columns: 2 },
+    //         { fieldname: 'employee_name', columns: 2 },
+    //         { fieldname: 'designation', columns: 2 },
+    //         { fieldname: 'division', columns: 3 },
+    //     ];
+    //     frappe.form.link_formatters['Employee'] = function(value) {
+    //             return value;
+    //     }
+    // },
     from_date: function(frm){
         get_date(frm);
     },
@@ -75,8 +75,8 @@ frappe.ui.form.on('Vehicle Request', {
 		frm.set_query('vehicle', () => {
 			return {
 				filters: {
-					equipment_type: frm.doc.vehicle_type,
-                    hired_equipment: 0,
+					// equipment_type: frm.doc.vehicle_type,
+                    // hired_equipment: 0,
                     branch: frm.doc.branch // Add branch filter
 				}
 			}
