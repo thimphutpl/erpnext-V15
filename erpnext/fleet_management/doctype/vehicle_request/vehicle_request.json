@@ -31,6 +31,8 @@
   "column_break04",
   "purpose",
   "total_days_and_hours",
+  "employee_details_section",
+  "employee_details",
   "fleet_details_section",
   "vehicle_type",
   "vehicle",
@@ -46,7 +48,6 @@
   "rejection_reason",
   "section_break03",
   "items",
-  "employee_details",
   "reason_for_extension",
   "workflow_state",
   "amended_from"
@@ -314,11 +315,16 @@
    "fieldtype": "Table",
    "label": "Employee Details",
    "options": "Vehicle Request Employee"
+  },
+  {
+   "fieldname": "employee_details_section",
+   "fieldtype": "Section Break",
+   "label": "Employee Details"
   }
  ],
  "is_submittable": 1,
  "links": [],
- "modified": "2025-02-14 17:03:41.867868",
+ "modified": "2025-02-14 17:28:20.770633",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Vehicle Request",
