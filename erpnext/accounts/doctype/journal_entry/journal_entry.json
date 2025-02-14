@@ -64,6 +64,7 @@
   "select_print_heading",
   "remit_details_section",
   "remit_bank",
+  "month",
   "column_break_znnn",
   "remit_purpose",
   "rtgs_information_section",
@@ -782,6 +783,12 @@
    "fieldtype": "Link",
    "label": "Supplier",
    "options": "Supplier"
+  },
+  {
+   "fieldname": "month",
+   "fieldtype": "Select",
+   "label": "Month",
+   "options": "\nJanuary\nFebruary\nMarch\nApril\nMay\nJune\nJuly\nAugust\nSeptember\nOctober\nNovember\nDecember"
   }
  ],
  "icon": "fa fa-file-text",
@@ -796,7 +803,7 @@
    "table_fieldname": "payment_entries"
   }
  ],
- "modified": "2025-02-12 10:51:46.444295",
+ "modified": "2025-02-14 12:11:27.093548",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Journal Entry",
