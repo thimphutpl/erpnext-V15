@@ -233,7 +233,7 @@
    "fieldtype": "Column Break"
   },
   {
-   "depends_on": "eval:doc.private == \"CDCL\"",
+   "depends_on": "eval:doc.private == \"\"",
    "fetch_from": "customer.branch",
    "fieldname": "customer_branch",
    "fieldtype": "Read Only",
@@ -337,7 +337,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-27 17:08:55.255904",
+ "modified": "2025-02-14 22:57:27.621896",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Equipment Hiring Form",
