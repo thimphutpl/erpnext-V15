@@ -15,7 +15,7 @@ class VehicleRequestItem(Document):
 
 		designation: DF.Link | None
 		division: DF.Link | None
-		employee: DF.Link | None
+		employee_id: DF.Link | None
 		employee_name: DF.Data | None
 		name: DF.Int | None
 		parent: DF.Data
