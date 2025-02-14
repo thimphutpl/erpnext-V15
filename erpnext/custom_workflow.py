@@ -973,6 +973,8 @@ class CustomWorkflow:
 				frappe.throw("Only <b>{}</b> can Cancel this request".format(self.doc.approver_name))
 	
 	def travel_claim(self):
+		if self.new_state.lower() == self.old_state.lower():
+			return
 		if self.new_state.lower() in ("Waiting Supervisor Approval".lower()):
 			if self.doc.owner != frappe.session.user and self.new_state.lower() != self.old_state.lower():
 				frappe.throw("Only <b>{}</b> can Apply this request".format(self.doc.owner))
