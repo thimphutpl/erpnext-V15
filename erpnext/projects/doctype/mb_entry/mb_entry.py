@@ -50,14 +50,14 @@ class MBEntry(AccountsController):
 	def on_submit(self):
 		self.validate_boq_items()
 		self.update_boq()
-		self.make_gl_entries()
+		# self.make_gl_entries()
 
 	def before_cancel(self):
 		self.set_status()
 
 	def on_cancel(self):
 		self.update_boq()
-		self.make_gl_entries()
+		# self.make_gl_entries()
 			
 	def set_status(self):
 		self.status = {
