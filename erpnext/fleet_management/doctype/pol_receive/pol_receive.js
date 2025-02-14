@@ -144,13 +144,13 @@ frappe.ui.form.on('POL Receive', {
 		})
 	},
 	equipment:function(frm){
-		// frm.set_query("fuelbook",function(){
-		// 	return {
-		// 		filters:{
-		// 			"equipment":frm.doc.equipment
-		// 		}
-		// 	}
-		// })
+		frm.set_query("fuelbook",function(){
+			return {
+				filters:{
+					"equipment":frm.doc.equipment
+				}
+			}
+		})
 		if (frm.doc.book_type === 'Common') {
 			update_balances(frm);
 		} else if (frm.doc.book_type === 'Own') {
