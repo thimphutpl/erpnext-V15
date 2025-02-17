@@ -540,11 +540,10 @@ def get_pay_details(employee, year, month):
 				rate_per_day, rate_per_hour, rate_per_hour_normal
 			FROM `tabMusterroll`
 			WHERE parent = '{employee}'
-			AND '{from_date}' <= IFNULL(to_date, '{to_date}')
-			AND '{to_date}' >= IFNULL(from_date, '{from_date}')
-			ORDER BY IFNULL(to_date,'{to_date}') DESC
+			
+			ORDER BY from_date DESC
 			LIMIT 1
-		""".format(employee=employee, from_date=from_date, to_date=to_date), as_dict = True)
+		""".format(employee=employee), as_dict = True)
 
 # def update_mr_rates(employee_type, employee, cost_center, from_date, to_date):
 # 	# Updating wage rate

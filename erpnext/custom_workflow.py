@@ -21,7 +21,10 @@ class CustomWorkflow:
 	def __init__(self, doc):
 		self.doc = doc
 		self.new_state = self.doc.workflow_state
-		self.old_state = self.doc.get_db_value("workflow_state")
+		if not self.doc.is_new():
+			self.old_state = self.doc.get_db_value("workflow_state")
+		else:
+			self.old_state = self.doc.workflow_state
 
 		self.field_map 		= get_field_map()
 		self.doc_approver	= self.field_map[self.doc.doctype]
@@ -973,6 +976,7 @@ class CustomWorkflow:
 				frappe.throw("Only <b>{}</b> can Cancel this request".format(self.doc.approver_name))
 	
 	def travel_claim(self):
+		# frappe.throw(str(self.new_state.lower()))
 		if self.new_state.lower() == self.old_state.lower():
 			return
 		if self.new_state.lower() in ("Waiting Supervisor Approval".lower()):
