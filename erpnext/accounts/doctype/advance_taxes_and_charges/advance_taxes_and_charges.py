@@ -20,9 +20,7 @@ class AdvanceTaxesandCharges(Document):
 		allocated_amount: DF.Currency
 		base_tax_amount: DF.Currency
 		base_total: DF.Currency
-		charge_type: DF.Literal[
-			"", "Actual", "On Paid Amount", "On Previous Row Amount", "On Previous Row Total"
-		]
+		charge_type: DF.Literal["", "Actual", "On Paid Amount", "On Previous Row Amount", "On Previous Row Total"]
 		cost_center: DF.Link | None
 		currency: DF.Link | None
 		description: DF.SmallText
@@ -30,6 +28,8 @@ class AdvanceTaxesandCharges(Document):
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
+		party: DF.DynamicLink | None
+		party_type: DF.Literal["", "Supplier", "Employee"]
 		rate: DF.Float
 		row_id: DF.Data | None
 		tax_amount: DF.Currency

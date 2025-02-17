@@ -21,14 +21,7 @@ class PurchaseTaxesandCharges(Document):
 		base_tax_amount_after_discount_amount: DF.Currency
 		base_total: DF.Currency
 		category: DF.Literal["Valuation and Total", "Valuation", "Total"]
-		charge_type: DF.Literal[
-			"",
-			"Actual",
-			"On Net Total",
-			"On Previous Row Amount",
-			"On Previous Row Total",
-			"On Item Quantity",
-		]
+		charge_type: DF.Literal["", "Actual", "On Net Total", "On Previous Row Amount", "On Previous Row Total", "On Item Quantity"]
 		cost_center: DF.Link | None
 		description: DF.SmallText
 		included_in_paid_amount: DF.Check
@@ -38,6 +31,8 @@ class PurchaseTaxesandCharges(Document):
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
+		party: DF.DynamicLink | None
+		party_type: DF.Literal["", "Supplier", "Employee"]
 		rate: DF.Float
 		row_id: DF.Data | None
 		tax_amount: DF.Currency
