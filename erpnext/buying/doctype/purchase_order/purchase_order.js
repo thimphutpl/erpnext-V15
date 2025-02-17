@@ -775,6 +775,15 @@ erpnext.buying.PurchaseOrderController = class PurchaseOrderController extends (
 	schedule_date() {
 		set_schedule_date(this.frm);
 	}
+
+	onload() {
+		this.frm.set_query("item_code", "items", function (doc, cdt, cdn) {
+			return {
+				query: "erpnext.controllers.queries.item_query",
+				filters: { item_group: doc.naming_series },
+			};
+		});
+	}
 };
 
 // for backward compatibility: combine new and previous states

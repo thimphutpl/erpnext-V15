@@ -15,7 +15,7 @@ def get_auto_name(dn, naming_series=None):
 			series_seq = 'POFA'
 		elif naming_series == 'Sales Product':
 			series_seq = 'POSA'
-		elif naming_series == 'Spareparts':
+		elif naming_series == 'Spare Parts':
 			series_seq = 'POSP'
 		elif naming_series == 'Services Miscellaneous':
 			series_seq = 'POSM'
@@ -31,7 +31,7 @@ def get_auto_name(dn, naming_series=None):
 			series_seq = 'SOFA'
 		elif naming_series == 'Sales Product':
 			series_seq = 'SOSA'
-		elif naming_series == 'Spareparts':
+		elif naming_series == 'Spare Parts':
 			series_seq = 'SOSP'
 		elif naming_series == 'Services Miscellaneous':
 			series_seq = 'SOSM'
@@ -47,7 +47,7 @@ def get_auto_name(dn, naming_series=None):
 			series_seq = 'PIFA'
 		elif naming_series == 'Sales Product':
 			series_seq = 'PISA'
-		elif naming_series == 'Spareparts':
+		elif naming_series == 'Spare Parts':
 			series_seq = 'PISP'
 		elif naming_series == 'Services Miscellaneous':
 			series_seq = 'PISM'
@@ -63,7 +63,7 @@ def get_auto_name(dn, naming_series=None):
 			series_seq = 'SIFA'
 		elif naming_series == 'Sales Product':
 			series_seq = 'SISA'
-		elif naming_series == 'Spareparts':
+		elif naming_series == 'Spare Parts':
 			series_seq = 'SISP'
 		elif naming_series == 'Services Miscellaneous':
 			series_seq = 'SISM'
@@ -79,7 +79,7 @@ def get_auto_name(dn, naming_series=None):
 			series_seq = 'SEFA'
 		elif naming_series == 'Sales Product':
 			series_seq = 'SESA'
-		elif naming_series == 'Spareparts':
+		elif naming_series == 'Spare Parts':
 			series_seq = 'SESP'
 		elif naming_series == 'Services Miscellaneous':
 			series_seq = 'SESM'
@@ -95,7 +95,7 @@ def get_auto_name(dn, naming_series=None):
 			series_seq = 'DNFA'
 		elif naming_series == 'Sales Product':
 			series_seq = 'DNSA'
-		elif naming_series == 'Spareparts':
+		elif naming_series == 'Spare Parts':
 			series_seq = 'DNSP'
 		elif naming_series == 'Services Miscellaneous':
 			series_seq = 'DNSM'
@@ -111,7 +111,7 @@ def get_auto_name(dn, naming_series=None):
 			series_seq = 'PRFA'
 		elif naming_series == 'Sales Product':
 			series_seq = 'PRSA'
-		elif naming_series == 'Spareparts':
+		elif naming_series == 'Spare Parts':
 			series_seq = 'PRSP'
 		elif naming_series == 'Services Miscellaneous':
 			series_seq = 'PRSM'
@@ -127,7 +127,7 @@ def get_auto_name(dn, naming_series=None):
 			series_seq = 'MRFA'
 		elif naming_series == 'Sales Product':
 			series_seq = 'MRSA'
-		elif naming_series == 'Spareparts':
+		elif naming_series == 'Spare Parts':
 			series_seq = 'MRSP'
 		elif naming_series == 'Services Miscellaneous':
 			series_seq = 'MRSM'
@@ -145,7 +145,7 @@ def get_auto_name(dn, naming_series=None):
 			series_seq = 'SQFA'
 		elif naming_series == 'Sales Product':
 			series_seq = 'SQSA'
-		elif naming_series == 'Spareparts':
+		elif naming_series == 'Spare Parts':
 			series_seq = 'SQSP'
 		elif naming_series == 'Services Miscellaneous':
 			series_seq = 'SQSM'
@@ -161,7 +161,7 @@ def get_auto_name(dn, naming_series=None):
 			series_seq = 'RQFA'
 		elif naming_series == 'Sales Product':
 			series_seq = 'RQSA'
-		elif naming_series == 'Spareparts':
+		elif naming_series == 'Spare Parts':
 			series_seq = 'RQSP'
 		elif naming_series == 'Services Miscellaneous':
 			series_seq = 'RQSM'
@@ -187,7 +187,7 @@ def get_auto_name(dn, naming_series=None):
 			series_seq = 'QIFA'
 		elif naming_series == 'Sales Product':
 			series_seq = 'QISA'
-		elif naming_series == 'Spareparts':
+		elif naming_series == 'Spare Parts':
 			series_seq = 'QISP'
 		elif naming_series == 'Services Miscellaneous':
 			series_seq = 'QISM'
@@ -203,7 +203,7 @@ def get_auto_name(dn, naming_series=None):
 			series_seq = 'QTFA'
 		elif naming_series == 'Sales Product':
 			series_seq = 'QTSA'
-		elif naming_series == 'Spareparts':
+		elif naming_series == 'Spare Parts':
 			series_seq = 'QTSP'
 		elif naming_series == 'Services Miscellaneous':
 			series_seq = 'QTSM'

@@ -51,7 +51,7 @@ class MaterialRequest(BuyingController):
 		material_request_type: DF.Literal["Material Issue", "Purchase", "Material Transfer", "Manufacture", "Requisition"]
 		mr_footer: DF.TextEditor | None
 		mr_header: DF.TextEditor | None
-		naming_series: DF.Literal["", "Consumables", "Fixed Asset", "Sales Product", "Spareparts", "Services Miscellaneous", "Services Works", "Labour Contract", "REORDER", "MAT-MR-.YYYY.-"]
+		naming_series: DF.Literal["", "Consumables", "Fixed Asset", "Sales Product", "Spare Parts", "Services Miscellaneous", "Services Works", "Labour Contract", "REORDER", "MAT-MR-.YYYY.-"]
 		per_ordered: DF.Percent
 		per_received: DF.Percent
 		schedule_date: DF.Date | None
@@ -458,8 +458,8 @@ def make_purchase_order(source_name, target_doc=None, args=None):
 			"Material Request": {
 				"doctype": "Purchase Order",
 				"field_map": {
-					"material_request_date":"transaction_date" ,
 					"material_request":"name",
+					"material_request_date":"transaction_date" ,
 				},
 				"validation": {"docstatus": ["=", 1]},
 				# "validation": {"docstatus": ["=", 1], "material_request_type": ["=", "Purchase"]}, [Remarks]: didn't allow requisition to make purchase
@@ -536,8 +536,8 @@ def make_purchase_order_based_on_supplier(source_name, target_doc=None, args=Non
 			"Material Request": {
 				"doctype": "Purchase Order",
 				"field_map": {
-					"material_request_date": "transaction_date",
 					"material_request": "name",
+					"material_request_date": "transaction_date",
 				},
 			},
 			"Material Request Item": {

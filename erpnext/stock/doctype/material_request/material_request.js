@@ -664,29 +664,34 @@ erpnext.buying.MaterialRequestController = class MaterialRequestController exten
 		set_schedule_date(this.frm);
 	}
 
-	// onload() {
-	// 	this.frm.set_query("item_code", "items", function (doc, cdt, cdn) {
-	// 		if (doc.material_request_type == "Customer Provided") {
-	// 			return {
-	// 				query: "erpnext.controllers.queries.item_query",
-	// 				filters: {
-	// 					customer: doc.customer,
-	// 					is_stock_item: 1,
-	// 				},
-	// 			};
-	// 		} else if (doc.material_request_type == "Purchase") {
-	// 			return {
-	// 				query: "erpnext.controllers.queries.item_query",
-	// 				filters: { is_purchase_item: 1 },
-	// 			};
-	// 		} else {
-	// 			return {
-	// 				query: "erpnext.controllers.queries.item_query",
-	// 				filters: { is_stock_item: 1 },
-	// 			};
-	// 		}
-	// 	});
-	// }
+	onload() {
+		this.frm.set_query("item_code", "items", function (doc, cdt, cdn) {
+			return {
+				query: "erpnext.controllers.queries.item_query",
+				filters: { item_group: doc.naming_series },
+			};
+
+			// if (doc.material_request_type == "Customer Provided") {
+			// 	return {
+			// 		query: "erpnext.controllers.queries.item_query",
+			// 		filters: {
+			// 			customer: doc.customer,
+			// 			is_stock_item: 1,
+			// 		},
+			// 	};
+			// } else if (doc.material_request_type == "Purchase") {
+			// 	return {
+			// 		query: "erpnext.controllers.queries.item_query",
+			// 		filters: { is_purchase_item: 1 },
+			// 	};
+			// } else {
+			// 	return {
+			// 		query: "erpnext.controllers.queries.item_query",
+			// 		filters: { is_stock_item: 1 },
+			// 	};
+			// }
+		});
+	}
 
 	items_add(doc, cdt, cdn) {
 		var row = frappe.get_doc(cdt, cdn);
