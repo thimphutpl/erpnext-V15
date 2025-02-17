@@ -66,7 +66,9 @@
   "material_cost",
   "services_cost",
   "other_expenses",
+  "expenses",
   "column_break_sirl",
+  "advances",
   "column_break_yuaa",
   "total_cost",
   "defect_liability_section_section",
@@ -944,6 +946,18 @@
    "fieldtype": "Currency",
    "label": "Other Expenses",
    "read_only": 1
+  },
+  {
+   "fieldname": "expenses",
+   "fieldtype": "Currency",
+   "label": "Expenses",
+   "read_only": 1
+  },
+  {
+   "fieldname": "advances",
+   "fieldtype": "Currency",
+   "label": "Advances",
+   "read_only": 1
   }
  ],
  "icon": "fa fa-puzzle-piece",
@@ -951,7 +965,7 @@
  "index_web_pages_for_search": 1,
  "links": [],
  "max_attachments": 4,
- "modified": "2025-02-10 11:53:59.236739",
+ "modified": "2025-02-17 11:49:54.455923",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Project",
@@ -1047,6 +1061,5 @@
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],
- "timeline_field": "customer",
- "track_seen": 1
+ "timeline_field": "customer"
 }
