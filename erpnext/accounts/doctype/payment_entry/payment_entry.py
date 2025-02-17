@@ -1342,6 +1342,7 @@ class PaymentEntry(AccountsController):
 						"debit_in_account_currency": self.received_amount - total_deductions,
 						"debit": self.base_received_amount - total_deductions,
 						"cost_center": self.cost_center,
+						"post_net_value": True,
 					},
 					item=self,
 				)
