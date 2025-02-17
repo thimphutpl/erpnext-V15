@@ -7,6 +7,7 @@
  "engine": "InnoDB",
  "field_order": [
   "charge_type",
+  "add_deduct_tax",
   "row_id",
   "account_head",
   "col_break_1",
@@ -212,13 +213,21 @@
    "label": "Account Currency",
    "options": "Currency",
    "read_only": 1
+  },
+  {
+   "default": "Add",
+   "fieldname": "add_deduct_tax",
+   "fieldtype": "Select",
+   "label": "Add or Deduct",
+   "options": "Add\nDeduct",
+   "reqd": 1
   }
  ],
  "idx": 1,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-01-14 10:08:17.776528",
+ "modified": "2025-02-17 15:25:56.392503",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Sales Taxes and Charges",
