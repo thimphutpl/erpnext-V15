@@ -1692,7 +1692,6 @@ class PurchaseInvoice(BuyingController):
 			"Payment Ledger Entry",
 			"Tax Withheld Vouchers",
 			"Serial and Batch Bundle",
-			"Landed Cost Voucher",
 		)
 		self.update_advance_tax_references(cancel=1)
 		self.consume_budget(cancel=True)
