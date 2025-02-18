@@ -157,7 +157,7 @@
    "read_only": 1
   },
   {
-   "fetch_from": "equipment.tank_capacity",
+   "fetch_from": "equipment.tanks_capacity",
    "fieldname": "tank_capacity",
    "fieldtype": "Float",
    "label": "Tank Capacity"
@@ -166,7 +166,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-02-12 15:06:53.711442",
+ "modified": "2025-02-18 12:06:02.565180",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Issue Items",

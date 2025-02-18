@@ -243,7 +243,7 @@ frappe.ui.form.on("POL Issue Items", {
                     if (r.message) {
                         frappe.model.set_value(cdt, cdn, "equipment_cost_center", r.message.cc);
                         frappe.model.set_value(cdt, cdn, "equipment_warehouse", r.message.wh);
-                        // frappe.model.set_value(cdt, cdn, "tank_capacity", r.message.wh);
+                        frappe.model.set_value(cdt, cdn, "tank_capacity", r.message.wh);
                     }
                 }
             });
