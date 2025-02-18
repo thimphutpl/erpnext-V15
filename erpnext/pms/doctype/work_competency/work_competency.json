@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "WCOMP.####",
+ "autoname": "field:competency",
  "creation": "2021-03-05 12:06:49.177664",
  "doctype": "DocType",
  "editable_grid": 1,
@@ -9,13 +9,11 @@
  "field_order": [
   "competency_details_section",
   "competency",
-  "weightage",
+  "eas_group",
+  "description",
   "column_break_2",
-  "disabled",
-  "section_break_4",
-  "apply_to_all",
-  "employee_group_item",
-  "description"
+  "weightage",
+  "disabled"
  ],
  "fields": [
   {
@@ -23,24 +21,15 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Competency",
-   "reqd": 1
+   "reqd": 1,
+   "unique": 1
   },
   {
    "fieldname": "weightage",
    "fieldtype": "Float",
    "in_list_view": 1,
-   "label": "Weightage(%)",
+   "label": "Weightage (%)",
    "reqd": 1
-  },
-  {
-   "fieldname": "section_break_4",
-   "fieldtype": "Section Break"
-  },
-  {
-   "default": "0",
-   "fieldname": "apply_to_all",
-   "fieldtype": "Check",
-   "label": "Apply to all"
   },
   {
    "fieldname": "column_break_2",
@@ -58,22 +47,24 @@
    "label": "Disabled"
   },
   {
-   "fieldname": "employee_group_item",
-   "fieldtype": "Table",
-   "options": "Work Competency Item"
-  },
-  {
    "fieldname": "description",
    "fieldtype": "Small Text",
    "label": "Description"
+  },
+  {
+   "fieldname": "eas_group",
+   "fieldtype": "Link",
+   "label": "EAS Group",
+   "options": "EAS Group",
+   "reqd": 1
   }
  ],
  "links": [],
- "modified": "2024-12-27 17:44:33.191868",
+ "modified": "2025-02-07 17:36:23.882163",
  "modified_by": "Administrator",
  "module": "PMS",
  "name": "Work Competency",
- "naming_rule": "Expression (old style)",
+ "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [
   {

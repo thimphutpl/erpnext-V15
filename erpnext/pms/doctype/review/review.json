@@ -10,46 +10,40 @@
   "employee",
   "eas_group",
   "grade",
-  "department",
   "column_break_2",
   "employee_name",
-  "review_date",
   "division",
+  "department",
   "column_break_10",
   "branch",
-  "target",
   "section",
   "column_break_13",
   "designation",
   "unit",
-  "user_id",
   "pms_calendar_section",
   "eas_calendar",
+  "column_break_ibtu",
   "start_date",
-  "negative_target",
   "column_break_17",
-  "company",
   "end_date",
+  "column_break_zidh",
+  "review_date",
   "part_a_section",
   "get_target",
   "review_target_item",
-  "part_b_section",
-  "get_competency",
-  "review_competency_item",
   "part_c_section",
   "additional_items",
   "approver_details_section",
   "approver",
-  "set_manual_approver",
   "column_break_30",
   "approver_name",
   "column_break_38",
   "approver_designation",
   "other_details_section",
+  "company",
   "rev_workflow_state",
-  "reason",
   "column_break_40",
-  "reference",
+  "target",
   "amended_from"
  ],
  "fields": [
@@ -91,14 +85,9 @@
    "read_only": 1
   },
   {
-   "fieldname": "part_b_section",
-   "fieldtype": "Section Break",
-   "label": "Part B: Review of core competencies"
-  },
-  {
    "fieldname": "part_a_section",
    "fieldtype": "Section Break",
-   "label": "Part A : Review of planned performance targets"
+   "label": "Review of planned performance targets"
   },
   {
    "depends_on": "eval:doc.pms_calendar",
@@ -141,24 +130,11 @@
    "options": "Additional Achievements"
   },
   {
-   "fieldname": "review_competency_item",
-   "fieldtype": "Table",
-   "label": "Review competency",
-   "options": "Review Competency Item",
-   "read_only": 1
-  },
-  {
    "depends_on": "eval:doc.eas_calendar",
    "fieldname": "get_target",
    "fieldtype": "Button",
    "hidden": 1,
    "label": "Get Target"
-  },
-  {
-   "fieldname": "get_competency",
-   "fieldtype": "Button",
-   "hidden": 1,
-   "label": "Get Competency"
   },
   {
    "fetch_from": "employee.designation",
@@ -233,31 +209,13 @@
    "fieldtype": "Column Break"
   },
   {
-   "collapsible": 1,
    "fieldname": "other_details_section",
    "fieldtype": "Section Break",
-   "label": "Target Set Up Reference"
-  },
-  {
-   "allow_on_submit": 1,
-   "fieldname": "reason",
-   "fieldtype": "Small Text",
-   "ignore_user_permissions": 1,
-   "label": "Reason",
-   "read_only": 1
+   "label": "Additional Information"
   },
   {
    "fieldname": "column_break_40",
    "fieldtype": "Column Break"
-  },
-  {
-   "allow_on_submit": 1,
-   "fieldname": "reference",
-   "fieldtype": "Link",
-   "ignore_user_permissions": 1,
-   "label": "Reference",
-   "options": "Target Set Up",
-   "read_only": 1
   },
   {
    "fieldname": "review_target_item",
@@ -312,29 +270,6 @@
    "options": "Company"
   },
   {
-   "fetch_from": "employee.user_id",
-   "fieldname": "user_id",
-   "fieldtype": "Link",
-   "label": "User ID",
-   "options": "User",
-   "read_only": 1
-  },
-  {
-   "bold": 1,
-   "default": "0",
-   "fieldname": "set_manual_approver",
-   "fieldtype": "Check",
-   "label": "Set Manual Approver",
-   "read_only": 1
-  },
-  {
-   "default": "0",
-   "fieldname": "negative_target",
-   "fieldtype": "Check",
-   "label": "Eligible For Negative Target",
-   "read_only": 1
-  },
-  {
    "fetch_from": "employee.eas_group",
    "fieldname": "eas_group",
    "fieldtype": "Link",
@@ -349,11 +284,19 @@
    "label": "EAS Calendar",
    "options": "EAS Calendar",
    "reqd": 1
+  },
+  {
+   "fieldname": "column_break_ibtu",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_zidh",
+   "fieldtype": "Column Break"
   }
  ],
  "is_submittable": 1,
  "links": [],
- "modified": "2024-12-28 14:42:38.380790",
+ "modified": "2025-02-02 23:38:10.287747",
  "modified_by": "Administrator",
  "module": "PMS",
  "name": "Review",

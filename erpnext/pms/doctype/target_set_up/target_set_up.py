@@ -18,7 +18,6 @@ class TargetSetUp(Document):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
-		from erpnext.pms.doctype.competency_item.competency_item import CompetencyItem
 		from erpnext.pms.doctype.performance_target_evaluation.performance_target_evaluation import PerformanceTargetEvaluation
 		from frappe.types import DF
 
@@ -28,29 +27,22 @@ class TargetSetUp(Document):
 		approver_name: DF.Data | None
 		branch: DF.Link | None
 		company: DF.Link | None
-		competency: DF.Table[CompetencyItem]
 		date: DF.Date | None
 		designation: DF.Link | None
 		division: DF.Link | None
 		eas_calendar: DF.Link
 		eas_group: DF.Link
 		employee: DF.Link
-		employee_group: DF.Link | None
 		employee_name: DF.ReadOnly | None
 		end_date: DF.Date | None
 		grade: DF.Link | None
-		manual_upload: DF.Check
 		reason: DF.Data | None
-		reference: DF.Link | None
 		section: DF.Link | None
-		set_manual_approver: DF.Check
 		start_date: DF.Date | None
 		target_item: DF.Table[PerformanceTargetEvaluation]
 		unit: DF.Link | None
-		user_id: DF.Link | None
 	# end: auto-generated types
 	def validate(self):
-		self.get_supervisor_id()
 		self.check_target()
 		self.check_duplicate_entry() 
 		# validate_workflow_states(self) 
@@ -60,27 +52,9 @@ class TargetSetUp(Document):
 		return
 		self.validate_calendar()
 
-	@frappe.whitelist()
-	def get_competency(self):
-		if not self.employee_group:
-			frappe.throw(_('Employee Group is required to fetch competencies.'))
-		data = frappe.db.sql("""
-			SELECT wc.competency, wc.weightage, wc.description
-			FROM `tabWork Competency` wc 
-			INNER JOIN`tabWork Competency Item` wci 
-			ON wc.name = wci.parent 
-			WHERE wci.applicable = 1 
-			AND wci.employee_group = %s 
-			AND wc.disabled = 0
-			ORDER BY wc.competency
-		""", (self.employee_group,), as_dict=True)
-		if not data:
-			frappe.throw(_('No Work Competency records found for the selected Employee Group.'))
-		self.set('competency', data)
-
 	def on_update_after_submit(self):
 		self.check_target()
-		review = frappe.db.get_value('Review',{'target':self.name,'docstatus':('!=',2)},['name'])
+		review = frappe.db.get_value('Review', {'target':self.name,'docstatus':('!=',2)}, ['name'])
 		if not review:
 			return
 		rev_doc = frappe.get_doc('Review',review)
@@ -118,14 +92,7 @@ class TargetSetUp(Document):
 
 	def check_duplicate_entry(self):
 		# check duplicate entry for particular employee
-		if self.reference and len(frappe.db.get_list('Target Set Up',filters={'employee': self.employee, 'eas_calendar': self.eas_calendar, 'docstatus': 1,'reference':self.reference})) >= 2 :
-			frappe.throw("You cannot set more than <b>2</b> Target Set Up for EAS Calendar <b>{}</b>".format(self.eas_calendar))
-		
-		if self.reference and len(frappe.db.get_list('Target Set Up',filters={'employee': self.employee, 'eas_calendar': self.eas_calendar, 'docstatus': 1,'reference':self.reference,'section':self.section})) >= 2:
-			frappe.throw("You cannot set more than <b>2</b> Target Set Up for EAS Calendar <b>{}</b> within Section <b>{}</b>".format(self.eas_calendar,self.section))
-
-		if not self.reference and frappe.db.exists("Target Set Up", {'employee': self.employee, 'eas_calendar': self.eas_calendar, 'docstatus': 1}):
-			frappe.throw(_('You have already set the Target for EAS Calendar <b>{}</b> or Route from <b><a href="#List/Change In Performance Evaluation/List">Change In Performance Evaluation</a></b> if you have 2 EAS'.format(self.eas_calendar)))
+		pass
 
 	def check_target(self):
 		check = frappe.db.get_value("EAS Group", self.eas_group, "required_to_set_target")
@@ -164,18 +131,6 @@ class TargetSetUp(Document):
 					msg=_('Sum of Weightage for Target must be <b>100</b> but your total weightage is <b>{}</b>'.format(total_target_weightage)))
 
 			self.total_weightage = total_target_weightage
-		
-	def get_supervisor_id(self):
-		# get supervisor details         
-		reports_to = frappe.db.get_value("Employee", {"name":self.employee}, "reports_to")
-		if not reports_to:
-			frappe.throw('You have not set report to in your master data')
-		email,name, designation = frappe.db.get_value("Employee",{"name":reports_to},["user_id","employee_name","designation"])
-		if not email:
-			frappe.throw('Your supervisor <b>{}</b> email not found in Employee Master Data, please contact your HR'.format(name))
-		self.approver = email
-		self.approver_name = name
-		self.approver_designation = designation
 
 	@frappe.whitelist()
 	def calculate_total_weightage(self):

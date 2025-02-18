@@ -15,15 +15,13 @@ class WorkCompetency(Document):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
-		from erpnext.pms.doctype.work_competency_item.work_competency_item import WorkCompetencyItem
 		from frappe.types import DF
 
-		apply_to_all: DF.Check
 		competency: DF.Data
 		description: DF.SmallText | None
 		disabled: DF.Check
-		employee_group_item: DF.Table[WorkCompetencyItem]
+		eas_group: DF.Link
 		weightage: DF.Float
 	# end: auto-generated types
-	def autoname(self):
-		self.name = make_autoname("WCOMP.#.-.{}".format(str(self.naming_series)))
+	# def autoname(self):
+	# 	self.name = make_autoname("WCOMP.#.-.{}".format(str(self.naming_series)))

@@ -1,16 +1,7 @@
 // Copyright (c) 2021, Frappe Technologies Pvt. Ltd. and contributors
 // For license information, please see license.txt
-frappe.ui.form.on('Review', {
-	onload: function (frm) {
-        // make_child_table_field_editable(frm);
-		let grid = frm.fields_dict['review_target_item'].grid;
-        // Disable "Add Row" button
-        grid.cannot_add_rows = true;
-        // Hide "Delete" and other row actions
-        // grid.wrapper.find('.grid-delete-row').hide();
-        // grid.wrapper.find('.grid-duplicate-row').hide();
-    },
 
+frappe.ui.form.on('Review', {
 	refresh: function(frm){
 		if (frm.doc.docstatus == 1) {
 			cur_frm.add_custom_button(__('Create Evaluation'), ()=>{
@@ -20,82 +11,22 @@ frappe.ui.form.on('Review', {
 				});
 			}).addClass("btn-primary custom-create custom-create-css")
 		}
-		// if (frm.doc.rev_workflow_state == "Waiting Approval" && frappe.user.has_role(['HR Manager', 'HR User'])){
-		// 	cur_frm.add_custom_button(__('Manual Approval'), ()=>{
-		// 		frappe.call({
-		// 			method: "erpnext.pms.doctype.review.review.manual_approval_for_hr",
-		// 			frm: cur_frm,
-					
-		// 			args: {
-		// 				name: frm.doc.name,
-		// 				employee: frm.doc.employee,
-		// 				pms_calendar: frm.doc.pms_calendar,
-		// 			},
-		// 			callback:function(){
-		// 				cur_frm.reload_doc()
-		// 			}				
-		// 		});
-		// 	}).addClass("btn-primary custom-create custom-create-css");
-		// }
+		
 		if (frm.doc.approver == frappe.session.user){
 			frappe.meta.get_docfield("Review Target Item", "appraisees_remarks", cur_frm.doc.name).read_only = frappe.session.user == frm.doc.approver
 			frappe.meta.get_docfield("Review Competency Item", "appraisees_remarks", cur_frm.doc.name).read_only = frappe.session.user == frm.doc.approver
 			frappe.meta.get_docfield("Additional Achievements", "appraisees_remarks", cur_frm.doc.name).read_only = frappe.session.user == frm.doc.approver
-		}
-		// if (frm.doc.docstatus != 1 && frappe.user.has_role(['HR Manager', 'HR User'])){
-		// 	frm.add_custom_button(__('Manual Approval'), ()=>{
-		// 		frappe.call({
-		// 			method: "erpnext.pms.doctype.review.review.manual_approval_for_hr",
-		// 			frm: cur_frm,
-		// 			args: {
-		// 				name: frm.doc.name,
-		// 				employee: frm.doc.employee,
-		// 				pms_calendar: frm.doc.pms_calendar,
-		// 			},
-		// 			callback:function(){
-		// 				cur_frm.reload_doc()
-		// 			}				
-		// 		});
-		// 	}).addClass("btn-primary custom-create custom-create-css");
-		// }
+		}	
 	},
-	// set_manual_approver:function(frm){
-	// 	if (flt(frm.doc.set_manual_approver) == 1){
-	// 		frm.set_df_property('approver', 'read_only', 0);
-	// 	}
-	// 	else{
-	// 		frm.set_df_property('approver', 'read_only', 1);
-	// 	}
-	// },
+	
 	get_target: function(frm){
 		get_target(frm);
 	},
-	get_competency: (frm) => {
-		get_competency(frm);
-	},
+	
 	eas_calendar: function(frm) {
 		cur_frm.refresh_fields()
 	}
 })
-
-cur_frm.cscript.approver = function(doc){
-	console.log(doc.approver)
-	frappe.call({
-		"method": "set_approver_designation",
-		"doc": doc,
-		"args":{
-			"approver": doc.approver
-		},
-		callback: function(r){
-			if(r){
-				console.log(r.message)
-				cur_frm.set_value("approver_designation",r.message);
-				cur_frm.refresh_field("approver_designation")
-
-			}
-		}
-	})
-}
 
 var add_btn = function(frm){
 	if (frm.doc.docstatus == 1){
@@ -105,26 +36,6 @@ var add_btn = function(frm){
 				frm: cur_frm
 			});
 		}).addClass("btn-primary custom-create custom-create-css")
-	}
-}
-
-var hr_add_btn =function(frm){
-	if (frm.doc.rev_workflow_state == "Waiting Approval" && frappe.user.has_role(['HR Manager', 'HR User'])){
-		frm.add_custom_button(__('Manual Approval'), ()=>{
-			frappe.call({
-				method: "erpnext.pms.doctype.review.review.manual_approval_for_hr",
-				frm: cur_frm,
-				
-				args: {
-					name: frm.doc.name,
-					employee: frm.doc.employee,
-					pms_calendar: frm.doc.pms_calendar,
-				},
-				callback:function(){
-					cur_frm.reload_doc()
-				}				
-			});
-		}).addClass("btn-primary custom-create custom-create-css");
 	}
 }
 
@@ -144,7 +55,7 @@ var get_competency = (frm) => {
 
 var get_target = function(frm){
 	//get traget from py file
-	if (frm.doc.required_to_set_target && frm.doc.pms_calendar) {
+	if (frm.doc.required_to_set_target && frm.doc.eas_calendar) {
 		frappe.call({
 			method: 'get_target',
 			doc: frm.doc,
