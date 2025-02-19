@@ -144,25 +144,39 @@ class POLReceive(StockController):
 	def before_cancel(self):
 		self.delete_pol_entry()
 
-	def on_cancel(self):
-		if getdate(self.posting_date) > getdate("2018-03-31"):
-			self.update_stock_ledger()
-		""" ++++++++++ Ver 2.0.190509 Begins ++++++++++ """
-		# Ver 2.0.190509, Following method commented by SHIV on 2019/05/20 
-		#self.update_general_ledger(1)
+	# def on_cancel(self):
+	# 	if getdate(self.posting_date) > getdate("2018-03-31"):
+	# 		self.update_stock_ledger()
+	# 	""" ++++++++++ Ver 2.0.190509 Begins ++++++++++ """
+	# 	# Ver 2.0.190509, Following method commented by SHIV on 2019/05/20 
+	# 	#self.update_general_ledger(1)
 
-		# Ver 2.0.190509, Following method added by SHIV on 2019/05/20
-		self.make_gl_entries_on_cancel()
-		""" ++++++++++ Ver 2.0.190509 Ends ++++++++++++ """
+	# 	# Ver 2.0.190509, Following method added by SHIV on 2019/05/20
+	# 	self.make_gl_entries_on_cancel()
+	# 	""" ++++++++++ Ver 2.0.190509 Ends ++++++++++++ """
 		
-		docstatus = frappe.db.get_value("Journal Entry", self.jv, "docstatus")
-		if docstatus and docstatus != 2:
-			frappe.throw("Cancel the Journal Entry " + str(self.jv) + " and proceed.")
+	# 	docstatus = frappe.db.get_value("Journal Entry", self.jv, "docstatus")
+	# 	if docstatus and docstatus != 2:
+	# 		frappe.throw("Cancel the Journal Entry " + str(self.jv) + " and proceed.")
 
-		self.db_set("jv", None)
+	# 	self.db_set("jv", None)
 
-		# self.cancel_budget_entry() #jai, this should handle at General Ledger process
-		self.delete_pol_entry()
+	# 	# self.cancel_budget_entry() #jai, this should handle at General Ledger process
+	# 	self.delete_pol_entry()
+
+	def on_cancel(self):
+		# if self.clearance_date:
+		# 	frappe.throw("Already done bank reconciliation.")
+
+		self.ignore_linked_doctypes = (
+			"Payment Ledger Entry",
+			"Stock Ledger Entry",
+		)
+		super().on_cancel()   
+
+		self.make_gl_entries()
+		self.update_stock_ledger()
+		# self.update_ref_doc(cancel=1)
 
 	# def validate_dc(self):
 	# 	is_container, no_own_tank = frappe.db.get_value("Equipment Type", frappe.db.get_value("Equipment", self.equipment, "equipment_type") , ["is_container", "no_own_tank"])
