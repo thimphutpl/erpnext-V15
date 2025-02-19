@@ -33,6 +33,10 @@
   "items",
   "sb_321",
   "deducts",
+  "taxes_section",
+  "taxes_and_charges",
+  "taxes_and_charges_section",
+  "taxes",
   "section_break_18",
   "amended_from",
   "column_break_20",
@@ -105,7 +109,7 @@
    "depends_on": "eval:doc.items",
    "fieldname": "receivable_amount",
    "fieldtype": "Currency",
-   "label": "Receivable Amount",
+   "label": "Payable Amount",
    "options": "0",
    "reqd": 1
   },
@@ -267,12 +271,35 @@
    "in_list_view": 1,
    "label": "Status",
    "options": "Draft\nSubmitted\nCancelled"
+  },
+  {
+   "fieldname": "taxes_section",
+   "fieldtype": "Section Break",
+   "label": "Taxes and Charges"
+  },
+  {
+   "fieldname": "taxes_and_charges",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Purchase Taxes and Charges Template",
+   "options": "Purchase Taxes and Charges Template"
+  },
+  {
+   "fieldname": "taxes_and_charges_section",
+   "fieldtype": "Section Break",
+   "label": "Taxes and Charges"
+  },
+  {
+   "fieldname": "taxes",
+   "fieldtype": "Table",
+   "label": "Purchase Taxes and Charges",
+   "options": "Purchase Taxes and Charges"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-27 19:56:09.430328",
+ "modified": "2025-02-19 09:43:16.489017",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Mechanical Payment",
