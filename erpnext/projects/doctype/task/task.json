@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_import": 1,
- "autoname": "TASK-.YYYY.-.#####",
+ "autoname": "TASK.YY.MM.#####",
  "creation": "2013-01-29 19:25:50",
  "doctype": "DocType",
  "document_type": "Setup",
@@ -607,10 +607,9 @@
  ],
  "icon": "fa fa-check",
  "idx": 1,
- "is_tree": 1,
  "links": [],
  "max_attachments": 5,
- "modified": "2025-02-14 17:57:14.957614",
+ "modified": "2025-02-19 13:23:39.199522",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Task",
@@ -638,5 +637,6 @@
  "sort_order": "DESC",
  "states": [],
  "timeline_field": "project",
- "title_field": "subject"
+ "title_field": "subject",
+ "track_changes": 1
 }

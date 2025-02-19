@@ -4,150 +4,150 @@
 frappe.provide("erpnext.projects");
 
 frappe.ui.form.on("Task", {
-	setup: function (frm) {
-		frm.make_methods = {
-			Timesheet: () =>
-				frappe.model.open_mapped_doc({
-					method: "erpnext.projects.doctype.task.task.make_timesheet",
-					frm: frm,
-				}),
-		};
+	// setup: function (frm) {
+	// 	// frm.make_methods = {
+	// 	// 	Timesheet: () =>
+	// 	// 		frappe.model.open_mapped_doc({
+	// 	// 			method: "erpnext.projects.doctype.task.task.make_timesheet",
+	// 	// 			frm: frm,
+	// 	// 		}),
+	// 	// };
 
-		// Default values set as follows by SHIV on 2017/08/18
-		frm.set_value("target_uom","Percent");
-		frm.set_value("target_quantity",100);
-	},
+	// 	// Default values set as follows by SHIV on 2017/08/18
+	// 	// frm.set_value("target_uom","Percent");
+	// 	// frm.set_value("target_quantity",100);
+	// },
 
-	refresh: function (frm) {
-		var doc = frm.doc;
-		if(doc.__islocal) {
-			if(!frm.doc.exp_end_date) {
-				frm.set_value("exp_end_date", frappe.datetime.add_days(new Date(), 7));
-			}
-		}
-		if (frm.doc.status != "Closed" && frm.doc.status != "Completed" && frm.doc.status != "Cancelled" && frm.doc.status != "Template") {
-			// added by phuntsho on november 20,2021
-			// if (frm.doc.project_type == "Internal"){
-			// 	frm.add_custom_button("Monthly Settlement", function () {
-			// 		frappe.model.open_mapped_doc({
-			// 			method: "erpnext.projects.doctype.task.task.monthly_settlement",
-			// 			frm: cur_frm
-			// 		})
-			// 	}).addClass("btn-primary");
-			// }
+	// refresh: function (frm) {
+	// 	var doc = frm.doc;
+	// 	if(doc.__islocal) {
+	// 		if(!frm.doc.exp_end_date) {
+	// 			frm.set_value("exp_end_date", frappe.datetime.add_days(new Date(), 7));
+	// 		}
+	// 	}
+	// 	if (frm.doc.status != "Closed" && frm.doc.status != "Completed" && frm.doc.status != "Cancelled" && frm.doc.status != "Template") {
+	// 		// added by phuntsho on november 20,2021
+	// 		// if (frm.doc.project_type == "Internal"){
+	// 		// 	frm.add_custom_button("Monthly Settlement", function () {
+	// 		// 		frappe.model.open_mapped_doc({
+	// 		// 			method: "erpnext.projects.doctype.task.task.monthly_settlement",
+	// 		// 			frm: cur_frm
+	// 		// 		})
+	// 		// 	}).addClass("btn-primary");
+	// 		// }
 			
-			frm.add_custom_button("Make Purchase Requistion", function () {
-				frappe.model.open_mapped_doc({
-					method: "erpnext.projects.doctype.task.task.make_purchase_requisition",
-					frm: cur_frm
-				})
-			},
-				__("Make")
-			)
-			frm.add_custom_button("Make Material Issue Request", function () {
-				frappe.model.open_mapped_doc({
-					method: "erpnext.projects.doctype.task.task.make_material_issue_request",
-					frm: cur_frm
-				})
-			},
-				__("Make")
-			)
-			cur_frm.add_custom_button("Make Stock Issue Entry",
-				function (){
-					frappe.model.open_mapped_doc({
-						method: "erpnext.projects.doctype.task.task.make_stock_issue_entry",
-						frm: cur_frm
-					})
-				},
-				__("Make")
-			)
-			frm.add_custom_button("Make Stock Return Entry", function () {
-				frappe.model.open_mapped_doc({
-					method: "erpnext.projects.doctype.task.task.make_stock_return_entry",
-					frm: cur_frm
-				})
-			},
-				__("Make")
-			)
-		}
-		if(!doc.__islocal) {
-			// ++++++++++++++++++++ Ver 1.0 BEGINS ++++++++++++++++++++
-			// Follwoing view option added by SHIV on 2017/08/17
-			if(frappe.model.can_read("Project")) {
-				frm.add_custom_button(__("Project"), function() {
-					frappe.route_options = {"name": doc.project}
-					frappe.set_route("Form", "Project", doc.project);
-				}, __("View"), true);
-			}			
-			// +++++++++++++++++++++ Ver 1.0 ENDS +++++++++++++++++++++
-			if(frappe.model.can_read("Timesheet")) {
-				frm.add_custom_button(__("Timesheet"), function() {
-					frappe.route_options = {"project": doc.project, "task": doc.name}
-					frappe.set_route("List", "Timesheet");
-				}, __("View"), true);
-			}
+	// 		frm.add_custom_button("Make Purchase Requistion", function () {
+	// 			frappe.model.open_mapped_doc({
+	// 				method: "erpnext.projects.doctype.task.task.make_purchase_requisition",
+	// 				frm: cur_frm
+	// 			})
+	// 		},
+	// 			__("Make")
+	// 		)
+	// 		frm.add_custom_button("Make Material Issue Request", function () {
+	// 			frappe.model.open_mapped_doc({
+	// 				method: "erpnext.projects.doctype.task.task.make_material_issue_request",
+	// 				frm: cur_frm
+	// 			})
+	// 		},
+	// 			__("Make")
+	// 		)
+	// 		cur_frm.add_custom_button("Make Stock Issue Entry",
+	// 			function (){
+	// 				frappe.model.open_mapped_doc({
+	// 					method: "erpnext.projects.doctype.task.task.make_stock_issue_entry",
+	// 					frm: cur_frm
+	// 				})
+	// 			},
+	// 			__("Make")
+	// 		)
+	// 		frm.add_custom_button("Make Stock Return Entry", function () {
+	// 			frappe.model.open_mapped_doc({
+	// 				method: "erpnext.projects.doctype.task.task.make_stock_return_entry",
+	// 				frm: cur_frm
+	// 			})
+	// 		},
+	// 			__("Make")
+	// 		)
+	// 	}
+	// 	if(!doc.__islocal) {
+	// 		// ++++++++++++++++++++ Ver 1.0 BEGINS ++++++++++++++++++++
+	// 		// Follwoing view option added by SHIV on 2017/08/17
+	// 		if(frappe.model.can_read("Project")) {
+	// 			frm.add_custom_button(__("Project"), function() {
+	// 				frappe.route_options = {"name": doc.project}
+	// 				frappe.set_route("Form", "Project", doc.project);
+	// 			}, __("View"), true);
+	// 		}			
+	// 		// +++++++++++++++++++++ Ver 1.0 ENDS +++++++++++++++++++++
+	// 		if(frappe.model.can_read("Timesheet")) {
+	// 			frm.add_custom_button(__("Timesheet"), function() {
+	// 				frappe.route_options = {"project": doc.project, "task": doc.name}
+	// 				frappe.set_route("List", "Timesheet");
+	// 			}, __("View"), true);
+	// 		}
 
-			if(frm.perm[0].write) {
-				if(frm.doc.status!=="Closed" && frm.doc.status!=="Cancelled") {
-					frm.add_custom_button(__("Close"), function() {
-						frm.set_value("status", "Closed");
-						frm.save();
-					});
-				} else {
-					frm.add_custom_button(__("Reopen"), function() {
-						frm.set_value("status", "Open");
-						frm.save();
-					});
-				}
-			}
-		}
-	},
+	// 		if(frm.perm[0].write) {
+	// 			if(frm.doc.status!=="Closed" && frm.doc.status!=="Cancelled") {
+	// 				frm.add_custom_button(__("Close"), function() {
+	// 					frm.set_value("status", "Closed");
+	// 					frm.save();
+	// 				});
+	// 			} else {
+	// 				frm.add_custom_button(__("Reopen"), function() {
+	// 					frm.set_value("status", "Open");
+	// 					frm.save();
+	// 				});
+	// 			}
+	// 		}
+	// 	}
+	// },
 
-	onload: function (frm) {
-		frm.set_query("task", "depends_on", function () {
-			let filters = {
-				name: ["!=", frm.doc.name],
-				status: ["!=", "Closed"],
-				is_group: ["=", 0],
-			};
-			if (frm.doc.project) filters["project"] = frm.doc.project;
-			return {
-				filters: filters,
-			};
-		});
+	// onload: function (frm) {
+	// 	frm.set_query("task", "depends_on", function () {
+	// 		let filters = {
+	// 			name: ["!=", frm.doc.name],
+	// 			status: ["!=", "Closed"],
+	// 			is_group: ["=", 0],
+	// 		};
+	// 		if (frm.doc.project) filters["project"] = frm.doc.project;
+	// 		return {
+	// 			filters: filters,
+	// 		};
+	// 	});
 
-		frm.set_query("parent_task", function () {
-			let filters = {
-				is_group: 1,
-				name: ["!=", frm.doc.name],
-			};
-			if (frm.doc.project) filters["project"] = frm.doc.project;
-			return {
-				filters: filters,
-			};
-		});
-	},
+	// 	frm.set_query("parent_task", function () {
+	// 		let filters = {
+	// 			is_group: 1,
+	// 			name: ["!=", frm.doc.name],
+	// 		};
+	// 		if (frm.doc.project) filters["project"] = frm.doc.project;
+	// 		return {
+	// 			filters: filters,
+	// 		};
+	// 	});
+	// },
 
-	is_group: function (frm) {
-		frappe.call({
-			method: "erpnext.projects.doctype.task.task.check_if_child_exists",
-			args: {
-				name: frm.doc.name,
-			},
-			callback: function (r) {
-				if (r.message.length > 0) {
-					let message = __(
-						"Cannot convert Task to non-group because the following child Tasks exist: {0}.",
-						[r.message.join(", ")]
-					);
-					frappe.msgprint(message);
-					frm.reload_doc();
-				}
-			},
-		});
-	},
+	// is_group: function (frm) {
+	// 	frappe.call({
+	// 		method: "erpnext.projects.doctype.task.task.check_if_child_exists",
+	// 		args: {
+	// 			name: frm.doc.name,
+	// 		},
+	// 		callback: function (r) {
+	// 			if (r.message.length > 0) {
+	// 				let message = __(
+	// 					"Cannot convert Task to non-group because the following child Tasks exist: {0}.",
+	// 					[r.message.join(", ")]
+	// 				);
+	// 				frappe.msgprint(message);
+	// 				frm.reload_doc();
+	// 			}
+	// 		},
+	// 	});
+	// },
 
-	validate: function (frm) {
-		frm.doc.project && frappe.model.remove_from_locals("Project", frm.doc.project);
-	},
+	// validate: function (frm) {
+	// 	frm.doc.project && frappe.model.remove_from_locals("Project", frm.doc.project);
+	// },
 });

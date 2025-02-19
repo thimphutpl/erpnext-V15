@@ -94,16 +94,16 @@ class Task(NestedSet):
 
 	nsm_parent_field = "parent_task"
 
-	def autoname(self):
-		cur_year  = str(today())[0:4]
-		cur_month = str(today())[5:7]
-		if self.project:
-			serialno  = make_autoname("TSK" + self.project[-4:] + ".####")
-			#self.name = serialno[0:3] + cur_year + cur_month + serialno[3:]
-		else:
-			serialno  = make_autoname("TSK.YY.MM.####")
+	# def autoname(self):
+	# 	cur_year  = str(today())[0:4]
+	# 	cur_month = str(today())[5:7]
+	# 	# if self.project:
+	# 	# 	serialno  = make_autoname("TSK" + self.project[-4:] + ".####")
+	# 	# 	#self.name = serialno[0:3] + cur_year + cur_month + serialno[3:]
+	# 	# else:
+	# 	# serialno  = make_autoname("TSK.YY.MM.#####")
 
-		self.name = serialno
+	# 	self.name = make_autoname("TSK.YY.MM.#####")
 		
 	def get_customer_details(self):
 		cust = frappe.db.sql("select customer_name from `tabCustomer` where name=%s", self.customer)
@@ -114,16 +114,16 @@ class Task(NestedSet):
 	def validate(self):
 		self.validate_dates()
 		self.validate_progress()
-		self.validate_status()
-		self.update_depends_on()
-		self.validate_dependencies_for_template_task()
+		# self.validate_status()
+		# self.update_depends_on()
+		# self.validate_dependencies_for_template_task()
 		self.validate_completed_on()
 		# Following method created by SHIV on 2017/08/18
 		self.set_defaults()
 
 	def validate_dates(self):
-		self.validate_from_to_dates("exp_start_date", "exp_end_date")
-		self.validate_from_to_dates("act_start_date", "act_end_date")
+		# self.validate_from_to_dates("exp_start_date", "exp_end_date")
+		# self.validate_from_to_dates("act_start_date", "act_end_date")
 		self.validate_parent_expected_end_date()
 		self.validate_parent_project_dates()
 
@@ -232,9 +232,9 @@ class Task(NestedSet):
 		frappe.utils.nestedset.update_nsm(self)
 
 	def on_update(self):
-		self.update_nsm_model()
+		# self.update_nsm_model()
 		self.check_recursion()
-		self.reschedule_dependent_tasks()
+		# self.reschedule_dependent_tasks()
 		self.update_project()
 		self.unassign_todo()
 		self.populate_depends_on()
@@ -333,7 +333,7 @@ class Task(NestedSet):
 		if check_if_child_exists(self.name):
 			throw(_("Child Task exists for this Task. You can not delete this Task."))
 
-		self.update_nsm_model()
+		# self.update_nsm_model()
 
 	def after_delete(self):
 		self.update_project()
