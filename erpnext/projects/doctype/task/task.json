@@ -1,7 +1,6 @@
 {
  "actions": [],
  "allow_import": 1,
- "autoname": "TASK.YY.MM.#####",
  "creation": "2013-01-29 19:25:50",
  "doctype": "DocType",
  "document_type": "Setup",
@@ -609,11 +608,10 @@
  "idx": 1,
  "links": [],
  "max_attachments": 5,
- "modified": "2025-02-19 13:23:39.199522",
+ "modified": "2025-02-19 15:11:13.428560",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Task",
- "naming_rule": "Expression (old style)",
  "nsm_parent_field": "parent_task",
  "owner": "Administrator",
  "permissions": [

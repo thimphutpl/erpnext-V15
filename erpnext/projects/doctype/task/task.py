@@ -94,16 +94,27 @@ class Task(NestedSet):
 
 	nsm_parent_field = "parent_task"
 
-	# def autoname(self):
-	# 	cur_year  = str(today())[0:4]
-	# 	cur_month = str(today())[5:7]
-	# 	# if self.project:
-	# 	# 	serialno  = make_autoname("TSK" + self.project[-4:] + ".####")
-	# 	# 	#self.name = serialno[0:3] + cur_year + cur_month + serialno[3:]
-	# 	# else:
-	# 	# serialno  = make_autoname("TSK.YY.MM.#####")
-
-	# 	self.name = make_autoname("TSK.YY.MM.#####")
+	def autoname(self):
+		cur_year  = str(today())[2:4]
+		cur_month = str(today())[5:7]
+		current = 0
+		# if self.project:
+		# 	serialno  = make_autoname("TSK" + self.project[-4:] + ".####")
+		# 	#self.name = serialno[0:3] + cur_year + cur_month + serialno[3:]
+		# else:
+		# serialno  = make_autoname("TSK.YY.MM.#####")
+		previous = frappe.db.sql("""
+                          select name from `tabTask` where name like '%TSK-{}-{}%'order by creation desc limit 1
+                          """.format(cur_year, cur_month),as_dict=1)
+		if len(previous) > 0:
+			previous = int(str(previous[0].name).split("-")[3].split("-")[0])
+			current = int(previous) + 1
+			current = f"""{'0'*(6-len(str(current)))}{str(current)}"""
+		else:
+			current = "000001"
+		self.name = "TSK-"+str(cur_year)+"-"+str(cur_month)+"-"+current
+			
+		# self.name = make_autoname("TSKYY.MM.#####")
 		
 	def get_customer_details(self):
 		cust = frappe.db.sql("select customer_name from `tabCustomer` where name=%s", self.customer)
@@ -237,7 +248,7 @@ class Task(NestedSet):
 		# self.reschedule_dependent_tasks()
 		self.update_project()
 		self.unassign_todo()
-		self.populate_depends_on()
+		# self.populate_depends_on()
 
 	def unassign_todo(self):
 		if self.status == "Completed":
