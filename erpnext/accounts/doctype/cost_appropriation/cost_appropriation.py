@@ -16,7 +16,7 @@ class CostAppropriation(AccountsController):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
-		from frappe.model.document import Document
+		from erpnext.accounts.doctype.cost_appropriation_item.cost_appropriation_item import CostAppropriationItem
 		from frappe.types import DF
 
 		account: DF.Link | None
@@ -28,7 +28,7 @@ class CostAppropriation(AccountsController):
 		cost_center: DF.Link | None
 		cost_type: DF.Literal["HSD", "Hire Charge", "Lubricant", "Operator Allowance", "OAP Salary", "Muster Roll Employee", "GCE", "Overtime Payment", "DFG Soelra", "Thai Salary", "Indian Operators Salary", "Repair and Maintenance", "OJT", "Contract Employee"]
 		from_date: DF.Date
-		items: DF.Table[Document]
+		items: DF.Table[CostAppropriationItem]
 		posting_date: DF.Date
 		remarks: DF.LongText | None
 		title: DF.Data | None

@@ -13,14 +13,14 @@ class ExpenseAllocation(Document):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
-		from frappe.model.document import Document
+		from erpnext.accounts.doctype.expense_allocation_item.expense_allocation_item import ExpenseAllocationItem
 		from frappe.types import DF
 
 		amended_from: DF.Link | None
 		branch: DF.Link
 		cost_center: DF.Link | None
 		cost_type: DF.Literal["HSD", "Hire Charge", "Lubricant", "Operator Allowance", "OAP Salary", "Muster Roll Employee", "GCE", "Overtime Payment", "DFG Soelra", "Thai Salary", "Indian Operators Salary", "Repair and Maintenance", "OJT", "Contract Employee"]
-		items: DF.Table[Document]
+		items: DF.Table[ExpenseAllocationItem]
 		posting_date: DF.Date
 		title: DF.Data
 		total_amount: DF.Currency
