@@ -350,12 +350,20 @@ class CustomWorkflow:
 		
 		elif approver_type == "General Manager":
 			# frappe.throw(str(self.general_manager))
-			officiating = get_officiating_employee(self.general_manager[3])
-			if officiating:
-				officiating = frappe.db.get_value("Employee", officiating[0].officiate, self.field_list)
-			vars(self.doc)[self.doc_approver[0]] = officiating[0] if officiating else self.general_manager[0]
-			vars(self.doc)[self.doc_approver[1]] = officiating[1] if officiating else self.general_manager[1]
-			vars(self.doc)[self.doc_approver[2]] = officiating[2] if officiating else self.general_manager[2]
+			if self.doc.doctype in ("Employee Transfer"):
+				officiating = get_officiating_employee(self.expense_approver[3])
+				if officiating:
+					officiating = frappe.db.get_value("Employee", officiating[0].officiate, self.field_list)
+				vars(self.doc)[self.doc_approver[0]] = officiating[0] if officiating else self.expense_approver[0]
+				vars(self.doc)[self.doc_approver[1]] = officiating[1] if officiating else self.expense_approver[1]
+				vars(self.doc)[self.doc_approver[2]] = officiating[2] if officiating else self.expense_approver[2]
+			else:
+				officiating = get_officiating_employee(self.general_manager[3])
+				if officiating:
+					officiating = frappe.db.get_value("Employee", officiating[0].officiate, self.field_list)
+				vars(self.doc)[self.doc_approver[0]] = officiating[0] if officiating else self.general_manager[0]
+				vars(self.doc)[self.doc_approver[1]] = officiating[1] if officiating else self.general_manager[1]
+				vars(self.doc)[self.doc_approver[2]] = officiating[2] if officiating else self.general_manager[2]
 		
 		elif approver_type == "GMM":
 			officiating = get_officiating_employee(self.gm_marketing[3])
@@ -1262,6 +1270,8 @@ class CustomWorkflow:
 			pass
 
 	def employee_transfer(self):
+		if self.new_state.lower() == self.old_state.lower():
+			return
 		
 		if self.doc.workflow_state == "Rejected":
 			if not self.doc.rejection_reason:
@@ -1270,24 +1280,24 @@ class CustomWorkflow:
 		elif self.new_state.lower() == "Waiting Supervisor Approval".lower():
 			self.set_approver("Supervisor")
 
-			
 		elif self.new_state.lower() == "Waiting GM Approval".lower():
-			if self.expense_approver[0] != frappe.session.user:
-				frappe.throw("Only {} can Forward this document.".format(self.expense_approver[0]))
+			if self.supervisor != frappe.session.user:
+				frappe.throw("Only {} can Forward this document.".format(self.supervisor))
 			self.set_approver("General Manager")
 
 		elif self.new_state.lower() == "Waiting Hr Approval".lower():
 			# frappe.throw(str(self.hrgm))
-			if self.general_manager[0] != frappe.session.user:
-				frappe.throw("Only {} can Forward this document.".format(self.general_manager[0]))
+			if self.supervisor != frappe.session.user:
+				frappe.throw("Only {} can Forward this document.".format(self.supervisor))
 			self.set_approver("HR")
    
 		elif self.new_state.lower() =="Rejected".lower():
-			if (self.hr_approver[0] != frappe.session.user) or (self.doc.supervisor != frappe.session.user):
-				frappe.throw("Only {} or {} can reject this document.".format(self.doc.supervisor, self.hr_approver[0]))
-   
+			if (self.hr_approver[0] != frappe.session.user):
+				if (self.doc.supervisor != frappe.session.user):
+					frappe.throw("Only {} or {} can reject this document.".format(self.doc.supervisor, self.hr_approver[0]))
+
 		elif self.new_state.lower() =="Approved".lower():
-			if self.hr_approver[0] != frappe.session.user:
+			if self.supervisor != frappe.session.user:
 				frappe.throw("Only {} can approve or edit this document.".format(self.hr_approver[0]))
 
 	def notify(self, args):
