@@ -16,6 +16,7 @@ class ExpenseAllocationItem(Document):
 
 		amount: DF.Currency
 		business_activity: DF.Link
+		equipment: DF.Link | None
 		equipment_number: DF.Data | None
 		expense_for: DF.Literal["", "HSD", "Hire Charge", "Lubricant", "Operator Allowance", "OAP Salary", "Muster Roll Employee", "GCE", "Overtime Payment", "DFG Soelra", "Thai Salary", "Indian Operators Salary", "Repair and Maintenance", "OJT", "Contract Employee"]
 		expense_type: DF.Data | None

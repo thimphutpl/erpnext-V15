@@ -9,6 +9,7 @@
   "project",
   "business_activity",
   "expense_type",
+  "equipment",
   "column_break_fmvm",
   "expense_for",
   "id_card",
@@ -51,7 +52,7 @@
    "fieldname": "expense_type",
    "fieldtype": "Data",
    "hidden": 1,
-   "label": "Equipment/OAP/GCE/MR",
+   "label": "OAP/GCE/MR",
    "options": "expense_for"
   },
   {
@@ -61,7 +62,7 @@
    "label": "CID No."
   },
   {
-   "depends_on": "eval:doc.expense_for == \"Equipment\"",
+   "fetch_from": "equipment.registration_number",
    "fieldname": "equipment_number",
    "fieldtype": "Data",
    "label": "Registration Number",
@@ -105,12 +106,19 @@
    "fieldname": "remarks",
    "fieldtype": "Long Text",
    "label": "Remarks"
+  },
+  {
+   "depends_on": "eval:doc.expense_for==\"HSD\" || doc.expense_for==\"Hire Charge\"",
+   "fieldname": "equipment",
+   "fieldtype": "Link",
+   "label": "Equipment",
+   "options": "Equipment"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-02-17 19:03:54.637482",
+ "modified": "2025-02-20 10:18:45.662981",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Expense Allocation Item",
