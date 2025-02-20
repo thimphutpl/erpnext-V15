@@ -1417,8 +1417,8 @@ class PaymentEntry(AccountsController):
 					frappe.throw(_("Currency for {0} must be {1}").format(d.account, self.company_currency))
 				party, party_type = '', ''
 				if frappe.db.get_value("Account", d.account, "account_type") in ('Payable', 'Receivable'):
-					party = self.party
-					party_type = self.party_type
+					party = d.party
+					party_type = d.party_type
 
 				gl_entries.append(
 					self.get_gl_dict(
