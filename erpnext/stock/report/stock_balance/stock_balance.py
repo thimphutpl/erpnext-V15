@@ -562,10 +562,11 @@ class StockBalanceReport:
 		return attribute_map
 
 	def get_opening_vouchers(self):
-		opening_vouchers = {"Stock Entry": [], "Stock Reconciliation": []}
+		opening_vouchers = {"Stock Entry": [], "Stock Reconciliation": [], "POL Receive": []}
 
 		se = frappe.qb.DocType("Stock Entry")
 		sr = frappe.qb.DocType("Stock Reconciliation")
+		polr = frappe.qb.DocType("POL Receive")
 
 		vouchers_data = (
 			frappe.qb.from_(
@@ -582,6 +583,11 @@ class StockBalanceReport:
 						& (sr.posting_date <= self.to_date)
 						& (sr.purpose == "Opening Stock")
 					)
+				)
+				+ (
+					frappe.qb.from_(polr)
+					.select(polr.name, Coalesce("POL Receive").as_("voucher_type"))
+					.where((polr.docstatus == 1) & (polr.posting_date <= self.to_date) & (polr.is_opening == "Yes"))
 				)
 			).select("voucher_type", "name")
 		).run(as_dict=True)
