@@ -71,7 +71,7 @@ def get_data(filters):
 					from `tabLeave Encashment` le
 					where le.employee = '{0}'
 					and   le.docstatus = 1 and le.branch = '{3}'
-					and   le.application_date {1} and le.application_date {2}
+					and   le.encashment_date {1} and le.encashment_date {2}
 					""".format(eq.operator, date, filter_date, eq.branch), as_dict=1)[0]
 			le = flt(lea.e_amount)
 			ota = frappe.db.sql("""
@@ -141,7 +141,7 @@ def get_data(filters):
 
 		pol, insurance,  goods_amount, service_amount = equipment_expense(filters, eq.name, eq.branch, date, filter_date)
 		total = flt(pol) + flt(insurance) + flt(goods_amount) + flt(service_amount) + flt(gross_pay) +  flt(le) + flt(tc) + flt(ot)
-		row = [eq.name, eq.branch, eq.equipment_number, eq.equipment_type, eq.operator, pol, insurance, goods_amount, service_amount,\
+		row = [eq.name, eq.branch, eq.registration_number, eq.equipment_type, eq.operator, pol, insurance, goods_amount, service_amount,\
 			gross_pay, le, tc, ot, total]
 		data.append(row)
 	return data

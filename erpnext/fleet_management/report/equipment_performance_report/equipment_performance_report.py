@@ -33,7 +33,7 @@ def get_data(filters):
 		cond += " and e.is_disabled = 1"
 
 	equipments = """
-		select * from (select e.name, eh.branch, eh.from_date, ifnull(eh.to_date, curdate()) as to_date, e.equipment_number, 
+		select * from (select e.name, eh.branch, eh.from_date, ifnull(eh.to_date, curdate()) as to_date, e.registration_number, 
 		e.equipment_type, e.equipment_model from `tabEquipment` e, `tabEquipment History` eh  where eh.parent = e.name {0} group by e.name, eh.branch) 
 		as equip left join
 		(select eo.operator, eo.start_date, eo.employee_type, ifnull(eo.end_date, curdate()) as end_date, eo.parent 
@@ -76,7 +76,7 @@ def get_data(filters):
 					from `tabLeave Encashment` le
 					where le.employee = '{0}'
 					and   le.docstatus = 1 and le.branch = '{3}'
-					and   le.application_date {1} and le.application_date {2}
+					and   le.encashment_date {1} and le.encashment_date {2}
 					""".format(eq.operator, date, filter_date, eq.branch), as_dict=1)[0]
 			le = flt(lea.e_amount)
 			ota = frappe.db.sql("""
@@ -156,7 +156,7 @@ def get_data(filters):
 			util_percent = 0.0
 			#frappe.msgprint("4 {0}".format(util_percent))
 
-		row = [eq.name, eq.branch, eq.equipment_number, eq.equipment_type, eq.equipment_model, eq.operator, total_exp, revn, ex, rate,\
+		row = [eq.name, eq.branch, eq.registration_number, eq.equipment_type, eq.equipment_model, eq.operator, total_exp, revn, ex, rate,\
 		bench,total_hc, round(util_percent,2)]
 		data.append(row)
 	return data
