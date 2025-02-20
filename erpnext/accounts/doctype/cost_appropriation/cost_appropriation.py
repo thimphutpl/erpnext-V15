@@ -83,15 +83,13 @@ class CostAppropriation(AccountsController):
 		if self.cost_type == 'Repair and Maintenance':
 			self.account = frappe.db.get_value ("Company",self.company,"repair_and_maintenance")
 		if self.cost_type == 'HSD':
-			self.hsd = frappe.db.get_value ("Company",self.company,"hsd")
-		
+			self.account = frappe.db.get_value ("Company",self.company,"hsd")
 		if self.cost_type == 'Lubricant':
 			self.account = frappe.db.get_value ("Company",self.company,"lubricant")
 		if self.cost_type == 'GCE':
 			self.account = frappe.db.get_value ("Company",self.company,"gce")
 		if self.cost_type == 'Overtime Payment':
 			self.hsd = frappe.db.get_value ("Company",self.company,"overtime_payment")
-		
 		if self.cost_type == 'Muster Roll Employee':
 			self.account = frappe.db.get_value ("Company",self.company,"muster_roll_employee")
 			if self.cost_type =='Operator Allowance':
@@ -101,6 +99,8 @@ class CostAppropriation(AccountsController):
 				
 
 	def on_submit(self):
+		if not self.account:
+			frappe.throw("Accounts is required please set account in company settings")
 		self.post_gl_entry()
 
 	def on_cancel(self):
@@ -143,7 +143,6 @@ class CostAppropriation(AccountsController):
 		gl_entries   = []
 		if self.total_amount > 0:
 			data = frappe.db.sql("""select round(sum(amount),2) as amount, project from `tabCost Appropriation Item` where parent = '{}' group by project""".format(self.name), as_dict = 1)
-			# frappe.throw(str(data))
 			for a in data:
 				gl_entries.append(
 					self.get_gl_dict({
