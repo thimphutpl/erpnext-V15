@@ -105,7 +105,8 @@ class eNote(Document):
 		#Allow only the permitted user to make changes
 		self.permitted_user = frappe.session.user if not self.permitted_user else self.permitted_user
 
-		if self.get_db_value("workflow_state") != "Waiting For Reviewer":
+		# if self.get_db_value("workflow_state") != "Waiting For Reviewer":
+		if self.get_db_value("workflow_state") not in ("Waiting For Reviewer", "Draft"): # Changes by sanga 
 			#frappe.throw("hi")
 			if self.permitted_user != frappe.session.user:
 				frappe.throw(" Only <b>{}</b> is allowed to make changes and perform actions to this Note".format(self.permitted_user))
