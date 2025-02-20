@@ -196,7 +196,6 @@
    "label": "Payment From / To"
   },
   {
-   "depends_on": "eval:in_list([\"Receive\", \"Pay\"], doc.payment_type) && doc.docstatus==0",
    "fieldname": "party_type",
    "fieldtype": "Link",
    "in_standard_filter": 1,
@@ -884,8 +883,8 @@
   },
   {
    "fieldname": "vendor_invoice_no",
-   "fieldtype": "Small Text",
-   "label": "Vendor Invoice No."
+   "fieldtype": "Data",
+   "label": "Supplier Invoice No."
   },
   {
    "fieldname": "column_break_ybad",
@@ -954,7 +953,7 @@
    "table_fieldname": "payment_entries"
   }
  ],
- "modified": "2025-02-13 16:09:23.793779",
+ "modified": "2025-02-20 17:56:47.883518",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Payment Entry",
