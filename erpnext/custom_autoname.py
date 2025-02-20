@@ -17,7 +17,7 @@ def get_auto_name(dn, naming_series=None):
 			series_seq = 'POSA'
 		elif naming_series == 'Spare Parts':
 			series_seq = 'POSP'
-		elif naming_series == 'Services Miscellaneous':
+		elif naming_series == 'Service Miscellaneous':
 			series_seq = 'POSM'
 		elif naming_series == 'Services Works':
 			series_seq = 'POSW'
@@ -33,7 +33,7 @@ def get_auto_name(dn, naming_series=None):
 			series_seq = 'SOSA'
 		elif naming_series == 'Spare Parts':
 			series_seq = 'SOSP'
-		elif naming_series == 'Services Miscellaneous':
+		elif naming_series == 'Service Miscellaneous':
 			series_seq = 'SOSM'
 		elif naming_series == 'Services Works':
 			series_seq = 'SOSW'
@@ -49,7 +49,7 @@ def get_auto_name(dn, naming_series=None):
 			series_seq = 'PISA'
 		elif naming_series == 'Spare Parts':
 			series_seq = 'PISP'
-		elif naming_series == 'Services Miscellaneous':
+		elif naming_series == 'Service Miscellaneous':
 			series_seq = 'PISM'
 		elif naming_series == 'Services Works':
 			series_seq = 'PISW'
@@ -65,7 +65,7 @@ def get_auto_name(dn, naming_series=None):
 			series_seq = 'SISA'
 		elif naming_series == 'Spare Parts':
 			series_seq = 'SISP'
-		elif naming_series == 'Services Miscellaneous':
+		elif naming_series == 'Service Miscellaneous':
 			series_seq = 'SISM'
 		elif naming_series == 'Services Works':
 			series_seq = 'SISW'
@@ -81,7 +81,7 @@ def get_auto_name(dn, naming_series=None):
 			series_seq = 'SESA'
 		elif naming_series == 'Spare Parts':
 			series_seq = 'SESP'
-		elif naming_series == 'Services Miscellaneous':
+		elif naming_series == 'Service Miscellaneous':
 			series_seq = 'SESM'
 		elif naming_series == 'Services Works':
 			series_seq = 'SESW'
@@ -97,7 +97,7 @@ def get_auto_name(dn, naming_series=None):
 			series_seq = 'DNSA'
 		elif naming_series == 'Spare Parts':
 			series_seq = 'DNSP'
-		elif naming_series == 'Services Miscellaneous':
+		elif naming_series == 'Service Miscellaneous':
 			series_seq = 'DNSM'
 		elif naming_series == 'Services Works':
 			series_seq = 'DNSW'
@@ -113,7 +113,7 @@ def get_auto_name(dn, naming_series=None):
 			series_seq = 'PRSA'
 		elif naming_series == 'Spare Parts':
 			series_seq = 'PRSP'
-		elif naming_series == 'Services Miscellaneous':
+		elif naming_series == 'Service Miscellaneous':
 			series_seq = 'PRSM'
 		elif naming_series == 'Services Works':
 			series_seq = 'PRSW'
@@ -129,7 +129,7 @@ def get_auto_name(dn, naming_series=None):
 			series_seq = 'MRSA'
 		elif naming_series == 'Spare Parts':
 			series_seq = 'MRSP'
-		elif naming_series == 'Services Miscellaneous':
+		elif naming_series == 'Service Miscellaneous':
 			series_seq = 'MRSM'
 		elif naming_series == 'Services Works':
 			series_seq = 'MRSW'
@@ -147,7 +147,7 @@ def get_auto_name(dn, naming_series=None):
 			series_seq = 'SQSA'
 		elif naming_series == 'Spare Parts':
 			series_seq = 'SQSP'
-		elif naming_series == 'Services Miscellaneous':
+		elif naming_series == 'Service Miscellaneous':
 			series_seq = 'SQSM'
 		elif naming_series == 'Services Works':
 			series_seq = 'SQSW'
@@ -163,7 +163,7 @@ def get_auto_name(dn, naming_series=None):
 			series_seq = 'RQSA'
 		elif naming_series == 'Spare Parts':
 			series_seq = 'RQSP'
-		elif naming_series == 'Services Miscellaneous':
+		elif naming_series == 'Service Miscellaneous':
 			series_seq = 'RQSM'
 		elif naming_series == 'Services Works':
 			series_seq = 'RQSW'
@@ -189,7 +189,7 @@ def get_auto_name(dn, naming_series=None):
 			series_seq = 'QISA'
 		elif naming_series == 'Spare Parts':
 			series_seq = 'QISP'
-		elif naming_series == 'Services Miscellaneous':
+		elif naming_series == 'Service Miscellaneous':
 			series_seq = 'QISM'
 		elif naming_series == 'Services Works':
 			series_seq = 'QISW'
@@ -205,7 +205,7 @@ def get_auto_name(dn, naming_series=None):
 			series_seq = 'QTSA'
 		elif naming_series == 'Spare Parts':
 			series_seq = 'QTSP'
-		elif naming_series == 'Services Miscellaneous':
+		elif naming_series == 'Service Miscellaneous':
 			series_seq = 'QTSM'
 		elif naming_series == 'Services Works':
 			series_seq = 'QTSW'
