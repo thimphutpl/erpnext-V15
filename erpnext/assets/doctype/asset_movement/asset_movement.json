@@ -97,6 +97,7 @@
    "allow_bulk_edit": 1,
    "fieldname": "assets",
    "fieldtype": "Table",
+   "ignore_user_permissions": 1,
    "label": "Assets",
    "options": "Asset Movement Item",
    "reqd": 1
@@ -109,6 +110,7 @@
    "depends_on": "eval:doc.based_on == 'Custodian'",
    "fieldname": "from_employee",
    "fieldtype": "Link",
+   "ignore_user_permissions": 1,
    "label": "From Employee",
    "mandatory_depends_on": "eval:doc.based_on == 'Custodian'",
    "options": "Employee"
@@ -188,7 +190,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-16 12:49:04.019714",
+ "modified": "2025-02-20 15:26:24.986285",
  "modified_by": "Administrator",
  "module": "Assets",
  "name": "Asset Movement",
