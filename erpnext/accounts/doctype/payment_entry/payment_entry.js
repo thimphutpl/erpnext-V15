@@ -173,6 +173,12 @@ frappe.ui.form.on("Payment Entry", {
 				filters: { company: doc.company },
 			};
 		});
+
+		frm.set_query("party_type", "deductions", function(){
+			return {
+				filters: {"name": ["in", ["Customer", "Supplier","Employee"]]}
+			}
+		});
 	},
 
 	refresh: function (frm) {
