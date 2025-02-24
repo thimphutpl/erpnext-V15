@@ -512,6 +512,7 @@
    "depends_on": "eval: doc.book_type == 'Common'\neval:doc.is_hsd_item",
    "fieldname": "tanker_balance",
    "fieldtype": "Float",
+   "hidden": 1,
    "in_list_view": 1,
    "label": "Tanker Balance"
   },
@@ -547,7 +548,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-02-24 14:22:32.391807",
+ "modified": "2025-02-24 16:17:44.399273",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Receive",
