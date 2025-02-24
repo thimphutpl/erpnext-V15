@@ -242,6 +242,7 @@
   {
    "fieldname": "reference",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Bluebook Fitness & Emission  JE Ref",
    "read_only": 1
   },
@@ -258,7 +259,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-02-02 20:03:29.892865",
+ "modified": "2025-02-24 16:56:50.434493",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Insurance and Registration",
