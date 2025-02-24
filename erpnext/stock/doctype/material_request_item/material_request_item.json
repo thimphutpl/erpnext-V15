@@ -172,6 +172,7 @@
   },
   {
    "columns": 3,
+   "fetch_from": "cost_center.warehouse",
    "fieldname": "warehouse",
    "fieldtype": "Link",
    "label": "Warehouse",
@@ -179,6 +180,7 @@
    "oldfieldtype": "Link",
    "options": "Warehouse",
    "print_width": "100px",
+   "read_only": 1,
    "width": "100px"
   },
   {
@@ -333,6 +335,7 @@
    "width": "70px"
   },
   {
+   "allow_on_submit": 1,
    "columns": 1,
    "fieldname": "actual_qty",
    "fieldtype": "Float",
@@ -522,7 +525,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-01-23 11:47:29.310754",
+ "modified": "2025-02-24 14:33:53.135570",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Material Request Item",
