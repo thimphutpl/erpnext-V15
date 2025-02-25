@@ -1,9 +1,10 @@
 frappe.listview_settings["Project"] = {
-	add_fields: ["status", "priority", "is_active", "percent_complete", "tot_wq_percent_complete", "tot_wq_percent", "expected_end_date", "project_name"],
-	filters: [["status", "=", "Open"]],
+	add_fields: ["status", "docstatus", "priority", "is_active", "percent_complete", "tot_wq_percent_complete", "tot_wq_percent", "expected_end_date", "project_name"],
+	// filters: [["status", "=", "Open"]],
+	has_indicator_for_draft: 1,
 	get_indicator: function (doc) {
-		if (doc.status == "Open") {
-			return [__(doc.status), "orange", "status,=,Open"];
+		if (doc.status == "Planning") {
+			return [__(doc.status), "orange", "status,=,Planning"];
 		}
 		else if (doc.status == "Ongoing") {
 			return [__(doc.status), "orange", "status,=,Ongoing"];
