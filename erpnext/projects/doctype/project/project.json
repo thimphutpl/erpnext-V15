@@ -835,6 +835,7 @@
    "allow_on_submit": 1,
    "fieldname": "physical_progress",
    "fieldtype": "Percent",
+   "in_list_view": 1,
    "label": "Contributed(%)",
    "read_only": 1
   },
@@ -966,7 +967,7 @@
  "is_submittable": 1,
  "links": [],
  "max_attachments": 4,
- "modified": "2025-02-25 13:30:43.576016",
+ "modified": "2025-02-25 15:34:39.176200",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Project",
