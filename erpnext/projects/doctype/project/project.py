@@ -1063,6 +1063,10 @@ class Project(Document):
 		if self.sales_order:
 			frappe.db.set_value("Sales Order", self.sales_order, "project", self.name)
 
+	def on_submit(self):
+		if self.status != "Completed":
+			frappe.throw("Status should be completed when submitting or set status from the Action Button")
+
 	def on_trash(self):
 		self.remove_project_definition_link()
 		frappe.db.set_value("Sales Order", {"project": self.name}, "project", "")
