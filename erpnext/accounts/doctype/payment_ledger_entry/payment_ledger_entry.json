@@ -24,7 +24,8 @@
   "account_currency",
   "amount_in_account_currency",
   "delinked",
-  "remarks"
+  "remarks",
+  "amended_from"
  ],
  "fields": [
   {
@@ -154,12 +155,23 @@
    "fieldtype": "Data",
    "label": "Voucher Detail No",
    "search_index": 1
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Payment Ledger Entry",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
   }
  ],
  "in_create": 1,
  "index_web_pages_for_search": 1,
+ "is_submittable": 1,
  "links": [],
- "modified": "2023-11-03 16:39:58.904113",
+ "modified": "2025-02-26 14:23:24.427650",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Payment Ledger Entry",
@@ -175,13 +187,16 @@
    "share": 1
   },
   {
+   "cancel": 1,
    "email": 1,
    "export": 1,
    "print": 1,
    "read": 1,
    "report": 1,
    "role": "Accounts Manager",
-   "share": 1
+   "share": 1,
+   "submit": 1,
+   "write": 1
   },
   {
    "email": 1,
