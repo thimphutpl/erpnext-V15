@@ -37,6 +37,8 @@ class TDSRemittance(AccountsController):
 		mode_of_payment: DF.Link
 		pay_to_recd_from: DF.Data | None
 		posting_date: DF.Date
+		project: DF.Link | None
+		project_definition: DF.Link | None
 		purpose: DF.Literal["", "Other Invoice"]
 		reference_date: DF.Data | None
 		reference_number: DF.Data | None
@@ -59,10 +61,19 @@ class TDSRemittance(AccountsController):
 		check_clearance_date(self.doctype, self.name)
 		self.ignore_linked_doctypes = ("GL Entry", "Stock Ledger Entry", "Payment Ledger Entry")
 		self.make_gl_entries()
+	# def get_condition(self):
+	# 	if self.branch:
+	# 		return ' AND t.branch ="{}" '.format(self.branch)
+	# 	return ''
 	def get_condition(self):
+		conditions = []
 		if self.branch:
-			return ' AND t.branch ="{}" '.format(self.branch)
-		return ''
+			conditions.append('t.branch = "{}"'.format(self.branch))
+		if self.project_definition:
+			conditions.append('p.project_definition = "{}"'.format(self.project_definition))
+		
+		return " AND " + " AND ".join(conditions) if conditions else ''
+
 	@frappe.whitelist()
 	def get_details(self):
 		total_tds_amount = total_bill_amount = 0
@@ -165,48 +176,114 @@ def get_tds_invoices(tax_withholding_category, from_date, to_date, name, filter_
 		existing_cond = _get_existing_cond()
 	
 	# Purchase Invoice
+	# if not party_type or party_type == "Supplier":
+	# 	pi_entries = frappe.db.sql("""select t.posting_date, 'Purchase Invoice' as invoice_type, t.name as invoice_no,  
+	# 			'Supplier' as party_type, t.supplier as party, (select supplier_tpn_no from `tabSupplier` where name = t.supplier) as tpn, 
+	# 			t.cost_center,
+	# 			t1.base_total+t1.base_tax_amount as bill_amount, 
+	# 			(case when t1.base_tax_amount > 0 then t1.base_tax_amount else t1.tax_amount end) tds_amount,
+	# 			t1.account_head as tax_account, tre.tds_remittance, tre.tds_receipt_update,t.bill_no, t.bill_date,
+	# 			(case when tre.tds_receipt_update is not null then 'Paid' else 'Unpaid' end) remittance_status
+	# 		from `tabPurchase Invoice` t 
+	# 			inner join `tabPurchase Taxes and Charges` t1 on t.name = t1.parent
+	# 			left join `tabSupplier` s on s.name = t.supplier
+	# 			left join `tabTDS Receipt Entry` tre on tre.invoice_no = t.name 
+	# 		where t.posting_date between '{from_date}' and '{to_date}'
+	# 		{accounts_cond}
+	# 		and t.docstatus = 1 
+	# 		{existing_cond}
+	# 		{cond}""".format(accounts_cond = accounts_cond, cond = cond, existing_cond = existing_cond,\
+	# 			from_date=from_date, to_date=to_date), as_dict=True)
 	if not party_type or party_type == "Supplier":
-		pi_entries = frappe.db.sql("""select t.posting_date, 'Purchase Invoice' as invoice_type, t.name as invoice_no,  
-				'Supplier' as party_type, t.supplier as party, (select supplier_tpn_no from `tabSupplier` where name = t.supplier) as tpn, 
+		pi_entries = frappe.db.sql("""
+			select 
+				t.posting_date, 'Purchase Invoice' as invoice_type, 
+				t.name as invoice_no, 'Supplier' as party_type, 
+				t.supplier as party, 
+				(select supplier_tpn_no from `tabSupplier` where name = t.supplier) as tpn, 
 				t.cost_center,
-				t1.base_total+t1.base_tax_amount as bill_amount, 
-				(case when t1.base_tax_amount > 0 then t1.base_tax_amount else t1.tax_amount end) tds_amount,
-				t1.account_head as tax_account, tre.tds_remittance, tre.tds_receipt_update,t.bill_no, t.bill_date,
-				(case when tre.tds_receipt_update is not null then 'Paid' else 'Unpaid' end) remittance_status
+				t1.base_total + t1.base_tax_amount as bill_amount, 
+				(case when t1.base_tax_amount > 0 then t1.base_tax_amount else t1.tax_amount end) as tds_amount,
+				t1.account_head as tax_account, 
+				tre.tds_remittance, 
+				tre.tds_receipt_update, 
+				t.bill_no, 
+				t.bill_date,
+				(case when tre.tds_receipt_update is not null then 'Paid' else 'Unpaid' end) as remittance_status,
+				p.project_definition  -- Fetch Project Definition from tabProject
 			from `tabPurchase Invoice` t 
 				inner join `tabPurchase Taxes and Charges` t1 on t.name = t1.parent
 				left join `tabSupplier` s on s.name = t.supplier
 				left join `tabTDS Receipt Entry` tre on tre.invoice_no = t.name 
+				left join `tabProject` p on t.project = p.name  -- Join with Project table
 			where t.posting_date between '{from_date}' and '{to_date}'
 			{accounts_cond}
 			and t.docstatus = 1 
 			{existing_cond}
-			{cond}""".format(accounts_cond = accounts_cond, cond = cond, existing_cond = existing_cond,\
+			{cond}
+		""".format(accounts_cond=accounts_cond, cond=cond, existing_cond=existing_cond,
 				from_date=from_date, to_date=to_date), as_dict=True)
+
+	# Payment Entry
+	# if party_type:
+	# 	party_cond = "and t.party_type = '{}'".format(party_type)
+	# pe_entries = frappe.db.sql("""select t.posting_date, t.name as invoice_no, 'Payment Entry' as invoice_type,
+	# 		t.party_type, t.party, 
+	# 		(case when t.party_type = 'Customer' then c.tax_id when t.party_type = 'Supplier' then s.supplier_tpn_no else null end) as tpn, 
+	# 		t.cost_center,
+	# 		case when t1.base_total > 0 then (t1.base_tax_amount + t1.base_total) else (t1.tax_amount + t1.total) end as bill_amount, 
+	# 		case when t1.base_tax_amount > 0 then t1.base_tax_amount else t1.tax_amount end as tds_amount,
+	# 		t1.account_head as tax_account, tre.tds_remittance, tre.tds_receipt_update,
+	# 		(case when tre.tds_receipt_update is not null then 'Paid' else 'Unpaid' end) remittance_status
+	# 	from `tabPayment Entry` as t
+	# 		inner join `tabAdvance Taxes and Charges` t1 on t.name = t1.parent
+	# 		left join `tabCustomer` c on t.party_type = 'Customer' and c.name = t.party
+	# 		left join `tabSupplier` s on t.party_type = 'Supplier' and s.name = t.party
+	# 		left join `tabTDS Receipt Entry` tre on tre.invoice_no = t.name 
+	# 	where t.posting_date between '{from_date}' and '{to_date}'
+	# 	{accounts_cond}
+	# 	and t.docstatus = 1
+	# 	{existing_cond}
+	# 	{party_cond}
+	# 	{cond}""".format(accounts_cond = accounts_cond, cond = cond, existing_cond = existing_cond,\
+	# 		party_cond = party_cond, from_date=from_date, to_date=to_date), as_dict=True)
 
 	# Payment Entry
 	if party_type:
 		party_cond = "and t.party_type = '{}'".format(party_type)
-	pe_entries = frappe.db.sql("""select t.posting_date, t.name as invoice_no, 'Payment Entry' as invoice_type,
+
+	pe_entries = frappe.db.sql("""
+		select 
+			t.posting_date, t.name as invoice_no, 'Payment Entry' as invoice_type,
 			t.party_type, t.party, 
-			(case when t.party_type = 'Customer' then c.tax_id when t.party_type = 'Supplier' then s.supplier_tpn_no else null end) as tpn, 
+			(case when t.party_type = 'Customer' then c.tax_id 
+				when t.party_type = 'Supplier' then s.supplier_tpn_no 
+				else null end) as tpn, 
 			t.cost_center,
-			case when t1.base_total > 0 then (t1.base_tax_amount + t1.base_total) else (t1.tax_amount + t1.total) end as bill_amount, 
-			case when t1.base_tax_amount > 0 then t1.base_tax_amount else t1.tax_amount end as tds_amount,
-			t1.account_head as tax_account, tre.tds_remittance, tre.tds_receipt_update,
-			(case when tre.tds_receipt_update is not null then 'Paid' else 'Unpaid' end) remittance_status
+			case when t1.base_total > 0 then (t1.base_tax_amount + t1.base_total) 
+				else (t1.tax_amount + t1.total) end as bill_amount, 
+			case when t1.base_tax_amount > 0 then t1.base_tax_amount 
+				else t1.tax_amount end as tds_amount,
+			t1.account_head as tax_account, 
+			tre.tds_remittance, tre.tds_receipt_update,
+			(case when tre.tds_receipt_update is not null then 'Paid' else 'Unpaid' end) as remittance_status,
+			p.project_definition  -- Fetch Project Definition from tabProject
 		from `tabPayment Entry` as t
 			inner join `tabAdvance Taxes and Charges` t1 on t.name = t1.parent
 			left join `tabCustomer` c on t.party_type = 'Customer' and c.name = t.party
 			left join `tabSupplier` s on t.party_type = 'Supplier' and s.name = t.party
 			left join `tabTDS Receipt Entry` tre on tre.invoice_no = t.name 
+			left join `tabProject` p on t.project = p.name  -- Join with Project table
 		where t.posting_date between '{from_date}' and '{to_date}'
 		{accounts_cond}
 		and t.docstatus = 1
 		{existing_cond}
 		{party_cond}
-		{cond}""".format(accounts_cond = accounts_cond, cond = cond, existing_cond = existing_cond,\
-			party_cond = party_cond, from_date=from_date, to_date=to_date), as_dict=True)
+		{cond}
+	""".format(
+		accounts_cond=accounts_cond, cond=cond, existing_cond=existing_cond,
+		party_cond=party_cond, from_date=from_date, to_date=to_date
+	), as_dict=True)
 
 	# Journal Entry
 	if len(accounts) == 1:
@@ -219,34 +296,103 @@ def get_tds_invoices(tax_withholding_category, from_date, to_date, name, filter_
 	if party_type:
 		party_cond = "and t1.party_type = '{}'".format(party_type)
 
-	je_entries = frappe.db.sql("""select t.posting_date, t.name as invoice_no, 'Journal Entry' as invoice_type,
-		t1.party_type, t1.party, 
-		(case when t1.party_type = 'Customer' then c.tax_id 
-			when t1.party_type = 'Supplier' then s.supplier_tpn_no else null end) as tpn, 
-		t1.cost_center,
-		(case when t1.tax_amount > 0 and t1.debit > 0 and ifnull(t1.apply_tds) = 1 
-				then t1.taxable_amount 
-			else 0 end) as bill_amount, 
-		(case when t1.tax_amount > 0 and t1.debit > 0 and ifnull(t1.apply_tds) = 1 
-				then t1.tax_amount
-			when t1.tax_amount = 0 and t1.credit > 0 then t1.credit
-			else 0 end) as tds_amount,
-		(case when t1.tax_amount > 0 and t1.debit > 0 and ifnull(t1.apply_tds) = 1 
-				then t1.tax_account
-			else t1.account end) as tax_account, tre.tds_remittance, tre.tds_receipt_update, t.bill_no, t.bill_date,
-		(case when tre.tds_receipt_update is not null then 'Paid' else 'Unpaid' end) remittance_status
-		from `tabJournal Entry` as t
-			inner join `tabJournal Entry Account` t1 on t.name = t1.parent
-			left join `tabCustomer` c on t1.party_type = 'Customer' and c.name = t1.party
-			left join `tabSupplier` s on t1.party_type = 'Supplier' and s.name = t1.party
-			left join `tabTDS Receipt Entry` tre on tre.invoice_no = t.name 
-		where t.posting_date between '{from_date}' and '{to_date}'
-		{accounts_cond}
-		and t.docstatus = 1 and t.apply_tds = 1 
-		{existing_cond}
-		{party_cond}
-		{cond}""".format(accounts_cond = accounts_cond, cond = cond, existing_cond = existing_cond,\
-			party_cond = party_cond, from_date=from_date, to_date=to_date), as_dict=True)
+	# je_entries = frappe.db.sql("""select t.posting_date, t.name as invoice_no, 'Journal Entry' as invoice_type,
+	# 	t1.party_type, t1.party, 
+	# 	(case when t1.party_type = 'Customer' then c.tax_id 
+	# 		when t1.party_type = 'Supplier' then s.supplier_tpn_no else null end) as tpn, 
+	# 	t1.cost_center,
+	# 	(case when t1.tax_amount > 0 and t1.debit > 0 and ifnull(t1.apply_tds) = 1 
+	# 			then t1.taxable_amount 
+	# 		else 0 end) as bill_amount, 
+	# 	(case when t1.tax_amount > 0 and t1.debit > 0 and ifnull(t1.apply_tds) = 1 
+	# 			then t1.tax_amount
+	# 		when t1.tax_amount = 0 and t1.credit > 0 then t1.credit
+	# 		else 0 end) as tds_amount,
+	# 	(case when t1.tax_amount > 0 and t1.debit > 0 and ifnull(t1.apply_tds) = 1 
+	# 			then t1.tax_account
+	# 		else t1.account end) as tax_account, tre.tds_remittance, tre.tds_receipt_update, t.bill_no, t.bill_date,
+	# 	(case when tre.tds_receipt_update is not null then 'Paid' else 'Unpaid' end) remittance_status
+	# 	from `tabJournal Entry` as t
+	# 		inner join `tabJournal Entry Account` t1 on t.name = t1.parent
+	# 		left join `tabCustomer` c on t1.party_type = 'Customer' and c.name = t1.party
+	# 		left join `tabSupplier` s on t1.party_type = 'Supplier' and s.name = t1.party
+	# 		left join `tabTDS Receipt Entry` tre on tre.invoice_no = t.name 
+	# 	where t.posting_date between '{from_date}' and '{to_date}'
+	# 	{accounts_cond}
+	# 	and t.docstatus = 1 and t.apply_tds = 1 
+	# 	{existing_cond}
+	# 	{party_cond}
+	# 	{cond}""".format(accounts_cond = accounts_cond, cond = cond, existing_cond = existing_cond,\
+	# 		party_cond = party_cond, from_date=from_date, to_date=to_date), as_dict=True)
+
+	je_entries = frappe.db.sql("""
+    SELECT 
+        t.posting_date, 
+        t.name AS invoice_no, 
+        'Journal Entry' AS invoice_type,
+        t1.party_type, 
+        t1.party, 
+        (CASE 
+            WHEN t1.party_type = 'Customer' THEN c.tax_id 
+            WHEN t1.party_type = 'Supplier' THEN s.supplier_tpn_no 
+            ELSE NULL 
+        END) AS tpn, 
+        t1.cost_center,
+        (CASE 
+            WHEN t1.tax_amount > 0 AND t1.debit > 0 AND IFNULL(t1.apply_tds) = 1 THEN t1.taxable_amount 
+            ELSE 0 
+        END) AS bill_amount, 
+        (CASE 
+            WHEN t1.tax_amount > 0 AND t1.debit > 0 AND IFNULL(t1.apply_tds) = 1 THEN t1.tax_amount
+            WHEN t1.tax_amount = 0 AND t1.credit > 0 THEN t1.credit
+            ELSE 0 
+        END) AS tds_amount,
+        (CASE 
+            WHEN t1.tax_amount > 0 AND t1.debit > 0 AND IFNULL(t1.apply_tds) = 1 THEN t1.tax_account
+            ELSE t1.account 
+        END) AS tax_account, 
+        tre.tds_remittance, 
+        tre.tds_receipt_update, 
+        t.bill_no, 
+        t.bill_date,
+        (CASE 
+            WHEN tre.tds_receipt_update IS NOT NULL THEN 'Paid' 
+            ELSE 'Unpaid' 
+        END) AS remittance_status,
+        p.project_definition
+    FROM 
+        `tabJournal Entry` AS t
+    INNER JOIN 
+        `tabJournal Entry Account` t1 ON t.name = t1.parent
+    LEFT JOIN 
+        `tabCustomer` c ON t1.party_type = 'Customer' AND c.name = t1.party
+    LEFT JOIN 
+        `tabSupplier` s ON t1.party_type = 'Supplier' AND s.name = t1.party
+    LEFT JOIN 
+        `tabTDS Receipt Entry` tre ON tre.invoice_no = t.name
+    LEFT JOIN 
+        `tabProject` p ON t1.project = p.name  -- Join the Project table to get project_definition
+    WHERE 
+        t.posting_date BETWEEN '{from_date}' AND '{to_date}'
+        {accounts_cond}
+        AND t.docstatus = 1 
+        AND t.apply_tds = 1 
+        {existing_cond}
+        {party_cond}
+        {cond}
+""".format(
+    accounts_cond=accounts_cond, 
+    cond=cond, 
+    existing_cond=existing_cond,
+    party_cond=party_cond, 
+    from_date=from_date, 
+    to_date=to_date
+), as_dict=True)
+
+	
+	
+
+
 	# Transporter Invoice
 	# ti_entries = frappe.db.sql("""select t.posting_date, t.name as invoice_no, 'Transporter Invoice' as invoice_type,
 	# 			'Supplier' as party_type, t.supplier as party, 
