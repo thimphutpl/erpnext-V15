@@ -800,27 +800,26 @@ frappe.ui.form.on("Material Request Item", {
 		const item = locals[doctype][name];
 		frm.events.get_item_data(frm, item, false);
 	},
-
-	warehouse: function (frm, doctype, name) {
-		const item = locals[doctype][name];
-		frm.events.get_item_data(frm, item, false);
-	},
-
 	rate(frm, doctype, name) {
 		const item = locals[doctype][name];
 		item.amount = flt(item.qty) * flt(item.rate);
 		frappe.model.set_value(doctype, name, "amount", item.amount);
 		refresh_field("amount", item.name, item.parentfield);
 	},
-
-	item_code: function (frm, doctype, name) {
-		const item = locals[doctype][name];
-		item.rate = 0;
-		item.uom = "";
-		set_schedule_date(frm);
-		frm.events.get_item_data(frm, item, true);
-	},
-
+	item_code: function(frm, cdt, cdn) {
+        let item = frappe.get_doc(cdt, cdn);
+        if (item.item_code && item.warehouse) {
+            frm.events.get_item_data(frm, item, true);
+        } else {
+            frappe.msgprint(__("Please select a warehouse for item {0}", [item.item_code]));
+        }
+    },
+    warehouse: function(frm, cdt, cdn) {
+        let item = frappe.get_doc(cdt, cdn);
+        if (item.item_code && item.warehouse) {
+            frm.events.get_item_data(frm, item, false);
+        }
+    },
 	schedule_date: function (frm, cdt, cdn) {
 		var row = locals[cdt][cdn];
 		if (row.schedule_date) {
