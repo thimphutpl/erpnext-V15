@@ -134,7 +134,8 @@ class JobCards(AccountsController):
 		# 	self.post_journal_entry()
 		# 	self.db_set("outstanding_amount", 0)
 		# if self.owned_by == "Others":
-		self.make_gl_entries()
+
+		# self.make_gl_entries()
 		self.update_breakdownreport()
 		
 
@@ -299,6 +300,7 @@ class JobCards(AccountsController):
 			frappe.throw("Setup Default Goods, Services and Receivable Accounts in Maintenance Accounts Settings")
 
 	def make_gl_entries(self):
+		gl_entries = []
 		if self.total_amount:
 			from erpnext.accounts.general_ledger import make_gl_entries
 			gl_entries = []
