@@ -27,6 +27,8 @@ class POLReceive(StockController):
 		advances: DF.Table[POLAdvanceItem]
 		amended_from: DF.Link | None
 		amount: DF.Currency
+		average_fuel_consumption_38: DF.Data | None
+		balance_amount_as_per_the_supplypol_book: DF.Data | None
 		book_type: DF.Literal["Own", "Common"]
 		branch: DF.Link
 		business_activity: DF.Link
@@ -35,6 +37,8 @@ class POLReceive(StockController):
 		cost_center: DF.Link
 		credit_account: DF.Link | None
 		current_km_reading: DF.Float
+		current_km_reading_2: DF.Float
+		date_of_last_polhsd_recoupment_made: DF.Data | None
 		direct_consumption: DF.Check
 		discount_amount: DF.Currency
 		equipment: DF.Link
@@ -60,9 +64,13 @@ class POLReceive(StockController):
 		paid_amount: DF.Currency
 		party: DF.DynamicLink | None
 		party_type: DF.Literal["", "Employee"]
+		pol_issued: DF.Data | None
 		pol_type: DF.Link
 		posting_date: DF.Date
 		posting_time: DF.Time | None
+		present_tank_balance: DF.Data | None
+		previous_km_reading: DF.Float
+		previous_tank_balance: DF.Data | None
 		qty: DF.Float
 		rate: DF.Currency
 		remarks: DF.LongText | None
@@ -70,6 +78,9 @@ class POLReceive(StockController):
 		stock_uom: DF.Data | None
 		supplier: DF.Link
 		total_amount: DF.Currency
+		total_km_covered: DF.Float
+		total_pol_consumed: DF.Data | None
+		total_pol_issed: DF.Data | None
 	# end: auto-generated types
 	def validate(self):
 		check_future_date(self.posting_date)
@@ -83,6 +94,7 @@ class POLReceive(StockController):
 		self.calculate_km_diff()
 		if not self.direct_consumption:
 			self.get_advance()
+		self.calculate_pol_details()
 		
 
 	def calculate_amount(self):
@@ -98,6 +110,15 @@ class POLReceive(StockController):
 		self.total_amount = flt(total_amount, 2)
 		self.outstanding_amount = flt(total_amount, 2)
 		self.qty = total_qty
+	def calculate_pol_details(self):
+		if self.previous_km_reading and self.current_km_reading_2:
+			self.total_km_covered = float(self.current_km_reading_2) - float(self.previous_km_reading)
+		if self.pol_issued and self.previous_tank_balance:
+			self.total_pol_issed = float(self.pol_issued) + float(self.previous_tank_balance)
+		if self.total_pol_issed and self.present_tank_balance:
+			self.total_pol_consumed = float(self.total_pol_issed) - float(self.present_tank_balance)
+		if self.total_km_covered and self.total_pol_consumed:
+			self.average_fuel_consumption_38 = float(self.total_km_covered) / float(self.total_pol_consumed)
 
 	def calculate_km_diff(self):
 		previous_km_reading = frappe.db.sql("""
@@ -505,29 +526,45 @@ class POLReceive(StockController):
 	def get_advance(self):
 		self.calculate_km_diff()
 		data = []
-		data = frappe.db.sql("""
-				SELECT 
-					a.name, a.amount, a.balance_amount, a.journal_entry
-				FROM `tabPOL Advance` a
-				WHERE docstatus = 1 
-				AND fuelbook = '{}'
-				AND fuelbook_branch = '{}'
-				AND balance_amount > 0
-				AND equipment_number = '{}' 
-				ORDER BY entry_date""".format(self.fuelbook, self.fuelbook_branch, self.equipment_number),as_dict=True)
-		self.set('advances',[])
-		
-		if not data:
+		if self.company == "His Majesty's Secretariat":
 			data = frappe.db.sql("""
-						SELECT 
-							a.name, a.amount, a.balance_amount, a.journal_entry
-						FROM `tabPOL Advance` a
-						WHERE docstatus = 1 
-						AND fuelbook = '{}'
-						AND fuelbook_branch = '{}'
-						AND balance_amount = 0
-						AND equipment_number = '{}' 
-						ORDER BY entry_date desc limit 1""".format(self.fuelbook, self.equipment_branch, self.equipment_number),as_dict=True)
+					SELECT 
+						a.name, a.amount, a.balance_amount, a.journal_entry
+					FROM `tabPOL Advance` a inner join `tabAbstract Bill` ab on a.name=ab.reference_name
+					WHERE a.docstatus = 1 
+					AND a.fuelbook = '{}'
+					AND a.fuelbook_branch = '{}'
+					AND a.balance_amount > 0
+					AND a.equipment_number = '{}' 
+					AND ab.docstatus = 1
+					ORDER BY a.entry_date""".format(self.fuelbook, self.fuelbook_branch, self.equipment_number),as_dict=True)
+			# frappe.throw(str(data))
+			self.set('advances',[])
+		else:
+			data = frappe.db.sql("""
+					SELECT 
+						a.name, a.amount, a.balance_amount, a.journal_entry
+					FROM `tabPOL Advance` a
+					WHERE docstatus = 1 
+					AND fuelbook = '{}'
+					AND fuelbook_branch = '{}'
+					AND balance_amount > 0
+					AND equipment_number = '{}' 
+					ORDER BY entry_date""".format(self.fuelbook, self.fuelbook_branch, self.equipment_number),as_dict=True)
+			# frappe.throw(str(data))
+			self.set('advances',[])
+			
+			if not data:
+				data = frappe.db.sql("""
+							SELECT 
+								a.name, a.amount, a.balance_amount, a.journal_entry
+							FROM `tabPOL Advance` a
+							WHERE docstatus = 1 
+							AND fuelbook = '{}'
+							AND fuelbook_branch = '{}'
+							AND balance_amount = 0
+							AND equipment_number = '{}' 
+							ORDER BY entry_date desc limit 1""".format(self.fuelbook, self.equipment_branch, self.equipment_number),as_dict=True)
 		allocated_amount = self.total_amount
 		total_amount_adjusted = 0
 

@@ -80,7 +80,7 @@ class POLAdvance(AccountsController):
 			self.update_od_balance()
 			# self.post_journal_entry()
 			abstract_bill = frappe.db.sql('''
-                                 select abstract_bill_required from `tabCompany` where name='{name}' limit 1
+                                 select abstract_bill_required from `tabCompany` where name="{name}" limit 1
                                  '''.format(name=self.company))
 			# frappe.throw(str(abstract_bill[0][0]))
 			if abstract_bill and abstract_bill[0][0] == 1:
@@ -168,7 +168,7 @@ class POLAdvance(AccountsController):
 		if not credit_account:
 			frappe.throw("Expense Account is mandatory")
 		if not advance_account:
-			frappe.throw("Setup POL Advance Account in Maintenance Accounts Settings")
+			frappe.throw("Setup POL Advance Account in Company List {}".format(self.company))
 
 		account_type = frappe.db.get_value("Account", credit_account, "account_type")
 		voucher_type = "Journal Entry"
@@ -237,7 +237,7 @@ class POLAdvance(AccountsController):
 	def create_abstract_bill(self):
      
 		data = frappe.db.sql("""
-		select pol_advance_account from `tabCompany` where name='Office of the Gyalpoi Zimpon'
+		select pol_advance_account from `tabCompany` where name="His Majesty's Secretariat"
 		""", as_dict=True)
 
 		# Accessing the result

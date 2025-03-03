@@ -62,6 +62,19 @@
   "advance_details",
   "get_advance",
   "advances",
+  "pol_details_section",
+  "previous_km_reading",
+  "total_km_covered",
+  "previous_tank_balance",
+  "present_tank_balance",
+  "average_fuel_consumption_38",
+  "column_break_yhoe",
+  "current_km_reading_2",
+  "pol_issued",
+  "total_pol_issed",
+  "total_pol_consumed",
+  "balance_amount_as_per_the_supplypol_book",
+  "date_of_last_polhsd_recoupment_made",
   "section_break_10",
   "discount_amount",
   "total_amount",
@@ -525,12 +538,77 @@
    "fieldname": "posting_time",
    "fieldtype": "Time",
    "label": "Posting Time"
+  },
+  {
+   "fieldname": "pol_details_section",
+   "fieldtype": "Section Break",
+   "label": "POL Details"
+  },
+  {
+   "fieldname": "column_break_yhoe",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "previous_km_reading",
+   "fieldtype": "Float",
+   "label": "1. Previous KM reading"
+  },
+  {
+   "fieldname": "total_km_covered",
+   "fieldtype": "Float",
+   "label": "3. Total KM Covered",
+   "read_only": 1
+  },
+  {
+   "fieldname": "current_km_reading_2",
+   "fieldtype": "Float",
+   "label": "2. Current KM reading"
+  },
+  {
+   "fieldname": "date_of_last_polhsd_recoupment_made",
+   "fieldtype": "Data",
+   "label": "11. Date of last POL/HSD recoupment made"
+  },
+  {
+   "fieldname": "pol_issued",
+   "fieldtype": "Data",
+   "label": "4. Pol issued"
+  },
+  {
+   "fieldname": "previous_tank_balance",
+   "fieldtype": "Data",
+   "label": "5. Previous Tank Balance"
+  },
+  {
+   "fieldname": "total_pol_issed",
+   "fieldtype": "Data",
+   "label": "6. Total POL issed"
+  },
+  {
+   "fieldname": "present_tank_balance",
+   "fieldtype": "Data",
+   "label": "7. Present Tank balance"
+  },
+  {
+   "fieldname": "total_pol_consumed",
+   "fieldtype": "Data",
+   "label": "8. Total POL Consumed"
+  },
+  {
+   "fieldname": "average_fuel_consumption_38",
+   "fieldtype": "Data",
+   "label": "9. Average Fuel Consumption "
+  },
+  {
+   "fieldname": "balance_amount_as_per_the_supplypol_book",
+   "fieldtype": "Data",
+   "label": "10. Balance Amount as per the supply/POL book"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-07-25 11:47:53.529076",
+ "modified": "2025-02-11 11:17:09.103716",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Receive",
