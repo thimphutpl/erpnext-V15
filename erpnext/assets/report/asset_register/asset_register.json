@@ -9,7 +9,7 @@
  "idx": 8,
  "is_standard": "Yes",
  "letterhead": null,
- "modified": "2025-02-10 15:09:54.985701",
+ "modified": "2025-03-03 14:48:37.630860",
  "modified_by": "Administrator",
  "module": "Assets",
  "name": "Asset Register",
@@ -27,6 +27,9 @@
   },
   {
    "role": "Asset User"
+  },
+  {
+   "role": "Employee"
   }
  ]
 }
