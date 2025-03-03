@@ -23,6 +23,7 @@
   "naming_series",
   "start_grade",
   "maximum_grade",
+  "grade",
   "column_break_9",
   "status",
   "gender",
@@ -59,6 +60,7 @@
   "section",
   "unit",
   "employment_details",
+  "job_applicant",
   "scheduled_confirmation_date",
   "contract_start_date",
   "column_break_32",
@@ -96,10 +98,18 @@
   "leave_block_list",
   "column_break_44",
   "holiday_list",
+  "default_shift",
+  "approvers_section",
+  "expense_approver",
+  "leave_approver",
+  "column_break_45",
+  "shift_request_approver",
   "salary_information",
   "ctc",
   "salary_currency",
   "salary_mode",
+  "salary_cb",
+  "payroll_cost_center",
   "bank_details_section",
   "bank_name",
   "bank_branch",
@@ -117,6 +127,9 @@
   "column_break6",
   "blood_group",
   "health_details",
+  "health_insurance_section",
+  "health_insurance_provider",
+  "health_insurance_no",
   "passport_details_section",
   "passport_number",
   "valid_upto",
@@ -237,8 +250,8 @@
   {
    "fieldname": "employee_number",
    "fieldtype": "Data",
+   "hidden": 1,
    "in_global_search": 1,
-   "in_list_view": 1,
    "label": "Employee Number",
    "oldfieldname": "employee_number",
    "oldfieldtype": "Data"
@@ -369,6 +382,7 @@
    "fieldname": "designation",
    "fieldtype": "Link",
    "in_global_search": 1,
+   "in_list_view": 1,
    "label": "Designation",
    "oldfieldname": "designation",
    "oldfieldtype": "Link",
@@ -894,6 +908,7 @@
    "fetch_from": "branch.cost_center",
    "fieldname": "cost_center",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Cost Center",
    "options": "Cost Center",
    "read_only": 1
@@ -931,6 +946,7 @@
   {
    "fieldname": "old_id",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "Old ID"
   },
   {
@@ -948,6 +964,7 @@
   {
    "fieldname": "employment_type",
    "fieldtype": "Link",
+   "ignore_user_permissions": 1,
    "label": "Employment Type",
    "options": "Employment Type"
   },
@@ -1113,11 +1130,12 @@
    "options": "Professional Category"
   },
   {
+   "default": "CDCL.YY",
    "fieldname": "naming_series",
    "fieldtype": "Select",
    "label": "Naming Series",
    "no_copy": 1,
-   "options": "EMP/\nCDCL-YY-.####\nEMP-YY-.####",
+   "options": "CDCL.YY\nHR-EMP-",
    "reqd": 1
   },
   {
@@ -1140,54 +1158,95 @@
    "label": "Maximum Grade",
    "options": "Employee Grade",
    "read_only": 1
+  },
+  {
+   "fieldname": "grade",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Grade",
+   "options": "Employee Grade"
+  },
+  {
+   "fieldname": "job_applicant",
+   "fieldtype": "Link",
+   "label": "Job Applicant",
+   "options": "Job Applicant"
+  },
+  {
+   "fieldname": "default_shift",
+   "fieldtype": "Link",
+   "label": "Default Shift",
+   "options": "Shift Type"
+  },
+  {
+   "fieldname": "approvers_section",
+   "fieldtype": "Section Break",
+   "label": "Approvers"
+  },
+  {
+   "fieldname": "expense_approver",
+   "fieldtype": "Link",
+   "label": "Expense Approver",
+   "options": "User"
+  },
+  {
+   "fieldname": "leave_approver",
+   "fieldtype": "Link",
+   "label": "Leave Approver",
+   "options": "User"
+  },
+  {
+   "fieldname": "column_break_45",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "shift_request_approver",
+   "fieldtype": "Link",
+   "label": "Shift Request Approver",
+   "options": "User"
+  },
+  {
+   "fieldname": "salary_cb",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "department.payroll_cost_center",
+   "fetch_if_empty": 1,
+   "fieldname": "payroll_cost_center",
+   "fieldtype": "Link",
+   "label": "Payroll Cost Center",
+   "options": "Cost Center"
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "health_insurance_section",
+   "fieldtype": "Section Break",
+   "label": "Health Insurance"
+  },
+  {
+   "fieldname": "health_insurance_provider",
+   "fieldtype": "Link",
+   "label": "Health Insurance Provider",
+   "options": "Employee Health Insurance"
+  },
+  {
+   "depends_on": "eval:doc.health_insurance_provider",
+   "fieldname": "health_insurance_no",
+   "fieldtype": "Data",
+   "label": "Health Insurance No"
   }
  ],
  "icon": "fa fa-user",
  "idx": 24,
  "image_field": "image",
  "links": [],
- "modified": "2025-02-10 13:32:18.431987",
+ "modified": "2025-03-03 12:58:36.917954",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee",
  "naming_rule": "Expression (old style)",
  "owner": "Administrator",
- "permissions": [
-  {
-   "email": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "Employee",
-   "write": 1
-  },
-  {
-   "create": 1,
-   "delete": 1,
-   "email": 1,
-   "export": 1,
-   "import": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "HR User",
-   "share": 1,
-   "write": 1
-  },
-  {
-   "create": 1,
-   "delete": 1,
-   "email": 1,
-   "export": 1,
-   "import": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "HR Manager",
-   "share": 1,
-   "write": 1
-  }
- ],
+ "permissions": [],
  "search_fields": "employee_name, gender, designation, employment_type",
  "show_name_in_global_search": 1,
  "sort_field": "modified",
