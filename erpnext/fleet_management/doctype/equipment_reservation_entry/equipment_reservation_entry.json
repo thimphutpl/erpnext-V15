@@ -21,7 +21,6 @@
   {
    "fieldname": "equipment",
    "fieldtype": "Link",
-   "in_list_view": 1,
    "label": "Equipment",
    "options": "Equipment",
    "reqd": 1
@@ -91,7 +90,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-20 23:27:39.939395",
+ "modified": "2025-03-04 16:41:42.783163",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Equipment Reservation Entry",

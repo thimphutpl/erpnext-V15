@@ -1,5 +1,6 @@
 // Copyright (c) 2016, Frappe Technologies Pvt. Ltd. and contributors
 // For license information, please see license.txt
+// ggg
 
 frappe.ui.form.on('Equipment Hiring Form', {
 	refresh: function (frm) {
