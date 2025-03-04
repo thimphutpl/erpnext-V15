@@ -194,16 +194,16 @@ class VehicleLogbook(Document):
 			data = frappe.db.sql(db_query.format(wf, wof, ir, e.equipment_type, e.equipment_model, self.from_date, self.to_date), as_dict=True)
 			if not data:
 				frappe.throw("There is either no Hire Charge defined or your logbook period overlaps with the Hire Charge period.")
-			if based_on == "Hire Charge Parameter":
-				name = frappe.db.sql("select ha.name, ha.tender_hire_rate as thr from `tabHiring Approval Details` ha, `tabEquipment Hiring Form` h where ha.parent = h.name and h.docstatus = 1 and ha.equipment = %s and h.name = %s", (str(self.equipment), str(self.ehf_name)), as_dict=True)
-			if name and name[0]['thr'] == 0:
-				self.idle_rate = data[0].idle_rate
-				if self.rate_type == "With Fuel":
-					self.work_rate = data[0].rate_fuel
-				if self.rate_type == "Without Fuel":
-					self.work_rate = data[0].rate_wofuel
-			self.ys_km = data[0].yard_distance
-			self.ys_hours = data[0].yard_hours
+			# if based_on == "Hire Charge Parameter":
+			# 	name = frappe.db.sql("select ha.name, ha.tender_hire_rate as thr from `tabHiring Approval Details` ha, `tabEquipment Hiring Form` h where ha.parent = h.name and h.docstatus = 1 and ha.equipment = %s and h.name = %s", (str(self.equipment), str(self.ehf_name)), as_dict=True)
+			# if name and name[0]['thr'] == 0:
+			# 	self.idle_rate = data[0].idle_rate
+			# 	if self.rate_type == "With Fuel":
+			# 		self.work_rate = data[0].rate_fuel
+			# 	if self.rate_type == "Without Fuel":
+			# 		self.work_rate = data[0].rate_wofuel
+			# self.ys_km = data[0].yard_distance
+			# self.ys_hours = data[0].yard_hours
 
 
 	def on_update(self):
@@ -227,8 +227,8 @@ class VehicleLogbook(Document):
 		if getdate(self.from_date) > getdate(self.to_date):
 			frappe.throw("From Date cannot be smaller than To Date")
 
-		if getdate(self.from_date).month != getdate(self.to_date).month:
-			frappe.throw("From Date and To Date should be in the same month")
+		# if getdate(self.from_date).month != getdate(self.to_date).month:
+		# 	frappe.throw("From Date and To Date should be in the same month")
 
 	def check_hire_form(self):
 		if self.vehicle_logbook == "Pool Vehicle":
