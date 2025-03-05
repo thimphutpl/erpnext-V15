@@ -316,6 +316,14 @@ class ProcessMRPayment(Document):
 			wage_account = frappe.db.get_single_value("Projects Accounts Settings", "dfg_wage_account")
 			if not wage_account:
 				frappe.throw("Setup DFG Wage Account in Projects Accounts Settings")
+		
+		elif self.employee_type == "GFG":
+			ot_account = frappe.db.get_single_value("Projects Accounts Settings", "gfg_overtime_account")
+			if not ot_account:
+				frappe.throw("Setup Overtime Account for GFG in Projects Accounts Settings")
+			wage_account = frappe.db.get_single_value("Projects Accounts Settings", "gfg_wage_account")
+			if not wage_account:
+				frappe.throw("Setup GFG Wage Account in Projects Accounts Settings")
 
 		elif self.employee_type == "Operator":
 			ot_account = frappe.db.get_single_value("Projects Accounts Settings", "operator_overtime_account")
