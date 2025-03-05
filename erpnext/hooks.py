@@ -414,6 +414,9 @@ scheduler_events = {
 		# "erpnext.projects.doctype.project.project.project_status_update_reminder",
 		# "erpnext.projects.doctype.project.project.hourly_reminder",
 		# "erpnext.projects.doctype.project.project.collect_project_status",
+		"erpnext.integrations.bps.download_bank_statement",
+		"erpnext.accounts.doctype.bank_statement_files.bank_statement_files.update_brs",
+		"erpnext.accounts.doctype.brs_entries.brs_entries.update_bank_clearance_date",
 	],
 	"hourly_long": [
 		"erpnext.stock.doctype.repost_item_valuation.repost_item_valuation.repost_entries",
@@ -603,6 +606,7 @@ permission_query_conditions = {
     "Salary Structure": "hrms.payroll.doctype.salary_structure.salary_structure.get_permission_query_conditions",
 	"Salary Slip": "hrms.payroll.doctype.salary_slip.salary_slip.get_permission_query_conditions",
 	"Leave Application": "hrms.hr.doctype.leave_application.leave_application.get_permission_query_conditions",
+    "Employee Separation": "hrms.hr.doctype.employee_separation.employee_separation.get_permission_query_conditions",
 	"Travel Authorization": "hrms.hr.doctype.travel_authorization.travel_authorization.get_permission_query_conditions",
 	"Travel Claim": "hrms.hr.doctype.travel_claim.travel_claim.get_permission_query_conditions",
 	"POL Issue": "erpnext.fleet_management.doctype.pol_issue.pol_issue.get_permission_query_conditions",
