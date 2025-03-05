@@ -34,7 +34,8 @@
   "total_ot_amount",
   "section_break_15",
   "total_amount",
-  "total_payable",
+  "column_break_ljge",
+  "net_pay",
   "ot_section",
   "bank",
   "cb_acc",
@@ -260,16 +261,20 @@
    "label": "Mess Deduction"
   },
   {
-   "fieldname": "total_payable",
+   "fieldname": "column_break_ljge",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "net_pay",
    "fieldtype": "Currency",
-   "hidden": 1,
-   "label": "Total Payable"
+   "label": "Net Pay",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-12-05 16:14:00.514995",
+ "modified": "2025-03-05 18:15:02.073668",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "MR Payment Item",

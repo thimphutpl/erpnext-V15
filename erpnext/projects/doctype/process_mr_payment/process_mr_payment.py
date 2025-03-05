@@ -40,57 +40,10 @@ class ProcessMRPayment(Document):
 		wages_amount: DF.Currency
 	# end: auto-generated types
 	def validate(self):
-                # Setting `monthyear`
 		month = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"].index(self.month) + 1
 		month = str(month) if cint(month) > 9 else str("0" + str(month))
 		self.monthyear = str(self.fiscal_year)+str(month)
-		total_days = monthrange(cint(self.fiscal_year), cint(month))[1]
-                
-		# if self.items:
-		# 	total_ot = total_wages = total_health = salary = 0.0
-			
-		# 	for a in self.items:
-		# 		if self.workflow_state != "Rejected":
-		# 			self.duplicate_entry_check(a.employee, a.employee_type, a.idx)
-		# 		a.fiscal_year   = self.fiscal_year
-		# 		a.month         = self.month
-                                
-		# 	#	a.total_ot_amount = flt(a.hourly_rate) * flt(a.number_of_hours)
-		# 	#	a.total_wage = flt(a.daily_rate) * flt(a.number_of_days)
-				
-		# 		if a.employee_type == "GEP Employee":
-		# 			salary = frappe.db.get_value("GEP Employee", a.employee, "salary")
-		# 			if flt(a.total_wage) > flt(salary):
-		# 				a.total_wage = flt(salary)
-
-		# 			if flt(total_days) == flt(a.number_of_days):
-		# 				a.total_wage = flt(salary)
-                                        
-		# 		# Ver.1.0.20200205 Begins, Following code added by SHIV on 2020/01/05
-		# 		a.total_wage = round(a.total_wage)
-		# 		a.total_ot_amount = round(a.total_ot_amount)
-		# 		#frappe.throw("total_ot_amount: "+str(a.total_ot_amount))
-		# 		# Ver.1.0.20200205 Ends
-
-		# 		a.total_amount = flt(a.total_ot_amount) + flt(a.total_wage)
-		# 		total_ot += flt(a.total_ot_amount)
-		# 		total_wages += flt(a.total_wage)
-		# 		if a.employee_type == "GEP Employee":
-		# 			# Ver.1.0.20200205 Begins, Following code added by SHIV on 2020/01/05
-		# 			# Follwoing line replcaed by subsequent by SHIV
-		# 			#a.health = flt(a.total_wage) * 0.01
-		# 			#a.health = round(flt(a.total_wage) * 0.01)
-		# 			# Ver.1.0.20200205 Ends
-		# 			a.wage_payable = flt(a.total_wage) - flt(a.health)
-		# 			total_health += flt(a.health)
-				
-		# 	total = total_ot + total_wages
-		# 	self.wages_amount = flt(total_wages)
-		# 	self.ot_amount = flt(total_ot)
-		# 	self.total_overall_amount = flt(total)
-		# 	if a.employee_type == "GEP Employee":
-		# 		self.total_health_amount = total_health
-			
+		total_days = monthrange(cint(self.fiscal_year), cint(month))[1]	
 
 	def on_submit(self):
 		# self.check_budget()
@@ -106,24 +59,19 @@ class ProcessMRPayment(Document):
 		self.db_set('payment_jv', "")
 		
 	def check_budget(self):
-			#frappe.throw("1")
 			budget_error= []
 			overtime_account = frappe.db.get_single_value ("Projects Accounts Settings",  "mr_overtime_account")
 			wages_account = frappe.db.get_single_value ("Projects Accounts Settings", "mr_wages_account")
-			#frappe.throw(str(overtime_account))
 			error = check_budget_available(self.cost_center, overtime_account, self.posting_date, self.ot_amount, False)
-			if error:
-									
-					budget_error.append(error)
+			if error:					
+				budget_error.append(error)
 
 			errors= check_budget_available(self.cost_center, wages_account, self.posting_date, self.wages_amount, throw_error = False)
 			if errors:
-					
-					budget_error.append(errors)
+				budget_error.append(errors)
 			if budget_error:
-					for e in budget_error:
-							
-							frappe.msgprint(str(e))
+				for e in budget_error:
+					frappe.msgprint(str(e))
 					frappe.throw("", title="Insufficient Budget")
 
 
@@ -206,8 +154,8 @@ class ProcessMRPayment(Document):
 				"cost_center": self.cost_center,
 				"reference_type": "Process MR Payment",
 				"reference_name": self.name,
-				"debit_in_account_currency": flt(total_amount),
-				"debit": flt(total_amount),
+				"debit_in_account_currency": flt(self.total_overall_amount),
+				"debit": flt(self.total_overall_amount),
 			})
 
 		if self.deduction:	
@@ -223,8 +171,8 @@ class ProcessMRPayment(Document):
 		je.append("accounts", {
 				"account": bank_account,
 				"cost_center": self.cost_center,
-				"credit_in_account_currency": flt(total_amount) + flt(self.deduction) if self.deduction else flt(total_amount),
-				"credit": flt(total_amount) + flt(self.deduction) if self.deduction else flt(total_amount),
+				"credit_in_account_currency": flt(self.gross_amount),
+				"credit": flt(self.gross_amount),
 			})
 			
 		# frappe.throw("<pre>{}</pre>".format(frappe.as_json(je.get('accounts'))))
@@ -263,11 +211,7 @@ class ProcessMRPayment(Document):
 		je.remark = 'Payment against : ' + self.name
 		je.posting_date = self.posting_date
 		je.branch = self.branch
-		total_amount = self.total_overall_amount
-
-		if self.total_health_amount and self.employee_type == "GEP Employee":
-			total_amount -= flt(self.total_health_amount)
-
+		
 		if self.ot_amount:	
 			je.append("accounts", {
 					"account": ot_account,
@@ -277,35 +221,22 @@ class ProcessMRPayment(Document):
 					"debit_in_account_currency": flt(self.ot_amount),
 					"debit": flt(self.ot_amount),
 				})
-
+		
 		if self.wages_amount:
-			if self.total_health_amount and self.employee_type == "GEP Employee":
-				health_account = frappe.db.get_value("Salary Component", "Health Contribution", "gl_head")
-				if not health_account:
-					frappe.throw("No GL Account for Health Contribution")
-				je.append("accounts", {
-						"account": health_account,
-						"reference_type": "Process MR Payment",
-						"reference_name": self.name,
-						"cost_center": self.cost_center,
-						"credit_in_account_currency": flt(self.total_health_amount),
-						"credit": flt(self.total_health_amount),
-					})
-
 			je.append("accounts", {
-					"account": wage_account,
-					"reference_type": "Process MR Payment",
-					"reference_name": self.name,
-					"cost_center": self.cost_center,
-					"debit_in_account_currency": flt(self.wages_amount) + flt(self.deduction) if self.deduction else flt(total_amount) - flt(self.ot_amount),
-					"debit": flt(self.wages_amount) + flt(self.deduction) if self.deduction else flt(total_amount) - flt(self.ot_amount),
-				})
+				"account": wage_account,
+				"reference_type": "Process MR Payment",
+				"reference_name": self.name,
+				"cost_center": self.cost_center,
+				"debit_in_account_currency": flt(self.wages_amount),
+				"debit": flt(self.wages_amount) ,
+			})
 
 		je.append("accounts", {
 				"account": expense_bank_account,
 				"cost_center": self.cost_center,
-				"credit_in_account_currency": flt(total_amount),
-				"credit": flt(total_amount),
+				"credit_in_account_currency": flt(self.total_overall_amount),
+				"credit": flt(self.total_overall_amount),
 			})
 		
 		if self.deduction:	
@@ -321,37 +252,6 @@ class ProcessMRPayment(Document):
 		je.insert()
 		je.submit()
 		self.db_set("payment_jv", je.name)
-
-		
-		if self.total_health_amount and self.employee_type == "GEP Employee":
-			health_account = frappe.db.get_value("Salary Component", "Health Contribution", "gl_head")
-			if not health_account:
-				frappe.throw("No GL Account for Health Contribution")
-			hjv = frappe.new_doc("Journal Entry")
-			hjv.flags.ignore_permissions = 1 
-			hjv.title = "Health Contribution for " + self.employee_type  + " (" + self.branch + ")"
-			hjv.voucher_type = 'Bank Entry'
-			hjv.naming_series = 'Bank Payment Voucher'
-			hjv.remark = 'HC Payment against : ' + self.name
-			hjv.posting_date = self.posting_date
-			hjv.branch = self.branch
-
-			hjv.append("accounts", {
-					"account": health_account,
-					"reference_type": "Process MR Payment",
-					"reference_name": self.name,
-					"cost_center": self.cost_center,
-					"debit_in_account_currency": flt(self.total_health_amount),
-					"debit": flt(self.total_health_amount),
-				})
-
-			hjv.append("accounts", {
-					"account": expense_bank_account,
-					"cost_center": self.cost_center,
-					"credit_in_account_currency": flt(self.total_health_amount),
-					"credit": flt(self.total_health_amount),
-				})
-			hjv.insert()
 			
 	@frappe.whitelist()
 	def get_records(self, fiscal_year, fiscal_month, cost_center, branch, dn):
@@ -409,23 +309,15 @@ class ProcessMRPayment(Document):
 					)
 		""".format(fiscal_year=fiscal_year, fiscal_month=fiscal_month,
 		dn=dn, cost_center=cost_center, from_date = from_date, to_date = to_date), as_dict=True)
-		#frappe.msgprint(str(emp_list))
+
 		for e in emp_list:
 			pay_details=get_pay_details(e.name, fiscal_year, month)
-			# frappe.msgprint(str(e.person_name))
-			# rate_per_day 		 = flt(pay_details[0].get("rate_per_day"))
-			# rate_per_hour 		 = flt(pay_details[0].get("rate_per_hour"))
-			# rate_per_hour_normal = flt(pay_details[0].get("rate_per_hour_normal"))
 			rate_per_day 		 = flt(pay_details[0]['rate_per_day'])
 			rate_per_hour 		 = flt(pay_details[0]['rate_per_hour'])
 			rate_per_hour_normal = flt(pay_details[0]['rate_per_hour_normal'])
-			# rate_per_day=100.0
-			# rate_per_hour=40
-			# rate_per_hour_normal=7
-			#frappe.throw(e.name)
+		
 
 			master.setdefault(e.name, frappe._dict({
-				#"type": employee_type,
 				"mr_employee": e.name,
 				"person_name": e.person_name,
 				"id_card": e.id_card,
@@ -474,17 +366,11 @@ class ProcessMRPayment(Document):
 		cost_center = cost_center, total_days = total_days), as_dict=True)
 
 		
-		#ifnull(number_of_hours,0)*ifnull(rate_per_hour_normal,0) as total_ot
 		total_overall_amount = ot_amount = wages_amount = deduction = 0
-		# frappe.throw(str(rest_list))
 		for r in rest_list:
-			# frappe.throw(str((flt(r.total_wage)+flt(r.total_ot))))
-			#frappe.throw(str(r.number_of_days))
+			
 			if master.get(r.mr_employee) and (flt(r.total_wage)+flt(r.total_ot)) > 0:
-				# frappe.throw(str(master.get(r.mr_employee).rate_per_day))
-				row = self.append("items",{})
-			#if master.get(r.mr_employee):
-				#r.employee_type = r.type
+				row = self.append("items", {})
 				master[r.mr_employee].update(r)
 				row.employee_type 	= "Muster Roll Employee"
 				row.employee 		= r.mr_employee
@@ -498,43 +384,34 @@ class ProcessMRPayment(Document):
 				row.bank = r.bank
 				row.account_no = r.account_no
 				row.designation = r.designation
-				row.daily_rate 	= flt(master.get(r.mr_employee).rate_per_day)
-				row.hourly_rate 	= flt(master.get(r.mr_employee).rate_per_hour)#Holiday Rate
-				row.hourly_rate_normal = flt(master.get(r.mr_employee).rate_per_hour_normal)
-				row.amount_regular = flt(r.number_of_hours_regular) * flt(row.hourly_rate_normal)
-				row.amount_special 		= flt(r.number_of_hours_special)*flt(row.hourly_rate)
-				row.total_ot_amount = flt(r.number_of_hours_regular) * flt(row.hourly_rate_normal) + flt(r.number_of_hours_special)*flt(row.hourly_rate)
-				row.total_wage 		= flt(row.daily_rate) * flt(r.number_of_days)
-				
-				
-				row.mess_deduction 	= flt(master.get(r.mr_employee).amount)
-				row.wage_payable=flt(row.total_wage)-flt(row.mess_deduction)
-				
-				row.total_amount 	= flt(flt(row.total_ot_amount, 2) + flt(row.wage_payable, 2), 2)
-				#row.total_payable=flt(row.total_amount)-flt(row.mess_deduction)
-				total_overall_amount += flt(row.total_amount, 2)
-				ot_amount 			 += row.total_ot_amount
-				wages_amount 		 += row.wage_payable
-				deduction 			 += row.mess_deduction
 
-				# data.append(master[r.mr_employee])
-				#frappe.throw("jj")
+				row.daily_rate 			= flt(master.get(r.mr_employee).rate_per_day)
+				row.hourly_rate 		= flt(master.get(r.mr_employee).rate_per_hour)
+				row.hourly_rate_normal 	= flt(master.get(r.mr_employee).rate_per_hour_normal)
+				row.amount_regular 		= flt(r.number_of_hours_regular) * flt(row.hourly_rate_normal)
+				row.amount_special 		= flt(r.number_of_hours_special) * flt(row.hourly_rate)
+				row.total_ot_amount 	= flt(r.number_of_hours_regular) * flt(row.hourly_rate_normal) + flt(r.number_of_hours_special) * flt(row.hourly_rate)
+				row.total_wage 			= flt(row.daily_rate) * flt(r.number_of_days)
+				
+				row.mess_deduction 		= flt(master.get(r.mr_employee).amount, 2)
+				row.wage_payable    	= flt(row.total_wage, 2)
+				row.total_amount 		= flt(flt(row.total_ot_amount, 2) + flt(row.wage_payable, 2), 2)
+				row.net_pay				= flt(flt(row.total_amount, 2) - flt(row.mess_deduction, 2), 2)
+
+				total_overall_amount 	+= flt(row.total_amount, 2)
+				ot_amount 			 	+= flt(row.total_ot_amount, 2)
+				wages_amount 		 	+= flt(row.wage_payable, 2)
+				deduction 			 	+= flt(row.mess_deduction, 2)
 			
-		self.total_overall_amount = flt(total_overall_amount)
-		self.ot_amount 			 = ot_amount
-		self.wages_amount 		 = wages_amount
-		self.deduction 			 = deduction
-		self.gross_amount		 =  flt(total_overall_amount) + flt(deduction)
-		# if data:
-		# 	# frappe.msgprint(str(data))
-
-		# 	return data
-		# else:
-		# 	frappe.throw(_("No data found!"),title="No Data Found!")
+		self.total_overall_amount 	= flt(total_overall_amount) - flt(deduction)
+		self.ot_amount 			 	= flt(ot_amount, 2)
+		self.wages_amount 		 	= wages_amount
+		self.deduction 			 	= deduction
+		self.gross_amount		 	= flt(wages_amount) + flt(ot_amount)
+		
 def get_pay_details(employee, year, month):
 	from_date = "-".join([str(year), str(month), '01'])
 	to_date   = str(get_last_day(from_date))
-	#frappe.throw(employee)
 
 	return  frappe.db.sql("""
 			SELECT
@@ -545,55 +422,6 @@ def get_pay_details(employee, year, month):
 			ORDER BY from_date DESC
 			LIMIT 1
 		""".format(employee=employee), as_dict = True)
-
-# def update_mr_rates(employee_type, employee, cost_center, from_date, to_date):
-# 	# Updating wage rate
-# 	rates = frappe.db.sql("""
-# 		SELECT
-#             GREATEST(IFNULL(from_date,'{from_date}'),'{from_date}') AS from_date, 
-# 			LEAST(IFNULL(to_date,'{to_date}'),'{to_date}') AS to_date, 
-# 			rate_per_day, rate_per_hour, rate_per_hour_normal
-# 		FROM `tabMusterroll`
-# 		WHERE parent = '{employee}'
-# 		AND '{year_month}' BETWEEN DATE_FORMAT(IFNULL(from_date,'{from_date}'),'%Y%m') 
-# 			AND DATE_FORMAT(IFNULL(to_date,'{to_date}'),'%Y%m')
-# 	""".format(employee=employee, year_month=str(to_date)[:4]+str(to_date)[5:7],
-# 	from_date=from_date, to_date=to_date), as_dict = True)
- 
-# 	for r in rates:
-# 		frappe.db.sql("""
-# 			update `tabAttendance Others`
-# 			set rate_per_day = {rate_per_day}
-# 			where employee_type = '{employee_type}'
-# 			and employee = '{employee}'
-# 			and `date` between '{from_date}' and '{to_date}'
-# 			and status = 'Present'
-# 			and docstatus = 1 
-# 		""".format(
-# 			rate_per_day=r.rate_per_day,
-# 			employee_type=employee_type,
-# 			employee=employee,
-# 			from_date=r.from_date,
-# 			to_date=r.to_date
-# 		))
-# 		frappe.db.sql("""
-# 			update `tabOvertime Entry`
-# 			set rate_per_hour = {rate_per_hour}, rate_per_hour_normal = {rate_per_hour_normal}
-# 			where employee_type = '{employee_type}'
-# 			and number = '{employee}'
-# 			and `date` between '{from_date}' and '{to_date}'
-# 			and docstatus = 1 
-# 		""".format(
-# 			rate_per_hour=r.rate_per_hour,
-# 			rate_per_hour_normal = r.rate_per_hour_normal,
-# 			employee_type=employee_type,
-# 			employee=employee,
-# 			from_date=r.from_date,
-# 			to_date=r.to_date
-# 		))
-# 	frappe.db.commit()
-
-
 
 @frappe.whitelist()
 def check_if_holiday_overtime_entry(branch, date, fiscal_year = None, fiscal_month = None):

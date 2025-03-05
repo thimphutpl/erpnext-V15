@@ -651,7 +651,7 @@ class BankPayment(Document):
 						(CASE WHEN mri.employee_type = "Muster Roll Employee" THEN mre.bank_branch ELSE gep.bank_branch END) as bank_branch, 
 						(CASE WHEN mri.employee_type = "Muster Roll Employee" THEN mre.bank_account_type ELSE gep.bank_account_type END) as bank_account_type, 
 						(CASE WHEN mri.employee_type = "Muster Roll Employee" THEN mre.bank_ac_no ELSE gep.bank_ac_no END) as bank_account_no,
-						round(mri.total_amount, 2) amount
+						round(mri.net_pay, 2) amount
 					FROM `tabProcess MR Payment` mr 
 					INNER JOIN `tabMR Payment Item` mri ON mri.parent = mr.name
 					LEFT JOIN `tabMuster Roll Employee` mre ON mri.employee_type = "Muster Roll Employee" and mre.name = mri.employee
