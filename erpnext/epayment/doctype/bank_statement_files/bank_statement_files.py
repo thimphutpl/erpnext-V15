@@ -19,7 +19,7 @@ class BankStatementFiles(Document):
 
 		bank_statement_date: DF.Data
 		bank_statement_file: DF.Attach
-		download_date: DF.Data | None
+		download_date: DF.Data
 		update_brs: DF.Check
 	# end: auto-generated types
 	pass
