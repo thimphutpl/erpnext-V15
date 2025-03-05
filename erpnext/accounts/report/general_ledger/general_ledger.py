@@ -341,16 +341,6 @@ def get_data_with_opening_closing(filters, account_details, accounting_dimension
 	totals, entries = get_accountwise_gle(filters, accounting_dimensions, gl_entries, gle_map)
 
 	# Opening for filtered account
-	# jai opening. 11 Feb, 2025
-	if totals.opening.get('debit') > totals.opening.get('credit'):
-		totals.opening['debit'] = totals.opening.get('debit') - totals.opening.get('credit')
-		totals.opening['credit'] = 0.0
-	elif totals.opening.get('debit') < totals.opening.get('credit'):
-		totals.opening['debit'] = 0.0
-		totals.opening['credit'] = abs(totals.opening.get('debit') - totals.opening.get('credit'))
-	else:
-		totals.opening['debit'] = 0.0
-		totals.opening['credit'] = 0.0
 	data.append(totals.opening)
 
 	if filters.get("group_by") != "Group by Voucher (Consolidated)":
@@ -379,17 +369,15 @@ def get_data_with_opening_closing(filters, account_details, accounting_dimension
 	data.append(totals.total)
 
 	# closing
-	#jai closing
-	# frappe.throw("<pre>{}</pre>".format(frappe.as_json(totals.closing)))
-	if totals.closing.get('debit') > totals.closing.get('credit'):
-		totals.closing['debit'] = totals.closing.get('debit') - totals.closing.get('credit')
-		totals.closing['credit'] = 0.0
-	elif totals.closing.get('debit') < totals.closing.get('credit'):
-		totals.closing['debit'] = 0.0
-		totals.closing['credit'] = abs(totals.closing.get('debit') - totals.closing.get('credit'))
+	balance = 0
+	if totals.closing['debit'] > totals.closing['credit']:
+		balance = totals.closing['debit'] - totals.closing['credit']
+		totals.closing['debit'] = balance
+		totals.closing['credit'] = 0
 	else:
-		totals.closing['debit'] = 0.0
-		totals.closing['credit'] = 0.0
+		balance = totals.closing['credit'] - totals.closing['debit']
+		totals.closing['credit'] = balance
+		totals.closing['debit'] = 0
 
 	data.append(totals.closing)
 
