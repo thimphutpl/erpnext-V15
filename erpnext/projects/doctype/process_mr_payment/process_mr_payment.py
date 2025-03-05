@@ -98,6 +98,7 @@ class ProcessMRPayment(Document):
 		self.bank_journal_entry()
 
 	def before_cancel(self):
+		self.ignore_linked_doctypes = ("GL Entry", "Payment Ledger Entry")
 		cl_status = frappe.db.get_value("Journal Entry", self.payment_jv, "docstatus")
 		if cl_status and cl_status != 2:
 			frappe.throw("You need to cancel the journal entry related to this payment first!")
@@ -509,9 +510,9 @@ class ProcessMRPayment(Document):
 				row.mess_deduction 	= flt(master.get(r.mr_employee).amount)
 				row.wage_payable=flt(row.total_wage)-flt(row.mess_deduction)
 				
-				row.total_amount 	= flt(row.total_ot_amount) + flt(row.wage_payable)
+				row.total_amount 	= flt(flt(row.total_ot_amount, 2) + flt(row.wage_payable, 2), 2)
 				#row.total_payable=flt(row.total_amount)-flt(row.mess_deduction)
-				total_overall_amount += row.total_amount
+				total_overall_amount += flt(row.total_amount, 2)
 				ot_amount 			 += row.total_ot_amount
 				wages_amount 		 += row.wage_payable
 				deduction 			 += row.mess_deduction
@@ -519,7 +520,7 @@ class ProcessMRPayment(Document):
 				# data.append(master[r.mr_employee])
 				#frappe.throw("jj")
 			
-		self.total_overall_amount = ot_amount+wages_amount
+		self.total_overall_amount = flt(total_overall_amount)
 		self.ot_amount 			 = ot_amount
 		self.wages_amount 		 = wages_amount
 		self.deduction 			 = deduction
