@@ -211,7 +211,7 @@ class ProcessMRPayment(Document):
 
 	def post_journal_entry(self):
 		expense_bank_account, ot_account, wage_account, gratuity_account = self.prepare_gls()
-		expense_bank_account=frappe.db.get_value("Cost Center",self.cost_center,"expense_account")
+		# expense_bank_account=frappe.db.get_value("Cost Center",self.cost_center,"expense_account")
 		if not expense_bank_account:
 			frappe.throw("Set Expense Account In Cost Center for '{}'".format(self.cost_center))
 		je = frappe.new_doc("Journal Entry")
