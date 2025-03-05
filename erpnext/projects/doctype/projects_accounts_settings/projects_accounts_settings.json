@@ -33,6 +33,10 @@
   "dfg_wage_account",
   "column_break_juqm",
   "dfg_overtime_account",
+  "gfg_accounts_section",
+  "gfg_wage_account",
+  "column_break_wazv",
+  "gfg_overtime_account",
   "oap_accounts_section",
   "oap_wage_account",
   "column_break_oica",
@@ -351,12 +355,33 @@
    "label": "OAP Gratuity Account",
    "options": "Account",
    "reqd": 1
+  },
+  {
+   "fieldname": "gfg_accounts_section",
+   "fieldtype": "Section Break",
+   "label": "GFG Accounts"
+  },
+  {
+   "fieldname": "gfg_wage_account",
+   "fieldtype": "Link",
+   "label": "GFG Wage Accounts",
+   "options": "Account"
+  },
+  {
+   "fieldname": "column_break_wazv",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "gfg_overtime_account",
+   "fieldtype": "Link",
+   "label": "GFG Overtime Account",
+   "options": "Account"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-12-25 16:22:38.717929",
+ "modified": "2025-03-05 15:55:17.277474",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Projects Accounts Settings",

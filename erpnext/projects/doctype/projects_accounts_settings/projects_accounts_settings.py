@@ -23,6 +23,8 @@ class ProjectsAccountsSettings(Document):
 		gep_overtime_accounts: DF.Link | None
 		gep_wages_account: DF.Link
 		gep_wages_accounts: DF.Link | None
+		gfg_overtime_account: DF.Link | None
+		gfg_wage_account: DF.Link | None
 		inventory_account: DF.Link | None
 		inventory_accounts: DF.Link | None
 		invoice_account_internal: DF.Link | None
