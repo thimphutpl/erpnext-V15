@@ -1,6 +1,6 @@
 frappe.listview_settings['Bank Payment'] = {
 	add_fields: ["status", "docstatus"],
-	filters:[["status","=", "Pending"]],
+	// filters:[["status","=", "Pending"]],
 	// colwidths: {"name":2, "status":2, "expected_start_date":2},
 	get_indicator: function(doc) {
         var status = {"Draft": "white",
