@@ -47,6 +47,7 @@
   "remark",
   "paid_loan",
   "inter_company_journal_entry_reference",
+  "journal_no",
   "column_break98",
   "bill_no",
   "bill_date",
@@ -648,6 +649,11 @@
    "label": "Bank Payment",
    "options": "Bank Payment",
    "read_only": 1
+  },
+  {
+   "fieldname": "journal_no",
+   "fieldtype": "Data",
+   "label": "Journal No."
   }
  ],
  "icon": "fa fa-file-text",
@@ -662,7 +668,7 @@
    "table_fieldname": "payment_entries"
   }
  ],
- "modified": "2025-01-15 13:24:52.776806",
+ "modified": "2025-03-06 22:44:57.637944",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Journal Entry",

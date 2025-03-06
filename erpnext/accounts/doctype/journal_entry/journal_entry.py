@@ -69,6 +69,7 @@ class JournalEntry(AccountsController):
 		inter_company_journal_entry_reference: DF.Link | None
 		is_opening: DF.Literal["No", "Yes"]
 		is_system_generated: DF.Check
+		journal_no: DF.Data | None
 		letter_head: DF.Link | None
 		mode_of_payment: DF.Link | None
 		money_receipt_no: DF.Data | None

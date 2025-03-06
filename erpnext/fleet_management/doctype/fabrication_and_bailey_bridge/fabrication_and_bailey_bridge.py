@@ -152,7 +152,7 @@ class FabricationAndBaileyBridge(AccountsController):
 			je.title = "Fabrication And Bailey Bridge (" + self.name + ")"
 			je.voucher_type = 'Journal Entry'
 			je.naming_series = 'Maintenance Invoice'
-			je.remark = 'Payment against : ' + self.name;
+			je.remark = 'Payment against : ' + self.name
 			#je.posting_date = self.posting_date
 			je.posting_date = self.finish_date
 			je.branch = self.branch
@@ -165,14 +165,37 @@ class FabricationAndBaileyBridge(AccountsController):
 				if not ir_account:
 					frappe.throw("Setup Internal Revenue Account in Maintenance Accounts Settings")	
 
-				je.append("accounts", {
-						"account": maintenance_account,
-						"reference_type": "Fabrication And Bailey Bridge",
-						"reference_name": self.name,
-						"cost_center": self.customer_cost_center,
-						"debit_in_account_currency": flt(self.total_amount),
-						"debit": flt(self.total_amount),
-					})
+				# je.append("accounts", {
+				# 		"account": maintenance_account,
+				# 		"reference_type": "Fabrication And Bailey Bridge",
+				# 		"reference_name": self.name,
+				# 		"cost_center": self.customer_cost_center,
+				# 		"debit_in_account_currency": flt(self.total_amount),
+				# 		"debit": flt(self.total_amount),
+				# 	})
+				for d in self.get("items"):
+					maint_account = maintenance_account
+					if d.which == "Item":
+						maint_account = frappe.db.get_value("Item Default", {"parent": d.job}, "expense_account")
+					if d.amount != 0:
+						found = False
+						for entry in je.accounts:
+							if entry.account == maint_account and entry.cost_center == self.customer_cost_center:
+								# Update existing entry
+								entry.debit_in_account_currency += flt(d.amount)
+								entry.debit += flt(d.amount)
+								found = True
+								break  # No need to continue searching
+						if not found:
+							# Append new entry if no match was found
+							je.append("accounts", {
+									"account": maint_account,
+									"reference_type": "Fabrication And Bailey Bridge",
+									"reference_name": self.name,
+									"cost_center": self.customer_cost_center,
+									"debit_in_account_currency": flt(d.amount),
+									"debit": flt(d.amount),
+								})
 				je.append("accounts", {
 						"account": ic_account,
 						"reference_type": "Fabrication And Bailey Bridge",
@@ -194,7 +217,7 @@ class FabricationAndBaileyBridge(AccountsController):
 					amount = self.goods_amount
 					if a == "Service":
 						amount = self.services_amount
-						account_name = services_account;
+						account_name = services_account
 					if amount != 0:
 						je.append("accounts", {
 								"account": account_name,
@@ -212,7 +235,7 @@ class FabricationAndBaileyBridge(AccountsController):
 					amount = self.goods_amount
 					if a == "Service":
 						amount = self.services_amount
-						account_name = services_account;
+						account_name = services_account
 					if amount != 0:
 						je.append("accounts", {
 								"account": account_name,
