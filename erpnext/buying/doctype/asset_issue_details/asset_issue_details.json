@@ -72,7 +72,7 @@
    "fieldname": "entry_date",
    "fieldtype": "Date",
    "in_list_view": 1,
-   "label": "Entry Date",
+   "label": "Purchase Receipt Date",
    "reqd": 1
   },
   {
@@ -266,7 +266,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-02-17 12:47:35.767392",
+ "modified": "2025-03-06 17:09:07.070872",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Asset Issue Details",
