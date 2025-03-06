@@ -1372,3 +1372,22 @@ def add_reference_in_jv_on_split(entry_name, new_asset_name, old_asset_name, dep
 	journal_entry.make_gl_entries(1)
 	journal_entry.docstatus = 1
 	journal_entry.make_gl_entries()
+
+@frappe.whitelist()
+def get_permission_query_conditions(user):
+	if not user: user = frappe.session.user
+	user_roles = frappe.get_roles(user)
+	if user == "Administrator":
+		return
+	
+	if "Asset User" in user_roles or "Asset Manager" in user_roles:
+		return
+	
+	return """(
+		`tabAsset`.owner = '{user}'
+		or
+		exists(select 1
+			from `tabEmployee`
+			where `tabEmployee`.name = `tabAsset`.custodian
+			and `tabEmployee`.user_id = '{user}' and `tabAsset`.docstatus != 2)
+	)""".format(user=user)
