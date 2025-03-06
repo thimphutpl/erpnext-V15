@@ -481,7 +481,6 @@
    "fieldtype": "Column Break"
   },
   {
-   "depends_on": "calculate_depreciation",
    "fieldname": "section_break_36",
    "fieldtype": "Section Break",
    "label": "Finance Books"
@@ -748,7 +747,7 @@
    "link_fieldname": "target_asset"
   }
  ],
- "modified": "2025-02-10 14:41:23.850262",
+ "modified": "2025-02-19 15:56:06.142153",
  "modified_by": "Administrator",
  "module": "Assets",
  "name": "Asset",

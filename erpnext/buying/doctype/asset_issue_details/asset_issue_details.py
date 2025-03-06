@@ -19,6 +19,7 @@ class AssetIssueDetails(Document):
         amended_from: DF.Link | None
         amount: DF.Currency
         asset_rate: DF.Currency
+        asset_received_entries: DF.Link | None
         branch: DF.Link
         brand: DF.Data
         chesis_no: DF.Data | None
@@ -30,6 +31,7 @@ class AssetIssueDetails(Document):
         engine_no: DF.Data | None
         entry_date: DF.Date
         equipment_type: DF.Link | None
+        is_existing_asset: DF.Check
         issued_date: DF.Date
         issued_to: DF.Link | None
         item_code: DF.Link
@@ -84,6 +86,24 @@ class AssetIssueDetails(Document):
         balance_qty = flt(total_qty) - flt(issued_qty)
         if flt(self.qty) > flt(balance_qty):
             frappe.throw(_("Issuing Quantity cannot be greater than Balance Quantity i.e., {}").format(flt(balance_qty)), title="Insufficient Balance")
+
+    @frappe.whitelist()
+    def get_existing_details(self):
+        if self.asset_received_entries and self.is_existing_asset == 1:
+            qty = frappe.db.get_value("Asset Received Entries", self.asset_received_entries, "qty")
+            warehouse = frappe.db.get_value("Asset Received Entries", self.asset_received_entries, "warehouse")
+            rate = frappe.db.get_value("Asset Received Entries", self.asset_received_entries, "asset_rate")
+            issued_qty = frappe.db.sql("""
+                                       select sum(ifnull(qty,0)) as qty from `tabAsset Issue Details` where asset_received_entries = '{}'
+                                       and docstatus = 1
+                                       """.format(self.asset_received_entries),as_dict=1)[0].qty
+            if flt(qty) - flt(issued_qty) <= 0:
+                frappe.throw("Insufficient Quanitity/All Quantity Issued from Asset Received Entry {}".format(self.asset_received_entries))
+            if not warehouse:
+                frappe.throw("Warehouse not selected in Asset Received Entry {}".format(self.asset_received_entries))
+            if not rate:
+                frappe.throw("Asset Rate not set in Asset Received Entry {}".format(self.asset_received_entries))
+            return flt(qty) - flt(issued_qty), warehouse, rate
 
     def make_asset(self, qty):
         item_doc = frappe.get_doc("Item",self.item_code)

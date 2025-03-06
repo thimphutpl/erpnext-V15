@@ -67,8 +67,25 @@ frappe.ui.form.on('Asset Issue Details', {
 			}
 		});
 
+	},
+	"asset_received_entries": function(frm){
+		if(frm.doc.is_existing_asset == 1){
+			frappe.call({
+				method: "get_existing_details",
+				doc: frm.doc,
+				callback: function(m){
+					if(m.message){
+						frm.set_value("balance_qty", m.message[0]);
+						frm.set_value("warehouse", m.message[1]);
+						frm.set_value("asset_rate", m.message[2]);
+					}
+				}
+			})
+		}
+
 	}
 });
+
 
 cur_frm.fields_dict['item_code'].get_query = function (doc) {
 	return {

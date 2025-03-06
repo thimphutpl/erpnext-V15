@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "allow_import": 1,
  "autoname": "ARE.YY.####",
  "creation": "2022-11-28 11:39:34.361269",
  "doctype": "DocType",
@@ -9,6 +10,9 @@
   "branch",
   "cost_center",
   "ref_doc",
+  "is_existing_asset",
+  "existing_pr_reference",
+  "asset_rate",
   "item_code",
   "qty",
   "received_date",
@@ -53,12 +57,13 @@
    "reqd": 1
   },
   {
+   "depends_on": "eval:doc.is_existing_asset == 0;",
    "fieldname": "ref_doc",
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Reference Document",
-   "options": "Purchase Receipt",
-   "reqd": 1
+   "mandatory_depends_on": "eval:doc.is_existing_asset == 0;",
+   "options": "Purchase Receipt"
   },
   {
    "fieldname": "branch",
@@ -67,6 +72,7 @@
    "options": "Branch"
   },
   {
+   "fetch_from": "item_code.item_name",
    "fieldname": "item_name",
    "fieldtype": "Data",
    "label": "Item Name"
@@ -105,12 +111,32 @@
    "fieldtype": "Link",
    "label": "Warehouse",
    "options": "Warehouse"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_existing_asset",
+   "fieldtype": "Check",
+   "label": "Is Existing Asset"
+  },
+  {
+   "depends_on": "eval:doc.is_existing_asset == 1;",
+   "fieldname": "existing_pr_reference",
+   "fieldtype": "Data",
+   "label": "Existing PR Reference",
+   "mandatory_depends_on": "eval:doc.is_existing_asset == 1;"
+  },
+  {
+   "depends_on": "eval:doc.is_existing_asset == 1;",
+   "fieldname": "asset_rate",
+   "fieldtype": "Currency",
+   "label": "Asset Rate(Unit Rate)",
+   "mandatory_depends_on": "eval:doc.is_existing_asset == 1;"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-20 20:50:33.962627",
+ "modified": "2025-02-17 13:30:09.028327",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Asset Received Entries",
@@ -127,6 +153,7 @@
    "report": 1,
    "role": "System Manager",
    "share": 1,
+   "submit": 1,
    "write": 1
   },
   {
@@ -151,6 +178,19 @@
    "report": 1,
    "role": "Stock User",
    "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Stock Manager",
+   "share": 1,
+   "submit": 1,
    "write": 1
   }
  ],

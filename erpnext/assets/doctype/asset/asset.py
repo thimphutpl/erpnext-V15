@@ -38,7 +38,7 @@ from erpnext.assets.doctype.asset_depreciation_schedule.asset_depreciation_sched
 	update_draft_asset_depr_schedules,
 )
 from erpnext.controllers.accounts_controller import AccountsController
-
+from datetime import datetime
 
 class Asset(AccountsController):
 	# begin: auto-generated types
@@ -238,7 +238,7 @@ class Asset(AccountsController):
 			self.value_after_depreciation = 0
 			self.set_depreciation_rate()
 		else:
-			self.finance_books = []
+			# self.finance_books = []
 			self.value_after_depreciation = flt(self.gross_purchase_amount) - flt(
 				self.opening_accumulated_depreciation
 			)
@@ -290,7 +290,7 @@ class Asset(AccountsController):
 			frappe.throw(_("Available for use date is required"))
 
 		for d in self.finance_books:
-			if d.depreciation_start_date < self.available_for_use_date:
+			if datetime.strptime(str(d.depreciation_start_date), "%Y-%m-%d") < datetime.strptime(str(self.available_for_use_date), "%Y-%m-%d"):
 				frappe.throw(
 					_(
 						"Row #{}: Depreciation Posting Date should not be before Available for Use Date."
@@ -308,7 +308,6 @@ class Asset(AccountsController):
 
 		if self.item_code and not self.get("finance_books"):
 			self.set("finance_books", finance_books)
-
 		if self.available_for_use_date:
 			for a in self.finance_books:
 				a.finance_book = finance_books[0]['finance_book']
@@ -324,7 +323,7 @@ class Asset(AccountsController):
 			self.branch = frappe.db.get_value('Branch',{'cost_center':self.cost_center},'branch')
 
 	def validate_finance_books(self):
-		if not self.calculate_depreciation or len(self.finance_books) == 1:
+		if len(self.finance_books) == 1:
 			return
 		if frappe.db.get_value("Item",self.item_code,"item_sub_group")=="Third Party Item":
 			return
