@@ -10,7 +10,7 @@
  "is_standard": "Yes",
  "letter_head": "Gyalsung Infra",
  "letterhead": null,
- "modified": "2025-02-11 12:07:02.062719",
+ "modified": "2025-03-08 10:07:06.925531",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Payment Report",
@@ -34,6 +34,9 @@
   },
   {
    "role": "Accounts User"
+  },
+  {
+   "role": "DFG User"
   }
  ]
 }
