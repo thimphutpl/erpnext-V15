@@ -256,3 +256,15 @@ class MechanicalPayment(AccountsController):
         self.receivable_amount = total
 
 
+    @frappe.whitelist()
+    def get_tax_rate(self):
+        # if not self.branch or not self.customer or not self.payment_for:
+        # 	frappe.throw("Branch, Customer and Payment For is Mandatory")
+        # frappe.throw(str(self.tax_withholding_category))
+        transactions = frappe.db.sql("select tax_withholding_rate from `tabTax Withholding Rate` where parent='{}' and '{}' between from_date and to_date;".format(self.tax_withholding_category, self.posting_date), as_dict=1)
+        if not transactions:
+            frappe.throw("please set tax withholding rate for Category {} in Tax Withholding Category".format(self.tax_withholding_category))
+        
+        self.tax_withholding_rate = transactions[0]['tax_withholding_rate']
+
+        self.tds_amount = (flt(self.net_amount) * flt(self.tax_withholding_rate))/100

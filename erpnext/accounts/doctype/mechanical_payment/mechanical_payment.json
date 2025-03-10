@@ -25,9 +25,11 @@
   "cheque_date",
   "clearance_date",
   "section_break_14",
+  "tax_withholding_category",
   "tds_amount",
   "column_break_16",
   "tds_account",
+  "tax_withholding_rate",
   "section_break_19",
   "get_transactions",
   "items",
@@ -187,7 +189,8 @@
    "default": "0",
    "fieldname": "tds_amount",
    "fieldtype": "Currency",
-   "label": "TDS Amount"
+   "label": "TDS Amount",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_16",
@@ -374,12 +377,24 @@
    "fieldname": "declaration_reference_no",
    "fieldtype": "Data",
    "label": "Declaration Reference No"
+  },
+  {
+   "fieldname": "tax_withholding_category",
+   "fieldtype": "Link",
+   "label": "Tax Withholding Category",
+   "options": "Tax Withholding Category"
+  },
+  {
+   "fieldname": "tax_withholding_rate",
+   "fieldtype": "Float",
+   "label": "Tax Withholding Rate",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-03-05 12:39:55.750996",
+ "modified": "2025-03-10 11:42:22.798710",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Mechanical Payment",

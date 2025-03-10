@@ -47,6 +47,19 @@ frappe.ui.form.on('Mechanical Payment', {
         });
     },
 
+    tax_withholding_category: function(frm) {
+        frappe.call({
+            method: "get_tax_rate",
+            doc: frm.doc,
+            callback: function(r) {
+                frm.refresh_field("items");
+                frm.refresh_fields();
+            },
+            freeze: true,
+            freeze_message: "Fetching Transactions... Please Wait"
+        });
+    },
+
     "receivable_amount": function(frm) {
         if (frm.doc.receivable_amount > frm.doc.actual_amount) {
             frm.set_value("receivable_amount", frm.doc.actual_amount);
