@@ -82,6 +82,7 @@
   "total_taxes_and_charges",
   "deductions_or_loss_section",
   "deductions",
+  "d_amount",
   "transaction_references",
   "clearance_date",
   "accounting_dimensions_section",
@@ -865,6 +866,12 @@
    "fieldname": "money_receipt_no",
    "fieldtype": "Data",
    "label": "Money Receipt No"
+  },
+  {
+   "fieldname": "d_amount",
+   "fieldtype": "Currency",
+   "label": "Loss or Gain Amount",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
@@ -878,7 +885,7 @@
    "table_fieldname": "payment_entries"
   }
  ],
- "modified": "2025-01-23 16:36:00.500673",
+ "modified": "2025-03-10 13:09:07.407402",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Payment Entry",

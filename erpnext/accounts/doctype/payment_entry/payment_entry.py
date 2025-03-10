@@ -104,6 +104,7 @@ class PaymentEntry(AccountsController):
 		self.ensure_supplier_is_not_blocked()
 		self.set_status()
 		self.set_total_in_words()
+		self.d_amount = sum([flt(d.amount) for d in self.get("deductions")])
 
 	def on_submit(self):
 		if self.difference_amount:

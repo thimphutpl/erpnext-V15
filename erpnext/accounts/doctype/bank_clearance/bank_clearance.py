@@ -175,6 +175,16 @@ def get_payment_entries_for_bank_clearance(
 		as_dict=1,
 	)
 
+	# for pe in payment_entries:
+	# 	total_deductions = 0
+	# 	for d in frappe.get_all("Payment Entry Deduction", ["name","amount"], {"parent":pe.payment_entry}):
+	# 		total_deductions += flt(d.amount)
+
+	# 	if frappe.db.get_value(pe.payment_document, pe.payment_entry, "payment_type") == "Pay":
+	# 		pe.credit += total_deductions
+	# 	else:
+	# 		pe.debit -= total_deductions
+
 	hsd_entries = frappe.db.sql("""
 				select
 						"HSD Payment" as payment_document, name as payment_entry,
