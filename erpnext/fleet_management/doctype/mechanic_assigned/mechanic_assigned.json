@@ -25,6 +25,7 @@
   {
    "fieldname": "mechanic",
    "fieldtype": "Dynamic Link",
+   "ignore_user_permissions": 1,
    "label": "Mechanic",
    "options": "employee_type",
    "reqd": 1
@@ -60,7 +61,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-10-09 10:46:34.298849",
+ "modified": "2025-03-11 15:36:51.020995",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Mechanic Assigned",
