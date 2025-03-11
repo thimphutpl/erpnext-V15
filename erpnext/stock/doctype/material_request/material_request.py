@@ -901,8 +901,14 @@ def get_permission_query_conditions(user):
 					where e.user_id = '{user}'
 					and wb.branch = e.branch
 					and w.name = wb.parent
-					and (`tabMaterial Request`.set_from_warehouse = w.name or `tabMaterial Request`.set_warehouse = w.name) 
-					and `tabMaterial Request`.workflow_state not in  ('Draft','Cancelled')
+					and (`tabMaterial Request`.warehouse = w.name)
 				)
 			)
+			or 
+			exists(select 1
+			from `tabEmployee` e, `tabAssign Branch` ab, `tabBranch Item` bi
+			where e.user_id = '{user}'
+			and ab.employee = e.name
+			and bi.parent = ab.name
+			and bi.branch = `tabMaterial Request`.branch)
 	)""".format(user = user, ceo_or_general_manager = ceo_or_general_manager)
