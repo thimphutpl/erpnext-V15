@@ -46,6 +46,14 @@ frappe.ui.form.on("Purchase Order", {
 			};
 		});
 
+		frm.set_query("cost_center", "items", function () {
+			return {
+				filters: {
+					is_group: 0,
+				},
+			};
+		});
+
 		frm.set_query("branch", function (doc) {
 			return {
 				filters: { company: doc.company },
