@@ -29,9 +29,11 @@
   "company_code",
   "company_name",
   "place_and_contact_details_section_section",
+  "customer_location",
+  "contact_no",
+  "email",
   "location",
   "telephone_and_fax",
-  "email",
   "defaults_tab",
   "default_currency",
   "default_bank_account",
@@ -644,12 +646,14 @@
   {
    "fieldname": "location",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Location",
    "options": "Location"
   },
   {
    "fieldname": "telephone_and_fax",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Telephone and Fax",
    "options": "Telephony Call Type"
   },
@@ -700,7 +704,8 @@
   {
    "fieldname": "customer_id",
    "fieldtype": "Data",
-   "label": "Customer CID/License No"
+   "label": "Customer CID/License No",
+   "reqd": 1
   },
   {
    "default": "0",
@@ -726,6 +731,17 @@
    "fieldname": "email",
    "fieldtype": "Data",
    "label": "Email"
+  },
+  {
+   "fieldname": "customer_location",
+   "fieldtype": "Data",
+   "label": "Customer Location"
+  },
+  {
+   "fieldname": "contact_no",
+   "fieldtype": "Data",
+   "label": "Contact No",
+   "reqd": 1
   }
  ],
  "icon": "fa fa-user",
@@ -739,7 +755,7 @@
    "link_fieldname": "party"
   }
  ],
- "modified": "2024-12-27 12:33:00.846914",
+ "modified": "2025-03-12 12:31:57.873587",
  "modified_by": "Administrator",
  "module": "Selling",
  "name": "Customer",
