@@ -88,7 +88,7 @@ class POLReceive(StockController):
 	# end: auto-generated types
 	def before_save(self):
         # Ensure tank balance does not exceed tank capacity
-		if self.book_type == "Own" and flt(self.tank_capacity) < flt(self.tank_balance):
+		if self.book_type == "Own" and flt(self.tank_capacity) < flt(self.tank_balance + self.qty):
 			frappe.throw(
                 ("Tank capacity ({}) should be greater than or equal to sum of tank balance and quantity ({}).").format(
                     self.tank_capacity, flt(self.tank_balance)
@@ -354,6 +354,8 @@ class POLReceive(StockController):
 		gl_entries = []
 		
 		creditor_account = frappe.db.get_value("Company", self.company, "default_payable_account")
+		if self.is_opening == "Yes":
+			creditor_account = 'Legacy Clearing Account - CDCL'
 		if not creditor_account:
 			frappe.throw("Set Default Payable Account in Company")
 
