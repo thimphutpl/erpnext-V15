@@ -195,26 +195,26 @@ frappe.ui.form.on("POL Issue", "refresh", function(frm) {
                 }
         }
 
-	frm.fields_dict['items'].grid.get_field('equipment').get_query = function(doc, cdt, cdn) {
-		doc = locals[cdt][cdn]
-                if(frm.doc.purpose == "Transfer") {
-                        return {
-				"query": "erpnext.fleet_management.doctype.pol_issue.pol_issue.equipment_query",
-				filters: {'branch': '%'}
-                        }
-                }
-                else 
-                return
+	// frm.fields_dict['items'].grid.get_field('equipment').get_query = function(doc, cdt, cdn) {
+	// 	doc = locals[cdt][cdn]
+    //             if(frm.doc.purpose == "Transfer") {
+    //                     return {
+	// 			"query": "erpnext.fleet_management.doctype.pol_issue.pol_issue.equipment_query",
+	// 			filters: {'branch': '%'}
+    //                     }
+    //             }
+    //             else 
+    //             return
             
-                // {
-                //         return {
-                //                 filters: {
-                //                         "is_disabled": 0,
-				// 	"equipment_type": ["not in", ['Skid Tank', 'Barrel']]
-                //                 }
-                //         }
-                // }
-	}
+    //             // {
+    //             //         return {
+    //             //                 filters: {
+    //             //                         "is_disabled": 0,
+	// 			// 	"equipment_type": ["not in", ['Skid Tank', 'Barrel']]
+    //             //                 }
+    //             //         }
+    //             // }
+	// }
 })
 
 // frappe.ui.form.on("POL Issue Items", "equipment", function(doc, cdt, cdn) {
@@ -233,8 +233,6 @@ frappe.ui.form.on("POL Issue", "refresh", function(frm) {
 // 		})
 // 	}
 // })
-
-
 
 frappe.ui.form.on("POL Issue Items", {
     equipment: function (frm, cdt, cdn) {
@@ -257,7 +255,7 @@ frappe.ui.form.on("POL Issue Items", {
             });
         }
 
-        if (row.equipment) {
+        if (row.equipment && row.transfer!=1) {
             // Fetch Equipment Data
             frappe.call({
                 method: "erpnext.fleet_management.doctype.pol_issue.pol_issue.get_equipment_datas",
@@ -288,6 +286,39 @@ frappe.ui.form.on("POL Issue Items", {
         } else {
             // Clear the field if no equipment is selected
             frappe.model.set_value(cdt, cdn, "equipment_balance", 0);
+        }
+
+        if (row.equipment && row.transfer) {
+            // Fetch Equipment Data
+            frappe.call({
+                method: "erpnext.fleet_management.doctype.pol_issue.pol_issue.get_tank_data",
+                args: {
+                    equipment: row.equipment,
+                    all_equipment: frm.doc.all_equipment || 1,
+                    branch: frm.doc.branch
+                },
+                callback: function (response) {
+                    if (response.message) {
+                        let data = response.message;
+
+                        // Optional: Display fetched data
+                        frappe.msgprint({
+                            title: __('Fetched Equipment Data'),
+                            message: `<pre>${JSON.stringify(data, null, 4)}</pre>`,
+                            indicator: 'green'
+                        });
+
+                        // Set the balance in the current row
+                        frappe.model.set_value(cdt, cdn, "tank_balance", data[0]?.balance || 0);
+                    } else {
+                        frappe.msgprint(__('No data found for the selected equipment.'));
+                        frappe.model.set_value(cdt, cdn, "tank_balance", 0);
+                    }
+                }
+            });
+        } else {
+            // Clear the field if no equipment is selected
+            frappe.model.set_value(cdt, cdn, "tank_balance", 0);
         }
 
         // Refresh fields to update UI

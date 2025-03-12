@@ -81,12 +81,18 @@ class POLIssue(StockController):
 		
 		for item in self.get("items"):
 			# Ensure tank capacity is greater than or equal to the sum of equipment balance and quantity
-			if flt(item.tank_capacity) < flt(cint(item.equipment_balance) + cint(item.qty)):
+			if self.purpose == 'Issue' and flt(item.tank_capacity) < flt(cint(item.equipment_balance) + cint(item.qty)):
 				frappe.throw(
 					("Tank capacity ({0}) should be greater than or equal to the sum of equipment balance and quantity ({1}) in row {2}.").format(
 						item.tank_capacity, flt(item.equipment_balance + item.qty), item.idx
 					)
-				)		
+				)
+			elif self.purpose == 'Transfer' and flt(item.tanker_capacity) < flt(cint(item.tank_balance) + cint(item.qty)):
+				frappe.throw(
+					("Tanker capacity ({0}) should be greater than or equal to the sum of tank balance and quantity ({1}) in row {2}.").format(
+						item.tanker_capacity, flt(item.tank_balance + item.qty), item.idx
+					)
+				)			
 
 	def validate(self):
 		check_future_date(self.posting_date)
@@ -671,4 +677,67 @@ def get_equipment_datas(equipment, all_equipment=0, equipment_branch=None):
                 })
 
     return data
+
+
+
+# Tank Balance
+@frappe.whitelist()	
+def get_tank_data(equipment, all_equipment=0, equipment_branch=None):
+	"""
+	Fetch equipment balance details based on the provided parameters.
+	"""
+	# frappe.throw("Fetching Equipment Data")
+	data = []
+
+	# Query to fetch equipment details
+	query = """
+		SELECT e.name, e.branch, e.registration_number, e.hsd_type, e.equipment_type
+		FROM `tabEquipment` e
+		JOIN `tabEquipment Type` et ON e.equipment_type = et.name
+	"""
+	if not all_equipment:
+		query += " WHERE et.is_container = 1"
+	else:
+		query += " WHERE 1=1"
+
+	if equipment_branch:
+		query += " AND e.equipment_branch = %(equipment_branch)s"
+	if equipment:
+		query += " AND e.name = %(equipment)s"
+
+	query += " ORDER BY e.branch"
+
+	# Query to fetch items
+	items = frappe.db.sql("""
+		SELECT item_code, item_name, stock_uom 
+		FROM `tabItem`
+		WHERE is_hsd_item = 1 AND disabled = 0
+	""", as_dict=True)
+
+	equipment_details = frappe.db.sql(query, {
+		'equipment_branch': equipment_branch,
+		'equipment': equipment
+	}, as_dict=True)
+
+	for eq in equipment_details:
+		for item in items:
+			received = issued = 0
+		
+			if all_equipment:
+				received = get_pol_tills("Stock", eq.name, item.item_code)
+				issued = get_pol_tills("Issue", eq.name, item.item_code)
+				# if eq.hsd_type == item.item_code:
+			else:
+				received = get_pol_tills("Receive", eq.name, item.item_code)
+				issued = get_pol_consumed_tills(eq.name)
+
+			# Append balance details
+			if received or issued:
+				data.append({
+					'received': received,
+					'issued': issued,
+					'balance': flt(received) - flt(issued)
+				})
+
+	return data
 
