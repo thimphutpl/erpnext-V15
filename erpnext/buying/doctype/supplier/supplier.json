@@ -28,6 +28,7 @@
   "location",
   "cb_sb_lcd",
   "telephone_and_fax",
+  "email_address",
   "section_credit_limit",
   "credit_days_based_on",
   "credit_days",
@@ -660,6 +661,11 @@
    "fieldname": "attention_person",
    "fieldtype": "Data",
    "label": "Attention Person"
+  },
+  {
+   "fieldname": "email_address",
+   "fieldtype": "Data",
+   "label": "Email Address"
   }
  ],
  "icon": "fa fa-user",
@@ -672,7 +678,7 @@
    "link_fieldname": "party"
   }
  ],
- "modified": "2025-01-22 12:15:39.203238",
+ "modified": "2025-03-12 12:24:28.934858",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Supplier",

@@ -51,6 +51,7 @@ class Supplier(TransactionBase):
 		default_currency: DF.Link | None
 		default_price_list: DF.Link | None
 		disabled: DF.Check
+		email_address: DF.Data | None
 		email_id: DF.ReadOnly | None
 		hold_type: DF.Literal["", "All", "Invoices", "Payments"]
 		image: DF.AttachImage | None
