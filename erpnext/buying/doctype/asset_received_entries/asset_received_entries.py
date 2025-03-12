@@ -17,7 +17,7 @@ class AssetReceivedEntries(Document):
 		amended_from: DF.Link | None
 		asset_rate: DF.Currency
 		branch: DF.Link | None
-		brand: DF.Link | None
+		brand: DF.Data | None
 		child_ref: DF.Data | None
 		company: DF.Link | None
 		cost_center: DF.Link | None
