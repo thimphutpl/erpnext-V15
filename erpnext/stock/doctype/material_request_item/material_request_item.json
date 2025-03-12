@@ -172,6 +172,7 @@
   },
   {
    "columns": 3,
+   "fetch_from": "cost_center.warehouse",
    "fieldname": "warehouse",
    "fieldtype": "Link",
    "label": "Warehouse",
@@ -179,6 +180,7 @@
    "oldfieldtype": "Link",
    "options": "Warehouse",
    "print_width": "100px",
+   "read_only": 1,
    "width": "100px"
   },
   {
@@ -524,7 +526,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-03-08 11:56:01.267078",
+ "modified": "2025-03-12 12:07:04.510124",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Material Request Item",
