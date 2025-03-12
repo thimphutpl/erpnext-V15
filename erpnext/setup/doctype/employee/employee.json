@@ -2,7 +2,6 @@
  "actions": [],
  "allow_events_in_timeline": 1,
  "allow_import": 1,
- "allow_rename": 1,
  "autoname": "naming_series:",
  "creation": "2022-02-21 11:54:09.632218",
  "doctype": "DocType",
@@ -32,20 +31,25 @@
   "create_user",
   "create_user_permission",
   "company_details_section",
-  "company",
   "department",
   "employee_number",
-  "increment_cycle",
-  "promotion_cycle",
-  "promotion_due_date",
   "column_break_25",
   "designation",
-  "reports_to",
   "employee_group",
   "column_break_18",
-  "branch",
-  "cost_center",
   "grade",
+  "section_break_hxij",
+  "reports_to",
+  "column_break_tpvx",
+  "promotion_due_date",
+  "increment_cycle",
+  "promotion_cycle",
+  "section_break_loyy",
+  "company",
+  "column_break_fgtu",
+  "branch",
+  "column_break_dnmt",
+  "cost_center",
   "employment_details",
   "scheduled_confirmation_date",
   "column_break_32",
@@ -54,6 +58,10 @@
   "col_break_22",
   "notice_number_of_days",
   "date_of_retirement",
+  "yelp_section",
+  "joining_date",
+  "column_break_btxp",
+  "end_date",
   "contact_details",
   "cell_number",
   "column_break_40",
@@ -86,12 +94,17 @@
   "section_break_teny",
   "employee_bank_accounts",
   "bank_details_section",
+  "column_break_heye",
   "bank_name",
   "bank_branch",
-  "column_break_heye",
   "bank_account_type",
   "bank_ac_no",
-  "iban",
+  "column_break_uqnt",
+  "tpn_number",
+  "pf_number",
+  "pf_tiers",
+  "gis_number",
+  "gis_policy_number",
   "personal_details",
   "marital_status",
   "family_background",
@@ -127,8 +140,7 @@
   "feedback",
   "lft",
   "rgt",
-  "old_parent",
-  "connections_tab"
+  "old_parent"
  ],
  "fields": [
   {
@@ -781,7 +793,8 @@
   },
   {
    "fieldname": "bank_details_section",
-   "fieldtype": "Section Break"
+   "fieldtype": "Section Break",
+   "label": "Bank Details"
   },
   {
    "fieldname": "column_break_9",
@@ -790,12 +803,6 @@
   {
    "fieldname": "column_break_25",
    "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "connections_tab",
-   "fieldtype": "Tab Break",
-   "label": "Connections",
-   "show_dashboard": 1
   },
   {
    "fieldname": "column_break_32",
@@ -827,15 +834,10 @@
    "fieldtype": "Column Break"
   },
   {
-   "depends_on": "eval:doc.salary_mode == 'Bank'",
-   "fieldname": "iban",
-   "fieldtype": "Data",
-   "label": "IBAN"
-  },
-  {
    "fieldname": "old_employee_id",
    "fieldtype": "Data",
-   "label": "Old Employee ID"
+   "label": "Old Employee ID",
+   "set_only_once": 1
   },
   {
    "fetch_from": "branch.cost_center",
@@ -899,6 +901,74 @@
    "fieldtype": "Select",
    "label": "Promotion Cycle",
    "options": "\nJanuary\nJuly"
+  },
+  {
+   "fieldname": "yelp_section",
+   "fieldtype": "Section Break",
+   "label": "YELP Employee"
+  },
+  {
+   "fieldname": "joining_date",
+   "fieldtype": "Date",
+   "label": "Joining Date"
+  },
+  {
+   "fieldname": "column_break_btxp",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "end_date",
+   "fieldtype": "Date",
+   "label": "End Date"
+  },
+  {
+   "fieldname": "tpn_number",
+   "fieldtype": "Data",
+   "label": "TPN Number"
+  },
+  {
+   "fieldname": "pf_number",
+   "fieldtype": "Data",
+   "label": "PF Number"
+  },
+  {
+   "fieldname": "pf_tiers",
+   "fieldtype": "Data",
+   "label": "PF Tiers"
+  },
+  {
+   "fieldname": "gis_number",
+   "fieldtype": "Data",
+   "label": "GIS Number"
+  },
+  {
+   "fieldname": "gis_policy_number",
+   "fieldtype": "Data",
+   "label": "GIS Policy Number"
+  },
+  {
+   "fieldname": "column_break_uqnt",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_hxij",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_tpvx",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_loyy",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_fgtu",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_dnmt",
+   "fieldtype": "Column Break"
   }
  ],
  "icon": "fa fa-user",
@@ -906,7 +976,7 @@
  "image_field": "image",
  "is_tree": 1,
  "links": [],
- "modified": "2025-02-06 15:03:48.676086",
+ "modified": "2025-03-04 16:52:15.798500",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee",
@@ -948,7 +1018,7 @@
    "write": 1
   }
  ],
- "search_fields": "employee_name",
+ "search_fields": "employee_name, designation",
  "show_name_in_global_search": 1,
  "sort_field": "modified",
  "sort_order": "DESC",

@@ -13,6 +13,7 @@
   "naming_series",
   "supplier_name",
   "country",
+  "tpn_no",
   "column_break0",
   "supplier_group",
   "supplier_type",
@@ -26,6 +27,10 @@
   "column_break_gxxz",
   "bank_account_type",
   "account_number",
+  "location_and_contact_details_section",
+  "location",
+  "column_break_ipqd",
+  "telephone_and_fax",
   "defaults_section",
   "default_currency",
   "default_bank_account",
@@ -524,6 +529,32 @@
    "fieldtype": "Table",
    "label": "Accounts",
    "options": "Supplier Bank Account"
+  },
+  {
+   "fieldname": "location_and_contact_details_section",
+   "fieldtype": "Section Break",
+   "label": "Location and Contact Details"
+  },
+  {
+   "fieldname": "location",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Location"
+  },
+  {
+   "fieldname": "column_break_ipqd",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "telephone_and_fax",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Telephone  And Fax"
+  },
+  {
+   "fieldname": "tpn_no",
+   "fieldtype": "Data",
+   "label": "TPN No."
   }
  ],
  "icon": "fa fa-user",
@@ -536,7 +567,7 @@
    "link_fieldname": "party"
   }
  ],
- "modified": "2025-01-08 18:35:49.559364",
+ "modified": "2025-03-10 11:19:02.683471",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Supplier",

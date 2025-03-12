@@ -273,7 +273,8 @@ def _make_journal_entry_for_depreciation(
 
 	je = frappe.new_doc("Journal Entry")
 	je.voucher_type = "Depreciation Entry"
-	je.naming_series = depreciation_series
+	je.naming_series = "Depreciation Entry Voucher"
+	# je.naming_series = depreciation_series
 	je.posting_date = depr_schedule.schedule_date
 	je.company = asset.company
 	je.finance_book = asset_depr_schedule_doc.finance_book
@@ -455,8 +456,10 @@ def scrap_asset(asset_name, scrap_date=None):
 	depreciation_series = frappe.get_cached_value("Company", asset.company, "series_for_depreciation_entry")
 
 	je = frappe.new_doc("Journal Entry")
-	je.voucher_type = "Journal Entry"
-	je.naming_series = depreciation_series
+	je.voucher_type = "Depreciation Entry"
+	je.naming_series = "Depreciation Entry Voucher"
+	# je.voucher_type = "Journal Entry"
+	# je.naming_series = depreciation_series
 	je.posting_date = date
 	je.company = asset.company
 	je.remark = f"Scrap Entry for asset {asset_name}"

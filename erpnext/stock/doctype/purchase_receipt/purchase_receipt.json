@@ -13,6 +13,7 @@
   "column_break0",
   "title",
   "naming_series",
+  "branch",
   "supplier",
   "supplier_name",
   "supplier_delivery_note",
@@ -1135,10 +1136,12 @@
    "label": "Accounting Dimensions"
   },
   {
+   "fetch_from": "branch.cost_center",
    "fieldname": "cost_center",
    "fieldtype": "Link",
    "label": "Cost Center",
-   "options": "Cost Center"
+   "options": "Cost Center",
+   "read_only": 1
   },
   {
    "fieldname": "dimension_col_break",
@@ -1265,13 +1268,20 @@
   {
    "fieldname": "column_break_elui",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "label": "Branch",
+   "options": "Branch",
+   "reqd": 1
   }
  ],
  "icon": "fa fa-truck",
  "idx": 261,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-07 13:20:44.794513",
+ "modified": "2025-03-10 11:28:55.982881",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Purchase Receipt",

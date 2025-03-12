@@ -28,14 +28,9 @@ class RequestforQuotation(BuyingController):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
+		from erpnext.buying.doctype.request_for_quotation_item.request_for_quotation_item import RequestforQuotationItem
+		from erpnext.buying.doctype.request_for_quotation_supplier.request_for_quotation_supplier import RequestforQuotationSupplier
 		from frappe.types import DF
-
-		from erpnext.buying.doctype.request_for_quotation_item.request_for_quotation_item import (
-			RequestforQuotationItem,
-		)
-		from erpnext.buying.doctype.request_for_quotation_supplier.request_for_quotation_supplier import (
-			RequestforQuotationSupplier,
-		)
 
 		amended_from: DF.Link | None
 		billing_address: DF.Link | None

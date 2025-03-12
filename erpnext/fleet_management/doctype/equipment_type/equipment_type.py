@@ -17,5 +17,6 @@ class EquipmentType(Document):
 		disabled: DF.Check
 		equipment_category: DF.Link
 		equipment_type: DF.Data
+		is_container: DF.Check
 	# end: auto-generated types
 	pass

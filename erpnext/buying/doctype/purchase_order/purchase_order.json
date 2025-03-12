@@ -11,6 +11,8 @@
   "supplier_section",
   "title",
   "naming_series",
+  "branch",
+  "cost_center",
   "supplier",
   "supplier_name",
   "order_confirmation_no",
@@ -27,7 +29,7 @@
   "supplier_warehouse",
   "amended_from",
   "accounting_dimensions_section",
-  "cost_center",
+  "column_break_pftl",
   "dimension_col_break",
   "project",
   "currency_and_price_list",
@@ -39,6 +41,7 @@
   "plc_conversion_rate",
   "ignore_pricing_rule",
   "before_items_section",
+  "scan_barcode",
   "set_from_warehouse",
   "items_col_break",
   "set_warehouse",
@@ -133,6 +136,7 @@
   "more_info_tab",
   "tracking_section",
   "status",
+  "advance_payment_status",
   "column_break_75",
   "per_billed",
   "per_received",
@@ -353,7 +357,7 @@
   },
   {
    "fieldname": "address_display",
-   "fieldtype": "Small Text",
+   "fieldtype": "Text Editor",
    "label": "Supplier Address Details",
    "read_only": 1
   },
@@ -392,7 +396,7 @@
   },
   {
    "fieldname": "shipping_address_display",
-   "fieldtype": "Small Text",
+   "fieldtype": "Text Editor",
    "label": "Shipping Address Details",
    "print_hide": 1,
    "read_only": 1
@@ -463,8 +467,7 @@
    "fieldtype": "Link",
    "label": "Set Target Warehouse",
    "options": "Warehouse",
-   "print_hide": 1,
-   "reqd": 1
+   "print_hide": 1
   },
   {
    "default": "0",
@@ -487,6 +490,13 @@
    "hide_border": 1,
    "oldfieldtype": "Section Break",
    "options": "fa fa-shopping-cart"
+  },
+  {
+   "fieldname": "scan_barcode",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Scan Barcode",
+   "options": "Barcode"
   },
   {
    "allow_bulk_edit": 1,
@@ -610,6 +620,7 @@
   {
    "fieldname": "shipping_rule",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Shipping Rule",
    "options": "Shipping Rule",
    "print_hide": 1
@@ -1091,7 +1102,7 @@
   },
   {
    "fieldname": "billing_address_display",
-   "fieldtype": "Small Text",
+   "fieldtype": "Text Editor",
    "label": "Billing Address Details",
    "read_only": 1
   },
@@ -1141,10 +1152,12 @@
    "label": "Accounting Dimensions "
   },
   {
+   "fetch_from": "branch.cost_center",
    "fieldname": "cost_center",
    "fieldtype": "Link",
    "label": "Cost Center",
-   "options": "Cost Center"
+   "options": "Cost Center",
+   "read_only": 1
   },
   {
    "fieldname": "dimension_col_break",
@@ -1244,6 +1257,7 @@
   {
    "fieldname": "incoterm",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Incoterm",
    "options": "Incoterm"
   },
@@ -1251,6 +1265,7 @@
    "depends_on": "incoterm",
    "fieldname": "named_place",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Named Place"
   },
   {
@@ -1263,13 +1278,36 @@
    "fieldtype": "Tab Break",
    "label": "Connections",
    "show_dashboard": 1
+  },
+  {
+   "fieldname": "advance_payment_status",
+   "fieldtype": "Select",
+   "hidden": 1,
+   "in_standard_filter": 1,
+   "label": "Advance Payment Status",
+   "no_copy": 1,
+   "oldfieldname": "status",
+   "oldfieldtype": "Select",
+   "options": "Not Initiated\nInitiated\nPartially Paid\nFully Paid",
+   "print_hide": 1
+  },
+  {
+   "fieldname": "column_break_pftl",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "label": "Branch",
+   "options": "Branch",
+   "reqd": 1
   }
  ],
  "icon": "fa fa-file-text",
  "idx": 105,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-07 13:22:28.082576",
+ "modified": "2025-03-10 11:27:29.610037",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Purchase Order",
@@ -1318,7 +1356,7 @@
  ],
  "search_fields": "status, transaction_date, supplier, grand_total",
  "show_name_in_global_search": 1,
- "sort_field": "modified",
+ "sort_field": "creation",
  "sort_order": "DESC",
  "states": [],
  "timeline_field": "supplier",

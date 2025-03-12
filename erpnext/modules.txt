@@ -21,3 +21,5 @@ Subcontracting
 EDI
 ePayment
 Fleet Management
+Event Management
+eNote

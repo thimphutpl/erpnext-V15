@@ -53,6 +53,7 @@ class Supplier(TransactionBase):
 		is_internal_supplier: DF.Check
 		is_transporter: DF.Check
 		language: DF.Link | None
+		location: DF.Data | None
 		mobile_no: DF.ReadOnly | None
 		naming_series: DF.Literal["SUP-.YYYY.-"]
 		on_hold: DF.Check
@@ -72,6 +73,8 @@ class Supplier(TransactionBase):
 		tax_category: DF.Link | None
 		tax_id: DF.Data | None
 		tax_withholding_category: DF.Link | None
+		telephone_and_fax: DF.Data | None
+		tpn_no: DF.Data | None
 		warn_pos: DF.Check
 		warn_rfqs: DF.Check
 		website: DF.Data | None

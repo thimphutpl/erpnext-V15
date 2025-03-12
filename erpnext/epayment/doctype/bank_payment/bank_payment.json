@@ -9,7 +9,6 @@
   "branch",
   "transaction_type",
   "transaction_no",
-  "institution_name",
   "fiscal_year",
   "month",
   "select_beneficiary",
@@ -35,7 +34,6 @@
   "get_transactions",
   "column_break_6",
   "department",
-  "division",
   "sb_transaction_details",
   "items",
   "total_amount",
@@ -72,13 +70,6 @@
    "fieldtype": "Dynamic Link",
    "label": "Transaction No.",
    "options": "transaction_type"
-  },
-  {
-   "depends_on": "eval:doc.transaction_type==\"Employee Loan Payment\"",
-   "fieldname": "institution_name",
-   "fieldtype": "Link",
-   "label": "Institution Name",
-   "options": "Financial Institution"
   },
   {
    "fieldname": "fiscal_year",
@@ -158,14 +149,14 @@
    "fieldname": "bank_name",
    "fieldtype": "Link",
    "label": "Bank Name",
-   "options": "Financial Institution",
+   "options": "Bank",
    "read_only": 1
   },
   {
    "fieldname": "bank_branch",
    "fieldtype": "Link",
    "label": "Bank Branch",
-   "options": "Financial Institution Branch",
+   "options": "Bank Branch",
    "read_only": 1
   },
   {
@@ -233,12 +224,6 @@
    "fieldtype": "Link",
    "label": "Department",
    "options": "Department"
-  },
-  {
-   "fieldname": "division",
-   "fieldtype": "Link",
-   "label": "Division",
-   "options": "Division"
   },
   {
    "fieldname": "sb_transaction_details",
@@ -338,7 +323,7 @@
  ],
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-23 12:24:25.158735",
+ "modified": "2025-03-03 17:05:57.132875",
  "modified_by": "Administrator",
  "module": "ePayment",
  "name": "Bank Payment",

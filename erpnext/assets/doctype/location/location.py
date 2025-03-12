@@ -23,8 +23,11 @@ class Location(NestedSet):
 
 		area: DF.Float
 		area_uom: DF.Link | None
+		disabled: DF.Check
+		income_account: DF.Link | None
 		is_container: DF.Check
 		is_group: DF.Check
+		is_recreational_park: DF.Check
 		latitude: DF.Float
 		lft: DF.Int
 		location_name: DF.Data

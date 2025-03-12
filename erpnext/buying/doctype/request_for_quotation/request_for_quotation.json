@@ -127,6 +127,7 @@
   {
    "fieldname": "supplier_response_section",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Email Details"
   },
   {
@@ -312,7 +313,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-11-06 12:45:28.898706",
+ "modified": "2025-02-24 10:52:50.596596",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Request for Quotation",

@@ -8,8 +8,11 @@
  "field_order": [
   "equipment_category",
   "description",
+  "pol_advance_account",
+  "r_m_expense_account",
   "column_break_xail",
-  "disabled"
+  "disabled",
+  "allow_hire"
  ],
  "fields": [
   {
@@ -34,11 +37,29 @@
    "fieldname": "disabled",
    "fieldtype": "Check",
    "label": "Disabled"
+  },
+  {
+   "fieldname": "pol_advance_account",
+   "fieldtype": "Link",
+   "label": "POL Expense Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "r_m_expense_account",
+   "fieldtype": "Link",
+   "label": "R & M Expense Account",
+   "options": "Account"
+  },
+  {
+   "default": "0",
+   "fieldname": "allow_hire",
+   "fieldtype": "Check",
+   "label": "AllowHire"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-01-08 21:24:45.538824",
+ "modified": "2025-03-04 12:23:33.842518",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Equipment Category",

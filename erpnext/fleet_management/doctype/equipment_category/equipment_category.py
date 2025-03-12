@@ -14,8 +14,11 @@ class EquipmentCategory(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		allow_hire: DF.Check
 		description: DF.SmallText | None
 		disabled: DF.Check
 		equipment_category: DF.Data
+		pol_advance_account: DF.Link | None
+		r_m_expense_account: DF.Link | None
 	# end: auto-generated types
 	pass

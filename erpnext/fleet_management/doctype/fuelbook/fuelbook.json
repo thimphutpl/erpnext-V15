@@ -1,6 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "field:fuelbook_number",
  "creation": "2025-01-08 17:28:45.596393",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -9,7 +10,8 @@
   "type",
   "equipment",
   "column_break_oegn",
-  "disabled"
+  "disabled",
+  "fuelbook_number"
  ],
  "fields": [
   {
@@ -45,14 +47,22 @@
    "fieldname": "disabled",
    "fieldtype": "Check",
    "label": "Disabled"
+  },
+  {
+   "fieldname": "fuelbook_number",
+   "fieldtype": "Data",
+   "label": "Fuelbook Number",
+   "reqd": 1,
+   "unique": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-01-08 17:45:51.695406",
+ "modified": "2025-03-12 13:30:30.977317",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Fuelbook",
+ "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [
   {
@@ -101,6 +111,7 @@
    "write": 1
   }
  ],
+ "search_fields": "supplier",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []

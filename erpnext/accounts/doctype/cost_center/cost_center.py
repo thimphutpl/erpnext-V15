@@ -29,6 +29,7 @@ class CostCenter(NestedSet):
 		old_parent: DF.Link | None
 		parent_cost_center: DF.Link
 		rgt: DF.Int
+		warehouse: DF.Link | None
 	# end: auto-generated types
 
 	nsm_parent_field = "parent_cost_center"

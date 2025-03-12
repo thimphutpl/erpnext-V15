@@ -16,6 +16,7 @@ class Fuelbook(Document):
 
 		disabled: DF.Check
 		equipment: DF.Link | None
+		fuelbook_number: DF.Data
 		supplier: DF.Link
 		type: DF.Literal["Own", "Common"]
 	# end: auto-generated types

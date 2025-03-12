@@ -83,6 +83,7 @@
   {
    "fieldname": "barcode",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Barcode"
   },
   {
@@ -610,7 +611,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-02-25 15:58:40.982582",
+ "modified": "2025-03-03 11:54:18.221603",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Stock Entry Detail",

@@ -872,3 +872,9 @@ def get_filtered_child_rows(doctype, txt, searchfield, start, page_len, filters)
 		)
 
 	return query.run(as_dict=False)
+
+@frappe.whitelist()
+def filter_branch_wh(doctype, txt, searchfield, start, page_len, filters):
+        if not filters.get("branch"):
+                frappe.throw("Select Branch First")
+        return frappe.db.sql("select a.parent from `tabWarehouse Branch` a, tabWarehouse b where a.parent = b.name and a.branch = %s and b.disabled = 0", filters.get("branch"))

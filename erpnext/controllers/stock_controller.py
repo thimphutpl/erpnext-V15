@@ -133,8 +133,9 @@ class StockController(AccountsController):
 				"Company", self.company, "enable_provisional_accounting_for_non_stock_items"
 			)
 		)
-
-		is_asset_pr = any(d.get("is_fixed_asset") for d in self.get("items"))
+		is_asset_pr = False
+		if self.doctype!="POL Receive":
+			is_asset_pr = any(d.get("is_fixed_asset") for d in self.get("items"))
 
 		if (
 			cint(erpnext.is_perpetual_inventory_enabled(self.company))
@@ -142,7 +143,7 @@ class StockController(AccountsController):
 			or is_asset_pr
 		):
 			warehouse_account = get_warehouse_account_map(self.company)
-
+			
 			if self.docstatus == 1:
 				if not gl_entries:
 					gl_entries = (
@@ -534,11 +535,29 @@ class StockController(AccountsController):
 						self.check_expense_account(item_row)
 
 						# expense account/ target_warehouse / source_warehouse
-						if item_row.get("target_warehouse"):
+						
+						if hasattr(self, 'stock_entry_type') and self.stock_entry_type == 'CSR':
+							expense_account=frappe.get_value("Company",self.company,'csr_account')
+							if not expense_account:
+								frappe.throw("set CSR Account in Company")
+						elif item_row.get("target_warehouse"):
 							warehouse = item_row.get("target_warehouse")
 							expense_account = warehouse_account[warehouse]["account"]
+							# frappe.throw(str(expense_account))
+						# else:
+							
+						# if self.stock_entry_type == 'CSR':
+						# 	expense_account=frappe.get_value("Company",self.company,'csr_account')
+						# 	if not expense_account:
+						# 		frappe.throw("set CSR Account in Company")
+						# 		# frappe.throw(str(expense_account))
 						else:
 							expense_account = item_row.expense_account
+						if self.doctype == 'Delivery Note':
+							expense_account=frappe.get_value("Company",self.company,'default_expense_account')
+							if not expense_account:
+								frappe.throw("set default expense account in Company")
+						# frappe.msgprint("hi")
 
 						gl_list.append(
 							self.get_gl_dict(
@@ -851,9 +870,9 @@ class StockController(AccountsController):
 		self.update_inventory_dimensions(d, sl_dict)
 
 		if self.docstatus == 2:
-			from erpnext.deprecation_dumpster import deprecation_warning
+			# from erpnext.deprecation_dumpster import deprecation_warning
 
-			deprecation_warning("unknown", "v16", "No instructions.")
+			# deprecation_warning("unknown", "v16", "No instructions.")
 			# To handle denormalized serial no records, will br deprecated in v16
 			for field in ["serial_no", "batch_no"]:
 				if d.get(field):
@@ -861,6 +880,17 @@ class StockController(AccountsController):
 
 		return sl_dict
 
+	def validate_warehouse_branch(self, warehouse, branch):
+                if not branch:
+                        frappe.throw("Branch is Mandatory")
+                if not warehouse:
+                        frappe.throw("Warehouse is Mandatory")
+                branches = frappe.db.sql("select parent from `tabWarehouse Branch` where branch = %s", branch, as_dict=1)
+                for a in branches:
+                        if a.parent == warehouse:
+                                return
+                frappe.throw("Warehouse <b>" + str(warehouse) + "</b> doesn't belong to <b>" + str(branch) + "</b>")
+                
 	def update_inventory_dimensions(self, row, sl_dict) -> None:
 		# To handle delivery note and sales invoice
 		if row.get("item_row"):
@@ -940,11 +970,12 @@ class StockController(AccountsController):
 					row.db_set(dimension.source_fieldname, sl_dict[dimension.target_fieldname])
 
 	def make_sl_entries(self, sl_entries, allow_negative_stock=False, via_landed_cost_voucher=False):
+		# frappe.throw(frappe.as_json(self))
+		# frappe.throw(frappe.as_json(self.__dict__))
 		from erpnext.stock.serial_batch_bundle import update_batch_qty
 		from erpnext.stock.stock_ledger import make_sl_entries
-
 		make_sl_entries(sl_entries, allow_negative_stock, via_landed_cost_voucher)
-		update_batch_qty(self.doctype, self.name, via_landed_cost_voucher=via_landed_cost_voucher)
+		# update_batch_qty(self.doctype, self.name, via_landed_cost_voucher=via_landed_cost_voucher)
 
 	def make_gl_entries_on_cancel(self):
 		cancel_exchange_gain_loss_journal(frappe._dict(doctype=self.doctype, name=self.name))

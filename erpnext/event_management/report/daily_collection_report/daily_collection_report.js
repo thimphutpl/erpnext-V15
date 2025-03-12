@@ -1,0 +1,34 @@
+// Copyright (c) 2025, Frappe Technologies Pvt. Ltd. and contributors
+// For license information, please see license.txt
+
+frappe.query_reports["Daily Collection Report"] = {
+	"filters": [
+		{
+			fieldname: "company",
+			label: __("Company"),
+			fieldtype: "Link",
+			options: "Company",
+			default: frappe.defaults.get_user_default("Company"),
+			reqd: 1,
+		},
+		{
+			fieldname: "location",
+			label: __("Location"),
+			fieldtype: "Link",
+			options: "Location",
+			reqd: 1,
+		},
+		{
+			fieldname: "date",
+			label: __("Date"),
+			fieldtype: "Date",
+			reqd: 1,
+		},
+		{
+			fieldname: "status",
+			label: __("Status"),
+			fieldtype: "Select",
+			options: ["", "Draft", "Submitted"],
+		},
+	]
+};

@@ -10,6 +10,16 @@ frappe.ui.form.on("Location", {
 				},
 			};
 		});
+
+		frm.set_query("income_account", function(){
+			return {
+				filters: {
+					'root_type': 'Income',
+					'disabled': 0,
+					'is_group': 0,
+				}
+			}
+		});
 	},
 
 	onload_post_render(frm) {

@@ -192,7 +192,7 @@
    "type": "Link"
   }
  ],
- "modified": "2025-02-04 20:07:13.690251",
+ "modified": "2025-03-06 14:57:53.796249",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Projects",
@@ -203,7 +203,7 @@
  "quick_lists": [],
  "restrict_to_domain": "",
  "roles": [],
- "sequence_id": 24.0,
+ "sequence_id": 25.0,
  "shortcuts": [
   {
    "color": "Grey",

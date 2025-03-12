@@ -9,7 +9,8 @@
   "equipment_type",
   "equipment_category",
   "column_break_jsfg",
-  "disabled"
+  "disabled",
+  "is_container"
  ],
  "fields": [
   {
@@ -37,11 +38,17 @@
    "fieldname": "disabled",
    "fieldtype": "Check",
    "label": "Disabled"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_container",
+   "fieldtype": "Check",
+   "label": "Is Container"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-01-08 21:24:21.194674",
+ "modified": "2025-02-17 17:59:49.512317",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Equipment Type",

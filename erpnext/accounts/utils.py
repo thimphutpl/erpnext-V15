@@ -2321,3 +2321,9 @@ def sync_auto_reconcile_config(auto_reconciliation_job_trigger: int = 15):
 				"frequency": "Cron",
 			}
 		).save()
+
+@frappe.whitelist()
+def check_clearance_date(dt, dn):
+	doc = frappe.get_doc(dt, dn)
+	if doc.clearance_date:
+		frappe.msgprint("Cannot cancel this document as <b>Bank Reconciliation</b> has already done on {}".format(doc.clearance_date), raise_exception= True)

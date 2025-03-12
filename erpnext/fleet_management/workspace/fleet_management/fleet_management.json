@@ -1,0 +1,327 @@
+{
+ "charts": [],
+ "content": "[{\"id\":\"ucLaX7W_iP\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b></b></span><b>Quick Access</b>\",\"col\":12}},{\"id\":\"BRL4Ah-7aK\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Equipment\",\"col\":3}},{\"id\":\"bGU4cT05JJ\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"POL Receive\",\"col\":3}},{\"id\":\"yrSBhXcSW1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"POL Issue\",\"col\":3}},{\"id\":\"UwA4igFetd\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Fleet Management</span>\",\"col\":12}},{\"id\":\"Fb1Q95Gylr\",\"type\":\"card\",\"data\":{\"card_name\":\"Master Data\",\"col\":4}},{\"id\":\"_iIPEfhypn\",\"type\":\"card\",\"data\":{\"card_name\":\"Insurance & Registration\",\"col\":4}},{\"id\":\"-j7GKUyLQV\",\"type\":\"card\",\"data\":{\"card_name\":\"POL Transaction\",\"col\":4}},{\"id\":\"36DesS3Fao\",\"type\":\"card\",\"data\":{\"card_name\":\"Equipment Hiring Form\",\"col\":4}},{\"id\":\"6ZsM11nAFX\",\"type\":\"card\",\"data\":{\"card_name\":\"Repair and Maintenance\",\"col\":4}},{\"id\":\"bjyaLL9Af7\",\"type\":\"card\",\"data\":{\"card_name\":\"Fleet Reports\",\"col\":4}}]",
+ "creation": "2025-01-07 23:44:11.813289",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "getting-started",
+ "idx": 0,
+ "indicator_color": "green",
+ "is_hidden": 0,
+ "label": "Fleet Management",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Insurance & Registration",
+   "link_count": 1,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "dependencies": "Insurance and Registration",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Insurance and Registration",
+   "link_count": 0,
+   "link_to": "Insurance and Registration",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Equipment Hiring Form",
+   "link_count": 4,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "dependencies": "Equipment Hiring Form",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Equipment Hiring Form",
+   "link_count": 0,
+   "link_to": "Equipment Hiring Form",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Vehicle Logbook",
+   "link_count": 0,
+   "link_to": "Vehicle Logbook",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Hire Charge Invoice",
+   "link_count": 0,
+   "link_to": "Hire Charge Invoice",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Mechanical Payment",
+   "link_count": 0,
+   "link_to": "Mechanical Payment",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Repair and Maintenance",
+   "link_count": 3,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Repair And Services",
+   "link_count": 0,
+   "link_to": "Repair And Services",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Repair And Service Invoice",
+   "link_count": 0,
+   "link_to": "Repair And Service Invoice",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Payment Entry",
+   "link_count": 0,
+   "link_to": "Payment Entry",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Master Data",
+   "link_count": 6,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Equipment",
+   "link_count": 0,
+   "link_to": "Equipment",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Equipment Category",
+   "link_count": 0,
+   "link_to": "Equipment Category",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Equipment Type",
+   "link_count": 0,
+   "link_to": "Equipment Type",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Fuelbook",
+   "link_count": 0,
+   "link_to": "Fuelbook",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "dependencies": "Equipment Model",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Equipment Model",
+   "link_count": 0,
+   "link_to": "Equipment Model",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Hire Charge Parameter",
+   "link_count": 0,
+   "link_to": "Hire Charge Parameter",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Fleet Reports",
+   "link_count": 4,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "POL Receive Report",
+   "link_count": 0,
+   "link_to": "POL Receive Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "POL Receive",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "POL Ledger",
+   "link_count": 0,
+   "link_to": "POL Ledger",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "POL Entry",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Insurance and Registration Report",
+   "link_count": 0,
+   "link_to": "Insurance and Registration Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Insurance and Registration",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Repair and Service Report",
+   "link_count": 0,
+   "link_to": "Repair and Service Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Repair And Services",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "POL Transaction",
+   "link_count": 3,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "POL Advance",
+   "link_count": 0,
+   "link_to": "POL Advance",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "POL Receive",
+   "link_count": 0,
+   "link_to": "POL Receive",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "dependencies": "HSD Payment",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "HSD Payment",
+   "link_count": 0,
+   "link_to": "HSD Payment",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  }
+ ],
+ "modified": "2025-03-12 15:27:33.789357",
+ "modified_by": "Administrator",
+ "module": "Fleet Management",
+ "name": "Fleet Management",
+ "number_cards": [],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [],
+ "sequence_id": 26.0,
+ "shortcuts": [
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "POL Receive",
+   "link_to": "POL Receive",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Equipment",
+   "link_to": "Equipment",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "POL Issue",
+   "link_to": "POL Issue",
+   "stats_filter": "[]",
+   "type": "DocType"
+  }
+ ],
+ "title": "Fleet Management"
+}

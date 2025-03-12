@@ -673,7 +673,7 @@ class PaymentEntry(AccountsController):
 				else:
 					ref_doc = frappe.get_doc(d.reference_doctype, d.reference_name)
 
-					if d.reference_doctype != "Journal Entry":
+					if d.reference_doctype != "Journal Entry" and  d.reference_doctype not in ["Repair And Service Invoice"]:
 						if self.party != ref_doc.get(scrub(self.party_type)):
 							frappe.throw(
 								_("{0} {1} is not associated with {2} {3}").format(
@@ -718,15 +718,15 @@ class PaymentEntry(AccountsController):
 							_("{0} {1} must be submitted").format(_(d.reference_doctype), d.reference_name)
 						)
 
-	def get_valid_reference_doctypes(self):
-		if self.party_type == "Customer":
-			return ("Sales Order", "Sales Invoice", "Journal Entry", "Dunning", "Payment Entry")
-		elif self.party_type == "Supplier":
-			return ("Purchase Order", "Purchase Invoice", "Journal Entry", "Payment Entry")
-		elif self.party_type == "Shareholder":
-			return ("Journal Entry",)
-		elif self.party_type == "Employee":
-			return ("Journal Entry",)
+	# def get_valid_reference_doctypes(self):
+	# 	if self.party_type == "Customer":
+	# 		return ("Sales Order", "Sales Invoice", "Journal Entry", "Dunning", "Payment Entry")
+	# 	elif self.party_type == "Supplier":
+	# 		return ("Purchase Order", "Purchase Invoice", "Journal Entry", "Payment Entry","Repair And Service Invoice")
+	# 	elif self.party_type == "Shareholder":
+	# 		return ("Journal Entry",)
+	# 	elif self.party_type == "Employee":
+	# 		return ("Journal Entry",)
 
 	def validate_paid_invoices(self):
 		no_oustanding_refs = {}
@@ -2923,14 +2923,14 @@ def get_payment_entry(
 	)
 
 	# bank or cash
-	bank = get_bank_cash_account(doc, bank_account, ignore_permissions=ignore_permissions)
+	bank = get_bank_cash_account(doc, bank_account)
 
 	# if default bank or cash account is not set in company master and party has default company bank account, fetch it
 	if party_type in ["Customer", "Supplier"] and not bank:
 		party_bank_account = get_party_bank_account(party_type, doc.get(scrub(party_type)))
 		if party_bank_account:
 			account = frappe.db.get_value("Bank Account", party_bank_account, "account")
-			bank = get_bank_cash_account(doc, account, ignore_permissions=ignore_permissions)
+			bank = get_bank_cash_account(doc, account)
 
 	paid_amount, received_amount = set_paid_amount_and_received_amount(
 		dt, party_account_currency, bank, outstanding_amount, payment_type, bank_amount, doc
@@ -2940,7 +2940,8 @@ def get_payment_entry(
 	paid_amount, received_amount, discount_amount, valid_discounts = apply_early_payment_discount(
 		paid_amount, received_amount, doc, party_account_currency, reference_date
 	)
-
+	# frappe.throw(str(doc.get("party")))
+	# frappe.throw(str(dt))
 	pe = frappe.new_doc("Payment Entry")
 	pe.payment_type = payment_type
 	pe.company = doc.company
@@ -2948,8 +2949,14 @@ def get_payment_entry(
 	pe.posting_date = nowdate()
 	pe.reference_date = reference_date
 	pe.mode_of_payment = doc.get("mode_of_payment")
-	pe.party_type = party_type
-	pe.party = doc.get(scrub(party_type))
+	
+	# pe.party = doc.get(scrub(party_type))
+	if dt in ['Repair And Service Invoice']:
+		pe.party_type = doc.get("party_type")
+		pe.party = doc.get("party")
+	else:
+		pe.party_type = party_type
+		pe.party = doc.get(scrub(party_type))
 	pe.contact_person = doc.get("contact_person")
 	complete_contact_details(pe)
 	pe.ensure_supplier_is_not_blocked()
@@ -3237,13 +3244,12 @@ def update_accounting_dimensions(pe, doc):
 		pe.set(dimension, doc.get(dimension))
 
 
-def get_bank_cash_account(doc, bank_account, ignore_permissions=False):
+def get_bank_cash_account(doc, bank_account):
 	bank = get_default_bank_cash_account(
 		doc.company,
 		"Bank",
 		mode_of_payment=doc.get("mode_of_payment"),
-		account=bank_account,
-		ignore_permissions=ignore_permissions,
+		account=bank_account
 	)
 
 	if not bank:
