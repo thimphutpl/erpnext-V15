@@ -16,6 +16,8 @@ class ProjectExpenseItem(Document):
 
 		amount: DF.Currency
 		child_reference: DF.Data | None
+		expenseadvance: DF.Literal["", "Expense", "Advance"]
+		gl_reference: DF.Data | None
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
