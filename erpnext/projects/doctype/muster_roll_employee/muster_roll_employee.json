@@ -16,6 +16,7 @@
   "column_break_qxdm",
   "gender",
   "mr_type",
+  "mobile_number",
   "column_break_yhwd",
   "list_in_job_card",
   "mess_deduction",
@@ -386,12 +387,17 @@
    "fieldtype": "Data",
    "label": "Nationality",
    "read_only": 1
+  },
+  {
+   "fieldname": "mobile_number",
+   "fieldtype": "Data",
+   "label": "Mobile Number"
   }
  ],
  "in_create": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-02-04 09:58:56.538936",
+ "modified": "2025-03-13 10:22:19.105916",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Muster Roll Employee",

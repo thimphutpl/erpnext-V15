@@ -41,6 +41,7 @@ class MusterRollEmployee(Document):
 		joining_date: DF.Date
 		list_in_job_card: DF.Check
 		mess_deduction: DF.Check
+		mobile_number: DF.Data | None
 		mr_type: DF.Literal["Under CDCL", "Under Labour Contract"]
 		musterroll: DF.Table[Musterroll]
 		nationality: DF.Data | None
