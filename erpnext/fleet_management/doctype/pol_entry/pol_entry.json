@@ -88,7 +88,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Type",
-   "options": "Receive\nIssue\nStock\nconsumed",
+   "options": "Receive\nIssue\nStock\nconsumed\nTransfer",
    "reqd": 1
   },
   {
@@ -208,7 +208,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-09 16:50:11.044543",
+ "modified": "2025-03-13 23:35:13.825851",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Entry",

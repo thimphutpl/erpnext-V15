@@ -38,7 +38,7 @@ class POLEntry(Document):
 		reference_type: DF.Literal["", "POL Receive", "POL Issue", "Vehicle Logbook", "HSD Adjustment", "Equipment POL Transfer"]
 		supplier: DF.Link | None
 		tanker_quantity: DF.Float
-		type: DF.Literal["Receive", "Issue", "Stock", "consumed"]
+		type: DF.Literal["Receive", "Issue", "Stock", "consumed", "Transfer"]
 		uom: DF.Literal["", "Hour", "KM"]
 	# end: auto-generated types
 	pass

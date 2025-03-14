@@ -12,14 +12,20 @@
   "column_break_pieo",
   "posting_date",
   "posting_time",
+  "section_break_qjfn",
+  "own_tank_transfer",
   "section_break_obeq",
   "from_equipment",
   "fe_number",
   "from_branch",
+  "tank_balance",
+  "equipment_balance",
   "column_break_rxkc",
   "to_equipment",
   "te_number",
   "to_branch",
+  "to_tank_balance",
+  "to_equipment_balance",
   "section_break_avnh",
   "pol_type",
   "item_name",
@@ -191,12 +197,48 @@
    "label": "Voucher No",
    "options": "voucher_type",
    "read_only": 1
+  },
+  {
+   "fieldname": "section_break_qjfn",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "own_tank_transfer",
+   "fieldtype": "Check",
+   "label": "Own Tank Transfer"
+  },
+  {
+   "depends_on": "eval:doc.from_equipment",
+   "fieldname": "tank_balance",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Tank Balance",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.own_tank_transfer",
+   "fieldname": "equipment_balance",
+   "fieldtype": "Read Only",
+   "label": "Equipment Balance"
+  },
+  {
+   "fieldname": "to_tank_balance",
+   "fieldtype": "Float",
+   "label": "Tank Balance",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.own_tank_transfer",
+   "fieldname": "to_equipment_balance",
+   "fieldtype": "Float",
+   "label": "Equipment Balance"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-12-02 10:07:19.055147",
+ "modified": "2025-03-13 12:48:14.293253",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Equipment POL Transfer",
