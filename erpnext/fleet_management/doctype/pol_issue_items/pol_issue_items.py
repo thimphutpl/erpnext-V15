@@ -15,7 +15,7 @@ class POLIssueItems(Document):
 
 		cost_center: DF.Link | None
 		equipment: DF.Link
-		equipment_balance: DF.ReadOnly | None
+		equipment_balance: DF.Data | None
 		equipment_branch: DF.Data | None
 		equipment_category: DF.Link | None
 		equipment_cost_center: DF.Link | None
@@ -31,9 +31,11 @@ class POLIssueItems(Document):
 		parenttype: DF.Data
 		qty: DF.Float
 		serial_and_batch_bundle: DF.Link | None
+		tank_balance: DF.Float
 		tank_capacity: DF.ReadOnly | None
 		tanker_capacity: DF.ReadOnly | None
 		target_cost_center: DF.Link
+		transfer: DF.Check
 		warehouse: DF.Link | None
 	# end: auto-generated types
 	pass
