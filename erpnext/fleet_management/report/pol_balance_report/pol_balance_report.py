@@ -28,7 +28,7 @@ def get_data(filters=None):
 
 	for eq in frappe.db.sql(query, as_dict=True):
 		for item in items:
-			received = issued = 0
+			received = issued = transfered = 0
 			if filters.all_equipment:
 				if eq.hsd_type == item.item_code:
 					received = get_pol_tills("Receive", eq.name, filters.to_date, item.item_code)
