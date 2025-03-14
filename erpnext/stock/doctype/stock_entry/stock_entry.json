@@ -248,6 +248,7 @@
    "fieldname": "set_posting_time",
    "fieldtype": "Check",
    "label": "Edit Posting Date and Time",
+   "permlevel": 1,
    "print_hide": 1
   },
   {
@@ -792,7 +793,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-12-30 17:14:47.516349",
+ "modified": "2025-03-14 21:48:54.035145",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Stock Entry",
