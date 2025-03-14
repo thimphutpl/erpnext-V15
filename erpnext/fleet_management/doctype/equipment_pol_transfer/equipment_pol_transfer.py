@@ -9,6 +9,7 @@ from frappe.utils import flt, getdate, nowdate
 from erpnext.custom_utils import check_future_date, get_branch_cc, prepare_gl, check_budget_available
 from erpnext.stock.stock_ledger import get_valuation_rate
 from erpnext.fleet_management.report.hsd_consumption_report.fleet_management_report import get_pol_tills, get_pol_consumed_tills, get_pol_transfer, get_pol_till
+from erpnext.stock.utils import get_stock_balance
 
 class EquipmentPOLTransfer(Document):
 	# begin: auto-generated types
@@ -53,10 +54,11 @@ class EquipmentPOLTransfer(Document):
 			
 
 	def on_submit(self):
+		# self.update_stock_ledger()
 		self.adjust_consumed_pol()
-		if self.from_branch != self.to_branch and getdate(self.posting_date) > getdate("2018-03-31"):
-			# self.check_budget() #it is handled in budget and it is centralized 
-			self.update_gl_entry()
+		# if self.from_branch != self.to_branch and getdate(self.posting_date) > getdate("2018-03-31"):
+		# 	# self.check_budget() #it is handled in budget and it is centralized 
+		# 	self.update_gl_entry()
 
 	def check_budget(self):
 		cc = get_branch_cc(self.to_branch)
@@ -106,64 +108,105 @@ class EquipmentPOLTransfer(Document):
 		consume.flags.ignore_permissions=1
 		consume.submit()
 
-	def update_gl_entry(self):
-		gl_entries = []
-		from_cc = get_branch_cc(self.from_branch)
-		to_cc = get_branch_cc(self.to_branch)
-		from_account = frappe.db.get_value("Equipment Category", frappe.db.get_value("Equipment", self.from_equipment, "equipment_category"), "budget_account")
-		to_account = frappe.db.get_value("Equipment Category", frappe.db.get_value("Equipment", self.to_equipment, "equipment_category"), "budget_account")
-		if not from_account and not to_account:
-			frappe.throw("Check Budget Accounts Settings in Equipment Category")
+	# def update_stock_ledger(self):
+	# 	sl_entries = []
+	# 	if self.purpose == "Issue":
+	# 		sl_entries.append(self.get_sl_entries(self, {
+	# 			"actual_qty": -1 * flt(self.qty),
+	# 			"warehouse": self.warehouse,
+	# 			"incoming_rate": 0
+	# 		}))
+	# 	else:
+	# 		# Transfer only if different warehouse
+	# 		if self.warehouse != self.warehouse:
+	# 			stock_qty, map_rate = get_stock_balance(
+	# 				self.pol_type,
+	# 				self.warehouse,
+	# 				self.posting_date,
+	# 				self.posting_time,
+	# 				with_valuation_rate=True
+	# 			)
+	# 			valuation_rate = flt(self.qty) * flt(map_rate)
 
-		ic_account = frappe.db.get_single_value("Accounts Settings", "intra_company_account")
-		if not ic_account:
-			frappe.throw("Setup Intra-Company Account in Accounts Settings")
+	# 			# Make SL entries for source warehouse first, then for target warehouse
+	# 			sl_entries.append(self.get_sl_entries(self, {
+	# 				"actual_qty": -1 * flt(self.qty),
+	# 				"warehouse": self.warehouse,
+	# 				"incoming_rate": 0
+	# 			}))
+
+	# 			sl_entries.append(self.get_sl_entries(self, {
+	# 				"actual_qty": flt(self.qty),
+	# 				"warehouse": self.warehouse,
+	# 				"incoming_rate": flt(map_rate)
+	# 			}))
+
+	# 	if self.docstatus == 2:
+	# 		sl_entries.reverse()
+
+	# 	self.make_sl_entries(sl_entries, 'Yes' if self.amended_from else 'No')
+	
+
+	# def update_gl_entry(self):
+	# 	gl_entries = []
+	# 	from_cc = get_branch_cc(self.from_branch)
+	# 	to_cc = get_branch_cc(self.to_branch)
+	# 	from_account = frappe.db.get_value("Equipment Category", frappe.db.get_value("Equipment", self.from_equipment, "equipment_category"), "budget_account")
+	# 	to_account = frappe.db.get_value("Equipment Category", frappe.db.get_value("Equipment", self.to_equipment, "equipment_category"), "budget_account")
+	# 	if not from_account and not to_account:
+	# 		frappe.throw("Check Budget Accounts Settings in Equipment Category")
+
+	# 	ic_account = frappe.db.get_single_value("Accounts Settings", "intra_company_account")
+	# 	if not ic_account:
+	# 		frappe.throw("Setup Intra-Company Account in Accounts Settings")
 		
-		from erpnext.stock.stock_ledger import get_valuation_rate
-		valuation_rate = get_valuation_rate(self.pol_type, frappe.db.get_value("Cost Center", from_cc, "warehouse"), self.doctype, self.name,)
-		if not valuation_rate:
-			frappe.throw("Valuation Rate could not be calculated. Check Cost Center and Warehouse Linkage")
+	# 	from erpnext.stock.stock_ledger import get_valuation_rate
+	# 	valuation_rate = get_valuation_rate(self.pol_type, frappe.db.get_value("Cost Center", from_cc, "warehouse"), self.doctype, self.name,)
+	# 	if not valuation_rate:
+	# 		frappe.throw("Valuation Rate could not be calculated. Check Cost Center and Warehouse Linkage")
 
-		gl_entries.append(
-			prepare_gl(self, {"account": from_account,
-					 "credit": flt(valuation_rate),
-					 "credit_in_account_currency": flt(valuation_rate),
-					 "cost_center": from_cc,
-					})
-			)
+	# 	gl_entries.append(
+	# 		prepare_gl(self, {"account": from_account,
+	# 				 "credit": flt(valuation_rate),
+	# 				 "credit_in_account_currency": flt(valuation_rate),
+	# 				 "cost_center": from_cc,
+	# 				})
+	# 		)
 
-		gl_entries.append(
-			prepare_gl(self, {"account": to_account,
-					 "debit": flt(valuation_rate),
-					 "debit_in_account_currency": flt(valuation_rate),
-					 "cost_center": to_cc,
-					})
-			)
+	# 	gl_entries.append(
+	# 		prepare_gl(self, {"account": to_account,
+	# 				 "debit": flt(valuation_rate),
+	# 				 "debit_in_account_currency": flt(valuation_rate),
+	# 				 "cost_center": to_cc,
+	# 				})
+	# 		)
 
-		gl_entries.append(
-			prepare_gl(self, {"account": ic_account,
-					 "debit": flt(valuation_rate),
-					 "debit_in_account_currency": flt(valuation_rate),
-					 "cost_center": from_cc,
-					})
-			)
+	# 	gl_entries.append(
+	# 		prepare_gl(self, {"account": ic_account,
+	# 				 "debit": flt(valuation_rate),
+	# 				 "debit_in_account_currency": flt(valuation_rate),
+	# 				 "cost_center": from_cc,
+	# 				})
+	# 		)
 
-		gl_entries.append(
-			prepare_gl(self, {"account": ic_account,
-					 "credit": flt(valuation_rate),
-					 "credit_in_account_currency": flt(valuation_rate),
-					 "cost_center": to_cc,
-					})
-			)
+	# 	gl_entries.append(
+	# 		prepare_gl(self, {"account": ic_account,
+	# 				 "credit": flt(valuation_rate),
+	# 				 "credit_in_account_currency": flt(valuation_rate),
+	# 				 "cost_center": to_cc,
+	# 				})
+	# 		)
 
-		if gl_entries:
-			from erpnext.accounts.general_ledger import make_gl_entries
-			make_gl_entries(gl_entries, cancel=(self.docstatus == 2), update_outstanding="No", merge_entries=True)
+	# 	if gl_entries:
+	# 		from erpnext.accounts.general_ledger import make_gl_entries
+	# 		make_gl_entries(gl_entries, cancel=(self.docstatus == 2), update_outstanding="No", merge_entries=True)
 
 	def on_cancel(self):
+		# self.update_stock_ledger()
 		if self.from_branch != self.to_branch and getdate(self.posting_date) > getdate("2018-03-31"):
 			# self.cancel_budget_entry()
-			self.update_gl_entry()
+			# self.update_gl_entry()
+			pass
 		frappe.db.sql("delete from `tabPOL Entry` where reference_name = %s", (self.name))
 
 	##
