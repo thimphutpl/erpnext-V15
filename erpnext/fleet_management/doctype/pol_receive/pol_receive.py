@@ -155,10 +155,10 @@ class POLReceive(StockController):
 			self.make_gl_entries()
 
 		# Skip GL Entries if is_opening is "Yes"
-		elif self.is_opening == "Yes" and self.book_type == "Common":
-			self.update_stock_ledger()
-		else:
-			pass
+		# elif self.is_opening == "Yes" and self.book_type == "Common":
+		# 	self.update_stock_ledger()
+		# else:
+		# 	pass
 		
 		self.make_pol_entry()
 		""" ++++++++++ Ver 2.0.190509 Ends ++++++++++++ """

@@ -679,7 +679,6 @@ def get_equipment_datas(equipment, all_equipment=0, equipment_branch=None):
     return data
 
 
-
 # Tank Balance
 @frappe.whitelist()	
 def get_tank_data(equipment, all_equipment=0, equipment_branch=None):

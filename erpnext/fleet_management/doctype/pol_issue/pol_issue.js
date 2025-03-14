@@ -10,8 +10,8 @@ frappe.ui.form.on('POL Issue', {
             };
         });
     },
-    "equipment":function(frm){
-    },
+    // "equipment":function(frm){
+    // },
     tank_balance: function (frm) {
         console.log("tanker function triggered");
         // frappe.throw("tanker")
