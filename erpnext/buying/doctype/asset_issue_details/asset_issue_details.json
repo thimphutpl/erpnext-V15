@@ -34,6 +34,7 @@
   "issued_to",
   "location",
   "asset_rate",
+  "balance_qty",
   "column_break_17",
   "emp_branch",
   "issued_date",
@@ -261,12 +262,19 @@
    "label": "Asset Received Entries",
    "mandatory_depends_on": "eval:doc.is_existing_asset == 1;",
    "options": "Asset Received Entries"
+  },
+  {
+   "depends_on": "eval:doc.is_existing_asset",
+   "fieldname": "balance_qty",
+   "fieldtype": "Float",
+   "label": "Balance Quantity",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-03-06 17:09:07.070872",
+ "modified": "2025-03-14 17:16:07.301738",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Asset Issue Details",

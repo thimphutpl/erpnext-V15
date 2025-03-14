@@ -20,6 +20,7 @@ class AssetIssueDetails(Document):
         amount: DF.Currency
         asset_rate: DF.Currency
         asset_received_entries: DF.Link | None
+        balance_qty: DF.Float
         branch: DF.Link
         brand: DF.Data
         chesis_no: DF.Data | None
@@ -68,24 +69,24 @@ class AssetIssueDetails(Document):
         #         frappe.throw("You cannot cancel the document before cancelling asset with code {0}".format(self.reference_code))    
     
     def check_qty_balance(self):
-        total_qty = frappe.db.sql("""select sum(ifnull(qty,0)) total_qty 
-                                  from `tabAsset Received Entries`
-                                  where item_code="{}"
-                                  and ref_doc = "{}"
-                                  and docstatus = 1
-                        """.format(self.item_code, self.purchase_receipt))[0][0]
-        issued_qty = frappe.db.sql("""select sum(ifnull(qty,0)) issued_qty
-                                   from `tabAsset Issue Details` 
-                                   where item_code ='{}'
-                                   and branch = '{}'
-                                   and purchase_receipt = '{}'
-                                   and docstatus = 1 
-                                   and name != '{}'
-                        """.format(self.item_code, self.branch, self.purchase_receipt, self.name))[0][0]
+        # total_qty = frappe.db.sql("""select sum(ifnull(qty,0)) total_qty 
+        #                           from `tabAsset Received Entries`
+        #                           where item_code="{}"
+        #                           and ref_doc = "{}"
+        #                           and docstatus = 1
+        #                 """.format(self.item_code, self.asset_received_entries))[0][0]
+        # issued_qty = frappe.db.sql("""select sum(ifnull(qty,0)) issued_qty
+        #                            from `tabAsset Issue Details` 
+        #                            where item_code ='{}'
+        #                            and branch = '{}'
+        #                            and asset_received_entries = '{}'
+        #                            and docstatus = 1 
+        #                            and name != '{}'
+        #                 """.format(self.item_code, self.branch, self.asset_received_entries, self.name))[0][0]
         
-        balance_qty = flt(total_qty) - flt(issued_qty)
-        if flt(self.qty) > flt(balance_qty):
-            frappe.throw(_("Issuing Quantity cannot be greater than Balance Quantity i.e., {}").format(flt(balance_qty)), title="Insufficient Balance")
+        # balance_qty = flt(total_qty) - flt(issued_qty)
+        if flt(self.qty) > flt(self.balance_qty):
+            frappe.throw(_("Issuing Quantity cannot be greater than Balance Quantity i.e., {}").format(flt(self.balance_qty)), title="Insufficient Balance")
 
     @frappe.whitelist()
     def get_existing_details(self):
