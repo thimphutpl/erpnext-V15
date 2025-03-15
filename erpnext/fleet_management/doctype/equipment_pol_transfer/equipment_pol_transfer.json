@@ -90,6 +90,7 @@
    "fieldtype": "Section Break"
   },
   {
+   "depends_on": "eval:doc.own_tank_transfer",
    "fieldname": "from_equipment",
    "fieldtype": "Link",
    "label": "From Equipment",
@@ -115,6 +116,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "depends_on": "eval:doc.own_tank_transfer",
    "fieldname": "to_equipment",
    "fieldtype": "Link",
    "label": "To Equipment",
@@ -238,7 +240,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-03-13 12:48:14.293253",
+ "modified": "2025-03-15 16:14:19.624535",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Equipment POL Transfer",

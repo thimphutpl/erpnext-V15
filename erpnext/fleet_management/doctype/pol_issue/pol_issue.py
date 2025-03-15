@@ -42,7 +42,7 @@ class POLIssue(StockController):
 		pol_type: DF.Link
 		posting_date: DF.Date
 		posting_time: DF.Time | None
-		purpose: DF.Literal["", "Issue", "Transfer"]
+		purpose: DF.Literal["", "Issue", "Tanker To Tanker Transfer"]
 		remarks: DF.SmallText | None
 		stock_uom: DF.ReadOnly | None
 		tank_balance: DF.Data | None
@@ -87,7 +87,7 @@ class POLIssue(StockController):
 						item.tank_capacity, flt(item.equipment_balance + item.qty), item.idx
 					)
 				)
-			elif self.purpose == 'Transfer' and flt(item.tanker_capacity) < flt(cint(item.tank_balance) + cint(item.qty)):
+			elif self.purpose == 'Tanker To Tanker Transfer' and flt(item.tanker_capacity) < flt(cint(item.tank_balance) + cint(item.qty)):
 				frappe.throw(
 					("Tanker capacity ({0}) should be greater than or equal to the sum of tank balance and quantity ({1}) in row {2}.").format(
 						item.tanker_capacity, flt(item.tank_balance + item.qty), item.idx

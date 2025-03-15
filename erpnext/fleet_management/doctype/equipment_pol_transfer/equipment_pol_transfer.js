@@ -5,8 +5,13 @@ cur_frm.add_fetch("pol_type", "item_name", "item_name")
 
 frappe.ui.form.on('Equipment POL Transfer', {
 	onload: function(frm) {
-		if(!frm.doc.posting_date) {
-			frm.set_value("posting_date", get_today())
+		// if(!frm.doc.posting_date) {
+		// 	frm.set_value("posting_date", get_today())
+		// }
+        if(!frm.doc.posting_date) {
+			// frm.set_value("posting_date", get_today())
+            frm.set_value('posting_date', frappe.datetime.now_date());
+            frm.set_value('posting_time', frappe.datetime.now_time());
 		}
 	},
 
