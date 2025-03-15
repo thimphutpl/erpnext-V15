@@ -30,6 +30,9 @@ frappe.ui.form.on('Vehicle Logbook', {
         }
 		else if (frm.doc.vehicle_logbook === 'Support Equipment') {
             frm.set_df_property('equipment', 'hidden', 0);
+        }
+		else if (frm.doc.vehicle_logbook === 'Own Equipment') {
+            frm.set_df_property('equipment', 'hidden', 0);
         } else {
             frm.set_df_property('equipment', 'hidden', 1);
         }
@@ -72,6 +75,17 @@ frappe.ui.form.on('Vehicle Logbook', {
 				return {
 					filters: {
 						equipment_category: 'Support Equipment'
+					}
+				};
+			});
+			frm.trigger('equipment'); // Trigger equipment logic
+		} 
+		else if (frm.doc.vehicle_logbook === 'Own Equipment') {
+			frm.set_df_property('equipment', 'hidden', 0);
+			frm.set_query('equipment', function () {
+				return {
+					filters: {
+						equipment_category: 'Own Equipment'
 					}
 				};
 			});
