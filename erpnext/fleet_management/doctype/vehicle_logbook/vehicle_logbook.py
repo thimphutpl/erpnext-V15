@@ -71,7 +71,7 @@ class VehicleLogbook(Document):
 		total_amount: DF.Float
 		total_idle_time: DF.Float
 		total_work_time: DF.Float
-		vehicle_logbook: DF.Literal["", "Equipment Hiring Form", "Pool Vehicle", "Support Equipment"]
+		vehicle_logbook: DF.Literal["", "Own Equipment", "Equipment Hiring Form", "Pool Vehicle", "Support Equipment"]
 		vlogs: DF.Table[VehicleLog]
 		work_rate: DF.Currency
 		ys_hours: DF.Float

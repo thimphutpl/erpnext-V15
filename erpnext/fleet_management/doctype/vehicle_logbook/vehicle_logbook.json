@@ -512,7 +512,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Select Equipment Hiring Form/Pool Vehicle",
-   "options": "\nEquipment Hiring Form\nPool Vehicle\nSupport Equipment"
+   "options": "\nOwn Equipment\nEquipment Hiring Form\nPool Vehicle\nSupport Equipment"
   },
   {
    "fieldname": "section_break_qcra",
@@ -628,7 +628,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-03-13 16:57:53.655616",
+ "modified": "2025-03-15 09:15:45.919978",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Vehicle Logbook",
