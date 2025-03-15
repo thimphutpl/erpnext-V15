@@ -70,7 +70,7 @@
    "fieldname": "cost_type",
    "fieldtype": "Select",
    "label": "Cost Type",
-   "options": "HSD\nHire Charge\nLubricant\nOperator Allowance\nOAP Salary\nMuster Roll Employee\nGCE\nOvertime Payment\nDFG Soelra\nThai Salary\nIndian Operators Salary\nRepair and Maintenance\nOJT\nContract Employee",
+   "options": "HSD\nHire Charge\nLubricant\nOperator Allowance\nOAP Salary\nMuster Roll Employee\nGCE\nOvertime Payment\nDFG Soelra\nGFG Soelra\nThai Salary\nIndian Operators Salary\nRepair and Maintenance\nOJT\nContract Employee",
    "reqd": 1
   },
   {
@@ -183,7 +183,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-02-19 19:01:49.479983",
+ "modified": "2025-03-15 10:31:36.693263",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Cost Appropriation",

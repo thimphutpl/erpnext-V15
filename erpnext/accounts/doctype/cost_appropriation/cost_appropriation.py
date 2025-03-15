@@ -26,7 +26,7 @@ class CostAppropriation(AccountsController):
 		branch: DF.Link
 		company: DF.Link
 		cost_center: DF.Link | None
-		cost_type: DF.Literal["HSD", "Hire Charge", "Lubricant", "Operator Allowance", "OAP Salary", "Muster Roll Employee", "GCE", "Overtime Payment", "DFG Soelra", "Thai Salary", "Indian Operators Salary", "Repair and Maintenance", "OJT", "Contract Employee"]
+		cost_type: DF.Literal["HSD", "Hire Charge", "Lubricant", "Operator Allowance", "OAP Salary", "Muster Roll Employee", "GCE", "Overtime Payment", "DFG Soelra", "GFG Soelra", "Thai Salary", "Indian Operators Salary", "Repair and Maintenance", "OJT", "Contract Employee"]
 		from_date: DF.Date
 		items: DF.Table[CostAppropriationItem]
 		posting_date: DF.Date
