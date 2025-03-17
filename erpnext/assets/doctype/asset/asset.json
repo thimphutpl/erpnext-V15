@@ -705,7 +705,7 @@
    "label": "Is Opening Asset"
   },
   {
-   "depends_on": "eval: doc.is_existing_asset",
+   "depends_on": "eval: doc.is_opening_asset",
    "fieldname": "existing_pr_reference",
    "fieldtype": "Data",
    "label": "Existing PR Reference"
@@ -747,7 +747,7 @@
    "link_fieldname": "target_asset"
   }
  ],
- "modified": "2025-03-17 15:55:18.417522",
+ "modified": "2025-03-17 16:04:29.078798",
  "modified_by": "Administrator",
  "module": "Assets",
  "name": "Asset",
