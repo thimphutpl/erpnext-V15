@@ -132,23 +132,30 @@ class JobCards(AccountsController):
 			self.make_gl_entries()
 		self.update_breakdownreport()
 
-	def before_cancel(self):     
-		check_uncancelled_linked_doc(self.doctype, self.name)
-		cl_status = frappe.db.get_value("Journal Entry", self.jv, "docstatus")
-		cl_status = frappe.db.get_value("Payment Ledger Entry", self.payment_jv, "docstatus")
-		if cl_status and cl_status != 2:
-			frappe.throw("You need to cancel the journal entry related to this job card first!")
+	# def before_cancel(self):     
+	# 	check_uncancelled_linked_doc(self.doctype, self.name)
+	# 	cl_status = frappe.db.get_value("Journal Entry", self.jv, "docstatus")
+	# 	cl_status = frappe.db.get_value("Payment Ledger Entry", self.payment_jv, "docstatus")
+	# 	if cl_status and cl_status != 2:
+	# 		frappe.throw("You need to cancel the journal entry related to this job card first!")
 		
-		self.db_set('jv', None)
+	# 	self.db_set('jv', None)
+	# 	self.db_set('payment_jv', None)
 
 	def on_cancel(self):
 		self.ignore_linked_doctypes = (
 			"GL Entry",
 			"Payment Ledger Entry",
 			"Stock Ledger Entry",
-			"Repost Item Valuation",
-			"Serial and Batch Bundle",
 		)
+		cl_status = frappe.db.get_value("Journal Entry", self.jv, "docstatus")
+		cl_status = frappe.db.get_value("Payment Ledger Entry", self.payment_jv, "docstatus")
+		if cl_status and cl_status != 2:
+			frappe.throw("You need to cancel the journal entry related to this job card first!")
+		
+		self.db_set('jv', None)
+		self.db_set('payment_jv', None)
+
 		bdr = frappe.get_doc("Break Down Report", self.break_down_report)
 		if bdr.job_cards == self.name:
 			bdr.db_set("job_cards", None)
