@@ -135,6 +135,7 @@ class JobCards(AccountsController):
 	def before_cancel(self):
 		check_uncancelled_linked_doc(self.doctype, self.name)
 		cl_status = frappe.db.get_value("Journal Entry", self.jv, "docstatus")
+		cl_status = frappe.db.get_value("Payment Ledger Entry", self.payment_jv, "docstatus")
 		if cl_status and cl_status != 2:
 			frappe.throw("You need to cancel the journal entry related to this job card first!")
 		
