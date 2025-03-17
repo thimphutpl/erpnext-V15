@@ -140,7 +140,6 @@ class JobCards(AccountsController):
 			"Repost Item Valuation",
 			"Serial and Batch Bundle",
 		)     
-		self.delete_pol_entry()
 		check_uncancelled_linked_doc(self.doctype, self.name)
 		cl_status = frappe.db.get_value("Journal Entry", self.jv, "docstatus")
 		cl_status = frappe.db.get_value("Payment Ledger Entry", self.payment_jv, "docstatus")
