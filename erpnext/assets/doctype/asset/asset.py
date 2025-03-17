@@ -82,6 +82,7 @@ class Asset(AccountsController):
 		depreciation_method: DF.Literal["", "Straight Line", "Double Declining Balance", "Manual"]
 		disable_depreciation: DF.Check
 		disposal_date: DF.Date | None
+		existing_pr_reference: DF.Data | None
 		finance_books: DF.Table[AssetFinanceBook]
 		frequency_of_depreciation: DF.Int
 		gross_purchase_amount: DF.Currency

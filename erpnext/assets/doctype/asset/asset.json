@@ -49,6 +49,7 @@
   "additional_value",
   "total_asset_cost",
   "additional_asset_cost",
+  "existing_pr_reference",
   "column_break_23",
   "gross_purchase_amount",
   "asset_quantity",
@@ -702,6 +703,12 @@
    "fieldname": "is_opening_asset",
    "fieldtype": "Check",
    "label": "Is Opening Asset"
+  },
+  {
+   "depends_on": "eval: doc.is_existing_asset",
+   "fieldname": "existing_pr_reference",
+   "fieldtype": "Data",
+   "label": "Existing PR Reference"
   }
  ],
  "idx": 72,
@@ -740,7 +747,7 @@
    "link_fieldname": "target_asset"
   }
  ],
- "modified": "2025-02-06 18:53:06.220824",
+ "modified": "2025-03-17 15:55:18.417522",
  "modified_by": "Administrator",
  "module": "Assets",
  "name": "Asset",
