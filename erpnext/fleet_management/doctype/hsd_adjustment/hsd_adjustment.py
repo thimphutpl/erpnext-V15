@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 import frappe
 from frappe.model.document import Document
 from frappe.utils import flt
-from erpnext.fleet_management.report.hsd_consumption_report.fleet_management_report import get_pol_consumed_till, get_pol_till
+from erpnext.fleet_management.report.hsd_consumption_report.fleet_management_report import get_pol_consumed_tills, get_pol_tills
 
 
 class HSDAdjustment(Document):
@@ -47,8 +47,8 @@ class HSDAdjustment(Document):
 
 	def make_pol_entry(self):	
 		for a in self.items:
-			received = get_pol_till("Receive", a.equipment, self.date, a.hsd_type)
-			consumed = get_pol_consumed_till(a.equipment, self.date)
+			received = get_pol_tills("Receive", a.equipment, self.date, a.hsd_type)
+			consumed = get_pol_consumed_tills(a.equipment)
 			actual_receive = flt(a.balance) + flt(consumed)
 			qty = flt(actual_receive) - flt(received)
 	
@@ -152,5 +152,64 @@ class HSDAdjustment(Document):
 			d["balance"] = 0
 			row = self.append('items', {})
 			row.update(d)
+
+
+
+# System Balance for from_equipment
+@frappe.whitelist()	
+def get_tank_data(equipment, equipment_branch=None):
+	"""
+	Fetch equipment balance details based on the provided parameters.
+	"""
+	# frappe.throw("Fetching Equipment Data")
+	data = []
+
+	# Query to fetch equipment details
+	query = """
+		SELECT e.name, e.branch, e.registration_number, e.hsd_type, e.equipment_type
+		FROM `tabEquipment` e
+		JOIN `tabEquipment Type` et ON e.equipment_type = et.name
+	"""
+
+	if equipment_branch:
+		query += " AND e.equipment_branch = %(equipment_branch)s"
+	if equipment:
+		query += " AND e.name = %(equipment)s"
+
+	query += " ORDER BY e.branch"
+
+	# Query to fetch items
+	items = frappe.db.sql("""
+		SELECT item_code, item_name, stock_uom 
+		FROM `tabItem`
+		WHERE is_hsd_item = 1 AND disabled = 0
+	""", as_dict=True)
+
+	equipment_details = frappe.db.sql(query, {
+		'equipment_branch': equipment_branch,
+		'equipment': equipment
+	}, as_dict=True)
+
+	for eq in equipment_details:
+		for item in items:
+			received = issued = 0
+		
+			if equipment:
+				received = get_pol_tills("Receive", eq.name, item.item_code)
+				issued = get_pol_consumed_tills(eq.name)
+				# if eq.hsd_type == item.item_code:
+			else:
+				received = get_pol_tills("Stock", eq.name, item.item_code)
+				issued = get_pol_tills("Issue", eq.name, item.item_code)
+
+			# Append balance details
+			if received or issued:
+				data.append({
+					'received': received,
+					'issued': issued,
+					'balance': flt(received) - flt(issued)
+				})
+
+	return data
 
 
