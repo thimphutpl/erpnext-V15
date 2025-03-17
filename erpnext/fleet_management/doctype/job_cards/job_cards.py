@@ -133,6 +133,14 @@ class JobCards(AccountsController):
 		self.update_breakdownreport()
 
 	def before_cancel(self):
+		self.ignore_linked_doctypes = (
+			"GL Entry",
+			"Payment Ledger Entry",
+			"Stock Ledger Entry",
+			"Repost Item Valuation",
+			"Serial and Batch Bundle",
+		)     
+		self.delete_pol_entry()
 		check_uncancelled_linked_doc(self.doctype, self.name)
 		cl_status = frappe.db.get_value("Journal Entry", self.jv, "docstatus")
 		cl_status = frappe.db.get_value("Payment Ledger Entry", self.payment_jv, "docstatus")
