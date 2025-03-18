@@ -214,11 +214,12 @@ def get_tds_invoices(tax_withholding_category, from_date, to_date, name, filter_
 			t.posting_date, t.name as invoice_no, 'Mechanical Payment' as invoice_type,
 			'Supplier' as party_type, t.customer as party,  
 			t.cost_center, t.tds_amount,
+			t.receivable_amount as bill_amount,
 			t.tds_account as tax_account,
 			tre.tds_remittance, tre.tds_receipt_update,
 			(case when tre.tds_receipt_update is not null then 'Paid' else 'Unpaid' end) as remittance_status
 		from `tabMechanical Payment` as t
-			inner join `tabTDS Receipt Entry` tre on tre.invoice_no = t.name 
+			left join `tabTDS Receipt Entry` tre on tre.invoice_no = t.name 
 		where t.posting_date between '{from_date}' and '{to_date}'
 		and t.docstatus = 1
 		{existing_cond}
