@@ -222,11 +222,12 @@ def get_tds_invoices(tax_withholding_category, from_date, to_date, name, filter_
 			left join `tabTDS Receipt Entry` tre on tre.invoice_no = t.name 
 		where t.posting_date between '{from_date}' and '{to_date}'
 		and t.docstatus = 1
+		and t.tax_withholding_category = '{tax_withholding_category}'
 		{existing_cond}
 		{cond}
 	""".format(
 		cond=cond, existing_cond=existing_cond,
-		from_date=from_date, to_date=to_date
+		from_date=from_date, to_date=to_date , tax_withholding_category=tax_withholding_category
 	), as_dict=True)
 	# Payment Entry
 	if party_type:
