@@ -618,7 +618,8 @@
   {
    "fieldname": "telephone_and_fax",
    "fieldtype": "Data",
-   "label": "Telephone and Fax"
+   "label": "Telephone and Fax",
+   "reqd": 1
   },
   {
    "fieldname": "section_credit_limit",
@@ -678,7 +679,7 @@
    "link_fieldname": "party"
   }
  ],
- "modified": "2025-03-12 12:24:28.934858",
+ "modified": "2025-03-18 11:58:04.463199",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Supplier",

@@ -86,7 +86,7 @@ class Supplier(TransactionBase):
 		tax_holiday: DF.Link | None
 		tax_id: DF.Data | None
 		tax_withholding_category: DF.Link | None
-		telephone_and_fax: DF.Data | None
+		telephone_and_fax: DF.Data
 		warn_pos: DF.Check
 		warn_rfqs: DF.Check
 		website: DF.Data | None
