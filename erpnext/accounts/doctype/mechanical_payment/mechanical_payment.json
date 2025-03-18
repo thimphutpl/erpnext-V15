@@ -379,7 +379,6 @@
    "label": "Declaration Reference No"
   },
   {
-   "allow_on_submit": 1,
    "fieldname": "tax_withholding_category",
    "fieldtype": "Link",
    "label": "Tax Withholding Category",
@@ -395,7 +394,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-03-18 17:35:31.448755",
+ "modified": "2025-03-18 17:39:30.818993",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Mechanical Payment",
