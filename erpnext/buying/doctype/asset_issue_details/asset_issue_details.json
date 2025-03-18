@@ -246,7 +246,6 @@
    "default": "0",
    "fieldname": "create_single_asset",
    "fieldtype": "Check",
-   "hidden": 1,
    "label": "Create Single Asset"
   },
   {
@@ -274,7 +273,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-03-14 17:16:07.301738",
+ "modified": "2025-03-14 18:33:17.193204",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Asset Issue Details",
