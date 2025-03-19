@@ -70,12 +70,14 @@ def get_utility_data(filters):
 
 def get_condition(filters):
 	conds = ""
-	if filters.transaction_type:
-		conds += "and bpi.transaction_type='{}'".format(filters.transaction_type)
-	if filters.supplier:
-		conds += "and bpi.supplier='{}'".format(filters.supplier)
-	if filters.status:
-		conds += "and bpi.status='{}'".format(filters.status)
-	if filters.party:
-		conds = "and uti.party='{}'".format(filters.party)
+	if filters.payment_type == "Bank Payment":
+		if filters.transaction_type:
+			conds += "and bpi.transaction_type='{}'".format(filters.transaction_type)
+		if filters.supplier:
+			conds += "and bpi.supplier='{}'".format(filters.supplier)
+		if filters.status:
+			conds += "and bpi.status='{}'".format(filters.status)
+	else:
+		if filters.party:
+			conds = "and uti.party='{}'".format(filters.party)
 	return conds
