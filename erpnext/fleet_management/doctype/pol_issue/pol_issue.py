@@ -44,6 +44,7 @@ class POLIssue(StockController):
 		posting_time: DF.Time | None
 		purpose: DF.Literal["", "Issue", "Tanker To Tanker Transfer"]
 		remarks: DF.SmallText | None
+		set_posting_time: DF.Check
 		stock_uom: DF.ReadOnly | None
 		tank_balance: DF.Data | None
 		tanker: DF.Link | None

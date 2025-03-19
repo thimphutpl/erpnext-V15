@@ -15,6 +15,7 @@
   "posting_date",
   "posting_time",
   "warehouse",
+  "set_posting_time",
   "section_break_2",
   "pol_type",
   "item_name",
@@ -183,12 +184,21 @@
    "fieldname": "tanker_capacity",
    "fieldtype": "Read Only",
    "label": "Tanker Capacity"
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:doc.docstatus==0",
+   "fieldname": "set_posting_time",
+   "fieldtype": "Check",
+   "label": "Edit Posting Date and Time",
+   "permlevel": 1,
+   "print_hide": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-03-15 15:58:46.657364",
+ "modified": "2025-03-19 22:31:55.816025",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Issue",
