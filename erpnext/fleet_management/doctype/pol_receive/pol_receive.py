@@ -70,6 +70,7 @@ class POLReceive(StockController):
 		qty: DF.Float
 		rate: DF.Currency
 		remarks: DF.LongText | None
+		set_posting_time: DF.Check
 		stock_uom: DF.Link | None
 		supplier: DF.Link
 		tank_balance: DF.Data | None

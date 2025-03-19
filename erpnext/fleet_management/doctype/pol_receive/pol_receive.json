@@ -15,6 +15,7 @@
   "column_break_3",
   "warehouse",
   "company",
+  "set_posting_time",
   "column_break_zeja",
   "posting_date",
   "posting_time",
@@ -610,12 +611,21 @@
    "fieldname": "sb_more_info",
    "fieldtype": "Section Break",
    "label": "More Information"
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:doc.docstatus==0",
+   "fieldname": "set_posting_time",
+   "fieldtype": "Check",
+   "label": "Edit Posting Date and Time",
+   "permlevel": 1,
+   "print_hide": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-03-18 12:16:09.649234",
+ "modified": "2025-03-19 15:45:02.921675",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Receive",
