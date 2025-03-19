@@ -25,6 +25,8 @@
   "vehicle_type",
   "cb_4",
   "vehicle_model",
+  "column_break_dsmo",
+  "registration_number",
   "sb_2",
   "asset_name",
   "cb_6",
@@ -255,11 +257,22 @@
    "fieldname": "project",
    "fieldtype": "Read Only",
    "label": "Project"
+  },
+  {
+   "fieldname": "column_break_dsmo",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "equipment.registration_number",
+   "fieldname": "registration_number",
+   "fieldtype": "Data",
+   "label": "Registration Number",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-02-24 16:56:50.434493",
+ "modified": "2025-03-19 14:57:01.315356",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Insurance and Registration",
