@@ -283,10 +283,10 @@ class BudgetReappropiation(Document):
 				if to_account:
 					to_budget_account = frappe.get_doc("Budget Account", to_account[0].name)
 					total = flt(to_budget_account.budget_amount) + flt(d.amount)
-					budget_received = flt(from_budget_account.budget_received) + flt(d.amount)
+					budget_received = flt(to_budget_account.budget_received) + flt(d.amount)
 					if cancel:
 						total = flt(to_budget_account.budget_amount) - flt(d.amount)
-						budget_received = flt(from_budget_account.budget_received) - flt(d.amount)
+						budget_received = flt(to_budget_account.budget_received) - flt(d.amount)
 					to_budget_account.db_set("budget_received", flt(budget_received,2))
 					if monthly_budget_check:
 						# frappe.throw(str(to_month))

@@ -173,12 +173,12 @@ def get_cwip(filters):
 def get_values(account, to_date, from_date, cost_center=None, opening=False, cwip=False, adjustment=False):
 #	query = "select sum(debit) as debit, sum(credit) as credit from `tabGL Entry` where account = \'" + str(account) + "\' and docstatus = 1"
 	if cwip:
-		query = "select sum(debit) as debit, sum(credit) as credit from `tabGL Entry` where account in " + str(account) + " and docstatus = 1 "
+		query = "select sum(debit) as debit, sum(credit) as credit from `tabGL Entry` where account in " + str(account) + " and docstatus = 1 and is_cancelled = 0"
 	elif adjustment:
 		return [frappe._dict({"debit": 0.0, "credit": 0.0})]
 		#query = "select sum(debit) as debit, sum(credit) as credit from `tabGL Entry` where account = \'" + str(account) + "\' and docstatus = 1 and is_depreciation_adjustment = 'Yes'"
 	else:
-		query = "select sum(debit) as debit, sum(credit) as credit from `tabGL Entry` where account = \'" + str(account) + "\' and docstatus = 1"
+		query = "select sum(debit) as debit, sum(credit) as credit from `tabGL Entry` where account = \'" + str(account) + "\' and docstatus = 1 and is_cancelled = 0"
 	if not opening:
 		query += " and posting_date between \'" + str(from_date) + "\' and \'" + str(to_date) + "\'"
 	else:
