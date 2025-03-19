@@ -1334,6 +1334,10 @@ class PaymentEntry(AccountsController):
 				)
 			)
 		if self.payment_type in ("Receive", "Internal Transfer"):
+			party, party_type = '', ''
+			if frappe.get_value("Account", self.paid_to, "account_type") in ('Payable', 'Receivable'):
+				party = self.party
+				party_type = self.party_type
 			gl_entries.append(
 				self.get_gl_dict(
 					{
@@ -1344,6 +1348,8 @@ class PaymentEntry(AccountsController):
 						"debit": self.base_received_amount - total_deductions,
 						"cost_center": self.cost_center,
 						"post_net_value": True,
+						"party": party,
+						"party_type": party_type,
 					},
 					item=self,
 				)
