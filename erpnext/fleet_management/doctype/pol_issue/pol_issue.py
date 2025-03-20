@@ -52,22 +52,22 @@ class POLIssue(StockController):
 		total_quantity: DF.Float
 		warehouse: DF.Link
 	# end: auto-generated types
-	def before_save(self):
-		if not self.tanker:
-			return
-		received_till = get_pol_till("Stock", self.tanker, self.posting_date, self.pol_type)
-		issue_till = get_pol_till("Issue", self.tanker, self.posting_date, self.pol_type)
-		balance = flt(received_till) - flt(issue_till)
-		if flt(self.total_quantity) > flt(balance):
-			frappe.throw("Not enough balance in tanker to issue. The balance is " + str(balance))
+	# def before_save(self):
+	# 	if not self.tanker:
+	# 		return
+	# 	received_till = get_pol_till("Stock", self.tanker, self.posting_date, self.pol_type)
+	# 	issue_till = get_pol_till("Issue", self.tanker, self.posting_date, self.pol_type)
+	# 	balance = flt(received_till) - flt(issue_till)
+	# 	if flt(self.total_quantity) > flt(balance):
+	# 		frappe.throw("Not enough balance in tanker to issue. The balance is " + str(balance))
 
-		# # Ensure tank balance does not exceed tank capacity
-		if flt(self.tank_balance) < flt(self.total_quantity):
-			frappe.throw(
-                ("Cannot issue quantity ({}) more than the tanker quantity balance ({}).").format(
-                    self.total_quantity, self.tank_balance
-                )
-            )
+	# 	# # Ensure tank balance does not exceed tank capacity
+	# 	if flt(self.tank_balance) < flt(self.total_quantity):
+	# 		frappe.throw(
+    #             ("Cannot issue quantity ({}) more than the tanker quantity balance ({}).").format(
+    #                 self.total_quantity, self.tank_balance
+    #             )
+    #         )
 
 		# for item in self.get("items"):
 		# 	# Ensure tank capacity is greater than or equal to the sum of equipment balance and quantity
@@ -237,6 +237,7 @@ class POLIssue(StockController):
 
 		if self.docstatus == 2:
 			sl_entries.reverse()
+		frappe.throw(frappe.as_json(self.__dict__))
 
 		self.make_sl_entries(sl_entries, 'Yes' if self.amended_from else 'No')
 
