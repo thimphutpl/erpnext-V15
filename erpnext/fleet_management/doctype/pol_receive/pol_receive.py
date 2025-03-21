@@ -165,18 +165,34 @@ class POLReceive(StockController):
 	# 	self.delete_pol_entry()
 
 	def on_cancel(self):
-		# if self.clearance_date:
-		# 	frappe.throw("Already done bank reconciliation.")
+		if getdate(self.posting_date) > getdate("2018-03-31") and (self.is_opening == "No" or self.is_opening == "") or self.is_opening == "Yes" and self.book_type == "Common":
+			self.update_stock_ledger()
+		""" ++++++++++ Ver 2.0.190509 Begins ++++++++++ """
+		# Ver 2.0.190509, Following method commented by SHIV on 2019/05/20 
+		#self.update_general_ledger(1)
 
+		# Ver 2.0.190509, Following method added by SHIV on 2019/05/20
+		if self.is_opening != "Yes":
+			self.make_gl_entries_on_cancel()
+		""" ++++++++++ Ver 2.0.190509 Ends ++++++++++++ """
 		self.ignore_linked_doctypes = (
+			"GL Entry",
 			"Payment Ledger Entry",
 			"Stock Ledger Entry",
+			"Repost Item Valuation",
+			"Serial and Batch Bundle",
+			"HSD Payment"
 		)
-		super().on_cancel()   
-
-		self.make_gl_entries()
-		self.update_stock_ledger()
+		# super().on_cancel()   
+		# self.make_gl_entries()
+		# self.update_stock_ledger()
 		# self.update_ref_doc(cancel=1)
+
+		docstatus = frappe.db.get_value("Journal Entry", self.jv, "docstatus")
+		if docstatus and docstatus != 2:
+			frappe.throw("Cancel the Journal Entry " + str(self.jv) + " and proceed.")
+
+		self.db_set("jv", None)	
 
 	# def validate_dc(self):
 	# 	is_container, no_own_tank = frappe.db.get_value("Equipment Type", frappe.db.get_value("Equipment", self.equipment, "equipment_type") , ["is_container", "no_own_tank"])
