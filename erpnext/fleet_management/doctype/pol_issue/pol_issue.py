@@ -237,7 +237,7 @@ class POLIssue(StockController):
 
 		if self.docstatus == 2:
 			sl_entries.reverse()
-		frappe.throw(frappe.as_json(self.__dict__))
+		# frappe.throw(frappe.as_json(self.__dict__))
 
 		self.make_sl_entries(sl_entries, 'Yes' if self.amended_from else 'No')
 
