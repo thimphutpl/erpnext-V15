@@ -367,6 +367,8 @@
    "fetch_from": "branch.cost_center",
    "fieldname": "cost_center",
    "fieldtype": "Link",
+   "in_filter": 1,
+   "in_standard_filter": 1,
    "label": "Cost Center",
    "options": "Cost Center",
    "read_only": 1
@@ -441,7 +443,7 @@
    "fieldname": "store_type",
    "fieldtype": "Select",
    "label": "Store Type",
-   "options": "Electrical\nPlumbing\nGeneral\nWorkshop"
+   "options": "\nElectrical\nPlumbing\nGeneral\nWorkshop"
   },
   {
    "fieldname": "approver_designation",
@@ -460,7 +462,7 @@
   {
    "columns": 2,
    "fieldname": "reference_name",
-   "fieldtype": "Dynamic Link",
+   "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Reference Name",
    "options": "reference_type",
@@ -483,7 +485,7 @@
  "idx": 70,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-02-26 09:51:45.415557",
+ "modified": "2025-03-24 17:41:49.318271",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Material Request",
