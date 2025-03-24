@@ -14,7 +14,6 @@ class POLReceiveItem(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
-		allocated_amount: DF.Link | None
 		amount: DF.Currency
 		bill_date: DF.Date | None
 		bill_no: DF.Data | None
@@ -24,5 +23,6 @@ class POLReceiveItem(Document):
 		qty: DF.Float
 		rate: DF.Currency
 		remarks: DF.SmallText | None
+		uom: DF.Link | None
 	# end: auto-generated types
 	pass

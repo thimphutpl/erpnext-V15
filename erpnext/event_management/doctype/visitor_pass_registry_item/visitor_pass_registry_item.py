@@ -15,14 +15,14 @@ class VisitorPassRegistryItem(Document):
 		from frappe.types import DF
 
 		amount: DF.Currency
-		csr_amount: DF.Currency
+		journal_no: DF.Data | None
 		mode_of_payment: DF.Link
-		no_of_visitors: DF.Int
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
 		qty: DF.Int
 		remarks: DF.SmallText | None
 		ticket_price: DF.Currency
+		ticket_type: DF.Link
 	# end: auto-generated types
 	pass

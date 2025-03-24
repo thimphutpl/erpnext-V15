@@ -13,13 +13,19 @@
   "cashier",
   "section_break_jbbg",
   "items",
-  "section_break_rrxj",
+  "section_break_rpvq",
+  "other_charges",
+  "section_break_azie",
+  "transaction_details",
+  "amount_details_section",
   "total_visitors",
   "column_break_parc",
   "total_amount",
   "total_csr_amount",
+  "grand_total",
   "more_info_section",
   "column_break_euax",
+  "remarks",
   "journal_entry",
   "column_break_tuxo",
   "company",
@@ -105,13 +111,12 @@
    "fieldtype": "Section Break"
   },
   {
+   "allow_in_quick_entry": 1,
    "fieldname": "items",
    "fieldtype": "Table",
+   "label": "Entry Fee",
+   "no_copy": 1,
    "options": "Visitor Pass Registry Item"
-  },
-  {
-   "fieldname": "section_break_rrxj",
-   "fieldtype": "Section Break"
   },
   {
    "fieldname": "column_break_parc",
@@ -124,6 +129,7 @@
    "read_only": 1
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "total_visitors",
    "fieldtype": "Int",
    "label": "Total No. of Vistors",
@@ -137,22 +143,67 @@
    "read_only": 1
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "status",
    "fieldtype": "Select",
+   "in_list_view": 1,
    "label": "Status",
-   "options": "\nDraft\nSubmitted\nClosed\nCancelled"
+   "no_copy": 1,
+   "options": "Draft\nOpen\nClosed\nSubmitted\nCancelled",
+   "read_only": 1
   },
   {
    "fieldname": "total_csr_amount",
    "fieldtype": "Currency",
    "label": "Total CSR Amount",
    "read_only": 1
+  },
+  {
+   "fieldname": "section_break_azie",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "transaction_details",
+   "fieldtype": "Table",
+   "label": "Bank Transaction Details",
+   "no_copy": 1,
+   "options": "Visitor Pass Registry Detail",
+   "read_only": 1
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Small Text",
+   "label": "Remarks"
+  },
+  {
+   "fieldname": "amount_details_section",
+   "fieldtype": "Section Break",
+   "label": "Amount Details"
+  },
+  {
+   "fieldname": "section_break_rpvq",
+   "fieldtype": "Section Break"
+  },
+  {
+   "allow_in_quick_entry": 1,
+   "fieldname": "other_charges",
+   "fieldtype": "Table",
+   "label": "Other Charges",
+   "no_copy": 1,
+   "options": "Visitor Pass Other Charges"
+  },
+  {
+   "fieldname": "grand_total",
+   "fieldtype": "Currency",
+   "label": "Grand Total",
+   "no_copy": 1,
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-03-11 10:01:08.592755",
+ "modified": "2025-03-24 12:24:16.904272",
  "modified_by": "Administrator",
  "module": "Event Management",
  "name": "Visitor Pass Registry",
@@ -175,5 +226,6 @@
  ],
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "track_changes": 1
 }

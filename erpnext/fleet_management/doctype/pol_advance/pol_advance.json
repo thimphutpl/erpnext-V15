@@ -13,11 +13,16 @@
   "equipment_name",
   "column_break_ysbs",
   "posting_date",
+  "posting_time",
   "status",
   "section_break_wclk",
   "column_break_kyxr",
   "fuelbook",
   "supplier",
+  "column_break_xbwn",
+  "od_amount",
+  "od_adjusted",
+  "od_balance",
   "column_break_xwwp",
   "advance_amount",
   "adjusted_amount",
@@ -100,9 +105,9 @@
   {
    "fieldname": "fuelbook",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Fuelbook",
-   "options": "Fuelbook",
-   "reqd": 1
+   "options": "Fuelbook"
   },
   {
    "fieldname": "column_break_ysbs",
@@ -125,6 +130,7 @@
    "fetch_from": "fuelbook.supplier",
    "fieldname": "supplier",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Supplier",
    "options": "Supplier",
    "read_only": 1,
@@ -179,6 +185,7 @@
    "fieldtype": "Data",
    "hidden": 1,
    "label": "Journal Entry",
+   "no_copy": 1,
    "read_only": 1
   },
   {
@@ -186,7 +193,8 @@
    "fieldname": "journal_entry_status",
    "fieldtype": "Data",
    "hidden": 1,
-   "label": "Journal Entry",
+   "label": "Journal Entry Status",
+   "no_copy": 1,
    "read_only": 1
   },
   {
@@ -195,12 +203,47 @@
    "fieldtype": "HTML",
    "label": "Journal Entry",
    "read_only": 1
+  },
+  {
+   "fieldname": "column_break_xbwn",
+   "fieldtype": "Column Break"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "od_amount",
+   "fieldtype": "Currency",
+   "label": "OD Amount",
+   "no_copy": 1,
+   "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "od_adjusted",
+   "fieldtype": "Currency",
+   "label": "OD Adjusted",
+   "no_copy": 1,
+   "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "od_balance",
+   "fieldtype": "Currency",
+   "label": "OD Balance",
+   "no_copy": 1,
+   "read_only": 1
+  },
+  {
+   "default": "Now",
+   "fieldname": "posting_time",
+   "fieldtype": "Time",
+   "label": "Posting Time",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-03-12 15:15:35.728254",
+ "modified": "2025-03-20 12:31:54.882807",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Advance",
@@ -219,9 +262,23 @@
    "share": 1,
    "submit": 1,
    "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Fleet User",
+   "share": 1,
+   "submit": 1,
+   "write": 1
   }
  ],
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "track_changes": 1
 }

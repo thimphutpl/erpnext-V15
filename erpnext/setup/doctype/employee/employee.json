@@ -31,10 +31,11 @@
   "create_user",
   "create_user_permission",
   "company_details_section",
-  "department",
   "employee_number",
+  "employment_type",
   "column_break_25",
   "designation",
+  "employment_status",
   "employee_group",
   "column_break_18",
   "grade",
@@ -46,10 +47,12 @@
   "promotion_cycle",
   "section_break_loyy",
   "company",
+  "department",
   "column_break_fgtu",
   "branch",
-  "column_break_dnmt",
   "cost_center",
+  "division",
+  "column_break_dnmt",
   "employment_details",
   "scheduled_confirmation_date",
   "column_break_32",
@@ -761,7 +764,7 @@
   {
    "fieldname": "company_details_section",
    "fieldtype": "Section Break",
-   "label": "Employee Details"
+   "label": "Employment Details"
   },
   {
    "fieldname": "column_break_18",
@@ -960,7 +963,8 @@
   },
   {
    "fieldname": "section_break_loyy",
-   "fieldtype": "Section Break"
+   "fieldtype": "Section Break",
+   "label": "Company Details"
   },
   {
    "fieldname": "column_break_fgtu",
@@ -969,6 +973,24 @@
   {
    "fieldname": "column_break_dnmt",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "employment_status",
+   "fieldtype": "Select",
+   "label": "Employment Status",
+   "options": "\nIn Service\nLeft\nProbation\nEOL\nStudy Leave\nTerminated\nSuspended"
+  },
+  {
+   "fieldname": "employment_type",
+   "fieldtype": "Link",
+   "label": "Employment Type",
+   "options": "Employment Type"
+  },
+  {
+   "fieldname": "division",
+   "fieldtype": "Link",
+   "label": "Division",
+   "options": "Department"
   }
  ],
  "icon": "fa fa-user",
@@ -976,7 +998,7 @@
  "image_field": "image",
  "is_tree": 1,
  "links": [],
- "modified": "2025-03-04 16:52:15.798500",
+ "modified": "2025-03-24 13:02:40.504020",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee",

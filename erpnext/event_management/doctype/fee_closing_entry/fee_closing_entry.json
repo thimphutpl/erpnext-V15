@@ -1,0 +1,183 @@
+{
+ "actions": [],
+ "autoname": "FCE.-.YYYY.-.MM.-.####",
+ "creation": "2025-03-24 10:36:12.362496",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "user_deatial_section",
+  "branch",
+  "location",
+  "column_break_uezj",
+  "posting_date",
+  "cashier",
+  "reference_transaction_section",
+  "references",
+  "modes_of_payment_section",
+  "payments",
+  "section_break_azga",
+  "grand_total",
+  "column_break_ttsf",
+  "more_info_section",
+  "column_break_vrnh",
+  "status",
+  "journal_entry",
+  "column_break_hkwu",
+  "company",
+  "cost_center",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Fee Closing Entry",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "default": "Today",
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Posting Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "more_info_section",
+   "fieldtype": "Section Break",
+   "label": "More Info"
+  },
+  {
+   "fieldname": "column_break_vrnh",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_hkwu",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company"
+  },
+  {
+   "fieldname": "location",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Location",
+   "options": "Location"
+  },
+  {
+   "fieldname": "column_break_uezj",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Draft\nOpen\nSubmitted\nCancelled",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cashier",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "label": "Cashier",
+   "options": "User"
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "label": "Branch",
+   "options": "Branch",
+   "reqd": 1
+  },
+  {
+   "fieldname": "references",
+   "fieldtype": "Table",
+   "label": "Visitor Pass Registry Detail",
+   "options": "Entry Fee Reference"
+  },
+  {
+   "fieldname": "section_break_azga",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "grand_total",
+   "fieldtype": "Currency",
+   "label": "Grand Total",
+   "read_only": 1
+  },
+  {
+   "fieldname": "modes_of_payment_section",
+   "fieldtype": "Section Break",
+   "label": "Modes of Payment"
+  },
+  {
+   "fieldname": "payments",
+   "fieldtype": "Table",
+   "label": "Payment Method Detail",
+   "options": "Payment Method Detail"
+  },
+  {
+   "fieldname": "user_deatial_section",
+   "fieldtype": "Section Break",
+   "label": "User Deatial"
+  },
+  {
+   "fieldname": "reference_transaction_section",
+   "fieldtype": "Section Break",
+   "label": "Reference Transaction"
+  },
+  {
+   "fetch_from": "branch.cost_center",
+   "fieldname": "cost_center",
+   "fieldtype": "Link",
+   "label": "Cost Center",
+   "options": "Cost Center",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_ttsf",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "journal_entry",
+   "fieldtype": "Data",
+   "label": "Journal Entry"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2025-03-24 16:53:24.976764",
+ "modified_by": "Administrator",
+ "module": "Event Management",
+ "name": "Fee Closing Entry",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

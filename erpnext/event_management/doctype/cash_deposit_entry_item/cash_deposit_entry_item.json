@@ -1,0 +1,56 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-03-24 17:04:41.105971",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "reference_name",
+  "column_break_edov",
+  "posting_date",
+  "column_break_kovg",
+  "cash_amount"
+ ],
+ "fields": [
+  {
+   "fieldname": "reference_name",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Reference Name",
+   "options": "Fee Closing Entry"
+  },
+  {
+   "fieldname": "column_break_edov",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Posting Date"
+  },
+  {
+   "fieldname": "column_break_kovg",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "cash_amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Cash Amount"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-03-24 17:06:33.356224",
+ "modified_by": "Administrator",
+ "module": "Event Management",
+ "name": "Cash Deposit Entry Item",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

@@ -97,6 +97,7 @@ class StockEntry(StockController):
 		apply_putaway_rule: DF.Check
 		asset_repair: DF.Link | None
 		bom_no: DF.Link | None
+		branch: DF.Link
 		company: DF.Link
 		credit_note: DF.Link | None
 		delivery_note_no: DF.Link | None

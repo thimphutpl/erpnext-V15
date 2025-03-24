@@ -17,6 +17,8 @@
   "is_group",
   "account_settings_section",
   "income_account",
+  "applicable_for_users",
+  "payments",
   "sb_location_details",
   "latitude",
   "longitude",
@@ -169,11 +171,23 @@
    "fieldname": "is_recreational_park",
    "fieldtype": "Check",
    "label": "Is Recreational Park"
+  },
+  {
+   "fieldname": "applicable_for_users",
+   "fieldtype": "Table",
+   "label": "Applicable for Users",
+   "options": "Event Profile User"
+  },
+  {
+   "fieldname": "payments",
+   "fieldtype": "Table",
+   "label": "Payment Methods",
+   "options": "Event Payment Method"
   }
  ],
  "is_tree": 1,
  "links": [],
- "modified": "2025-03-06 17:24:40.758888",
+ "modified": "2025-03-20 11:30:48.363189",
  "modified_by": "Administrator",
  "module": "Assets",
  "name": "Location",

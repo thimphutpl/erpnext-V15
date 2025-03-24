@@ -6,35 +6,28 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "no_of_visitors",
+  "ticket_type",
   "column_break_ejjq",
-  "qty",
-  "column_break_qmbj",
   "ticket_price",
+  "column_break_qmbj",
+  "qty",
   "column_break_syko",
-  "mode_of_payment",
-  "column_break_vkcl",
   "amount",
-  "column_break_ccil",
-  "csr_amount",
+  "column_break_vkcl",
+  "mode_of_payment",
+  "column_break_tlli",
+  "journal_no",
   "section_break_pshw",
   "remarks"
  ],
  "fields": [
-  {
-   "columns": 1,
-   "fieldname": "no_of_visitors",
-   "fieldtype": "Int",
-   "in_list_view": 1,
-   "label": "Visitors",
-   "reqd": 1
-  },
   {
    "fieldname": "column_break_qmbj",
    "fieldtype": "Column Break"
   },
   {
    "columns": 2,
+   "fetch_from": "ticket_type.ticket_price",
    "fieldname": "ticket_price",
    "fieldtype": "Currency",
    "in_list_view": 1,
@@ -72,6 +65,7 @@
   },
   {
    "columns": 1,
+   "default": "1",
    "fieldname": "qty",
    "fieldtype": "Int",
    "in_list_view": 1,
@@ -88,21 +82,30 @@
    "label": "Remarks"
   },
   {
-   "columns": 2,
-   "fieldname": "column_break_ccil",
+   "fieldname": "column_break_tlli",
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "csr_amount",
-   "fieldtype": "Currency",
+   "columns": 1,
+   "fieldname": "journal_no",
+   "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "CSR Amount"
+   "label": "Journal No."
+  },
+  {
+   "columns": 2,
+   "fieldname": "ticket_type",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Ticket Type",
+   "options": "Ticket Type",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-03-10 10:33:10.866880",
+ "modified": "2025-03-23 20:06:36.118700",
  "modified_by": "Administrator",
  "module": "Event Management",
  "name": "Visitor Pass Registry Item",

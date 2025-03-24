@@ -26,26 +26,66 @@ class POLAdvance(Document):
 		cost_center: DF.Link | None
 		equipment: DF.Link
 		equipment_name: DF.Data | None
-		fuelbook: DF.Link
+		fuelbook: DF.Link | None
 		is_opening: DF.Check
 		journal_entry: DF.Data | None
 		journal_entry_status: DF.Data | None
+		od_adjusted: DF.Currency
+		od_amount: DF.Currency
+		od_balance: DF.Currency
 		posting_date: DF.Date
+		posting_time: DF.Time
 		status: DF.Literal["Draft", "Paid", "Unpaid", "Cancelled"]
 		supplier: DF.Link
 	# end: auto-generated types
 	
 	def validate(self):
 		self.set_status()
+		self.validate_advance_amount()
+
+	def before_save(self):
+		self.validate_previous_advance()
 
 	def on_submit(self):
 		if not self.is_opening:
 			self.post_journal_entry()
+			self.update_pol_advance()
 		else:
 			self.status = "Paid"
 
 	def on_cancel(self):
 		self.ignore_linked_doctypes = ("GL Entry", "Payment Ledger Entry")
+
+	def validate_previous_advance(self):
+		if self.docstatus != 0:
+			return
+		
+		advances = self.get_pol_advance()
+		
+		if advances and getdate(self.posting_date) < getdate(advances[0]['posting_date']):
+			frappe.throw(f"Posting date cannot be less than {advances[0]['posting_date']}")
+
+		if advances and flt(advances[0]['od_balance']):
+			self.adjusted_amount = flt(self.adjusted_amount) + flt(advances[0]['od_balance'])
+			self.balance_amount = flt(self.balance_amount) - flt(advances[0]['od_balance'])
+
+	def get_pol_advance(self):
+		query = (
+			frappe.db.sql("""
+				SELECT name AS reference_name, advance_amount, balance_amount,
+					posting_date, od_balance
+				FROM `tabPOL Advance`
+				WHERE docstatus = 1 AND equipment = %s AND fuelbook = %s AND company = %s AND name != %s
+				ORDER BY posting_date, posting_time DESC
+				LIMIT 1
+			""", (self.equipment, self.fuelbook, self.company, self.name), as_dict=True)
+		)
+		
+		return query
+	
+	def validate_advance_amount(self):
+		if flt(self.balance_amount) < 0:
+			frappe.throw("The balance advance amount cannot be less than 0")
 
 	def set_status(self, status=None):
 		if self.is_new():
@@ -60,6 +100,15 @@ class POLAdvance(Document):
 				self.status = "Unpaid"
 		else:
 			self.status = "Draft"
+
+	def update_pol_advance(self):
+		advances = self.get_pol_advance()
+		if advances:
+			doc = frappe.get_doc("POL Advance", advances[0]['reference_name'])
+			doc.od_adjusted = flt(doc.od_adjusted) + flt(advances[0]['od_balance'])
+			doc.od_balance = flt(doc.od_balance) - flt(advances[0]['od_balance'])
+			doc.save(ignore_permissions = True)
+
 
 	def post_journal_entry(self):
 		default_bank_account = frappe.db.get_value("Branch", self.branch, "expense_bank_account")

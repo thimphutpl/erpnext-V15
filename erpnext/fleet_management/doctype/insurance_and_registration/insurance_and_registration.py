@@ -181,7 +181,7 @@ class InsuranceandRegistration(AccountsController):
 		if self.bluebookfitnessemission:
 			if self.items:
 				for i in self.items:
-					if i.type == "Bluebook":
+					if i.type == "Registration Certificate":
 						expense_account = frappe.db.get_value("Company", "Green Bhutan Corporation Limited", "registration_certificate_expense_account")
 					if i.type == "Fitness":
 						expense_account = frappe.db.get_value("Company", "Green Bhutan Corporation Limited", "fitness_expense_account")

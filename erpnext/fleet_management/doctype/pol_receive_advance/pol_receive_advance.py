@@ -14,13 +14,13 @@ class POLReceiveAdvance(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
-		allocated_amount: DF.Float
-		amount: DF.Float
-		balance: DF.Float
-		balance_amount: DF.Float
+		advance_amount: DF.Currency
+		advance_date: DF.Date | None
+		allocated_amount: DF.Currency
+		balance_amount: DF.Currency
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
-		pol_advance: DF.Link | None
+		reference_name: DF.Link | None
 	# end: auto-generated types
 	pass

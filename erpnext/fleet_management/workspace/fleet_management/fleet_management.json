@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"ucLaX7W_iP\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b></b></span><b>Quick Access</b>\",\"col\":12}},{\"id\":\"BRL4Ah-7aK\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Equipment\",\"col\":3}},{\"id\":\"bGU4cT05JJ\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"POL Receive\",\"col\":3}},{\"id\":\"yrSBhXcSW1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"POL Issue\",\"col\":3}},{\"id\":\"UwA4igFetd\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Fleet Management</span>\",\"col\":12}},{\"id\":\"Fb1Q95Gylr\",\"type\":\"card\",\"data\":{\"card_name\":\"Master Data\",\"col\":4}},{\"id\":\"_iIPEfhypn\",\"type\":\"card\",\"data\":{\"card_name\":\"Insurance & Registration\",\"col\":4}},{\"id\":\"-j7GKUyLQV\",\"type\":\"card\",\"data\":{\"card_name\":\"POL Transaction\",\"col\":4}},{\"id\":\"36DesS3Fao\",\"type\":\"card\",\"data\":{\"card_name\":\"Equipment Hiring Form\",\"col\":4}},{\"id\":\"6ZsM11nAFX\",\"type\":\"card\",\"data\":{\"card_name\":\"Repair and Maintenance\",\"col\":4}},{\"id\":\"bjyaLL9Af7\",\"type\":\"card\",\"data\":{\"card_name\":\"Fleet Reports\",\"col\":4}}]",
+ "content": "[{\"id\":\"ucLaX7W_iP\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b></b></span><b>Quick Access</b>\",\"col\":12}},{\"id\":\"BRL4Ah-7aK\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Equipment\",\"col\":3}},{\"id\":\"yrSBhXcSW1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"POL Advance\",\"col\":3}},{\"id\":\"bGU4cT05JJ\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"POL Receive\",\"col\":3}},{\"id\":\"UwA4igFetd\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Fleet Management</span>\",\"col\":12}},{\"id\":\"Fb1Q95Gylr\",\"type\":\"card\",\"data\":{\"card_name\":\"Master Data\",\"col\":4}},{\"id\":\"-j7GKUyLQV\",\"type\":\"card\",\"data\":{\"card_name\":\"POL Transaction\",\"col\":4}},{\"id\":\"_iIPEfhypn\",\"type\":\"card\",\"data\":{\"card_name\":\"Insurance & Registration\",\"col\":4}},{\"id\":\"36DesS3Fao\",\"type\":\"card\",\"data\":{\"card_name\":\"Equipment Hiring Form\",\"col\":4}},{\"id\":\"6ZsM11nAFX\",\"type\":\"card\",\"data\":{\"card_name\":\"Repair and Maintenance\",\"col\":4}},{\"id\":\"bjyaLL9Af7\",\"type\":\"card\",\"data\":{\"card_name\":\"Fleet Reports\",\"col\":4}}]",
  "creation": "2025-01-07 23:44:11.813289",
  "custom_blocks": [],
  "docstatus": 0,
@@ -29,56 +29,6 @@
    "label": "Insurance and Registration",
    "link_count": 0,
    "link_to": "Insurance and Registration",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Equipment Hiring Form",
-   "link_count": 4,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "dependencies": "Equipment Hiring Form",
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Equipment Hiring Form",
-   "link_count": 0,
-   "link_to": "Equipment Hiring Form",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Vehicle Logbook",
-   "link_count": 0,
-   "link_to": "Vehicle Logbook",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Hire Charge Invoice",
-   "link_count": 0,
-   "link_to": "Hire Charge Invoice",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Mechanical Payment",
-   "link_count": 0,
-   "link_to": "Mechanical Payment",
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
@@ -125,8 +75,37 @@
   {
    "hidden": 0,
    "is_query_report": 0,
+   "label": "POL Transaction",
+   "link_count": 2,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "POL Advance",
+   "link_count": 0,
+   "link_to": "POL Advance",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "POL Receive",
+   "link_count": 0,
+   "link_to": "POL Receive",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
    "label": "Master Data",
-   "link_count": 6,
+   "link_count": 5,
    "link_type": "DocType",
    "onboard": 0,
    "type": "Card Break"
@@ -185,6 +164,56 @@
   {
    "hidden": 0,
    "is_query_report": 0,
+   "label": "Equipment Hiring Form",
+   "link_count": 5,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "dependencies": "Equipment Hiring Form",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Equipment Hiring Form",
+   "link_count": 0,
+   "link_to": "Equipment Hiring Form",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Vehicle Logbook",
+   "link_count": 0,
+   "link_to": "Vehicle Logbook",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Hire Charge Invoice",
+   "link_count": 0,
+   "link_to": "Hire Charge Invoice",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Mechanical Payment",
+   "link_count": 0,
+   "link_to": "Mechanical Payment",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
    "label": "Hire Charge Parameter",
    "link_count": 0,
    "link_to": "Hire Charge Parameter",
@@ -196,31 +225,19 @@
    "hidden": 0,
    "is_query_report": 0,
    "label": "Fleet Reports",
-   "link_count": 4,
+   "link_count": 3,
    "link_type": "DocType",
    "onboard": 0,
    "type": "Card Break"
   },
   {
    "hidden": 0,
-   "is_query_report": 0,
+   "is_query_report": 1,
    "label": "POL Receive Report",
    "link_count": 0,
    "link_to": "POL Receive Report",
    "link_type": "Report",
    "onboard": 0,
-   "report_ref_doctype": "POL Receive",
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "POL Ledger",
-   "link_count": 0,
-   "link_to": "POL Ledger",
-   "link_type": "Report",
-   "onboard": 0,
-   "report_ref_doctype": "POL Entry",
    "type": "Link"
   },
   {
@@ -244,49 +261,9 @@
    "onboard": 0,
    "report_ref_doctype": "Repair And Services",
    "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "POL Transaction",
-   "link_count": 3,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "POL Advance",
-   "link_count": 0,
-   "link_to": "POL Advance",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "POL Receive",
-   "link_count": 0,
-   "link_to": "POL Receive",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "dependencies": "HSD Payment",
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "HSD Payment",
-   "link_count": 0,
-   "link_to": "HSD Payment",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
   }
  ],
- "modified": "2025-03-12 15:27:33.789357",
+ "modified": "2025-03-17 15:11:58.129938",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Fleet Management",
@@ -301,6 +278,14 @@
   {
    "color": "Grey",
    "doc_view": "List",
+   "label": "POL Advance",
+   "link_to": "POL Advance",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
    "label": "POL Receive",
    "link_to": "POL Receive",
    "stats_filter": "[]",
@@ -311,14 +296,6 @@
    "doc_view": "List",
    "label": "Equipment",
    "link_to": "Equipment",
-   "stats_filter": "[]",
-   "type": "DocType"
-  },
-  {
-   "color": "Grey",
-   "doc_view": "List",
-   "label": "POL Issue",
-   "link_to": "POL Issue",
    "stats_filter": "[]",
    "type": "DocType"
   }

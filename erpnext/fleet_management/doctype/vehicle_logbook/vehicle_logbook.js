@@ -120,39 +120,39 @@ frappe.ui.form.on('Vehicle Logbook', {
 			});
 		}
 
-		if (frm.doc.equipment) {
-            frappe.call({
-                method: "erpnext.fleet_management.doctype.vehicle_logbook.vehicle_logbook.get_equipment_data", // Update with the correct path
-                args: {
-                    equipment_name: frm.doc.equipment,
-                    to_date: frm.doc.to_date,
-                    all_equipment: frm.doc.all_equipment || 1,
-                    branch: frm.doc.branch
-                },
-                callback: function(response) {
-                    if (response.message) {
-                        let data = response.message;
+		// if (frm.doc.equipment) {
+        //     frappe.call({
+        //         method: "erpnext.fleet_management.doctype.vehicle_logbook.vehicle_logbook.get_equipment_data", // Update with the correct path
+        //         args: {
+        //             equipment_name: frm.doc.equipment,
+        //             to_date: frm.doc.to_date,
+        //             all_equipment: frm.doc.all_equipment || 1,
+        //             branch: frm.doc.branch
+        //         },
+        //         callback: function(response) {
+        //             if (response.message) {
+        //                 let data = response.message;
 
-                        // Process and display the fetched data
-                        frappe.msgprint({
-                            title: __('Fetched Equipment Data'),
-                            message: `<pre>${JSON.stringify(data, null, 4)}</pre>`,
-                            indicator: 'green'
-                        });
+        //                 // Process and display the fetched data
+        //                 frappe.msgprint({
+        //                     title: __('Fetched Equipment Data'),
+        //                     message: `<pre>${JSON.stringify(data, null, 4)}</pre>`,
+        //                     indicator: 'green'
+        //                 });
 
-                        // Optional: You can set a field value with specific data
-                        if (data.length > 0) {
-                            frm.set_value('tank_balance', data[0].balance);
-                        }
-                    } else {
-                        frappe.msgprint(__('No data found for the selected equipment.'));
-                    }
-                }
-            });
-        } else {
-            // Clear related fields if no equipment is selected
-            frm.set_value('tank_balance', '');
-        }
+        //                 // Optional: You can set a field value with specific data
+        //                 if (data.length > 0) {
+        //                     frm.set_value('tank_balance', data[0].balance);
+        //                 }
+        //             } else {
+        //                 frappe.msgprint(__('No data found for the selected equipment.'));
+        //             }
+        //         }
+        //     });
+        // } else {
+        //     // Clear related fields if no equipment is selected
+        //     frm.set_value('tank_balance', '');
+        // }
 	},
 
 
@@ -357,7 +357,7 @@ function calculate_work_hour(frm) {
 
 
 cur_frm.add_fetch("equipment", "registration_number", "registration_number")
-cur_frm.add_fetch("equipment", "hsd_type", "pol_type")
+// cur_frm.add_fetch("equipment", "hsd_type", "pol_type")
 cur_frm.add_fetch("equipment", "current_operator", "equipment_operator")
 cur_frm.add_fetch("pool_equipment", "registration_number", "pool_equipment_number")
 cur_frm.add_fetch("equipment", "lph", "lph")

@@ -402,7 +402,7 @@
    "link_fieldname": "pos_profile"
   }
  ],
- "modified": "2022-08-10 12:57:06.241439",
+ "modified": "2025-03-17 10:31:20.815763",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "POS Profile",
@@ -426,6 +426,17 @@
    "read": 1,
    "report": 1,
    "role": "Accounts User"
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales User",
+   "share": 1,
+   "write": 1
   }
  ],
  "sort_field": "modified",

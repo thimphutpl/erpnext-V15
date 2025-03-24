@@ -1,0 +1,73 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:fee_type",
+ "creation": "2025-03-23 19:54:45.971871",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "fee_type",
+  "rate",
+  "column_break_zxmq",
+  "disabled",
+  "description"
+ ],
+ "fields": [
+  {
+   "fieldname": "fee_type",
+   "fieldtype": "Data",
+   "label": "Fee Type",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "rate",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Rate",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_zxmq",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "disabled",
+   "fieldtype": "Check",
+   "label": "Disabled"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "label": "Description"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-03-23 20:09:34.134576",
+ "modified_by": "Administrator",
+ "module": "Event Management",
+ "name": "Fee Type",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "search_fields": "description",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

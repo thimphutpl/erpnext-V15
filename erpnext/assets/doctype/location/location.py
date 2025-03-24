@@ -19,8 +19,11 @@ class Location(NestedSet):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
+		from erpnext.event_management.doctype.event_payment_method.event_payment_method import EventPaymentMethod
+		from erpnext.event_management.doctype.event_profile_user.event_profile_user import EventProfileUser
 		from frappe.types import DF
 
+		applicable_for_users: DF.Table[EventProfileUser]
 		area: DF.Float
 		area_uom: DF.Link | None
 		disabled: DF.Check
@@ -34,6 +37,7 @@ class Location(NestedSet):
 		longitude: DF.Float
 		old_parent: DF.Data | None
 		parent_location: DF.Link | None
+		payments: DF.Table[EventPaymentMethod]
 		rgt: DF.Int
 	# end: auto-generated types
 

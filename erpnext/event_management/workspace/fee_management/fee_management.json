@@ -1,0 +1,152 @@
+{
+ "charts": [],
+ "content": "[{\"id\":\"aDmSXFmSkz\",\"type\":\"paragraph\",\"data\":{\"text\":\"<b>Quick Access</b>\",\"col\":12}},{\"id\":\"k4RM-c6o8i\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Visitor Pass Registry\",\"col\":3}},{\"id\":\"YCfW4KJqm0\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Fee Closing Entry\",\"col\":3}},{\"id\":\"F9fcs4WCxn\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Cash Deposit Entry\",\"col\":3}},{\"id\":\"QcCmSn6zqf\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Event Management</span>\",\"col\":12}},{\"id\":\"F7QWB48vqN\",\"type\":\"card\",\"data\":{\"card_name\":\"Masters\",\"col\":4}},{\"id\":\"doR9K8apDF\",\"type\":\"card\",\"data\":{\"card_name\":\"Transactions\",\"col\":4}},{\"id\":\"U9ZRGMHIK1\",\"type\":\"card\",\"data\":{\"card_name\":\"Reports\",\"col\":4}}]",
+ "creation": "2025-03-06 14:57:45.268021",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "unhide",
+ "idx": 1,
+ "indicator_color": "",
+ "is_hidden": 0,
+ "label": "Fee Management",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Reports",
+   "link_count": 1,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Daily Collection Report",
+   "link_count": 0,
+   "link_to": "Daily Collection Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Masters",
+   "link_count": 3,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Location",
+   "link_count": 0,
+   "link_to": "Location",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Ticket Type",
+   "link_count": 0,
+   "link_to": "Ticket Type",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Fee Type",
+   "link_count": 0,
+   "link_to": "Fee Type",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Transactions",
+   "link_count": 3,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Visitor Pass Registry",
+   "link_count": 0,
+   "link_to": "Visitor Pass Registry",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Fee Closing Entry",
+   "link_count": 0,
+   "link_to": "Fee Closing Entry",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Cash Deposit Entry",
+   "link_count": 0,
+   "link_to": "Cash Deposit Entry",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  }
+ ],
+ "modified": "2025-03-24 16:57:47.986901",
+ "modified_by": "Administrator",
+ "module": "Event Management",
+ "name": "Fee Management",
+ "number_cards": [],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [],
+ "sequence_id": 21.0,
+ "shortcuts": [
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Cash Deposit Entry",
+   "link_to": "Cash Deposit Entry",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Visitor Pass Registry",
+   "link_to": "Visitor Pass Registry",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Fee Closing Entry",
+   "link_to": "Fee Closing Entry",
+   "stats_filter": "[]",
+   "type": "DocType"
+  }
+ ],
+ "title": "Fee Management"
+}

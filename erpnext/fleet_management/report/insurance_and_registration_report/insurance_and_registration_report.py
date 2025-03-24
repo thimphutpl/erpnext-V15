@@ -41,3 +41,9 @@ def get_data(filters):
 	#frappe.msgprint("{0}, {1}".format(filters.get("from_date"), filters.get("to_date")))
 	return frappe.db.sql(query)
 
+
+
+
+
+
+

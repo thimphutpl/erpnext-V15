@@ -39,6 +39,9 @@ def get_conditions(filters):
 	if filters.get("company"):
 		conditions["company"] = filters.company
 
+	if filters.get("custodian"):
+		conditions["custodian"] = filters.custodian	
+
 	if filters.filter_based_on == "Date Range":
 		if not filters.from_date and not filters.to_date:
 			filters.from_date = add_months(nowdate(), -12)
@@ -118,6 +121,7 @@ def get_data(filters):
 		"available_for_use_date",
 		"purchase_invoice",
 		"opening_accumulated_depreciation",
+		"custodian"
 	]
 	assets_record = frappe.db.get_all("Asset", filters=conditions, fields=fields)
 
@@ -147,6 +151,7 @@ def get_data(filters):
 			"purchase_date": asset.purchase_date,
 			"asset_value": asset_value,
 			"company": asset.company,
+			"custodian": asset.custodian,
 		}
 		data.append(row)
 
@@ -404,6 +409,13 @@ def get_columns(filters):
 				"options": "Company",
 				"width": 120,
 			},
+			{
+				"label": _("Employee"),
+				"fieldname": "custodian",
+				"fieldtype": "Link",
+				"options": "Employee",
+				"width": 120,
+			},
 		]
 
 	return [
@@ -487,4 +499,11 @@ def get_columns(filters):
 			"options": "Company",
 			"width": 120,
 		},
+		{
+				"label": _("Employee"),
+				"fieldname": "custodian",
+				"fieldtype": "Link",
+				"options": "Employee",
+				"width": 120,
+			},
 	]

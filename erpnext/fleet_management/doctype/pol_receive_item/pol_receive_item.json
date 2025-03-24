@@ -10,7 +10,7 @@
   "bill_date",
   "column_break_4",
   "qty",
-  "allocated_amount",
+  "uom",
   "column_break_nmdt",
   "rate",
   "amount",
@@ -31,38 +31,26 @@
    "read_only": 1
   },
   {
-   "columns": 1,
-   "fieldname": "allocated_amount",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "UOM",
-   "options": "UOM",
-   "read_only": 1
-  },
-  {
    "columns": 2,
    "fieldname": "bill_no",
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Bill No",
-   "options": "POL Advance",
-   "read_only": 1
+   "options": "POL Advance"
   },
   {
    "columns": 2,
    "fieldname": "bill_date",
    "fieldtype": "Date",
    "in_list_view": 1,
-   "label": "Bill Date",
-   "read_only": 1
+   "label": "Bill Date"
   },
   {
    "columns": 1,
    "fieldname": "qty",
    "fieldtype": "Float",
    "in_list_view": 1,
-   "label": "Qty",
-   "read_only": 1
+   "label": "Qty"
   },
   {
    "fieldname": "column_break_nmdt",
@@ -73,8 +61,7 @@
    "fieldname": "rate",
    "fieldtype": "Currency",
    "in_list_view": 1,
-   "label": "Rate",
-   "read_only": 1
+   "label": "Rate"
   },
   {
    "fieldname": "section_break_qozd",
@@ -84,12 +71,20 @@
    "fieldname": "remarks",
    "fieldtype": "Small Text",
    "label": "Remarks"
+  },
+  {
+   "columns": 1,
+   "fieldname": "uom",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "UOM",
+   "options": "UOM"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-03-12 15:41:57.377356",
+ "modified": "2025-03-16 19:32:49.370078",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Receive Item",

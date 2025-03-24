@@ -1,0 +1,60 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-03-24 10:47:00.668699",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "reference_name",
+  "column_break_ejjc",
+  "posting_date",
+  "column_break_rfmh",
+  "grand_total"
+ ],
+ "fields": [
+  {
+   "fieldname": "reference_name",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Reference Name",
+   "options": "Visitor Pass Registry"
+  },
+  {
+   "fieldname": "column_break_ejjc",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "reference_name.posting_date",
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Posting Date",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_rfmh",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "reference_name.grand_total",
+   "fieldname": "grand_total",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Grand Total",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-03-24 12:40:14.471176",
+ "modified_by": "Administrator",
+ "module": "Event Management",
+ "name": "Entry Fee Reference",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
