@@ -308,7 +308,8 @@
    "oldfieldname": "from_warehouse",
    "oldfieldtype": "Link",
    "options": "Warehouse",
-   "print_hide": 1
+   "print_hide": 1,
+   "reqd": 1
   },
   {
    "depends_on": "from_warehouse",
@@ -340,7 +341,8 @@
    "oldfieldname": "to_warehouse",
    "oldfieldtype": "Link",
    "options": "Warehouse",
-   "print_hide": 1
+   "print_hide": 1,
+   "reqd": 1
   },
   {
    "depends_on": "to_warehouse",
@@ -740,6 +742,8 @@
    "depends_on": "eval:doc.in_transit==1 && doc.docstatus == 0",
    "fieldname": "status",
    "fieldtype": "Select",
+   "in_filter": 1,
+   "in_standard_filter": 1,
    "label": "Status",
    "options": "\nDraft\nIn Transit\nSubmitted\nCancelled",
    "read_only": 1
@@ -802,9 +806,8 @@
   },
   {
    "fieldname": "reference_name",
-   "fieldtype": "Dynamic Link",
+   "fieldtype": "Data",
    "label": "Reference Name",
-   "options": "reference_type",
    "read_only": 1
   }
  ],
@@ -813,7 +816,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-22 16:37:16.790350",
+ "modified": "2025-03-24 17:31:53.631607",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Stock Entry",
