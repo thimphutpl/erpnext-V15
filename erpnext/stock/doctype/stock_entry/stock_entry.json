@@ -308,8 +308,7 @@
    "oldfieldname": "from_warehouse",
    "oldfieldtype": "Link",
    "options": "Warehouse",
-   "print_hide": 1,
-   "reqd": 1
+   "print_hide": 1
   },
   {
    "depends_on": "from_warehouse",
@@ -331,7 +330,6 @@
    "fieldtype": "Column Break"
   },
   {
-   "description": "Sets 'Target Warehouse' in each row of the items table.",
    "fieldname": "to_warehouse",
    "fieldtype": "Link",
    "in_list_view": 1,
@@ -341,8 +339,7 @@
    "oldfieldname": "to_warehouse",
    "oldfieldtype": "Link",
    "options": "Warehouse",
-   "print_hide": 1,
-   "reqd": 1
+   "print_hide": 1
   },
   {
    "depends_on": "to_warehouse",
@@ -817,7 +814,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-03-24 17:39:34.911657",
+ "modified": "2025-03-25 09:43:58.025942",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Stock Entry",
