@@ -1,5 +1,4 @@
 frappe.provide("erpnext.financial_statements");
-
 erpnext.financial_statements = {
 	filters: get_filters(),
 	baseData: null,
@@ -260,7 +259,8 @@ function get_filters() {
 					company: frappe.query_report.get_filter_value("company"),
 				});
 			},
-		},
+		},		
+		
 	];
 
 	// Dynamically set 'default' values for fiscal year filters

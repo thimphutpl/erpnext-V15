@@ -1,73 +1,92 @@
 # Copyright (c) 2024, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
-from frappe import _
+from __future__ import unicode_literals
 import frappe
-
+from frappe import _
+from frappe.utils import flt
+from erpnext.accounts.report.financial_statements_cdcl  import (get_period_list, get_columns, get_data)
 
 def execute(filters=None):
-	return _execute(filters)
+	if filters.show_zero_values:
+		show_zero = 1
+	else:
+		show_zero = 0
+	if filters.from_fiscal_year > filters.to_fiscal_year:
+		frappe.throw("From Fiscal Year Cannot Be Greater Than To Fiscal Year")
+	period_list = get_period_list(filters.from_fiscal_year, filters.to_fiscal_year, filters.periodicity, filters.company)
 
-def _execute(filters=None):
-	if not filters:
-		filters = {}
+	income = get_data(filters.cost_center, filters.company, "Income", "Credit", period_list,
+		accumulated_values=filters.accumulated_values, ignore_closing_entries=True, show_zero_values=show_zero, project=filters.project)
+	expense = get_data(filters.cost_center, filters.company, "Expense", "Debit", period_list,
+		accumulated_values=filters.accumulated_values, ignore_closing_entries=True, show_zero_values=show_zero, project=filters.project)
 
-	columns = get_columns(filters)
-	data    = get_data(filters)
-	return columns, data
+	net_profit_loss = get_net_profit_loss(income, expense, period_list, filters.company)
 
-def get_data(filters):
-	gl_entries = get_gl_entries(filters)
-	return gl_entries
+	data = []
+	data.extend(income or [])
+	data.extend(expense or [])
+	if net_profit_loss:
+		data.append(net_profit_loss)
 
-def get_conditions(filters):
-	conditions = []
+	columns = get_columns(filters.periodicity, period_list, filters.accumulated_values, filters.company)
 
-	# if filters.get("cost_center"):
-	# 	filters.cost_center = get_cost_centers_with_children(filters.cost_center)
-	# 	conditions.append("cost_center in %(cost_center)s")
+	chart = get_chart_data(filters, columns, income, expense, net_profit_loss)
 
-	return "and {}".format(" and ".join(conditions)) if conditions else ""
+	return columns, data, None, chart 
 
-def get_gl_entries(filters):
-	gl_entries = frappe.db.sql(
-		f"""
-		select
-			name as gl_entry, posting_date, account, party_type, party,
-			voucher_type, voucher_subtype, voucher_no,
-			cost_center, project,
-			against_voucher_type, against_voucher, account_currency,
-			against, is_opening, creation
-		from `tabGL Entry`
-		where is_cancelled = 0 {get_conditions(filters)}
-	""",
-		filters,
-		as_dict=1,
-	)
-	return gl_entries
+def get_net_profit_loss(income, expense, period_list, company):
+	if income and expense:
+		total = 0
+		net_profit_loss = {
+			"account_name": "'" + _("Net Profit / Loss") + "'",
+			"account": None,
+			"warn_if_negative": True,
+			"currency": frappe.db.get_value("Company", company, "default_currency")
+		}
 
-def get_columns(filters):
-	columns = [
-		{"label": _("Posting Date"), "fieldname": "posting_date", "fieldtype": "Date", "width": 120},
-		{
-			"label": _("Account"),
-			"fieldname": "account",
-			"fieldtype": "Link",
-			"options": "Account",
-			"width": 180,
-		},
-		{"label": _("Cost Center"), "fieldname": "cost_center", "width": 180},
-		{"label": _("Voucher Type"), "fieldname": "voucher_type", "width": 120},
-		{
-			"label": _("Voucher No"),
-			"fieldname": "voucher_no",
-			"fieldtype": "Dynamic Link",
-			"options": "voucher_type",
-			"width": 180,
-		},
-		{"label": _("Against Account"), "fieldname": "against", "width": 150},
-		{"label": _("Party Type"), "fieldname": "party_type", "width": 100},
-		{"label": _("Party"), "fieldname": "party", "width": 150},
-	]
+		has_value = False
 
-	return columns
+		for period in period_list:
+			net_profit_loss[period.key] = flt(income[-2][period.key] - expense[-2][period.key], 3)
+
+			if net_profit_loss[period.key]:
+				has_value=True
+
+			total += flt(net_profit_loss[period.key])
+			net_profit_loss["total"] = total
+
+		if has_value:
+			return net_profit_loss
+
+def get_chart_data(filters, columns, income, expense, net_profit_loss):
+	x_intervals = ['x'] + [d.get("label") for d in columns[2:-1]]
+
+	income_data, expense_data, net_profit = [], [], []
+	for p in columns[2:]:
+		if income:
+			income_data.append(income[-2].get(p.get("fieldname")))
+		if expense:
+			expense_data.append(expense[-2].get(p.get("fieldname")))
+		if net_profit_loss:
+			net_profit.append(net_profit_loss.get(p.get("fieldname")))
+
+	columns = [x_intervals]
+	if income_data:
+		columns.append(["Income"] + income_data)
+	if expense_data:
+		columns.append(["Expense"] + expense_data)
+	if net_profit:
+		columns.append(["Net Profit/Loss"] + net_profit)
+
+	chart = {
+		"data": {
+			'x': 'x',
+			'columns': columns
+		}
+	}
+
+	if not filters.accumulated_values:
+		chart["chart_type"] = "bar"
+
+	return chart
