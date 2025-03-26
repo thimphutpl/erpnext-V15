@@ -762,7 +762,7 @@ class Asset(AccountsController):
 				"company": self.company,
 				"remark": self.name + " (" + self.asset_name + ") Asset Issued",
 				"user_remark": self.name + " (" + self.asset_name + ") Asset Issued",
-				"posting_date": self.posting_date if self.posting_date else self.purchase_date,
+				"posting_date": self.posting_date if self.posting_date else self.available_for_use_date,
 				"branch": self.branch
 				})
 			#debit account update
@@ -792,7 +792,7 @@ class Asset(AccountsController):
 					"company": self.company,
 					"remark": self.name + " (" + self.asset_name + ") Asset Issued",
 					"user_remark": self.name + " (" + self.asset_name + ") Asset Issued",
-					"posting_date": self.posting_date if self.posting_date else self.purchase_date,
+					"posting_date": self.posting_date if self.posting_date else self.available_for_use_date,
 					"branch": self.branch
 					})
 				#debit account update
