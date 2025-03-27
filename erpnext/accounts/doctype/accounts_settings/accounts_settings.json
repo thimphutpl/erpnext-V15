@@ -45,10 +45,13 @@
   "stale_days",
   "approver_tab",
   "abstract_bill_approver",
+  "chief_finance_officer",
   "column_break_pzef",
   "ab_approver_name",
+  "cfo_name",
   "column_break_moyj",
   "ab_user_id",
+  "cfo_user_id",
   "invoicing_settings_tab",
   "accounts_transactions_settings_section",
   "over_billing_allowance",
@@ -502,6 +505,24 @@
    "label": "Email",
    "options": "User",
    "read_only": 1
+  },
+  {
+   "fieldname": "chief_finance_officer",
+   "fieldtype": "Link",
+   "label": "Chief Finance Officer",
+   "options": "Employee"
+  },
+  {
+   "fetch_from": "chief_finance_officer.employee_name",
+   "fieldname": "cfo_name",
+   "fieldtype": "Data",
+   "label": "CFO Name"
+  },
+  {
+   "fetch_from": "chief_finance_officer.user_id",
+   "fieldname": "cfo_user_id",
+   "fieldtype": "Data",
+   "label": "CFO User ID"
   }
  ],
  "icon": "icon-cog",
@@ -509,7 +530,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-09-03 10:43:28.685062",
+ "modified": "2025-03-27 15:01:25.958733",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Accounts Settings",

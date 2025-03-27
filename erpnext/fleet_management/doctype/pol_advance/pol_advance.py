@@ -85,6 +85,8 @@ class POLAdvance(AccountsController):
 			# frappe.throw(str(abstract_bill[0][0]))
 			if abstract_bill and abstract_bill[0][0] == 1:
 				self.create_abstract_bill()
+				self.send_email()
+
 			else:
 				self.post_journal_entry()
 
@@ -92,7 +94,33 @@ class POLAdvance(AccountsController):
 		if not self.is_opening:
 			# self.cancel_budget_entry()
 			self.update_od_balance()
+	def send_email(self):
+		cfo = frappe.db.get_single_value("Accounts Settings", "cfo_user_id")
+		if cfo:
+			recipient = cfo
+		else:
+			frappe.throw("Please set Chief Finance Officer in Accounts setting under approver setting")
 
+			 
+		subject = "New Abstract for POL Advance"
+		
+  
+		if cfo:
+			message = f"""
+			<p>Dear Sir,</p>
+			<p>This is to inform you that a new Abstract Bill has been created in ERPNext from POL Advance.</p>
+			<p>Please review the details at your earliest convenience at
+   			<a href="https://erp.ogz.bt/" target="_blank">Click Here</a>.</p>
+			<p>Thank you,<br>
+			<strong>ERP HMS</strong></p>
+		"""
+		
+
+		frappe.sendmail(
+			recipients = recipient,
+			subject=subject,
+			message=message
+		)
 	def update_od_balance(self):
 		if self.is_opening:
 			return

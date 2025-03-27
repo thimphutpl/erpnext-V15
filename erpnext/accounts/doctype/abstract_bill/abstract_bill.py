@@ -83,10 +83,35 @@ class AbstractBill(Document):
 		if current_state == "Pending":
 			if frappe.session.user != self.forward_to_name:
 				frappe.throw("Only {} can edit and submit these document".format(self.forward_to_name))
+		action = frappe.request.form.get('action')
+		if action == "Forward":
+			self.send_email()
 
 	def validate_fiscal_year(self):
 		if not self.fiscal_year:
 			frappe.throw("Please fiscal year")
+	def send_email(self):
+		recipient = self.forward_to_name
+			 
+		subject = "Forwarded Abstract for POL Advance"
+		
+  
+		if recipient:
+			message = f"""
+			<p>Dear Sir,</p>
+			<p>This is to inform you that a new Abstract Bill has been forwarded to you in ERPNext from POL Advance.</p>
+			<p>Please review the details at your earliest convenience at
+   			<a href="https://erp.ogz.bt/" target="_blank">Click Here</a>.</p>
+			<p>Thank you,<br>
+			<strong>ERP HMS</strong></p>
+		"""
+		
+
+		frappe.sendmail(
+			recipients = recipient,
+			subject=subject,
+			message=message
+		)
 
 	def before_submit(self):
 		if not self.mode_of_payment:
