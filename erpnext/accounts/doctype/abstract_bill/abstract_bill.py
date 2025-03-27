@@ -43,6 +43,8 @@ class AbstractBill(Document):
 		file_index: DF.Link | None
 		final_settlement: DF.Check
 		fiscal_year: DF.Link | None
+		forward_to: DF.Link | None
+		has_workflow: DF.Check
 		items: DF.Table[AbstractBillItem]
 		journal_entry: DF.Data | None
 		journal_entry_status: DF.Data | None
@@ -68,11 +70,19 @@ class AbstractBill(Document):
 		self.set_activity_head()
 		self.calculate_total_amount()
 		self.set_approver()
-		if not self.get("__islocal"):
+		action = frappe.request.form.get('action')
+		if not self.get("__islocal") and action=='Submit':
 			self.validate_fiscal_year()
 			self.validate_file_index()
 			self.validate_tax_exemption()
 		self.generate_dispatch_number()
+		self.validate_workflow()
+  
+	def validate_workflow(self):
+		current_state = frappe.db.get_value(self.doctype, self.name, "workflow_state")
+		if current_state == "Pending":
+			if frappe.session.user != self.forward_to_name:
+				frappe.throw("Only {} can edit and submit these document".format(self.forward_to_name))
 
 	def validate_fiscal_year(self):
 		if not self.fiscal_year:
@@ -333,3 +343,18 @@ def get_fiscal_year(doctype, txt, searchfield, start, page_len, filters):
             "page_len": page_len
         }
     )
+    
+def get_permission_query_conditions(user):
+    # frappe.throw("hi")
+	# if not user: user = frappe.session.user
+	user_roles = frappe.get_roles(user)
+
+	if user == "Administrator" or "System Manager" or "Chief Finance Officer" in user_roles: 
+		return
+
+	return """(
+		`tabMaterial Request`.owner = '{user}'
+		or 
+		`tabMaterial Request`.forward_to_name = '{user}'
+  
+	)""".format(user=user)

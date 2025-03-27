@@ -263,6 +263,8 @@ class POLAdvance(AccountsController):
 			"doctype": "Abstract Bill",
 			"posting_date": self.entry_date,
 			"company": self.company,
+			"has_workflow":1,
+			"worflow_state":"Draft",
 			"branch": self.branch,
 			"reference_doctype": self.doctype,
 			"reference_name": self.name,

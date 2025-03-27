@@ -577,6 +577,7 @@ permission_query_conditions = {
     "Journal Entry": "erpnext.accounts.doctype.journal_entry.journal_entry.get_permission_query_conditions",
     "Journal Entry": "erpnext.accounts.doctype.fiscal_year.fiscal_year.get_permission_query_conditions",
 	"Material Request": "erpnext.stock.doctype.material_request.material_request.get_permission_query_conditions",
+	"Abstract Bill": "erpnext.accounts.doctype.abstract_bill.abstract_bill.get_permission_query_conditions"
 }
 
 user_privacy_documents = [
