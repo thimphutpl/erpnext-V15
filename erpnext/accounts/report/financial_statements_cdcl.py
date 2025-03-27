@@ -236,7 +236,6 @@ def filter_out_zero_value_rows(data, parent_children_map, show_zero_values=False
 
 	return data_with_value
 
-
 def add_total_row(out, root_type, balance_must_be, period_list, company_currency):
     total_row = {
         "account_name": "'Total'",
@@ -248,9 +247,9 @@ def add_total_row(out, root_type, balance_must_be, period_list, company_currency
     for period in period_list:
         total = 0.0
         for row in out:
-            # Use .get() with default to handle missing keys
-            total += flt(row.get(period.key, 0.0))
-        
+            if not row.get("parent_account"):  # Check if it's a root account
+                total += flt(row.get(period.key, 0.0))
+
         total_row[period.key] = total
 
     total_row["total"] = total_row[period_list[-1].key]
