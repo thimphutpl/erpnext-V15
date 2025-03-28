@@ -16,6 +16,7 @@ class PurchaseInvoiceItem(Document):
 
 		allow_zero_valuation_rate: DF.Check
 		amount: DF.Currency
+		amount_discount: DF.Data | None
 		apply_tds: DF.Check
 		asset_category: DF.Link | None
 		asset_location: DF.Link | None
@@ -33,6 +34,7 @@ class PurchaseInvoiceItem(Document):
 		cost_center: DF.Link | None
 		deferred_expense_account: DF.Link | None
 		description: DF.TextEditor | None
+		discount_account: DF.Link | None
 		discount_amount: DF.Currency
 		discount_percentage: DF.Percent
 		enable_deferred_expense: DF.Check
