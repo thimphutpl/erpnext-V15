@@ -38,7 +38,7 @@ class POLReceive(StockController):
 		credit_account: DF.Link | None
 		current_km_reading: DF.Float
 		current_km_reading_2: DF.Float
-		date_of_last_polhsd_recoupment_made: DF.Data | None
+		date_of_last_polhsd_recoupment_made: DF.Date | None
 		direct_consumption: DF.Check
 		discount_amount: DF.Currency
 		equipment: DF.Link
@@ -83,6 +83,7 @@ class POLReceive(StockController):
 		total_pol_issed: DF.Data | None
 	# end: auto-generated types
 	def validate(self):
+		self.add_previous_km()
 		check_future_date(self.posting_date)
 		self.check_on_dry_hire()
 		# self.validate_warehouse()
@@ -96,7 +97,22 @@ class POLReceive(StockController):
 			self.get_advance()
 		self.calculate_pol_details()
 		
+	def add_previous_km(self):
+		latest_km = frappe.db.sql('''
+                            SELECT current_km_reading_2 
+							FROM `tabPOL Receive` 
+							WHERE equipment_number = '{}' and docstatus=1
+							ORDER BY previous_km_reading DESC 
+							LIMIT 1;
+                            '''.format(self.equipment_number))
+		if latest_km:
+			# frappe.throw(str(latest_km[0][0]))
+			self.previous_km_reading = latest_km[0][0]
+		
+		from frappe.utils import flt
 
+		if flt(self.current_km_reading_2) < flt(self.previous_km_reading):
+			frappe.throw('Current KM reading cannot be less than previous KM reading')
 	def calculate_amount(self):
 		total_amount = 0
 		total_qty = 0
@@ -143,8 +159,8 @@ class POLReceive(StockController):
 		# 	if not pv_km:
 		# 		frappe.throw("Please set initial km reading in equimpment {}".format(frappe.get_desk_link("Equipment", self.equipment)))
 		
-		if flt(pv_km) >= flt(self.current_km_reading):
-			frappe.throw("Current KM Reading cannot be less than Previous KM Reading<b>({})</b> for Vehicle Number <b>{}</b>".format(pv_km,self.equipment_number))
+		# if flt(pv_km) >= flt(self.current_km_reading):
+		# 	frappe.throw("Current KM Reading cannot be less than Previous KM Reading<b>({})</b> for Vehicle Number <b>{}</b>".format(pv_km,self.equipment_number))
 		self.km_difference = flt(self.current_km_reading) - flt(pv_km)
 		self.mileage = flt(self.km_difference) / self.qty
 
