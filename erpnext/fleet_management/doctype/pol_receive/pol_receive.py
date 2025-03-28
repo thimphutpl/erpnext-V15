@@ -38,8 +38,9 @@ class POLReceive(StockController):
 		current_km: DF.Float
 		equipment: DF.Link
 		equipment_name: DF.Data | None
+		for_machineries: DF.Check
 		fuel_type: DF.Link
-		fuelbook: DF.Link
+		fuelbook: DF.Link | None
 		item_name: DF.Data | None
 		items: DF.Table[POLReceiveItem]
 		km_difference: DF.Float
@@ -139,24 +140,42 @@ class POLReceive(StockController):
 		self.set("advances", [])
 		
 		Advance = frappe.qb.DocType("POL Advance")
-		
-		query = (
-			frappe.qb.from_(Advance)
-			.select(
-				Advance.name.as_("reference_name"),
-				Advance.advance_amount,
-				Advance.balance_amount,
-				Advance.posting_date.as_("advance_date"),
+		if not self.for_machineries:
+			query = (
+				frappe.qb.from_(Advance)
+				.select(
+					Advance.name.as_("reference_name"),
+					Advance.advance_amount,
+					Advance.balance_amount,
+					Advance.posting_date.as_("advance_date"),
+				)
+				.where(
+					(Advance.docstatus == 1)
+					& (Advance.balance_amount > 0)
+					& (Advance.status == "Paid")
+					& (Advance.equipment == self.equipment)
+					& (Advance.fuelbook == self.fuelbook)
+					& (Advance.company == self.company)
+				)
 			)
-			.where(
-				(Advance.docstatus == 1)
-				& (Advance.balance_amount > 0)
-				& (Advance.status == "Paid")
-				& (Advance.equipment == self.equipment)
-				& (Advance.fuelbook == self.fuelbook)
-				& (Advance.company == self.company)
+		else:
+			query = (
+				frappe.qb.from_(Advance)
+				.select(
+					Advance.name.as_("reference_name"),
+					Advance.advance_amount,
+					Advance.balance_amount,
+					Advance.posting_date.as_("advance_date"),
+				)
+				.where(
+					(Advance.docstatus == 1)
+					& (Advance.balance_amount > 0)
+					& (Advance.status == "Paid")
+					& (Advance.equipment == self.equipment)
+					& (Advance.supplier == self.supplier)
+					& (Advance.company == self.company)
+				)
 			)
-		)
 		
 		advances = query.run(as_dict=True)
 		

@@ -26,6 +26,7 @@ class POLAdvance(Document):
 		cost_center: DF.Link | None
 		equipment: DF.Link
 		equipment_name: DF.Data | None
+		for_machineries: DF.Check
 		fuelbook: DF.Link | None
 		is_opening: DF.Check
 		journal_entry: DF.Data | None

@@ -6,6 +6,7 @@
  "engine": "InnoDB",
  "field_order": [
   "equipment_details_section",
+  "for_machineries",
   "branch",
   "cost_center",
   "column_break_teov",
@@ -103,6 +104,7 @@
    "options": "Company"
   },
   {
+   "depends_on": "eval: doc.for_machineries === 0;",
    "fieldname": "fuelbook",
    "fieldtype": "Link",
    "in_list_view": 1,
@@ -133,7 +135,7 @@
    "in_list_view": 1,
    "label": "Supplier",
    "options": "Supplier",
-   "read_only": 1,
+   "read_only_depends_on": "eval:doc.for_machineries === 0;",
    "reqd": 1
   },
   {
@@ -238,12 +240,19 @@
    "fieldtype": "Time",
    "label": "Posting Time",
    "reqd": 1
+  },
+  {
+   "default": "0",
+   "description": "Check this button only if you are going to give an advance to machinery other than vehicles",
+   "fieldname": "for_machineries",
+   "fieldtype": "Check",
+   "label": "For Machineries"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-03-20 12:31:54.882807",
+ "modified": "2025-03-25 14:05:09.773392",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Advance",

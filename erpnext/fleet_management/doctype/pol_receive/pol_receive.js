@@ -52,6 +52,10 @@ frappe.ui.form.on('POL Receive', {
 		get_pol_advance(frm);
 		get_previous_km_reading(frm);
 	},
+	supplier: function (frm) {
+		get_pol_advance(frm);
+		get_previous_km_reading(frm);
+	},
 
 	current_km: function(frm) {
         if (flt(frm.doc.current_km) < flt(frm.doc.previous_km)) {
@@ -109,7 +113,7 @@ var calculate_total_amount = function(frm){
 }
 
 var get_pol_advance = (frm) => {
-	if (frm.doc.equipment && frm.doc.fuelbook) {
+	if ((frm.doc.equipment && frm.doc.fuelbook) || (frm.doc.equipment && frm.doc.supplier)) {
 		frappe.call({
 			method: 'get_pol_advance',
 			doc: frm.doc,

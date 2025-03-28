@@ -16,10 +16,11 @@
   "section_break_wsqm",
   "items",
   "more_info_section",
-  "amended_from",
+  "journal_entry",
   "column_break_owas",
   "company",
-  "cost_center"
+  "cost_center",
+  "amended_from"
  ],
  "fields": [
   {
@@ -86,6 +87,7 @@
    "fieldtype": "Section Break"
   },
   {
+   "default": "Today",
    "fieldname": "from_date",
    "fieldtype": "Date",
    "label": "From Date"
@@ -95,6 +97,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "default": "Today",
    "fieldname": "to_date",
    "fieldtype": "Date",
    "label": "To Date"
@@ -106,13 +109,20 @@
   {
    "fieldname": "items",
    "fieldtype": "Table",
+   "label": "Closing Entry Details",
    "options": "Cash Deposit Entry Item"
+  },
+  {
+   "fieldname": "journal_entry",
+   "fieldtype": "Data",
+   "label": "Journal Entry",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-03-24 17:07:03.599826",
+ "modified": "2025-03-24 18:31:40.277179",
  "modified_by": "Administrator",
  "module": "Event Management",
  "name": "Cash Deposit Entry",

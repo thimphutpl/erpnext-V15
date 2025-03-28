@@ -15,6 +15,7 @@ class CashDepositEntryItem(Document):
 		from frappe.types import DF
 
 		cash_amount: DF.Currency
+		cashier: DF.Link | None
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data

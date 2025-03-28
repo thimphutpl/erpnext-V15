@@ -24,6 +24,7 @@ class CashDepositEntry(Document):
 		cost_center: DF.Link | None
 		from_date: DF.Date | None
 		items: DF.Table[CashDepositEntryItem]
+		journal_entry: DF.Data | None
 		location: DF.Link
 		posting_date: DF.Date | None
 		to_date: DF.Date | None
