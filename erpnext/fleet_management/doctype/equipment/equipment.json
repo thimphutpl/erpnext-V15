@@ -366,19 +366,17 @@
   {
    "fieldname": "tanks_capacity",
    "fieldtype": "Float",
-   "hidden": 1,
    "label": "Tank Capacity"
   },
   {
    "fieldname": "tankers_capacity",
    "fieldtype": "Float",
-   "hidden": 1,
    "label": "Tanker Capacity"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-02-13 15:58:30.911349",
+ "modified": "2025-03-30 12:23:17.877640",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Equipment",
