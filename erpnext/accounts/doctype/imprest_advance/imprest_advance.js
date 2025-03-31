@@ -3,10 +3,10 @@
 
 frappe.ui.form.on('Imprest Advance', {
 	setup: function(frm) {
-        // Set query for employee field
-        frm.set_query("party", erpnext.queries.party);
+        // Set query for party (employee) field
+        frm.set_query("party", erpnext.queries.employee);  // Changed to employee query
         
-        // Set query for approver field based on selected employee
+        // Set query for approver field
         frm.set_query("approver", function() {
             if (!frm.doc.party) {
                 frappe.msgprint(__("Please select an employee first"));
@@ -14,18 +14,19 @@ frappe.ui.form.on('Imprest Advance', {
             }
             
             return {
-                query: "erpnext.accounts.doctype.imprest_advance.imprest_advance.get_approvers",
+                query: "erpnext.accounts.doctype.imprest_recoup.imprest_recoup.get_approvers",
                 filters: {
-                    employee: frm.doc.party
+                    party: frm.doc.party  // Changed from 'employee' to 'party' to match Python
                 }
             };
         });
     },
-	party: function(frm) {
+    
+    party: function(frm) {
         // Clear approver when employee changes
-        frm.set_value("approver", "");
+        frm.set_value("approver", null);
         
-        // If employee is selected, fetch their expense approver
+        // Fetch new approver if employee is selected
         if (frm.doc.party) {
             frappe.call({
                 method: "frappe.client.get_value",
@@ -42,6 +43,7 @@ frappe.ui.form.on('Imprest Advance', {
             });
         }
     },
+
 
 	refresh: function(frm) {
 		frm.set_query("project", function() {
