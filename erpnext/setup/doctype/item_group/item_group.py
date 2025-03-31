@@ -41,7 +41,7 @@ class ItemGroup(NestedSet):
 		self.validate_item_code_base()
 
 	def validate_item_code_base(self):
-		if not self.is_group:
+		if self.is_new:
 			return
 
 		if not re.match(r'^[A-Z]{2}$', self.item_code_base):
