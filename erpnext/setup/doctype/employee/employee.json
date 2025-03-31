@@ -47,12 +47,13 @@
   "promotion_cycle",
   "section_break_loyy",
   "company",
-  "department",
   "column_break_fgtu",
   "branch",
   "cost_center",
-  "division",
   "column_break_dnmt",
+  "department",
+  "division",
+  "section",
   "employment_details",
   "scheduled_confirmation_date",
   "column_break_32",
@@ -991,6 +992,12 @@
    "fieldtype": "Link",
    "label": "Division",
    "options": "Department"
+  },
+  {
+   "fieldname": "section",
+   "fieldtype": "Link",
+   "label": "Section",
+   "options": "Department"
   }
  ],
  "icon": "fa fa-user",
@@ -998,7 +1005,7 @@
  "image_field": "image",
  "is_tree": 1,
  "links": [],
- "modified": "2025-03-24 13:02:40.504020",
+ "modified": "2025-03-31 07:19:57.145645",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee",

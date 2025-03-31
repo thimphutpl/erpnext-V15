@@ -12,6 +12,9 @@
   "column_break_3",
   "company",
   "is_group",
+  "is_department",
+  "is_division",
+  "is_section",
   "disabled",
   "lft",
   "rgt",
@@ -123,13 +126,31 @@
    "label": "Approver Designation",
    "options": "Designation",
    "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_department",
+   "fieldtype": "Check",
+   "label": "Is Department"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_division",
+   "fieldtype": "Check",
+   "label": "Is Division"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_section",
+   "fieldtype": "Check",
+   "label": "Is Section"
   }
  ],
  "icon": "fa fa-sitemap",
  "idx": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2025-02-24 10:42:33.526161",
+ "modified": "2025-03-31 07:16:46.193810",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Department",

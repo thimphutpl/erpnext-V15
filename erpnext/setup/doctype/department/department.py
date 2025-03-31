@@ -6,6 +6,7 @@ import frappe
 from frappe.utils.nestedset import NestedSet, get_root_of
 
 from erpnext.utilities.transaction_base import delete_events
+from frappe.utils import cint
 
 
 class Department(NestedSet):
@@ -23,7 +24,10 @@ class Department(NestedSet):
 		company: DF.Link
 		department_name: DF.Data
 		disabled: DF.Check
+		is_department: DF.Check
+		is_division: DF.Check
 		is_group: DF.Check
+		is_section: DF.Check
 		lft: DF.Int
 		old_parent: DF.Data | None
 		parent_department: DF.Link | None
@@ -103,15 +107,15 @@ def add_node():
 def get_employee_count(department):
 	dep = frappe.get_doc("Department", department)	
 	cond = ''
-	cond = ' and department ="{}"'.format(dep.name)
-	# if cint(dep.is_department):
-	# 	cond = ' and department ="{}"'.format(dep.name)
-	# if cint(dep.is_division):	
-	# 	cond = ' and division ="{}"'.format(dep.department_name)
+	# cond = ' and department ="{}"'.format(dep.name)
+	if cint(dep.is_department):
+		cond = ' and department ="{}"'.format(dep.name)
+	if cint(dep.is_division):	
+		cond = ' and division ="{}"'.format(dep.department_name)
 	# if cint(dep.is_unit): 
 	# 	cond = ' and unit ="{}"'.format(dep.department_name)
-	# if cint(dep.is_section): 
-	# 	cond = ' and section ="{}"'.format(dep.department_name)
+	if cint(dep.is_section): 
+		cond = ' and section ="{}"'.format(dep.department_name)
 	data = {}
 	res = frappe.db.sql("""
 					select count(*) employee_count 

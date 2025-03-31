@@ -26,8 +26,27 @@ frappe.ui.form.on("Employee", {
 			return {
 				filters: {
 					company: frm.doc.company,
+					is_department: 1
 				},
 			};
+		});
+
+		frm.set_query("division", function(){
+			return {
+				filters: {
+					is_division: 1,
+					parent_department: frm.doc.department
+				}
+			}
+		});
+
+		frm.set_query("section", function(){
+			return {
+				filters: {
+					is_section: 1,
+					parent_department: frm.doc.department
+				}
+			}
 		});
 	},
 	prefered_contact_email: function (frm) {
