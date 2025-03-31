@@ -69,6 +69,7 @@
   "present_tank_balance",
   "average_fuel_consumption_38",
   "date_of_last_polhsd_recoupment_made",
+  "date_of_last_pol",
   "column_break_yhoe",
   "current_km_reading_2",
   "pol_issued",
@@ -566,6 +567,7 @@
   {
    "fieldname": "date_of_last_polhsd_recoupment_made",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "11. Date of last POL/HSD recoupment made"
   },
   {
@@ -602,12 +604,17 @@
    "fieldname": "balance_amount_as_per_the_supplypol_book",
    "fieldtype": "Data",
    "label": "10. Balance Amount as per the supply/POL book"
+  },
+  {
+   "fieldname": "date_of_last_pol",
+   "fieldtype": "Date",
+   "label": "11. Date of Last POL/HSD recoupment made"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-03-28 12:16:32.551766",
+ "modified": "2025-03-31 11:27:52.257165",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Receive",
