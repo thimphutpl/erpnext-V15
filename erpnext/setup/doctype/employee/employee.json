@@ -47,13 +47,12 @@
   "promotion_cycle",
   "section_break_loyy",
   "company",
-  "column_break_fgtu",
-  "branch",
-  "cost_center",
-  "column_break_dnmt",
   "department",
   "division",
   "section",
+  "column_break_fgtu",
+  "branch",
+  "cost_center",
   "employment_details",
   "scheduled_confirmation_date",
   "column_break_32",
@@ -972,10 +971,6 @@
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "column_break_dnmt",
-   "fieldtype": "Column Break"
-  },
-  {
    "fieldname": "employment_status",
    "fieldtype": "Select",
    "label": "Employment Status",
@@ -1005,7 +1000,7 @@
  "image_field": "image",
  "is_tree": 1,
  "links": [],
- "modified": "2025-03-31 07:19:57.145645",
+ "modified": "2025-03-31 07:39:51.677677",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee",
