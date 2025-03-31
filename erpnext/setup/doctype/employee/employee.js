@@ -44,7 +44,7 @@ frappe.ui.form.on("Employee", {
 			return {
 				filters: {
 					is_section: 1,
-					parent_department: frm.doc.department
+					parent_department: frm.doc.division
 				}
 			}
 		});
