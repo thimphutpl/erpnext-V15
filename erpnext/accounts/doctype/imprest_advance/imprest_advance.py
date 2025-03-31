@@ -214,6 +214,24 @@ class ImprestAdvance(Document):
 		# Set a reference to the claim journal entry
 		self.db_set("journal_entry", je.name)
 		frappe.msgprint("Journal Entry created. {}".format(frappe.get_desk_link("Journal Entry", je.name)))
+
+@frappe.whitelist()
+def get_approvers(doctype, txt, searchfield, start, page_len, filters):
+    if not filters.get("party"):
+        frappe.throw(_("Please select an employee first"))
+
+    employee = filters.get("party")
+    expense_approver = frappe.db.get_value("Employee", employee, "expense_approver")
+    
+    if not expense_approver:
+        return []
+    
+    # Return the approver details
+    return frappe.get_all("User", 
+        filters={"name": expense_approver},
+        fields=["name as value", "full_name as description"],
+        as_list=1
+    )		
 	
 def get_permission_query_conditions(user):
 	if not user: user = frappe.session.user

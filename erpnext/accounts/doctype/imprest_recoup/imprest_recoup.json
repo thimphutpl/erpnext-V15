@@ -212,8 +212,7 @@
    "fieldname": "approver",
    "fieldtype": "Link",
    "label": "Approver Email ID",
-   "options": "User",
-   "read_only": 1
+   "options": "User"
   },
   {
    "fieldname": "column_break_27",
@@ -271,7 +270,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-11 12:57:17.969252",
+ "modified": "2025-03-24 18:01:03.584263",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Imprest Recoup",

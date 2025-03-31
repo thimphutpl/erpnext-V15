@@ -370,6 +370,24 @@ def get_imprest_recoup_account(recoup_type, company):
 		)
 	return {"account": account}
 
+@frappe.whitelist()
+def get_approvers(doctype, txt, searchfield, start, page_len, filters):
+    if not filters.get("party"):
+        frappe.throw(_("Please select an employee first"))
+
+    employee = filters.get("party")
+    expense_approver = frappe.db.get_value("Employee", employee, "expense_approver")
+    
+    if not expense_approver:
+        return []
+    
+    # Return the approver details
+    return frappe.get_all("User", 
+        filters={"name": expense_approver},
+        fields=["name as value", "full_name as description"],
+        as_list=1
+    )
+
 
 def get_permission_query_conditions(user):
 	if not user: user = frappe.session.user
