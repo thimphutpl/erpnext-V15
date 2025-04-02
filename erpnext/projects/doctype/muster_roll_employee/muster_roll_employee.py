@@ -51,11 +51,12 @@ class MusterRollEmployee(Document):
 		rate_per_day: DF.Currency
 		rate_per_hour_normal: DF.Currency
 		rate_per_hour_overtime: DF.Currency
+		reason: DF.Data | None
 		reference_docname: DF.Data | None
 		reference_doctype: DF.Data | None
 		salary: DF.Currency
 		separation_date: DF.Date | None
-		status: DF.Literal["Active", "Left"]
+		status: DF.Literal["Active", "Left", "Terminated"]
 		temp_docname: DF.Data | None
 		temp_doctype: DF.Data | None
 		unit: DF.Link | None

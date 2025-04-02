@@ -12,6 +12,7 @@
   "designation",
   "id_card",
   "status",
+  "reason",
   "qualification",
   "column_break_qxdm",
   "gender",
@@ -91,7 +92,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Status",
-   "options": "Active\nLeft",
+   "options": "Active\nLeft\nTerminated",
    "reqd": 1
   },
   {
@@ -392,12 +393,18 @@
    "fieldname": "mobile_number",
    "fieldtype": "Data",
    "label": "Mobile Number"
+  },
+  {
+   "depends_on": "eval:doc.status=='Terminated'",
+   "fieldname": "reason",
+   "fieldtype": "Data",
+   "label": "Reason"
   }
  ],
  "in_create": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-03-13 10:22:19.105916",
+ "modified": "2025-04-01 12:47:04.809021",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Muster Roll Employee",
