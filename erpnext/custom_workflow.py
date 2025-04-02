@@ -77,8 +77,11 @@ class CustomWorkflow:
 				self.asset_verifier = frappe.db.get_value("Employee", frappe.db.get_value("Employee", {"designation": "Chief Executive Officer", "status": "Active"},"name"), self.field_list)
 		
 		if self.doc.doctype in ("Imprest Advance", "Imprest Recoup"):
-			self.employee = frappe.db.get_value("Employee", self.doc.party, self.field_list)
-			self.reports_to = frappe.db.get_value("Employee", {"user_id":frappe.db.get_value("Employee", self.employee, "expense_approver")}, self.field_list)
+			self.reports_to = frappe.db.get_value("Employee", {"user_id":frappe.db.get_value("Employee", self.doc.party, "expense_approver")}, self.field_list)
+			if not self.reports_to:
+				frappe.throw("Set expense approver in {}".format(
+					frappe.get_desk_link("Employee", self.doc.party)
+				))
 
 		if self.doc.doctype in ("Budget Reappropiation", "Supplementary Budget"):
 			self.employee = frappe.db.get_value("Employee", {"user_id":self.doc.owner}, self.field_list)
@@ -966,10 +969,10 @@ class CustomWorkflow:
 			self.doc.document_status = "Cancelled"
 
 	def travel_authorization(self):
-		if self.new_state.lower() in ("Draft".lower(), "Waiting Supervisor Approval".lower()):
+		if self.new_state.lower() in ("Waiting Supervisor Approval".lower()):
 			if self.doc.owner != frappe.session.user and self.new_state.lower() != self.old_state.lower():
 				frappe.throw("Only <b>{}</b> can Apply this request".format(self.doc.owner))
-			# self.set_approver("Supervisor")
+			self.set_approver("Supervisor")
 			
 		elif self.new_state.lower() == "Approved".lower():
 			if self.doc.approver != frappe.session.user:
@@ -1223,9 +1226,8 @@ class CustomWorkflow:
 	
 	def imprest_recoup(self):
 		if self.new_state.lower() in ("Draft".lower(), "Waiting Approval".lower()):
-			if self.new_state.lower() == "Waiting Approval".lower():
-				if frappe.session.user != self.doc.owner:
-					frappe.throw("Only {} can apply this Imprest Advance".format(self.doc.owner))
+			if frappe.session.user != self.doc.owner:
+				frappe.throw("Only {} can apply this Imprest Advance".format(self.doc.owner))
 			self.set_approver("Supervisor")
 
 		elif self.new_state.lower() in ("Waiting Recoupment".lower(), "Rejected".lower()) and self.old_state.lower() == "Waiting Approval".lower():
