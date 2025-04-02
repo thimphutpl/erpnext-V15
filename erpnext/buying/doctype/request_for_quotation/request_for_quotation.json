@@ -110,8 +110,7 @@
    "fieldtype": "Table",
    "label": "Suppliers",
    "options": "Request for Quotation Supplier",
-   "print_hide": 1,
-   "reqd": 1
+   "print_hide": 1
   },
   {
    "fieldname": "items_section",
@@ -337,7 +336,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-12-30 17:31:46.769796",
+ "modified": "2025-04-02 14:06:38.533246",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Request for Quotation",
