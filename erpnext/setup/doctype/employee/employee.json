@@ -117,6 +117,8 @@
   "column_break_73",
   "date_of_issue",
   "place_of_issue",
+  "section_break_lbou",
+  "nominee",
   "profile_tab",
   "bio",
   "educational_qualification",
@@ -978,6 +980,16 @@
    "fieldtype": "Link",
    "label": "Payroll Cost Center",
    "options": "Cost Center"
+  },
+  {
+   "fieldname": "section_break_lbou",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "nominee",
+   "fieldtype": "Table",
+   "label": "Employee Benefit Nomination",
+   "options": "Employee Benefit Nomination"
   }
  ],
  "icon": "fa fa-user",
@@ -985,7 +997,7 @@
  "image_field": "image",
  "is_tree": 1,
  "links": [],
- "modified": "2024-10-25 12:56:40.259400",
+ "modified": "2025-04-03 14:40:33.017203",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee",

@@ -1,0 +1,56 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-04-03 14:34:04.966853",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "benefit_type",
+  "column_break_oxpa",
+  "beneficiary_name",
+  "column_break_tjzp",
+  "percentage"
+ ],
+ "fields": [
+  {
+   "fieldname": "benefit_type",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Benefit Type",
+   "options": "Employee Benefit Type"
+  },
+  {
+   "fieldname": "column_break_oxpa",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "beneficiary_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Beneficiary Name"
+  },
+  {
+   "fieldname": "column_break_tjzp",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "percentage",
+   "fieldtype": "Percent",
+   "in_list_view": 1,
+   "label": "Percentage"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-04-03 14:37:45.012694",
+ "modified_by": "Administrator",
+ "module": "Setup",
+ "name": "Employee Benefit Nomination",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
