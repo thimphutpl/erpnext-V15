@@ -6,7 +6,7 @@ from frappe import _
 from frappe.model.document import Document
 from frappe.utils import money_in_words, cint, flt, nowdate, now_datetime
 from erpnext import get_company_currency
-from hrms.hr.doctype.travel_authorization.travel_authorization import get_exchange_rate
+from erpnext.setup.utils import get_exchange_rate
 
 
 class ProjectAdvance(Document):
