@@ -1,6 +1,6 @@
 {
  "actions": [],
- "autoname": "format:DAJ.YY.MM.####",
+ "autoname": "format:{DAJ}{YY}{MM}{####}",
  "creation": "2024-12-01 23:15:21.050269",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -108,7 +108,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-12-03 11:37:48.476442",
+ "modified": "2025-04-04 10:30:54.559928",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Daily Activity Journal",
