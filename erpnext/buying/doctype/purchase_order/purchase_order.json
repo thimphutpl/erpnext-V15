@@ -1096,7 +1096,6 @@
    "options": "Tax Withholding Category"
   },
   {
-   "collapsible": 1,
    "fieldname": "accounting_dimensions_section",
    "fieldtype": "Section Break",
    "label": "Accounting Dimensions "
@@ -1115,6 +1114,7 @@
   {
    "fieldname": "project",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Project",
    "options": "Project"
   },
@@ -1337,7 +1337,7 @@
  "idx": 105,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-02-14 11:27:26.863537",
+ "modified": "2025-04-04 15:27:42.686039",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Purchase Order",
