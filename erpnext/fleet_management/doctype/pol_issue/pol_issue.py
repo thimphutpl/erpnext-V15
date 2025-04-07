@@ -261,7 +261,7 @@ class POLIssue(StockController):
 		if self.docstatus == 2:
 			sl_entries.reverse()
 
-		self.make_sl_entries(sl_entries, 'Yes' if self.amended_from else 'No')
+		self.make_sl_entries(sl_entries)
 
 
     # Ver 2.0.190509, following method added by SHIV on 2019/05/21
