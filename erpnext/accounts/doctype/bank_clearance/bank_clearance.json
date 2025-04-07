@@ -11,6 +11,7 @@
   "from_date",
   "to_date",
   "column_break_5",
+  "branch",
   "bank_account",
   "include_reconciled_entries",
   "include_pos_transactions",
@@ -84,6 +85,13 @@
    "fieldtype": "Table",
    "label": "Payment Entries",
    "options": "Bank Clearance Detail"
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "label": "Branch",
+   "options": "Branch",
+   "reqd": 1
   }
  ],
  "hide_toolbar": 1,
@@ -91,7 +99,7 @@
  "idx": 1,
  "issingle": 1,
  "links": [],
- "modified": "2022-11-28 17:24:13.008692",
+ "modified": "2025-04-07 14:16:34.203879",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Bank Clearance",

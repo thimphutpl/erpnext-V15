@@ -21,15 +21,13 @@ class BankClearance(Document):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
+		from erpnext.accounts.doctype.bank_clearance_detail.bank_clearance_detail import BankClearanceDetail
 		from frappe.types import DF
-
-		from erpnext.accounts.doctype.bank_clearance_detail.bank_clearance_detail import (
-			BankClearanceDetail,
-		)
 
 		account: DF.Link
 		account_currency: DF.Link | None
 		bank_account: DF.Link | None
+		branch: DF.Link
 		from_date: DF.Date
 		include_pos_transactions: DF.Check
 		include_reconciled_entries: DF.Check
