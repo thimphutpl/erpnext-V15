@@ -31,12 +31,12 @@ class PurchaseReceiptItem(Document):
 		bom: DF.Link | None
 		brand: DF.Link | None
 		conversion_factor: DF.Float
-		cost_center: DF.Link | None
+		cost_center: DF.Link
 		delivery_note_item: DF.Data | None
 		description: DF.TextEditor | None
 		discount_amount: DF.Currency
 		discount_percentage: DF.Percent
-		expense_account: DF.Link | None
+		expense_account: DF.Link
 		from_warehouse: DF.Link | None
 		has_item_scanned: DF.Check
 		image: DF.Attach | None
@@ -104,7 +104,7 @@ class PurchaseReceiptItem(Document):
 		uom: DF.Link
 		use_serial_batch_fields: DF.Check
 		valuation_rate: DF.Currency
-		warehouse: DF.Link | None
+		warehouse: DF.Link
 		weight_per_unit: DF.Float
 		weight_uom: DF.Link | None
 		wip_composite_asset: DF.Link | None

@@ -1118,7 +1118,6 @@
    "read_only": 1
   },
   {
-   "collapsible": 1,
    "fieldname": "accounting_dimensions_section",
    "fieldtype": "Section Break",
    "label": "Accounting Dimensions"
@@ -1343,7 +1342,7 @@
  "idx": 261,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-03-14 21:55:05.135472",
+ "modified": "2025-04-07 12:22:28.294820",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Purchase Receipt",

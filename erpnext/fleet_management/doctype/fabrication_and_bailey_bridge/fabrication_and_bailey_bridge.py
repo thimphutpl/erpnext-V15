@@ -158,6 +158,8 @@ class FabricationAndBaileyBridge(AccountsController):
 			je.branch = self.branch
 
 			if self.owned_by == "CDCL":
+				customer_cost_center=frappe.db.get_value("Customer", self.customer, "cost_center")
+				#frappe.throw(str(customer_cost_center))
 				ir_account = frappe.db.get_single_value("Maintenance Accounts Settings", "hire_revenue_internal_account")
 				ic_account = frappe.db.get_single_value("Accounts Settings", "intra_company_account")
 				if not ic_account:
@@ -192,7 +194,7 @@ class FabricationAndBaileyBridge(AccountsController):
 									"account": maint_account,
 									"reference_type": "Fabrication And Bailey Bridge",
 									"reference_name": self.name,
-									"cost_center": self.customer_cost_center,
+									"cost_center": customer_cost_center,
 									"debit_in_account_currency": flt(d.amount),
 									"debit": flt(d.amount),
 								})
@@ -200,7 +202,7 @@ class FabricationAndBaileyBridge(AccountsController):
 						"account": ic_account,
 						"reference_type": "Fabrication And Bailey Bridge",
 						"reference_name": self.name,
-						"cost_center": self.customer_cost_center,
+						"cost_center": customer_cost_center,
 						"credit_in_account_currency": flt(self.total_amount),
 						"credit": flt(self.total_amount),
 					})

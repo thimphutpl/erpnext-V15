@@ -32,7 +32,7 @@ class PurchaseOrderItem(Document):
 		brand: DF.Link | None
 		company_total_stock: DF.Float
 		conversion_factor: DF.Float
-		cost_center: DF.Link | None
+		cost_center: DF.Link
 		delivered_by_supplier: DF.Check
 		description: DF.TextEditor | None
 		discount_amount: DF.Currency
@@ -87,7 +87,7 @@ class PurchaseOrderItem(Document):
 		supplier_quotation_item: DF.Link | None
 		total_weight: DF.Float
 		uom: DF.Link
-		warehouse: DF.Link | None
+		warehouse: DF.Link
 		weight_per_unit: DF.Float
 		weight_uom: DF.Link | None
 		wip_composite_asset: DF.Link | None
