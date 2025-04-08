@@ -16,7 +16,7 @@ frappe.ui.form.on('Hire Charge Invoice', {
 			}, __("View"));
 		}
 
-		frm.set_df_property("discount_amount", "read_only", frm.doc.owned_by == "CDCL")
+		frm.set_df_property("discount_amount", "read_only", frm.doc.owned_by == "GYALSUNG INFRA")
 		if (frm.doc.invoice_jv && frappe.model.can_read("Journal Entry")) {
 			cur_frm.add_custom_button(__('Bank Entries'), function() {
 				frappe.route_options = {
@@ -136,6 +136,92 @@ function calculate_advance_total(frm) {
 	frm.refresh_field("balance_advance_amount")
 }
 	
+// function get_vehicle_logs(form) {
+// 	frappe.call({
+// 		method: "erpnext.fleet_management.doctype.hire_charge_invoice.hire_charge_invoice.get_vehicle_logs",
+// 		async: false,
+// 		args: {
+// 			"form": form,
+// 		},
+// 		freeze: true,
+// 		freeze_message: "Loading Logbook Data...... Please Wait",
+// 		callback: function(r) {
+// 			if(r.message) {
+// 				var total_invoice_amount = 0;
+// 				cur_frm.clear_table("items");
+// 				r.message.forEach(function(logbook) {
+// 				        var row = frappe.model.add_child(cur_frm.doc, "Hire Invoice Details", "items");
+// 					row.vehicle_logbook = logbook['name']
+// 					row.registration_number = logbook['registration_number']
+// 					row.total_work_hours = logbook['total_work_time']
+// 					row.total_idle_hours = logbook['total_idle_time']
+// 					row.equipment = logbook['equipment']
+// 					row.rate_type = logbook['rate_type']
+// 					row.work_rate = logbook['work_rate']
+// 					row.idle_rate = logbook['idle_rate']
+// 					row.amount_idle = logbook['total_idle_time'] * logbook['idle_rate']
+// 					row.amount_work = logbook['total_work_time'] * logbook['work_rate']
+// 					row.number_of_days = logbook['no_of_days']
+// 					row.total_amount = logbook['total_amount']
+// 					row.hire_charge_amount = logbook['hire_charge_amount']
+// 					row.hsd_consumption = logbook['consumption']
+// 					row.operator_salary = logbook['operator_salary']
+// 					row.project = logbook['project']
+// 					// row.total_amount = (row.amount_idle + row.amount_work)
+// 					refresh_field("items");
+
+// 					// total_invoice_amount += (row.amount_idle + row.amount_work)
+// 					total_invoice_amount += (row.total_amount)
+					
+// 					frappe.call({
+// 						method: "erpnext.fleet_management.doctype.hire_charge_invoice.hire_charge_invoice.get_vehicle_accessories",
+// 						async: false,
+// 						args: {
+// 							"form": form,
+// 							"equipment": logbook['equipment']
+// 						},
+// 						callback: function(r) {
+// 							if(r.message) {
+// 								r.message.forEach(function(access) {
+// 									var row = frappe.model.add_child(cur_frm.doc, "Hire Invoice Details", "items");
+// 									row.vehicle_logbook = logbook['name']
+// 									row.registration_number = access['name']
+// 									row.equipment = logbook['equipment']
+// 									row.rate_type = logbook['rate_type']
+// 									row.total_work_hours = logbook['total_work_time']
+// 									row.total_idle_hours = logbook['total_idle_time']
+// 									row.work_rate = access['work']
+// 									row.idle_rate = access['idle']
+// 									row.amount_idle = logbook['total_idle_time'] * access['idle']
+// 									row.amount_work = logbook['total_work_time'] * access['work']
+// 									row.number_of_days = logbook['no_of_days']
+// 									row.total_amount = (row.amount_idle + row.amount_work)
+// 									row.total_amount = logbook['total_amount']
+// 									row.hire_charge_amount = logbook['hire_charge_amount']
+// 									row.hsd_consumption = logbook['consumption']
+// 									row.operator_salary = logbook['operator_salary']
+// 									row.project = logbook['project']
+// 									refresh_field("items");
+
+// 									// total_invoice_amount += (row.amount_idle + row.amount_work)
+// 									total_invoice_amount += (row.total_amount)
+// 								})
+// 							}
+// 						}
+// 					});
+// 				});
+
+// 				cur_frm.set_value("total_invoice_amount", total_invoice_amount)
+// 				cur_frm.refresh_field("total_invoice_amount")
+// 				cur_frm.refresh()
+// 			}
+// 			else {
+// 				frappe.msgprint("No Vehicle Logs found!")
+// 			}
+// 		}
+// 	})
+// }
+
 function get_vehicle_logs(form) {
 	frappe.call({
 		method: "erpnext.fleet_management.doctype.hire_charge_invoice.hire_charge_invoice.get_vehicle_logs",
@@ -148,6 +234,9 @@ function get_vehicle_logs(form) {
 		callback: function(r) {
 			if(r.message) {
 				var total_invoice_amount = 0;
+				var total_hire_charge_amount = 0;
+				var total_hsd_consumption = 0;
+				var total_operator_salary = 0;
 				cur_frm.clear_table("items");
 				r.message.forEach(function(logbook) {
 				        var row = frappe.model.add_child(cur_frm.doc, "Hire Invoice Details", "items");
@@ -172,6 +261,9 @@ function get_vehicle_logs(form) {
 
 					// total_invoice_amount += (row.amount_idle + row.amount_work)
 					total_invoice_amount += (row.total_amount)
+					total_hire_charge_amount += (row.hire_charge_amount)
+					total_hsd_consumption += (row.hsd_consumption)
+					total_operator_salary += (row.operator_salary)
 					
 					frappe.call({
 						method: "erpnext.fleet_management.doctype.hire_charge_invoice.hire_charge_invoice.get_vehicle_accessories",
@@ -205,6 +297,9 @@ function get_vehicle_logs(form) {
 
 									// total_invoice_amount += (row.amount_idle + row.amount_work)
 									total_invoice_amount += (row.total_amount)
+									total_hire_charge_amount += (row.hire_charge_amount)
+									total_hsd_consumption += (row.hsd_consumption)
+									total_operator_salary += (row.operator_salary)
 								})
 							}
 						}
@@ -212,7 +307,14 @@ function get_vehicle_logs(form) {
 				});
 
 				cur_frm.set_value("total_invoice_amount", total_invoice_amount)
+				cur_frm.set_value("total_hire_charge_amount", total_hire_charge_amount)
+				cur_frm.set_value("total_hsd_consumption", total_hsd_consumption)
+				cur_frm.set_value("total_operator_salary", total_operator_salary)
+
 				cur_frm.refresh_field("total_invoice_amount")
+				cur_frm.refresh_field("total_hire_charge_amount")
+				cur_frm.refresh_field("total_hsd_consumption")
+				cur_frm.refresh_field("total_operator_salary")
 				cur_frm.refresh()
 			}
 			else {

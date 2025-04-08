@@ -147,6 +147,12 @@ def get_data(filters=None):
 			duration = None
 			start_dates = []
 			end_dates = []
+			cc_mandays = frappe.db.sql("""
+                              select sum(mandays) from `tabProject` where cost_center = '{}' and docstatus < 2
+                              """.format(cc.name))
+			overall_mandays = frappe.db.sql("""
+                              select sum(mandays) from `tabProject` where docstatus < 2
+                              """.format(cc.name))
 			for prj in frappe.db.get_all("Project Definition", {"cost_center": cc.name}, ["start_date", "end_date"]):
 				if prj.start_date:
 					start_dates.append(prj.start_date)

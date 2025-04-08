@@ -48,7 +48,20 @@ class AssetIssueDetails(Document):
         warehouse: DF.Link | None
     # end: auto-generated types
     def validate(self):
-        pass
+        if self.asset_received_entries and self.is_existing_asset == 1:
+            qty = frappe.db.get_value("Asset Received Entries", self.asset_received_entries, "qty")
+            warehouse = frappe.db.get_value("Asset Received Entries", self.asset_received_entries, "warehouse")
+            rate = frappe.db.get_value("Asset Received Entries", self.asset_received_entries, "asset_rate")
+            issued_qty = frappe.db.sql("""
+                                       select sum(ifnull(qty,0)) as qty from `tabAsset Issue Details` where asset_received_entries = '{}'
+                                       and docstatus = 1
+                                       """.format(self.asset_received_entries),as_dict=1)[0].qty
+            if flt(qty) - flt(issued_qty) <= 0:
+                frappe.throw("Insufficient Quanitity/All Quantity Issued from Asset Received Entry {}".format(self.asset_received_entries))
+            if not warehouse:
+                frappe.throw("Warehouse not selected in Asset Received Entry {}".format(self.asset_received_entries))
+            if not rate:
+                frappe.throw("Asset Rate not set in Asset Received Entry {}".format(self.asset_received_entries))
 
     def on_submit(self):
         self.check_qty_balance()
@@ -85,7 +98,7 @@ class AssetIssueDetails(Document):
         #                 """.format(self.item_code, self.branch, self.asset_received_entries, self.name))[0][0]
         
         # balance_qty = flt(total_qty) - flt(issued_qty)
-        if flt(self.qty) > flt(self.balance_qty):
+        if flt(self.qty) > flt(self.balance_qty) and self.is_existing_asset == 1:
             frappe.throw(_("Issuing Quantity cannot be greater than Balance Quantity i.e., {}").format(flt(self.balance_qty)), title="Insufficient Balance")
 
     @frappe.whitelist()

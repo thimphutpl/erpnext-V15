@@ -60,6 +60,12 @@ frappe.query_reports["Trial Balance"] = {
 			},
 		},
 		{
+			fieldname: "project_definition",
+			label: __("Project Definition"),
+			fieldtype: "Link",
+			options: "Project Definition",
+		},
+		{
 			fieldname: "project",
 			label: __("Project"),
 			fieldtype: "Link",

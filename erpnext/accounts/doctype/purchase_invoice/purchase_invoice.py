@@ -274,7 +274,7 @@ class PurchaseInvoice(BuyingController):
 		self.validate_project()
 		if not self.is_opening:
 			self.is_opening = "No"
-
+		self.cal_amount_for_discount()
 		self.validate_posting_time()
 
 		super().validate()
@@ -305,6 +305,7 @@ class PurchaseInvoice(BuyingController):
 		self.validate_write_off_account()
 		self.validate_multiple_billing("Purchase Receipt", "pr_detail", "amount")
 		self.create_remarks()
+		# self.cal_amount_for_discount()
 		self.calculate_taxes_and_totals()
 		self.set_status()
 		self.validate_purchase_receipt_if_update_stock()
@@ -316,23 +317,27 @@ class PurchaseInvoice(BuyingController):
 		self.reset_default_field_value("set_from_warehouse", "items", "from_warehouse")
 		self.set_percentage_received()
 		# self.warehouse_from_branch()
-
+	def cal_amount_for_discount(self):
+		for x in self.get("items"):
+			if x.amount_discount:
+				x.amount=(flt(x.rate)*flt(x.qty))-flt(x.amount_discount)
 	def adjust_add_ded(self):
-		self.total_add_ded = flt(self.freight_insurance_charges) - flt(self.discount) + flt(self.tax) + flt(self.other_charges)
-		self.discount_amount = -1 * flt(self.total_add_ded)
+		self.total_add_ded = flt(self.freight_insurance_charges) - flt(self.discount) - flt(self.total_taxes_and_charges) + flt(self.other_charges)
+		self.discount_amount = flt(self.total_add_ded)
 	def warehouse_from_branch(doc):
-		branchname=doc.branch
+		# branchname=doc.branch
+		cost_center= frappe.db.get_value("Branch", doc.branch,"cost_center")
 		query = """
-        SELECT parent 
-        FROM `tabWarehouse Branch` 
-        WHERE branch=%s
+        SELECT warehouse 
+        FROM `tabCost Center` 
+        WHERE name=%s
         """
 
-		warehouse = frappe.db.sql(query, (branchname,), as_dict=True)
+		warehouse = frappe.db.sql(query, (cost_center,), as_dict=True)
 		if warehouse:
 			doc.set_warehouse = warehouse[0].get("parent")
 		else:
-			frappe.throw(f"No warehouse found for branch {branchname}")
+			frappe.throw(f"No warehouse found for branch {cost_center}")
 		
 	def set_percentage_received(self):
 		total_billed_qty = 0.0
@@ -510,7 +515,6 @@ class PurchaseInvoice(BuyingController):
 
 	def set_expense_account(self, for_validate=False):
 		auto_accounting_for_stock = erpnext.is_perpetual_inventory_enabled(self.company)
-
 		if auto_accounting_for_stock:
 			stock_not_billed_account = self.get_company_default("stock_received_but_not_billed")
 			stock_items = self.get_stock_items()
@@ -597,7 +601,6 @@ class PurchaseInvoice(BuyingController):
 								"This is done to handle accounting for cases when Purchase Receipt is created after Purchase Invoice"
 							)
 							frappe.msgprint(msg, title=_("Expense Head Changed"))
-
 						item.expense_account = stock_not_billed_account
 			elif item.is_fixed_asset:
 				account = None
@@ -615,7 +618,6 @@ class PurchaseInvoice(BuyingController):
 					if receipt_item:
 						item.pr_detail = receipt_item.name
 						item.purchase_receipt = receipt_item.parent
-
 				if item.pr_detail:
 					if not self.asset_received_but_not_billed:
 						self.asset_received_but_not_billed = self.get_company_default(
@@ -634,28 +636,31 @@ class PurchaseInvoice(BuyingController):
 					)
 					if arbnb_booked_in_pr:
 						account = self.asset_received_but_not_billed
-
 				if not account:
-					account_type = (
-						"capital_work_in_progress_account"
-						if is_cwip_accounting_enabled(item.asset_category)
-						else "fixed_asset_account"
-					)
-					account = get_asset_category_account(
-						account_type, item=item.item_code, company=self.company
-					)
+					# frappe.throw("Please Wait we are deciding account for this type of transaction")
+					account = frappe.db.get_value("Company",self.company,"asset_received_but_not_billed")
+					# account_type = (
+					# 	"capital_work_in_progress_account"
+					# 	if is_cwip_accounting_enabled(item.asset_category)
+					# 	else "fixed_asset_account"
+					# )
+					# account = get_asset_category_account(
+					# 	account_type, item=item.item_code, company=self.company
+					# )
 					if not account:
-						form_link = get_link_to_form("Asset Category", item.asset_category)
-						throw(
-							_("Please set Fixed Asset Account in {} against {}.").format(
-								form_link, self.company
-							),
-							title=_("Missing Account"),
-						)
+						frappe.throw("Please set Account for Asset Received But Not billed in Company")
+						# form_link = get_link_to_form("Asset Category", item.asset_category)
+						# throw(
+						# 	_("Please set Fixed Asset Account in {} against {}.").format(
+						# 		form_link, self.company
+						# 	),
+						# 	title=_("Missing Account"),
+						# )
 				item.expense_account = account
+			
 			elif not item.expense_account and for_validate:
 				throw(_("Expense account is mandatory for item {0}").format(item.item_code or item.item_name))
-
+			# frappe.throw(str(item.expense_account))
 	def validate_expense_account(self):
 		for item in self.get("items"):
 			validate_account_head(item.idx, item.expense_account, self.company, "Expense")
@@ -801,6 +806,8 @@ class PurchaseInvoice(BuyingController):
 		validate_docs_for_deferred_accounting([], [self.name])
 
 	def on_submit(self):
+		# if self.discount_amount:
+		# 	frappe.throw("Under Maintenance")
 		super().on_submit()
 
 		self.check_prev_docstatus()
@@ -847,6 +854,7 @@ class PurchaseInvoice(BuyingController):
 
 		self.process_common_party_accounting()
 		self.consume_budget(cancel=False)
+		self.reload()
 
 	def on_update_after_submit(self):
 		if hasattr(self, "repost_required"):
@@ -1032,14 +1040,20 @@ class PurchaseInvoice(BuyingController):
 		self.make_gle_for_rounding_adjustment(gl_entries)
 		total_debit = total_credit = 0
 		gls = []
+		# if self.discount_amount > 0:
 		for a in gl_entries:
 			gls.append({"account":a.account, "Debit":a.debit, "Credit":a.credit})
 			if a.debit > 0:
 				total_debit += a.debit
+				# frappe.errprint("Account: "+a.account+" Debit: "+str(a.debit))
 				# gls.update({a.account: {"Debit": a.debit}})
-			else:
+			elif a.credit > 0:
 				total_credit += a.credit
+				# frappe.errprint("Account: "+a.account+" Credit: "+str(a.credit))
 				# gls.update({a.account: {"Credit": a.credit}})
+		# if self.discount_amount > 0:
+		# 	frappe.throw(str(gl_entries))
+		# 	frappe.throw("Total Debit = "+str(total_debit)+" Total Credit = "+str(total_credit))
 
 		return gl_entries
 
@@ -1065,7 +1079,8 @@ class PurchaseInvoice(BuyingController):
 			self.precision("base_grand_total"),
 		)
 		if self.taxes_and_charges_deducted > 0:
-			base_grand_total = (self.total) -(self.taxes_and_charges_deducted)
+			# base_grand_total = (self.total) -(self.taxes_and_charges_deducted)
+			base_grand_total = self.base_grand_total if self.base_grand_total else self.grand_total
 		advance_amount = 0.00
 		# advance_amount_pe_currency = 0.00
 		if self.get("advances"):
@@ -1173,7 +1188,6 @@ class PurchaseInvoice(BuyingController):
 					warehouse_debit_amount = self.make_stock_adjustment_entry(
 						gl_entries, item, voucher_wise_stock_value, account_currency
 					)
-
 					if item.from_warehouse:
 						gl_entries.append(
 							self.get_gl_dict(
@@ -1529,6 +1543,8 @@ class PurchaseInvoice(BuyingController):
 							if account_currency == self.company_currency
 							else amount,
 							"cost_center": tax.cost_center,
+							"party_type": tax.party_type if tax.party_type else None,
+							"party": tax.party if tax.party else None,
 						},
 						account_currency,
 						item=tax,
@@ -1574,6 +1590,8 @@ class PurchaseInvoice(BuyingController):
 								"cost_center": tax.cost_center,
 								"against": self.supplier,
 								"credit": applicable_amount,
+								"party_type": tax.party_type if tax.party_type else None,
+								"party": tax.party if tax.party else None,
 								"remarks": self.remarks or _("Accounting Entry for Stock"),
 							},
 							item=tax,
@@ -1708,7 +1726,7 @@ class PurchaseInvoice(BuyingController):
 		# base_rounding_adjustment may become zero due to small precision
 		# eg: rounding_adjustment = 0.01 and exchange rate = 0.05 and precision of base_rounding_adjustment is 2
 		# 	then base_rounding_adjustment becomes zero and error is thrown in GL Entry
-		if not self.is_internal_transfer() and self.rounding_adjustment and self.base_rounding_adjustment:
+		if not self.is_internal_transfer() and self.rounding_adjustment and not self.disable_rounded_total and self.base_rounding_adjustment:
 			round_off_account, round_off_cost_center = get_round_off_account_and_cost_center(
 				self.company, "Purchase Invoice", self.name, self.use_company_roundoff_cost_center
 			)
@@ -2186,6 +2204,18 @@ def make_purchase_receipt(source_name, target_doc=None):
 	)
 
 	return doc
+
+
+@frappe.whitelist()
+def set_discount_value(rate, qty):
+	amount = flt(rate)* flt(qty)
+	account = frappe.db.get_value("Company","GYALSUNG INFRA", "default_discount_account")
+	if not account:
+		frappe.throw("Please set default discount account in company")
+	if amount:
+		return amount
+	else:
+		frappe.throw("Select Item First")
 @frappe.whitelist()
 def get_permission_query_conditions(user):
 	if not user: user = frappe.session.user
@@ -2196,7 +2226,7 @@ def get_permission_query_conditions(user):
 		return
 	if "Purchase Master Manager" in user_roles:
 		return
-	if "Accounts User" in user_roles:
+	if "Accounts User" in user_roles or "Purchase User" in user_roles:
 		return """(
 		exists(select 1
 				from `tabAssign Branch`, `tabBranch Item`

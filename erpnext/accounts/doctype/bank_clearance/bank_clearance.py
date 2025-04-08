@@ -55,6 +55,7 @@ class BankClearance(Document):
 					self.bank_account,
 					self.include_reconciled_entries,
 					self.include_pos_transactions,
+					self.branch
 				)
 				or []
 			)
@@ -116,7 +117,7 @@ class BankClearance(Document):
 
 
 def get_payment_entries_for_bank_clearance(
-	from_date, to_date, account, bank_account, include_reconciled_entries, include_pos_transactions
+	from_date, to_date, account, bank_account, include_reconciled_entries, include_pos_transactions, branch
 ):
 	entries = []
 
@@ -141,6 +142,87 @@ def get_payment_entries_for_bank_clearance(
 			order by t1.posting_date ASC, t1.name DESC
 		""",
 		{"account": account, "from": from_date, "to": to_date},
+		as_dict=1,
+	)
+	mechanical_payment = frappe.db.sql(
+		f"""
+			select
+				"Mechanical Payment" as payment_document, m1.name as payment_entry,
+				m1.cheque_no as cheque_number, m1.cheque_date,
+				m1.net_amount as credit, 0 as debit,
+				m1.posting_date, m1.income_account as against_account, m1.clearance_date
+			from
+				`tabMechanical Payment` m1
+			where
+				m1.income_account = %(account)s 
+				and m1.docstatus=1
+				and m1.posting_date >= %(from)s and m1.posting_date <= %(to)s
+			group by m1.income_account, m1.name
+			order by m1.posting_date ASC, m1.name DESC
+		""",
+		{"account": account, "from": from_date, "to": to_date},
+		as_dict=1,
+	)
+	hsd_payment = frappe.db.sql(
+		f"""
+			select
+				"HSD Payment" as payment_document, h1.name as payment_entry,
+				h1.cheque__no as cheque_number, h1.cheque_date,
+				h1.actual_amount as credit, 0 as debit,
+				h1.posting_date, h1.bank_account as against_account, h1.clearance_date
+			from
+				`tabHSD Payment` h1
+			where
+				h1.bank_account = %(account)s 
+				and h1.docstatus=1
+				and h1.posting_date >= %(from)s and h1.posting_date <= %(to)s
+			group by h1.bank_account, h1.name
+			order by h1.posting_date ASC, h1.name DESC
+		""",
+		{"account": account, "from": from_date, "to": to_date},
+		as_dict=1,
+	)
+	tds_remittance = frappe.db.sql(
+		f"""
+			select
+				"TDS Remittance" as payment_document, r1.name as payment_entry,
+				r1.cheque_no as cheque_number, r1.cheque_date,
+				r1.total_tds as credit, 0 as debit,
+				r1.posting_date, r1.credit_account as against_account, r1.clearance_date
+			from
+				`tabTDS Remittance` r1
+			where
+				r1.credit_account = %(account)s 
+				and r1.docstatus=1
+				and r1.posting_date >= %(from)s and r1.posting_date <= %(to)s
+			group by r1.credit_account, r1.name
+			order by r1.posting_date ASC, r1.name DESC
+		""",
+		{"account": account, "from": from_date, "to": to_date},
+		as_dict=1,
+	)
+	if not branch:
+		frappe.throw("Branch is required")
+	imprest_account= frappe.db.get_value("Branch", branch,"expense_bank_account")
+	if not imprest_account:
+		frappe.throw("Please set default expense bank account in branch")
+	imprest_recoup = frappe.db.sql(
+		f"""
+			select
+				"Imprest Recoup" as payment_document, i1.name as payment_entry,
+				i1.cheque_no as cheque_number, i1.cheque_date,
+				i1.total_amount as credit, 0 as debit,
+				i1.posting_date, %(imprest_account)s as against_account, i1.clearance_date
+			from
+				`tabImprest Recoup` i1
+			where
+				i1.branch = %(branch)s 
+				and i1.docstatus=1
+				and i1.posting_date >= %(from)s and i1.posting_date <= %(to)s
+			group by i1.branch, i1.name
+			order by i1.posting_date ASC, i1.name DESC
+		""",
+		{"branch": branch, "from": from_date, "to": to_date, "imprest_account":imprest_account},
 		as_dict=1,
 	)
 
@@ -233,7 +315,7 @@ def get_payment_entries_for_bank_clearance(
 		).run(as_dict=True)
 
 	entries = (
-		list(payment_entries) + list(journal_entries) + list(pos_sales_invoices) + list(pos_purchase_invoices)
+		list(payment_entries) + list(journal_entries) + list(pos_sales_invoices) + list(pos_purchase_invoices) + list(mechanical_payment) + list(hsd_payment) + list(tds_remittance) + list(imprest_recoup)
 	)
 
 	return entries

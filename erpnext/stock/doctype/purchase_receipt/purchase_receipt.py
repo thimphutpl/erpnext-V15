@@ -16,6 +16,7 @@ from erpnext.assets.doctype.asset.asset import get_asset_account, is_cwip_accoun
 from erpnext.buying.utils import check_on_hold_or_closed_status
 from erpnext.controllers.accounts_controller import merge_taxes
 from erpnext.controllers.buying_controller import BuyingController
+from frappe.utils import money_in_words
 from erpnext.stock.doctype.delivery_note.delivery_note import make_inter_company_transaction
 
 form_grid_templates = {"items": "templates/form_grid/item_grid.html"}
@@ -306,6 +307,10 @@ class PurchaseReceipt(BuyingController):
 				break
 	def calculate_total_add_ded(self):
 		self.total_add_ded = flt(self.freight_insurance_charges) - flt(self.discount) + flt(self.tax) + flt(self.other_charges)
+		if self.total_add_ded:
+			self.net_total = self.total + self.total_add_ded
+			self.grand_total = self.net_total
+			self.in_words = money_in_words(self.grand_total, self.currency)
 	def validate_provisional_expense_account(self):
 		provisional_accounting_for_non_stock_items = cint(
 			frappe.db.get_value("Company", self.company, "enable_provisional_accounting_for_non_stock_items")
@@ -371,18 +376,19 @@ class PurchaseReceipt(BuyingController):
 					frappe.throw(_(msg))
 	
 	def warehouse_from_branch(doc):
-		branchname=doc.branch
+		# branchname=doc.branch
+		cost_center= frappe.db.get_value("Branch", doc.branch,"cost_center")
 		query = """
-        SELECT parent 
-        FROM `tabWarehouse Branch` 
-        WHERE branch=%s
+        SELECT warehouse 
+        FROM `tabCost Center` 
+        WHERE name=%s
         """
 
-		warehouse = frappe.db.sql(query, (branchname,), as_dict=True)
+		warehouse = frappe.db.sql(query, (cost_center,), as_dict=True)
 		if warehouse:
 			doc.set_warehouse = warehouse[0].get("parent")
 		else:
-			frappe.throw(f"No warehouse found for branch {branchname}")
+			frappe.throw(f"No warehouse found for branch {cost_center}")
 
 	def get_already_received_qty(self, po, po_detail):
 		qty = frappe.db.sql(

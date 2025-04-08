@@ -99,6 +99,7 @@ class PaymentEntry(AccountsController):
 		self.ensure_supplier_is_not_blocked()
 		self.set_status()
 		self.check_party_advance_balance()
+		self.set_paid_from_rtgs()
 		self.set_total_in_words()
 		if self.workflow_state=="Verified":
 			self.verifier=frappe.session.user
@@ -188,7 +189,10 @@ class PaymentEntry(AccountsController):
 		self.update_payment_schedule(cancel=1)
 		self.set_payment_req_status()
 		self.set_status()
-
+	
+	def set_paid_from_rtgs(self):
+		if self.mode_of_payment=="RTGS":
+			self.paid_from= frappe.db.get_value("Mode of Payment Account",{"parent":"RTGS"},"default_account")
 	def set_payment_req_status(self):
 		from erpnext.accounts.doctype.payment_request.payment_request import update_payment_req_status
 
@@ -1361,6 +1365,8 @@ class PaymentEntry(AccountsController):
 						else d.tax_amount,
 						"cost_center": d.cost_center,
 						"post_net_value": True,
+						"party_type": d.party_type if d.party_type else None,
+						"party": d.party if d.party else None,
 					},
 					account_currency,
 					item=d,
@@ -1386,6 +1392,8 @@ class PaymentEntry(AccountsController):
 							else d.tax_amount,
 							"cost_center": self.cost_center,
 							"post_net_value": True,
+							"party_type": d.party_type if d.party_type else None,
+							"party": d.party if d.party else None,
 						},
 						account_currency,
 						item=d,

@@ -49,6 +49,11 @@ class BreakDownReport(Document):
 		self.post_equipment_status_entry()
 
 	def on_cancel(self):
+		# bdr = frappe.get_doc("Job Cards", self.job_cards)
+		# if bdr.name == self.job_cards:
+		# 	bdr.db_set("job_cards", None)
+		# if self.owned_by == "Others":
+		# 	self.make_gl_entries()
 		check_uncancelled_linked_doc(self.doctype, self.name)
 		# Use parameterized queries to prevent SQL injection
 		frappe.db.sql("DELETE FROM `tabEquipment Reservation Entry` WHERE ehf_name = %s", (self.name,))

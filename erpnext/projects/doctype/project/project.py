@@ -708,8 +708,8 @@ class Project(Document):
 					additional_task = '{}'
 					where name = '{}'
 					""".format(
-         				t.activity,
-             			t.task,
+         				str(t.activity).replace("'", "''"),
+             			str(t.task).replace("'", "''"),
              			t.is_group,
              			t.work_quantity,
              			t.work_quantity_complete if t.is_group == 0 else group_wqc,
@@ -717,11 +717,11 @@ class Project(Document):
              			t.task_achievement_percent if t.is_group == 0 else group_achievement_percent,
              			t.target_uom,
              			t.target_quantity,
-             			t.parent_task if t.parent_task else None,
+             			t.parent_task if t.parent_task else "",
              			t.status,
              			t.start_date,
              			t.end_date,
-             			t.description,
+             			str(t.description).replace("'", "''"),
              			t.target_quantity_complete,
              			task_idx,
              			t.task_duration,
@@ -813,7 +813,7 @@ class Project(Document):
 		for task in self.activity_tasks:
 			if task.is_group == 0:
 				task.task_weightage = flt((task.task_duration/total_duration) * 100,7)
-				if task.work_quantity_complete:
+				if task.work_quantity_complete >= 0:
 					task.task_achievement_percent = task.task_weightage * (task.work_quantity_complete/100)
 			frappe.db.sql("""
 				update `tabActivity Tasks` set task_duration = {}, task_weightage = '{}', task_achievement_percent = '{}' where name = '{}'
@@ -1987,24 +1987,33 @@ def get_permission_query_conditions(user):
 	if "Projects GM" in user_roles or "Project Manager" in user_roles:
 		return
 	if "Purchase User" in user_roles or "Accounts User" in user_roles:
-		return """(
-			exists(select 1
-				from `tabAssign Branch`, `tabBranch Item`
-				where `tabAssign Branch`.name = `tabBranch Item`.parent 
-				and `tabBranch Item`.branch = `tabProject`.branch
-				and `tabAssign Branch`.user = '{user}')
-			or
-			exists(select 1
-				from `tabAssign Branch`, `tabAssign Project`
-				where `tabAssign Branch`.name = `tabAssign Project`.parent 
-				and `tabAssign Project`.project = `tabProject`.name
-				and `tabAssign Branch`.user = '{user}')
-			or
-			exists(select 1
-					from `tabEmployee`
-					where `tabEmployee`.branch = `tabProject`.branch
-					and `tabEmployee`.user_id = '{user}')
-		)""".format(user=user)
+		if "Projects User" in user_roles:
+			return """(
+				exists(select 1
+					from `tabAssign Branch`, `tabAssign Project`
+					where `tabAssign Branch`.name = `tabAssign Project`.parent 
+					and `tabAssign Project`.project = `tabProject`.name
+					and `tabAssign Branch`.user = '{user}')
+			)""".format(user=user)
+		if "Projects User" not in user_roles :
+			return """(
+				exists(select 1
+					from `tabAssign Branch`, `tabBranch Item`
+					where `tabAssign Branch`.name = `tabBranch Item`.parent 
+					and `tabBranch Item`.branch = `tabProject`.branch
+					and `tabAssign Branch`.user = '{user}')
+				or
+				exists(select 1
+					from `tabAssign Branch`, `tabAssign Project`
+					where `tabAssign Branch`.name = `tabAssign Project`.parent 
+					and `tabAssign Project`.project = `tabProject`.name
+					and `tabAssign Branch`.user = '{user}')
+				or
+				exists(select 1
+						from `tabEmployee`
+						where `tabEmployee`.branch = `tabProject`.branch
+						and `tabEmployee`.user_id = '{user}')
+			)""".format(user=user)
 
 	return """(
 		`tabProject`.owner = '{user}'

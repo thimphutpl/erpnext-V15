@@ -181,6 +181,7 @@ class StockLedgerEntry(Document):
 			return
 
 		if not self.get("via_landed_cost_voucher"):
+			# frappe.throw("mmmmmmmmnkk")
 			SerialBatchBundle(
 				sle=self,
 				item_code=self.item_code,

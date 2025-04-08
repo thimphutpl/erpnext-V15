@@ -78,7 +78,6 @@ class StockBalanceReport:
 		closing_balance = self.get_closing_balance()
 		if not closing_balance:
 			return
-
 		self.start_from = add_days(closing_balance[0].to_date, 1)
 		res = frappe.get_doc("Closing Stock Balance", closing_balance[0].name).get_prepared_data()
 
@@ -197,12 +196,11 @@ class StockBalanceReport:
 		qty_dict = item_warehouse_map[group_by_key]
 		for field in self.inventory_dimensions:
 			qty_dict[field] = entry.get(field)
-
+		
 		if entry.voucher_type == "Stock Reconciliation" and (not entry.batch_no or entry.serial_no):
 			qty_diff = flt(entry.qty_after_transaction) - flt(qty_dict.bal_qty)
 		else:
 			qty_diff = flt(entry.actual_qty)
-
 		value_diff = flt(entry.stock_value_difference)
 
 		if entry.posting_date < self.from_date or entry.voucher_no in self.opening_vouchers.get(

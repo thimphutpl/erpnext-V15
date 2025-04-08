@@ -649,6 +649,25 @@ frappe.ui.form.on("Purchase Invoice Item", {
 			}
 		})
 		frm.refresh_fields();
+	},
+	amount_discount: function (frm, cdt, cdn) {
+		var d = locals[cdt][cdn];
+		frappe.call({
+			method:"erpnext.accounts.doctype.purchase_invoice.purchase_invoice.set_discount_value",
+			args:{
+				rate: d.rate,
+				qty: d.qty,
+			},
+			callback: function(r){
+				console.log(r.message)
+				if (r.message) {
+					frappe.model.set_value(cdt, cdn, "amount", r.message);
+				} else {
+					frappe.msgprint(__("Error: No response from server"));
+				}
+			},
+		})
+		frm.refresh_fields();
 	}
 });
 frappe.ui.form.on("Purchase Invoice", {

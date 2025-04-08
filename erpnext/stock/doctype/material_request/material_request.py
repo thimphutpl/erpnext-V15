@@ -228,18 +228,18 @@ class MaterialRequest(BuyingController):
 
 		self.set_status(update=True, status="Cancelled")
 	def warehouse_from_branch(doc):
-		branchname=doc.branch
+		# branchname=doc.branch
+		cost_center= frappe.db.get_value("Branch", doc.branch,"cost_center")
 		query = """
-        SELECT parent 
-        FROM `tabWarehouse Branch` 
-        WHERE branch=%s
+        SELECT warehouse 
+        FROM `tabCost Center` 
+        WHERE name=%s
         """
-
-		warehouse = frappe.db.sql(query, (branchname,), as_dict=True)
+		warehouse = frappe.db.sql(query, (cost_center,), as_dict=True)
 		if warehouse:
 			doc.set_warehouse = warehouse[0].get("parent")
 		else:
-			frappe.throw(f"No warehouse found for branch {branchname}")
+			frappe.throw(f"No warehouse found for branch {cost_center}")
 
 	def check_modified_date(self):
 		mod_db = frappe.db.sql("""select modified from `tabMaterial Request` where name = %s""", self.name)

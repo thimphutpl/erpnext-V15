@@ -144,6 +144,7 @@ class POLIssue(StockController):
 						a.hiring_warehouse = None
 
 	def on_submit(self):
+		# frappe.throw("Under Maintenance")
 		if not self.items:
 			frappe.throw("Should have a POL Issue Details to Submit")
 		self.validate_data()
@@ -160,6 +161,16 @@ class POLIssue(StockController):
 		
 		self.make_pol_entry()
 
+	# def on_cancel(self):
+	# 	""" ++++++++++ Ver 2.0.190509 Begins ++++++++++ """
+	# 	# Following lines commented by SHIV on 2019/05/09
+	# 	# self.update_stock_gl_ledger(1, 1)
+
+	# 	# Following lines added by SHIV on 2019/05/09
+	# 	self.update_stock_ledger()
+	# 	self.make_gl_entries_on_cancel()        
+	# 	self.delete_pol_entry()
+
 	def on_cancel(self):
 		""" ++++++++++ Ver 2.0.190509 Begins ++++++++++ """
 		# Following lines commented by SHIV on 2019/05/09
@@ -167,7 +178,14 @@ class POLIssue(StockController):
 
 		# Following lines added by SHIV on 2019/05/09
 		self.update_stock_ledger()
-		self.make_gl_entries_on_cancel()        
+		self.make_gl_entries_on_cancel()
+		self.ignore_linked_doctypes = (
+			"GL Entry",
+			"Payment Ledger Entry",
+			"Stock Ledger Entry",
+			"Repost Item Valuation",
+			"Serial and Batch Bundle",
+		)     
 		self.delete_pol_entry()
 
         # Ver 2.0.190509, following method created by SHIV on 2019/05/21
@@ -238,7 +256,6 @@ class POLIssue(StockController):
 		if self.docstatus == 2:
 			sl_entries.reverse()
 		# frappe.throw(frappe.as_json(self.__dict__))
-
 		self.make_sl_entries(sl_entries, 'Yes' if self.amended_from else 'No')
 
 
@@ -380,8 +397,8 @@ class POLIssue(StockController):
 		received_till = get_pol_till("Stock", self.tanker, self.posting_date, self.pol_type)
 		issue_till = get_pol_till("Issue", self.tanker, self.posting_date, self.pol_type)
 		balance = flt(received_till) - flt(issue_till)
-		if flt(self.total_quantity) > flt(balance):
-			frappe.throw("Not enough balance in tanker to issue. The balance is " + str(balance))	
+		# if flt(self.total_quantity) > flt(balance):
+		# 	frappe.throw("Not enough balance in tanker to issue. The balance is " + str(balance))	
 
 	def make_pol_entry(self):
 		if getdate(self.posting_date) <= getdate("2024-03-31"):

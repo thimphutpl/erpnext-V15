@@ -24,7 +24,7 @@ class InactiveEmployeeStatusError(frappe.ValidationError):
 
 class Employee(NestedSet):
 	nsm_parent_field = "reports_to"
-	    
+		
 	def validate(self):
 		from erpnext.controllers.status_updater import validate_status
 		validate_status(self.status, ["Active", "Inactive", "Suspended", "Left"])
@@ -41,6 +41,7 @@ class Employee(NestedSet):
 			existing_user_id = frappe.db.get_value("Employee", self.name, "user_id")
 			if existing_user_id:
 				remove_user_permission("Employee", self.name, existing_user_id)
+		self.update_salary_structure_grade()
 
 	def after_rename(self, old, new, merge):
 		self.db_set("employee", new)
@@ -49,6 +50,10 @@ class Employee(NestedSet):
 		self.employee_name = " ".join(
 			filter(lambda x: x, [self.first_name, self.middle_name, self.last_name])
 		)
+
+	def update_salary_structure_grade(self):
+		for ss in frappe.db.get_all("Salary Structure", {"is_active": "Yes", "employee": self.employee}):
+			frappe.db.sql("update `tabSalary Structure` set employee_grade = '{}' where name = '{}'".format(self.grade, ss.name))
 
 	def validate_user_details(self):
 		if self.user_id:
@@ -213,6 +218,8 @@ class Employee(NestedSet):
 			user.gender = self.gender
 
 		if self.image:
+			if not self.image.startswith(('http://', 'https://')):
+				self.image = frappe.utils.get_url() + self.image
 			if not user.user_image:
 				user.user_image = self.image
 				try:

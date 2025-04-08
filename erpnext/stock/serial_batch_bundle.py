@@ -195,7 +195,11 @@ class SerialBatchBundle:
 
 	@property
 	def child_doctype(self):
-		child_doctype = self.sle.voucher_type + " Item"
+		# frappe.throw(str(self.sle.voucher_type))
+		if self.sle.voucher_type=="POL Issue":
+			child_doctype = self.sle.voucher_type + " Items"
+		else:
+			child_doctype = self.sle.voucher_type + " Item"
 
 		if self.sle.voucher_type == "Subcontracting Receipt" and self.sle.dependant_sle_voucher_detail_no:
 			child_doctype = "Subcontracting Receipt Supplied Item"
@@ -253,6 +257,7 @@ class SerialBatchBundle:
 		if is_rejected(self.sle.voucher_type, self.sle.voucher_detail_no, self.sle.warehouse):
 			update_values["rejected_serial_and_batch_bundle"] = ""
 		if self.sle.voucher_type != "POL Receive":
+			# frappe.throw(frappe.as_json(self.child_doctype))
 			frappe.db.set_value(self.child_doctype, self.sle.voucher_detail_no, update_values)
 		else:
 			frappe.db.set_value(self.sle.voucher_type, self.sle.voucher_no, update_values)

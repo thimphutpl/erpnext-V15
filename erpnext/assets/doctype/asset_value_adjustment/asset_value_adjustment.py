@@ -186,6 +186,7 @@ class AssetValueAdjustment(Document):
 				get_link_to_form("Asset", asset.name),
 				get_link_to_form(self.get("doctype"), self.get("name")),
 			)
+			asset.gross__purchase_amount = self.new_asset_value
 		elif self.docstatus == 2:
 			notes = _(
 				"This schedule was created when Asset {0}'s Asset Value Adjustment {1} was cancelled."
@@ -193,7 +194,7 @@ class AssetValueAdjustment(Document):
 				get_link_to_form("Asset", asset.name),
 				get_link_to_form(self.get("doctype"), self.get("name")),
 			)
-
+			asset.gross__purchase_amount = self.current_asset_value
 		make_new_active_asset_depr_schedules_and_cancel_current_ones(
 			asset, notes, value_after_depreciation=asset_value, ignore_booked_entry=True
 		)
@@ -202,8 +203,8 @@ class AssetValueAdjustment(Document):
 
 	@frappe.whitelist()
 	def update_def_account(self):
-		if self.re_valued:
-			account= "Revaluation Income/(Loss) - SMCL"
-		else:
-			account = " "
+		# if self.re_valued:
+		# 	account= "Revaluation Income/(Loss) - SMCL"
+		# else:
+		account = " "
 		return account

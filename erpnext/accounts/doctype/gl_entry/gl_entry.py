@@ -359,7 +359,11 @@ def update_outstanding_amt(
 				f"""
 			select sum(debit_in_account_currency) - sum(credit_in_account_currency)
 			from `tabGL Entry` where voucher_type = 'Journal Entry' and voucher_no = %s
-			and account = %s and (against_voucher is null or against_voucher='') {party_condition}""",
+			and account = %s 
+			and (against_voucher is null or against_voucher='' 
+			or against_voucher_type in ('Journal Entry','Leave Encashment','Travel Claim',
+				'Employee Benefits','POL','Leave Travel Concession','Job Card')) 
+				{party_condition}""",
 				(against_voucher, account),
 			)[0][0]
 		)

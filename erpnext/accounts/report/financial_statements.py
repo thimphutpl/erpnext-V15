@@ -509,19 +509,44 @@ def get_accounting_entries(
 	period_closing_voucher=None,
 	ignore_opening_entries=False,
 ):
+	projects = []
+	if filters.project_definition:
+		for a in frappe.db.get_all("Project", {"project_definition": filters.project_definition}):
+			projects.append(a.name)
+	if filters.project:
+		projects.append(filters.project)
+	if len(projects) ==  0:
+		projects.append(None)
 	gl_entry = frappe.qb.DocType(doctype)
-	query = (
-		frappe.qb.from_(gl_entry)
-		.select(
-			gl_entry.account,
-			gl_entry.debit,
-			gl_entry.credit,
-			gl_entry.debit_in_account_currency,
-			gl_entry.credit_in_account_currency,
-			gl_entry.account_currency,
+
+	if filters.project_definition and not filters.project:
+		query = (
+			frappe.qb.from_(gl_entry)
+			.select(
+				gl_entry.account,
+				gl_entry.debit,
+				gl_entry.credit,
+				gl_entry.debit_in_account_currency,
+				gl_entry.credit_in_account_currency,
+				gl_entry.account_currency,
+			)
+			.where((gl_entry.company == filters.company) & (gl_entry.project.isin(projects)))
 		)
-		.where(gl_entry.company == filters.company)
-	)
+	elif filters.project and filters.project_definition:
+		frappe.throw("Must choose elther Project filters or Project Definition filters")
+	else:
+		query = (
+			frappe.qb.from_(gl_entry)
+			.select(
+				gl_entry.account,
+				gl_entry.debit,
+				gl_entry.credit,
+				gl_entry.debit_in_account_currency,
+				gl_entry.credit_in_account_currency,
+				gl_entry.account_currency,
+			)
+			.where((gl_entry.company == filters.company))
+		)
 
 	if doctype == "GL Entry":
 		query = query.select(gl_entry.posting_date, gl_entry.is_opening, gl_entry.fiscal_year)
@@ -536,7 +561,7 @@ def get_accounting_entries(
 
 	query = apply_additional_conditions(doctype, query, from_date, ignore_closing_entries, filters)
 	query = query.where(gl_entry.account.isin(accounts))
-
+	# frappe.throw(str(query))
 	entries = query.run(as_dict=True)
 
 	return entries

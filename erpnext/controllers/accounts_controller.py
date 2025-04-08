@@ -198,8 +198,9 @@ class AccountsController(TransactionBase):
 		if self.meta.get_field("currency"):
 			self.calculate_taxes_and_totals()
 
-			if not self.meta.get_field("is_return") or not self.is_return:
-				self.validate_value("base_grand_total", ">=", 0)
+			# if not self.meta.get_field("is_return") or not self.is_return:
+			# 	# frappe.throw(str(self.base_grand_total))
+			# 	self.validate_value("base_grand_total", ">=", 0)
 
 			validate_return(self)
 
@@ -480,7 +481,7 @@ class AccountsController(TransactionBase):
 			df = self.meta.get_field("discount_amount")
 			if self.get("discount_amount") and hasattr(self, "taxes") and not len(self.taxes):
 				df.set("print_hide", 0)
-				self.discount_amount = -self.discount_amount
+				self.discount_amount = self.discount_amount
 			else:
 				df.set("print_hide", 1)
 
@@ -521,6 +522,7 @@ class AccountsController(TransactionBase):
 		from erpnext.controllers.taxes_and_totals import calculate_taxes_and_totals
 
 		calculate_taxes_and_totals(self)
+		# frappe.throw("HAHAAAANNNN")
 
 		if self.doctype in (
 			"Sales Order",
@@ -1636,13 +1638,13 @@ class AccountsController(TransactionBase):
 		amount = item.net_amount
 		base_amount = item.base_net_amount
 
-		if (
-			enable_discount_accounting
-			and self.get("discount_amount")
-			and self.get("additional_discount_account")
-		):
-			amount = item.amount
-			base_amount = item.base_amount
+		# if (
+		# 	enable_discount_accounting
+		# 	and self.get("discount_amount")
+		# 	and self.get("additional_discount_account")
+		# ):
+		# 	amount = item.amount
+		# 	base_amount = item.base_amount
 
 		return amount, base_amount
 

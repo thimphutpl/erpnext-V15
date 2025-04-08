@@ -456,6 +456,9 @@ class StockEntry(StockController):
 			frappe.db.set_value("Project", self.project, "total_consumed_material_cost", amount)
 	def validate_project(self):
 		count = 1
+		for a in self.get("items"):
+			if a.project:
+				self.for_project = 1
 		for row in self.get("items"):
 			if self.for_project == 1 and self.stock_entry_type in ("Material Issue", "Material Return"):
 				if not row.project:

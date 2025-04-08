@@ -123,6 +123,8 @@ class Task(NestedSet):
 			return ret
 
 	def validate(self):
+		if self.parent_task == "None":
+			self.parent_task = None
 		self.validate_dates()
 		self.validate_progress()
 		# self.validate_status()

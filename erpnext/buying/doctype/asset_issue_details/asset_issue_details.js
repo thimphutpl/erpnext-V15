@@ -78,6 +78,7 @@ frappe.ui.form.on('Asset Issue Details', {
 						frm.set_value("balance_qty", m.message[0]);
 						frm.set_value("warehouse", m.message[1]);
 						frm.set_value("asset_rate", m.message[2]);
+						frm.refresh_fields();
 					}
 				}
 			})

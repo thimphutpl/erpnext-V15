@@ -63,7 +63,7 @@ def validate_filters(filters):
 def get_depreciation_details(filters):
     query= """
         SELECT
-            ds.parent AS asset,
+            ads.asset AS asset,
             SUM(CASE
                 WHEN ds.schedule_date < '{from_date}' THEN ds.depreciation_amount
                 ELSE 0
@@ -80,20 +80,23 @@ def get_depreciation_details(filters):
                 WHEN ds.schedule_date BETWEEN '{from_date}' AND '{to_date}' THEN ds.income_depreciation_amount
                 ELSE 0
             END) AS depreciation_income_tax
-        FROM `tabDepreciation Schedule` as ds
+        FROM `tabDepreciation Schedule` as ds, `tabAsset Depreciation Schedule` ads
         WHERE ds.schedule_date <= '{to_date}'
-        AND (IFNULL(ds.journal_entry,'') != '' )
+        AND ds.parent = ads.name
+        AND ads.docstatus = 1
+        AND (IFNULL(ds.journal_entry,'') != '')
         GROUP BY ds.parent
     """.format(from_date=filters.from_date, to_date=filters.to_date, fiscal_year = filters.fiscal_year)
 
     query_two= """
         SELECT
-            ds.parent AS asset,
+            ads.asset AS asset,
             SUM(ds.depreciation_amount) AS dep_total_next_year
-        FROM `tabDepreciation Schedule` AS ds
-        WHERE YEAR(ds.schedule_date) = '{fiscal_year}' 
-        AND (SELECT status FROM `tabAsset` WHERE name = ds.parent) IN ('Submitted','Partially Depreciated')
-        GROUP BY ds.parent
+        FROM `tabAsset Depreciation Schedule` ads, `tabDepreciation Schedule` AS ds
+        WHERE YEAR(ds.schedule_date) = '{fiscal_year}' AND ds.parent = ads.name
+        AND (SELECT status FROM `tabAsset` WHERE name = ads.asset) IN ('Submitted','Partially Depreciated')
+        AND ads.docstatus = 1
+        GROUP BY ads.asset
 
     """.format(fiscal_year = str(int(filters.fiscal_year)+1))
 
@@ -106,11 +109,20 @@ def get_depreciation_details(filters):
     return depreciation_details, depreciation_details_two
 
 def get_data(filters):
+    cond = ""
+    if filters.cost_center:
+        cond+=" and a.cost_center = \'" + filters.get("cost_center") + "\'"
+
+    if filters.asset_category:
+        cond+=" and a.asset_category = \'" + filters.get("asset_category") + "\'"
+
+    if filters.asset_code:
+        cond +=" and a.name in %(asset_code)s "
     query = """
             SELECT
             a.name, a.asset_name, a.asset_category, a.asset_sub_category, "No" AS is_free_asset,
             a.vehicle_number, a.serial_number, a.old_asset_code,
-            a.cost_center, a.purchase_date, a.posting_date as date_of_issue, a.status, a.asset_status, 
+            a.cost_center, a.available_for_use_date, a.posting_date as date_of_issue, a.status, a.asset_status, 
             a.disposal_date, a.journal_entry_for_scrap,
             a.custodian as issued_to, a.custodian_name as employee_name,
             a.asset_quantity, a.asset_rate, a.additional_value,
@@ -119,7 +131,7 @@ def get_data(filters):
                         a.income_tax_opening_depreciation_amount as iopening,
             a.residual_value, a.remarks,
             (
-                (CASE WHEN a.purchase_date < '{from_date}' THEN IFNULL(a.asset_rate,0)*IFNULL(a.asset_quantity,1)
+                (CASE WHEN a.available_for_use_date < '{from_date}' THEN IFNULL(a.asset_rate,0)*IFNULL(a.asset_quantity,1)
                     ELSE 0 END)
                 +
                 (
@@ -132,7 +144,7 @@ def get_data(filters):
                 ) 
             ) gross_opening,
             (
-                (CASE WHEN a.purchase_date BETWEEN '{from_date}' AND '{to_date}' THEN IFNULL(a.asset_rate,0)*IFNULL(a.asset_quantity,1)
+                (CASE WHEN a.available_for_use_date BETWEEN '{from_date}' AND '{to_date}' THEN IFNULL(a.asset_rate,0)*IFNULL(a.asset_quantity,1)
                     ELSE 0 END)
                 +
                 (
@@ -173,20 +185,21 @@ def get_data(filters):
             0 AS depreciation_income_tax
                 FROM 
             `tabAsset` AS a
-            INNER JOIN `tabAsset Finance Book` AS f ON f.parent = a.name       
+            LEFT JOIN `tabAsset Finance Book` AS f ON f.parent = a.name       
         WHERE a.docstatus = 1 
-        AND a.purchase_date <= '{to_date}'
+        AND a.available_for_use_date <= '{to_date}'
         AND a.is_free_asset = 0
         AND (
             a.status not in ('Scrapped', 'Sold')
             OR
             (a.status in ('Scrapped', 'Sold') AND a.disposal_date >= '{from_date}')
         )
+        {cond}
         UNION
         SELECT
             a.name, a.asset_name, a.asset_category, a.asset_sub_category, "Yes" AS is_free_asset,
             a.vehicle_number, a.serial_number, a.old_asset_code,
-            a.cost_center, a.purchase_date, a.posting_date as date_of_issue, a.status, a.asset_status, 
+            a.cost_center, a.available_for_use_date, a.posting_date as date_of_issue, a.status, a.asset_status, 
             a.disposal_date, a.journal_entry_for_scrap,
             a.custodian as issued_to, a.custodian_name as employee_name,
             a.asset_quantity, a.asset_rate, a.additional_value,
@@ -194,8 +207,33 @@ def get_data(filters):
                         a.opening_accumulated_depreciation, 0 AS value_after_depreciation,
                         a.income_tax_opening_depreciation_amount as iopening,
             a.residual_value, a.remarks,
-            0 AS gross_opening,
-            0 AS gross_addition,
+        (
+                (CASE WHEN a.available_for_use_date < '{from_date}' THEN IFNULL(a.asset_rate,0)*IFNULL(a.asset_quantity,1)
+                    ELSE 0 END)
+                +
+                (
+                    IFNULL((SELECT SUM(IFNULL(am.difference_amount,0))
+                    FROM `tabAsset Value Adjustment` am
+                    WHERE am.asset = a.name
+                    AND am.docstatus = 1
+                    AND am.date < '{from_date}'
+                    ),0)
+                ) 
+            ) gross_opening,
+            (
+                (CASE WHEN a.available_for_use_date BETWEEN '{from_date}' AND '{to_date}' THEN IFNULL(a.asset_rate,0)*IFNULL(a.asset_quantity,1)
+                    ELSE 0 END)
+                +
+                (
+                    IFNULL((SELECT SUM(IFNULL(am.difference_amount,0))
+                    FROM `tabAsset Value Adjustment` am
+                    WHERE am.asset = a.name
+                    AND am.docstatus = 1
+                    AND am.date BETWEEN '{from_date}' AND '{to_date}'
+                    AND am.difference_amount > 0
+                    ),0)
+                ) 
+            ) gross_addition,
             0 AS gross_adjustment,
             0 AS dep_opening,
             0 AS dep_addition,
@@ -214,16 +252,8 @@ def get_data(filters):
             OR
             (a.status in ('Scrapped', 'Sold') AND a.disposal_date >= '{from_date}')
         )
-        """.format(from_date=filters.from_date, to_date=filters.to_date)
-                
-    if filters.cost_center:
-        query+=" and a.cost_center = \'" + filters.cost_center + "\'"
-
-    if filters.asset_category:
-        query+=" and a.asset_category = \'" + filters.asset_category + "\'"
-
-    if filters.asset_code:
-        query +=" and a.name in %(asset_code)s "
+        {cond}
+        """.format(from_date=filters.from_date, to_date=filters.to_date, cond=cond)
 
     asset_data = frappe.db.sql(query, filters, as_dict=True)
     depreciation_details, depreciation_details_two = get_depreciation_details(filters)
@@ -270,7 +300,7 @@ def get_data(filters):
                 "employee_name": a.employee_name,
                 "designation": a.designation,
                 "cost_center": a.cost_center,
-                "date_of_issue": a.purchase_date,
+                "date_of_issue": a.available_for_use_date,
                 "qty": a.asset_quantity,
                 "gross_opening": gross_opening,
                 "gross_addition": gross_addition,
@@ -298,48 +328,48 @@ def get_data(filters):
             data.append(row)
     return data
 
-def get_depreciation_details(filters):
-    query= """
-        SELECT
-            ds.parent AS asset,
-            SUM(CASE
-                WHEN ds.schedule_date < '{from_date}' THEN ds.depreciation_amount
-                ELSE 0
-            END) AS dep_opening,
-            SUM(CASE
-                WHEN ds.schedule_date BETWEEN '{from_date}' AND '{to_date}' THEN ds.depreciation_amount
-                ELSE 0
-            END) AS dep_addition,
-            SUM(CASE
-                WHEN ds.schedule_date < '{from_date}' THEN ds.income_depreciation_amount
-                ELSE 0
-            END) AS opening_income,
-            SUM(CASE
-                WHEN ds.schedule_date BETWEEN '{from_date}' AND '{to_date}' THEN ds.income_depreciation_amount
-                ELSE 0
-            END) AS depreciation_income_tax
-        FROM `tabDepreciation Schedule` as ds
-        WHERE ds.schedule_date <= '{to_date}'
-        AND (IFNULL(ds.journal_entry,'') != '' )
-        GROUP BY ds.parent
-    """.format(from_date=filters.from_date, to_date=filters.to_date, fiscal_year = filters.fiscal_year)
+# def get_depreciation_details(filters):
+#     query= """
+#         SELECT
+#             ds.parent AS asset,
+#             SUM(CASE
+#                 WHEN ds.schedule_date < '{from_date}' THEN ds.depreciation_amount
+#                 ELSE 0
+#             END) AS dep_opening,
+#             SUM(CASE
+#                 WHEN ds.schedule_date BETWEEN '{from_date}' AND '{to_date}' THEN ds.depreciation_amount
+#                 ELSE 0
+#             END) AS dep_addition,
+#             SUM(CASE
+#                 WHEN ds.schedule_date < '{from_date}' THEN ds.income_depreciation_amount
+#                 ELSE 0
+#             END) AS opening_income,
+#             SUM(CASE
+#                 WHEN ds.schedule_date BETWEEN '{from_date}' AND '{to_date}' THEN ds.income_depreciation_amount
+#                 ELSE 0
+#             END) AS depreciation_income_tax
+#         FROM `tabDepreciation Schedule` as ds
+#         WHERE ds.schedule_date <= '{to_date}'
+#         AND (IFNULL(ds.journal_entry,'') != '' )
+#         GROUP BY ds.parent
+#     """.format(from_date=filters.from_date, to_date=filters.to_date, fiscal_year = filters.fiscal_year)
 
-    query_two= """
-        SELECT
-            ds.parent AS asset,
-            SUM(ds.depreciation_amount) AS dep_total_next_year
-        FROM `tabDepreciation Schedule` AS ds
-        WHERE YEAR(ds.schedule_date) = '{fiscal_year}' AND (SELECT status FROM `tabAsset` WHERE name = ds.parent) IN ('Submitted','Partially Depreciated')
-        GROUP BY ds.parent
-    """.format(fiscal_year = str(int(filters.fiscal_year)+1))
+#     query_two= """
+#         SELECT
+#             ds.parent AS asset,
+#             SUM(ds.depreciation_amount) AS dep_total_next_year
+#         FROM `tabDepreciation Schedule` AS ds
+#         WHERE YEAR(ds.schedule_date) = '{fiscal_year}' AND (SELECT status FROM `tabAsset` WHERE name = ds.parent) IN ('Submitted','Partially Depreciated')
+#         GROUP BY ds.parent
+#     """.format(fiscal_year = str(int(filters.fiscal_year)+1))
 
-    depreciation_details = frappe._dict()
-    depreciation_details_two = frappe._dict()
-    for row in frappe.db.sql(query, as_dict=True):
-        depreciation_details.setdefault(row.asset, row)
-    for row in frappe.db.sql(query_two, as_dict=True):
-        depreciation_details_two.setdefault(row.asset, row)
-    return depreciation_details, depreciation_details_two
+#     depreciation_details = frappe._dict()
+#     depreciation_details_two = frappe._dict()
+#     for row in frappe.db.sql(query, as_dict=True):
+#         depreciation_details.setdefault(row.asset, row)
+#     for row in frappe.db.sql(query_two, as_dict=True):
+#         depreciation_details_two.setdefault(row.asset, row)
+#     return depreciation_details, depreciation_details_two
 
 def get_columns():
     return [
@@ -370,19 +400,20 @@ def get_columns():
             "width": 150
         },
         {
+            "fieldname": "asset_sub_category",
+            "label": _("Sub Category"),
+            "fieldtype": "Link",
+            "options":"Item Sub Group",
+            "width": 150
+        },
+        {
             "fieldname": "is_free_asset",
             "label": _("Is Free Asset"),
             "fieldtype": "Select",
             "options": ["Yes", "No"],
             "width": 80
         },
-        # {
-        #     "fieldname": "asset_sub_category",
-        #     "label": _("Sub Category"),
-        #     "fieldtype": "Link",
-        #     "options":"Item Sub Group",
-        #     "width": 150
-        # },
+
         {
             "fieldname": "issued_to",
             "label": _("Issued To"),

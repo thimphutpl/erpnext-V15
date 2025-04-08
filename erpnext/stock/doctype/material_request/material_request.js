@@ -765,7 +765,7 @@ const formatDate = (date) => {
 	return `${year}-${month}-${day}`;
 };
 
-frappe.ui.form.on("Material Request Item", {
+frappe.ui.form.on("Material Request Item", {	
 	items_add: function(frm, cdt, cdn){
 		if(frm.doc.reference_type == "Project" && frm.doc.reference_name){
 			frappe.model.set_value(cdt, cdn, "project", frm.doc.reference_name);
@@ -786,8 +786,9 @@ frappe.ui.form.on("Material Request Item", {
 					}
 				},
 			});
-		}
+		}		
 	},
+	
 	qty: function (frm, doctype, name) {
 		const item = locals[doctype][name];
 		if (flt(item.qty) < flt(item.min_order_qty)) {

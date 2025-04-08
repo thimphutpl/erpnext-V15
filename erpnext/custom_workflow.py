@@ -231,8 +231,8 @@ class CustomWorkflow:
 
 	def set_approver(self, approver_type):
 		if approver_type == "Supervisor":
-			# if not self.reports_to:
-			# 	frappe.throw("Reports To not set for Employee {}".format(self.doc.employee if self.doc.employee else frappe.db.get_value("Employee",{"user_id",self.doc.owner},"name")))
+			if not self.reports_to:
+				frappe.throw("Reports To not set for Employee {}".format(self.doc.employee if self.doc.employee else frappe.db.get_value("Employee",{"user_id",self.doc.owner},"name")))
 			officiating = get_officiating_employee(self.reports_to[3])
 			if officiating:
 				officiating = frappe.db.get_value("Employee", officiating[0].officiate, self.field_list)
@@ -545,8 +545,9 @@ class CustomWorkflow:
 				frappe.throw(f"Only {self.doc.approver} can Approved this Request.")			
 
 		elif self.new_state.lower() == ("Rejected".lower()):
-			if frappe.session.user != self.doc.approver:
-				frappe.throw(f"Only {self.doc.approver} can Reject this Request.")
+			pass
+			# if frappe.session.user != self.doc.approver:
+			# 	frappe.throw(f"Only {self.doc.approver} can Reject this Request.")
 		else:
 			frappe.throw(_("Invalid Workflow State {}").format(self.doc.workflow_state))
 
@@ -879,6 +880,11 @@ class NotifyCustomWorkflow:
 			if not template:
 				frappe.msgprint(_("Please set default template for Employee Separation Status Notification in HR Settings."))
 				return
+		elif self.doc.doctype == "Employee Separation Clearance":
+			template = frappe.db.get_single_value('HR Settings', 'employee_separation_Clearance_status_notification_template')
+			if not template:
+				frappe.msgprint(_("Please set default template for Employee Separation Clearance Status Notification in HR Settings."))
+				return
 		elif self.doc.doctype == "Employee Transfer":
 			template = frappe.db.get_single_value('HR Settings', 'employee_transfer_status_notification_template')
 			if not template:
@@ -983,6 +989,11 @@ class NotifyCustomWorkflow:
 				template = frappe.db.get_single_value('HR Settings', 'employee_separation_approval_notification_template')
 				if not template:
 					frappe.msgprint(_("Please set default template for Employee Separation Approval Notification in HR Settings."))
+					return 
+			elif self.doc.doctype == "Employee Separation Clearance":
+				template = frappe.db.get_single_value('HR Settings', 'employee_separation_clearance_approval_notification_template')
+				if not template:
+					frappe.msgprint(_("Please set default template for Employee Separation Clearance Approval Notification in HR Settings."))
 					return 
 					# added by karma
 			elif self.doc.doctype == "Imprest Recoup":

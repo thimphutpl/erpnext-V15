@@ -117,7 +117,7 @@ def get_data(filters):
 		filters,
 		gl_entries_by_account,
 		ignore_closing_entries=not flt(filters.with_period_closing_entry_for_current_period),
-		ignore_opening_entries=True,
+		ignore_opening_entries=True
 	)
 
 	calculate_values(accounts, gl_entries_by_account, opening_balances, filters.get("show_net_values"))
@@ -264,6 +264,11 @@ def get_opening_balance(
 
 	if filters.project:
 		opening_balance = opening_balance.where(closing_balance.project == filters.project)
+	if filters.project_definition:
+		projects = []
+		for a in frappe.db.get_all("Project", {"project_definition": filters.project_definition}):
+			projects.append(a.name)
+		opening_balance = opening_balance.where(closing_balance.project.isin(projects))
 
 	if filters.get("include_default_book_entries"):
 		company_fb = frappe.get_cached_value("Company", filters.company, "default_finance_book")

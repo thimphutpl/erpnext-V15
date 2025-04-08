@@ -570,6 +570,7 @@ class TestPurchaseInvoice(FrappeTestCase, StockTestMixin):
 		)
 
 	def test_total_purchase_cost_for_project(self):
+		frappe.throw("KK")
 		if not frappe.db.exists("Project", {"project_name": "_Test Project for Purchase"}):
 			project = make_project({"project_name": "_Test Project for Purchase"})
 		else:

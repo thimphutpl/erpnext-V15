@@ -90,7 +90,7 @@ class HireChargeInvoice(AccountsController):
 		self.set_advance_data()
 		self.update_advance_amount()
 		self.update_vlogs(1)
-		if self.owned_by == "CDCL":
+		if self.owned_by == "GYALSUNG INFRA":
 			self.post_journal_entry()
 			self.db_set("outstanding_amount", 0)
 		else:
@@ -99,27 +99,87 @@ class HireChargeInvoice(AccountsController):
 			self.refund_of_excess_advance()
 		self.check_close()
 
+	# def on_cancel(self):
+	# 	# if frappe.session.user == "Administrator":
+	# 	#     frappe.throw('Dont cancel') 
+	# 	# frappe.throw("hhhhhhhhh")
+	# 	if self.owned_by != "GYALSUNG INFRA":
+	# 		self.ignore_linked_doctypes = (
+	# 			"Payment Ledger Entry",
+	# 		)
+	# 		super().on_cancel()
+	# 		self.make_gl_entries()
+	# 		#self.make_gl_entries_on_cancel()
+	# 	check_uncancelled_linked_doc(self.doctype, self.name)
+	# 	cl_status = frappe.db.get_value("Journal Entry", self.invoice_jv, "docstatus")
+	# 	if cl_status and cl_status != 2:
+	# 		frappe.throw("You need to cancel the journal entry ("+ str(self.invoice_jv) + ")related to this invoice first!")
+	# 	if self.payment_jv:
+	# 		cl_status = frappe.db.get_value("Journal Entry", self.payment_jv, "docstatus")
+	# 		if cl_status and cl_status != 2:
+	# 			frappe.throw("You need to cancel the journal entry ("+ str(self.payment_jv) + ")related to this invoice first!")
+	# 	self.readjust_advance()
+	# 	if self.close:
+	# 		self.check_advances()
+	# 	self.update_vlogs(0)
+	# 	self.check_close(1)
+	# 	self.db_set("invoice_jv", "")
+	# 	self.db_set("payment_jv", "")
+
+	# def on_cancel(self):
+	# 	# if self.clearance_date:
+	# 	# 	frappe.throw("Already done bank reconciliation.")
+
+	# 	self.ignore_linked_doctypes = (
+	# 		"Payment Ledger Entry",
+	# 	)
+	# 	super().on_cancel()   
+
+	# 	self.make_gl_entries()
+	# 	# self.update_ref_doc(cancel=1)
+
 	def on_cancel(self):
-		# if frappe.session.user == "Administrator":
-		#     frappe.throw('Dont cancel')
-		if self.owned_by != "CDCL":
-			self.make_gl_entries()
-			#self.make_gl_entries_on_cancel()
-		check_uncancelled_linked_doc(self.doctype, self.name)
-		cl_status = frappe.db.get_value("Journal Entry", self.invoice_jv, "docstatus")
-		if cl_status and cl_status != 2:
-			frappe.throw("You need to cancel the journal entry ("+ str(self.invoice_jv) + ")related to this invoice first!")
-		if self.payment_jv:
-			cl_status = frappe.db.get_value("Journal Entry", self.payment_jv, "docstatus")
-			if cl_status and cl_status != 2:
-				frappe.throw("You need to cancel the journal entry ("+ str(self.payment_jv) + ")related to this invoice first!")
-		self.readjust_advance()
-		if self.close:
-			self.check_advances()
-		self.update_vlogs(0)
-		self.check_close(1)
-		self.db_set("invoice_jv", "")
-		self.db_set("payment_jv", "")
+		# Cancel and unlink the linked Payment Ledger Entry
+		self.cancel_and_unlink_payment_ledger_entry()
+
+		# Ignore linked Payment Ledger Entry during cancellation
+		self.ignore_linked_doctypes = ("Payment Ledger Entry",)
+
+		# Call the parent class's on_cancel method
+		super().on_cancel()
+
+		# Make GL entries for cancellation
+		self.make_gl_entries()
+
+	def cancel_and_unlink_payment_ledger_entry(self):
+		# Fetch all linked Payment Ledger Entries
+		payment_ledger_entries = frappe.db.get_all(
+			"Payment Ledger Entry",
+			filters={
+				"against_voucher_type": self.doctype,  # e.g., "Hire Charge Invoice"
+				"against_voucher_no": self.name,       # e.g., "HCI25020078"
+				"docstatus": 1                         # Only submitted entries
+			},
+			fields=["name"]
+		)
+
+		for entry in payment_ledger_entries:
+			# Cancel the Payment Ledger Entry
+			ple_doc = frappe.get_doc("Payment Ledger Entry", entry.name)
+			if ple_doc.docstatus == 1:  # Ensure it is submitted
+				ple_doc.cancel()
+				frappe.msgprint(f"Cancelled Payment Ledger Entry: {entry.name}")
+
+			# Unlink the Payment Ledger Entry from the Hire Charge Invoice
+			frappe.db.set_value(
+				"Payment Ledger Entry",
+				entry.name,
+				{
+					"against_voucher_type": None,  # Unlink by setting to None
+					"against_voucher_no": None     # Unlink by setting to None
+				}
+			)
+			frappe.msgprint(f"Unlinked Payment Ledger Entry: {entry.name}")
 
 	def check_advances(self, cancel=None):
 		hire_name = self.ehf_name
@@ -202,7 +262,7 @@ class HireChargeInvoice(AccountsController):
 		je.posting_date = self.posting_date
 		je.branch = self.branch
 
-		if self.owned_by == "CDCL":
+		if self.owned_by == "GYALSUNG INFRA":
 			customer_cost_center = frappe.db.get_value("Equipment Hiring Form", self.ehf_name, "customer_cost_center")
 			je.append("accounts", {
 					"account": hea_account,
@@ -324,18 +384,31 @@ class HireChargeInvoice(AccountsController):
 		# discount_account = frappe.db.get_single_value("Maintenance Accounts Settings", "discount_account")
 		# if not discount_account:
 		# 	frappe.throw("Setup Discount Account in Maintenance Accounts Settings") 
-		for item in self.get("items"):
-			if item.total_amount: 
-				gl_entries.append(
-					self.get_gl_dict({
-								"account": payable_account,
-								# "against_voucher_type": "Equipment Hiring Form",
-								# "against": self.ehf_name,
-								# for item in items:
-								"credit": item.total_amount,
-								"credit_in_account_currency": item.total_amount,
-								"cost_center": self.cost_center
-						}, self.currency)
+
+		# for item in self.get("items"):
+		# 	if item.total_invoice_amount: 
+		# 		gl_entries.append(
+		# 			self.get_gl_dict({
+		# 						"account": payable_account,
+		# 						# "against_voucher_type": "Equipment Hiring Form",
+		# 						# "against": self.ehf_name,
+		# 						# for item in items:
+		# 						"credit": self.total_invoice_amount,
+		# 						"credit_in_account_currency": self.total_invoice_amount,
+		# 						"cost_center": self.cost_center
+		# 				}, self.currency)
+		# )
+		if self.total_invoice_amount: 
+			gl_entries.append(
+				self.get_gl_dict({
+							"account": payable_account,
+							# "against_voucher_type": "Equipment Hiring Form",
+							# "against": self.ehf_name,
+							# for item in items:
+							"credit": self.total_invoice_amount,
+							"credit_in_account_currency": self.total_invoice_amount,
+							"cost_center": self.cost_center
+					}, self.currency)
 		)
 		# for item in self.get("items"):
 		# 	if item.operator_salary:
@@ -351,46 +424,60 @@ class HireChargeInvoice(AccountsController):
 		# 			}, self.currency)
 		# 		)
 
-		for item in self.get("items"):
-			if item.operator_salary:
-				gl_entries.append(
-					self.get_gl_dict({
-						"account": operator_account,
-						"against": self.supplier,
-						# "party_type": "supplier",
-						# "party": self.supplier,
-						"debit": item.operator_salary,
-						"debit_in_account_currency": item.operator_salary,
-						"cost_center": self.cost_center
-					}, self.currency)
-				)
+		# if item.operator_salary:
+		if self.total_invoice_amount: 
+			gl_entries.append(
+				self.get_gl_dict({
+					"account": hire_account,
+					"against": self.supplier,
+					# "party_type": "supplier",
+					# "party": self.supplier,
+					"debit": self.total_invoice_amount,
+					"debit_in_account_currency": self.total_invoice_amount,
+					"cost_center": self.cost_center
+				}, self.currency)
+			)
+
+		# for item in self.get("items"):
+		# 	if item.operator_salary:
+		# 		gl_entries.append(
+		# 			self.get_gl_dict({
+		# 				"account": operator_account,
+		# 				"against": self.supplier,
+		# 				# "party_type": "supplier",
+		# 				# "party": self.supplier,
+		# 				"debit": item.operator_salary,
+		# 				"debit_in_account_currency": item.operator_salary,
+		# 				"cost_center": self.cost_center
+		# 			}, self.currency)
+		# 		)
 
 
-			if item.hire_charge_amount:
-				gl_entries.append(
-					self.get_gl_dict({
-							"account": hire_account,
-							"against": self.supplier,
-							"debit": item.hire_charge_amount,
-							"debit_in_account_currency": item.hire_charge_amount,
-							"cost_center": self.cost_center
-					}, self.currency)
-				)
+		# 	if item.hire_charge_amount:
+		# 		gl_entries.append(
+		# 			self.get_gl_dict({
+		# 					"account": hire_account,
+		# 					"against": self.supplier,
+		# 					"debit": item.hire_charge_amount,
+		# 					"debit_in_account_currency": item.hire_charge_amount,
+		# 					"cost_center": self.cost_center
+		# 			}, self.currency)
+		# 		)
 
-			if item.hsd_consumption:
-				gl_entries.append(
-					self.get_gl_dict({
-							"account": hsd_account,
-							"against": self.supplier,
-							# "party_type": "supplier",
-							# "party": self.supplier,
-							# "against_voucher": self.name,
-							# "against_voucher_type": self.doctype,
-							"debit": item.hsd_consumption,
-							"debit_in_account_currency": item.hsd_consumption,
-							"cost_center": self.cost_center
-					}, self.currency)
-				)
+		# 	if item.hsd_consumption:
+		# 		gl_entries.append(
+		# 			self.get_gl_dict({
+		# 					"account": hsd_account,
+		# 					"against": self.supplier,
+		# 					# "party_type": "supplier",
+		# 					# "party": self.supplier,
+		# 					# "against_voucher": self.name,
+		# 					# "against_voucher_type": self.doctype,
+		# 					"debit": item.hsd_consumption,
+		# 					"debit_in_account_currency": item.hsd_consumption,
+		# 					"cost_center": self.cost_center
+		# 			}, self.currency)
+		# 		)
 			# frappe.msgprint(format(gl_entries))
 			make_gl_entries(gl_entries, cancel=(self.docstatus == 2),update_outstanding="No", merge_entries=False)
 

@@ -44,11 +44,11 @@ class calculate_taxes_and_totals:
 			return
 
 		self.discount_amount_applied = False
-		self._calculate()
-
 		if self.doc.meta.get_field("discount_amount"):
 			self.set_discount_amount()
 			self.apply_discount_amount()
+		self._calculate()
+
 
 		# Update grand total as per cash and non trade discount
 		if self.doc.apply_discount_on == "Grand Total" and self.doc.get("is_cash_or_non_trade_discount"):
@@ -284,7 +284,9 @@ class calculate_taxes_and_totals:
 			):
 				amount = flt(item.amount) - total_inclusive_tax_amount_per_qty
 
-				item.net_amount = flt(amount / (1 + cumulated_tax_fraction))
+				# item.net_amount = flt(amount / (1 + cumulated_tax_fraction))
+				# item.net_amount = flt(amount / (1 + cumulated_tax_fraction))
+				item.net_amount = (item.amount+((item.amount/self.doc.total)*self.discount_amount))
 				item.net_rate = flt(item.net_amount / item.qty, item.precision("net_rate"))
 				item.discount_percentage = flt(
 					item.discount_percentage, item.precision("discount_percentage")
@@ -343,9 +345,11 @@ class calculate_taxes_and_totals:
 			self.doc.total += item.amount
 			self.doc.total_qty += item.qty
 			self.doc.base_total += item.base_amount
+			# if self.doc.doctype != "Purchase Invoice":
 			self.doc.net_total += item.net_amount
 			self.doc.base_net_total += item.base_net_amount
-
+		# if self.doc.doctype == "Purchase Invoice":
+		# 	self.doc.net_total = self.doc.total + self.doc.discount_amount
 		self.doc.round_floats_in(self.doc, ["total", "base_total", "net_total", "base_net_total"])
 
 	def calculate_shipping_charges(self):
@@ -478,7 +482,15 @@ class calculate_taxes_and_totals:
 				)
 
 		elif tax.charge_type == "On Net Total":
-			current_tax_amount = (tax_rate / 100.0) * item.net_amount
+			#commented to change get correct tax amount
+			# current_tax_amount = (tax_rate / 100.0) * item.net_amount
+			self.discount_amount = self.doc.total_add_ded
+			if self.doc.discount_amount > 0 or self.doc.discount_amount < 0:
+				current_tax_amount = (tax_rate / 100.0) * (item.net_amount+(item.net_amount/(self.doc.net_total)))
+			else:
+				current_tax_amount = (tax_rate / 100.0) * item.net_amount
+			if frappe.session.user == "Administrator":
+				frappe.msgprint(str(current_tax_amount))
 		elif tax.charge_type == "On Previous Row Amount":
 			current_tax_amount = (tax_rate / 100.0) * self.doc.get("taxes")[
 				cint(tax.row_id) - 1
@@ -560,12 +572,16 @@ class calculate_taxes_and_totals:
 			self.doc.grand_total = flt(self.doc.net_total)
 
 		if self.doc.doctype in ['Purchase Receipt','Purchase Invoice']:
-			self.doc.grand_total = flt(self.doc.total) + flt(self.doc.total_taxes_and_charges) + flt(self.doc.total_add_ded)
+			self.doc.grand_total = flt(self.doc.net_total) + flt(self.doc.total_taxes_and_charges)
 			# self.doc.grand_total += flt(self.doc.freight_insurance_charges,2) + flt(self.doc.other_charges,2)
 
 		if self.doc.get("taxes"):
+			# self.doc.total_taxes_and_charges = flt(
+			# 	self.doc.grand_total - self.doc.net_total - flt(self.doc.rounding_adjustment) -f,
+			# 	self.doc.precision("total_taxes_and_charges"),
+			# )
 			self.doc.total_taxes_and_charges = flt(
-				self.doc.grand_total - self.doc.net_total - flt(self.doc.rounding_adjustment),
+				self.doc.taxes_and_charges_added - self.doc.taxes_and_charges_deducted,
 				self.doc.precision("total_taxes_and_charges"),
 			)
 		else:
@@ -595,13 +611,11 @@ class calculate_taxes_and_totals:
 						self.doc.taxes_and_charges_deducted += flt(tax.tax_amount_after_discount_amount)
 
 			self.doc.round_floats_in(self.doc, ["taxes_and_charges_added", "taxes_and_charges_deducted"])
-
 			self.doc.base_grand_total = (
 				flt(self.doc.grand_total * self.doc.conversion_rate)
 				if (self.doc.taxes_and_charges_added or self.doc.taxes_and_charges_deducted)
 				else self.doc.base_net_total
 			)
-
 			self._set_in_company_currency(self.doc, ["taxes_and_charges_added", "taxes_and_charges_deducted"])
 
 		self.doc.round_floats_in(self.doc, ["grand_total", "base_grand_total"])
@@ -651,7 +665,9 @@ class calculate_taxes_and_totals:
 			)
 
 	def apply_discount_amount(self):
-		if self.doc.discount_amount:
+		if not self.doc.discount_amount:
+			self.doc.discount_amount = 0
+		if self.doc.discount_amount > 0 or self.doc.discount_amount < 0:
 			if not self.doc.apply_discount_on:
 				frappe.throw(_("Please select Apply Discount On"))
 
@@ -663,7 +679,9 @@ class calculate_taxes_and_totals:
 			if self.doc.apply_discount_on == "Grand Total" and self.doc.get("is_cash_or_non_trade_discount"):
 				self.discount_amount_applied = True
 				return
-
+			if not self.doc.grand_total:
+				self.doc.grand_total = flt(self.doc.net_total)
+				self.doc.base_grand_total = flt(self.doc.base_net_total)
 			total_for_discount_amount = self.get_total_for_discount_amount()
 			taxes = self.doc.get("taxes")
 			net_total = 0
@@ -671,27 +689,29 @@ class calculate_taxes_and_totals:
 			if total_for_discount_amount:
 				# calculate item amount after Discount Amount
 				for i, item in enumerate(self._items):
-					distributed_amount = (
-						flt(self.doc.discount_amount) * item.net_amount / total_for_discount_amount
-					)
+					# distributed_amount = (
+					# 	flt(self.doc.discount_amount) * item.net_amount / total_for_discount_amount
+					# )
 
-					item.net_amount = flt(item.net_amount - distributed_amount, item.precision("net_amount"))
+					# item.net_amount = flt(item.net_amount - distributed_amount, item.precision("net_amount"))
+					self.doc.discount_amount = self.doc.total_add_ded
+					item.net_amount = (item.amount+((item.amount/self.doc.total)*self.doc.discount_amount))
+					# frappe.throw(str(item.net_amount))
 					net_total += item.net_amount
-
 					# discount amount rounding loss adjustment if no taxes
-					if (
-						self.doc.apply_discount_on == "Net Total"
-						or not taxes
-						or total_for_discount_amount == self.doc.net_total
-					) and i == len(self._items) - 1:
-						discount_amount_loss = flt(
-							self.doc.net_total - net_total - self.doc.discount_amount,
-							self.doc.precision("net_total"),
-						)
+					# if (
+					# 	self.doc.apply_discount_on == "Net Total"
+					# 	or not taxes
+					# 	or total_for_discount_amount == self.doc.net_total
+					# ) and i == len(self._items) - 1:
+					# 	discount_amount_loss = flt(
+					# 		self.doc.net_total - net_total - self.doc.discount_amount,
+					# 		self.doc.precision("net_total"),
+					# 	)
 
-						item.net_amount = flt(
-							item.net_amount + discount_amount_loss, item.precision("net_amount")
-						)
+					# 	item.net_amount = flt(
+					# 		item.net_amount + discount_amount_loss, item.precision("net_amount")
+					# 	)
 
 					item.net_rate = (
 						flt(item.net_amount / item.qty, item.precision("net_rate")) if item.qty else 0

@@ -139,13 +139,13 @@ class JobCards(AccountsController):
 		self.update_breakdownreport()
 		
 
-	# def before_cancel(self):
-	# 	check_uncancelled_linked_doc(self.doctype, self.name)
-	# 	cl_status = frappe.db.get_value("Journal Entry", self.jv, "docstatus")
-	# 	if cl_status and cl_status != 2:
-	# 		frappe.throw("You need to cancel the journal entry related to this job card first!")
+	def before_cancel(self):
+		check_uncancelled_linked_doc(self.doctype, self.name)
+		cl_status = frappe.db.get_value("Journal Entry", self.jv, "docstatus")
+		if cl_status and cl_status != 2:
+			frappe.throw("You need to cancel the journal entry related to this job card first!")
 		
-	# 	self.db_set('jv', None)
+		self.db_set('jv', None)
 
 	def on_cancel(self):
 		self.ignore_linked_doctypes = (

@@ -79,7 +79,6 @@ def make_sl_entries(sl_entries, allow_negative_stock=False, via_landed_cost_vouc
 
 			if cancel:
 				sle["actual_qty"] = -flt(sle.get("actual_qty"))
-
 				if sle["actual_qty"] < 0 and not sle.get("outgoing_rate"):
 					sle["outgoing_rate"] = get_incoming_outgoing_rate_for_cancel(
 						sle.item_code, sle.voucher_type, sle.voucher_no, sle.voucher_detail_no
@@ -104,6 +103,7 @@ def make_sl_entries(sl_entries, allow_negative_stock=False, via_landed_cost_vouc
 
 			is_stock_item = frappe.get_cached_value("Item", args.get("item_code"), "is_stock_item")
 			if is_stock_item:
+				
 				bin_name = get_or_make_bin(args.get("item_code"), args.get("warehouse"))
 				args.reserved_stock = flt(frappe.db.get_value("Bin", bin_name, "reserved_stock"))
 				repost_current_voucher(args, allow_negative_stock, via_landed_cost_voucher)
@@ -598,7 +598,7 @@ class update_entries_after:
 
 		if self.args.get("sle_id"):
 			self.process_sle_against_current_timestamp()
-			if not future_sle_exists(self.args):
+			if not future_sle_exists(self.args):				
 				self.update_bin()
 		else:
 			entries_to_fix = self.get_future_entries_to_fix()
@@ -1356,6 +1356,7 @@ class update_entries_after:
 		return get_stock_ledger_entries(args, ">", "asc", for_update=True, check_serial_no=False)
 
 	def raise_exceptions(self):
+		# frappe.throw(str(self.exceptions.items()))
 		msg_list = []
 		for warehouse, exceptions in self.exceptions.items():
 			deficiency = min(e["diff"] for e in exceptions)

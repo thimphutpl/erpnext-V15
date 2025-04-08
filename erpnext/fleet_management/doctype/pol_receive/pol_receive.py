@@ -112,6 +112,7 @@ class POLReceive(StockController):
 		self.validate_item()
 
 	def on_submit(self):
+		# frappe.throw("Under Maintenance")
 		self.validate_dc()
 		self.validate_data()
 		self.check_on_dry_hire()

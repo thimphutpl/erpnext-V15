@@ -397,13 +397,17 @@ class JournalEntry(AccountsController):
 		elif self.is_opening == 'No' and is_advance == "No" and self.voucher_type != "Credit Note":
 			previous_other_expenses = frappe.db.get_value("Project", reference_name, ["other_expenses","total_cost"],as_dict=1)
 			total_other_expenses = (flt(previous_other_expenses.other_expenses) + flt(debit_in_account_currency)) if self.docstatus == 1 else (flt(previous_other_expenses.other_expenses) - flt(debit_in_account_currency))
+			total_other_expenses = (flt(total_other_expenses) - flt(credit_in_account_currency)) if self.docstatus == 1 else (flt(total_other_expenses) + flt(credit_in_account_currency))
 			# total_opening_adjustment = (flt(previous_opening.opening_adjustment) + flt(credit_in_account_currency)) if self.docstatus == 1 else (flt(previous_opening.opening_adjustment) - flt(credit_in_account_currency))
 			total_project_cost = (flt(previous_other_expenses.total_cost) + flt(debit_in_account_currency)) if self.docstatus == 1 else (flt(previous_other_expenses.total_cost) - flt(debit_in_account_currency))
+			total_project_cost = (flt(total_project_cost) - flt(credit_in_account_currency)) if self.docstatus == 1 else (flt(total_project_cost) + flt(credit_in_account_currency))
 			frappe.db.sql("update `tabProject` set other_expenses = {}, total_cost = {} where name ='{}'".format(total_other_expenses, total_project_cost, reference_name))
 			if task:
 				previous_task_other_expenses = frappe.db.get_value("Task", task, ["other_expenses","total_cost"],as_dict=1)
 				total_task_other_expenses = (flt(previous_task_other_expenses.other_expenses) + flt(debit_in_account_currency)) if self.docstatus == 1 else (flt(previous_task_other_expenses.other_expenses) - flt(debit_in_account_currency))
+				total_task_other_expenses = (flt(total_task_other_expenses) - flt(credit_in_account_currency)) if self.docstatus == 1 else (flt(total_task_other_expenses) + flt(credit_in_account_currency))
 				total_task_cost = (flt(previous_task_other_expenses.total_cost) + flt(debit_in_account_currency)) if self.docstatus == 1 else (flt(previous_task_other_expenses.total_cost) - flt(debit_in_account_currency))
+				total_task_cost = (flt(total_task_cost) - flt(credit_in_account_currency)) if self.docstatus == 1 else (flt(total_task_cost) + flt(credit_in_account_currency))
 				frappe.db.sql("update `tabTask` set other_expenses = {}, total_cost = {} where name ='{}'".format(total_task_other_expenses, total_task_cost, task))
 		# elif is_advance == "No" and is_opening_adjustment == 0 and is_settlement == 0 and self.voucher_type == "Credit Note":
 		# 	total_previous_cost = frappe.db.get_value("Project", reference_name, "total_cost", as_dict=1)
@@ -730,6 +734,7 @@ class JournalEntry(AccountsController):
 					if d.party_type in ("Employee", "Supplier"):
 						continue
 					elif not (d.party_type and d.party):
+						return
 						frappe.throw(
 							_(
 								"Row {0}: Party Type and Party are required for Receivable / Payable account {1}"
@@ -875,7 +880,7 @@ class JournalEntry(AccountsController):
 				against_entries = frappe.db.sql(
 					"""select * from `tabJournal Entry Account`
 					where account = %s and docstatus = 1 and parent = %s
-					and (reference_type is null or reference_type in ('', 'Sales Order', 'Purchase Order', 'Leave Encashment', 'Travel Claim'))
+					and (reference_type is null or reference_type in ('', 'Sales Order', 'Purchase Order', 'Leave Encashment', 'Travel Claim', 'Employee Benefits'))
 					""",
 					(d.account, d.reference_name),
 					as_dict=True,
@@ -895,6 +900,8 @@ class JournalEntry(AccountsController):
 					valid = False
 					for jvd in against_entries:
 						if flt(jvd[dr_or_cr]) > 0:
+							valid = True
+						if jvd.reference_type == "Employee Benefits":
 							valid = True
 					if not valid and not self.system_generated_gain_loss():
 						frappe.throw(
@@ -1096,6 +1103,8 @@ class JournalEntry(AccountsController):
 	def validate_total_debit_and_credit(self):
 		if not (self.voucher_type == "Exchange Gain Or Loss" and self.multi_currency):
 			if self.difference:
+				# frappe.throw(self.title)
+				# frappe.throw("Dibit "+str(self.total_debit)+" Credit "+str(self.total_credit))
 				frappe.throw(
 					_("Total Debit must be equal to Total Credit. The difference is {0}").format(
 						self.difference
@@ -1122,7 +1131,6 @@ class JournalEntry(AccountsController):
 					tax_cr = tax_amount if flt(d.debit) else 0
 			self.total_debit = flt(self.total_debit) + flt(d.debit, d.precision("debit")) + flt(tax_dr)
 			self.total_credit = flt(self.total_credit) + flt(d.credit, d.precision("credit")) + flt(tax_cr)
-
 		self.difference = flt(self.total_debit, self.precision("total_debit")) - flt(
 			self.total_credit, self.precision("total_credit")
 		)

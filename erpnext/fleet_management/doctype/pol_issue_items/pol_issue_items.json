@@ -94,6 +94,12 @@
    "read_only": 1
   },
   {
+    "fieldname": "serial_and_batch_bundle",
+    "fieldtype": "Data",
+    "label": "Serial And Batch Bundle",
+    "read_only": 1
+   },
+  {
    "fieldname": "column_break_11",
    "fieldtype": "Column Break"
   },

@@ -10,6 +10,7 @@ from frappe.desk.notifications import clear_doctype_notifications
 from frappe.model.mapper import get_mapped_doc
 from frappe.utils import cint, cstr, flt, get_link_to_form
 from frappe.model.naming import make_autoname
+from frappe.utils import money_in_words
 
 from erpnext.accounts.doctype.sales_invoice.sales_invoice import (
 	unlink_inter_company_doc,
@@ -228,6 +229,10 @@ class PurchaseOrder(BuyingController):
 		validate_inter_company_party(
 			self.doctype, self.supplier, self.company, self.inter_company_order_reference
 		)
+		if self.total_add_ded:
+			self.net_total = self.total + self.total_add_ded
+			self.grand_total =self.net_total
+			self.in_words = money_in_words(self.grand_total, self.currency)
 		self.reset_default_field_value("set_warehouse", "items", "warehouse")
 
 	def validate_with_previous_doc(self):
@@ -298,18 +303,19 @@ class PurchaseOrder(BuyingController):
 		# calculate totals again after applying TDS
 		self.calculate_taxes_and_totals()
 	def warehouse_from_branch(doc):
-		branchname=doc.branch
+		# branchname=doc.branch
+		cost_center= frappe.db.get_value("Branch", doc.branch,"cost_center")
 		query = """
-        SELECT parent 
-        FROM `tabWarehouse Branch` 
-        WHERE branch=%s
+        SELECT warehouse 
+        FROM `tabCost Center` 
+        WHERE name=%s
         """
 
-		warehouse = frappe.db.sql(query, (branchname,), as_dict=True)
+		warehouse = frappe.db.sql(query, (cost_center,), as_dict=True)
 		if warehouse:
 			doc.set_warehouse = warehouse[0].get("parent")
 		else:
-			frappe.throw(f"No warehouse found for branch {branchname}")
+			frappe.throw(f"No warehouse found for branch {cost_center}")
 
 	def validate_supplier(self):
 		prevent_po = frappe.db.get_value("Supplier", self.supplier, "prevent_pos")
@@ -484,8 +490,8 @@ class PurchaseOrder(BuyingController):
 	def on_submit(self):
 		super().on_submit()
 		if self.for_project == 1:
-			self.update_project_task()
 			self.update_project_maintenance_cost()
+			self.update_project_task()
 		if self.is_against_so():
 			self.update_status_updater()
 
@@ -607,6 +613,9 @@ class PurchaseOrder(BuyingController):
 	# added by phuntsho and kinley on oct 12, 2021
 
 	def validate_project(self):
+		for a in self.items:
+			if a.project:
+				self.for_project = 1
 		if self.for_project == 1:
 			row = 1
 			for a in self.items:
@@ -692,39 +701,36 @@ class PurchaseOrder(BuyingController):
 	def update_project_maintenance_cost(self):
 		""" update the cost of project/task or maintenance """
 		for a in self.items:
-			if "Service" in frappe.db.get_value("Item", a.item_code, "item_group"):
-				stores_cost = service_cost = 0
+			if "Service" in a.item_group:
+				service_cost = 0
 				if a.net_amount > 0:
 					amount = a.base_net_amount if a.base_net_amount > 0 else a.net_amount
 				else:
 					amount = a.base_amount if a.base_amount > 0 else a.amount
 				if "Service" in a.item_group:
 					service_cost = amount
-				else:
-					stores_cost = amount
-				if a.project:
+				if a.project and service_cost > 0:
 					project = frappe.get_doc("Project", a.project)
-					if a.task:
-						task = frappe.get_doc("Task", a.task)
 
 					# total_previous_cost = frappe.db.get_value("Project", a.project, ["material_cost", "services_cost", "total_cost"], as_dict=1)
 					# task_previous_cost = frappe.db.get_value("Task", a.task, ["material_cost", "services_cost", "total_cost"],as_dict=1)
 					project_service_cost = (flt(project.services_cost) + flt(service_cost)) if self.docstatus == 1 else (flt(project.services_cost) - flt(service_cost))
 					# task_service_cost = (flt(task.services_cost) + flt(service_cost)) if self.docstatus == 1 else (flt(task.services_cost) - flt(service_cost))
-					project_store_cost = (flt(project.material_cost) + flt(stores_cost)) if self.docstatus == 1 else (flt(project.material_cost) - flt(stores_cost))
+					# project_store_cost = (flt(project.material_cost) + flt(stores_cost)) if self.docstatus == 1 else (flt(project.material_cost) - flt(stores_cost))
 					# task_store_cost = (flt(task.material_cost) + flt(stores_cost)) if self.docstatus == 1 else (flt(task.material_cost) - flt(stores_cost))
 					# total_task_cost = (flt(task.total_cost) + flt(amount)) if self.docstatus == 1 else (flt(task.total_cost) - flt(amount))
 					total_overall_cost = (flt(project.total_cost) + flt(amount)) if self.docstatus == 1 else (flt(project.total_cost) - flt(amount))
 					project.db_set("total_cost",total_overall_cost)
 					project.db_set("services_cost",project_service_cost)
-					project.db_set("material_cost",project_store_cost)
+					# project.db_set("material_cost",project_store_cost)
 					if a.task:
+						task = frappe.get_doc("Task", a.task)
 						task_service_cost = (flt(task.services_cost) + flt(service_cost)) if self.docstatus == 1 else (flt(task.services_cost) - flt(service_cost))
-						task_store_cost = (flt(task.material_cost) + flt(stores_cost)) if self.docstatus == 1 else (flt(task.material_cost) - flt(stores_cost))
+						# task_store_cost = (flt(task.material_cost) + flt(stores_cost)) if self.docstatus == 1 else (flt(task.material_cost) - flt(stores_cost))
 						total_task_cost = (flt(task.total_cost) + flt(amount)) if self.docstatus == 1 else (flt(task.total_cost) - flt(amount))
 						task.db_set("total_cost",total_task_cost)
 						task.db_set("services_cost",task_service_cost)
-						task.db_set("material_cost",task_store_cost)
+						# task.db_set("material_cost",task_store_cost)
 					# frappe.db.sql("update `tabProject` set total_cost={} where name ='{}'".format(total_overall_cost, self.reference_name))
 					# frappe.db.sql("""UPDATE `tabTask` SET total_cost={tot_cost}, service_cost={ser_cost}, material_cost={mat_cost} WHERE name='{task}'""".format(tot_cost=total_task_cost, ser_cost=total_service_cost, mat_cost=total_store_cost, task =self.task))
 
@@ -853,7 +859,9 @@ def make_purchase_receipt(source_name, target_doc=None):
 		target.base_amount = (
 			(flt(obj.qty) - flt(obj.received_qty)) * flt(obj.rate) * flt(source_parent.conversion_rate)
 		)
-
+	def set_missing_values(source, target):
+		if target.project == "None":
+			target.project = None
 	doc = get_mapped_doc(
 		"Purchase Order",
 		source_name,
@@ -1101,31 +1109,29 @@ def get_permission_query_conditions(user):
 
 	if user == "Administrator":
 		return
-	if frappe.session.user == user:
-		return
-	# if "Purchase Master Manager" in user_roles:
-	# 	return
-	# else:
-	# 	return
-	# if "Accounts User" in user_roles or "Purchase User" in user_roles:
-	# 	return """(
-	# 		exists(select 1
-	# 			from `tabAssign Branch`, `tabBranch Item`
-	# 			where `tabAssign Branch`.name = `tabBranch Item`.parent 
-	# 			and `tabBranch Item`.branch = `tabPurchase Order`.branch
-	# 			and `tabAssign Branch`.user = '{user}')
-	# 		or
-	# 		exists(select 1
-	# 			from `tabEmployee`
-	# 			where `tabEmployee`.branch = `tabPurchase Order`.branch
-	# 			and `tabEmployee`.user_id = '{user}')
-	# 	)""".format(user=user)
 		
-	# return """(
-	# 	`tabPurchase Order`.owner = '{user}'
-	# 	or
-	# 	exists(select 1
-	# 			from `tabEmployee`
-	# 			where `tabEmployee`.branch = `tabPurchase Order`.branch
-	# 			and `tabEmployee`.user_id = '{user}')
-	# )""".format(user=user)
+	if "Purchase Master Manager" in user_roles:
+		return
+
+	if "Accounts User" in user_roles or "Purchase User" in user_roles:
+		return """(
+			exists(select 1
+				from `tabAssign Branch`, `tabBranch Item`
+				where `tabAssign Branch`.name = `tabBranch Item`.parent 
+				and `tabBranch Item`.branch = `tabPurchase Order`.branch
+				and `tabAssign Branch`.user = '{user}')
+			or
+			exists(select 1
+				from `tabEmployee`
+				where `tabEmployee`.branch = `tabPurchase Order`.branch
+				and `tabEmployee`.user_id = '{user}')
+		)""".format(user=user)
+		
+	return """(
+		`tabPurchase Order`.owner = '{user}'
+		or
+		exists(select 1
+				from `tabEmployee`
+				where `tabEmployee`.branch = `tabPurchase Order`.branch
+				and `tabEmployee`.user_id = '{user}')
+	)""".format(user=user)

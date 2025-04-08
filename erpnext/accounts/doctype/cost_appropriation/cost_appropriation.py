@@ -92,8 +92,8 @@ class CostAppropriation(AccountsController):
 			self.hsd = frappe.db.get_value ("Company",self.company,"overtime_payment")
 		if self.cost_type == 'Muster Roll Employee':
 			self.account = frappe.db.get_value ("Company",self.company,"muster_roll_employee")
-			if self.cost_type =='Operator Allowance':
-				self.account = frappe.db.get_value ("Company",self.company,"operator_allowance")
+		if self.cost_type =='Operator Allowance':
+			self.account = frappe.db.get_value ("Company",self.company,"operator_allowance")
 		if self.cost_type == 'OAP Salary':
 			self.account = frappe.db.get_value ("Company",self.company,"oap_salary")
 				
