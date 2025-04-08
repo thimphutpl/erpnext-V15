@@ -1193,12 +1193,12 @@ def make_purchase_invoice(source_name, target_doc=None, args=None):
 		doc.set_payment_schedule()
 
 	def update_other_charges(source, target, sp):
-		target.discount = flt(source.discount)
-		target.tax = flt(source.tax)
-		target.other_charges = flt(source.other_charges)
-		target.freight_and_insurance_charges = flt(source.freight_and_insurance_charges)
+		target.discount = flt(target.discount) + flt(source.discount)
+		target.tax = flt(target.tax) + flt(source.tax)
+		target.other_charges = flt(target.other_charges) + flt(source.other_charges)
+		target.freight_and_insurance_charges = flt(target.freight_and_insurance_charges) + flt(source.freight_and_insurance_charges)
 		target.total_add_ded = flt(target.freight_and_insurance_charges) - flt(target.discount) + flt(target.tax) + flt(target.other_charges)
-		target.discount_amount = -1 * flt(target.total_add_ded) 
+		target.discount_amount = -1 * flt(target.total_add_ded)
 
 	def update_item(source_doc, target_doc, source_parent):
 		target_doc.qty, returned_qty = get_pending_qty(source_doc)
