@@ -33,7 +33,7 @@ def get_data(filters=None):
 			if filters.all_equipment:
 				if eq.hsd_type == item.item_code:
 					received = get_pol_till("Receive", eq.name, filters.to_date, item.item_code)
-					issued = get_pol_consumed_till(eq.name)
+					issued = get_pol_consumed_till(eq.name, filters.to_date,)
 					transfered = get_pol_transfer("Transfer", eq.name, item.item_code)
 			else:
 				received = get_pol_till("Stock", eq.name, filters.to_date, item.item_code)
