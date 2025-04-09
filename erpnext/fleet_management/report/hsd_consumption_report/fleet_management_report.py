@@ -4,7 +4,9 @@
 from __future__ import unicode_literals
 import frappe
 from frappe import _
-from frappe.utils import flt, cint,add_days, cstr, flt, getdate, nowdate, rounded, date_diff
+from frappe.utils import flt, cint,add_days, cstr, flt, getdate, nowdate, rounded, date_diff, get_datetime
+from frappe.utils import get_datetime, nowdate
+from datetime import datetime
 
 # #
 # Both recieved and issued pols can be queried with this
@@ -38,7 +40,7 @@ def get_pol_till(purpose, equipment, date, pol_type=None, additional_type=None):
 
 	return total
 
-def get_pol_tills(purpose, equipment, date, pol_type=None):
+def get_pol_tills(purpose, equipment, posting_date, pol_type=None, ):
 	if not equipment:
 		frappe.throw("Equipment and Till Date are Mandatory")
 	total = 0
@@ -46,11 +48,11 @@ def get_pol_tills(purpose, equipment, date, pol_type=None):
 	if pol_type:
 		query += " and pol_type = \'" + str(pol_type) + "\'"
 	
-
 	quantity = frappe.db.sql(query, as_dict=True)
 	if quantity:
 		total = quantity[0].total
 	return total
+
 
 def get_pol_transfer(purpose, equipment, date, pol_type=None):
 	if not equipment:
@@ -85,7 +87,7 @@ def get_pol_between(purpose, equipment, from_date, to_date, pol_type=None):
 ##
 # Get consumed POl as per yardstick
 ##
-def get_pol_consumed_till(equipment, date):
+def get_pol_consumed_till(equipment, date,):
 	if not equipment or not date:
 		frappe.throw("Equipment and Till Date are Mandatory")
 	pol = frappe.db.sql("select sum(consumption) as total from `tabVehicle Logbook` where docstatus = 1 and equipment = %s and to_date <= %s", (equipment, date), as_dict=True)
@@ -93,15 +95,16 @@ def get_pol_consumed_till(equipment, date):
 		return pol[0].total
 	else:
 		return 0	
-	
+
 def get_pol_consumed_tills(equipment):
 	if not equipment:
-		frappe.throw("Equipment are Mandatory")
+		frappe.throw("Equipment are Mandatory")	
 	pol = frappe.db.sql("select sum(consumption) as total from `tabVehicle Logbook` where docstatus = 1 and equipment = %s", (equipment, ), as_dict=True)
 	if pol:
 		return pol[0].total
 	else:
-		return 0			
+		return 0
+			
 
 def get_km_till(equipment, date):
 	if not equipment or not date:
