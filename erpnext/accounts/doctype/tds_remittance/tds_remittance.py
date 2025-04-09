@@ -73,7 +73,7 @@ class TDSRemittance(AccountsController):
 
 		entries = get_tds_invoices(self.tax_withholding_category, self.from_date, self.to_date, \
 			self.name, filter_existing=True, cond= cond, cost_center=self.cost_center)
-		frappe.throw(str(entries))
+		
 		if not entries:
 			frappe.msgprint(_("No Records Found"))
 
