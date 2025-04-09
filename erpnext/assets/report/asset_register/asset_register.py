@@ -110,14 +110,15 @@ def get_data(filters):
             SELECT
             a.name, a.asset_name, a.asset_category, a.asset_sub_category,
             a.vehicle_number, a.serial_number, a.old_asset_code,
-            a.cost_center, a.purchase_date, a.posting_date as date_of_issue, a.status, a.asset_status, 
+            a.cost_center, a.purchase_date, a.purchase_date as date_of_issue, a.status, a.asset_status, 
             a.disposal_date, a.journal_entry_for_scrap,
             a.custodian as issued_to, a.custodian_name as employee_name,
             a.asset_quantity, a.asset_rate, a.additional_value,
             a.gross_purchase_amount, f.expected_value_after_useful_life,
                         a.opening_accumulated_depreciation, f.value_after_depreciation,
                         a.income_tax_opening_depreciation_amount as iopening,
-            a.residual_value, a.remarks,
+            a.residual_value, a.remarks,f.depreciation_start_date,f.total_number_of_depreciations as no_of_total_dep,
+            f.total_number_of_booked_depreciations,
             (
                 (CASE WHEN a.purchase_date < '{from_date}' THEN IFNULL(a.asset_rate,0)*IFNULL(a.asset_quantity,1)
                     ELSE 0 END)
@@ -289,7 +290,10 @@ def get_data(filters):
                 "status": a.status,
                 "project": a.project,
                 "dep_total_next_year": a.dep_total_next_year,
-                "remarks": a.remarks
+                "remarks": a.remarks,
+                "depreciation_start_date": a.depreciation_start_date,
+                "no_of_total_dep": a.no_of_total_dep,
+                "depreciation_completed": a.total_number_of_booked_depreciations,
             }
             data.append(row)
         # total row
@@ -408,7 +412,7 @@ def get_columns():
         },
         {
             "fieldname": "date_of_issue",
-            "label": _("Dep Start Date"),
+            "label": _("Purchase Date"),
             "fieldtype": "Date",
             "width": 120
         },
@@ -540,5 +544,24 @@ def get_columns():
             "fieldtype": "data",
             "width": 120
         },
+        {
+            "fieldname": "depreciation_start_date",
+            "label": _("Dep Start Date"),
+            "fieldtype": "date",
+            "width": 120
+        },
+        {
+            "fieldname": "no_of_total_dep",
+            "label": _("No. of Depreciation"),
+            "fieldtype": "data",
+            "width": 120
+        },
+        {
+            "fieldname": "depreciation_completed",
+            "label": _("Completed Depreciation"),
+            "fieldtype": "data",
+            "width": 120
+        },
+        
     ]
 
