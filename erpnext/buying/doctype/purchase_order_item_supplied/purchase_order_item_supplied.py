@@ -18,6 +18,7 @@ class PurchaseOrderItemSupplied(Document):
 		bom_detail_no: DF.Data | None
 		consumed_qty: DF.Float
 		conversion_factor: DF.Float
+		item_name: DF.Data | None
 		main_item_code: DF.Link | None
 		parent: DF.Data
 		parentfield: DF.Data
