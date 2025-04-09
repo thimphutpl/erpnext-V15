@@ -92,13 +92,28 @@ frappe.query_reports["Inventory Report"] = {
 				};
 			},
 		},
+
 		{
-			fieldname: "warehouse_type",
-			label: __("Warehouse Type"),
-			fieldtype: "Link",
-			width: "80",
-			options: "Warehouse Type",
-		},
+            fieldname: "movement",
+            label: __("Movement Type"),
+            fieldtype: "Select",
+            width: "80",
+            options: [
+                "",  // Empty for all
+                "Fast Moving",
+                "Slow Moving", 
+                "Non Moving"
+            ]
+        },
+
+		// {
+		// 	fieldname: "warehouse_type",
+		// 	label: __("Warehouse Type"),
+		// 	fieldtype: "Link",
+		// 	width: "80",
+		// 	options: "Warehouse Type",
+		// },
+
 		// {
 		// 	fieldname: "valuation_field_type",
 		// 	label: __("Valuation Field Type"),

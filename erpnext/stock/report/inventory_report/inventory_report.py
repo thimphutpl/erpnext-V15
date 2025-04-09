@@ -28,6 +28,7 @@ class StockBalanceFilter(TypedDict):
     from_date: str
     to_date: str
     item_group: str | None
+    item_sub_group: str | None
     item: str | None
     warehouse: str | None
     warehouse_type: str | None
@@ -123,6 +124,7 @@ class StockBalanceReport:
             variant_values = self.get_variant_values_for()
 
         for _key, report_data in self.item_warehouse_map.items():
+
             if variant_data := variant_values.get(report_data.item_code):
                 report_data.update(variant_data)
 
@@ -156,13 +158,18 @@ class StockBalanceReport:
                 # if report_data.get('out_qty') else 0
             )
 
+
             # Determine Movement Status
             if report_data['consumption'] >= 60:
                 report_data['movement'] = "Fast Moving"
             elif report_data['consumption'] < 60 and report_data['consumption'] > 0:
                 report_data['movement'] = "Slow Moving"
             else:
-                report_data['movement'] = "No Moving"    
+                report_data['movement'] = "Non Moving" 
+
+            # Apply movement filter if specified
+            if self.filters.get("movement") and report_data['movement'] != self.filters.get("movement"):
+                continue       
 
             if self.filters.get("show_stock_ageing_data"):
                 opening_fifo_queue = self.get_opening_fifo_queue(report_data) or []
@@ -286,6 +293,7 @@ class StockBalanceReport:
                 "item_code": entry.item_code,
                 "warehouse": entry.warehouse,
                 "item_group": entry.item_group,
+                "item_sub_group": entry.item_sub_group,
                 "company": entry.company,
                 "currency": self.company_currency,
                 "stock_uom": entry.stock_uom,
@@ -332,7 +340,7 @@ class StockBalanceReport:
             .limit(1)
         )
 
-        for fieldname in ["warehouse", "item_code", "item_group", "warehouse_type"]:
+        for fieldname in ["warehouse", "item_code", "item_group", "item_sub_group", "warehouse_type"]:
             if self.filters.get(fieldname):
                 query = query.where(table[fieldname] == self.filters.get(fieldname))
 
@@ -364,6 +372,7 @@ class StockBalanceReport:
                 sle.serial_and_batch_bundle,
                 sle.has_serial_no,
                 item_table.item_group,
+                item_table.item_sub_group,
                 item_table.stock_uom,
                 item_table.item_name,
             )
@@ -398,12 +407,12 @@ class StockBalanceReport:
 
         if self.filters.get("warehouse"):
             query = apply_warehouse_filter(query, sle, self.filters)
-        elif warehouse_type := self.filters.get("warehouse_type"):
-            query = (
-                query.join(warehouse_table)
-                .on(warehouse_table.name == sle.warehouse)
-                .where(warehouse_table.warehouse_type == warehouse_type)
-            )
+        # elif warehouse_type := self.filters.get("warehouse_type"):
+        #     query = (
+        #         query.join(warehouse_table)
+        #         .on(warehouse_table.name == sle.warehouse)
+        #         .where(warehouse_table.warehouse_type == warehouse_type)
+        #     )
 
         return query
 
@@ -446,6 +455,13 @@ class StockBalanceReport:
                 "fieldname": "item_group",
                 "fieldtype": "Link",
                 "options": "Item Group",
+                "width": 100,
+            },
+            {
+                "label": _("Item Sub Group"),
+                "fieldname": "item_sub_group",
+                "fieldtype": "Link",
+                "options": "Item Sub Group",
                 "width": 100,
             },
             # {
@@ -702,6 +718,7 @@ def filter_items_with_no_transactions(
                 "warehouse",
                 "item_name",
                 "item_group",
+                "item_sub_group",
                 "project",
                 "stock_uom",
                 "company",
@@ -740,7 +757,7 @@ def get_inventory_summary_data(filters: StockBalanceFilter):
     summary_data = {
         "Fast Moving": {"count": 0, "total_value": 0},
         "Slow Moving": {"count": 0, "total_value": 0},
-        "No Moving": {"count": 0, "total_value": 0},
+        "Non Moving": {"count": 0, "total_value": 0},
     }
 
     # Process data to create the summary
