@@ -767,7 +767,17 @@ class PurchaseInvoice(BuyingController):
 				self.set_consumed_qty_in_subcontract_order()
 
 		# this sequence because outstanding may get -negative
-		self.make_gl_entries()
+		abstract_bill = frappe.db.sql('''
+                                 select abstract_bill_required from `tabCompany` where name="{name}" limit 1
+                                 '''.format(name=self.company))
+			# frappe.throw(str(abstract_bill[0][0]))
+		if abstract_bill and abstract_bill[0][0] == 1:
+			self.create_abstract_bill()
+			# self.send_email()
+
+		if not abstract_bill:
+			# self.post_journal_entry()
+			self.make_gl_entries()
 
 		if self.update_stock == 1:
 			self.repost_future_sle_and_gle()
@@ -794,7 +804,9 @@ class PurchaseInvoice(BuyingController):
 			if self.needs_repost:
 				self.validate_for_repost()
 				self.db_set("repost_required", self.needs_repost)
-
+		self.set_status()
+  
+  
 	def consume_budget(self, cancel=False):
 		if cancel:
 			frappe.db.sql("delete from `tabCommitted Budget` where reference_type='{}' and reference_no='{}'".format(self.doctype, self.name))
@@ -1925,6 +1937,50 @@ class PurchaseInvoice(BuyingController):
 		if update:
 			self.db_set("status", self.payment_status, update_modified=update_modified)
 
+	def create_abstract_bill(self):
+     
+		# data = frappe.db.sql("""
+		# select pol_advance_account from `tabCompany` where name="His Majesty's Secretariat"
+		# """, as_dict=True)
+
+		# # Accessing the result
+		# if data:
+		# 	pol_advance_account = data[0].get('pol_advance_account')
+		# else:
+		# 	frappe.throw("Add pol_advance_account in company")
+		expense_account = ''
+		for i in self.items:
+			# frappe.throw(i.expense_account)
+			expense_account = i.expense_account
+			break
+
+		# imprest_advance_account = self.get_imprest_type_account(self.imprest_type)
+		items = []
+		items.append({
+			"account": expense_account,
+			"cost_center": self.cost_center,
+			"party_type": 'Supplier',
+			"party": self.supplier,
+			"business_activity": self.business_activity,
+			"amount": self.base_total,
+		})		
+		ab = frappe.new_doc("Abstract Bill")
+		ab.flags.ignore_permission = 1
+		ab.update({
+			"doctype": "Abstract Bill",
+			"posting_date": self.posting_date,
+			"company": self.company,
+			"has_workflow":1,
+			"worflow_state":"Draft",
+			"branch": self.branch,
+			"reference_doctype": self.doctype,
+			"reference_name": self.name,
+			"items": items,
+		})
+		ab.insert()
+		frappe.msgprint(_('Abstarct Bill {0} posted to accounts').format(frappe.get_desk_link("Abstract Bill", ab.name)))
+
+
 
 # to get details of purchase invoice/receipt from which this doc was created for exchange rate difference handling
 def get_purchase_document_details(doc):
@@ -2079,3 +2135,18 @@ def make_purchase_receipt(source_name, target_doc=None):
 	)
 
 	return doc
+
+@frappe.whitelist()
+def make_abstract_bill(source_name):
+    from frappe.model.mapper import get_mapped_doc
+
+    return get_mapped_doc("Purchase Invoice", source_name, {
+        "Purchase Invoice": {
+            "doctype": "Abstract Bill",
+            "field_map": {
+                "company": "company",
+                "posting_date": "date",  # example field mapping
+                # add more fields here
+            }
+        }
+    })
