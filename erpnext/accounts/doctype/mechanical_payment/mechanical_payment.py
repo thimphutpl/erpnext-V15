@@ -197,10 +197,13 @@ class MechanicalPayment(AccountsController):
             against_voucher, against_voucher_type = None, None
             doc = frappe.get_doc(a.reference_type, a.reference_name)
             if a.reference_type == "Job Cards":
+                if doc.customer != self.customer:
+                frappe.throw(" {} customer selected but the customer must be {} as per {} {}. ".format(self.customer, doc.customer, a.reference_type, a.reference_name))
                 if doc.jv:
                     against_voucher_type = "Journal Entry"
                     against_voucher = doc.jv
-            if doc.supplier != self.customer:
+            
+            elif doc.supplier != self.customer:
                 frappe.throw(" {} customer selected but the customer must be {} as per {} {}. ".format(self.customer, doc.customer, a.reference_type, a.reference_name))
 
             gl_entries.append(
