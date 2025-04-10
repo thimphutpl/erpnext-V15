@@ -1,0 +1,29 @@
+{
+ "content": null,
+ "creation": "2025-04-10 11:42:05.349031",
+ "docstatus": 0,
+ "doctype": "Page",
+ "idx": 0,
+ "modified": "2025-04-10 11:43:19.498096",
+ "modified_by": "Administrator",
+ "module": "Management Dashboard",
+ "name": "project_management",
+ "owner": "Administrator",
+ "page_name": "project_management",
+ "roles": [
+  {
+   "role": "Project Engineer"
+  },
+  {
+   "role": "Projects Readonly"
+  },
+  {
+   "role": "Employee"
+  }
+ ],
+ "script": null,
+ "standard": "Yes",
+ "style": null,
+ "system_page": 0,
+ "title": "Project Management Dashboard"
+}
