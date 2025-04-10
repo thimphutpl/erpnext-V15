@@ -16,7 +16,6 @@ def get_columns(filters):
 	if filters.aggregate:
 		return [
 			("Equipment") + ":Link/Equipment:120",
-			("Equipment Type") + ":Link/Equipment Type:150",
 			("Total Advance Amount")+ ":Currency:200",
 			("Total Adjusted Amount") + ":Currency:200",
 			("Total Balance Amount") + ":Currency:200",
@@ -41,7 +40,7 @@ def get_data(filters):
 	if filters.aggregate:
 		query = frappe.db.sql("""select
 								p.equipment, 
-								p.equipment_type,
+								
 								SUM(p.amount), 
 								SUM(p.adjusted_amount), 
 								SUM(p.balance_amount)
@@ -53,7 +52,7 @@ def get_data(filters):
 		query = frappe.db.sql("""select
 									p.name, 
 									p.equipment, 
-									p.equipment_type,
+									
 									p.fuelbook_branch, 
 									p.cost_center, 
 									p.entry_date,
