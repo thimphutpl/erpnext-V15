@@ -76,6 +76,8 @@ class CostAppropriation(AccountsController):
 			self.account = frappe.db.get_value ("Company",self.company,"contract_employee")
 		if self.cost_type == 'DFG Soelra':
 			self.account = frappe.db.get_value ("Company",self.company,"dfg_soelra")
+		if self.cost_type == 'GFG Soelra':
+			self.account = frappe.db.get_value ("Company",self.company,"gfg_soelra")
 		if self.cost_type == 'Thai Salary':
 			self.account = frappe.db.get_value ("Company",self.company,"thai_salary")
 		if self.cost_type == 'Indian Operators Salary':

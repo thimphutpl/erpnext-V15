@@ -89,6 +89,7 @@
   "gce",
   "muster_roll_employee",
   "dfg_soelra",
+  "gfg_soelra",
   "repair_and_maintenance",
   "contract_employee",
   "advance_payments_section",
@@ -1026,6 +1027,12 @@
    "fieldtype": "Link",
    "label": "Asset Equity Account",
    "options": "Account"
+  },
+  {
+   "fieldname": "gfg_soelra",
+   "fieldtype": "Link",
+   "label": "GFG Soelra",
+   "options": "Account"
   }
  ],
  "icon": "fa fa-building",
@@ -1033,7 +1040,7 @@
  "image_field": "company_logo",
  "is_tree": 1,
  "links": [],
- "modified": "2025-02-10 14:16:27.786742",
+ "modified": "2025-04-10 12:10:12.660099",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Company",

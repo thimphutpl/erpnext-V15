@@ -31,6 +31,7 @@ class Company(NestedSet):
 		abstract_bill_required: DF.Check
 		accumulated_depreciation_account: DF.Link | None
 		allow_account_creation_against_child_company: DF.Check
+		asset_equity_account: DF.Link | None
 		asset_received_but_not_billed: DF.Link | None
 		auto_err_frequency: DF.Literal["Daily", "Weekly"]
 		auto_exchange_rate_revaluation: DF.Check
@@ -91,6 +92,7 @@ class Company(NestedSet):
 		fitness_account: DF.Link | None
 		gain_disposal_account: DF.Link | None
 		gce: DF.Link | None
+		gfg_soelra: DF.Link | None
 		hire_charge: DF.Link | None
 		hsd: DF.Link | None
 		imprest_advance_account: DF.Link | None
