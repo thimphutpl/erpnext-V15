@@ -889,19 +889,103 @@ def get_non_moving_branch_data():
 
 
 
+# def get_consumption_report(filters: StockBalanceFilter):
+#     stock_balance_report = StockBalanceReport(filters)
+#     _, data = stock_balance_report.run()
+
+#     summary_data = {
+#         "Items with Opening & Closing Balance but No Receipt & Consumption": {
+#             "count": 0, "total_value": 0
+#         },
+#         "Items with Opening Balance, Receipt Value & No Consumption": {
+#             "count": 0, "total_value": 0
+#         },
+#         "Purchased During the Year with No Consumption": {
+#             "count": 0, "total_value": 0
+#         },
+#     }
+
+#     # Process data to create the summary
+#     for row in data:
+#         opening_qty = row.get("opening_qty", 0)
+#         closing_qty = row.get("closing_qty", 0)
+#         receipt_qty = row.get("in_qty", 0)
+#         consumption_qty = row.get("out_qty", 0)
+#         value = row.get("bal_val", 0)  # Balance value of the item
+
+#         if opening_qty > 0 and closing_qty > 0 and receipt_qty == 0 and consumption_qty == 0:
+#             category = "Items with Opening & Closing Balance but No Receipt & Consumption"
+#         elif opening_qty > 0 and receipt_qty > 0 and consumption_qty == 0:
+#             category = "Items with Opening Balance, Receipt Value & No Consumption"
+#         elif opening_qty == 0 and receipt_qty > 0 and consumption_qty == 0:
+#             category = "Purchased During the Year with No Consumption"
+#         else:
+#             continue  # Skip rows that don't match any category
+
+#         summary_data[category]["count"] += 1
+#         summary_data[category]["total_value"] += value
+
+#     # Calculate totals
+#     total_items = sum(category["count"] for category in summary_data.values())
+#     total_value = sum(category["total_value"] for category in summary_data.values())
+
+#     # Convert summary data to a report-friendly format
+#     report_data = []
+#     for category, details in summary_data.items():
+#         report_data.append({
+#             "Category": category,
+#             "Number of Items": details["count"],
+#             "Total Value": details["total_value"],
+#             "Value Percent": (
+#                 (details["total_value"] / total_value * 100) if total_value > 0 else 0
+#             ),
+#             "Item Percent": (
+#                 (details["count"] / total_items * 100) if total_items > 0 else 0
+#             ),
+#         })
+
+#     # Add the Total row
+#     report_data.append({
+#         "Category": "<b>Total</b>",
+#         "Number of Items": total_items,
+#         "Total Value": total_value,
+#         "Value Percent": 100.0,  # Total percentage for value
+#         "Item Percent": 100.0,   # Total percentage for items
+#     })
+
+#     # Define the columns
+#     columns = [
+#         {"label": "Category", "fieldname": "Category", "fieldtype": "HTML", "width": 350},
+#         {"label": "Number of Items", "fieldname": "Number of Items", "fieldtype": "Int", "width": 150},
+#         {"label": "Total Value", "fieldname": "Total Value", "fieldtype": "Currency", "width": 150},
+#         {"label": "Value Percent", "fieldname": "Value Percent", "fieldtype": "Percent", "width": 150},
+#         {"label": "Item Percent", "fieldname": "Item Percent", "fieldtype": "Percent", "width": 150},
+#     ]
+
+#     return columns, report_data
+
+
+
+
 def get_consumption_report(filters: StockBalanceFilter):
     stock_balance_report = StockBalanceReport(filters)
     _, data = stock_balance_report.run()
 
     summary_data = {
         "Items with Opening & Closing Balance but No Receipt & Consumption": {
-            "count": 0, "total_value": 0
+            "count": 0, 
+            "total_value": 0,
+            "items": []
         },
         "Items with Opening Balance, Receipt Value & No Consumption": {
-            "count": 0, "total_value": 0
+            "count": 0, 
+            "total_value": 0,
+            "items": []
         },
         "Purchased During the Year with No Consumption": {
-            "count": 0, "total_value": 0
+            "count": 0, 
+            "total_value": 0,
+            "items": []
         },
     }
 
@@ -912,6 +996,8 @@ def get_consumption_report(filters: StockBalanceFilter):
         receipt_qty = row.get("in_qty", 0)
         consumption_qty = row.get("out_qty", 0)
         value = row.get("bal_val", 0)  # Balance value of the item
+        item_code = row.get("item_code", "")
+        item_name = row.get("item_name", "")
 
         if opening_qty > 0 and closing_qty > 0 and receipt_qty == 0 and consumption_qty == 0:
             category = "Items with Opening & Closing Balance but No Receipt & Consumption"
@@ -924,6 +1010,15 @@ def get_consumption_report(filters: StockBalanceFilter):
 
         summary_data[category]["count"] += 1
         summary_data[category]["total_value"] += value
+        summary_data[category]["items"].append({
+            "item_code": item_code,
+            "item_name": item_name,
+            "value": value,
+            "opening_qty": opening_qty,
+            "closing_qty": closing_qty,
+            "receipt_qty": receipt_qty,
+            "consumption_qty": consumption_qty
+        })
 
     # Calculate totals
     total_items = sum(category["count"] for category in summary_data.values())
@@ -932,8 +1027,9 @@ def get_consumption_report(filters: StockBalanceFilter):
     # Convert summary data to a report-friendly format
     report_data = []
     for category, details in summary_data.items():
+        # Add the category summary row
         report_data.append({
-            "Category": category,
+            "Category": f"<b>{category}</b>",
             "Number of Items": details["count"],
             "Total Value": details["total_value"],
             "Value Percent": (
@@ -942,7 +1038,25 @@ def get_consumption_report(filters: StockBalanceFilter):
             "Item Percent": (
                 (details["count"] / total_items * 100) if total_items > 0 else 0
             ),
+            "indent": 0,
+            "is_group": True
         })
+        
+        # Add all items under this category
+        for item in details["items"]:
+            report_data.append({
+                "Category": f"{item['item_code']} - {item['item_name']}",
+                "Number of Items": 1,
+                "Total Value": item["value"],
+                "Value Percent": (item["value"] / total_value * 100) if total_value > 0 else 0,
+                "Item Percent": (1 / total_items * 100) if total_items > 0 else 0,
+                "indent": 1,
+                "opening_qty": item["opening_qty"],
+                "closing_qty": item["closing_qty"],
+                "receipt_qty": item["receipt_qty"],
+                "consumption_qty": item["consumption_qty"],
+                "is_group": False
+            })
 
     # Add the Total row
     report_data.append({
@@ -951,6 +1065,8 @@ def get_consumption_report(filters: StockBalanceFilter):
         "Total Value": total_value,
         "Value Percent": 100.0,  # Total percentage for value
         "Item Percent": 100.0,   # Total percentage for items
+        "indent": 0,
+        "is_group": True
     })
 
     # Define the columns
@@ -960,10 +1076,16 @@ def get_consumption_report(filters: StockBalanceFilter):
         {"label": "Total Value", "fieldname": "Total Value", "fieldtype": "Currency", "width": 150},
         {"label": "Value Percent", "fieldname": "Value Percent", "fieldtype": "Percent", "width": 150},
         {"label": "Item Percent", "fieldname": "Item Percent", "fieldtype": "Percent", "width": 150},
+        # Hidden columns for item details
+        {"label": "Opening Qty", "fieldname": "opening_qty", "fieldtype": "Float", "hidden": 1},
+        {"label": "Closing Qty", "fieldname": "closing_qty", "fieldtype": "Float", "hidden": 1},
+        {"label": "Receipt Qty", "fieldname": "receipt_qty", "fieldtype": "Float", "hidden": 1},
+        {"label": "Consumption Qty", "fieldname": "consumption_qty", "fieldtype": "Float", "hidden": 1},
+        {"label": "Indent", "fieldname": "indent", "fieldtype": "Int", "hidden": 1},
+        {"label": "Is Group", "fieldname": "is_group", "fieldtype": "Check", "hidden": 1},
     ]
 
     return columns, report_data
-
 
 
 
