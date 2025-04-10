@@ -770,6 +770,7 @@
    "fieldtype": "Currency",
    "hidden": 1,
    "label": "Additional Discount Amount",
+   "no_copy": 1,
    "options": "currency",
    "print_hide": 1
   },
@@ -1311,38 +1312,43 @@
    "default": "0",
    "fieldname": "freight_and_insurance_charges",
    "fieldtype": "Currency",
-   "label": "Freight and Insurance Charges"
+   "label": "Freight and Insurance Charges",
+   "no_copy": 1
   },
   {
    "default": "0",
    "fieldname": "discount",
    "fieldtype": "Currency",
-   "label": "Discount"
+   "label": "Discount",
+   "no_copy": 1
   },
   {
    "default": "0",
    "fieldname": "tax",
    "fieldtype": "Currency",
-   "label": "Tax"
+   "label": "Tax",
+   "no_copy": 1
   },
   {
    "default": "0",
    "fieldname": "other_charges",
    "fieldtype": "Currency",
-   "label": "Other Charges"
+   "label": "Other Charges",
+   "no_copy": 1
   },
   {
    "default": "0",
    "fieldname": "total_add_ded",
    "fieldtype": "Currency",
-   "label": "Net Charges & Discount"
+   "label": "Net Charges & Discount",
+   "no_copy": 1
   }
  ],
  "icon": "fa fa-truck",
  "idx": 261,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-04-07 12:22:28.294820",
+ "modified": "2025-04-10 11:20:54.132780",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Purchase Receipt",
