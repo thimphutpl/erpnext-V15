@@ -15,12 +15,14 @@
   "ref_number",
   "column_break_zngb",
   "receive_payment",
-  "customer_details_section",
+  "section_break_rxqr",
   "branch",
-  "column_break_rnel",
   "cost_center",
-  "column_break_wcwn",
+  "customer_details_section",
+  "column_break_wxzl",
   "customer",
+  "column_break_rnel",
+  "column_break_wcwn",
   "intra_cdcl_customer_details_section",
   "customer_cost_center",
   "column_break_fzmv",
@@ -392,12 +394,20 @@
    "label": "Status",
    "options": "\nPayment Received\nPending Payment",
    "read_only": 1
+  },
+  {
+   "fieldname": "section_break_rxqr",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_wxzl",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-02-05 16:00:52.518008",
+ "modified": "2025-04-10 16:40:19.814731",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Fabrication And Bailey Bridge",
