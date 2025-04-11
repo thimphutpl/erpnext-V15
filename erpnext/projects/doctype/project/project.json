@@ -925,6 +925,7 @@
    "label": "Material Details"
   },
   {
+   "allow_bulk_edit": 1,
    "allow_on_submit": 1,
    "fieldname": "task_material_item",
    "fieldtype": "Table",
@@ -985,7 +986,7 @@
  "is_submittable": 1,
  "links": [],
  "max_attachments": 4,
- "modified": "2025-03-13 11:19:27.201544",
+ "modified": "2025-04-11 09:51:57.672365",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Project",
