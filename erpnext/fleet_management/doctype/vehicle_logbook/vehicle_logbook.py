@@ -30,7 +30,6 @@ class VehicleLogbook(Document):
 		distance_km: DF.Int
 		ehf_name: DF.Link | None
 		equipment: DF.Link | None
-		equipment_non_consumption: DF.Check
 		equipment_operator: DF.Data | None
 		equipment_run_by_electric: DF.Check
 		final_hour: DF.Float
