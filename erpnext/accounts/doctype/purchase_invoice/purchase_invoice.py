@@ -348,6 +348,17 @@ class PurchaseInvoice(BuyingController):
 		if self.posting_date and (not hasattr(self, '_manual_due_date') or not self._manual_due_date):
 			self.due_date = add_days(self.posting_date, 30)
 
+		# Clear payment schedule if posting date changes and terms exist
+		if self.has_value_changed('posting_date') and self.payment_terms_template:
+			self.payment_schedule = []
+			frappe.msgprint(_("Payment Schedule has been cleared due to posting date change. Please re-apply Payment Terms Template."), alert=True)
+
+		# Clear payment schedule if coming from purchase receipt
+		if self.get_doc_before_save() and self.get("purchase_receipt"):
+			self.payment_schedule = []
+			self.payment_terms_template = None
+			frappe.msgprint(_("Payment Schedule cleared as invoice was created from Purchase Receipt"), alert=True)	
+
 		tds_category = frappe.db.get_value("Supplier", self.supplier, "tax_withholding_category")
 		if tds_category and not for_validate:
 			self.apply_tds = 1
@@ -371,12 +382,20 @@ class PurchaseInvoice(BuyingController):
 			self.set_onload("enable_apply_tds", True if po_with_tds else False)
 
 		super().set_missing_values(for_validate)
-
-	# def before_save(self):
-	# 	# Reset manual flag if due_date matches calculated value
-	# 	calculated_due_date = add_days(self.posting_date, 30)
-	# 	if hasattr(self, '_manual_due_date') and self.due_date == calculated_due_date:
-	# 		self._manual_due_date = False	
+	
+	# Override to set default due date for payment schedule
+	def validate_payment_schedule_dates(self):
+		if self.payment_terms_template and self.get("payment_schedule"):
+			for schedule in self.payment_schedule:
+				# Calculate days difference from original due date to posting date
+				original_days_diff = (getdate(self.due_date) - getdate(self.posting_date)).days
+				# Calculate new due date based on payment term percentage
+				new_due_date = add_days(
+					self.posting_date,
+					original_days_diff * (flt(schedule.payment_term) / 100)
+				)
+				schedule.due_date = new_due_date
+	
 
 	def validate_credit_to_acc(self):
 		if not self.credit_to:
@@ -2108,7 +2127,7 @@ def make_purchase_receipt(source_name, target_doc=None):
 		target_doc,
 	)
 
-	return doc
+	return doc		
 
 def get_permission_query_conditions(user):
 	if not user: user = frappe.session.user
