@@ -9,6 +9,7 @@ from frappe.query_builder.functions import Sum
 from frappe.utils import cint, cstr, flt, formatdate, get_link_to_form, getdate, nowdate
 from frappe.model.naming import make_autoname
 from erpnext.custom_autoname import get_auto_name
+from frappe.utils import add_days
 
 import erpnext
 from erpnext.accounts.deferred_revenue import validate_service_stop_date
@@ -140,7 +141,7 @@ class PurchaseInvoice(BuyingController):
 		material_request: DF.Link | None
 		material_request_date: DF.Date | None
 		mode_of_payment: DF.Link | None
-		naming_series: DF.Literal["", "Consumables", "Fixed Asset", "Sales Product", "Spare Parts", "Services Miscellaneous", "Services Works", "Labour Contract", "ACC-PINV-.YYYY.-", "ACC-PINV-RET-.YYYY.-"]
+		naming_series: DF.Literal["", "Consumables", "Fixed Asset", "Sales Product", "Spare Parts", "Services Miscellaneous", "Services Works", "Labour Contract", "Hiring Charge", "ACC-PINV-.YYYY.-", "ACC-PINV-RET-.YYYY.-"]
 		net_total: DF.Currency
 		on_hold: DF.Check
 		only_include_allocated_payments: DF.Check
@@ -338,10 +339,14 @@ class PurchaseInvoice(BuyingController):
 			self.party_account_currency = frappe.get_cached_value(
 				"Account", self.credit_to, "account_currency"
 			)
-		if not self.due_date:
-			self.due_date = get_due_date(
-				self.posting_date, "Supplier", self.supplier, self.company, self.bill_date
-			)
+		# if not self.due_date:
+		# 	self.due_date = get_due_date(
+		# 		self.posting_date, "Supplier", self.supplier, self.company, self.bill_date
+		# 	)
+		
+		# Always ensure due_date is set based on posting_date if not manually changed
+		if self.posting_date and (not hasattr(self, '_manual_due_date') or not self._manual_due_date):
+			self.due_date = add_days(self.posting_date, 30)
 
 		tds_category = frappe.db.get_value("Supplier", self.supplier, "tax_withholding_category")
 		if tds_category and not for_validate:
@@ -366,6 +371,12 @@ class PurchaseInvoice(BuyingController):
 			self.set_onload("enable_apply_tds", True if po_with_tds else False)
 
 		super().set_missing_values(for_validate)
+
+	# def before_save(self):
+	# 	# Reset manual flag if due_date matches calculated value
+	# 	calculated_due_date = add_days(self.posting_date, 30)
+	# 	if hasattr(self, '_manual_due_date') and self.due_date == calculated_due_date:
+	# 		self._manual_due_date = False	
 
 	def validate_credit_to_acc(self):
 		if not self.credit_to:

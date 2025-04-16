@@ -236,7 +236,7 @@
    "no_copy": 1,
    "oldfieldname": "naming_series",
    "oldfieldtype": "Select",
-   "options": "\nConsumables\nFixed Asset\nSales Product\nSpare Parts\nServices Miscellaneous\nServices Works\nLabour Contract\nACC-PINV-.YYYY.-\nACC-PINV-RET-.YYYY.-",
+   "options": "\nConsumables\nFixed Asset\nSales Product\nSpare Parts\nServices Miscellaneous\nServices Works\nLabour Contract\nHiring Charge\nACC-PINV-.YYYY.-\nACC-PINV-RET-.YYYY.-",
    "print_hide": 1,
    "reqd": 1,
    "set_only_once": 1
@@ -397,7 +397,6 @@
    "label": "Reason For Putting On Hold"
   },
   {
-   "collapsible": 1,
    "collapsible_depends_on": "bill_no",
    "fieldname": "supplier_invoice_details",
    "fieldtype": "Section Break",
@@ -842,7 +841,6 @@
    "read_only": 1
   },
   {
-   "collapsible": 1,
    "fieldname": "section_break_44",
    "fieldtype": "Section Break",
    "label": "Additional Discount"
@@ -1103,7 +1101,6 @@
    "print_hide": 1
   },
   {
-   "collapsible": 1,
    "collapsible_depends_on": "advances",
    "fieldname": "advances_section",
    "fieldtype": "Section Break",
@@ -1780,7 +1777,7 @@
  "idx": 204,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-02-14 11:49:07.740246",
+ "modified": "2025-04-07 12:38:03.719593",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Purchase Invoice",

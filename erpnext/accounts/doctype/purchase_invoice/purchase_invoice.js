@@ -41,6 +41,7 @@ erpnext.accounts.PurchaseInvoice = class PurchaseInvoice extends erpnext.buying.
 			};
 		});
 	}
+	
 
 	onload() {
 		super.onload();
@@ -647,6 +648,46 @@ frappe.ui.form.on("Purchase Invoice", {
 		});
 	},
 
+	posting_date: function(frm) {
+        if (!frm.doc.posting_date) return;
+        
+        // Skip if this is a manual change
+        if (frm.doc._due_date_manually_changed) return;
+        
+        // Calculate new due date
+        var new_due_date = frappe.datetime.add_days(frm.doc.posting_date, 30);
+        
+        // Only update if different
+        if (!frm.doc.due_date || frm.doc.due_date !== new_due_date) {
+            frm.set_value('due_date', new_due_date);
+        }
+    },
+    
+    due_date: function(frm) {
+        if (!frm.doc.posting_date || !frm.doc.due_date) return;
+        
+        // Calculate expected due date
+        var calculated_due_date = frappe.datetime.add_days(frm.doc.posting_date, 30);
+        
+        // Set manual change flag if different from calculated
+        frm.doc._due_date_manually_changed = frm.doc.due_date !== calculated_due_date;
+    },
+    
+    refresh: function(frm) {
+        // Initialize manual change flag
+        if (typeof frm.doc._due_date_manually_changed === 'undefined') {
+            frm.doc._due_date_manually_changed = false;
+        }
+        
+        // If not manually changed, ensure due_date is correct
+        if (!frm.doc._due_date_manually_changed && frm.doc.posting_date) {
+            var calculated_due_date = frappe.datetime.add_days(frm.doc.posting_date, 30);
+            if (!frm.doc.due_date || frm.doc.due_date !== calculated_due_date) {
+                frm.set_value('due_date', calculated_due_date);
+            }
+        }
+    },
+
 	create_landed_cost_voucher: function (frm) {
 		let lcv = frappe.model.get_new_doc("Landed Cost Voucher");
 		lcv.company = frm.doc.company;
@@ -688,6 +729,11 @@ frappe.ui.form.on("Purchase Invoice", {
 	},
 
 	onload: function (frm) {
+		// Set initial due_date if not set
+		if (frm.is_new() && frm.doc.posting_date && !frm.doc.due_date) {
+			frm.set_value('due_date', frappe.datetime.add_days(frm.doc.posting_date, 30));
+		}
+		
 		if (frm.doc.__onload && frm.is_new()) {
 			if (frm.doc.supplier) {
 				frm.doc.apply_tds = frm.doc.__onload.supplier_tds ? 1 : 0;
