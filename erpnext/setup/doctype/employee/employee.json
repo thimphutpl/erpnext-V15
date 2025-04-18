@@ -44,6 +44,7 @@
   "increment_cycle",
   "promotion_cycle",
   "promotion_due_date",
+  "parent_organization",
   "leave_and_expense_claim_section",
   "reports_to",
   "second_approver",
@@ -1207,13 +1208,19 @@
    "fieldname": "parent_agency_eid",
    "fieldtype": "Data",
    "label": "Parent Agency EID"
+  },
+  {
+   "depends_on": "eval:doc.employment_type == 'Deputation'",
+   "fieldname": "parent_organization",
+   "fieldtype": "Data",
+   "label": "Parent Organization"
   }
  ],
  "icon": "fa fa-user",
  "idx": 24,
  "image_field": "image",
  "links": [],
- "modified": "2025-02-04 21:20:50.715158",
+ "modified": "2025-04-18 11:04:42.953474",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee",
