@@ -154,6 +154,7 @@ class POLReceive(StockController):
 		if getdate(self.posting_date) > getdate("2018-03-31") and (self.is_opening == "No" or self.is_opening == ""):
 			self.update_stock_ledger()
 			self.make_gl_entries()
+		self.repost_future_sle_and_gle()
 
 		# Skip GL Entries if is_opening is "Yes"
 		# elif self.is_opening == "Yes" and self.book_type == "Common":
@@ -177,6 +178,7 @@ class POLReceive(StockController):
 		# Ver 2.0.190509, Following method added by SHIV on 2019/05/20
 		if self.is_opening != "Yes":
 			self.make_gl_entries_on_cancel()
+		self.repost_future_sle_and_gle()
 		""" ++++++++++ Ver 2.0.190509 Ends ++++++++++++ """
 		self.ignore_linked_doctypes = (
 			"GL Entry",
