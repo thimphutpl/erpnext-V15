@@ -1826,6 +1826,9 @@ def set_project_status(project, status):
 
 	project.status = status
 	project.save()
+	if status in ("Ongoing", "Planning"):
+		pro_id=project.name
+		frappe.db.sql("""update `tabProject` set docstatus=0 where name='{pro}'""".format(pro=pro_id))
 
 
 def get_holiday_list(company=None):
