@@ -931,22 +931,19 @@ def get_permission_query_conditions(user):
 	if user == "Administrator":
 		return
 		
-	if "Stock Manager" in user_roles:
-		return
-		
 	return """(
 		`tabMaterial Request`.owner = '{user}'
 		or
 		exists(select 1
-				from `tabAssign Branch`, `tabBranch Item`
-				where `tabAssign Branch`.name = `tabBranch Item`.parent 
-				and `tabBranch Item`.branch = `tabMaterial Request`.branch
-				and `tabAssign Branch`.user = '{user}')
+			from `tabAssign Branch`, `tabBranch Item`
+			where `tabAssign Branch`.name = `tabBranch Item`.parent 
+			and `tabBranch Item`.branch = `tabMaterial Request`.branch
+			and `tabAssign Branch`.user = '{user}')
 		or
 		exists(select 1
-				from `tabEmployee`
-				where `tabEmployee`.branch = `tabMaterial Request`.branch
-				and `tabEmployee`.user_id = '{user}')
+			from `tabEmployee`
+			where `tabEmployee`.branch = `tabMaterial Request`.branch
+			and `tabEmployee`.user_id = '{user}')
 		or
 		(`tabMaterial Request`.approver = '{user}' and `tabMaterial Request`.workflow_state not in ('Draft','Approved','Rejected','Cancelled'))
 
