@@ -189,8 +189,7 @@
    "default": "0",
    "fieldname": "tds_amount",
    "fieldtype": "Currency",
-   "label": "TDS Amount",
-   "read_only": 1
+   "label": "TDS Amount"
   },
   {
    "fieldname": "column_break_16",
@@ -394,7 +393,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-03-18 17:39:30.818993",
+ "modified": "2025-04-21 15:30:16.498993",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Mechanical Payment",
