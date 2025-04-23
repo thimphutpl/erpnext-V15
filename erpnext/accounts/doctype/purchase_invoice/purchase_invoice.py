@@ -316,6 +316,7 @@ class PurchaseInvoice(BuyingController):
 		self.reset_default_field_value("rejected_warehouse", "items", "rejected_warehouse")
 		self.reset_default_field_value("set_from_warehouse", "items", "from_warehouse")
 		self.set_percentage_received()
+		self.check_purchase_receipt()
 		# self.warehouse_from_branch()
 	def cal_amount_for_discount(self):
 		for x in self.get("items"):
@@ -338,7 +339,9 @@ class PurchaseInvoice(BuyingController):
 			doc.set_warehouse = warehouse[0].get("parent")
 		else:
 			frappe.throw(f"No warehouse found for branch {cost_center}")
-		
+	def check_purchase_receipt(self):
+		if self.purchase_order and not self.purchase_receipt:
+			frappe.throw("Canot create Purchase Invoice Without Purchase Receipt")
 	def set_percentage_received(self):
 		total_billed_qty = 0.0
 		total_received_qty = 0.0
