@@ -183,7 +183,7 @@
  "idx": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2025-02-11 10:02:10.642998",
+ "modified": "2025-04-25 10:45:15.133484",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Cost Center",
@@ -239,6 +239,15 @@
    "role": "Admin",
    "share": 1,
    "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "MR User",
+   "share": 1
   }
  ],
  "search_fields": "parent_cost_center, is_group",
