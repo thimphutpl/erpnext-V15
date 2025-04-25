@@ -105,6 +105,7 @@ frappe.ui.form.on("Material Request", {
 		}
 		frm.refresh_fields();
 	},
+	
 	item_group: function(frm){
 		frm.fields_dict["items"].grid.get_field("item_code").get_query = function (doc) {
 			return {
@@ -807,14 +808,40 @@ frappe.ui.form.on("Material Request Item", {
 		frappe.model.set_value(doctype, name, "amount", item.amount);
 		refresh_field("amount", item.name, item.parentfield);
 	},
+	// item_code: function(frm, cdt, cdn) {
+    //     let item = frappe.get_doc(cdt, cdn);
+    //     if (item.item_code && item.warehouse) {
+    //         frm.events.get_item_data(frm, item, true);
+    //     } else {
+    //         frappe.msgprint(__("Please select a warehouse for item {0}", [item.item_code]));
+    //     }
+    // },
+	
 	item_code: function(frm, cdt, cdn) {
-        let item = frappe.get_doc(cdt, cdn);
-        if (item.item_code && item.warehouse) {
-            frm.events.get_item_data(frm, item, true);
-        } else {
-            frappe.msgprint(__("Please select a warehouse for item {0}", [item.item_code]));
-        }
-    },
+		let item = frappe.get_doc(cdt, cdn);
+	
+		if (!item.warehouse && frm.doc.cost_center) {			
+			frappe.call({
+				method: "frappe.client.get_value",
+				args: {
+					doctype: "Cost Center",
+					fieldname: "warehouse",
+					filters: { name: frm.doc.cost_center },
+				},
+				callback: function(r) {
+					if (r.message && r.message.warehouse) {						
+						frappe.model.set_value(cdt, cdn, "warehouse", r.message.warehouse);
+					} else {
+						frappe.msgprint(__("Please select a warehouse for item {0}", [item.item_code]));
+					}
+				}
+			});
+		} else if (item.item_code && item.warehouse) {
+			frm.events.get_item_data(frm, item, true);
+		}
+	},
+	
+	
     warehouse: function(frm, cdt, cdn) {
         let item = frappe.get_doc(cdt, cdn);
         if (item.item_code && item.warehouse) {
