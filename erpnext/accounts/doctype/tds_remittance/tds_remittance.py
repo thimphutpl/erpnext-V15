@@ -89,6 +89,15 @@ class TDSRemittance(AccountsController):
 
 		self.set('items', [])
 		for d in entries:
+			if d.invoice_type=="Mechanical Payment":
+				if not d.party_type or not d.party:
+					frappe.throw("Party is missing in Mechanical Payment '{mp}'".format(mp=d.invoice_no))
+				if d.party_type =="Supplier":
+					supplier_tpn= frappe.db.get_value("Supplier",d.party,"supplier_tpn_no")
+					if not supplier_tpn:
+						frappe.throw("TPN Number required in Supplier '{sp}'".format(sp=d.party))
+					d.tpn= supplier_tpn
+
 			d.bill_amount 		= flt(d.bill_amount,2)
 			d.tds_amount 		= flt(d.tds_amount,2)
 			total_tds_amount 	+= flt(d.tds_amount)
