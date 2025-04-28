@@ -124,7 +124,6 @@ def get_payment_entries_for_bank_clearance(
 	condition = ""
 	if not include_reconciled_entries:
 		condition = "and (clearance_date IS NULL or clearance_date='0000-00-00')"
-
 	journal_entries = frappe.db.sql(
 		f"""
 			select
@@ -155,7 +154,7 @@ def get_payment_entries_for_bank_clearance(
 				`tabMechanical Payment` m1
 			where
 				m1.income_account = %(account)s 
-				and m1.docstatus=1
+				and m1.docstatus=1 {condition}
 				and m1.posting_date >= %(from)s and m1.posting_date <= %(to)s
 			group by m1.income_account, m1.name
 			order by m1.posting_date ASC, m1.name DESC
@@ -174,7 +173,7 @@ def get_payment_entries_for_bank_clearance(
 				`tabHSD Payment` h1
 			where
 				h1.bank_account = %(account)s 
-				and h1.docstatus=1
+				and h1.docstatus=1 {condition}
 				and h1.posting_date >= %(from)s and h1.posting_date <= %(to)s
 			group by h1.bank_account, h1.name
 			order by h1.posting_date ASC, h1.name DESC
@@ -193,7 +192,7 @@ def get_payment_entries_for_bank_clearance(
 				`tabTDS Remittance` r1
 			where
 				r1.credit_account = %(account)s 
-				and r1.docstatus=1
+				and r1.docstatus=1 {condition}
 				and r1.posting_date >= %(from)s and r1.posting_date <= %(to)s
 			group by r1.credit_account, r1.name
 			order by r1.posting_date ASC, r1.name DESC
@@ -217,7 +216,7 @@ def get_payment_entries_for_bank_clearance(
 				`tabImprest Recoup` i1
 			where
 				i1.branch = %(branch)s 
-				and i1.docstatus=1
+				and i1.docstatus=1 {condition}
 				and i1.posting_date >= %(from)s and i1.posting_date <= %(to)s
 			group by i1.branch, i1.name
 			order by i1.posting_date ASC, i1.name DESC
