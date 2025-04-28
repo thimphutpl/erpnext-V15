@@ -764,6 +764,7 @@ class BankPayment(Document):
 								and b.account_type != 'Bank'
 								and a.parent = '{journal_entry}'
 								and a.credit > 0
+								and a.account != 'Internal Company Transaction - CDCL'
 								""".format(journal_entry = a.transaction_id), as_dict=True):
 					non_bank_entries += 1
 					non_bank_entries_amount += flt(x.credit)
@@ -775,6 +776,7 @@ class BankPayment(Document):
 										FROM `tabJournal Entry Account` ja
 										WHERE ja.parent = '{parent}'
 										AND ja.debit > 0
+										AND ja.account != 'Internal Company Transaction - CDCL'
 									""".format(parent = a.transaction_id), as_dict=True):
 					query = supplier = employee = customer = None
 					if self.select_beneficiary and self.beneficiary:
