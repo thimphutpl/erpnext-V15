@@ -272,6 +272,7 @@
   {
    "fieldname": "project_definition",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Project Definition",
    "options": "Project Definition"
   },
@@ -279,6 +280,7 @@
    "fetch_from": "project_definition.project_code",
    "fieldname": "project",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Project",
    "options": "Project"
   }
@@ -286,7 +288,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-02-24 09:35:03.338285",
+ "modified": "2025-04-29 15:28:14.714473",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "TDS Remittance",
