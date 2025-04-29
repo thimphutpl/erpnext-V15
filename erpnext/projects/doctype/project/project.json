@@ -986,7 +986,7 @@
  "is_submittable": 1,
  "links": [],
  "max_attachments": 4,
- "modified": "2025-04-11 09:51:57.672365",
+ "modified": "2025-04-29 12:43:31.077692",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Project",
@@ -1082,5 +1082,6 @@
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],
- "timeline_field": "customer"
+ "timeline_field": "customer",
+ "track_changes": 1
 }
