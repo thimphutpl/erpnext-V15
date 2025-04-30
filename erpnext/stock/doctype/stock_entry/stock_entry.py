@@ -265,7 +265,7 @@ class StockEntry(StockController):
 		self.make_bundle_using_old_serial_batch_fields()
 		self.update_stock_ledger()
 		if self.stock_entry_type=="Material Return" or self.stock_entry_type=="Material Issue":
-			self.update_project_task()
+			# self.update_project_task()
 			self.update_project_cost()
 		self.update_work_order()
 		self.validate_subcontract_order()
@@ -294,7 +294,7 @@ class StockEntry(StockController):
 		if self.work_order and self.purpose == "Material Consumption for Manufacture":
 			self.validate_work_order_status()
 		if self.stock_entry_type=="Material Return" or self.stock_entry_type=="Material Issue":
-			self.update_project_task()
+			# self.update_project_task()
 			self.update_project_cost()
 		self.update_work_order()
 		self.update_stock_ledger()
