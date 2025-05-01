@@ -53,6 +53,7 @@ class VehicleRequest(Document):
 	# end: auto-generated types
 	def validate(self):
 		# validate_workflow_states(self)
+		notify_workflow_states(self)
 		self.check_duplicate_entry()
 		self.calculate_time()
 		self.check_date()
