@@ -174,7 +174,7 @@ class Asset(AccountsController):
 		self.delete_depreciation_entries()
 		cancel_asset_depr_schedules(self)
 		self.set_status()
-		self.ignore_linked_doctypes = ("GL Entry", "Stock Ledger Entry")
+		self.ignore_linked_doctypes = ("Journal Entry","GL Entry", "Stock Ledger Entry")
 		make_reverse_gl_entries(voucher_type="Asset", voucher_no=self.name)
 		self.db_set("booked_fixed_asset", 0)
 		add_asset_activity(self.name, _("Asset cancelled"))

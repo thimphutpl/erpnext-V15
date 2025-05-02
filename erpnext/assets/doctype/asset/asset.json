@@ -284,7 +284,6 @@
    "options": "Company:company:default_currency"
   },
   {
-   "collapsible": 1,
    "collapsible_depends_on": "eval:doc.calculate_depreciation || doc.is_existing_asset",
    "fieldname": "section_break_23",
    "fieldtype": "Section Break",
@@ -747,7 +746,7 @@
    "link_fieldname": "target_asset"
   }
  ],
- "modified": "2025-03-17 16:04:29.078798",
+ "modified": "2025-04-30 11:27:46.893401",
  "modified_by": "Administrator",
  "module": "Assets",
  "name": "Asset",

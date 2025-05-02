@@ -92,8 +92,7 @@ class FabricationAndBaileyBridge(AccountsController):
 			if get_datetime(self.finish_date + " " + self.job_out_time) < get_datetime(self.posting_date + " " + self.job_in_time):
 				frappe.throw(_("Job out date cannot be earlier than job in date."),title="Invalid Data")
 			self.update_reservation()
-		#self.check_items()
-		# frappe.throw(str(self.owned_by))
+		
 		if self.owned_by == "Own":
 			self.db_set("outstanding_amount", 0)	
 		if self.owned_by == "CDCL":
@@ -104,26 +103,23 @@ class FabricationAndBaileyBridge(AccountsController):
 		# self.update_breakdownreport()	
 
 	def before_cancel(self):
-		check_uncancelled_linked_doc(self.doctype, self.name)
-		cl_status = frappe.db.get_value("Journal Entry", self.jv, "docstatus")
-		if cl_status and cl_status != 2:
-			frappe.throw("You need to cancel the journal entry related to this fabrication and bailey bridge first!")
-		
+		if self.outstanding_amount == 0:
+			frappe.throw(f"Cannot cancel. Since payment is made and outstanding is Zero.")
+		if self.jv:
+			cl_status = frappe.db.get_value("Journal Entry", self.jv, "docstatus")
+			if cl_status == 1:
+				frappe.throw("You need to cancel the journal entry related to this fabrication and bailey bridge first!")
+			
 		self.db_set('jv', None)
 
-	# def on_cancel(self):
-	# 	bdr = frappe.get_doc("Break Down Report", self.break_down_report)
-	# 	if bdr.job_cards == self.name:
-	# 		bdr.db_set("job_cards", None)
-	# 	if self.owned_by == "Others":
-	# 		self.make_gl_entries()	
-
 	def on_cancel(self):
-		fab_bridge = frappe.get_doc("Fabrication And Bailey Bridge", self.name)
-		if fab_bridge.docstatus == 1:
-			fab_bridge.cancel()
+		self.ignore_linked_doctypes = (
+			"GL Entry",
+			"Payment Ledger Entry",
+			"Stock Ledger Entry",
+		)
 
-		if fab_bridge.owned_by == "Others":
+		if self.owned_by == "Others":
 			self.make_gl_entries()
 
 
