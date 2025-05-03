@@ -157,6 +157,7 @@ class POLIssue(StockController):
 		# Following lines added by SHIV on 2019/05/09
 		self.update_stock_ledger()
 		self.make_gl_entries()
+		self.repost_future_sle_and_gle()
 		""" ++++++++++ Ver 2.0.190509 Ends ++++++++++++ """
 		
 		self.make_pol_entry()
@@ -179,6 +180,7 @@ class POLIssue(StockController):
 		# Following lines added by SHIV on 2019/05/09
 		self.update_stock_ledger()
 		self.make_gl_entries_on_cancel()
+		self.repost_future_sle_and_gle()
 		self.ignore_linked_doctypes = (
 			"GL Entry",
 			"Payment Ledger Entry",
@@ -256,7 +258,8 @@ class POLIssue(StockController):
 		if self.docstatus == 2:
 			sl_entries.reverse()
 		# frappe.throw(frappe.as_json(self.__dict__))
-		self.make_sl_entries(sl_entries, 'Yes' if self.amended_from else 'No')
+		# self.make_sl_entries(sl_entries, 'Yes' if self.amended_from else 'No')
+		self.make_sl_entries(sl_entries)
 
 
     # Ver 2.0.190509, following method added by SHIV on 2019/05/21
