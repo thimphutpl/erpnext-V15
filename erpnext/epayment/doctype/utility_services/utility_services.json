@@ -43,7 +43,6 @@
    "fieldtype": "Link",
    "label": "Branch Expense Account",
    "options": "Account",
-   "read_only": 1,
    "reqd": 1
   },
   {
@@ -63,10 +62,11 @@
   }
  ],
  "links": [],
- "modified": "2024-11-23 12:16:47.872683",
+ "modified": "2025-05-05 17:25:31.047524",
  "modified_by": "Administrator",
  "module": "ePayment",
  "name": "Utility Services",
+ "naming_rule": "Expression (old style)",
  "owner": "Administrator",
  "permissions": [
   {
