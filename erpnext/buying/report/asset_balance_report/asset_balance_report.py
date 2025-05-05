@@ -80,7 +80,7 @@ def get_data(filters):
 					FROM `tabAsset Issue Details` ai
 					WHERE ai.item_code = ar.item_code
 					AND ai.issued_date BETWEEN '{from_date}' AND '{to_date}' 
-					AND ai.branch = ar.branch
+					AND ai.asset_received_entries = ar.name
 					AND ai.docstatus = 1
 					),0) issued_amount
 			FROM `tabAsset Received Entries` ar
