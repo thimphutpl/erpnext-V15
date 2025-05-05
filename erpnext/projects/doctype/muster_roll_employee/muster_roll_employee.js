@@ -12,7 +12,21 @@
 
 frappe.ui.form.on('Muster Roll Employee', {
 	refresh: function(frm) {
+		// if(frm.doc.mess_deduction===0){
+		// 	frm.set_value("amount", 0)
+		// 	frm.refresh_field("amount")
+
+		// }
 	},
+
+	mess_deduction: function(frm) {
+		if(frm.doc.mess_deduction===0){
+			frm.set_value("amount", 0)
+			frm.refresh_field("amount")
+
+		}
+	},
+
 
 	rate_per_day: function(frm) {
 		if(frm.doc.rate_per_day) {
