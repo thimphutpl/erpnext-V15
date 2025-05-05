@@ -62,7 +62,7 @@ class AssetIssueDetails(Document):
                 frappe.throw("Warehouse not selected in Asset Received Entry {}".format(self.asset_received_entries))
             if not rate:
                 frappe.throw("Asset Rate not set in Asset Received Entry {}".format(self.asset_received_entries))
-
+        self.check_balance_qty()
     def on_submit(self):
         self.check_qty_balance()
         if not self.create_single_asset:
@@ -82,25 +82,26 @@ class AssetIssueDetails(Document):
         #         frappe.throw("You cannot cancel the document before cancelling asset with code {0}".format(self.reference_code))    
     
     def check_qty_balance(self):
-        # total_qty = frappe.db.sql("""select sum(ifnull(qty,0)) total_qty 
-        #                           from `tabAsset Received Entries`
-        #                           where item_code="{}"
-        #                           and ref_doc = "{}"
-        #                           and docstatus = 1
-        #                 """.format(self.item_code, self.asset_received_entries))[0][0]
-        # issued_qty = frappe.db.sql("""select sum(ifnull(qty,0)) issued_qty
-        #                            from `tabAsset Issue Details` 
-        #                            where item_code ='{}'
-        #                            and branch = '{}'
-        #                            and asset_received_entries = '{}'
-        #                            and docstatus = 1 
-        #                            and name != '{}'
-        #                 """.format(self.item_code, self.branch, self.asset_received_entries, self.name))[0][0]
-        
-        # balance_qty = flt(total_qty) - flt(issued_qty)
         if flt(self.qty) > flt(self.balance_qty) and self.is_existing_asset == 1:
             frappe.throw(_("Issuing Quantity cannot be greater than Balance Quantity i.e., {}").format(flt(self.balance_qty)), title="Insufficient Balance")
 
+    def check_balance_qty(self):
+        if self.is_existing_asset:
+            if not self.asset_received_entries:
+                frappe.throw("Asset Received Entry is Required")
+            if self.qty > self.balance_qty:
+                frappe.throw("Qty cannot be more than balance qty that is "+str(self.balance_qty))
+        elif self.purchase_receipt:
+            qty=frappe.db.sql("""select sum(received_qty) from `tabPurchase Receipt Item` where parent='{parent}' and item_code='{item_code}'""".format(parent=self.purchase_receipt, item_code=self.item_code))[0][0]
+            used_qty= frappe.db.sql("""select sum(qty) from `tabAsset Issue Details` where purchase_receipt='{pr}' and docstatus=1 and item_code='{item_code}'""".format(pr=self.purchase_receipt,item_code=self.item_code))[0][0]
+            if str(used_qty)=="None":
+                balance_qty=qty
+            else:   
+                balance_qty = cint(qty) - cint(used_qty)
+            if balance_qty ==0:
+                frappe.throw("Cannot make Asset Issue Details as balance qty is 0")
+            if self.qty > balance_qty:
+                frappe.throw("Qty cannot be more than balance qty that is "+str(balance_qty))
     @frappe.whitelist()
     def get_existing_details(self):
         if self.asset_received_entries and self.is_existing_asset == 1:
