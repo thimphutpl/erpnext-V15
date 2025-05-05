@@ -75,6 +75,7 @@ def get_data(filters):
 					AND ai.issued_date BETWEEN '{from_date}' AND '{to_date}' 
 					AND ai.branch = ar.branch
 					AND ai.docstatus = 1
+					AND ai.is_existing_asset =1
 					),0) issued_qty,
 				IFNULL((SELECT SUM(ai.amount)
 					FROM `tabAsset Issue Details` ai
