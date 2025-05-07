@@ -155,7 +155,6 @@
    "reqd": 1
   },
   {
-   "fetch_from": "branch.expense_bank_account",
    "fieldname": "income_account",
    "fieldtype": "Link",
    "label": "Default Expense Bank Account",
@@ -393,7 +392,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-04-22 13:28:44.040132",
+ "modified": "2025-05-07 22:19:28.178406",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Mechanical Payment",
