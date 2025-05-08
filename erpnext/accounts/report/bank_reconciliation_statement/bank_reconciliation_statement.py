@@ -164,7 +164,7 @@ def get_imprest_recoup_entries(filters):
             ir.total_amount AS credit,  # Now in credit column
             ir.cheque_no AS reference_no,
             ir.cheque_date AS ref_date,
-            NULL AS clearance_date,
+            clearance_date,
             ir.remarks AS against_account,
             b.expense_bank_account AS against_account_number,
             (SELECT account_currency FROM `tabAccount` 
@@ -174,7 +174,8 @@ def get_imprest_recoup_entries(filters):
         WHERE
             ir.docstatus = 1
             AND ir.posting_date <= %(report_date)s
-            AND b.expense_bank_account = %(account)s  # Ensure this is your BANK account
+            AND b.expense_bank_account = %(account)s
+			AND IFNULL(ir.clearance_date, '4000-01-01') > %(report_date)s
     """, filters, as_dict=1)
 
 
