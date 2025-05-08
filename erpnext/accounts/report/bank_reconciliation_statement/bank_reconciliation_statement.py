@@ -59,7 +59,6 @@ def execute(filters=None):
 		{},
 		get_balance_row(_("Balance as per Bank Statement"), bank_bal, account_currency),
 	]
-
 	return columns, data
 
 
