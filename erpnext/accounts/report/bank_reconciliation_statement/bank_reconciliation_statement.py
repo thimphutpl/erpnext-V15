@@ -153,20 +153,20 @@ def get_journal_entries(filters):
 		filters,
 		as_dict=1,
 	)
-# added code 
+
 def get_imprest_recoup_entries(filters):
     return frappe.db.sql("""
         SELECT 
             'Imprest Recoup' AS payment_document,
             ir.posting_date AS posting_date,
             ir.name AS payment_entry,
-            ir.total_amount AS debit,
-            0 AS credit,
+            0 AS debit,  # Changed from total_amount
+            ir.total_amount AS credit,  # Now in credit column
             ir.cheque_no AS reference_no,
             ir.cheque_date AS ref_date,
             NULL AS clearance_date,
             ir.remarks AS against_account,
-            b.expense_bank_account AS against_account_number,  # Get from branch
+            b.expense_bank_account AS against_account_number,
             (SELECT account_currency FROM `tabAccount` 
              WHERE name=%(account)s) AS account_currency
         FROM `tabImprest Recoup` ir
@@ -174,7 +174,7 @@ def get_imprest_recoup_entries(filters):
         WHERE
             ir.docstatus = 1
             AND ir.posting_date <= %(report_date)s
-            AND b.expense_bank_account = %(account)s
+            AND b.expense_bank_account = %(account)s  # Ensure this is your BANK account
     """, filters, as_dict=1)
 
 
