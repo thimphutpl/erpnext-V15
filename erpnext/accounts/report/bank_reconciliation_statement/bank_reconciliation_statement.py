@@ -30,6 +30,7 @@ def execute(filters=None):
 		total_credit += flt(d.credit)
 
 	amounts_not_reflected_in_system = get_amounts_not_reflected_in_system(filters)
+	# frappe.throw(str(amounts_not_reflected_in_system))
 
 	bank_bal = (
 		flt(balance_as_per_system) - flt(total_debit) + flt(total_credit) + amounts_not_reflected_in_system
@@ -41,16 +42,22 @@ def execute(filters=None):
 		),
 		{},
 		{
-			"payment_entry": _("Outstanding Cheques and Deposits to clear"),
-			"debit": total_debit,
+			"payment_entry": _("Cheques issued but not encashed"),
+			"debit": 0,
 			"credit": total_credit,
 			"account_currency": account_currency,
 		},
-		get_balance_row(
-			_("Cheques and Deposits incorrectly cleared"), amounts_not_reflected_in_system, account_currency
-		),
+		{
+			"payment_entry": _("Cheques deposited but not cleared"),
+			"debit": total_debit,
+			"credit": 0,
+			"account_currency": account_currency,
+		},
+		# get_balance_row(
+		# 	_("Cheques and Deposits incorrectly cleared"), amounts_not_reflected_in_system, account_currency
+		# ),
 		{},
-		get_balance_row(_("Calculated Bank Statement balance"), bank_bal, account_currency),
+		get_balance_row(_("Balance as per Bank Statement"), bank_bal, account_currency),
 	]
 
 	return columns, data
@@ -117,17 +124,18 @@ def get_entries(filters):
 		key=lambda k: getdate(k["posting_date"]),
 	)
 
-
 def get_entries_for_bank_reconciliation_statement(filters):
-	journal_entries = get_journal_entries(filters)
-
-	payment_entries = get_payment_entries(filters)
-
-	pos_entries = []
-	if filters.include_pos_transactions:
-		pos_entries = get_pos_entries(filters)
-
-	return list(journal_entries) + list(payment_entries) + list(pos_entries)
+    journal_entries = get_journal_entries(filters)
+    payment_entries = get_payment_entries(filters)
+    pos_entries = get_pos_entries(filters) if filters.get("include_pos_transactions") else []
+    imprest_entries = get_imprest_recoup_entries(filters)  # New line
+    
+    return (
+        list(journal_entries) 
+        + list(payment_entries) 
+        + list(pos_entries)
+        + list(imprest_entries)
+    )
 
 
 def get_journal_entries(filters):
@@ -146,6 +154,29 @@ def get_journal_entries(filters):
 		filters,
 		as_dict=1,
 	)
+# added one 
+def get_imprest_recoup_entries(filters):
+    return frappe.db.sql("""
+        SELECT 
+            'Imprest Recoup' AS payment_document,
+            ir.posting_date AS posting_date,
+            ir.name AS payment_entry,
+            ir.total_amount AS debit,
+            0 AS credit,
+            ir.cheque_no AS reference_no,
+            ir.cheque_date AS ref_date,
+            NULL AS clearance_date,
+            ir.remarks AS against_account,
+            b.expense_bank_account AS against_account_number,  # Get from branch
+            (SELECT account_currency FROM `tabAccount` 
+             WHERE name=%(account)s) AS account_currency
+        FROM `tabImprest Recoup` ir
+        INNER JOIN `tabBranch` b ON ir.branch = b.name
+        WHERE
+            ir.docstatus = 1
+            AND ir.posting_date <= %(report_date)s
+            AND b.expense_bank_account = %(account)s
+    """, filters, as_dict=1)
 
 
 def get_payment_entries(filters):
