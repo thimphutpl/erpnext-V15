@@ -11,7 +11,7 @@ frappe.query_reports["Project Progress Report"] = {
 			"on_change": function(query_report) {
 				frappe.query_report.set_filter_value("project_definition", null);
 				frappe.query_report.set_filter_value("project", null);
-				frappe.query_report.set_filter_value("task", null);
+				// frappe.query_report.set_filter_value("task", null);
 				frappe.query_report.refresh();
 			},
 			"reqd": 1
@@ -25,12 +25,12 @@ frappe.query_reports["Project Progress Report"] = {
 				var parent_project = frappe.query_report.get_filter_value("parent_project")
 				return {
 					'doctype': "Project Definition",
-					'filters': [['parent_project', '=', parent_project]]
+					'filters': [['project_category', '=', parent_project]]
 				}
 			},
 			"on_change": function(query_report) {
 				frappe.query_report.set_filter_value("project", null);
-				frappe.query_report.set_filter_value("task", null);
+				// frappe.query_report.set_filter_value("task", null);
 				frappe.query_report.refresh();
 			}
 		},
@@ -51,18 +51,18 @@ frappe.query_reports["Project Progress Report"] = {
 				frappe.query_report.refresh();
 			}
 		},
-		{
-			"fieldname": "task",
-			"label": ("Task"),
-			"fieldtype": "Link",
-			"options": "Task",
-			"get_query": function() {
-				var project = frappe.query_report.get_filter_value("project")
-				return { 'doctype': "Task",
-						'filters': [
-								['project', '=', project]
-				]}
-			},
-		},
+		// {
+		// 	"fieldname": "task",
+		// 	"label": ("Task"),
+		// 	"fieldtype": "Link",
+		// 	"options": "Task",
+		// 	"get_query": function() {
+		// 		var project = frappe.query_report.get_filter_value("project")
+		// 		return { 'doctype': "Task",
+		// 				'filters': [
+		// 						['project', '=', project]
+		// 		]}
+		// 	},
+		// },
 	]
 };

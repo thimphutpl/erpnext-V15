@@ -12,7 +12,6 @@ from frappe.query_builder import Interval
 from frappe.query_builder.functions import Count, CurDate, Date, Sum, UnixTimestamp
 from frappe.utils import add_days, flt, get_datetime, get_time, get_url, nowtime, today, getdate, date_diff
 from frappe.utils.user import is_website_user
-
 from erpnext import get_default_company
 from erpnext.controllers.queries import get_filters_cond
 from erpnext.controllers.website_list_for_contact import get_customers_suppliers
@@ -1874,6 +1873,8 @@ def recalculate_project_total_purchase_cost(project: str | None = None):
 # Updateing financial Progress here
 @frappe.whitelist()
 def update_finacial_progress(project, estimated_budget):
+	project_defination = frappe.db.get_value("Project",project,"project_definition")
+	# frappe.throw(str(project_defination))
 	if project:
 		actual_expenses = frappe.db.sql(""" select sum(debit)-sum(credit) as actual_expenses 
 			from `tabGL Entry`
@@ -1883,7 +1884,13 @@ def update_finacial_progress(project, estimated_budget):
 		financial_progress = (int(actual_expenses[0][0])/int(estimated_budget))*100
 
 		frappe.db.sql(""" update `tabProject` set actual_expenses={0}, financial_progress={1} where name='{2}'""".format(actual_expenses[0][0], financial_progress, project))
-
+		
+		datas = frappe.db.sql(""" Select SUM(estimated_budget) AS estimated_budget, SUM(actual_expenses) AS actual_expenses from `tabProject` where docstatus!=2 and project_definition='{defination}' """.format(defination=project_defination))
+		if datas:
+			budget = datas[0][0]
+			expense = datas[0][1]
+			financial_percent = (flt(expense)/flt(budget))*100
+			frappe.db.sql(""" update `tabProject Definition` set provisional_estimated_budget={0}, a_expenses={1}, f_progress={2} where name='{3}'""".format(budget, expense, financial_percent, project_defination))
 
 """ ************************************************************************* """
 """ custom function starts from here,  codes from old cdcl erp"""
