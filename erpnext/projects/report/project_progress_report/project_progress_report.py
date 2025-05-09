@@ -12,13 +12,13 @@ def execute(filters=None):
 
 def get_columns(filters=None):
 	columns = []
-	if not filters.get("cost_center") and not filters.get("project_definition") and not filters.get("project") and not filters.get("task"):
+	if filters.get("parent_project") and not filters.get("project_definition") and not filters.get("project") and not filters.get("task"):
 		columns = [
 			{
-			"fieldname": "cost_center",
-			"label": "Cost Center",
+			"fieldname": "project_definition",
+			"label": "Project Definition",
 			"fieldtype": "Link",
-			"options": "Cost Center",
+			"options": "Project Definition",
 			"width": 150
 			},
 			{
@@ -40,8 +40,8 @@ def get_columns(filters=None):
 			"width": 120
 			},
 			{
-			"fieldname": "project_progress",
-			"label": "Project Progress(%)",
+			"fieldname": "weightage",
+			"label": "PP Weightage(%)",
 			"fieldtype": "Float",
 			"width": 120
 			},
@@ -52,108 +52,36 @@ def get_columns(filters=None):
 			"width": 120
 			},
 			{
-			"fieldname": "weightage",
-			"label": "Weightage(%)",
+			"fieldname": "project_progress",
+			"label": "Project Progress(%)",
 			"fieldtype": "Float",
 			"width": 120
 			},
-			# {
-			# "fieldname": "type",
-			# "label": "Income Type",
-			# "fieldtype": "Data",
-			# "width": 160
-			# },
-			# {
-			# "fieldname": "basic",
-			# "label": "Basic Salary",
-			# "fieldtype": "Currency",
-			# "width": 150
-			# },
-			# {
-			# "fieldname": "others",
-			# "label": "Allowances",
-			# "fieldtype": "Currency",
-			# "width": 120
-			# },
-			# {
-			# "fieldname": "total",
-			# "label": "Total Income",
-			# "fieldtype": "Currency",
-			# "width": 120
-			# },
-			# {
-			# "fieldname": "pf",
-			# "label": "PF",
-			# "fieldtype": "Currency",
-			# "width": 120
-			# },
-			# {
-			# "fieldname": "gis",
-			# "label": "GIS",
-			# "fieldtype": "Currency",
-			# "width": 120
-			# },
-			# {
-			# "fieldname": "totalPfGis",
-			# "label": "Total of PF & GIS",
-			# "fieldtype": "Currency",
-			# "width": 120
-			# },
-			# {
-			# "fieldname": "taxable",
-			# "label": "Taxable Income",
-			# "fieldtype": "Currency",
-			# "width": 120
-			# },
-			# {
-			# "fieldname": "tds",
-			# "label": "TDS Amount",
-			# "fieldtype": "Currency",
-			# "width": 120
-			# },
-			# {
-			# "fieldname": "health",
-			# "label": "Health",
-			# "fieldtype": "Currency",
-			# "width": 120
-			# },
-			# {
-			# "fieldname": "receipt_number",
-			# "label": "RRCO Receipt No.",
-			# "fieldtype": "Data",
-			# "width": 150
-			# },
-			# {
-			# "fieldname": "receipt_date",
-			# "label": "RRCO Receipt Date",
-			# "fieldtype": "Date",
-			# "width": 130
-			# },
-			# {
-			# "fieldname": "posting_date",
-			# "label": "Posting Date",
-			# "fieldtype": "Date",
-			# "width": 130
-			# },
+			{
+			"fieldname": "financial_progress",
+			"label": "Financial Progress(%)",
+			"fieldtype": "Data",
+			"width": 120
+			},
 		]
 	return columns
 
 def get_data(filters=None):
 	data = []
-	if not filters.get("cost_center") and not filters.get("project_definition") and not filters.get("project") and not filters.get("task"):
-		for cc in frappe.db.get_all("Cost Center", {"disabled": 0, "project_cost_center": 1}):
+	if filters.get("parent_project") and not filters.get("project_definition") and not filters.get("project") and not filters.get("task"):
+		for pd in frappe.db.get_all("Project Definition", {"project_category": filters.get("parent_project"), "docstatus": 1}, ["name", "physical_progress", "physical_progress_weightage", "percent_completed"]):
 			start_date = None
 			end_date = None
 			duration = None
 			start_dates = []
 			end_dates = []
 			cc_mandays = frappe.db.sql("""
-                              select sum(mandays) from `tabProject` where cost_center = '{}' and docstatus < 2
-                              """.format(cc.name))
+                              select sum(mandays) from `tabProject` where project_definition = '{}' and docstatus < 2
+                              """.format(pd.name))
 			overall_mandays = frappe.db.sql("""
                               select sum(mandays) from `tabProject` where docstatus < 2
-                              """.format(cc.name))
-			for prj in frappe.db.get_all("Project Definition", {"cost_center": cc.name}, ["start_date", "end_date"]):
+                              """.format(pd.name))
+			for prj in frappe.db.get_all("Project Definition", {"name": pd.name}, ["start_date", "end_date"]):
 				if prj.start_date:
 					start_dates.append(prj.start_date)
 				if prj.end_date:
@@ -164,5 +92,7 @@ def get_data(filters=None):
 				end_date = min(end_dates)
 			if start_date and end_date:
 				duration = date_diff(end_date, start_date)+1
-			data.append({"cost_center": cc.name, "start_date": start_date, "end_date": end_date, "duration": duration})
+			data.append({"project_definition": pd.name, "start_date": start_date, "end_date": end_date, "duration": duration, "project_progress": pd.physical_progress, "weightage": pd.physical_progress_weightage, "site_progress": pd.percent_completed})
+	
+
 	return data

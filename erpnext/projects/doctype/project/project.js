@@ -165,6 +165,14 @@ frappe.ui.form.on("Project", {
 	set_custom_buttons: function (frm) {
 		if (!frm.is_new()) {
 			frm.add_custom_button(
+				__("Update Project Cost"),
+				() => {
+					frm.events.update_finacial_progress(frm);
+				},
+				__("Actions")
+			);
+
+			frm.add_custom_button(
 				__("Duplicate Project with Tasks"),
 				() => {
 					frm.events.create_duplicate(frm);
@@ -212,6 +220,20 @@ frappe.ui.form.on("Project", {
 				);
 			}
 		}
+	},
+	update_finacial_progress:function (frm) {
+		frappe.call({
+			method: "erpnext.projects.doctype.project.project.update_finacial_progress",
+			args: { 
+				"project": frm.doc.name ,
+				"estimated_budget": frm.doc.estimated_budget
+			},
+			freeze: true,
+			freeze_message: __("Recalculating Financial Progress against this Project..."),
+			callback: function (r) {
+				window.location.reload()
+			},
+		});
 	},
 
 	update_total_purchase_cost: function (frm) {

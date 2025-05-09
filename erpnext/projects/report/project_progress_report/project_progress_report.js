@@ -4,16 +4,17 @@
 frappe.query_reports["Project Progress Report"] = {
 	"filters": [
 		{
-			"fieldname": "cost_center",
-			"label": ("Cost Center"),
-			"fieldtype": "Link",
-			"options": "Cost Center",
+			"fieldname": "parent_project",
+			"label": ("Parent Project"),
+			"fieldtype": "Select",
+			"options": ["", "GI Project", "DFG Project", "Other Project"],
 			"on_change": function(query_report) {
 				frappe.query_report.set_filter_value("project_definition", null);
 				frappe.query_report.set_filter_value("project", null);
 				frappe.query_report.set_filter_value("task", null);
 				frappe.query_report.refresh();
-			}
+			},
+			"reqd": 1
 		},
 		{
 			"fieldname": "project_definition",
@@ -21,10 +22,10 @@ frappe.query_reports["Project Progress Report"] = {
 			"fieldtype": "Link",
 			"options": "Project Definition",
 			"get_query": function() {
-				var cost_center = frappe.query_report.get_filter_value("cost_center")
+				var parent_project = frappe.query_report.get_filter_value("parent_project")
 				return {
 					'doctype': "Project Definition",
-					'filters': [['cost_center', '=', cost_center]]
+					'filters': [['parent_project', '=', parent_project]]
 				}
 			},
 			"on_change": function(query_report) {

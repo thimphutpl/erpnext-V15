@@ -52,11 +52,14 @@
   "holiday_list",
   "sb_progress",
   "physical_progress_weightage",
+  "estimated_budget",
   "completion_date",
   "column_break_uayw",
   "physical_progress",
+  "actual_expenses",
   "column_break_xzuk",
   "percent_completed",
+  "financial_progress",
   "sb_material_details",
   "task_material_item",
   "other_document_references_section",
@@ -978,6 +981,25 @@
    "fieldtype": "Currency",
    "label": "Advances",
    "read_only": 1
+  },
+  {
+   "fieldname": "estimated_budget",
+   "fieldtype": "Data",
+   "label": "Provisional Estimated Budget"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "actual_expenses",
+   "fieldtype": "Data",
+   "label": "Actual Expenses",
+   "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "financial_progress",
+   "fieldtype": "Data",
+   "label": "Financial Progress (%)",
+   "read_only": 1
   }
  ],
  "icon": "fa fa-puzzle-piece",
@@ -986,7 +1008,7 @@
  "is_submittable": 1,
  "links": [],
  "max_attachments": 4,
- "modified": "2025-04-29 12:43:31.077692",
+ "modified": "2025-05-08 14:58:39.912903",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Project",

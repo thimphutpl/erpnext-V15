@@ -21,16 +21,19 @@ class ProjectDefinition(Document):
 		from erpnext.projects.doctype.ongoing_project_item.ongoing_project_item import OngoingProjectItem
 		from frappe.types import DF
 
+		a_expenses: DF.Data | None
 		amended_from: DF.Link | None
 		budget_profile: DF.Literal["", "Annually", "Overall"]
 		company: DF.Link | None
 		cost_center: DF.Link | None
 		end_date: DF.Date
+		f_progress: DF.Data | None
 		fiscal_year: DF.Link | None
 		overall_mandays: DF.Data | None
 		percent_completed: DF.Percent
 		physical_progress: DF.Percent
 		physical_progress_weightage: DF.Percent
+		project_category: DF.Literal["", "GI Project", "DFG Project", "Other Project"]
 		project_code: DF.Data | None
 		project_code_prefix: DF.Literal["", "GI-J", "GI-K", "GI-T", "GI-P", "GI-G", "GI"]
 		project_man_days: DF.Data | None
@@ -40,6 +43,7 @@ class ProjectDefinition(Document):
 		project_name: DF.Data
 		project_profile: DF.Literal["", "Internal", "External"]
 		project_sites: DF.Table[OngoingProjectItem]
+		provisional_estimated_budget: DF.Data | None
 		start_date: DF.Date
 		status: DF.Literal["Created", "Ongoing", "Completed"]
 		total_overall_project_cost: DF.Currency
@@ -61,38 +65,42 @@ class ProjectDefinition(Document):
 	#added by Kinley 16/01/2025
 	@frappe.whitelist()
 	def update_project_progress(self):
+		if not self.project_category:
+			frappe.throw("Please project categoy")
 		if self.docstatus == 1:
-			project_man_days = overall_mandays = physical_progress_weightage = physical_progress = no_of_projects = no_of_project_definitions = 0
-			contribution_per_prj = frappe.db.sql("""
-								select sum(ifnull(percent_completed, 0)) as wqc from `tabProject` where project_definition = '{}'
-								""".format(self.name), as_dict=1)[0].wqc
+			for pc in frappe.db.get_all("Project Definition", {"project_category": self.project_category, "docstatus":1}, ["name"]):
+				project_man_days = overall_mandays = physical_progress_weightage = physical_progress = no_of_projects = no_of_project_definitions = 0
+				contribution_per_prj = frappe.db.sql("""
+									select sum(ifnull(percent_completed, 0)) as wqc from `tabProject` where project_definition = '{}'
+									""".format(pc.name), as_dict=1)[0].wqc
 
-			for prj in frappe.db.get_all("Project", {"project_definition": self.name}, ["mandays", "physical_progress"]):
-				if not prj.mandays:
-					prj.mandays = 0
-				project_man_days += flt(prj.mandays,2)
-				if not prj.physical_progress:
-					prj.physical_progress = 0
-				physical_progress += flt(prj.physical_progress,4)
-				no_of_projects += 1
-			frappe.db.sql("""
-					update `tabProject Definition` set project_man_days = {} where name = '{}'
-					""".format(project_man_days, self.name))
-			for pd in frappe.db.get_all("Project Definition", {"docstatus": 1}, ["project_man_days"]):
-				if not pd.project_man_days:
-					pd.project_man_days = 0
-				overall_mandays += flt(pd.project_man_days,2)
-				no_of_project_definitions += 1
-			physical_progress_weightage = flt(flt(project_man_days) / flt(overall_mandays)*100,3)
-			if no_of_projects > 0:
-				contribution_per_prj = flt(contribution_per_prj/flt(no_of_projects),4)
-			physical_progress = flt(flt(physical_progress_weightage) * (contribution_per_prj * 0.01),4)
+				for prj in frappe.db.get_all("Project", {"project_definition": pc.name}, ["mandays", "physical_progress"]):
+					if not prj.mandays:
+						prj.mandays = 0
+					project_man_days += flt(prj.mandays,2)
+					if not prj.physical_progress:
+						prj.physical_progress = 0
+					physical_progress += flt(prj.physical_progress,4)
+					no_of_projects += 1
+				frappe.db.sql("""
+						update `tabProject Definition` set project_man_days = {} where name = '{}'
+						""".format(project_man_days, pc.name))
+
+				for pd in frappe.db.get_all("Project Definition", {"docstatus": 1, "project_category": self.project_category}, ["project_man_days"]):
+					if not pd.project_man_days:
+						pd.project_man_days = 0
+					overall_mandays += flt(pd.project_man_days,2)
+					no_of_project_definitions += 1
+				physical_progress_weightage = flt(flt(project_man_days) / flt(overall_mandays)*100,3)
+				if no_of_projects > 0:
+					contribution_per_prj = flt(contribution_per_prj/flt(no_of_projects),4)
+				physical_progress = flt(flt(physical_progress_weightage) * (contribution_per_prj * 0.01),4)
 
 
-			frappe.db.sql("""
-					update `tabProject Definition` set overall_mandays = {}, physical_progress_weightage = {}, physical_progress = {}, percent_completed = {} where name = '{}'
-					""".format(overall_mandays, physical_progress_weightage, physical_progress, contribution_per_prj, self.name))
-			# frappe.db.commit()	
+				frappe.db.sql("""
+						update `tabProject Definition` set overall_mandays = {}, physical_progress_weightage = {}, physical_progress = {}, percent_completed = {} where name = '{}'
+						""".format(overall_mandays, physical_progress_weightage, physical_progress, contribution_per_prj, pc.name))
+				# frappe.db.commit()	
 
 # ADDED BY Kinley ON 04-06-2024
 @frappe.whitelist()

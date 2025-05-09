@@ -1871,6 +1871,19 @@ def recalculate_project_total_purchase_cost(project: str | None = None):
 			"total_purchase_cost",
 			(total_purchase_cost and total_purchase_cost[0][0] or 0),
 		)
+# Updateing financial Progress here
+@frappe.whitelist()
+def update_finacial_progress(project, estimated_budget):
+	if project:
+		actual_expenses = frappe.db.sql(""" select sum(debit)-sum(credit) as actual_expenses 
+			from `tabGL Entry`
+			where project='{project}'
+			and is_cancelled =0
+		""".format(project=project))
+		financial_progress = (int(actual_expenses[0][0])/int(estimated_budget))*100
+
+		frappe.db.sql(""" update `tabProject` set actual_expenses={0}, financial_progress={1} where name='{2}'""".format(actual_expenses[0][0], financial_progress, project))
+
 
 """ ************************************************************************* """
 """ custom function starts from here,  codes from old cdcl erp"""
