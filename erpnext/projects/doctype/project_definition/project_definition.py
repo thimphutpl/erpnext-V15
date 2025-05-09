@@ -93,7 +93,7 @@ class ProjectDefinition(Document):
 					no_of_project_definitions += 1
 				physical_progress_weightage = flt(flt(project_man_days) / flt(overall_mandays)*100,3)
 				if no_of_projects > 0:
-					contribution_per_prj = flt(contribution_per_prj*(flt(physical_progress)*0.01),4)
+					contribution_per_prj = flt(physical_progress_weightage*(flt(physical_progress)*0.01),4)
 				# physical_progress = flt(flt(physical_progress_weightage) * (contribution_per_prj * 0.01),4)
 
 
