@@ -74,7 +74,7 @@ class ProjectDefinition(Document):
 									select sum(ifnull(percent_completed, 0)) as wqc from `tabProject` where project_definition = '{}'
 									""".format(pc.name), as_dict=1)[0].wqc
 
-				for prj in frappe.db.get_all("Project", {"project_definition": pc.name}, ["mandays", "physical_progress", "per"]):
+				for prj in frappe.db.get_all("Project", {"project_definition": pc.name}, ["mandays", "physical_progress"]):
 					if not prj.mandays:
 						prj.mandays = 0
 					project_man_days += flt(prj.mandays,2)
