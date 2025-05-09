@@ -124,17 +124,19 @@ def get_entries(filters):
 	)
 
 def get_entries_for_bank_reconciliation_statement(filters):
-    journal_entries = get_journal_entries(filters)
-    payment_entries = get_payment_entries(filters)
-    pos_entries = get_pos_entries(filters) if filters.get("include_pos_transactions") else []
-    imprest_entries = get_imprest_recoup_entries(filters)  # New line
-    
-    return (
-        list(journal_entries) 
-        + list(payment_entries) 
-        + list(pos_entries)
-        + list(imprest_entries)
-    )
+	journal_entries = get_journal_entries(filters)
+	payment_entries = get_payment_entries(filters)
+	pos_entries = get_pos_entries(filters) if filters.get("include_pos_transactions") else []
+	imprest_entries = get_imprest_recoup_entries(filters)  # New line
+	mp_entries = get_mechanical_payments(filters)  # New line
+	
+	return (
+		list(journal_entries) 
+		+ list(payment_entries) 
+		+ list(pos_entries)
+		+ list(imprest_entries)
+		+ list(mp_entries)
+	)
 
 
 def get_journal_entries(filters):
@@ -155,28 +157,55 @@ def get_journal_entries(filters):
 	)
 # addedcode
 def get_imprest_recoup_entries(filters):
-    return frappe.db.sql("""
-        SELECT 
-            'Imprest Recoup' AS payment_document,
-            ir.posting_date AS posting_date,
-            ir.name AS payment_entry,
-            0 AS debit,  # Changed from total_amount
-            ir.total_amount AS credit,  # Now in credit column
-            ir.cheque_no AS reference_no,
-            ir.cheque_date AS ref_date,
-            clearance_date,
-            ir.remarks AS against_account,
-            b.expense_bank_account AS against_account_number,
-            (SELECT account_currency FROM `tabAccount` 
-             WHERE name=%(account)s) AS account_currency
-        FROM `tabImprest Recoup` ir
-        INNER JOIN `tabBranch` b ON ir.branch = b.name
-        WHERE
-            ir.docstatus = 1
-            AND ir.posting_date <= %(report_date)s
-            AND b.expense_bank_account = %(account)s
+	return frappe.db.sql("""
+		SELECT 
+			'Imprest Recoup' AS payment_document,
+			ir.posting_date AS posting_date,
+			ir.name AS payment_entry,
+			0 AS debit,  # Changed from total_amount
+			ir.total_amount AS credit,  # Now in credit column
+			ir.cheque_no AS reference_no,
+			ir.cheque_date AS ref_date,
+			clearance_date,
+			ir.remarks AS against_account,
+			b.expense_bank_account AS against_account_number,
+			(SELECT account_currency FROM `tabAccount` 
+			 WHERE name=%(account)s) AS account_currency
+		FROM `tabImprest Recoup` ir
+		INNER JOIN `tabBranch` b ON ir.branch = b.name
+		WHERE
+			ir.docstatus = 1
+			AND ir.posting_date <= %(report_date)s
+			AND b.expense_bank_account = %(account)s
 			AND IFNULL(ir.clearance_date, '4000-01-01') > %(report_date)s
-    """, filters, as_dict=1)
+	""", filters, as_dict=1)
+
+# added new
+def get_mechanical_payments(filters):
+    return frappe.db.sql(
+        """
+        SELECT
+            "Mechanical Payment" AS payment_document,
+            mp.name AS payment_entry,
+            mp.posting_date,           
+            mp.clearance_date,           
+            mp.cheque_no,
+            mp.cheque_date,            
+            mp.receivable_amount,           
+            mp.net_amount,
+            IF(mp.income_account=%(account)s, mp.net_amount, 0) AS credit
+        FROM `tabMechanical Payment` AS mp        
+        WHERE
+            mp.docstatus = 1
+            AND mp.income_account = %(account)s
+            AND mp.posting_date <= %(report_date)s
+            AND IFNULL(mp.clearance_date, '4000-01-01') > %(report_date)s          
+           
+        ORDER BY mp.posting_date
+        """,
+        filters,
+        as_dict=1,
+    )
 
 
 def get_payment_entries(filters):
