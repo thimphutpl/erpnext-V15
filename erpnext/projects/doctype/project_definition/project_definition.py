@@ -74,7 +74,7 @@ class ProjectDefinition(Document):
 									select sum(ifnull(percent_completed, 0)) as wqc from `tabProject` where project_definition = '{}'
 									""".format(pc.name), as_dict=1)[0].wqc
 
-				for prj in frappe.db.get_all("Project", {"project_definition": pc.name}, ["mandays", "physical_progress"]):
+				for prj in frappe.db.get_all("Project", {"project_definition": pc.name}, ["mandays", "physical_progress", "per"]):
 					if not prj.mandays:
 						prj.mandays = 0
 					project_man_days += flt(prj.mandays,2)
@@ -93,8 +93,8 @@ class ProjectDefinition(Document):
 					no_of_project_definitions += 1
 				physical_progress_weightage = flt(flt(project_man_days) / flt(overall_mandays)*100,3)
 				if no_of_projects > 0:
-					contribution_per_prj = flt(contribution_per_prj/flt(no_of_projects),4)
-				physical_progress = flt(flt(physical_progress_weightage) * (contribution_per_prj * 0.01),4)
+					contribution_per_prj = flt(contribution_per_prj*(flt(physical_progress)*0.01),4)
+				# physical_progress = flt(flt(physical_progress_weightage) * (contribution_per_prj * 0.01),4)
 
 
 				frappe.db.sql("""
