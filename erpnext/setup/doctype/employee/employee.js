@@ -46,6 +46,7 @@ frappe.ui.form.on("Employee", {
 			return {
 				filters: {
 					'is_gewog': 1,
+					'parent_dzongkhag': frm.doc.dzongkhag
 				},
 			};
 		});

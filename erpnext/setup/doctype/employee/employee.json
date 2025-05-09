@@ -273,7 +273,7 @@
    "fieldname": "date_of_joining",
    "fieldtype": "Date",
    "in_list_view": 1,
-   "label": "Date of Joining",
+   "label": "Initial Appointment Date",
    "oldfieldname": "date_of_joining",
    "oldfieldtype": "Date",
    "reqd": 1
@@ -962,6 +962,7 @@
   {
    "fieldname": "employment_status",
    "fieldtype": "Select",
+   "hidden": 1,
    "label": "Employment Status",
    "options": "\nIn Service\nEOL\nProbation\nLeft"
   },
@@ -997,7 +998,7 @@
  "image_field": "image",
  "is_tree": 1,
  "links": [],
- "modified": "2025-04-03 14:40:33.017203",
+ "modified": "2025-05-09 10:46:58.175351",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee",
