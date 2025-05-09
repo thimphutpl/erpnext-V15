@@ -199,7 +199,6 @@
    "fieldtype": "Float",
    "in_list_view": 1,
    "label": "Initial Hour ",
-   "read_only": 1,
    "width": "104"
   },
   {
@@ -249,8 +248,7 @@
    "fieldname": "initial_km",
    "fieldtype": "Int",
    "label": "Initial KM",
-   "precision": "1",
-   "read_only": 1
+   "precision": "1"
   },
   {
    "fieldname": "column_break_24",
@@ -584,7 +582,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-04-15 12:19:05.069154",
+ "modified": "2025-05-09 09:18:45.743259",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Vehicle Logbook",

@@ -456,7 +456,7 @@ def get_opening(equipment, from_date, to_date, pol_type):
 	# c_km = frappe.db.sql("select final_km from `tabVehicle Logbook` where docstatus = 1 and equipment = %s and to_date <= %s order by to_date desc limit 1", (equipment, from_date), as_dict=True)
 
 	# c_hr = frappe.db.sql("select final_hour from `tabVehicle Logbook` where docstatus = 1 and equipment = %s and to_date <= %s order by to_date desc limit 1", (equipment, from_date), as_dict=True)
-
+	frappe.throw("hhhhh")
 	c_km = frappe.db.sql("select final_km from `tabVehicle Logbook` where docstatus = 1 and equipment = %s ORDER BY creation desc limit 1", (equipment), as_dict=True)
 
 	c_hr = frappe.db.sql("select final_hour from `tabVehicle Logbook` where docstatus = 1 and equipment = %s ORDER BY creation desc limit 1", (equipment), as_dict=True)
