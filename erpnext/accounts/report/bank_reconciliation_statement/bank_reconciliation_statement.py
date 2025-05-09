@@ -129,6 +129,7 @@ def get_entries_for_bank_reconciliation_statement(filters):
 	pos_entries = get_pos_entries(filters) if filters.get("include_pos_transactions") else []
 	imprest_entries = get_imprest_recoup_entries(filters)  # New line
 	mp_entries = get_mechanical_payments(filters)  # New line
+	tds_entries = get_tds_list(filters)  # New line
 	
 	return (
 		list(journal_entries) 
@@ -136,6 +137,7 @@ def get_entries_for_bank_reconciliation_statement(filters):
 		+ list(pos_entries)
 		+ list(imprest_entries)
 		+ list(mp_entries)
+		+ list(tds_entries)
 	)
 
 
@@ -202,6 +204,32 @@ def get_mechanical_payments(filters):
             AND IFNULL(mp.clearance_date, '4000-01-01') > %(report_date)s          
            
         ORDER BY mp.posting_date
+        """,
+        filters,
+        as_dict=1,
+    )
+
+# added new
+def get_tds_list(filters):
+    return frappe.db.sql(
+        """
+        SELECT
+            "TDS Remittance" AS payment_document,
+            tds.name AS payment_entry,
+            tds.posting_date,           
+            tds.clearance_date,           
+            tds.cheque_no,
+            tds.cheque_date,                   
+            tds.total_tds,
+            IF(tds.credit_account=%(account)s, tds.total_tds, 0) AS credit
+        FROM `tabTDS Remittance` AS tds        
+        WHERE
+            tds.docstatus = 1
+            AND tds.credit_account = %(account)s
+            AND tds.posting_date <= %(report_date)s
+            AND IFNULL(tds.clearance_date, '4000-01-01') > %(report_date)s          
+           
+        ORDER BY tds.posting_date
         """,
         filters,
         as_dict=1,
