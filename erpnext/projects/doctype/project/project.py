@@ -1875,6 +1875,8 @@ def recalculate_project_total_purchase_cost(project: str | None = None):
 def update_finacial_progress(project, estimated_budget):
 	project_defination = frappe.db.get_value("Project",project,"project_definition")
 	# frappe.throw(str(project_defination))
+	if not estimated_budget: 
+		frappe.throw("Please set Provisional Estimated Budget in project")
 	if project:
 		actual_expenses = frappe.db.sql(""" select sum(debit)-sum(credit) as actual_expenses 
 			from `tabGL Entry`
