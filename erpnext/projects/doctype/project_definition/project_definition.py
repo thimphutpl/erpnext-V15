@@ -99,7 +99,7 @@ class ProjectDefinition(Document):
 
 				frappe.db.sql("""
 						update `tabProject Definition` set overall_mandays = {}, physical_progress_weightage = {}, physical_progress = {}, percent_completed = {} where name = '{}'
-						""".format(overall_mandays, physical_progress_weightage, physical_progress, contribution_per_prj, pc.name))
+						""".format(overall_mandays, physical_progress_weightage, contribution_per_prj, physical_progress, pc.name))
 				# frappe.db.commit()	
 
 # ADDED BY Kinley ON 04-06-2024
