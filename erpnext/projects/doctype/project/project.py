@@ -1883,7 +1883,8 @@ def update_finacial_progress(project, estimated_budget):
 			where project='{project}'
 			and is_cancelled =0
 		""".format(project=project))
-		financial_progress = (int(actual_expenses[0][0])/int(estimated_budget))*100
+
+		financial_progress = (flt(actual_expenses[0][0])/flt(estimated_budget))*100
 
 		frappe.db.sql(""" update `tabProject` set actual_expenses={0}, financial_progress={1} where name='{2}'""".format(actual_expenses[0][0], financial_progress, project))
 		
