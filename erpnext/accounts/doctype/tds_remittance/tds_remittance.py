@@ -194,7 +194,7 @@ def get_tds_invoices(tax_withholding_category, from_date, to_date, name, filter_
 				(select supplier_tpn_no from `tabSupplier` where name = t.supplier) as tpn, 
 				t.cost_center,
 				t1.base_total + t1.base_tax_amount as bill_amount,
-				(case when t1.base_tax_amount > 0 then t1.base_tax_amount else t1.tax_amount_after_discount_amount end) as tds_amount,
+				(case when t1.base_tax_amount_after_discount_amount > 0 then t1.base_tax_amount_after_discount_amount else t1.tax_amount_after_discount_amount end) as tds_amount,
 				t1.account_head as tax_account, 
 				tre.tds_remittance, 
 				tre.tds_receipt_update, 
