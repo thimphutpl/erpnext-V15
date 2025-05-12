@@ -41,6 +41,7 @@
    "search_index": 1
   },
   {
+   "depends_on": "branch",
    "fieldname": "project",
    "fieldtype": "Link",
    "in_list_view": 1,
@@ -86,7 +87,8 @@
    "fieldname": "branch",
    "fieldtype": "Link",
    "label": "Branch",
-   "options": "Branch"
+   "options": "Branch",
+   "reqd": 1
   },
   {
    "fieldname": "company",
@@ -140,7 +142,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-05-12 15:39:13.295136",
+ "modified": "2025-05-12 16:02:43.163581",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Project Hindrance",

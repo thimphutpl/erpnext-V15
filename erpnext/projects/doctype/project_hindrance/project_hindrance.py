@@ -19,7 +19,7 @@ class ProjectHindrance(Document):
 		approver: DF.Link | None
 		approver_designation: DF.Data | None
 		approver_name: DF.Data | None
-		branch: DF.Link | None
+		branch: DF.Link
 		company: DF.Link
 		employee: DF.Link
 		from_date: DF.Date
