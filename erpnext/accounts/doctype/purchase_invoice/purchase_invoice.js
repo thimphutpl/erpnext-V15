@@ -710,7 +710,18 @@ frappe.ui.form.on("Purchase Invoice", {
 			};
 		};
 	},
-
+	// Auto populate cost_center in taxes and charges
+	taxes_and_charges: function(frm) {
+        if (!frm.doc.cost_center) return;
+        setTimeout(() => {
+            (frm.doc.taxes || []).forEach(row => {
+                if (!row.cost_center) {
+                    frappe.model.set_value(row.doctype, row.name, 'cost_center', frm.doc.cost_center);
+                }
+            });
+        }, 500);
+    },
+	
 	refresh: function (frm) {
 		console.log(frm);
 		frm.events.add_custom_buttons(frm);
