@@ -155,3 +155,33 @@ frappe.ui.form.on("Landed Cost Taxes and Charges", {
 		frm.events.set_base_amount(frm, cdt, cdn);
 	},
 });
+
+frappe.ui.form.on("Landed Cost Voucher", {
+	refresh: function (frm) {
+		console.log("Button!");
+		console.log(frm.doc.total_taxes_and_charges);
+		frm.add_custom_button('Create Transporter Invoice', () => {
+			frappe.call({
+				method: "frappe.client.get",
+				args: {
+					doctype: "Purchase Receipt",
+					name: frm.doc.purchase_receipts[0].receipt_document
+				},
+				callback: function(r) {
+					if (r.message) {
+						let supplier = r.message.supplier;
+						frappe.new_doc('Transporter Invoice', {
+							landed_cost_voucher: frm.doc.name,
+							title: `Invoice ${supplier}`,
+							supplier: supplier,
+							branch: r.message.branch,
+							amount: flt(frm.doc.total_taxes_and_charges),
+							cost_center: r.message.cost_center
+						});
+					}
+				}
+			});
+			
+		})
+	}
+});

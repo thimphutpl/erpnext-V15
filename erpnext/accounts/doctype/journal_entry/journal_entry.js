@@ -663,6 +663,9 @@ frappe.ui.form.on("Journal Entry Account", {
 	// following methods added by SHIV on 2022/09/17
 	apply_tds: function(frm, cdt, cdn){
 		erpnext.journal_entry.set_tds_account(frm, cdt, cdn);
+		var row = locals[cdt][cdn];
+		frappe.model.set_value(cdt, cdn, "taxable_amount_in_account_currency",
+				flt(row.debit_in_account_currency) || flt(row.credit_in_account_currency));
 		cur_frm.cscript.update_totals(frm.doc);
 	},
 
