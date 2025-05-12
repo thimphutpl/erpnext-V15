@@ -168,7 +168,7 @@ class CustomWorkflow:
 		if (self.doc.doctype not in self.field_map) or not frappe.db.exists("Workflow", {"document_type": self.doc.doctype, "is_active": 1}):
 			return
 
-		if self.doc.doctype == "Leave Application":
+		if self.doc.doctype == "Leave Application":			
 			self.leave_application()	
 		elif self.doc.doctype == "Leave Encashment":			
 			self.leave_encashment()
@@ -176,12 +176,12 @@ class CustomWorkflow:
 			self.salary_advance()
 		elif self.doc.doctype == "Travel Request":
 			self.travel_request()
-		elif self.doc.doctype == "Travel Authorization":			
+		elif self.doc.doctype == "Travel Authorization":					
 			self.travel_authorization()
-		elif self.doc.doctype == "Travel Claim":				
+		elif self.doc.doctype == "Travel Claim":						
 			self.travel_claim()	
-		elif self.doc.doctype == "Vehicle Request":
-			self.vehicle_request()
+		# elif self.doc.doctype == "Vehicle Request":
+		# 	self.vehicle_request()
 		elif self.doc.doctype == "Repair And Services":
 			self.repair_services()
 		elif self.doc.doctype == "Overtime Application":
@@ -202,6 +202,8 @@ class CustomWorkflow:
 			self.employee_benefits()
 		elif self.doc.doctype == "Coal Raising Payment":
 			self.coal_raising_payment()
+		elif self.doc.doctype =="Project Hindrance":
+			self.project_hindrance()
 		elif self.doc.doctype == "POL":
 			self.pol()
 		elif self.doc.doctype in ("Asset Issue Details","Project Capitalization"):
@@ -452,6 +454,31 @@ class CustomWorkflow:
 			vars(self.doc)[self.doc_approver[2]] = officiating[2] if officiating else self.budget_reappropiation_approver[2]
 		else:
 			frappe.throw(_("Invalid approver type for Workflow"))
+	def project_hindrance(self):
+		if self.new_state.lower() in ("Draft".lower()):
+			if frappe.session.user != self.doc.owner:
+				frappe.throw("Only {} can apply this Application".format(self.doc.owner))
+
+		elif self.new_state.lower() == ("Waiting For Verification".lower()):
+			self.set_approver("Supervisor")
+
+		elif self.new_state.lower() == ("Waiting Approval".lower()):
+			if frappe.session.user != self.doc.approver:
+				frappe.throw(f"Only {self.doc.approver} can Verify this Application.")
+			approver_approver = frappe.db.get_value("Employee",self.doc.employee,"second_approver")
+			if not approver_approver:
+				frappe.throw("Please Set Approver for Project Engineer " +self.doc.employee)
+			self.set_approver("Approver Approver")
+
+		elif self.new_state.lower() == ("Approved".lower()):
+			if frappe.session.user != self.doc.approver:
+				frappe.throw(f"Only {self.doc.approver} can Approved this Application.")
+
+		elif self.new_state.lower() == ("Rejected".lower()):
+			if frappe.session.user != self.doc.approver:
+				frappe.throw(f"Only {self.doc.approver} can Reject this Application.")
+		else:
+			frappe.throw(_("Invalid Workflow State {}").format(self.doc.workflow_state))
 
 	def leave_application(self):
 		
@@ -885,6 +912,11 @@ class NotifyCustomWorkflow:
 			if not template:
 				frappe.msgprint(_("Please set default template for Employee Separation Clearance Status Notification in HR Settings."))
 				return
+		elif self.doc.doctype == "Vehicle Request":
+			template = frappe.db.get_single_value('HR Settings', 'vehicle_request_status_notification_template')
+			if not template:
+				frappe.msgprint(_("Please set default template for Vehicle Request Status Notification in HR Settings."))
+				return	
 		elif self.doc.doctype == "Employee Transfer":
 			template = frappe.db.get_single_value('HR Settings', 'employee_transfer_status_notification_template')
 			if not template:
@@ -994,7 +1026,13 @@ class NotifyCustomWorkflow:
 				template = frappe.db.get_single_value('HR Settings', 'employee_separation_clearance_approval_notification_template')
 				if not template:
 					frappe.msgprint(_("Please set default template for Employee Separation Clearance Approval Notification in HR Settings."))
-					return 
+					return
+				
+			elif self.doc.doctype == "Vehicle Request":
+				template = frappe.db.get_single_value('HR Settings', 'vehicle_request_approval_notification_template')
+				if not template:
+					frappe.msgprint(_("Please set default template for Vehicle Request Approval Notification in HR Settings."))
+					return	
 					# added by karma
 			elif self.doc.doctype == "Imprest Recoup":
 				template = frappe.db.get_single_value('HR Settings', 'imprest_recoup_approval_notification_template')
@@ -1160,7 +1198,7 @@ class NotifyCustomWorkflow:
 		except frappe.OutgoingEmailError:
 			pass
 
-	def send_notification(self):
+	def send_notification(self):		
 		if (self.doc.doctype not in self.field_map) or not frappe.db.exists("Workflow", {"document_type": self.doc.doctype, "is_active": 1}):
 			return
 		if self.new_state == "Draft":
@@ -1191,6 +1229,7 @@ def get_field_map():
 		"Vehicle Request": ["approver_id", "approver"],
 		"Repair And Services": ["approver", "approver_name", "aprover_designation"],
 		"Overtime Application": ["ot_approver", "ot_approver_name", "approver_designation"],
+		"Project Hindrance": ["approver", "approver_name", "approver_designation"],
 		"POL Expense": ["approver", "approver_name", "approver_designation"],
 		"Material Request": ["approver","approver_name","approver_designation"],
 		"Asset Movement": ["approver", "approver_name", "approver_designation"],
