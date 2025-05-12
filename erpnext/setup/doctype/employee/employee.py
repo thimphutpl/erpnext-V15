@@ -28,7 +28,7 @@ class Employee(NestedSet):
 	def validate(self):
 		from erpnext.controllers.status_updater import validate_status
 		validate_status(self.status, ["Active", "Inactive", "Suspended", "Left"])
-		year_month = str(self.date_of_joining)[2:4] + str(self.date_of_joining)[5:7]
+		year_month = str(self.date_of_joining)[2:4] + str(self.date_of_joining)[5:7]		
 		self.validate_date()
 		self.validate_email()
 		self.validate_status()
@@ -69,7 +69,7 @@ class Employee(NestedSet):
 			self.validate_duplicate_user_id()
 
 	def update_nsm_model(self):
-		frappe.utils.nestedset.update_nsm(self)
+		frappe.utils.nestedset.update_nsm(self)	
 
 	def on_update(self):		
 		self.update_nsm_model()
@@ -77,14 +77,20 @@ class Employee(NestedSet):
 			self.update_user()
 			self.update_user_permissions()
 		self.reset_employee_emails_cache()
+		# Reset casual_leave_allocated if key fields have changed
+		previous = self.get_doc_before_save()
+		if previous:
+			if (
+				previous.employment_type != self.employment_type and
+				previous.date_of_joining != self.date_of_joining and
+				previous.employee_group != self.employee_group
+			):
+				self.db_set("casual_leave_allocated", 0)		
 		self.post_casual_leave()
 
-
-	def post_casual_leave(self):
-		
+	def post_casual_leave(self):		
 		if not cint(self.casual_leave_allocated):
 			credits_per_year = frappe.db.get_value("Employee Group Item", {"parent": self.employee_group, "leave_type": ('in',['Casual Leave','GCE Casual Leave'])}, "credits_per_year")
-			# frappe.throw(str(credits_per_year))
 			if flt(credits_per_year):
 				from_date = getdate(self.date_of_joining)
 				to_date = get_year_end_date(from_date);
@@ -98,7 +104,7 @@ class Employee(NestedSet):
 								end
 								) as no_of_months
 				""".format(str(self.date_of_joining),str(add_days(to_date,1))))[0][0]
-
+				# frappe.throw(str(no_of_months))
 				new_leaves_allocated = round5((flt(no_of_months)/12)*flt(credits_per_year))
 				new_leaves_allocated = new_leaves_allocated if new_leaves_allocated <= flt(credits_per_year) else flt(credits_per_year)
 
@@ -129,53 +135,8 @@ class Employee(NestedSet):
 					la.submit()
 					if self.employment_type != 'GCE':
 						self.db_set("casual_leave_allocated", 1)
-				frappe.db.commit()
-
-	# def post_casual_leave(self):
-	# 	from_date = getdate(self.date_of_joining)
-	# 	to_date = get_year_end_date(from_date)
-
-	# 	if not cint(self.casual_leave_allocated):
-	# 		if frappe.db.exists("Leave Allocation", {"leave_type": "Casual Leave", "employee": self.name, "from_date": ("<=",str(to_date)), "to_date": (">=", str(from_date))}):
-	# 			# self.add_comments("Auto allocation of CL is skipped as an allocation already exists for the period {} - {}".format(from_date, to_date))
-	# 			self.db_set("casual_leave_allocated", 1)
-	# 			return
-				
-	# 		if not frappe.db.sql("""select count(*) as counts from `tabFiscal Year` where now() between year_start_date and year_end_date
-	# 			and '{}' <= year_end_date and '{}' >= year_start_date""".format(from_date, to_date))[0][0]:
-	# 			# self.add_comments("Auto allocation of CL is skipped as the Employee's Date of Joing is not in current Fiscal Year")
-	# 			self.db_set("casual_leave_allocated", 1)
-	# 			return
-
-	# 		credits_per_year = frappe.db.get_value("Employee Group Item", {"parent": self.employee_group, "leave_type": 'Casual Leave'}, "credits_per_year")
-	# 		if flt(credits_per_year):
-	# 			no_of_months = frappe.db.sql("""
-	# 					select (
-	# 							case
-	# 									when day('{0}') > 1 and day('{0}') <= 15
-	# 									then timestampdiff(MONTH,'{0}','{1}')+1
-	# 									else timestampdiff(MONTH,'{0}','{1}')
-	# 							end
-	# 							) as no_of_months
-	# 			""".format(str(self.date_of_joining),str(add_days(to_date,1))))[0][0]
-
-	# 			new_leaves_allocated = round5((flt(no_of_months)/12)*flt(credits_per_year))
-	# 			new_leaves_allocated = new_leaves_allocated if new_leaves_allocated <= flt(credits_per_year) else flt(credits_per_year)
-
-	# 			if flt(new_leaves_allocated):
-	# 				la = frappe.new_doc("Leave Allocation")
-	# 				la.employee = self.employee
-	# 				la.employee_name = self.employee_name
-	# 				la.leave_type = "Casual Leave"
-	# 				la.from_date = str(from_date)
-	# 				la.to_date = str(to_date)
-	# 				la.carry_forward = cint(0)
-	# 				la.new_leaves_allocated = flt(new_leaves_allocated)
-	# 				la.submit()
-	# 				self.db_set("casual_leave_allocated", 1)
-	# 				if la.name:
-	# 					frappe.msgprint("Causal Leave Allocated {} for this Employee ".format(frappe.get_desk_link("Leave Allocation",la.name)))
-
+				frappe.db.commit()	
+	
 	def update_user_permissions(self):
 		if not self.create_user_permission:
 			return
