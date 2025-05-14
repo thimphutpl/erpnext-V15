@@ -48,6 +48,7 @@ def get_stock_ledger_entries(filters):
 		from `tabStock Ledger Entry`
 		where company = %(company)s and
 			posting_date between %(from_date)s and %(to_date)s
+			and is_cancelled=0
 			{sle_conditions}
 			order by posting_date asc, posting_time asc, name asc"""\
 		.format(sle_conditions=get_sle_conditions(filters)), filters, as_dict=1)
