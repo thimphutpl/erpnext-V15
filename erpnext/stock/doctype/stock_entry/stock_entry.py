@@ -264,9 +264,9 @@ class StockEntry(StockController):
 		self.validate_closed_subcontracting_order()
 		self.make_bundle_using_old_serial_batch_fields()
 		self.update_stock_ledger()
-		if self.stock_entry_type=="Material Return" or self.stock_entry_type=="Material Issue":
+		# if self.stock_entry_type=="Material Return" or self.stock_entry_type=="Material Issue":
 			# self.update_project_task()
-			self.update_project_cost()
+			# self.update_project_cost()
 		self.update_work_order()
 		self.validate_subcontract_order()
 		self.update_subcontract_order_supplied_items()
@@ -275,7 +275,7 @@ class StockEntry(StockController):
 		self.make_gl_entries()
 
 		self.repost_future_sle_and_gle()
-		self.update_cost_in_project()
+		# self.update_cost_in_project()
 		self.update_transferred_qty()
 		self.update_quality_inspection()
 
@@ -293,9 +293,9 @@ class StockEntry(StockController):
 
 		if self.work_order and self.purpose == "Material Consumption for Manufacture":
 			self.validate_work_order_status()
-		if self.stock_entry_type=="Material Return" or self.stock_entry_type=="Material Issue":
+		# if self.stock_entry_type=="Material Return" or self.stock_entry_type=="Material Issue":
 			# self.update_project_task()
-			self.update_project_cost()
+			# self.update_project_cost()
 		self.update_work_order()
 		self.update_stock_ledger()
 
@@ -308,7 +308,7 @@ class StockEntry(StockController):
 
 		self.make_gl_entries_on_cancel()
 		self.repost_future_sle_and_gle()
-		self.update_cost_in_project()
+		# self.update_cost_in_project()
 		self.update_transferred_qty()
 		self.update_quality_inspection()
 		self.delete_auto_created_batches()
@@ -421,6 +421,7 @@ class StockEntry(StockController):
 				)
 
 	def update_cost_in_project(self):
+		frappe.throw("This funbction is disabled and cost updated is not required for gyalsung infra")
 		if self.work_order and not frappe.db.get_value(
 			"Work Order", self.work_order, "update_consumed_material_cost_in_project"
 		):
@@ -779,6 +780,7 @@ class StockEntry(StockController):
 	# 			row += 1
 
 	def update_project_task(self):
+		frappe.throw("This funbction is disabled and cost updated is not required for gyalsung infra")
 		""" update the items child table for the respective doctype: Task or Maintenance order """
 		if self.docstatus == 1 and self.for_project == 1 and self.stock_entry_type == "Material Issue":
 			for d in self.items:
@@ -856,6 +858,7 @@ class StockEntry(StockController):
 				))
 	# added by phuntsho on september 28, 2021
 	def update_project_cost(self):
+		frappe.throw("This funbction is disabled and cost updated is not required for gyalsung infra")
 		""" update the cost of project/task or maintenance """
 		for a in self.items:
 			stores_cost = service_cost = 0
