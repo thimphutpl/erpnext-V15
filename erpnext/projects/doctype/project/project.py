@@ -1883,7 +1883,7 @@ def update_finacial_progress(project, estimated_budget):
 			where project='{project}'
 			and is_cancelled =0
 		""".format(project=project))
-		if not actual_expenses or estimated_budget:
+		if not actual_expenses or not estimated_budget:
 			financial_progress=0
 			frappe.db.sql(""" update `tabProject` set actual_expenses=0, financial_progress={0} where name='{1}'""".format(financial_progress, project))
 
