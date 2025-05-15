@@ -106,7 +106,9 @@
    "default": "0",
    "fieldname": "maintain_stock",
    "fieldtype": "Check",
-   "label": "Maintain Stock/Inventory Details"
+   "hidden": 1,
+   "label": "Maintain Stock/Inventory Details",
+   "read_only": 1
   },
   {
    "fieldname": "item_code",
@@ -159,7 +161,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-01-27 17:55:16.130381",
+ "modified": "2025-05-15 11:06:58.476140",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Imprest Recoup Item",

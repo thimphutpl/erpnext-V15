@@ -73,7 +73,7 @@ class ImprestRecoup(StockController):
 
 	def on_submit(self):
 		self.make_gl_entry()
-		self.update_stock_ledger()
+		# self.update_stock_ledger()
 
 		
 	def on_cancel(self):
