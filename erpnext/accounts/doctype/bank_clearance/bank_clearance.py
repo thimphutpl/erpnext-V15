@@ -202,30 +202,52 @@ def get_payment_entries_for_bank_clearance(
 	)
 	if not branch:
 		frappe.throw("Branch is required")
-	if branch in ("GI - Liaison Office Sjongkhar", "GI - Liaision Office Pling","GI - Liaison Office Gelephu"):
-		branch="GI - Head Office"
 	imprest_account= frappe.db.get_value("Branch", branch,"expense_bank_account")
+	
 	if not imprest_account:
 		frappe.throw("Please set default expense bank account in branch")
-	imprest_recoup = frappe.db.sql(
-		f"""
-			select
-				"Imprest Recoup" as payment_document, i1.name as payment_entry,
-				i1.cheque_no as cheque_number, i1.cheque_date,
-				i1.total_amount as credit, 0 as debit,
-				i1.posting_date, %(imprest_account)s as against_account, i1.clearance_date
-			from
-				`tabImprest Recoup` i1
-			where
-				i1.branch = %(branch)s 
-				and i1.docstatus=1 {condition}
-				and i1.posting_date >= %(from)s and i1.posting_date <= %(to)s
-			group by i1.branch, i1.name
-			order by i1.posting_date ASC, i1.name DESC
-		""",
-		{"branch": branch, "from": from_date, "to": to_date, "imprest_account":imprest_account},
-		as_dict=1,
-	)
+	if branch =="GI - Head Office":
+		imprest_recoup = frappe.db.sql(
+			f"""
+				select
+					"Imprest Recoup" as payment_document, i1.name as payment_entry,
+					i1.cheque_no as cheque_number, i1.cheque_date,
+					i1.total_amount as credit, 0 as debit,
+					i1.posting_date, %(imprest_account)s as against_account, i1.clearance_date
+				from
+					`tabImprest Recoup` i1
+				where
+					i1.docstatus=1
+					and i1.branch in ('GI - Head Office','GI - Liaision Office Pling','GI - Liaison Office Sjongkhar','GI - Liaison Office Gelephu') 
+					{condition}
+					and i1.posting_date >= %(from)s and i1.posting_date <= %(to)s
+				group by i1.branch, i1.name
+				order by i1.posting_date ASC, i1.name DESC
+			""",
+			{"from": from_date, "to": to_date, "imprest_account":imprest_account},
+			as_dict=1,
+		)
+
+	else:
+		imprest_recoup = frappe.db.sql(
+			f"""
+				select
+					"Imprest Recoup" as payment_document, i1.name as payment_entry,
+					i1.cheque_no as cheque_number, i1.cheque_date,
+					i1.total_amount as credit, 0 as debit,
+					i1.posting_date, %(imprest_account)s as against_account, i1.clearance_date
+				from
+					`tabImprest Recoup` i1
+				where
+					i1.branch = %(branch)s 
+					and i1.docstatus=1 {condition}
+					and i1.posting_date >= %(from)s and i1.posting_date <= %(to)s
+				group by i1.branch, i1.name
+				order by i1.posting_date ASC, i1.name DESC
+			""",
+			{"branch": branch, "from": from_date, "to": to_date, "imprest_account":imprest_account},
+			as_dict=1,
+		)
 
 	if bank_account:
 		condition += "and bank_account = %(bank_account)s"
