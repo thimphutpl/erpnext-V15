@@ -490,8 +490,8 @@ class PurchaseOrder(BuyingController):
 	def on_submit(self):
 		super().on_submit()
 		if self.for_project == 1:
-			self.update_project_maintenance_cost()
-			self.update_project_task()
+			# self.update_project_maintenance_cost()
+			# self.update_project_task()
 		if self.is_against_so():
 			self.update_status_updater()
 
@@ -545,8 +545,8 @@ class PurchaseOrder(BuyingController):
 		self.update_ordered_qty()
 
 		self.update_blanket_order()
-		self.update_project_task()
-		self.update_project_maintenance_cost()
+		# self.update_project_task()
+		# self.update_project_maintenance_cost()
 		unlink_inter_company_doc(self.doctype, self.name, self.inter_company_order_reference)
 
 	def on_update(self):
