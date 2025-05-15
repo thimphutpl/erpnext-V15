@@ -58,6 +58,10 @@ class HSDPayment(Document):
 		self.clearance_date = None
 		if self.workflow_state=="Verified":
 			self.verifier=frappe.session.user
+		if self.workflow_state=="Waiting Approval":
+			self.verifier=frappe.session.user
+		if self.workflow_state=="Approved":
+			self.approver=frappe.session.user
 
 	def set_status(self):
                 self.status = {

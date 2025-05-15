@@ -61,7 +61,10 @@
   "remitter_cidtpan_no",
   "advance_payment",
   "final_payment",
-  "declaration_reference_no"
+  "declaration_reference_no",
+  "approver_section_section",
+  "approver",
+  "verifier"
  ],
  "fields": [
   {
@@ -387,12 +390,31 @@
    "fieldtype": "Float",
    "label": "Tax Withholding Rate",
    "read_only": 1
+  },
+  {
+   "fieldname": "approver_section_section",
+   "fieldtype": "Section Break",
+   "label": "Approver Section"
+  },
+  {
+   "fieldname": "approver",
+   "fieldtype": "Link",
+   "label": "Approver",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "verifier",
+   "fieldtype": "Link",
+   "label": "Verifier",
+   "options": "User",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-05-07 22:19:28.178406",
+ "modified": "2025-05-15 12:38:23.414404",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Mechanical Payment",
