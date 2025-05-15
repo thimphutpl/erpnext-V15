@@ -202,6 +202,8 @@ def get_payment_entries_for_bank_clearance(
 	)
 	if not branch:
 		frappe.throw("Branch is required")
+	if branch in ("GI - Liaison Office Sjongkhar", "GI - Liaision Office Pling","GI - Liaison Office Gelephu"):
+		branch="GI - Head Office"
 	imprest_account= frappe.db.get_value("Branch", branch,"expense_bank_account")
 	if not imprest_account:
 		frappe.throw("Please set default expense bank account in branch")
