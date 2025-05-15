@@ -489,7 +489,7 @@ class PurchaseOrder(BuyingController):
 
 	def on_submit(self):
 		super().on_submit()
-		if self.for_project == 1:
+		# if self.for_project == 1:
 			# self.update_project_maintenance_cost()
 			# self.update_project_task()
 		if self.is_against_so():
