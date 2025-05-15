@@ -159,28 +159,51 @@ def get_journal_entries(filters):
 	)
 # addedcode
 def get_imprest_recoup_entries(filters):
-	return frappe.db.sql("""
-		SELECT 
-			'Imprest Recoup' AS payment_document,
-			ir.posting_date AS posting_date,
-			ir.name AS payment_entry,
-			0 AS debit,  # Changed from total_amount
-			ir.total_amount AS credit,  # Now in credit column
-			ir.cheque_no AS reference_no,
-			ir.cheque_date AS ref_date,
-			clearance_date,
-			ir.remarks AS against_account,
-			b.expense_bank_account AS against_account_number,
-			(SELECT account_currency FROM `tabAccount` 
-			 WHERE name=%(account)s) AS account_currency
-		FROM `tabImprest Recoup` ir
-		INNER JOIN `tabBranch` b ON ir.branch = b.name
-		WHERE
-			ir.docstatus = 1
-			AND ir.posting_date <= %(report_date)s
-			AND b.expense_bank_account = %(account)s
-			AND IFNULL(ir.clearance_date, '4000-01-01') > %(report_date)s
-	""", filters, as_dict=1)
+	if filters.get("branch")=="GI - Head Office":
+		return frappe.db.sql("""
+			SELECT 
+				'Imprest Recoup' AS payment_document,
+				ir.posting_date AS posting_date,
+				ir.name AS payment_entry,
+				0 AS debit,
+				ir.total_amount AS credit,
+				ir.cheque_no AS reference_no,
+				ir.cheque_date AS ref_date,
+				ir.clearance_date As clearance_date,
+				ir.remarks AS against_account,
+				b.expense_bank_account AS against_account_number,
+				'BTN' AS account_currency
+			FROM `tabImprest Recoup` ir
+			INNER JOIN `tabBranch` b ON ir.branch = b.name
+			WHERE
+				ir.docstatus = 1
+				AND ir.posting_date <= %(report_date)s
+				AND b.branch in ('GI - Head Office','GI - Liaision Office Pling','GI - Liaison Office Sjongkhar','GI - Liaison Office Gelephu') 
+				AND IFNULL(ir.clearance_date, '4000-01-01') > %(report_date)s
+		""", filters, as_dict=1)
+	else: 
+		# branch=filters.get("branch")
+		return frappe.db.sql("""
+			SELECT 
+				'Imprest Recoup' AS payment_document,
+				ir.posting_date AS posting_date,
+				ir.name AS payment_entry,
+				0 AS debit,  # Changed from total_amount
+				ir.total_amount AS credit,  # Now in credit column
+				ir.cheque_no AS reference_no,
+				ir.cheque_date AS ref_date,
+				ir.clearance_date As clearance_date,
+				ir.remarks AS against_account,
+				b.expense_bank_account AS against_account_number,
+				'BTN' AS account_currency
+			FROM `tabImprest Recoup` ir
+			INNER JOIN `tabBranch` b ON ir.branch = b.name
+			WHERE
+				ir.docstatus = 1
+				AND ir.posting_date <= %(report_date)s
+				AND b.branch = %(branch)s
+				AND IFNULL(ir.clearance_date, '4000-01-01') > %(report_date)s
+		""", filters, as_dict=1)
 
 # added new
 def get_mechanical_payments(filters):

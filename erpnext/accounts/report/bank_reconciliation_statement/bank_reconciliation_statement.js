@@ -41,6 +41,13 @@ frappe.query_reports["Bank Reconciliation Statement"] = {
 			reqd: 1,
 		},
 		{
+			fieldname: "branch",
+			label: __("Branch"),
+			fieldtype: "Link",
+			options: "Branch",
+			reqd: 1,
+		},
+		{
 			fieldname: "include_pos_transactions",
 			label: __("Include POS Transactions"),
 			fieldtype: "Check",
