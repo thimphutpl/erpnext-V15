@@ -140,7 +140,20 @@ frappe.ui.form.on("Mechanical Payment Item", {
 frappe.ui.form.on('Mechanical Payment', {
     refresh: function(frm) {
         // Add custom logic if required
+    },
+    branch: function(frm) {
+    if (frm.doc.branch) {
+        frappe.db.get_value("Branch", frm.doc.branch, "expense_bank_account", function(r) {
+            if (r && r.expense_bank_account) {
+                frm.set_value("income_account", r.expense_bank_account);
+            } else {
+                frm.set_value("income_account", null);
+                frappe.msgprint("No Expense Bank Account is set for the selected Branch.");
+            }
+        });
     }
+}
+
 });
 
 // frm.fields_dict['items'].grid.get_field('reference_name').get_query = function(frm, cdt, cdn) {
