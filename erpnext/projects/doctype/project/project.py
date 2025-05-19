@@ -1878,7 +1878,7 @@ def update_finacial_progress(project, estimated_budget):
 	if not estimated_budget: 
 		frappe.throw("Please set Provisional Estimated Budget in project")
 	if project:
-		actual_expenses = frappe.db.sql(""" select sum(debit)-sum(credit) as actual_expenses 
+		actual_expenses = frappe.db.sql(""" select sum(debit) as actual_expenses
 			from `tabGL Entry`
 			where project='{project}'
 			and is_cancelled =0
