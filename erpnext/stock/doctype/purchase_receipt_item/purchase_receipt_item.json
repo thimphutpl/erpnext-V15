@@ -355,6 +355,7 @@
    "oldfieldname": "import_rate",
    "oldfieldtype": "Currency",
    "options": "currency",
+   "precision": "4",
    "print_width": "100px",
    "width": "100px"
   },
@@ -1148,7 +1149,7 @@
  "idx": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-01-23 17:50:23.145288",
+ "modified": "2025-05-19 11:15:05.969795",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Purchase Receipt Item",
