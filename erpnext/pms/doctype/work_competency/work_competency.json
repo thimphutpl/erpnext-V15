@@ -54,13 +54,14 @@
   {
    "fieldname": "eas_group",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "EAS Group",
    "options": "EAS Group",
    "reqd": 1
   }
  ],
  "links": [],
- "modified": "2025-02-07 17:36:23.882163",
+ "modified": "2025-04-14 15:22:30.842214",
  "modified_by": "Administrator",
  "module": "PMS",
  "name": "Work Competency",

@@ -140,19 +140,19 @@
    "label": "APPROVER DETAILS"
   },
   {
+   "fetch_from": "employee.reports_to",
    "fieldname": "approver",
    "fieldtype": "Link",
    "ignore_user_permissions": 1,
    "label": "Approver",
-   "options": "User",
-   "read_only": 1
+   "options": "Employee"
   },
   {
    "fieldname": "column_break_17",
    "fieldtype": "Column Break"
   },
   {
-   "fetch_from": "approver.full_name",
+   "fetch_from": "approver.employee_name",
    "fieldname": "approver_name",
    "fieldtype": "Data",
    "label": "Approver Name",
@@ -228,6 +228,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "fetch_from": "approver.designation",
    "fieldname": "approver_designation",
    "fieldtype": "Data",
    "label": "Approver Designation",
@@ -261,7 +262,7 @@
  ],
  "is_submittable": 1,
  "links": [],
- "modified": "2025-02-07 18:59:50.115018",
+ "modified": "2025-04-25 16:22:24.147253",
  "modified_by": "Administrator",
  "module": "PMS",
  "name": "Target Set Up",

@@ -23,7 +23,6 @@
   "evaluation_end_date",
   "section_break_22",
   "remarks",
-  "amended_from",
   "amended_from"
  ],
  "fields": [
@@ -119,7 +118,7 @@
    "fieldtype": "Link",
    "label": "Amended From",
    "no_copy": 1,
-   "options": "PMS Extension",
+   "options": "EAS Extension",
    "print_hide": 1,
    "read_only": 1
   },
@@ -130,13 +129,12 @@
    "no_copy": 1,
    "options": "EAS Extension",
    "print_hide": 1,
-   "read_only": 1,
-   "search_index": 1
+   "read_only": 1
   }
  ],
  "is_submittable": 1,
  "links": [],
- "modified": "2024-12-27 15:50:19.095415",
+ "modified": "2025-03-11 09:30:07.066957",
  "modified_by": "Administrator",
  "module": "PMS",
  "name": "EAS Extension",

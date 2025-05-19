@@ -46,7 +46,7 @@ class TargetSetUp(Document):
 		self.check_target()
 		self.check_duplicate_entry() 
 		# validate_workflow_states(self) 
-		# self.validate_calendar()
+		self.validate_calendar()
 			
 	def on_submit(self):
 		return
@@ -86,9 +86,23 @@ class TargetSetUp(Document):
 		elif self.workflow_state == 'Draft' or self.workflow_state == 'Rejected':
 			return   
 		# check whether eas is active for target setup       
-		elif not frappe.db.exists("EAS Calendar", {"name": self.eas_calendar, "docstatus": 1,
-					"target_start_date":("<=",nowdate()), "target_end_date": (">=",nowdate())}):
-			frappe.throw(_('Target Set Up for EAS Calendar <b>{}</b> is not open').format(self.eas_calendar))
+		# elif not frappe.db.exists("EAS Calendar", {"name": self.eas_calendar, "docstatus": 1,
+		# 			"target_start_date":("<=",nowdate()), "target_end_date": (">=",nowdate())}):
+		# 	frappe.throw("hi")
+		# 	frappe.throw(_('Target Set Up for EAS Calendar <b>{}</b> is not open').format(self.eas_calendar))
+		eas_calendar = frappe.get_doc("EAS Calendar", self.eas_calendar)
+		if eas_calendar.docstatus != 1:
+			frappe.throw(_("EAS Calendar {} is not submitted").format(self.eas_calendar))
+		valid_child = False
+		#current_date=nowdate()
+		current_date = getdate()
+		for child in eas_calendar.items:
+			#frappe.throw(str(nowdate()))  
+			if child.target_start_date <= current_date <= child.target_end_date:
+				valid_child = True
+				break			
+		if not valid_child:
+			frappe.throw(_('No active Target Setup found in EAS Calendar <b>{}</b>').format(self.eas_calendar))
 
 	def check_duplicate_entry(self):
 		# check duplicate entry for particular employee
@@ -96,6 +110,7 @@ class TargetSetUp(Document):
 
 	def check_target(self):
 		check = frappe.db.get_value("EAS Group", self.eas_group, "required_to_set_target")
+		eas_setting=frappe.frappe.get_doc('EAS Settings')
 		if not check:
 			frappe.throw(
 					title='Error',
@@ -105,8 +120,15 @@ class TargetSetUp(Document):
 				frappe.throw(_('You need to <b>Set The Target</b>'))
 
 			total_target_weightage = 0
+			target = len(self.get('target_item'))
+			if target > eas_setting.max_no_of_target or target < eas_setting.min_no_of_target:
+				frappe.throw(
+					title='Error',
+					msg="Total number of target must be between <b>{}</b> and <b>{}</b> but you have set only <b>{}</b> target".format(eas_setting.min_no_of_target,eas_setting.max_no_of_target,target))
 			# total weightage must be 100
 			for i, t in enumerate(self.target_item):
+				row_num = i + 1
+				#frappe.throw(str("hi"))
 				if getdate(t.from_date).year < getdate().year:
 					frappe.throw(
 						title=_("Error"),
@@ -121,14 +143,24 @@ class TargetSetUp(Document):
 					frappe.throw(
 						title=_("Error"),
 						msg=_(" <b>From Date</b> cannot be greater than <b>To Date</b> in Target Item at Row <b>{}</b>".format(i+1)))
+				
+				# if t.weightage < eas_setting.min_weightage_for_target:
+				# 	frappe.throw(
+				# 		title=_("Error"),
+				# 		msg=_(" min watage should grater <b>{}</b>".format(eas_setting.min_weightage_for_target,row_num)))
+				if flt(t.weightage) > flt(eas_setting.max_weightage_for_target) or flt(t.weightage) < flt(eas_setting.min_weightage_for_target):
+					frappe.throw(
+						title=_('Error'),
+						msg="Weightage for target must be between <b>{}</b> and <b>{}</b> but you have set <b>{}</b> at row <b>{}</b>".format(eas_setting.min_weightage_for_target,eas_setting.max_weightage_for_target,t.weightage, i+1))
 
 				
 				total_target_weightage += flt(t.weightage)
-
-			if flt(total_target_weightage) != 100:
+			
+			#frappe.throw(str(total_target_weightage))
+			if flt(total_target_weightage) >flt(eas_setting.max_rating_limit):
 				frappe.throw(
 					title=_("Error"),
-					msg=_('Sum of Weightage for Target must be <b>100</b> but your total weightage is <b>{}</b>'.format(total_target_weightage)))
+					msg=_('Sum of Weightage for Target must be <b>{0}</b> but your total weightage is <b>{1}</b>'.format(eas_setting.max_rating_limit,total_target_weightage)))
 
 			self.total_weightage = total_target_weightage
 
@@ -165,6 +197,32 @@ def create_review(source_name, target_doc=None):
 		}
 	}, target_doc)
 
+	return doclist
+
+@frappe.whitelist()
+def create_evaluation(source_name, target_doc=None):
+	if frappe.db.exists('Performance Evaluation',
+		{'target_set_up':source_name,
+			'docstatus':('!=',2)
+		}):
+		frappe.throw(
+			title='Error',
+			msg="You have already created Evaluation for this Target")
+	doclist = get_mapped_doc("Target Set Up", source_name, {
+		"Target Set Up": {
+			"doctype": "Performance Evaluation",
+			"field_map":{
+					"target_set_up":"name"
+				},
+		},
+		"Performance Target Evaluation":{
+			"doctype":"Evaluate Target Item"
+		},
+		"Negative Target":{
+			"doctype":"Performance Evaluation Negative Target"
+		}
+
+	}, target_doc)
 	return doclist
 
 @frappe.whitelist()

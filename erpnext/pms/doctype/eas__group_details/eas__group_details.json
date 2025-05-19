@@ -1,0 +1,140 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-04-14 14:25:47.982238",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "eas_group",
+  "target_setup_section",
+  "target_start_date",
+  "column_break_xzts",
+  "target_end_date",
+  "review_section",
+  "review_start_date",
+  "column_break_hjjt",
+  "review_end_date",
+  "evaluation_section",
+  "evaluation_start_date",
+  "column_break_epqs",
+  "evaluation_end_date",
+  "pms_appeal_duration_section",
+  "appeal_start_date",
+  "column_break_mawy",
+  "appeal_end_date"
+ ],
+ "fields": [
+  {
+   "fieldname": "eas_group",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "EAS Group",
+   "options": "EAS Group"
+  },
+  {
+   "fieldname": "target_setup_section",
+   "fieldtype": "Section Break",
+   "label": "Target Setup"
+  },
+  {
+   "fieldname": "target_start_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Target Start Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_xzts",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "target_end_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Target End Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "review_section",
+   "fieldtype": "Section Break",
+   "label": "Review"
+  },
+  {
+   "fieldname": "review_start_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Review Start Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_hjjt",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "review_end_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Review End Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "evaluation_section",
+   "fieldtype": "Section Break",
+   "label": "Evaluation"
+  },
+  {
+   "fieldname": "evaluation_start_date",
+   "fieldtype": "Date",
+   "label": "Evaluation Start Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_epqs",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "evaluation_end_date",
+   "fieldtype": "Date",
+   "label": "Evaluation End Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "pms_appeal_duration_section",
+   "fieldtype": "Section Break",
+   "label": "PMS Appeal Duration"
+  },
+  {
+   "fieldname": "appeal_start_date",
+   "fieldtype": "Date",
+   "label": "Appeal Start Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_mawy",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "appeal_end_date",
+   "fieldtype": "Date",
+   "label": "Appeal End Date",
+   "reqd": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-04-14 14:50:09.840280",
+ "modified_by": "Administrator",
+ "module": "PMS",
+ "name": "EAS  Group Details",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

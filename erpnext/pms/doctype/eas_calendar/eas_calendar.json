@@ -8,6 +8,7 @@
  "engine": "InnoDB",
  "field_order": [
   "fiscal_year",
+  "eas_group",
   "column_break_2",
   "phase",
   "target_setup_section",
@@ -26,8 +27,11 @@
   "appeal_start_date",
   "column_break_pedg",
   "appeal_end_date",
+  "eas_group_details_section",
+  "items",
   "section_break_22",
-  "remarks"
+  "remarks",
+  "amended_from"
  ],
  "fields": [
   {
@@ -53,6 +57,7 @@
   {
    "fieldname": "target_setup_section",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Target Setup"
   },
   {
@@ -60,8 +65,7 @@
    "fieldname": "target_start_date",
    "fieldtype": "Date",
    "in_list_view": 1,
-   "label": "Target Start Date",
-   "reqd": 1
+   "label": "Target Start Date"
   },
   {
    "fieldname": "column_break_4",
@@ -72,20 +76,19 @@
    "fieldname": "target_end_date",
    "fieldtype": "Date",
    "in_list_view": 1,
-   "label": "Target End Date",
-   "reqd": 1
+   "label": "Target End Date"
   },
   {
    "fieldname": "review_section",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Review"
   },
   {
    "allow_on_submit": 1,
    "fieldname": "review_start_date",
    "fieldtype": "Date",
-   "label": "Review Start Date",
-   "reqd": 1
+   "label": "Review Start Date"
   },
   {
    "fieldname": "column_break_10",
@@ -95,20 +98,19 @@
    "allow_on_submit": 1,
    "fieldname": "review_end_date",
    "fieldtype": "Date",
-   "label": "Review End Date",
-   "reqd": 1
+   "label": "Review End Date"
   },
   {
    "fieldname": "evaluation_section",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Evaluation"
   },
   {
    "allow_on_submit": 1,
    "fieldname": "evaluation_start_date",
    "fieldtype": "Date",
-   "label": "Evaluation Start Date",
-   "reqd": 1
+   "label": "Evaluation Start Date"
   },
   {
    "fieldname": "column_break_16",
@@ -118,12 +120,12 @@
    "allow_on_submit": 1,
    "fieldname": "evaluation_end_date",
    "fieldtype": "Date",
-   "label": "Evaluation End Date",
-   "reqd": 1
+   "label": "Evaluation End Date"
   },
   {
    "fieldname": "pms_appeal_duration_section",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "PMS Appeal Duration"
   },
   {
@@ -150,11 +152,38 @@
    "fieldtype": "Data",
    "label": "Reason For Extension",
    "read_only": 1
+  },
+  {
+   "fieldname": "eas_group",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Eas_Group",
+   "options": "EAS Group"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "EAS Calendar",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "eas_group_details_section",
+   "fieldtype": "Section Break",
+   "label": "EAS Group Details"
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "options": "EAS  Group Details"
   }
  ],
  "is_submittable": 1,
  "links": [],
- "modified": "2024-12-28 11:18:59.139135",
+ "modified": "2025-04-16 14:07:49.352679",
  "modified_by": "Administrator",
  "module": "PMS",
  "name": "EAS Calendar",

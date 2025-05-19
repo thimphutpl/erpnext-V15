@@ -23,6 +23,24 @@ frappe.ui.form.on('Performance Evaluation', {
 			});
 		}
 	},
+	employee: function(frm) {
+        // This function is triggered whenever the 'employee' field changes
+        if (frm.doc.employee) {
+            // Check if the employee is 'CDCL0005002'
+            if (frm.doc.eas_group === 'Group II') {
+                console.log("Condition met: Enabling row addition"); // Debugging
+                // Enable adding rows to the 'evaluate_target_item' grid
+                frm.fields_dict['evaluate_target_item'].grid.cannot_add_rows = false;
+            } else {
+                console.log("Condition not met: Disabling row addition"); // Debugging
+                // Disable adding rows if the condition is not met
+                frm.fields_dict['evaluate_target_item'].grid.cannot_add_rows = true;
+            }
+
+            // Refresh the grid to reflect the changes
+            frm.refresh_field('evaluate_target_item');
+        }
+    },
 
 	get_competency: function(frm) {
 		if(frm.doc.docstatus != 1){

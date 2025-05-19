@@ -12,13 +12,33 @@ frappe.ui.form.on('Target Set Up', {
 		})
 	},
 
-	refresh: (frm)=>{
-		add_btn(frm)
-	},
-
-	eas_calendar: function(frm) {
-
-	},
+	refresh: function(frm) {
+		frm.set_query('employee', function() {
+		  return {
+			filters: {
+			  	eas_group: 'Group I'
+			}
+		  };
+		});
+	  },
+	  refresh: function(frm) {
+        if (frm.doc.docstatus == 1) {
+            frm.add_custom_button(__('Create Review'), () => {
+                frappe.model.open_mapped_doc({
+                    method: "erpnext.pms.doctype.target_set_up.target_set_up.create_review",
+                    frm: frm // Use the parameter from the function
+                });
+            }).addClass("btn-primary custom-create custom-create-css");
+        }
+		// if (frm.doc.docstatus == 1){
+		// 	frm.add_custom_button(__('Create Evaluation'), ()=>{
+		// 		frappe.model.open_mapped_doc({
+		// 			method: "erpnext.pms.doctype.target_set_up.target_set_up.create_evaluation",	
+		// 			frm: cur_frm
+		// 		});
+		// 	}).addClass("btn-primary custom-create custom-create-css")
+		// }
+    }
 });
 
 frappe.ui.form.on('Performance Target Evaluation',{
@@ -34,13 +54,13 @@ frappe.ui.form.on('Performance Target Evaluation',{
 	
 })
 
-var add_btn = (frm)=>{
-	if ( frm.doc.docstatus == 1 ){
-		frm.add_custom_button(__('Create Review'), ()=>{
-			frappe.model.open_mapped_doc({
-				method: "erpnext.pms.doctype.target_set_up.target_set_up.create_review",	
-				frm: cur_frm
-			});
-		}).addClass("btn-primary custom-create custom-create-css");
-	}
-}
+// var add_btn = (frm)=>{
+// 	if ( frm.doc.docstatus == 1 ){
+// 		frm.add_custom_button(__('Create Review'), ()=>{
+// 			frappe.model.open_mapped_doc({
+// 				method: "erpnext.pms.doctype.target_set_up.target_set_up.create_review",	
+// 				frm: cur_frm
+// 			});
+// 		}).addClass("btn-primary custom-create custom-create-css");
+// 	}
+// }
