@@ -47,13 +47,13 @@ class Review(Document):
 		unit: DF.Link | None
 	# end: auto-generated types
 	def validate(self):
-		# self.check_duplicate_entry()
-		# validate_workflow_states(self)
-		# if self.workflow_state != "Approved":
-		# 	notify_workflow_states(self)
-		# self.check_target()
+		#self.check_duplicate_entry()
+		validate_workflow_states(self)
+		if self.workflow_state != "Approved":
+			notify_workflow_states(self)
+		self.check_target()
 		
-		# self.validate_calendar()
+		#self.validate_calendar()
 		self.validate_row_deletion()
 
 	def on_submit(self):

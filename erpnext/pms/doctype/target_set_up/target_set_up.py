@@ -9,6 +9,7 @@ from frappe import _
 from frappe.model.document import Document
 from frappe.utils import flt, nowdate, getdate
 from frappe.model.mapper import get_mapped_doc
+#from nowdate import nowdate 
 from erpnext.custom_workflow import validate_workflow_states, notify_workflow_states
 
 class TargetSetUp(Document):
@@ -45,7 +46,7 @@ class TargetSetUp(Document):
 	def validate(self):
 		self.check_target()
 		self.check_duplicate_entry() 
-		# validate_workflow_states(self) 
+		validate_workflow_states(self) 
 		self.validate_calendar()
 			
 	def on_submit(self):
@@ -76,33 +77,51 @@ class TargetSetUp(Document):
 		eval_doc.save(ignore_permissions = True)
 		
 	def validate_calendar(self):
+		
 		if frappe.db.exists("Target Set Up", {"employee": self.employee, "docstatus":2, "eas_calendar": self.eas_calendar}):
 			doc = frappe.get_doc('Target Set Up', self.amended_from)
+			
 			if self.eas_calendar == doc.eas_calendar:
+				#
 				return
 			else:
 				frappe.throw(_("EAS Calendar doesnot match with the cancelled Target"))
 
 		elif self.workflow_state == 'Draft' or self.workflow_state == 'Rejected':
-			return   
-		# check whether eas is active for target setup       
-		# elif not frappe.db.exists("EAS Calendar", {"name": self.eas_calendar, "docstatus": 1,
-		# 			"target_start_date":("<=",nowdate()), "target_end_date": (">=",nowdate())}):
-		# 	frappe.throw("hi")
-		# 	frappe.throw(_('Target Set Up for EAS Calendar <b>{}</b> is not open').format(self.eas_calendar))
-		eas_calendar = frappe.get_doc("EAS Calendar", self.eas_calendar)
-		if eas_calendar.docstatus != 1:
-			frappe.throw(_("EAS Calendar {} is not submitted").format(self.eas_calendar))
-		valid_child = False
-		#current_date=nowdate()
-		current_date = getdate()
-		for child in eas_calendar.items:
-			#frappe.throw(str(nowdate()))  
-			if child.target_start_date <= current_date <= child.target_end_date:
-				valid_child = True
-				break			
-		if not valid_child:
-			frappe.throw(_('No active Target Setup found in EAS Calendar <b>{}</b>').format(self.eas_calendar))
+			#frappe.throw(str(self.eas_group))
+			if self.eas_group=='Group II':
+				
+				#frappe.throw("hi11")
+				current_date = getdate()
+				eas_calendar = frappe.get_doc("EAS Calendar", self.eas_calendar)
+				child_records = eas_calendar.get("items")
+				for child in child_records:
+					
+					if child.eas_group==self.eas_group and current_date >= child.target_start_date:
+						frappe.throw("hi")
+						return 
+					else:
+						frappe.throw(child.eas_group)
+						frappe.throw(_('No active Target Setup found in EAS Calendar <b>{}</b>').format(self.eas_calendar))
+						
+
+						
+
+
+			elif self.eas_group=='Group I':
+				
+				#frappe.throw("hi11")
+				eas_calendar = frappe.get_doc("EAS Calendar", self.eas_calendar)
+				child_records = eas_calendar.get("items")
+				for child in child_records:
+					if child.eas_group==self.eas_group:
+						if child.target_start_date <= current_date <= child.target_end_date:
+							frappe.throw(_('No active Target Setup found in EAS Calendar <b>{}</b>').format(self.eas_calendar))	
+
+						
+
+
+			
 
 	def check_duplicate_entry(self):
 		# check duplicate entry for particular employee
@@ -156,8 +175,8 @@ class TargetSetUp(Document):
 				
 				total_target_weightage += flt(t.weightage)
 			
-			#frappe.throw(str(total_target_weightage))
-			if flt(total_target_weightage) >flt(eas_setting.max_rating_limit):
+			#frappe.throw(str(eas_setting.max_rating_limit))
+			if flt(total_target_weightage) !=flt(eas_setting.max_rating_limit):
 				frappe.throw(
 					title=_("Error"),
 					msg=_('Sum of Weightage for Target must be <b>{0}</b> but your total weightage is <b>{1}</b>'.format(eas_setting.max_rating_limit,total_target_weightage)))

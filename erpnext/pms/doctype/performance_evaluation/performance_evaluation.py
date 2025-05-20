@@ -63,7 +63,7 @@ class PerformanceEvaluation(Document):
 		self.calculate_competency_score()
 		self.calculate_final_score()
 		# self.check_target()
-		# validate_workflow_states(self)
+		validate_workflow_states(self)
 
 	def on_submit(self):
 		self.validate_calendar()
