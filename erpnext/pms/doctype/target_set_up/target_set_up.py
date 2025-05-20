@@ -87,38 +87,25 @@ class TargetSetUp(Document):
 			else:
 				frappe.throw(_("EAS Calendar doesnot match with the cancelled Target"))
 
-		elif self.workflow_state == 'Draft' or self.workflow_state == 'Rejected':
-			#frappe.throw(str(self.eas_group))
-			if self.eas_group=='Group II':
-				
-				#frappe.throw("hi11")
-				current_date = getdate()
-				eas_calendar = frappe.get_doc("EAS Calendar", self.eas_calendar)
-				child_records = eas_calendar.get("items")
-				for child in child_records:
-					
-					if child.eas_group==self.eas_group and current_date >= child.target_start_date:
-						frappe.throw("hi")
-						return 
-					else:
-						frappe.throw(child.eas_group)
-						frappe.throw(_('No active Target Setup found in EAS Calendar <b>{}</b>').format(self.eas_calendar))
-						
+		
+		if self.eas_group in ['Group I', 'Group II'] and self.workflow_state in ['Draft', 'Rejected']:
+			current_date = getdate()
+			eas_calendar = frappe.get_doc("EAS Calendar", self.eas_calendar)
+			active_found = False
 
-						
+			for child in eas_calendar.get("items", []):
+				if child.eas_group != self.eas_group:
+					continue 
+				if self.eas_group == 'Group II' and current_date >= child.target_start_date:
+					active_found = True
+					break
+				if self.eas_group == 'Group I' and (child.target_start_date <= current_date <= child.target_end_date):
+					active_found = True
+					break
 
+				if not active_found:
+					frappe.throw(_('No active Target Setup found in EAS Calendar <b>{}</b>').format(self.eas_calendar))
 
-			elif self.eas_group=='Group I':
-				
-				#frappe.throw("hi11")
-				eas_calendar = frappe.get_doc("EAS Calendar", self.eas_calendar)
-				child_records = eas_calendar.get("items")
-				for child in child_records:
-					if child.eas_group==self.eas_group:
-						if child.target_start_date <= current_date <= child.target_end_date:
-							frappe.throw(_('No active Target Setup found in EAS Calendar <b>{}</b>').format(self.eas_calendar))	
-
-						
 
 
 			
