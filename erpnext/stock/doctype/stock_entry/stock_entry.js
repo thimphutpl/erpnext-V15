@@ -1086,7 +1086,15 @@ frappe.ui.form.on("Stock Entry Detail", {
 });
 
 frappe.ui.form.on("Stock Entry", "refresh", function(frm) {
-	cur_frm.set_query("job_card", function() {
+	cur_frm.set_query("job_cards", function() {
+		return {
+			"filters": {
+			"docstatus": 0,
+			"branch": frm.doc.branch
+			}
+		};
+	});
+	cur_frm.set_query("fabrication_bailey_bridge", function() {
 		return {
 			"filters": {
 			"docstatus": 0,
