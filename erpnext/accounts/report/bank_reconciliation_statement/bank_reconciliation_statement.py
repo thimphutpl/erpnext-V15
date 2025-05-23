@@ -130,6 +130,7 @@ def get_entries_for_bank_reconciliation_statement(filters):
 	imprest_entries = get_imprest_recoup_entries(filters)  # New line
 	mp_entries = get_mechanical_payments(filters)  # New line
 	tds_entries = get_tds_list(filters)  # New line
+	hsd_entries = get_hsd_list(filters)  # New line
 	
 	return (
 		list(journal_entries) 
@@ -138,6 +139,8 @@ def get_entries_for_bank_reconciliation_statement(filters):
 		+ list(imprest_entries)
 		+ list(mp_entries)
 		+ list(tds_entries)
+		+ list(hsd_entries)
+
 	)
 
 
@@ -204,6 +207,20 @@ def get_imprest_recoup_entries(filters):
 				AND b.branch = %(branch)s
 				AND IFNULL(ir.clearance_date, '4000-01-01') > %(report_date)s
 		""", filters, as_dict=1)
+
+def get_hsd_list(filters):
+	return frappe.db.sql("""
+		select
+			"HSD Payment" as payment_document, name as payment_entry,
+			amount as credit, 0 as debit,
+			cheque__no as reference_no, cheque_date as ref_date,
+			posting_date, supplier as against_account, clearance_date, 'BTN' as account_currency
+		from `tabHSD Payment`
+		where bank_account = %(account)s
+		and docstatus = 1
+		and posting_date <= %(report_date)s 
+		and ifnull(clearance_date, '4000-01-01') > %(report_date)s
+	""", filters, as_dict=1)
 
 # added new
 def get_mechanical_payments(filters):
