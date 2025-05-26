@@ -1,4 +1,5 @@
 import frappe
+import os
 from frappe import _, scrub, throw
 from frappe.model.naming import set_name_by_naming_series
 from frappe.permissions import (
@@ -154,8 +155,14 @@ class Employee(NestedSet):
 		set_user_permission_if_allowed("Company", self.company, self.user_id)
 
 	def update_user(self):
-		# add employee role if missing
-		user = frappe.get_doc("User", self.user_id)
+		# Ensure user_id and employee_name are present
+		if not self.user_id or not self.employee_name:
+			frappe.throw(_("User ID and Employee Name are required to update user details."))
+
+		try:
+			user = frappe.get_doc("User", self.user_id)
+		except frappe.DoesNotExistError:
+			frappe.throw(_("User {0} does not exist").format(self.user_id))
 		user.flags.ignore_permissions = True
 
 		if "Employee" not in user.get("roles"):
@@ -164,12 +171,13 @@ class Employee(NestedSet):
 		# copy details like Fullname, DOB and Image to User
 		if self.employee_name and not (user.first_name and user.last_name):
 			employee_name = self.employee_name.split(" ")
+			user.middle_name = ""
+			user.last_name = ""
 			if len(employee_name) >= 3:
 				user.last_name = " ".join(employee_name[2:])
 				user.middle_name = employee_name[1]
 			elif len(employee_name) == 2:
 				user.last_name = employee_name[1]
-
 			user.first_name = employee_name[0]
 
 		if self.date_of_birth:
@@ -177,25 +185,27 @@ class Employee(NestedSet):
 
 		if self.gender:
 			user.gender = self.gender
-
 		if self.image:
-			if not self.image.startswith(('http://', 'https://')):
-				self.image = frappe.utils.get_url() + self.image
-			if not user.user_image:
-				user.user_image = self.image
-				try:
-					frappe.get_doc(
-						{
-							"doctype": "File",
-							"file_url": self.image,
-							"attached_to_doctype": "User",
-							"attached_to_name": self.user_id,
-						}
-					).insert(ignore_if_duplicate=True)
-				except frappe.DuplicateEntryError:
-					# already exists
-					pass
+			image_url = self.image
+			if not image_url.startswith(("/files/", "http", "https")):
+				image_url = "/files/" + image_url.split("/")[-1]
 
+			# Always update user_image to allow changes
+			user.user_image = frappe.utils.get_url() + image_url
+
+			# Only try to insert if the file physically exists
+			full_path = frappe.get_site_path("public", image_url.lstrip("/"))
+			if os.path.exists(full_path):
+				try:
+					frappe.get_doc({
+						"doctype": "File",
+						"file_url": image_url,
+						"attached_to_doctype": "User",
+						"attached_to_name": self.user_id,
+					}).insert(ignore_if_duplicate=True)
+				except Exception as e:
+					# Catch DuplicateEntryError or any other error
+					pass
 		user.save()
 
 	def validate_date(self):
@@ -600,4 +610,4 @@ def has_record_permission(doc, user):
 		if frappe.db.exists("Employee", {"name":doc.name, "user_id": user}):
 			return True
 		else:
-			return False 
+			return False
