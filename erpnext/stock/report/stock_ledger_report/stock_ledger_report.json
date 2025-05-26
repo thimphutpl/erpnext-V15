@@ -10,7 +10,7 @@
  "is_standard": "Yes",
  "letter_head": "cdcl_default",
  "letterhead": null,
- "modified": "2024-11-25 11:27:05.159034",
+ "modified": "2025-05-26 11:59:49.703007",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Stock Ledger Report",
@@ -25,6 +25,9 @@
   },
   {
    "role": "Accounts Manager"
+  },
+  {
+   "role": "Project Engineer"
   }
  ]
 }
