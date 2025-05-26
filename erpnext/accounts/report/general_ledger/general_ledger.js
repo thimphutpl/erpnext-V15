@@ -255,6 +255,15 @@ frappe.query_reports["General Ledger"] = {
 			label: __("Show Over Head Cost"),
 			fieldtype: "Check",
 		},
+		{
+			fieldname: "clear_filters",
+			label: __("Clear Filters"),
+			fieldtype: "Button",
+			click:()=>{
+						frappe.query_report.set_filter_value("project", []);
+						frappe.query_report.refresh();
+			}
+		},
 	],
 };
 

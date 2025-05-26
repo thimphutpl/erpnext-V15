@@ -259,8 +259,16 @@ function get_filters() {
 					company: frappe.query_report.get_filter_value("company"),
 				});
 			},
-		},		
-		
+		},	
+		{
+			fieldname: "clear_filters",
+			label: __("Clear Filters"),
+			fieldtype: "Button",
+			click:()=>{
+						frappe.query_report.set_filter_value("project", []);
+						frappe.query_report.refresh();
+			}
+		},
 	];
 
 	// Dynamically set 'default' values for fiscal year filters
