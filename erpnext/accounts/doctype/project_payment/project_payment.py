@@ -581,12 +581,12 @@ class ProjectPayment(AccountsController):
 						doc = frappe.get_doc("Project", self.project)
 						row = doc.append("retention_money_receivable", {})
 						row.project_payment            = self.name
-						row.retention_money            = self.invoice_date
+						row.retention_money            = ded.amount
 						row.save(ignore_permissions=True)
 					else:
 						row = frappe.get_doc("Retention Money Receivable", {"parent": self.project, "project_payment": self.name})
 						row.project_payment            = self.name
-						row.retention_money            = self.invoice_date
+						row.retention_money            = ded.amount
 						row.save(ignore_permissions=True)
 # ++++++++++++++++++++ Ver 2.0 BEGINS ++++++++++++++++++++        
 # Following method is created by SHIV on 05/09/2017
