@@ -175,3 +175,14 @@ class MusterRollEmployee(Document):
 			"from_date": from_date,
 			"to_date": to_date
 		})
+
+
+@frappe.whitelist()
+def rejoin_muster_roll_employee(docname):
+	doc = frappe.get_doc("Muster Roll Employee", docname)
+	if doc.docstatus != 1 or doc.status != "Left":
+		frappe.throw("Only submitted and 'Left' employees can be rejoined.")
+	frappe.db.sql("""
+		update `tabMuster Roll Employee` set docstatus=0, status='Active', separation_date=NULL where name=%s
+	""", (docname,))
+	return "Employee rejoined, status set to Active and docstatus set to Draft."

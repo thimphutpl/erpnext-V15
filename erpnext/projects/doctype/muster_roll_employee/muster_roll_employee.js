@@ -1,18 +1,21 @@
 // Copyright (c) 2024, Frappe Technologies Pvt. Ltd. and contributors
 // For license information, please see license.txt
 
-// frappe.ui.form.on("Muster Roll Employee", {
-// 	refresh(frm) {
 
-// 	},
-// });
-// cur_frm.add_fetch("cost_center", "branch", "branch")
-// cur_frm.add_fetch("project", "cost_center", "cost_center")
-// cur_frm.add_fetch("project", "branch", "branch")
-
-frappe.ui.form.on('Muster Roll Employee', {
-	refresh: function(frm) {
-	},
+frappe.ui.form.on('Muster Roll Employee', {	
+	refresh(frm) {
+        if (frm.doc.status === "Left") {
+            frm.add_custom_button(__("Unfreeze MR"), () => {
+                frappe.call({
+                    method: "erpnext.projects.doctype.muster_roll_employee.muster_roll_employee.rejoin_muster_roll_employee",
+                    args: { docname: frm.doc.name },
+                    callback: () => {
+                        window.location.reload(); // Remove delay for immediate reload
+                    }
+                });
+            });
+        }
+    },
 
 	rate_per_day: function(frm) {
 		if(frm.doc.rate_per_day) {
@@ -25,11 +28,23 @@ frappe.ui.form.on('Muster Roll Employee', {
 		cur_frm.toggle_reqd("separation_date", frm.doc.status == "Left")
 	},
 	
+	branch: function(frm) {
+		frm.__cost_center_autofetch = true;
+	},
+
 	cost_center: function(frm){
-		if(!frm.doc.__islocal){
-			cur_frm.set_value("date_of_transfer",frappe.datetime.nowdate());
-			refresh_many(["date_of_transfer"]);
-			validate_prev_doc(frm,__("Please select date of transfer to new cost center"));		
+		if (frm.__cost_center_autofetch) {			
+			frm.__cost_center_autofetch = false;
+			return;
+		}
+		if (!frm.__cost_center_checked) {
+			frm.__cost_center_checked = true;
+			if(!frm.doc.__islocal){
+				cur_frm.set_value("date_of_transfer",frappe.datetime.nowdate());
+				refresh_many(["date_of_transfer"]);
+				validate_prev_doc(frm,__("Please select date of transfer to new cost center"));		
+			}			
+			setTimeout(() => { frm.__cost_center_checked = false; }, 1000);
 		}
 	},
 
