@@ -571,7 +571,7 @@ class ProjectPayment(AccountsController):
 			je.submit()
 
 	def retention_money_item_entry(self):
-		retention_acc = frappe.db.get_single_value("Projects Accounts Setting", "retention_account_receivable")
+		retention_acc = frappe.db.get_single_value("Projects Accounts Settings", "retention_account_receivable")
 		for ded in self.deductions:
 			if retention_acc and str(ded.account) == str(retention_acc):
 				if self.docstatus == 2:
