@@ -109,7 +109,7 @@ class AssetIssueDetails(Document):
             warehouse = frappe.db.get_value("Asset Received Entries", self.asset_received_entries, "warehouse")
             rate = frappe.db.get_value("Asset Received Entries", self.asset_received_entries, "asset_rate")
             issued_qty = frappe.db.sql("""
-                                       select sum(ifnull(qty,0)) as qty from `tabAsset Issue Details` where asset_received_entries = '{}'
+                                       select sum(qty) as qty from `tabAsset Issue Details` where asset_received_entries = '{}'
                                        and docstatus = 1
                                        """.format(self.asset_received_entries),as_dict=1)[0].qty
             if flt(qty) - flt(issued_qty) <= 0:
