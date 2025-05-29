@@ -304,7 +304,7 @@
   },
   {
    "fieldname": "total_amount_in_words",
-   "fieldtype": "Data",
+   "fieldtype": "Long Text",
    "hidden": 1,
    "label": "Total Amount in Words",
    "no_copy": 1,
@@ -804,7 +804,7 @@
    "table_fieldname": "payment_entries"
   }
  ],
- "modified": "2025-03-21 15:05:43.123262",
+ "modified": "2025-05-29 09:46:54.172408",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Journal Entry",

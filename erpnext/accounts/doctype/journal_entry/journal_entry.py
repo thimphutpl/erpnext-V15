@@ -106,7 +106,7 @@ class JournalEntry(AccountsController):
 		title: DF.Data | None
 		total_amount: DF.Currency
 		total_amount_currency: DF.Link | None
-		total_amount_in_words: DF.Data | None
+		total_amount_in_words: DF.LongText | None
 		total_credit: DF.Currency
 		total_debit: DF.Currency
 		use_check_lot: DF.Check
