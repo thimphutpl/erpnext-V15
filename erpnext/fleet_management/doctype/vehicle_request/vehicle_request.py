@@ -2,11 +2,12 @@
 # For license information, please see license.txt
 
 import frappe
+from frappe import _, whitelist
 from frappe.model.document import Document
 from frappe.model.mapper import get_mapped_doc
-from frappe.utils import flt
-from frappe.utils import flt, get_datetime, nowdate, cint, datetime, date_diff, time_diff
+from frappe.utils import flt, get_datetime, nowdate, cint, datetime, date_diff, time_diff, get_fullname
 from erpnext.custom_workflow import validate_workflow_states, notify_workflow_states
+from hrms.utils import get_employee_email
 
 class VehicleRequest(Document):
 	# begin: auto-generated types
@@ -67,6 +68,12 @@ class VehicleRequest(Document):
 	def on_submit(self):
 		self.check_vehicle()
 		notify_workflow_states(self)
+		self.notify_employee()
+
+	def on_cancel(self):
+		self.check_vehicle()
+		notify_workflow_states(self)
+		self.notify_employee()
 
 	def check_duplicate_entry(self):
 		data = frappe.db.sql("""
@@ -86,7 +93,7 @@ class VehicleRequest(Document):
 	def calculate_time(self):
 		time = time_diff(self.to_date, self.from_date)
 		self.total_days_and_hours=time
-		return time  
+		return time
 
 	def fetch_departrure_time(self):
 		if self.workflow_state == "Waiting Approval":
@@ -96,6 +103,61 @@ class VehicleRequest(Document):
 	def  check_date(self):
 		if self.from_date > self.to_date:
 			frappe.throw("From Date cannot be before than To Date")
+
+	def notify_employee(self):
+			driver_email = None
+			if self.driver:
+				try:
+					driver_email = get_employee_email(self.driver)
+				except Exception:
+					pass
+
+			if not driver_email:
+				return
+
+			parent_doc = frappe.get_doc("Vehicle Request", self.name)
+			args = parent_doc.as_dict()
+
+			template = frappe.db.get_single_value("HR Settings", "vehicle_request_status_notification_template")
+			if not template:
+				frappe.msgprint(_("Please set default template for Leave Status Notification in HR Settings."))
+				return
+			email_template = frappe.get_doc("Email Template", template)
+			message = frappe.render_template(email_template.response_, args)
+
+			# Send to driver only
+			self.notify(
+				{
+					"message": message,
+					"message_to": driver_email,
+					"subject": email_template.subject,
+					"notify": "driver",
+				}
+			)
+
+	def notify(self, args):
+		args = frappe._dict(args)
+		# args -> message, message_to, subjects
+		if cint(self.follow_via_email):
+			contact = args.message_to
+			if not isinstance(contact, list):
+				if not args.notify == "employee":
+					contact = frappe.get_doc("User", contact).email or contact
+
+			sender = dict()
+			sender["email"] = frappe.get_doc("User", frappe.session.user).email
+			sender["full_name"] = get_fullname(sender["email"])
+
+			try:
+				frappe.sendmail(
+					recipients=contact,
+					sender=sender["email"],
+					subject=args.subject,
+					message=args.message,
+				)
+				frappe.msgprint(_("Email sent to {0}").format(contact))
+			except frappe.OutgoingEmailError:
+				pass
 
 @frappe.whitelist()  
 def check_form_date_and_to_date(from_date, to_date):
