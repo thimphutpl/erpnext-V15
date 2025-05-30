@@ -54,7 +54,7 @@ class VehicleRequest(Document):
 	# end: auto-generated types
 	def validate(self):
 		# validate_workflow_states(self)
-		notify_workflow_states(self)
+		notify_workflow_states(self)		
 		self.check_duplicate_entry()
 		self.calculate_time()
 		self.check_date()
@@ -64,10 +64,10 @@ class VehicleRequest(Document):
 				frappe.throw("Kilometer reading must be greater than previous kilometer reading.")
 		if self.workflow_state != "Approved":
 			notify_workflow_states(self)
+			
 
 	def on_submit(self):
 		self.check_vehicle()
-		notify_workflow_states(self)
 		self.notify_employee()
 
 	def on_cancel(self):
@@ -138,26 +138,25 @@ class VehicleRequest(Document):
 	def notify(self, args):
 		args = frappe._dict(args)
 		# args -> message, message_to, subjects
-		if cint(self.follow_via_email):
-			contact = args.message_to
-			if not isinstance(contact, list):
-				if not args.notify == "employee":
-					contact = frappe.get_doc("User", contact).email or contact
+		contact = args.message_to
+		if not isinstance(contact, list):
+			if not args.notify == "employee":
+				contact = frappe.get_doc("User", contact).email or contact
 
-			sender = dict()
-			sender["email"] = frappe.get_doc("User", frappe.session.user).email
-			sender["full_name"] = get_fullname(sender["email"])
+		sender = dict()
+		sender["email"] = frappe.get_doc("User", frappe.session.user).email
+		sender["full_name"] = get_fullname(sender["email"])
 
-			try:
-				frappe.sendmail(
-					recipients=contact,
-					sender=sender["email"],
-					subject=args.subject,
-					message=args.message,
-				)
-				frappe.msgprint(_("Email sent to {0}").format(contact))
-			except frappe.OutgoingEmailError:
-				pass
+		try:
+			frappe.sendmail(
+				recipients=contact,
+				sender=sender["email"],
+				subject=args.subject,
+				message=args.message,
+			)
+			frappe.msgprint(_("Email sent to {0}").format(contact))
+		except frappe.OutgoingEmailError:
+			pass
 
 @frappe.whitelist()  
 def check_form_date_and_to_date(from_date, to_date):
