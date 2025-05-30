@@ -29,7 +29,7 @@ def get_data(filters):
 			FROM(
 			SELECT ar.item_code, ar.ref_doc, ar.cost_center, (select distinct pr.warehouse from `tabPurchase Receipt Item` pr where pr.name = ar.child_ref) as warehouse,
 				SUM(ar.qty) received_qty,
-				(SELECT SUM(pri.amount) from `tabPurchase Receipt Item` pri where pri.name = ar.child_ref) received_amount,
+				SUM((SELECT SUM(pri.base_rate*pri.received_qty) from `tabPurchase Receipt Item` pri join `tabPurchase Receipt` pr on pri.parent = pr.name where pri.name = ar.child_ref and pr.branch = ar.branch)) received_amount,
 				IFNULL((SELECT SUM(ai.qty)
 					FROM `tabAsset Issue Details` ai
 					WHERE ai.item_code = ar.item_code
