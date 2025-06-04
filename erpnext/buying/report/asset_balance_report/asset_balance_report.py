@@ -68,7 +68,7 @@ def get_data(filters):
 			FROM(
 			SELECT ar.item_code, ar.existing_pr_reference as existing_pr, ar.cost_center, ar.warehouse,
 				SUM(ar.qty) received_qty,
-				ar.asset_rate*ar.qty received_amount,
+				SUM(ar.asset_rate*ar.qty) as received_amount,
 				IFNULL((SELECT SUM(ai.qty)
 					FROM `tabAsset Issue Details` ai
 					WHERE ai.item_code = ar.item_code
@@ -80,9 +80,10 @@ def get_data(filters):
 				IFNULL((SELECT SUM(ai.amount)
 					FROM `tabAsset Issue Details` ai
 					WHERE ai.item_code = ar.item_code
-					AND ai.issued_date BETWEEN '{from_date}' AND '{to_date}' 
-					AND ai.asset_received_entries = ar.name
+					AND ai.issued_date BETWEEN '{from_date}' AND '{to_date}'
+					AND ai.branch = ar.branch
 					AND ai.docstatus = 1
+					AND ai.is_existing_asset =1
 					),0) issued_amount
 			FROM `tabAsset Received Entries` ar
 			WHERE ar.received_date BETWEEN '{from_date}' AND '{to_date}'
