@@ -998,7 +998,7 @@
  "image_field": "image",
  "is_tree": 1,
  "links": [],
- "modified": "2025-05-09 10:46:58.175351",
+ "modified": "2025-06-04 10:13:28.644633",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee",
@@ -1040,7 +1040,7 @@
    "write": 1
   }
  ],
- "search_fields": "employee_name, company",
+ "search_fields": "employee_name, company,designation",
  "show_name_in_global_search": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
