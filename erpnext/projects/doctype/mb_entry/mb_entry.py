@@ -56,6 +56,11 @@ class MBEntry(AccountsController):
 		self.set_status()
 
 	def on_cancel(self):
+		self.ignore_linked_doctypes = (
+			"GL Entry",
+			"Payment Ledger Entry",
+			"Stock Ledger Entry",
+		)
 		self.update_boq()
 		self.make_gl_entries()
 			
