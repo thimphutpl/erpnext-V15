@@ -5,28 +5,36 @@
 {% block content %}
 <main>
 	{% if homepage.hero_section_based_on == 'Default' %}
-	<section class="hero-section border-bottom {%if homepage.hero_image%}hero-image{%endif%}"
-		{% if homepage.hero_image %}
-		style="background-image: url('{{ homepage.hero_image }}');"
-		{%- endif %}
-	>
-		<div class="container py-5">
-			<h1 class="d-none d-sm-block display-4">{{ homepage.tag_line }}</h1>
-			<h1 class="d-block d-sm-none">{{ homepage.tag_line }}</h1>
-			<h2 class="d-none d-sm-block">{{ homepage.description }}</h2>
-			<h3 class="d-block d-sm-none">{{ homepage.description }}</h3>
+	<div style="float: center; width:100%; height:100%;">
+		<p style="text-align:center">WELLCOME TO GYALSUNG INFRA SMART ERP SYSTEM</p>
+		<div style="float: left; width:10%; height:100%;" > 
+			<div>
+				<!-- <h3> {{ homepage.tag_line }}</h3> -->
+				<br><br><br><br><br><br><br><br><br><br>
+				<br><br><br><br><br><br><br><br><br><br>
+				<!-- <h4>{{ homepage.description }}</h4> -->
+			</div>
 		</div>
-
-	</section>
+		<div style="float: right; width:80%; height:100%;"> 
+			<section class="hero-section border-bottom {%if homepage.hero_image%}hero-image{%endif%}"
+				{% if homepage.hero_image %}
+					style="background-image: url('{{ homepage.hero_image }}'); width:75%; height:100%;"
+				{%- endif %}
+				>
+			</section>
+			<h3 style="color: #696969 ;float:left;"> {{ homepage.tag_line }}</h3>
+			<h5 style="color: #696969; float:right; margin-right:30%;">{{ homepage.description }}</h5>
+		</div>
+	</div>
 	{% elif homepage.hero_section_based_on == 'Slideshow' and slideshow %}
 	<section class="hero-section">
 		{% include "templates/includes/slideshow.html" %}
 	</section>
-	{% elif homepage.hero_section_based_on == 'Homepage Section' %}
+	<!-- {% elif homepage.hero_section_based_on == 'Homepage Section' %}
 		{{ render_homepage_section(homepage.hero_section_doc) }}
-	{% endif %}
+	{% endif %} -->
 
-	{% if homepage.products %}
+	<!-- {% if homepage.products %}
 	<section class="container section-products my-5">
 		<h3>{{ _('Products') }}</h3>
 
@@ -44,9 +52,9 @@
 			{% endfor %}
 		</div>
 	</section>
-	{% endif %}
+	{% endif %} -->
 
-	{% if blogs %}
+	<!-- {% if blogs %}
 	<section class="container my-5">
 		<h3>{{ _('Publications') }}</h3>
 
@@ -67,10 +75,10 @@
 			{% endfor %}
 		</div>
 	</section>
-	{% endif %}
+	{% endif %} -->
 
-	{% for section in homepage_sections %}
+	<!-- {% for section in homepage_sections %}
 		{{ render_homepage_section(section) }}
-	{% endfor %}
+	{% endfor %} -->
 </main>
 {% endblock %}
