@@ -181,6 +181,7 @@ def get_imprest_recoup_entries(filters):
 			WHERE
 				ir.docstatus = 1
 				AND ir.posting_date <= %(report_date)s
+				AND ir.expense_account = %(account)s
 				AND b.branch in ('GI - Head Office','GI - Liaision Office Pling','GI - Liaison Office Sjongkhar','GI - Liaison Office Gelephu') 
 				AND IFNULL(ir.clearance_date, '4000-01-01') > %(report_date)s
 		""", filters, as_dict=1)
