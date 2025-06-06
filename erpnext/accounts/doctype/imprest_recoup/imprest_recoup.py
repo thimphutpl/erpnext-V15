@@ -35,6 +35,7 @@ class ImprestRecoup(StockController):
 		company: DF.Link
 		cost_center: DF.Link
 		dispatch: DF.Data | None
+		expense_account: DF.Link | None
 		final_je: DF.Data | None
 		final_settlement: DF.Literal["", "Yes", "No"]
 		imprest_advance_list: DF.Table[ImprestAdvanceItem]

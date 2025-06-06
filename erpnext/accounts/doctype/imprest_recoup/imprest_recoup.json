@@ -10,6 +10,7 @@
   "title",
   "branch",
   "cost_center",
+  "expense_account",
   "column_break_goqi",
   "company",
   "imprest_type",
@@ -300,12 +301,20 @@
    "fieldname": "pay_torecd_from",
    "fieldtype": "Data",
    "label": "Pay To/Recd From"
+  },
+  {
+   "fetch_from": "branch.expense_bank_account",
+   "fieldname": "expense_account",
+   "fieldtype": "Link",
+   "label": "Expense Account",
+   "options": "Account",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-02-07 11:54:50.661247",
+ "modified": "2025-06-06 15:01:45.796466",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Imprest Recoup",
