@@ -275,12 +275,12 @@ class CustomWorkflow:
 			vars(self.doc)[self.doc_approver[1]] = officiating[1] if officiating else self.supervisors_supervisor[1]
 			vars(self.doc)[self.doc_approver[2]] = officiating[2] if officiating else self.supervisors_supervisor[2]
 		elif approver_type == "report to":
-			officiating = get_officiating_employee(self.report_to[3])
+			officiating = get_officiating_employee(self.reports_to[3])
 			if officiating:
 				officiating = frappe.db.get_value("Employee", officiating[0].officiate, self.field_list)
-			vars(self.doc)[self.doc_approver[0]] = officiating[0] if officiating else self.report_to[0]
-			vars(self.doc)[self.doc_approver[1]] = officiating[1] if officiating else self.report_to[1]
-			vars(self.doc)[self.doc_approver[2]] = officiating[2] if officiating else self.report_to[2]
+			vars(self.doc)[self.doc_approver[0]] = officiating[0] if officiating else self.reports_to[0]
+			vars(self.doc)[self.doc_approver[1]] = officiating[1] if officiating else self.reports_to[1]
+			vars(self.doc)[self.doc_approver[2]] = officiating[2] if officiating else self.reports_to[2]
 		
 		elif approver_type == "Fleet Manager":
 			officiating = get_officiating_employee(self.fleet_mto[3])
