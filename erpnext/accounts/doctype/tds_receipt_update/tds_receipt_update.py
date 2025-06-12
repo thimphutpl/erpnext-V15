@@ -165,7 +165,8 @@ class TDSReceiptUpdate(Document):
 					FROM `tabLeave Encashment` AS t 
 						WHERE t.docstatus = 1 
 						AND t.encashment_date BETWEEN '{0}' AND '{1}' 
-						AND t.encashment_tax > 0 
+						AND t.encashment_tax > 0
+						AND t.branch = '{2}'
 						AND NOT EXISTS (SELECT 1 
 					FROM `tabTDS Receipt Entry` AS b 
 						WHERE b.invoice_no = t.name)
@@ -187,6 +188,7 @@ class TDSReceiptUpdate(Document):
 						AND t.posting_date BETWEEN '{0}' 
 						AND '{1}'
 						AND t1.tax_amount > 0
+						AND t.branch = '{2}'
 						AND NOT EXISTS (SELECT 1 
 					FROM `tabTDS Receipt Entry` AS b 
 						WHERE b.invoice_no = t.name)
