@@ -169,7 +169,7 @@ class TDSReceiptUpdate(Document):
 						AND NOT EXISTS (SELECT 1 
 					FROM `tabTDS Receipt Entry` AS b 
 						WHERE b.invoice_no = t.name)
-						""".format(self.from_date, self.to_date)
+						""".format(self.from_date, self.to_date, self.branch)
 				query += """
 					UNION SELECT 
 						"Employee Benefit Claim" as invoice_type, 
@@ -190,7 +190,7 @@ class TDSReceiptUpdate(Document):
 						AND NOT EXISTS (SELECT 1 
 					FROM `tabTDS Receipt Entry` AS b 
 						WHERE b.invoice_no = t.name)
-						""".format(self.from_date, self.to_date)
+						""".format(self.from_date, self.to_date, self.branch)
 				entries = frappe.db.sql(query,as_dict=1)
 			else:
 				if not self.branch:
