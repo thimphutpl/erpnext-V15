@@ -51,6 +51,8 @@ def get_condition(filters):
 		conditions.append("ti.party = '{}'".format(filters.get("supplier")))
 	if filters.get("customer") and filters.get("party_type") == "Customer":
 		conditions.append("ti.party = '{}'".format(filters.get("supplier")))
+	if filters.get("branch"):
+		conditions.append("t.branch = '{}'".format(filters.get("branch")))
 	if filters.get("from_date") > filters.get("to_date"):
 		frappe.throw("To Date cannot be greater than From Date")
 	if filters.get("from_date") and filters.get("to_date"):
@@ -122,22 +124,34 @@ def calculate_total(data):
 def get_datax(filters):
 	query = query1 = ''
 	je_entries = []
+	branch_cond = ""
+	if filters.get("branch"):
+		branch_cond = " AND a.branch = '{}' ".format(filters.branch)
+		branch_cond_pe = " AND t.branch = '{}' ".format(filters.branch)
+		branch_cond_dp = " AND d.branch = '{}' ".format(filters.branch)
+		branch_cond_btl = " AND b.branch = '{}' ".format(filters.branch)
+		branch_cond_bd = " AND i.branch = '{}' ".format(filters.branch)
+	else:
+		branch_cond = branch_cond_pe = branch_cond_dp = branch_cond_btl = branch_cond_bd = ""
+
 	if filters.customer_type == "Supplier" and filters.supplier:
 		if frappe.db.get_single_value("Accounts Settings", "book_purchase_tax_charges") == "Purchase Invoice":
 			query = """SELECT a.posting_date, t.total as tds_taxable_amount, round(t.rate) as tds_rate, t.tax_amount as tds_amount,
-							b.cheque_number, b.cheque_date, 
-							b.receipt_number, b.receipt_date 
-							FROM `tabPurchase Invoice` AS a
-							inner join `tabPurchase Taxes and Charges` t 
-							on a.name = t.parent
-							inner join `tabRRCO Receipt Entries` AS b
-							on a.name = b.purchase_invoice
-							AND a.posting_date BETWEEN '{0}' AND '{1}'
-							AND a.supplier = '{2}'
-							AND a.currency = '{3}' """.format(filters.from_date, filters.to_date, filters.supplier, filters.currency)
+						b.cheque_number, b.cheque_date, 
+						b.receipt_number, b.receipt_date 
+						FROM `tabPurchase Invoice` AS a
+						inner join `tabPurchase Taxes and Charges` t 
+						on a.name = t.parent
+						inner join `tabRRCO Receipt Entries` AS b
+						on a.name = b.purchase_invoice
+						AND a.posting_date BETWEEN '{0}' AND '{1}'
+						AND a.supplier = '{2}'
+						AND a.currency = '{3}'
+						{branch_cond}
+						""".format(filters.from_date, filters.to_date, filters.supplier, filters.currency, branch_cond=branch_cond)
 		else:
 			query = """select t.posting_date,
-					case when t.currency != "BTN" 
+					case when t.currency != \"BTN\" 
 						then t1.base_total + t1.base_tax_amount 
 						else t1.total end 
 					as tds_taxable_amount,
@@ -155,15 +169,17 @@ def get_datax(filters):
 					on t.name = b.purchase_invoice
 					AND t.posting_date BETWEEN '{0}' AND '{1}'
 					AND t.party = '{2}'
-					AND t.currency = '{3}'""".format(filters.from_date, filters.to_date, filters.supplier, filters.currency)
+					AND t.currency = '{3}'
+					{branch_cond_pe}
+					""".format(filters.from_date, filters.to_date, filters.supplier, filters.currency, branch_cond_pe=branch_cond_pe)
 		query1 = """SELECT  
 						d.posting_date, d.name,
-						case when d.currency != "BTN"
+						case when d.currency != \"BTN\"
 							then di.taxable_amount
 							else di.base_taxable_amount end 
 						as tds_taxable_amount, 
 						d.tds_percent as tds_rate,  
-						case when d.currency != "BTN"
+						case when d.currency != \"BTN\"
 							then di.tds_amount
 							else di.base_tds_amount end
 						as tds_amount,
@@ -180,43 +196,49 @@ def get_datax(filters):
 						di.party = '{2}'
 					AND EXISTS(select 1 from `tabRRCO Receipt Entries` rr where rr.purchase_invoice = d.name and supplier = '{2}')
 					AND d.currency = '{3}'
-					""".format(filters.from_date, filters.to_date, filters.supplier, filters.currency)
+					{branch_cond_dp}
+					""".format(filters.from_date, filters.to_date, filters.supplier, filters.currency, branch_cond_dp=branch_cond_dp)
 		je_entries = get_journal_entries(filters)
 	elif filters.customer_type == "Customer" and filters.customer:
 		query = """SELECT 
-						b.posting_date,i.taxable_amount as tds_taxable_amount,
-						 i.tds_percent as tds_rate,	i.tds_amount, 
-						rr.cheque_number,  rr.cheque_date, rr.receipt_number, rr.receipt_date  
-					FROM `tabBTL Sales` b 
-					INNER JOIN 
-						`tabBTL Sales Item` i ON b.name = i.parent
-					INNER JOIN
-						`tabRRCO Receipt Entries` AS rr ON rr.purchase_invoice = b.name
-					WHERE b.required_commission = 1 
-					AND b.docstatus = 1
-					AND b.posting_date BETWEEN '{0}' AND '{1}'
-					AND i.tds_amount > 0 
-					AND rr.supplier = '{2}'
-					AND b.customer = '{2}'
-		""".format(str(filters.from_date), str(filters.to_date), filters.customer)
+					b.posting_date,i.taxable_amount as tds_taxable_amount,
+					 i.tds_percent as tds_rate,\ti.tds_amount, 
+					rr.cheque_number,  rr.cheque_date, rr.receipt_number, rr.receipt_date  
+				FROM `tabBTL Sales` b 
+				INNER JOIN 
+					`tabBTL Sales Item` i ON b.name = i.parent
+				INNER JOIN
+					`tabRRCO Receipt Entries` AS rr ON rr.purchase_invoice = b.name
+				WHERE b.required_commission = 1 
+				AND b.docstatus = 1
+				AND b.posting_date BETWEEN '{0}' AND '{1}'
+				AND i.tds_amount > 0 
+				AND rr.supplier = '{2}'
+				AND b.customer = '{2}'
+				{branch_cond_btl}
+		""".format(str(filters.from_date), str(filters.to_date), filters.customer, branch_cond_btl=branch_cond_btl)
 		query1 = """SELECT i.transaction_date, i.payable_amount as tds_taxable_amount, 
-							2 as tds_rate, i.tds as tds_amount, rr.cheque_number,  
-							rr.cheque_date, rr.receipt_number, rr.receipt_date  
-					FROM `tabBilling Data` i 
-					INNER JOIN
-					`tabRRCO Receipt Entries` AS rr ON rr.purchase_invoice = i.parent 
-					WHERE i.parenttype = 'Airtime Collections'
-					AND i.docstatus = 1
-					AND i.tds > 0
-					AND i.transaction_date BETWEEN '{0}' AND '{1}'
-					AND rr.supplier = '{2}'
-					AND i.customer = '{2}'
-		""".format(str(filters.from_date), str(filters.to_date), filters.customer)
+						2 as tds_rate, i.tds as tds_amount, rr.cheque_number,  
+						rr.cheque_date, rr.receipt_number, rr.receipt_date  
+				FROM `tabBilling Data` i 
+				INNER JOIN
+				`tabRRCO Receipt Entries` AS rr ON rr.purchase_invoice = i.parent 
+				WHERE i.parenttype = 'Airtime Collections'
+				AND i.docstatus = 1
+				AND i.tds > 0
+				AND i.transaction_date BETWEEN '{0}' AND '{1}'
+				AND rr.supplier = '{2}'
+				AND i.customer = '{2}'
+				{branch_cond_bd}
+		""".format(str(filters.from_date), str(filters.to_date), filters.customer, branch_cond_bd=branch_cond_bd)
 	if not query:
 		return []
 	return frappe.db.sql(query,as_dict=1) + frappe.db.sql(query1,as_dict=1) + je_entries
 
 def get_journal_entries(filters):
+	branch_cond = ""
+	if filters.get("branch"):
+		branch_cond = " AND t.branch = '{}' ".format(filters.branch)
 	return frappe.db.sql("""
 			SELECT t.posting_date, t2.debit as tds_taxable_amount,
 				(CASE 
@@ -242,9 +264,10 @@ def get_journal_entries(filters):
 			AND t.docstatus = 1
 			AND t1.credit > 0
 			AND t2.party = "{supplier}"
+			{branch_cond}
 			AND EXISTS(SELECT 1
 				FROM `tabSingles` s
 				WHERE s.doctype = 'Accounts Settings'
 				AND s.field IN ('tds_2_account', 'tds_3_account', 'tds_5_account', 'tds_10_account')
 				AND t1.account = s.value)
-		""".format(supplier = filters.supplier, from_date = str(filters.from_date), to_date = str(filters.to_date)), as_dict=True)
+		""".format(supplier = filters.supplier, from_date = str(filters.from_date), to_date = str(filters.to_date), branch_cond=branch_cond), as_dict=True)

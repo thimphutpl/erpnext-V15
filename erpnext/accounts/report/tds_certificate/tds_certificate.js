@@ -88,6 +88,13 @@ frappe.query_reports["TDS Certificate"] = {
 			},
 		},
 		{
+			"fieldname": "branch",
+			"label": __("Branch"),
+			"fieldtype": "Link",
+			"options": "Branch",
+			"default": frappe.defaults.get_user_default("branch")
+		},
+		{
 			"fieldname": "from_date",
 			"label": __("From Date"),
 			"fieldtype": "Date",
