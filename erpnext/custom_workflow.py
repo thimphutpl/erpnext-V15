@@ -741,9 +741,8 @@ class CustomWorkflow:
 				frappe.throw("Only {} can Forward this document".format(self.doc.approver))
 			self.set_approver("Supervisor")
 		
-		elif self.new_state.lower() in ("Waiting CEO Approval".lower()):
-			if self.doc.approver != frappe.session.user:
-				frappe.throw("Only {} can Forward this document".format(self.doc.approver))
+		
+			
 			# self.set_approver("CEO")
 
 		elif self.new_state.lower() in ("Approved".lower()):
