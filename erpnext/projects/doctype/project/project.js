@@ -64,6 +64,32 @@ frappe.ui.form.on("Project", {
 				},
 			};
 		});
+		frm.doc.task_material_item?.forEach(function (row) {
+			if (row.reference_name) {
+				frappe.db.get_value("Stock Entry", row.reference_name, "docstatus")
+					.then(r => {
+						if (r.message && r.message.docstatus === 2) {  // Cancelled
+							frappe.db.get_list("Stock Entry", {
+								filters: {
+									amended_from: row.reference_name,
+									docstatus: 1
+								},
+								limit: 1
+							}).then(res => {
+								if (res && res.length > 0) {
+									let amended = res[0].name;
+									frappe.model.set_value(row.doctype, row.name, "reference_name", amended);
+									frappe.msgprint({
+										title: "Reference Updated",
+										message: `Replaced cancelled Stock Entry ${row.reference_name} with ${amended} in Task Material Item.`,
+										indicator: "orange"
+									});
+								}
+							});
+						}
+					});
+			}
+		});		
 	},
 
 	refresh: function (frm) {
