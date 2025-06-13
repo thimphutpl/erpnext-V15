@@ -1164,6 +1164,8 @@ class AccountsController(TransactionBase):
 				"reference_row": d.reference_row,
 				"remarks": d.remarks,
 				"advance_amount": flt(d.amount),
+				"cost_center":d.cost_center,
+				"advance_account":d.advance_account,
 				"allocated_amount": allocated_amount,
 				"ref_exchange_rate": flt(d.exchange_rate),  # exchange_rate of advance entry
 			}
@@ -1182,6 +1184,7 @@ class AccountsController(TransactionBase):
 			amount_field = "credit_in_account_currency"
 			order_field = "sales_order"
 			order_doctype = "Sales Order"
+			cost_center = self.cost_center
 			party_account.append(self.debit_to)
 		else:
 			party_type = "Supplier"
@@ -1189,6 +1192,7 @@ class AccountsController(TransactionBase):
 			amount_field = "debit_in_account_currency"
 			order_field = "purchase_order"
 			order_doctype = "Purchase Order"
+			cost_center = self.cost_center
 			party_account.append(self.credit_to)
 
 		party_account.extend(
@@ -1202,7 +1206,7 @@ class AccountsController(TransactionBase):
 		)
 
 		payment_entries = get_advance_payment_entries_for_regional(
-			party_type, party, party_account, order_doctype, order_list, include_unallocated
+			party_type, party, party_account, order_doctype, order_list, include_unallocated, cost_center
 		)
 
 		res = journal_entries + payment_entries
@@ -2696,6 +2700,8 @@ def get_advance_journal_entries(
 			(journal_acc.name).as_("reference_row"),
 			(journal_acc.reference_name).as_("against_order"),
 			(journal_acc.exchange_rate),
+			(journal_acc.account).as_("advance_account"),
+			(journal_acc.cost_center),
 		)
 		.where(
 			journal_acc.account.isin(party_account)
@@ -2743,6 +2749,7 @@ def get_advance_payment_entries(
 	order_doctype,
 	order_list=None,
 	include_unallocated=True,
+	cost_center = None,
 	against_all_orders=False,
 	limit=None,
 	condition=None,
@@ -2770,7 +2777,9 @@ def get_advance_payment_entries(
 		q = q.where(payment_ref.reference_doctype == order_doctype)
 		if order_list:
 			q = q.where(payment_ref.reference_name.isin(order_list))
-
+		if cost_center:
+			q = q.where(payment_entry.cost_center == cost_center)
+		# frappe.throw(str(q))
 		allocated = list(q.run(as_dict=True))
 		payment_entries += allocated
 	if include_unallocated:
@@ -2783,6 +2792,8 @@ def get_advance_payment_entries(
 		)
 		q = q.select((payment_entry.unallocated_amount).as_("amount"))
 		q = q.where(payment_entry.unallocated_amount > 0)
+		if cost_center:
+			q = q.where(payment_entry.cost_center == cost_center)
 
 		unallocated = list(q.run(as_dict=True))
 		payment_entries += unallocated
@@ -2807,6 +2818,7 @@ def get_common_query(
 			(payment_entry.name).as_("reference_name"),
 			payment_entry.posting_date,
 			(payment_entry.remarks).as_("remarks"),
+			payment_entry.cost_center,
 		)
 		.where(payment_entry.payment_type == payment_type)
 		.where(payment_entry.party_type == party_type)
@@ -2816,11 +2828,11 @@ def get_common_query(
 
 	if payment_type == "Receive":
 		q = q.select((payment_entry.paid_from_account_currency).as_("currency"))
-		q = q.select(payment_entry.paid_from)
+		q = q.select((payment_entry.paid_from).as_("advance_account"))
 		q = q.where(payment_entry.paid_from.isin(party_account))
 	else:
 		q = q.select((payment_entry.paid_to_account_currency).as_("currency"))
-		q = q.select(payment_entry.paid_to)
+		q = q.select((payment_entry.paid_to).as_("advance_account"))
 		q = q.where(payment_entry.paid_to.isin(party_account))
 
 	if payment_type == "Receive":

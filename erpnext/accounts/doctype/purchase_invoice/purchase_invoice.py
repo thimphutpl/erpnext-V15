@@ -1003,6 +1003,8 @@ class PurchaseInvoice(BuyingController):
 
 		self.make_tax_gl_entries(gl_entries)
 		self.make_internal_transfer_gl_entries(gl_entries)
+		""" custom Advance gl entry, for the purpose of Advances """
+		self.make_advance_gl_entry(gl_entries)
 
 		gl_entries = make_regional_gl_entries(gl_entries, self)
 
@@ -1013,6 +1015,25 @@ class PurchaseInvoice(BuyingController):
 		self.make_gle_for_rounding_adjustment(gl_entries)
 		return gl_entries
 
+	# make advance gl entry customisation for advance incorporation by paying advance in different accounts
+	def make_advance_gl_entry(self, gl_entries):
+		for a in self.get("advances"):
+			if flt(a.allocated_amount) and a.advance_account:
+				advance_account_currency = get_account_currency(a.advance_account)
+			allocated_amount = round(flt(a.allocated_amount), 2)
+			
+			gl_entries.append(
+				self.get_gl_dict({
+					"account": a.advance_account,
+					"against": self.supplier,
+					"party_type": "Supplier",
+					"party": self.supplier,
+					"credit": allocated_amount,
+					"credit_in_account_currency": allocated_amount, 
+					"cost_center": a.cost_center,
+				},advance_account_currency)
+			)
+	
 	def check_asset_cwip_enabled(self):
 		# Check if there exists any item with cwip accounting enabled in it's asset category
 		for item in self.get("items"):
@@ -1033,7 +1054,7 @@ class PurchaseInvoice(BuyingController):
 			if (self.base_rounding_adjustment and self.base_rounded_total)
 			else self.base_grand_total,
 			self.precision("base_grand_total"),
-		)
+		) - flt(self.total_advance)
 
 		if grand_total and not self.is_internal_transfer():
 			against_voucher = self.name
