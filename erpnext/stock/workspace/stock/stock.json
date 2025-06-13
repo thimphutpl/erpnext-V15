@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"LkqrpJHM9X\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Quick Access</b></span>\",\"col\":12}},{\"id\":\"OR8PYiYspy\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Item\",\"col\":3}},{\"id\":\"KP1A22WjDl\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Material Request\",\"col\":3}},{\"id\":\"0EYKOrx6U1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Stock Entry\",\"col\":3}},{\"id\":\"cqotiphmhZ\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Purchase Receipt\",\"col\":3}},{\"id\":\"Xhjqnm-JxZ\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Delivery Note\",\"col\":3}},{\"id\":\"yxCx6Tay4Z\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Stock Ledger\",\"col\":3}},{\"id\":\"o3sdEnNy34\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Stock Balance\",\"col\":3}},{\"id\":\"m9O0HUUDS5\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Dashboard\",\"col\":3}},{\"id\":\"NwWcNC_xNj\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Learn Inventory Management\",\"col\":3}},{\"id\":\"3SmmwBbOER\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Masters &amp; Reports</b></span>\",\"col\":12}},{\"id\":\"OAGNH9njt7\",\"type\":\"card\",\"data\":{\"card_name\":\"Items Catalogue\",\"col\":4}},{\"id\":\"jF9eKz0qr0\",\"type\":\"card\",\"data\":{\"card_name\":\"Stock Transactions\",\"col\":4}},{\"id\":\"tyTnQo-MIS\",\"type\":\"card\",\"data\":{\"card_name\":\"Stock Reports\",\"col\":4}},{\"id\":\"dJaJw6YNPU\",\"type\":\"card\",\"data\":{\"card_name\":\"Settings\",\"col\":4}},{\"id\":\"7oM7hFL4v8\",\"type\":\"card\",\"data\":{\"card_name\":\"Tools\",\"col\":4}},{\"id\":\"ve3L6ZifkB\",\"type\":\"card\",\"data\":{\"card_name\":\"Key Reports\",\"col\":4}}]",
+ "content": "[{\"id\":\"LkqrpJHM9X\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Quick Access</b></span>\",\"col\":12}},{\"id\":\"m9O0HUUDS5\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Dashboard\",\"col\":3}},{\"id\":\"3SmmwBbOER\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Masters &amp; Reports</b></span>\",\"col\":12}},{\"id\":\"OAGNH9njt7\",\"type\":\"card\",\"data\":{\"card_name\":\"Items Catalogue\",\"col\":4}},{\"id\":\"jF9eKz0qr0\",\"type\":\"card\",\"data\":{\"card_name\":\"Stock Transactions\",\"col\":4}},{\"id\":\"tyTnQo-MIS\",\"type\":\"card\",\"data\":{\"card_name\":\"Stock Reports\",\"col\":4}},{\"id\":\"dJaJw6YNPU\",\"type\":\"card\",\"data\":{\"card_name\":\"Settings\",\"col\":4}},{\"id\":\"7oM7hFL4v8\",\"type\":\"card\",\"data\":{\"card_name\":\"Tools\",\"col\":4}},{\"id\":\"ve3L6ZifkB\",\"type\":\"card\",\"data\":{\"card_name\":\"Key Reports\",\"col\":4}}]",
  "creation": "2020-03-02 15:43:10.096528",
  "custom_blocks": [],
  "docstatus": 0,
@@ -125,144 +125,6 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Key Reports",
-   "link_count": 7,
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "dependencies": "Stock Entry",
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Stock Analytics",
-   "link_count": 0,
-   "link_to": "Stock Analytics",
-   "link_type": "Report",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "dependencies": "Delivery Note",
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Delivery Note Trends",
-   "link_count": 0,
-   "link_to": "Delivery Note Trends",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "dependencies": "Purchase Receipt",
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Purchase Receipt Trends",
-   "link_count": 0,
-   "link_to": "Purchase Receipt Trends",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "dependencies": "Sales Order",
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Sales Order Analysis",
-   "link_count": 0,
-   "link_to": "Sales Order Analysis",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "dependencies": "Purchase Order",
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Purchase Order Analysis",
-   "link_count": 0,
-   "link_to": "Purchase Order Analysis",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "dependencies": "Bin",
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Item Shortage Report",
-   "link_count": 0,
-   "link_to": "Item Shortage Report",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "dependencies": "Batch",
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Batch-Wise Balance History",
-   "link_count": 0,
-   "link_to": "Batch-Wise Balance History",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Settings",
-   "link_count": 4,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "dependencies": "",
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Stock Settings",
-   "link_count": 0,
-   "link_to": "Stock Settings",
-   "link_type": "DocType",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "dependencies": "",
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Warehouse",
-   "link_count": 0,
-   "link_to": "Warehouse",
-   "link_type": "DocType",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "dependencies": "",
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Unit of Measure (UOM)",
-   "link_count": 0,
-   "link_to": "UOM",
-   "link_type": "DocType",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "dependencies": "",
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Brand",
-   "link_count": 0,
-   "link_to": "Brand",
-   "link_type": "DocType",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
    "label": "Tools",
    "link_count": 1,
    "link_type": "DocType",
@@ -355,21 +217,10 @@
    "hidden": 0,
    "is_query_report": 0,
    "label": "Stock Transactions",
-   "link_count": 6,
+   "link_count": 2,
    "link_type": "DocType",
    "onboard": 0,
    "type": "Card Break"
-  },
-  {
-   "dependencies": "Item",
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Stock Entry",
-   "link_count": 0,
-   "link_to": "Stock Entry",
-   "link_type": "DocType",
-   "onboard": 1,
-   "type": "Link"
   },
   {
    "dependencies": "Item",
@@ -383,52 +234,21 @@
    "type": "Link"
   },
   {
-   "dependencies": "Item, Customer",
+   "dependencies": "Item",
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Delivery Note",
+   "label": "Stock Entry",
    "link_count": 0,
-   "link_to": "Delivery Note",
+   "link_to": "Stock Entry",
    "link_type": "DocType",
    "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "dependencies": "Item, Supplier",
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Purchase Receipt",
-   "link_count": 0,
-   "link_to": "Purchase Receipt",
-   "link_type": "DocType",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Purchase Order",
-   "link_count": 0,
-   "link_to": "Purchase Order",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Asset Issue Details",
-   "link_count": 0,
-   "link_to": "Asset Issue Details",
-   "link_type": "DocType",
-   "onboard": 0,
    "type": "Link"
   },
   {
    "hidden": 0,
    "is_query_report": 0,
    "label": "Stock Reports",
-   "link_count": 6,
+   "link_count": 2,
    "link_type": "DocType",
    "onboard": 0,
    "type": "Card Break"
@@ -456,50 +276,48 @@
    "type": "Link"
   },
   {
-   "dependencies": "Item",
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Stock Summary",
-   "link_count": 0,
-   "link_to": "stock-balance",
-   "link_type": "Page",
+   "label": "Settings",
+   "link_count": 1,
+   "link_type": "DocType",
    "onboard": 0,
-   "type": "Link"
+   "type": "Card Break"
   },
   {
-   "dependencies": "Item",
+   "dependencies": "",
    "hidden": 0,
-   "is_query_report": 1,
-   "label": "Stock Ageing",
+   "is_query_report": 0,
+   "label": "Stock Settings",
    "link_count": 0,
-   "link_to": "Stock Ageing",
-   "link_type": "Report",
-   "onboard": 0,
+   "link_to": "Stock Settings",
+   "link_type": "DocType",
+   "onboard": 1,
    "type": "Link"
   },
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Warehouse Wise Stock Balance",
-   "link_count": 0,
-   "link_to": "Warehouse Wise Stock Balance",
-   "link_type": "Report",
+   "label": "Key Reports",
+   "link_count": 1,
+   "link_type": "DocType",
    "onboard": 0,
-   "type": "Link"
+   "type": "Card Break"
   },
   {
+   "dependencies": "Stock Entry",
    "hidden": 0,
    "is_query_report": 1,
-   "label": "Stock Transaction Report",
+   "label": "Stock Analytics",
    "link_count": 0,
-   "link_to": "Stock Transaction Report",
+   "link_to": "Stock Analytics",
    "link_type": "Report",
-   "onboard": 0,
+   "onboard": 1,
    "type": "Link"
   }
  ],
- "modified": "2024-11-29 12:18:50.647019",
- "modified_by": "kinzang.namgyal@cdcl.bt",
+ "modified": "2025-05-28 11:01:11.273154",
+ "modified_by": "kalden.dorji@thimphutechpark.bt",
  "module": "Stock",
  "name": "Stock",
  "number_cards": [],
@@ -511,60 +329,6 @@
  "roles": [],
  "sequence_id": 18.0,
  "shortcuts": [
-  {
-   "color": "Green",
-   "format": "{}  Available",
-   "label": "Item",
-   "link_to": "Item",
-   "stats_filter": "{\n    \"disabled\" : 0\n}",
-   "type": "DocType"
-  },
-  {
-   "color": "Grey",
-   "doc_view": "List",
-   "label": "Learn Inventory Management",
-   "type": "URL",
-   "url": "https://frappe.school/courses/inventory-management?utm_source=in_app"
-  },
-  {
-   "color": "Yellow",
-   "format": "{} Pending",
-   "label": "Material Request",
-   "link_to": "Material Request",
-   "stats_filter": "{\n    \"company\": [\"like\", '%' + frappe.defaults.get_global_default(\"company\") + '%'],\n    \"status\": \"Pending\"\n}",
-   "type": "DocType"
-  },
-  {
-   "label": "Stock Entry",
-   "link_to": "Stock Entry",
-   "type": "DocType"
-  },
-  {
-   "color": "Yellow",
-   "format": "{} To Bill",
-   "label": "Purchase Receipt",
-   "link_to": "Purchase Receipt",
-   "stats_filter": "{\n    \"company\": [\"like\", '%' + frappe.defaults.get_global_default(\"company\") + '%'],\n    \"status\": \"To Bill\"\n}",
-   "type": "DocType"
-  },
-  {
-   "color": "Yellow",
-   "format": "{} To Bill",
-   "label": "Delivery Note",
-   "link_to": "Delivery Note",
-   "stats_filter": "{\n    \"company\": [\"like\", '%' + frappe.defaults.get_global_default(\"company\") + '%'],\n    \"status\": \"To Bill\"\n}",
-   "type": "DocType"
-  },
-  {
-   "label": "Stock Ledger",
-   "link_to": "Stock Ledger",
-   "type": "Report"
-  },
-  {
-   "label": "Stock Balance",
-   "link_to": "Stock Balance",
-   "type": "Report"
-  },
   {
    "label": "Dashboard",
    "link_to": "Stock",

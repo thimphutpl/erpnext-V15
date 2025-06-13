@@ -251,7 +251,7 @@ erpnext.company.setup_queries = function (frm) {
 			["default_expense_account", { root_type: "Expense" }],
 			["default_income_account", { root_type: "Income" }],
 			["round_off_account", { root_type: "Expense" }],
-			["write_off_account", { root_type: "Expense" }],
+			["write_off_account", {is_group: 0}],
 			["default_deferred_expense_account", {}],
 			["default_deferred_revenue_account", {}],
 			["default_discount_account", {}],

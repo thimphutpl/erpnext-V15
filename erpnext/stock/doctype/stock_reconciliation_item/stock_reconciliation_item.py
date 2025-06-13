@@ -17,7 +17,6 @@ class StockReconciliationItem(Document):
 		allow_zero_valuation_rate: DF.Check
 		amount: DF.Currency
 		amount_difference: DF.Currency
-		barcode: DF.Data | None
 		batch_no: DF.Link | None
 		current_amount: DF.Currency
 		current_qty: DF.Float

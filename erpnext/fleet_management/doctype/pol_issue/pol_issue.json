@@ -22,9 +22,12 @@
   "stock_uom",
   "registration_number",
   "column_break_10",
+  "issue_from",
   "tanker",
   "tank_balance",
+  "rate",
   "total_quantity",
+  "total_amount",
   "is_hsd_item",
   "section_break_3",
   "items",
@@ -69,17 +72,19 @@
    "reqd": 1
   },
   {
+   "default": "Today",
    "fieldname": "posting_date",
    "fieldtype": "Date",
    "in_list_view": 1,
    "label": "Posting Date",
-   "reqd": 1
+   "read_only": 1
   },
   {
+   "default": "Today",
    "fieldname": "posting_time",
    "fieldtype": "Time",
    "label": "Posting Time",
-   "reqd": 1
+   "read_only": 1
   },
   {
    "fieldname": "column_break_4",
@@ -121,7 +126,7 @@
    "fieldtype": "Column Break"
   },
   {
-   "depends_on": "eval:doc.is_hsd_item",
+   "depends_on": "eval:doc.is_hsd_item && doc.issue_from ==\"Tanker\"",
    "fieldname": "tanker",
    "fieldtype": "Link",
    "in_list_view": 1,
@@ -129,6 +134,7 @@
    "options": "Equipment"
   },
   {
+   "fetch_from": "branch.cost_center",
    "fieldname": "cost_center",
    "fieldtype": "Link",
    "label": "Cost Center",
@@ -138,14 +144,13 @@
   {
    "fieldname": "warehouse",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Warehouse",
-   "options": "Warehouse",
-   "reqd": 1
+   "options": "Warehouse"
   },
   {
    "fieldname": "total_quantity",
    "fieldtype": "Float",
-   "hidden": 1,
    "label": "Total Quantity",
    "read_only": 1
   },
@@ -181,9 +186,9 @@
   {
    "fieldname": "tank_balance",
    "fieldtype": "Float",
-   "hidden": 1,
    "in_list_view": 1,
-   "label": "Tank Balance"
+   "label": "Tank/Barrel Balance",
+   "read_only": 1
   },
   {
    "fieldname": "project",
@@ -192,16 +197,35 @@
    "options": "Project"
   },
   {
+   "depends_on": "eval:doc.issue_from ==\"Tanker\"",
    "fetch_from": "tanker.registration_number",
    "fieldname": "registration_number",
    "fieldtype": "Read Only",
    "label": "Registration Number"
+  },
+  {
+   "fieldname": "issue_from",
+   "fieldtype": "Select",
+   "label": "Issue From",
+   "options": "Tanker\nBarrel"
+  },
+  {
+   "fieldname": "rate",
+   "fieldtype": "Data",
+   "label": "Rate",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_amount",
+   "fieldtype": "Currency",
+   "label": "Total Amount",
+   "precision": "2"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-02-24 15:28:36.881446",
+ "modified": "2025-06-13 10:38:03.913114",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Issue",

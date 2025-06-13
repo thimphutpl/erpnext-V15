@@ -1,8 +1,9 @@
-# Copyright (c) 2023, Frappe Technologies Pvt. Ltd. and contributors
+# Copyright (c) 2025, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
 # import frappe
 from frappe.model.document import Document
+
 
 class NoteRemark(Document):
 	# begin: auto-generated types
@@ -19,7 +20,6 @@ class NoteRemark(Document):
 		employee: DF.Link | None
 		employee_name: DF.Data | None
 		forward_to: DF.Link | None
-		name: DF.Int | None
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data

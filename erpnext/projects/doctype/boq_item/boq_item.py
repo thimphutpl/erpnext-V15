@@ -22,12 +22,13 @@ class BOQItem(Document):
 		balance_rate: DF.Float
 		booked_amount: DF.Float
 		booked_quantity: DF.Float
-		boq_code: DF.Data
 		claimed_amount: DF.Float
 		claimed_quantity: DF.Float
 		currency: DF.Link | None
 		is_group: DF.Check
 		item: DF.Text
+		item_code: DF.Link
+		item_name: DF.Data | None
 		parent: DF.Data
 		parent_item: DF.Text | None
 		parentfield: DF.Data

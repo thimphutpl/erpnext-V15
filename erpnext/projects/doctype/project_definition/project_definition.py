@@ -35,7 +35,7 @@ class ProjectDefinition(Document):
 		physical_progress_weightage: DF.Percent
 		project_category: DF.Literal["", "GI Project", "DFG Project", "Other Project"]
 		project_code: DF.Data | None
-		project_code_prefix: DF.Literal["", "GI-J", "GI-K", "GI-T", "GI-P", "GI-G", "GI"]
+		project_code_prefix: DF.Literal["", "DNCP-D", "DNCP-N", "DNCP-C"]
 		project_man_days: DF.Data | None
 		project_manager: DF.Link | None
 		project_manager_designation: DF.Link | None
@@ -49,7 +49,7 @@ class ProjectDefinition(Document):
 		total_overall_project_cost: DF.Currency
 	# end: auto-generated types
 	def autoname(self):
-		self.name = "GI-"+self.project_code+" - GYALSUNG"
+		self.name = self.project_code+" - DNCP"
 
 	def validate(self):
 		self.validate_project_profile()
@@ -65,11 +65,17 @@ class ProjectDefinition(Document):
 	#added by Kinley 16/01/2025
 	@frappe.whitelist()
 	def update_project_progress(self):
-		if not self.project_category:
-			frappe.throw("Please project categoy")
+		# if not self.project_category:
+		# 	frappe.throw("Please project categoy")
 		if self.docstatus == 1:
-			for pc in frappe.db.get_all("Project Definition", {"project_category": self.project_category, "docstatus":1}, ["name"]):
-				project_man_days = overall_mandays = physical_progress_weightage = physical_progress = no_of_projects = no_of_project_definitions = 0
+			overall_mandays = frappe.db.sql("""
+									select sum(ifnull(mandays, 0)) as wqc from `tabProject`
+									""", as_dict=1)[0].wqc
+			no_of_project_definitions = frappe.db.sql("""
+									select ifnull(count(name),0) as wqc from `tabProject Definition` where docstatus = 1
+									""", as_dict=1)[0].wqc
+			for pc in frappe.db.get_all("Project Definition", {"docstatus":1}, ["name", "project_man_days"]):
+				project_man_days = physical_progress_weightage = physical_progress = no_of_projects = 0
 				contribution_per_prj = frappe.db.sql("""
 									select sum(ifnull(percent_completed, 0)) as wqc from `tabProject` where project_definition = '{}'
 									""".format(pc.name), as_dict=1)[0].wqc
@@ -86,17 +92,23 @@ class ProjectDefinition(Document):
 						update `tabProject Definition` set project_man_days = {} where name = '{}'
 						""".format(project_man_days, pc.name))
 
-				for pd in frappe.db.get_all("Project Definition", {"docstatus": 1, "project_category": self.project_category}, ["project_man_days"]):
-					if not pd.project_man_days:
-						pd.project_man_days = 0
-					overall_mandays += flt(pd.project_man_days,2)
-					no_of_project_definitions += 1
+				# for pd in frappe.db.get_all("Project Definition", {"docstatus": 1, "name":self.name}, ["project_man_days"]):
+				if not pc.project_man_days:
+					pc.project_man_days = 0
+				# overall_mandays += flt(pc.project_man_days,2)
 				physical_progress_weightage = flt(flt(project_man_days) / flt(overall_mandays)*100,3)
 				if no_of_projects > 0:
 					contribution_per_prj = flt(physical_progress_weightage*(flt(physical_progress)*0.01),4)
 				# physical_progress = flt(flt(physical_progress_weightage) * (contribution_per_prj * 0.01),4)
 
-
+				if not overall_mandays:
+					overall_mandays = 0
+				if not physical_progress_weightage:
+					physical_progress_weightage = 0
+				if not contribution_per_prj:
+					contribution_per_prj = 0
+				if not overall_mandays:
+					physical_progress = 0
 				frappe.db.sql("""
 						update `tabProject Definition` set overall_mandays = {}, physical_progress_weightage = {}, physical_progress = {}, percent_completed = {} where name = '{}'
 						""".format(overall_mandays, physical_progress_weightage, contribution_per_prj, physical_progress, pc.name))

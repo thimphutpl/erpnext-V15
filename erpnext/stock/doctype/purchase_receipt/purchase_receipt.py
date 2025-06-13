@@ -73,7 +73,6 @@ class PurchaseReceipt(BuyingController):
 		group_same_items: DF.Check
 		ignore_pricing_rule: DF.Check
 		in_words: DF.Data | None
-		incoterm: DF.Link | None
 		instructions: DF.SmallText | None
 		inter_company_reference: DF.Link | None
 		is_internal_supplier: DF.Check

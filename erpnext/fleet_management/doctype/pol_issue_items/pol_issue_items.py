@@ -20,7 +20,7 @@ class POLIssueItems(Document):
 		equipment_category: DF.Link | None
 		equipment_cost_center: DF.Link | None
 		equipment_number: DF.Data | None
-		equipment_warehouse: DF.Link
+		equipment_warehouse: DF.Link | None
 		expense_account: DF.Link | None
 		hiring_branch: DF.Data | None
 		hiring_cost_center: DF.Data | None
@@ -30,6 +30,7 @@ class POLIssueItems(Document):
 		parentfield: DF.Data
 		parenttype: DF.Data
 		qty: DF.Float
+		serial_and_batch_bundle: DF.Data | None
 		tank_capacity: DF.Float
 		warehouse: DF.Link | None
 	# end: auto-generated types

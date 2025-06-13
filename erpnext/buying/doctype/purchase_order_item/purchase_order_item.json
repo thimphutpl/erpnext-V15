@@ -438,6 +438,7 @@
    "label": "Warehouse Settings"
   },
   {
+   "fetch_from": "cost_center.warehouse",
    "fieldname": "warehouse",
    "fieldtype": "Link",
    "in_list_view": 1,
@@ -918,7 +919,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-02-10 18:54:12.622417",
+ "modified": "2025-06-04 16:08:08.894583",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Purchase Order Item",

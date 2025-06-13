@@ -138,7 +138,6 @@
    "default": "0",
    "fieldname": "re_valued",
    "fieldtype": "Check",
-   "hidden": 1,
    "label": "Revalued Asset"
   },
   {
@@ -166,7 +165,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-03-17 12:51:16.900378",
+ "modified": "2024-11-21 10:43:06.055875",
  "modified_by": "Administrator",
  "module": "Assets",
  "name": "Asset Value Adjustment",

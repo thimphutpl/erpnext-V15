@@ -16,5 +16,6 @@ class AssetSubCategory(Document):
 
 		asset_category: DF.Link
 		asset_sub_category: DF.Data
+		company: DF.Link
 	# end: auto-generated types
 	pass

@@ -6,10 +6,10 @@
  "docstatus": 0,
  "doctype": "Report",
  "filters": [],
- "idx": 8,
+ "idx": 3,
  "is_standard": "Yes",
  "letterhead": null,
- "modified": "2025-02-03 18:36:53.129232",
+ "modified": "2025-05-08 17:08:54.956077",
  "modified_by": "Administrator",
  "module": "Assets",
  "name": "Property Plant and Equipment",
@@ -24,6 +24,10 @@
   },
   {
    "role": "Quality Manager"
+  },
+  {
+   "role": "Asset User"
   }
- ]
+ ],
+ "timeout": 0
 }

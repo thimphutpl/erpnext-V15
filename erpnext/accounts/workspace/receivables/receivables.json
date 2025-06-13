@@ -196,8 +196,8 @@
    "type": "Link"
   }
  ],
- "modified": "2024-11-23 13:11:24.624311",
- "modified_by": "Administrator",
+ "modified": "2025-05-28 11:01:10.963173",
+ "modified_by": "kalden.dorji@thimphutechpark.bt",
  "module": "Accounts",
  "name": "Receivables",
  "number_cards": [],
@@ -207,7 +207,7 @@
  "quick_lists": [],
  "restrict_to_domain": "",
  "roles": [],
- "sequence_id": 14.0,
+ "sequence_id": 12.0,
  "shortcuts": [
   {
    "color": "Grey",

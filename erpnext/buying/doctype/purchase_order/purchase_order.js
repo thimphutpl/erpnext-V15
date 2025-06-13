@@ -51,6 +51,10 @@ frappe.ui.form.on("Purchase Order", {
 				filters: { company: doc.company },
 			};
 		});
+		if(frm.doc.__islocal){
+			frm.set_value("disable_rounded_total", 1);
+			frm.refresh_field("disable_rounded_total");
+		}
 	},
 
 	company: function (frm) {

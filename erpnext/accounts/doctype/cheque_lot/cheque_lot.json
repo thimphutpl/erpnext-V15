@@ -105,7 +105,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2022-09-22 01:47:12.735932",
+ "modified": "2025-05-27 15:01:25.201377",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Cheque Lot",
@@ -113,6 +113,7 @@
  "owner": "Administrator",
  "permissions": [
   {
+   "cancel": 1,
    "create": 1,
    "delete": 1,
    "email": 1,

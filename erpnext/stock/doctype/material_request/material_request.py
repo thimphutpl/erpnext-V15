@@ -51,16 +51,17 @@ class MaterialRequest(BuyingController):
 		mr_header: DF.TextEditor | None
 		per_ordered: DF.Percent
 		per_received: DF.Percent
-		reference_name: DF.DynamicLink | None
+		reference_name: DF.Data | None
 		reference_type: DF.Link | None
 		repair_and_services: DF.Data | None
 		schedule_date: DF.Date
 		select_print_heading: DF.Link | None
-		series: DF.Literal["", "Consumables", "Fixed Asset", "Sales Product", "Spare parts", "Services Miscellaneous", "Services Works"]
+		series: DF.Literal["", "Consumables", "Fixed Asset", "Sales Product", "Spare Parts", "Services Miscellaneous", "Services Works"]
 		set_from_warehouse: DF.Link | None
 		set_warehouse: DF.Link | None
 		status: DF.Literal["", "Draft", "Submitted", "Stopped", "Cancelled", "Pending", "Partially Ordered", "Partially Received", "Ordered", "Issued", "Transferred", "Received"]
-		store_type: DF.Literal["Electrical", "Plumbing", "General", "Workshop"]
+		store_type: DF.Literal["", "Electrical", "Plumbing", "General", "Workshop"]
+		supplier: DF.Link | None
 		tc_name: DF.Link | None
 		terms: DF.TextEditor | None
 		title: DF.Data | None
@@ -128,7 +129,7 @@ class MaterialRequest(BuyingController):
 					)
 
 	def validate(self):
-		validate_workflow_states(self)
+		# validate_workflow_states(self)
 		super().validate()
 
 		self.validate_schedule_date()
@@ -929,6 +930,8 @@ def get_permission_query_conditions(user):
 	employee=frappe.db.get_value("Employee",{"user_id": user},"name")
 
 	if user == "Administrator":
+		return
+	if user_roles == "System Manager":
 		return
 		
 	return """(

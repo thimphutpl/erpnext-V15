@@ -114,7 +114,8 @@
    "fieldtype": "Link",
    "in_standard_filter": 1,
    "label": "Cost Center",
-   "options": "Cost Center"
+   "options": "Cost Center",
+   "reqd": 1
   },
   {
    "fieldname": "column_break_13",
@@ -166,7 +167,7 @@
   {
    "fieldname": "set_warehouse",
    "fieldtype": "Link",
-   "label": "Default Warehouse",
+   "label": "Warehouse",
    "options": "Warehouse"
   },
   {
@@ -184,7 +185,7 @@
  "idx": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-15 09:51:03.449106",
+ "modified": "2025-06-11 17:36:11.658234",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Stock Reconciliation",

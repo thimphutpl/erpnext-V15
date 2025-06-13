@@ -550,45 +550,6 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "POL Transaction",
-   "link_count": 3,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "POL Receive",
-   "link_count": 0,
-   "link_to": "POL Receive",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "POL Issued",
-   "link_count": 0,
-   "link_to": "POL Issue",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "HSD Payment",
-   "link_count": 0,
-   "link_to": "HSD Payment",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
    "label": "Fleet Transaction",
    "link_count": 6,
    "link_type": "DocType",
@@ -738,10 +699,49 @@
    "link_type": "Report",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "POL Transaction",
+   "link_count": 3,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "POL Advance",
+   "link_count": 0,
+   "link_to": "POL Advance",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "POL Receive",
+   "link_count": 0,
+   "link_to": "POL Receive",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "POL Issue/ Transfer",
+   "link_count": 0,
+   "link_to": "POL Issue",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2025-01-22 10:12:49.156200",
- "modified_by": "Administrator",
+ "modified": "2025-06-09 17:39:42.789848",
+ "modified_by": "tshering.lham@thimphutechpark.bt",
  "module": "Fleet Management",
  "name": "Fleet Management",
  "number_cards": [],

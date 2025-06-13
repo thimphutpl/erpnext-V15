@@ -1,0 +1,210 @@
+{
+ "charts": [],
+ "content": "[{\"id\":\"g5E129mjiP\",\"type\":\"onboarding\",\"data\":{\"onboarding_name\":\"Assets\",\"col\":12}},{\"id\":\"LXqffVtht3\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Your Shortcuts</b></span>\",\"col\":12}},{\"id\":\"0WZSTM-D4x\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Asset\",\"col\":3}},{\"id\":\"sS7EEYIM-0\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Asset Category\",\"col\":3}},{\"id\":\"R3ciLE2Yvv\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Fixed Asset Register\",\"col\":3}},{\"id\":\"hYQVxLDMSz\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Dashboard\",\"col\":3}},{\"id\":\"nH4nEblWqN\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"5O_M8S06QV\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Reports &amp; Masters</b></span>\",\"col\":12}},{\"id\":\"rcLzi8sXkD\",\"type\":\"card\",\"data\":{\"card_name\":\"Assets\",\"col\":4}},{\"id\":\"DSOaYtypT0\",\"type\":\"card\",\"data\":{\"card_name\":\"Asset Transaction\",\"col\":4}},{\"id\":\"1H4KxQuI0E\",\"type\":\"card\",\"data\":{\"card_name\":\"Reports\",\"col\":4}}]",
+ "creation": "2020-03-02 15:43:27.634865",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "assets",
+ "idx": 0,
+ "is_hidden": 0,
+ "label": "Assets",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Assets",
+   "link_count": 3,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Asset",
+   "link_count": 0,
+   "link_to": "Asset",
+   "link_type": "DocType",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Asset Category",
+   "link_count": 0,
+   "link_to": "Asset Category",
+   "link_type": "DocType",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Asset Sub Category",
+   "link_count": 0,
+   "link_to": "Asset Sub Category",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Asset Transaction",
+   "link_count": 3,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Asset Movement",
+   "link_count": 0,
+   "link_to": "Asset Movement",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Asset Value Adjustment",
+   "link_count": 0,
+   "link_to": "Asset Value Adjustment",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Bulk Asset Disposal",
+   "link_count": 0,
+   "link_to": "Bulk Asset Disposal",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Reports",
+   "link_count": 6,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "dependencies": "Asset",
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Asset Depreciation Ledger",
+   "link_count": 0,
+   "link_to": "Asset Depreciation Ledger",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Property Plant and Equipment",
+   "link_count": 0,
+   "link_to": "Property Plant and Equipment",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "dependencies": "Asset",
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Asset Depreciations and Balances",
+   "link_count": 0,
+   "link_to": "Asset Depreciations and Balances",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "dependencies": "Asset Maintenance",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Asset Maintenance",
+   "link_count": 0,
+   "link_to": "Asset Maintenance",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Asset Maintenance",
+   "type": "Link"
+  },
+  {
+   "dependencies": "Asset Activity",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Asset Activity",
+   "link_count": 0,
+   "link_to": "Asset Activity",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Asset Activity",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Asset Register",
+   "link_count": 0,
+   "link_to": "Asset Register",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  }
+ ],
+ "modified": "2025-05-29 18:17:46.572150",
+ "modified_by": "Administrator",
+ "module": "Assets",
+ "name": "Assets",
+ "number_cards": [],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "restrict_to_domain": "",
+ "roles": [
+  {
+   "role": "Asset User"
+  }
+ ],
+ "sequence_id": 10.0,
+ "shortcuts": [
+  {
+   "label": "Asset",
+   "link_to": "Asset",
+   "type": "DocType"
+  },
+  {
+   "label": "Asset Category",
+   "link_to": "Asset Category",
+   "type": "DocType"
+  },
+  {
+   "label": "Fixed Asset Register",
+   "link_to": "Fixed Asset Register",
+   "type": "Report"
+  },
+  {
+   "label": "Dashboard",
+   "link_to": "Asset",
+   "type": "Dashboard"
+  }
+ ],
+ "title": "Assets"
+}

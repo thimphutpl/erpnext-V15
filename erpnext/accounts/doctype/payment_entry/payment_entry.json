@@ -844,6 +844,7 @@
   {
    "bold": 1,
    "depends_on": "eval:doc.mode_of_payment == \"Cheque\"",
+   "fetch_from": "cheque_lot.next_no",
    "fieldname": "reference_no",
    "fieldtype": "Data",
    "label": "Reference No"
@@ -953,7 +954,7 @@
    "table_fieldname": "payment_entries"
   }
  ],
- "modified": "2025-02-20 17:56:47.883518",
+ "modified": "2025-06-10 09:49:27.128829",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Payment Entry",

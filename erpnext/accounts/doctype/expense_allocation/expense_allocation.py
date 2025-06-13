@@ -19,7 +19,7 @@ class ExpenseAllocation(Document):
 		amended_from: DF.Link | None
 		branch: DF.Link
 		cost_center: DF.Link | None
-		cost_type: DF.Literal["HSD", "Hire Charge", "Lubricant", "Operator Allowance", "OAP Salary", "Muster Roll Employee", "GCE", "Overtime Payment", "DFG Soelra", "GFG Soelra", "Thai Salary", "Indian Operators Salary", "Repair and Maintenance", "OJT", "Contract Employee"]
+		cost_type: DF.Literal["HSD", "Hire Charge", "Lubricant", "Operator Allowance", "Muster Roll Employee", "Overtime Payment", "Repair and Maintenance", "Employee Salary"]
 		items: DF.Table[ExpenseAllocationItem]
 		posting_date: DF.Date
 		title: DF.Data

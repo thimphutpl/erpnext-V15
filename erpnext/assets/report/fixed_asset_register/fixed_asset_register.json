@@ -6,10 +6,10 @@
  "docstatus": 0,
  "doctype": "Report",
  "filters": [],
- "idx": 0,
+ "idx": 18,
  "is_standard": "Yes",
  "letterhead": null,
- "modified": "2023-07-26 21:03:20.722628",
+ "modified": "2025-05-08 17:11:40.946257",
  "modified_by": "Administrator",
  "module": "Assets",
  "name": "Fixed Asset Register",
@@ -24,6 +24,10 @@
   },
   {
    "role": "Quality Manager"
+  },
+  {
+   "role": "Asset User"
   }
- ]
+ ],
+ "timeout": 0
 }

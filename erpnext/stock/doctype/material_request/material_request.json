@@ -442,6 +442,7 @@
    "depends_on": "eval: doc.material_request_type ==\"Material Issue\"",
    "fieldname": "store_type",
    "fieldtype": "Select",
+   "hidden": 1,
    "label": "Store Type",
    "options": "\nElectrical\nPlumbing\nGeneral\nWorkshop"
   },
@@ -475,6 +476,7 @@
    "label": "For Project"
   },
   {
+   "depends_on": "eval: doc.material_request_type ==\"Purchase\"",
    "fieldname": "supplier",
    "fieldtype": "Link",
    "label": "Supplier",
@@ -485,7 +487,7 @@
  "idx": 70,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-03-24 17:41:49.318271",
+ "modified": "2025-06-11 17:05:22.532398",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Material Request",

@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"tHb3yxthkR\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>                                    Masters Data &amp; Transaction</b></span>\",\"col\":12}},{\"id\":\"DnNtsmxpty\",\"type\":\"card\",\"data\":{\"card_name\":\"Accounting Masters\",\"col\":4}},{\"id\":\"nKKr6fjgjb\",\"type\":\"card\",\"data\":{\"card_name\":\"Transaction Entry\",\"col\":4}},{\"id\":\"Wn2lhs7WLn\",\"type\":\"card\",\"data\":{\"card_name\":\"Multi Currency\",\"col\":4}},{\"id\":\"QWiuI4338s\",\"type\":\"card\",\"data\":{\"card_name\":\"Taxes\",\"col\":4}},{\"id\":\"UtlUkdfGBc\",\"type\":\"card\",\"data\":{\"card_name\":\"Account Settings\",\"col\":4}},{\"id\":\"LyxwV1-dZU\",\"type\":\"card\",\"data\":{\"card_name\":\"Project Accounts\",\"col\":4}},{\"id\":\"ogg8KsB6dA\",\"type\":\"card\",\"data\":{\"card_name\":\"Impress Transaction \",\"col\":4}},{\"id\":\"xTKhqbI2Ad\",\"type\":\"card\",\"data\":{\"card_name\":\"Banking\",\"col\":4}},{\"id\":\"DLNAq33-qg\",\"type\":\"card\",\"data\":{\"card_name\":\"Cheque\",\"col\":4}},{\"id\":\"s56JobTG-l\",\"type\":\"card\",\"data\":{\"card_name\":\"General Reports\",\"col\":4}},{\"id\":\"QOI1bjgWbO\",\"type\":\"card\",\"data\":{\"card_name\":\"Financial Statements\",\"col\":4}},{\"id\":\"KUYyQVB4Cn\",\"type\":\"card\",\"data\":{\"card_name\":\"Mechanical Accounts\",\"col\":4}},{\"id\":\"sLgDKsvJiA\",\"type\":\"card\",\"data\":{\"card_name\":\"Tools\",\"col\":4}}]",
+ "content": "[{\"id\":\"tHb3yxthkR\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>                                    Masters Data &amp; Transaction</b></span>\",\"col\":12}},{\"id\":\"DnNtsmxpty\",\"type\":\"card\",\"data\":{\"card_name\":\"Accounting Masters\",\"col\":4}},{\"id\":\"nKKr6fjgjb\",\"type\":\"card\",\"data\":{\"card_name\":\"Transaction Entry\",\"col\":4}},{\"id\":\"Wn2lhs7WLn\",\"type\":\"card\",\"data\":{\"card_name\":\"Multi Currency\",\"col\":4}},{\"id\":\"QWiuI4338s\",\"type\":\"card\",\"data\":{\"card_name\":\"Taxes\",\"col\":4}},{\"id\":\"ogg8KsB6dA\",\"type\":\"card\",\"data\":{\"card_name\":\"Impress Transaction \",\"col\":4}},{\"id\":\"xTKhqbI2Ad\",\"type\":\"card\",\"data\":{\"card_name\":\"Banking\",\"col\":4}},{\"id\":\"DLNAq33-qg\",\"type\":\"card\",\"data\":{\"card_name\":\"Cheque\",\"col\":4}},{\"id\":\"QOI1bjgWbO\",\"type\":\"card\",\"data\":{\"card_name\":\"Financial Reports\",\"col\":4}},{\"id\":\"sLgDKsvJiA\",\"type\":\"card\",\"data\":{\"card_name\":\"Tools\",\"col\":4}},{\"id\":\"UtlUkdfGBc\",\"type\":\"card\",\"data\":{\"card_name\":\"Account Settings\",\"col\":4}}]",
  "creation": "2020-03-02 15:41:59.515192",
  "custom_blocks": [],
  "docstatus": 0,
@@ -80,164 +80,6 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Project Accounts",
-   "link_count": 4,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Project Invoice",
-   "link_count": 0,
-   "link_to": "Project Invoice",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Project Payment",
-   "link_count": 0,
-   "link_to": "Project Payment",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Deposit Work",
-   "link_count": 0,
-   "link_to": "Deposit Work",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Deposit Work Report",
-   "link_count": 0,
-   "link_to": "Deposit Work Report",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Transaction Entry",
-   "link_count": 3,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "dependencies": "",
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Journal Entry",
-   "link_count": 0,
-   "link_to": "Journal Entry",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Payment Entry",
-   "link_count": 0,
-   "link_to": "Payment Entry",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "General Ledger",
-   "link_count": 0,
-   "link_to": "General Ledger",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Account Settings",
-   "link_count": 6,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Accounts Settings",
-   "link_count": 0,
-   "link_to": "Accounts Settings",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "HR Accounts Settings",
-   "link_count": 0,
-   "link_to": "HR Accounts Settings",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Maintenance Accounts Settings",
-   "link_count": 0,
-   "link_to": "Maintenance Accounts Settings",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Projects Accounts Settings",
-   "link_count": 0,
-   "link_to": "Projects Accounts Settings",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Sales Accounts Settings",
-   "link_count": 0,
-   "link_to": "Sales Accounts Settings",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Fiscal Year",
-   "link_count": 0,
-   "link_to": "Fiscal Year",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
    "label": "Accounting Masters",
    "link_count": 4,
    "link_type": "DocType",
@@ -283,45 +125,6 @@
    "link_count": 0,
    "link_to": "Branch",
    "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Cheque",
-   "link_count": 3,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Create Cheque Lot",
-   "link_count": 0,
-   "link_to": "Cheque Lot",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Fund Requisition",
-   "link_count": 0,
-   "link_to": "Fund Requisition",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Cheque Register",
-   "link_count": 0,
-   "link_to": "Cheque Register",
-   "link_type": "Report",
    "onboard": 0,
    "type": "Link"
   },
@@ -426,45 +229,6 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "General Reports",
-   "link_count": 3,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "General Ledger",
-   "link_count": 0,
-   "link_to": "General Ledger",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Accounts Receivable",
-   "link_count": 0,
-   "link_to": "Accounts Receivable",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Accounts Payable",
-   "link_count": 0,
-   "link_to": "Accounts Payable",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
    "label": "Banking",
    "link_count": 6,
    "link_type": "DocType",
@@ -534,8 +298,8 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Mechanical Accounts",
-   "link_count": 1,
+   "label": "Tools",
+   "link_count": 3,
    "link_type": "DocType",
    "onboard": 0,
    "type": "Card Break"
@@ -543,9 +307,9 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "HSD Payment",
+   "label": "Expense Allocation",
    "link_count": 0,
-   "link_to": "HSD Payment",
+   "link_to": "Expense Allocation",
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
@@ -553,8 +317,57 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Financial Statements",
-   "link_count": 5,
+   "label": "Cost Appropriation",
+   "link_count": 0,
+   "link_to": "Cost Appropriation",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "RRCO Receipt Tool",
+   "link_count": 0,
+   "link_to": "TDS Receipt Update",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Cheque",
+   "link_count": 2,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Create Cheque Lot",
+   "link_count": 0,
+   "link_to": "Cheque Lot",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Cheque Register",
+   "link_count": 0,
+   "link_to": "Cheque Register",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Financial Reports",
+   "link_count": 8,
    "link_type": "DocType",
    "onboard": 0,
    "type": "Card Break"
@@ -612,7 +425,106 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Tools",
+   "label": "General Ledger",
+   "link_count": 0,
+   "link_to": "General Ledger",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Accounts Receivable",
+   "link_count": 0,
+   "link_to": "Accounts Receivable",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Accounts Payable",
+   "link_count": 0,
+   "link_to": "Accounts Payable",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Account Settings",
+   "link_count": 6,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Fiscal Year",
+   "link_count": 0,
+   "link_to": "Fiscal Year",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Accounts Settings",
+   "link_count": 0,
+   "link_to": "Accounts Settings",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "HR Accounts Settings",
+   "link_count": 0,
+   "link_to": "HR Accounts Settings",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Maintenance Accounts Settings",
+   "link_count": 0,
+   "link_to": "Maintenance Accounts Settings",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Projects Accounts Settings",
+   "link_count": 0,
+   "link_to": "Projects Accounts Settings",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Sales Accounts Settings",
+   "link_count": 0,
+   "link_to": "Sales Accounts Settings",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Transaction Entry",
    "link_count": 3,
    "link_type": "DocType",
    "onboard": 0,
@@ -621,9 +533,20 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Expense Allocation",
+   "label": "Purchase Invoice",
    "link_count": 0,
-   "link_to": "Expense Allocation",
+   "link_to": "Purchase Invoice",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Journal Entry",
+   "link_count": 0,
+   "link_to": "Journal Entry",
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
@@ -631,25 +554,15 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Cost Appropriation",
+   "label": "Payment Entry",
    "link_count": 0,
-   "link_to": "Cost Appropriation",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "RRCO Receipt Tool",
-   "link_count": 0,
-   "link_to": "TDS Receipt Update",
+   "link_to": "Payment Entry",
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
   }
  ],
- "modified": "2025-01-29 14:49:40.105499",
+ "modified": "2025-06-13 09:45:31.143341",
  "modified_by": "kalden.dorji@thimphutechpark.bt",
  "module": "Accounts",
  "name": "Accounting",
@@ -660,7 +573,7 @@
  "quick_lists": [],
  "restrict_to_domain": "",
  "roles": [],
- "sequence_id": 12.0,
+ "sequence_id": 10.0,
  "shortcuts": [],
  "title": "Accounting"
 }

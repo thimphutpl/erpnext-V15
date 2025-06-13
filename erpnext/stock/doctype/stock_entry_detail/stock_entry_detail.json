@@ -71,8 +71,8 @@
   "project",
   "task",
   "dimension_col_break",
-  "more_info",
   "actual_qty",
+  "more_info",
   "transferred_qty",
   "bom_no",
   "allow_alternative_item",
@@ -359,7 +359,6 @@
    "print_hide": 1
   },
   {
-   "collapsible": 1,
    "fieldname": "more_info",
    "fieldtype": "Section Break",
    "label": "More Information"
@@ -381,7 +380,6 @@
    "no_copy": 1,
    "oldfieldname": "actual_qty",
    "oldfieldtype": "Read Only",
-   "print_hide": 1,
    "read_only": 1,
    "search_index": 1
   },
@@ -697,7 +695,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-02-11 13:01:20.597771",
+ "modified": "2025-06-12 11:25:07.527146",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Stock Entry Detail",

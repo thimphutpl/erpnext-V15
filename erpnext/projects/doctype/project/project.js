@@ -84,13 +84,13 @@ frappe.ui.form.on("Project", {
 					frappe.set_route("query-report", "Project Register");
 				},__("Reports"), "icon-file-alt"
 			);
-			frm.add_custom_button(__("Manpower"), function(){
-					frappe.route_options = {
-						project: frm.doc.name
-					};
-					frappe.set_route("query-report", "Project Manpower");
-				},__("Reports"), "icon-file-alt"
-			);
+			// frm.add_custom_button(__("Manpower"), function(){
+			// 		frappe.route_options = {
+			// 			project: frm.doc.name
+			// 		};
+			// 		frappe.set_route("query-report", "Project Manpower");
+			// 	},__("Reports"), "icon-file-alt"
+			// );
 		}
 		// +++++++++++++++++++++ Ver 1.0 ENDS +++++++++++++++++++++
 		if ((frm.doc.status == "Planning" || frm.doc.status == "Ongoing") && frm.doc.docstatus < 1) {
@@ -144,8 +144,8 @@ frappe.ui.form.on("Project", {
 	},
 	mandays: function(frm) {
 		if(cur_frm.doc.overall_mandays > 0){
-			cur_frm.set_value("physical_progress_weightage", (parseFloat(cur_frm.doc.mandays)/parseFloat(cur_frm.doc.overall_mandays)*100).toFixed(3))
-			cur_frm.set_value("man_power_required", Math.round(parseFloat(cur_frm.doc.mandays)/parseFloat(cur_frm.doc.total_duration)))
+			frm.set_value("physical_progress_weightage", (parseFloat(cur_frm.doc.mandays)/parseFloat(cur_frm.doc.overall_mandays)*100).toFixed(3))
+			frm.set_value("man_power_required", Math.round(parseFloat(cur_frm.doc.mandays)/parseFloat(cur_frm.doc.total_duration)))
 		}
 		frm.events.update_project_work_plan(frm);
 		frm.refresh_fields();

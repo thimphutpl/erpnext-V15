@@ -35,7 +35,7 @@ frappe.ui.form.on("Bulk Asset Disposal", {
 			method: "erpnext.assets.doctype.bulk_asset_disposal.bulk_asset_disposal.sale_asset",
 			args: {
 				branch: frm.doc.branch,
-				business_activity: "Common",
+				// business_activity: frm.doc.business_activity,
 				name: frm.doc.name,
 				scrap_date: frm.doc.scrap_date,
 				customer: frm.doc.customer,

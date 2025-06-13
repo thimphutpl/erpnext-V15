@@ -12,7 +12,7 @@ def execute(filters=None):
 
 def get_columns(filters=None):
 	columns = []
-	if filters.get("parent_project") and not filters.get("project_definition") and not filters.get("project") and not filters.get("task"):
+	if not filters.get("project_definition") and not filters.get("project"):
 		columns = [
 			{
 			"fieldname": "project_definition",
@@ -72,11 +72,11 @@ def get_columns(filters=None):
 			{
 			"fieldname": "financial_progress",
 			"label": "Financial Progress(%)",
-			"fieldtype": "Float",
+			"fieldtype": "Data",
 			"width": 120
 			},
 		]
-	elif filters.get("parent_project") and filters.get("project_definition") and not filters.get("project") and not filters.get("task"):
+	elif filters.get("project_definition") and not filters.get("project"):
 		columns = [
 			{
 			"fieldname": "project",
@@ -144,8 +144,8 @@ def get_columns(filters=None):
 
 def get_data(filters=None):
 	data = []
-	if filters.get("parent_project") and not filters.get("project_definition") and not filters.get("project") and not filters.get("task"):
-		for pd in frappe.db.get_all("Project Definition", {"project_category": filters.get("parent_project"), "docstatus": 1}, ["name", "physical_progress", "physical_progress_weightage", "percent_completed" ,"provisional_estimated_budget", "a_expenses", "f_progress"]):
+	if not filters.get("project_definition") and not filters.get("project"):
+		for pd in frappe.db.get_all("Project Definition", {"docstatus": 1}, ["name", "physical_progress", "physical_progress_weightage", "percent_completed" ,"provisional_estimated_budget", "a_expenses", "f_progress"]):
 			start_date = None
 			end_date = None
 			duration = None
@@ -169,7 +169,7 @@ def get_data(filters=None):
 			if start_date and end_date:
 				duration = date_diff(end_date, start_date)+1
 			data.append({"project_definition": pd.name, "start_date": start_date, "end_date": end_date, "duration": duration, "project_progress": pd.physical_progress, "weightage": pd.physical_progress_weightage, "site_progress": pd.percent_completed, "estimated_budget": pd.provisional_estimated_budget, "actual_expenses": pd.a_expenses, "financial_progress": pd.f_progress})
-	elif filters.get("parent_project") and filters.get("project_definition") and not filters.get("project") and not filters.get("task"):
+	elif filters.get("project_definition") and not filters.get("project"):
 		for pd in frappe.db.get_all("Project", {"project_definition": filters.get("project_definition"), "docstatus": ["<", 2]}, ["name", "physical_progress", "physical_progress_weightage", "percent_completed", "total_duration", "expected_start_date", "expected_end_date", "estimated_budget", "actual_expenses", "financial_progress"]):
 			start_date = None
 			end_date = None

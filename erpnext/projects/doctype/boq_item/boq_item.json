@@ -6,7 +6,8 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "boq_code",
+  "item_code",
+  "item_name",
   "uom",
   "currency",
   "column_break_ntrl",
@@ -45,15 +46,8 @@
  ],
  "fields": [
   {
-   "columns": 1,
-   "fieldname": "boq_code",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "BOQ Code",
-   "reqd": 1
-  },
-  {
    "columns": 2,
+   "fetch_from": "item_code.stock_uom",
    "fieldname": "uom",
    "fieldtype": "Link",
    "in_list_view": 1,
@@ -276,12 +270,28 @@
    "in_list_view": 1,
    "label": "Quantity",
    "precision": "5"
+  },
+  {
+   "columns": 1,
+   "fieldname": "item_code",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Item Code",
+   "options": "Item",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "item_code.item_name",
+   "fieldname": "item_name",
+   "fieldtype": "Data",
+   "label": "Item Name",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-11-27 11:01:26.416952",
+ "modified": "2025-06-09 16:54:15.946626",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "BOQ Item",

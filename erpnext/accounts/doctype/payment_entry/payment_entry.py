@@ -114,6 +114,12 @@ class PaymentEntry(AccountsController):
 		self.update_advance_paid()
 		self.update_payment_schedule()
 		self.set_status()
+		self.update_cheque_lot()
+
+	def update_cheque_lot(self, cancel=False):
+		from erpnext.accounts.doctype.cheque_lot.cheque_lot import get_cheque_info
+		if self.use_cheque_lot == 1:
+			get_cheque_info(self.cheque_lot, cancel=cancel)
 
 	def set_liability_account(self):
 		# Auto setting liability account should only be done during 'draft' status
@@ -189,6 +195,8 @@ class PaymentEntry(AccountsController):
 		self.update_payment_schedule(cancel=1)
 		self.set_payment_req_status()
 		self.set_status()
+		self.update_cheque_lot(cancel=True)
+
 	
 	def set_paid_from_rtgs(self):
 		if self.mode_of_payment=="RTGS":

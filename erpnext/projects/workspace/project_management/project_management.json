@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"YdUh9pdtEy\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Project Management</span>\",\"col\":12}},{\"id\":\"LlKsddWyTc\",\"type\":\"card\",\"data\":{\"card_name\":\"Projects\",\"col\":4}},{\"id\":\"EFo50i-STw\",\"type\":\"card\",\"data\":{\"card_name\":\"Transactions\",\"col\":4}},{\"id\":\"JQO8YbAqkt\",\"type\":\"card\",\"data\":{\"card_name\":\"Manpower\",\"col\":4}},{\"id\":\"i3uo5_mSkn\",\"type\":\"card\",\"data\":{\"card_name\":\"Project Tools\",\"col\":4}},{\"id\":\"4wwxaCmgr8\",\"type\":\"card\",\"data\":{\"card_name\":\"Reports\",\"col\":4}}]",
+ "content": "[{\"id\":\"YdUh9pdtEy\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Project Management</span>\",\"col\":12}},{\"id\":\"LlKsddWyTc\",\"type\":\"card\",\"data\":{\"card_name\":\"Projects\",\"col\":4}},{\"id\":\"EFo50i-STw\",\"type\":\"card\",\"data\":{\"card_name\":\"Transactions\",\"col\":4}},{\"id\":\"JQO8YbAqkt\",\"type\":\"card\",\"data\":{\"card_name\":\"Manpower\",\"col\":4}},{\"id\":\"4wwxaCmgr8\",\"type\":\"card\",\"data\":{\"card_name\":\"Reports\",\"col\":4}}]",
  "creation": "2024-09-25 10:22:20.551275",
  "custom_blocks": [],
  "docstatus": 0,
@@ -13,193 +13,6 @@
  "is_hidden": 0,
  "label": "Project Management",
  "links": [
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Project Tools",
-   "link_count": 2,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Project Sales",
-   "link_count": 0,
-   "link_to": "Project Sales",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Muster Roll Application",
-   "link_count": 0,
-   "link_to": "Muster Roll Application",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Manpower",
-   "link_count": 3,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "GEP Employee",
-   "link_count": 0,
-   "link_to": "GEP Employee",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Muster Roll Employee",
-   "link_count": 0,
-   "link_to": "Muster Roll Employee",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Process Payment for GEP & MR",
-   "link_count": 0,
-   "link_to": "Process MR Payment",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Reports",
-   "link_count": 11,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Project Register",
-   "link_count": 0,
-   "link_to": "Project Register",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Project Work Plan",
-   "link_count": 0,
-   "link_to": "Project Work Plan",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Project Manpower",
-   "link_count": 0,
-   "link_to": "Project Manpower",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Project Equipment",
-   "link_count": 0,
-   "link_to": "Project Equipment",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "BOQ Register",
-   "link_count": 0,
-   "link_to": "BOQ Register",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Measure Book Register",
-   "link_count": 0,
-   "link_to": "Measurement Book Register",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Advanced Payment Register",
-   "link_count": 0,
-   "link_to": "Advance Payment Register",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Invoice Register",
-   "link_count": 0,
-   "link_to": "Invoice Register",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Payment Register",
-   "link_count": 0,
-   "link_to": "Payment Register",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Project Wise Stock Tracking",
-   "link_count": 0,
-   "link_to": "Project wise Stock Tracking",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Items Register",
-   "link_count": 0,
-   "link_to": "Item Register",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
   {
    "hidden": 0,
    "is_query_report": 0,
@@ -282,8 +95,8 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Transactions",
-   "link_count": 5,
+   "label": "Manpower",
+   "link_count": 3,
    "link_type": "DocType",
    "onboard": 0,
    "type": "Card Break"
@@ -291,9 +104,9 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Project Advance",
+   "label": "Muster Roll Employee",
    "link_count": 0,
-   "link_to": "Project Advance",
+   "link_to": "Muster Roll Employee",
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
@@ -301,9 +114,9 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Project Invoice",
+   "label": "Process Payment for MR",
    "link_count": 0,
-   "link_to": "Project Invoice",
+   "link_to": "Process MR Payment",
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
@@ -311,9 +124,9 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Project Payment",
+   "label": "Muster Roll Application",
    "link_count": 0,
-   "link_to": "Project Payment",
+   "link_to": "Muster Roll Application",
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
@@ -321,12 +134,11 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Daily Activity Journal",
-   "link_count": 0,
-   "link_to": "Daily Activity Journal",
+   "label": "Transactions",
+   "link_count": 1,
    "link_type": "DocType",
    "onboard": 0,
-   "type": "Link"
+   "type": "Card Break"
   },
   {
    "hidden": 0,
@@ -337,10 +149,59 @@
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Reports",
+   "link_count": 4,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Project Progress Report",
+   "link_count": 0,
+   "link_to": "Project Progress Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Project Register",
+   "link_count": 0,
+   "link_to": "Project Register",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "BOQ Register",
+   "link_count": 0,
+   "link_to": "BOQ Register",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Measure Book Register",
+   "link_count": 0,
+   "link_to": "Measurement Book Register",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2025-01-23 11:46:25.227475",
- "modified_by": "kalden.dorji@thimphutechpark.bt",
+ "modified": "2025-06-11 16:12:27.522839",
+ "modified_by": "Administrator",
  "module": "Projects",
  "name": "Project Management",
  "number_cards": [],

@@ -144,6 +144,7 @@
   "fleet_management_tab",
   "pol_settings_section",
   "pol_advance_account",
+  "fuel_stock_account",
   "column_break_jfxu",
   "repair_and_service_account"
  ],
@@ -1033,6 +1034,12 @@
    "fieldtype": "Link",
    "label": "GFG Soelra",
    "options": "Account"
+  },
+  {
+   "fieldname": "fuel_stock_account",
+   "fieldtype": "Link",
+   "label": "Fuel Stock Account",
+   "options": "Account"
   }
  ],
  "icon": "fa fa-building",
@@ -1040,7 +1047,7 @@
  "image_field": "company_logo",
  "is_tree": 1,
  "links": [],
- "modified": "2025-04-10 12:10:12.660099",
+ "modified": "2025-06-11 15:37:50.745619",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Company",

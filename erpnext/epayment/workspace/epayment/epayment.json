@@ -120,8 +120,8 @@
    "type": "Link"
   }
  ],
- "modified": "2024-11-26 11:48:26.346325",
- "modified_by": "Administrator",
+ "modified": "2025-05-28 11:01:11.405896",
+ "modified_by": "kalden.dorji@thimphutechpark.bt",
  "module": "ePayment",
  "name": "ePayment",
  "number_cards": [],
@@ -130,7 +130,7 @@
  "public": 1,
  "quick_lists": [],
  "roles": [],
- "sequence_id": 11.0,
+ "sequence_id": 20.0,
  "shortcuts": [],
  "title": "ePayment"
 }

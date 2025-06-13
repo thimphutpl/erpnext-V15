@@ -24,8 +24,8 @@ frappe.ui.form.on('POL Advance', {
 	},
 	equipment:function(frm){
 		frm.events.set_fuelbook_filter(frm)
-		frm.events.set_advance_limit(frm)
-		frm.events.set_advance_amount(frm)
+		frm.events.set_fuelbook_from_equipment(frm)
+		// frm.events.set_advance_amount(frm)
 	},
 	use_common_fuelbook:function(frm){
 		frm.events.set_fuelbook_filter(frm)
@@ -49,9 +49,21 @@ frappe.ui.form.on('POL Advance', {
 			})
 		}
 	},
+	set_fuelbook_from_equipment: function(frm){
+		frappe.call({
+			method: "get_fuelbook",
+			doc: frm.doc,
+			callback: function(r){
+				if(r.message){
+					frm.set_value("fuel_book", r.message);
+					frm.refresh_field("fuel_book");
+				}
+			}
+		})
+	},
 	fuel_book: function(frm){
-		frm.events.set_advance_limit(frm)
-		frm.events.set_advance_amount(frm)
+		set_advance_limit(frm)
+		set_advance_amount(frm)
 	},
 	set_advance_limit: function(frm){
 		if (frm.doc.equipment || frm.doc.fuel_book){
@@ -157,4 +169,29 @@ var set_party_type = (frm)=>{
 			}
 		};
 	});
+}
+var set_advance_limit = function(frm){
+	if (frm.doc.equipment || frm.doc.fuel_book){
+		frappe.call({
+			method: "set_advance_limit",
+			doc: frm.doc,
+			callback: function(r) {
+				frm.refresh_field("advance_limit");
+				frm.dirty()
+			}
+		});
+	}
+}
+ var set_advance_amount = function(frm){
+	if (frm.doc.equipment || frm.doc.fuel_book){
+		frappe.call({
+			method: "set_auto_advance_amount",
+			doc: frm.doc,
+			callback: function(r) {
+				frm.set_value("amount", r.message);
+				frm.refresh_field("amount");
+				// frm.dirty()
+			}
+		});
+	}
 }

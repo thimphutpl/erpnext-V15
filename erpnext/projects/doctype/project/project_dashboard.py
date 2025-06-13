@@ -6,14 +6,25 @@ def get_data():
 		"heatmap": True,
 		"heatmap_message": _("This is based on the Time Sheets created against this project"),
 		"fieldname": "project",
+		
+		"internal_links": {
+			"Stock Entry": ["items", "project"]
+		},
 		"transactions": [
 			{
 				"label": _("Project"),
 				"items": ["Task", "Timesheet", "Issue", "Project Update"],
 			},
-			{"label": _("Material"), "items": ["BOM", "Material Request", "Stock Entry", "BOQ", "BOQ Adjustment"]},
-			# {"label": _("Sales"), "items": ["Sales Order", "Delivery Note", "Sales Invoice"]},
-			{"label": _("Purchase"), "items": ["Purchase Order", "Purchase Receipt", "Purchase Invoice"]},
-			{"label": _("Transactions"), "items": ["Project Advance", "Project Invoice", "Project Payment", "MB Entry", "Journal Entry"]},
+			{	"label": _("Material"), 
+				"items": ["Material Request", "BOQ", "BOQ Adjustment","Stock Entry"]
+			},
+			{
+				"label": _("Purchase"), 
+				"items": ["Purchase Order", "Purchase Receipt", "Purchase Invoice"]
+			},
+			{
+				"label": _("Transactions"), 
+				"items": ["Project Advance", "Project Invoice", "Project Payment", "MB Entry", "Journal Entry"]
+			},
 		],
 	}

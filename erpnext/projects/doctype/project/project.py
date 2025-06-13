@@ -78,7 +78,7 @@ class Project(Document):
 		if not frappe.db.get_value("Project Definition", self.project_definition, "project_code_prefix"):
 			frappe.throw("Project Code Prefix is not set for Project Definition {}".format(self.project_definition))
 		prefix = frappe.db.get_value("Project Definition", self.project_definition, "project_code_prefix")
-		self.name = self.project_name + " ("+prefix+") - GYALSUNG"
+		self.name = self.project_name + " ("+prefix+") - DNCP"
 
 	def onload(self):
 		self.load_activity_tasks()
@@ -161,7 +161,10 @@ class Project(Document):
 			if not self.total_duration:
 				self.total_duration = date_diff(self.expected_end_date, self.expected_start_date)+1
 			self.overall_mandays = overall_mandays
-			if flt(self.mandays) > 0 and flt(self.total_duration) > 0:
+			#adsfasdf
+			#adsfasdf
+			#adsfasdf
+			if flt(self.mandays) > 0 and flt(self.total_duration) > 0 and self.overall_mandays > 0:
 				self.man_power_required = flt(flt(self.mandays) / flt(self.total_duration),0)
 				self.physical_progress_weightage = flt(flt(self.mandays) / flt(self.overall_mandays)*100,3)
 			contribution_per = 0
@@ -504,14 +507,14 @@ class Project(Document):
 
 	def get_parent_activity_tasks(self):
 		# return frappe.get_all("Task", "*", {"project": self.name, "additional_task": 0}, order_by="task_idx, exp_start_date")
-		return frappe.get_all("Task", "*", {"project": self.name, "additional_task": 0, "is_group": 1}, order_by="creation")
+		return frappe.get_all("Task", "*", {"project": self.name, "additional_task": 0, "is_group": 1}, order_by="exp_start_date asc")
 	def get_child_activity_tasks(self, parent_task):
 		# return frappe.get_all("Task", "*", {"project": self.name, "additional_task": 0}, order_by="task_idx, exp_start_date")
-		return frappe.get_all("Task", "*", {"project": self.name, "additional_task": 0, "is_group": 0, "parent_task": parent_task}, order_by="creation")
+		return frappe.get_all("Task", "*", {"project": self.name, "additional_task": 0, "is_group": 0, "parent_task": parent_task}, order_by="exp_start_date asc")
 
 	def get_no_parent_child_activity_tasks(self):
 		# return frappe.get_all("Task", "*", {"project": self.name, "additional_task": 0}, order_by="task_idx, exp_start_date")
-		return frappe.get_all("Task", "*", {"project": self.name, "additional_task": 0, "is_group": 0, "parent_task": ""})
+		return frappe.get_all("Task", "*", {"project": self.name, "additional_task": 0, "is_group": 0, "parent_task": ""}, order_by="exp_start_date asc")
 
 	def get_additional_tasks(self):
 		return frappe.get_all("Task", "*", {"project": self.name, "additional_task": 1}, order_by="task_idx, exp_start_date")	
@@ -812,6 +815,8 @@ class Project(Document):
 		for task in self.activity_tasks:
 			if task.is_group == 0:
 				task.task_weightage = flt((task.task_duration/total_duration) * 100,7)
+				if not task.work_quantity_complete:
+					task.work_quantity_complete = 0
 				if task.work_quantity_complete >= 0:
 					task.task_achievement_percent = task.task_weightage * (task.work_quantity_complete/100)
 			frappe.db.sql("""

@@ -472,7 +472,7 @@ class CustomWorkflow:
 
 		elif self.new_state.lower() == ("Approved".lower()):
 			if frappe.session.user != self.doc.approver:
-				frappe.throw(f"Only {self.doc.approver} can Approved this Application.")
+				frappe.throw(f"Only {self.doc.approver} can Approve this Application.")
 
 		elif self.new_state.lower() == ("Rejected".lower()):
 			if frappe.session.user != self.doc.approver:
@@ -510,7 +510,7 @@ class CustomWorkflow:
 
 		elif self.new_state.lower() == ("Approved".lower()):
 			if frappe.session.user != self.doc.leave_approver:
-				frappe.throw(f"Only {self.doc.leave_approver} can Approved this Leave Application.")
+				frappe.throw(f"Only {self.doc.leave_approver} can Approve this Leave Application.")
 			
 
 		elif self.new_state.lower() == ("Rejected".lower()):
@@ -540,7 +540,7 @@ class CustomWorkflow:
 
 		elif self.new_state.lower() == ("Approved".lower()):
 			if frappe.session.user != self.doc.approver:
-				frappe.throw(f"Only {self.doc.approver} can Approved this Leave Encashment.")
+				frappe.throw(f"Only {self.doc.approver} can Approve this Leave Encashment.")
 	
 		elif self.new_state.lower() == ("Rejected".lower()):
 			if frappe.session.user != self.doc.approver:
@@ -569,7 +569,7 @@ class CustomWorkflow:
 
 		elif self.new_state.lower() == ("Approved".lower()):
 			if frappe.session.user != self.doc.approver:
-				frappe.throw(f"Only {self.doc.approver} can Approved this Request.")			
+				frappe.throw(f"Only {self.doc.approver} can Approve this Request.")			
 
 		elif self.new_state.lower() == ("Rejected".lower()):
 			pass
@@ -601,7 +601,7 @@ class CustomWorkflow:
 		elif self.new_state.lower() == ("Waiting Approval".lower()):
 			self.set_approver("Supervisor")
 
-		elif self.new_state.lower() == ("Verified By Supervisor".lower()):
+		elif self.new_state.lower() == ("Verified By Supervisor".lower()):				
 			if frappe.session.user != self.doc.approver:
 				frappe.throw("Only {approver} can Verify this Travel Claim.".format(approver=self.doc.approver))
 			self.set_approver("Approver Approver")
@@ -612,8 +612,10 @@ class CustomWorkflow:
 			self.set_approver("HRGM")
 			
 		elif self.new_state.lower() == ("Approved".lower()):
+			if not self.doc.approver:
+				self.set_approver("Supervisor")
 			if frappe.session.user != self.doc.approver:
-				frappe.throw("Only {approver} can Approved this Travel Claim.".format(approver=self.doc.approver))		
+				frappe.throw("Only {approver} can Approve this Travel Claim.".format(approver=self.doc.approver))		
 		
 		elif self.new_state.lower() == ("Rejected".lower()):
 			if frappe.session.user != self.doc.approver:
@@ -672,7 +674,7 @@ class CustomWorkflow:
 
 		elif self.new_state.lower() == ("Approved".lower()):
 			# if self.doc.material_request_type =="Purchase" and frappe.session.user != self.doc.approver:
-			# 	frappe.throw(f"Only {self.doc.approver} can Approved this Material Request")
+			# 	frappe.throw(f"Only {self.doc.approver} can Approve this Material Request")
 			pass
 		elif self.new_state.lower() == ("Rejected".lower()):
 			# if self.doc.material_request_type =="Purchase" and frappe.session.user != self.doc.approver:

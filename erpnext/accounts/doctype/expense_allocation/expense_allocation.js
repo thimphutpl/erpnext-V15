@@ -49,7 +49,7 @@ var update_totals = function(frm){
 cur_frm.fields_dict['items'].grid.get_field('cost_center').get_query = function(frm, cdt, cdn) {
 	return {
             "filters": {
-                "is_disabled": 0,
+                "disabled": 0,
                 "is_group": 0
             }
         };

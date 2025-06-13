@@ -204,10 +204,11 @@
    "fieldname": "project_code_prefix",
    "fieldtype": "Select",
    "label": "Project Code Prefix",
-   "options": "\nGI-J\nGI-K\nGI-T\nGI-P\nGI-G\nGI",
+   "options": "\nDNCP-D\nDNCP-N\nDNCP-C",
    "reqd": 1
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "cost_center",
    "fieldtype": "Link",
    "label": "Cost Center",
@@ -260,9 +261,9 @@
    "allow_on_submit": 1,
    "fieldname": "project_category",
    "fieldtype": "Select",
+   "hidden": 1,
    "label": "Project Category",
-   "options": "\nGI Project\nDFG Project\nOther Project",
-   "reqd": 1
+   "options": "\nGI Project\nDFG Project\nOther Project"
   },
   {
    "allow_on_submit": 1,
@@ -290,7 +291,7 @@
  "is_submittable": 1,
  "links": [],
  "max_attachments": 4,
- "modified": "2025-05-09 10:56:45.835274",
+ "modified": "2025-06-11 19:08:04.546350",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Project Definition",

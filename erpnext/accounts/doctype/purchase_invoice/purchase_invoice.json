@@ -8,7 +8,6 @@
  "engine": "InnoDB",
  "field_order": [
   "title",
-  "dispatch",
   "payment_status",
   "n_series",
   "naming_series",
@@ -28,6 +27,7 @@
   "is_paid",
   "is_return",
   "return_against",
+  "dispatch",
   "bill_no",
   "bill_date",
   "update_outstanding_for_self",
@@ -499,7 +499,6 @@
    "read_only": 1
   },
   {
-   "collapsible": 1,
    "fieldname": "currency_and_price_list",
    "fieldtype": "Section Break",
    "label": "Currency and Price List",
@@ -707,7 +706,6 @@
   {
    "fieldname": "taxes_section",
    "fieldtype": "Section Break",
-   "hidden": 1,
    "hide_border": 1,
    "label": "Taxes and Charges",
    "oldfieldtype": "Section Break",
@@ -720,8 +718,7 @@
   {
    "fieldname": "section_break_51",
    "fieldtype": "Section Break",
-   "hide_border": 1,
-   "label": "Taxes and Charges"
+   "hide_border": 1
   },
   {
    "fetch_from": "tax_withholding_category.category_name",
@@ -825,7 +822,6 @@
    "read_only": 1
   },
   {
-   "collapsible": 1,
    "fieldname": "section_break_44",
    "fieldtype": "Section Break",
    "label": "Additional Charges and Discount"
@@ -1772,7 +1768,7 @@
  "idx": 204,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-02-13 15:31:28.912356",
+ "modified": "2025-06-04 16:27:52.332711",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Purchase Invoice",

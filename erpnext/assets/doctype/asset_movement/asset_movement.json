@@ -9,7 +9,6 @@
   "company",
   "purpose",
   "based_on",
-  "posting_date",
   "column_break_4",
   "transaction_date",
   "from_employee",
@@ -97,7 +96,6 @@
    "allow_bulk_edit": 1,
    "fieldname": "assets",
    "fieldtype": "Table",
-   "ignore_user_permissions": 1,
    "label": "Assets",
    "options": "Asset Movement Item",
    "reqd": 1
@@ -110,7 +108,6 @@
    "depends_on": "eval:doc.based_on == 'Custodian'",
    "fieldname": "from_employee",
    "fieldtype": "Link",
-   "ignore_user_permissions": 1,
    "label": "From Employee",
    "mandatory_depends_on": "eval:doc.based_on == 'Custodian'",
    "options": "Employee"
@@ -177,20 +174,12 @@
    "label": "Cost Center",
    "mandatory_depends_on": "eval:doc.based_on == 'Cost Center'",
    "options": "Cost Center"
-  },
-  {
-   "default": "Today",
-   "fieldname": "posting_date",
-   "fieldtype": "Date",
-   "hidden": 1,
-   "label": "Posting Date",
-   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-02-20 15:26:24.986285",
+ "modified": "2024-11-17 23:39:13.656932",
  "modified_by": "Administrator",
  "module": "Assets",
  "name": "Asset Movement",

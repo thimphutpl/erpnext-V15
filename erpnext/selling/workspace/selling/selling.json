@@ -197,10 +197,20 @@
    "hidden": 0,
    "is_query_report": 0,
    "label": "Selling",
-   "link_count": 3,
+   "link_count": 4,
    "link_type": "DocType",
    "onboard": 0,
    "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Sales Order",
+   "link_count": 0,
+   "link_to": "Sales Order",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
   },
   {
    "hidden": 0,
@@ -233,7 +243,7 @@
    "type": "Link"
   }
  ],
- "modified": "2025-01-28 12:16:33.597975",
+ "modified": "2025-05-29 11:10:14.862909",
  "modified_by": "kalden.dorji@thimphutechpark.bt",
  "module": "Selling",
  "name": "Selling",

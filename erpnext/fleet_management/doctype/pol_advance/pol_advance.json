@@ -17,6 +17,7 @@
   "cost_center",
   "fuelbook_branch",
   "is_opening",
+  "book_type",
   "payment_details_section",
   "party_type",
   "party",
@@ -128,6 +129,7 @@
    "read_only": 1
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "fuel_book",
    "fieldtype": "Link",
    "in_list_view": 1,
@@ -148,6 +150,7 @@
    "fieldtype": "Link",
    "label": "Company",
    "options": "Company",
+   "read_only": 1,
    "reqd": 1
   },
   {
@@ -322,6 +325,7 @@
    "default": "0",
    "fieldname": "use_common_fuelbook",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "Use Common Fuelbook"
   },
   {
@@ -329,12 +333,20 @@
    "fieldtype": "Currency",
    "label": "Advance Limit",
    "read_only": 1
+  },
+  {
+   "fetch_from": "fuel_book.type",
+   "fieldname": "book_type",
+   "fieldtype": "Select",
+   "label": "Fuel Book Type",
+   "options": "\nOwn\nCommon",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-09-03 12:03:30.012616",
+ "modified": "2025-06-10 14:38:44.564849",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Advance",

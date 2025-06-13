@@ -15,8 +15,8 @@ frappe.query_reports["Asset Register"] = {
 		{
 			"fieldname": "fiscal_year",
 			"label": __("Fiscal Year"),
-			"fieldtype": "Link",
-			"options": "Fiscal Year",
+			"fieldtype": "Select",
+			"options": ["", "2023", "2024", "2025", "2026", "2027", "2028", "2029", "2030"],
 			"reqd": 1,
 			"on_change": function(query_report) {
 				var fiscal_year = query_report.get_values().fiscal_year;

@@ -16,6 +16,7 @@
   "disabled",
   "is_hq_branch",
   "branch_code",
+  "default_warehouse",
   "accounts_settings_section",
   "expense_bank_account",
   "column_break_6",
@@ -168,12 +169,18 @@
    "fieldname": "branch_code",
    "fieldtype": "Data",
    "label": "Branch Code"
+  },
+  {
+   "fieldname": "default_warehouse",
+   "fieldtype": "Link",
+   "label": "Default Warehouse",
+   "options": "Warehouse"
   }
  ],
  "icon": "fa fa-code-fork",
  "idx": 1,
  "links": [],
- "modified": "2024-12-19 14:41:39.765056",
+ "modified": "2025-05-29 10:53:03.197351",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Branch",

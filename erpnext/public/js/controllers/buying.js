@@ -25,13 +25,13 @@ erpnext.buying = {
 					};
 				});
 
-				if (this.frm.doc.__islocal
-					&& frappe.meta.has_field(this.frm.doc.doctype, "disable_rounded_total")) {
+				// if (this.frm.doc.__islocal
+				// 	&& frappe.meta.has_field(this.frm.doc.doctype, "disable_rounded_total")) {
 
-						var df = frappe.meta.get_docfield(this.frm.doc.doctype, "disable_rounded_total");
-						var disable = cint(df.default) || cint(frappe.sys_defaults.disable_rounded_total);
-						this.frm.set_value("disable_rounded_total", disable);
-				}
+				// 		var df = frappe.meta.get_docfield(this.frm.doc.doctype, "disable_rounded_total");
+				// 		var disable = cint(df.default) || cint(frappe.sys_defaults.disable_rounded_total);
+				// 		this.frm.set_value("disable_rounded_total", disable);
+				// }
 
 
 				// no idea where me is coming from

@@ -27,7 +27,6 @@ class AssetMovement(Document):
 		company: DF.Link
 		cost_center: DF.Link | None
 		from_employee: DF.Link | None
-		posting_date: DF.Date
 		project: DF.Link | None
 		purpose: DF.Literal["", "Transfer", "Receipt"]
 		reference_doctype: DF.Link | None
@@ -249,6 +248,7 @@ class AssetMovement(Document):
 				equip.save()
 			""" Asset transfer gl """
 			if d.source_cost_center != d.target_cost_center and self.purpose == "Transfer":
+				self.posting_date = self.transaction_date
 				make_asset_transfer_gl(self, d.asset, self.transaction_date, d.source_cost_center, d.target_cost_center, cancel)
 
 			if current_cost_center and current_employee:
@@ -282,6 +282,8 @@ class AssetMovement(Document):
 					frappe.throw("To Employee is Mandatory")
 				elif self.from_employee == self.to_employee:
 					frappe.throw("Select Different Employee")
+			else:
+				self.to_employee=''
 
 			condition_statement=''
 			if self.based_on == 'Custodian':
@@ -297,27 +299,16 @@ class AssetMovement(Document):
 				""".format(cond=condition_statement),as_dict = 1)
 			if asset_list:
 				self.set("assets",[])
-				if self.to_single:
-					for x in asset_list:
-						row = self.append("assets",{})
-						data = {"asset":x.name, 
-								"from_employee":x.custodian,
-								"from_employee_name":x.custodian_name, 
-								"source_cost_center":x.cost_center,
-								"target_cost_center":frappe.db.get_value("Employee",self.to_employee,"cost_center"),
-								"to_employee":self.to_employee,
-								}
-						row.update(data)
-				else:
-					for x in asset_list:
-						row = self.append("assets",{})
-						data = {"asset":x.name, 
-								"from_employee":x.custodian,
-								"from_employee_name":x.custodian_name, 
-								"source_cost_center":x.cost_center,
-								"target_cost_center":frappe.db.get_value("Employee",self.to_employee,"cost_center"),
-								}
-						row.update(data)
+				for x in asset_list:
+					row = self.append("assets",{})
+					data = {"asset":x.name, 
+							"from_employee":x.custodian,
+							"to_employee":self.to_employee if self.to_single else '',
+							"from_employee_name":x.custodian_name, 
+							"source_cost_center":x.cost_center,
+							"target_cost_center":frappe.db.get_value("Employee",self.to_employee,"cost_center"),
+							}
+					row.update(data)
 			else:
 				frappe.msgprint(f"No Assets registered with given Custodian/Cost Center", title="Notification", indicator='green')
 

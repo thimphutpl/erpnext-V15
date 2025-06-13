@@ -596,6 +596,7 @@
   {
    "fieldname": "project_category",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Activity Category",
    "options": "Project Category"
   },
@@ -905,13 +906,15 @@
   {
    "fieldname": "sb_cost_details",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Cost Details"
   },
   {
    "allow_on_submit": 1,
    "fieldname": "opening_balance",
    "fieldtype": "Currency",
-   "label": "Opening Balance"
+   "label": "Opening Balance",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_sirl",
@@ -1008,7 +1011,7 @@
  "is_submittable": 1,
  "links": [],
  "max_attachments": 4,
- "modified": "2025-05-08 14:58:39.912903",
+ "modified": "2025-06-11 16:59:00.044526",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Project",

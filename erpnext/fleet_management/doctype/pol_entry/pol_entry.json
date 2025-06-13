@@ -6,28 +6,31 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "posting_date",
+  "posting_time",
   "branch",
   "cost_center",
   "equipment",
+  "is_barrel",
+  "qty",
+  "rate",
+  "amount",
+  "item",
+  "item_name",
   "supplier",
+  "book_type",
   "equipment_category",
+  "type",
+  "reference_type",
   "equipment_type",
   "pol_type",
-  "item_name",
-  "posting_date",
-  "qty",
-  "reference_type",
   "reference_name",
-  "type",
   "is_opening",
   "amended_from",
-  "posting_time",
   "current_km",
   "km_difference",
   "mileage",
   "uom",
-  "rate",
-  "amount",
   "memo_number",
   "pol_slip_no",
   "fuelbook",
@@ -55,14 +58,14 @@
    "in_list_view": 1,
    "label": "Equipment",
    "options": "Equipment",
-   "reqd": 1
+   "read_only": 1
   },
   {
    "fieldname": "pol_type",
    "fieldtype": "Data",
    "label": "POL Type",
    "options": "Item",
-   "reqd": 1
+   "read_only": 1
   },
   {
    "fieldname": "posting_date",
@@ -73,7 +76,7 @@
    "fieldname": "qty",
    "fieldtype": "Float",
    "in_list_view": 1,
-   "label": "Qty",
+   "label": "Balance Qty",
    "precision": "2"
   },
   {
@@ -87,8 +90,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Type",
-   "options": "Receive\nIssue\nStock\nconsumed",
-   "reqd": 1
+   "options": "Receive\nIssue\nStock\nconsumed"
   },
   {
    "default": "0",
@@ -185,22 +187,44 @@
   },
   {
    "fieldname": "reference_name",
-   "fieldtype": "Dynamic Link",
+   "fieldtype": "Data",
    "label": "Reference Name",
-   "options": "reference_type"
+   "options": "reference_type",
+   "read_only": 1,
+   "reqd": 1
   },
   {
    "default": "1",
    "fieldname": "own_cost_center",
    "fieldtype": "Check",
    "label": "Own Cost Center"
+  },
+  {
+   "fieldname": "item",
+   "fieldtype": "Link",
+   "label": "Item",
+   "options": "Item"
+  },
+  {
+   "fieldname": "book_type",
+   "fieldtype": "Select",
+   "label": "Book Type",
+   "options": "Own\nCommon\nBarrel",
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_barrel",
+   "fieldtype": "Check",
+   "label": "Is Barrel",
+   "read_only": 1
   }
  ],
  "in_create": 1,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-25 15:47:47.629506",
+ "modified": "2025-06-12 13:29:28.879765",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Entry",

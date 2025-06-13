@@ -62,7 +62,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Cost Type",
-   "options": "HSD\nHire Charge\nLubricant\nOperator Allowance\nOAP Salary\nMuster Roll Employee\nGCE\nOvertime Payment\nDFG Soelra\nGFG Soelra\nThai Salary\nIndian Operators Salary\nRepair and Maintenance\nOJT\nContract Employee",
+   "options": "HSD\nHire Charge\nLubricant\nOperator Allowance\nMuster Roll Employee\nOvertime Payment\nRepair and Maintenance\nEmployee Salary",
    "reqd": 1
   },
   {
@@ -105,7 +105,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-03-08 10:44:20.858120",
+ "modified": "2025-06-09 14:32:34.466724",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Expense Allocation",

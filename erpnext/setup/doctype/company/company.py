@@ -90,6 +90,7 @@ class Company(NestedSet):
 		fax: DF.Data | None
 		fine_and_penalty_account: DF.Link | None
 		fitness_account: DF.Link | None
+		fuel_stock_account: DF.Link | None
 		gain_disposal_account: DF.Link | None
 		gce: DF.Link | None
 		gfg_soelra: DF.Link | None

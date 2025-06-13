@@ -34,6 +34,7 @@ class POLAdvance(AccountsController):
 		approver_designation: DF.Link | None
 		approver_name: DF.Data | None
 		balance_amount: DF.Currency
+		book_type: DF.Literal["", "Own", "Common"]
 		branch: DF.Link | None
 		cheque_date: DF.Date | None
 		cheque_no: DF.Data | None
@@ -63,7 +64,6 @@ class POLAdvance(AccountsController):
 		# if flt(self.is_opening) == 0:
 		# 	validate_workflow_states(self)
 		self.set_advance_limit()
-		# self.set_auto_advance_amount()
 		self.posting_date = self.entry_date
 		self.validate_amount()
 
@@ -75,8 +75,6 @@ class POLAdvance(AccountsController):
 	def on_submit(self): 
 		if not self.is_opening:
 			self.post_journal_entry()
-		# if flt(self.is_opening) == 0:
-			# notify_workflow_states(self)
 
 	def before_cancel(self):
 		if self.is_opening:
@@ -88,8 +86,12 @@ class POLAdvance(AccountsController):
 				
 	def on_cancel(self):
 		self.ignore_linked_doctypes = ("GL Entry", "Stock Ledger Entry", "Payment Ledger Entry")
-		# if cint(self.use_common_fuelbook) == 0:
-		# 	self.make_gl_entries()
+
+	@frappe.whitelist()
+	def get_fuelbook(self):
+		if not self.equipment:
+			frappe.throw("Equipment or Fuel book is missing")
+		return frappe.db.get_value("Equipment", self.equipment, "fuelbook")
 
 	@frappe.whitelist()
 	def set_advance_limit(self):
@@ -103,12 +105,13 @@ class POLAdvance(AccountsController):
 				frappe.throw("Equipment or Fuel book is missing")
 
 			if flt(self.advance_limit) <= 0 and self.equipment_type:
-				self.advance_limit = frappe.db.get_value("Equipment Type", self.equipment_type, "pol_expense_limit")
+				self.advance_limit = frappe.db.get_value("Fuelbook", self.fuel_book, "expense_limit")
 	
 	@frappe.whitelist()
 	def set_auto_advance_amount(self):
 		if not self.fuel_book:
 			frappe.throw("Fuel book is missing")
+		
 		if not self.equipment:
 			frappe.throw("Equipment or Fuel book is missing")
 		
@@ -134,10 +137,10 @@ class POLAdvance(AccountsController):
 			
 		default_ba = get_default_ba()
 		
-		credit_account = self.credit_account
-		advance_account = frappe.db.get_value("Equipment Category", self.equipment_category, 'pol_advance_account')
+		credit_account = frappe.db.get_value("Branch",self.fuelbook_branch,"expense_bank_account")
+		advance_account = frappe.db.get_value("Company", self.company, "pol_advance_account")
 		if not advance_account:
-			advance_account = frappe.db.get_value("Company", self.company, "pol_advance_account")
+			frappe.throw("Please Set Account for POL Advance Account in Company")
 		if not credit_account:
 			frappe.throw("Credit Account is mandatory")
 		
@@ -196,7 +199,7 @@ class POLAdvance(AccountsController):
 		if flt(self.amount) <= 0:
 			frappe.throw("Amount cannot be less than or equal to Zero")
 		if cint(self.use_common_fuelbook) == 0 and flt(self.amount) > flt(self.advance_limit):
-			frappe.throw("Amount cannot be greater than advance limit")
+			frappe.throw("Amount cannot be greater than advance limit "+str(self.advance_limit))
 		if cint(self.is_opening) == 0 :
 			self.outstanding_amount = self.amount
 
@@ -206,21 +209,3 @@ def get_permission_query_conditions(user):
 
 	if user == "Administrator" or "System Manager" in user_roles: 
 		return
-
-	# return """(
-	# 	`tabPOL Advance`.owner = '{user}'
-	# 	or
-	# 	exists(select 1
-	# 		from `tabEmployee` as e
-	# 		where e.branch = `tabPOL Advance`.fuelbook_branch
-	# 		and e.user_id = '{user}')
-	# 	or
-	# 	exists(select 1
-	# 		from `tabEmployee` e, `tabAssign Branch` ab, `tabBranch Item` bi
-	# 		where e.user_id = '{user}'
-	# 		and ab.employee = e.name
-	# 		and bi.parent = ab.name
-	# 		and bi.branch = `tabPOL Advance`.fuelbook_branch)
-	# 	or
-	# 	(`tabPOL Advance`.approver = '{user}' and `tabPOL Advance`.workflow_state not in  ('Draft','Approved','Rejected','Cancelled'))
-	# )""".format(user=user)

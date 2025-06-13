@@ -12,6 +12,10 @@ erpnext.buying.setup_buying_controller();
 
 erpnext.accounts.PurchaseInvoice = class PurchaseInvoice extends erpnext.buying.BuyingController {
 	setup(doc) {
+		if(cur_frm.doc.__islocal){
+			cur_frm.set_value("disable_rounded_total", 1);
+			cur_frm.refresh_field("disable_rounded_total");
+		}
 		this.setup_posting_date_time_check();
 		super.setup(doc);
 		// this.frm.set_df_property("apply_tds", "read_only", 0);

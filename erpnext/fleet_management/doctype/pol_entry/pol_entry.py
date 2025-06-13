@@ -1,7 +1,7 @@
 # Copyright (c) 2022, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
-# import frappe
+import frappe
 from frappe.model.document import Document
 
 class POLEntry(Document):
@@ -15,29 +15,33 @@ class POLEntry(Document):
 
 		amended_from: DF.Link | None
 		amount: DF.Currency
+		book_type: DF.Literal["Own", "Common", "Barrel"]
 		branch: DF.Link
 		cost_center: DF.Link | None
 		current_km: DF.Float
-		equipment: DF.Link
+		equipment: DF.Link | None
 		equipment_category: DF.Link | None
 		equipment_type: DF.Link | None
 		fuelbook: DF.Link | None
+		is_barrel: DF.Check
 		is_opening: DF.Check
+		item: DF.Link | None
 		item_name: DF.Data | None
 		km_difference: DF.Float
 		memo_number: DF.Data | None
 		mileage: DF.Float
 		own_cost_center: DF.Check
 		pol_slip_no: DF.Data | None
-		pol_type: DF.Data
+		pol_type: DF.Data | None
 		posting_date: DF.Date | None
 		posting_time: DF.Time | None
 		qty: DF.Float
 		rate: DF.Currency
-		reference_name: DF.DynamicLink | None
+		reference_name: DF.Data
 		reference_type: DF.Literal["", "POL Receive", "POL Issue", "Vehicle Logbook", "HSD Adjustment", "Equipment POL Transfer"]
 		supplier: DF.Link | None
 		type: DF.Literal["Receive", "Issue", "Stock", "consumed"]
 		uom: DF.Literal["", "Hour", "KM"]
 	# end: auto-generated types
-	pass
+	def on_cancel(self):
+		frappe.throw("POL Entry should not be cancelled")

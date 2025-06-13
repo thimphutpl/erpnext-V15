@@ -70,6 +70,10 @@ frappe.ui.form.on("Purchase Receipt", {
 		erpnext.queries.setup_queries(frm, "Warehouse", function () {
 			return erpnext.queries.warehouse(frm.doc);
 		});
+		if(frm.doc.__islocal){
+			frm.set_value("disable_rounded_total", 1);
+			frm.refresh_field("disable_rounded_total");
+		}
 	},
 
 	refresh: function (frm) {

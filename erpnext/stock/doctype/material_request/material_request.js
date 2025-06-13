@@ -143,16 +143,21 @@ frappe.ui.form.on("Material Request", {
 
 	make_custom_buttons: function (frm) {
 		if (frm.doc.docstatus == 0) {
-			frm.add_custom_button(
-				__("Bill of Materials"),
-				() => frm.events.get_items_from_bom(frm),
-				__("Get Items From")
-			);
 			// frm.add_custom_button(
-			// 	__("BOQ"),
-			// 	() => frm.events.get_items_from_boq(frm),
+			// 	__("Bill of Materials"),
+			// 	() => frm.events.get_items_from_bom(frm),
 			// 	__("Get Items From")
 			// );
+			// frm.add_custom_button(
+			// 	__("Bill of Quantity"),
+			// 	() => frm.events.get_items_from_bom(frm),
+			// 	__("Get Items From")
+			// );
+			frm.add_custom_button(
+				__("BOQ"),
+				() => frm.events.get_items_from_boq(frm),
+				__("Get Items From")
+			);
 		}
 
 		if (frm.doc.docstatus == 1 && frm.doc.status != "Stopped") {
@@ -559,17 +564,18 @@ frappe.ui.form.on("Material Request", {
 				values["company"] = frm.doc.company;
 				if (!frm.doc.company) frappe.throw(__("Company field is required"));
 				frappe.call({
-					method: "erpnext.manufacturing.doctype.bom.bom.get_bom_items",
+					method: "erpnext.projects.doctype.boq.boq.get_boq_items",
 					args: values,
 					callback: function (r) {
 						if (!r.message) {
-							frappe.throw(__("BOM does not contain any stock item"));
+							frappe.throw(__("BOQ does not contain any stock item"));
 						} else {
 							erpnext.utils.remove_empty_first_row(frm, "items");
 							$.each(r.message, function (i, item) {
 								var d = frappe.model.add_child(cur_frm.doc, "Material Request Item", "items");
 								d.item_code = item.item_code;
 								d.item_name = item.item_name;
+								d.rate = item.rate;
 								d.description = item.description;
 								d.warehouse = values.warehouse;
 								d.uom = item.stock_uom;

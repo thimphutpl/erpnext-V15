@@ -1,7 +1,7 @@
 // Copyright (c) 2022, Frappe Technologies Pvt. Ltd. and contributors
 // For license information, please see license.txt
 
-cur_frm.add_fetch("equipment", "registration_number", "equipment_number")
+cur_frm.add_fetch("equipment", "registration_number", "registration_number")
 cur_frm.add_fetch("branch", "branch", "cost_center")
 cur_frm.add_fetch("cost_center", "warehouse", "warehouse")
 cur_frm.add_fetch("fuelbook", "branch", "fuelbook_branch")
@@ -33,26 +33,7 @@ frappe.ui.form.on('POL Receive', {
 		})
 	},
 	refresh: function(frm) {
-		if(frm.doc.jv) {
-			cur_frm.add_custom_button(__('Bank Entries'), function() {
-				frappe.route_options = {
-					"Journal Entry Account.reference_type": me.frm.doc.doctype,
-					"Journal Entry Account.reference_name": me.frm.doc.name,
-				};
-				frappe.set_route("List", "Journal Entry");
-			}, __("View"));
-		}
-		if(frm.doc.docstatus == 1) {
-			cur_frm.add_custom_button(__("Stock Ledger"), function() {
-				frappe.route_options = {
-					voucher_no: frm.doc.name,
-					from_date: frm.doc.posting_date,
-					to_date: frm.doc.posting_date,
-					company: frm.doc.company
-				};
-				frappe.set_route("query-report", "Stock Ledger Report");
-			}, __("View"));
-
+		if(frm.doc.docstatus == 1 && frm.doc.book_type !="Barrel") {
 			cur_frm.add_custom_button(__('Accounting Ledger'), function() {
 				frappe.route_options = {
 					voucher_no: frm.doc.name,
@@ -159,7 +140,7 @@ frappe.ui.form.on('POL Receive', {
 				frappe.call({
 					method: "erpnext.fleet_management.doctype.pol_receive.pol_receive.get_equipment_data",
 					args: {
-						equipment_name: frm.doc.equipment,
+						equipment: frm.doc.equipment,
 						to_date: frm.doc.to_date,
 						all_equipment: frm.doc.all_equipment || 0,
 						branch: frm.doc.branch

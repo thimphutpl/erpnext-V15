@@ -101,8 +101,8 @@ def get_container_filtered(doctype, txt, searchfield, start, page_len, filters):
 		cond = "and branch = '%s'" % filters.get("branch")
 
 	return frappe.db.sql(
-		"""select name, equipment_name, equipment_category, equipment_type from `tabEquipment` e
-			where enabled = 1 and  `{key}` LIKE %(txt)s {cond}
+		"""select name, equipment_category, equipment_type from `tabEquipment` e
+			where is_disabled = 0 and  `{key}` LIKE %(txt)s {cond}
 			and exists (select 1 from `tabEquipment Type` where is_container = 1 and name = e.equipment_type and disabled = 0)
 			order by name limit %(page_len)s offset %(start)s""".format(
 			key=searchfield, cond=cond

@@ -109,6 +109,20 @@ frappe.ui.form.on("Asset", {
 
 		if (frm.doc.docstatus == 1) {
 			if (["Submitted", "Partially Depreciated", "Fully Depreciated"].includes(frm.doc.status)) {
+				if(in_list([...frappe.user_roles], 'Admin')){
+					frm.add_custom_button(__("Disable Depreciation"), function(){
+						frappe.warn('Are you sure to proceed?',
+							'Asset Depreciation will be disabled here after.',
+							() => {
+								frm.trigger("update_disable_depreciation")
+							},
+							'Continue',
+							true // Sets dialog as minimizable
+						)
+						// frm.trigger("update_disable_depreciation")
+					});
+				}
+
 				frm.add_custom_button(
 					__("Transfer Asset"),
 					function () {
@@ -261,7 +275,7 @@ frappe.ui.form.on("Asset", {
 		if (frm.doc.purchase_receipt && frm.doc.purchase_invoice && frm.doc.docstatus === 1) {
 			frm.set_df_property("purchase_invoice", "read_only", 1);
 			frm.set_df_property("purchase_receipt", "read_only", 1);
-		} else if (frm.doc.is_existing_asset || frm.doc.is_composite_asset || frm.doc.is_free_asset == 1) {
+		} else if (frm.doc.is_existing_asset || frm.doc.is_composite_asset || frm.doc.is_opening_asset) {
 			frm.toggle_reqd("purchase_receipt", 0);
 			frm.toggle_reqd("purchase_invoice", 0);
 		} else if (frm.doc.purchase_receipt) {
@@ -277,11 +291,6 @@ frappe.ui.form.on("Asset", {
 			frm.set_df_property("purchase_receipt", "read_only", 0);
 			frm.toggle_reqd("purchase_invoice", 1);
 			frm.set_df_property("purchase_invoice", "read_only", 0);
-		}
-		if (frm.doc.is_existing_asset || frm.doc.is_composite_asset || frm.doc.is_free_asset == 1) {
-			frm.toggle_reqd("purchase_receipt", 0);
-			frm.toggle_reqd("purchase_invoice", 0);
-			frm.toggle_reqd("purchase_date", 0);
 		}
 	},
 
@@ -502,47 +511,14 @@ frappe.ui.form.on("Asset", {
 			},
 		});
 	},
-	is_free_asset: function(frm){
-		frm.trigger("toggle_reference_doc");
-		if (!frm.doc.asset_category) return
-		frappe.call({
-			method: "erpnext.assets.doctype.asset.asset.get_account_info",
-			args: {
-				asset_category: frm.doc.asset_category,
-				is_free_asset: frm.doc.is_free_asset,
-				company: frm.doc.company
-			},
-			callback: function (r, rt) {
-				// console.log(r.message)
-				// console.log(r.message[0].fixed_asset_account)
-				if (r.message) {
-					frm.set_value("asset_account", r.message[0].fixed_asset_account);
-					// frm.set_value("credit_account", r.message);
-					frm.refresh_field('asset_account');
-					
 
-					frm.set_value("accumulated_depreciation_account", r.message[0].accumulated_depreciation_account);
-					// frm.set_value("credit_account", r.message);
-					frm.refresh_field('accumulated_depreciation_account');
-
-					frm.set_value("credit_account", r.message[0].credit_account);
-					if(frm.doc.is_free_asset == 1){
-						frm.set_value("equity_account", r.message[0].equity_account);
-					}
-					// frm.set_value("credit_account", r.message);
-					frm.refresh_field('credit_account');
-				}
-			},
-		});
-	},
 	asset_category: function (frm) {
 		if (!frm.doc.asset_category) return
+		
 		frappe.call({
 			method: "erpnext.assets.doctype.asset.asset.get_account_info",
 			args: {
-				asset_category: frm.doc.asset_category,
-				is_free_asset: frm.doc.is_free_asset,
-				company: frm.doc.company
+				asset_category: frm.doc.asset_category
 			},
 			callback: function (r, rt) {
 				// console.log(r.message)
@@ -558,9 +534,6 @@ frappe.ui.form.on("Asset", {
 					frm.refresh_field('accumulated_depreciation_account');
 
 					frm.set_value("credit_account", r.message[0].credit_account);
-					if(frm.doc.is_free_asset == 1){
-						frm.set_value("equity_account", r.message[0].equity_account);
-					}
 					// frm.set_value("credit_account", r.message);
 					frm.refresh_field('credit_account');
 				}
@@ -569,6 +542,10 @@ frappe.ui.form.on("Asset", {
 	},
 
 	is_existing_asset: function (frm) {
+		frm.trigger("toggle_reference_doc");
+	},
+	
+	is_opening_asset: function (frm) {
 		frm.trigger("toggle_reference_doc");
 	},
 
@@ -590,7 +567,8 @@ frappe.ui.form.on("Asset", {
 				item_code: frm.doc.item_code,
 				company: frm.doc.company,
 				serial_no: frm.doc.serial_no,
-				cost_center: frm.doc.cost_center
+				cost_center: frm.doc.cost_center,
+				branch: frm.doc.branch
 			},
 			method: "erpnext.assets.doctype.asset.asset.make_sales_invoice",
 			callback: function (r) {
@@ -844,6 +822,21 @@ frappe.ui.form.on("Asset", {
 			frappe.flags.from_set_salvage_value_percentage_or_expected_value_after_useful_life = false;
 		}
 	},
+
+	update_disable_depreciation: function(frm){
+		return frappe.call({
+			method: "erpnext.assets.doctype.asset.asset.update_disable_depreciation",
+			args:{
+				'asset_id': frm.doc.name
+			},
+			callback: function(r, rt) {
+				if(r.message){
+					frappe.msgprint("Disable Depreciation updated for this Asset");
+				}
+				cur_frm.reload_doc()
+			},
+		});
+	},
 });
 
 frappe.ui.form.on("Asset Finance Book", {
@@ -908,32 +901,80 @@ frappe.ui.form.on("Asset Finance Book", {
 	},
 });
 
-erpnext.asset.scrap_asset = function (frm) {
-	frappe.confirm(__("Do you really want to scrap this asset?"), function () {
-		frappe.call({
-			args: {
-				asset_name: frm.doc.name,
-			},
-			method: "erpnext.assets.doctype.asset.depreciation.scrap_asset",
-			callback: function (r) {
-				cur_frm.reload_doc();
-			},
-		});
-	});
-};
+// erpnext.asset.scrap_asset = function (frm) {
+// 	frappe.confirm(__("Do you really want to scrap this asset?"), function () {
+// 		frappe.call({
+// 			args: {
+// 				asset_name: frm.doc.name,
+// 			},
+// 			method: "erpnext.assets.doctype.asset.depreciation.scrap_asset",
+// 			callback: function (r) {
+// 				cur_frm.reload_doc();
+// 			},
+// 		});
+// 	});
+// };
 
-erpnext.asset.restore_asset = function (frm) {
+// erpnext.asset.restore_asset = function (frm) {
+// 	frappe.confirm(__("Do you really want to restore this scrapped asset?"), function () {
+// 		frappe.call({
+// 			args: {
+// 				asset_name: frm.doc.name,
+// 			},
+// 			method: "erpnext.assets.doctype.asset.depreciation.restore_asset",
+// 			callback: function (r) {
+// 				cur_frm.reload_doc();
+// 			},
+// 		});
+// 	});
+// };
+
+erpnext.asset.scrap_asset = function (frm) {
+	var dialog = new frappe.ui.Dialog({
+		title: __("Scrap Asset"),
+		fields: [
+			{
+				"label": __("Scrap Date"),
+				"fieldname": "scrap_date",
+				"fieldtype": "Date",
+				"reqd": 1,
+				"default": frappe.datetime.nowdate(),
+				"read_only": 0
+			}
+		]
+	});
+
+	dialog.set_primary_action(__("Scrap"), function () {
+		var args = dialog.get_values();
+		if (!args) return;
+		dialog.hide();
+		return frappe.call({
+			method: "erpnext.assets.doctype.asset.depreciation.scrap_asset",
+			args: {
+				"asset_name": frm.doc.name,
+				"scrap_date": args.scrap_date
+			},
+			callback: function (r) {
+				// console.log(r.message)
+				frappe.set_route("Form", "Journal Entry", r.message);
+			}
+		})
+	});
+	dialog.show();
+}
+
+erpnext.asset.restore_asset = function(frm) {
 	frappe.confirm(__("Do you really want to restore this scrapped asset?"), function () {
 		frappe.call({
 			args: {
-				asset_name: frm.doc.name,
+				"asset_name": frm.doc.name
 			},
 			method: "erpnext.assets.doctype.asset.depreciation.restore_asset",
-			callback: function (r) {
+			callback: function(r) {
 				cur_frm.reload_doc();
-			},
-		});
-	});
+			}
+		})
+	})
 };
 
 erpnext.asset.transfer_asset = function () {

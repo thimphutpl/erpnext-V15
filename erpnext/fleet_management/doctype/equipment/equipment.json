@@ -220,7 +220,7 @@
   },
   {
    "default": "0",
-   "description": "Check if the Equipment is Not Gyalsung Infra's",
+   "description": "Check if the Equipment is Not DNCP",
    "fieldname": "not_cdcl",
    "fieldtype": "Check",
    "label": "Not Own"
@@ -376,7 +376,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-03-30 12:23:17.877640",
+ "modified": "2025-06-10 10:19:45.639829",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Equipment",

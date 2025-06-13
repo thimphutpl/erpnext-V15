@@ -103,17 +103,18 @@ class JournalEntry(AccountsController):
 		stock_entry: DF.Link | None
 		supplier_name: DF.Link | None
 		tax_withholding_category: DF.Link | None
-		title: DF.Data | None
+		title: DF.Data
 		total_amount: DF.Currency
 		total_amount_currency: DF.Link | None
 		total_amount_in_words: DF.Data | None
 		total_credit: DF.Currency
 		total_debit: DF.Currency
 		use_check_lot: DF.Check
+		use_cheque_lot: DF.Check
 		user_remark: DF.SmallText | None
 		vendor_invoice_no: DF.SmallText | None
 		verifier: DF.Link | None
-		voucher_type: DF.Literal["Journal Entry", "Inter Company Journal Entry", "Bank Entry", "Cash Entry", "Credit Card Entry", "Debit Note", "Credit Note", "Contra Entry", "Excise Entry", "Write Off Entry", "Opening Entry", "Depreciation Entry", "Exchange Rate Revaluation", "Exchange Gain Or Loss", "Deferred Revenue", "Deferred Expense"]
+		voucher_type: DF.Literal["Journal Entry", "Bank Entry", "Contra Entry", "Opening Entry", "Depreciation Entry"]
 		write_off_amount: DF.Currency
 		write_off_based_on: DF.Literal["Accounts Receivable", "Accounts Payable"]
 	# end: auto-generated types
@@ -122,6 +123,8 @@ class JournalEntry(AccountsController):
 		super().__init__(*args, **kwargs)
 
 	def autoname(self):
+		if not self.naming_series:
+			self.naming_series = "Journal Entry"
 		prefix = frappe.db.get_value("Journal Entry Series", self.naming_series, "prefix")
 		if not prefix:
 			frappe.throw("Please set prefix {}".format(
@@ -221,6 +224,7 @@ class JournalEntry(AccountsController):
 		self.update_invoice_discounting()
 		self.update_booked_depreciation()
 		self.update_reference_document()
+		self.update_cheque_lot()
 		self.update_project_advance(cancel=self.docstatus == 2)
 		travel_claim = frappe.db.sql("""select name from `tabTravel Claim` where claim_journal like '%{}%'""".format(self.name),as_dict=1)
 		if travel_claim == [] and "Travel Payable" not in self.title:
@@ -267,6 +271,7 @@ class JournalEntry(AccountsController):
 			"Repost Accounting Ledger",
 			"Repost Accounting Ledger Items",
 			"Unreconcile Payment",
+			"POL Receive",
 			"Unreconcile Payment Entries",
 		)
 		self.make_gl_entries(1)
@@ -278,6 +283,7 @@ class JournalEntry(AccountsController):
 		self.update_invoice_discounting()
 		self.update_booked_depreciation(1)
 		self.update_reference_document(cancel=True)
+		self.update_cheque_lot()
 		check_clearance_date(self.doctype, self.name)
 		self.update_project_advance(cancel=self.docstatus == 2)
 		travel_claim = frappe.db.sql("""select name from `tabTravel Claim` where claim_journal like '%{}%'""".format(self.name),as_dict=1)
@@ -416,6 +422,11 @@ class JournalEntry(AccountsController):
 		# 	total_overall_cost = (flt(total_previous_cost.total_cost) - flt(credit_in_account_currency)) if self.docstatus == 1 else (flt(total_previous_cost.total_cost) + flt(credit_in_account_currency))
 		# 	frappe.db.sql("update `tabProject` set total_cost={}, adjustments_made={} where name ='{}'".format(total_overall_cost, total_adjustment, reference_name))
 		frappe.db.commit()
+
+	def update_cheque_lot(self, cancel=False):
+		from erpnext.accounts.doctype.cheque_lot.cheque_lot import get_cheque_info
+		if self.use_cheque_lot == 1:
+			get_cheque_info(self.cheque_no, cancel=cancel)
 
 	def update_advance_paid(self):
 		advance_paid = frappe._dict()
@@ -1089,9 +1100,13 @@ class JournalEntry(AccountsController):
 					accounts_credited.append(d.party or d.account)
 			for d in self.get("accounts"):
 				if flt(d.debit) > 0:
+					if len(accounts_credited) == 0:
+						frappe.throw("Account Missing")
 					# d.against_account = ", ".join(str(account) for account in set(accounts_credited) if account is not None)
 					d.against_account = ", ".join(list(set(accounts_credited)))
 				if flt(d.credit) > 0:
+					if len(accounts_debited) == 0:
+						frappe.throw("Account Missing")
 					d.against_account = ", ".join(list(set(accounts_debited)))
 
 	def validate_debit_credit_amount(self):

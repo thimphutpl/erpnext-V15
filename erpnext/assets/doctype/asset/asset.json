@@ -2,7 +2,7 @@
  "actions": [],
  "allow_import": 1,
  "allow_rename": 1,
- "autoname": "ASSET.YY.######",
+ "autoname": "naming_series:",
  "creation": "2022-01-18 02:26:55.975005",
  "doctype": "DocType",
  "document_type": "Document",
@@ -15,7 +15,7 @@
   "asset_owner",
   "asset_owner_company",
   "is_existing_asset",
-  "is_free_asset",
+  "is_opening_asset",
   "old_asset_code",
   "is_composite_asset",
   "supplier",
@@ -42,7 +42,6 @@
   "asset_account",
   "credit_account",
   "accumulated_depreciation_account",
-  "equity_account",
   "purchase_details_section",
   "purchase_receipt",
   "purchase_invoice",
@@ -50,6 +49,7 @@
   "additional_value",
   "total_asset_cost",
   "additional_asset_cost",
+  "existing_pr_reference",
   "column_break_23",
   "gross_purchase_amount",
   "asset_quantity",
@@ -208,9 +208,11 @@
    "fieldtype": "Link",
    "ignore_user_permissions": 1,
    "label": "Custodian",
-   "options": "Employee"
+   "options": "Employee",
+   "reqd": 1
   },
   {
+   "fetch_from": "branch.cost_center",
    "fieldname": "cost_center",
    "fieldtype": "Link",
    "label": "Cost Center",
@@ -227,8 +229,8 @@
    "fieldname": "purchase_date",
    "fieldtype": "Date",
    "label": "Purchase Date",
-   "mandatory_depends_on": "eval:!doc.is_existing_asset && !doc.is_composite_asset && !doc.is_free_asset;",
-   "read_only_depends_on": "eval:!doc.is_existing_asset && !doc.is_composite_asset && !doc.is_free_asset"
+   "mandatory_depends_on": "eval:!doc.is_existing_asset && !doc.is_composite_asset && !doc.is_opening_asset",
+   "read_only_depends_on": "eval:!doc.is_existing_asset && !doc.is_composite_asset && !doc.is_opening_asset"
   },
   {
    "fieldname": "disposal_date",
@@ -253,7 +255,7 @@
    "label": "Gross Purchase Amount",
    "mandatory_depends_on": "eval:(!doc.is_composite_asset || doc.docstatus==1)",
    "options": "Company:company:default_currency",
-   "read_only_depends_on": "eval:!doc.is_existing_asset"
+   "read_only_depends_on": "eval:!doc.is_existing_asset && !doc.is_opening_asset"
   },
   {
    "fieldname": "available_for_use_date",
@@ -270,7 +272,7 @@
   },
   {
    "default": "0",
-   "depends_on": "eval:!doc.is_composite_asset",
+   "depends_on": "eval:!doc.is_composite_asset && !doc.is_opening_asset",
    "fieldname": "is_existing_asset",
    "fieldtype": "Check",
    "label": "Is Existing Asset"
@@ -283,7 +285,6 @@
    "options": "Company:company:default_currency"
   },
   {
-   "collapsible": 1,
    "collapsible_depends_on": "eval:doc.calculate_depreciation || doc.is_existing_asset",
    "fieldname": "section_break_23",
    "fieldtype": "Section Break",
@@ -421,7 +422,7 @@
    "fieldtype": "Column Break"
   },
   {
-   "depends_on": "eval:!doc.is_composite_asset && !doc.is_existing_asset && !doc.is_free_asset",
+   "depends_on": "eval:!doc.is_composite_asset && !doc.is_existing_asset",
    "fieldname": "purchase_receipt",
    "fieldtype": "Link",
    "label": "Purchase Receipt",
@@ -430,7 +431,7 @@
    "print_hide": 1
   },
   {
-   "depends_on": "eval:!doc.is_composite_asset && !doc.is_existing_asset && !doc.is_free_asset",
+   "depends_on": "eval:!doc.is_composite_asset && !doc.is_existing_asset",
    "fieldname": "purchase_invoice",
    "fieldtype": "Link",
    "label": "Purchase Invoice",
@@ -456,7 +457,6 @@
    "read_only": 1
   },
   {
-   "collapsible": 1,
    "fieldname": "accounting_dimensions_section",
    "fieldtype": "Section Break",
    "label": "Accounting Dimensions"
@@ -466,7 +466,6 @@
    "fieldtype": "Column Break"
   },
   {
-   "collapsible": 1,
    "collapsible_depends_on": "is_existing_asset",
    "fieldname": "purchase_details_section",
    "fieldtype": "Section Break",
@@ -481,6 +480,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "depends_on": "calculate_depreciation",
    "fieldname": "section_break_36",
    "fieldtype": "Section Break",
    "label": "Finance Books"
@@ -699,16 +699,16 @@
   },
   {
    "default": "0",
-   "fieldname": "is_free_asset",
+   "depends_on": "eval:!doc.is_composite_asset && !doc.is_existing_asset",
+   "fieldname": "is_opening_asset",
    "fieldtype": "Check",
-   "label": "Is Free Asset"
+   "label": "Is Opening Asset"
   },
   {
-   "depends_on": "eval:doc.is_free_asset == 1;",
-   "fieldname": "equity_account",
-   "fieldtype": "Link",
-   "label": "Equity Account",
-   "options": "Account"
+   "depends_on": "eval: doc.is_opening_asset",
+   "fieldname": "existing_pr_reference",
+   "fieldtype": "Data",
+   "label": "Existing PR Reference"
   }
  ],
  "idx": 72,
@@ -747,11 +747,11 @@
    "link_fieldname": "target_asset"
   }
  ],
- "modified": "2025-02-19 15:56:06.142153",
+ "modified": "2025-06-04 16:16:42.485265",
  "modified_by": "Administrator",
  "module": "Assets",
  "name": "Asset",
- "naming_rule": "Expression (old style)",
+ "naming_rule": "By \"Naming Series\" field",
  "owner": "Administrator",
  "permissions": [
   {

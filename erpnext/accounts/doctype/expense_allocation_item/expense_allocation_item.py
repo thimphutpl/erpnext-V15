@@ -15,7 +15,8 @@ class ExpenseAllocationItem(Document):
 		from frappe.types import DF
 
 		amount: DF.Currency
-		business_activity: DF.Link
+		business_activity: DF.Link | None
+		cost_center: DF.Link | None
 		equipment: DF.Link | None
 		equipment_number: DF.Data | None
 		expense_for: DF.Literal["", "HSD", "Hire Charge", "Lubricant", "Operator Allowance", "OAP Salary", "Muster Roll Employee", "GCE", "Overtime Payment", "DFG Soelra", "GFG Soelra", "Thai Salary", "Indian Operators Salary", "Repair and Maintenance", "OJT", "Contract Employee"]
@@ -24,7 +25,7 @@ class ExpenseAllocationItem(Document):
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
-		project: DF.Link
+		project: DF.Link | None
 		quantity: DF.Data | None
 		rate: DF.Currency
 		remarks: DF.LongText | None
