@@ -4,13 +4,13 @@
 frappe.ui.form.on("Asset Sub Category", {
     setup(frm){
         // Set query for asset_category based on company
-        frm.set_query("asset_category", function() {
-            return {
-                filters: {
-                    "company": frm.doc.company
-                }
-            };
-        });
+        // frm.set_query("asset_category", function() {
+        //     return {
+        //         filters: {
+        //             "company": frm.doc.company
+        //         }
+        //     };
+        // });
     },
 
 	refresh(frm) {

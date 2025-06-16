@@ -1499,7 +1499,7 @@ def get_gl_entries_on_asset_regain(
 
 
 def get_gl_entries_on_asset_disposal(
-	asset, selling_amount=0, finance_book=None, voucher_type=None, voucher_no=None, date=None
+	asset, selling_amount=0, finance_book=None, voucher_type=None, voucher_no=None, date=None, cost_center = None
 ):
 	if not date:
 		date = getdate()
@@ -1511,7 +1511,6 @@ def get_gl_entries_on_asset_disposal(
 		accumulated_depr_amount,
 		value_after_depreciation,
 	) = get_asset_details(asset, finance_book)
-
 	gl_entries = [
 		asset.get_gl_dict(
 			{
@@ -1519,6 +1518,7 @@ def get_gl_entries_on_asset_disposal(
 				"credit_in_account_currency": asset.gross_purchase_amount,
 				"credit": asset.gross_purchase_amount,
 				"posting_date": date,
+				"cost_center": cost_center,
 			},
 			item=asset,
 		),
@@ -1532,6 +1532,7 @@ def get_gl_entries_on_asset_disposal(
 					"debit_in_account_currency": accumulated_depr_amount,
 					"debit": accumulated_depr_amount,
 					"posting_date": date,
+					"cost_center": cost_center
 				},
 				item=asset,
 			),
@@ -1542,7 +1543,7 @@ def get_gl_entries_on_asset_disposal(
 	disposal_account = loss_disposal_account
 	if profit_amount:
 		get_profit_gl_entries(
-			asset, profit_amount, gl_entries, disposal_account, date
+			asset, profit_amount, gl_entries, disposal_account, cost_center, date
 		)
 
 	if voucher_type and voucher_no:
@@ -1579,6 +1580,7 @@ def get_profit_gl_entries(
 		date = getdate()
 
 	debit_or_credit = "debit" if profit_amount < 0 else "credit"
+
 	gl_entries.append(
 		asset.get_gl_dict(
 			{
@@ -1612,7 +1614,7 @@ def get_profit_gl_entries(
 @frappe.whitelist()
 def get_disposal_account_and_cost_center(company):
 	loss_disposal_account = frappe.get_cached_value(
-		"Company", company, ["disposal_account"]
+		"Company", company, ["gain_disposal_account"]
 	)
 	if not loss_disposal_account:
 		frappe.throw(_("Please set 'Gain/Loss Account on Asset Disposal' in Company {0}").format(company))

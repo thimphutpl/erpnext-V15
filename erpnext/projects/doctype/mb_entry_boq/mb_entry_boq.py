@@ -17,14 +17,14 @@ class MBEntryBOQ(Document):
 		act_amount: DF.Float
 		act_quantity: DF.Float
 		act_rate: DF.Float
-		boq_code: DF.Data | None
 		boq_item_name: DF.Data | None
 		entry_amount: DF.Float
 		entry_quantity: DF.Float
 		entry_rate: DF.Float
 		is_group: DF.Check
 		is_selected: DF.Check
-		item: DF.Text | None
+		item_code: DF.Link | None
+		item_name: DF.Data | None
 		original_amount: DF.Float
 		original_quantity: DF.Float
 		original_rate: DF.Float

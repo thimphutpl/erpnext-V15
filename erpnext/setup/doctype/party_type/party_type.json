@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "allow_rename": 1,
  "autoname": "field:party_type",
  "creation": "2016-12-26 11:26:51.508286",
  "doctype": "DocType",
@@ -24,13 +25,13 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Account Type",
-   "options": "Payable\nReceivable",
+   "options": "Payable\nReceivable\nEquity",
    "reqd": 1
   }
  ],
  "in_create": 1,
  "links": [],
- "modified": "2024-08-14 12:49:31.801500",
+ "modified": "2025-06-14 11:46:10.152660",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Party Type",

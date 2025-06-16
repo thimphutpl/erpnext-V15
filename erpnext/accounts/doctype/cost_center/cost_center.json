@@ -16,6 +16,7 @@
   "company",
   "warehouse",
   "expense_account",
+  "budget_allocationestimation",
   "cb0",
   "is_group",
   "disabled",
@@ -130,7 +131,8 @@
   },
   {
    "fieldname": "section_break_hefj",
-   "fieldtype": "Section Break"
+   "fieldtype": "Section Break",
+   "hidden": 1
   },
   {
    "fieldname": "sub_activity",
@@ -177,13 +179,18 @@
    "fieldtype": "Link",
    "label": "Muster Roll Expense Bank Account",
    "options": "Account"
+  },
+  {
+   "fieldname": "budget_allocationestimation",
+   "fieldtype": "Data",
+   "label": "Budget Allocation/Estimation"
   }
  ],
  "icon": "fa fa-money",
  "idx": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2025-04-25 10:45:15.133484",
+ "modified": "2025-06-16 09:45:05.342618",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Cost Center",

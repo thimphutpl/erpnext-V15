@@ -1,0 +1,134 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-06-14 11:03:03.868873",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "source_over_head_details_section",
+  "source_branch",
+  "distribution_type",
+  "get_source_cost",
+  "column_break_bxdh",
+  "source_cost_center",
+  "account",
+  "source_total_amount",
+  "target_over_head_details_section",
+  "distribute_cost",
+  "items",
+  "section_break_z3vf",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_z3vf",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Over Head Cost Distribution",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "source_over_head_details_section",
+   "fieldtype": "Section Break",
+   "label": "Source Over Head Details "
+  },
+  {
+   "fieldname": "source_branch",
+   "fieldtype": "Link",
+   "in_filter": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Source Branch",
+   "options": "Branch",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "source_branch.cost_center",
+   "fieldname": "source_cost_center",
+   "fieldtype": "Link",
+   "label": "Source Cost Center",
+   "options": "Cost Center",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_bxdh",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "Get cost only after branch and account are set",
+   "fieldname": "get_source_cost",
+   "fieldtype": "Button",
+   "label": "Get Over Head Cost"
+  },
+  {
+   "fieldname": "source_total_amount",
+   "fieldtype": "Currency",
+   "label": "Source Total Amount",
+   "reqd": 1
+  },
+  {
+   "fieldname": "distribution_type",
+   "fieldtype": "Select",
+   "label": "Distribution Type",
+   "options": "Cost Center to Cost Center\nCost Center to Project",
+   "reqd": 1
+  },
+  {
+   "fieldname": "target_over_head_details_section",
+   "fieldtype": "Section Break",
+   "label": "Target Over Head Details"
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "options": "Over Head Cost Item",
+   "reqd": 1
+  },
+  {
+   "description": "Distribute cost once target datas are set",
+   "fieldname": "distribute_cost",
+   "fieldtype": "Button",
+   "label": "Distribute Cost"
+  },
+  {
+   "fieldname": "account",
+   "fieldtype": "Link",
+   "label": "Account",
+   "options": "Account",
+   "reqd": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2025-06-14 12:16:52.662408",
+ "modified_by": "Administrator",
+ "module": "Accounts",
+ "name": "Over Head Cost Distribution",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

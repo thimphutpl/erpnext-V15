@@ -314,6 +314,7 @@
    "collapsible": 1,
    "fieldname": "section_break_18",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Start and End Dates"
   },
   {
@@ -359,6 +360,7 @@
   {
    "fieldname": "total_costing_amount",
    "fieldtype": "Currency",
+   "hidden": 1,
    "label": "Total Costing Amount (via Timesheet)",
    "read_only": 1
   },
@@ -389,6 +391,7 @@
   {
    "fieldname": "total_billable_amount",
    "fieldtype": "Currency",
+   "hidden": 1,
    "label": "Total Billable Amount (via Timesheet)",
    "read_only": 1
   },
@@ -615,16 +618,19 @@
   {
    "fieldname": "tot_add_wq_percent",
    "fieldtype": "Percent",
+   "hidden": 1,
    "label": "% Work Quantity",
    "read_only": 1
   },
   {
    "fieldname": "cb_adt_1",
-   "fieldtype": "Column Break"
+   "fieldtype": "Column Break",
+   "hidden": 1
   },
   {
    "fieldname": "tot_add_wq_percent_complete",
    "fieldtype": "Percent",
+   "hidden": 1,
    "label": "% Work Quantity Completed",
    "read_only": 1
   },
@@ -1011,7 +1017,7 @@
  "is_submittable": 1,
  "links": [],
  "max_attachments": 4,
- "modified": "2025-06-11 16:59:00.044526",
+ "modified": "2025-06-13 12:03:58.124815",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Project",

@@ -44,6 +44,14 @@ frappe.ui.form.on("Task", {
 			},
 				__("Make")
 			)
+			// frm.add_custom_button("Make Timesheet", function () {
+			// 	frappe.model.open_mapped_doc({
+			// 		method: "erpnext.projects.doctype.task.task.make_timesheet",
+			// 		frm: frm,
+			// 	})
+			// },
+			// 	__("Make")
+			// )
 			frm.add_custom_button("Make Material Issue Request", function () {
 				frappe.model.open_mapped_doc({
 					method: "erpnext.projects.doctype.task.task.make_material_issue_request",

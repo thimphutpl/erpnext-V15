@@ -142,7 +142,6 @@
    "link_to": "Asset Maintenance",
    "link_type": "Report",
    "onboard": 0,
-   "report_ref_doctype": "Asset Maintenance",
    "type": "Link"
   },
   {
@@ -154,7 +153,6 @@
    "link_to": "Asset Activity",
    "link_type": "Report",
    "onboard": 0,
-   "report_ref_doctype": "Asset Activity",
    "type": "Link"
   },
   {
@@ -168,8 +166,8 @@
    "type": "Link"
   }
  ],
- "modified": "2025-05-29 18:17:46.572150",
- "modified_by": "Administrator",
+ "modified": "2025-06-14 10:11:36.954611",
+ "modified_by": "sonam.zangmo@thimphutechpark.bt",
  "module": "Assets",
  "name": "Assets",
  "number_cards": [],
@@ -186,13 +184,19 @@
  "sequence_id": 10.0,
  "shortcuts": [
   {
+   "color": "Pink",
+   "doc_view": "",
    "label": "Asset",
    "link_to": "Asset",
+   "stats_filter": "[]",
    "type": "DocType"
   },
   {
+   "color": "Green",
+   "doc_view": "",
    "label": "Asset Category",
    "link_to": "Asset Category",
+   "stats_filter": "[]",
    "type": "DocType"
   },
   {

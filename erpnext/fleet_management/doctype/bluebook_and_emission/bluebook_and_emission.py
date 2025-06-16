@@ -25,7 +25,7 @@ class BluebookandEmission(Document):
 		receipt_number: DF.Data
 		remarks: DF.SmallText | None
 		total_amount: DF.Currency
-		type: DF.Literal["", "Registration Certificate", "Fitness", "Emission"]
+		type: DF.Literal["", "Registration Certificate", "Fitness", "Emission", "Offense"]
 		valid_upto: DF.Date
 	# end: auto-generated types
 	pass

@@ -384,7 +384,7 @@ class PaymentEntry(AccountsController):
 			if not self.party:
 				frappe.throw(_("Party is mandatory"))
 
-			_party_name = "title" if self.party_type == "Shareholder" else self.party_type.lower() + "_name"
+			_party_name = "title" if self.party_type == "Equity" else self.party_type.lower() + "_name"
 
 			if frappe.db.has_column(self.party_type, _party_name):
 				self.party_name = frappe.db.get_value(self.party_type, self.party, _party_name)
@@ -571,13 +571,18 @@ class PaymentEntry(AccountsController):
 						frappe.throw(
 							_("{0} {1} must be submitted").format(_(d.reference_doctype), d.reference_name)
 						)
-
+	@frappe.whitelist()
+	def get_default_expense_bank_account(self):
+		if self.branch and self.payment_type == "Pay":
+			if not frappe.db.get_value("Branch", self.branch, "expense_bank_account"):
+				frappe.throw("Default Expense Bank Account is not set for branch {}".format(self.branch))
+			return frappe.db.get_value("Branch", self.branch, "expense_bank_account")
 	def get_valid_reference_doctypes(self):
 		if self.party_type == "Customer":
 			return ("Sales Order", "Sales Invoice", "Journal Entry", "Dunning", "Payment Entry")
 		elif self.party_type == "Supplier":
 			return ("Purchase Order", "Purchase Invoice", "Journal Entry", "Payment Entry")
-		elif self.party_type == "Shareholder":
+		elif self.party_type == "Equity":
 			return ("Journal Entry",)
 		elif self.party_type == "Employee":
 			return ("Journal Entry",)
@@ -2059,7 +2064,7 @@ def get_party_details(company, party_type, party, date, cost_center=None):
 	party_account = get_party_account(party_type, party, company)
 	account_currency = get_account_currency(party_account)
 	account_balance = get_balance_on(party_account, date, cost_center=cost_center)
-	_party_name = "title" if party_type == "Shareholder" else party_type.lower() + "_name"
+	_party_name = "title" if party_type == "Equity" else party_type.lower() + "_name"
 	party_name = frappe.db.get_value(party_type, party, _party_name)
 	party_balance = get_balance_on(party_type=party_type, party=party, cost_center=cost_center)
 	if party_type in ["Customer", "Supplier"]:

@@ -224,7 +224,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-06-12 13:29:28.879765",
+ "modified": "2025-06-13 12:44:54.056934",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Entry",
@@ -233,7 +233,6 @@
  "permissions": [
   {
    "create": 1,
-   "delete": 1,
    "email": 1,
    "export": 1,
    "print": 1,
@@ -245,7 +244,6 @@
   },
   {
    "create": 1,
-   "delete": 1,
    "email": 1,
    "export": 1,
    "print": 1,

@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"YdUh9pdtEy\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Project Management</span>\",\"col\":12}},{\"id\":\"LlKsddWyTc\",\"type\":\"card\",\"data\":{\"card_name\":\"Projects\",\"col\":4}},{\"id\":\"EFo50i-STw\",\"type\":\"card\",\"data\":{\"card_name\":\"Transactions\",\"col\":4}},{\"id\":\"JQO8YbAqkt\",\"type\":\"card\",\"data\":{\"card_name\":\"Manpower\",\"col\":4}},{\"id\":\"4wwxaCmgr8\",\"type\":\"card\",\"data\":{\"card_name\":\"Reports\",\"col\":4}}]",
+ "content": "[{\"id\":\"YdUh9pdtEy\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Your Shortcuts</span>\",\"col\":12}},{\"id\":\"RP5ral84k5\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Project Dashboard\",\"col\":3}},{\"id\":\"GBLQLXYzYU\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Project\",\"col\":3}},{\"id\":\"lcdexFLl8p\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Project Defination\",\"col\":3}},{\"id\":\"Cp3i1WH46M\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"CV1PwKul8K\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Masterdata &amp; Transaction</b></span>\",\"col\":12}},{\"id\":\"LlKsddWyTc\",\"type\":\"card\",\"data\":{\"card_name\":\"Projects\",\"col\":4}},{\"id\":\"EFo50i-STw\",\"type\":\"card\",\"data\":{\"card_name\":\"Transactions\",\"col\":4}},{\"id\":\"JQO8YbAqkt\",\"type\":\"card\",\"data\":{\"card_name\":\"Manpower\",\"col\":4}},{\"id\":\"4wwxaCmgr8\",\"type\":\"card\",\"data\":{\"card_name\":\"Reports\",\"col\":4}}]",
  "creation": "2024-09-25 10:22:20.551275",
  "custom_blocks": [],
  "docstatus": 0,
@@ -200,8 +200,8 @@
    "type": "Link"
   }
  ],
- "modified": "2025-06-11 16:12:27.522839",
- "modified_by": "Administrator",
+ "modified": "2025-06-14 10:19:05.784673",
+ "modified_by": "sonam.zangmo@thimphutechpark.bt",
  "module": "Projects",
  "name": "Project Management",
  "number_cards": [],
@@ -211,6 +211,30 @@
  "quick_lists": [],
  "roles": [],
  "sequence_id": 23.0,
- "shortcuts": [],
+ "shortcuts": [
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Project Dashboard",
+   "link_to": "Project",
+   "type": "Dashboard"
+  },
+  {
+   "color": "Blue",
+   "doc_view": "List",
+   "label": "Project",
+   "link_to": "Project",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Orange",
+   "doc_view": "List",
+   "label": "Project Defination",
+   "link_to": "Project Definition",
+   "stats_filter": "[]",
+   "type": "DocType"
+  }
+ ],
  "title": "Project Management"
 }

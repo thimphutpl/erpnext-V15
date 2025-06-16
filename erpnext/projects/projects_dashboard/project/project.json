@@ -24,17 +24,25 @@
   {
    "chart": "Total Project Count",
    "width": "Half"
+  },
+  {
+   "chart": "Estimated Cost",
+   "width": "Half"
+  },
+  {
+   "chart": "Total Expense",
+   "width": "Half"
   }
  ],
  "creation": "2024-12-09 16:44:15.443616",
  "dashboard_name": "Project",
  "docstatus": 0,
  "doctype": "Dashboard",
- "idx": 0,
+ "idx": 5,
  "is_default": 0,
  "is_standard": 1,
- "modified": "2025-02-05 12:36:38.703468",
- "modified_by": "yeshinedup@gyalsunginfra.bt",
+ "modified": "2025-06-14 11:11:47.389377",
+ "modified_by": "sonam.zangmo@thimphutechpark.bt",
  "module": "Projects",
  "name": "Project",
  "owner": "rinzin.norbu@thimphutechpark.bt"

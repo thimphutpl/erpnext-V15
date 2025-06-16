@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"F4LCAkjVFv\",\"type\":\"header\",\"data\":{\"text\":\"<span style=\\\"font-size: 18px;\\\"><b>Quick Access</b></span>\",\"col\":12}},{\"id\":\"v1eN9SIcrU\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Equipment\",\"col\":3}},{\"id\":\"wgGC82GF3F\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"POL Expense\",\"col\":3}},{\"id\":\"-NuAtfS9nX\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"POL Receive\",\"col\":3}},{\"id\":\"YFS568uADQ\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Repair &amp; Services\",\"col\":3}},{\"id\":\"uQ7NSESFJP\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"R &amp; Service Invoice\",\"col\":3}},{\"id\":\"2YnzX66Mn5\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Equipment Modifier Tool\",\"col\":3}},{\"id\":\"aVaBD9XAzC\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Reports &amp; Masters</b></span>\",\"col\":12}},{\"id\":\"zAyHBMp-e1\",\"type\":\"card\",\"data\":{\"card_name\":\"Master Data\",\"col\":4}},{\"id\":\"jXcn_p3B0m\",\"type\":\"card\",\"data\":{\"card_name\":\"Settings and Tools\",\"col\":4}},{\"id\":\"rqjlK7wtEq\",\"type\":\"card\",\"data\":{\"card_name\":\"Fleet Transaction\",\"col\":4}},{\"id\":\"H9xDv81via\",\"type\":\"card\",\"data\":{\"card_name\":\"POL Transaction\",\"col\":4}},{\"id\":\"3lZeAPhxW0\",\"type\":\"card\",\"data\":{\"card_name\":\"Maintenance Transaction\",\"col\":4}},{\"id\":\"bvleQJe82w\",\"type\":\"card\",\"data\":{\"card_name\":\"POL Reports\",\"col\":4}},{\"id\":\"aAkEB-kViN\",\"type\":\"card\",\"data\":{\"card_name\":\"Maintenance Reports\",\"col\":4}},{\"id\":\"QVW-tcs9r8\",\"type\":\"card\",\"data\":{\"card_name\":\"Fleet Report\",\"col\":4}}]",
+ "content": "[{\"id\":\"F4LCAkjVFv\",\"type\":\"header\",\"data\":{\"text\":\"<span style=\\\"font-size: 18px;\\\"><b>Your Shortcuts</b></span>\",\"col\":12}},{\"id\":\"v1eN9SIcrU\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Equipment\",\"col\":3}},{\"id\":\"wgGC82GF3F\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"POL Expense\",\"col\":3}},{\"id\":\"-NuAtfS9nX\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"POL Receive\",\"col\":3}},{\"id\":\"YFS568uADQ\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Repair &amp; Services\",\"col\":3}},{\"id\":\"uQ7NSESFJP\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"R &amp; Service Invoice\",\"col\":3}},{\"id\":\"2YnzX66Mn5\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Equipment Modifier Tool\",\"col\":3}},{\"id\":\"1xV31PGfQF\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"aVaBD9XAzC\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Reports &amp; Masters</b></span>\",\"col\":12}},{\"id\":\"zAyHBMp-e1\",\"type\":\"card\",\"data\":{\"card_name\":\"Master Data\",\"col\":4}},{\"id\":\"jXcn_p3B0m\",\"type\":\"card\",\"data\":{\"card_name\":\"Settings and Tools\",\"col\":4}},{\"id\":\"rqjlK7wtEq\",\"type\":\"card\",\"data\":{\"card_name\":\"Fleet Transaction\",\"col\":4}},{\"id\":\"H9xDv81via\",\"type\":\"card\",\"data\":{\"card_name\":\"POL Transaction\",\"col\":4}},{\"id\":\"3lZeAPhxW0\",\"type\":\"card\",\"data\":{\"card_name\":\"Maintenance Transaction\",\"col\":4}},{\"id\":\"bvleQJe82w\",\"type\":\"card\",\"data\":{\"card_name\":\"POL Reports\",\"col\":4}},{\"id\":\"aAkEB-kViN\",\"type\":\"card\",\"data\":{\"card_name\":\"Maintenance Reports\",\"col\":4}},{\"id\":\"QVW-tcs9r8\",\"type\":\"card\",\"data\":{\"card_name\":\"Fleet Report\",\"col\":4}}]",
  "creation": "2023-03-14 12:40:35.110706",
  "custom_blocks": [],
  "docstatus": 0,
@@ -740,8 +740,8 @@
    "type": "Link"
   }
  ],
- "modified": "2025-06-09 17:39:42.789848",
- "modified_by": "tshering.lham@thimphutechpark.bt",
+ "modified": "2025-06-14 10:37:22.221909",
+ "modified_by": "sonam.zangmo@thimphutechpark.bt",
  "module": "Fleet Management",
  "name": "Fleet Management",
  "number_cards": [],
@@ -754,57 +754,57 @@
  "sequence_id": 19.0,
  "shortcuts": [
   {
-   "color": "Red",
-   "doc_view": "List",
-   "format": "{} Draft",
-   "label": "POL Expense",
-   "link_to": "POL Advance",
-   "stats_filter": "{\"docstatus\":[\"=\",\"0\"]}",
-   "type": "DocType"
-  },
-  {
-   "color": "Red",
-   "doc_view": "List",
-   "format": "{} Draft",
-   "label": "Repair &amp; Services",
-   "link_to": "Repair And Services",
-   "stats_filter": "{\"docstatus\":[\"=\",\"0\"]}",
-   "type": "DocType"
-  },
-  {
-   "color": "Red",
-   "doc_view": "List",
-   "format": "{} Draft",
-   "label": "POL Receive",
-   "link_to": "POL Receive",
-   "stats_filter": "{\"docstatus\":[\"=\",\"0\"]}",
-   "type": "DocType"
-  },
-  {
-   "color": "Red",
-   "doc_view": "List",
-   "format": "{} Draft",
-   "label": "R &amp; Service Invoice",
-   "link_to": "Repair And Service Invoice",
-   "stats_filter": "{\"docstatus\":[\"=\",\"0\"]}",
-   "type": "DocType"
-  },
-  {
    "color": "Green",
    "doc_view": "List",
    "format": "{} Open",
    "label": "Equipment",
    "link_to": "Equipment",
-   "stats_filter": "{\"is_disabled\":[\"=\",1]}",
+   "stats_filter": "[[\"Equipment\",\"is_disabled\",\"=\",1,false]]",
    "type": "DocType"
   },
   {
    "color": "Red",
    "doc_view": "List",
    "format": "{} Draft",
+   "label": "POL Expense",
+   "link_to": "POL Advance",
+   "stats_filter": "[[\"POL Advance\",\"docstatus\",\"=\",\"0\",false]]",
+   "type": "DocType"
+  },
+  {
+   "color": "Yellow",
+   "doc_view": "List",
+   "format": "{} Draft",
+   "label": "POL Receive",
+   "link_to": "POL Receive",
+   "stats_filter": "[[\"POL Receive\",\"docstatus\",\"=\",\"0\",false]]",
+   "type": "DocType"
+  },
+  {
+   "color": "Pink",
+   "doc_view": "List",
+   "format": "{} Draft",
+   "label": "Repair &amp; Services",
+   "link_to": "Repair And Services",
+   "stats_filter": "[[\"Repair And Services\",\"docstatus\",\"=\",\"0\",false]]",
+   "type": "DocType"
+  },
+  {
+   "color": "Blue",
+   "doc_view": "List",
+   "format": "{} Draft",
+   "label": "R &amp; Service Invoice",
+   "link_to": "Repair And Service Invoice",
+   "stats_filter": "[[\"Repair And Service Invoice\",\"docstatus\",\"=\",\"0\",false]]",
+   "type": "DocType"
+  },
+  {
+   "color": "Green",
+   "doc_view": "List",
+   "format": "{} Draft",
    "label": "Equipment Modifier Tool",
    "link_to": "Equipment Modifier Tool",
-   "stats_filter": "{\"docstatus\":[\"=\",\"0\"]}",
+   "stats_filter": "[[\"Equipment Modifier Tool\",\"docstatus\",\"=\",\"0\",false]]",
    "type": "DocType"
   }
  ],

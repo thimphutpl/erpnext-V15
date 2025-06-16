@@ -1118,13 +1118,13 @@ class SalesInvoice(SellingController):
 		for d in self.get("items"):
 			if d.is_fixed_asset:
 				if not disposal_account:
-					loss_disposal_account, gain_disposal_account, depreciation_cost_center = get_disposal_account_and_cost_center(
+					gain_disposal_account = get_disposal_account_and_cost_center(
 						self.company
 					)
 
-				d.income_account = gain_disposal_account
+				d.income_account = gain_disposal_account[0]
 				if not d.cost_center:
-					d.cost_center = depreciation_cost_center
+					frappe.throw("Missing cost center in table.")
 
 	def check_prev_docstatus(self):
 		for d in self.get("items"):
@@ -1348,6 +1348,7 @@ class SalesInvoice(SellingController):
 							self.get("doctype"),
 							self.get("name"),
 							self.get("posting_date"),
+							self.get("cost_center"),
 						)
 						asset.db_set("disposal_date", self.posting_date)
 						add_asset_activity(asset.name, _("Asset sold"))

@@ -307,6 +307,7 @@
   {
    "fieldname": "total_costing_amount",
    "fieldtype": "Currency",
+   "hidden": 1,
    "label": "Total Costing Amount (via Timesheet)",
    "oldfieldname": "actual_budget",
    "oldfieldtype": "Currency",
@@ -320,6 +321,7 @@
   {
    "fieldname": "total_billing_amount",
    "fieldtype": "Currency",
+   "hidden": 1,
    "label": "Total Billable Amount (via Timesheet)",
    "read_only": 1
   },
@@ -608,7 +610,7 @@
  "idx": 1,
  "links": [],
  "max_attachments": 5,
- "modified": "2025-02-19 15:11:13.428560",
+ "modified": "2025-06-13 12:00:56.646028",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Task",

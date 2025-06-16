@@ -213,6 +213,7 @@
    "description": "Fetch items based on Default Supplier.",
    "fieldname": "get_items_from_open_material_requests",
    "fieldtype": "Button",
+   "hidden": 1,
    "label": "Get Items from Open Material Requests"
   },
   {
@@ -1358,7 +1359,7 @@
  "idx": 105,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-06-04 16:05:03.395935",
+ "modified": "2025-06-16 11:34:09.995052",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Purchase Order",

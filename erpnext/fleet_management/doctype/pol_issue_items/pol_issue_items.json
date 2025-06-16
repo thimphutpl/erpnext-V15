@@ -35,8 +35,7 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Equipment",
-   "options": "Equipment",
-   "reqd": 1
+   "options": "Equipment"
   },
   {
    "fieldname": "qty",
@@ -44,8 +43,7 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Quantity",
-   "precision": "2",
-   "reqd": 1
+   "precision": "2"
   },
   {
    "fieldname": "column_break_3",
@@ -178,7 +176,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-06-13 10:53:48.043537",
+ "modified": "2025-06-13 14:23:43.841254",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Issue Items",

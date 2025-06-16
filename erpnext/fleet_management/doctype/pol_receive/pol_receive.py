@@ -519,7 +519,7 @@ class POLReceive(StockController):
 
 		con = frappe.new_doc("POL Entry")
 		con.flags.ignore_permissions = 1
-		if self.pol_type !="Barrel":	
+		if self.book_type !="Barrel":	
 			con.equipment = self.equipment
 		else:
 			con.is_barrel = 1
@@ -535,41 +535,6 @@ class POLReceive(StockController):
 		con.reference_name = self.name
 		con.is_opening = 0
 		con.submit()
-
-			# name = frappe.db.get_value("POL Entry",{"reference_name":self.name},"name")
-			# frappe.db.sql("""delete from `tabPOL Entry` where name='{name}'""".format(name=name))
-		# if self.direct_consumption:
-		# 	con1 = frappe.new_doc("POL Entry")
-		# 	con1.flags.ignore_permissions = 1	
-		# 	con1.equipment = self.equipment
-		# 	con1.pol_type = self.pol_type
-		# 	con1.branch = self.equipment_branch
-		# 	con1.posting_date = self.posting_date
-		# 	con1.posting_time = self.posting_time
-		# 	con1.qty = self.qty
-		# 	con1.reference_type = "POL Receive"
-		# 	con1.reference_name = self.name
-		# 	con1.type = "Receive"
-		# 	con1.is_opening = 0
-		# 	con1.own_cost_center = own
-		# 	con1.submit()
-			
-		# 	if container:
-		# 		con2 = frappe.new_doc("POL Entry")
-		# 		con2.flags.ignore_permissions = 1	
-		# 		con2.equipment = self.equipment
-		# 		con2.pol_type = self.pol_type
-		# 		con2.branch = self.equipment_branch
-		# 		con2.posting_date = self.posting_date
-		# 		con2.posting_time = self.posting_time
-		# 		con2.qty = self.qty
-		# 		con2.reference_type = "POL Receive"
-		# 		con2.reference_name = self.name
-		# 		con2.type = "Issue"
-		# 		con2.is_opening = 0
-		# 		con2.own_cost_center = own
-		# 		con2.submit()
-
 
 	def delete_pol_entry(self):
 		frappe.db.sql("delete from `tabPOL Entry` where reference_name = %s", self.name)

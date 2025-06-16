@@ -21,6 +21,7 @@ class CostCenter(NestedSet):
 		from frappe.types import DF
 
 		branch_created: DF.Check
+		budget_allocationestimation: DF.Data | None
 		budget_cost_center: DF.Link | None
 		company: DF.Link
 		cost_center_name: DF.Data

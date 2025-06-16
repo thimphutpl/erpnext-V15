@@ -33,6 +33,7 @@ class InsuranceandRegistration(Document):
         employee: DF.Link | None
         employee_name: DF.Data | None
         equipment: DF.Link | None
+        equipment_number: DF.Data | None
         imprest_party: DF.Link | None
         insurance_for: DF.Literal["", "Vehicle", "Asset"]
         insurance_item: DF.Table[InsuranceDetails]
@@ -41,6 +42,7 @@ class InsuranceandRegistration(Document):
         project: DF.ReadOnly | None
         reference: DF.Data | None
         registration_item: DF.Table[RegistrationDetails]
+        registration_number: DF.Data | None
         settle_imprest_advance: DF.Check
         vehicle_model: DF.Data | None
         vehicle_type: DF.Link | None

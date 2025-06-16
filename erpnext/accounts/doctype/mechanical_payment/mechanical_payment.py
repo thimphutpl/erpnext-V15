@@ -164,7 +164,7 @@ class MechanicalPayment(AccountsController):
 	def make_gl_entry(self):
 		from erpnext.accounts.general_ledger import make_gl_entries
 		# receivable_account = frappe.db.get_single_value("Maintenance Accounts Settings", "default_receivable_account")
-		payable_account = frappe.db.get_value("Company", "GYALSUNG INFRA","default_payable_account")
+		payable_account = frappe.db.get_value("Company",self.company,"default_payable_account")
 		if not payable_account:
 			frappe.throw("Setup Default Payable Account in Company")
 

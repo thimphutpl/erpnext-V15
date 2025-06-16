@@ -27,7 +27,18 @@ frappe.ui.form.on("Payment Entry", {
 
 		erpnext.accounts.dimensions.setup_dimension_filters(frm, frm.doctype);
 	},
-
+	branch: function(frm){
+		frappe.call({
+			method: "get_default_expense_bank_account",
+			doc: frm.doc,
+			callback: function(r){
+				if(r.message){
+					frm.set_value("paid_from", r.message);
+					frm.refresh_field("paid_from");
+				}
+			}
+		})
+	},
 	setup: function (frm) {
 		frm.set_query("paid_from", function () {
 			frm.events.validate_company(frm);

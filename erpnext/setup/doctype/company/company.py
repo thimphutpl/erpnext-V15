@@ -114,6 +114,7 @@ class Company(NestedSet):
 		payment_terms: DF.Link | None
 		phone_no: DF.Data | None
 		pol_advance_account: DF.Link | None
+		pol_expense_account: DF.Link | None
 		reconcile_on_advance_payment_date: DF.Check
 		registration_account: DF.Link | None
 		registration_details: DF.Code | None

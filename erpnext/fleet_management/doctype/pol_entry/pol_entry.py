@@ -44,4 +44,5 @@ class POLEntry(Document):
 		uom: DF.Literal["", "Hour", "KM"]
 	# end: auto-generated types
 	def on_cancel(self):
+		# dont all cancel pol entry it will give wrong balance qty and rate for pol issue
 		frappe.throw("POL Entry should not be cancelled")

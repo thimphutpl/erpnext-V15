@@ -9,7 +9,7 @@ from frappe.contacts.address_and_contact import (
 from frappe.model.document import Document
 
 
-class Shareholder(Document):
+class Equity(Document):
 	# begin: auto-generated types
 	# This code is auto-generated. Do not modify anything in this block.
 
@@ -34,7 +34,7 @@ class Shareholder(Document):
 		load_address_and_contact(self)
 
 	def on_trash(self):
-		delete_contact_and_address("Shareholder", self.name)
+		delete_contact_and_address("Equity", self.name)
 
 	def before_save(self):
 		for entry in self.share_balance:

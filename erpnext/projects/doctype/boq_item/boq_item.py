@@ -26,7 +26,7 @@ class BOQItem(Document):
 		claimed_quantity: DF.Float
 		currency: DF.Link | None
 		is_group: DF.Check
-		item: DF.Text
+		item: DF.Text | None
 		item_code: DF.Link
 		item_name: DF.Data | None
 		parent: DF.Data

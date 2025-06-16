@@ -4,5 +4,5 @@
 import unittest
 
 
-class TestShareholder(unittest.TestCase):
+class TestEquity(unittest.TestCase):
 	pass

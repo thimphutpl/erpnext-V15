@@ -229,6 +229,7 @@
    "depends_on": "party",
    "fieldname": "contact_person",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Contact",
    "options": "Contact"
   },
@@ -236,6 +237,7 @@
    "depends_on": "contact_person",
    "fieldname": "contact_email",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Email",
    "options": "Email",
    "read_only": 1
@@ -256,7 +258,6 @@
   {
    "bold": 1,
    "depends_on": "eval:(in_list([\"Internal Transfer\", \"Pay\"], doc.payment_type) || doc.party)",
-   "fetch_from": "branch.expense_bank_account",
    "fieldname": "paid_from",
    "fieldtype": "Link",
    "in_global_search": 1,
@@ -392,6 +393,7 @@
    "options": "Payment Entry Reference"
   },
   {
+   "collapsible": 1,
    "fieldname": "section_break_34",
    "fieldtype": "Section Break",
    "label": "Writeoff"
@@ -460,6 +462,7 @@
    "options": "Payment Entry Deduction"
   },
   {
+   "collapsible": 1,
    "fieldname": "transaction_references",
    "fieldtype": "Section Break",
    "label": "Transaction ID"
@@ -570,6 +573,7 @@
    "depends_on": "party",
    "fieldname": "bank_account",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Company Bank Account",
    "options": "Bank Account"
   },
@@ -577,6 +581,7 @@
    "depends_on": "party",
    "fieldname": "party_bank_account",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Party Bank Account",
    "options": "Bank Account"
   },
@@ -631,6 +636,7 @@
    "label": "Apply Tax Withholding Amount"
   },
   {
+   "collapsible": 1,
    "fieldname": "taxes_and_charges_section",
    "fieldtype": "Section Break",
    "label": "Taxes and Charges"
@@ -690,6 +696,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "collapsible": 1,
    "fieldname": "section_break_56",
    "fieldtype": "Section Break",
    "hide_border": 1
@@ -824,7 +831,7 @@
    "read_only": 1
   },
   {
-   "depends_on": "eval:doc.mode_of_payment == \"Cheque\"",
+   "depends_on": "eval:doc.mode_of_payment == \"Cheque\" || doc.mode_of_payment == \"Direct Deposit\"",
    "fieldname": "sb_cheque_reference",
    "fieldtype": "Section Break"
   },
@@ -842,8 +849,8 @@
    "options": "Cheque Lot"
   },
   {
+   "allow_on_submit": 1,
    "bold": 1,
-   "depends_on": "eval:doc.mode_of_payment == \"Cheque\"",
    "fetch_from": "cheque_lot.next_no",
    "fieldname": "reference_no",
    "fieldtype": "Data",
@@ -851,13 +858,13 @@
   },
   {
    "bold": 1,
-   "depends_on": "eval:doc.mode_of_payment == \"Cheque\"",
    "fieldname": "reference_date",
    "fieldtype": "Date",
    "label": "Reference Date",
    "search_index": 1
   },
   {
+   "collapsible": 1,
    "fieldname": "rtgs_information",
    "fieldtype": "Section Break",
    "label": "RTGS Information"
@@ -954,7 +961,7 @@
    "table_fieldname": "payment_entries"
   }
  ],
- "modified": "2025-06-10 09:49:27.128829",
+ "modified": "2025-06-16 10:50:32.145801",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Payment Entry",

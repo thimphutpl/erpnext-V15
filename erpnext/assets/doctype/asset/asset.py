@@ -66,7 +66,7 @@ class Asset(AccountsController):
 		asset_sub_category: DF.Link | None
 		available_for_use_date: DF.Date | None
 		booked_fixed_asset: DF.Check
-		branch: DF.Link | None
+		branch: DF.Link
 		calculate_depreciation: DF.Check
 		capitalized_in: DF.Link | None
 		company: DF.Link
@@ -934,16 +934,16 @@ def make_sales_invoice(asset, item_code, company, serial_no=None, cost_center=No
 	si.branch = branch
 	si.cost_center = cost_center
 	si.currency = frappe.get_cached_value("Company", company, "default_currency")
-	loss_disposal_account, gain_disposal_account, depreciation_cost_center = get_disposal_account_and_cost_center(company)
+	gain_disposal_account = get_disposal_account_and_cost_center(company)
 	si.append(
 		"items",
 		{
 			"item_code": item_code,
 			"is_fixed_asset": 1,
 			"asset": asset,
-			"income_account": gain_disposal_account,
+			"income_account": gain_disposal_account[0],
 			"serial_no": serial_no,
-			"cost_center": cost_center if cost_center else depreciation_cost_center,
+			"cost_center": cost_center,
 			"qty": 1,
 		},
 	)

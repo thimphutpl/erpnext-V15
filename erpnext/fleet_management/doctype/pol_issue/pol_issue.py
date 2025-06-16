@@ -37,6 +37,7 @@ class POLIssue(StockController):
 		branch: DF.Link
 		company: DF.Link
 		cost_center: DF.Link | None
+		currency: DF.Link | None
 		is_hsd_item: DF.Check
 		issue_from: DF.Literal["Tanker", "Barrel"]
 		item_name: DF.ReadOnly | None
@@ -54,6 +55,11 @@ class POLIssue(StockController):
 		tanker: DF.Link | None
 		total_amount: DF.Currency
 		total_quantity: DF.Float
+		transfer_amount: DF.Currency
+		transfer_branch: DF.Link | None
+		transfer_cost_center: DF.Link | None
+		transfer_qty: DF.Float
+		transfer_type: DF.Literal["", "Tanker to Tanker", "Barrel to Barrel", "Tanker to Barrel", "Barrel to Tanker"]
 		warehouse: DF.Link | None
 	# end: auto-generated types
 	# begin: auto-generated types
@@ -89,6 +95,7 @@ class POLIssue(StockController):
 		warehouse: DF.Link | None
 
 	def validate(self):
+		self.validate_transfer_data()
 		self.update_posting_date_and_time()
 		self.validate_branch()
 		self.validate_data()
@@ -128,14 +135,13 @@ class POLIssue(StockController):
 
 	def on_submit(self):
 		self.update_posting_date_and_time()
-		if not self.items:
+		if self.purpose=="Issue" and not self.items:
 			frappe.throw("Should have a POL Issue Details to Submit")
 		self.validate_data()
 		self.check_and_set_rate()
 		self.set_tatal_amount()
 		self.make_gl_entries()
 		""" ++++++++++ Ver 2.0.190509 Ends ++++++++++++ """
-		
 		self.make_pol_entry()
 
 	def on_cancel(self):
@@ -147,7 +153,7 @@ class POLIssue(StockController):
 			"Repost Item Valuation",
 			"Serial and Batch Bundle",
 		)	 
-		self.delete_pol_entry()
+		self.make_pol_entry(cancel=True)
 
 	def update_posting_date_and_time(self):
 		self.posting_date = nowdate()
@@ -160,7 +166,7 @@ class POLIssue(StockController):
 			cond = "and equipment='{tanker}'".format(tanker=self.tanker)
 		if self.issue_from =="Barrel":
 			cond = "and is_barrel =1"
-
+		b_qty = b_rate = 0
 		balance_qty = frappe.db.sql("""select qty, rate
 			from `tabPOL Entry` 
 			where branch='{branch}'
@@ -168,12 +174,19 @@ class POLIssue(StockController):
 			{cond}
 			order by timestamp(posting_date, posting_time) desc
 			limit 1
-			""".format(branch=self.branch, item=self.pol_type, cond =cond))
-		if self.total_quantity and self.total_quantity > balance_qty[0][0]:
-			frappe.throw("Total qty cannot be greater than tanker balance "+str(balance_qty[0][0]))
+			""".format(branch=self.branch, item=self.pol_type, cond =cond),as_dict=True)
+		if balance_qty:
+			for x in balance_qty:
+				b_qty = x.qty + b_qty
+				b_rate =x.rate + b_rate
+		if b_qty <= 0:
+			frappe.throw("Tanker/Barrel has no fuel balance")
+		if self.total_quantity and self.total_quantity > b_qty:
+			frappe.throw("Total qty cannot be greater than tanker balance "+str(b_qty))
 		else:
-			self.tank_balance =balance_qty[0][0]
-			self.rate = balance_qty[0][1]
+			self.tank_balance =b_qty
+			self.rate = b_rate
+
 	def make_gl_entries(self):
 		gl_entries = []
 		self.make_expense_gl_entry(gl_entries)
@@ -182,17 +195,12 @@ class POLIssue(StockController):
 		make_gl_entries(gl_entries,update_outstanding="No",cancel=self.docstatus == 2)
 	
 	def make_expense_gl_entry(self, gl_entries):
-		if flt(self.total_amount) > 0:
-			if self.direct_consumption:
-				expense_account = frappe.db.get_value("Equipment Category", self.equipment_category,'pol_advance_account')
+		if self.purpose=="Issue":
+			if flt(self.total_amount) > 0:
+				expense_account = frappe.db.get_value("Company",self.company,"pol_expense_account")
 				if not expense_account:
-					frappe.throw("Please set POL Expense Account in Equipment Category "+str(self.equipment_category))
-			else:
-				expense_account = frappe.db.get_value("Company", self.company,'fuel_stock_account')
-				if not expense_account:
-					frappe.throw("Please set Fuel Stock Account in Company "+str(self.equipment_category))
-
-			gl_entries.append(
+					frappe.throw("Please set POL Expense Account in Company")
+				gl_entries.append(
 					self.get_gl_dict({
 						"account": expense_account,
 						"debit": self.total_amount,
@@ -204,73 +212,213 @@ class POLIssue(StockController):
 						"voucher_no":self.name
 					}, self.currency))
 
+		if self.purpose=="Transfer":
+			if flt(self.transfer_amount) > 0:
+				if self.transfer_type in ("Barrel to Barrel", "Tanker to Barrel"):
+					dr_cost_center = self.transfer_cost_center
+				elif self.transfer_type in ("Barrel to Tanker", "Tanker to Tanker"):
+					for x in self.items:
+						dr_cost_center = frappe.db.get_value("Branch",x.equipment_branch,"cost_center")
+				else:
+					dr_cost_center =""
+				if not dr_cost_center or dr_cost_center=="":
+					frappe.throw("Transfer Cost center is required")
+				expense_account = frappe.db.get_value("Company",self.company,"fuel_stock_account")
+				if not expense_account:
+					frappe.throw("Please set Fuel Stock Account in Company")
+				gl_entries.append(
+					self.get_gl_dict({
+						"account": expense_account,
+						"debit": self.transfer_amount,
+						"debit_in_account_currency": self.transfer_amount,
+						"against_voucher": self.name,
+						"against_voucher_type": self.doctype,
+						"cost_center": dr_cost_center,
+						"voucher_type":self.doctype,
+						"voucher_no":self.name
+					}, self.currency))
+
 	def make_advance_gl_entry(self, gl_entries):
-		if flt(self.total_amount) > 0:
-			advance_account = frappe.db.get_value("Company", self.company,'pol_advance_account')
+		credit_amount =0
+		if self.purpose=="Transfer":
+			credit_amount = self.transfer_amount
+		if self.purpose=="Issue":
+			credit_amount = self.total_amount
+		if flt(credit_amount) > 0:
+			advance_account = frappe.db.get_value("Company",self.company,"fuel_stock_account")
 			if not advance_account:
-				frappe.throw("Please set POL Advance Account in  Company "+str(self.company))
+				frappe.throw("Please set Fuel Stock Account in  Company "+str(self.company))
 			gl_entries.append(
 				self.get_gl_dict({
 					"account": advance_account,
-					"credit": self.total_amount,
-					"credit_in_account_currency": self.total_amount,
+					"credit": credit_amount,
+					"credit_in_account_currency": credit_amount,
 					"against_voucher": self.name,
-					"party_type": "Supplier",
-					"party": self.supplier,
 					"against_voucher_type": self.doctype,
 					"cost_center": self.cost_center,
 					"voucher_type":self.doctype,
 					"voucher_no":self.name
 				}, self.currency))
 
+
+	def make_pol_entry(self, cancel=False):
+		if self.issue_from=="Barrel":
+			book_type ="Barrel"
+			cond ="and is_barrel = 1"
+		else:
+			book_type ="Common"
+			cond ="and equipment='{tanker}'".format(tanker=self.tanker)
+		balance_qty = frappe.db.sql("""select qty, rate, amount
+			from `tabPOL Entry` 
+			where branch='{branch}'
+			and item ='{item}'
+			{cond}
+			order by timestamp(posting_date, posting_time) desc
+			limit 1
+			""".format(branch=self.branch, item=self.pol_type, cond=cond), as_dict=True)
+		
+		b_qty = b_rate= total_amount = 0
+		for raw in balance_qty:
+			if not cancel:
+				if raw.qty != self.tank_balance:
+					frappe.throw("POL Received or Issue has been made after this transaction please make few changes and save this doc")
+				if self.purpose=="Issue":
+					b_qty = flt(raw.qty) - flt(self.total_quantity)
+					total_amount = raw.amount - self.total_amount
+				if self.purpose=="Transfer":
+					b_qty = flt(raw.qty) - flt(self.transfer_qty)
+					total_amount = raw.amount - self.transfer_amount
+				b_rate = flt(total_amount) / flt(b_qty)
+			else:
+				if self.purpose=="Issue":
+					b_qty = flt(raw.qty) + flt(self.total_quantity)
+					total_amount = flt(raw.amount) + flt(self.total_amount)
+				if self.purpose=="Transfer":
+					b_qty = flt(raw.qty) + flt(self.transfer_qty)
+					total_amount = flt(raw.amount) + flt(self.transfer_amount)
+				
+				b_rate = flt(total_amount) / flt(b_qty)
+
+		con = frappe.new_doc("POL Entry")
+		con.flags.ignore_permissions = 1
+		if self.issue_from !="Barrel":	
+			con.equipment = self.tanker
+		else:
+			con.is_barrel = 1
+		con.book_type = book_type
+		con.item = self.pol_type
+		con.branch = self.branch
+		con.posting_date = nowdate()
+		con.posting_time = nowtime()
+		con.qty = b_qty
+		con.rate = b_rate
+		con.amount = total_amount
+		con.reference_type = "POL Issue"
+		con.reference_name = self.name
+		con.is_opening = 0
+		con.submit()
+		
+		if self.purpose =="Transfer":
+			branch=""
+			if self.transfer_type in("Barrel to Barrel", "Tanker to Barrel"):
+				branch= self.transfer_branch
+				book_type ="Barrel"
+				cond ="and is_barrel = 1"
+			if self.transfer_type in ("Tanker to Tanker", "Barrel to Tanker"):
+				count=0
+				for x in self.items:
+					branch=x.equipment_branch
+					count=count+1
+					equipment = x.equipment
+					tr_qty=x.qty
+				if count >=2:
+					frappe.throw("Transfer can only be made to one equipment at a time")
+				if not equipment or not tr_qty:
+					frappe.throw("Receiver equipment and Qty is Required")
+				book_type ="Common"
+				cond ="and equipment='{equipment}'".format(equipment=equipment)
+			if not branch or branch=="":
+				frappe.throw("Transfer Branch or Equioment Branch is required")
+
+			balance_qty = frappe.db.sql("""select qty, rate, amount
+				from `tabPOL Entry` 
+				where branch='{branch}'
+				and item ='{item}'
+				{cond}
+				order by timestamp(posting_date, posting_time) desc
+				limit 1
+				""".format(branch=branch, item=self.pol_type, cond=cond), as_dict=True)
+			
+			b_qty = b_rate = total_amount = 0
+			if balance_qty:
+				for raw in balance_qty:
+					if not cancel:
+						b_qty = flt(raw.qty) + flt(self.transfer_qty)
+						total_amount = flt(raw.amount) + flt(self.transfer_amount)
+						b_rate = flt(total_amount) / flt(b_qty)
+					else:
+						b_qty = flt(raw.qty) - flt(self.transfer_qty)
+						total_amount = flt(raw.amount) - flt(self.transfer_amount)
+						if total_amount!=0 and b_qty!=0:
+							b_rate = flt(total_amount) / flt(b_qty)
+			else:
+				b_qty = self.transfer_qty
+				b_rate = self.rate
+				total_amount = self.transfer_amount
+
+			con = frappe.new_doc("POL Entry")
+			con.flags.ignore_permissions = 1
+			if self.transfer_type in ("Tanker to Tanker", "Barrel to Tanker"):	
+				con.equipment = equipment
+			if self.transfer_type in ("Tanker to Barrel", "Barrel to Barrel"):	
+				con.is_barrel = 1
+			con.book_type = book_type
+			con.item = self.pol_type
+			con.branch = branch
+			con.posting_date = nowdate()
+			con.posting_time = nowtime()
+			con.qty = b_qty
+			con.rate = b_rate
+			con.amount = total_amount
+			con.reference_type = "POL Issue"
+			con.reference_name = self.name
+			con.is_opening = 0
+			con.submit()
+
+	def validate_transfer_data(self):
+		if self.purpose=="Transfer":
+			if self.transfer_type in ("Barrel to Barrel","Tanker to Barrel"):
+				if not self.transfer_branch:
+					frappe.throw("Transfer branch is required when transfer type is "+str(self.transfer_type))
+				if self.transfer_type=="Tanker to Barrel" and self.issue_from=="Barrel":
+					frappe.throw("Issue from cannot be Barrel when  transfer type is "+str(self.transfer_type))
+				if self.transfer_type=="Barrel to Barrel" and self.issue_from !="Barrel":
+					frappe.throw("Issue from has to be Barrel when transfer type is "+str(self.transfer_type))
+			if self.transfer_type not in ("Barrel to Barrel","Tanker to Barrel"):
+				if self.transfer_type=="Barrel to Tanker" and self.issue_from!="Barrel":
+					frappe.throw("Issue from has to be Barrel when  transfer type is "+str(self.transfer_type))
+			if	self.transfer_type in ("Barrel to Tanker","Tanker to Tanker"):
+				if not self.items:
+					frappe.throw("Receiver Equipment is required when transfer type is "+str(self.transfer_type))
+				if self.issue_from=="Barrel" and self.transfer_type=="Tanker to Tanker":
+					frappe.throw("Issue from cannot be Barrel when transfer type is "+str(self.transfer_type))
+				item_count =0
+				for x in self.items:
+					item_count = item_count+1	
+					self.transfer_qty = x.qty
+				if item_count >=2:
+					frappe.throw("Transfer can only be made to one equipment at a time")
+
+			if self.transfer_type in ("Barrel to Barrel","Tanker to Barrel") and self.items:
+				frappe.throw("Receiver Equipment is not required when transfer type is "+str(self.transfer_type)+ "remove items details")
+			self.transfer_amount = self.transfer_qty * self.rate
 	def set_tatal_amount(self):
 		if self.rate and self.total_quantity:
 			self.total_amount = self.rate * self.total_quantity
+		self.transfer_amount = self.transfer_qty * self.rate
+		if self.transfer_qty > self.tank_balance:
+			frappe.throw("Transfer balance cannot be greater than tanker/barrel balance")
 	
-
-	def make_pol_entry(self):
-		if getdate(self.posting_date) <= getdate("2024-03-31"):
-			return
-		if self.tanker:
-			con = frappe.new_doc("POL Entry")
-			con.flags.ignore_permissions = 1
-			con.equipment = self.tanker
-			con.pol_type = self.pol_type
-			con.branch = self.branch
-			con.posting_date = self.posting_date
-			con.posting_time = self.posting_time
-			con.qty = self.total_quantity
-			con.reference_type = "POL Issue"
-			con.reference_name = self.name
-			con.type = "Issue"
-			con.is_opening = 0
-			con.submit()
-
-		for a in self.items:
-			if self.branch == a.equipment_branch:
-				own = 1
-			else:
-				own = 0
-			con = frappe.new_doc("POL Entry")
-			con.flags.ignore_permissions = 1
-			con.equipment = a.equipment
-			con.pol_type = self.pol_type
-			con.branch = a.equipment_branch
-			con.posting_date = self.posting_date
-			con.posting_time = self.posting_time
-			con.qty = a.qty
-			con.reference_type = "POL Issue"
-			con.reference_name = self.name
-			con.own_cost_center = own
-			if self.purpose == "Issue":
-				con.type = "Receive"
-			else:
-				con.type = "Stock"
-			con.is_opening = 0
-			con.submit()
-
-	def delete_pol_entry(self):
-		frappe.db.sql("delete from `tabPOL Entry` where reference_name = %s", self.name)
 # Equipment Balance
 @frappe.whitelist()
 def get_equipment_data(tanker, branch, pol_type):
@@ -295,48 +443,6 @@ def get_equipment_data(tanker, branch, pol_type):
 		return b_qty, b_rate
 	else:
 		frappe.throw("Tanker Balance is Zero for this Tanker")
-
-@frappe.whitelist()
-def get_tanker_data(doctype, txt, searchfield, start, page_len, filters):
-	if not filters.get('branch'):
-		frappe.throw(_("Branch is required to fetch the equipment."))
-	
-	tanker_data = frappe.db.sql("""
-		SELECT
-			e.name, e.equipment_type, e.registration_number
-		FROM `tabEquipment` e
-		WHERE e.branch = %(branch)s
-		  AND e.is_disabled != 1
-		  AND e.not_cdcl = 0
-		  AND EXISTS (
-			  SELECT 1
-			  FROM `tabEquipment Type` t
-			  WHERE t.name = e.equipment_type
-				AND t.is_container = 1
-		  )
-		  AND ({key} LIKE %(txt)s
-			   OR e.equipment_type LIKE %(txt)s
-			   OR e.registration_number LIKE %(txt)s)
-		{mcond}
-		ORDER BY
-			IF(LOCATE(%(_txt)s, e.name), LOCATE(%(_txt)s, e.name), 99999),
-			IF(LOCATE(%(_txt)s, e.equipment_type), LOCATE(%(_txt)s, e.equipment_type), 99999),
-			IF(LOCATE(%(_txt)s, e.registration_number), LOCATE(%(_txt)s, e.registration_number), 99999),
-			idx DESC,
-			e.name, e.equipment_type, e.registration_number
-		LIMIT %(start)s, %(page_len)s
-	""".format(
-		key=searchfield,
-		mcond=get_match_cond(doctype)
-	), {
-		"txt": f"%{txt}%",
-		"_txt": txt.replace("%", ""),
-		"start": start,
-		"page_len": page_len,
-		"branch": filters['branch']
-	})
-
-	return tanker_data
 
 @frappe.whitelist()
 def get_tanker_details(tanker, posting_date, pol_type):

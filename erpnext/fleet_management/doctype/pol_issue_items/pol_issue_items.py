@@ -14,7 +14,7 @@ class POLIssueItems(Document):
 		from frappe.types import DF
 
 		cost_center: DF.Link | None
-		equipment: DF.Link
+		equipment: DF.Link | None
 		equipment_balance: DF.ReadOnly | None
 		equipment_branch: DF.Data | None
 		equipment_category: DF.Link | None

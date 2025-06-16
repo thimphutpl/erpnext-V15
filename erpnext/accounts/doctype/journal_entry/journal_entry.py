@@ -426,7 +426,7 @@ class JournalEntry(AccountsController):
 	def update_cheque_lot(self, cancel=False):
 		from erpnext.accounts.doctype.cheque_lot.cheque_lot import get_cheque_info
 		if self.use_cheque_lot == 1:
-			get_cheque_info(self.cheque_no, cancel=cancel)
+			get_cheque_info(self.select_cheque_lot, cancel=cancel)
 
 	def update_advance_paid(self):
 		advance_paid = frappe._dict()

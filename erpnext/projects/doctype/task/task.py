@@ -429,6 +429,7 @@ def make_timesheet(source_name, target_doc=None, ignore_permissions=False):
 				"task": source.name,
 			},
 		)
+		target.project = source.project
 
 	doclist = get_mapped_doc(
 		"Task",

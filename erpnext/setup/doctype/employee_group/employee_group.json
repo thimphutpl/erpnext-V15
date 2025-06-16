@@ -71,15 +71,13 @@
    "fieldname": "employee_pf",
    "fieldtype": "Percent",
    "label": "Employee PF Contribution ( % )",
-   "precision": "2",
-   "reqd": 1
+   "precision": "2"
   },
   {
    "fieldname": "employer_pf",
    "fieldtype": "Percent",
    "label": "Employer PF Contribution ( % )",
-   "precision": "2",
-   "reqd": 1
+   "precision": "2"
   },
   {
    "fieldname": "column_break_htfk",
@@ -215,7 +213,7 @@
   }
  ],
  "links": [],
- "modified": "2025-02-04 17:03:27.772711",
+ "modified": "2025-06-14 11:59:36.093786",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee Group",

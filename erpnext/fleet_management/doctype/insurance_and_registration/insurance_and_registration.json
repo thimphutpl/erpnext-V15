@@ -43,7 +43,8 @@
   "items",
   "post_je",
   "reference",
-  "company"
+  "company",
+  "equipment_number"
  ],
  "fields": [
   {
@@ -251,6 +252,7 @@
   {
    "fieldname": "post_je",
    "fieldtype": "Button",
+   "hidden": 1,
    "label": "Post Bluebook Fitness & Emission JE"
   },
   {
@@ -268,11 +270,17 @@
    "fieldtype": "Data",
    "label": "Registration Number",
    "read_only": 1
+  },
+  {
+   "fieldname": "equipment_number",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Equipment Number"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-03-19 14:57:01.315356",
+ "modified": "2025-06-16 12:10:05.898210",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Insurance and Registration",

@@ -116,7 +116,7 @@
  "modified": "2023-04-10 22:02:20.406087",
  "modified_by": "Administrator",
  "module": "Accounts",
- "name": "Shareholder",
+ "name": "Equity",
  "naming_rule": "By \"Naming Series\" field",
  "owner": "Administrator",
  "permissions": [

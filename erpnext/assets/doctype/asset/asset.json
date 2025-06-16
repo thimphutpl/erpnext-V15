@@ -644,7 +644,8 @@
    "fieldname": "branch",
    "fieldtype": "Link",
    "label": "Branch",
-   "options": "Branch"
+   "options": "Branch",
+   "reqd": 1
   },
   {
    "depends_on": "is_existing_asset",
@@ -747,7 +748,7 @@
    "link_fieldname": "target_asset"
   }
  ],
- "modified": "2025-06-04 16:16:42.485265",
+ "modified": "2025-06-13 14:30:17.115497",
  "modified_by": "Administrator",
  "module": "Assets",
  "name": "Asset",

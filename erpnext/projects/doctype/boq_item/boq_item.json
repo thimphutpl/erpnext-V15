@@ -69,9 +69,7 @@
    "columns": 2,
    "fieldname": "item",
    "fieldtype": "Text",
-   "in_list_view": 1,
-   "label": "Item",
-   "reqd": 1
+   "label": "Item"
   },
   {
    "columns": 1,
@@ -291,7 +289,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-06-09 16:54:15.946626",
+ "modified": "2025-06-13 12:26:54.990809",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "BOQ Item",

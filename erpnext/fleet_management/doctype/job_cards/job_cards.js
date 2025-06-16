@@ -38,12 +38,12 @@ frappe.ui.form.on('Job Cards', {
 			/*cur_frm.add_custom_button(__('Payment'), function() {
 				cur_frm.cscript.receive_payment()
 			}, __("Receive"));*/
-			frm.add_custom_button("Receive Payment", function() {
+			frm.add_custom_button("Make Payment", function() {
 				frappe.model.open_mapped_doc({
 					method: "erpnext.fleet_management.doctype.job_cards.job_cards.make_payment_entry",
 					frm: cur_frm
 				})
-			}, __("Receive"));
+			}, __("Make Payment"));
 		}
 		else {
 			cur_frm.toggle_display("receive_payment", 0)
