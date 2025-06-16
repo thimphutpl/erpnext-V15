@@ -93,12 +93,14 @@ class ProcessOvertimePayment(Document):
 		from_date = m['month_start_date']
 		to_date = m['month_end_date']
 
-		query = """select name as reference_doc, employee, employee_name, rate as hourly_rate	, total_hours, total_amount as total_ot_amount
+		query = """select name as reference_doc, employee, employee_name, rate as hourly_rate, total_hours, total_amount as total_ot_amount
 			from `tabOvertime Application` where docstatus = 1 and workflow_state = 'Approved' 
-			and ifnull(payment_jv, '') = ''			
-			and cost_center ='{2}' order by employee desc
+			and ifnull(payment_jv, '') = ''
+			and cost_center ='{2}'
+			and posting_date >= '{0}' and posting_date <= '{1}'
+			order by employee desc
 		""".format(from_date, to_date, self.cost_center)
-	
+		
 		entries = frappe.db.sql(query, as_dict=True)
 		# frappe.throw(str(entries))
 		if not entries:
@@ -167,4 +169,4 @@ class ProcessOvertimePayment(Document):
 	def update_ot(self):
 		for d in self.get('items'):
 			doc = frappe.get_doc("Overtime Application", d.reference_doc)
-			doc.db_set("payment_jv", self.name)	
+			doc.db_set("payment_jv", self.name)
