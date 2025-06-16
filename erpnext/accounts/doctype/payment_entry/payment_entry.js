@@ -27,6 +27,24 @@ frappe.ui.form.on("Payment Entry", {
 
 		erpnext.accounts.dimensions.setup_dimension_filters(frm, frm.doctype);
 	},
+	// auto fetch logic
+	branch: function(frm) {
+        if (frm.doc.payment_type !== 'Receive' && frm.doc.branch) {
+            frappe.call({
+                method: 'frappe.client.get_value',
+                args: {
+                    doctype: 'Branch',
+                    filters: { name: frm.doc.branch },
+                    fieldname: 'expense_bank_account'
+                },
+                callback: function(r) {
+                    if (r.message) {
+                        frm.set_value('paid_from', r.message.expense_bank_account);
+                    }
+                }
+            });
+        }
+    },
 
 	setup: function (frm) {
 		frm.set_query("paid_from", function () {
@@ -171,6 +189,7 @@ frappe.ui.form.on("Payment Entry", {
 				filters: { company: doc.company },
 			};
 		});
+		
 	},
 
 	refresh: function (frm) {
