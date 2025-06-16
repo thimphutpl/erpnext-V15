@@ -997,14 +997,16 @@ class PurchaseInvoice(BuyingController):
 		self.negative_expense_to_be_booked = 0.0
 		gl_entries = []
 
+		""" custom Advance gl entry, for the purpose of Advances """
+		self.make_advance_gl_entry(gl_entries)
+		
 		self.make_supplier_gl_entry(gl_entries)
 		self.make_item_gl_entries(gl_entries)
 		self.make_precision_loss_gl_entry(gl_entries)
 
 		self.make_tax_gl_entries(gl_entries)
 		self.make_internal_transfer_gl_entries(gl_entries)
-		""" custom Advance gl entry, for the purpose of Advances """
-		self.make_advance_gl_entry(gl_entries)
+		
 
 		gl_entries = make_regional_gl_entries(gl_entries, self)
 
