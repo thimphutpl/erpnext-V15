@@ -266,7 +266,7 @@ def get_columns(additional_table_columns, filters):
 			"width": 100,
 		},
         {
-                "label": _("Actuali Rate"),
+                "label": _("Actual Rate"),
                 "fieldname": "base_rate",
                 "fieldtype": "Float",
                 "options": "currency",
