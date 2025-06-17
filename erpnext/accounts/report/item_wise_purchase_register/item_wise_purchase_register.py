@@ -91,6 +91,7 @@ def _execute(filters=None, additional_table_columns=None):
 			"expense_account": expense_account,
 			"stock_qty": d.stock_qty,
 			"stock_uom": d.stock_uom,
+            "base_rate": d.base_rate,
 			"rate": d.base_net_amount / d.stock_qty if d.stock_qty else d.base_net_amount,
 			"amount": d.base_net_amount,
 		}
@@ -264,6 +265,13 @@ def get_columns(additional_table_columns, filters):
 			"options": "UOM",
 			"width": 100,
 		},
+        {
+                "label": _("Actuali Rate"),
+                "fieldname": "base_rate",
+                "fieldtype": "Float",
+                "options": "currency",
+                "width": 100,
+                },
 		{
 			"label": _("Rate"),
 			"fieldname": "rate",
@@ -348,6 +356,7 @@ def get_items(filters, additional_table_columns):
 			pii.expense_account,
 			pii.stock_qty,
 			pii.stock_uom,
+            pii.base_rate,
 			pii.base_net_amount,
 			pi.supplier_name,
 			pi.mode_of_payment,
