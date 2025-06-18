@@ -402,10 +402,43 @@ frappe.ui.form.on("Payment Entry", {
 	},
 
 	mode_of_payment: function (frm) {
-		erpnext.accounts.pos.get_payment_mode_account(frm, frm.doc.mode_of_payment, function (account) {
-			let payment_account_field = frm.doc.payment_type == "Receive" ? "paid_to" : "paid_from";
-			frm.set_value(payment_account_field, account);
-		});
+		// If mode is Cheque and branch is selected, use branch expense_bank_account
+		if (frm.doc.mode_of_payment == "Cheque" && frm.doc.branch) {
+			if (frm.doc.payment_type !== "Receive") {
+				frappe.call({
+					method: 'frappe.client.get_value',
+					args: {
+						doctype: 'Branch',
+						filters: { name: frm.doc.branch },
+						fieldname: 'expense_bank_account'
+					},
+					callback: function(r) {
+						if (r.message) {
+							frm.set_value('paid_from', r.message.expense_bank_account);
+						}
+					}
+				});
+			} else {
+				frappe.call({
+					method: 'frappe.client.get_value',
+					args: {
+						doctype: 'Branch',
+						filters: { name: frm.doc.branch },
+						fieldname: 'expense_bank_account'
+					},
+					callback: function(r) {
+						if (r.message) {
+							frm.set_value('paid_to', r.message.expense_bank_account);
+						}
+					}
+				});
+			}
+		} else {
+			erpnext.accounts.pos.get_payment_mode_account(frm, frm.doc.mode_of_payment, function (account) {
+				let payment_account_field = frm.doc.payment_type == "Receive" ? "paid_to" : "paid_from";
+				frm.set_value(payment_account_field, account);
+			});
+		}
 	},
 
 	party_type: function (frm) {
