@@ -84,6 +84,14 @@ frappe.ui.form.on("Project", {
 										message: `Replaced cancelled Stock Entry ${row.reference_name} with ${amended} in Task Material Item.`,
 										indicator: "orange"
 									});
+								} else {
+									// No amended entry found, clear the reference
+									frappe.model.set_value(row.doctype, row.name, "reference_name", "");
+									frappe.msgprint({
+										title: "Reference Removed",
+										message: `Cancelled Stock Entry ${row.reference_name} has no amendment. Reference cleared in Task Material Item.`,
+										indicator: "orange"
+									});
 								}
 							});
 						}
