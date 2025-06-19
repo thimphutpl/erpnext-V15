@@ -14,6 +14,7 @@
   "column_break_4",
   "company",
   "is_company",
+  "gl_head",
   "address_contacts",
   "address_html",
   "column_break_9",
@@ -110,10 +111,16 @@
    "hidden": 1,
    "label": "Contact List",
    "read_only": 1
+  },
+  {
+   "fieldname": "gl_head",
+   "fieldtype": "Link",
+   "label": "GL Head",
+   "options": "Account"
   }
  ],
  "links": [],
- "modified": "2023-04-10 22:02:20.406087",
+ "modified": "2025-06-19 10:50:37.175740",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Equity",
