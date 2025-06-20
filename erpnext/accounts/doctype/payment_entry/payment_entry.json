@@ -16,7 +16,6 @@
   "company",
   "branch",
   "mode_of_payment",
-  "force_rejection",
   "sb_cheque_reference",
   "use_cheque_lot",
   "cheque_lot",
@@ -940,13 +939,6 @@
    "fieldname": "ifsc_code",
    "fieldtype": "Data",
    "label": "IFSC Code"
-  },
-  {
-   "default": "0",
-   "fieldname": "force_rejection",
-   "fieldtype": "Check",
-   "hidden": 1,
-   "label": "Force Rejection"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -960,7 +952,7 @@
    "table_fieldname": "payment_entries"
   }
  ],
- "modified": "2025-06-20 12:48:46.910652",
+ "modified": "2025-06-20 12:57:11.513104",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Payment Entry",
