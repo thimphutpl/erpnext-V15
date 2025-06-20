@@ -93,12 +93,7 @@ class PaymentEntry(AccountsController):
 		self.set_title()
 		self.set_remarks()
 		self.validate_duplicate_entry()
-		self.validate_payment_type_with_outstanding()
-		if self.workflow_state == "Rejected":
-			if not self.force_rejection:
-				frappe.throw(_("This invoice may already be fully paid. Click 'Proceed to Rejection' to confirm."))
-			else:
-				return
+		self.validate_payment_type_with_outstanding()		
 		self.validate_allocated_amount()
 		self.validate_paid_invoices()
 		self.ensure_supplier_is_not_blocked()

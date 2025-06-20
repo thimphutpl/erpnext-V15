@@ -27,27 +27,6 @@ frappe.ui.form.on("Payment Entry", {
 
 		erpnext.accounts.dimensions.setup_dimension_filters(frm, frm.doctype);
 	},
-
-	validate: function(frm) {
-        if (frm.doc.workflow_state === "Rejected") {
-        }
-    },
-	after_save: function(frm) {
-        if (frm.doc.workflow_state === "Rejected" && !frm.doc.force_rejection) {
-            frappe.msgprint({
-                title: __('Possible Duplicate Payment'),
-                message: __('This payment might be a duplicate because the invoice is already fully paid.'),
-                primary_action: {
-                    label: 'Proceed to Rejection',
-                    action() {
-                        frm.set_value("force_rejection", 1);
-                        frm.save();
-                        frappe.hide_msgprint();
-                    }
-                }
-            });
-        }
-    },
 	// auto fetch logic
 	branch: function(frm) {
         if (frm.doc.payment_type !== 'Receive' && frm.doc.branch) {
