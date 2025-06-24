@@ -41,6 +41,9 @@
   "grade",
   "section_break_hxij",
   "reports_to",
+  "report_to_name",
+  "approver",
+  "approver_name",
   "column_break_tpvx",
   "promotion_due_date",
   "increment_cycle",
@@ -55,6 +58,7 @@
   "cost_center",
   "employment_details",
   "scheduled_confirmation_date",
+  "job_applicant",
   "column_break_32",
   "final_confirmation_date",
   "contract_end_date",
@@ -163,12 +167,12 @@
   {
    "fieldname": "naming_series",
    "fieldtype": "Select",
-   "hidden": 1,
    "label": "Series",
    "no_copy": 1,
    "oldfieldname": "naming_series",
    "oldfieldtype": "Select",
-   "options": "HR-EMP-",
+   "options": "BTF\nHR-EMP-",
+   "reqd": 1,
    "set_only_once": 1
   },
   {
@@ -182,8 +186,7 @@
   {
    "fieldname": "first_name",
    "fieldtype": "Data",
-   "label": "First Name",
-   "reqd": 1
+   "label": "First Name"
   },
   {
    "allow_in_quick_entry": 1,
@@ -993,6 +996,33 @@
    "fieldtype": "Link",
    "label": "Section",
    "options": "Department"
+  },
+  {
+   "fetch_from": "reports_to.employee_name",
+   "fieldname": "report_to_name",
+   "fieldtype": "Data",
+   "label": "Report To Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "job_applicant",
+   "fieldtype": "Link",
+   "label": "Job Applicant",
+   "options": "Job Applicant"
+  },
+  {
+   "fieldname": "approver",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Approver",
+   "options": "Employee"
+  },
+  {
+   "fetch_from": "approver.employee_name",
+   "fieldname": "approver_name",
+   "fieldtype": "Data",
+   "label": "Approver Name",
+   "read_only": 1
   }
  ],
  "icon": "fa fa-user",
@@ -1000,7 +1030,7 @@
  "image_field": "image",
  "is_tree": 1,
  "links": [],
- "modified": "2025-03-31 07:39:51.677677",
+ "modified": "2025-05-31 12:42:03.503700",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee",

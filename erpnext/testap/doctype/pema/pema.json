@@ -1,0 +1,53 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-06-18 16:04:56.722968",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "fnae",
+  "ln",
+  "lll"
+ ],
+ "fields": [
+  {
+   "fieldname": "fnae",
+   "fieldtype": "Data",
+   "label": "fnae"
+  },
+  {
+   "fieldname": "ln",
+   "fieldtype": "Data",
+   "label": "ln"
+  },
+  {
+   "fieldname": "lll",
+   "fieldtype": "Data",
+   "label": "lll"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-06-18 16:05:57.942159",
+ "modified_by": "Administrator",
+ "module": "Testap",
+ "name": "pema",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

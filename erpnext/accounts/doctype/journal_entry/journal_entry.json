@@ -13,6 +13,7 @@
   "title",
   "voucher_type",
   "naming_series",
+  "business_activity",
   "finance_book",
   "process_deferred_accounting",
   "reversal_of",
@@ -560,6 +561,17 @@
    "fieldname": "tds_table",
    "fieldtype": "HTML",
    "label": "TDS Table"
+  },
+  {
+   "fieldname": "business_activity",
+   "fieldtype": "Link",
+   "label": "Business Activity",
+   "no_copy": 1,
+   "oldfieldname": "naming_series",
+   "oldfieldtype": "Select",
+   "options": "Business Activity",
+   "print_hide": 1,
+   "set_only_once": 1
   }
  ],
  "icon": "fa fa-file-text",
@@ -574,7 +586,7 @@
    "table_fieldname": "payment_entries"
   }
  ],
- "modified": "2025-03-10 23:21:50.370754",
+ "modified": "2025-06-17 17:00:30.174548",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Journal Entry",

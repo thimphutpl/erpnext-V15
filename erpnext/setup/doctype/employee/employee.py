@@ -22,7 +22,6 @@ class EmployeeUserDisabledError(frappe.ValidationError):
 class InactiveEmployeeStatusError(frappe.ValidationError):
 	pass
 
-
 class Employee(NestedSet):
 	nsm_parent_field = "reports_to"
 

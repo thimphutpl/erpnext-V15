@@ -28,6 +28,7 @@ class Department(NestedSet):
 		is_division: DF.Check
 		is_group: DF.Check
 		is_section: DF.Check
+		leave_block_list: DF.Link | None
 		lft: DF.Int
 		old_parent: DF.Data | None
 		parent_department: DF.Link | None

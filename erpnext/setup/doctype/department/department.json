@@ -9,6 +9,7 @@
  "field_order": [
   "department_name",
   "parent_department",
+  "leave_block_list",
   "column_break_3",
   "company",
   "is_group",
@@ -144,13 +145,19 @@
    "fieldname": "is_section",
    "fieldtype": "Check",
    "label": "Is Section"
+  },
+  {
+   "fieldname": "leave_block_list",
+   "fieldtype": "Link",
+   "label": "Leave Block List",
+   "options": "Leave Block List"
   }
  ],
  "icon": "fa fa-sitemap",
  "idx": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2025-03-31 07:16:46.193810",
+ "modified": "2025-05-24 13:50:41.182635",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Department",

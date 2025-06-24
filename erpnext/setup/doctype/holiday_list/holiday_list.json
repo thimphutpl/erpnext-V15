@@ -142,7 +142,7 @@
  "icon": "fa fa-calendar",
  "idx": 1,
  "links": [],
- "modified": "2025-02-03 15:41:52.223682",
+ "modified": "2025-05-25 23:15:17.905630",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Holiday List",
@@ -159,6 +159,15 @@
    "role": "HR Manager",
    "share": 1,
    "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Employee",
+   "share": 1
   }
  ],
  "sort_field": "modified",

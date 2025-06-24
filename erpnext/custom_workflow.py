@@ -28,6 +28,7 @@ class CustomWorkflow:
 
 			self.hr_manager = frappe.db.get_value("Employee", frappe.db.get_single_value("HR Settings", "hr_manager"), self.field_list)
 			if not self.hr_manager:
+				
 				frappe.throw("Plesse set HR Manager in HR Settings")
 		### =============== *** =============== *** === NYUTHYUE === *** =============== *** =============== ###
 
@@ -50,6 +51,7 @@ class CustomWorkflow:
 			self.gm_approver	= frappe.db.get_value("Employee", frappe.db.get_value("Department",{"department_name":str(frappe.db.get_value("Employee", self.doc.employee, "division"))}, "approver_hod"),self.field_list)
 
 			if self.doc.doctype in ["POL","Leave Application","Vehicle Request"]:
+				#frappe.throw("hi")
 				self.adm_section_manager = frappe.db.get_value("Employee",{"user_id":frappe.db.get_value(
 					"Department Approver",
 					{"parent": "Administration Section - SMCL", "parentfield": "expense_approvers", "idx": 1},
@@ -474,32 +476,33 @@ class CustomWorkflow:
 			frappe.throw(_("Invalid Workflow State {}").format(self.doc.workflow_state))
 
 	def travel_authorization(self):
+		#frappe.throw(str(self.doc.reports_to))
 		if self.new_state and self.old_state and self.new_state.lower() == self.old_state.lower():
 			return
 
-		elif self.new_state.lower() in ("Draft".lower()):			
-			if frappe.session.user != self.doc.owner:
-				frappe.throw("Only {} can apply this Request".format(self.doc.owner))
+		# elif self.new_state.lower() in ("Draft".lower()):			
+		# 	if frappe.session.user != self.doc.owner:
+		# 		frappe.throw("Only {} can apply this Request".format(self.doc.owner))
 
-		elif self.new_state.lower() == ("Waiting Supervisor Approval".lower()):
-			if frappe.session.user != self.doc.owner:
-				frappe.throw("Only {} can apply this Request".format(self.doc.owner))
-			self.set_approver("Supervisor")
+		elif self.new_state.lower() == ("Verified".lower()):
+			if frappe.session.user != self.reports_to[0]:
+				frappe.throw("Only {} can apply this Request".format(self.reports_to[0]))
+		# 	self.set_approver("Supervisor")
 
-		elif self.new_state.lower() == ("Waiting HR Approval".lower()):
-			if frappe.session.user != self.doc.approver:
-				frappe.throw(f"Only {self.doc.approver} can Forward this Request.")
-			self.set_approver("HR Manager")
+		# elif self.new_state.lower() == ("Waiting HR Approval".lower()):
+		# 	if frappe.session.user != self.doc.approver:
+		# 		frappe.throw(f"Only {self.doc.approver} can Forward this Request.")
+		# 	self.set_approver("HR Manager")
 
-		elif self.new_state.lower() == ("Approved".lower()):
-			if frappe.session.user != self.doc.approver:
-				frappe.throw(f"Only {self.doc.approver} can Approved this Request.")			
+		# elif self.new_state.lower() == ("Approved".lower()):
+		# 	if frappe.session.user != self.doc.approver:
+		# 		frappe.throw(f"Only {self.doc.approver} can Approved this Request.")			
 
-		elif self.new_state.lower() == ("Rejected".lower()):
-			if frappe.session.user != self.doc.approver:
-				frappe.throw(f"Only {self.doc.approver} can Reject this Request.")
-		else:
-			frappe.throw(_("Invalid Workflow State {}").format(self.doc.workflow_state))
+		# elif self.new_state.lower() == ("Rejected".lower()):
+		# 	if frappe.session.user != self.doc.approver:
+		# 		frappe.throw(f"Only {self.doc.approver} can Reject this Request.")
+		# else:
+		# 	frappe.throw(_("Invalid Workflow State {}").format(self.doc.workflow_state))
 
 	def travel_claim(self):
 		if self.new_state and self.old_state and self.new_state.lower() == self.old_state.lower():
@@ -673,6 +676,7 @@ class NotifyCustomWorkflow:
 		elif self.doc.doctype == "Travel Authorization":
 			template = frappe.db.get_single_value('HR Settings', 'travel_authorization_status_notification_template')
 			if not template:
+				frappe.throw("hi")
 				frappe.msgprint(_("Please set default template for Authorization Status Notification in HR Settings."))
 				return
 		elif self.doc.doctype == "Travel Claim":
@@ -752,6 +756,7 @@ class NotifyCustomWorkflow:
 			})
 
 	def notify_approver(self):
+		#frappe.throw("hi")
 		if self.doc.get(self.doc_approver[0]):
 			parent_doc = frappe.get_doc(self.doc.doctype, self.doc.name)
 			args = parent_doc.as_dict()

@@ -73,6 +73,7 @@ class Item(Document):
 		allow_negative_stock: DF.Check
 		asset_category: DF.Link | None
 		asset_naming_series: DF.Literal[None]
+		asset_sub_category: DF.Link | None
 		attributes: DF.Table[ItemVariantAttribute]
 		auto_create_assets: DF.Check
 		barcodes: DF.Table[ItemBarcode]
@@ -116,6 +117,7 @@ class Item(Document):
 		item_defaults: DF.Table[ItemDefault]
 		item_group: DF.Link
 		item_name: DF.Data
+		item_sub_group: DF.Link
 		last_purchase_rate: DF.Float
 		lead_time_days: DF.Int
 		max_discount: DF.Float
@@ -165,13 +167,13 @@ class Item(Document):
 			)
 		self.item_code = make_autoname(f"{base}.#######")
 		
-		if not self.item_code:
-			frappe.throw(
-				_("Item Code is mandatory because Item is not automatically numbered."),
-				title=_("Missing Item Code")
-			)
-		self.item_code = strip(self.item_code)
-		self.name = self.item_code
+		# if not self.item_code:
+		# 	frappe.throw(
+		# 		_("Item Code is mandatory because Item is not automatically numbered."),
+		# 		title=_("Missing Item Code")
+		# 	)
+		# self.item_code = strip(self.item_code)
+		# self.name = self.item_code
 
 		# if frappe.db.get_default("item_naming_by") == "Naming Series":
 		# 	if self.variant_of:

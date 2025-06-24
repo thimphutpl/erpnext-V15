@@ -11,7 +11,7 @@ frappe.treeview_settings["Department"] = {
 		},
 	],
 	breadcrumb: "HR",
-	root_label: "All Departments",
+	root_label: "All Department",
 	get_tree_root: true,
 	menu_items: [
 		{
