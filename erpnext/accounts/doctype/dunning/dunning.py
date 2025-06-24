@@ -32,14 +32,14 @@ class Dunning(AccountsController):
 
 		from erpnext.accounts.doctype.overdue_payment.overdue_payment import OverduePayment
 
-		address_display: DF.TextEditor | None
+		address_display: DF.SmallText | None
 		amended_from: DF.Link | None
 		base_dunning_amount: DF.Currency
 		body_text: DF.TextEditor | None
 		closing_text: DF.TextEditor | None
 		company: DF.Link
 		company_address: DF.Link | None
-		company_address_display: DF.TextEditor | None
+		company_address_display: DF.SmallText | None
 		contact_display: DF.SmallText | None
 		contact_email: DF.Data | None
 		contact_mobile: DF.SmallText | None
@@ -85,14 +85,7 @@ class Dunning(AccountsController):
 				frappe.throw(
 					_(
 						"The currency of invoice {} ({}) is different from the currency of this dunning ({})."
-					).format(
-						frappe.get_desk_link(
-							"Sales Invoice",
-							row.sales_invoice,
-						),
-						invoice_currency,
-						self.currency,
-					)
+					).format(row.sales_invoice, invoice_currency, self.currency)
 				)
 
 	def validate_overdue_payments(self):
@@ -193,13 +186,10 @@ def resolve_dunning(doc, state):
 					outstanding_ps = frappe.get_value(
 						"Payment Schedule", overdue_payment.payment_schedule, "outstanding"
 					)
-					resolve = resolve and (False if (outstanding_ps > 0 and outstanding_inv > 0) else True)
+					resolve = False if (outstanding_ps > 0 and outstanding_inv > 0) else True
 
-				new_status = "Resolved" if resolve else "Unresolved"
-
-				if dunning.status != new_status:
-					dunning.status = new_status
-					dunning.save()
+				dunning.status = "Resolved" if resolve else "Unresolved"
+				dunning.save()
 
 
 def get_linked_dunnings_as_per_state(sales_invoice, state):

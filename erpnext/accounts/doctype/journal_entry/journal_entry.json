@@ -2,7 +2,7 @@
  "actions": [],
  "allow_auto_repeat": 1,
  "allow_import": 1,
- "autoname": "naming_series:",
+ "autoname": "naming_series:journal_entry_series",
  "creation": "2022-01-25 10:29:58.717206",
  "doctype": "DocType",
  "document_type": "Document",
@@ -11,20 +11,25 @@
   "entry_type_and_date",
   "is_system_generated",
   "title",
+  "branch",
   "voucher_type",
   "naming_series",
   "finance_book",
   "process_deferred_accounting",
   "reversal_of",
-  "tax_withholding_category",
   "column_break1",
+  "mode_of_payment",
   "from_template",
   "company",
   "posting_date",
   "apply_tds",
+  "tax_withholding_category",
   "2_add_edit_gl_entries",
   "accounts",
+  "tds_table",
+  "use_check_lot",
   "section_break99",
+  "select_cheque_lot",
   "cheque_no",
   "cheque_date",
   "user_remark",
@@ -42,6 +47,7 @@
   "remark",
   "paid_loan",
   "inter_company_journal_entry_reference",
+  "journal_no",
   "column_break98",
   "bill_no",
   "bill_date",
@@ -57,11 +63,19 @@
   "letter_head",
   "select_print_heading",
   "addtional_info",
-  "mode_of_payment",
   "payment_order",
   "column_break3",
   "is_opening",
   "stock_entry",
+  "money_receipt_information_section",
+  "get_series",
+  "money_receipt_prefix",
+  "cb_sb_mri1",
+  "money_receipt_no",
+  "epayment_status_section",
+  "payment_status",
+  "cb_sb_ep1",
+  "bank_payment",
   "subscription_section",
   "auto_repeat",
   "amended_from",
@@ -90,18 +104,17 @@
    "label": "Entry Type",
    "oldfieldname": "voucher_type",
    "oldfieldtype": "Select",
-   "options": "Journal Entry\nInter Company Journal Entry\nBank Entry\nCash Entry\nCredit Card Entry\nDebit Note\nCredit Note\nContra Entry\nExcise Entry\nWrite Off Entry\nOpening Entry\nDepreciation Entry\nExchange Rate Revaluation\nExchange Gain Or Loss\nDeferred Revenue\nDeferred Expense",
+   "options": "Journal Entry\nInter Company Journal Entry\nBank Entry\nCash Entry\nCredit Card Entry\nDebit Note\nCredit Note\nContra Entry\nExcise Entry\nWrite Off Entry\nOpening Entry\nDepreciation Entry\nExchange Rate Revaluation\nExchange Gain Or Loss\nDeferred Revenue\nDeferred Expense\nHire Invoice",
    "reqd": 1,
    "search_index": 1
   },
   {
    "fieldname": "naming_series",
-   "fieldtype": "Select",
+   "fieldtype": "Link",
    "label": "Series",
-   "no_copy": 1,
    "oldfieldname": "naming_series",
    "oldfieldtype": "Select",
-   "options": "ACC-JV-.YYYY.-",
+   "options": "Journal Entry Series",
    "print_hide": 1,
    "reqd": 1,
    "set_only_once": 1
@@ -166,8 +179,7 @@
    "fieldtype": "Data",
    "in_global_search": 1,
    "in_list_view": 1,
-   "label": "Reference Number",
-   "mandatory_depends_on": "eval:doc.voucher_type == \"Bank Entry\"",
+   "label": "Cheque No",
    "no_copy": 1,
    "oldfieldname": "cheque_no",
    "oldfieldtype": "Data",
@@ -176,8 +188,7 @@
   {
    "fieldname": "cheque_date",
    "fieldtype": "Date",
-   "label": "Reference Date",
-   "mandatory_depends_on": "eval:doc.voucher_type == \"Bank Entry\"",
+   "label": "Cheque Date",
    "no_copy": 1,
    "oldfieldname": "cheque_date",
    "oldfieldtype": "Date",
@@ -500,6 +511,7 @@
   {
    "fieldname": "from_template",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "From Template",
    "no_copy": 1,
    "options": "Journal Entry Template",
@@ -510,16 +522,15 @@
    "depends_on": "eval:doc.apply_tds",
    "fieldname": "tax_withholding_category",
    "fieldtype": "Link",
-   "label": "Tax Withholding Category",
+   "label": "Tax Category",
    "mandatory_depends_on": "eval:doc.apply_tds",
    "options": "Tax Withholding Category"
   },
   {
    "default": "0",
-   "depends_on": "eval:['Credit Note', 'Debit Note'].includes(doc.voucher_type)",
    "fieldname": "apply_tds",
    "fieldtype": "Check",
-   "label": "Apply Tax Withholding Amount "
+   "label": "Apply Tax Amount "
   },
   {
    "depends_on": "eval:doc.docstatus",
@@ -553,6 +564,96 @@
    "label": "Repost Required",
    "print_hide": 1,
    "read_only": 1
+  },
+  {
+   "fieldname": "tds_table",
+   "fieldtype": "HTML",
+   "label": "TDS Table",
+   "read_only": 1
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Branch",
+   "options": "Branch",
+   "reqd": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "default": "0",
+   "depends_on": "eval:doc.naming_series=='Bank Payment Voucher'",
+   "fieldname": "use_check_lot",
+   "fieldtype": "Check",
+   "label": "Assign Using Check Lot"
+  },
+  {
+   "allow_on_submit": 1,
+   "depends_on": "eval:doc.use_check_lot==1",
+   "fieldname": "select_cheque_lot",
+   "fieldtype": "Link",
+   "label": "Select Cheque Lot",
+   "options": "Cheque Lot"
+  },
+  {
+   "depends_on": "eval:doc.docstatus==1 && (doc.naming_series=='Bank Receipt Voucher' || doc.naming_series=='Cash Receipt Voucher')",
+   "fieldname": "money_receipt_information_section",
+   "fieldtype": "Section Break",
+   "label": "Money Receipt Information"
+  },
+  {
+   "allow_on_submit": 1,
+   "depends_on": "eval:doc.money_receipt_no==0",
+   "fieldname": "get_series",
+   "fieldtype": "Button",
+   "label": "Get Series"
+  },
+  {
+   "fieldname": "money_receipt_prefix",
+   "fieldtype": "Data",
+   "label": "Money Receipt Prefix",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cb_sb_mri1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "money_receipt_no",
+   "fieldtype": "Data",
+   "label": "Money Receipt No",
+   "read_only": 1
+  },
+  {
+   "fieldname": "epayment_status_section",
+   "fieldtype": "Section Break",
+   "label": "ePayment Status"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "payment_status",
+   "fieldtype": "Select",
+   "label": "Payment Status",
+   "options": "\nPayment Under Process\nPayment Successful\nPayment Failed\nPartial Payment\nPayment Cancelled",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cb_sb_ep1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "bank_payment",
+   "fieldtype": "Link",
+   "label": "Bank Payment",
+   "options": "Bank Payment",
+   "read_only": 1
+  },
+  {
+   "fieldname": "journal_no",
+   "fieldtype": "Data",
+   "label": "Journal No."
   }
  ],
  "icon": "fa fa-file-text",
@@ -567,7 +668,7 @@
    "table_fieldname": "payment_entries"
   }
  ],
- "modified": "2024-03-27 13:09:58.366953",
+ "modified": "2025-06-24 10:34:48.712068",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Journal Entry",
@@ -613,7 +714,7 @@
   }
  ],
  "search_fields": "voucher_type,posting_date, due_date, cheque_no",
- "sort_field": "creation",
+ "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],
  "title_field": "title",

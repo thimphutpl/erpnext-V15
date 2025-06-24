@@ -156,7 +156,7 @@ frappe.ui.form.on("Invoice Discounting", {
 					},
 				});
 			},
-			primary_action_label: __("Get Invoices"),
+			primary_action_label: __("Get Invocies"),
 		});
 		d.show();
 	},
@@ -189,7 +189,7 @@ frappe.ui.form.on("Invoice Discounting", {
 
 	show_general_ledger: (frm) => {
 		if (frm.doc.docstatus > 0) {
-			frm.add_custom_button(
+			cur_frm.add_custom_button(
 				__("Accounting Ledger"),
 				function () {
 					frappe.route_options = {

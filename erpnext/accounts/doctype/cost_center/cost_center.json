@@ -2,6 +2,7 @@
  "actions": [],
  "allow_copy": 1,
  "allow_import": 1,
+ "allow_rename": 1,
  "creation": "2013-01-23 19:57:17",
  "description": "Track separate Income and Expense for product verticals or divisions.",
  "doctype": "DocType",
@@ -13,12 +14,19 @@
   "cost_center_number",
   "parent_cost_center",
   "company",
+  "warehouse",
+  "holiday_list",
   "cb0",
   "is_group",
   "disabled",
   "lft",
   "rgt",
-  "old_parent"
+  "old_parent",
+  "branch_created",
+  "use_budget_from_parent",
+  "budget_cost_center",
+  "section_break_hefj",
+  "sub_activity"
  ],
  "fields": [
   {
@@ -51,8 +59,7 @@
    "label": "Parent Cost Center",
    "oldfieldname": "parent_cost_center",
    "oldfieldtype": "Link",
-   "options": "Cost Center",
-   "reqd": 1
+   "options": "Cost Center"
   },
   {
    "fieldname": "company",
@@ -119,13 +126,57 @@
    "fieldname": "disabled",
    "fieldtype": "Check",
    "label": "Disabled"
+  },
+  {
+   "fieldname": "section_break_hefj",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "sub_activity",
+   "fieldtype": "Table",
+   "label": "Sub Activity",
+   "options": "Sub Activity"
+  },
+  {
+   "default": "0",
+   "fieldname": "branch_created",
+   "fieldtype": "Check",
+   "label": "Branch Created",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "use_budget_from_parent",
+   "fieldtype": "Check",
+   "label": " Use Budget from Parent Cost Centers"
+  },
+  {
+   "depends_on": "eval:doc.use_budget_from_parent",
+   "fieldname": "budget_cost_center",
+   "fieldtype": "Link",
+   "label": "Budget Cost Center",
+   "mandatory_depends_on": "eval:doc.use_budget_from_parent",
+   "options": "Cost Center"
+  },
+  {
+   "depends_on": "eval:doc.is_group!=1",
+   "fieldname": "warehouse",
+   "fieldtype": "Link",
+   "label": "Warehouse",
+   "options": "Warehouse"
+  },
+  {
+   "fieldname": "holiday_list",
+   "fieldtype": "Link",
+   "label": "Holiday List",
+   "options": "Holiday List"
   }
  ],
  "icon": "fa fa-money",
  "idx": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2024-04-24 10:55:54.083042",
+ "modified": "2024-12-05 12:20:45.002210",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Cost Center",
@@ -133,15 +184,12 @@
  "owner": "Administrator",
  "permissions": [
   {
-   "create": 1,
-   "delete": 1,
    "email": 1,
    "print": 1,
    "read": 1,
    "report": 1,
    "role": "Accounts Manager",
-   "share": 1,
-   "write": 1
+   "share": 1
   },
   {
    "export": 1,
@@ -172,11 +220,23 @@
    "role": "Employee",
    "select": 1,
    "share": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Admin",
+   "share": 1,
+   "write": 1
   }
  ],
  "search_fields": "parent_cost_center, is_group",
  "show_name_in_global_search": 1,
- "sort_field": "creation",
+ "sort_field": "modified",
  "sort_order": "ASC",
  "states": []
 }

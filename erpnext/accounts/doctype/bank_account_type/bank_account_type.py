@@ -16,6 +16,7 @@ class BankAccountType(Document):
 		from frappe.types import DF
 
 		account_type: DF.Data | None
+		description: DF.SmallText | None
 	# end: auto-generated types
 
 	pass

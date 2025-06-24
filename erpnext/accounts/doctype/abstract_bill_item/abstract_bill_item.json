@@ -1,0 +1,197 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-07-18 14:43:13.857916",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "account",
+  "business_activity",
+  "not_required",
+  "column_break_qqkg",
+  "amount",
+  "bill_no",
+  "bill_date",
+  "activity_head",
+  "column_break_zkby",
+  "base_amount",
+  "cash_receipt",
+  "reimburse_amount",
+  "cost_center",
+  "tax_exempted",
+  "remarks",
+  "party_details_section",
+  "party_type",
+  "column_break_znse",
+  "party",
+  "narration",
+  "reference_details_section",
+  "reference_type",
+  "column_break_lozq",
+  "reference_name"
+ ],
+ "fields": [
+  {
+   "fieldname": "party_type",
+   "fieldtype": "Select",
+   "label": "Party Type",
+   "options": "\nSupplier\nEmployee\nAgency\nBeneficiary",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_qqkg",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "party",
+   "fieldtype": "Dynamic Link",
+   "in_list_view": 1,
+   "label": "Party",
+   "options": "party_type",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_zkby",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Amount",
+   "options": "currency",
+   "reqd": 1
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "label": "Remarks"
+  },
+  {
+   "fieldname": "bill_no",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Ref. No./Bill No."
+  },
+  {
+   "fieldname": "bill_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Ref./Bill Date"
+  },
+  {
+   "fieldname": "account",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Account",
+   "options": "Account",
+   "reqd": 1
+  },
+  {
+   "fieldname": "activity_head",
+   "fieldtype": "Data",
+   "label": "Activity Head/Object Code",
+   "read_only": 1
+  },
+  {
+   "fieldname": "business_activity",
+   "fieldtype": "Link",
+   "label": "Business Activity",
+   "options": "Business Activity",
+   "reqd": 1
+  },
+  {
+   "fieldname": "cost_center",
+   "fieldtype": "Link",
+   "label": "Cost Center",
+   "options": "Cost Center",
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "tax_exempted",
+   "fieldtype": "Check",
+   "label": "Tax Exempted",
+   "no_copy": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "base_amount",
+   "fieldtype": "Currency",
+   "label": "Amount (Company Currency)",
+   "options": "Company:company:default_currency",
+   "read_only": 1
+  },
+  {
+   "fieldname": "reference_details_section",
+   "fieldtype": "Section Break",
+   "label": "Reference Details"
+  },
+  {
+   "fieldname": "reference_type",
+   "fieldtype": "Link",
+   "label": "Reference Type",
+   "options": "DocType",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_lozq",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "reference_name",
+   "fieldtype": "Dynamic Link",
+   "in_list_view": 1,
+   "label": "Reference Name",
+   "options": "reference_type",
+   "read_only": 1
+  },
+  {
+   "fieldname": "party_details_section",
+   "fieldtype": "Section Break",
+   "label": "Party Details"
+  },
+  {
+   "fieldname": "column_break_znse",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "narration",
+   "fieldtype": "Small Text",
+   "label": "Narration"
+  },
+  {
+   "depends_on": "eval:parent.final_settlement",
+   "fieldname": "cash_receipt",
+   "fieldtype": "Currency",
+   "label": "Cash Receipt"
+  },
+  {
+   "depends_on": "eval:parent.final_settlement",
+   "fieldname": "reimburse_amount",
+   "fieldtype": "Currency",
+   "label": "Reimburse Amount"
+  },
+  {
+   "default": "0",
+   "fieldname": "not_required",
+   "fieldtype": "Check",
+   "label": "Not Required",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2024-08-20 13:01:35.101119",
+ "modified_by": "Administrator",
+ "module": "Accounts",
+ "name": "Abstract Bill Item",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

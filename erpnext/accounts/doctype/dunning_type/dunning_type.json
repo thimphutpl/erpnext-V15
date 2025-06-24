@@ -107,7 +107,7 @@
    "link_fieldname": "dunning_type"
   }
  ],
- "modified": "2024-03-27 13:08:19.584112",
+ "modified": "2021-11-13 00:25:35.659283",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Dunning Type",
@@ -151,8 +151,7 @@
    "write": 1
   }
  ],
- "sort_field": "creation",
+ "sort_field": "modified",
  "sort_order": "DESC",
- "states": [],
  "track_changes": 1
 }

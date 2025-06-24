@@ -22,7 +22,7 @@ def get_columns(filters):
 			"fieldtype": "Link",
 			"fieldname": "account",
 			"options": "Account",
-			"width": 200,
+			"width": 100,
 		},
 		{
 			"label": _("Currency"),
@@ -30,7 +30,7 @@ def get_columns(filters):
 			"fieldname": "currency",
 			"options": "Currency",
 			"hidden": 1,
-			"width": 100,
+			"width": 50,
 		},
 		{
 			"label": _("Balance"),

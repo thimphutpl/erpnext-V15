@@ -13,6 +13,15 @@ frappe.ui.form.on("Cost Center", {
 				},
 			};
 		});
+
+		frm.set_query("budget_cost_center", function() {
+			return {
+				filters: {
+					company: frm.doc.company,
+					is_group: 1
+				}
+			}
+		});
 	},
 	refresh: function (frm) {
 		if (!frm.is_new()) {
@@ -32,7 +41,7 @@ frappe.ui.form.on("Cost Center", {
 			);
 		}
 
-		frm.events.hide_unhide_group_ledger(frm);
+		// frm.events.hide_unhide_group_ledger(frm); #comment by Jai
 
 		frm.toggle_display("sb1", doc.is_group == 0);
 		frm.set_intro(intro_txt);

@@ -9,13 +9,25 @@
  "field_order": [
   "department_name",
   "parent_department",
+  "department_rating",
   "column_break_3",
   "company",
   "is_group",
+  "is_division",
+  "is_section",
+  "is_unit",
   "disabled",
   "lft",
   "rgt",
-  "old_parent"
+  "old_parent",
+  "section_break_mrcz",
+  "approver_hod",
+  "column_break_mhap",
+  "approver_id",
+  "column_break_ggez",
+  "approver_name",
+  "column_break_gcak",
+  "approver_designation"
  ],
  "fields": [
   {
@@ -38,10 +50,11 @@
   {
    "fieldname": "company",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Company",
    "options": "Company",
-   "reqd": 1
+   "remember_last_selected_value": 1
   },
   {
    "bold": 1,
@@ -84,13 +97,77 @@
   {
    "fieldname": "column_break_3",
    "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_unit",
+   "fieldtype": "Check",
+   "label": "Is Unit"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_section",
+   "fieldtype": "Check",
+   "label": "Is Section"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_division",
+   "fieldtype": "Check",
+   "label": "Is Division"
+  },
+  {
+   "fieldname": "section_break_mrcz",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_mhap",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "approver_hod.user_id",
+   "fieldname": "approver_id",
+   "fieldtype": "Link",
+   "label": "Approver ID",
+   "options": "User"
+  },
+  {
+   "fieldname": "column_break_ggez",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "approver_hod.employee_name",
+   "fieldname": "approver_name",
+   "fieldtype": "Data",
+   "label": "Approver Name"
+  },
+  {
+   "fieldname": "column_break_gcak",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "approver_hod.designation",
+   "fieldname": "approver_designation",
+   "fieldtype": "Data",
+   "label": "Approver Designation"
+  },
+  {
+   "fieldname": "approver_hod",
+   "fieldtype": "Link",
+   "label": "Approver",
+   "options": "Employee"
+  },
+  {
+   "fieldname": "department_rating",
+   "fieldtype": "Percent",
+   "label": "Department Rating"
   }
  ],
  "icon": "fa fa-sitemap",
  "idx": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2024-06-12 16:10:31.451257",
+ "modified": "2025-06-18 18:41:22.136575",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Department",

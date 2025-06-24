@@ -47,7 +47,7 @@ class POSInvoice(SalesInvoice):
 
 		account_for_change_amount: DF.Link | None
 		additional_discount_percentage: DF.Float
-		address_display: DF.TextEditor | None
+		address_display: DF.SmallText | None
 		advances: DF.Table[SalesInvoiceAdvance]
 		against_income_account: DF.SmallText | None
 		allocate_advances_automatically: DF.Check
@@ -72,7 +72,7 @@ class POSInvoice(SalesInvoice):
 		commission_rate: DF.Float
 		company: DF.Link
 		company_address: DF.Link | None
-		company_address_display: DF.TextEditor | None
+		company_address_display: DF.SmallText | None
 		consolidated_invoice: DF.Link | None
 		contact_display: DF.SmallText | None
 		contact_email: DF.Data | None
@@ -138,7 +138,7 @@ class POSInvoice(SalesInvoice):
 		selling_price_list: DF.Link
 		set_posting_time: DF.Check
 		set_warehouse: DF.Link | None
-		shipping_address: DF.TextEditor | None
+		shipping_address: DF.SmallText | None
 		shipping_address_name: DF.Link | None
 		shipping_rule: DF.Link | None
 		source: DF.Link | None
@@ -372,7 +372,7 @@ class POSInvoice(SalesInvoice):
 			if d.get("qty") > 0:
 				frappe.throw(
 					_(
-						"Row #{}: You cannot add positive quantities in a return invoice. Please remove item {} to complete the return."
+						"Row #{}: You cannot add postive quantities in a return invoice. Please remove item {} to complete the return."
 					).format(d.idx, frappe.bold(d.item_code)),
 					title=_("Invalid Item"),
 				)
@@ -789,7 +789,7 @@ def make_merge_log(invoices):
 		invoices = json.loads(invoices)
 
 	if len(invoices) == 0:
-		frappe.throw(_("At least one invoice has to be selected."))
+		frappe.throw(_("Atleast one invoice has to be selected."))
 
 	merge_log = frappe.new_doc("POS Invoice Merge Log")
 	merge_log.posting_date = getdate(nowdate())

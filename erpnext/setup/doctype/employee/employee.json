@@ -12,41 +12,61 @@
  "field_order": [
   "basic_details_tab",
   "basic_information",
+  "salutation",
+  "employee_name",
   "employee",
   "naming_series",
   "first_name",
   "middle_name",
   "last_name",
-  "employee_name",
   "column_break_9",
   "gender",
   "date_of_birth",
-  "salutation",
+  "grade",
   "column_break1",
   "date_of_joining",
   "image",
   "status",
+  "old_id",
   "erpnext_user",
   "user_id",
   "create_user",
   "create_user_permission",
+  "employment_details_section",
+  "employee_type",
+  "employee_group",
+  "professional_category",
+  "reports_to",
+  "column_break_wrmk",
+  "employee_status",
+  "probation_end_date",
+  "increment_cycle",
+  "promotion_cycle",
+  "promotion_due_date",
   "company_details_section",
   "company",
   "department",
   "employee_number",
   "column_break_25",
   "designation",
-  "reports_to",
+  "division",
+  "section",
   "column_break_18",
   "branch",
+  "cost_center",
+  "unit",
   "employment_details",
+  "job_applicant",
   "scheduled_confirmation_date",
+  "contract_start_date",
   "column_break_32",
   "final_confirmation_date",
   "contract_end_date",
   "col_break_22",
   "notice_number_of_days",
   "date_of_retirement",
+  "contract_summary_section",
+  "contract_summary",
   "contact_details",
   "cell_number",
   "column_break_40",
@@ -76,23 +96,46 @@
   "ctc",
   "salary_currency",
   "salary_mode",
+  "column_break_xjso",
+  "payroll_cost_center",
   "bank_details_section",
   "bank_name",
-  "column_break_heye",
+  "bank_branch",
+  "bank_account_type",
   "bank_ac_no",
+  "column_break_heye",
+  "tpn_number",
   "iban",
+  "pf_number",
+  "pf_tiers",
+  "gis_number",
+  "gis_policy_number",
   "personal_details",
   "marital_status",
   "family_background",
   "column_break6",
   "blood_group",
   "health_details",
+  "health_insurance_section",
+  "health_insurance_provider",
+  "health_insurance_no",
   "passport_details_section",
   "passport_number",
   "valid_upto",
+  "license_no",
   "column_break_73",
   "date_of_issue",
   "place_of_issue",
+  "permanent_details_section",
+  "country",
+  "gewog",
+  "house_number",
+  "column_break_yetr",
+  "dzongkhag",
+  "village",
+  "thram_number",
+  "employee_family_details_section",
+  "employee_family_details",
   "profile_tab",
   "bio",
   "educational_qualification",
@@ -435,7 +478,7 @@
   {
    "fieldname": "cell_number",
    "fieldtype": "Data",
-   "label": "Mobile",
+   "label": "Mobile Number",
    "options": "Phone"
   },
   {
@@ -514,7 +557,7 @@
   {
    "fieldname": "passport_number",
    "fieldtype": "Data",
-   "label": "Passport Number"
+   "label": "CID/Passport Number"
   },
   {
    "fieldname": "date_of_issue",
@@ -817,6 +860,252 @@
    "fieldname": "iban",
    "fieldtype": "Data",
    "label": "IBAN"
+  },
+  {
+   "fieldname": "old_id",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Old ID"
+  },
+  {
+   "fieldname": "grade",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Grade",
+   "options": "Employee Grade"
+  },
+  {
+   "fieldname": "employment_details_section",
+   "fieldtype": "Section Break",
+   "label": "Employee Details"
+  },
+  {
+   "fieldname": "employee_type",
+   "fieldtype": "Link",
+   "ignore_user_permissions": 1,
+   "label": "Employment Type",
+   "options": "Employment Type"
+  },
+  {
+   "fieldname": "column_break_wrmk",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "employee_status",
+   "fieldtype": "Select",
+   "label": "Employment Status",
+   "options": "\nIn Service\nLeft\nProbation\nEOL\nStudy Leave\nTerminated\nSuspended"
+  },
+  {
+   "fieldname": "employee_group",
+   "fieldtype": "Link",
+   "label": "Employee Group",
+   "options": "Employee Group"
+  },
+  {
+   "depends_on": "eval:doc.employment_status == \"Probation\";",
+   "fieldname": "probation_end_date",
+   "fieldtype": "Date",
+   "label": "Probation End Date",
+   "mandatory_depends_on": "employement_status == \"Probation\";"
+  },
+  {
+   "fieldname": "professional_category",
+   "fieldtype": "Link",
+   "label": "Professional Category",
+   "options": "Professional Category"
+  },
+  {
+   "fieldname": "increment_cycle",
+   "fieldtype": "Select",
+   "label": "Increment Cycle",
+   "options": "\nJanuary\nFebruary\nMarch\nApril\nMay\nJune\nJuly\nAugust\nSeptember\nOctober\nNovember\nDecember"
+  },
+  {
+   "fieldname": "promotion_cycle",
+   "fieldtype": "Select",
+   "label": "Promotion Cycle",
+   "options": "\nJanuary\nJuly"
+  },
+  {
+   "fieldname": "promotion_due_date",
+   "fieldtype": "Date",
+   "label": "Promotion Due Date"
+  },
+  {
+   "fieldname": "division",
+   "fieldtype": "Link",
+   "label": "Division",
+   "options": "Department"
+  },
+  {
+   "fetch_from": "branch.cost_center",
+   "fieldname": "cost_center",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Cost Center",
+   "options": "Cost Center",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Section",
+   "options": "Department"
+  },
+  {
+   "fieldname": "unit",
+   "fieldtype": "Link",
+   "label": "Unit",
+   "options": "Department"
+  },
+  {
+   "fieldname": "job_applicant",
+   "fieldtype": "Link",
+   "label": "Job Applicant",
+   "options": "Job Applicant"
+  },
+  {
+   "fieldname": "contract_start_date",
+   "fieldtype": "Date",
+   "label": "Contract Start Date"
+  },
+  {
+   "fieldname": "contract_summary_section",
+   "fieldtype": "Section Break",
+   "label": "Contract Summary"
+  },
+  {
+   "fieldname": "contract_summary",
+   "fieldtype": "Table",
+   "options": "Contract History"
+  },
+  {
+   "fieldname": "column_break_xjso",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "department.payroll_cost_center",
+   "fetch_if_empty": 1,
+   "fieldname": "payroll_cost_center",
+   "fieldtype": "Link",
+   "label": "Payroll Cost Center",
+   "options": "Cost Center"
+  },
+  {
+   "fieldname": "bank_branch",
+   "fieldtype": "Link",
+   "label": "Bank Branch",
+   "options": "Financial Institution Branch"
+  },
+  {
+   "fieldname": "bank_account_type",
+   "fieldtype": "Link",
+   "label": "Bank Account Type",
+   "options": "Bank Account Type"
+  },
+  {
+   "fieldname": "tpn_number",
+   "fieldtype": "Data",
+   "label": "TPN Number"
+  },
+  {
+   "fieldname": "pf_number",
+   "fieldtype": "Data",
+   "label": "PF Number"
+  },
+  {
+   "fieldname": "pf_tiers",
+   "fieldtype": "Select",
+   "label": "PF Tiers",
+   "options": "\n1\n2"
+  },
+  {
+   "fieldname": "gis_number",
+   "fieldtype": "Data",
+   "label": "GIS Number"
+  },
+  {
+   "fieldname": "gis_policy_number",
+   "fieldtype": "Data",
+   "label": "GIS Policy Number"
+  },
+  {
+   "fieldname": "health_insurance_section",
+   "fieldtype": "Section Break",
+   "label": "Health Insurance"
+  },
+  {
+   "fieldname": "health_insurance_provider",
+   "fieldtype": "Link",
+   "label": "Health Insurance Provider",
+   "options": "Employee Health Insurance"
+  },
+  {
+   "depends_on": "eval:doc.health_insurance_provider",
+   "fieldname": "health_insurance_no",
+   "fieldtype": "Data",
+   "label": "Health Insurance No"
+  },
+  {
+   "description": "<b>Applicable for drivers/operators</b>",
+   "fieldname": "license_no",
+   "fieldtype": "Data",
+   "label": "License No."
+  },
+  {
+   "fieldname": "permanent_details_section",
+   "fieldtype": "Section Break",
+   "label": "Permanent Details"
+  },
+  {
+   "fieldname": "country",
+   "fieldtype": "Link",
+   "label": "Country",
+   "options": "Country"
+  },
+  {
+   "fieldname": "gewog",
+   "fieldtype": "Link",
+   "label": "Gewog",
+   "options": "Gewog"
+  },
+  {
+   "fieldname": "column_break_yetr",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "dzongkhag",
+   "fieldtype": "Link",
+   "label": "Dzongkhag",
+   "options": "Dzongkhag"
+  },
+  {
+   "fieldname": "house_number",
+   "fieldtype": "Data",
+   "label": "House Number"
+  },
+  {
+   "fieldname": "village",
+   "fieldtype": "Data",
+   "label": "Village"
+  },
+  {
+   "fieldname": "thram_number",
+   "fieldtype": "Data",
+   "label": "Thram Number"
+  },
+  {
+   "fieldname": "employee_family_details_section",
+   "fieldtype": "Section Break",
+   "label": "Employee Family Details"
+  },
+  {
+   "fieldname": "employee_family_details",
+   "fieldtype": "Table",
+   "options": "Employee Family Details"
   }
  ],
  "icon": "fa fa-user",
@@ -824,7 +1113,7 @@
  "image_field": "image",
  "is_tree": 1,
  "links": [],
- "modified": "2024-03-27 13:09:36.900706",
+ "modified": "2025-06-24 09:55:46.320836",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee",

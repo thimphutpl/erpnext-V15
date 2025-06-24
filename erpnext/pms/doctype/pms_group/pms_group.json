@@ -1,0 +1,89 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-05-22 21:36:20.654091",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+    "group_name",
+    "weightage_for_target",
+    "required_to_set_target",
+    "column_break_2t52g",
+    "weightage_for_competency",
+    "not_required_section",
+    "negative_target"
+   ],
+   "fields": [
+    {
+     "fieldname": "group_name",
+     "fieldtype": "Data",
+     "in_list_view": 1,
+     "label": "Group Name",
+     "reqd": 1,
+     "unique": 1
+    },
+    {
+     "bold": 1,
+     "depends_on": "required_to_set_target",
+     "fieldname": "weightage_for_target",
+     "fieldtype": "Percent",
+     "in_list_view": 1,
+     "label": "Weightage For Target(%)",
+     "mandatory_depends_on": "required_to_set_target"
+    },
+    {
+     "default": "0",
+     "fieldname": "required_to_set_target",
+     "fieldtype": "Check",
+     "label": "Required to set target"
+    },
+    {
+     "fieldname": "column_break_2t52g",
+     "fieldtype": "Column Break"
+    },
+    {
+     "fieldname": "weightage_for_competency",
+     "fieldtype": "Percent",
+     "label": "Weightage For Competency (%)",
+     "reqd": 1
+    },
+    {
+     "fieldname": "not_required_section",
+     "fieldtype": "Section Break",
+     "hidden": 1,
+     "label": "Not Required"
+    },
+    {
+     "default": "0",
+     "fieldname": "negative_target",
+     "fieldtype": "Check",
+     "hidden": 1,
+     "label": "Eligible for Negative Target"
+    }
+   ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-05-22 21:36:56.583140",
+ "modified_by": "Administrator",
+ "module": "PMS",
+ "name": "PMS Group",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

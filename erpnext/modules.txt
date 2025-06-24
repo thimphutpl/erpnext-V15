@@ -18,3 +18,7 @@ Communication
 Telephony
 Bulk Transaction
 Subcontracting
+Budget
+ePayment
+PMS
+Fleet Management

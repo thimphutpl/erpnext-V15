@@ -1,0 +1,99 @@
+{
+ "actions": [],
+ "allow_import": 1,
+ "autoname": "field:api_name",
+ "creation": "2021-05-20 03:32:00.662573",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "api_name",
+  "api_link",
+  "description",
+  "section_break_4",
+  "item"
+ ],
+ "fields": [
+  {
+   "fieldname": "api_name",
+   "fieldtype": "Data",
+   "label": "API Name",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "api_link",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "label": "API Link",
+   "reqd": 1,
+   "width": "100%"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Description"
+  },
+  {
+   "fieldname": "section_break_4",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "item",
+   "fieldtype": "Table",
+   "options": "API Detail Item"
+  }
+ ],
+ "links": [],
+ "modified": "2024-11-23 12:01:56.160070",
+ "modified_by": "Administrator",
+ "module": "ePayment",
+ "name": "API Detail",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "import": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Administrator",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "import": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "import": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Accounts Master",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "track_seen": 1
+}

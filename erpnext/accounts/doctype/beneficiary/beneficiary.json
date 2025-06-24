@@ -1,0 +1,139 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:beneficiary",
+ "creation": "2024-08-13 11:13:47.581492",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "beneficiary",
+  "beneficiary_name",
+  "column_break_yiqd",
+  "description",
+  "international_bank_details_section",
+  "bank",
+  "bank_address",
+  "column_break_wphg",
+  "swift_code",
+  "account_number",
+  "bank_detail_section",
+  "bank_name",
+  "bank_branch",
+  "column_break_vvju",
+  "bank_account_type",
+  "bank_ac_no"
+ ],
+ "fields": [
+  {
+   "fieldname": "beneficiary_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Beneficiary Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "label": "Description"
+  },
+  {
+   "fieldname": "column_break_yiqd",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "beneficiary",
+   "fieldtype": "Data",
+   "label": "Beneficiary",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "international_bank_details_section",
+   "fieldtype": "Section Break",
+   "label": "International Bank Details"
+  },
+  {
+   "fieldname": "bank",
+   "fieldtype": "Data",
+   "label": "Bank"
+  },
+  {
+   "fieldname": "bank_address",
+   "fieldtype": "Data",
+   "label": "Bank Address"
+  },
+  {
+   "fieldname": "column_break_wphg",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "swift_code",
+   "fieldtype": "Data",
+   "label": "Swift Code"
+  },
+  {
+   "fieldname": "account_number",
+   "fieldtype": "Data",
+   "label": "Account Number"
+  },
+  {
+   "fieldname": "bank_detail_section",
+   "fieldtype": "Section Break",
+   "label": "Bank Detail"
+  },
+  {
+   "fieldname": "bank_name",
+   "fieldtype": "Link",
+   "label": "Bank Name",
+   "options": "Financial Institution"
+  },
+  {
+   "fieldname": "bank_branch",
+   "fieldtype": "Link",
+   "label": "Bank Branch",
+   "options": "Financial Institution Branch"
+  },
+  {
+   "fieldname": "bank_account_type",
+   "fieldtype": "Link",
+   "label": "Bank Account Type",
+   "options": "Bank Account Type"
+  },
+  {
+   "fieldname": "bank_ac_no",
+   "fieldtype": "Data",
+   "label": "Bank A/C No."
+  },
+  {
+   "fieldname": "column_break_vvju",
+   "fieldtype": "Column Break"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-08-13 12:17:11.744005",
+ "modified_by": "Administrator",
+ "module": "Accounts",
+ "name": "Beneficiary",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "search_fields": "beneficiary_name",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

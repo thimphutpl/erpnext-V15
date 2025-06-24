@@ -8,7 +8,6 @@ import frappe
 from frappe import _
 from frappe.model.meta import get_field_precision
 from frappe.utils import cint, flt, formatdate, getdate, now
-from frappe.utils.dashboard import cache_source
 
 import erpnext
 from erpnext.accounts.doctype.accounting_dimension.accounting_dimension import (
@@ -18,7 +17,7 @@ from erpnext.accounts.doctype.accounting_dimension_filter.accounting_dimension_f
 	get_dimension_filter_map,
 )
 from erpnext.accounts.doctype.accounting_period.accounting_period import ClosedAccountingPeriod
-from erpnext.accounts.doctype.budget.budget import validate_expense_against_budget
+from erpnext.budget.doctype.budget.budget import validate_expense_against_budget
 from erpnext.accounts.utils import create_payment_ledger_entry
 from erpnext.exceptions import InvalidAccountDimensionError, MandatoryAccountDimensionError
 
@@ -46,7 +45,7 @@ def make_gl_entries(
 					from_repost=from_repost,
 				)
 				save_entries(gl_map, adv_adj, update_outstanding, from_repost)
-			# Post GL Map process there may no be any GL Entries
+			# Post GL Map proccess there may no be any GL Entries
 			elif gl_map:
 				frappe.throw(
 					_(
@@ -386,7 +385,50 @@ def make_entry(args, adv_adj, update_outstanding, from_repost=False):
 	gle.submit()
 
 	if not from_repost and gle.voucher_type != "Period Closing Voucher":
-		validate_expense_against_budget(args)
+		#Commit and Consume budget
+		transactions = [d.transaction for d in frappe.get_all("Budget Transaction", fields='transaction')]
+		if args.voucher_type in transactions and args.against_voucher_type != 'Asset':
+			account_types = [d.account_type for d in frappe.get_all("Budget Settings Account Types", fields='account_type')]
+			if frappe.db.get_value("Account", args.account, "account_type") in account_types:
+				validate_expense_against_budget(args)
+				cc_doc = frappe.get_doc("Cost Center", args.cost_center)
+				budget_cost_center = cc_doc.budget_cost_center if cc_doc.use_budget_from_parent else args.cost_center
+				if not args.is_cancelled:
+					#Commit Budget
+					bud_obj = frappe.get_doc({
+						"doctype": "Committed Budget",
+						"account": args.account,
+						"cost_center": budget_cost_center,
+						"committed_cost_center": args.cost_center,
+						"project": args.project,
+						"reference_type": args.voucher_type,
+						"reference_no": args.voucher_no,
+						"reference_date": args.posting_date,
+						"amount": flt(args.debit_in_account_currency),
+						"company": args.company,
+						"closed": 1,
+						# "business_activity": args.business_activity,
+					})
+					bud_obj.flags.ignore_permissions=1
+					bud_obj.submit()
+				
+					#Consume Budget
+					con_obj = frappe.get_doc({
+						"doctype": "Consumed Budget",
+						"account": args.account,
+						"cost_center": budget_cost_center,
+						"consumed_cost_center": args.cost_center,
+						"project": args.project,
+						"reference_type": args.voucher_type,
+						"reference_no": args.voucher_no,
+						"reference_date": args.posting_date,
+						"amount": flt(args.debit_in_account_currency),
+						"company": args.company,
+						"com_ref": bud_obj.name,
+						# "business_activity": args.business_activity,
+					})
+					con_obj.flags.ignore_permissions=1
+					con_obj.submit()
 
 
 def validate_cwip_accounts(gl_map):
@@ -671,10 +713,10 @@ def check_freezing_date(posting_date, adv_adj=False):
 	Hence stop admin to bypass if accounts are freezed
 	"""
 	if not adv_adj:
-		acc_frozen_upto = frappe.db.get_single_value("Accounts Settings", "acc_frozen_upto")
+		acc_frozen_upto = frappe.db.get_value("Accounts Settings", None, "acc_frozen_upto")
 		if acc_frozen_upto:
-			frozen_accounts_modifier = frappe.db.get_single_value(
-				"Accounts Settings", "frozen_accounts_modifier"
+			frozen_accounts_modifier = frappe.db.get_value(
+				"Accounts Settings", None, "frozen_accounts_modifier"
 			)
 			if getdate(posting_date) <= getdate(acc_frozen_upto) and (
 				frozen_accounts_modifier not in frappe.get_roles() or frappe.session.user == "Administrator"

@@ -5,6 +5,7 @@
 import frappe
 from frappe import _
 from frappe.utils.nestedset import NestedSet
+from frappe.utils import cint
 
 from erpnext.accounts.utils import validate_field_number
 
@@ -16,17 +17,24 @@ class CostCenter(NestedSet):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
+		from erpnext.accounts.doctype.sub_activity.sub_activity import SubActivity
 		from frappe.types import DF
 
+		branch_created: DF.Check
+		budget_cost_center: DF.Link | None
 		company: DF.Link
 		cost_center_name: DF.Data
 		cost_center_number: DF.Data | None
 		disabled: DF.Check
+		holiday_list: DF.Link | None
 		is_group: DF.Check
 		lft: DF.Int
 		old_parent: DF.Link | None
-		parent_cost_center: DF.Link
+		parent_cost_center: DF.Link | None
 		rgt: DF.Int
+		sub_activity: DF.Table[SubActivity]
+		use_budget_from_parent: DF.Check
+		warehouse: DF.Link | None
 	# end: auto-generated types
 
 	nsm_parent_field = "parent_cost_center"
@@ -39,6 +47,40 @@ class CostCenter(NestedSet):
 	def validate(self):
 		self.validate_mandatory()
 		self.validate_parent_cost_center()
+		self.update_holiday_list()
+		# self.check_ware_house()
+	
+	def update_holiday_list(self):
+		if self.holiday_list:
+			for emp in frappe.db.sql("Select name from `tabEmployee` where cost_center='{}'".format(self.name), as_dict=True):
+				doc=frappe.get_doc("Employee", emp)
+				doc.holiday_list=self.holiday_list
+				doc.save(ignore_permissions=True)
+				
+
+	def check_ware_house(self):
+		if not self.is_group and not self.warehouse:
+			frappe.throw("Warehouse is mandatory for non-group cost center")
+
+	# Added by Dawa Tshering on 23/07/2024
+	def on_update(self):
+		self.create_branch()
+		if frappe.local.flags.ignore_on_update:
+			return
+		else:
+			super(CostCenter, self).on_update()
+
+	def create_branch(self):
+		if cint(self.is_group) == 1 or cint(self.branch_created) == 1:
+			return
+
+		company = frappe.defaults.get_defaults().company
+		doc = frappe.new_doc("Branch")
+		doc.branch = self.cost_center_name.strip()
+		doc.cost_center = self.name
+		doc.company = self.company
+		doc.save()
+		self.db_set("branch_created", 1)
 
 	def validate_mandatory(self):
 		if self.cost_center_name != self.company and not self.parent_cost_center:
@@ -54,6 +96,7 @@ class CostCenter(NestedSet):
 						frappe.bold(self.parent_cost_center)
 					)
 				)
+	
 
 	@frappe.whitelist()
 	def convert_group_to_ledger(self):

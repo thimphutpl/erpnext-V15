@@ -14,7 +14,13 @@
   "column_break_5",
   "posting_date",
   "company",
+  "branch",
   "mode_of_payment",
+  "sb_cheque_reference",
+  "use_cheque_lot",
+  "cheque_lot",
+  "reference_no",
+  "reference_date",
   "party_section",
   "party_type",
   "party",
@@ -67,6 +73,7 @@
   "column_break_55",
   "apply_tax_withholding_amount",
   "tax_withholding_category",
+  "references_total_amount",
   "section_break_56",
   "taxes",
   "section_break_60",
@@ -75,10 +82,8 @@
   "total_taxes_and_charges",
   "deductions_or_loss_section",
   "deductions",
+  "d_amount",
   "transaction_references",
-  "reference_no",
-  "column_break_23",
-  "reference_date",
   "clearance_date",
   "accounting_dimensions_section",
   "project",
@@ -97,10 +102,16 @@
   "bank_account_no",
   "payment_order",
   "in_words",
+  "bank_payment_detail_section",
+  "bank_payment",
+  "cb_sb_bpd1",
+  "payment_status",
   "subscription_section",
   "auto_repeat",
   "amended_from",
-  "title"
+  "title",
+  "money_receipt_prefix",
+  "money_receipt_no"
  ],
  "fields": [
   {
@@ -113,7 +124,7 @@
    "fieldname": "naming_series",
    "fieldtype": "Select",
    "label": "Series",
-   "options": "ACC-PAY-.YYYY.-",
+   "options": "\nJournal Voucher\nBank Payment Voucher\nBank Receipt Voucher\nACC-PAY-.YYYY.-",
    "print_hide": 1,
    "reqd": 1,
    "set_only_once": 1
@@ -152,18 +163,20 @@
    "reqd": 1
   },
   {
-   "allow_on_submit": 1,
+   "fetch_from": "branch.cost_center",
    "fieldname": "cost_center",
    "fieldtype": "Link",
    "label": "Cost Center",
-   "options": "Cost Center"
+   "options": "Cost Center",
+   "read_only": 1
   },
   {
    "fieldname": "mode_of_payment",
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Mode of Payment",
-   "options": "Mode of Payment"
+   "options": "Mode of Payment",
+   "reqd": 1
   },
   {
    "depends_on": "eval:in_list([\"Receive\", \"Pay\"], doc.payment_type)",
@@ -206,6 +219,7 @@
    "depends_on": "party",
    "fieldname": "contact_person",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Contact",
    "options": "Contact"
   },
@@ -213,6 +227,7 @@
    "depends_on": "contact_person",
    "fieldname": "contact_email",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Email",
    "options": "Email",
    "read_only": 1
@@ -228,7 +243,6 @@
    "fieldname": "party_balance",
    "fieldtype": "Currency",
    "label": "Party Balance",
-   "no_copy": 1,
    "print_hide": 1,
    "read_only": 1
   },
@@ -443,27 +457,6 @@
    "label": "Transaction ID"
   },
   {
-   "bold": 1,
-   "depends_on": "eval:(doc.paid_from && doc.paid_to)",
-   "fieldname": "reference_no",
-   "fieldtype": "Data",
-   "label": "Cheque/Reference No",
-   "mandatory_depends_on": "eval:(doc.paid_from_account_type == 'Bank' || doc.paid_to_account_type == 'Bank')"
-  },
-  {
-   "fieldname": "column_break_23",
-   "fieldtype": "Column Break"
-  },
-  {
-   "bold": 1,
-   "depends_on": "eval:(doc.paid_from && doc.paid_to)",
-   "fieldname": "reference_date",
-   "fieldtype": "Date",
-   "label": "Cheque/Reference Date",
-   "mandatory_depends_on": "eval:(doc.paid_from_account_type == 'Bank' || doc.paid_to_account_type == 'Bank')",
-   "search_index": 1
-  },
-  {
    "depends_on": "eval:doc.docstatus==1",
    "fieldname": "clearance_date",
    "fieldtype": "Date",
@@ -569,6 +562,7 @@
    "depends_on": "party",
    "fieldname": "bank_account",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Company Bank Account",
    "options": "Bank Account"
   },
@@ -576,6 +570,7 @@
    "depends_on": "party",
    "fieldname": "party_bank_account",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Party Bank Account",
    "options": "Bank Account"
   },
@@ -626,6 +621,7 @@
    "depends_on": "eval:doc.party_type == 'Supplier'",
    "fieldname": "apply_tax_withholding_amount",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "Apply Tax Withholding Amount"
   },
   {
@@ -789,6 +785,93 @@
    "options": "No\nYes",
    "print_hide": 1,
    "search_index": 1
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "label": "Branch",
+   "options": "Branch",
+   "reqd": 1
+  },
+  {
+   "fieldname": "bank_payment_detail_section",
+   "fieldtype": "Section Break",
+   "label": "Bank Payment Detail"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "bank_payment",
+   "fieldtype": "Link",
+   "label": "Bank Payment",
+   "options": "Bank Payment",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cb_sb_bpd1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "payment_status",
+   "fieldtype": "Select",
+   "label": "Payment Status",
+   "options": "\nPayment Under Process\nPayment Successful\nPayment Failed\nPartial Payment\nPayment Cancelled",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.mode_of_payment == \"Cheque\"",
+   "fieldname": "sb_cheque_reference",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "use_cheque_lot",
+   "fieldtype": "Check",
+   "label": "Use Cheque Lot"
+  },
+  {
+   "depends_on": "use_cheque_lot",
+   "fieldname": "cheque_lot",
+   "fieldtype": "Link",
+   "label": "Cheque Lot",
+   "options": "Cheque Lot"
+  },
+  {
+   "bold": 1,
+   "depends_on": "eval:doc.mode_of_payment == \"Cheque\"",
+   "fieldname": "reference_no",
+   "fieldtype": "Data",
+   "label": "Reference No"
+  },
+  {
+   "bold": 1,
+   "depends_on": "eval:doc.mode_of_payment == \"Cheque\"",
+   "fieldname": "reference_date",
+   "fieldtype": "Date",
+   "label": "Reference Date",
+   "search_index": 1
+  },
+  {
+   "fieldname": "references_total_amount",
+   "fieldtype": "Currency",
+   "label": "Taxable Total Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "money_receipt_prefix",
+   "fieldtype": "Data",
+   "label": "Money Receipt Prefix"
+  },
+  {
+   "fieldname": "money_receipt_no",
+   "fieldtype": "Data",
+   "label": "Money Receipt No"
+  },
+  {
+   "fieldname": "d_amount",
+   "fieldtype": "Currency",
+   "label": "Loss or Gain Amount",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
@@ -802,7 +885,7 @@
    "table_fieldname": "payment_entries"
   }
  ],
- "modified": "2024-05-31 17:07:06.197249",
+ "modified": "2025-03-10 13:09:07.407402",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Payment Entry",
@@ -843,7 +926,7 @@
   }
  ],
  "show_name_in_global_search": 1,
- "sort_field": "creation",
+ "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],
  "title_field": "title",

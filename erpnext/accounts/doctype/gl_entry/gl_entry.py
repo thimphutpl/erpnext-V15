@@ -34,6 +34,7 @@ class GLEntry(Document):
 		against: DF.Text | None
 		against_voucher: DF.DynamicLink | None
 		against_voucher_type: DF.Link | None
+		business_activity: DF.Link | None
 		company: DF.Link | None
 		cost_center: DF.Link | None
 		credit: DF.Currency
@@ -134,6 +135,7 @@ class GLEntry(Document):
 					)
 				)
 			elif account_type == "Payable":
+				# frappe.throw(str(self.account))
 				frappe.throw(
 					_("{0} {1}: Supplier is required against Payable account {2}").format(
 						self.voucher_type, self.voucher_no, self.account

@@ -10,7 +10,7 @@ import frappe.defaults
 from frappe import _, qb, throw
 from frappe.model.meta import get_field_precision
 from frappe.query_builder import AliasedQuery, Criterion, Table
-from frappe.query_builder.functions import Count, Round, Sum
+from frappe.query_builder.functions import Count, Sum
 from frappe.query_builder.utils import DocType
 from frappe.utils import (
 	add_days,
@@ -383,6 +383,11 @@ def get_count_on(account, fieldname, date):
 
 		return count
 
+@frappe.whitelist()
+def check_clearance_date(dt, dn):
+	doc = frappe.get_doc(dt, dn)
+	if doc.clearance_date:
+		frappe.msgprint("Cannot cancel this document as <b>Bank Reconciliation</b> has already done on {}".format(doc.clearance_date), raise_exception= True)
 
 @frappe.whitelist()
 def add_ac(args=None):
@@ -573,8 +578,6 @@ def check_if_advance_entry_modified(args):
 		)
 
 	else:
-		precision = frappe.get_precision("Payment Entry", "unallocated_amount")
-
 		payment_entry = frappe.qb.DocType("Payment Entry")
 		payment_ref = frappe.qb.DocType("Payment Entry Reference")
 
@@ -596,10 +599,7 @@ def check_if_advance_entry_modified(args):
 				.where(payment_ref.allocated_amount == args.get("unreconciled_amount"))
 			)
 		else:
-			q = q.where(
-				Round(payment_entry.unallocated_amount, precision)
-				== Round(args.get("unreconciled_amount"), precision)
-			)
+			q = q.where(payment_entry.unallocated_amount == args.get("unreconciled_amount"))
 
 	ret = q.run(as_dict=True)
 
@@ -623,10 +623,7 @@ def update_reference_in_journal_entry(d, journal_entry, do_not_save=False):
 
 	# Update Advance Paid in SO/PO since they might be getting unlinked
 	update_advance_paid = []
-	advance_payment_doctypes = frappe.get_hooks("advance_payment_receivable_doctypes") + frappe.get_hooks(
-		"advance_payment_payable_doctypes"
-	)
-	if jv_detail.get("reference_type") in advance_payment_doctypes:
+	if jv_detail.get("reference_type") in ["Sales Order", "Purchase Order"]:
 		update_advance_paid.append((jv_detail.reference_type, jv_detail.reference_name))
 
 	if flt(d["unadjusted_amount"]) - flt(d["allocated_amount"]) != 0:
@@ -701,10 +698,7 @@ def update_reference_in_payment_entry(
 		existing_row = payment_entry.get("references", {"name": d["voucher_detail_no"]})[0]
 
 		# Update Advance Paid in SO/PO since they are getting unlinked
-		advance_payment_doctypes = frappe.get_hooks("advance_payment_receivable_doctypes") + frappe.get_hooks(
-			"advance_payment_payable_doctypes"
-		)
-		if existing_row.get("reference_doctype") in advance_payment_doctypes:
+		if existing_row.get("reference_doctype") in ["Sales Order", "Purchase Order"]:
 			update_advance_paid.append((existing_row.reference_doctype, existing_row.reference_name))
 
 		if d.allocated_amount <= existing_row.allocated_amount:
@@ -740,7 +734,6 @@ def update_reference_in_payment_entry(
 			reference_exchange_details=reference_exchange_details,
 		)
 	payment_entry.set_amounts()
-
 	payment_entry.make_exchange_gain_loss_journal(
 		frappe._dict({"difference_posting_date": d.difference_posting_date}), dimensions_dict
 	)
@@ -1060,11 +1053,11 @@ def get_outstanding_invoices(
 			if (
 				min_outstanding
 				and max_outstanding
-				and (outstanding_amount < min_outstanding or outstanding_amount > max_outstanding)
+				and not (outstanding_amount >= min_outstanding and outstanding_amount <= max_outstanding)
 			):
 				continue
 
-			if d.voucher_type != "Purchase Invoice" or d.voucher_no not in held_invoices:
+			if not d.voucher_type == "Purchase Invoice" or d.voucher_no not in held_invoices:
 				outstanding_invoices.append(
 					frappe._dict(
 						{
@@ -1107,16 +1100,12 @@ def get_companies():
 
 
 @frappe.whitelist()
-def get_children(doctype, parent, company, is_root=False, include_disabled=False):
-	if isinstance(include_disabled, str):
-		include_disabled = loads(include_disabled)
+def get_children(doctype, parent, company, is_root=False):
 	from erpnext.accounts.report.financial_statements import sort_accounts
 
-	parent_fieldname = "parent_" + doctype.lower().replace(" ", "_")
+	parent_fieldname = "parent_" + frappe.scrub(doctype)
 	fields = ["name as value", "is_group as expandable"]
 	filters = [["docstatus", "<", 2]]
-	if frappe.db.has_column(doctype, "disabled") and not include_disabled:
-		filters.append(["disabled", "=", False])
 
 	filters.append([f'ifnull(`{parent_fieldname}`,"")', "=", "" if is_root else parent])
 
@@ -2134,3 +2123,101 @@ def run_ledger_health_checks():
 					doc.general_and_payment_ledger_mismatch = True
 					doc.checked_on = run_date
 					doc.save()
+@frappe.whitelist()
+def get_tds_account(percent,company):
+	if not percent:
+		frappe.throw("TDS Percent is mandatory")
+	return frappe.db.get_value("TDS Account Item",{"parent":company,"tds_percent":percent}, "account")
+
+@frappe.whitelist()
+def get_account_type(account,company):
+	return frappe.db.get_value("Account",{"name":account,"company":company},"account_type")
+
+def make_asset_transfer_gl(self, asset, date, from_cc, to_cc, cancel, not_legacy_data=True):
+	if from_cc == to_cc:
+		frappe.throw("From Cost Center and To Cost Center cannot be the same")
+	if getdate(date) > getdate(nowdate()):
+		frappe.throw("The transaction date cannot be future date")
+
+	dep_schedules = frappe.db.sql("select d.name from tabAsset a, `tabDepreciation Schedule` d where d.parent = a.name and a.name = %s and a.docstatus = 1 and d.schedule_date >= %s and d.journal_entry is not null", (asset, date), as_dict=True)
+	if dep_schedules:
+		frappe.throw("The asset has been depreciated beyond the transfer date. Please change the transfer date and try again")	
+
+	asset = frappe.get_doc("Asset", asset)
+	
+	accumulated_dep = flt(asset.gross_purchase_amount) - flt(asset.value_after_depreciation)
+	
+	accumulated_dep_account = frappe.db.sql("select accumulated_depreciation_account from `tabAsset Category Account` where parent = %s", asset.asset_category, as_dict=True)[0].accumulated_depreciation_account
+	ic_account = frappe.db.get_single_value("Accounts Settings", "intra_company_account")
+	if not ic_account:
+		frappe.throw("Setup Intra Company Accounts under Accounts Settings")
+
+	from erpnext.accounts.general_ledger import make_gl_entries
+	from erpnext.custom_utils import prepare_gl
+
+	gl_entries = []
+	gl_entries.append(
+		prepare_gl(self, {
+		       "account":  asset.asset_account,
+		       "credit": asset.gross_purchase_amount,
+		       "credit_in_account_currency": asset.gross_purchase_amount,
+		       "against_voucher": asset.name,
+		       "against_voucher_type": "Asset",
+		       "cost_center": from_cc,
+		})
+	)
+	gl_entries.append(
+		prepare_gl(self, {
+		       "account":  asset.asset_account,
+		       "debit": asset.gross_purchase_amount,
+		       "debit_in_account_currency": asset.gross_purchase_amount,
+		       "against_voucher": asset.name,
+		       "against_voucher_type": "Asset",
+		       "cost_center": to_cc,
+		})
+	)
+	if flt(accumulated_dep) > 0:
+		gl_entries.append(
+			prepare_gl(self, {
+			       "account": accumulated_dep_account,
+			       "debit": accumulated_dep,
+			       "debit_in_account_currency": accumulated_dep,
+			       "against_voucher": asset.name,
+			       "against_voucher_type": "Asset",
+			       "cost_center": from_cc,
+			})
+		)
+		gl_entries.append(
+			prepare_gl(self, {
+			       "account": accumulated_dep_account,
+			       "credit": accumulated_dep,
+			       "credit_in_account_currency": accumulated_dep,
+			       "against_voucher": asset.name,
+			       "against_voucher_type": "Asset",
+			       "cost_center": to_cc,
+			})
+		)
+
+	if flt(asset.value_after_depreciation) > 0:
+		gl_entries.append(
+			prepare_gl(self, {
+			       "account": ic_account,
+			       "debit": asset.value_after_depreciation,
+			       "debit_in_account_currency": asset.value_after_depreciation,
+			       "against_voucher": asset.name,
+			       "against_voucher_type": "Asset",
+			       "cost_center": from_cc,
+			})
+		)
+		gl_entries.append(
+			prepare_gl(self, {
+			       "account": ic_account,
+			       "credit": asset.value_after_depreciation,
+			       "credit_in_account_currency": asset.value_after_depreciation,
+			       "against_voucher": asset.name,
+			       "against_voucher_type": "Asset",
+			       "cost_center": to_cc,
+			})
+		)
+
+	make_gl_entries(gl_entries, cancel=cancel, update_outstanding="No", merge_entries=False)

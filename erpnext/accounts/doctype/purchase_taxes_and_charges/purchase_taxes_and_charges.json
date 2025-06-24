@@ -245,8 +245,7 @@
  "naming_rule": "Random",
  "owner": "Administrator",
  "permissions": [],
- "sort_field": "creation",
+ "sort_field": "modified",
  "sort_order": "DESC",
- "states": [],
  "track_changes": 1
 }

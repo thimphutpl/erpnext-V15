@@ -1,0 +1,135 @@
+{
+ "charts": [],
+ "content": "[{\"id\":\"U9DwKz3FZV\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"ePayment Dashboard\",\"col\":3}},{\"id\":\"m8ISqmMqsQ\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">ePayment</span>\",\"col\":12}},{\"id\":\"nF9v-lHBK3\",\"type\":\"card\",\"data\":{\"card_name\":\"Utility Bill Payment Settings\",\"col\":4}},{\"id\":\"KDqgvX11Jc\",\"type\":\"card\",\"data\":{\"card_name\":\"Transactions\",\"col\":4}},{\"id\":\"JF9_Jnc7gq\",\"type\":\"card\",\"data\":{\"card_name\":\"Bank Payment Settings\",\"col\":4}}]",
+ "creation": "2024-11-23 12:03:55.730002",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "expenses",
+ "idx": 0,
+ "indicator_color": "green",
+ "is_hidden": 0,
+ "label": "ePayment",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Utility Bill Payment Settings",
+   "link_count": 3,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "API Detail",
+   "link_count": 0,
+   "link_to": "API Detail",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Utility Service Type",
+   "link_count": 0,
+   "link_to": "Utility Service Type",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Utility Services",
+   "link_count": 0,
+   "link_to": "Utility Services",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Bank Payment Settings",
+   "link_count": 1,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Bank Payment Settings",
+   "link_count": 0,
+   "link_to": "Bank Payment Settings",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Transactions",
+   "link_count": 3,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Utility Bill",
+   "link_count": 0,
+   "link_to": "Utility Bill",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Bank Payment",
+   "link_count": 0,
+   "link_to": "Bank Payment",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "e-Payment Report",
+   "link_count": 0,
+   "link_to": "e-Payment Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  }
+ ],
+ "modified": "2024-12-23 10:32:03.625584",
+ "modified_by": "kinzang.namgyal@cdcl.bt",
+ "module": "ePayment",
+ "name": "ePayment",
+ "number_cards": [],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [],
+ "sequence_id": 9.0,
+ "shortcuts": [
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "ePayment Dashboard",
+   "link_to": "ePayment",
+   "type": "Dashboard"
+  }
+ ],
+ "title": "ePayment"
+}

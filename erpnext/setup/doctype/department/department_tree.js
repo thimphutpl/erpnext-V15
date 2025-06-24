@@ -8,11 +8,12 @@ frappe.treeview_settings["Department"] = {
 			fieldtype: "Link",
 			options: "Company",
 			label: __("Company"),
+			default: erpnext.utils.get_tree_default("company"),
 		},
 	],
 	breadcrumb: "HR",
 	root_label: "All Departments",
-	get_tree_root: true,
+	get_tree_root: false,
 	menu_items: [
 		{
 			label: __("New Department"),
@@ -22,7 +23,17 @@ frappe.treeview_settings["Department"] = {
 			condition: 'frappe.boot.user.can_create.indexOf("Department") !== -1',
 		},
 	],
-	onload: function (treeview) {
-		treeview.make_tree();
-	},
+	// onload: function (treeview) {
+	// 	treeview.make_tree();
+	// },
+	onload: function(treeview) {
+        // Explicitly set the root node
+        treeview.tree.root = {
+            label: "All Departments",
+            value: "All Departments",
+            expandable: true
+        };
+        treeview.make_tree();
+    }
+	
 };

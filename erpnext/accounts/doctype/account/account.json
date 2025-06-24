@@ -2,6 +2,7 @@
  "actions": [],
  "allow_copy": 1,
  "allow_import": 1,
+ "allow_rename": 1,
  "creation": "2013-01-30 12:49:46",
  "description": "Heads (or groups) against which Accounting Entries are made and balances are maintained.",
  "doctype": "DocType",
@@ -18,6 +19,7 @@
   "root_type",
   "report_type",
   "account_currency",
+  "ledger",
   "column_break1",
   "parent_account",
   "account_type",
@@ -27,7 +29,22 @@
   "lft",
   "rgt",
   "old_parent",
-  "include_in_gross"
+  "include_in_gross",
+  "is_recovery",
+  "dhi_company",
+  "dhi_company_name",
+  "bank_account_details_section",
+  "bank_name",
+  "bank_branch",
+  "column_break_vohk",
+  "bank_account_type",
+  "bank_account_no",
+  "budget_details",
+  "ignore_budget_check",
+  "is_centralized_budget",
+  "cost_center",
+  "column_break_hvbi",
+  "budget_type"
  ],
  "fields": [
   {
@@ -64,8 +81,6 @@
    "label": "Is Group"
   },
   {
-   "fetch_from": "parent_account.company",
-   "fetch_if_empty": 1,
    "fieldname": "company",
    "fieldtype": "Link",
    "in_standard_filter": 1,
@@ -108,7 +123,6 @@
    "fieldname": "parent_account",
    "fieldtype": "Link",
    "ignore_user_permissions": 1,
-   "in_preview": 1,
    "label": "Parent Account",
    "oldfieldname": "parent_account",
    "oldfieldtype": "Link",
@@ -188,32 +202,114 @@
    "fieldname": "disabled",
    "fieldtype": "Check",
    "label": "Disable"
+  },
+  {
+   "depends_on": "eval:(doc.account_type == \"Expense Account\" || doc.account_type==\"Fixed Asset\")",
+   "fieldname": "ledger",
+   "fieldtype": "Select",
+   "label": "Ledger",
+   "options": "\nCapex\nOpex"
+  },
+  {
+   "default": "0",
+   "fieldname": "ignore_budget_check",
+   "fieldtype": "Check",
+   "label": " Ignore Budget Check"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_centralized_budget",
+   "fieldtype": "Check",
+   "label": " Is Centralized Budget"
+  },
+  {
+   "depends_on": "eval:doc.is_centralized_budget",
+   "fieldname": "cost_center",
+   "fieldtype": "Link",
+   "label": "Cost Center",
+   "mandatory_depends_on": "eval:doc.is_centralized_budget",
+   "options": "Cost Center"
+  },
+  {
+   "fieldname": "column_break_hvbi",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "budget_type",
+   "fieldtype": "Link",
+   "label": "Budget Type",
+   "options": "Budget Type"
+  },
+  {
+   "fieldname": "budget_details",
+   "fieldtype": "Tab Break",
+   "label": "Budget Details"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_recovery",
+   "fieldtype": "Check",
+   "label": "Is Recovery"
+  },
+  {
+   "fieldname": "dhi_company",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "DHI Company",
+   "options": "DHI Company"
+  },
+  {
+   "fetch_from": "dhi_company.company",
+   "fieldname": "dhi_company_name",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "DHI Company Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "bank_account_details_section",
+   "fieldtype": "Section Break",
+   "label": "BANK ACCOUNT DETAILS"
+  },
+  {
+   "fieldname": "bank_name",
+   "fieldtype": "Link",
+   "label": "Bank",
+   "options": "Financial Institution"
+  },
+  {
+   "fieldname": "bank_branch",
+   "fieldtype": "Link",
+   "label": "Branch",
+   "options": "Financial Institution Branch"
+  },
+  {
+   "fieldname": "column_break_vohk",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "bank_account_type",
+   "fieldtype": "Link",
+   "label": "Bank Account Type",
+   "options": "Bank Account Type"
+  },
+  {
+   "fieldname": "bank_account_no",
+   "fieldtype": "Data",
+   "label": "Bank Account No"
   }
  ],
  "icon": "fa fa-money",
  "idx": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2024-06-27 16:23:04.444354",
+ "modified": "2025-06-10 16:31:52.031021",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Account",
  "nsm_parent_field": "parent_account",
  "owner": "Administrator",
  "permissions": [
-  {
-   "create": 1,
-   "delete": 1,
-   "email": 1,
-   "export": 1,
-   "import": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "Accounts User",
-   "share": 1,
-   "write": 1
-  },
   {
    "email": 1,
    "print": 1,
@@ -240,19 +336,35 @@
    "delete": 1,
    "email": 1,
    "export": 1,
-   "import": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Admin",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
    "print": 1,
    "read": 1,
    "report": 1,
    "role": "Accounts Manager",
-   "share": 1,
-   "write": 1
+   "share": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Accounts Master",
+   "share": 1
   }
  ],
  "search_fields": "account_number",
  "show_name_in_global_search": 1,
- "show_preview_popup": 1,
- "sort_field": "creation",
+ "sort_field": "modified",
  "sort_order": "ASC",
  "states": [],
  "track_changes": 1

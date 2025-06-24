@@ -11,12 +11,23 @@
   },
   {
    "card": "Total Outgoing Payment"
+  },
+  {
+   "card": "Sum of Debit"
   }
  ],
  "charts": [
   {
    "chart": "Profit and Loss",
    "width": "Full"
+  },
+  {
+   "chart": "Cost Center Wise Profit and Loss",
+   "width": "Full"
+  },
+  {
+   "chart": "Balance Sheet",
+   "width": "Half"
   },
   {
    "chart": "Incoming Bills (Purchase Invoice)",
@@ -47,10 +58,10 @@
  "dashboard_name": "Accounts",
  "docstatus": 0,
  "doctype": "Dashboard",
- "idx": 0,
+ "idx": 39,
  "is_default": 0,
  "is_standard": 1,
- "modified": "2020-07-22 13:07:34.540574",
+ "modified": "2025-01-17 15:26:32.123784",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Accounts",

@@ -1,0 +1,41 @@
+{
+ "chart_name": "Cost Center Wise Profit and Loss",
+ "chart_type": "Report",
+ "creation": "2025-01-16 18:00:44.414020",
+ "docstatus": 0,
+ "doctype": "Dashboard Chart",
+ "dynamic_filters_json": "{}",
+ "filters_json": "{\"company\":\"Construction Development Corporation Limited\",\"based_on\":\"Cost Center\",\"fiscal_year\":\"2025\",\"show_zero_values\":0,\"from_date\":\"2025-01-01\",\"to_date\":\"2025-12-31\"}",
+ "group_by_type": "Count",
+ "idx": 4,
+ "is_public": 1,
+ "is_standard": 1,
+ "modified": "2025-01-17 17:19:28.325750",
+ "modified_by": "Administrator",
+ "module": "Accounts",
+ "name": "Cost Center Wise Profit and Loss",
+ "number_of_groups": 0,
+ "owner": "kinzang.namgyal@cdcl.bt",
+ "report_name": "Profitability Analysis",
+ "roles": [],
+ "time_interval": "Yearly",
+ "timeseries": 0,
+ "timespan": "Last Year",
+ "type": "Line",
+ "use_report_chart": 0,
+ "x_field": "account",
+ "y_axis": [
+  {
+   "color": "#29CD42",
+   "y_field": "income"
+  },
+  {
+   "color": "#CB2929",
+   "y_field": "expense"
+  },
+  {
+   "color": "#0e23c4",
+   "y_field": "gross_profit_loss"
+  }
+ ]
+}

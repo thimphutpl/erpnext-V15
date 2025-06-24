@@ -154,8 +154,8 @@ def get_payment_entries_for_bank_clearance(
 			select
 				"Payment Entry" as payment_document, name as payment_entry,
 				reference_no as cheque_number, reference_date as cheque_date,
-				if(paid_from=%(account)s, paid_amount + total_taxes_and_charges, 0) as credit,
-				if(paid_from=%(account)s, 0, received_amount) as debit,
+				if(paid_from=%(account)s, paid_amount + total_taxes_and_charges + d_amount, 0) as credit,
+				if(paid_from=%(account)s, 0, received_amount + total_taxes_and_charges) as debit,
 				posting_date, ifnull(party,if(paid_from=%(account)s,paid_to,paid_from)) as against_account, clearance_date,
 				if(paid_to=%(account)s, paid_to_account_currency, paid_from_account_currency) as account_currency
 			from `tabPayment Entry`
@@ -174,6 +174,42 @@ def get_payment_entries_for_bank_clearance(
 		},
 		as_dict=1,
 	)
+
+	# for pe in payment_entries:
+	# 	total_deductions = 0
+	# 	for d in frappe.get_all("Payment Entry Deduction", ["name","amount"], {"parent":pe.payment_entry}):
+	# 		total_deductions += flt(d.amount)
+
+	# 	if frappe.db.get_value(pe.payment_document, pe.payment_entry, "payment_type") == "Pay":
+	# 		pe.credit += total_deductions
+	# 	else:
+	# 		pe.debit -= total_deductions
+
+	hsd_entries = frappe.db.sql("""
+				select
+						"HSD Payment" as payment_document, name as payment_entry,
+						cheque__no as cheque_number, cheque_date,
+						amount as debit, 0 as credit,
+						posting_date, supplier as against_account, clearance_date
+				from `tabHSD Payment`
+				where bank_account = '{0}'
+				and docstatus = 1
+				and posting_date >= '{1}' and posting_date <= '{2}'
+				{3}
+		""".format(account, from_date, to_date, condition), as_dict=1)
+
+	mechanical_entries = frappe.db.sql("""
+				select
+						"Mechanical Payment" as payment_document, name as payment_entry,
+						cheque_no as cheque_number, cheque_date,
+						net_amount as debit, 0 as credit,
+						posting_date, customer as against_account, clearance_date
+				from `tabMechanical Payment`
+				where income_account = '{0}'
+				and docstatus = 1
+				and posting_date >= '{1}' and posting_date <= '{2}'
+				{3}
+		""".format(account, from_date, to_date, condition), as_dict=1)
 
 	pos_sales_invoices, pos_purchase_invoices = [], []
 	if include_pos_transactions:
@@ -235,7 +271,7 @@ def get_payment_entries_for_bank_clearance(
 		).run(as_dict=True)
 
 	entries = (
-		list(payment_entries) + list(journal_entries) + list(pos_sales_invoices) + list(pos_purchase_invoices)
+		list(payment_entries) + list(journal_entries) + list(hsd_entries) + list(mechanical_entries) + list(pos_sales_invoices) + list(pos_purchase_invoices)
 	)
 
 	return entries

@@ -15,12 +15,10 @@ class MonthlyDistribution(Document):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
+		from erpnext.accounts.doctype.monthly_distribution_percentage.monthly_distribution_percentage import MonthlyDistributionPercentage
 		from frappe.types import DF
 
-		from erpnext.accounts.doctype.monthly_distribution_percentage.monthly_distribution_percentage import (
-			MonthlyDistributionPercentage,
-		)
-
+		amended_from: DF.Link | None
 		distribution_id: DF.Data
 		fiscal_year: DF.Link | None
 		percentages: DF.Table[MonthlyDistributionPercentage]

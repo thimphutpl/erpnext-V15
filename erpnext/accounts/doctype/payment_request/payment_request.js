@@ -25,10 +25,6 @@ frappe.ui.form.on("Payment Request", "onload", function (frm, dt, dn) {
 });
 
 frappe.ui.form.on("Payment Request", "refresh", function (frm) {
-	if (frm.doc.status == "Failed") {
-		frm.set_intro(__("Failure: {0}", [frm.doc.failed_reason]), "red");
-	}
-
 	if (
 		frm.doc.payment_request_type == "Inward" &&
 		frm.doc.payment_channel !== "Phone" &&

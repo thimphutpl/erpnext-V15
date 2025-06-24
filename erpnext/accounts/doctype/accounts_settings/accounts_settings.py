@@ -24,6 +24,7 @@ class AccountsSettings(Document):
 
 		acc_frozen_upto: DF.Date | None
 		add_taxes_from_item_tax_template: DF.Check
+		advance_to_supplier: DF.Link | None
 		allow_multi_currency_invoices_against_single_party_account: DF.Check
 		allow_stale: DF.Check
 		auto_reconcile_payments: DF.Check
@@ -35,6 +36,7 @@ class AccountsSettings(Document):
 		book_tax_discount_loss: DF.Check
 		check_supplier_invoice_uniqueness: DF.Check
 		credit_controller: DF.Link | None
+		cwip_account: DF.Link | None
 		delete_linked_ledger_entries: DF.Check
 		determine_address_tax_category_from: DF.Literal["Billing Address", "Shipping Address"]
 		enable_common_party_accounting: DF.Check
@@ -44,6 +46,7 @@ class AccountsSettings(Document):
 		frozen_accounts_modifier: DF.Link | None
 		general_ledger_remarks_length: DF.Int
 		ignore_account_closing_balance: DF.Check
+		intra_company_account: DF.Link | None
 		make_payment_via_journal_entry: DF.Check
 		merge_similar_account_heads: DF.Check
 		over_billing_allowance: DF.Currency
@@ -112,3 +115,14 @@ class AccountsSettings(Document):
 	def validate_pending_reposts(self):
 		if self.acc_frozen_upto:
 			check_pending_reposting(self.acc_frozen_upto)
+
+@frappe.whitelist()
+def get_bank_account(branch=None, company=None):
+	default_bank_account = frappe.db.get_value('Company', company, 'default_bank_account')
+	expense_bank_account = None
+	if branch:
+		expense_bank_account = frappe.db.get_value('Branch', branch, 'expense_bank_account')
+
+	if not expense_bank_account and not default_bank_account:
+		frappe.throw(_("Please set <b>Bank Expense Account</b> under <b>Branch</b> master"))
+	return expense_bank_account if expense_bank_account else default_bank_account

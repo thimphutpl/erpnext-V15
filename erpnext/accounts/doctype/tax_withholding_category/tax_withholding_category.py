@@ -145,6 +145,7 @@ def get_party_tax_withholding_details(inv, tax_withholding_category=None):
 
 	if party_type == "Supplier":
 		tax_row = get_tax_row_for_tds(tax_details, tax_amount)
+		
 	else:
 		tax_row = get_tax_row_for_tcs(inv, tax_details, tax_amount, tax_deducted)
 
@@ -584,7 +585,7 @@ def get_tcs_amount(parties, inv, tax_details, vouchers, adv_vouchers):
 	conditions.append(ple.voucher_no == ple.against_voucher_no)
 	conditions.append(ple.company == inv.company)
 
-	qb.from_(ple).select(Abs(Sum(ple.amount))).where(Criterion.all(conditions)).run(as_list=1)
+	(qb.from_(ple).select(Abs(Sum(ple.amount))).where(Criterion.all(conditions)).run(as_list=1))
 
 	advance_amt = (
 		qb.from_(ple).select(Abs(Sum(ple.amount))).where(Criterion.all(conditions)).run()[0][0] or 0.0

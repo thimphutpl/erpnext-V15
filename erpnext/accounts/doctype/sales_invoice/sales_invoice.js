@@ -61,9 +61,9 @@ erpnext.accounts.SalesInvoiceController = class SalesInvoiceController extends (
 	refresh(doc, dt, dn) {
 		const me = this;
 		super.refresh();
-		if (this.frm.msgbox && this.frm.msgbox.$wrapper.is(":visible")) {
+		if (cur_frm.msgbox && cur_frm.msgbox.$wrapper.is(":visible")) {
 			// hide new msgbox
-			this.frm.msgbox.hide();
+			cur_frm.msgbox.hide();
 		}
 
 		this.frm.toggle_reqd("due_date", !this.frm.doc.is_return);
@@ -113,37 +113,33 @@ erpnext.accounts.SalesInvoiceController = class SalesInvoiceController extends (
 		if (doc.docstatus == 1 && !doc.is_return) {
 			var is_delivered_by_supplier = false;
 
-			is_delivered_by_supplier = this.frm.doc.items.some(function (item) {
+			is_delivered_by_supplier = cur_frm.doc.items.some(function (item) {
 				return item.is_delivered_by_supplier ? true : false;
 			});
 
 			if (doc.outstanding_amount >= 0 || Math.abs(flt(doc.outstanding_amount)) < flt(doc.grand_total)) {
-				this.frm.add_custom_button(
-					__("Return / Credit Note"),
-					this.make_sales_return.bind(this),
-					__("Create")
-				);
-				this.frm.page.set_inner_btn_group_as_primary(__("Create"));
+				cur_frm.add_custom_button(__("Return / Credit Note"), this.make_sales_return, __("Create"));
+				cur_frm.page.set_inner_btn_group_as_primary(__("Create"));
 			}
 
 			if (cint(doc.update_stock) != 1) {
 				// show Make Delivery Note button only if Sales Invoice is not created from Delivery Note
 				var from_delivery_note = false;
-				from_delivery_note = this.frm.doc.items.some(function (item) {
+				from_delivery_note = cur_frm.doc.items.some(function (item) {
 					return item.delivery_note ? true : false;
 				});
 
 				if (!from_delivery_note && !is_delivered_by_supplier) {
-					this.frm.add_custom_button(
+					cur_frm.add_custom_button(
 						__("Delivery"),
-						this.frm.cscript["Make Delivery Note"],
+						cur_frm.cscript["Make Delivery Note"],
 						__("Create")
 					);
 				}
 			}
 
 			if (doc.outstanding_amount > 0) {
-				this.frm.add_custom_button(
+				cur_frm.add_custom_button(
 					__("Payment Request"),
 					function () {
 						me.make_payment_request();
@@ -151,10 +147,10 @@ erpnext.accounts.SalesInvoiceController = class SalesInvoiceController extends (
 					__("Create")
 				);
 
-				this.frm.add_custom_button(
+				cur_frm.add_custom_button(
 					__("Invoice Discounting"),
 					function () {
-						this.frm.events.create_invoice_discounting(this.frm);
+						cur_frm.events.create_invoice_discounting(cur_frm);
 					},
 					__("Create")
 				);
@@ -175,10 +171,10 @@ erpnext.accounts.SalesInvoiceController = class SalesInvoiceController extends (
 			}
 
 			if (doc.docstatus === 1) {
-				this.frm.add_custom_button(
+				cur_frm.add_custom_button(
 					__("Maintenance Schedule"),
 					function () {
-						this.frm.cscript.make_maintenance_schedule();
+						cur_frm.cscript.make_maintenance_schedule();
 					},
 					__("Create")
 				);
@@ -186,7 +182,7 @@ erpnext.accounts.SalesInvoiceController = class SalesInvoiceController extends (
 		}
 
 		// Show buttons only when pos view is active
-		if (cint(doc.docstatus == 0) && this.frm.page.current_view_name !== "pos" && !doc.is_return) {
+		if (cint(doc.docstatus == 0) && cur_frm.page.current_view_name !== "pos" && !doc.is_return) {
 			this.frm.cscript.sales_order_btn();
 			this.frm.cscript.delivery_note_btn();
 			this.frm.cscript.quotation_btn();
@@ -217,7 +213,7 @@ erpnext.accounts.SalesInvoiceController = class SalesInvoiceController extends (
 	make_maintenance_schedule() {
 		frappe.model.open_mapped_doc({
 			method: "erpnext.accounts.doctype.sales_invoice.sales_invoice.make_maintenance_schedule",
-			frm: this.frm,
+			frm: cur_frm,
 		});
 	}
 
@@ -236,27 +232,28 @@ erpnext.accounts.SalesInvoiceController = class SalesInvoiceController extends (
 
 	set_default_print_format() {
 		// set default print format to POS type or Credit Note
-		if (this.frm.doc.is_pos) {
-			if (this.frm.pos_print_format) {
-				this.frm.meta._default_print_format = this.frm.meta.default_print_format;
-				this.frm.meta.default_print_format = this.frm.pos_print_format;
+		if (cur_frm.doc.is_pos) {
+			if (cur_frm.pos_print_format) {
+				cur_frm.meta._default_print_format = cur_frm.meta.default_print_format;
+				cur_frm.meta.default_print_format = cur_frm.pos_print_format;
 			}
-		} else if (this.frm.doc.is_return && !this.frm.meta.default_print_format) {
-			if (this.frm.return_print_format) {
-				this.frm.meta._default_print_format = this.frm.meta.default_print_format;
-				this.frm.meta.default_print_format = this.frm.return_print_format;
+		} else if (cur_frm.doc.is_return && !cur_frm.meta.default_print_format) {
+			if (cur_frm.return_print_format) {
+				cur_frm.meta._default_print_format = cur_frm.meta.default_print_format;
+				cur_frm.meta.default_print_format = cur_frm.return_print_format;
 			}
 		} else {
-			if (this.frm.meta._default_print_format) {
-				this.frm.meta.default_print_format = this.frm.meta._default_print_format;
-				this.frm.meta._default_print_format = null;
+			if (cur_frm.meta._default_print_format) {
+				cur_frm.meta.default_print_format = cur_frm.meta._default_print_format;
+				cur_frm.meta._default_print_format = null;
 			} else if (
-				[this.frm.pos_print_format, this.frm.return_print_format].includes(
-					this.frm.meta.default_print_format
+				in_list(
+					[cur_frm.pos_print_format, cur_frm.return_print_format],
+					cur_frm.meta.default_print_format
 				)
 			) {
-				this.frm.meta.default_print_format = null;
-				this.frm.meta._default_print_format = null;
+				cur_frm.meta.default_print_format = null;
+				cur_frm.meta._default_print_format = null;
 			}
 		}
 	}
@@ -373,19 +370,19 @@ erpnext.accounts.SalesInvoiceController = class SalesInvoiceController extends (
 			}
 		);
 
-		if (this.frm.doc.customer) {
-			frappe.call({
-				method: "erpnext.accounts.doctype.sales_invoice.sales_invoice.get_loyalty_programs",
-				args: {
-					customer: this.frm.doc.customer,
-				},
-				callback: function (r) {
-					if (r.message && r.message.length > 1) {
-						select_loyalty_program(me.frm, r.message);
-					}
-				},
-			});
-		}
+		// if (this.frm.doc.customer) {
+		// 	frappe.call({
+		// 		method: "erpnext.accounts.doctype.sales_invoice.sales_invoice.get_loyalty_programs",
+		// 		args: {
+		// 			customer: this.frm.doc.customer,
+		// 		},
+		// 		callback: function (r) {
+		// 			if (r.message && r.message.length > 1) {
+		// 				select_loyalty_program(me.frm, r.message);
+		// 			}
+		// 		},
+		// 	});
+		// }
 	}
 
 	make_inter_company_invoice() {
@@ -468,7 +465,7 @@ erpnext.accounts.SalesInvoiceController = class SalesInvoiceController extends (
 	make_sales_return() {
 		frappe.model.open_mapped_doc({
 			method: "erpnext.accounts.doctype.sales_invoice.sales_invoice.make_sales_return",
-			frm: this.frm,
+			frm: cur_frm,
 		});
 	}
 

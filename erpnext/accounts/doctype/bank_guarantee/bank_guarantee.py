@@ -48,11 +48,11 @@ class BankGuarantee(Document):
 
 	def on_submit(self):
 		if not self.bank_guarantee_number:
-			frappe.throw(_("Enter the Bank Guarantee Number before submitting."))
+			frappe.throw(_("Enter the Bank Guarantee Number before submittting."))
 		if not self.name_of_beneficiary:
-			frappe.throw(_("Enter the name of the Beneficiary before submitting."))
+			frappe.throw(_("Enter the name of the Beneficiary before submittting."))
 		if not self.bank:
-			frappe.throw(_("Enter the name of the bank or lending institution before submitting."))
+			frappe.throw(_("Enter the name of the bank or lending institution before submittting."))
 
 
 @frappe.whitelist()

@@ -116,7 +116,7 @@
   }
  ],
  "links": [],
- "modified": "2024-03-27 13:10:11.511137",
+ "modified": "2021-02-15 20:30:56.256403",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Payment Term",
@@ -160,8 +160,7 @@
   }
  ],
  "quick_entry": 1,
- "sort_field": "creation",
+ "sort_field": "modified",
  "sort_order": "DESC",
- "states": [],
  "track_changes": 1
 }

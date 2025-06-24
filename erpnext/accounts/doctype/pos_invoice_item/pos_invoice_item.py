@@ -3,10 +3,10 @@
 
 
 # import frappe
-from erpnext.accounts.doctype.sales_invoice_item.sales_invoice_item import SalesInvoiceItem
+from frappe.model.document import Document
 
 
-class POSInvoiceItem(SalesInvoiceItem):
+class POSInvoiceItem(Document):
 	# begin: auto-generated types
 	# This code is auto-generated. Do not modify anything in this block.
 

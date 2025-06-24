@@ -16,6 +16,7 @@
   "country",
   "is_group",
   "default_holiday_list",
+  "cheque_required",
   "cb0",
   "default_letter_head",
   "tax_id",
@@ -785,6 +786,12 @@
    "fieldtype": "Link",
    "label": "Default Operating Cost Account",
    "options": "Account"
+  },
+  {
+   "default": "0",
+   "fieldname": "cheque_required",
+   "fieldtype": "Check",
+   "label": "Cheque Required"
   }
  ],
  "icon": "fa fa-building",
@@ -792,7 +799,7 @@
  "image_field": "company_logo",
  "is_tree": 1,
  "links": [],
- "modified": "2024-06-21 17:46:25.567565",
+ "modified": "2025-06-24 10:41:08.662053",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Company",

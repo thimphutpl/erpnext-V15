@@ -34,45 +34,25 @@ class Account(NestedSet):
 		account_currency: DF.Link | None
 		account_name: DF.Data
 		account_number: DF.Data | None
-		account_type: DF.Literal[
-			"",
-			"Accumulated Depreciation",
-			"Asset Received But Not Billed",
-			"Bank",
-			"Cash",
-			"Chargeable",
-			"Capital Work in Progress",
-			"Cost of Goods Sold",
-			"Current Asset",
-			"Current Liability",
-			"Depreciation",
-			"Direct Expense",
-			"Direct Income",
-			"Equity",
-			"Expense Account",
-			"Expenses Included In Asset Valuation",
-			"Expenses Included In Valuation",
-			"Fixed Asset",
-			"Income Account",
-			"Indirect Expense",
-			"Indirect Income",
-			"Liability",
-			"Payable",
-			"Receivable",
-			"Round Off",
-			"Stock",
-			"Stock Adjustment",
-			"Stock Received But Not Billed",
-			"Service Received But Not Billed",
-			"Tax",
-			"Temporary",
-		]
+		account_type: DF.Literal["", "Accumulated Depreciation", "Asset Received But Not Billed", "Bank", "Cash", "Chargeable", "Capital Work in Progress", "Cost of Goods Sold", "Current Asset", "Current Liability", "Depreciation", "Direct Expense", "Direct Income", "Equity", "Expense Account", "Expenses Included In Asset Valuation", "Expenses Included In Valuation", "Fixed Asset", "Income Account", "Indirect Expense", "Indirect Income", "Liability", "Payable", "Receivable", "Round Off", "Stock", "Stock Adjustment", "Stock Received But Not Billed", "Service Received But Not Billed", "Tax", "Temporary"]
 		balance_must_be: DF.Literal["", "Debit", "Credit"]
+		bank_account_no: DF.Data | None
+		bank_account_type: DF.Link | None
+		bank_branch: DF.Link | None
+		bank_name: DF.Link | None
+		budget_type: DF.Link | None
 		company: DF.Link
+		cost_center: DF.Link | None
+		dhi_company: DF.Link | None
+		dhi_company_name: DF.Data | None
 		disabled: DF.Check
 		freeze_account: DF.Literal["No", "Yes"]
+		ignore_budget_check: DF.Check
 		include_in_gross: DF.Check
+		is_centralized_budget: DF.Check
 		is_group: DF.Check
+		is_recovery: DF.Check
+		ledger: DF.Literal["", "Capex", "Opex"]
 		lft: DF.Int
 		old_parent: DF.Data | None
 		parent_account: DF.Link
@@ -91,7 +71,9 @@ class Account(NestedSet):
 			super().on_update()
 
 	def onload(self):
-		frozen_accounts_modifier = frappe.db.get_single_value("Accounts Settings", "frozen_accounts_modifier")
+		frozen_accounts_modifier = frappe.db.get_value(
+			"Accounts Settings", "Accounts Settings", "frozen_accounts_modifier"
+		)
 		if not frozen_accounts_modifier or frozen_accounts_modifier in frappe.get_roles():
 			self.set_onload("can_freeze_account", True)
 
@@ -108,7 +90,8 @@ class Account(NestedSet):
 		self.validate_parent()
 		self.validate_parent_child_account_type()
 		self.validate_root_details()
-		validate_field_number("Account", self.name, self.account_number, self.company, "account_number")
+		# Commented by Dawa Tshering on 2024/07/25
+		# validate_field_number("Account", self.name, self.account_number, self.company, "account_number")
 		self.validate_group_or_ledger()
 		self.set_root_and_report_type()
 		self.validate_mandatory()
@@ -435,9 +418,17 @@ def get_account_currency(account):
 		return
 
 	def generator():
-		account_currency, company = frappe.get_cached_value(
+		values = frappe.get_cached_value(
 			"Account", account, ["account_currency", "company"]
 		)
+		if values:
+			account_currency = values[0]
+			company = values[1]
+		else:
+			frappe.throw(f"account cuurency not set for acc {account}")
+		# if values:
+        # 	account_currency = valu
+		# 	frappe.throw(str(account_currency))
 		if not account_currency:
 			account_currency = frappe.get_cached_value("Company", company, "default_currency")
 
@@ -514,8 +505,8 @@ def update_account_number(name, account_name, account_number=None, from_descenda
 				)
 
 				frappe.throw(message, title=_("Rename Not Allowed"))
-
-	validate_account_number(name, account_number, account.company)
+	# Commented by Dawa Tshering
+	# validate_account_number(name, account_number, account.company)
 	if account_number:
 		frappe.db.set_value("Account", name, "account_number", account_number.strip())
 	else:

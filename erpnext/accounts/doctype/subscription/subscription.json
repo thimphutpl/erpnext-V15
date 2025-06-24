@@ -51,7 +51,7 @@
    "fieldtype": "Select",
    "label": "Status",
    "no_copy": 1,
-   "options": "\nTrialing\nActive\nPast Due Date\nCancelled\nUnpaid\nCompleted",
+   "options": "\nTrialling\nActive\nPast Due Date\nCancelled\nUnpaid\nCompleted",
    "read_only": 1
   },
   {
@@ -267,7 +267,7 @@
    "link_fieldname": "subscription"
   }
  ],
- "modified": "2024-03-27 13:10:47.578120",
+ "modified": "2023-12-28 17:20:42.687789",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Subscription",
@@ -311,7 +311,7 @@
    "write": 1
   }
  ],
- "sort_field": "creation",
+ "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],
  "track_changes": 1

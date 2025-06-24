@@ -1,5 +1,4 @@
 {
- "actions": [],
  "allow_import": 1,
  "autoname": "ACC-INV-DISC-.YYYY.-.#####",
  "creation": "2019-03-07 12:01:56.296952",
@@ -169,8 +168,7 @@
   }
  ],
  "is_submittable": 1,
- "links": [],
- "modified": "2024-03-27 13:09:52.746196",
+ "modified": "2019-05-30 19:08:21.199759",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Invoice Discounting",
@@ -193,8 +191,7 @@
    "write": 1
   }
  ],
- "sort_field": "creation",
+ "sort_field": "modified",
  "sort_order": "DESC",
- "states": [],
  "track_changes": 1
 }

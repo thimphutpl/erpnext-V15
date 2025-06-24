@@ -139,7 +139,6 @@ class PricingRule(Document):
 		self.validate_price_list_with_currency()
 		self.validate_dates()
 		self.validate_condition()
-		self.validate_mixed_with_recursion()
 
 		if not self.margin_type:
 			self.margin_rate_or_amount = 0.0
@@ -199,7 +198,7 @@ class PricingRule(Document):
 
 	def validate_applicable_for_selling_or_buying(self):
 		if not self.selling and not self.buying:
-			throw(_("At least one of the Selling or Buying must be selected"))
+			throw(_("Atleast one of the Selling or Buying must be selected"))
 
 		if not self.selling and self.applicable_for in [
 			"Customer",
@@ -292,7 +291,7 @@ class PricingRule(Document):
 	def validate_price_list_with_currency(self):
 		if self.currency and self.for_price_list:
 			price_list_currency = frappe.db.get_value("Price List", self.for_price_list, "currency", True)
-			if self.currency != price_list_currency:
+			if not self.currency == price_list_currency:
 				throw(_("Currency should be same as Price List Currency: {0}").format(price_list_currency))
 
 	def validate_dates(self):
@@ -308,10 +307,6 @@ class PricingRule(Document):
 			and re.match(r'[\w\.:_]+\s*={1}\s*[\w\.@\'"]+', self.condition)
 		):
 			frappe.throw(_("Invalid condition expression"))
-
-	def validate_mixed_with_recursion(self):
-		if self.mixed_conditions and self.is_recursive:
-			frappe.throw(_("Recursive Discounts with Mixed condition is not supported by the system"))
 
 
 # --------------------------------------------------------------------------------

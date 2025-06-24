@@ -1,23 +1,26 @@
 {
  "actions": [],
  "allow_import": 1,
- "autoname": "naming_series:",
+ "autoname": "PI.YY.MM.######",
  "creation": "2013-05-21 16:16:39",
  "doctype": "DocType",
  "document_type": "Document",
  "engine": "InnoDB",
  "field_order": [
   "title",
+  "payment_status",
   "naming_series",
   "supplier",
   "supplier_name",
   "tax_id",
   "company",
+  "branch",
   "column_break_6",
   "posting_date",
   "posting_time",
   "set_posting_time",
   "due_date",
+  "business_activity",
   "column_break1",
   "is_paid",
   "is_return",
@@ -32,6 +35,11 @@
   "bill_no",
   "column_break_15",
   "bill_date",
+  "section_break_cxav",
+  "settle_from_advance",
+  "party_type",
+  "column_break_dakv",
+  "imprest_party",
   "accounting_dimensions_section",
   "cost_center",
   "dimension_col_break",
@@ -46,7 +54,6 @@
   "plc_conversion_rate",
   "ignore_pricing_rule",
   "sec_warehouse",
-  "scan_barcode",
   "col_break_warehouse",
   "update_stock",
   "set_warehouse",
@@ -54,6 +61,7 @@
   "is_subcontracted",
   "rejected_warehouse",
   "supplier_warehouse",
+  "column_break_ecuy",
   "items_section",
   "items",
   "section_break_26",
@@ -71,12 +79,21 @@
   "tax_category",
   "taxes_and_charges",
   "column_break_58",
-  "shipping_rule",
   "column_break_49",
-  "incoterm",
-  "named_place",
   "section_break_51",
   "taxes",
+  "advances_section",
+  "allocate_advances_automatically",
+  "only_include_allocated_payments",
+  "get_advances",
+  "advances",
+  "advance_tax",
+  "write_off",
+  "write_off_amount",
+  "base_write_off_amount",
+  "column_break_61",
+  "write_off_account",
+  "write_off_cost_center",
   "totals",
   "base_taxes_and_charges_added",
   "base_taxes_and_charges_deducted",
@@ -100,11 +117,24 @@
   "outstanding_amount",
   "disable_rounded_total",
   "section_break_44",
+  "freight_and_insurance_charges",
+  "discount",
   "apply_discount_on",
   "base_discount_amount",
   "column_break_46",
+  "tax",
+  "other_charges",
+  "total_add_ded",
   "additional_discount_percentage",
   "discount_amount",
+  "references_section",
+  "material_request",
+  "purchase_order",
+  "purchase_receipt",
+  "column_break_mqmr",
+  "material_request_date",
+  "purchase_order_date",
+  "purchase_receipt_date",
   "tax_withheld_vouchers_section",
   "tax_withheld_vouchers",
   "sec_tax_breakup",
@@ -121,18 +151,6 @@
   "col_br_payments",
   "cash_bank_account",
   "paid_amount",
-  "advances_section",
-  "allocate_advances_automatically",
-  "only_include_allocated_payments",
-  "get_advances",
-  "advances",
-  "advance_tax",
-  "write_off",
-  "write_off_amount",
-  "base_write_off_amount",
-  "column_break_61",
-  "write_off_account",
-  "write_off_cost_center",
   "address_and_contact_tab",
   "section_addresses",
   "supplier_address",
@@ -197,7 +215,8 @@
   "inter_company_invoice_reference",
   "is_old_subcontracting_flow",
   "remarks",
-  "connections_tab"
+  "connections_tab",
+  "tds_amount"
  ],
  "fields": [
   {
@@ -217,7 +236,7 @@
    "no_copy": 1,
    "oldfieldname": "naming_series",
    "oldfieldtype": "Select",
-   "options": "ACC-PINV-.YYYY.-\nACC-PINV-RET-.YYYY.-",
+   "options": "\nConsumables\nFixed Asset\nSales Product\nSpare Parts\nServices Miscellaneous\nServices Works\nLabour Contract\nHiring Charge\nACC-PINV-.YYYY.-\nACC-PINV-RET-.YYYY.-",
    "print_hide": 1,
    "reqd": 1,
    "set_only_once": 1
@@ -280,6 +299,7 @@
    "default": "0",
    "fieldname": "apply_tds",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "Apply Tax Withholding Amount",
    "print_hide": 1
   },
@@ -299,7 +319,7 @@
    "remember_last_selected_value": 1
   },
   {
-   "allow_on_submit": 1,
+   "fetch_from": "branch.cost_center",
    "fieldname": "cost_center",
    "fieldtype": "Link",
    "label": "Cost Center",
@@ -310,7 +330,7 @@
    "fieldname": "posting_date",
    "fieldtype": "Date",
    "in_list_view": 1,
-   "label": "Date",
+   "label": "Posting Date",
    "oldfieldname": "posting_date",
    "oldfieldtype": "Date",
    "print_hide": 1,
@@ -377,7 +397,6 @@
    "label": "Reason For Putting On Hold"
   },
   {
-   "collapsible": 1,
    "collapsible_depends_on": "bill_no",
    "fieldname": "supplier_invoice_details",
    "fieldtype": "Section Break",
@@ -444,7 +463,7 @@
   },
   {
    "fieldname": "address_display",
-   "fieldtype": "Text Editor",
+   "fieldtype": "Small Text",
    "label": "Address",
    "read_only": 1
   },
@@ -490,7 +509,7 @@
   },
   {
    "fieldname": "shipping_address_display",
-   "fieldtype": "Text Editor",
+   "fieldtype": "Small Text",
    "label": "Shipping Address",
    "print_hide": 1,
    "read_only": 1
@@ -557,6 +576,7 @@
   {
    "fieldname": "sec_warehouse",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "hide_border": 1,
    "label": "Items"
   },
@@ -586,6 +606,7 @@
    "default": "0",
    "fieldname": "is_subcontracted",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "Is Subcontracted",
    "print_hide": 1,
    "read_only": 1
@@ -603,12 +624,6 @@
    "fieldtype": "Check",
    "label": "Update Stock",
    "print_hide": 1
-  },
-  {
-   "fieldname": "scan_barcode",
-   "fieldtype": "Data",
-   "label": "Scan Barcode",
-   "options": "Barcode"
   },
   {
    "allow_bulk_edit": 1,
@@ -708,35 +723,24 @@
   {
    "fieldname": "taxes_section",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "hide_border": 1,
    "label": "Taxes and Charges",
    "oldfieldtype": "Section Break",
    "options": "fa fa-money"
   },
   {
-   "fieldname": "tax_category",
-   "fieldtype": "Link",
-   "label": "Tax Category",
-   "options": "Tax Category",
-   "print_hide": 1
-  },
-  {
    "fieldname": "column_break_49",
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "shipping_rule",
-   "fieldtype": "Link",
-   "label": "Shipping Rule",
-   "options": "Shipping Rule",
-   "print_hide": 1
-  },
-  {
    "fieldname": "section_break_51",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "hide_border": 1
   },
   {
+   "fetch_from": "tax_withholding_category.category_name",
    "fieldname": "taxes_and_charges",
    "fieldtype": "Link",
    "label": "Purchase Taxes and Charges Template",
@@ -837,7 +841,6 @@
    "read_only": 1
   },
   {
-   "collapsible": 1,
    "fieldname": "section_break_44",
    "fieldtype": "Section Break",
    "label": "Additional Discount"
@@ -846,6 +849,7 @@
    "default": "Grand Total",
    "fieldname": "apply_discount_on",
    "fieldtype": "Select",
+   "hidden": 1,
    "label": "Apply Additional Discount On",
    "options": "\nGrand Total\nNet Total",
    "print_hide": 1
@@ -853,6 +857,7 @@
   {
    "fieldname": "base_discount_amount",
    "fieldtype": "Currency",
+   "hidden": 1,
    "label": "Additional Discount Amount (Company Currency)",
    "options": "Company:company:default_currency",
    "print_hide": 1,
@@ -865,12 +870,14 @@
   {
    "fieldname": "additional_discount_percentage",
    "fieldtype": "Float",
+   "hidden": 1,
    "label": "Additional Discount Percentage",
    "print_hide": 1
   },
   {
    "fieldname": "discount_amount",
    "fieldtype": "Currency",
+   "hidden": 1,
    "label": "Additional Discount Amount",
    "options": "currency",
    "print_hide": 1
@@ -1088,12 +1095,12 @@
    "depends_on": "eval:flt(doc.write_off_amount)!=0",
    "fieldname": "write_off_cost_center",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Write Off Cost Center",
    "options": "Cost Center",
    "print_hide": 1
   },
   {
-   "collapsible": 1,
    "collapsible_depends_on": "advances",
    "fieldname": "advances_section",
    "fieldtype": "Section Break",
@@ -1271,7 +1278,6 @@
    "fieldtype": "Select",
    "in_standard_filter": 1,
    "label": "Status",
-   "no_copy": 1,
    "options": "\nDraft\nReturn\nDebit Note Issued\nSubmitted\nPaid\nPartly Paid\nUnpaid\nOverdue\nCancelled\nInternal Transfer",
    "print_hide": 1
   },
@@ -1339,7 +1345,6 @@
    "label": "Update Auto Repeat Reference"
   },
   {
-   "collapsible": 1,
    "fieldname": "accounting_dimensions_section",
    "fieldtype": "Section Break",
    "label": "Accounting Dimensions "
@@ -1364,7 +1369,7 @@
   },
   {
    "fieldname": "billing_address_display",
-   "fieldtype": "Text Editor",
+   "fieldtype": "Small Text",
    "label": "Billing Address",
    "read_only": 1
   },
@@ -1397,6 +1402,7 @@
    "depends_on": "eval:doc.update_stock && doc.is_internal_supplier",
    "fieldname": "set_from_warehouse",
    "fieldtype": "Link",
+   "hidden": 1,
    "ignore_user_permissions": 1,
    "label": "Set From Warehouse",
    "no_copy": 1,
@@ -1579,18 +1585,6 @@
    "print_hide": 1
   },
   {
-   "fieldname": "incoterm",
-   "fieldtype": "Link",
-   "label": "Incoterm",
-   "options": "Incoterm"
-  },
-  {
-   "depends_on": "incoterm",
-   "fieldname": "named_place",
-   "fieldtype": "Data",
-   "label": "Named Place"
-  },
-  {
    "default": "0",
    "depends_on": "allocate_advances_automatically",
    "description": "Advance payments allocated against orders will only be fetched",
@@ -1634,17 +1628,160 @@
    "fieldname": "update_outstanding_for_self",
    "fieldtype": "Check",
    "label": "Update Outstanding for Self"
+  },
+  {
+   "fieldname": "payment_status",
+   "fieldtype": "Select",
+   "hidden": 1,
+   "label": "Payment Status",
+   "options": "Unpaid\nPaid",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_ecuy",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "label": "Branch",
+   "options": "Branch",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_cxav",
+   "fieldtype": "Section Break",
+   "hidden": 1,
+   "label": "Imprest Party Detail"
+  },
+  {
+   "default": "0",
+   "fieldname": "settle_from_advance",
+   "fieldtype": "Check",
+   "label": "Settle from Advance"
+  },
+  {
+   "fieldname": "column_break_dakv",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.settle_from_advance",
+   "fieldname": "party_type",
+   "fieldtype": "Select",
+   "label": "Imprest Party Type",
+   "options": "\nEmployee\nAgency"
+  },
+  {
+   "depends_on": "eval:doc.settle_from_advance",
+   "fieldname": "imprest_party",
+   "fieldtype": "Dynamic Link",
+   "label": "Imprest Party",
+   "options": "party_type"
+  },
+  {
+   "fieldname": "business_activity",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Business Activity",
+   "options": "Business Activity"
+  },
+  {
+   "fieldname": "references_section",
+   "fieldtype": "Section Break",
+   "label": "References"
+  },
+  {
+   "fieldname": "material_request",
+   "fieldtype": "Link",
+   "label": "Material Request",
+   "options": "Material Request"
+  },
+  {
+   "fieldname": "purchase_order",
+   "fieldtype": "Link",
+   "label": "Purchase Order",
+   "options": "Purchase Order"
+  },
+  {
+   "fieldname": "purchase_receipt",
+   "fieldtype": "Link",
+   "label": "Purchase Reciept",
+   "options": "Purchase Receipt"
+  },
+  {
+   "fetch_from": "material_request.transaction_date",
+   "fieldname": "material_request_date",
+   "fieldtype": "Date",
+   "label": "MR Date"
+  },
+  {
+   "fieldname": "column_break_mqmr",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "purchase_order.transaction_date",
+   "fieldname": "purchase_order_date",
+   "fieldtype": "Date",
+   "label": "PO Date"
+  },
+  {
+   "fetch_from": "purchase_receipt.posting_date",
+   "fieldname": "purchase_receipt_date",
+   "fieldtype": "Date",
+   "label": "PR Date"
+  },
+  {
+   "fieldname": "discount",
+   "fieldtype": "Currency",
+   "label": "Discount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "tds_amount",
+   "fieldtype": "Currency",
+   "label": "TDS Amount"
+  },
+  {
+   "fieldname": "tax_category",
+   "fieldtype": "Link",
+   "label": "Tax Category",
+   "options": "Tax Category",
+   "print_hide": 1
+  },
+  {
+   "fieldname": "freight_and_insurance_charges",
+   "fieldtype": "Currency",
+   "label": "Freight and Insurance Charges",
+   "read_only": 1
+  },
+  {
+   "fieldname": "tax",
+   "fieldtype": "Currency",
+   "label": "Tax",
+   "read_only": 1
+  },
+  {
+   "fieldname": "other_charges",
+   "fieldtype": "Currency",
+   "label": "Other Charges"
+  },
+  {
+   "fieldname": "total_add_ded",
+   "fieldtype": "Currency",
+   "hidden": 1,
+   "label": "Net Charges & Discount",
+   "read_only": 1
   }
  ],
  "icon": "fa fa-file-text",
  "idx": 204,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-04-11 11:28:42.802211",
+ "modified": "2025-04-07 12:38:03.719593",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Purchase Invoice",
- "naming_rule": "By \"Naming Series\" field",
+ "naming_rule": "Expression (old style)",
  "owner": "Administrator",
  "permissions": [
   {
@@ -1697,7 +1834,7 @@
  ],
  "search_fields": "posting_date, supplier, bill_no, base_grand_total, outstanding_amount",
  "show_name_in_global_search": 1,
- "sort_field": "creation",
+ "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],
  "timeline_field": "supplier",
