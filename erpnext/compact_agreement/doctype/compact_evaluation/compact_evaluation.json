@@ -38,6 +38,7 @@
   {
    "fieldname": "company",
    "fieldtype": "Link",
+   "ignore_user_permissions": 1,
    "in_list_view": 1,
    "label": "Company",
    "options": "Company",
@@ -101,7 +102,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-19 11:06:45.010693",
+ "modified": "2025-06-25 12:03:24.678200",
  "modified_by": "Administrator",
  "module": "Compact Agreement",
  "name": "Compact Evaluation",
