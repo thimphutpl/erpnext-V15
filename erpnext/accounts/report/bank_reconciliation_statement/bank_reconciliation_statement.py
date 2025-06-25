@@ -169,6 +169,7 @@ def get_imprest_recoup_entries(filters):
 				ir.posting_date AS posting_date,
 				ir.name AS payment_entry,
 				0 AS debit,
+				# ir.expense_account AS expense_account,
 				ir.total_amount AS credit,
 				ir.cheque_no AS reference_no,
 				ir.cheque_date AS ref_date,
@@ -195,6 +196,7 @@ def get_imprest_recoup_entries(filters):
 				0 AS debit,  # Changed from total_amount
 				ir.total_amount AS credit,  # Now in credit column
 				ir.cheque_no AS reference_no,
+				ir.expense_account AS expense_account,
 				ir.cheque_date AS ref_date,
 				ir.clearance_date As clearance_date,
 				ir.remarks AS against_account,
@@ -205,6 +207,7 @@ def get_imprest_recoup_entries(filters):
 			WHERE
 				ir.docstatus = 1
 				AND ir.posting_date <= %(report_date)s
+				AND ir.expense_account = %(account)s
 				AND b.branch = %(branch)s
 				AND IFNULL(ir.clearance_date, '4000-01-01') > %(report_date)s
 		""", filters, as_dict=1)
