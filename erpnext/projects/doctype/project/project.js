@@ -66,36 +66,38 @@ frappe.ui.form.on("Project", {
 		});
 		frm.doc.task_material_item?.forEach(function (row) {
 			if (row.reference_name) {
-				frappe.db.get_value("Stock Entry", row.reference_name, "docstatus")
-					.then(r => {
-						if (r.message && r.message.docstatus === 2) {  // Cancelled
-							frappe.db.get_list("Stock Entry", {
-								filters: {
-									amended_from: row.reference_name,
-									docstatus: 1
+				const find_latest_active_amended = (reference_name, callback) => {
+					frappe.db.get_value("Stock Entry", reference_name, "docstatus")
+						.then(r => {
+							if (r.message && r.message.docstatus === 1) {
+								callback(reference_name);
+							} else {
+								frappe.db.get_list("Stock Entry", {
+									filters: {
+										amended_from: reference_name
 								},
+								order_by: "creation desc",
 								limit: 1
 							}).then(res => {
 								if (res && res.length > 0) {
-									let amended = res[0].name;
-									frappe.model.set_value(row.doctype, row.name, "reference_name", amended);
-									frappe.msgprint({
-										title: "Reference Updated",
-										message: `Replaced cancelled Stock Entry ${row.reference_name} with ${amended} in Task Material Item.`,
-										indicator: "orange"
-									});
-								} else {
-									// No amended entry found, clear the reference
-									frappe.model.set_value(row.doctype, row.name, "reference_name", "");
-									frappe.msgprint({
-										title: "Reference Removed",
-										message: `Cancelled Stock Entry ${row.reference_name} has no amendment. Reference cleared in Task Material Item.`,
-										indicator: "orange"
-									});
-								}
-							});
-						}
-					});
+									find_latest_active_amended(res[0].name, callback);
+							} else {
+								callback(reference_name);							}
+						});
+							}
+						});
+				};
+				find_latest_active_amended(row.reference_name, function (latest_amended) {
+					if (latest_amended && latest_amended !== row.reference_name) {
+						row.reference_name = latest_amended;
+						frm.fields_dict["task_material_item"].grid.refresh();
+						frappe.msgprint({
+							title: "Reference Updated",
+							message: `Updated Stock Entry: ${latest_amended}`,
+							indicator: "orange"
+						});
+					}
+				});
 			}
 		});		
 	},
