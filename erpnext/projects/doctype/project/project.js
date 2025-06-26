@@ -254,6 +254,18 @@ frappe.ui.form.on("Project", {
 					},
 					__("View")
 				);
+				frm.add_custom_button(
+					__("Project Progress Graph"),
+					() => {
+						frappe.route_options = {
+							project: frm.doc.name,
+							from_date: frm.doc.expected_start_date,
+							to_date: frm.doc.expected_end_date
+						};
+						frappe.set_route("query-report", "Project Progress Graphs");
+					},
+					__("View")
+				);
 			}
 		}
 	},
