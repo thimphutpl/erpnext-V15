@@ -168,7 +168,8 @@ class CompactReview(Document):
         self.update_supplier_part_no(self.suppliers[0].supplier)
 
     def on_cancel(self):
-        self.db_set("status", "Cancelled")
+        if hasattr(self, 'status'):  # Check if status field exists
+            self.db_set("status", "Cancelled")
         
     def group_items_by_output(self):
         """Group items based on 'output' checkbox in child table."""
