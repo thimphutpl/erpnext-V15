@@ -207,10 +207,10 @@ class CompactReview(Document):
         else:
             item_to_delete.delete()
 
-    def on_trash(self):
+def on_trash(self):
         """Override the trash method to ensure group deletion works."""
         for item in self.table_vaeg:
-            self.before_delete(item)	           			           			
+            self.before_delete(item)	 	           			           			
    
 
 @frappe.whitelist()
