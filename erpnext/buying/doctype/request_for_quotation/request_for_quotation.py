@@ -44,6 +44,8 @@ class RequestforQuotation(BuyingController):
 		incoterm: DF.Link | None
 		items: DF.Table[RequestforQuotationItem]
 		letter_head: DF.Link | None
+		material_request: DF.Link | None
+		material_request_date: DF.Date | None
 		message_for_supplier: DF.TextEditor
 		named_place: DF.Data | None
 		naming_series: DF.Literal["", "Consumables", "Fixed Asset", "Sales Product", "Spareparts", "Services Miscellaneous", "Services Works", "Labour Contract", "PUR-RFQ-.YYYY.-"]

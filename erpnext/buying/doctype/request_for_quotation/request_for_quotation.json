@@ -21,6 +21,9 @@
   "suppliers",
   "items_section",
   "items",
+  "references_section",
+  "material_request",
+  "material_request_date",
   "supplier_response_section",
   "email_template",
   "preview",
@@ -330,13 +333,31 @@
    "fieldname": "footer_text",
    "fieldtype": "Text Editor",
    "label": "Footer"
+  },
+  {
+   "fieldname": "references_section",
+   "fieldtype": "Section Break",
+   "label": "References"
+  },
+  {
+   "fieldname": "material_request",
+   "fieldtype": "Link",
+   "label": "Material Request",
+   "options": "Material Request",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "material_request.transaction_date",
+   "fieldname": "material_request_date",
+   "fieldtype": "Date",
+   "label": "Material Request Date"
   }
  ],
  "icon": "fa fa-shopping-cart",
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-04-02 15:08:15.418934",
+ "modified": "2025-06-27 17:43:40.928283",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Request for Quotation",
