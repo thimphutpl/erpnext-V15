@@ -19,7 +19,7 @@
    "fieldname": "target",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Target"
+   "label": "Object"
   },
   {
    "fieldname": "acheived",
@@ -60,7 +60,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-06-27 20:51:38.350664",
+ "modified": "2025-06-27 22:52:13.745132",
  "modified_by": "Administrator",
  "module": "Compact Agreement",
  "name": "Compact Agreement Items Review",
