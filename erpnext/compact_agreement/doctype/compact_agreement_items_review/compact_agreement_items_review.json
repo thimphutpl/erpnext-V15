@@ -8,8 +8,8 @@
  "field_order": [
   "target",
   "deliverables",
-  "datelines",
-  "weighted",
+  "date_line",
+  "weightage",
   "acheived",
   "remarks"
  ],
@@ -20,20 +20,6 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Target"
-  },
-  {
-   "columns": 1,
-   "fieldname": "datelines",
-   "fieldtype": "Date",
-   "in_list_view": 1,
-   "label": "Datelines"
-  },
-  {
-   "columns": 1,
-   "fieldname": "weighted",
-   "fieldtype": "Percent",
-   "in_list_view": 1,
-   "label": "Weighted"
   },
   {
    "fieldname": "acheived",
@@ -55,12 +41,26 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Deliverables"
+  },
+  {
+   "columns": 1,
+   "fieldname": "date_line",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Date Line"
+  },
+  {
+   "columns": 1,
+   "fieldname": "weightage",
+   "fieldtype": "Percent",
+   "in_list_view": 1,
+   "label": "Weightage"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-10-30 15:09:20.230985",
+ "modified": "2025-06-27 20:51:38.350664",
  "modified_by": "Administrator",
  "module": "Compact Agreement",
  "name": "Compact Agreement Items Review",
