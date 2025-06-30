@@ -141,7 +141,7 @@ class Asset(AccountsController):
 		if not self.split_from:
 			self.prepare_depreciation_data()
 
-			if self.calculate_depreciation and self.is_free_asset == 1:
+			if self.calculate_depreciation and not self.is_free_asset:
 				update_draft_asset_depr_schedules(self)
 
 				if frappe.db.exists("Asset", self.name):
