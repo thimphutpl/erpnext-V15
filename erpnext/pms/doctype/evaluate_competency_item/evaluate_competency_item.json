@@ -13,6 +13,9 @@
   "weightage",
   "column_break_10",
   "is_parent",
+  "self_rating_section",
+  "achievement_self",
+  "column_break_xktj",
   "rating_section",
   "achievement",
   "average",
@@ -46,15 +49,13 @@
    "columns": 1,
    "fieldname": "weightage",
    "fieldtype": "Data",
-   "in_list_view": 1,
    "label": "Weightage(%)",
    "read_only": 1
   },
   {
    "fieldname": "appraisers_remark",
    "fieldtype": "Small Text",
-   "label": "Appraiser's Remark",
-   "read_only": 1
+   "label": "Appraiser's Remark"
   },
   {
    "fieldname": "column_break_4",
@@ -81,8 +82,7 @@
   {
    "fieldname": "appraisees_remark",
    "fieldtype": "Small Text",
-   "label": "Appraisee's Remark",
-   "read_only": 1
+   "label": "Appraisee's Remark"
   },
   {
    "fieldname": "comment",
@@ -138,9 +138,10 @@
    "label": "Give Comments If Necessary"
   },
   {
+   "depends_on": "eval: doc.workflow_state!='Waiting Supervisor Approval'",
    "fieldname": "rating_section",
    "fieldtype": "Section Break",
-   "label": "Rating Details"
+   "label": "Supervisor Rating "
   },
   {
    "allow_on_submit": 1,
@@ -177,7 +178,6 @@
    "fetch_from": "achievement.star",
    "fieldname": "rating",
    "fieldtype": "Rating",
-   "in_list_view": 1,
    "label": "Rating",
    "read_only": 1
   },
@@ -187,7 +187,6 @@
    "depends_on": "eval:doc.is_parent",
    "fieldname": "average",
    "fieldtype": "Float",
-   "in_list_view": 1,
    "label": "Average",
    "precision": "5",
    "read_only": 1
@@ -204,11 +203,30 @@
    "label": "Weightage Percent",
    "options": "10\n20\n30\n40\n50\n60\n70\n80\n90\n100",
    "read_only": 1
+  },
+  {
+   "fieldname": "self_rating_section",
+   "fieldtype": "Section Break",
+   "label": "Self Rating",
+   "read_only_depends_on": "eval: doc.workflow_state!='Draft'"
+  },
+  {
+   "allow_on_submit": 1,
+   "depends_on": "eval:!doc.is_parent",
+   "fieldname": "achievement_self",
+   "fieldtype": "Link",
+   "ignore_user_permissions": 1,
+   "label": "Achievement (self)",
+   "options": "Overall Rating"
+  },
+  {
+   "fieldname": "column_break_xktj",
+   "fieldtype": "Column Break"
   }
  ],
  "istable": 1,
  "links": [],
- "modified": "2023-10-05 09:53:05.573959",
+ "modified": "2025-06-30 21:01:24.608806",
  "modified_by": "Administrator",
  "module": "PMS",
  "name": "Evaluate Competency Item",

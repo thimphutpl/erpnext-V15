@@ -28,7 +28,6 @@ class PerformanceEvaluation(Document):
 
 		achievements_items: DF.Table[EvaluateAdditionalAchievements]
 		agreed_by_perc: DF.Literal["", "Yes", "No"]
-		amended_from: DF.Link | None
 		approver: DF.Link | None
 		approver_designation: DF.Data | None
 		approver_fl_designation: DF.Data | None
@@ -91,7 +90,7 @@ class PerformanceEvaluation(Document):
 		if self.upload_old_data:
 			return 
 		# if self.eval_workflow_state != frappe.db.get_value('Performance Evaluation',self.name,'eval_workflow_state'): 
-		# 	validate_workflow_states(self)  
+		validate_workflow_states(self)  
 		self.set_dafault_values() 
 		self.check_duplicate_entry()
 		self.calculate_target_score()
@@ -273,7 +272,7 @@ class PerformanceEvaluation(Document):
 		self.db_set('form_iii_score',flt(self.negative_rating))
 		self.db_set('final_score', flt(self.form_i_score) + flt(self.form_ii_score)+ flt(self.form_iii_score))
 		self.db_set('final_score_percent', flt(self.final_score))
-		# frappe.throw(str(self.final_score_percent))
+		# \frappe.throw(str(self.final_score_percent))
 		self.overall_rating = frappe.db.sql('''select name from `tabOverall Rating` where  upper_range_percent >= {0} and lower_range_percent <= {0}'''.format(self.final_score_percent))[0][0]
 		self.db_set('overall_rating', self.overall_rating)
 		# self.star_obtained = frappe.db.get_value('Overall Rating',self.overall_rating,'star')

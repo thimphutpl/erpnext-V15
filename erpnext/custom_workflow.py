@@ -486,8 +486,24 @@ class CustomWorkflow:
             self.target_setup()
         elif self.doc.doctype == "Review":
             self.review()
+        elif self.doc.doctype == "Performance Evaluation":
+            self.performance_evaluation()
         else:
             frappe.throw(_("Workflow not defined for {}").format(self.doc.doctype))
+    def performance_evaluation(self):
+        user_id = frappe.db.get_value("Employee",self.doc.approver,'user_id')
+        if self.new_state.lower() in ("Waiting Supervisor Approval".lower()):
+            if self.old_state.lower() in ("Waiting Supervisor Approval".lower()):
+                if user_id != frappe.session.user:
+                    frappe.throw("Only {} can save or edit this Document".format(self.doc.approver_name))
+            self.set_approver("Supervisor")
+            
+        if self.new_state.lower() in ("Approved".lower()):
+            if user_id != frappe.session.user:
+                frappe.throw("Only {} can Approve this Document".format(self.doc.approver_name))
+        if self.new_state.lower() in ("Rejected".lower()):
+            if user_id != frappe.session.user:
+                frappe.throw("Only {} can Reject this Document".format(self.doc.approver_name))
     def review(self):
         user_id = frappe.db.get_value("Employee",self.doc.approver,'user_id')
         if self.new_state.lower() in ("Waiting Supervisor Approval".lower()):
@@ -1494,6 +1510,7 @@ def get_field_map():
         "Employee Separation": ["approver","approver_name","approver_designation"],
         "Target Set Up": ["approver","approver_name","approver_designation"],
          "Review": ["approver","approver_name","approver_designation"],
+         "Performance Evaluation": ["approver","approver_name","approver_designation"],
         "POL": ["approver","approver_name","approver_designation"],
         "Asset Issue Details": [],
     }

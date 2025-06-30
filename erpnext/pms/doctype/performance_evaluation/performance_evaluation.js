@@ -3,6 +3,7 @@
 // developed by Birendra on 01/03/2021
 
 frappe.ui.form.on('Performance Evaluation', {
+	
 	setup:(frm)=>{
 		apply_filter(frm)
 		// set_default_value(frm)
@@ -20,6 +21,13 @@ frappe.ui.form.on('Performance Evaluation', {
 	},
 	
 	refresh: (frm)=>{
+		
+		// if ((frm.doc.workflow_state!=='Waiting Supervisor Approval') || frm.doc.workflow_state!=='Approved'){
+			// frappe.meta.get_docfield('Evaluate Target Item', 'quantity_achieved').read_only = 1;
+			// frappe.meta.get_docfield('Evaluate Target Item', 'quality_achieved').read_only = 1;
+			// frappe.meta.get_docfield('Evaluate Target Item', 'timeline_achieved').read_only = 1;
+		// }
+		// frappe.meta.get_docfield('Evaluate Target Item', 'quantity_achieved').read_only = 1;
 		if (frm.doc.docstatus == 0 && frappe.user.has_role(['HR Manager', 'HR User'])){
 			frm.set_df_property('set_manual_approver', 'read_only', 0);
 		}else{
@@ -32,6 +40,7 @@ frappe.ui.form.on('Performance Evaluation', {
 			frm.get_docfield("evaluate_target_item").allow_bulk_edit = 0;
 			frm.get_docfield("evaluate_target_item").read_only = 1;
 		}
+		
 		if (frm.doc.docstatus === 1) {
 			cur_frm.add_custom_button('Appeal', function() {
 				frappe.model.open_mapped_doc({
@@ -41,6 +50,7 @@ frappe.ui.form.on('Performance Evaluation', {
 			});
 		}
 	},
+
 
 	perc_required: (frm) => {
 		if (frm.doc.perc_required == "Yes"){
@@ -111,8 +121,16 @@ frappe.ui.form.on('Evaluate Target Item',{
 				frappe.meta.get_docfield("Evaluate Target Item","reverse_formula",cur_frm.doc.name).read_only = 0
 			}else{
 				frappe.meta.get_docfield("Evaluate Target Item","reverse_formula",cur_frm.doc.name).read_only = 1
+
 			}
 		}
+		
+		
+		
+		// frappe.meta.get_docfield("Evaluate Target Item","quality_achieved",cur_frm.doc.name).read_only =1
+		// frappe.meta.get_docfield("Evaluate Target Item","quantity_achieved",cur_frm.doc.name).read_only =1
+		
+		
 		frappe.meta.get_docfield("Evaluate Target Item","qty_quality",cur_frm.doc.name).read_only = frm.doc.docstatus
 		frappe.meta.get_docfield("Evaluate Target Item","timeline_base_on",cur_frm.doc.name).read_only = frm.doc.docstatus
 	},
@@ -264,3 +282,69 @@ var get_achievement = (frm)=>{
 frappe.form.link_formatters['Employee'] = function(value, doc) {
 	return value
 }
+
+frappe.ui.form.on('Evaluate Target Item', {
+	
+	refresh: function(frm, cdt, cdn) {
+		let child_doc = locals[cdt][cdn];
+		 
+		
+			frm.fields_dict['Evaluate Target Item'].grid.grid_rows_by_docname[cdn].toggle_editable('quantity_achieved', true);
+		
+	},
+	form_render:(frm,cdt,cdn)=>{
+		// var row = locals[cdt][cdn]
+		// if ( frm.doc.docstatus == 1){
+		// 	if (frappe.user.has_role(['HR Manager', 'HR User'])){
+		// 		frappe.meta.get_docfield("Evaluate Target Item","reverse_formula",cur_frm.doc.name).read_only = 0
+		// 	}else{
+		// 		frappe.meta.get_docfield("Evaluate Target Item","reverse_formula",cur_frm.doc.name).read_only = 1
+		// 	}
+		// }
+		// frappe.meta.get_docfield("Evaluate Target Item","quality_achieved",cur_frm.doc.name).read_only =1
+		// frappe.meta.get_docfield("Evaluate Target Item","quantity_achieved",cur_frm.doc.name).read_only =1
+	},
+		
+	
+		// frappe.meta.get_docfield("Evaluate Competency Item", "supervisor_rating", cur_frm.doc.name).hidden = frappe.session.user != frm.doc.approver || row.is_parent != 1 || frm.doc.eval_workflow_state == "Draft"
+	
+    quantity_achieved_self: function(frm, cdt, cdn) {
+        let row = locals[cdt][cdn];
+
+        // Set value in the same row
+        frappe.model.set_value(cdt, cdn, 'quantity_achieved', row.quantity_achieved_self);
+
+        // Refresh parent field
+        // frm.refresh_field('evaluate_target_item');  // Must match the fieldname in parent doctype
+    },
+	timeline_achieved_self: function(frm, cdt, cdn) {
+        let row = locals[cdt][cdn];
+
+        // Set value in the same row
+        frappe.model.set_value(cdt, cdn, 'timeline_achieved', row.timeline_achieved_self);
+
+        // Refresh parent field
+        // frm.refresh_field('evaluate_target_item');  // Must match the fieldname in parent doctype
+    }
+});
+
+frappe.ui.form.on('Evaluate Competency Item', {
+	
+
+	
+	
+	// frappe.meta.get_docfield("Evaluate Competency Item", "supervisor_rating", cur_frm.doc.name).hidden = frappe.session.user != frm.doc.approver || row.is_parent != 1 || frm.doc.eval_workflow_state == "Draft"
+
+
+	achievement_self: function(frm, cdt, cdn) {
+	let row = locals[cdt][cdn];
+
+	// Set value in the same row
+	frappe.model.set_value(cdt, cdn, 'achievement', row.achievement_self);
+
+
+
+	// Refresh parent field
+	// frm.refresh_field('evaluate_target_item');  // Must match the fieldname in parent doctype
+}
+});
