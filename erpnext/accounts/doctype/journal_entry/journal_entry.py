@@ -306,7 +306,7 @@ class JournalEntry(AccountsController):
 				self.update_project_task()
 				# self.update_project_cost()
 				# self.update_project_maintenance_cost()
-
+		self.workflow_state = "Cancelled"
 	def update_project_task(self):
 		""" update the items child table for the respective doctype: Task or Maintenance order """
 		if self.docstatus == 1:
