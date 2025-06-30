@@ -218,11 +218,11 @@ class CustomWorkflow:
                 officiating = get_officiating_employee(self.reports_to[3])
                 if officiating:
                     officiating = frappe.db.get_value("Employee", officiating[0].officiate, self.field_list)
-                
+                # frappe.throw(str())
                 vars(self.doc)[self.doc_approver[0]] = officiating[0] if officiating else self.reports_to[3]
                 vars(self.doc)[self.doc_approver[1]] = officiating[1] if officiating else self.reports_to[1]
                 vars(self.doc)[self.doc_approver[2]] = officiating[2] if officiating else self.reports_to[2]
-                vars(self.doc)[self.doc_approver[3]] = officiating[2] if officiating else self.reports_to[0]
+                # vars(self.doc)[self.doc_approver[3]] = officiating[2] if officiating else self.reports_to[0]
         elif approver_type =="AFD Procurement Head":
             procurement_head=frappe.db.get_single_value("Buying settings","afd_procurement_head_approval")
             if not procurement_head:
@@ -482,9 +482,25 @@ class CustomWorkflow:
             self.compile_budget()
         elif self.doc.doctype == "Asset Movement":
             self.asset_movement()
+        elif self.doc.doctype == "Target Set Up":
+            self.target_setup()
         else:
             frappe.throw(_("Workflow not defined for {}").format(self.doc.doctype))
-    
+    def target_setup(self):
+        user_id = frappe.db.get_value("Employee",self.doc.approver,'user_id')
+        if self.new_state.lower() in ("Waiting Supervisor Approval".lower()):
+            self.set_approver("Supervisor")
+            
+        if self.new_state.lower() in ("Approved".lower()):
+            if user_id != frappe.session.user:
+                frappe.throw("Only {} can Approve this Document".format(self.doc.approver_name))
+        if self.new_state.lower() in ("Rejected".lower()):
+            if user_id != frappe.session.user:
+                frappe.throw("Only {} can Reject this Document".format(self.doc.approver_name))
+          
+         
+       
+
     def compile_budget(self):
         if not self.old_state:
             return
@@ -944,6 +960,8 @@ class CustomWorkflow:
             if self.doc.approver_email != frappe.session.user:
                 frappe.throw("Only the {} can Approve this material request".format(self.doc.approver))
             
+            # elif self.doc.approver_email != frappe.session.user:
+            #     frappe.throw("Only the {} can Approve this material request".format(self.doc.approver))
 
         elif self.new_state.lower() in ("Waiting CEO Approval".lower()):
             if self.doc.approver != frappe.session.user:
@@ -1461,6 +1479,7 @@ def get_field_map():
         "Employee Benefits": ["benefit_approver","benefit_approver_name","benefit_approver_designation"],
         "Compile Budget": ["approver","approver_name"],
         "Employee Separation": ["approver","approver_name","approver_designation"],
+        "Target Set Up": ["approver","approver_name","approver_designation"],
         "POL": ["approver","approver_name","approver_designation"],
         "Asset Issue Details": [],
     }

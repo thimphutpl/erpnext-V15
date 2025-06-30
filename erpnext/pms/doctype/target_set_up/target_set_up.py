@@ -60,6 +60,7 @@ class TargetSetUp(Document):
 	# end: auto-generated types
 
 	def validate(self):
+		validate_workflow_states(self)
 		self.load_pre_requirement()
 		self.check_target()
 		self.check_duplicate_entry() 
@@ -155,7 +156,7 @@ class TargetSetUp(Document):
 					frappe.throw(
 						title=_("Error"),
 						msg=_("<b>{}</b> value is not allowed for <b>Quality</b> in Target Item at Row <b>{}</b>".format(t.quality,i+1)))
-
+			
 				if flt(t.weightage) > flt(self.max_weightage_for_target) or flt(t.weightage) < flt(self.min_weightage_for_target):
 					frappe.throw(
 						title=_('Error'),
