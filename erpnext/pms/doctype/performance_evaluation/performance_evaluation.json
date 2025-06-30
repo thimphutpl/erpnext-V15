@@ -97,8 +97,7 @@
   "upload_old_data",
   "other_information_section",
   "reason",
-  "column_break_73",
-  "amended_from"
+  "column_break_73"
  ],
  "fields": [
   {
@@ -176,26 +175,6 @@
    "fieldname": "part_b_section",
    "fieldtype": "Section Break",
    "label": "Form II:(Work-Related Competencies and Values)"
-  },
-  {
-   "fieldname": "amended_from",
-   "fieldtype": "Link",
-   "hidden": 1,
-   "label": "Amended From",
-   "no_copy": 1,
-   "options": "Performance Evaluation",
-   "print_hide": 1,
-   "read_only": 1
-  },
-  {
-   "fieldname": "amended_from",
-   "fieldtype": "Link",
-   "hidden": 1,
-   "label": "Amended From",
-   "no_copy": 1,
-   "options": "Performance Evaluation",
-   "print_hide": 1,
-   "read_only": 1
   },
   {
    "allow_on_submit": 1,
@@ -729,7 +708,7 @@
  ],
  "is_submittable": 1,
  "links": [],
- "modified": "2024-09-16 20:24:19.087265",
+ "modified": "2025-06-30 20:46:23.618816",
  "modified_by": "Administrator",
  "module": "PMS",
  "name": "Performance Evaluation",
