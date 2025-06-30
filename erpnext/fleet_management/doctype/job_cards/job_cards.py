@@ -11,6 +11,12 @@ from frappe.model.mapper import get_mapped_doc
 from erpnext.controllers.accounts_controller import AccountsController 
 from erpnext.custom_utils import check_uncancelled_linked_doc, check_future_date
 import dateutil.parser as dparser
+from erpnext.accounts.general_ledger import (
+	get_round_off_account_and_cost_center,
+	make_gl_entries,
+	make_reverse_gl_entries,
+	merge_similar_entries,
+)
 
 class JobCards(AccountsController):
 	# begin: auto-generated types
@@ -127,15 +133,9 @@ class JobCards(AccountsController):
 			if get_datetime(self.finish_date + " " + self.job_out_time) < get_datetime(self.posting_date + " " + self.job_in_time):
 				frappe.throw(_("Job out date cannot be earlier than job in date."),title="Invalid Data")
 			self.update_reservation()
-		#self.check_items()
-		# if self.owned_by == "Own":
-		# 	self.db_set("outstanding_amount", 0)
-		# if self.owned_by == "CDCL":
-		# 	self.post_journal_entry()
-		# 	self.db_set("outstanding_amount", 0)
-		# if self.owned_by == "Others":
 
-		# self.make_gl_entries()
+		if self.total_amount > 0:
+			self.make_gl_entries()
 		self.update_breakdownreport()
 		
 
@@ -164,8 +164,51 @@ class JobCards(AccountsController):
 		bdr = frappe.get_doc("Break Down Report", self.break_down_report)
 		if bdr.job_cards == self.name:
 			bdr.db_set("job_cards", None)
-		if self.owned_by == "Others":
-			self.make_gl_entries()	
+		if self.total_amount > 0:
+			self.make_gl_entries_on_cancel()
+
+	def make_gl_entries(self):
+		gl_entries = []
+		self.make_expense_gl_entry(gl_entries)
+		self.make_advance_gl_entry(gl_entries)
+		gl_entries = merge_similar_entries(gl_entries)
+		make_gl_entries(gl_entries,update_outstanding="No",cancel=self.docstatus == 2)
+	
+	def make_expense_gl_entry(self, gl_entries):
+		if flt(self.total_amount) > 0:
+			expense_account = frappe.db.get_value("Equipment Category", self.equipment_category,'r_m_expense_account')
+			if not expense_account:
+				frappe.throw("Please set R & M Expense Account in Equipment Category "+str(self.equipment_category))
+			gl_entries.append(
+					self.get_gl_dict({
+						"account": expense_account,
+						"debit": self.total_amount,
+						"debit_in_account_currency": self.total_amount,
+						"against_voucher": self.name,
+						"against_voucher_type": self.doctype,
+						"cost_center": self.cost_center,
+						"voucher_type":self.doctype,
+						"voucher_no":self.name
+					}, self.currency))
+
+	def make_advance_gl_entry(self, gl_entries):
+		if flt(self.total_amount) > 0:
+			advance_account = frappe.db.get_value("Company", self.company,'default_payable_account')
+			if not advance_account:
+				frappe.throw("Please set Default payable Account in  Company "+str(self.company))
+			gl_entries.append(
+				self.get_gl_dict({
+					"account": advance_account,
+					"credit": self.total_amount,
+					"credit_in_account_currency": self.total_amount,
+					"against_voucher": self.name,
+					"party_type": "Supplier",
+					"party": self.customer,
+					"against_voucher_type": self.doctype,
+					"cost_center": self.cost_center,
+					"voucher_type":self.doctype,
+					"voucher_no":self.name
+				}, self.currency))
 
 	def get_default_settings(self):
 		goods_account = frappe.db.get_single_value("Maintenance Accounts Settings", "default_goods_account")
@@ -311,64 +354,6 @@ class JobCards(AccountsController):
 			self.db_set("jv", je.name)
 		else:
 			frappe.throw("Setup Default Goods, Services and Receivable Accounts in Maintenance Accounts Settings")
-
-	def make_gl_entries(self):
-		gl_entries = []
-		if self.total_amount:
-			from erpnext.accounts.general_ledger import make_gl_entries
-			gl_entries = []
-			self.posting_date = self.finish_date
-
-		# goods_account = frappe.db.get_single_value("Maintenance Accounts Settings", "default_goods_account")
-		# services_account = frappe.db.get_single_value("Maintenance Accounts Settings", "default_services_account")
-		# receivable_account = frappe.db.get_single_value("Maintenance Accounts Settings", "default_receivable_account")
-		equipment_account = frappe.db.get_value("Equipment Category", self.equipment_category,'r_m_expense_account')
-		payable_account = frappe.db.get_value("Company", "GYALSUNG INFRA","default_payable_account")
-		# if not goods_account:
-		# 	frappe.throw("Setup Default Goods Account in Maintenance Setting")
-		# if not services_account:
-		# 	frappe.throw("Setup Default Services Account in Maintenance Setting")
-		if not payable_account:
-			frappe.throw("Setup Default Payable Account in Company")
-		
-		gl_entries.append(
-				self.get_gl_dict({
-						"account":  payable_account,
-						"party_type": "Supplier",
-						"party": self.customer,
-						"against": payable_account,
-						"credit": self.total_amount,
-						"credit_in_account_currency": self.total_amount,
-						"against_voucher": self.name,
-						"against_voucher_type": self.doctype,
-						"cost_center": self.cost_center
-				}, self.currency)
-		)
-
-		if self.goods_amount:
-			gl_entries.append(
-				self.get_gl_dict({
-						"account": equipment_account,
-						"against": self.customer,
-						"debit": self.goods_amount,
-						"debit_in_account_currency": self.goods_amount,
-						"cost_center": self.cost_center
-				}, self.currency)
-			)
-		if self.services_amount:
-			gl_entries.append(
-				self.get_gl_dict({
-						"account": equipment_account,
-						"against": self.customer,
-						"debit": self.services_amount,
-						"debit_in_account_currency": self.services_amount,
-						"cost_center": self.cost_center
-				}, self.currency)
-			)
-
-
-		make_gl_entries(gl_entries, cancel=(self.docstatus == 2),update_outstanding="No", merge_entries=False)
-
 
 	def update_reservation(self):
 		frappe.db.sql("update `tabEquipment Reservation Entry` set to_date = %s, to_time = %s where docstatus = 1 and ehf_name = %s", (self.finish_date, self.job_out_time, self.break_down_report))

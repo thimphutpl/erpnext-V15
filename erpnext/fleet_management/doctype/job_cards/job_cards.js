@@ -2,20 +2,12 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on('Job Cards', {
-	// setup: function(frm){
-	// 	frm.get_field('assigned_to').grid.editable_fields = [
-	// 		{fieldname: 'mechanic', columns: 3},
-	// 		{fieldname: 'start_time', columns: 3},
-	// 		{fieldname: 'end_time', columns: 3},
-	// 		{fieldname: 'total_time', columns: 1},
-	// 	];		
-	// },
 	refresh: function(frm) {
 		if(frm.doc.docstatus===1){
 			frm.add_custom_button(__('Accounting Ledger'), function(){
 				frappe.route_options = {
 					voucher_no: frm.doc.name,
-					from_date: frm.doc.finish_date,
+					from_date: frm.doc.posting_date,
 					to_date: frm.doc.finish_date,
 					company: frm.doc.company,
 					group_by_voucher: false
@@ -34,10 +26,6 @@ frappe.ui.form.on('Job Cards', {
 		}
 	
 		if (frm.doc.outstanding_amount > 0 && frm.doc.owned_by == "Others" && frappe.model.can_write("Journal Entry")) {
-			//cur_frm.toggle_display("receive_payment", 1)
-			/*cur_frm.add_custom_button(__('Payment'), function() {
-				cur_frm.cscript.receive_payment()
-			}, __("Receive"));*/
 			frm.add_custom_button("Receive Payment", function() {
 				frappe.model.open_mapped_doc({
 					method: "erpnext.fleet_management.doctype.job_cards.job_cards.make_payment_entry",
@@ -68,8 +56,6 @@ frappe.ui.form.on('Job Cards', {
 		cur_frm.refresh()
 	},
 	"get_items": function(frm) {
-		//get_entries_from_min(frm.doc.stock_entry)
-		//load_accounts(frm.doc.company)
 		return frappe.call({
 			method: "get_job_items",
 			doc: frm.doc,
@@ -92,46 +78,6 @@ frappe.ui.form.on('Job Cards', {
                 }
         }
 });
-
-// //Job Card Item  Details
-// frappe.ui.form.on("Job Card Item", {
-// 	"which": function(frm,cdt,cdn) {
-// 		var item = locals[cdt][cdn];
-// 		frappe.model.set_value(cdt, cdn, "job_name", '')
-// 		frappe.model.set_value(cdt, cdn, "job", '')
-// 		frm.refresh_field("job_name")
-// 		frm.refresh_field("job")
-// 	},
-// 	"start_time": function(frm, cdt, cdn) {
-// 		calculate_datetime(frm, cdt, cdn)
-// 	},
-// 	"end_time": function(frm, cdt, cdn) {
-// 		calculate_datetime(frm, cdt, cdn)
-// 	},
-// 	"job": function(frm, cdt, cdn) {
-// 		var item = locals[cdt][cdn]
-		
-// 		if(item.job) {
-// 			frappe.call({
-// 				method: "frappe.client.get_value",
-// 				args: {
-// 					doctype: item.which,
-// 					fieldname: ["item_name", "cost"],
-// 					filters: {
-// 						name: item.job
-// 					}
-// 				},
-// 				callback: function(r) {
-// 					frappe.model.set_value(cdt, cdn, "job_name", r.message.item_name)
-// 					frappe.model.set_value(cdt, cdn, "amount", r.message.cost)
-// 					cur_frm.refresh_field("job_name")
-// 					cur_frm.refresh_field("amount")
-// 				}
-// 			})
-// 		}
-// 	}
-// })
-
 //Job Card Item  Details
 frappe.ui.form.on("Job Cards Item", {
 	"which": function(frm,cdt,cdn) {
@@ -240,37 +186,6 @@ function calculate_time(frm, cdt, cdn) {
 	}
 	cur_frm.refresh_field("total_time")
 }
-
-// cur_frm.fields_dict['assigned_to'].grid.get_field('mechanic').get_query = function(frm, cdt, cdn) {
-// 	var d = locals[cdt][cdn];
-//         if(d.employee_type == "Employee") {
-//                 return {
-//                         filters: [
-//                         ['Employee', 'is_job_card_employee', '=', 1],
-//                         ['Employee', 'branch', '=', frm.branch],
-//                         ['Employee', 'status', '=', 'Active']
-//                         ]
-//                 }
-//         }
-// 	else if(d.employee_type == "GEP Employee") {
-//                 return {
-//                         filters: [
-//                         ['GEP Employee', 'list_in_job_card', '=', 1],
-//                         ['GEP Employee', 'branch', '=', frm.branch],
-//                         ['GEP Employee', 'status', '=', 'Active']
-//                         ]
-//                 }
-// 	}
-//         else {
-//                 return {
-//                         filters: [
-//                         ['Muster Roll Employee', 'list_in_job_card', '=', 1],
-//                         ['Muster Roll Employee', 'branch', '=', frm.branch],
-//                         ['Muster Roll Employee', 'status', '=', 'Active']
-//                         ]
-//                 }
-//         }
-// }
 
 function get_entries_from_min(form) {
 	frappe.call({
