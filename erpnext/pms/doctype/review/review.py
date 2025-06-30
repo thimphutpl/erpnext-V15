@@ -61,6 +61,7 @@ class Review(Document):
 		self.check_duplicate_entry()
 		# validate_workflow_states(self)
 		self.check_target()
+		validate_workflow_states(self)
 
 	def on_submit(self):
 		if self.reference and self.reason:

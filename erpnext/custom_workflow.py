@@ -484,8 +484,21 @@ class CustomWorkflow:
             self.asset_movement()
         elif self.doc.doctype == "Target Set Up":
             self.target_setup()
+        elif self.doc.doctype == "Review":
+            self.review()
         else:
             frappe.throw(_("Workflow not defined for {}").format(self.doc.doctype))
+    def review(self):
+        user_id = frappe.db.get_value("Employee",self.doc.approver,'user_id')
+        if self.new_state.lower() in ("Waiting Supervisor Approval".lower()):
+            self.set_approver("Supervisor")
+            
+        if self.new_state.lower() in ("Approved".lower()):
+            if user_id != frappe.session.user:
+                frappe.throw("Only {} can Approve this Document".format(self.doc.approver_name))
+        if self.new_state.lower() in ("Rejected".lower()):
+            if user_id != frappe.session.user:
+                frappe.throw("Only {} can Reject this Document".format(self.doc.approver_name))
     def target_setup(self):
         user_id = frappe.db.get_value("Employee",self.doc.approver,'user_id')
         if self.new_state.lower() in ("Waiting Supervisor Approval".lower()):
@@ -1480,6 +1493,7 @@ def get_field_map():
         "Compile Budget": ["approver","approver_name"],
         "Employee Separation": ["approver","approver_name","approver_designation"],
         "Target Set Up": ["approver","approver_name","approver_designation"],
+         "Review": ["approver","approver_name","approver_designation"],
         "POL": ["approver","approver_name","approver_designation"],
         "Asset Issue Details": [],
     }
