@@ -1,0 +1,36 @@
+{
+ "add_total_row": 1,
+ "columns": [],
+ "creation": "2025-06-30 14:20:15.911579",
+ "disabled": 0,
+ "docstatus": 0,
+ "doctype": "Report",
+ "filters": [],
+ "idx": 0,
+ "is_standard": "Yes",
+ "letter_head": "Head Office",
+ "letterhead": null,
+ "modified": "2025-06-30 14:20:15.911579",
+ "modified_by": "Administrator",
+ "module": "Accounts",
+ "name": "Over Head Cost",
+ "owner": "Administrator",
+ "prepared_report": 0,
+ "ref_doctype": "GL Entry",
+ "report_name": "Over Head Cost",
+ "report_type": "Script Report",
+ "roles": [
+  {
+   "role": "Accounts User"
+  },
+  {
+   "role": "Accounts Manager"
+  },
+  {
+   "role": "Projects Readonly"
+  },
+  {
+   "role": "Project Engineer"
+  }
+ ]
+}
