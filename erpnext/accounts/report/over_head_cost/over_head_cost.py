@@ -20,32 +20,31 @@ def get_data(filters=None):
 			"Gyalpozhing - GYALSUNG", "Head Office - GYALSUNG", "Jamtsholing - GYALSUNG",
 			"Khotokha - GYALSUNG", "Pemathang - GYALSUNG", "Tareythang - GYALSUNG"
 		]:
-			data = frappe.db.get_all(
+			child_data = frappe.db.get_all(
 				"Cost Center",
 				filters={"parent_cost_center": filters.cost_center},
 				fields=["name"]
 			)
-			child_cost_center = [d['name'] for d in data]
+			child_cost_center = [d['name'] for d in child_data]
 			if child_cost_center:
 				placeholders = ", ".join(f"'{cc}'" for cc in child_cost_center)
 				query += f" and gl.cost_center in ({placeholders})"
 		else:
 			query += f" and gl.cost_center = '{filters.cost_center}'"
-
-	for raw in frappe.db.sql(query, as_dict=True):
-		if not raw.debit or not raw.credit:
-			over_head_cost = 0
-		else:
-			over_head_cost=raw.debit - raw.credit
-			
+	over_head_data = frappe.db.sql(query, as_dict=True)
+	for raw in over_head_data:
 		if not filters.cost_center:
 			filters.cost_center = "GYALSUNG INFRA - GYALSUNG"
+		total_debit = raw.debit if raw.debit else 0
+		total_credit = raw.credit if raw.credit else 0
+		over_head_cost =total_debit-total_credit
+
 		row = frappe._dict({ 
 			"cost_center":filters.cost_center, 
 			"from_date":filters.from_date, 
 			"to_date":filters.to_date, 
-			"total_expense":raw.debit, 
-			"total_income":raw.credit, 
+			"total_expense":total_debit, 
+			"total_income":total_credit, 
 			"over_head_cost": over_head_cost if over_head_cost > 0 else 0
 		})
 		data.append(row)
