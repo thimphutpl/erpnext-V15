@@ -33,7 +33,11 @@ def get_data(filters=None):
 			query += f" and gl.cost_center = '{filters.cost_center}'"
 
 	for raw in frappe.db.sql(query, as_dict=True):
-		over_head_cost=raw.debit - raw.credit
+		if not raw.debit or not raw.credit:
+			over_head_cost = 0
+		else:
+			over_head_cost=raw.debit - raw.credit
+			
 		if not filters.cost_center:
 			filters.cost_center = "GYALSUNG INFRA - GYALSUNG"
 		row = frappe._dict({ 
