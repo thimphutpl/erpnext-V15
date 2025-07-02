@@ -15,13 +15,13 @@ class CompactAgreementItemsEvaluation(Document):
 		from frappe.types import DF
 
 		achieved: DF.Percent
-		datelines: DF.Date | None
+		deadline: DF.Date | None
 		deliverables: DF.Data | None
+		objective: DF.Data | None
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
 		remarks: DF.Data | None
-		target: DF.Data | None
-		weighted: DF.Percent
+		weightage: DF.Percent
 	# end: auto-generated types
 	pass
