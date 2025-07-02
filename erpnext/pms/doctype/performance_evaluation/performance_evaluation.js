@@ -307,7 +307,15 @@ frappe.ui.form.on('Evaluate Target Item', {
 		
 	
 		// frappe.meta.get_docfield("Evaluate Competency Item", "supervisor_rating", cur_frm.doc.name).hidden = frappe.session.user != frm.doc.approver || row.is_parent != 1 || frm.doc.eval_workflow_state == "Draft"
+	quality_achieved_self: function(frm, cdt, cdn) {
+			let row = locals[cdt][cdn];
 	
+			// Set value in the same row
+			frappe.model.set_value(cdt, cdn, 'quality_achieved', row.quality_achieved_self);
+	
+			// Refresh parent field
+			// frm.refresh_field('evaluate_target_item');  // Must match the fieldname in parent doctype
+		},
     quantity_achieved_self: function(frm, cdt, cdn) {
         let row = locals[cdt][cdn];
 
