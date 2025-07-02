@@ -131,6 +131,7 @@ def get_entries_for_bank_reconciliation_statement(filters):
 	mp_entries = get_mechanical_payments(filters)  # New line
 	tds_entries = get_tds_list(filters)  # New line
 	hsd_entries = get_hsd_list(filters)  # New line
+	ot_entries = get_ot_list(filters)
 	
 	return (
 		list(journal_entries) 
@@ -140,6 +141,7 @@ def get_entries_for_bank_reconciliation_statement(filters):
 		+ list(mp_entries)
 		+ list(tds_entries)
 		+ list(hsd_entries)
+		+ list(get_ot_list)
 
 	)
 
@@ -278,6 +280,31 @@ def get_tds_list(filters):
         filters,
         as_dict=1,
     )
+
+def get_ot_list(filters):
+	return frappe.db.sql(
+		"""
+		SELECT
+			'Process Overtime Payment' AS payment_document,
+			name AS payment_entry,
+			cheque_no AS reference_no,
+			cheque_date AS ref_date,
+			total_amount AS credit,
+			0 AS debit,
+			posting_date,
+			branch AS against_account,
+			clearance_date,
+			'BTN' AS account_currency
+		FROM `tabProcess Overtime Payment`
+		WHERE
+			expense_bank_account = %(account)s
+			AND docstatus = 1
+			AND posting_date <= %(report_date)s
+			AND IFNULL(clearance_date, '4000-01-01') > %(report_date)s
+		""",
+		filters,
+		as_dict=1
+	)
 
 
 def get_payment_entries(filters):
