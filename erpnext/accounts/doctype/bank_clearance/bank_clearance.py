@@ -200,6 +200,37 @@ def get_payment_entries_for_bank_clearance(
 		{"account": account, "from": from_date, "to": to_date},
 		as_dict=1,
 	)
+
+	ot_payment = frappe.db.sql(
+		f"""
+			SELECT
+				"Process Overtime Payment" AS payment_document,
+				name AS payment_entry,
+				cheque_no AS cheque_number,
+				cheque_date,
+				total_amount AS credit,
+				0 AS debit,
+				posting_date,
+				ot_account AS against_account,
+				clearance_date,
+				'BTN' AS account_currency
+			FROM `tabProcess Overtime Payment`
+			WHERE
+				expense_bank_account = %(account)s
+				AND docstatus = 1
+				{condition}
+				AND posting_date >= %(from)s AND posting_date <= %(to)s
+			ORDER BY posting_date ASC, name DESC
+		""",
+		{
+			"account": account,
+			"from": from_date,
+			"to": to_date,
+		},
+		as_dict=1
+	)
+
+
 	if not branch:
 		frappe.throw("Branch is required")
 	imprest_account = frappe.db.get_value("Branch", branch, "expense_bank_account")
@@ -341,7 +372,7 @@ def get_payment_entries_for_bank_clearance(
 		).run(as_dict=True)
 
 	entries = (
-		list(payment_entries) + list(journal_entries) + list(pos_sales_invoices) + list(pos_purchase_invoices) + list(mechanical_payment) + list(hsd_payment) + list(tds_remittance) + list(imprest_recoup)
+		list(payment_entries) + list(journal_entries) + list(pos_sales_invoices) + list(pos_purchase_invoices) + list(mechanical_payment) + list(hsd_payment) + list(tds_remittance) + list(imprest_recoup) + list(ot_payment)
 	)
 
 	return entries
