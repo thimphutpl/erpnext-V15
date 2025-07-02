@@ -141,7 +141,7 @@ def get_entries_for_bank_reconciliation_statement(filters):
 		+ list(mp_entries)
 		+ list(tds_entries)
 		+ list(hsd_entries)
-		+ list(get_ot_list)
+		+ list(ot_entries)
 
 	)
 
