@@ -292,7 +292,7 @@ def get_ot_list(filters):
 			total_amount AS credit,
 			0 AS debit,
 			posting_date,
-			branch AS against_account,
+			ot_account AS against_account,
 			clearance_date,
 			'BTN' AS account_currency
 		FROM `tabProcess Overtime Payment`
