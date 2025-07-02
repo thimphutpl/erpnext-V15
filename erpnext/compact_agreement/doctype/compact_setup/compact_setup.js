@@ -4,7 +4,7 @@
 frappe.ui.form.on("Compact Setup", {
 	refresh: function(frm) {
 		// Check if the user has the PMS Compact Approver role
-		if (frappe.user.has_role("Head of OPM")) {
+		if (frappe.user.has_role("Compact Manager")) {
 			frm.add_custom_button("Create Compact Review", function() {
 				frappe.model.open_mapped_doc({
 					method: "erpnext.compact_agreement.doctype.compact_setup.compact_setup.make_compact_review",
