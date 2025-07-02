@@ -145,6 +145,7 @@ class CompactEvaluation(Document):
     def validate(self):
         """Validate document before saving."""
         self.validate_achieved()
+        self.validate_weightage()
         
     def validate_achieved(self):
         """Validate that total achieved doesn't exceed 100%."""
@@ -158,6 +159,19 @@ class CompactEvaluation(Document):
             frappe.throw(
                 f"Total achieved cannot exceed 100%. Current total is {total_achieved:.2f}%",
                 title="Invalid Achieved"
+            )
+    def validate_weightage(self):
+        """Validate that total weightage doesn't exceed 100%."""
+        if not hasattr(self, 'table_qwvz') or not self.table_qwvz:
+            frappe.throw("Please add items with weightage in the table")
+            return
+            
+        total_weightage = sum(flt(item.weightage or 0) for item in self.table_qwvz)
+        
+        if flt(total_weightage, 2) > 100.0:  # Strict check for > 100%
+            frappe.throw(
+                f"Total achieved cannot exceed 100%. Current total is {total_weightage:.2f}%",
+                title="Invalid Weightage"
             )
 
     def before_save(self):

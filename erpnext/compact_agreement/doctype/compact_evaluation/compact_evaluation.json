@@ -85,7 +85,7 @@
   {
    "fieldname": "total_weighted_percent",
    "fieldtype": "Percent",
-   "label": "Total Weighted",
+   "label": "Total Weightage",
    "precision": "2"
   },
   {
@@ -102,7 +102,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-06-25 12:03:24.678200",
+ "modified": "2025-07-02 10:17:12.773581",
  "modified_by": "Administrator",
  "module": "Compact Agreement",
  "name": "Compact Evaluation",
