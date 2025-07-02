@@ -196,7 +196,7 @@ def get_columns():
         },
         {
             "label": _("Weightage"),
-            "fieldname": "weighted",
+            "fieldname": "weightage",
             "fieldtype": "Percent",
             "width": 120,
         },
