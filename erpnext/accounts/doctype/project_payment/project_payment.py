@@ -96,7 +96,11 @@ class ProjectPayment(AccountsController):
 	def on_cancel(self):
 		if self.clearance_date:
 			frappe.throw("Already done bank reconciliation.")
-
+		self.ignore_linked_doctypes = (
+			"GL Entry",
+			"Payment Ledger Entry",
+			"Stock Ledger Entry",
+		)
 		self.make_gl_entries()
 		self.update_invoice_balance()
 		self.update_advance_balance()
