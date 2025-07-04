@@ -6,6 +6,7 @@ frappe.ui.form.on("EAS Calendar", {
 		// set_default_field_value(frm)
 	},
 	refresh:function(frm){
+       
 		disable_fields(frm)
 	},
 });

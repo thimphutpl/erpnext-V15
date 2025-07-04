@@ -3,7 +3,7 @@ from frappe import _
 
 def get_data():
 	return {
-		'fieldname': 'name',
+		'fieldname': 'eas_calendar',
 		'transactions': [
 			{
 				'label': _('Extension'),

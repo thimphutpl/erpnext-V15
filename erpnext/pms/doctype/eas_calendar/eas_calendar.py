@@ -63,12 +63,17 @@ class EASCalendar(Document):
 
 @frappe.whitelist()
 def create_eas_extension(source_name, target_doc=None):
+	#frappe.throw(source_name)
 	doclist = get_mapped_doc("EAS Calendar", source_name, {
 		"EAS Calendar": {
 			"doctype": "EAS Extension",
 			"field_map": {
                 "eas_calendar": "name"
-            }
+            },
+		 "EAS  Group Details":{
+			 "doctype":"EAS Extension Details"
+
+		 }
 		},
 	}, target_doc)
 
