@@ -951,7 +951,10 @@ class CustomWorkflow:
                     frappe.throw("Only {} can Cancel this request".format(self.doc.approver_name))
 
     def material_request(self):
-        # frappe.throw(str(self.new_state.lower()))
+     
+        
+        approver = frappe.db.get_value("Employee",self.doc.approver,"user_id")
+        
         ''' Material Request Workflow
             1. Employee -> Waiting supervisor approval->Waiting AFD procurement Head-> Waiting AFD Head Approval
             
@@ -969,36 +972,36 @@ class CustomWorkflow:
             
         elif self.new_state.lower() in ("Waiting AFD Procurement Head".lower()):
             if not self.old_state.lower() in ("Draft".lower()):
-                if self.doc.approver_email != frappe.session.user and self.new_state.lower()!= self.old_state.lower():
+                if approver != frappe.session.user and self.new_state.lower()!= self.old_state.lower():
                     frappe.throw("Only approver can forward this material request")
             self.set_approver("AFD Procurement Head")
             
         
         elif self.new_state.lower() in ("Waiting AFD Head Approval".lower()):
-            if self.doc.approver_email != frappe.session.user and self.new_state.lower()!= self.old_state.lower():
+            if approver != frappe.session.user and self.new_state.lower()!= self.old_state.lower():
                 frappe.throw("Only approver can forward this material request")
             self.set_approver("AFD Head Approval")
             
         elif self.new_state.lower() in ("Waiting Store Approval".lower()):
-            if self.doc.approver_email != frappe.session.user and self.new_state.lower()!= self.old_state.lower():
+            if approver != frappe.session.user and self.new_state.lower()!= self.old_state.lower():
                 frappe.throw("Only the document owner can Apply this material request")
             self.set_approver("Supervisor")
             # self.set_approver("Warehouse Manager")
 
         elif self.new_state.lower() in ("Approved".lower()):
-            if self.doc.approver_email != frappe.session.user:
+            if approver != frappe.session.user:
                 frappe.throw("Only the {} can Approve this material request".format(self.doc.approver))
             
             # elif self.doc.approver_email != frappe.session.user:
             #     frappe.throw("Only the {} can Approve this material request".format(self.doc.approver))
 
         elif self.new_state.lower() in ("Waiting CEO Approval".lower()):
-            if self.doc.approver != frappe.session.user:
+            if approver != frappe.session.user:
                 frappe.throw("Only the {} can Approve this material request".format(self.doc.approver))
             self.set_approver("MR CEO") 
 
         elif self.new_state.lower() in ("Rejected".lower()):
-            if self.doc.approver != frappe.session.user:
+            if approver != frappe.session.user:
                 frappe.throw("Only the {} can Reject this material request".format(self.doc.approver))
 
     def employee_benefit_claim(self):
