@@ -135,11 +135,20 @@ erpnext.accounts.PurchaseInvoice = class PurchaseInvoice extends erpnext.buying.
 			}
 		}
 
-		if (doc.docstatus == 1 && doc.outstanding_amount != 0 && !doc.on_hold && doc.company!="Office of the Gyalpoi Zimpon") {
+		if (doc.docstatus == 1 && doc.outstanding_amount != 0) {
 			this.frm.add_custom_button(__("Payment"), () => this.make_payment_entry(), __("Create"));
 			cur_frm.page.set_inner_btn_group_as_primary(__("Create"));
 		}
-
+		// if (doc.docstatus == 1 && doc.branch=="Administrative Finance Division") {
+		// 	this.frm.add_custom_button(__("Abstract"), () => make_abstract_bill(), __("Create"));
+		// 	cur_frm.page.set_inner_btn_group_as_primary(__("Create"));
+		// }
+		function make_abstract_bill() {
+			frappe.model.open_mapped_doc({
+				method: "erpnext.accounts.doctype.purchase_invoice.purchase_invoice.make_abstract_bill",
+				frm: cur_frm
+			});
+		}
 		if (!doc.is_return && doc.docstatus == 1 && doc.company!="Office of the Gyalpoi Zimpon") {
 			if (doc.outstanding_amount >= 0 || Math.abs(flt(doc.outstanding_amount)) < flt(doc.grand_total)) {
 				cur_frm.add_custom_button(__("Return / Debit Note"), this.make_debit_note, __("Create"));
