@@ -140,32 +140,53 @@ class JobCards(AccountsController):
 		
 
 	def before_cancel(self):
-		check_uncancelled_linked_doc(self.doctype, self.name)
+		# check_uncancelled_linked_doc(self.doctype, self.name)
+		if self.break_down_report:
+			bdr = frappe.get_doc("Break Down Report", self.break_down_report)
+			if bdr.docstatus == 1:
+				# If submitted, cancel it
+				bdr.cancel()
+			if bdr.job_cards == self.name:
+				bdr.db_set("job_cards", None)
+			equipment_status_entry = frappe.db.sql(""" select name from `tabEquipment Status Entry` where ehf_name = %s and docstatus = 1""", (self.break_down_report,), as_dict=True)
+			for raw in equipment_status_entry:
+				tmp_doc = frappe.get_doc("Equipment Status Entry", raw.name)
+				if tmp_doc.docstatus == 1:
+					tmp_doc.cancel()
 		cl_status = frappe.db.get_value("Journal Entry", self.jv, "docstatus")
 		if cl_status and cl_status != 2:
 			frappe.throw("You need to cancel the journal entry related to this job card first!")
-		
 		self.db_set('jv', None)
 
+
 	def on_cancel(self):
+		self.check_payment()
 		self.ignore_linked_doctypes = (
 			"GL Entry",
 			"Payment Ledger Entry",
 			"Stock Ledger Entry",
+			"Job Cards",
 		)
-		cl_status = frappe.db.get_value("Journal Entry", self.jv, "docstatus")
-		cl_status = frappe.db.get_value("Payment Ledger Entry", self.payment_jv, "docstatus")
-		if cl_status and cl_status != 2:
-			frappe.throw("You need to cancel the journal entry related to this job card first!")
-		
+		journal_status = frappe.db.get_value("Journal Entry", self.jv, "docstatus")
+		payment_status = frappe.db.get_value("Payment Ledger Entry", self.payment_jv, "docstatus")
+		if (journal_status and journal_status != 2) or (payment_status and payment_status != 2):
+			frappe.throw("You need to cancel the related Journal Entry and Payment Ledger Entry for this job card first!")
 		self.db_set('jv', None)
 		self.db_set('payment_jv', None)
-
-		bdr = frappe.get_doc("Break Down Report", self.break_down_report)
-		if bdr.job_cards == self.name:
-			bdr.db_set("job_cards", None)
 		if self.total_amount > 0:
-			self.make_gl_entries_on_cancel()
+			# Fetch GL Entries for this voucher
+			gl_entries = frappe.get_all(
+				"GL Entry",
+				filters={
+					"voucher_type": self.doctype,
+					"voucher_no": self.name,
+				},
+				fields=["*"],
+			)
+			if gl_entries:
+				make_reverse_gl_entries(gl_entries, self.doctype, self.name)
+		# Remove call to undefined make_gl_entries_on_cancel
+		# If you need to reverse GL entries, use make_reverse_gl_entries or implement as needed
 
 	def make_gl_entries(self):
 		gl_entries = []
@@ -209,6 +230,12 @@ class JobCards(AccountsController):
 					"voucher_type":self.doctype,
 					"voucher_no":self.name
 				}, self.currency))
+	def check_payment(self):
+		mr_id = frappe.db.get_value("Mechanical Payment Item", {"reference_type": "Job Cards","reference_name":self.name}, "parent")
+		if mr_id:
+			mr_status = frappe.db.get_value("Mechanical Payment", mr_id, "docstatus")
+			if mr_status and mr_status != 2:
+				frappe.throw("You need to cancel the Mechanical Payment for this job card first!")
 
 	def get_default_settings(self):
 		goods_account = frappe.db.get_single_value("Maintenance Accounts Settings", "default_goods_account")

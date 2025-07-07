@@ -5,7 +5,7 @@ import frappe
 from frappe.model.document import Document
 from frappe.utils import nowdate, add_years
 from frappe.model.mapper import get_mapped_doc
-from erpnext.custom_utils import check_uncancelled_linked_doc, check_future_date
+from erpnext.custom_utils import check_future_date
 
 class BreakDownReport(Document):
 	# begin: auto-generated types
@@ -49,16 +49,20 @@ class BreakDownReport(Document):
 		self.post_equipment_status_entry()
 
 	def on_cancel(self):
-		# bdr = frappe.get_doc("Job Cards", self.job_cards)
-		# if bdr.name == self.job_cards:
-		# 	bdr.db_set("job_cards", None)
-		# if self.owned_by == "Others":
-		# 	self.make_gl_entries()
-		check_uncancelled_linked_doc(self.doctype, self.name)
-		# Use parameterized queries to prevent SQL injection
-		frappe.db.sql("DELETE FROM `tabEquipment Reservation Entry` WHERE ehf_name = %s", (self.name,))
-		frappe.db.sql("DELETE FROM `tabEquipment Status Entry` WHERE ehf_name = %s", (self.name,))
-
+		self.ignore_linked_doctypes = (
+			"GL Entry",
+			"Job Cards",
+		)
+		equipment_status_entry = frappe.db.sql(""" select name from `tabEquipment Status Entry` where ehf_name = %s and docstatus = 1""", self.name, as_dict=True)
+		for raw in equipment_status_entry:
+			tmp_doc = frappe.get_doc("Equipment Status Entry", raw.name)
+			if tmp_doc.docstatus == 1:
+				tmp_doc.cancel()
+		# Uncomment to auto-cancel linked Job Card if needed
+		# if self.job_cards:
+		# 	job_card = frappe.get_doc("Job Cards", self.job_cards)
+		# 	if job_card.docstatus == 1:
+		# 		job_card.cancel()
 	def validate_equipment(self):
 		frappe.logger().info(f"Equipment: {self.equipment}, Branch: {self.branch}, Customer Branch: {self.customer_branch}")
 		if self.owned_by in ['CDCL', 'Own']:
@@ -121,4 +125,3 @@ def make_job_cards(source_name, target_doc=None):
 	}, target_doc)
 
 	return doc
-		
