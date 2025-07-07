@@ -767,17 +767,17 @@ class PurchaseInvoice(BuyingController):
 				self.set_consumed_qty_in_subcontract_order()
 
 		# this sequence because outstanding may get -negative
-		abstract_bill = frappe.db.sql('''
-                                 select abstract_bill_required from `tabCompany` where name="{name}" limit 1
-                                 '''.format(name=self.company))
-			# frappe.throw(str(abstract_bill[0][0]))
-		if abstract_bill and abstract_bill[0][0] == 1:
-			self.create_abstract_bill()
-			# self.send_email()
+		# abstract_bill = frappe.db.sql('''
+        #                          select abstract_bill_required from `tabCompany` where name="{name}" limit 1
+        #                          '''.format(name=self.company))
+		# 	# frappe.throw(str(abstract_bill[0][0]))
+		# if abstract_bill and abstract_bill[0][0] == 1:
+		# 	self.create_abstract_bill()
+		# 	# self.send_email()
 
-		if not abstract_bill:
-			# self.post_journal_entry()
-			self.make_gl_entries()
+		# if not abstract_bill:
+		# 	# self.post_journal_entry()
+		self.make_gl_entries()
 
 		if self.update_stock == 1:
 			self.repost_future_sle_and_gle()
