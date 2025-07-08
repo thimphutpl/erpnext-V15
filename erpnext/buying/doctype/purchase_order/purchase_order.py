@@ -1113,7 +1113,7 @@ def get_permission_query_conditions(user):
 	if "Purchase Master Manager" in user_roles:
 		return
 	# added
-	if "Auditor" in user_roles:
+	if "Audit User" in user_roles:
 		return
 
 	if "Accounts User" in user_roles or "Purchase User" in user_roles:
