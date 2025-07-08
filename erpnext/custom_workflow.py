@@ -572,9 +572,8 @@ class CustomWorkflow:
 				frappe.throw(f"Only {self.doc.approver} can Approved this Request.")			
 
 		elif self.new_state.lower() == ("Rejected".lower()):
-			pass
-			# if frappe.session.user != self.doc.approver:
-			# 	frappe.throw(f"Only {self.doc.approver} can Reject this Request.")
+			if frappe.session.user != self.doc.approver:
+				frappe.throw(f"Only {self.doc.approver} can Reject this Request.")
 		else:
 			frappe.throw(_("Invalid Workflow State {}").format(self.doc.workflow_state))
 
