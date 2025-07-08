@@ -41,6 +41,8 @@ class eNote(Document):
 		self.enote_format = make_autoname(str(self.enote_series)+".YYYY./.#####")
 		frappe.db.set_value("eNote", self.name, "enote_format", self.enote_format)
 		self.send_notification()
+		self.check_review()
+		
 		# notify_workflow_states(self)
   
 	def validate(self):	
@@ -56,6 +58,8 @@ class eNote(Document):
 			
 		self.save_forward_to()
 		self.workflow_action()
+		
+		
 		# if we allow on action approve, it going double email to doc owner. 
 		# one form here and another from on_submit().
 		# if we allow from here, workflow state is still stays in pending which is wrong.  
@@ -65,7 +69,7 @@ class eNote(Document):
 			self.send_notification()
 			# notify_workflow_states(self)   
 
-
+	
 	def save_forward_to(self):
 		if not self.forward_to:
 			if frappe.db.exists("Employee", {"user_id":frappe.session.user}):
@@ -159,10 +163,19 @@ class eNote(Document):
 		if not template:
 			frappe.msgprint(_("Please set default template for eNote Reviewer Notification in HR Settings."))
 			return
+		reviewer = frappe.db.sql('''
+			select user_id from `tabeNote Reviewer` where parent='{}'
+		'''.format(self.doc.name))
+		reviewers = []
+		if reviewer:
+			for i in reviewer:
+				reviewers.append(i[0])
+	
 
+		
 		email_template = frappe.get_doc("Email Template", template)
 		message = frappe.render_template(email_template.response, args)
-		recipients = self.doc.owner
+		recipients = reviewers
 		subject = email_template.subject
 		self.send_mail(recipients,message, subject)
 
