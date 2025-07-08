@@ -84,7 +84,7 @@ def create_eas_extension(source_name, target_doc=None):
                 "doctype": "EAS Extension",
                 "field_map": {"eas_calendar": "name"}
             },
-            "EAS Group Details": {  # Note: Removed extra space to match exact fieldname
+            "EAS  Group Details": {  # Note: Removed extra space to match exact fieldname
                 "doctype": "EAS Extension Details",
                 "postprocess": process_child  # Now accepts 3 args
             }
