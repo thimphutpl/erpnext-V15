@@ -57,8 +57,10 @@ class EASExtension(Document):
 					#frappe.throw("jjj")
 					tar.target_start_date=sour.target_start_date
 					tar.target_end_date=sour.target_end_date
-					tar.review_start_date=sour.review_end_date
+					tar.review_start_date=sour.review_start_date
+					tar.review_end_date=sour.review_end_date
 					tar.evaluation_start_date=sour.evaluation_start_date
+					tar.evaluation_end_date=sour.evaluation_end_date
 					tar.db_update() 
 					#tar.save()
 					break
@@ -71,30 +73,50 @@ class EASExtension(Document):
 			for eas_ext in self.eas_extension_details:
 				
 				if eas_cal.eas_group==eas_ext.eas_group:
+					if eas_cal.eas_group=="Group I":
 					
-					if getdate(eas_cal.target_start_date) > getdate(eas_ext.target_start_date):
-						frappe.throw(f"{eas_cal.eas_group} The Extension setup  target  date should be grater then calendar set up target")
-								
-														
-					if eas_ext.target_start_date > eas_ext.target_end_date:
-						frappe.throw(_("Target start date can not be greater than target end date"))
-						
-					if eas_ext.review_start_date < eas_ext.target_end_date:
-						frappe.throw(_("Review start date can not be greater than target end date"))
-						
-					if eas_ext.review_start_date > eas_ext.review_end_date:
-						frappe.throw(_("Review start date can not be greater than review end date"))
-						
-					if eas_ext.evaluation_start_date < eas_ext.review_end_date:
-						frappe.throw(_("Evaluation start date can not be greater than review end date"))
-						
-					if eas_ext.evaluation_start_date > eas_ext.evaluation_end_date:
-						frappe.throw(_("Evaluation start date can not be greater than evaluation end date"))
+						if getdate(eas_cal.target_start_date) > getdate(eas_ext.target_start_date):
+							frappe.throw(f"{eas_cal.eas_group} The Extension setup  target  date should be grater then calendar set up target")
+									
+															
+						if eas_ext.target_start_date > eas_ext.target_end_date:
+							frappe.throw(_("Target start date can not be greater than target end date"))
+							
+						if eas_ext.review_start_date < eas_ext.target_end_date:
+							frappe.throw(_("Review start date can not be greater than target end date"))
+							
+						if eas_ext.review_start_date > eas_ext.review_end_date:
+							frappe.throw(_("Review start date can not be greater than review end date"))
+							
+						if eas_ext.evaluation_start_date < eas_ext.review_end_date:
+							frappe.throw(_("Evaluation start date can not be greater than review end date"))
+							
+						if eas_ext.evaluation_start_date > eas_ext.evaluation_end_date:
+							frappe.throw(_("Evaluation start date can not be greater than evaluation end date"))
 
-					if eas_ext.appeal_start_date < eas_ext.evaluation_end_date:
-						frappe.throw(_("Evaluation start date can not be greater than review end date"))
-						
-					if eas_ext.appeal_start_date > eas_ext.appeal_end_date:
-						frappe.throw(_("Evaluation start date can not be greater than evaluation end date")) 
+						if eas_ext.appeal_start_date < eas_ext.evaluation_end_date:
+							frappe.throw(_("Evaluation start date can not be greater than review end date"))
+							
+						if eas_ext.appeal_start_date > eas_ext.appeal_end_date:
+							frappe.throw(_("Evaluation start date can not be greater than evaluation end date")) 
 
+					elif eas_cal.eas_group=="Group II":
+						if getdate(eas_cal.target_start_date) > getdate(eas_ext.target_start_date):
+							frappe.throw(f"{eas_cal.eas_group} The Extension setup  target  date should be grater then calendar set up target")
+									
+															
+						if eas_ext.target_start_date > eas_ext.target_end_date:
+							frappe.throw(_("Target start date can not be greater than target end date"))
+							
+							
+						if eas_ext.review_start_date > eas_ext.review_end_date:
+							frappe.throw(_("Review start date can not be greater than review end date"))
+							
+							
+						if eas_ext.evaluation_start_date > eas_ext.evaluation_end_date:
+							frappe.throw(_("Evaluation start date can not be greater than evaluation end date"))
+
+							
+						if eas_ext.appeal_start_date > eas_ext.appeal_end_date:
+							frappe.throw(_("Evaluation start date can not be greater than evaluation end date"))
 					break

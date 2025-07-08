@@ -14,7 +14,7 @@ class EASCalendar(Document):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
-		from erpnext.pms.doctype.eas__group_details.eas__group_details import EASGroupDetails
+		from erpnext.pms.doctype.eas_group_details.eas_group_details import EASGroupDetails
 		from frappe.types import DF
 
 		amended_from: DF.Link | None
@@ -58,23 +58,37 @@ class EASCalendar(Document):
 					frappe.throw(_("Evaluation start date can not be greater than evaluation end date")) 
 
 
-		pass
+		
 
 
 @frappe.whitelist()
 def create_eas_extension(source_name, target_doc=None):
-	#frappe.throw(source_name)
-	doclist = get_mapped_doc("EAS Calendar", source_name, {
-		"EAS Calendar": {
-			"doctype": "EAS Extension",
-			"field_map": {
-                "eas_calendar": "name"
+    def process_child(source_child, target_child, source_parent):
+        """Correct child processor with 3 parameters"""
+          # Debug confirmation
+        target_child.update({
+            'eas_group': source_child.eas_group,
+            'target_start_date': source_child.target_start_date,
+            'target_end_date': source_child.target_end_date,
+            'review_start_date': source_child.review_start_date,
+            'review_end_date': source_child.review_end_date,
+            'evaluation_start_date': source_child.evaluation_start_date,
+            'evaluation_end_date': source_child.evaluation_end_date
+        })
+    
+    doclist = get_mapped_doc(
+        "EAS Calendar", 
+        source_name, 
+        {
+            "EAS Calendar": {
+                "doctype": "EAS Extension",
+                "field_map": {"eas_calendar": "name"}
             },
-		 "EAS  Group Details":{
-			 "doctype":"EAS Extension Details"
-
-		 }
-		},
-	}, target_doc)
-
-	return doclist
+            "EAS Group Details": {  # Note: Removed extra space to match exact fieldname
+                "doctype": "EAS Extension Details",
+                "postprocess": process_child  # Now accepts 3 args
+            }
+        }, 
+        target_doc
+    )
+    return doclist
