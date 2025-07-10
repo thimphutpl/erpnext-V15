@@ -144,7 +144,7 @@ var create_custom_buttons = function(frm){
 		if(!frm.doc.bank_payment || status.includes(frm.doc.payment_status) ){
 			frm.page.set_primary_action(__('Process Payment'), () => {
 				frappe.model.open_mapped_doc({
-					method: "erpnext.maintenance.doctype.hsd_payment.hsd_payment.make_bank_payment",
+					method: "erpnext.fleet_management.doctype.hsd_payment.hsd_payment.make_bank_payment",
 					frm: cur_frm
 				})
 			});

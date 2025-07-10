@@ -112,6 +112,18 @@ class HSDPayment(Document):
 	def on_cancel(self):
 		if self.clearance_date:
                         frappe.throw("Already done bank reconciliation.")
+		self.ignore_linked_doctypes = (
+			"GL Entry",
+			"Payment Ledger Entry",
+			"Stock Ledger Entry",
+			"Repost Item Valuation",
+			"Serial and Batch Bundle",
+		)
+		# docstatus = frappe.db.get_value("Journal Entry", self.jv, "docstatus")
+		# if docstatus and docstatus != 2:
+		# 	frappe.throw("Cancel the Journal Entry " + str(self.jv) + " and proceed.")
+
+		# self.db_set("jv", None)				
 
 		self.adjust_outstanding(cancel=True)
 		self.update_general_ledger()

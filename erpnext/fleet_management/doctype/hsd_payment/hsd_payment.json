@@ -179,6 +179,8 @@
    "allow_on_submit": 1,
    "fieldname": "payment_status",
    "fieldtype": "Data",
+   "hidden": 1,
+   "in_list_view": 1,
    "label": "Payment status",
    "read_only": 1
   },
@@ -244,7 +246,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-15 12:13:41.909149",
+ "modified": "2025-07-10 14:31:32.548660",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "HSD Payment",
