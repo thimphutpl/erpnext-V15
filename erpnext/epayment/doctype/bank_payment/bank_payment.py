@@ -347,6 +347,11 @@ class BankPayment(Document):
 				doc.payment_status = status
 				doc.bank_payment = self.name
 				doc.save(ignore_permissions=True)
+			elif self.transaction_type == "HSD Payment":
+				doc = frappe.get_doc("HSD Payment", i.transaction_id)
+				doc.payment_status = status
+				doc.bank_payment = self.name
+				doc.save(ignore_permissions=True)	
 
 	def set_defaults(self):
 		self.posting_date = now()
