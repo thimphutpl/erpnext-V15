@@ -64,11 +64,11 @@ class HSDPayment(Document):
 			self.approver=frappe.session.user
 
 	def set_status(self):
-                self.status = {
-                        "0": "Draft",
-                        "1": "Submitted",
-                        "2": "Cancelled"
-                }[str(self.docstatus or 0)]
+				self.status = {
+						"0": "Draft",
+						"1": "Submitted",
+						"2": "Cancelled"
+				}[str(self.docstatus or 0)]
 
 	def validate_allocated_amount(self):
 		# Code added by phuntsho on nov 3 2020
@@ -118,12 +118,33 @@ class HSDPayment(Document):
 		self.update_general_ledger()
 		self.approver=self.verifier=frappe.session.user
 
+	# amended
+	def cancel(self):
+		self.ignore_linked_doctypes = ("Payment Ledger Entry",)
+		super(HSDPayment, self).cancel()
+
 	def on_cancel(self):
 		if self.clearance_date:
-                        frappe.throw("Already done bank reconciliation.")
+			frappe.throw("Already done bank reconciliation.")
+
+		payment_ledger_entries = frappe.get_all(
+			"Payment Ledger Entry",
+			filters={"voucher_type": "HSD Payment", "voucher_no": self.name},
+			pluck="name"
+		)
+
+		for ple_name in payment_ledger_entries:
+			ple_doc = frappe.get_doc("Payment Ledger Entry", ple_name)
+			
+			if ple_doc.docstatus == 1:
+				ple_doc.cancel()
+			
+			frappe.delete_doc("Payment Ledger Entry", ple_name, force=1)
 
 		self.adjust_outstanding(cancel=True)
 		self.update_general_ledger()
+	# end
+
 	
 	def adjust_outstanding(self, cancel=False):
 		for a in self.items:
@@ -156,17 +177,17 @@ class HSDPayment(Document):
 					 "credit_in_account_currency": flt(self.amount),
 					 "cost_center": self.cost_center,
 					"party_type": "Supplier",
-                                         "party": self.supplier,
+										 "party": self.supplier,
 					})
 			)
 		else:
 			gl_entries.append(
-                                prepare_gl(self, {"account": self.bank_account,
-                                         "credit": flt(self.amount),
-                                         "credit_in_account_currency": flt(self.amount),
-                                         "cost_center": self.cost_center,
-                                        })
-                        )
+								prepare_gl(self, {"account": self.bank_account,
+										 "credit": flt(self.amount),
+										 "credit_in_account_currency": flt(self.amount),
+										 "cost_center": self.cost_center,
+										})
+						)
 
 		gl_entries.append(
 			prepare_gl(self, {"account": creditor_account,
@@ -253,23 +274,23 @@ class HSDPayment(Document):
 	# ePayment Begins
 @frappe.whitelist()
 def make_bank_payment(source_name, target_doc=None):
-    def set_missing_values(obj, target, source_parent):
-        target.payment_type = None
-        target.transaction_type = "HSD Payment"
-        target.posting_date = get_datetime()
-        target.from_date = None
-        target.payment_type ="One-One Payment"
-        target.to_date = None
+	def set_missing_values(obj, target, source_parent):
+		target.payment_type = None
+		target.transaction_type = "HSD Payment"
+		target.posting_date = get_datetime()
+		target.from_date = None
+		target.payment_type ="One-One Payment"
+		target.to_date = None
 
-    doc = get_mapped_doc("HSD Payment", source_name, {
-            "HSD Payment": {
-                "doctype": "Bank Payment",
-                "field_map": {
-                    "name": "transaction_no",
-                    "bank_account": "paid_from"
-                },
-                "postprocess": set_missing_values,
-            },
-    }, target_doc, ignore_permissions=True)
-    return doc
+	doc = get_mapped_doc("HSD Payment", source_name, {
+			"HSD Payment": {
+				"doctype": "Bank Payment",
+				"field_map": {
+					"name": "transaction_no",
+					"bank_account": "paid_from"
+				},
+				"postprocess": set_missing_values,
+			},
+	}, target_doc, ignore_permissions=True)
+	return doc
 # ePayment Ends
