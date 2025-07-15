@@ -173,7 +173,7 @@ class TDSReceiptUpdate(Document):
 						""".format(self.from_date, self.to_date, self.branch)
 				query += """
 					UNION SELECT 
-						"Employee Benefit Claim" as invoice_type, 
+						"Employee Benefits" as invoice_type, 
 						t.name as invoice_no, 
 						t.posting_date, 
 						t1.amount as bill_amount,
@@ -182,7 +182,7 @@ class TDSReceiptUpdate(Document):
 						t.employee as party, 
 						'Employee' as party_type,
 						t.employee_name as party_name
-					FROM `tabEmployee Benefit Claim` AS t, `tabSeparation Item` t1 
+					FROM `tabEmployee Benefits` AS t, `tabSeparation Item` t1 
 						WHERE t.docstatus = 1 
 						AND t1.parent = t.name
 						AND t.posting_date BETWEEN '{0}' 
