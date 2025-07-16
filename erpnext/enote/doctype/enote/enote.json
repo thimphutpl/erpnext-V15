@@ -131,17 +131,16 @@
    "read_only": 1
   },
   {
-   "description": "** This eNote type refers to department or division or section or unit if it has different series format. EG. If ITD has BOBL/ITD/01/Year/### and HRD has BOBL/HRD/01/Year/###, then in eNote type, it must include HRD and ITD ***.",
+   "description": "** This eNote type refers to department or division or section or unit if it has different series format. EG. If ITD has BTF/ITD/01/Year/### and HRD has BTF/HRD/01/Year/###, then in eNote type, it must include HRD and ITD ***.",
    "fieldname": "enote_type",
    "fieldtype": "Link",
-   "hidden": 1,
    "label": "eNote Type",
    "options": "eNote Type"
   },
   {
    "description": "*** It must be ended with /. Based on this series, it will generate your dispatch number after the eNote is approved.***",
    "fieldname": "enote_series",
-   "fieldtype": "Data",
+   "fieldtype": "Link",
    "label": "Dispatch/Reference Series",
    "options": "eNote Series",
    "reqd": 1
@@ -178,7 +177,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-05-20 16:14:54.689587",
+ "modified": "2025-07-07 12:54:38.818122",
  "modified_by": "Administrator",
  "module": "eNote",
  "name": "eNote",

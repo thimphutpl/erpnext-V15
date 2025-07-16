@@ -11,7 +11,6 @@ erpnext.assets.AssetCapitalization = class AssetCapitalization extends erpnext.s
 
 	onload() {
 		this.setup_queries();
-		erpnext.accounts.dimensions.setup_dimension_filters(this.frm, this.frm.doctype);
 	}
 
 	refresh() {

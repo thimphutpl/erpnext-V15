@@ -14,7 +14,7 @@ class BankBranch(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
-		bank: DF.Link
+		bank_name: DF.Link
 		branch_name: DF.Data
 		financial_system_code: DF.Data
 	# end: auto-generated types

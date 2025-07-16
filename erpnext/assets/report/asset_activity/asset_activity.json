@@ -6,11 +6,11 @@
  "docstatus": 0,
  "doctype": "Report",
  "filters": [],
- "idx": 0,
+ "idx": 9,
  "is_standard": "Yes",
  "json": "{}",
  "letterhead": null,
- "modified": "2023-08-01 11:14:46.581234",
+ "modified": "2025-05-08 17:10:21.746214",
  "modified_by": "Administrator",
  "module": "Assets",
  "name": "Asset Activity",
@@ -28,6 +28,10 @@
   },
   {
    "role": "Quality Manager"
+  },
+  {
+   "role": "Asset User"
   }
- ]
+ ],
+ "timeout": 0
 }

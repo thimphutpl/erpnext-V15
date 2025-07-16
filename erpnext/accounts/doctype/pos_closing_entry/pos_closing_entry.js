@@ -120,7 +120,7 @@ frappe.ui.form.on("POS Closing Entry", {
 		});
 	},
 
-	before_save: async function (frm) {
+	before_submit: async function (frm) {
 		frappe.dom.freeze(__("Processing Sales! Please Wait..."));
 
 		frm.set_value("grand_total", 0);

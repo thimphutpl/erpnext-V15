@@ -307,6 +307,15 @@ class POSInvoiceMergeLog(Document):
 
 	def get_new_sales_invoice(self):
 		sales_invoice = frappe.new_doc("Sales Invoice")
+		pos_closing_entry = frappe.get_value("POS Closing Entry",self.pos_closing_entry,'user')
+		if pos_closing_entry:
+			branch = frappe.get_value("Employee",{"user_id":pos_closing_entry},'branch')
+			if branch:
+				sales_invoice.branch = branch
+			else:
+				frappe.throw("Please set the branch for the cashier in employee")
+		else:
+			frappe.throw("Please set the cashier")
 		sales_invoice.customer = self.customer
 		sales_invoice.is_pos = 1
 		sales_invoice.posting_date = None

@@ -4,12 +4,13 @@
 
 import json
 from functools import reduce
+from frappe.model.mapper import get_mapped_doc
 
 import frappe
 from frappe import ValidationError, _, qb, scrub, throw
 from frappe.query_builder import Tuple
 from frappe.query_builder.functions import Count
-from frappe.utils import cint, comma_or, flt, getdate, nowdate
+from frappe.utils import cint, comma_or, flt, getdate, nowdate, get_datetime
 from frappe.utils.data import comma_and, fmt_money, get_link_to_form
 from pypika import Case
 from pypika.functions import Coalesce, Sum
@@ -203,7 +204,7 @@ class PaymentEntry(AccountsController):
 		self.update_outstanding_amounts()
 		self.update_payment_schedule()
 		self.update_payment_requests()
-		self.make_advance_payment_ledger_entries()
+		# self.make_advance_payment_ledger_entries()
 		self.update_advance_paid()  # advance_paid_status depends on the payment request amount
 		self.set_status()
 
@@ -309,7 +310,7 @@ class PaymentEntry(AccountsController):
 		self.delink_advance_entry_references()
 		self.update_payment_schedule(cancel=1)
 		self.update_payment_requests(cancel=True)
-		self.make_advance_payment_ledger_entries()
+		# self.make_advance_payment_ledger_entries()
 		self.update_advance_paid()  # advance_paid_status depends on the payment request amount
 		self.set_status()
 
@@ -3615,3 +3616,32 @@ def make_payment_order(source_name, target_doc=None):
 @erpnext.allow_regional
 def add_regional_gl_entries(gl_entries, doc):
 	return
+
+# ePayment Begins
+@frappe.whitelist()
+def make_bank_payment(source_name, target_doc=None):
+	def set_missing_values(obj, target, source_parent):
+		target.payment_type = None
+		target.transaction_type = "Payment Entry"
+		target.posting_date = get_datetime()
+		target.from_date = None
+		target.to_date = None
+		target.get_entries()
+
+	doc = get_mapped_doc(
+		"Payment Entry",
+		source_name,
+		{
+			"Payment Entry": {
+				"doctype": "Bank Payment",
+				"field_map": {"name": "transaction_no", "paid_from": "paid_from"},
+				"postprocess": set_missing_values,
+			},
+		},
+		target_doc,
+		ignore_permissions=True,
+	)
+	return doc
+
+
+# ePayment Ends

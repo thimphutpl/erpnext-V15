@@ -51,7 +51,7 @@ def get_columns():
 		 "fieldname": "employee_name",
 		 "label": "Employee Name",
 		 "fieldtype": "Data",
-		 "width": 100
+		 "width": 150
 		},
 		{
 		  "fieldname": "name",
@@ -64,7 +64,7 @@ def get_columns():
 		  "fieldname": "asset_name",
 		  "label": "Asset Name",
 		  "fieldtype": "Data",
-		  "width": 100
+		  "width": 150
 		},
 		{
 		  "fieldname": "purchase_date",
@@ -76,7 +76,7 @@ def get_columns():
 		  "fieldname": "gross_amount",
 		  "label": "Price",
 		  "fieldtype": "Currency",
-		  "width": 100
+		  "width": 150
 		},
 		#{
 		#  "fieldname": "status",
@@ -85,4 +85,3 @@ def get_columns():
 		#  "width": 150
 		#}
 	]
-

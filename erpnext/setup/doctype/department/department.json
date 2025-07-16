@@ -132,7 +132,7 @@
    "default": "0",
    "fieldname": "is_department",
    "fieldtype": "Check",
-   "label": "Is Department"
+   "label": "Is Services"
   },
   {
    "default": "0",
@@ -157,7 +157,7 @@
  "idx": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2025-05-24 13:50:41.182635",
+ "modified": "2025-07-09 10:00:49.552452",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Department",

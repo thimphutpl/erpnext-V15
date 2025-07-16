@@ -98,6 +98,10 @@
   "bank_account_no",
   "payment_order",
   "in_words",
+  "payments_section",
+  "bank_payment",
+  "column_break_deqj",
+  "payment_status",
   "subscription_section",
   "auto_repeat",
   "amended_from",
@@ -806,6 +810,30 @@
    "label": "Branch",
    "options": "Branch",
    "reqd": 1
+  },
+  {
+   "fieldname": "payments_section",
+   "fieldtype": "Section Break",
+   "label": "Payments"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "bank_payment",
+   "fieldtype": "Link",
+   "label": "Bank Payment",
+   "options": "Bank Payment",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_deqj",
+   "fieldtype": "Column Break"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "payment_status",
+   "fieldtype": "Data",
+   "label": "Payment Status",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
@@ -819,7 +847,7 @@
    "table_fieldname": "payment_entries"
   }
  ],
- "modified": "2025-03-10 11:24:55.662806",
+ "modified": "2025-04-18 12:40:35.191168",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Payment Entry",

@@ -13,7 +13,6 @@
   "title",
   "voucher_type",
   "naming_series",
-  "business_activity",
   "finance_book",
   "process_deferred_accounting",
   "reversal_of",
@@ -50,6 +49,11 @@
   "bill_no",
   "bill_date",
   "due_date",
+  "payment_section",
+  "bank_payment",
+  "utility_bill",
+  "column_break_ljdi",
+  "payment_status",
   "write_off",
   "write_off_based_on",
   "get_outstanding_invoices",
@@ -520,7 +524,6 @@
    "default": "0",
    "fieldname": "apply_tds",
    "fieldtype": "Check",
-   "hidden": 1,
    "label": "Apply Tax Withholding Amount "
   },
   {
@@ -563,15 +566,39 @@
    "label": "TDS Table"
   },
   {
-   "fieldname": "business_activity",
+   "fieldname": "payment_section",
+   "fieldtype": "Section Break",
+   "label": "Payment"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "bank_payment",
    "fieldtype": "Link",
-   "label": "Business Activity",
+   "label": "Bank Payment",
    "no_copy": 1,
-   "oldfieldname": "naming_series",
-   "oldfieldtype": "Select",
-   "options": "Business Activity",
-   "print_hide": 1,
-   "set_only_once": 1
+   "options": "Bank Payment",
+   "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "utility_bill",
+   "fieldtype": "Link",
+   "label": "Utility Bill",
+   "no_copy": 1,
+   "options": "Utility Bill",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_ljdi",
+   "fieldtype": "Column Break"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "payment_status",
+   "fieldtype": "Data",
+   "label": "Payment Status",
+   "no_copy": 1,
+   "read_only": 1
   }
  ],
  "icon": "fa fa-file-text",
@@ -586,7 +613,7 @@
    "table_fieldname": "payment_entries"
   }
  ],
- "modified": "2025-06-17 17:00:30.174548",
+ "modified": "2025-07-10 13:11:55.903756",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Journal Entry",
@@ -629,6 +656,20 @@
    "read": 1,
    "report": 1,
    "role": "Auditor"
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Administrator",
+   "select": 1,
+   "share": 1,
+   "submit": 1,
+   "write": 1
   }
  ],
  "search_fields": "voucher_type,posting_date, due_date, cheque_no",

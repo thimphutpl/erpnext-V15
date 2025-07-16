@@ -10,6 +10,7 @@
  "field_order": [
   "asset_category_name",
   "column_break_3",
+  "abbr",
   "depreciation_options",
   "enable_cwip_accounting",
   "finance_book_detail",
@@ -36,6 +37,7 @@
    "label": "Finance Book Detail"
   },
   {
+   "allow_bulk_edit": 1,
    "fieldname": "finance_books",
    "fieldtype": "Table",
    "label": "Finance Books",
@@ -63,13 +65,19 @@
    "fieldname": "enable_cwip_accounting",
    "fieldtype": "Check",
    "label": "Enable Capital Work in Progress Accounting"
+  },
+  {
+   "fieldname": "abbr",
+   "fieldtype": "Data",
+   "label": "Abbrevation"
   }
  ],
  "links": [],
- "modified": "2021-02-24 15:05:38.621803",
+ "modified": "2025-06-30 16:41:14.249169",
  "modified_by": "Administrator",
  "module": "Assets",
  "name": "Asset Category",
+ "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [
   {
@@ -114,5 +122,6 @@
  "show_name_in_global_search": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
+ "states": [],
  "track_changes": 1
 }

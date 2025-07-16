@@ -28,4 +28,3 @@ frappe.query_reports["Employee Asset Report"] = {
 		},
 	]
 };
-

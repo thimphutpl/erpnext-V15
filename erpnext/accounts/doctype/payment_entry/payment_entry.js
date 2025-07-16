@@ -42,6 +42,8 @@ frappe.ui.form.on("Payment Entry", {
 		if (frm.is_new()) {
 			set_default_party_type(frm);
 		}
+
+		create_custom_buttons(frm);
 	},
 
 	setup: function (frm) {
@@ -256,6 +258,8 @@ frappe.ui.form.on("Payment Entry", {
 		}
 		erpnext.accounts.unreconcile_payment.add_unreconcile_btn(frm);
 		frappe.flags.allocate_payment_amount = true;
+
+		create_custom_buttons(frm);
 	},
 
 	validate_company: (frm) => {
@@ -1887,3 +1891,20 @@ function prompt_for_missing_account(frm, account) {
 function get_deduction_amount_precision() {
 	return frappe.meta.get_field_precision(frappe.meta.get_field("Payment Entry Deduction", "amount"));
 }
+
+/* ePayment Begins */
+var create_custom_buttons = function(frm){
+	var status = ["Failed", "Upload Failed", "Cancelled", "Payment Failed", "Payment Cancelled"];
+
+	if(frm.doc.docstatus == 1 && frm.doc.payment_type == "Pay" && frm.doc.party_type == 'Supplier' && frm.doc.mode_of_payment == "ePayment"){
+		if(!frm.doc.bank_payment || status.includes(frm.doc.payment_status) ){
+			frm.page.set_primary_action(__('Process Payment'), () => {
+				frappe.model.open_mapped_doc({
+					method: "erpnext.accounts.doctype.payment_entry.payment_entry.make_bank_payment",
+					frm: cur_frm
+				})
+			});
+		}
+	}
+}
+/* ePayment Ends */

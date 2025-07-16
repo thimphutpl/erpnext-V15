@@ -17,6 +17,7 @@ class AssetCategoryAccount(Document):
 		accumulated_depreciation_account: DF.Link | None
 		capital_work_in_progress_account: DF.Link | None
 		company_name: DF.Link
+		credit_account: DF.Link | None
 		depreciation_expense_account: DF.Link | None
 		fixed_asset_account: DF.Link
 		parent: DF.Data

@@ -6,8 +6,9 @@ import json
 
 import frappe
 from frappe.model.naming import make_autoname
+from frappe.model.mapper import get_mapped_doc
 from frappe import _, msgprint, scrub
-from frappe.utils import comma_and, cstr, flt, fmt_money, formatdate, get_link_to_form, nowdate, now_datetime
+from frappe.utils import comma_and, cstr, flt, fmt_money, formatdate, get_link_to_form, nowdate, now_datetime, get_datetime
 
 import erpnext
 from erpnext.accounts.deferred_revenue import get_deferred_booking_accounts
@@ -53,10 +54,10 @@ class JournalEntry(AccountsController):
 		amended_from: DF.Link | None
 		apply_tds: DF.Check
 		auto_repeat: DF.Link | None
+		bank_payment: DF.Link | None
 		bill_date: DF.Date | None
 		bill_no: DF.Data | None
 		branch: DF.Link | None
-		business_activity: DF.Link | None
 		cheque_date: DF.Date | None
 		cheque_no: DF.Data | None
 		clearance_date: DF.Date | None
@@ -75,6 +76,7 @@ class JournalEntry(AccountsController):
 		paid_loan: DF.Data | None
 		pay_to_recd_from: DF.Data | None
 		payment_order: DF.Link | None
+		payment_status: DF.Data | None
 		posting_date: DF.Date
 		process_deferred_accounting: DF.Link | None
 		remark: DF.SmallText | None
@@ -89,6 +91,7 @@ class JournalEntry(AccountsController):
 		total_credit: DF.Currency
 		total_debit: DF.Currency
 		user_remark: DF.SmallText | None
+		utility_bill: DF.Link | None
 		voucher_type: DF.Literal["Journal Entry", "Inter Company Journal Entry", "Bank Entry", "Cash Entry", "Credit Card Entry", "Debit Note", "Credit Note", "Contra Entry", "Excise Entry", "Write Off Entry", "Opening Entry", "Depreciation Entry", "Exchange Rate Revaluation", "Exchange Gain Or Loss", "Deferred Revenue", "Deferred Expense"]
 		write_off_amount: DF.Currency
 		write_off_based_on: DF.Literal["Accounts Receivable", "Accounts Payable"]
@@ -161,11 +164,13 @@ class JournalEntry(AccountsController):
 		validate_docs_for_deferred_accounting([self.name], [])
 
 	def submit(self):
-		if len(self.accounts) > 100:
-			msgprint(_("The task has been enqueued as a background job."), alert=True)
-			self.queue_action("submit", timeout=4600)
-		else:
-			return self._submit()
+		#pass
+		 #frappe.throw("hi")
+		 if len(self.accounts) > 100:
+		 	msgprint(_("The task has been enqueued as a background job."), alert=True)
+		 	self.queue_action("submit", timeout=4600)
+		 else:
+		 	return self._submit()
 
 	def cancel(self):
 		if len(self.accounts) > 100:
@@ -183,7 +188,7 @@ class JournalEntry(AccountsController):
 		# self.validate_cheque_info()
 		self.check_credit_limit()
 		self.make_gl_entries()
-		self.make_advance_payment_ledger_entries()
+		#self.make_advance_payment_ledger_entries()
 		self.update_advance_paid()
 		self.update_asset_value()
 		self.update_inter_company_jv()
@@ -219,7 +224,7 @@ class JournalEntry(AccountsController):
 			"Advance Payment Ledger Entry",
 		)
 		self.make_gl_entries(1)
-		self.make_advance_payment_ledger_entries()
+		#self.make_advance_payment_ledger_entries()
 		self.update_advance_paid()
 		self.unlink_advance_entry_reference()
 		self.unlink_asset_reference()
@@ -269,6 +274,10 @@ class JournalEntry(AccountsController):
 				elif d.reference_type == "POL Advance" and d.reference_name:
 					doc = frappe.get_doc("POL Advance", d.reference_name)
 					doc.db_set('status', "Cancelled")
+					doc.db_set('journal_entry_status', "Cancelled on {0}".format(now_datetime().strftime("%Y-%m-%d %H:%M:%S")))
+
+				elif d.reference_type == "Cash Deposit Entry" and d.reference_name:
+					doc = frappe.get_doc("Cash Deposit Entry", d.reference_name)
 					doc.db_set('journal_entry_status', "Cancelled on {0}".format(now_datetime().strftime("%Y-%m-%d %H:%M:%S")))
 				
 				# removing references
@@ -1749,3 +1758,33 @@ def get_tds_account(tax_withholding_category):
 		from `tabTax Withholding Category` t
 		where t.name = "{}" """.format(tax_withholding_category), as_dict=True)
 	return account[0] if account else None
+
+
+# ePayment Begins
+@frappe.whitelist()
+def make_bank_payment(source_name, target_doc=None):
+	def set_missing_values(obj, target, source_parent):
+		target.transaction_type = "Journal Entry"
+		target.posting_date = get_datetime()
+		target.from_date = None
+		target.to_date = None
+		target.paid_from = frappe.db.get_value("Branch", target.branch, "expense_bank_account")
+		target.get_entries()
+
+	doc = get_mapped_doc(
+		"Journal Entry",
+		source_name,
+		{
+			"Journal Entry": {
+				"doctype": "Bank Payment",
+				"field_map": {
+					"name": "transaction_no",
+				},
+				"postprocess": set_missing_values,
+			},
+		},
+		target_doc,
+		ignore_permissions=True,
+	)
+	return doc
+# ePayment Ends

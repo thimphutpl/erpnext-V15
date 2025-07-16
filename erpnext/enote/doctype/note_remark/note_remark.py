@@ -14,8 +14,18 @@ class NoteRemark(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		action: DF.Literal["", "Apply", "Forward", "Approve", "Reject", "Review"]
+		content: DF.TextEditor | None
+		designation: DF.Data | None
+		employee: DF.Link | None
+		employee_name: DF.Data | None
+		forward_to: DF.Link | None
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
+		print_hide: DF.Check
+		remark: DF.TextEditor | None
+		remark_date: DF.Date | None
+		user: DF.Link
 	# end: auto-generated types
 	pass

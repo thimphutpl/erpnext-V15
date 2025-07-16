@@ -24,7 +24,7 @@ class eNote(Document):
 		content: DF.TextEditor | None
 		copied: DF.TableMultiSelect[NoteCopy]
 		enote_format: DF.Data | None
-		enote_series: DF.Data
+		enote_series: DF.Link
 		enote_type: DF.Link | None
 		forward_to: DF.Link | None
 		note_date: DF.Date | None
@@ -44,6 +44,7 @@ class eNote(Document):
 		# notify_workflow_states(self)
   
 	def validate(self):	
+
 		action = frappe.request.form.get('action')
 		if action and action not in ("Save","Apply") and self.reviewer_required:
 			status = 1

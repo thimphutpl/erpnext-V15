@@ -117,9 +117,7 @@ class AssetRepair(AccountsController):
 					get_link_to_form(self.doctype, self.name),
 				)
 				self.asset_doc.flags.ignore_validate_update_after_submit = True
-				make_new_active_asset_depr_schedules_and_cancel_current_ones(
-					self.asset_doc, notes, ignore_booked_entry=True
-				)
+				make_new_active_asset_depr_schedules_and_cancel_current_ones(self.asset_doc, notes)
 				self.asset_doc.save()
 
 				add_asset_activity(
@@ -156,9 +154,7 @@ class AssetRepair(AccountsController):
 					get_link_to_form(self.doctype, self.name),
 				)
 				self.asset_doc.flags.ignore_validate_update_after_submit = True
-				make_new_active_asset_depr_schedules_and_cancel_current_ones(
-					self.asset_doc, notes, ignore_booked_entry=True
-				)
+				make_new_active_asset_depr_schedules_and_cancel_current_ones(self.asset_doc, notes)
 				self.asset_doc.save()
 
 				add_asset_activity(

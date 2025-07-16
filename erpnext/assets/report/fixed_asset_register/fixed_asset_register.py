@@ -39,9 +39,6 @@ def get_conditions(filters):
 	if filters.get("company"):
 		conditions["company"] = filters.company
 
-	if filters.get("custodian"):
-		conditions["custodian"] = filters.custodian	
-
 	if filters.filter_based_on == "Date Range":
 		if not filters.from_date and not filters.to_date:
 			filters.from_date = add_months(nowdate(), -12)
@@ -69,12 +66,12 @@ def get_conditions(filters):
 		conditions["cost_center"] = filters.get("cost_center")
 
 	if status:
-		# In Store assets are those that are not sold or scrapped or capitalized
+		# In Store assets are those that are not sold or scrapped or capitalized or decapitalized
 		operand = "not in"
 		if status not in "In Location":
 			operand = "in"
 
-		conditions["status"] = (operand, ["Sold", "Scrapped", "Capitalized"])
+		conditions["status"] = (operand, ["Sold", "Scrapped", "Capitalized", "Decapitalized"])
 
 	return conditions
 
@@ -121,7 +118,6 @@ def get_data(filters):
 		"available_for_use_date",
 		"purchase_invoice",
 		"opening_accumulated_depreciation",
-		"custodian"
 	]
 	assets_record = frappe.db.get_all("Asset", filters=conditions, fields=fields)
 
@@ -151,7 +147,6 @@ def get_data(filters):
 			"purchase_date": asset.purchase_date,
 			"asset_value": asset_value,
 			"company": asset.company,
-			"custodian": asset.custodian,
 		}
 		data.append(row)
 
@@ -207,7 +202,7 @@ def prepare_chart_data(data, filters):
 					"values": [flt(d.get("asset_value"), 2) for d in labels_values_map.values()],
 				},
 				{
-					"name": _("Depreciated Amount"),
+					"name": _("Depreciatied Amount"),
 					"values": [flt(d.get("depreciated_amount"), 2) for d in labels_values_map.values()],
 				},
 			],
@@ -277,9 +272,9 @@ def get_asset_depreciation_amount_map(filters, finance_book):
 		query = query.where(asset.cost_center == filters.cost_center)
 	if filters.status:
 		if filters.status == "In Location":
-			query = query.where(asset.status.notin(["Sold", "Scrapped", "Capitalized"]))
+			query = query.where(asset.status.notin(["Sold", "Scrapped", "Capitalized", "Decapitalized"]))
 		else:
-			query = query.where(asset.status.isin(["Sold", "Scrapped", "Capitalized"]))
+			query = query.where(asset.status.isin(["Sold", "Scrapped", "Capitalized", "Decapitalized"]))
 	if finance_book:
 		query = query.where((gle.finance_book.isin([cstr(finance_book), ""])) | (gle.finance_book.isnull()))
 	else:
@@ -409,13 +404,6 @@ def get_columns(filters):
 				"options": "Company",
 				"width": 120,
 			},
-			{
-				"label": _("Employee"),
-				"fieldname": "custodian",
-				"fieldtype": "Link",
-				"options": "Employee",
-				"width": 120,
-			},
 		]
 
 	return [
@@ -499,11 +487,4 @@ def get_columns(filters):
 			"options": "Company",
 			"width": 120,
 		},
-		{
-				"label": _("Employee"),
-				"fieldname": "custodian",
-				"fieldtype": "Link",
-				"options": "Employee",
-				"width": 120,
-			},
 	]

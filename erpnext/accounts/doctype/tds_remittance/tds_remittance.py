@@ -31,11 +31,10 @@ class TDSRemittance(AccountsController):
 	@frappe.whitelist()
 	def get_details(self):
 		total_tds_amount = total_bill_amount = 0
-
+		
 		if self.purpose != 'Other Invoice':
 			return total_tds_amount, total_bill_amount
 		cond = self.get_condition()
-
 		entries = get_tds_invoices(self.tax_withholding_category, self.from_date, self.to_date, \
 			self.name, filter_existing=True, cond= cond)
 		if not entries:
@@ -125,6 +124,7 @@ def get_tds_invoices(tax_withholding_category, from_date, to_date, name, filter_
 		accounts_cond = 'and t1.account_head in %(accounts)s'
 		params = {"accounts": tuple(accounts), "from_date": from_date, "to_date": to_date, "name": name}
 	
+	
 	if filter_existing:
 		existing_cond = _get_existing_cond()
 	
@@ -155,7 +155,7 @@ def get_tds_invoices(tax_withholding_category, from_date, to_date, name, filter_
 	if party_type:
 		party_cond = "and t.party_type = %(party_type)s"
 		params.update({"party_type": party_type})
-
+	
 	pe_entries = frappe.db.sql("""
 		select t.posting_date, t.name as invoice_no, 'Payment Entry' as invoice_type,
 			t.party_type, t.party, 
@@ -183,6 +183,65 @@ def get_tds_invoices(tax_withholding_category, from_date, to_date, name, filter_
 		""".format(accounts_cond=accounts_cond, cond=cond, existing_cond=existing_cond, party_cond=party_cond),
 		params, as_dict=True)
 
+	
+	# Journal Entry
+	if len(accounts) == 1:
+		accounts_cond = """and (t1.account = "{0}" or 
+			(t1.tax_account = "{0}" and ifnull(t1.apply_tds, 0) = 1))""".format(accounts[0])
+	else:
+		accounts_cond = """and (t1.account in ({0}) or 
+			(t1.tax_account in ({0}) and ifnull(t1.apply_tds, 0) = 1))""".format(
+			'"' + '","'.join(accounts) + '"'
+		)
+	
+	if party_type:
+		party_cond = "and t1.party_type = '{}'".format(party_type)
+	else:
+		party_cond = ""
+
+	# Execute the query
+	params['name'] =name
+	# frappe.throw(str(name))
+	je_entries = frappe.db.sql(f"""
+		select t.posting_date, t.name as invoice_no, 'Journal Entry' as invoice_type,
+			t1.party_type, t1.party, 
+			(case when t1.party_type = 'Customer' then c.tax_id 
+				when t1.party_type = 'Supplier' then s.tpn_no else null end) as tpn, 
+			t1.cost_center,
+			(case when t1.tax_amount > 0 and t1.debit > 0 and ifnull(t1.apply_tds, 0) = 1 
+				then t1.taxable_amount else 0 end) as bill_amount, 
+			(case when t1.tax_amount > 0 and t1.debit > 0 and ifnull(t1.apply_tds, 0) = 1 
+				then t1.tax_amount
+				when t1.tax_amount = 0 and t1.credit > 0 then t1.credit
+				else 0 end) as tds_amount,
+			(case when t1.tax_amount > 0 and t1.debit > 0 and ifnull(t1.apply_tds, 0) = 1 
+				then t1.tax_account else t1.account end) as tax_account, 
+			tre.tds_remittance, tre.tds_receipt_update, t.bill_no, t.bill_date,
+			(case when tre.tds_receipt_update is not null then 'Paid' else 'Unpaid' end) as remittance_status
+		from `tabJournal Entry` t
+			inner join `tabJournal Entry Account` t1 on t.name = t1.parent
+			left join `tabCustomer` c on t1.party_type = 'Customer' and c.name = t1.party
+			left join `tabSupplier` s on t1.party_type = 'Supplier' and s.name = t1.party
+			left join `tabTDS Receipt Entry` tre on tre.invoice_no = t.name 
+		where t.posting_date between '{from_date}' and '{to_date}'
+			{accounts_cond}
+			and t.docstatus = 1 and t.apply_tds = 1
+			and not exists (select 1 from `tabTDS Remittance Item` i
+				inner join `tabTDS Remittance` r
+				on i.parent = r.name
+				where r.name != '{name}'
+				and i.invoice_no = t.name
+				and r.docstatus != 2)
+				and not exists(select 1
+					from `tabTDS Receipt Entry` re
+					where re.invoice_no = t.name)
+			{party_cond}
+			{cond}
+			
+			
+			
+	""".format(accounts_cond = accounts_cond, cond = cond, existing_cond = existing_cond,
+			party_cond = party_cond, from_date=from_date, to_date=to_date,name=name),as_dict=True)
 	'''
 	# Journal Entry
 	if len(accounts) == 1:
@@ -227,10 +286,9 @@ def get_tds_invoices(tax_withholding_category, from_date, to_date, name, filter_
 			{existing_cond}
 			{party_cond}
 			{cond}
-	""".format(accounts_cond = accounts_cond, cond = cond, existing_cond = existing_cond,\
+	""".format(accounts_cond = accounts_cond, cond = cond, existing_cond = existing_cond,
 			party_cond = party_cond, from_date=from_date, to_date=to_date), as_dict=True)
 	'''
-
 	entries = pi_entries + pe_entries + je_entries
 	entries = sorted(entries, key=lambda d: (d['posting_date'], d['invoice_no']))
 	return entries

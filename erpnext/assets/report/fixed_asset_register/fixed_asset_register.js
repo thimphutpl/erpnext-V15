@@ -59,7 +59,7 @@ frappe.query_reports["Fixed Asset Register"] = {
 			fieldname: "filter_based_on",
 			label: __("Period Based On"),
 			fieldtype: "Select",
-			options: ["--Select a period--", "Fiscal Year", "Date Range", "Employee"],
+			options: ["--Select a period--", "Fiscal Year", "Date Range"],
 			default: "--Select a period--",
 		},
 		{
@@ -99,13 +99,6 @@ frappe.query_reports["Fixed Asset Register"] = {
 			options: ["Purchase Date", "Available For Use Date"],
 			default: "Purchase Date",
 			depends_on: "eval: doc.filter_based_on == 'Date Range' || doc.filter_based_on == 'Fiscal Year'",
-		},
-		{
-			fieldname: "custodian",
-			label: __("Employee"),
-			fieldtype: "Link",
-			options: "Employee",
-			width: 120
 		},
 	],
 };

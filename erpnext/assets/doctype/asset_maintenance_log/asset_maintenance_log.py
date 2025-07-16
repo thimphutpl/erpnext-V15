@@ -37,7 +37,6 @@ class AssetMaintenanceLog(Document):
 		naming_series: DF.Literal["ACC-AML-.YYYY.-"]
 		periodicity: DF.Data | None
 		task: DF.Link | None
-		task_assignee_email: DF.Data | None
 		task_name: DF.Data | None
 	# end: auto-generated types
 

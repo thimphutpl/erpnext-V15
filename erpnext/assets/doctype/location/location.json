@@ -11,14 +11,8 @@
   "location_name",
   "parent_location",
   "cb_details",
-  "disabled",
-  "is_recreational_park",
   "is_container",
   "is_group",
-  "account_settings_section",
-  "income_account",
-  "applicable_for_users",
-  "payments",
   "sb_location_details",
   "latitude",
   "longitude",
@@ -59,7 +53,6 @@
    "description": "Check if it is a hydroponic unit",
    "fieldname": "is_container",
    "fieldtype": "Check",
-   "hidden": 1,
    "label": "Is Container"
   },
   {
@@ -67,14 +60,12 @@
    "default": "0",
    "fieldname": "is_group",
    "fieldtype": "Check",
-   "hidden": 1,
    "in_list_view": 1,
    "label": "Is Group"
   },
   {
    "fieldname": "sb_location_details",
    "fieldtype": "Section Break",
-   "hidden": 1,
    "label": "Location Details"
   },
   {
@@ -108,8 +99,7 @@
   },
   {
    "fieldname": "sb_geolocation",
-   "fieldtype": "Section Break",
-   "hidden": 1
+   "fieldtype": "Section Break"
   },
   {
    "fieldname": "location",
@@ -148,46 +138,11 @@
    "no_copy": 1,
    "print_hide": 1,
    "read_only": 1
-  },
-  {
-   "default": "0",
-   "fieldname": "disabled",
-   "fieldtype": "Check",
-   "label": "Disabled"
-  },
-  {
-   "fieldname": "account_settings_section",
-   "fieldtype": "Section Break",
-   "label": "Account Settings"
-  },
-  {
-   "fieldname": "income_account",
-   "fieldtype": "Link",
-   "label": "Income Account",
-   "options": "Account"
-  },
-  {
-   "default": "0",
-   "fieldname": "is_recreational_park",
-   "fieldtype": "Check",
-   "label": "Is Recreational Park"
-  },
-  {
-   "fieldname": "applicable_for_users",
-   "fieldtype": "Table",
-   "label": "Applicable for Users",
-   "options": "Event Profile User"
-  },
-  {
-   "fieldname": "payments",
-   "fieldtype": "Table",
-   "label": "Payment Methods",
-   "options": "Event Payment Method"
   }
  ],
  "is_tree": 1,
  "links": [],
- "modified": "2025-03-20 11:30:48.363189",
+ "modified": "2023-08-29 12:49:33.290527",
  "modified_by": "Administrator",
  "module": "Assets",
  "name": "Location",
