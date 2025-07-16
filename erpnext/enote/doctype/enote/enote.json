@@ -142,6 +142,7 @@
    "description": "*** It must be ended with /. Based on this series, it will generate your dispatch number after the eNote is approved.***",
    "fieldname": "enote_series",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "Dispatch/Reference Series",
    "options": "eNote Series",
    "reqd": 1
@@ -311,7 +312,7 @@
  "icon": "fa fa-file-text",
  "is_submittable": 1,
  "links": [],
- "modified": "2025-07-16 16:59:56.219009",
+ "modified": "2025-07-16 17:19:12.514269",
  "modified_by": "Administrator",
  "module": "eNote",
  "name": "eNote",
