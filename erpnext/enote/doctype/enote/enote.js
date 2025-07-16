@@ -20,7 +20,7 @@ frappe.ui.form.on('eNote', {
 			
 		} else{
 			frm.set_df_property("copied", "hidden", 1);
-			frm.set_df_property("enote_format","hidden", 1);
+			frm.set_df_property("enote_format","hidden", 0);
 		}
 
 		if (frm.doc.__islocal) {
