@@ -216,6 +216,6 @@ def get_columns(filters):
 		("Leave Encashment") + ":Currency:120",
 		("Travel Claim") + ":Float:120",
 		("OT Amount") + ":Float:120",
-		("Total Expense") + ":Float:120"
+		("Total Expense") + ":Float:120",
 	]
 	return cols
