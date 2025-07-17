@@ -68,7 +68,23 @@ frappe.ui.form.on('Equipment Hiring Form', {
 		// 		frm: frm
 		// 	});
 		// });
-		
+
+		if (frm.doc.docstatus == 1) {
+			cur_frm.add_custom_button(
+				__("Equipment Hiring Extension"),
+				() => frm.events.make_equipment_hiring_extension(frm),
+				__("Create")
+			);
+			
+		}
+	},
+
+	make_equipment_hiring_extension: function(frm) {
+	// call your server-side python function using frappe.model.open_mapped_doc
+		frappe.model.open_mapped_doc({
+			method: "erpnext.fleet_management.doctype.equipment_hiring_form.equipment_hiring_form.make_equipment_hiring_extension",
+			frm: frm
+		});
 	},
 
 	onload: function (frm) {

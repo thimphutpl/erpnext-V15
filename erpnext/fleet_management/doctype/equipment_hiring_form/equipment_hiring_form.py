@@ -147,7 +147,7 @@ class EquipmentHiringForm(Document):
 			doc.to_time = a.to_time
 			doc.from_time = a.from_time
 			doc.submit()	
-
+			
 	def check_equipment_free(self):
 		for a in self.approved_items:
 			ec = frappe.db.get_value("Equipment Category", frappe.db.get_value("Equipment", a.equipment, "equipment_category"), "allow_hire")
@@ -464,3 +464,25 @@ def get_advance_balance(branch, customer):
 # 			},
 # 		}, target_doc)
 # 	return doc
+@frappe.whitelist()
+def make_equipment_hiring_extension(source_name,target_doc=None, args=None):
+
+	doclist = get_mapped_doc(
+		"Equipment Hiring Form",
+		source_name,
+		{
+			"Equipment Hiring Form": {
+				"doctype": "Equipment Hiring Extension",
+				"field_map": {
+					"equipment_hiring_form":"name",
+				},
+				"validation": {"docstatus": ["=", 1]},
+			},
+			
+		},
+		
+	)
+
+
+	doclist.set_onload("load_after_mapping", False)
+	return doclist
