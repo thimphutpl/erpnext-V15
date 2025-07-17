@@ -17,7 +17,7 @@ class MaterialRequestItem(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
-		actual_qty: DF.Float
+		actual_qty: DF.Data | None
 		amount: DF.Currency
 		bom_no: DF.Link | None
 		brand: DF.Link | None

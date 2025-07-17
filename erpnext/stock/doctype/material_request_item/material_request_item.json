@@ -519,6 +519,7 @@
    "fieldtype": "Link",
    "label": "Task",
    "options": "Task",
+   "read_only": 1,
    "read_only_depends_on": "eval:parent.reference_type == \"Task\";"
   }
  ],
@@ -526,7 +527,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-03-12 12:07:04.510124",
+ "modified": "2025-07-17 12:20:29.366984",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Material Request Item",
