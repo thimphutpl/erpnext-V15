@@ -23,5 +23,6 @@ class HSDAdjustmentItem(Document):
 		parenttype: DF.Data
 		registration_number: DF.ReadOnly | None
 		system_balance: DF.Float
+		tanker_adjustment: DF.Check
 	# end: auto-generated types
 	pass

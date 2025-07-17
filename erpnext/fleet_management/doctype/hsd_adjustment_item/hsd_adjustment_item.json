@@ -6,6 +6,7 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "tanker_adjustment",
   "equipment",
   "registration_number",
   "column_break_ianu",
@@ -71,12 +72,20 @@
    "in_list_view": 1,
    "label": "Equipment Number",
    "options": "equipment.equipment_number"
+  },
+  {
+   "default": "0",
+   "description": "Adjustment for the Fuel Tanker, Barrel and Skid Tank.",
+   "fieldname": "tanker_adjustment",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Tanker Adjustment"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-11-26 09:56:39.123131",
+ "modified": "2025-04-10 12:52:43.123317",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "HSD Adjustment Item",
