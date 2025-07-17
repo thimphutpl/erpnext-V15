@@ -186,9 +186,20 @@ def equipment_expense(filters, eq_name, eq_branch, date, filter_date):
 	ins = frappe.db.sql("""
 			select sum(ifnull(id.insured_amount,0)) as insurance  
 			from `tabInsurance Details` id,	`tabInsurance and Registration` ir 
-			where id.parent = ir.name and ir.equipment = '{0}'
+			where id.parent = ir.name and ir.insurance_type = '{0}'
 			and   id.insured_date {1} and id.insured_date {2}
 		 """.format(eq_name, date, filter_date), as_dict=1)[0]
+
+	# ins = frappe.db.sql("""
+    #     SELECT SUM(IFNULL(id.insured_amount, 0)) AS insurance  
+    #     FROM `tabInsurance Details` id
+    #     JOIN `tabInsurance and Registration` ir 
+    #     ON id.parent = ir.name
+    #     WHERE ir.insurance_type = '{0}'
+    #     AND id.insured_date {1} 
+    #     AND id.insured_date {2}
+    # """.format(eq_name, date, filter_date), as_dict=1)[0]
+	
 	#Reg fee
 	reg = frappe.db.sql("""
 			select sum(ifnull(rd.registration_amount,0)) as r_amount
@@ -198,7 +209,8 @@ def equipment_expense(filters, eq_name, eq_branch, date, filter_date):
                                 and   rd.registration_date {1} and rd.registration_date {2}
 			""".format(eq_name, date, filter_date), as_dict=1)[0]
 	
-	return round(flt(vl.consumption)*flt(pol.rate),2), round(flt(ins.insurance)+flt(reg.r_amount),2), round(flt(jc.goods_amount),2), round(flt(jc.services_amount),2)
+	# return round(flt(vl.consumption)*flt(pol.rate),2), round(flt(ins.insurance)+flt(reg.r_amount),2), round(flt(jc.goods_amount),2), round(flt(jc.services_amount),2)
+	return round(flt(vl.consumption)*flt(pol.rate),2), round(flt(ins.insurance),2), round(flt(jc.goods_amount),2), round(flt(jc.services_amount),2)
 
 	
 def get_columns(filters):
@@ -216,6 +228,6 @@ def get_columns(filters):
 		("Leave Encashment") + ":Currency:120",
 		("Travel Claim") + ":Float:120",
 		("OT Amount") + ":Float:120",
-		("Total Expense") + ":Float:120",
+		("Total Expense") + ":Float:120"
 	]
 	return cols
