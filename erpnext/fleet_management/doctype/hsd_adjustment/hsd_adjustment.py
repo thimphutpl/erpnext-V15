@@ -73,51 +73,6 @@ class HSDAdjustment(Document):
 	def cancel_pol_entry(self):
 		frappe.db.sql("delete from `tabPOL Entry` where reference_name = %s", self.name)
 
-	# @frappe.whitelist()
-	# def get_equipments(self):
-	# 	if not self.branch:
-	# 		frappe.throw("Select the Branch first")
-	# 	query = "select name as equipment, registration_number, hsd_type from tabEquipment where is_disabled = 0 and branch = \'" + str(self.branch) + "\'"
-	# 	entries = frappe.db.sql(query, as_dict=True)
-	# 	self.set('items', [])
-
-	# 	for d in entries:
-	# 		d.balance = 0
-	# 		row = self.append('items', {})
-	# 		row.update(d)
-
-
-
-
-	# @frappe.whitelist()
-	# def get_equipments(self):
-	# 	if not self.branch:
-	# 		frappe.throw("Select the Branch first")
-	# 	if not self.date:
-	# 		frappe.throw("Select a valid date")
-		
-	# 	# Fetch equipment records based on branch and selected date
-	# 	query = """
-	# 		SELECT 
-	# 			name AS equipment, 
-	# 			registration_number, 
-	# 			hsd_type 
-	# 		FROM 
-	# 			`tabEquipment` 
-	# 		WHERE 
-	# 			is_disabled = 0 
-	# 			AND branch = %(branch)s 
-	# 			AND creation <= %(date)s
-	# 	"""
-	# 	entries = frappe.db.sql(query, {"branch": self.branch, "date": self.date,}, as_dict=True)
-		
-	# 	# Clear and populate the items table
-	# 	self.set('items', [])
-	# 	for d in entries:
-	# 		d["balance"] = 0
-	# 		row = self.append('items', {})
-	# 		row.update(d)
-
 
 	@frappe.whitelist()
 	def get_equipments(self):
@@ -157,7 +112,7 @@ class HSDAdjustment(Document):
 
 # System Balance for from_equipment
 @frappe.whitelist()	
-def get_tank_data(equipment, equipment_branch=None):
+def get_tank_data(equipment, equipment_branch=None, tanker_adjustment=0):
 	"""
 	Fetch equipment balance details based on the provided parameters.
 	"""
@@ -169,6 +124,7 @@ def get_tank_data(equipment, equipment_branch=None):
 		SELECT e.name, e.branch, e.registration_number, e.hsd_type, e.equipment_type
 		FROM `tabEquipment` e
 		JOIN `tabEquipment Type` et ON e.equipment_type = et.name
+		WHERE 1=1
 	"""
 
 	if equipment_branch:
@@ -193,14 +149,19 @@ def get_tank_data(equipment, equipment_branch=None):
 	for eq in equipment_details:
 		for item in items:
 			received = issued = 0
-		
+
 			if equipment:
-				received = get_pol_tills("Receive", eq.name, item.item_code)
-				issued = get_pol_consumed_tills(eq.name)
-				# if eq.hsd_type == item.item_code:
+				if tanker_adjustment == 1:
+					# Tanker adjustment logic
+					received = get_pol_tills("Stock", eq.name, item.item_code)
+					issued = get_pol_tills("Issue", eq.name, item.item_code)
+				if tanker_adjustment != 1:
+					# Standard equipment adjustment logic
+					received = get_pol_tills("Receive", eq.name, item.item_code)
+					issued = get_pol_consumed_tills(eq.name)
 			else:
 				received = get_pol_tills("Stock", eq.name, item.item_code)
-				issued = get_pol_tills("Issue", eq.name, item.item_code)
+				issued = get_pol_tills("Issue", eq.name, item.item_code)	
 
 			# Append balance details
 			if received or issued:

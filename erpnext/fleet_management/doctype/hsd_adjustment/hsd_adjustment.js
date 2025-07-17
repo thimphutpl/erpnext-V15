@@ -36,7 +36,8 @@ frappe.ui.form.on("HSD Adjustment Item", {
 				method: "erpnext.fleet_management.doctype.hsd_adjustment.hsd_adjustment.get_tank_data",
 				args: {
 					equipment: row.equipment,
-					branch: frm.doc.branch
+					branch: frm.doc.branch,
+					tanker_adjustment: frm.doc.tanker_adjustment ? 1 : 0
 				},
 				callback: function (response) {
 					if (response.message) {
