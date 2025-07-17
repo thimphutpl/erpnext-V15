@@ -62,6 +62,7 @@
   "table_jqvd",
   "section_break_13",
   "break_down_report",
+  "mechanical_payment",
   "column_break_15",
   "break_down_report_date",
   "column_break_17",
@@ -471,12 +472,18 @@
    "label": "Status",
    "options": "\nPayment Received\nPending Payment",
    "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "mechanical_payment",
+   "fieldtype": "Read Only",
+   "label": "Mechanical Payment"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-02-05 16:00:01.014434",
+ "modified": "2025-03-17 16:20:59.932494",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Job Cards",

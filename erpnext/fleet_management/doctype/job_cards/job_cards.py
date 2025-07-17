@@ -47,6 +47,7 @@ class JobCards(AccountsController):
 		jv: DF.Data | None
 		location: DF.Data | None
 		locations: DF.Data | None
+		mechanical_payment: DF.ReadOnly | None
 		name_of_the_job: DF.Data | None
 		outstanding_amount: DF.Currency
 		owned_by: DF.Data | None
@@ -485,6 +486,11 @@ def make_payment_entry(source_name, target_doc=None):
 			"allocated_amount": obj.outstanding_amount,
 			"customer": obj.customer
 		})
+		# Fetch the name of the Mechanical Payment
+		mechanical_payment_name = target.name
+
+		# Update the Job Cards document with the Mechanical Payment name
+		frappe.db.set_value("Job Cards", obj.name, "mechanical_payment", mechanical_payment_name)
 
 	doc = get_mapped_doc("Job Cards", source_name, {
 			"Job Cards": {
