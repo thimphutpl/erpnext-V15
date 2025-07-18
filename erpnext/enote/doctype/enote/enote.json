@@ -53,9 +53,7 @@
   {
    "fieldname": "enote_format",
    "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Dispatch Number",
-   "unique": 1
+   "label": "Dispatch Number"
   },
   {
    "fieldname": "title",
@@ -312,7 +310,7 @@
  "icon": "fa fa-file-text",
  "is_submittable": 1,
  "links": [],
- "modified": "2025-07-16 17:19:12.514269",
+ "modified": "2025-07-18 15:26:15.618328",
  "modified_by": "Administrator",
  "module": "eNote",
  "name": "eNote",

@@ -55,7 +55,7 @@ class eNote(Document):
 	# end: auto-generated types
 	
 	def on_submit(self):
-		# self.enote_format = make_autoname(str(self.enote_series)+".YYYY./.#####")
+		self.enote_format = make_autoname(str(self.enote_series)+"/.YYYY./.#####")
 		frappe.db.set_value("eNote", self.name, "enote_format", self.enote_format)
 		self.send_notification()
 		#notify_workflow_states(self)
