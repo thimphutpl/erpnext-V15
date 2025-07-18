@@ -9,6 +9,21 @@ frappe.ui.form.on("Fiscal Year", {
 				frappe.datetime.add_days(frappe.defaults.get_default("year_end_date"), 1)
 			);
 		}
+		frm.set_query("company", "companies", function(doc){
+			if (doc.is_calendar_year) {
+				return {
+					filters: {
+						'calendar_year_based': 1,
+					}
+				}
+			} else {
+				return {
+					filters: {
+						'calendar_year_based': 0,
+					}
+				}	
+			}
+		})
 	},
 	year_start_date: function (frm) {
 		if (!frm.doc.is_short_year) {

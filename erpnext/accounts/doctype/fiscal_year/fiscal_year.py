@@ -16,13 +16,14 @@ class FiscalYear(Document):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
-		from erpnext.accounts.doctype.fiscal_year_company.fiscal_year_company import FiscalYearCompany
 		from frappe.types import DF
 
+		from erpnext.accounts.doctype.fiscal_year_company.fiscal_year_company import FiscalYearCompany
+
 		auto_created: DF.Check
-		closed: DF.Check
 		companies: DF.Table[FiscalYearCompany]
 		disabled: DF.Check
+		is_calendar_year: DF.Check
 		is_short_year: DF.Check
 		year: DF.Data
 		year_end_date: DF.Date
@@ -30,6 +31,8 @@ class FiscalYear(Document):
 	# end: auto-generated types
 
 	def validate(self):
+		self.validate_is_company_calendar_year()
+		self.validate_fiscal_year_name()
 		self.validate_dates()
 		self.validate_overlap()
 
@@ -51,6 +54,34 @@ class FiscalYear(Document):
 						)
 					)
 
+	def validate_is_company_calendar_year(self):
+		if self.get("companies"):
+			for c in self.companies:
+				calendar_year_based = frappe.db.get_value("Company", c.company, "calendar_year_based")
+				if not calendar_year_based and self.is_calendar_year:
+					frappe.throw("{} cannot be Calander Year.".format(frappe.get_desk_link("Company", c.company)))
+				elif calendar_year_based and not self.is_calendar_year:
+					frappe.throw("{} is Calander Year.".format(frappe.get_desk_link("Company", c.company)))
+
+	def validate_fiscal_year_name(self):
+		# Determine if the fiscal year should be a calendar year or cross-year
+		if self.is_calendar_year:
+			start_year = cstr(getdate(self.year_start_date).year)
+			end_year = cstr(getdate(self.year_end_date).year)
+
+			if self.name != start_year:
+				frappe.throw(
+					_("For a calendar year fiscal year, the name should be '{0}'").format(start_year)
+				)
+		else:
+			start_year = cstr(getdate(self.year_start_date).year)
+			end_year = cstr(getdate(self.year_end_date).year)
+
+			if self.name != f"{start_year}-{end_year[-2:]}":
+				frappe.throw(
+					_("For a fiscal year spanning multiple years, the name should be '{0}-{1}'").format(start_year, end_year[-2:])
+				)
+
 	def validate_dates(self):
 		self.validate_from_to_dates("year_start_date", "year_end_date")
 		if self.is_short_year:
@@ -58,13 +89,32 @@ class FiscalYear(Document):
 			# under certain circumstances. For example, in the USA and Germany.
 			return
 
-		date = getdate(self.year_start_date) + relativedelta(years=1) - relativedelta(days=1)
+		start_date = getdate(self.year_start_date)
+		end_date = getdate(self.year_end_date)
 
-		if getdate(self.year_end_date) != date:
-			frappe.throw(
-				_("Fiscal Year End Date should be one year after Fiscal Year Start Date"),
-				frappe.exceptions.InvalidDates,
-			)
+		# date = getdate(self.year_start_date) + relativedelta(years=1) - relativedelta(days=1)
+
+		# if getdate(self.year_end_date) != date:
+		# 	frappe.throw(
+		# 		_("Fiscal Year End Date should be one year after Fiscal Year Start Date"),
+		# 		frappe.exceptions.InvalidDates,
+		# 	)
+
+		if start_date.year == end_date.year:
+			expected_end_date = start_date + relativedelta(years=1) - relativedelta(days=1)
+			if end_date != expected_end_date:
+				frappe.throw(
+					_("Fiscal Year End Date should be one year after Fiscal Year Start Date"),
+					frappe.exceptions.InvalidDates,
+				)
+		else:
+		# Non-standard fiscal year logic (e.g., 2024-25)
+			expected_end_date = start_date + relativedelta(months=12) - relativedelta(days=1)
+			if end_date != expected_end_date:
+				frappe.throw(
+					_("For non-standard fiscal years, the end date should be exactly one year minus a day after the start date."),
+					frappe.exceptions.InvalidDates,
+				)
 
 	def on_update(self):
 		check_duplicate_fiscal_year(self)
@@ -159,3 +209,33 @@ def get_from_and_to_date(fiscal_year):
 	fields = ["year_start_date", "year_end_date"]
 	cached_results = frappe.get_cached_value("Fiscal Year", fiscal_year, fields, as_dict=1)
 	return dict(from_date=cached_results.year_start_date, to_date=cached_results.year_end_date)
+
+
+def get_permission_query_conditions(user):
+    return
+# 	if not user: user = frappe.session.user
+# 	user_roles = frappe.get_roles(user)
+
+# 	if user == "Administrator" or "System Manager" in user_roles:
+# 		return
+
+# 	return """(
+# 		exists(select 1
+# 			from `tabEmployee` as e
+# 			where e.company = `tabFiscal Year Company`.company
+# 			and e.user_id = '{user}')
+# 	)""".format(user=user)
+
+	# return """(
+	# 	exists(select 1
+	# 		from `tabEmployee` as e
+	# 		where e.company = `tabFiscal Year Company`.company
+	# 		and e.user_id = '{user}')
+	# 	or
+	# 	exists(select 1
+	# 		from `tabEmployee` e, `tabAssign Branch` ab, `tabBranch Item` bi
+	# 		where e.user_id = '{user}'
+	# 		and ab.employee = e.name
+	# 		and bi.parent = ab.name
+	# 		and bi.branch = `tabJournal Entry`.branch)
+	# )""".format(user=user)

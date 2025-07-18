@@ -37,6 +37,7 @@
   "employee_group",
   "professional_category",
   "reports_to",
+  "custom_report_name",
   "column_break_wrmk",
   "employee_status",
   "probation_end_date",
@@ -46,6 +47,7 @@
   "company_details_section",
   "company",
   "department",
+  "employment_type",
   "employee_number",
   "column_break_25",
   "designation",
@@ -55,6 +57,7 @@
   "branch",
   "cost_center",
   "unit",
+  "connections_tab",
   "employment_details",
   "job_applicant",
   "scheduled_confirmation_date",
@@ -92,12 +95,19 @@
   "attendance_device_id",
   "column_break_44",
   "holiday_list",
+  "default_shift",
+  "approvers_section",
+  "expense_approver",
+  "leave_approver",
+  "column_break_45",
+  "shift_request_approver",
   "salary_information",
   "ctc",
   "salary_currency",
   "salary_mode",
-  "column_break_xjso",
+  "salary_cb",
   "payroll_cost_center",
+  "column_break_xjso",
   "bank_details_section",
   "bank_name",
   "bank_branch",
@@ -159,8 +169,7 @@
   "feedback",
   "lft",
   "rgt",
-  "old_parent",
-  "connections_tab"
+  "old_parent"
  ],
  "fields": [
   {
@@ -178,13 +187,14 @@
    "report_hide": 1
   },
   {
+   "default": "RBA.YY",
    "fieldname": "naming_series",
    "fieldtype": "Select",
    "label": "Series",
    "no_copy": 1,
    "oldfieldname": "naming_series",
    "oldfieldtype": "Select",
-   "options": "HR-EMP-",
+   "options": "RBA.YY\nHR-EMP-",
    "set_only_once": 1
   },
   {
@@ -870,7 +880,6 @@
   {
    "fieldname": "grade",
    "fieldtype": "Link",
-   "in_list_view": 1,
    "label": "Grade",
    "options": "Employee Grade"
   },
@@ -1033,6 +1042,7 @@
    "label": "GIS Policy Number"
   },
   {
+   "collapsible": 1,
    "fieldname": "health_insurance_section",
    "fieldtype": "Section Break",
    "label": "Health Insurance"
@@ -1106,6 +1116,58 @@
    "fieldname": "employee_family_details",
    "fieldtype": "Table",
    "options": "Employee Family Details"
+  },
+  {
+   "fetch_from": "reports_to.employee_name",
+   "fieldname": "custom_report_name",
+   "fieldtype": "Data",
+   "label": "Report Name",
+   "translatable": 1
+  },
+  {
+   "fieldname": "employment_type",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "ignore_user_permissions": 1,
+   "label": "Employment Type",
+   "options": "Employment Type"
+  },
+  {
+   "fieldname": "default_shift",
+   "fieldtype": "Link",
+   "label": "Default Shift",
+   "options": "Shift Type"
+  },
+  {
+   "fieldname": "approvers_section",
+   "fieldtype": "Section Break",
+   "label": "Approvers"
+  },
+  {
+   "fieldname": "expense_approver",
+   "fieldtype": "Link",
+   "label": "Expense Approver",
+   "options": "User"
+  },
+  {
+   "fieldname": "leave_approver",
+   "fieldtype": "Link",
+   "label": "Leave Approver",
+   "options": "User"
+  },
+  {
+   "fieldname": "column_break_45",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "shift_request_approver",
+   "fieldtype": "Link",
+   "label": "Shift Request Approver",
+   "options": "User"
+  },
+  {
+   "fieldname": "salary_cb",
+   "fieldtype": "Column Break"
   }
  ],
  "icon": "fa fa-user",
@@ -1113,48 +1175,14 @@
  "image_field": "image",
  "is_tree": 1,
  "links": [],
- "modified": "2025-06-24 09:55:46.320836",
+ "modified": "2025-06-26 10:33:21.900408",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee",
  "naming_rule": "By \"Naming Series\" field",
  "nsm_parent_field": "reports_to",
  "owner": "Administrator",
- "permissions": [
-  {
-   "email": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "Employee"
-  },
-  {
-   "create": 1,
-   "delete": 1,
-   "email": 1,
-   "export": 1,
-   "import": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "HR User",
-   "share": 1,
-   "write": 1
-  },
-  {
-   "create": 1,
-   "delete": 1,
-   "email": 1,
-   "export": 1,
-   "import": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "HR Manager",
-   "share": 1,
-   "write": 1
-  }
- ],
+ "permissions": [],
  "search_fields": "employee_name",
  "show_name_in_global_search": 1,
  "sort_field": "creation",

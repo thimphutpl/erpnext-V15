@@ -24,10 +24,61 @@ frappe.ui.form.on("Employee", {
 	onload: function (frm) {
 		frm.set_query("department", function () {
 			return {
-				filters: {
-					company: frm.doc.company,
-				},
+				"filters": {
+					"company": frm.doc.company,
+					"disabled": 0,
+					"is_division": 0,
+					"is_section": 0,
+					"is_unit": 0
+				}
 			};
+		});
+		frm.set_query("division", function () {
+			return {
+				"filters": {
+					"company": frm.doc.company,
+					"disabled": 0,
+					"is_division": 1,
+					"is_section": 0,
+					"is_unit": 0
+				}
+			};
+		});
+		frm.set_query("section", function () {
+			return {
+				"filters": {
+					"parent_department": frm.doc.division,
+					"company": frm.doc.company,
+					"disabled": 0,
+					"is_division": 0,
+					"is_section": 1
+				}
+			};
+		});
+		frm.set_query("unit", function () {
+			if (!frm.doc.section) {
+				return {
+					"filters": {
+						"parent_department": frm.doc.division,
+						"company": frm.doc.company,
+						"disabled": 0,
+						"is_division": 0,
+						"is_unit": 1,
+						"is_section": 0
+					}
+				};
+			} else {
+				return {
+					"filters": {
+						"parent_department": frm.doc.section,
+						"company": frm.doc.company,
+						"disabled": 0,
+						"is_division": 0,
+						"is_unit": 1,
+						"is_section": 0
+					}
+				};
+			}
 		});
 	},
 	prefered_contact_email: function (frm) {

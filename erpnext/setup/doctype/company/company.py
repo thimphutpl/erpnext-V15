@@ -34,6 +34,7 @@ class Company(NestedSet):
 		auto_err_frequency: DF.Literal["Daily", "Weekly"]
 		auto_exchange_rate_revaluation: DF.Check
 		book_advance_payments_in_separate_party_account: DF.Check
+		calendar_year_based: DF.Check
 		capital_work_in_progress_account: DF.Link | None
 		chart_of_accounts: DF.Literal[None]
 		cheque_required: DF.Check
@@ -74,12 +75,14 @@ class Company(NestedSet):
 		disposal_account: DF.Link | None
 		domain: DF.Data | None
 		email: DF.Data | None
+		employer_contribution_to_pf: DF.Link | None
 		enable_perpetual_inventory: DF.Check
 		enable_provisional_accounting_for_non_stock_items: DF.Check
 		exception_budget_approver_role: DF.Link | None
 		exchange_gain_loss_account: DF.Link | None
 		existing_company: DF.Link | None
 		fax: DF.Data | None
+		imprest_advance_account: DF.Link | None
 		is_group: DF.Check
 		lft: DF.Int
 		monthly_sales_target: DF.Currency
@@ -507,7 +510,7 @@ class Company(NestedSet):
 				"Account",
 				filters={"company": self.name, "is_group": 0},
 				or_filters={
-					"account_name": ("in", [_("Sales"), _("Sales Account")]),
+					# "account_name": ("in", [_("Sales"), _("Sales Account")]),
 					"account_type": "Income Account",
 				},
 				pluck="name",
@@ -523,19 +526,19 @@ class Company(NestedSet):
 		if not self.default_payable_account:
 			self.db_set("default_payable_account", self.default_payable_account)
 
-		if not self.write_off_account:
-			write_off_acct = frappe.db.get_value(
-				"Account", {"account_name": _("Write Off"), "company": self.name, "is_group": 0}
-			)
+		# if not self.write_off_account:
+		# 	write_off_acct = frappe.db.get_value(
+		# 		"Account", {"account_name": _("Write Off"), "company": self.name, "is_group": 0}
+		# 	)
 
-			self.db_set("write_off_account", write_off_acct)
+		# 	self.db_set("write_off_account", write_off_acct)
 
-		if not self.exchange_gain_loss_account:
-			exchange_gain_loss_acct = frappe.db.get_value(
-				"Account", {"account_name": _("Exchange Gain/Loss"), "company": self.name, "is_group": 0}
-			)
+		# if not self.exchange_gain_loss_account:
+		# 	exchange_gain_loss_acct = frappe.db.get_value(
+		# 		"Account", {"account_name": _("Exchange Gain/Loss"), "company": self.name, "is_group": 0}
+		# 	)
 
-			self.db_set("exchange_gain_loss_account", exchange_gain_loss_acct)
+		# 	self.db_set("exchange_gain_loss_account", exchange_gain_loss_acct)
 
 		if not self.disposal_account:
 			disposal_acct = frappe.db.get_value(

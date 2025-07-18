@@ -17,6 +17,7 @@
   "is_group",
   "default_holiday_list",
   "cheque_required",
+  "calendar_year_based",
   "cb0",
   "default_letter_head",
   "tax_id",
@@ -87,6 +88,10 @@
   "depreciation_cost_center",
   "capital_work_in_progress_account",
   "asset_received_but_not_billed",
+  "additional_hr_payroll_account_section",
+  "employer_contribution_to_pf",
+  "column_break_olng",
+  "imprest_advance_account",
   "buying_and_selling_tab",
   "sales_settings",
   "default_buying_terms",
@@ -792,6 +797,33 @@
    "fieldname": "cheque_required",
    "fieldtype": "Check",
    "label": "Cheque Required"
+  },
+  {
+   "fieldname": "additional_hr_payroll_account_section",
+   "fieldtype": "Section Break",
+   "label": "Additional HR Payroll Account"
+  },
+  {
+   "fieldname": "employer_contribution_to_pf",
+   "fieldtype": "Link",
+   "label": "Employer Contribution to PF",
+   "options": "Account"
+  },
+  {
+   "fieldname": "column_break_olng",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "imprest_advance_account",
+   "fieldtype": "Link",
+   "label": "Imprest Advance Account",
+   "options": "Account"
+  },
+  {
+   "default": "0",
+   "fieldname": "calendar_year_based",
+   "fieldtype": "Check",
+   "label": " Calendar Year Based"
   }
  ],
  "icon": "fa fa-building",
@@ -799,7 +831,7 @@
  "image_field": "company_logo",
  "is_tree": 1,
  "links": [],
- "modified": "2025-06-24 10:41:08.662053",
+ "modified": "2025-07-15 09:56:37.245349",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Company",
