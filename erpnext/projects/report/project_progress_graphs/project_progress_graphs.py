@@ -8,10 +8,15 @@ from frappe.utils import add_days, getdate, formatdate, get_first_day, get_last_
 #from frappe.utils.data import get_first_day, get_last_day, add_days
 
 from erpnext.accounts.utils import get_fiscal_year
-import numpy as np
+
+@frappe.whitelist()
 def execute(filters=None):
+	import json
+	if isinstance(filters, str):
+		filters = json.loads(filters)
 	columns = get_columns(filters)
 	data, chart = get_periodic_data(filters, columns)
+	frappe.local.response["chart_data"] = chart
 	return columns, data, None, chart
 
 def get_columns(filters):
@@ -145,35 +150,27 @@ def get_milestone_tasks(filters):
 		parent = "{0}" order by idx""".format(filters.get('activity')), as_dict = 1)
 
 def get_chart_data(columns, target, achievement, filters):
-    labels = [d.get("label") for d in columns[1:]]
-    target_values = [flt(target.get(d.get("fieldname"))) if target.get(d.get("fieldname")) is not None else 0.0 for d in columns[1:]]
-    achievement_values = [flt(achievement.get(d.get("fieldname"))) if achievement.get(d.get("fieldname")) is not None else 0.0 for d in columns[1:]]
-    # Optionally add difference if you want to show it in the chart
-    # diff_values = [t - a for t, a in zip(target_values, achievement_values)]
+	labels = [d.get("label") for d in columns[1:]]
+	target_values = [flt(target.get(d.get("fieldname"))) if target.get(d.get("fieldname")) is not None else 0.0 for d in columns[1:]]
+	achievement_values = [flt(achievement.get(d.get("fieldname"))) if achievement.get(d.get("fieldname")) is not None else 0.0 for d in columns[1:]]
+	# Optionally add difference if you want to show it in the chart
+	# diff_values = [t - a for t, a in zip(target_values, achievement_values)]
 
-    chart = {
-        "data": {
-            "labels": labels,
-            "datasets": [
-                {"name": "Target", "values": target_values},
-                {"name": "Achievement", "values": achievement_values}
-            ]
-        },
-        "type": "line",  # or "line" if you want line chart
-        "height": 500,
-        # Remove width from here, set width via JS/CSS if needed
-        "colors": ["#5e64ff", "#63d0ff", "#ff5858"],
-        "title": 'Progress Graph! If the achievement bar is above the target bar, we are ahead of the schedule',
-        "axisOptions": {"shortenYAxisNumbers": 1},
-        "truncateLegends": 1,
-        # "zoom": {"enabled": True}
-		"zoom": {
-            "enabled": True,
-            "mode": "x",  # Allow horizontal zoom only
-            "scaleMode": "xy"  # Keep axis scaling during zoom
-        }
-    }
-    return chart
+	chart = {
+		"data": {
+			"labels": labels,
+			"datasets": [
+				{"name": "Target", "values": target_values},
+				{"name": "Achievement", "values": achievement_values}
+			]
+		},
+		"type": "line",  # or "line" if you want line chart
+		"height": 500,
+		# Remove width from here, set width via JS/CSS if needed
+		"colors": ["#5e64ff", "#63d0ff", "#ff5858"],
+		
+	}
+	return chart
 
 def get_period_date_ranges(filters):
 	from dateutil.relativedelta import relativedelta
