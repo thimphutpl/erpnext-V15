@@ -166,7 +166,7 @@ class eNote(Document):
 		elif self.workflow_state in ("Approved", "Rejected", "Cancelled"):
 			self.notify_employee()
 
-		elif self.workflow_state == "Pending" and frappe.session.user != self.forward_to:
+		elif self.workflow_state == "Pending for Approval" and frappe.session.user != self.forward_to:
 			self.notify_approval()
 
 		elif self.workflow_state == "Waiting For Reviewer":
@@ -354,7 +354,7 @@ class eNote(Document):
 				# doc.workflow_state = "Pending"
 				# doc.save()
 				# frappe.db.commit()
-				frappe.db.set_value("eNote", {'name': self.name}, "workflow_state", "Pending")
+				frappe.db.set_value("eNote", {'name': self.name}, "workflow_state", "Pending for Approval")
 
    
 	def send_mail(self, recipients, message, subject):
