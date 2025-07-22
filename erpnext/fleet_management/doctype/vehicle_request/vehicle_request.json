@@ -23,10 +23,8 @@
   "posting_date",
   "travel_information",
   "from_date",
-  "approver",
   "columb_break04",
   "to_date",
-  "approver_id",
   "place",
   "column_break04",
   "purpose",
@@ -41,6 +39,7 @@
   "kilometer_reading",
   "previous_km",
   "cb01",
+  "mode_of_travel",
   "driver",
   "driver_name",
   "contact_number",
@@ -50,7 +49,16 @@
   "items",
   "reason_for_extension",
   "workflow_state",
-  "amended_from"
+  "amended_from",
+  "approver_details_section",
+  "approver",
+  "verifier",
+  "column_break_gmuw",
+  "approver_name",
+  "verifier_name",
+  "column_break_czpv",
+  "approver_designation",
+  "verifier_designation"
  ],
  "fields": [
   {
@@ -133,8 +141,9 @@
   },
   {
    "fieldname": "approver",
-   "fieldtype": "Data",
+   "fieldtype": "Link",
    "label": "Approver",
+   "options": "User",
    "read_only": 1
   },
   {
@@ -147,13 +156,6 @@
    "fieldtype": "Datetime",
    "label": "To Date",
    "reqd": 1
-  },
-  {
-   "fieldname": "approver_id",
-   "fieldtype": "Link",
-   "label": "Approver ID",
-   "options": "User",
-   "read_only": 1
   },
   {
    "fieldname": "place",
@@ -217,6 +219,7 @@
    "read_only": 1
   },
   {
+   "depends_on": "eval:doc.mode_of_travel=='Office Car'",
    "fieldname": "kilometer_reading",
    "fieldtype": "Data",
    "label": "Kilometer Reading"
@@ -235,9 +238,11 @@
    "options": "Equipment Type"
   },
   {
+   "depends_on": "eval:doc.mode_of_travel=='Office Car'",
    "fieldname": "vehicle",
    "fieldtype": "Link",
    "label": "Vehicle",
+   "mandatory_depends_on": "eval:doc.mode_of_travel=='Office Car'",
    "options": "Equipment"
   },
   {
@@ -257,6 +262,7 @@
    "read_only": 1
   },
   {
+   "depends_on": "eval:doc.mode_of_travel=='Office Car'",
    "fieldname": "driver",
    "fieldtype": "Data",
    "ignore_user_permissions": 1,
@@ -264,6 +270,7 @@
    "options": "Employee"
   },
   {
+   "depends_on": "eval:doc.mode_of_travel=='Office Car'",
    "fetch_from": "driver.employee_name",
    "fieldname": "driver_name",
    "fieldtype": "Data",
@@ -320,11 +327,62 @@
    "fieldname": "employee_details_section",
    "fieldtype": "Section Break",
    "label": "Employee Details"
+  },
+  {
+   "fieldname": "mode_of_travel",
+   "fieldtype": "Select",
+   "label": "Mode Of Travel",
+   "options": "Office Car\nPrivate Vehicle\nPublic Transport"
+  },
+  {
+   "fieldname": "approver_details_section",
+   "fieldtype": "Section Break",
+   "label": "Approver Details",
+   "read_only": 1
+  },
+  {
+   "fieldname": "verifier",
+   "fieldtype": "Link",
+   "label": "Verifier",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_gmuw",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "approver_name",
+   "fieldtype": "Data",
+   "label": "Approver Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "verifier_name",
+   "fieldtype": "Data",
+   "label": "Verifier Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_czpv",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "approver_designation",
+   "fieldtype": "Data",
+   "label": "Approver Designation",
+   "read_only": 1
+  },
+  {
+   "fieldname": "verifier_designation",
+   "fieldtype": "Data",
+   "label": "Verifier Designation",
+   "read_only": 1
   }
  ],
  "is_submittable": 1,
  "links": [],
- "modified": "2025-02-14 17:28:20.770633",
+ "modified": "2025-07-21 16:43:48.055382",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Vehicle Request",

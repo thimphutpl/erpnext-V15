@@ -11,7 +11,19 @@ frappe.ui.form.on('Vehicle Request', {
         // }
         // else{
         //     cur_frm.toggle_display("fleet_details_section", false);
-        // }
+        // }        
+        // Hide all first`
+        frm.toggle_display(['verifier', 'verifier_name', 'verifier_designation'], 0);
+        frm.toggle_display(['approver', 'approver_name', 'approver_designation'], 0);
+
+        if (frm.doc.workflow_state === "Verified") {
+            frm.toggle_display(['verifier', 'verifier_name', 'verifier_designation'], 1);
+        } else if (frm.doc.workflow_state === "Approved") {
+            frm.toggle_display(['approver', 'approver_name', 'approver_designation'], 1);
+        } else if (frm.doc.workflow_state === "Waiting Approval") {
+            frm.toggle_display(['approver', 'approver_name', 'approver_designation'], 1);
+        }
+    
         if (frm.doc.docstatus == 1 ){
             open_extension(frm)
         }

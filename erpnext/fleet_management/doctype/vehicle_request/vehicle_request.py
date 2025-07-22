@@ -21,8 +21,9 @@ class VehicleRequest(Document):
 		from frappe.types import DF
 
 		amended_from: DF.Link | None
-		approver: DF.Data | None
-		approver_id: DF.Link | None
+		approver: DF.Link | None
+		approver_designation: DF.Data | None
+		approver_name: DF.Data | None
 		branch: DF.Link | None
 		contact_number: DF.Data | None
 		cost_center: DF.Link | None
@@ -36,6 +37,7 @@ class VehicleRequest(Document):
 		grade: DF.ReadOnly | None
 		items: DF.Table[VehicleRequestItem]
 		kilometer_reading: DF.Data | None
+		mode_of_travel: DF.Literal["Office Car", "Private Vehicle", "Public Transport"]
 		parent_cost_center: DF.Data | None
 		place: DF.Data
 		posting_date: DF.Date | None
@@ -50,10 +52,13 @@ class VehicleRequest(Document):
 		vehicle_model: DF.Link | None
 		vehicle_number: DF.Data | None
 		vehicle_type: DF.Link | None
+		verifier: DF.Link | None
+		verifier_designation: DF.Data | None
+		verifier_name: DF.Data | None
 		workflow_state: DF.Link | None
 	# end: auto-generated types
 	def validate(self):
-		# validate_workflow_states(self)
+		validate_workflow_states(self)
 		notify_workflow_states(self)		
 		self.check_duplicate_entry()
 		self.calculate_time()
@@ -67,11 +72,9 @@ class VehicleRequest(Document):
 			
 
 	def on_submit(self):
-		self.check_vehicle()
 		self.notify_employee()
 
 	def on_cancel(self):
-		self.check_vehicle()
 		notify_workflow_states(self)
 		self.notify_employee()
 
@@ -86,10 +89,7 @@ class VehicleRequest(Document):
 		""".format(self.vehicle,self.from_date,self.to_date),as_dict=1)
 		if data:
 			frappe.throw("Vehicle <b>{}</b> is already booked".format(self.vehicle_number))
-
-	def check_vehicle(self):
-		if not self.vehicle:
-			frappe.throw("Vehicle is Mandatory")
+	
 	def calculate_time(self):
 		time = time_diff(self.to_date, self.from_date)
 		self.total_days_and_hours=time
