@@ -3,43 +3,11 @@
 
 frappe.ui.form.on('Vehicle Request', {
 	refresh: function (frm) {
-        // if(frm.doc.workflow_state == "Waiting MTO Approval" || frm.doc.workflow_state == "Approved"){
-        //     frm.set_df_property('vehicle', 'reqd',  frappe.user.has_role(["ADM User","Branch Manager","Fleet Manager"]))
-        //     frm.set_df_property('kilometer_reading', 'reqd',  frappe.user.has_role(["ADM User","Branch Manager","Fleet Manager"]))
-        //     frm.toggle_display("fleet_details_section", frappe.user.has_role(["Fleet Manager","System Manager"]));
-        //     frm.refresh_fields();
-        // }
-        // else{
-        //     cur_frm.toggle_display("fleet_details_section", false);
-        // }        
-        // Hide all first`
-        frm.toggle_display(['verifier', 'verifier_name', 'verifier_designation'], 0);
-        frm.toggle_display(['approver', 'approver_name', 'approver_designation'], 0);
-
-        if (frm.doc.workflow_state === "Verified") {
-            frm.toggle_display(['verifier', 'verifier_name', 'verifier_designation'], 1);
-        } else if (frm.doc.workflow_state === "Approved") {
-            frm.toggle_display(['approver', 'approver_name', 'approver_designation'], 1);
-        } else if (frm.doc.workflow_state === "Waiting Approval") {
-            frm.toggle_display(['approver', 'approver_name', 'approver_designation'], 1);
-        }
-    
         if (frm.doc.docstatus == 1 ){
             open_extension(frm)
         }
     },
 
-	// setup: function (frm) {
-    //     frm.get_field('items').grid.editable_fields = [
-    //         { fieldname: 'employee', columns: 2 },
-    //         { fieldname: 'employee_name', columns: 2 },
-    //         { fieldname: 'designation', columns: 2 },
-    //         { fieldname: 'division', columns: 3 },
-    //     ];
-    //     frappe.form.link_formatters['Employee'] = function(value) {
-    //             return value;
-    //     }
-    // },
     from_date: function(frm){
         get_date(frm);
     },
@@ -47,10 +15,6 @@ frappe.ui.form.on('Vehicle Request', {
         check_date(frm);
     },
 
-    // vehicle: function(frm){
-    //     get_previous_km(frm)
-    // },
-    
     vehicle: function(frm) {
         get_previous_km(frm)
         if (frm.doc.vehicle) {

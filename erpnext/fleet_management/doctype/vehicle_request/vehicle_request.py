@@ -37,7 +37,7 @@ class VehicleRequest(Document):
 		grade: DF.ReadOnly | None
 		items: DF.Table[VehicleRequestItem]
 		kilometer_reading: DF.Data | None
-		mode_of_travel: DF.Literal["Office Car", "Private Vehicle", "Public Transport"]
+		mode_of_travel: DF.Literal["", "Office Car", "Private Vehicle", "Public Transport"]
 		parent_cost_center: DF.Data | None
 		place: DF.Data
 		posting_date: DF.Date | None
@@ -69,6 +69,15 @@ class VehicleRequest(Document):
 				frappe.throw("Kilometer reading must be greater than previous kilometer reading.")
 		if self.workflow_state != "Approved":
 			notify_workflow_states(self)
+		if self.workflow_state ==("Waiting Approval"):
+			if self.mode_of_travel != "Private Vehicle":
+				self.verifier= ''
+				self.verifier_name = ''
+				self.verifier_designation = ''
+			else:
+				self.verifier= self.approver
+				self.verifier_name = self.approver_name
+				self.verifier_designation = self.approver_designation
 			
 
 	def on_submit(self):

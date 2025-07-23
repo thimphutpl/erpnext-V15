@@ -332,7 +332,7 @@
    "fieldname": "mode_of_travel",
    "fieldtype": "Select",
    "label": "Mode Of Travel",
-   "options": "Office Car\nPrivate Vehicle\nPublic Transport"
+   "options": "\nOffice Car\nPrivate Vehicle\nPublic Transport"
   },
   {
    "fieldname": "approver_details_section",
@@ -382,7 +382,7 @@
  ],
  "is_submittable": 1,
  "links": [],
- "modified": "2025-07-21 16:43:48.055382",
+ "modified": "2025-07-22 17:03:10.411027",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Vehicle Request",
