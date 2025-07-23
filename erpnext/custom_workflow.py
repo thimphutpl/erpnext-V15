@@ -29,7 +29,7 @@ class CustomWorkflow:
 		self.field_list		= ["user_id","employee_name","designation","name"]
 		# self.general_manager = frappe.db.get_value("Employee", frappe.db.get_value("Department",str(frappe.db.get_value("Employee",self.doc.employee,"division")),"approver_hod"),self.field_list)
 
-		if self.doc.doctype != "Material Request" and self.doc.doctype not in ("Asset Issue Details", "Compile Budget","POL Expense", "Repair And Services", "Asset Movement", "Budget Reappropiation", "Employee Advance"):
+		if self.doc.doctype != "Material Request" and self.doc.doctype not in ("Asset Issue Details", "Compile Budget","POL Expense", "Repair And Services", "Asset Movement", "Budget Reappropiation", "Employee Advance","Vehicle Request"):
 			self.employee		= frappe.db.get_value("Employee", self.doc.employee, self.field_list)
 			self.reports_to = frappe.db.get_value("Employee", {"name":frappe.db.get_value("Employee", self.doc.employee, "reports_to")}, self.field_list)
 					
@@ -46,21 +46,9 @@ class CustomWorkflow:
 			self.pms_appealer  = frappe.db.get_value("Employee", frappe.db.get_single_value("PMS Setting", "approver"), self.field_list)
 
 			# self.dept_approver	= frappe.db.get_value("Employee", frappe.db.get_value("Department", str(frappe.db.get_value("Employee", self.doc.employee, "department")), "approver"), self.field_list)
-			self.gm_approver	= frappe.db.get_value("Employee", frappe.db.get_value("Department",{"department_name":str(frappe.db.get_value("Employee", self.doc.employee, "division"))}, "approver_hod"),self.field_list)
-
-			if self.doc.doctype in ["Leave Encashment","POL","Leave Application","Vehicle Request"]:
-				self.adm_section_manager = frappe.db.get_value("Employee",{"user_id":frappe.db.get_value(
-					"Department Approver",
-					{"parent": "Administration Section - SMCL", "parentfield": "expense_approvers", "idx": 1},
-					"approver",
-				)},self.field_list)
-
-			if self.doc.doctype in ["Vehicle Request"]:
-				self.adm_section_manager = frappe.db.get_value(
-				"Employee",
-				frappe.db.get_single_value("HR Settings", "aa_approver"),
-				self.field_list
-			)		
+			self.gm_approver	= frappe.db.get_value("Employee", frappe.db.get_single_value("Accounts Settings", "approver_name"), self.field_list)
+			self.adm_section_manager =frappe.db.get_value("Employee", frappe.db.get_single_value("HR Settings", "aa_approver"), self.field_list)
+		
 		if self.doc.doctype == "Asset Movement":
 			department = frappe.db.get_value("Employee",self.doc.from_employee, "department")
 			if not department:
@@ -146,28 +134,15 @@ class CustomWorkflow:
 			self.user_supervisor = frappe.db.get_value("Employee", frappe.db.get_value("Employee", {'user_id':self.doc.owner}, "reports_to"), self.field_list)
 			self.user_approver = frappe.db.get_value("Employee", frappe.db.get_value("Employee", {'user_id':self.doc.owner}, "second_approver"), self.field_list)
 			
-		
+		if self.doc.doctype == "Vehicle Request":
+			self.gm_approver	= frappe.db.get_value("Employee", frappe.db.get_single_value("Accounts Settings", "approver_name"), self.field_list)
+			self.adm_section_manager =frappe.db.get_value("Employee", frappe.db.get_single_value("HR Settings", "aa_approver"), self.field_list)
 		if self.doc.doctype == "Employee Benefits":
 			self.hrgm = frappe.db.get_value("Employee",frappe.db.get_single_value("HR Settings","hrgm"), self.field_list)	
 
 		if self.doc.doctype == "Repair And Services":
 			self.expense_approver = frappe.db.get_value("Employee", {"user_id":frappe.db.get_value("Employee", {"user_id":self.doc.owner}, "expense_approver")}, self.field_list)
 			self.hrgm = frappe.db.get_value("Employee",frappe.db.get_single_value("HR Settings","hrgm"), self.field_list)
-		
-		if self.doc.doctype == "Vehicle Request":
-			department =frappe.db.get_value("Employee",self.doc.employee,"department")
-			if not department:
-				frappe.throw("set department for employee in employee master")			
-			if frappe.db.get_value("Employee", self.doc.employee, "expense_approver"):
-				self.expense_approver		= frappe.db.get_value("Employee", {"user_id":frappe.db.get_value("Employee", self.doc.employee, "expense_approver")}, self.field_list)
-			else:
-				frappe.throw('Expense Approver not set for employee {}'.format(self.doc.employee))
-			self.vehicle_mto = frappe.db.get_value("Employee",{"user_id":frappe.db.get_value("Department",department,"approver_id")},self.field_list)
-			self.aa_approver = frappe.db.get_value(
-				"Employee",
-				frappe.db.get_single_value("HR Settings", "aa_approver"),
-				self.field_list
-			)
 
 		self.login_user		= frappe.db.get_value("Employee", {"user_id": frappe.session.user}, self.field_list)
 
@@ -376,28 +351,13 @@ class CustomWorkflow:
 			vars(self.doc)[self.doc_approver[1]] = officiating[1] if officiating else self.power_section_manager[1]
 			vars(self.doc)[self.doc_approver[2]] = officiating[2] if officiating else self.power_section_manager[2]
 
-		elif approver_type == "ADM":
+		elif approver_type == "ADM Approver":
 			officiating = get_officiating_employee(self.adm_section_manager[3])
 			if officiating:
 				officiating = frappe.db.get_value("Employee", officiating[0].officiate, self.field_list)
 			vars(self.doc)[self.doc_approver[0]] = officiating[0] if officiating else self.adm_section_manager[0]
 			vars(self.doc)[self.doc_approver[1]] = officiating[1] if officiating else self.adm_section_manager[1]
 			vars(self.doc)[self.doc_approver[2]] = officiating[2] if officiating else self.adm_section_manager[2]
-
-			verifier_info = self.adm_section_manager  # Or another list, as per your org logic
-			if len(self.doc_approver) > 5:
-				vars(self.doc)[self.doc_approver[3]] = verifier_info[0]
-				vars(self.doc)[self.doc_approver[4]] = verifier_info[1]
-				vars(self.doc)[self.doc_approver[5]] = verifier_info[2]
-		
-		# elif approver_type == "General Manager":
-			# frappe.throw(str(self.general_manager))
-			# officiating = get_officiating_employee(self.general_manager[3])
-			# if officiating:
-			# 	officiating = frappe.db.get_value("Employee", officiating[0].officiate, self.field_list)
-			# vars(self.doc)[self.doc_approver[0]] = officiating[0] if officiating else self.general_manager[0]
-			# vars(self.doc)[self.doc_approver[1]] = officiating[1] if officiating else self.general_manager[1]
-			# vars(self.doc)[self.doc_approver[2]] = officiating[2] if officiating else self.general_manager[2]
 		
 		elif approver_type == "GMM":
 			officiating = get_officiating_employee(self.gm_marketing[3])
@@ -473,6 +433,7 @@ class CustomWorkflow:
 			vars(self.doc)[self.doc_approver[2]] = officiating[2] if officiating else self.budget_reappropiation_approver[2]
 		else:
 			frappe.throw(_("Invalid approver type for Workflow"))
+	
 	def project_hindrance(self):
 		if self.new_state.lower() in ("Draft".lower()):
 			if frappe.session.user != self.doc.owner:
@@ -537,30 +498,20 @@ class CustomWorkflow:
 				frappe.throw(f"Only {self.doc.leave_approver} can Reject this Leave Application.")
 		else:
 			frappe.throw(_("Invalid Workflow State {}").format(self.doc.workflow_state))
-	# added
+	# added one
 	def vehicle_request(self):		
 		if self.new_state.lower() in ("Draft".lower()):
 			if frappe.session.user != self.doc.owner:
 				frappe.throw("Only {} can apply this leave".format(self.doc.owner))
-
 		elif self.new_state.lower() == ("Waiting Approval".lower()):
-			self.set_approver("ADM")
+			self.set_approver("ADM Approver")
 
 		elif self.new_state.lower() == ("Verified".lower()):
-			if frappe.session.user != self.doc.verifier:
-				frappe.throw(f"Only {self.doc.verifier} can Verify this Leave Application.")
-			approver_approver = frappe.db.get_value("Employee",self.doc.employee,"second_approver")
-			if not approver_approver:
-				frappe.throw("Please Set Approver for employee " +self.doc.employee)
-			self.set_approver("Approver Approver")
+			if frappe.session.user != self.doc.approver:
+				frappe.throw(f"Only {self.doc.approver} can Verify this Application.")
+			self.set_approver("GM")
 
 		elif self.new_state.lower() == "approved":
-			# Fetch the account approver from Account Settings
-			account_approver = frappe.db.get_single_value("Accounts Settings", "approver")
-			if not account_approver:
-				frappe.throw("Please set the Approver in Accounts Settings.")
-			if not self.doc.approver:
-				self.doc.approver = account_approver
 			if frappe.session.user != self.doc.approver:
 				frappe.throw(f"Only {self.doc.approver} can Approve this Vehicle Request.")			
 
@@ -1276,7 +1227,7 @@ def get_field_map():
 		"SWS Application": ["supervisor", "supervisor_name", "supervisor_designation"],
 		"SWS Membership": ["supervisor", "supervisor_name", "supervisor_designation"],
 		"Employee Advance": ["advance_approver_name", "advance_approver", "advance_approver_designation"],
-		"Vehicle Request": ["approver", "approver_name", "approver_designation", "verifier", "verifier_name", "verifier_designation"],
+		"Vehicle Request": ["approver", "approver_name", "approver_designation"],
 		"Repair And Services": ["approver", "approver_name", "aprover_designation"],
 		"Overtime Application": ["ot_approver", "ot_approver_name", "approver_designation"],
 		"Project Hindrance": ["approver", "approver_name", "approver_designation"],
