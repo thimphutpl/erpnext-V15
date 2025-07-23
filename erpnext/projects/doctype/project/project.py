@@ -550,7 +550,7 @@ class Project(Document):
 				ts_list = frappe.db.sql("""
 							select name
 							from `tabTimesheet`
-							where project = "{0}"
+							where parent_project = "{0}"
 							and task = '{1}'
 							and docstatus < 2
 					""".format(self.name, task.task_id), as_dict=1)
