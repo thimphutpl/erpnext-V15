@@ -69,8 +69,8 @@ frappe.ui.form.on('Asset Movement', {
 		if (frm.doc.purpose === 'Transfer') {
 			fieldnames_to_be_altered = {
 				target_cost_center: { read_only: 0, reqd: 0 },
-				source_cost_center: { read_only: 1, reqd: 1 },
-				from_employee: { read_only: 1, reqd: 0 },
+				source_cost_center: { read_only: 0, reqd: 1 },
+				from_employee: { read_only: 0, reqd: 0 },
 				to_employee: { read_only: 0, reqd: 1 }
 			};
 		}

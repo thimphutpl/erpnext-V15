@@ -49,13 +49,6 @@
    "label": "Asset Category"
   },
   {
-   "fieldname": "finance_book",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "Finance Book",
-   "options": "Finance Book"
-  },
-  {
    "fieldname": "journal_entry",
    "fieldtype": "Link",
    "label": "Journal Entry",
@@ -160,12 +153,19 @@
    "label": "Credit Account",
    "options": "Account",
    "reqd": 1
+  },
+  {
+   "fieldname": "finance_book",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Finance Book",
+   "options": "Finance Book"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-21 10:43:06.055875",
+ "modified": "2025-07-17 13:28:31.803779",
  "modified_by": "Administrator",
  "module": "Assets",
  "name": "Asset Value Adjustment",

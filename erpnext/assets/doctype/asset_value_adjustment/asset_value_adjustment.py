@@ -64,12 +64,14 @@ class AssetValueAdjustment(Document):
 	# end: auto-generated types
 
 	def validate(self):
+		
 		self.validate_date()
 		self.set_current_asset_value()
 		# self.set_difference_amount()
 		self.set_new_asset_value()
 
 	def on_submit(self):
+		
 		# self.make_depreciation_entry()
 		# self.update_asset(self.new_asset_value)
 		# add_asset_activity(
@@ -78,6 +80,7 @@ class AssetValueAdjustment(Document):
 		# 		get_link_to_form("Asset Value Adjustment", self.name)
 		# 	),
 		# )
+		#frappe.throw(str(self.new_asset_value))
 		self.change_value(self.new_asset_value)
 		self.update_asset()
 
@@ -114,6 +117,7 @@ class AssetValueAdjustment(Document):
 		self.new_asset_value = flt(self.current_asset_value + self.difference_amount)
 
 	def set_current_asset_value(self):
+		#frappe.throw("hi1")
 		if not self.current_asset_value and self.asset:
 			self.current_asset_value = get_asset_value_after_depreciation(self.asset, self.finance_book)
 
@@ -212,7 +216,7 @@ class AssetValueAdjustment(Document):
 					fieldname="name"
 					)
 				# asset_depreciation_schedule = frappe.db.get_value("Asset Depreciation Schedule",filters:{"asset":asset_obj.name,"docstatus":1},fields={"name"})
-				# frappe.throw(str(asset_depreciation_schedule))
+				# frappe.throw(str(asset_obj))
 				schedules = frappe.db.get_all("Depreciation Schedule", order_by="schedule_date", filters = {"parent": asset_depreciation_schedule, "schedule_date": [">=", start_date]},fields={"name", "schedule_date", "journal_entry",  "depreciation_amount", "accumulated_depreciation_amount", "income_depreciation_amount","income_accumulated_depreciation"})
 
 				# frappe.throw(frappe.as_json(schedules))
@@ -220,6 +224,7 @@ class AssetValueAdjustment(Document):
 				total_days = get_number_of_days(add_days(getdate(start_date), -1), schedules[-1]['schedule_date'])
 				##Assign the last dep schedule date for num of days calc
 				asset_depreciation_percent = asset_obj.get('finance_books')[0].income_depreciation_percent
+
 				last_sch_date = add_days(getdate(start_date), -1)
 				for i in schedules:
 					#Add additional values to the depreciation schedules
@@ -270,6 +275,7 @@ class AssetValueAdjustment(Document):
 			frappe.throw("Sorry, something happened. Please try again")
 
 	def make_gl_entry(self, asset_account, credit_account, value, asset, start_date):
+		
 		je = frappe.new_doc("Journal Entry")
 		je.flags.ignore_permissions = 1
 
@@ -321,6 +327,7 @@ class AssetValueAdjustment(Document):
 		sch.db_set("income_accumulated_depreciation", accu_income)
 		
 	def update_asset(self, cancel=False):
+		#frappe.throw("hi")
 		if self.re_valued:
 			if cancel:
 				frappe.db.set_value("Asset",self.asset,"revalued_asset_value", 0)

@@ -8,6 +8,42 @@ from frappe.model.document import Document
 from frappe.utils import cint, flt, getdate, nowdate
 
 class AssetIssueDetails(Document):
+    # begin: auto-generated types
+    # This code is auto-generated. Do not modify anything in this block.
+
+    from typing import TYPE_CHECKING
+
+    if TYPE_CHECKING:
+        from frappe.types import DF
+
+        amended_from: DF.Link | None
+        amount: DF.Currency
+        asset_rate: DF.Currency
+        branch: DF.Link
+        brand: DF.Data | None
+        chesis_no: DF.Data | None
+        company: DF.Link
+        cost_center: DF.ReadOnly | None
+        create_single_asset: DF.Check
+        emp_branch: DF.Data | None
+        employee_name: DF.Data | None
+        engine_no: DF.Data | None
+        entry_date: DF.Date
+        equipment_type: DF.Link | None
+        issued_date: DF.Date
+        issued_to: DF.Link
+        item_code: DF.Link
+        item_name: DF.Data
+        location: DF.Link | None
+        model: DF.Link | None
+        purchase_receipt: DF.Link | None
+        qty: DF.Int
+        reference_code: DF.Link | None
+        reg_number: DF.Data | None
+        serial_number: DF.Data | None
+        uom: DF.Data | None
+        warehouse: DF.Link | None
+    # end: auto-generated types
     def validate(self):
         pass
 
@@ -118,7 +154,7 @@ class AssetIssueDetails(Document):
                     "purchase_date": self.issued_date,
                     "calculate_depreciation": 1,
                     "asset_rate": self.asset_rate,
-                    "purchase_receipt_amount": self.asset_rate,
+                    "purchase_amount": self.asset_rate,
                     "gross_purchase_amount": flt(self.asset_rate) * flt(self.qty),
                     "asset_quantity": self.qty,
                     "purchase_receipt": self.purchase_receipt,
