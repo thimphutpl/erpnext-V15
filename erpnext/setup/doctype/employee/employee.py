@@ -448,7 +448,7 @@ def add_in_blocklist(emp, block_list):
 
 
 @frappe.whitelist()
-def get_overtime_rate(employee, posting_date ):
+def get_overtime_rate(employee, posting_date, is_late_night_ot=False, is_holiday=False ):
 	basic = frappe.db.sql("select b.eligible_for_overtime_and_payment, a.amount as basic_pay from `tabSalary Detail` a, `tabSalary Structure` b where a.parent = b.name and a.salary_component = 'Basic Pay' and b.is_active = 'Yes' and b.employee = \'" + str(employee) + "\'", as_dict=True)
 	if basic:
 		if not cint(basic[0].eligible_for_overtime_and_payment):
@@ -460,7 +460,14 @@ def get_overtime_rate(employee, posting_date ):
 		# if is_holiday(employee=employee, date= posting_date):
 		# 	return ((flt(basic[0].basic_pay) * 1.5) / (30 * 8))
 		# else:
-		return (flt(flt(basic[0].basic_pay) / (30 * 8),0))
+		rate = flt(basic[0].basic_pay) / (30 * 8)
+
+		# Multiply by 1.5 if it's late night OT or a holiday
+		if frappe.utils.cint(is_late_night_ot) or frappe.utils.cint(is_holiday):
+			rate *= 1.5
+
+		return flt(rate, 0)
+		# return (flt(flt(basic[0].basic_pay) / (30 * 8),0))
 	else:
 		frappe.throw("No Salary Structure found for the employee")
 

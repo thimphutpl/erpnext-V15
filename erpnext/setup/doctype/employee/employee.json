@@ -24,6 +24,7 @@
   "start_grade",
   "maximum_grade",
   "grade",
+  "exception_grade",
   "column_break_9",
   "status",
   "gender",
@@ -1234,13 +1235,20 @@
    "fieldname": "health_insurance_no",
    "fieldtype": "Data",
    "label": "Health Insurance No"
+  },
+  {
+   "fieldname": "exception_grade",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Exception Grade",
+   "options": "Employee Grade"
   }
  ],
  "icon": "fa fa-user",
  "idx": 24,
  "image_field": "image",
  "links": [],
- "modified": "2025-03-03 12:58:36.917954",
+ "modified": "2025-03-18 15:58:15.468414",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee",
