@@ -166,7 +166,7 @@ class eNote(Document):
 		elif self.workflow_state in ("Approved", "Rejected", "Cancelled"):
 			self.notify_employee()
 
-		elif self.workflow_state == "Pending for Approval" and frappe.session.user != self.forward_to:
+		elif self.workflow_state == "Pending For Approval" and frappe.session.user != self.forward_to:
 			self.notify_approval()
 
 		elif self.workflow_state == "Waiting For Reviewer":
