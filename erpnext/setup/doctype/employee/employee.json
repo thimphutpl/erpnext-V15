@@ -22,6 +22,7 @@
   "gender",
   "date_of_birth",
   "salutation",
+  "business_activity",
   "column_break1",
   "date_of_joining",
   "promotion_due_date",
@@ -991,6 +992,12 @@
    "fieldtype": "Table",
    "label": "Employee Benefit Nomination",
    "options": "Employee Benefit Nomination"
+  },
+  {
+   "fieldname": "business_activity",
+   "fieldtype": "Link",
+   "label": "Business Activity",
+   "options": "Business Activity"
   }
  ],
  "icon": "fa fa-user",
@@ -998,7 +1005,7 @@
  "image_field": "image",
  "is_tree": 1,
  "links": [],
- "modified": "2025-06-04 15:56:41.577912",
+ "modified": "2025-07-24 10:22:51.212681",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee",
