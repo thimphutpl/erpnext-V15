@@ -1,6 +1,18 @@
 frappe.query_reports["Purchase History Report"] = {
     "filters": [
         {
+            "fieldname": "from_date",
+            "label": __("From Date"),
+            "fieldtype": "Date",
+
+        },
+        {
+            "fieldname": "to_date",
+            "label": __("To Date"),
+            "fieldtype": "Date",
+
+        },
+        {
             "fieldname": "mr_name",
             "label": __("Material Request Name"),
             "fieldtype": "Link",

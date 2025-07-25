@@ -40,6 +40,10 @@ def execute(filters=None):
     if filters.get("pi_name"):
         conditions.append("pi.name = %s")
         values.append(filters["pi_name"])
+    if filters.get("from_date") and filters.get("to_date"):
+        conditions.append("mr.transaction_date BETWEEN %s AND %s")
+        values.append(filters["from_date"])
+        values.append(filters["to_date"])
 
     condition_string = " AND ".join(conditions) if conditions else "1=1"
 
@@ -72,8 +76,28 @@ def execute(filters=None):
     LEFT JOIN `tabPurchase Receipt Item` AS pri ON pri.parent = pr.name  -- Correct join
     LEFT JOIN `tabPurchase Invoice` AS pi ON pi.purchase_receipt = pr.name
     WHERE {condition_string}
+    ORDER BY mr.name, mri.item_code
     """
-
     data = frappe.db.sql(query, tuple(values), as_dict=True)
+    # previous_mr_name = None    
+    # for row in data:
+    #     if row["mr_name"] == previous_mr_name:
+    #         row["mr_name"] = ""
+    #        
+    #     else:
+    #         previous_mr_name = row["mr_name"]
+    #         
+    suppress_repeats_by_field(data, ["mr_name","mr_transation","mri_name","po_name","pr_name","pi_name"])
+
 
     return columns, data
+def suppress_repeats_by_field(data, fields):
+    previous_values = {field: None for field in fields}
+
+    for row in data:
+        for field in fields:
+            current = row.get(field)
+            if current == previous_values[field]:
+                row[field] = ""  
+            else:
+                previous_values[field] = current 
