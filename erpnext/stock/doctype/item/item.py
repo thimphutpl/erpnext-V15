@@ -112,7 +112,7 @@ class Item(Document):
 		is_service_item: DF.Check
 		is_stock_item: DF.Check
 		is_sub_contracted_item: DF.Check
-		item_code: DF.Data | None
+		item_code: DF.Data
 		item_defaults: DF.Table[ItemDefault]
 		item_group: DF.Link
 		item_name: DF.Data
@@ -155,19 +155,6 @@ class Item(Document):
 		self.set_onload("asset_naming_series", get_asset_naming_series())
 
 	def autoname(self):
-		# if frappe.db.get_default("item_naming_by") == "Naming Series":
-		# 	if self.variant_of:
-		# 		if not self.item_code:
-		# 			template_item_name = frappe.db.get_value("Item", self.variant_of, "item_name")
-		# 			make_variant_item_code(self.variant_of, template_item_name, self)
-		# 	else:
-		# 		from frappe.model.naming import set_name_by_naming_series
-
-		# 		set_name_by_naming_series(self)
-		# 		self.item_code = self.name
-
-		# self.item_code = strip(self.item_code)
-		# self.name = self.item_code
 		self.item_code = self.get_current_item_code()
 		if not self.item_code:
 			msgprint(
@@ -189,8 +176,6 @@ class Item(Document):
 			if not base:
 				frappe.throw("Setup Item Code Base in Item Group '{}'".format(frappe.get_desk_link("Item Group", self.item_group)))
 			return str(base) + str("100001")
-
-
 	def after_insert(self):
 		"""set opening stock and item price"""
 		if self.standard_rate:
