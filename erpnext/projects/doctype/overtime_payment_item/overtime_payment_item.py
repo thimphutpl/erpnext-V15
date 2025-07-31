@@ -14,8 +14,19 @@ class OvertimePaymentItem(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		bank_account: DF.ReadOnly
+		bank_name: DF.Link
+		cost_center: DF.Link | None
+		designation: DF.ReadOnly | None
+		employee: DF.Link
+		employee_name: DF.ReadOnly
+		grade: DF.ReadOnly | None
+		hourly_rate: DF.Currency
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
+		reference_doc: DF.Link
+		total_hours: DF.Float
+		total_ot_amount: DF.Currency
 	# end: auto-generated types
 	pass
