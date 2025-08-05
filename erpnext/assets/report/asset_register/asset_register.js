@@ -16,19 +16,8 @@ frappe.query_reports["Asset Register"] = {
 			"fieldname": "fiscal_year",
 			"label": __("Fiscal Year"),
 			"fieldtype": "Link",
-			"options": "Fiscal Year",
+			"options":"Fiscal Year",
 			"reqd": 1,
-			"on_change": function(query_report) {
-				var fiscal_year = query_report.get_values().fiscal_year;
-				if (fiscal_year) {
-					var year_start_date = fiscal_year + "-01-01"; // Format: YYYY-MM-DD
-					var year_end_date = fiscal_year + "-12-31";   // Format: YYYY-MM-DD
-					console.log(year_start_date);
-					query_report.set_filter_value("from_date", year_start_date);
-					query_report.set_filter_value("to_date", year_end_date);
-					frappe.query_report.trigger_refresh();
-				}
-			}
 		},
 		{
 			"fieldname": "from_date",

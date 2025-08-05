@@ -19,18 +19,19 @@ def validate_filters(filters):
     if not filters.fiscal_year:
         frappe.throw(_("Fiscal Year {0} is required").format(filters.fiscal_year))
 
-    # fiscal_year = frappe.db.get_value("Fiscal Year", filters.fiscal_year, ["year_start_date", "year_end_date"], as_dict=True)
-    # if not fiscal_year:
-    #     frappe.throw(_("Fiscal Year {0} does not exist").format(filters.fiscal_year))
-    # else:
-    #     filters.year_start_date = getdate(fiscal_year.year_start_date)
-    #     filters.year_end_date = getdate(fiscal_year.year_end_date)
-
     from datetime import datetime
-
-    filters.year_start_date = datetime.strptime(filters.fiscal_year + "-01-01", "%Y-%m-%d").date()
-    filters.year_end_date = datetime.strptime(filters.fiscal_year + "-12-31", "%Y-%m-%d").date()
-
+    
+    # Handle different fiscal year formats
+    fiscal_year = filters.fiscal_year
+    if '-' in fiscal_year:
+        # Format like 2024-25 - take the first part
+        base_year = int(fiscal_year.split('-')[0])
+    else:
+        # Format like 2024 or 2025
+        base_year = int(fiscal_year)
+    
+    filters.year_start_date = datetime.strptime(str(base_year) + "-01-01", "%Y-%m-%d").date()
+    filters.year_end_date = datetime.strptime(str(base_year) + "-12-31", "%Y-%m-%d").date()
 
     if not filters.from_date:
         filters.from_date = filters.year_start_date
@@ -87,6 +88,13 @@ def get_depreciation_details(filters):
         GROUP BY ds.parent
     """.format(from_date=filters.from_date, to_date=filters.to_date)
 
+    # Get base year for next year calculation
+    fiscal_year = filters.fiscal_year
+    if '-' in fiscal_year:
+        base_year = int(fiscal_year.split('-')[0])
+    else:
+        base_year = int(fiscal_year)
+        
     query_two= """
         SELECT
             ds.parent AS asset,
@@ -96,7 +104,7 @@ def get_depreciation_details(filters):
         AND (SELECT status FROM `tabAsset` WHERE name = ds.parent) IN ('Submitted','Partially Depreciated')
         GROUP BY ds.parent
 
-    """.format(fiscal_year = str(int(filters.fiscal_year)+1))
+    """.format(fiscal_year = str(base_year + 1))
 
     depreciation_details = frappe._dict()
     depreciation_details_two = frappe._dict()
@@ -290,6 +298,13 @@ def get_depreciation_details(filters):
         GROUP BY ds.parent
     """.format(from_date=filters.from_date, to_date=filters.to_date, fiscal_year = filters.fiscal_year)
 
+    # Get base year for next year calculation
+    fiscal_year = filters.fiscal_year
+    if '-' in fiscal_year:
+        base_year = int(fiscal_year.split('-')[0])
+    else:
+        base_year = int(fiscal_year)
+        
     query_two= """
         SELECT
             ds.parent AS asset,
@@ -297,7 +312,7 @@ def get_depreciation_details(filters):
         FROM `tabDepreciation Schedule` AS ds
         WHERE YEAR(ds.schedule_date) = '{fiscal_year}' AND (SELECT status FROM `tabAsset` WHERE name = ds.parent) IN ('Submitted','Partially Depreciated')
         GROUP BY ds.parent
-    """.format(fiscal_year = str(int(filters.fiscal_year)+1))
+    """.format(fiscal_year = str(base_year + 1))
 
     depreciation_details = frappe._dict()
     depreciation_details_two = frappe._dict()
@@ -335,13 +350,7 @@ def get_columns():
             "options":"Asset Category",
             "width": 150
         },
-        # {
-        #     "fieldname": "asset_sub_category",
-        #     "label": _("Sub Category"),
-        #     "fieldtype": "Link",
-        #     "options":"Item Sub Group",
-        #     "width": 150
-        # },
+        
         {
             "fieldname": "issued_to",
             "label": _("Issued To"),
@@ -496,4 +505,3 @@ def get_columns():
             "width": 120
         },
     ]
-
