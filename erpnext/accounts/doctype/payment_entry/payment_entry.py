@@ -204,7 +204,7 @@ class PaymentEntry(AccountsController):
 		self.update_outstanding_amounts()
 		self.update_payment_schedule()
 		self.update_payment_requests()
-		# self.make_advance_payment_ledger_entries()
+		#self.make_advance_payment_ledger_entries()
 		self.update_advance_paid()  # advance_paid_status depends on the payment request amount
 		self.set_status()
 
@@ -2909,13 +2909,14 @@ def get_payment_entry(
 	over_billing_allowance = frappe.db.get_single_value("Accounts Settings", "over_billing_allowance")
 	if dt in ("Sales Order", "Purchase Order") and flt(doc.per_billed, 2) >= (100.0 + over_billing_allowance):
 		frappe.throw(_("Can only make payment against unbilled {0}").format(_(dt)))
-
+	
 	if not party_type:
 		party_type = set_party_type(dt)
-
+	
 	party_account = set_party_account(dt, dn, doc, party_type)
 	party_account_currency = set_party_account_currency(dt, party_account, doc)
 
+	# frappe.throw(party_account)
 	if not payment_type:
 		payment_type = set_payment_type(dt, doc)
 
@@ -2925,6 +2926,13 @@ def get_payment_entry(
 
 	# bank or cash
 	bank = get_bank_cash_account(doc, bank_account)
+	if dt == "Purchase Order" and doc.status in ["To Receive and Bill","To Bill"]:
+		party_account = frappe.db.get_single_value("Accounts Settings", "advance_to_supplier")
+		
+		if not party_account:
+			frappe.throw("Setup Advance to Supplier Account in Accounts Settings")
+		# Ver 2.0 Begins, Following code added by SHIV on 03/01/2018
+		party_currency = doc.get("currency")
 
 	# if default bank or cash account is not set in company master and party has default company bank account, fetch it
 	if party_type in ["Customer", "Supplier"] and not bank:
@@ -2941,7 +2949,7 @@ def get_payment_entry(
 	paid_amount, received_amount, discount_amount, valid_discounts = apply_early_payment_discount(
 		paid_amount, received_amount, doc, party_account_currency, reference_date
 	)
-	# frappe.throw(str(doc.get("party")))
+	#frappe.throw(party_account)
 	# frappe.throw(str(dt))
 	pe = frappe.new_doc("Payment Entry")
 	pe.payment_type = payment_type
@@ -3270,12 +3278,16 @@ def set_party_type(dt):
 
 
 def set_party_account(dt, dn, doc, party_type):
+	
 	if dt == "Sales Invoice":
 		party_account = get_party_account_based_on_invoice_discounting(dn) or doc.debit_to
 	elif dt == "Purchase Invoice":
 		party_account = doc.credit_to
+	#elif dt == "Purchase Order":
+
 	else:
 		party_account = get_party_account(party_type, doc.get(party_type.lower()), doc.company)
+		#frappe.throw(doc.get(party_type.lower()))
 	return party_account
 
 

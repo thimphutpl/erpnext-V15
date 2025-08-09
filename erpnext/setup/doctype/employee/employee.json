@@ -124,6 +124,19 @@
   "column_break_73",
   "date_of_issue",
   "place_of_issue",
+  "permanent_details_section",
+  "country",
+  "house_number",
+  "phone_number",
+  "column_break_qnni",
+  "dzongkhag",
+  "gewog",
+  "village",
+  "thram_number",
+  "employee_family_details_section",
+  "employee_family_details",
+  "employee_benefits_nominees_section",
+  "nominees",
   "profile_tab",
   "bio",
   "educational_qualification",
@@ -542,7 +555,7 @@
    "collapsible": 1,
    "fieldname": "personal_details",
    "fieldtype": "Tab Break",
-   "label": "Personal"
+   "label": "Personal Details"
   },
   {
    "fieldname": "passport_number",
@@ -563,6 +576,74 @@
    "fieldname": "place_of_issue",
    "fieldtype": "Data",
    "label": "Place of Issue"
+  },
+
+  {
+   "fieldname": "permanent_details_section",
+   "fieldtype": "Section Break",
+   "label": "Permanent Details"
+  },
+  {
+   "fieldname": "country",
+   "fieldtype": "Link",
+   "label": "Country",
+   "options": "Country"
+  },
+  {
+   "depends_on": "eval:doc.dzongkhag",
+   "fieldname": "gewog",
+   "fieldtype": "Link",
+   "label": "Gewog",
+   "options": "Gewog"
+  },
+  {
+   "fieldname": "house_number",
+   "fieldtype": "Data",
+   "label": "House Number"
+  },
+  {
+   "fieldname": "column_break_qnni",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "dzongkhag",
+   "fieldtype": "Link",
+   "label": "Dzongkhag",
+   "options": "Dzongkhag"
+  },
+  {
+   "depends_on": "eval:doc.gewog",
+   "fieldname": "village",
+   "fieldtype": "Link",
+   "label": "Village",
+   "options": "Village"
+  },
+  {
+   "fieldname": "thram_number",
+   "fieldtype": "Data",
+   "label": "Thram Number"
+  },
+   {
+   "fieldname": "employee_family_details_section",
+   "fieldtype": "Section Break",
+   "label": "Employee Family Details"
+  },
+  {
+   "fieldname": "employee_family_details",
+   "fieldtype": "Table",
+   "label": "Family Details",
+   "options": "Employee Family Details"
+  },
+    {
+   "fieldname": "employee_benefits_nominees_section",
+   "fieldtype": "Section Break",
+   "label": "Employee Benefits Nominees"
+  },
+  {
+   "fieldname": "nominees",
+   "fieldtype": "Table",
+   "label": "Retirement Benefits Nominees Name",
+   "options": "Retirement Benefits Nominees"
   },
   {
    "fieldname": "column_break6",

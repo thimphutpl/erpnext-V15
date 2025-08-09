@@ -15,11 +15,9 @@ class ModeofPayment(Document):
 
 	if TYPE_CHECKING:
 		from erpnext.accounts.doctype.mode_of_payment_account.mode_of_payment_account import ModeofPaymentAccount
-		from erpnext.event_management.doctype.mode_of_payment_branch_account.mode_of_payment_branch_account import ModeofPaymentBranchAccount
 		from frappe.types import DF
 
 		accounts: DF.Table[ModeofPaymentAccount]
-		branch_accounts: DF.Table[ModeofPaymentBranchAccount]
 		enabled: DF.Check
 		mode_of_payment: DF.Data
 		type: DF.Literal["Cash", "Bank", "General", "Phone"]

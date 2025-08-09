@@ -7,6 +7,7 @@
  "engine": "InnoDB",
  "field_order": [
   "employee_group_name",
+  "column_break_yyxm",
   "retirement_age",
   "section_break_00",
   "employee_list",
@@ -25,6 +26,12 @@
   "section_break_lqip",
   "minimum_months",
   "increment_prorated",
+  "increase_free_load_setting_section",
+  "loan_type",
+  "maximum_number_of_months_allowed",
+  "column_break_bcub",
+  "noof_installment",
+  "minimum_service_period",
   "leave_encashment_settings_section",
   "min_encashment_days",
   "max_encashment_days",
@@ -210,10 +217,45 @@
    "fieldname": "retirement_age",
    "fieldtype": "Int",
    "label": "Retirement Age"
+  },
+  {
+   "fieldname": "increase_free_load_setting_section",
+   "fieldtype": "Section Break",
+   "label": "INTEREST FREE LOAD SETTING"
+  },
+  {
+   "fieldname": "loan_type",
+   "fieldtype": "Select",
+   "label": "Loan Type",
+   "options": "Gross Pay"
+  },
+  {
+   "fieldname": "maximum_number_of_months_allowed",
+   "fieldtype": "Data",
+   "label": "Maximum No. of Month Allowed"
+  },
+  {
+   "fieldname": "noof_installment",
+   "fieldtype": "Select",
+   "label": "No.of Installment",
+   "options": "\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n14\n15\n16\n17\n18\n19\n20\n21\n22\n23\n24\n25\n26\n27\n28\n29\n30\n31\n32\n33\n34\n35\n36\n37\n38\n39\n40\n41\n42\n43\n44\n45\n46\n47\n48\n49\n50\n51\n52\n53\n54\n55\n56\n57\n58\n59\n60"
+  },
+  {
+   "fieldname": "column_break_bcub",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "minimum_service_period",
+   "fieldtype": "Int",
+   "label": "Minimum service period"
+  },
+  {
+   "fieldname": "column_break_yyxm",
+   "fieldtype": "Column Break"
   }
  ],
  "links": [],
- "modified": "2025-02-03 20:01:11.730529",
+ "modified": "2025-08-02 12:08:16.999172",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee Group",

@@ -375,6 +375,7 @@ class PurchaseReceipt(BuyingController):
 		self.repost_future_sle_and_gle()
 		self.set_consumed_qty_in_subcontract_order()
 		self.reserve_stock_for_sales_order()
+		self.update_asset_receive_entries()
 
 	def check_next_docstatus(self):
 		submit_rv = frappe.db.sql(
@@ -428,6 +429,24 @@ class PurchaseReceipt(BuyingController):
 
 		return process_gl_map(gl_entries)
 
+	def update_asset_receive_entries(self):
+		for a in self.items:
+			item_group = frappe.db.get_value("Item", a.item_code, "item_group")
+			if item_group and item_group == "Fixed Asset":
+				ae = frappe.new_doc("Asset Received Entries")
+				ae.item_code = a.item_code
+				ae.child_ref = a.name
+				ae.item_name = a.item_name
+				ae.qty = a.qty
+				ae.company = self.company
+				ae.received_date = self.posting_date
+				# ae.reference_type = "Purchase Receipt"
+				ae.ref_doc = self.name
+				ae.branch = self.branch
+				ae.cost_center = a.cost_center
+				ae.warehouse = a.warehouse
+				ae.flags.ignore_permissions = True
+				ae.submit()
 	def make_item_gl_entries(self, gl_entries, warehouse_account=None):
 		from erpnext.accounts.doctype.purchase_invoice.purchase_invoice import (
 			get_purchase_document_details,

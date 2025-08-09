@@ -387,6 +387,7 @@ def get_party_account(party_type, party=None, company=None, include_advance=Fals
 	Will first search in party (Customer / Supplier) record, if not found,
 	will search in group (Customer Group / Supplier Group),
 	finally will return default."""
+	
 	if not company:
 		frappe.throw(_("Please select a Company"))
 
@@ -400,8 +401,9 @@ def get_party_account(party_type, party=None, company=None, include_advance=Fals
 	account = frappe.db.get_value(
 		"Party Account", {"parenttype": party_type, "parent": party, "company": company}, "account"
 	)
-
+	#frappe.throw(str(account))
 	if not account and party_type in ["Customer", "Supplier"]:
+		
 		party_group_doctype = "Customer Group" if party_type == "Customer" else "Supplier Group"
 		group = frappe.get_cached_value(party_type, party, scrub(party_group_doctype))
 		account = frappe.db.get_value(
@@ -409,13 +411,13 @@ def get_party_account(party_type, party=None, company=None, include_advance=Fals
 			{"parenttype": party_group_doctype, "parent": group, "company": company},
 			"account",
 		)
-
+		
 	if not account and party_type in ["Customer", "Supplier"]:
 		default_account_name = (
 			"default_receivable_account" if party_type == "Customer" else "default_payable_account"
 		)
 		account = frappe.get_cached_value("Company", company, default_account_name)
-
+		
 	existing_gle_currency = get_party_gle_currency(party_type, party, company)
 	if existing_gle_currency:
 		if account:
@@ -424,12 +426,13 @@ def get_party_account(party_type, party=None, company=None, include_advance=Fals
 			account = get_party_gle_account(party_type, party, company)
 
 	if include_advance and party_type in ["Customer", "Supplier", "Student"]:
+		frappe.throw("hi")
 		advance_account = get_party_advance_account(party_type, party, company)
 		if advance_account:
 			return [account, advance_account]
 		else:
 			return [account]
-
+	#frappe.throw(account)
 	return account
 
 

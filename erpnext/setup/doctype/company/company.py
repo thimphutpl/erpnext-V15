@@ -114,7 +114,7 @@ class Company(NestedSet):
 		round_off_cost_center: DF.Link | None
 		round_off_for_opening: DF.Link | None
 		sales_monthly_history: DF.SmallText | None
-		series_for_depreciation_entry: DF.Data | None
+		series_for_depreciation_entry: DF.Link | None
 		stock_adjustment_account: DF.Link | None
 		stock_received_but_not_billed: DF.Link | None
 		submit_err_jv: DF.Check

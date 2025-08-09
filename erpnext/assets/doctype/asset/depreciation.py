@@ -1270,6 +1270,7 @@ def get_comma_separated_links(names, doctype):
 
 @frappe.whitelist()
 def scrap_asset(asset_name,scrap_date=None):
+	#frappe.throw("hi")
 	asset = frappe.get_doc("Asset", asset_name)
 	if asset.docstatus != 1:
 		frappe.throw(_("Asset {0} must be submitted").format(asset.name))
@@ -1286,6 +1287,7 @@ def scrap_asset(asset_name,scrap_date=None):
 	asset.reload()
 
 	depreciation_series = frappe.get_cached_value("Company", asset.company, "series_for_depreciation_entry")
+	#frappe.throw(depreciation_series)
 	je = frappe.new_doc("Journal Entry")
 	je.voucher_type = "Journal Entry"
 	je.naming_series = depreciation_series

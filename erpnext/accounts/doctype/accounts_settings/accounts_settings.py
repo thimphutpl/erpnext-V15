@@ -25,6 +25,7 @@ class AccountsSettings(Document):
 
 		acc_frozen_upto: DF.Date | None
 		add_taxes_from_item_tax_template: DF.Check
+		advance_to_supplier: DF.Link | None
 		allow_multi_currency_invoices_against_single_party_account: DF.Check
 		allow_stale: DF.Check
 		auto_reconcile_payments: DF.Check
@@ -95,7 +96,7 @@ class AccountsSettings(Document):
 		if clear_cache:
 			frappe.clear_cache()
 			
-		self.validate_and_sync_auto_reconcile_config()
+		#self.validate_and_sync_auto_reconcile_config()
 
 	def validate_stale_days(self):
 		if not self.allow_stale and cint(self.stale_days) <= 0:
