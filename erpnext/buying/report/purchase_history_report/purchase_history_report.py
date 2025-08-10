@@ -9,6 +9,7 @@ def execute(filters=None):
         {"fieldname": "mr_date", "label": "Forward to Procurement", "fieldtype": "Date", "width": 200},
         {"fieldname": "mri_code", "label": "Item Code", "fieldtype": "Data", "width": 200},
         {"fieldname": "mri_name", "label": "Material Name", "fieldtype": "Data", "width": 200},
+        {"fieldname": "i_item_sub_group", "label": "Item Sub Group", "fieldtype": "Data", "width": 200},
         {"fieldname": "mri_quantity", "label": "Material Quantity", "fieldtype": "Float", "width": 200},
         {"fieldname": "po_name", "label": "Purchase Order Name", "fieldtype": "Data", "width": 200},
         {"fieldname": "po_date", "label": "Purchase Order Date", "fieldtype": "Date", "width": 200},
@@ -54,6 +55,7 @@ def execute(filters=None):
         mr.cost_center AS mr_cost_center,  
         mr.status AS mr_status,
         mr.date AS mr_date,  
+        i.item_sub_group AS i_item_sub_group,
         po.name AS po_name,
         po.transaction_date AS po_date,
         po.schedule_date AS po_schedule_date,
@@ -75,6 +77,7 @@ def execute(filters=None):
     LEFT JOIN `tabPurchase Receipt` AS pr ON pr.purchase_order = po.name
     LEFT JOIN `tabPurchase Receipt Item` AS pri ON pri.parent = pr.name  -- Correct join
     LEFT JOIN `tabPurchase Invoice` AS pi ON pi.purchase_receipt = pr.name
+    LEFT JOIN `tabItem` AS i ON mri.item_code = i.name
     WHERE {condition_string}
     ORDER BY mr.name, mri.item_code
     """
