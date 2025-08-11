@@ -1238,7 +1238,20 @@ class Project(Document):
 
 		if self.percent_complete == 100:
 			self.status = "Completed"
+	@frappe.whitelist()
+	def check_logged_in_user_role(self):
+		#return values initialization-----------------
+		freeze_project = 1
+		#----------------------------Supervisor------------------------------------------------------------------------------------------------------------------------------------------------------------|
+		user = frappe.session.user
+		user_roles = frappe.get_roles(user)
 
+		if user == "Administrator":
+			freeze_project = 0
+		if "Freeze Project" in user_roles:
+			freeze_project = 0
+		
+		return freeze_project 
 	def update_costing(self):
 		from_time_sheet = frappe.db.sql("""select
 			sum(costing_amount) as costing_amount,

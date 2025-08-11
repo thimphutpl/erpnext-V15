@@ -86,6 +86,7 @@ class GLEntry(Document):
 			# self.check_pl_account()
 			self.validate_party()
 			self.validate_currency()
+			self.check_project_freeze()
 
 	def on_update(self):
 		adv_adj = self.flags.adv_adj
@@ -121,6 +122,15 @@ class GLEntry(Document):
 					self.against_voucher_type,
 					self.against_voucher,
 				)
+	def check_project_freeze(self):
+		if self.project:
+			freeze_project = frappe.db.get_value("Project", self.project,"freeze_project")
+			if freeze_project:
+				freeze_date = frappe.db.get_value("Project", self.project,"freeze_till")
+			if not freeze_date:
+				frappe.throw("freeze Date is required for Project {}".format(self.project))
+			if freeze_date < self.posting_date:
+				frappe.throw("Account for Project {project} is frozen till {date}".format(project=self.project, date=freeze_date))
 
 	def check_mandatory(self):
 		mandatory = ["account", "voucher_type", "voucher_no", "company"]

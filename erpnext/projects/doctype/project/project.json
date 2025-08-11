@@ -57,9 +57,11 @@
   "column_break_uayw",
   "physical_progress",
   "actual_expenses",
+  "freeze_project",
   "column_break_xzuk",
   "percent_completed",
   "financial_progress",
+  "freeze_till",
   "sb_material_details",
   "task_material_item",
   "other_document_references_section",
@@ -1000,6 +1002,18 @@
    "fieldtype": "Data",
    "label": "Financial Progress (%)",
    "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "freeze_project",
+   "fieldtype": "Check",
+   "label": "freeze Project"
+  },
+  {
+   "depends_on": "freeze_project",
+   "fieldname": "freeze_till",
+   "fieldtype": "Date",
+   "label": "Freeze Till"
   }
  ],
  "icon": "fa fa-puzzle-piece",
@@ -1008,7 +1022,7 @@
  "is_submittable": 1,
  "links": [],
  "max_attachments": 4,
- "modified": "2025-05-08 14:58:39.912903",
+ "modified": "2025-08-11 09:55:33.744203",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Project",
