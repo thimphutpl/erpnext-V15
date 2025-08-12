@@ -15,6 +15,7 @@ frappe.query_reports["TDS Certificate"] = {
 					query_report.get_filter('customer').toggle(party_type == 'Customer')
 					query_report.get_filter('supplier').toggle(party_type == 'Supplier')
 					query_report.get_filter('vendor_tpn_no').toggle(false)
+					query_report.refresh();
 				}
 				else{
 					query_report.get_filter('supplier').toggle(false)
@@ -54,11 +55,28 @@ frappe.query_reports["TDS Certificate"] = {
 				}
 				frappe.model.with_doc("Supplier", supplier, function(r) {
 					var vendor = frappe.model.get_doc("Supplier", supplier);
-					console.log(vendor)
 					query_report.set_filter_value("vendor_tpn_no", vendor.supplier_tpn_no);
 					query_report.refresh("vendor_tpn_no");
 				});
 			}
+		},
+		{
+			"fieldname": "tds_rate",
+			"label": __("TDS Rate"),
+			"fieldtype": "Link",
+			"options": "Tax Withholding Category",
+			"reqd": 0,
+			"on_change": function (query_report) {
+				let category_name = query_report.get_filter_value('tds_rate');
+				if (!category_name) return;
+				// frappe.call({
+				// 	method: "erpnext.accounts.report.tds_certificate.tds_certificate.get_tax_withholding_rate",
+				// 	args: {
+				// 		category_name: category_name
+				// 	},
+				// });
+				query_report.refresh();
+			},
 		},
 		{
 			"fieldname": "vendor_tpn_no",

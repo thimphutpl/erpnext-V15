@@ -14,7 +14,7 @@ def get_data(filters):
 	data = []
 	conditions = get_condition(filters)
 	for d in frappe.db.sql('''
-			SELECT ti.party, ti.posting_date, ti.bill_amount, t.tax_withholding_category, 
+			SELECT ti.party as supplier, ti.posting_date, ti.bill_amount, t.tax_withholding_category, 
 				ti.tds_amount, t.cheque_no, t.cheque_date, ti.invoice_no, ti.invoice_type,
 				t.tds_receipt_number, t.tds_receipt_date
 			FROM `tabTDS Receipt Update` t INNER JOIN `tabTDS Remittance Item` ti ON t.name = ti.parent
@@ -55,6 +55,8 @@ def get_condition(filters):
 		frappe.throw("To Date cannot be greater than From Date")
 	if filters.get("from_date") and filters.get("to_date"):
 		conditions.append("ti.posting_date between '{}' and '{}'".format(filters.get("from_date"),filters.get("to_date")))
+	if filters.get("tds_rate"):
+		conditions.append("t.tax_withholding_category = '{}'".format(filters.get("tds_rate")))
 
 	return "and {}".format(" and ".join(conditions)) if conditions else ""
 def get_columns():
@@ -63,6 +65,12 @@ def get_columns():
 			"fieldname":"posting_date",
 			"label":_("Invoice Date"),
 			"fieldtype":"Date",
+			"width":120
+		},
+		{
+			"fieldname":"supplier",
+			"label":_("Supplier Name"),
+			"fieldtype":"Data",
 			"width":120
 		},
 		{
@@ -119,6 +127,25 @@ def calculate_total(data):
 	})
 	return row
 
+# @frappe.whitelist()
+# def get_tax_withholding_rate(category_name):
+#     if not category_name:
+#         return None
+    
+#     # Use ignore_permissions to bypass permission checks here
+#     rates = frappe.get_all(
+#         "Tax Withholding Rate",
+#         filters={"parent": category_name},
+#         fields=["tax_withholding_rate"],
+#         limit_page_length=1,
+#         order_by="idx asc",
+#         ignore_permissions=True
+#     )
+    
+#     if rates:
+#         return rates[0].tax_withholding_rate
+#     else:
+#         return None
 def get_datax(filters):
 	query = query1 = ''
 	je_entries = []
