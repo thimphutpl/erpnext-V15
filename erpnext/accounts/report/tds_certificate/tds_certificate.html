@@ -7,11 +7,11 @@
 <!-- <h2 class="text-center">Bank of Bhutan Ltd.</h2> -->
 <h4 class="text-center">TDS Certificate</h4>
 {% if (filters.from_date) { %}
-<h4 class="text-center">{%= dateutil.str_to_user(filters.from_date) %} to {%= dateutil.str_to_user(filters.to_date) %}
+<h4 class="text-center">{%= frappe.datetime.str_to_user(filters.from_date) %} to {%= frappe.datetime.str_to_user(filters.to_date) %}
 </h4>
 {% } %}
 <div style="float: right;">
-    <strong>Date: </strong>{%= dateutil.str_to_user(dateutil.get_datetime_as_string().split(' ')[0]) %}
+    <strong>Date: </strong>{%= frappe.datetime.str_to_user(frappe.datetime.get_datetime_as_string().split(' ')[0]) %}
 </div>
 <table style="width: 100%;">
     <tr>
