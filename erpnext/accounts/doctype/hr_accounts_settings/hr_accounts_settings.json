@@ -235,7 +235,7 @@
   {
    "fieldname": "ltc_payable",
    "fieldtype": "Link",
-   "label": "Leave Travel Concession Payable",
+   "label": "LTC Payable",
    "options": "Account"
   },
   {
@@ -252,7 +252,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-08-05 11:02:14.303449",
+ "modified": "2025-08-13 14:09:14.427210",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "HR Accounts Settings",
@@ -265,6 +265,17 @@
    "print": 1,
    "read": 1,
    "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "Administrator",
+   "select": 1,
    "share": 1,
    "write": 1
   }
