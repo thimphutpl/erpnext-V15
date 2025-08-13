@@ -23,6 +23,45 @@ frappe.ui.form.on('eNote', {
 			frm.set_df_property("enote_format","hidden", 1);
 		}
 
+		if (frm.doc.workflow_state == "Waiting For Reviewer" && frm.doc.reviewer_required) {
+			let is_reviewer = false;
+			(frm.doc.reviewers || []).forEach(reviewer => {
+				if (reviewer.user_id === frappe.session.user) {
+					is_reviewer = true;
+				}
+			});
+			
+			if (is_reviewer) {
+				frm.add_custom_button(__('Review'), function() {
+					let remark = "";
+					$.each(frm.doc.remark || [], function(i, item) {
+						if (item.user === frappe.session.user) {
+							remark = item.remark;
+						}
+					});
+					
+					let d = new frappe.ui.Dialog({
+						title: 'Write Your Review Remarks',
+						fields: [
+							{
+								label: __(""),
+								fieldtype: "Text Editor",
+								fieldname: "content",
+								default: remark,
+							}
+						],
+						size: 'medium',
+						primary_action_label: 'Submit Review',
+						primary_action(values) {
+							save_remark(frm, values['content'], 1);
+							d.hide();
+						},
+					});
+					d.show();
+				}, __("Actions"));
+			}
+		}
+
 		if (frm.doc.__islocal) {
 			frm.events.set_editable(frm, true);
 		} else {
@@ -151,3 +190,4 @@ var save_remark = function(frm, remark, reviewers){
         freeze_message: "Saving Remarks.... Please Wait",
 	})
 }
+
