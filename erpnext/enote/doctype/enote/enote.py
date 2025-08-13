@@ -41,7 +41,7 @@ class eNote(Document):
 		self.enote_format = make_autoname(str(self.enote_series)+".YYYY./.#####")
 		frappe.db.set_value("eNote", self.name, "enote_format", self.enote_format)
 		self.send_notification()
-		self.check_review()
+		# self.check_review()
 		
 		# notify_workflow_states(self)
   
@@ -347,13 +347,13 @@ class eNote(Document):
 
    
 	def send_mail(self, recipients, message, subject):
-		attachments = self.get_attachment()
+		# attachments = self.get_attachment()
 		try:
 			frappe.sendmail(
 					recipients=recipients,
 					subject=_(subject),
 					message= _(message),
-					attachments=attachments,
+					# attachments=attachments,
 				)
 		except:
 			pass	
@@ -366,8 +366,8 @@ def get_permission_query_conditions(user):
 
     if user == "Administrator":
         return
-    if "HR User" in user_roles or "HR Manager" in user_roles:
-        return
+    # if "HR User" in user_roles or "HR Manager" in user_roles:
+    #     return
     return """(
         `tabeNote`.owner = '{user}' or
 		IF (
