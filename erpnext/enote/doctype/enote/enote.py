@@ -58,13 +58,6 @@ class eNote(Document):
 			
 		self.save_forward_to()
 		self.workflow_action()
-		
-		
-		# if we allow on action approve, it going double email to doc owner. 
-		# one form here and another from on_submit().
-		# if we allow from here, workflow state is still stays in pending which is wrong.  
-		# again while reloading the doc, after saving remarks has impact as well. it should run
-		# only in below action.
 		if frappe.request.form.get('action') in ("Forward","Apply","Reject"):
 			self.send_notification()
 			# notify_workflow_states(self)   
