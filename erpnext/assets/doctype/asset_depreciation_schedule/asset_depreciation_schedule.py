@@ -471,17 +471,19 @@ class AssetDepreciationSchedule(Document):
 			# 	n < (cint(final_number_of_depreciations) - 1) or final_number_of_depreciations == 2
 			# ):
 			if not has_pro_rata or (
-				n < cint(final_number_of_depreciations) - 1
+				n <= cint(final_number_of_depreciations) - 1
 			):
 				schedule_date = add_months(
 					row.depreciation_start_date, n * cint(row.frequency_of_depreciation)
 				)
-
 				if should_get_last_day:
 					schedule_date = get_last_day(schedule_date)
 
 				monthly_schedule_date = add_months(schedule_date, - row.frequency_of_depreciation + 1)
-
+			# if has_pro_rata and asset_doc.opening_number_of_booked_depreciations > 0 and n == 0:
+			# 	schedule_date = add_months(
+			# 		row.depreciation_start_date, n * cint(row.frequency_of_depreciation)
+			# 	)
 			# if asset is being sold or scrapped
 			if date_of_disposal and getdate(schedule_date) >= getdate(date_of_disposal):
 				from_date = add_months(
@@ -507,7 +509,6 @@ class AssetDepreciationSchedule(Document):
 						no_of_days_in_a_schedule,
 						income_depreciation_amount,
 						income_accumulated_depreciation)
-
 				break
 
 			# For first row
@@ -519,6 +520,7 @@ class AssetDepreciationSchedule(Document):
 				if schedule_date:
 					depreciation_amount = get_depreciation_amount(asset_doc, value_after_depreciation, row, schedule_date, days, has_pro_rata)
 				# frappe.throw("here "+str(schedule_date)+" "+str(depreciation_amount))
+
 			# For last row
 			elif has_pro_rata and n == cint(final_number_of_depreciations) - 1:
 				if not asset_doc.flags.increase_in_asset_life:
@@ -673,7 +675,7 @@ class AssetDepreciationSchedule(Document):
 				else:
 					accumulated_depreciation = flt(self.opening_accumulated_depreciation)
 
-			depreciation_amount = flt(d.depreciation_amount, d.precision("depreciation_amount"))
+			depreciation_amount = flt(d.depreciation_amount)
 			value_after_depreciation -= flt(depreciation_amount)
 
 			# for the last row, if depreciation method = Straight Line
@@ -685,15 +687,16 @@ class AssetDepreciationSchedule(Document):
 				and not row.shift_based
 			):
 				depreciation_amount += flt(
-					value_after_depreciation - flt(row.expected_value_after_useful_life),
-					d.precision("depreciation_amount"),
+					value_after_depreciation - flt(row.expected_value_after_useful_life)
+					
 				)
 
 			d.depreciation_amount = depreciation_amount
 			accumulated_depreciation += d.depreciation_amount
 			d.accumulated_depreciation_amount = flt(
-				accumulated_depreciation, d.precision("accumulated_depreciation_amount")
+				accumulated_depreciation
 			)
+			frappe.msgprint(str(d.accumulated_depreciation_amount))
 
 
 def _get_value_after_depreciation_for_making_schedule(asset_doc, fb_row):
