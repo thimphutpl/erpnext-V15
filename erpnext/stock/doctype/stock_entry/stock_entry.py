@@ -1546,7 +1546,8 @@ class StockEntry(StockController):
 		finished_item_row = self.get_finished_item_row()
 		# frappe.throw(str(finished_item_row))
 		# make sl entries for source warehouse first
-		self.get_sle_for_source_warehouse(sl_entries, finished_item_row)
+		if self.stock_entry_type !="Material Return":
+			self.get_sle_for_source_warehouse(sl_entries, finished_item_row)
 		# frappe.throw(str(sl_entries))
 		# SLE for target warehouse
 		self.get_sle_for_target_warehouse(sl_entries, finished_item_row)
@@ -3231,19 +3232,30 @@ def get_supplied_items(
 @frappe.whitelist()
 def make_material_return(source_name, target_doc=None):
 	def set_missing_values(source, target):
+		if not source.from_warehouse:
+			frappe.throw(_("Source warehouse is missing in the original Stock Entry."))
+		if not source.items:
+			frappe.throw(_("No items found in the original Stock Entry."))
 		source.to_warehouse = target.from_warehouse
-		for b in source.items:
-			for a in target.items:
-				returned_qty = 0
-				for c in frappe.db.get_all("Stock Entry Detail",{"item_ref":b.name, "docstatus":1}, ['qty']):
-					returned_qty += c.qty
-				# frappe.msgprint(str(a.item_code) +" Project" +str(a.project))
-				a.item_ref = b.name
-				a.balance_qty = b.qty - returned_qty
-				a.qty = a.balance_qty
-				a.t_warehouse = b.s_warehouse
+		for source_item in source.items:
+			for target_item in target.items:
+				if target_item.item_code == source_item.item_code:
+					# Calculate returned quantity
+					returned_qty = sum(
+						d.qty for d in frappe.get_all(
+							"Stock Entry Detail",
+							filters={"item_ref": source_item.name, "docstatus": 1},
+							fields=["qty"]
+						)
+					) or 0
+
+					# Set fields in the target document
+					target_item.item_ref = source_item.name
+					target_item.balance_qty = source_item.qty - returned_qty
+					target_item.qty = target_item.balance_qty
+					target_item.t_warehouse = source_item.s_warehouse
+
 		target.stock_entry_type = "Material Return"
-	
 	doc = get_mapped_doc(
 		"Stock Entry",
 		source_name,
