@@ -340,7 +340,6 @@
    "label": "Comment Section"
   },
   {
-   "description": "<b>Give Comments if you reject this PMS</b>",
    "fieldname": "comment",
    "fieldtype": "Small Text",
    "label": "Comment(Optional)"
@@ -443,7 +442,7 @@
  ],
  "is_submittable": 1,
  "links": [],
- "modified": "2024-08-02 12:47:03.602777",
+ "modified": "2025-08-19 15:38:58.216920",
  "modified_by": "Administrator",
  "module": "PMS",
  "name": "Target Set Up",
