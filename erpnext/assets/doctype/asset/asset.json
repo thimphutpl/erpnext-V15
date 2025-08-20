@@ -607,6 +607,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "serial_number",
    "fieldtype": "Data",
    "label": "Serial Number"
@@ -747,7 +748,7 @@
    "link_fieldname": "target_asset"
   }
  ],
- "modified": "2025-02-19 15:56:06.142153",
+ "modified": "2025-08-20 17:13:30.103873",
  "modified_by": "Administrator",
  "module": "Assets",
  "name": "Asset",
