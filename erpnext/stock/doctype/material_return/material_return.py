@@ -74,6 +74,8 @@ class MaterialReturn(StockController):
 
 		for a in self.items:
 			inter_company_account = frappe.db.get_value("Company", self.company, "inter_company_account")
+			if not inter_company_account:
+				frappe.throw("Please set Default adjustment Account in Company {}".format(self.company))
 			if not a.expense_account:
 				frappe.throw("Expense Account is mandatory for Item {}".format(a.item_name))
 			wh_account = frappe.db.get_value("Warehouse", a.warehouse, "account")
