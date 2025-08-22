@@ -75,6 +75,7 @@
   "cost_center",
   "default_finance_book",
   "registration_account",
+  "inter_company_account",
   "cost_appropriation_settings_section",
   "hire_charge",
   "lubricant",
@@ -1033,6 +1034,12 @@
    "fieldtype": "Link",
    "label": "GFG Soelra",
    "options": "Account"
+  },
+  {
+   "fieldname": "inter_company_account",
+   "fieldtype": "Link",
+   "label": "Default Adjust Account",
+   "options": "Account"
   }
  ],
  "icon": "fa fa-building",
@@ -1040,7 +1047,7 @@
  "image_field": "company_logo",
  "is_tree": 1,
  "links": [],
- "modified": "2025-04-10 12:10:12.660099",
+ "modified": "2025-08-22 12:47:24.610552",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Company",

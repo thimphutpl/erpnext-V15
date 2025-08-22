@@ -73,6 +73,7 @@ class MaterialReturn(StockController):
 		gl_entries = []
 
 		for a in self.items:
+			inter_company_account = frappe.db.get_value("Company", self.company, "inter_company_account")
 			if not a.expense_account:
 				frappe.throw("Expense Account is mandatory for Item {}".format(a.item_name))
 			wh_account = frappe.db.get_value("Warehouse", a.warehouse, "account")
@@ -82,16 +83,28 @@ class MaterialReturn(StockController):
 			expense_account = a.expense_account
 			if not expense_account:
 				frappe.throw("Expense Account in Item for {}".format(a.item_name))
-
+			expense_project =""
+			if a.project:
+				expense_project = a.project
+			
 			gl_entries.append(
 				prepare_gl(self, {"account": expense_account,
-						 "credit": flt(a.amount),
-						 "credit_in_account_currency": flt(a.amount),
-						 "cost_center": self.cost_center,
-						 "remarks": a.remarks,
-						 "project": a.project
+						"credit": flt(a.amount),
+						"credit_in_account_currency": flt(a.amount),
+						"cost_center": a.project_cost_center,
+						"remarks": a.remarks,
+						"project": expense_project
 						})
 				)
+			gl_entries.append(
+			prepare_gl(self, {"account": inter_company_account,
+					"debit": flt(a.amount),
+					"debit_in_account_currency": flt(a.amount),
+					"cost_center": a.project_cost_center,
+					"remarks": a.remarks,
+					"project": expense_project
+				})
+			)
 			gl_entries.append(
 				prepare_gl(self, {"account": wh_account,
 						"debit": flt(a.amount),
@@ -100,7 +113,15 @@ class MaterialReturn(StockController):
 						"remarks": a.remarks
 					})
 				)
+			gl_entries.append(
+				prepare_gl(self, {"account": inter_company_account,
+						"credit": flt(a.amount),
+						"credit_in_account_currency": flt(a.amount),
+						"cost_center": self.cost_center,
+						"remarks": a.remarks
+						})
+				)
 
 		if gl_entries:
-			make_gl_entries(gl_entries, cancel=(self.docstatus == 2), update_outstanding="No", merge_entries=True)
+			make_gl_entries(gl_entries, cancel=(self.docstatus == 2), update_outstanding="No", merge_entries=False)
 

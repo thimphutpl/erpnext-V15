@@ -24,6 +24,8 @@ class MaterialReturnItem(Document):
 		parentfield: DF.Data
 		parenttype: DF.Data
 		project: DF.Link | None
+		project_branch: DF.Link
+		project_cost_center: DF.Link | None
 		qty: DF.Float
 		remarks: DF.SmallText | None
 		stock_uom: DF.Data | None

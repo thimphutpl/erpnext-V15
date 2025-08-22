@@ -97,6 +97,7 @@ class Company(NestedSet):
 		hsd: DF.Link | None
 		imprest_advance_account: DF.Link | None
 		indian_operators_salary: DF.Link | None
+		inter_company_account: DF.Link | None
 		is_group: DF.Check
 		lft: DF.Int
 		loss_disposal_account: DF.Link | None
