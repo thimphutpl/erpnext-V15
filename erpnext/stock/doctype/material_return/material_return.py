@@ -45,6 +45,8 @@ class MaterialReturn(StockController):
 			a.amount = flt(a.qty) * flt(a.basic_rate)
 			a.cost_center = self.cost_center
 			a.expense_account = expense_account
+			if a.valuation_rate <= 0:
+				frappe.throw("Valuation Rate is mandatory for Item {}".format(a.item_name))
 
 	def on_submit(self):
 		self.make_sl_entry()
