@@ -112,11 +112,11 @@ class HireChargeInvoice(AccountsController):
 		# check_uncancelled_linked_doc(self.doctype, self.name) #comment by Jai
 		cl_status = frappe.db.get_value("Journal Entry", self.invoice_jv, "docstatus")
 		if cl_status and cl_status != 2:
-			frappe.throw("You need to cancel the journal entry ("+ str(self.invoice_jv) + ")related to this invoice first!")
+			frappe.throw("You need to cancel the journal entry ("+ str(self.invoice_jv) + ") related to this invoice {} first!".format(self.name))
 		if self.payment_jv:
 			cl_status = frappe.db.get_value("Journal Entry", self.payment_jv, "docstatus")
 			if cl_status and cl_status != 2:
-				frappe.throw("You need to cancel the journal entry ("+ str(self.payment_jv) + ")related to this invoice first!")
+				frappe.throw("You need to cancel the journal entry ("+ str(self.payment_jv) + ") related to this invoice {} first!".format(self.name))
 		self.readjust_advance()
 		if self.close:
 			self.check_advances()
