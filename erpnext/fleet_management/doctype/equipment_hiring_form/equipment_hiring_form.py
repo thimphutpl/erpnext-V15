@@ -89,11 +89,11 @@ class EquipmentHiringForm(Document):
 		self.update_equipment_request(1)
 		#self.update_journal()
 
-	def before_cancel(self):		
+	def before_cancel(self):
 		# check_uncancelled_linked_doc(self.doctype, self.name)
 		cl_status = frappe.db.get_value("Journal Entry", self.advance_journal, "docstatus")
 		if cl_status and cl_status != 2:
-			frappe.throw("You need to cancel the journal entry related to this job card first!")
+			frappe.throw("You need to cancel the journal entry related to this {} entry first!".format(self.name))
 	
 		frappe.db.sql("delete from `tabEquipment Reservation Entry` where ehf_name = \'"+ str(self.name) +"\'")	
 		self.db_set("advance_journal", '')
@@ -184,7 +184,7 @@ class EquipmentHiringForm(Document):
 			je.title = "Advance for Equipment Hire (" + self.name + ")"
 			je.voucher_type = 'Bank Entry'
 			je.naming_series = 'Bank Receipt Voucher'
-			je.remark = 'Advance payment against : ' + self.name;
+			je.remark = 'Advance payment against : ' + self.name
 			je.posting_date = frappe.utils.nowdate()
 			je.branch = self.branch
 
