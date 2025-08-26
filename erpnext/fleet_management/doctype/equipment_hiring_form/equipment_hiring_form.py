@@ -90,7 +90,7 @@ class EquipmentHiringForm(Document):
 		#self.update_journal()
 
 	def before_cancel(self):		
-		check_uncancelled_linked_doc(self.doctype, self.name)
+		# check_uncancelled_linked_doc(self.doctype, self.name)
 		cl_status = frappe.db.get_value("Journal Entry", self.advance_journal, "docstatus")
 		if cl_status and cl_status != 2:
 			frappe.throw("You need to cancel the journal entry related to this job card first!")
