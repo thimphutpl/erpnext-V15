@@ -62,8 +62,12 @@ class JournalEntry(AccountsController):
 		cheque_no: DF.Data | None
 		clearance_date: DF.Date | None
 		company: DF.Link
+		cost_center: DF.Link | None
+		designation: DF.Link | None
 		difference: DF.Currency
 		due_date: DF.Date | None
+		employee_id: DF.Link | None
+		employee_name: DF.Data | None
 		finance_book: DF.Link | None
 		from_template: DF.Link | None
 		inter_company_journal_entry_reference: DF.Link | None
@@ -262,6 +266,7 @@ class JournalEntry(AccountsController):
 			"Repost Accounting Ledger Items",
 			"Unreconcile Payment",
 			"Unreconcile Payment Entries",
+			"Equipment Hiring Form",
 		)
 		self.make_gl_entries(1)
 		self.update_advance_paid()
