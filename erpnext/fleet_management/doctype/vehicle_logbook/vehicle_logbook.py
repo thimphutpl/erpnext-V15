@@ -219,7 +219,7 @@ class VehicleLogbook(Document):
 		#self.check_tank_capacity()
 	
 	def on_cancel(self):
-		check_uncancelled_linked_doc(self.doctype, self.name)
+		# check_uncancelled_linked_doc(self.doctype, self.name)
 		frappe.db.sql("delete from `tabEquipment Status Entry` where ehf_name = \'"+str(self.name)+"\'")
 
 	def check_dates(self):
@@ -456,7 +456,7 @@ def get_opening(equipment, from_date, to_date, pol_type):
 	# c_km = frappe.db.sql("select final_km from `tabVehicle Logbook` where docstatus = 1 and equipment = %s and to_date <= %s order by to_date desc limit 1", (equipment, from_date), as_dict=True)
 
 	# c_hr = frappe.db.sql("select final_hour from `tabVehicle Logbook` where docstatus = 1 and equipment = %s and to_date <= %s order by to_date desc limit 1", (equipment, from_date), as_dict=True)
-	frappe.throw("hhhhh")
+	# frappe.throw("hhhhh")
 	c_km = frappe.db.sql("select final_km from `tabVehicle Logbook` where docstatus = 1 and equipment = %s ORDER BY creation desc limit 1", (equipment), as_dict=True)
 
 	c_hr = frappe.db.sql("select final_hour from `tabVehicle Logbook` where docstatus = 1 and equipment = %s ORDER BY creation desc limit 1", (equipment), as_dict=True)
