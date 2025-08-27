@@ -1,0 +1,192 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-07-21 10:03:56.018117",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_ezcm",
+  "from_date",
+  "source_branch",
+  "target_branch",
+  "distribution_type",
+  "get_over_head_cost",
+  "sum_cost_driver",
+  "column_break_pgtj",
+  "to_date",
+  "source_cost_center",
+  "target_cost_center",
+  "account",
+  "source_total_amount",
+  "posting_date",
+  "project_count",
+  "target_over_head_details_section",
+  "get_project",
+  "over_head_cost_item",
+  "remarks",
+  "section_break_ycnd",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_ezcm",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "from_date",
+   "fieldtype": "Date",
+   "label": "From Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "source_branch",
+   "fieldtype": "Link",
+   "label": "Source Branch",
+   "options": "Branch",
+   "reqd": 1
+  },
+  {
+   "depends_on": "eval: doc.distribution_type==\"Cost Center to Cost Center\"",
+   "fieldname": "target_branch",
+   "fieldtype": "Link",
+   "label": "Target Branch",
+   "mandatory_depends_on": "eval: doc.distribution_type==\"Cost Center to Cost Center\"",
+   "options": "Branch"
+  },
+  {
+   "fieldname": "distribution_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Distribution Type",
+   "options": "\nCost Center to Cost Center\nCost Center to Project",
+   "reqd": 1
+  },
+  {
+   "fieldname": "get_over_head_cost",
+   "fieldtype": "Button",
+   "label": "Get Over Head Cost"
+  },
+  {
+   "fieldname": "column_break_pgtj",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "label": "Posting Date",
+   "options": "today",
+   "reqd": 1
+  },
+  {
+   "fieldname": "to_date",
+   "fieldtype": "Date",
+   "label": "To Date",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "source_branch.cost_center",
+   "fieldname": "source_cost_center",
+   "fieldtype": "Link",
+   "label": "Source Cost Center",
+   "options": "Cost Center",
+   "reqd": 1
+  },
+  {
+   "depends_on": "eval: doc.distribution_type==\"Cost Center to Cost Center\"",
+   "fetch_from": "source_branch.cost_center",
+   "fieldname": "target_cost_center",
+   "fieldtype": "Link",
+   "label": "Target Cost Center",
+   "mandatory_depends_on": "eval: doc.distribution_type==\"Cost Center to Cost Center\"",
+   "options": "Cost Center"
+  },
+  {
+   "fieldname": "source_total_amount",
+   "fieldtype": "Currency",
+   "label": "Source Total Amount",
+   "reqd": 1
+  },
+  {
+   "fieldname": "target_over_head_details_section",
+   "fieldtype": "Section Break",
+   "label": "Target Over Head Details"
+  },
+  {
+   "depends_on": "eval: doc.distribution_type!=\"Cost Center to Cost Center\"",
+   "fieldname": "get_project",
+   "fieldtype": "Button",
+   "label": "Get Project"
+  },
+  {
+   "depends_on": "eval: doc.distribution_type!=\"Cost Center to Cost Center\"",
+   "fieldname": "over_head_cost_item",
+   "fieldtype": "Table",
+   "mandatory_depends_on": "eval: doc.distribution_type!=\"Cost Center to Cost Center\"",
+   "options": "Over Head Cost Item"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Text",
+   "label": "Remarks"
+  },
+  {
+   "fieldname": "section_break_ycnd",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Over Head Cost Distribution",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "account",
+   "fieldtype": "Link",
+   "label": "Account",
+   "options": "Account",
+   "reqd": 1
+  },
+  {
+   "fieldname": "project_count",
+   "fieldtype": "Data",
+   "label": "Project Count",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sum_cost_driver",
+   "fieldtype": "Data",
+   "label": "Sum Cost Driver (%)",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2025-08-07 17:19:42.465625",
+ "modified_by": "Administrator",
+ "module": "Accounts",
+ "name": "Over Head Cost Distribution",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

@@ -26,6 +26,7 @@
   "project_engineer",
   "project_engineer_name",
   "project_engineer_designation",
+  "project_engineer_phone_number",
   "cb_1",
   "branch",
   "cost_center",
@@ -1014,6 +1015,11 @@
    "fieldname": "freeze_till",
    "fieldtype": "Date",
    "label": "Freeze Till"
+  },
+  {
+   "fieldname": "project_engineer_phone_number",
+   "fieldtype": "Data",
+   "label": "Project Engineer Phone number"
   }
  ],
  "icon": "fa fa-puzzle-piece",
@@ -1022,7 +1028,7 @@
  "is_submittable": 1,
  "links": [],
  "max_attachments": 4,
- "modified": "2025-08-11 09:55:33.744203",
+ "modified": "2025-08-27 09:50:32.719324",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Project",
