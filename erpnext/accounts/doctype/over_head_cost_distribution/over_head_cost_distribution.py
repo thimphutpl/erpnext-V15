@@ -3,6 +3,7 @@
 
 import frappe
 from frappe.model.document import Document
+from frappe.utils import flt
 
 
 class OverHeadCostDistribution(Document):
@@ -58,7 +59,7 @@ class OverHeadCostDistribution(Document):
 
 		if over_head:
 			for row in over_head:
-				amount= row.total_debit - row.total_credit
+				amount= flt(row.total_debit) - flt(row.total_credit)
 				if amount > 0:
 					return amount
 				else:
