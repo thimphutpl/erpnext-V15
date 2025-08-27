@@ -100,6 +100,13 @@ class EquipmentHiringForm(Document):
 
 	def on_cancel(self):
 		self.update_equipment_request(0)
+		self.ignore_linked_doctypes = (
+			"GL Entry",
+			"Payment Ledger Entry",
+			"Stock Ledger Entry",
+			"Repost Item Valuation",
+			"Serial and Batch Bundle",
+		)
 	
 	def update_journal(self):
 		for a in self.balance_advance_details:
