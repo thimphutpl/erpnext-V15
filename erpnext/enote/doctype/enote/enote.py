@@ -352,17 +352,17 @@ class eNote(Document):
 			pass	
 
 def get_permission_query_conditions(user):
-    if not user: user = frappe.session.user
-    user_roles = frappe.get_roles(user)
+	if not user: user = frappe.session.user
+	user_roles = frappe.get_roles(user)
 
 	# reviewers  = frappe.db.sql("SELECT user_id FROM `tabeNote Reviewer")
 
-    if user == "Administrator":
-        return
-    # if "HR User" in user_roles or "HR Manager" in user_roles:
-    #     return
-    return """(
-        `tabeNote`.owner = '{user}' or
+	if user == "Administrator":
+		return
+	# if "HR User" in user_roles or "HR Manager" in user_roles:
+	#     return
+	return """(
+		`tabeNote`.owner = '{user}' or
 		IF (
 				(`tabeNote`.reviewer_required = '1' and `tabeNote`.workflow_state != 'Waiting For Reviewer') or `tabeNote`.reviewer_required = '0',  
 				`tabeNote`.permitted_user = '{user}',
@@ -371,9 +371,9 @@ def get_permission_query_conditions(user):
 					where e.user_id = '{user}' and '{user}' = nr.user_id and nr.parent = `tabeNote`.name)
 			)
 		or
-        exists(select 1
+		exists(select 1
 			from `tabEmployee` e, `tabNote Copy` nc
-			where e.user_id = '{user}' and '{user}' = nc.user_id and nc.parent = `tabeNote`.name)
+			where e.user_id = '{user}' and '{user}' = nc.employee and nc.parent = `tabeNote`.name)
    		)
 		""".format(user=user)
 # `tabeNote`.permitted_user = '{user}' or
