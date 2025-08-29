@@ -79,8 +79,8 @@ class EquipmentHiringForm(Document):
 		if not self.approved_items:
 			frappe.throw("Cannot submit hiring form without Approved Items")
 
-	def before_submit(self):
-		self.check_equipment_free()		
+	# def before_submit(self):
+	# 	self.check_equipment_free()		
 
 	def on_submit(self):
 		self.assign_hire_form_to_equipment()
@@ -155,28 +155,28 @@ class EquipmentHiringForm(Document):
 			doc.from_time = a.from_time
 			doc.submit()	
 			
-	def check_equipment_free(self):
-		for a in self.approved_items:
-			ec = frappe.db.get_value("Equipment Category", frappe.db.get_value("Equipment", a.equipment, "equipment_category"), "allow_hire")
-			if ec:
-				pass
-			else:
-				from_datetime = str(get_datetime(str(a.from_date) + ' ' + str(a.from_time))) 
-				to_datetime = str(get_datetime(str(a.to_date) + ' ' + str(a.to_time)))
-				result = frappe.db.sql("""
-                                        select ehf_name
-                                        from `tabEquipment Reservation Entry`
-                                        where equipment = '{0}'
-                                        and docstatus = 1
-                                        and ('{1}' between concat(from_date,' ',from_time) and concat(to_date,' ',to_time)
-                                                or
-                                                '{2}' between concat(from_date,' ',from_time) and concat(to_date,' ',to_time)
-                                                or
-                                                ('{3}' <= concat(from_date,' ',from_time) and '{4}' >= concat(to_date,' ',to_time))
-                                        )
-                                """.format(a.equipment, from_datetime, to_datetime, from_datetime, to_datetime), as_dict=True)
-				for r in result:
-					frappe.throw(_("The equipment {0} is already in use from by {1}").format(a.equipment, r.ehf_name))	
+	# def check_equipment_free(self):
+	# 	for a in self.approved_items:
+	# 		ec = frappe.db.get_value("Equipment Category", frappe.db.get_value("Equipment", a.equipment, "equipment_category"), "allow_hire")
+	# 		if ec:
+	# 			pass
+	# 		else:
+	# 			from_datetime = str(get_datetime(str(a.from_date) + ' ' + str(a.from_time))) 
+	# 			to_datetime = str(get_datetime(str(a.to_date) + ' ' + str(a.to_time)))
+	# 			result = frappe.db.sql("""
+    #                                     select ehf_name
+    #                                     from `tabEquipment Reservation Entry`
+    #                                     where equipment = '{0}'
+    #                                     and docstatus = 1
+    #                                     and ('{1}' between concat(from_date,' ',from_time) and concat(to_date,' ',to_time)
+    #                                             or
+    #                                             '{2}' between concat(from_date,' ',from_time) and concat(to_date,' ',to_time)
+    #                                             or
+    #                                             ('{3}' <= concat(from_date,' ',from_time) and '{4}' >= concat(to_date,' ',to_time))
+    #                                     )
+    #                             """.format(a.equipment, from_datetime, to_datetime, from_datetime, to_datetime), as_dict=True)
+	# 			for r in result:
+	# 				frappe.throw(_("The equipment {0} is already in use from by {1}").format(a.equipment, r.ehf_name))	
 
 # make necessary journal entry
 	##
