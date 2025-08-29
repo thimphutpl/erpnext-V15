@@ -91,8 +91,8 @@ class MechanicalPayment(AccountsController):
                 frappe.throw("Allocated Amount should be between zero and Outstanding Amount on row {0}".format(d.idx))
             total = flt(total) + flt(d.allocated_amount)
 
-        if total != self.receivable_amount:
-            frappe.throw("Total Allocated Amount should be equal to Receivable Amount")
+        # if total != self.receivable_amount:
+        #     frappe.throw("Total Allocated Amount should be equal to Receivable Amount")
         # if self.receivable_amount > self.actual_amount:
         #     frappe.throw("Receivable Amount Cannot be greater than Total Outstanding Amount")
 
@@ -156,7 +156,7 @@ class MechanicalPayment(AccountsController):
             else:
                 amount = flt(doc.outstanding_amount) - flt(a.allocated_amount)
 
-            if a.reference_type == "Job Cards":
+            if a.reference_type in ("Job Cards", "Fabrication And Bailey Bridge"):
                 payable_amount = doc.total_amount
             else:
                 payable_amount = doc.balance_amount
