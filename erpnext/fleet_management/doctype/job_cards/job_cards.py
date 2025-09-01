@@ -235,9 +235,12 @@ class JobCards(AccountsController):
 					maint_account = maintenance_account
 					if d.which == "Item":
 						maint_account = frappe.db.get_value("Item Default", {"parent": d.job}, "expense_account")
+						if not ic_account:
+							frappe.throw("Setup Default Expense Account in Item Accounting")
 					if d.amount != 0:
 						found = False
 						for entry in je.accounts:
+							# frappe.throw((frappe.as_json(self.get("accounts"))))
 							if entry.account == maint_account and entry.cost_center == self.customer_cost_center:
 								# Update existing entry
 								entry.debit_in_account_currency += flt(d.amount)
