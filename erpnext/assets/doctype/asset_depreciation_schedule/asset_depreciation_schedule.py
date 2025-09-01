@@ -674,7 +674,7 @@ class AssetDepreciationSchedule(Document):
 				else:
 					accumulated_depreciation = flt(self.opening_accumulated_depreciation)
 
-			depreciation_amount = flt(d.depreciation_amount, d.precision("depreciation_amount"))
+			depreciation_amount = flt(d.depreciation_amount)
 			value_after_depreciation -= flt(depreciation_amount)
 
 			# for the last row, if depreciation method = Straight Line
@@ -687,13 +687,13 @@ class AssetDepreciationSchedule(Document):
 			):
 				depreciation_amount += flt(
 					value_after_depreciation - flt(row.expected_value_after_useful_life),
-					d.precision("depreciation_amount"),
+					
 				)
 
 			d.depreciation_amount = depreciation_amount
 			accumulated_depreciation += d.depreciation_amount
 			d.accumulated_depreciation_amount = flt(
-				accumulated_depreciation, d.precision("accumulated_depreciation_amount")
+				accumulated_depreciation
 			)
 
 

@@ -1,6 +1,5 @@
 {
  "actions": [],
- "allow_rename": 1,
  "creation": "2024-11-08 16:16:28.709331",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -36,9 +35,9 @@
   "sws_debit_account",
   "payable_account_section",
   "leave_encashment_payable",
-  "ltc_payable",
   "column_break_jgtd",
-  "travel_claim_payable"
+  "travel_claim_payable",
+  "ltc_payable"
  ],
  "fields": [
   {
@@ -233,12 +232,6 @@
    "options": "Account"
   },
   {
-   "fieldname": "ltc_payable",
-   "fieldtype": "Link",
-   "label": "LTC Payable",
-   "options": "Account"
-  },
-  {
    "fieldname": "column_break_jgtd",
    "fieldtype": "Column Break"
   },
@@ -247,12 +240,18 @@
    "fieldtype": "Link",
    "label": "Travel Claim Payable",
    "options": "Account"
+  },
+  {
+   "fieldname": "ltc_payable",
+   "fieldtype": "Link",
+   "label": "LTC Payable",
+   "options": "Account"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-08-13 14:09:14.427210",
+ "modified": "2025-08-14 20:25:50.259725",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "HR Accounts Settings",
@@ -267,20 +266,10 @@
    "role": "System Manager",
    "share": 1,
    "write": 1
-  },
-  {
-   "create": 1,
-   "delete": 1,
-   "email": 1,
-   "print": 1,
-   "read": 1,
-   "role": "Administrator",
-   "select": 1,
-   "share": 1,
-   "write": 1
   }
  ],
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "track_changes": 1
 }

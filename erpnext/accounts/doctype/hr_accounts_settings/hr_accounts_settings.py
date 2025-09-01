@@ -39,3 +39,13 @@ class HRAccountsSettings(Document):
 		travel_refundable_account: DF.Link | None
 	# end: auto-generated types
 	pass
+def get_bank_account(branch=None):
+	company=frappe.db.get_value("Branch",branch, "company")
+	default_bank_account = frappe.db.get_value('Company',company, 'default_bank_account')
+	expense_bank_account = None
+	if branch:
+		expense_bank_account = frappe.db.get_value('Branch', branch, 'expense_bank_account')
+
+	if not expense_bank_account and not default_bank_account:
+		frappe.throw(_("Please set <b>Bank Expense Account</b> under <b>Branch</b> master"))
+	return expense_bank_account if expense_bank_account else default_bank_account

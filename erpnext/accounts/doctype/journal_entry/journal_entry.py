@@ -608,21 +608,23 @@ class JournalEntry(AccountsController):
 		for d in self.get("accounts"):
 			account_type = frappe.get_cached_value("Account", d.account, "account_type")
 			if account_type in ["Receivable", "Payable"]:
+				
 				if not (d.party_type and d.party):
 					frappe.throw(
 						_(
 							"Row {0}: Party Type and Party is required for Receivable / Payable account {1}"
 						).format(d.idx, d.account)
 					)
-				elif (
-					d.party_type
-					and frappe.db.get_value("Party Type", d.party_type, "account_type") != account_type
-				):
-					frappe.throw(
-						_("Row {0}: Account {1} and Party Type {2} have different account types").format(
-							d.idx, d.account, d.party_type
-						)
-					)
+				# elif (
+				# 	d.party_type
+				# 	and frappe.db.get_value("Party Type", d.party_type, "account_type") != account_type
+				# ):
+				# 	frappe.throw("hi!")
+				# 	frappe.throw(
+				# 		_("Row {0}: Account {1} and Party Type {2} have different account types").format(
+				# 			d.idx, d.account, d.party_type
+				# 		)
+				# 	)
 
 	def check_credit_limit(self):
 		customers = list(

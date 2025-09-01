@@ -63,6 +63,7 @@ class Company(NestedSet):
 		default_holiday_list: DF.Link | None
 		default_in_transit_warehouse: DF.Link | None
 		default_income_account: DF.Link | None
+		default_interest_free_loan_account: DF.Link | None
 		default_inventory_account: DF.Link | None
 		default_letter_head: DF.Link | None
 		default_operating_cost_account: DF.Link | None

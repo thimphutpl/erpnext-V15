@@ -426,7 +426,7 @@ def get_party_account(party_type, party=None, company=None, include_advance=Fals
 			account = get_party_gle_account(party_type, party, company)
 
 	if include_advance and party_type in ["Customer", "Supplier", "Student"]:
-		frappe.throw("hi")
+		#frappe.throw("hi")
 		advance_account = get_party_advance_account(party_type, party, company)
 		if advance_account:
 			return [account, advance_account]
@@ -779,7 +779,9 @@ def validate_account_party_type(self):
 		return
 
 	if self.party_type and self.party:
+		
 		account_type = frappe.get_cached_value("Account", self.account, "account_type")
+		#frappe.throw(self.account)
 		if account_type and (account_type not in ["Receivable", "Payable","Tax"]):
 			frappe.throw(
 				_(

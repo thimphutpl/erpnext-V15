@@ -216,6 +216,7 @@
    "non_negative": 1,
    "oldfieldname": "qty",
    "oldfieldtype": "Currency",
+   "precision": "0",
    "print_width": "60px",
    "reqd": 1,
    "width": "60px"
@@ -610,6 +611,7 @@
    "fieldtype": "Float",
    "label": "Qty in Stock UOM",
    "no_copy": 1,
+   "precision": "0",
    "print_hide": 1,
    "print_width": "100px",
    "read_only": 1,
@@ -874,7 +876,8 @@
    "fieldname": "fg_item_qty",
    "fieldtype": "Float",
    "label": "Finished Good Qty",
-   "mandatory_depends_on": "eval:parent.is_subcontracted && !parent.is_old_subcontracting_flow"
+   "mandatory_depends_on": "eval:parent.is_subcontracted && !parent.is_old_subcontracting_flow",
+   "precision": "0"
   },
   {
    "depends_on": "eval:parent.is_internal_supplier",
@@ -915,7 +918,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-02-05 11:23:24.859435",
+ "modified": "2025-08-14 22:48:30.808858",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Purchase Order Item",

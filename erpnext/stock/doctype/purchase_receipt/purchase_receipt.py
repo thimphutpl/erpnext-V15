@@ -448,6 +448,7 @@ class PurchaseReceipt(BuyingController):
 				ae.flags.ignore_permissions = True
 				ae.submit()
 	def make_item_gl_entries(self, gl_entries, warehouse_account=None):
+		
 		from erpnext.accounts.doctype.purchase_invoice.purchase_invoice import (
 			get_purchase_document_details,
 		)
@@ -462,6 +463,7 @@ class PurchaseReceipt(BuyingController):
 			frappe.throw(_("{0} account not found while submitting purchase receipt").format(account_type))
 
 		def make_item_asset_inward_gl_entry(item, stock_value_diff, stock_asset_account_name):
+			#frappe.throw("hi")
 			account_currency = get_account_currency(stock_asset_account_name)
 
 			if not stock_asset_account_name:
@@ -480,11 +482,13 @@ class PurchaseReceipt(BuyingController):
 			)
 
 		def make_stock_received_but_not_billed_entry(item):
+			#frappe.throw(stock_asset_account_name)
 			account = (
 				warehouse_account[item.from_warehouse]["account"] if item.from_warehouse else stock_asset_rbnb
 			)
+			
 			account_currency = get_account_currency(account)
-
+			#frappe.throw(account_currency)
 			# GL Entry for from warehouse or Stock Received but not billed
 			# Intentionally passed negative debit amount to avoid incorrect GL Entry validation
 			credit_amount = (
@@ -656,7 +660,7 @@ class PurchaseReceipt(BuyingController):
 
 		stock_items = self.get_stock_items()
 		warehouse_with_no_account = []
-
+		
 		for d in self.get("items"):
 			if (
 				provisional_accounting_for_non_stock_items
@@ -665,10 +669,12 @@ class PurchaseReceipt(BuyingController):
 				and d.get("provisional_expense_account")
 				and not d.is_fixed_asset
 			):
+				
 				self.add_provisional_gl_entry(
 					d, gl_entries, self.posting_date, d.get("provisional_expense_account")
 				)
 			elif flt(d.qty) and (flt(d.valuation_rate) or self.is_return):
+				#frappe.throw("kl")
 				remarks = self.get("remarks") or _("Accounting Entry for {0}").format(
 					"Asset" if d.is_fixed_asset else "Stock"
 				)
@@ -687,6 +693,7 @@ class PurchaseReceipt(BuyingController):
 				landed_cost_entries = get_item_account_wise_additional_cost(self.name)
 
 				if d.is_fixed_asset:
+					
 					account_type = (
 						"capital_work_in_progress_account"
 						if is_cwip_accounting_enabled(d.asset_category)
@@ -696,15 +703,18 @@ class PurchaseReceipt(BuyingController):
 					stock_asset_account_name = get_asset_account(
 						account_type, asset_category=d.asset_category, company=self.company
 					)
-
+					#frappe.throw("hh")
 					stock_value_diff = (
 						flt(d.base_net_amount) + flt(d.item_tax_amount) + flt(d.landed_cost_voucher_amount)
 					)
 					stock_asset_account_name = warehouse_account[d.warehouse]["account"]
+					#frappe.throw(stock_asset_account_name)
 
 				elif warehouse_account.get(d.warehouse):
+					
 					stock_value_diff = get_stock_value_difference(self.name, d.name, d.warehouse)
 					stock_asset_account_name = warehouse_account[d.warehouse]["account"]
+					#frappe.throw(stock_asset_account_name)
 					supplier_warehouse_account = warehouse_account.get(self.supplier_warehouse, {}).get(
 						"account"
 					)
@@ -732,6 +742,7 @@ class PurchaseReceipt(BuyingController):
 			elif (d.warehouse and d.warehouse not in warehouse_with_no_account) or (
 				d.rejected_warehouse and d.rejected_warehouse not in warehouse_with_no_account
 			):
+				
 				warehouse_with_no_account.append(d.warehouse or d.rejected_warehouse)
 
 			if d.is_fixed_asset and d.landed_cost_voucher_amount:

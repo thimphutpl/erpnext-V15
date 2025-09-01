@@ -125,6 +125,7 @@
   "default_salary_tax_account",
   "leave_encashment_expense_account",
   "leave_encashment_payable_account",
+  "default_interest_free_loan_account",
   "column_break_fbah",
   "default_payroll_payable_account",
   "employer_contribution_pf_account",
@@ -1022,6 +1023,12 @@
    "fieldtype": "Link",
    "label": "POL Advance Account",
    "options": "Account"
+  },
+  {
+   "fieldname": "default_interest_free_loan_account",
+   "fieldtype": "Link",
+   "label": "Default Interest Free Loan Account",
+   "options": "Account"
   }
  ],
  "icon": "fa fa-building",
@@ -1029,7 +1036,7 @@
  "image_field": "company_logo",
  "is_tree": 1,
  "links": [],
- "modified": "2025-08-08 10:11:13.341330",
+ "modified": "2025-08-18 19:41:21.521596",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Company",
