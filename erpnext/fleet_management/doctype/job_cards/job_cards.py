@@ -235,7 +235,7 @@ class JobCards(AccountsController):
 					maint_account = maintenance_account
 					if d.which == "Item":
 						maint_account = frappe.db.get_value("Item Default", {"parent": d.job}, "expense_account")
-						if not ic_account:
+						if not maint_account:
 							frappe.throw("Setup Default Expense Account in Item Accounting")
 					if d.amount != 0:
 						found = False
