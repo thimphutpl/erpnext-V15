@@ -26,6 +26,7 @@
   "project_man_days",
   "column_break_11",
   "end_date",
+  "cost_center_mandays",
   "progress_details_section",
   "physical_progress_weightage",
   "provisional_estimated_budget",
@@ -284,13 +285,20 @@
    "fieldtype": "Data",
    "label": "Financial Progress (%)",
    "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "cost_center_mandays",
+   "fieldtype": "Data",
+   "label": "Same Cost Center Man Days",
+   "read_only": 1
   }
  ],
  "icon": "icon-puzzle-piece",
  "is_submittable": 1,
  "links": [],
  "max_attachments": 4,
- "modified": "2025-05-09 10:56:45.835274",
+ "modified": "2025-09-02 10:18:47.325418",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Project Definition",

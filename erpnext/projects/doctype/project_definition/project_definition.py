@@ -26,6 +26,7 @@ class ProjectDefinition(Document):
 		budget_profile: DF.Literal["", "Annually", "Overall"]
 		company: DF.Link | None
 		cost_center: DF.Link | None
+		cost_center_mandays: DF.Data | None
 		end_date: DF.Date
 		f_progress: DF.Data | None
 		fiscal_year: DF.Link | None
@@ -53,6 +54,7 @@ class ProjectDefinition(Document):
 
 	def validate(self):
 		self.validate_project_profile()
+		self.update_same_cost_center_mandays()
 	
 	def before_cancel(self):
 		project_list = frappe.db.get_list("Project",filters={"project_definition":self.name,"docstatus":["!=",2]})
@@ -62,9 +64,14 @@ class ProjectDefinition(Document):
 	def validate_project_profile(self):
 		if self.project_profile == "External" and "Accounts Manager" not in frappe.get_roles(frappe.session.user):
 			frappe.throw("Please select project profile as Internal.", title = "Invalid Selection")
+	def update_same_cost_center_mandays(self):
+		mandays = frappe.db.sql("""select sum(project_man_days) from `tabProject Definition` where cost_center = '{}' and docstatus = 1""".format(self.cost_center), as_dict=1)[0]['sum(project_man_days)']
+		frappe.db.sql("""update `tabProject Definition` set cost_center_mandays = {} where name = '{}'""".format(mandays, self.name))
+		# self.cost_center_mandays = mandays
 	#added by Kinley 16/01/2025
 	@frappe.whitelist()
 	def update_project_progress(self):
+		self.update_same_cost_center_mandays()
 		if not self.project_category:
 			frappe.throw("Please project categoy")
 		if self.docstatus == 1:
