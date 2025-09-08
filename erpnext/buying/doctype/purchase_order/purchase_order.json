@@ -1352,15 +1352,14 @@
    "fieldtype": "Select",
    "label": "Naming Series",
    "options": "\nConsumables\nFixed Asset\nSales Product\nSpare Parts\nServices Miscellaneous\nServices Works",
-   "reqd": 1,
-   "set_only_once": 1
+   "reqd": 1
   }
  ],
  "icon": "fa fa-file-text",
  "idx": 105,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-08-12 14:22:21.651492",
+ "modified": "2025-09-08 11:40:29.446756",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Purchase Order",
