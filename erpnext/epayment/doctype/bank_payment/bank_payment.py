@@ -89,6 +89,7 @@ class BankPayment(Document):
 		self.get_bank_available_balance()
 		self.check_one_one_or_bulk_payment()
 		self.update_pi_number()
+		self.validate_customer_workflow()
 
 	def before_submit(self):
 		self.validate_timing()
@@ -104,6 +105,19 @@ class BankPayment(Document):
 		self.update_status()
 		self.update_transaction_status(cancel=True)
 
+	def validate_customer_workflow(self):
+		self.old_state = self.get_db_value("workflow_state")
+		if self.workflow_state == "Waiting Customer Approval":
+			self.approver = frappe.db.get_value("Customer", frappe.db.get_value("Customer Bank Accounts", {"bank_account":self.paid_from}, "parent"), "user_id")
+			self.approver_name = frappe.db.get_value("Customer", frappe.db.get_value("Customer Bank Accounts", {"bank_account":self.paid_from}, "parent"), "customer_name")
+			if not frappe.db.exists("Customer Bank Accounts", {"bank_account": self.paid_from}, "parent"):
+				frappe.throw(_("No Customer linked with the Bank Account {}").format(self.paid_from))
+			if not frappe.db.get_value("Customer", frappe.db.get_value("Customer Bank Accounts", {"bank_account": self.paid_from}, "parent"), "user_id"):
+				frappe.throw(_("No User linked with the Customer {}").format(frappe.db.get_value("Customer", frappe.db.get_value("Customer Bank Accounts", {"bank_account": self.paid_from}, "parent"), "user_id")))
+			
+		if self.workflow_state == "Approved" and self.old_state == "Waiting Customer Approval":
+			if frappe.session.user != self.approver:
+				frappe.throw(_("Only {0} can approve this document.").format(get_fullname(self.approver)))
 	def append_bank_response_in_bpi(self):
 		if self.payment_type == "Bulk Payment":
 			file_list = []
@@ -837,6 +851,7 @@ class BankPayment(Document):
 											WHERE e.name = '{party}'
 										""".format(party = party)
 							employee = party
+							# frappe.throw(str(query))
 						elif party_type == "Customer":
 							query = """select c.bank_name, c.bank_branch, c.bank_account_type, 
 											c.account_number as bank_account_no, c.name as beneficiary_name,

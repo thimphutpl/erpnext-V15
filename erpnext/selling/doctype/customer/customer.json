@@ -28,6 +28,7 @@
   "inter_company",
   "company_code",
   "company_name",
+  "user_id",
   "place_and_contact_details_section_section",
   "customer_location",
   "contact_no",
@@ -64,6 +65,7 @@
   "column_break_ntab",
   "bank_account_type",
   "account_number",
+  "bank_accounts",
   "dashboard_tab",
   "contact_and_address_tab",
   "address_contacts",
@@ -742,6 +744,19 @@
    "fieldtype": "Data",
    "label": "Contact No",
    "reqd": 1
+  },
+  {
+   "description": "*Select user id for workflow purposes",
+   "fieldname": "user_id",
+   "fieldtype": "Link",
+   "label": "User ID",
+   "options": "User"
+  },
+  {
+   "fieldname": "bank_accounts",
+   "fieldtype": "Table MultiSelect",
+   "label": "Bank Accounts",
+   "options": "Customer Bank Accounts"
   }
  ],
  "icon": "fa fa-user",
@@ -755,7 +770,7 @@
    "link_fieldname": "party"
   }
  ],
- "modified": "2025-03-12 12:31:57.873587",
+ "modified": "2025-08-29 16:57:40.487154",
  "modified_by": "Administrator",
  "module": "Selling",
  "name": "Customer",
