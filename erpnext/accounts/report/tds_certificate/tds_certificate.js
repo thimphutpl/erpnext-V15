@@ -108,3 +108,15 @@ frappe.query_reports["TDS Certificate"] = {
 		}
 	]
 };
+// Add modal accessibility fixes
+$(document).on('hidden.bs.modal', '.modal', function () {
+    console.log('Modal hidden');
+    $(this).find(':focus').blur(); // Remove focus
+    $(this).attr('inert', 'true'); // Add inert attribute
+});
+
+$(document).on('shown.bs.modal', '.modal', function () {
+    console.log('Modal shown');
+    $(this).removeAttr('inert'); // Remove inert attribute
+    $(this).find('button').first().focus(); // Set focus to the first button
+});
