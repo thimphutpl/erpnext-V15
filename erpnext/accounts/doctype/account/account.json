@@ -31,6 +31,7 @@
   "old_parent",
   "include_in_gross",
   "is_recovery",
+  "is_joint_account",
   "dhi_company",
   "dhi_company_name",
   "bank_account_details_section",
@@ -295,13 +296,20 @@
    "fieldname": "bank_account_no",
    "fieldtype": "Data",
    "label": "Bank Account No"
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:doc.account_type == \"Bank\";",
+   "fieldname": "is_joint_account",
+   "fieldtype": "Check",
+   "label": "Is Joint Account"
   }
  ],
  "icon": "fa fa-money",
  "idx": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2024-11-29 16:36:36.193436",
+ "modified": "2025-08-29 15:24:45.875905",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Account",
