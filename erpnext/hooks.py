@@ -393,9 +393,9 @@ auto_cancel_exempted_doctypes = [
 
 scheduler_events = {
 	"cron": {
-		"* * * * *": [
-			"erpnext.accounts.doctype.journal_entry.journal_entry.auto_update_depreciation_status"
-		],
+		# "*/1 * * * *": [
+		# 	"erpnext.accounts.doctype.journal_entry.journal_entry.auto_update_depreciation_status"
+		# ],
 		"0/15 * * * *": [
 			"erpnext.manufacturing.doctype.bom_update_log.bom_update_log.resume_bom_cost_update_jobs",
 			"erpnext.accounts.doctype.process_payment_reconciliation.process_payment_reconciliation.trigger_reconciliation_for_queued_docs",
@@ -451,6 +451,7 @@ scheduler_events = {
 		"erpnext.accounts.utils.auto_create_exchange_rate_revaluation_daily",
 		"erpnext.accounts.utils.run_ledger_health_checks",
 		"erpnext.assets.doctype.asset_maintenance_log.asset_maintenance_log.update_asset_maintenance_log_status",
+		# "erpnext.accounts.doctype.journal_entry.journal_entry.auto_update_depreciation_status"
 		
 	],
 	"weekly": [
