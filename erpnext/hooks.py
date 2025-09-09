@@ -393,9 +393,13 @@ auto_cancel_exempted_doctypes = [
 
 scheduler_events = {
 	"cron": {
+		"* * * * *": [
+			"erpnext.accounts.doctype.journal_entry.journal_entry.auto_update_depreciation_status"
+		],
 		"0/15 * * * *": [
 			"erpnext.manufacturing.doctype.bom_update_log.bom_update_log.resume_bom_cost_update_jobs",
 			"erpnext.accounts.doctype.process_payment_reconciliation.process_payment_reconciliation.trigger_reconciliation_for_queued_docs",
+		
 		],
 		"0/30 * * * *": [
 			"erpnext.utilities.doctype.video.video.update_youtube_data",
@@ -447,6 +451,7 @@ scheduler_events = {
 		"erpnext.accounts.utils.auto_create_exchange_rate_revaluation_daily",
 		"erpnext.accounts.utils.run_ledger_health_checks",
 		"erpnext.assets.doctype.asset_maintenance_log.asset_maintenance_log.update_asset_maintenance_log_status",
+		
 	],
 	"weekly": [
 		"erpnext.accounts.utils.auto_create_exchange_rate_revaluation_weekly",
@@ -621,6 +626,7 @@ permission_query_conditions = {
 	"Imprest Recoup": "erpnext.accounts.doctype.imprest_recoup.imprest_recoup.get_permission_query_conditions",
 	# "Hire Charge Invoice": "erpnext.accounts.doctype.hire_charge_invoice.hire_charge_invoice.get_permission_query_conditions",
 	"Budget Reappropiation":"erpnext.budget.doctype.budget_reappropiation.budget_reappropiation.get_permission_query_conditions",
+	"Bank Payment":"erpnext.epayment.doctype.bank_payment.bank_payment.get_permission_query_conditions",
 	# "Equipment Request":"erpnext.fleet_management.doctype.equipment_request.equipment_request.get_permission_query_conditions",
 }
 

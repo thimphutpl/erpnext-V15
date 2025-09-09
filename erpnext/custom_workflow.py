@@ -1353,7 +1353,7 @@ class CustomWorkflow:
 					frappe.throw("Only {} or {} can reject this document.".format(self.doc.supervisor, self.hr_approver[0]))
 
 		elif self.new_state.lower() =="Approved".lower():
-			if self.doc.supervisor != frappe.session.user:
+			if self.doc.owner != frappe.session.user:
 				frappe.throw("Only {} can approve or edit this document.".format(self.hr_approver[0]))
 
 	def notify(self, args):

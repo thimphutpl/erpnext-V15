@@ -1835,3 +1835,21 @@ def check_if_in_list(entry, data):
 
 		if same_head:
 			return e
+
+def get_permission_query_conditions(user):
+	if not user: user = frappe.session.user
+	user_roles = frappe.get_roles(user)
+
+	if user == "Administrator" or "System Manager" in user_roles or "Purchase Master" in user_roles: 
+		return
+	if "Customer" in user_roles:
+		return """(
+			`tabBank Payment`.owner = '{user}'
+			or
+			exists(select 1
+				from `tabCustomer` as c, `tabCustomer Bank Accounts` cba
+				where c.name = cba.parent and
+				cba.bank_account = `tabBank Payment`.paid_from
+				and c.user_id = '{user}')
+	)""".format(user=user)		
+
