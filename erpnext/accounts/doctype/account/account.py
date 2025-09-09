@@ -51,6 +51,7 @@ class Account(NestedSet):
 		include_in_gross: DF.Check
 		is_centralized_budget: DF.Check
 		is_group: DF.Check
+		is_joint_account: DF.Check
 		is_recovery: DF.Check
 		ledger: DF.Literal["", "Capex", "Opex"]
 		lft: DF.Int
