@@ -8,7 +8,7 @@
  "engine": "InnoDB",
  "field_order": [
   "company",
-  "branch",
+  "department",
   "enote_format",
   "title",
   "category",
@@ -179,22 +179,24 @@
   {
    "fieldname": "company",
    "fieldtype": "Link",
+   "ignore_user_permissions": 1,
    "in_list_view": 1,
    "label": "Company",
    "options": "Company"
   },
   {
-   "fieldname": "branch",
+   "fieldname": "department",
    "fieldtype": "Link",
+   "ignore_user_permissions": 1,
    "in_list_view": 1,
-   "label": "Branch",
-   "options": "Branch"
+   "label": "Department",
+   "options": "Department"
   }
  ],
  "icon": "fa fa-file-text",
  "is_submittable": 1,
  "links": [],
- "modified": "2025-09-04 08:10:09.959805",
+ "modified": "2025-09-09 10:35:35.320876",
  "modified_by": "Administrator",
  "module": "eNote",
  "name": "eNote",

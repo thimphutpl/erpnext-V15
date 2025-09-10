@@ -13,7 +13,7 @@ frappe.ui.form.on('eNote', {
 			};
 		});
 
-		frm.set_query("branch", function () {
+		frm.set_query("department", function () {
 			return {
 				filters: {
 					company: frm.doc.company,
@@ -21,6 +21,7 @@ frappe.ui.form.on('eNote', {
 			};
 		});
 
+		
 
 		if(frm.doc.workflow_state == "Approved"){
 			frm.set_df_property("forward_to","hidden", 1);
