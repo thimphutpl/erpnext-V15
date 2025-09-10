@@ -22,8 +22,17 @@ def get_data(filters):
 		'''.format(condition=conditions), as_dict=True):
 		match d.invoice_type:
 			case "Purchase Invoice":
+				tds_rate = frappe.db.get_value(
+					"Purchase Taxes and Charges",
+					{
+						"parent": d.invoice_no,
+						"account_head": ["!=", "L202030111 - Retention Money Payable - GYALSUNG"]
+					},
+					"rate"
+				)
+
 				d.update({
-					"tds_rate": frappe.db.get_value("Purchase Taxes and Charges",{"parent":d.invoice_no},"rate")
+					"tds_rate": tds_rate  # Add the tds_rate value to the dictionary
 				})
 			case "Journal Entry":
 				d.update({
