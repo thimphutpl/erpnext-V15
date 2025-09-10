@@ -86,6 +86,7 @@
    "search_index": 1
   },
   {
+   "fetch_from": "work_order.bom_no",
    "fieldname": "bom_no",
    "fieldtype": "Link",
    "label": "BOM No",
@@ -280,7 +281,7 @@
    "fieldtype": "Column Break"
   },
   {
-   "fetch_from": "bom_no.item",
+   "fetch_from": "work_order.production_item",
    "fieldname": "production_item",
    "fieldtype": "Link",
    "label": "Production Item",
@@ -510,7 +511,7 @@
  ],
  "is_submittable": 1,
  "links": [],
- "modified": "2025-03-17 15:55:11.143456",
+ "modified": "2023-06-28 19:23:14.345214",
  "modified_by": "Administrator",
  "module": "Manufacturing",
  "name": "Job Card",

@@ -11,7 +11,7 @@ from frappe.model.document import Document
 from frappe.utils import cstr
 from frappe.utils.nestedset import get_root_of
 
-from erpnext.setup.doctype.customer_group.customer_group import get_parent_customer_groups
+# from erpnext.setup.doctype.customer_group.customer_group import get_parent_customer_groups
 
 
 class IncorrectCustomerGroup(frappe.ValidationError):
@@ -196,8 +196,8 @@ def get_tax_template(posting_date, args):
 		elif key == "customer_group":
 			if not value:
 				value = get_root_of("Customer Group")
-			customer_group_condition = get_customer_group_condition(value)
-			conditions.append(f"ifnull({key}, '') in ('', {customer_group_condition})")
+			# customer_group_condition = get_customer_group_condition(value)
+			# conditions.append(f"ifnull({key}, '') in ('', {customer_group_condition})")
 		else:
 			conditions.append(f"ifnull({key}, '') in ('', {frappe.db.escape(cstr(value))})")
 
@@ -236,9 +236,9 @@ def get_tax_template(posting_date, args):
 	return tax_template
 
 
-def get_customer_group_condition(customer_group):
-	condition = ""
-	customer_groups = ["%s" % (frappe.db.escape(d.name)) for d in get_parent_customer_groups(customer_group)]
-	if customer_groups:
-		condition = ",".join(["%s"] * len(customer_groups)) % (tuple(customer_groups))
-	return condition
+# def get_customer_group_condition(customer_group):
+# 	condition = ""
+# 	customer_groups = ["%s" % (frappe.db.escape(d.name)) for d in get_parent_customer_groups(customer_group)]
+# 	if customer_groups:
+# 		condition = ",".join(["%s"] * len(customer_groups)) % (tuple(customer_groups))
+# 	return condition

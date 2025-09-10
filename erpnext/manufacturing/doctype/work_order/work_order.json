@@ -2,12 +2,13 @@
  "actions": [],
  "allow_import": 1,
  "autoname": "naming_series:",
- "creation": "2025-04-09 12:09:40.634472",
+ "creation": "2013-01-10 16:34:16",
  "doctype": "DocType",
  "document_type": "Setup",
  "engine": "InnoDB",
  "field_order": [
   "item",
+  "branch",
   "naming_series",
   "status",
   "production_item",
@@ -16,6 +17,7 @@
   "bom_no",
   "sales_order",
   "column_break1",
+  "from_warehouse",
   "company",
   "qty",
   "material_transferred_for_manufacturing",
@@ -43,7 +45,6 @@
   "has_batch_no",
   "column_break_18",
   "batch_size",
-  "required_items_section",
   "materials_and_operations_tab",
   "operations_section",
   "transfer_material_against",
@@ -269,11 +270,6 @@
    "fieldtype": "Link",
    "label": "Scrap Warehouse",
    "options": "Warehouse"
-  },
-  {
-   "fieldname": "required_items_section",
-   "fieldtype": "Section Break",
-   "label": "Required Items"
   },
   {
    "fieldname": "required_items",
@@ -586,6 +582,20 @@
   {
    "fieldname": "section_break_ndpq",
    "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "label": "Branch",
+   "options": "Branch",
+   "reqd": 1
+  },
+  {
+   "fieldname": "from_warehouse",
+   "fieldtype": "Link",
+   "label": "Raw Material Warehouse",
+   "options": "Warehouse",
+   "reqd": 1
   }
  ],
  "icon": "fa fa-cogs",
@@ -593,7 +603,7 @@
  "image_field": "image",
  "is_submittable": 1,
  "links": [],
- "modified": "2024-02-11 15:47:13.454422",
+ "modified": "2025-08-25 11:52:02.873530",
  "modified_by": "Administrator",
  "module": "Manufacturing",
  "name": "Work Order",
@@ -623,6 +633,7 @@
    "role": "Stock User"
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "ASC",
  "states": [],

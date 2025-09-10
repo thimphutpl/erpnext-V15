@@ -6,10 +6,10 @@
  "docstatus": 0,
  "doctype": "Report",
  "filters": [],
- "idx": 2,
+ "idx": 11,
  "is_standard": "Yes",
  "letterhead": null,
- "modified": "2023-07-26 21:04:54.751077",
+ "modified": "2025-05-08 17:09:16.888190",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Asset Depreciations and Balances",
@@ -21,6 +21,10 @@
  "roles": [
   {
    "role": "Accounts User"
+  },
+  {
+   "role": "Asset User"
   }
- ]
+ ],
+ "timeout": 0
 }

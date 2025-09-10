@@ -1,0 +1,292 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:user",
+ "creation": "2025-08-26 21:12:40.847691",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "user",
+  "full_name",
+  "column_break_0",
+  "enabled",
+  "blacklisted",
+  "sb_id_details",
+  "cid",
+  "column_break_6",
+  "date_of_issue",
+  "date_of_expiry",
+  "sb_id_images",
+  "cid_file_front",
+  "column_break_9",
+  "cid_file_back",
+  "sb_address_details",
+  "billing_html",
+  "billing_address_line1",
+  "billing_address_line2",
+  "billing_dzongkhag",
+  "billing_gewog",
+  "billing_pincode",
+  "column_break_3",
+  "perm_html",
+  "perm_address_line1",
+  "perm_address_line2",
+  "perm_dzongkhag",
+  "perm_gewog",
+  "perm_pincode",
+  "sb_contact_details",
+  "first_name",
+  "last_name",
+  "email_id",
+  "mobile_no",
+  "alternate_mobile_no",
+  "amended_from",
+  "sb_bank_details",
+  "financial_institution",
+  "financial_institution_branch",
+  "account_number"
+ ],
+ "fields": [
+  {
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "label": "User",
+   "options": "User",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "full_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Full Name",
+   "options": "user.full_name"
+  },
+  {
+   "fieldname": "column_break_0",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "1",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Enabled"
+  },
+  {
+   "default": "0",
+   "fieldname": "blacklisted",
+   "fieldtype": "Check",
+   "label": "Suspended"
+  },
+  {
+   "fieldname": "sb_id_details",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "cid",
+   "fieldtype": "Data",
+   "label": "CID",
+   "options": "user.login_id"
+  },
+  {
+   "fieldname": "column_break_6",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "date_of_issue",
+   "fieldtype": "Date",
+   "label": "Date of Issue"
+  },
+  {
+   "fieldname": "date_of_expiry",
+   "fieldtype": "Date",
+   "label": "Date of Expiry"
+  },
+  {
+   "fieldname": "sb_id_images",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "cid_file_front",
+   "fieldtype": "Attach Image",
+   "hidden": 1,
+   "label": "CID Front"
+  },
+  {
+   "fieldname": "column_break_9",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "cid_file_back",
+   "fieldtype": "Attach Image",
+   "hidden": 1,
+   "label": "CID Back"
+  },
+  {
+   "fieldname": "sb_address_details",
+   "fieldtype": "Section Break",
+   "label": "ADDRESS INFORMATION"
+  },
+  {
+   "fieldname": "billing_html",
+   "fieldtype": "HTML",
+   "options": "<h5>Billing Address</h5>"
+  },
+  {
+   "fieldname": "billing_address_line1",
+   "fieldtype": "Data",
+   "label": "Address Line 1"
+  },
+  {
+   "fieldname": "billing_address_line2",
+   "fieldtype": "Data",
+   "label": "Address Line 2"
+  },
+  {
+   "fieldname": "billing_dzongkhag",
+   "fieldtype": "Link",
+   "label": "Dzongkhag",
+   "options": "Dzongkhags"
+  },
+  {
+   "fieldname": "billing_gewog",
+   "fieldtype": "Link",
+   "label": "Gewog",
+   "options": "Gewogs"
+  },
+  {
+   "fieldname": "billing_pincode",
+   "fieldtype": "Data",
+   "label": "Postal Code"
+  },
+  {
+   "fieldname": "column_break_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "perm_html",
+   "fieldtype": "HTML",
+   "options": "<h5>Permanent Address</h5>"
+  },
+  {
+   "fieldname": "perm_address_line1",
+   "fieldtype": "Data",
+   "label": "Address Line 1"
+  },
+  {
+   "fieldname": "perm_address_line2",
+   "fieldtype": "Data",
+   "label": "Address Line 2"
+  },
+  {
+   "fieldname": "perm_dzongkhag",
+   "fieldtype": "Link",
+   "label": "Dzongkhag",
+   "options": "Dzongkhags"
+  },
+  {
+   "fieldname": "perm_gewog",
+   "fieldtype": "Link",
+   "label": "Gewog",
+   "options": "Gewogs"
+  },
+  {
+   "fieldname": "perm_pincode",
+   "fieldtype": "Data",
+   "label": "Postal Code"
+  },
+  {
+   "fieldname": "sb_contact_details",
+   "fieldtype": "Section Break",
+   "label": "CONTACT INFORMATION"
+  },
+  {
+   "fieldname": "first_name",
+   "fieldtype": "Data",
+   "label": "First Name"
+  },
+  {
+   "fieldname": "last_name",
+   "fieldtype": "Data",
+   "label": "Last Name"
+  },
+  {
+   "fieldname": "email_id",
+   "fieldtype": "Data",
+   "label": "Email ID",
+   "options": "user.email"
+  },
+  {
+   "fieldname": "mobile_no",
+   "fieldtype": "Data",
+   "ignore_user_permissions": 1,
+   "label": "Mobile No",
+   "options": "user.mobile_no"
+  },
+  {
+   "fieldname": "alternate_mobile_no",
+   "fieldtype": "Data",
+   "label": "Alternate Mobile No",
+   "options": "user.alternate_mobile_no"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "User Account",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "sb_bank_details",
+   "fieldtype": "Section Break",
+   "label": "BANK ACCOUNT INFORMATION"
+  },
+  {
+   "fieldname": "financial_institution",
+   "fieldtype": "Link",
+   "label": "Bank",
+   "options": "Financial Institution"
+  },
+  {
+   "fieldname": "financial_institution_branch",
+   "fieldtype": "Link",
+   "label": "Branch",
+   "options": "Financial Institution Branch"
+  },
+  {
+   "fieldname": "account_number",
+   "fieldtype": "Data",
+   "label": "Account Number"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-08-26 21:34:19.305757",
+ "modified_by": "Administrator",
+ "module": "CRM",
+ "name": "User Account",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

@@ -15,9 +15,10 @@ from frappe.utils import cint, cstr, flt, get_link_to_form, getdate, new_line_se
 
 from erpnext.buying.utils import check_on_hold_or_closed_status, validate_for_items
 from erpnext.controllers.buying_controller import BuyingController
-from erpnext.manufacturing.doctype.work_order.work_order import get_item_details
+# from erpnext.manufacturing.doctype.work_order.work_order import get_item_details
 from erpnext.stock.doctype.item.item import get_item_defaults
 from erpnext.stock.stock_balance import get_indented_qty, update_bin_qty
+# from erpnext.custom_workflow import validate_workflow_states, notify_workflow_states
 
 form_grid_templates = {"items": "templates/form_grid/material_request_grid.html"}
 
@@ -29,41 +30,26 @@ class MaterialRequest(BuyingController):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
+		from erpnext.stock.doctype.material_request_item.material_request_item import MaterialRequestItem
 		from frappe.types import DF
 
-		from erpnext.stock.doctype.material_request_item.material_request_item import MaterialRequestItem
-
 		amended_from: DF.Link | None
+		branch: DF.Link
 		company: DF.Link
+		cost_center: DF.Link
 		customer: DF.Link | None
 		items: DF.Table[MaterialRequestItem]
 		job_card: DF.Link | None
 		letter_head: DF.Link | None
-		material_request_type: DF.Literal[
-			"Purchase", "Material Transfer", "Material Issue", "Manufacture", "Customer Provided"
-		]
+		material_request_type: DF.Literal["Purchase", "Material Transfer", "Material Issue", "Write-Off", "Material Receipt"]
 		naming_series: DF.Literal["MAT-MR-.YYYY.-"]
 		per_ordered: DF.Percent
 		per_received: DF.Percent
-		scan_barcode: DF.Data | None
 		schedule_date: DF.Date | None
 		select_print_heading: DF.Link | None
 		set_from_warehouse: DF.Link | None
 		set_warehouse: DF.Link | None
-		status: DF.Literal[
-			"",
-			"Draft",
-			"Submitted",
-			"Stopped",
-			"Cancelled",
-			"Pending",
-			"Partially Ordered",
-			"Partially Received",
-			"Ordered",
-			"Issued",
-			"Transferred",
-			"Received",
-		]
+		status: DF.Literal["", "Draft", "Submitted", "Stopped", "Cancelled", "Pending", "Partially Ordered", "Partially Received", "Ordered", "Issued", "Transferred", "Received"]
 		tc_name: DF.Link | None
 		terms: DF.TextEditor | None
 		title: DF.Data | None
@@ -113,6 +99,7 @@ class MaterialRequest(BuyingController):
 					)
 
 	def validate(self):
+		# validate_workflow_states(self)
 		super().validate()
 
 		self.validate_schedule_date()
@@ -379,7 +366,7 @@ def set_missing_values(source, target_doc):
 def update_item(obj, target, source_parent):
 	target.conversion_factor = obj.conversion_factor
 
-	qty = obj.ordered_qty or obj.received_qty
+	qty = obj.received_qty or obj.ordered_qty
 	target.qty = flt(flt(obj.stock_qty) - flt(qty)) / target.conversion_factor
 	target.stock_qty = target.qty * target.conversion_factor
 	if getdate(target.schedule_date) < getdate(nowdate()):
@@ -432,7 +419,7 @@ def make_purchase_order(source_name, target_doc=None, args=None):
 		filtered_items = args.get("filtered_children", [])
 		child_filter = d.name in filtered_items if filtered_items else True
 
-		qty = d.ordered_qty or d.received_qty
+		qty = d.received_qty or d.ordered_qty
 
 		return qty < d.stock_qty and child_filter
 
@@ -482,7 +469,7 @@ def make_request_for_quotation(source_name, target_doc=None):
 				"field_map": [
 					["name", "material_request_item"],
 					["parent", "material_request"],
-					["project", "project_name"],
+					["uom", "uom"],
 				],
 			},
 		},
@@ -643,7 +630,6 @@ def make_supplier_quotation(source_name, target_doc=None):
 		postprocess,
 	)
 
-	doclist.set_onload("load_after_mapping", False)
 	return doclist
 
 
@@ -722,7 +708,6 @@ def make_stock_entry(source_name, target_doc=None):
 					"uom": "stock_uom",
 					"job_card_item": "job_card_item",
 				},
-				"field_no_map": ["expense_account"],
 				"postprocess": update_item,
 				"condition": lambda doc: (
 					flt(doc.ordered_qty, doc.precision("ordered_qty"))
@@ -768,7 +753,6 @@ def raise_work_orders(material_request):
 				)
 
 				wo_order.set_work_order_operations()
-				wo_order.flags.ignore_validate = True
 				wo_order.flags.ignore_mandatory = True
 				wo_order.save()
 
@@ -815,7 +799,7 @@ def create_pick_list(source_name, target_doc=None):
 			},
 			"Material Request Item": {
 				"doctype": "Pick List Item",
-				"field_map": {"name": "material_request_item", "stock_qty": "stock_qty"},
+				"field_map": {"name": "material_request_item", "qty": "stock_qty"},
 			},
 		},
 		target_doc,

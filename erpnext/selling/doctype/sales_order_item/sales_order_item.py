@@ -34,6 +34,7 @@ class SalesOrderItem(Document):
 		conversion_factor: DF.Float
 		cost_center: DF.Link | None
 		customer_item_code: DF.Data | None
+		customer_price_list: DF.Link | None
 		delivered_by_supplier: DF.Check
 		delivered_qty: DF.Float
 		delivery_date: DF.Date | None
@@ -52,6 +53,7 @@ class SalesOrderItem(Document):
 		item_name: DF.Data
 		item_tax_rate: DF.Code | None
 		item_tax_template: DF.Link | None
+		lot_number: DF.Link | None
 		margin_rate_or_amount: DF.Float
 		margin_type: DF.Literal["", "Percentage", "Amount"]
 		material_request: DF.Link | None
@@ -67,6 +69,7 @@ class SalesOrderItem(Document):
 		planned_qty: DF.Float
 		prevdoc_docname: DF.Link | None
 		price_list_rate: DF.Currency
+		price_template: DF.Link | None
 		pricing_rules: DF.SmallText | None
 		produced_qty: DF.Float
 		production_plan_qty: DF.Float
@@ -80,6 +83,7 @@ class SalesOrderItem(Document):
 		rate_with_margin: DF.Currency
 		reserve_stock: DF.Check
 		returned_qty: DF.Float
+		sp_type: DF.Literal["General Rate", "Customer Based Rate"]
 		stock_qty: DF.Float
 		stock_reserved_qty: DF.Float
 		stock_uom: DF.Link | None

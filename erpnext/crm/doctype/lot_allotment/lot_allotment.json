@@ -1,0 +1,190 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "LOA.YY.MM.####",
+ "creation": "2025-08-31 18:20:22.533074",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "customer_id",
+  "site",
+  "allotment_type",
+  "cb_01",
+  "posting_date",
+  "branch",
+  "sb_01",
+  "lot_list_lot",
+  "sb_02",
+  "lot_list_details",
+  "sb_03",
+  "total_volume",
+  "uom",
+  "total_pieces",
+  "cb_02",
+  "total_amount",
+  "additional_cost",
+  "challan_cost",
+  "discount_amount",
+  "total_payable",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "customer_id",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Customer ID",
+   "options": "User",
+   "reqd": 1
+  },
+  {
+   "fieldname": "site",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Site",
+   "options": "Site",
+   "reqd": 1
+  },
+  {
+   "fieldname": "allotment_type",
+   "fieldtype": "Select",
+   "label": "Allotment Type",
+   "options": "\nDirect Allotment\nMonthly Allotment",
+   "reqd": 1
+  },
+  {
+   "fieldname": "cb_01",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "Today",
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "label": "Posting Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "label": "Branch",
+   "options": "Branch",
+   "reqd": 1
+  },
+  {
+   "fieldname": "sb_01",
+   "fieldtype": "Section Break",
+   "label": "Lots"
+  },
+  {
+   "fieldname": "lot_list_lot",
+   "fieldtype": "Table",
+   "options": "Lot Allotment Lots"
+  },
+  {
+   "fieldname": "sb_02",
+   "fieldtype": "Section Break",
+   "label": "Lot Details"
+  },
+  {
+   "description": "* Please Add Discount Amount or Additional Cost Inside Each Item If Any.",
+   "fieldname": "lot_list_details",
+   "fieldtype": "Table",
+   "options": "Lot Allotment Details"
+  },
+  {
+   "fieldname": "sb_03",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "total_volume",
+   "fieldtype": "Float",
+   "label": "Total Volume",
+   "read_only": 1
+  },
+  {
+   "fieldname": "uom",
+   "fieldtype": "Data",
+   "label": "UOM"
+  },
+  {
+   "fieldname": "total_pieces",
+   "fieldtype": "Data",
+   "label": "Total Pieces",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cb_02",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_amount",
+   "fieldtype": "Currency",
+   "label": "Total Amount",
+   "options": "currency",
+   "read_only": 1
+  },
+  {
+   "fieldname": "additional_cost",
+   "fieldtype": "Currency",
+   "label": "Additional Cost",
+   "options": "currency"
+  },
+  {
+   "fieldname": "challan_cost",
+   "fieldtype": "Currency",
+   "label": "Challan Cost",
+   "options": "currency"
+  },
+  {
+   "fieldname": "discount_amount",
+   "fieldtype": "Currency",
+   "label": "DIscount Amount",
+   "options": "currency"
+  },
+  {
+   "fieldname": "total_payable",
+   "fieldtype": "Currency",
+   "label": "Total Payable Amount",
+   "options": "currency",
+   "read_only": 1
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Lot Allotment",
+   "print_hide": 1,
+   "read_only": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2025-08-31 18:24:19.785528",
+ "modified_by": "Administrator",
+ "module": "CRM",
+ "name": "Lot Allotment",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

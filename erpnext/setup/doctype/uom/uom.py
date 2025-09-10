@@ -14,6 +14,7 @@ class UOM(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		description: DF.Data
 		enabled: DF.Check
 		must_be_whole_number: DF.Check
 		uom_name: DF.Data

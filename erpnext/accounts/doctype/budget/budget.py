@@ -28,9 +28,8 @@ class Budget(Document):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
-		from frappe.types import DF
-
 		from erpnext.accounts.doctype.budget_account.budget_account import BudgetAccount
+		from frappe.types import DF
 
 		accounts: DF.Table[BudgetAccount]
 		action_if_accumulated_monthly_budget_exceeded: DF.Literal["", "Stop", "Warn", "Ignore"]
@@ -48,7 +47,7 @@ class Budget(Document):
 		cost_center: DF.Link | None
 		fiscal_year: DF.Link
 		monthly_distribution: DF.Link | None
-		naming_series: DF.Literal["BUDGET-.YYYY.-"]
+		naming_series: DF.Data | None
 		project: DF.Link | None
 	# end: auto-generated types
 
@@ -136,12 +135,16 @@ class Budget(Document):
 		):
 			self.applicable_on_booking_actual_expenses = 1
 
+	def before_naming(self):
+		self.naming_series = f"{{{frappe.scrub(self.budget_against)}}}./.{self.fiscal_year}/.###"
+
 
 def validate_expense_against_budget(args, expense_amount=0):
 	args = frappe._dict(args)
+	
 	if not frappe.get_all("Budget", limit=1):
 		return
-
+	
 	if args.get("company") and not args.fiscal_year:
 		args.fiscal_year = get_fiscal_year(args.get("posting_date"), company=args.get("company"))[0]
 		frappe.flags.exception_approver_role = frappe.get_cached_value(
@@ -150,7 +153,7 @@ def validate_expense_against_budget(args, expense_amount=0):
 
 	if not frappe.get_cached_value("Budget", {"fiscal_year": args.fiscal_year, "company": args.company}):  # nosec
 		return
-
+	
 	if not args.account:
 		args.account = args.get("expense_account")
 
@@ -159,6 +162,7 @@ def validate_expense_against_budget(args, expense_amount=0):
 
 	if not args.account:
 		return
+	
 
 	default_dimensions = [
 		{
@@ -219,13 +223,17 @@ def validate_expense_against_budget(args, expense_amount=0):
 
 
 def validate_budget_records(args, budget_records, expense_amount):
+	
 	for budget in budget_records:
+		if flt(budget.budget_amount) == 0:
+			frappe.throw(f"The Revised Budget Amount for {args.account} is 0")
 		if flt(budget.budget_amount):
+
 			yearly_action, monthly_action = get_actions(args, budget)
 			args["for_material_request"] = budget.for_material_request
 			args["for_purchase_order"] = budget.for_purchase_order
-
 			if yearly_action in ("Stop", "Warn"):
+				
 				compare_expense_with_budget(
 					args,
 					flt(budget.budget_amount),
@@ -236,11 +244,13 @@ def validate_budget_records(args, budget_records, expense_amount):
 				)
 
 			if monthly_action in ["Stop", "Warn"]:
+				
 				budget_amount = get_accumulated_monthly_budget(
 					budget.monthly_distribution, args.posting_date, args.fiscal_year, budget.budget_amount
 				)
 
 				args["month_end_date"] = get_last_day(args.posting_date)
+				
 
 				compare_expense_with_budget(
 					args,
@@ -480,27 +490,19 @@ def get_actual_expense(args):
 			(args),
 		)[0][0]
 	)  # nosec
-
 	return amount
 
 
 def get_accumulated_monthly_budget(monthly_distribution, posting_date, fiscal_year, annual_budget):
 	distribution = {}
 	if monthly_distribution:
-		mdp = frappe.qb.DocType("Monthly Distribution Percentage")
-		md = frappe.qb.DocType("Monthly Distribution")
-
-		res = (
-			frappe.qb.from_(mdp)
-			.join(md)
-			.on(mdp.parent == md.name)
-			.select(mdp.month, mdp.percentage_allocation)
-			.where(md.fiscal_year == fiscal_year)
-			.where(md.name == monthly_distribution)
-			.run(as_dict=True)
-		)
-
-		for d in res:
+		for d in frappe.db.sql(
+			"""select mdp.month, mdp.percentage_allocation
+			from `tabMonthly Distribution Percentage` mdp, `tabMonthly Distribution` md
+			where mdp.parent=md.name and md.fiscal_year=%s""",
+			fiscal_year,
+			as_dict=1,
+		):
 			distribution.setdefault(d.month, d.percentage_allocation)
 
 	dt = frappe.get_cached_value("Fiscal Year", fiscal_year, "year_start_date")

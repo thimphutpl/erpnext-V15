@@ -1,0 +1,204 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "TRANS.YY.MM.####",
+ "creation": "2025-08-31 13:52:41.276759",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "approval_status",
+  "transport_details",
+  "common_pool",
+  "self_arranged",
+  "is_boulder",
+  "column_break_3",
+  "request_date",
+  "transporter_name",
+  "user",
+  "section_break_9",
+  "vehicle_no",
+  "vehicle_capacity",
+  "column_break_7",
+  "vehicle_owner",
+  "owner_cid",
+  "driver_details",
+  "drivers_name",
+  "column_break_17",
+  "contact_no",
+  "column_break_14",
+  "transporter",
+  "amended_from",
+  "status"
+ ],
+ "fields": [
+  {
+   "fieldname": "approval_status",
+   "fieldtype": "Select",
+   "label": "Approval Status",
+   "options": "Pending\nApproved\nRejected\nDeregistered"
+  },
+  {
+   "fieldname": "transport_details",
+   "fieldtype": "Section Break",
+   "label": "Transport Details"
+  },
+  {
+   "default": "0",
+   "fieldname": "common_pool",
+   "fieldtype": "Check",
+   "label": "Common Pool Transport"
+  },
+  {
+   "default": "0",
+   "fieldname": "self_arranged",
+   "fieldtype": "Check",
+   "label": "Self Owned Transport"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_boulder",
+   "fieldtype": "Check",
+   "label": "Is Boulder Transport"
+  },
+  {
+   "fieldname": "column_break_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "Today",
+   "fieldname": "request_date",
+   "fieldtype": "Date",
+   "label": "Request Date",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "depends_on": "eval:doc.common_pool == 1",
+   "fieldname": "transporter_name",
+   "fieldtype": "Data",
+   "label": "Transporter Name"
+  },
+  {
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "label": "User",
+   "options": "User",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_9",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "vehicle_no",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Vehicle Number",
+   "reqd": 1
+  },
+  {
+   "fieldname": "vehicle_capacity",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Vehicle Capacity(m3)",
+   "options": "Vehicle Capacity"
+  },
+  {
+   "fieldname": "column_break_7",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "vehicle_owner",
+   "fieldtype": "Select",
+   "label": "Vehicle Owner",
+   "options": "\nSelf\nSpouse"
+  },
+  {
+   "fieldname": "owner_cid",
+   "fieldtype": "Data",
+   "label": "Owner CID"
+  },
+  {
+   "fieldname": "driver_details",
+   "fieldtype": "Section Break",
+   "label": "Driver's Detail"
+  },
+  {
+   "fieldname": "drivers_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Driver's Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_17",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "contact_no",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Driver's Contact No",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_14",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.common_pool==1",
+   "fieldname": "transporter",
+   "fieldtype": "Link",
+   "label": "Transporter",
+   "options": "Transporter",
+   "read_only": 1
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Transport Request",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "default": "Pending",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "hidden": 1,
+   "label": "Status",
+   "options": "Pending\nApproved\nRejected\nDeregistered",
+   "read_only": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2025-08-31 14:09:01.457194",
+ "modified_by": "Administrator",
+ "module": "CRM",
+ "name": "Transport Request",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

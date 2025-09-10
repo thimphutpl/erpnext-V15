@@ -45,13 +45,13 @@
    "reqd": 1
   },
   {
-   "default": "Add",
+   "default": "Deduct",
    "fieldname": "add_deduct_tax",
    "fieldtype": "Select",
    "label": "Add or Deduct",
    "oldfieldname": "add_deduct_tax",
    "oldfieldtype": "Select",
-   "options": "Add\nDeduct",
+   "options": "Deduct\nAdd",
    "reqd": 1
   },
   {
@@ -139,7 +139,6 @@
    "columns": 2,
    "fieldname": "tax_amount",
    "fieldtype": "Currency",
-   "in_list_view": 1,
    "label": "Amount",
    "oldfieldname": "tax_amount",
    "oldfieldtype": "Currency",
@@ -148,6 +147,7 @@
   {
    "fieldname": "tax_amount_after_discount_amount",
    "fieldtype": "Currency",
+   "in_list_view": 1,
    "label": "Tax Amount After Discount Amount",
    "options": "currency",
    "print_hide": 1,
@@ -196,7 +196,7 @@
    "fieldname": "item_wise_tax_detail",
    "fieldtype": "Code",
    "hidden": 1,
-   "label": "Item Wise Tax Detail",
+   "label": "Item Wise Tax Detail ",
    "oldfieldname": "item_wise_tax_detail",
    "oldfieldtype": "Small Text",
    "print_hide": 1,
@@ -235,11 +235,10 @@
    "read_only": 1
   }
  ],
- "grid_page_length": 50,
  "idx": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-04-15 13:14:48.936047",
+ "modified": "2025-06-17 17:50:07.849953",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Purchase Taxes and Charges",
@@ -248,5 +247,6 @@
  "permissions": [],
  "sort_field": "modified",
  "sort_order": "DESC",
+ "states": [],
  "track_changes": 1
 }

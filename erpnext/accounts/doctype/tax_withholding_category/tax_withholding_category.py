@@ -36,38 +36,27 @@ class TaxWithholdingCategory(Document):
 
 	def validate(self):
 		self.validate_dates()
-		self.validate_companies_and_accounts()
+		self.validate_accounts()
 		self.validate_thresholds()
 
 	def validate_dates(self):
-		last_to_date = None
-		rates = sorted(self.get("rates"), key=lambda d: getdate(d.from_date))
-
-		for d in rates:
+		last_date = None
+		for d in self.get("rates"):
 			if getdate(d.from_date) >= getdate(d.to_date):
 				frappe.throw(_("Row #{0}: From Date cannot be before To Date").format(d.idx))
 
 			# validate overlapping of dates
-			if last_to_date and getdate(d.from_date) < getdate(last_to_date):
+			if last_date and getdate(d.to_date) < getdate(last_date):
 				frappe.throw(_("Row #{0}: Dates overlapping with other row").format(d.idx))
 
-			last_to_date = d.to_date
-
-	def validate_companies_and_accounts(self):
-		existing_accounts = set()
-		companies = set()
+	def validate_accounts(self):
+		existing_accounts = []
 		for d in self.get("accounts"):
-			# validate duplicate company
-			if d.get("company") in companies:
-				frappe.throw(_("Company {0} added multiple times").format(frappe.bold(d.get("company"))))
-			companies.add(d.get("company"))
-
-			# validate duplicate account
 			if d.get("account") in existing_accounts:
 				frappe.throw(_("Account {0} added multiple times").format(frappe.bold(d.get("account"))))
 
 			validate_account_head(d.idx, d.get("account"), d.get("company"))
-			existing_accounts.add(d.get("account"))
+			existing_accounts.append(d.get("account"))
 
 	def validate_thresholds(self):
 		for d in self.get("rates"):
@@ -447,7 +436,8 @@ def get_invoice_vouchers(parties, tax_details, company, party_type="Supplier"):
 			tax_details.get("tax_withholding_category"),
 			company,
 		),
-		as_dict=1,
+		as_dict=True
+
 	)
 
 	for d in journal_entries_details:
@@ -671,7 +661,6 @@ def get_tcs_amount(parties, inv, tax_details, vouchers, adv_vouchers):
 	conditions.append(ple.party.isin(parties))
 	conditions.append(ple.voucher_no == ple.against_voucher_no)
 	conditions.append(ple.company == inv.company)
-	conditions.append(ple.posting_date[tax_details.from_date : tax_details.to_date])
 
 	advance_amt = (
 		qb.from_(ple).select(Abs(Sum(ple.amount))).where(Criterion.all(conditions)).run()[0][0] or 0.0

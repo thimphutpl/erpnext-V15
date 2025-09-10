@@ -85,7 +85,6 @@ class AccountsTestMixin:
 					"attribute_name": "bank",
 					"account_name": "HDFC",
 					"parent_account": "Bank Accounts - " + abbr,
-					"account_type": "Bank",
 				}
 			),
 			frappe._dict(

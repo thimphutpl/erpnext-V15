@@ -4,7 +4,7 @@
 
 import frappe
 from frappe import _, throw
-from frappe.utils import add_to_date, cint, cstr, pretty_date
+from frappe.utils import cint, cstr
 from frappe.utils.nestedset import NestedSet, get_ancestors_of, get_descendants_of
 
 import erpnext
@@ -34,45 +34,20 @@ class Account(NestedSet):
 		account_currency: DF.Link | None
 		account_name: DF.Data
 		account_number: DF.Data | None
-		account_type: DF.Literal[
-			"",
-			"Accumulated Depreciation",
-			"Asset Received But Not Billed",
-			"Bank",
-			"Cash",
-			"Chargeable",
-			"Capital Work in Progress",
-			"Cost of Goods Sold",
-			"Current Asset",
-			"Current Liability",
-			"Depreciation",
-			"Direct Expense",
-			"Direct Income",
-			"Equity",
-			"Expense Account",
-			"Expenses Included In Asset Valuation",
-			"Expenses Included In Valuation",
-			"Fixed Asset",
-			"Income Account",
-			"Indirect Expense",
-			"Indirect Income",
-			"Liability",
-			"Payable",
-			"Receivable",
-			"Round Off",
-			"Round Off for Opening",
-			"Stock",
-			"Stock Adjustment",
-			"Stock Received But Not Billed",
-			"Service Received But Not Billed",
-			"Tax",
-			"Temporary",
-		]
+		account_type: DF.Literal["", "Accumulated Depreciation", "Asset Received But Not Billed", "Bank", "Cash", "Chargeable", "Capital Work in Progress", "Cost of Goods Sold", "Current Asset", "Current Liability", "Depreciation", "Direct Expense", "Direct Income", "Equity", "Expense Account", "Expenses Included In Asset Valuation", "Expenses Included In Valuation", "Fixed Asset", "Income Account", "Indirect Expense", "Indirect Income", "Liability", "Payable", "Receivable", "Round Off", "Round Off for Opening", "Stock", "Stock Adjustment", "Stock Received But Not Billed", "Service Received But Not Billed", "Tax", "Temporary"]
 		balance_must_be: DF.Literal["", "Debit", "Credit"]
+		bank_ac_no: DF.Data | None
+		bank_account_type: DF.Link | None
+		bank_branch: DF.Link | None
+		bank_name: DF.Link | None
+		budget_type: DF.Link | None
 		company: DF.Link
+		cost_center: DF.Link | None
 		disabled: DF.Check
 		freeze_account: DF.Literal["No", "Yes"]
+		ignore_budget_check: DF.Check
 		include_in_gross: DF.Check
+		is_centralized_budget: DF.Check
 		is_group: DF.Check
 		lft: DF.Int
 		old_parent: DF.Data | None
@@ -481,7 +456,6 @@ def get_account_autoname(account_number, account_name, company):
 
 @frappe.whitelist()
 def update_account_number(name, account_name, account_number=None, from_descendant=False):
-	_ensure_idle_system()
 	account = frappe.get_cached_doc("Account", name)
 	if not account:
 		return
@@ -502,7 +476,7 @@ def update_account_number(name, account_name, account_number=None, from_descenda
 				"name",
 			)
 
-			if old_name and not from_descendant:
+			if old_name:
 				# same account in parent company exists
 				allow_child_account_creation = _("Allow Account Creation Against Child Company")
 
@@ -543,7 +517,6 @@ def update_account_number(name, account_name, account_number=None, from_descenda
 
 @frappe.whitelist()
 def merge_account(old, new):
-	_ensure_idle_system()
 	# Validate properties before merging
 	new_account = frappe.get_cached_doc("Account", new)
 	old_account = frappe.get_cached_doc("Account", old)
@@ -597,31 +570,3 @@ def sync_update_account_number_in_child(
 
 	for d in frappe.db.get_values("Account", filters=filters, fieldname=["company", "name"], as_dict=True):
 		update_account_number(d["name"], account_name, account_number, from_descendant=True)
-
-
-def _ensure_idle_system():
-	# Don't allow renaming if accounting entries are actively being updated, there are two main reasons:
-	# 1. Correctness: It's next to impossible to ensure that renamed account is not being used *right now*.
-	# 2. Performance: Renaming requires locking out many tables entirely and severely degrades performance.
-
-	if frappe.flags.in_test:
-		return
-
-	last_gl_update = None
-	try:
-		# We also lock inserts to GL entry table with for_update here.
-		last_gl_update = frappe.db.get_value("GL Entry", {}, "modified", for_update=True, wait=False)
-	except frappe.QueryTimeoutError:
-		# wait=False fails immediately if there's an active transaction.
-		last_gl_update = add_to_date(None, seconds=-1)
-
-	if not last_gl_update:
-		return
-
-	if last_gl_update > add_to_date(None, minutes=-5):
-		frappe.throw(
-			_(
-				"Last GL Entry update was done {}. This operation is not allowed while system is actively being used. Please wait for 5 minutes before retrying."
-			).format(pretty_date(last_gl_update)),
-			title=_("System In Use"),
-		)

@@ -52,21 +52,19 @@ class SalesOrder(SellingController):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
-		from frappe.types import DF
-
 		from erpnext.accounts.doctype.payment_schedule.payment_schedule import PaymentSchedule
 		from erpnext.accounts.doctype.pricing_rule_detail.pricing_rule_detail import PricingRuleDetail
-		from erpnext.accounts.doctype.sales_taxes_and_charges.sales_taxes_and_charges import (
-			SalesTaxesandCharges,
-		)
+		from erpnext.accounts.doctype.sales_taxes_and_charges.sales_taxes_and_charges import SalesTaxesandCharges
 		from erpnext.selling.doctype.sales_order_item.sales_order_item import SalesOrderItem
 		from erpnext.selling.doctype.sales_team.sales_team import SalesTeam
 		from erpnext.stock.doctype.packed_item.packed_item import PackedItem
+		from frappe.types import DF
 
+		additional_cost: DF.Data | None
 		additional_discount_percentage: DF.Float
 		address_display: DF.SmallText | None
 		advance_paid: DF.Currency
-		advance_payment_status: DF.Literal["Not Requested", "Requested", "Partially Paid", "Fully Paid"]
+		allotment_date: DF.Date | None
 		amended_from: DF.Link | None
 		amount_eligible_for_commission: DF.Currency
 		apply_discount_on: DF.Literal["", "Grand Total", "Net Total"]
@@ -79,7 +77,10 @@ class SalesOrder(SellingController):
 		base_rounding_adjustment: DF.Currency
 		base_total: DF.Currency
 		base_total_taxes_and_charges: DF.Currency
+		bg_date: DF.Date | None
+		bg_no: DF.Data | None
 		billing_status: DF.Literal["Not Billed", "Fully Billed", "Partly Billed", "Closed"]
+		branch: DF.Link
 		campaign: DF.Link | None
 		commission_rate: DF.Float
 		company: DF.Link
@@ -93,37 +94,47 @@ class SalesOrder(SellingController):
 		contact_phone: DF.Data | None
 		conversion_rate: DF.Float
 		cost_center: DF.Link | None
+		country: DF.Link | None
 		coupon_code: DF.Link | None
 		currency: DF.Link
 		customer: DF.Link
 		customer_address: DF.Link | None
 		customer_group: DF.Link | None
+		customer_id: DF.Data | None
 		customer_name: DF.Data | None
+		customers_product_requisition_no: DF.Data | None
 		delivery_date: DF.Date | None
-		delivery_status: DF.Literal[
-			"Not Delivered", "Fully Delivered", "Partly Delivered", "Closed", "Not Applicable"
-		]
+		delivery_status: DF.Literal["Not Delivered", "Fully Delivered", "Partly Delivered", "Closed", "Not Applicable"]
 		disable_rounded_total: DF.Check
 		discount_amount: DF.Currency
 		dispatch_address: DF.SmallText | None
 		dispatch_address_name: DF.Link | None
+		footer: DF.TextEditor | None
 		from_date: DF.Date | None
 		grand_total: DF.Currency
 		group_same_items: DF.Check
 		has_unit_price_items: DF.Check
+		header: DF.TextEditor | None
 		ignore_pricing_rule: DF.Check
 		in_words: DF.Data | None
 		incoterm: DF.Link | None
 		inter_company_order_reference: DF.Link | None
+		is_allotment: DF.Check
+		is_credit: DF.Check
+		is_export: DF.Check
 		is_internal_customer: DF.Check
+		is_kidu_sale: DF.Check
+		is_rural_sale: DF.Check
 		items: DF.Table[SalesOrderItem]
 		language: DF.Data | None
 		letter_head: DF.Link | None
+		loading_cost: DF.Data | None
 		loyalty_amount: DF.Currency
 		loyalty_points: DF.Int
 		named_place: DF.Data | None
 		naming_series: DF.Literal["SAL-ORD-.YYYY.-"]
 		net_total: DF.Currency
+		net_transportation_charges: DF.Data | None
 		order_type: DF.Literal["", "Sales", "Maintenance", "Shopping Cart"]
 		other_charges_calculation: DF.TextEditor | None
 		packed_items: DF.Table[PackedItem]
@@ -139,13 +150,13 @@ class SalesOrder(SellingController):
 		price_list_currency: DF.Link
 		pricing_rules: DF.Table[PricingRuleDetail]
 		project: DF.Link | None
+		rate_template: DF.Link | None
 		represents_company: DF.Link | None
 		reserve_stock: DF.Check
 		rounded_total: DF.Currency
 		rounding_adjustment: DF.Currency
 		sales_partner: DF.Link | None
 		sales_team: DF.Table[SalesTeam]
-		scan_barcode: DF.Data | None
 		select_print_heading: DF.Link | None
 		selling_price_list: DF.Link
 		set_warehouse: DF.Link | None
@@ -154,18 +165,8 @@ class SalesOrder(SellingController):
 		shipping_rule: DF.Link | None
 		skip_delivery_note: DF.Check
 		source: DF.Link | None
-		status: DF.Literal[
-			"",
-			"Draft",
-			"On Hold",
-			"To Pay",
-			"To Deliver and Bill",
-			"To Bill",
-			"To Deliver",
-			"Completed",
-			"Cancelled",
-			"Closed",
-		]
+		status: DF.Literal["", "Draft", "On Hold", "To Deliver and Bill", "To Bill", "To Deliver", "Completed", "Cancelled", "Closed"]
+		supply_order_ref: DF.Data | None
 		tax_category: DF.Link | None
 		tax_id: DF.Data | None
 		taxes: DF.Table[SalesTaxesandCharges]
@@ -173,14 +174,17 @@ class SalesOrder(SellingController):
 		tc_name: DF.Link | None
 		terms: DF.TextEditor | None
 		territory: DF.Link | None
-		title: DF.Data | None
+		title: DF.Data
 		to_date: DF.Date | None
 		total: DF.Currency
 		total_commission: DF.Currency
+		total_distance: DF.Data | None
 		total_net_weight: DF.Float
 		total_qty: DF.Float
+		total_quantity: DF.Data | None
 		total_taxes_and_charges: DF.Currency
 		transaction_date: DF.Date
+		transportation_rate: DF.Data | None
 	# end: auto-generated types
 
 	def __init__(self, *args, **kwargs):
@@ -874,6 +878,7 @@ def make_material_request(source_name, target_doc=None):
 				"price_list_rate"
 			)
 		)
+		# frappe.throw(target.rate)
 		target.amount = target.qty * target.rate
 
 	doc = get_mapped_doc(

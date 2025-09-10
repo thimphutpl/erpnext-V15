@@ -1,0 +1,563 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "REQ.YY.MM.####",
+ "creation": "2025-08-26 21:40:37.633185",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "approval_status",
+  "column_break_15",
+  "rejection_reason",
+  "sb_user_details",
+  "user",
+  "full_name",
+  "mobile_no",
+  "alternate_mobile_no",
+  "column_break_0",
+  "address_list",
+  "sb_request_details",
+  "request_type",
+  "column_break_18",
+  "request_category",
+  "sb_id_details",
+  "new_cid_html",
+  "new_cid",
+  "new_date_of_issue",
+  "new_date_of_expiry",
+  "new_cid_file_front",
+  "new_cid_file_back",
+  "column_break_3",
+  "old_cid_html",
+  "old_cid",
+  "old_date_of_issue",
+  "old_date_of_expiry",
+  "old_cid_file_front",
+  "old_cid_file_back",
+  "sb_address_details",
+  "new_address_html",
+  "new_address_type",
+  "new_address_line1",
+  "new_address_line2",
+  "new_dzongkhag",
+  "new_gewog",
+  "new_pincode",
+  "column_break_6",
+  "old_address_html",
+  "old_address_type",
+  "old_address_line1",
+  "old_address_line2",
+  "old_dzongkhag",
+  "old_gewog",
+  "old_pincode",
+  "sb_contact_details",
+  "new_contact_html",
+  "new_first_name",
+  "new_last_name",
+  "new_email_id",
+  "new_mobile_no",
+  "new_alternate_mobile_no",
+  "column_break_9",
+  "old_contact_html",
+  "old_first_name",
+  "old_last_name",
+  "old_email_id",
+  "old_mobile_no",
+  "old_alternate_mobile_no",
+  "sb_bank_details",
+  "new_bank_html",
+  "new_financial_institution",
+  "new_financial_institution_branch",
+  "new_account_number",
+  "column_break_12",
+  "old_bank_html",
+  "old_financial_institution",
+  "old_financial_institution_branch",
+  "old_account_number",
+  "sb_others",
+  "send_sms",
+  "sms_content",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "default": "Pending",
+   "fieldname": "approval_status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Approval Status",
+   "options": "Pending\nApproved\nRejected",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_15",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.approval_status==\"Rejected\"",
+   "fieldname": "rejection_reason",
+   "fieldtype": "Small Text",
+   "label": "Rejection Reason"
+  },
+  {
+   "fieldname": "sb_user_details",
+   "fieldtype": "Section Break",
+   "label": "USER DETAILS"
+  },
+  {
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "label": "User ID",
+   "options": "User",
+   "reqd": 1
+  },
+  {
+   "fieldname": "full_name",
+   "fieldtype": "Data",
+   "label": "Full Name",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "user.mobile_no",
+   "fieldname": "mobile_no",
+   "fieldtype": "Data",
+   "label": "Mobile No"
+  },
+  {
+   "fetch_from": "user.alternate_mobile_no",
+   "fieldname": "alternate_mobile_no",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Alternate Mobile No"
+  },
+  {
+   "fieldname": "column_break_0",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "address_list",
+   "fieldtype": "HTML",
+   "options": "<h6>NEW CID DETAILS</h6>"
+  },
+  {
+   "fieldname": "sb_request_details",
+   "fieldtype": "Section Break",
+   "label": "REQUEST DETAILS"
+  },
+  {
+   "fieldname": "request_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Request Type",
+   "options": "\nRegistration\nChange Request"
+  },
+  {
+   "fieldname": "column_break_18",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "request_category",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Request Category",
+   "options": "\nCID Details\nAddress Details\nContact Details\nBank Details",
+   "reqd": 1
+  },
+  {
+   "depends_on": "eval:doc.request_category == \"CID Details\"",
+   "fieldname": "sb_id_details",
+   "fieldtype": "Section Break",
+   "label": "CID Information"
+  },
+  {
+   "depends_on": "eval:doc.request_type==\"Change Request\"",
+   "fieldname": "new_cid_html",
+   "fieldtype": "HTML",
+   "options": "<h6>NEW CID DETAILS</h6>"
+  },
+  {
+   "fieldname": "new_cid",
+   "fieldtype": "Data",
+   "label": "CID",
+   "options": "user.login_id"
+  },
+  {
+   "fieldname": "new_date_of_issue",
+   "fieldtype": "Date",
+   "label": "Date of Issue"
+  },
+  {
+   "fieldname": "new_date_of_expiry",
+   "fieldtype": "Date",
+   "label": "Date of Expiry"
+  },
+  {
+   "fieldname": "new_cid_file_front",
+   "fieldtype": "Attach Image",
+   "hidden": 1,
+   "label": "CID Front"
+  },
+  {
+   "fieldname": "new_cid_file_back",
+   "fieldtype": "Attach Image",
+   "hidden": 1,
+   "label": "CID Back"
+  },
+  {
+   "fieldname": "column_break_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.request_type==\"Change Request\"",
+   "fieldname": "old_cid_html",
+   "fieldtype": "HTML",
+   "options": "<h6>OLD CID DETAILS</h6>"
+  },
+  {
+   "depends_on": "eval:doc.request_type==\"Change Request\"",
+   "fieldname": "old_cid",
+   "fieldtype": "Data",
+   "label": "CID",
+   "options": "user.login_id",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.request_type==\"Change Request\"",
+   "fieldname": "old_date_of_issue",
+   "fieldtype": "Date",
+   "label": "Date of Issue",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.request_type==\"Change Request\"",
+   "fieldname": "old_date_of_expiry",
+   "fieldtype": "Date",
+   "label": "Date of Expiry",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.request_type==\"Change Request\"",
+   "fieldname": "old_cid_file_front",
+   "fieldtype": "Attach Image",
+   "hidden": 1,
+   "label": "CID Front",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.request_type==\"Change Request\"",
+   "fieldname": "old_cid_file_back",
+   "fieldtype": "Attach Image",
+   "hidden": 1,
+   "label": "CID Back",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.request_category == \"Address Details\"",
+   "fieldname": "sb_address_details",
+   "fieldtype": "Section Break",
+   "label": "ADDRESS INFORMATION"
+  },
+  {
+   "depends_on": "eval:doc.request_type==\"Change Request\"",
+   "fieldname": "new_address_html",
+   "fieldtype": "HTML",
+   "options": "<h6>NEW ADDRESS</h6>"
+  },
+  {
+   "depends_on": "eval:doc.request_category == \"Address Details\"",
+   "fieldname": "new_address_type",
+   "fieldtype": "Select",
+   "label": "Address Type",
+   "options": "\nBilling Address\nPermanent Address"
+  },
+  {
+   "fieldname": "new_address_line1",
+   "fieldtype": "Data",
+   "label": "Address Line 1"
+  },
+  {
+   "fieldname": "new_address_line2",
+   "fieldtype": "Data",
+   "label": "Address Line 2"
+  },
+  {
+   "fieldname": "new_dzongkhag",
+   "fieldtype": "Link",
+   "label": "Dzongkhag",
+   "options": "Dzongkhags"
+  },
+  {
+   "fieldname": "new_gewog",
+   "fieldtype": "Link",
+   "label": "Gewog",
+   "options": "Gewogs"
+  },
+  {
+   "fieldname": "new_pincode",
+   "fieldtype": "Data",
+   "label": "Postal Code"
+  },
+  {
+   "fieldname": "column_break_6",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.request_type == \"Change Request\"",
+   "fieldname": "old_address_html",
+   "fieldtype": "HTML",
+   "options": "<h6>OLD ADDRESS</h6>"
+  },
+  {
+   "depends_on": "eval:doc.request_type==\"Change Request\"",
+   "fieldname": "old_address_type",
+   "fieldtype": "Select",
+   "label": "Address Type",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.request_type == \"Change Request\"",
+   "fieldname": "old_address_line1",
+   "fieldtype": "Data",
+   "label": "Address Line 1",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.request_type == \"Change Request\"",
+   "fieldname": "old_address_line2",
+   "fieldtype": "Data",
+   "label": "Address Line 2",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.request_type == \"Change Request\"",
+   "fieldname": "old_dzongkhag",
+   "fieldtype": "Link",
+   "label": "Dzongkhag",
+   "options": "Dzongkhags",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.request_type == \"Change Request\"",
+   "fieldname": "old_gewog",
+   "fieldtype": "Link",
+   "label": "Gewog",
+   "options": "Gewogs",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.request_type==\"Change Request\"",
+   "fieldname": "old_pincode",
+   "fieldtype": "Data",
+   "label": "Postal Code",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.request_category == \"Contact Details\"",
+   "fieldname": "sb_contact_details",
+   "fieldtype": "Section Break",
+   "label": "CONTACT INFORMATION"
+  },
+  {
+   "depends_on": "eval:doc.request_type==\"Change Request\"",
+   "fieldname": "new_contact_html",
+   "fieldtype": "HTML",
+   "options": "<h6>NEW CONTACT</h6>"
+  },
+  {
+   "fieldname": "new_first_name",
+   "fieldtype": "Data",
+   "label": "First Name"
+  },
+  {
+   "fieldname": "new_last_name",
+   "fieldtype": "Data",
+   "label": "Last Name"
+  },
+  {
+   "fieldname": "new_email_id",
+   "fieldtype": "Data",
+   "label": "Email ID",
+   "options": "user.email"
+  },
+  {
+   "fieldname": "new_mobile_no",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Mobile No",
+   "options": "user.mobile_no"
+  },
+  {
+   "fieldname": "new_alternate_mobile_no",
+   "fieldtype": "Data",
+   "label": "Contact No",
+   "options": "user.alternate_mobile_no"
+  },
+  {
+   "fieldname": "column_break_9",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.request_type == \"Change Request\"",
+   "fieldname": "old_contact_html",
+   "fieldtype": "HTML",
+   "options": "<h6>OLD CONTACT</h6>"
+  },
+  {
+   "depends_on": "eval:doc.request_type == \"Change Request\"",
+   "fieldname": "old_first_name",
+   "fieldtype": "Data",
+   "label": "First Name",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.request_type == \"Change Request\"",
+   "fieldname": "old_last_name",
+   "fieldtype": "Data",
+   "label": "Last Name",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.request_type == \"Change Request\"",
+   "fieldname": "old_email_id",
+   "fieldtype": "Data",
+   "label": "Email ID",
+   "options": "user.email",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.request_type == \"Change Request\"",
+   "fieldname": "old_mobile_no",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Mobile No",
+   "options": "user.mobile_no",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.request_type == \"Change Request\"",
+   "fieldname": "old_alternate_mobile_no",
+   "fieldtype": "Data",
+   "label": "Contact No",
+   "options": "user.alternate_mobile_no",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.request_category == \"Bank Details\"",
+   "fieldname": "sb_bank_details",
+   "fieldtype": "Section Break",
+   "label": "BANK ACCOUNT INFORMATION"
+  },
+  {
+   "depends_on": "eval:doc.request_type==\"Change Request\"",
+   "fieldname": "new_bank_html",
+   "fieldtype": "HTML",
+   "label": "New Bank Details",
+   "options": "<h6>NEW BANK DETAILS</h6>"
+  },
+  {
+   "fieldname": "new_financial_institution",
+   "fieldtype": "Link",
+   "label": "Bank",
+   "options": "Financial Institution"
+  },
+  {
+   "fieldname": "new_financial_institution_branch",
+   "fieldtype": "Link",
+   "label": "Branch",
+   "options": "Financial Institution Branch"
+  },
+  {
+   "fieldname": "new_account_number",
+   "fieldtype": "Data",
+   "label": "Account Number"
+  },
+  {
+   "fieldname": "column_break_12",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.request_type==\"Change Request\"",
+   "fieldname": "old_bank_html",
+   "fieldtype": "HTML",
+   "label": "Old Bank Details",
+   "options": "<h6>OLD BANK DETAILS</h6>"
+  },
+  {
+   "depends_on": "eval:doc.request_type==\"Change Request\"",
+   "fieldname": "old_financial_institution",
+   "fieldtype": "Link",
+   "label": "Bank",
+   "options": "Financial Institution",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.request_type==\"Change Request\"",
+   "fieldname": "old_financial_institution_branch",
+   "fieldtype": "Link",
+   "label": "Branch",
+   "options": "Financial Institution Branch",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.request_type==\"Change Request\"",
+   "fieldname": "old_account_number",
+   "fieldtype": "Data",
+   "label": "Account Number",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sb_others",
+   "fieldtype": "Section Break",
+   "label": "ADDITIONAL INFORMATION"
+  },
+  {
+   "default": "1",
+   "fieldname": "send_sms",
+   "fieldtype": "Check",
+   "label": "Send SMS"
+  },
+  {
+   "fieldname": "sms_content",
+   "fieldtype": "Small Text",
+   "label": "SMS Content"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "User Request",
+   "print_hide": 1,
+   "read_only": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2025-08-26 23:08:21.169901",
+ "modified_by": "Administrator",
+ "module": "CRM",
+ "name": "User Request",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

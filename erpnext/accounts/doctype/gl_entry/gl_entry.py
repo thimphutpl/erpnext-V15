@@ -7,7 +7,7 @@ from frappe import _
 from frappe.model.document import Document
 from frappe.model.meta import get_field_precision
 from frappe.model.naming import set_name_from_naming_options
-from frappe.utils import create_batch, flt, fmt_money, now
+from frappe.utils import flt, fmt_money
 
 import erpnext
 from erpnext.accounts.doctype.accounting_dimension.accounting_dimension import (
@@ -77,6 +77,7 @@ class GLEntry(Document):
 			self.to_rename = 0
 
 	def validate(self):
+		# frappe.msgprint(frappe.as_json(self))
 		self.flags.ignore_submit_comment = True
 		self.validate_and_set_fiscal_year()
 		self.pl_must_have_cost_center()
@@ -129,7 +130,7 @@ class GLEntry(Document):
 			if not self.get(k):
 				frappe.throw(_("{0} is required").format(_(self.meta.get_label(k))))
 
-		if not self.is_cancelled and not (self.party_type and self.party):
+		if not (self.party_type and self.party):
 			account_type = frappe.get_cached_value("Account", self.account, "account_type")
 			if account_type == "Receivable":
 				frappe.throw(
@@ -251,6 +252,8 @@ class GLEntry(Document):
 			)
 
 	def validate_cost_center(self):
+		# frappe.log_error(f"{self.cost_center}")
+		# frappe.msgprint(str(self.cost))
 		if not self.cost_center:
 			return
 
@@ -451,15 +454,12 @@ def rename_gle_sle_docs():
 def rename_temporarily_named_docs(doctype):
 	"""Rename temporarily named docs using autoname options"""
 	docs_to_rename = frappe.get_all(doctype, {"to_rename": "1"}, order_by="creation", limit=50000)
-	autoname = frappe.get_meta(doctype).autoname
-
-	for batch in create_batch(docs_to_rename, 100):
-		for doc in batch:
-			oldname = doc.name
-			set_name_from_naming_options(autoname, doc)
-			newname = doc.name
-			frappe.db.sql(
-				f"UPDATE `tab{doctype}` SET name = %s, to_rename = 0, modified = %s where name = %s",
-				(newname, now(), oldname),
-			)
-		frappe.db.commit()
+	for doc in docs_to_rename:
+		oldname = doc.name
+		set_name_from_naming_options(frappe.get_meta(doctype).autoname, doc)
+		newname = doc.name
+		frappe.db.sql(
+			f"UPDATE `tab{doctype}` SET name = %s, to_rename = 0 where name = %s",
+			(newname, oldname),
+			auto_commit=True,
+		)

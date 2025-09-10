@@ -44,7 +44,6 @@ class ProcessStatementOfAccounts(Document):
 		ageing_based_on: DF.Literal["Due Date", "Posting Date"]
 		based_on_payment_terms: DF.Check
 		body: DF.TextEditor | None
-		categorize_by: DF.Literal["", "Categorize by Voucher", "Categorize by Voucher (Consolidated)"]
 		cc_to: DF.TableMultiSelect[ProcessStatementOfAccountsCC]
 		collection_name: DF.DynamicLink | None
 		company: DF.Link
@@ -57,6 +56,7 @@ class ProcessStatementOfAccounts(Document):
 		finance_book: DF.Link | None
 		frequency: DF.Literal["Weekly", "Monthly", "Quarterly"]
 		from_date: DF.Date | None
+		group_by: DF.Literal["", "Group by Voucher", "Group by Voucher (Consolidated)"]
 		ignore_cr_dr_notes: DF.Check
 		ignore_exchange_rate_revaluation_journals: DF.Check
 		include_ageing: DF.Check
@@ -129,8 +129,8 @@ def get_statement_dict(doc, get_statement_dict=False):
 
 		tax_id = frappe.get_doc("Customer", entry.customer).tax_id
 		presentation_currency = (
-			doc.currency
-			or get_party_account_currency("Customer", entry.customer, doc.company)
+			get_party_account_currency("Customer", entry.customer, doc.company)
+			or doc.currency
 			or get_company_currency(doc.company)
 		)
 
@@ -204,7 +204,7 @@ def get_gl_filters(doc, entry, tax_id, presentation_currency):
 		"party": [entry.customer],
 		"party_name": [entry.customer_name] if entry.customer_name else None,
 		"presentation_currency": presentation_currency,
-		"categorize_by": doc.categorize_by,
+		"group_by": doc.group_by,
 		"currency": doc.currency,
 		"project": [p.project_name for p in doc.project],
 		"show_opening_entries": 0,
@@ -236,21 +236,17 @@ def get_ar_filters(doc, entry):
 
 def get_html(doc, filters, entry, col, res, ageing):
 	base_template_path = "frappe/www/printview.html"
-	template_path = "erpnext/accounts/doctype/process_statement_of_accounts/process_statement_of_accounts_accounts_receivable.html"
-	if doc.report == "General Ledger":
-		template_path = (
-			"erpnext/accounts/doctype/process_statement_of_accounts/process_statement_of_accounts.html"
-		)
-
-	process_soa_html = frappe.get_hooks("process_soa_html")
-	# fetching custom print format for Process Statement of Accounts
-	if process_soa_html and process_soa_html.get(doc.report):
-		template_path = process_soa_html[doc.report][-1]
+	template_path = (
+		"erpnext/accounts/doctype/process_statement_of_accounts/process_statement_of_accounts.html"
+		if doc.report == "General Ledger"
+		else "erpnext/accounts/doctype/process_statement_of_accounts/process_statement_of_accounts_accounts_receivable.html"
+	)
 
 	if doc.letter_head:
 		from frappe.www.printview import get_letter_head
 
 		letter_head = get_letter_head(doc, 0)
+
 	html = frappe.render_template(
 		template_path,
 		{
@@ -266,6 +262,7 @@ def get_html(doc, filters, entry, col, res, ageing):
 			else None,
 		},
 	)
+
 	html = frappe.render_template(
 		base_template_path,
 		{"body": html, "css": get_print_style(), "title": "Statement For " + entry.customer},

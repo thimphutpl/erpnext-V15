@@ -1,8 +1,5 @@
-// Copyright (c) 2015, Frappe Technologies Pvt. Ltd. and Contributors
-// License: GNU General Public License v3. See license.txt
-
 frappe.query_reports["Budget Variance Report"] = {
-	filters: get_filters(),
+	"filters": get_filters(),
 	formatter: function (value, row, column, data, default_formatter) {
 		value = default_formatter(value, row, column, data);
 
@@ -79,8 +76,9 @@ function get_filters() {
 			fieldname: "budget_against",
 			label: __("Budget Against"),
 			fieldtype: "Select",
-			options: budget_against_options,
+			options: "\nCost Center",
 			default: "Cost Center",
+			hidden: 1,
 			reqd: 1,
 			on_change: function () {
 				frappe.query_report.set_filter_value("budget_against_filter", []);
@@ -89,16 +87,15 @@ function get_filters() {
 		},
 		{
 			fieldname: "budget_against_filter",
-			label: __("Dimension Filter"),
+			label: __("Cost Center Filter"),
 			fieldtype: "MultiSelectList",
-			options: "budget_against",
 			get_data: function (txt) {
 				if (!frappe.query_report.filters) return;
 
 				let budget_against = frappe.query_report.get_filter_value("budget_against");
 				if (!budget_against) return;
 
-				return frappe.db.get_link_options(budget_against, txt);
+				return frappe.db.get_link_options("Cost Center", txt);
 			},
 		},
 		{

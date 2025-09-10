@@ -14,10 +14,12 @@
   "parent_item_group",
   "is_group",
   "image",
+  "item_code_base",
   "column_break_5",
   "defaults",
   "item_group_defaults",
   "sec_break_taxes",
+  "show_subgroup_in_print",
   "taxes",
   "lft",
   "old_parent",
@@ -32,7 +34,6 @@
   {
    "fieldname": "item_group_name",
    "fieldtype": "Data",
-   "in_list_view": 1,
    "label": "Item Group Name",
    "oldfieldname": "item_group_name",
    "oldfieldtype": "Data",
@@ -127,6 +128,21 @@
    "options": "Item Group",
    "print_hide": 1,
    "report_hide": 1
+  },
+  {
+   "fieldname": "item_code_base",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Item Code Base",
+   "options": "\n",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "show_subgroup_in_print",
+   "fieldtype": "Check",
+   "label": "Show Subgroup in Print"
   }
  ],
  "icon": "fa fa-sitemap",
@@ -135,7 +151,7 @@
  "is_tree": 1,
  "links": [],
  "max_attachments": 3,
- "modified": "2024-01-30 14:08:38.485616",
+ "modified": "2024-12-14 14:18:20.553352",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Item Group",

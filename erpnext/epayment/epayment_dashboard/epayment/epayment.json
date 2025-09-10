@@ -1,0 +1,32 @@
+{
+ "cards": [
+  {
+   "card": "Bank Payment"
+  },
+  {
+   "card": "Utilities Payment"
+  }
+ ],
+ "charts": [
+  {
+   "chart": "ePayment",
+   "width": "Full"
+  },
+  {
+   "chart": "ePayment supplier wise",
+   "width": "Full"
+  }
+ ],
+ "creation": "2024-12-04 12:02:04.744288",
+ "dashboard_name": "ePayment",
+ "docstatus": 0,
+ "doctype": "Dashboard",
+ "idx": 0,
+ "is_default": 1,
+ "is_standard": 1,
+ "modified": "2024-12-04 12:20:37.123564",
+ "modified_by": "kinzang.namgyal@cdcl.bt",
+ "module": "ePayment",
+ "name": "ePayment",
+ "owner": "kinzang.namgyal@cdcl.bt"
+}

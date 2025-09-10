@@ -133,18 +133,13 @@ class PeriodClosingVoucher(AccountsController):
 		self.make_gl_entries()
 
 	def on_cancel(self):
-		self.ignore_linked_doctypes = (
-			"GL Entry",
-			"Stock Ledger Entry",
-			"Payment Ledger Entry",
-			"Account Closing Balance",
-		)
+		self.ignore_linked_doctypes = ("GL Entry", "Stock Ledger Entry", "Payment Ledger Entry")
 		self.block_if_future_closing_voucher_exists()
 		self.db_set("gle_processing_status", "In Progress")
 		self.cancel_gl_entries()
 
 	def make_gl_entries(self):
-		if frappe.db.estimate_count("GL Entry") > 100_000:
+		if self.get_gle_count_in_selected_period() > 5000:
 			frappe.enqueue(
 				process_gl_and_closing_entries,
 				doc=self,
@@ -158,6 +153,16 @@ class PeriodClosingVoucher(AccountsController):
 			)
 		else:
 			process_gl_and_closing_entries(self)
+
+	def get_gle_count_in_selected_period(self):
+		return frappe.db.count(
+			"GL Entry",
+			{
+				"posting_date": ["between", [self.period_start_date, self.period_end_date]],
+				"company": self.company,
+				"is_cancelled": 0,
+			},
+		)
 
 	def get_pcv_gl_entries(self):
 		self.pl_accounts_reverse_gle = []

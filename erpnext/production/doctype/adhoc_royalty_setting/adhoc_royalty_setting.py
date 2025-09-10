@@ -1,0 +1,56 @@
+# Copyright (c) 2025, Frappe Technologies Pvt. Ltd. and contributors
+# For license information, please see license.txt
+
+from __future__ import unicode_literals
+import frappe
+from frappe.model.document import Document
+from frappe.utils import cint
+
+class AdhocRoyaltySetting(Document):
+	# begin: auto-generated types
+	# This code is auto-generated. Do not modify anything in this block.
+
+	from typing import TYPE_CHECKING
+
+	if TYPE_CHECKING:
+		from erpnext.production.doctype.adhoc_royalty_setting_item.adhoc_royalty_setting_item import AdhocRoyaltySettingItem
+		from frappe.types import DF
+
+		company: DF.Link
+		from_date: DF.Date
+		items: DF.Table[AdhocRoyaltySettingItem]
+		to_date: DF.Date
+	# end: auto-generated types
+	def validate(self):
+		self.convert_to_inches()
+
+	def  convert_to_inches(self):
+		for a in self.items:
+			item_sub_group = ""
+			if a.based_on == 'Item':
+				item_sub_group = frappe.db.get_value("Item",a.particular, "item_sub_group")
+			if item_sub_group != "Firewood" or item_sub_group == "":
+				if not a.from_reading:
+					a.from_reading = 0
+				if not a.to_reading:
+					a.to_reading = 0
+
+				in_inches = 0
+				f = str(a.from_reading).split(".")
+				in_inches = cint(f[0]) * 12
+				if len(f) > 1:
+					if cint(f[1]) > 11:
+						frappe.throw("Inches in 'From Reading' should be smaller than 12 on row {0}".format(a.idx))
+					in_inches += cint(f[1])
+				a.from_inch = in_inches
+
+				in_inches = 0
+				f = str(a.to_reading).split(".")
+				in_inches = cint(f[0]) * 12
+				if len(f) > 1:
+					if cint(f[1]) > 11:
+						frappe.throw("Inches in 'To Reading' should be smaller than 12 on row {0}".format(a.idx))
+					in_inches += cint(f[1])
+				a.to_inch = in_inches
+
+

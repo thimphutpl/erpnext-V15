@@ -64,7 +64,9 @@ class JobCard(Document):
 		from erpnext.manufacturing.doctype.job_card_scheduled_time.job_card_scheduled_time import (
 			JobCardScheduledTime,
 		)
-		from erpnext.manufacturing.doctype.job_card_scrap_item.job_card_scrap_item import JobCardScrapItem
+		from erpnext.manufacturing.doctype.job_card_scrap_item.job_card_scrap_item import (
+			JobCardScrapItem,
+		)
 		from erpnext.manufacturing.doctype.job_card_time_log.job_card_time_log import JobCardTimeLog
 
 		actual_end_date: DF.Datetime | None
@@ -89,7 +91,7 @@ class JobCard(Document):
 		naming_series: DF.Literal["PO-JOB.#####"]
 		operation: DF.Link
 		operation_id: DF.Data | None
-		operation_row_number: DF.Literal[None]
+		operation_row_number: DF.Literal
 		posting_date: DF.Date | None
 		process_loss_qty: DF.Float
 		production_item: DF.Link | None
@@ -214,7 +216,7 @@ class JobCard(Document):
 
 				open_job_cards = []
 				if d.get("employee"):
-					open_job_cards = self.get_open_job_cards(d.get("employee"), workstation=self.workstation)
+					open_job_cards = self.get_open_job_cards(d.get("employee"))
 
 				data = self.get_overlap_for(d, open_job_cards=open_job_cards)
 				if data:
@@ -255,13 +257,9 @@ class JobCard(Document):
 				frappe.get_cached_value("Workstation", self.workstation, "production_capacity") or 1
 			)
 
-		if self.get_open_job_cards(args.get("employee")):
-			frappe.throw(
-				_(
-					"Employee {0} is currently working on another workstation. Please assign another employee."
-				).format(args.get("employee")),
-				OverlapError,
-			)
+		if args.get("employee"):
+			# override capacity for employee
+			production_capacity = 1
 
 		if not self.has_overlap(production_capacity, time_logs):
 			return {}
@@ -311,9 +309,6 @@ class JobCard(Document):
 		return overlap
 
 	def get_time_logs(self, args, doctype, open_job_cards=None):
-		if args.get("remaining_time_in_mins") and get_datetime(args.from_time) >= get_datetime(args.to_time):
-			args.to_time = add_to_date(args.from_time, minutes=args.get("remaining_time_in_mins"))
-
 		jc = frappe.qb.DocType("Job Card")
 		jctl = frappe.qb.DocType(doctype)
 
@@ -359,16 +354,14 @@ class JobCard(Document):
 			else:
 				query = query.where(jc.name.isin(open_job_cards))
 
-		if doctype == "Job Card Time Log":
-			query = query.where(jc.docstatus < 2)
-		else:
-			query = query.where((jc.docstatus == 0) & (jc.total_time_in_mins == 0))
+		if doctype != "Job Card Time Log":
+			query = query.where(jc.total_time_in_mins == 0)
 
 		time_logs = query.run(as_dict=True)
 
 		return time_logs
 
-	def get_open_job_cards(self, employee, workstation=None):
+	def get_open_job_cards(self, employee):
 		jc = frappe.qb.DocType("Job Card")
 		jctl = frappe.qb.DocType("Job Card Time Log")
 
@@ -379,14 +372,12 @@ class JobCard(Document):
 			.select(jc.name)
 			.where(
 				(jctl.parent == jc.name)
+				& (jc.workstation == self.workstation)
 				& (jctl.employee == employee)
 				& (jc.docstatus < 1)
 				& (jc.name != self.name)
 			)
 		)
-
-		if workstation:
-			query = query.where(jc.workstation == workstation)
 
 		jobs = query.run(as_dict=True)
 		return [job.get("name") for job in jobs] if jobs else []
@@ -421,13 +412,7 @@ class JobCard(Document):
 	def schedule_time_logs(self, row):
 		row.remaining_time_in_mins = row.time_in_mins
 		while row.remaining_time_in_mins > 0:
-			args = frappe._dict(
-				{
-					"from_time": row.planned_start_time,
-					"to_time": row.planned_end_time,
-					"remaining_time_in_mins": row.remaining_time_in_mins,
-				}
-			)
+			args = frappe._dict({"from_time": row.planned_start_time, "to_time": row.planned_end_time})
 
 			self.validate_overlap_for_workstation(args, row)
 			self.check_workstation_time(row)
@@ -654,7 +639,7 @@ class JobCard(Document):
 					)
 				)
 
-			if self.get("operation") == d.operation or self.is_corrective_job_card:
+			if self.get("operation") == d.operation:
 				self.append(
 					"items",
 					{
@@ -705,12 +690,6 @@ class JobCard(Document):
 					bold("Job Card"), get_link_to_form("Job Card", self.name)
 				)
 			)
-		elif frappe.db.get_single_value("Manufacturing Settings", "enforce_time_logs"):
-			for row in self.time_logs:
-				if not row.from_time or not row.to_time:
-					frappe.throw(
-						_("Row #{0}: From Time and To Time fields are required").format(row.idx),
-					)
 
 		precision = self.precision("total_completed_qty")
 		total_completed_qty = flt(
@@ -801,7 +780,7 @@ class JobCard(Document):
 			fields=["total_time_in_mins", "hour_rate"],
 			filters={"is_corrective_job_card": 1, "docstatus": 1, "work_order": self.work_order},
 		):
-			wo.corrective_operation_cost += (flt(row.total_time_in_mins) / 60) * flt(row.hour_rate)
+			wo.corrective_operation_cost += flt(row.total_time_in_mins) * flt(row.hour_rate)
 
 		wo.calculate_operating_cost()
 		wo.flags.ignore_validate_update_after_submit = True
@@ -965,9 +944,8 @@ class JobCard(Document):
 			if doc.transfer_material_against == "Job Card" and not doc.skip_transfer:
 				min_qty = []
 				for d in doc.operations:
-					completed_qty = flt(d.completed_qty) + flt(d.process_loss_qty)
-					if completed_qty:
-						min_qty.append(completed_qty)
+					if d.completed_qty:
+						min_qty.append(d.completed_qty)
 					else:
 						min_qty = []
 						break
@@ -992,9 +970,7 @@ class JobCard(Document):
 			if self.time_logs:
 				self.status = "Work In Progress"
 
-			if self.docstatus == 1 and (
-				self.for_quantity <= (self.total_completed_qty + self.process_loss_qty) or not self.items
-			):
+			if self.docstatus == 1 and (self.for_quantity <= self.total_completed_qty or not self.items):
 				self.status = "Completed"
 
 		if update_status:

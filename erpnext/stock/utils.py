@@ -58,10 +58,7 @@ def get_stock_value_from_bin(warehouse=None, item_code=None):
 
 
 def get_stock_value_on(
-	warehouses: list | str | None = None,
-	posting_date: str | None = None,
-	item_code: str | None = None,
-	company: str | None = None,
+	warehouses: list | str | None = None, posting_date: str | None = None, item_code: str | None = None
 ) -> float:
 	if not posting_date:
 		posting_date = nowdate()
@@ -87,9 +84,6 @@ def get_stock_value_on(
 	if item_code:
 		query = query.where(sle.item_code == item_code)
 
-	if company:
-		query = query.where(sle.company == company)
-
 	return query.run(as_list=True)[0][0]
 
 
@@ -108,8 +102,6 @@ def get_stock_balance(
 	If `with_valuation_rate` is True, will return tuple (qty, rate)"""
 
 	from erpnext.stock.stock_ledger import get_previous_sle
-
-	frappe.has_permission("Item", "read", throw=True)
 
 	if posting_date is None:
 		posting_date = nowdate()
@@ -665,4 +657,4 @@ def get_combine_datetime(posting_date, posting_time):
 	if isinstance(posting_time, datetime.timedelta):
 		posting_time = (datetime.datetime.min + posting_time).time()
 
-	return datetime.datetime.combine(posting_date, posting_time)
+	return datetime.datetime.combine(posting_date, posting_time).replace(microsecond=0)

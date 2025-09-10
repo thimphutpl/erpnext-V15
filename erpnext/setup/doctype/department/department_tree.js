@@ -8,6 +8,7 @@ frappe.treeview_settings["Department"] = {
 			fieldtype: "Link",
 			options: "Company",
 			label: __("Company"),
+			default: erpnext.utils.get_tree_default("company"),
 		},
 	],
 	breadcrumb: "HR",

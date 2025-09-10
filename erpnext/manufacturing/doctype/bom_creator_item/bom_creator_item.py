@@ -14,7 +14,6 @@ class BOMCreatorItem(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
-		allow_alternative_item: DF.Check
 		amount: DF.Currency
 		base_amount: DF.Currency
 		base_rate: DF.Currency

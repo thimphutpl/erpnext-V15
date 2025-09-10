@@ -1,0 +1,732 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "ORDR.YY.MM.#####",
+ "creation": "2025-08-31 18:03:07.556682",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "sb_customer_details",
+  "user",
+  "full_name",
+  "mobile_no",
+  "alternate_mobile_no",
+  "product_category",
+  "product_group",
+  "selection_based_on",
+  "column_break_30",
+  "address_list",
+  "sb_site_details",
+  "site",
+  "site_type",
+  "longitude",
+  "latitude",
+  "column_break_9",
+  "dzongkhag",
+  "plot_no",
+  "site_location",
+  "construction_start_date",
+  "construction_end_date",
+  "section_break_lots",
+  "lot_allotment_no",
+  "lots",
+  "sb_items",
+  "item_type",
+  "item",
+  "item_name",
+  "item_sub_group",
+  "uom",
+  "site_item_name",
+  "column_break_0",
+  "destination_dzongkhag",
+  "branch",
+  "location",
+  "has_common_pool",
+  "item_rate",
+  "lead_time",
+  "transport_rate",
+  "distance",
+  "sb_branch",
+  "sources",
+  "sb_sawn",
+  "sawns",
+  "sb_transportation",
+  "transport_mode",
+  "vehicle_capacity",
+  "noof_truck_load",
+  "quantity",
+  "pool_vehicles",
+  "vehicles",
+  "column_break_12",
+  "total_quantity",
+  "total_item_rate",
+  "total_transportation_rate",
+  "total_royalty_rate",
+  "total_payable_amount",
+  "challan_cost",
+  "place_order",
+  "sb_quota",
+  "total_available_quantity",
+  "order_limit_type",
+  "column_break_19",
+  "daily_quantity_limit",
+  "daily_quantity_limit_count",
+  "weekly_quantity_limit",
+  "weekly_quantity_limit_count",
+  "monthly_quantity_limit",
+  "monthly_quantity_limit_count",
+  "yearly_quantity_limit",
+  "yearly_quantity_limit_count",
+  "column_break_28",
+  "daily_available_quantity",
+  "daily_available_quantity_count",
+  "weekly_available_quantity",
+  "weekly_available_quantity_count",
+  "monthly_available_quantity",
+  "monthly_available_quantity_count",
+  "yearly_available_quantity",
+  "yearly_available_quantity_count",
+  "sb_remarks",
+  "remarks",
+  "sb_additional_information",
+  "customer",
+  "contact_info",
+  "destination",
+  "posting_date",
+  "amended_from",
+  "column_break_15",
+  "selling_price",
+  "transportation_rate",
+  "column_break_16",
+  "sales_order",
+  "total_paid_amount",
+  "total_balance_amount"
+ ],
+ "fields": [
+  {
+   "fieldname": "sb_customer_details",
+   "fieldtype": "Section Break",
+   "label": "CUSTOMER DETAILS"
+  },
+  {
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Customer ID",
+   "options": "User",
+   "reqd": 1
+  },
+  {
+   "fieldname": "full_name",
+   "fieldtype": "Data",
+   "label": "Customer Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "mobile_no",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Mobile No",
+   "read_only": 1
+  },
+  {
+   "fieldname": "alternate_mobile_no",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Alternate Mobile No",
+   "read_only": 1
+  },
+  {
+   "fieldname": "product_category",
+   "fieldtype": "Link",
+   "label": "Product Category",
+   "options": "Product Category",
+   "reqd": 1
+  },
+  {
+   "fieldname": "product_group",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Product Group",
+   "options": "Product Group"
+  },
+  {
+   "fetch_from": "product_group.selection_based_on",
+   "fieldname": "selection_based_on",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Selection Based On",
+   "options": "product_group.selection_based_on",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_30",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "address_list",
+   "fieldtype": "HTML"
+  },
+  {
+   "fieldname": "sb_site_details",
+   "fieldtype": "Section Break",
+   "label": "SITE DETAILS"
+  },
+  {
+   "fieldname": "site",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Site",
+   "options": "Site"
+  },
+  {
+   "fieldname": "site_type",
+   "fieldtype": "Link",
+   "label": "Site Type",
+   "options": "Site Type",
+   "read_only": 1
+  },
+  {
+   "fieldname": "longitude",
+   "fieldtype": "Data",
+   "label": "Longitude",
+   "read_only": 1
+  },
+  {
+   "fieldname": "latitude",
+   "fieldtype": "Data",
+   "label": "Latitude",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_9",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "dzongkhag",
+   "fieldtype": "Link",
+   "label": "Dzongkhag",
+   "options": "Dzongkhags",
+   "read_only": 1
+  },
+  {
+   "fieldname": "plot_no",
+   "fieldtype": "Data",
+   "label": "Plot No",
+   "read_only": 1
+  },
+  {
+   "fieldname": "site_location",
+   "fieldtype": "Small Text",
+   "label": "Location",
+   "read_only": 1
+  },
+  {
+   "fieldname": "construction_start_date",
+   "fieldtype": "Date",
+   "label": "Construction Start Date",
+   "read_only": 1
+  },
+  {
+   "fieldname": "construction_end_date",
+   "fieldtype": "Date",
+   "label": "Construction End Date",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.selection_based_on == 'Lot'",
+   "fieldname": "section_break_lots",
+   "fieldtype": "Section Break",
+   "label": "LOTS"
+  },
+  {
+   "fieldname": "lot_allotment_no",
+   "fieldtype": "Link",
+   "label": "Lot Allotment Number",
+   "options": "Lot Allotment"
+  },
+  {
+   "fieldname": "lots",
+   "fieldtype": "Table",
+   "options": "Customer Order Lots"
+  },
+  {
+   "fieldname": "sb_items",
+   "fieldtype": "Section Break",
+   "label": "MATERIAL"
+  },
+  {
+   "fieldname": "item_type",
+   "fieldtype": "Link",
+   "label": "Item Type",
+   "options": "Item Sub Group"
+  },
+  {
+   "fieldname": "item",
+   "fieldtype": "Link",
+   "label": "Item",
+   "options": "Item"
+  },
+  {
+   "fieldname": "item_name",
+   "fieldtype": "Data",
+   "label": "Item Name",
+   "options": "item.item_name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "item_sub_group",
+   "fieldtype": "Data",
+   "label": "Sub Group",
+   "options": "item.item_sub_group",
+   "read_only": 1
+  },
+  {
+   "fieldname": "uom",
+   "fieldtype": "Data",
+   "label": "Unit of Measurement",
+   "options": "item.stock_uom",
+   "read_only": 1
+  },
+  {
+   "fieldname": "site_item_name",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Site Item Name",
+   "options": "Site Item",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_0",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "destination_dzongkhag",
+   "fieldtype": "Link",
+   "label": "Destination Dzongkhag",
+   "options": "Dzongkhags"
+  },
+  {
+   "description": "*Branch will be auto filled for Timber Prime Products after saving",
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "label": "Select Source Branch",
+   "options": "Branch"
+  },
+  {
+   "fieldname": "location",
+   "fieldtype": "Select",
+   "label": "Select Source Location"
+  },
+  {
+   "default": "0",
+   "fieldname": "has_common_pool",
+   "fieldtype": "Check",
+   "label": "Has Common Pool Facility",
+   "read_only": 1
+  },
+  {
+   "fieldname": "item_rate",
+   "fieldtype": "Currency",
+   "label": "Item Rate",
+   "read_only": 1
+  },
+  {
+   "fieldname": "lead_time",
+   "fieldtype": "Int",
+   "label": "Lead Time(Days)",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.has_common_pool",
+   "fieldname": "transport_rate",
+   "fieldtype": "Currency",
+   "label": "Transportation Rate",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.has_common_pool",
+   "fieldname": "distance",
+   "fieldtype": "Float",
+   "label": "Distance to Site(km)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sb_branch",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "sources",
+   "fieldtype": "Table",
+   "label": "Sources",
+   "options": "Customer Order Branch",
+   "read_only": 1
+  },
+  {
+   "collapsible_depends_on": "eval:doc.selection_based_on == 'Measurements'",
+   "fieldname": "sb_sawn",
+   "fieldtype": "Section Break",
+   "hidden": 1
+  },
+  {
+   "fieldname": "sawns",
+   "fieldtype": "Table",
+   "options": "Customer Order Sawn"
+  },
+  {
+   "fieldname": "sb_transportation",
+   "fieldtype": "Section Break",
+   "label": "TRANSPORTATION"
+  },
+  {
+   "fieldname": "transport_mode",
+   "fieldtype": "Select",
+   "label": "Transport Mode",
+   "options": "\nCommon Pool\nSelf Owned Transport\nOthers\nPrivate Pool"
+  },
+  {
+   "depends_on": "eval:doc.transport_mode==\"Common Pool\"",
+   "fieldname": "vehicle_capacity",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Vehicle Capacity",
+   "options": "Vehicle Capacity"
+  },
+  {
+   "fieldname": "noof_truck_load",
+   "fieldtype": "Int",
+   "hidden": 1,
+   "label": "Total No.of Truck Load",
+   "read_only": 1
+  },
+  {
+   "fieldname": "quantity",
+   "fieldtype": "Float",
+   "label": "Quantity"
+  },
+  {
+   "depends_on": "eval:doc.transport_mode == \"Common Pool\" || doc.transport_mode == \"Others\"",
+   "fieldname": "pool_vehicles",
+   "fieldtype": "Table",
+   "label": "pool",
+   "options": "Customer Order Pool"
+  },
+  {
+   "depends_on": "eval:doc.transport_mode == \"Self Owned Transport\" || doc.transport_mode == \"Private Pool\"",
+   "fieldname": "vehicles",
+   "fieldtype": "Table",
+   "label": "vehicles",
+   "options": "Customer Order Vehicle"
+  },
+  {
+   "fieldname": "column_break_12",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_quantity",
+   "fieldtype": "Float",
+   "label": "Total Order Quantity",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_item_rate",
+   "fieldtype": "Currency",
+   "label": "Total Item Rate",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.transport_mode == \"Common Pool\"",
+   "fieldname": "total_transportation_rate",
+   "fieldtype": "Currency",
+   "label": "Total Transportation Rate",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "total_royalty_rate",
+   "fieldtype": "Currency",
+   "label": "Total Royalty Rate",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_payable_amount",
+   "fieldtype": "Currency",
+   "label": "Total Payable Amount",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "challan_cost",
+   "fieldtype": "Currency",
+   "hidden": 1,
+   "label": "Challan Cost",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "place_order",
+   "fieldtype": "Button",
+   "hidden": 1,
+   "label": "Place Order"
+  },
+  {
+   "fieldname": "sb_quota",
+   "fieldtype": "Section Break",
+   "label": "QUOTA DETAILS"
+  },
+  {
+   "fieldname": "total_available_quantity",
+   "fieldtype": "Float",
+   "label": "Overall Quota Balance",
+   "read_only": 1
+  },
+  {
+   "fieldname": "order_limit_type",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Limit Type",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_19",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.order_limit_type==\"Quantity\" && flt(doc.daily_quantity_limit) > 0",
+   "fieldname": "daily_quantity_limit",
+   "fieldtype": "Float",
+   "label": "Quota Limit / Day (Quantity)",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.order_limit_type==\"Truck Loads\" && flt(doc.daily_quantity_limit_count) > 0",
+   "fieldname": "daily_quantity_limit_count",
+   "fieldtype": "Int",
+   "label": "Quota Limit / Day  (No.of Truck Loads)",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.order_limit_type == \"Quantity\" && flt(doc.daily_quantity_limit) == 0 && flt(doc.weekly_quantity_limit) > 0",
+   "fieldname": "weekly_quantity_limit",
+   "fieldtype": "Float",
+   "label": "Quota Limit / Week (Quantity)",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.order_limit_type == \"Truck Loads\" && flt(doc.daily_quantity_limit_count) == 0 && flt(doc.weekly_quantity_limit_count) > 0",
+   "fieldname": "weekly_quantity_limit_count",
+   "fieldtype": "Int",
+   "label": "Quota Limit / Week  (No.of Truck Loads)",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.order_limit_type == \"Quantity\" && flt(doc.daily_quantity_limit) == 0 && flt(doc.weekly_quantity_limit) == 0 && flt(doc.monthly_quantity_limit) > 0",
+   "fieldname": "monthly_quantity_limit",
+   "fieldtype": "Float",
+   "label": "Quota Limit / Month (Quantity)",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.order_limit_type == \"Truck Loads\" && flt(doc.daily_quantity_limit_count) == 0 && flt(doc.weekly_quantity_limit_count) == 0 && flt(doc.monthly_quantity_limit_count) > 0",
+   "fieldname": "monthly_quantity_limit_count",
+   "fieldtype": "Int",
+   "label": "Quota Limit / Month  (No.of Truck Loads)",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.order_limit_type == \"Quantity\" && flt(doc.daily_quantity_limit) == 0 && flt(doc.weekly_quantity_limit) == 0 && flt(doc.monthly_quantity_limit) == 0 && flt(doc.yearly_quantity_limit) > 0",
+   "fieldname": "yearly_quantity_limit",
+   "fieldtype": "Float",
+   "label": "Quota Limit / Year (Quantity)",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.order_limit_type == \"Truck Loads\" && flt(doc.daily_quantity_limit_count) == 0 && flt(doc.weekly_quantity_limit_count) == 0 && flt(doc.monthly_quantity_limit_count) == 0 && flt(doc.yearly_quantity_limit_count) > 0",
+   "fieldname": "yearly_quantity_limit_count",
+   "fieldtype": "Int",
+   "label": "Quota Limit / Year  (No.of Truck Loads)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_28",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.order_limit_type == \"Quantity\" && flt(doc.daily_quantity_limit) > 0",
+   "fieldname": "daily_available_quantity",
+   "fieldtype": "Float",
+   "label": "Daily Quota Balance (Quantity)",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.order_limit_type == \"Truck Loads\" && flt(doc.daily_quantity_limit_count) > 0",
+   "fieldname": "daily_available_quantity_count",
+   "fieldtype": "Int",
+   "label": "Daily Quota Balance (No.of Truck Loads)",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.order_limit_type == \"Quantity\" && flt(doc.daily_quantity_limit) == 0 && flt(doc.weekly_quantity_limit) > 0",
+   "fieldname": "weekly_available_quantity",
+   "fieldtype": "Float",
+   "label": "Weekly Quota Balance (Quantity)",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.order_limit_type == \"Truck Loads\" && flt(doc.daily_quantity_limit_count) == 0 && flt(doc.weekly_quantity_limit_count) > 0",
+   "fieldname": "weekly_available_quantity_count",
+   "fieldtype": "Int",
+   "label": "Weekly Quota Balance (No.of Truck Loads)",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.order_limit_type == \"Quantity\" && flt(doc.daily_quantity_limit) == 0 && flt(doc.weekly_quantity_limit) == 0 && flt(doc.monthly_quantity_limit) > 0",
+   "fieldname": "monthly_available_quantity",
+   "fieldtype": "Float",
+   "label": "Monthly Quota Balance (Quantity)",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.order_limit_type == \"Truck Loads\" && flt(doc.daily_quantity_limit_count) == 0 && flt(doc.weekly_quantity_limit_count) == 0 && flt(doc.monthly_quantity_limit_count) > 0",
+   "fieldname": "monthly_available_quantity_count",
+   "fieldtype": "Int",
+   "label": "Monthly Quota Balance (No.of Truck Loads)",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.order_limit_type == \"Quantity\" && flt(doc.daily_quantity_limit) == 0 && flt(doc.weekly_quantity_limit) == 0 && flt(doc.monthly_quantity_limit) == 0 && flt(doc.yearly_quantity_limit) > 0",
+   "fieldname": "yearly_available_quantity",
+   "fieldtype": "Float",
+   "label": "Yearly Quota Balance",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.order_limit_type == \"Truck Loads\" && flt(doc.daily_quantity_limit_count) == 0 && flt(doc.weekly_quantity_limit_count) == 0 && flt(doc.monthly_quantity_limit_count) == 0 && flt(doc.yearly_quantity_limit_count) > 0",
+   "fieldname": "yearly_available_quantity_count",
+   "fieldtype": "Int",
+   "label": "Yearly Quota Balance (No.of Truck Loads)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sb_remarks",
+   "fieldtype": "Section Break",
+   "label": "REMARKS"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Text"
+  },
+  {
+   "fieldname": "sb_additional_information",
+   "fieldtype": "Section Break",
+   "label": "ADDITIONAL INFORMATION"
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "label": "Customer",
+   "options": "Customer",
+   "read_only": 1
+  },
+  {
+   "fieldname": "contact_info",
+   "fieldtype": "Data",
+   "label": "Contact Information"
+  },
+  {
+   "fieldname": "destination",
+   "fieldtype": "Text",
+   "label": "Destination"
+  },
+  {
+   "fieldname": "posting_date",
+   "fieldtype": "Datetime",
+   "label": "Posting Date",
+   "no_copy": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Customer Order",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_15",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "selling_price",
+   "fieldtype": "Link",
+   "label": "Selling Price Reference",
+   "options": "Selling Price",
+   "read_only": 1
+  },
+  {
+   "fieldname": "transportation_rate",
+   "fieldtype": "Link",
+   "label": "Transportation Rate Reference",
+   "options": "Transportation Rate",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_16",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "sales_order",
+   "fieldtype": "Link",
+   "label": "Sales Order",
+   "options": "Sales Order",
+   "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "total_paid_amount",
+   "fieldtype": "Currency",
+   "label": "Total Paid Amount",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "total_balance_amount",
+   "fieldtype": "Currency",
+   "label": "Balance Payable Amount",
+   "precision": "2",
+   "read_only": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2025-08-31 20:33:29.612155",
+ "modified_by": "Administrator",
+ "module": "CRM",
+ "name": "Customer Order",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

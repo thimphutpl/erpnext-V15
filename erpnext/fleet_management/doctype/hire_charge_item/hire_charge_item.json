@@ -1,0 +1,170 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-11-03 16:47:47.024351",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "from_date",
+  "column_break_qxtz",
+  "to_date",
+  "section_break_aayv",
+  "external_customer_column",
+  "rate_fuel_external",
+  "rate_wofuel_external",
+  "rate_broadleaf_external",
+  "rate_conifer_external",
+  "idle_rate_external",
+  "column_break_cahz",
+  "rate_fuel_internal",
+  "rate_wofuel_internal",
+  "rate_broadleaf_internal",
+  "rate_conifer_internal",
+  "idle_rate_internal",
+  "section_break_xifj",
+  "yardstick_rates_column",
+  "yard_hours",
+  "yard_distance",
+  "column_break_njrx",
+  "perf_bench",
+  "main_int"
+ ],
+ "fields": [
+  {
+   "fieldname": "from_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "From Date"
+  },
+  {
+   "fieldname": "to_date",
+   "fieldtype": "Date",
+   "label": "To Date"
+  },
+  {
+   "fieldname": "column_break_qxtz",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_aayv",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "external_customer_column",
+   "fieldtype": "Column Break",
+   "label": "External Customer"
+  },
+  {
+   "fieldname": "column_break_cahz",
+   "fieldtype": "Column Break",
+   "label": "Internal Customer"
+  },
+  {
+   "fieldname": "rate_fuel_internal",
+   "fieldtype": "Currency",
+   "label": "With Fuel"
+  },
+  {
+   "fieldname": "rate_wofuel_internal",
+   "fieldtype": "Currency",
+   "label": "Without Fuel"
+  },
+  {
+   "fieldname": "idle_rate_internal",
+   "fieldtype": "Currency",
+   "label": "Idle Rate"
+  },
+  {
+   "fieldname": "section_break_xifj",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "yardstick_rates_column",
+   "fieldtype": "Column Break",
+   "label": "Yardstick Rates"
+  },
+  {
+   "fieldname": "yard_hours",
+   "fieldtype": "Float",
+   "in_standard_filter": 1,
+   "label": "Based on Hours",
+   "precision": "2"
+  },
+  {
+   "fieldname": "column_break_njrx",
+   "fieldtype": "Column Break",
+   "label": "Performance & Maintenance"
+  },
+  {
+   "fieldname": "yard_distance",
+   "fieldtype": "Float",
+   "label": "Based on Distance",
+   "precision": "2"
+  },
+  {
+   "fieldname": "perf_bench",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Performance Benchmark"
+  },
+  {
+   "fieldname": "main_int",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Maintenance Interval",
+   "precision": "1"
+  },
+  {
+   "fieldname": "rate_fuel_external",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "With Fuel"
+  },
+  {
+   "fieldname": "rate_wofuel_external",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Without Fuel"
+  },
+  {
+   "fieldname": "rate_broadleaf_external",
+   "fieldtype": "Currency",
+   "label": "Rate Per Cft (Broadleaf)"
+  },
+  {
+   "fieldname": "rate_conifer_external",
+   "fieldtype": "Currency",
+   "label": "Rate Per Cft (Conifer)"
+  },
+  {
+   "fieldname": "idle_rate_external",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Idle Rate"
+  },
+  {
+   "fieldname": "rate_broadleaf_internal",
+   "fieldtype": "Currency",
+   "label": "Rate Per Cft (Broadleaf)"
+  },
+  {
+   "fieldname": "rate_conifer_internal",
+   "fieldtype": "Currency",
+   "label": "Rate Per Cft (Conifer)"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-07-21 15:02:53.800333",
+ "modified_by": "kalden.dorji@thimphutechpark.bt",
+ "module": "Fleet Management",
+ "name": "Hire Charge Item",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

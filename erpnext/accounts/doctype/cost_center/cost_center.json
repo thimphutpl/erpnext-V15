@@ -13,9 +13,11 @@
   "cost_center_number",
   "parent_cost_center",
   "company",
+  "warehouse",
   "cb0",
   "is_group",
   "disabled",
+  "branch_created",
   "lft",
   "rgt",
   "old_parent"
@@ -119,13 +121,26 @@
    "fieldname": "disabled",
    "fieldtype": "Check",
    "label": "Disabled"
+  },
+  {
+   "default": "0",
+   "fieldname": "branch_created",
+   "fieldtype": "Check",
+   "label": "Branch Created",
+   "read_only": 1
+  },
+  {
+   "fieldname": "warehouse",
+   "fieldtype": "Link",
+   "label": "Warehouse",
+   "options": "Warehouse"
   }
  ],
  "icon": "fa fa-money",
  "idx": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2024-04-24 10:55:54.083042",
+ "modified": "2025-02-17 16:33:59.117696",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Cost Center",

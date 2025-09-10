@@ -27,7 +27,19 @@
   "lft",
   "rgt",
   "old_parent",
-  "include_in_gross"
+  "include_in_gross",
+  "section_break_tvam",
+  "bank_name",
+  "bank_branch",
+  "column_break_cykx",
+  "bank_account_type",
+  "bank_ac_no",
+  "budget_details_tab",
+  "ignore_budget_check",
+  "is_centralized_budget",
+  "cost_center",
+  "column_break_lidp",
+  "budget_type"
  ],
  "fields": [
   {
@@ -128,7 +140,7 @@
    "description": "Rate at which this tax is applied",
    "fieldname": "tax_rate",
    "fieldtype": "Float",
-   "label": "Tax Rate",
+   "label": "Rate",
    "oldfieldname": "tax_rate",
    "oldfieldtype": "Currency"
   },
@@ -185,13 +197,79 @@
    "fieldname": "disabled",
    "fieldtype": "Check",
    "label": "Disable"
+  },
+  {
+   "fieldname": "section_break_tvam",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "bank_name",
+   "fieldtype": "Link",
+   "label": "Bank Name",
+   "options": "Bank"
+  },
+  {
+   "fieldname": "bank_branch",
+   "fieldtype": "Link",
+   "label": "Bank Branch",
+   "options": "Bank Branch"
+  },
+  {
+   "fieldname": "column_break_cykx",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "bank_account_type",
+   "fieldtype": "Link",
+   "label": "Bank Account Type",
+   "options": "Bank Account Type"
+  },
+  {
+   "fieldname": "bank_ac_no",
+   "fieldtype": "Data",
+   "label": "Bank A/C No."
+  },
+  {
+   "fieldname": "budget_details_tab",
+   "fieldtype": "Tab Break",
+   "label": "Budget Details"
+  },
+  {
+   "default": "0",
+   "fieldname": "ignore_budget_check",
+   "fieldtype": "Check",
+   "label": " Ignore Budget Check"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_centralized_budget",
+   "fieldtype": "Check",
+   "label": " Is Centralized Budget"
+  },
+  {
+   "fieldname": "column_break_lidp",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.is_centralized_budget",
+   "fieldname": "cost_center",
+   "fieldtype": "Link",
+   "label": "Cost Center",
+   "mandatory_depends_on": "eval:doc.is_centralized_budget",
+   "options": "Cost Center"
+  },
+  {
+   "fieldname": "budget_type",
+   "fieldtype": "Link",
+   "label": "Budget Type",
+   "options": "Budget Type"
   }
  ],
  "icon": "fa fa-money",
  "idx": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2024-08-19 15:19:11.095045",
+ "modified": "2025-05-05 20:20:10.044084",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Account",

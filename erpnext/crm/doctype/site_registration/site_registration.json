@@ -1,0 +1,357 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "SREG.YY.MM.#####",
+ "creation": "2025-08-27 20:58:08.473517",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "approval_status",
+  "column_break_9",
+  "rejection_reason",
+  "sb_registration_details",
+  "purpose",
+  "user",
+  "full_name",
+  "mobile_no",
+  "alternate_mobile_no",
+  "column_break_0",
+  "address_list",
+  "customer_type",
+  "customer_group",
+  "territory",
+  "sb_construction_details",
+  "product_category",
+  "site_type",
+  "construction_type",
+  "is_building",
+  "number_of_floors",
+  "column_break_3",
+  "approval_no",
+  "approval_document",
+  "construction_start_date",
+  "construction_end_date",
+  "site_list",
+  "sb_location",
+  "dzongkhag",
+  "gewog",
+  "plot_no",
+  "column_break_12",
+  "location",
+  "latitude",
+  "longitude",
+  "sb_materials",
+  "items",
+  "sb_distance",
+  "distance",
+  "get_distance",
+  "sb_remarks",
+  "remarks",
+  "sb_additional_information",
+  "site",
+  "amended_from",
+  "status"
+ ],
+ "fields": [
+  {
+   "default": "Pending",
+   "fieldname": "approval_status",
+   "fieldtype": "Select",
+   "label": "Approval Status",
+   "options": "Pending\nApproved\nRejected",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_9",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.approval_status==\"Rejected\"",
+   "fieldname": "rejection_reason",
+   "fieldtype": "Small Text",
+   "label": "Rejection Reason"
+  },
+  {
+   "fieldname": "sb_registration_details",
+   "fieldtype": "Section Break",
+   "label": "CUSTOMER DETAILS"
+  },
+  {
+   "fieldname": "purpose",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Purpose",
+   "options": "Site Purpose"
+  },
+  {
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "label": "Customer ID",
+   "options": "User",
+   "reqd": 1
+  },
+  {
+   "fieldname": "full_name",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Customer Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "mobile_no",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Mobile No",
+   "read_only": 1
+  },
+  {
+   "fieldname": "alternate_mobile_no",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Alternate Mobile No",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_0",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "address_list",
+   "fieldtype": "HTML",
+   "hidden": 1
+  },
+  {
+   "fieldname": "customer_type",
+   "fieldtype": "Select",
+   "label": "Customer Type",
+   "options": "\nDomestic Customer\nInternational Customer"
+  },
+  {
+   "fieldname": "customer_group",
+   "fieldtype": "Link",
+   "label": "Customer Group",
+   "options": "Customer Group"
+  },
+  {
+   "fieldname": "territory",
+   "fieldtype": "Link",
+   "label": "Territory",
+   "options": "Territory"
+  },
+  {
+   "fieldname": "sb_construction_details",
+   "fieldtype": "Section Break",
+   "label": "CONSTRUCTION DETAILS",
+   "read_only": 1
+  },
+  {
+   "fieldname": "product_category",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Registration For Product",
+   "options": "Product Category",
+   "reqd": 1
+  },
+  {
+   "fieldname": "site_type",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Site Type",
+   "options": "Site Type",
+   "read_only": 1
+  },
+  {
+   "fieldname": "construction_type",
+   "fieldtype": "Link",
+   "label": "Construction Type",
+   "options": "Construction Type",
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_building",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Is Building ?"
+  },
+  {
+   "depends_on": "eval:doc.is_building",
+   "fieldname": "number_of_floors",
+   "fieldtype": "Data",
+   "label": "Number of Floors"
+  },
+  {
+   "fieldname": "column_break_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "approval_no",
+   "fieldtype": "Data",
+   "label": "Construction Approval No.",
+   "reqd": 1
+  },
+  {
+   "fieldname": "approval_document",
+   "fieldtype": "Attach",
+   "hidden": 1,
+   "label": "Construction Approval Document"
+  },
+  {
+   "fieldname": "construction_start_date",
+   "fieldtype": "Date",
+   "label": "Construction Start Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "construction_end_date",
+   "fieldtype": "Date",
+   "label": "Construction End Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "site_list",
+   "fieldtype": "HTML"
+  },
+  {
+   "fieldname": "sb_location",
+   "fieldtype": "Section Break",
+   "label": "SITE LOCATION DETAILS"
+  },
+  {
+   "fieldname": "dzongkhag",
+   "fieldtype": "Link",
+   "label": "Dzongkhag",
+   "options": "Dzongkhags",
+   "reqd": 1
+  },
+  {
+   "fieldname": "gewog",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Gewog",
+   "options": "Gewogs"
+  },
+  {
+   "depends_on": "eval:doc.is_building",
+   "fieldname": "plot_no",
+   "fieldtype": "Data",
+   "label": "Plot/Thram No."
+  },
+  {
+   "fieldname": "column_break_12",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "location",
+   "fieldtype": "Small Text",
+   "label": "Location of Construction Site",
+   "reqd": 1
+  },
+  {
+   "fieldname": "latitude",
+   "fieldtype": "Data",
+   "label": "Latitude"
+  },
+  {
+   "fieldname": "longitude",
+   "fieldtype": "Data",
+   "label": "Longitude"
+  },
+  {
+   "fieldname": "sb_materials",
+   "fieldtype": "Section Break",
+   "label": "MATERIAL DETAILS"
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "label": "Materials",
+   "options": "Site Registration Item",
+   "reqd": 1
+  },
+  {
+   "fieldname": "sb_distance",
+   "fieldtype": "Section Break",
+   "label": "DISTANCE TO CUSTOMER SITE FROM COMMON POOL BRANCHES"
+  },
+  {
+   "fieldname": "distance",
+   "fieldtype": "Table",
+   "label": "Distance",
+   "options": "Site Registration Distance",
+   "read_only": 1
+  },
+  {
+   "fieldname": "get_distance",
+   "fieldtype": "Button",
+   "label": "<b>Reset Distance</b>"
+  },
+  {
+   "fieldname": "sb_remarks",
+   "fieldtype": "Section Break",
+   "label": "REMARKS"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Long Text"
+  },
+  {
+   "fieldname": "sb_additional_information",
+   "fieldtype": "Section Break",
+   "label": "ADDITIONAL INFORMATION"
+  },
+  {
+   "fieldname": "site",
+   "fieldtype": "Data",
+   "label": "Site",
+   "read_only": 1
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Site Registration",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "default": "Pending",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "\nPending\nApproved\nRejected\nCancelled",
+   "read_only": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2025-08-28 10:30:08.219584",
+ "modified_by": "Administrator",
+ "module": "CRM",
+ "name": "Site Registration",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

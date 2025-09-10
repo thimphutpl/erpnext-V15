@@ -1,0 +1,458 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "ROY.YY.MM.####",
+ "creation": "2025-08-14 16:37:10.350792",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_1",
+  "make_royalty_payment",
+  "section_break_4",
+  "branch",
+  "range_name",
+  "location",
+  "cost_center",
+  "column_break_3",
+  "business_activity",
+  "posting_date",
+  "section_break_6",
+  "production_type",
+  "cable_line",
+  "column_break_8",
+  "marking_list",
+  "adhoc_production",
+  "section_break_12",
+  "get_royalty_details",
+  "column_break_14",
+  "from_date",
+  "column_break_11",
+  "to_date",
+  "section_break_18",
+  "planned_items",
+  "adhoc_temp_items",
+  "adhoc_items",
+  "section_break_25",
+  "discount_amount",
+  "less_cft",
+  "add_amount",
+  "less_qty",
+  "total_royalty",
+  "net_royalty",
+  "total_cft",
+  "net_cft",
+  "total_qty",
+  "net_qty",
+  "column_break_27",
+  "log_amount",
+  "total_log",
+  "column_break_30",
+  "timber_amount",
+  "total_timber",
+  "section_break_21",
+  "total_m3",
+  "section_break_5",
+  "company",
+  "column_break_7",
+  "currency",
+  "column_break_9",
+  "amended_from",
+  "journal_entry",
+  "workflow_state",
+  "section_break_information",
+  "remarks",
+  "section_break",
+  "rp_header_text",
+  "seperate_head_foot",
+  "rp_footer_text"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_1",
+   "fieldtype": "Section Break"
+  },
+  {
+   "allow_on_submit": 1,
+   "depends_on": "eval:!doc.journal_entry && doc.docstatus==1",
+   "fieldname": "make_royalty_payment",
+   "fieldtype": "Button",
+   "label": "Make Royalty Payment",
+   "options": "make_royalty_payment"
+  },
+  {
+   "fieldname": "section_break_4",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Branch",
+   "options": "Branch",
+   "reqd": 1
+  },
+  {
+   "fieldname": "range_name",
+   "fieldtype": "Link",
+   "label": "Range Name",
+   "options": "Range"
+  },
+  {
+   "fieldname": "location",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Location/FMU",
+   "options": "Location"
+  },
+  {
+   "fieldname": "cost_center",
+   "fieldtype": "Link",
+   "label": "Cost Center",
+   "options": "Cost Center",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "business_activity",
+   "fieldtype": "Link",
+   "label": "Business Activity",
+   "options": "Business Activity",
+   "reqd": 1
+  },
+  {
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "label": "Posting Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_6",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "production_type",
+   "fieldtype": "Select",
+   "label": "Production Type",
+   "options": "Planned\nAdhoc",
+   "reqd": 1
+  },
+  {
+   "fieldname": "cable_line",
+   "fieldtype": "Data",
+   "label": "Cable Line No"
+  },
+  {
+   "fieldname": "column_break_8",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.production_type==\"Planned\"",
+   "fieldname": "marking_list",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Marking List",
+   "options": "Marking List"
+  },
+  {
+   "description": "* If not selected, All Adhoc Production Locations under above selected Range will be considered",
+   "fieldname": "adhoc_production",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Adhoc Production",
+   "options": "Adhoc Production"
+  },
+  {
+   "depends_on": "eval:doc.branch",
+   "fieldname": "section_break_12",
+   "fieldtype": "Section Break"
+  },
+  {
+   "depends_on": "eval:(doc.production_type==\"Planned\") && (doc.from_date && doc.to_date) || (doc.production_type==\"Adhoc\" && (doc.range_name || doc.adhoc_production) && doc.from_date && doc.to_date)",
+   "fieldname": "get_royalty_details",
+   "fieldtype": "Button",
+   "label": "Get Royalty Details",
+   "options": "get_royalty_details"
+  },
+  {
+   "fieldname": "column_break_14",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "from_date",
+   "fieldtype": "Date",
+   "label": "From Date"
+  },
+  {
+   "fieldname": "column_break_11",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "to_date",
+   "fieldtype": "Date",
+   "label": "To Date"
+  },
+  {
+   "fieldname": "section_break_18",
+   "fieldtype": "Section Break",
+   "label": "Royalty Details"
+  },
+  {
+   "depends_on": "eval:doc.production_type==\"Planned\"",
+   "fieldname": "planned_items",
+   "fieldtype": "Table",
+   "hidden": 1,
+   "options": "Royalty Payment Planned",
+   "read_only": 1
+  },
+  {
+   "fieldname": "adhoc_temp_items",
+   "fieldtype": "Table",
+   "hidden": 1,
+   "options": "Royalty Adhoc Temp"
+  },
+  {
+   "fieldname": "adhoc_items",
+   "fieldtype": "Table",
+   "options": "Royalty Payment Adhoc",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_25",
+   "fieldtype": "Section Break",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.adhoc_items",
+   "fieldname": "discount_amount",
+   "fieldtype": "Currency",
+   "label": "Discount Amount"
+  },
+  {
+   "depends_on": "eval:doc.adhoc_items",
+   "fieldname": "less_cft",
+   "fieldtype": "Float",
+   "hidden": 1,
+   "label": "Volume To Be Subtracted(Cft)"
+  },
+  {
+   "depends_on": "eval:doc.adhoc_items",
+   "fieldname": "add_amount",
+   "fieldtype": "Currency",
+   "label": "Add Amount"
+  },
+  {
+   "depends_on": "eval:doc.adhoc_items",
+   "fieldname": "less_qty",
+   "fieldtype": "Float",
+   "label": "Quantity To Be Subtracted"
+  },
+  {
+   "fieldname": "total_royalty",
+   "fieldtype": "Currency",
+   "label": "Total Royalty",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.discount_amount != 0 || doc.add_amount != 0",
+   "fieldname": "net_royalty",
+   "fieldtype": "Currency",
+   "label": "Net Royalty",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_cft",
+   "fieldtype": "Float",
+   "hidden": 1,
+   "label": "Total Volume (Cft)",
+   "precision": "3",
+   "read_only": 1
+  },
+  {
+   "fieldname": "net_cft",
+   "fieldtype": "Float",
+   "hidden": 1,
+   "label": "Net Volume(Cft)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_qty",
+   "fieldtype": "Float",
+   "label": "Total Quantity",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.less_qty != 0",
+   "fieldname": "net_qty",
+   "fieldtype": "Float",
+   "label": "Net Quantity",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_27",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.production_type==\"Planned\"",
+   "fieldname": "log_amount",
+   "fieldtype": "Currency",
+   "hidden": 1,
+   "label": "Amount (Log)",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.production_type==\"Planned\"",
+   "fieldname": "total_log",
+   "fieldtype": "Float",
+   "hidden": 1,
+   "label": "Volume (Log)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_30",
+   "fieldtype": "Column Break",
+   "hidden": 1
+  },
+  {
+   "depends_on": "eval:doc.production_type==\"Planned\"",
+   "fieldname": "timber_amount",
+   "fieldtype": "Currency",
+   "hidden": 1,
+   "label": "Amount (Firewood)",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.production_type==\"Planned\"",
+   "fieldname": "total_timber",
+   "fieldtype": "Float",
+   "hidden": 1,
+   "label": "Amount (Firewood - m3)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_21",
+   "fieldtype": "Section Break",
+   "hidden": 1
+  },
+  {
+   "fieldname": "total_m3",
+   "fieldtype": "Float",
+   "precision": "3",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_5",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_7",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "BTN",
+   "fieldname": "currency",
+   "fieldtype": "Link",
+   "label": "Currency",
+   "options": "Currency",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_9",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Royalty Payment",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "journal_entry",
+   "fieldtype": "Link",
+   "label": "Royalty Payment Reference",
+   "options": "Journal Entry",
+   "read_only": 1
+  },
+  {
+   "fieldname": "workflow_state",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Workflow State",
+   "options": "Workflow State"
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "section_break_information",
+   "fieldtype": "Section Break",
+   "label": "More Information"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Small Text",
+   "label": "Remarks"
+  },
+  {
+   "fieldname": "section_break",
+   "fieldtype": "Section Break",
+   "label": "Royalty Payment Header and Footer"
+  },
+  {
+   "fieldname": "rp_header_text",
+   "fieldtype": "Text Editor",
+   "label": "Royalty Payment Header"
+  },
+  {
+   "fieldname": "seperate_head_foot",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "rp_footer_text",
+   "fieldtype": "Text Editor",
+   "label": "Royalty Payment Footer"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2025-08-14 18:56:19.458861",
+ "modified_by": "Administrator",
+ "module": "Accounts",
+ "name": "Royalty Payment",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

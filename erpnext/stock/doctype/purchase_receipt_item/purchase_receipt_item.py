@@ -16,11 +16,9 @@ class PurchaseReceiptItem(Document):
 
 		allow_zero_valuation_rate: DF.Check
 		amount: DF.Currency
-		amount_difference_with_purchase_invoice: DF.Currency
 		apply_tds: DF.Check
 		asset_category: DF.Link | None
 		asset_location: DF.Link | None
-		barcode: DF.Data | None
 		base_amount: DF.Currency
 		base_net_amount: DF.Currency
 		base_net_rate: DF.Currency
@@ -30,17 +28,16 @@ class PurchaseReceiptItem(Document):
 		batch_no: DF.Link | None
 		billed_amt: DF.Currency
 		bom: DF.Link | None
-		brand: DF.Link | None
+		brand: DF.Data | None
+		business_activity: DF.Link | None
 		conversion_factor: DF.Float
 		cost_center: DF.Link | None
 		delivery_note_item: DF.Data | None
 		description: DF.TextEditor | None
 		discount_amount: DF.Currency
 		discount_percentage: DF.Percent
-		distributed_discount_amount: DF.Currency
 		expense_account: DF.Link | None
 		from_warehouse: DF.Link | None
-		has_item_scanned: DF.Check
 		image: DF.Attach | None
 		include_exploded_items: DF.Check
 		is_fixed_asset: DF.Check
@@ -58,6 +55,7 @@ class PurchaseReceiptItem(Document):
 		margin_type: DF.Literal["", "Percentage", "Amount"]
 		material_request: DF.Link | None
 		material_request_item: DF.Data | None
+		model: DF.Data | None
 		net_amount: DF.Currency
 		net_rate: DF.Currency
 		page_break: DF.Check
@@ -78,6 +76,7 @@ class PurchaseReceiptItem(Document):
 		qty: DF.Float
 		quality_inspection: DF.Link | None
 		rate: DF.Currency
+		rate_difference_with_purchase_invoice: DF.Currency
 		rate_with_margin: DF.Currency
 		received_qty: DF.Float
 		received_stock_qty: DF.Float
@@ -89,7 +88,6 @@ class PurchaseReceiptItem(Document):
 		return_qty_from_rejected_warehouse: DF.Check
 		returned_qty: DF.Float
 		rm_supp_cost: DF.Currency
-		sales_incoming_rate: DF.Currency
 		sales_order: DF.Link | None
 		sales_order_item: DF.Data | None
 		sample_quantity: DF.Int
@@ -101,7 +99,9 @@ class PurchaseReceiptItem(Document):
 		stock_uom_rate: DF.Currency
 		subcontracting_receipt_item: DF.Data | None
 		supplier_part_no: DF.Data | None
+		task: DF.Link | None
 		total_weight: DF.Float
+		transporation_cost: DF.Currency
 		uom: DF.Link
 		use_serial_batch_fields: DF.Check
 		valuation_rate: DF.Currency

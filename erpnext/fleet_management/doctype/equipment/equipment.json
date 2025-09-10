@@ -1,0 +1,488 @@
+{
+ "actions": [],
+ "allow_import": 1,
+ "allow_rename": 1,
+ "autoname": "EQUIP.YY.####",
+ "creation": "2022-10-19 12:38:16.340269",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "equipment_details_tab",
+  "company",
+  "branch",
+  "asset_code",
+  "registration_date",
+  "column_break_2",
+  "is_disabled",
+  "disabled_date",
+  "project",
+  "business_activity",
+  "column_break_wbcr",
+  "not_cdcl",
+  "owned_by",
+  "maintain_in_others_asset",
+  "employee",
+  "column_break_wapg",
+  "hired_equipment",
+  "section_break_hvxq",
+  "equipment_category",
+  "bluebook_date",
+  "column_break_qcgk",
+  "equipment_type",
+  "tanks_capacity",
+  "column_break_bape",
+  "equipment_model",
+  "tankers_capacity",
+  "column_break_vikw",
+  "equipment_name",
+  "fuel_expense_account",
+  "yardstick_details_for_pool_vehicles_section",
+  "lph",
+  "column_break_cfqm",
+  "kph",
+  "engine_details_section",
+  "engine_number",
+  "column_break_13",
+  "chasis_number",
+  "column_break_qigi",
+  "fuelbook",
+  "column_break_ggtl",
+  "fuel_type",
+  "equipment_operator_section",
+  "operators",
+  "model_items",
+  "helper_details_section",
+  "helper",
+  "equipment_history_section",
+  "equipment_history",
+  "details",
+  "section_break_ckxd",
+  "current_operator",
+  "current_hr_reading",
+  "current_km_reading",
+  "owner_details_tab",
+  "supplier",
+  "dzongkhag",
+  "gewog",
+  "village",
+  "equipment_history_tab"
+ ],
+ "fields": [
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Branch",
+   "options": "Branch",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "equipment_category",
+   "fieldtype": "Link",
+   "label": "Equipment Category",
+   "options": "Equipment Category",
+   "reqd": 1
+  },
+  {
+   "fieldname": "equipment_type",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Equipment Type",
+   "options": "Equipment Type",
+   "reqd": 1,
+   "set_only_once": 1
+  },
+  {
+   "fieldname": "equipment_model",
+   "fieldtype": "Link",
+   "label": "Equipment Model",
+   "options": "Equipment Model"
+  },
+  {
+   "fieldname": "engine_details_section",
+   "fieldtype": "Section Break",
+   "label": "Engine Details"
+  },
+  {
+   "fetch_from": "asset_issue_details.engine_no",
+   "fieldname": "engine_number",
+   "fieldtype": "Data",
+   "label": "Engine Number",
+   "unique": 1
+  },
+  {
+   "fieldname": "column_break_13",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "asset_issue_details.chesis_no",
+   "fieldname": "chasis_number",
+   "fieldtype": "Data",
+   "label": "Chasis Number"
+  },
+  {
+   "depends_on": "hired_equipment",
+   "fieldname": "owner_details_tab",
+   "fieldtype": "Tab Break",
+   "label": "Owner Details"
+  },
+  {
+   "depends_on": "eval:doc.not_cdcl!=1",
+   "fieldname": "asset_code",
+   "fieldtype": "Link",
+   "in_filter": 1,
+   "label": "Asset Code",
+   "options": "Asset"
+  },
+  {
+   "fieldname": "supplier",
+   "fieldtype": "Link",
+   "ignore_user_permissions": 1,
+   "label": "Owner(Supplier)",
+   "mandatory_depends_on": "hired_equipment",
+   "options": "Supplier"
+  },
+  {
+   "fieldname": "equipment_operator_section",
+   "fieldtype": "Section Break",
+   "label": "Vehicle Operator/Driver"
+  },
+  {
+   "fieldname": "equipment_details_tab",
+   "fieldtype": "Tab Break",
+   "label": "Equipment/Vehicle Details"
+  },
+  {
+   "allow_in_quick_entry": 1,
+   "fieldname": "fuelbook",
+   "fieldtype": "Link",
+   "label": "Fuelbook",
+   "options": "Fuelbook"
+  },
+  {
+   "fieldname": "model_items",
+   "fieldtype": "Table",
+   "hidden": 1,
+   "label": "Equipment Model History",
+   "options": "Equipment Model History"
+  },
+  {
+   "fieldname": "dzongkhag",
+   "fieldtype": "Link",
+   "label": "Dzongkhag",
+   "options": "Dzongkhag",
+   "read_only": 1
+  },
+  {
+   "fieldname": "gewog",
+   "fieldtype": "Link",
+   "label": "Gewog",
+   "options": "Dzongkhag",
+   "read_only": 1
+  },
+  {
+   "fieldname": "village",
+   "fieldtype": "Link",
+   "label": "Village",
+   "options": "Dzongkhag",
+   "read_only": 1
+  },
+  {
+   "fieldname": "equipment_history",
+   "fieldtype": "Table",
+   "options": "Equipment History"
+  },
+  {
+   "fieldname": "equipment_history_tab",
+   "fieldtype": "Tab Break",
+   "label": "Equipment History"
+  },
+  {
+   "fetch_from": "employee.employee_number",
+   "fieldname": "current_operator",
+   "fieldtype": "Data",
+   "label": "Current Operator"
+  },
+  {
+   "depends_on": "eval:doc.is_disabled",
+   "fieldname": "disabled_date",
+   "fieldtype": "Date",
+   "label": "Disabled Date"
+  },
+  {
+   "fieldname": "column_break_wbcr",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "not_cdcl",
+   "fieldtype": "Check",
+   "label": "Not Own"
+  },
+  {
+   "fieldname": "column_break_wapg",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_hvxq",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "bluebook_date",
+   "fieldtype": "Date",
+   "hidden": 1,
+   "label": "Bluebook Date"
+  },
+  {
+   "fieldname": "column_break_qcgk",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_bape",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_vikw",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_qigi",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_ggtl",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "details",
+   "fieldtype": "Small Text",
+   "label": "Equipment Details"
+  },
+  {
+   "fieldname": "current_km_reading",
+   "fieldtype": "Data",
+   "label": "Current KM Reading"
+  },
+  {
+   "fieldname": "current_hr_reading",
+   "fieldtype": "Data",
+   "label": "Current Hour Reading"
+  },
+  {
+   "fieldname": "operators",
+   "fieldtype": "Table",
+   "label": "Equipment Operator",
+   "options": "Equipment Operator"
+  },
+  {
+   "fieldname": "equipment_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Registration Number",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "depends_on": "not_cdcl",
+   "fieldname": "owned_by",
+   "fieldtype": "Link",
+   "label": "Owned By",
+   "mandatory_depends_on": "not_cdcl",
+   "options": "Supplier"
+  },
+  {
+   "default": "0",
+   "depends_on": "not_cdcl",
+   "fieldname": "maintain_in_others_asset",
+   "fieldtype": "Check",
+   "label": "Maintain in Others Asset"
+  },
+  {
+   "depends_on": "maintain_in_others_asset",
+   "fieldname": "employee",
+   "fieldtype": "Link",
+   "label": "Employee",
+   "mandatory_depends_on": "maintain_in_others_asset",
+   "options": "Employee"
+  },
+  {
+   "default": "0",
+   "fieldname": "hired_equipment",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Hired Equipment"
+  },
+  {
+   "fieldname": "yardstick_details_for_pool_vehicles_section",
+   "fieldtype": "Section Break",
+   "hidden": 1,
+   "label": "Yardstick Details"
+  },
+  {
+   "fieldname": "lph",
+   "fieldtype": "Float",
+   "label": "Based on Hours",
+   "precision": "2"
+  },
+  {
+   "fieldname": "column_break_cfqm",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "kph",
+   "fieldtype": "Float",
+   "label": "Based on Kilometers",
+   "precision": "2"
+  },
+  {
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "in_list_view": 1,
+   "label": "Project",
+   "options": "Project"
+  },
+  {
+   "fieldname": "tanks_capacity",
+   "fieldtype": "Float",
+   "hidden": 1,
+   "label": "Tank Capacity"
+  },
+  {
+   "fieldname": "tankers_capacity",
+   "fieldtype": "Float",
+   "hidden": 1,
+   "label": "Tanker Capacity"
+  },
+  {
+   "fieldname": "helper",
+   "fieldtype": "Table",
+   "options": "Equipment Helper"
+  },
+  {
+   "fieldname": "equipment_history_section",
+   "fieldtype": "Section Break",
+   "label": "Equipment History"
+  },
+  {
+   "fieldname": "helper_details_section",
+   "fieldtype": "Section Break",
+   "label": "Helper Details "
+  },
+  {
+   "allow_in_quick_entry": 1,
+   "fieldname": "registration_date",
+   "fieldtype": "Date",
+   "label": "Registration Date"
+  },
+  {
+   "fieldname": "business_activity",
+   "fieldtype": "Link",
+   "label": "Business Activity",
+   "options": "Business Activity"
+  },
+  {
+   "fieldname": "section_break_ckxd",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "Natural Resources Development Corporation Limited",
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company",
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_disabled",
+   "fieldtype": "Check",
+   "label": "Is Disabled"
+  },
+  {
+   "fieldname": "fuel_type",
+   "fieldtype": "Link",
+   "label": "Fuel Type",
+   "options": "Item"
+  },
+  {
+   "fieldname": "fuel_expense_account",
+   "fieldtype": "Link",
+   "label": "Fuel Expense Account",
+   "options": "Account"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-08-14 12:22:46.141385",
+ "modified_by": "kalden.dorji@thimphutechpark.bt",
+ "module": "Fleet Management",
+ "name": "Equipment",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Fleet Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Fleet User",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales User",
+   "share": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Stock User",
+   "share": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "search_fields": "equipment_type,equipment_name, branch",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "equipment_name"
+}

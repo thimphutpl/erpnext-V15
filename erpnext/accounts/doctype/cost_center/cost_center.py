@@ -5,6 +5,7 @@
 import frappe
 from frappe import _
 from frappe.utils.nestedset import NestedSet
+from frappe.utils import cint
 
 from erpnext.accounts.utils import validate_field_number
 
@@ -18,6 +19,7 @@ class CostCenter(NestedSet):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		branch_created: DF.Check
 		company: DF.Link
 		cost_center_name: DF.Data
 		cost_center_number: DF.Data | None
@@ -27,6 +29,7 @@ class CostCenter(NestedSet):
 		old_parent: DF.Link | None
 		parent_cost_center: DF.Link
 		rgt: DF.Int
+		warehouse: DF.Link | None
 	# end: auto-generated types
 
 	nsm_parent_field = "parent_cost_center"
@@ -45,6 +48,24 @@ class CostCenter(NestedSet):
 			frappe.throw(_("Please enter parent cost center"))
 		elif self.cost_center_name == self.company and self.parent_cost_center:
 			frappe.throw(_("Root cannot have a parent cost center"))
+	
+	# Added by Dawa Tshering on 25/12/2024
+	def on_update(self):
+		self.create_branch()
+		if frappe.local.flags.ignore_on_update:
+			return
+		else:
+			super(CostCenter, self).on_update()
+
+	def create_branch(self):
+		if cint(self.is_group) == 1 or cint(self.branch_created) == 1:
+			return
+		doc = frappe.new_doc("Branch")
+		doc.branch = self.cost_center_name.strip()
+		doc.cost_center = self.name
+		doc.company = self.company
+		doc.save()
+		self.db_set("branch_created", 1)
 
 	def validate_parent_cost_center(self):
 		if self.parent_cost_center:

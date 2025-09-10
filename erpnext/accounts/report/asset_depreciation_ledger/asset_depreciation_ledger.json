@@ -6,10 +6,10 @@
  "docstatus": 0,
  "doctype": "Report",
  "filters": [],
- "idx": 6,
+ "idx": 15,
  "is_standard": "Yes",
  "letterhead": null,
- "modified": "2023-11-08 20:17:05.774211",
+ "modified": "2025-05-08 17:08:06.822175",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Asset Depreciation Ledger",
@@ -21,6 +21,10 @@
  "roles": [
   {
    "role": "Accounts User"
+  },
+  {
+   "role": "Asset User"
   }
- ]
+ ],
+ "timeout": 0
 }

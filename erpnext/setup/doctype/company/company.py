@@ -28,14 +28,18 @@ class Company(NestedSet):
 		from frappe.types import DF
 
 		abbr: DF.Data
+		abstract_bill_required: DF.Check
 		accumulated_depreciation_account: DF.Link | None
+		advance_account: DF.Link | None
+		advance_from_customer_supplier: DF.Link | None
 		allow_account_creation_against_child_company: DF.Check
 		asset_received_but_not_billed: DF.Link | None
-		auto_err_frequency: DF.Literal["Daily", "Weekly", "Monthly"]
+		auto_err_frequency: DF.Literal["Daily", "Weekly"]
 		auto_exchange_rate_revaluation: DF.Check
 		book_advance_payments_in_separate_party_account: DF.Check
 		capital_work_in_progress_account: DF.Link | None
 		chart_of_accounts: DF.Literal[None]
+		cheque_required: DF.Check
 		company_description: DF.TextEditor | None
 		company_logo: DF.AttachImage | None
 		company_name: DF.Data
@@ -73,28 +77,32 @@ class Company(NestedSet):
 		disposal_account: DF.Link | None
 		domain: DF.Data | None
 		email: DF.Data | None
+		employer_contribution_to_pf: DF.Link | None
 		enable_perpetual_inventory: DF.Check
 		enable_provisional_accounting_for_non_stock_items: DF.Check
 		exception_budget_approver_role: DF.Link | None
 		exchange_gain_loss_account: DF.Link | None
 		existing_company: DF.Link | None
+		expenses_included_in_asset_valuation: DF.Link | None
+		expenses_included_in_valuation: DF.Link | None
 		fax: DF.Data | None
+		gain_disposal_account: DF.Link | None
+		imprest_advance_account: DF.Link | None
 		is_group: DF.Check
 		lft: DF.Int
+		loss_disposal_account: DF.Link | None
 		monthly_sales_target: DF.Currency
 		old_parent: DF.Data | None
 		parent_company: DF.Link | None
 		payment_terms: DF.Link | None
 		phone_no: DF.Data | None
+		pol_advance_account: DF.Link | None
 		reconcile_on_advance_payment_date: DF.Check
-		reconciliation_takes_effect_on: DF.Literal[
-			"Advance Payment Date", "Oldest Of Invoice Or Advance", "Reconciliation Date"
-		]
 		registration_details: DF.Code | None
+		repair_and_service_account: DF.Link | None
 		rgt: DF.Int
 		round_off_account: DF.Link | None
 		round_off_cost_center: DF.Link | None
-		round_off_for_opening: DF.Link | None
 		sales_monthly_history: DF.SmallText | None
 		series_for_depreciation_entry: DF.Data | None
 		stock_adjustment_account: DF.Link | None
@@ -207,7 +215,7 @@ class Company(NestedSet):
 		):
 			frappe.throw(
 				_("'{0}' should be in company currency {1}.").format(
-					frappe.bold(_("Default Advance Received Account")), frappe.bold(self.default_currency)
+					frappe.bold("Default Advance Received Account"), frappe.bold(self.default_currency)
 				)
 			)
 
@@ -218,7 +226,7 @@ class Company(NestedSet):
 		):
 			frappe.throw(
 				_("'{0}' should be in company currency {1}.").format(
-					frappe.bold(_("Default Advance Paid Account")), frappe.bold(self.default_currency)
+					frappe.bold("Default Advance Paid Account"), frappe.bold(self.default_currency)
 				)
 			)
 
@@ -249,8 +257,10 @@ class Company(NestedSet):
 				frappe.flags.country_change = True
 				self.create_default_accounts()
 				self.create_default_warehouses()
-
+		# frappe.throw(str(self.))
+		#frappe.throw(str(frappe.db.get_value("Cost Center", {"is_group": 0, "company": self.name})))
 		if not frappe.db.get_value("Cost Center", {"is_group": 0, "company": self.name}):
+			
 			self.create_default_cost_center()
 
 		if frappe.flags.country_change:
@@ -282,7 +292,6 @@ class Company(NestedSet):
 		frappe.clear_cache()
 
 	def create_default_warehouses(self):
-		parent_warehouse = None
 		for wh_detail in [
 			{"warehouse_name": _("All Warehouses"), "is_group": 1},
 			{"warehouse_name": _("Stores"), "is_group": 0},
@@ -290,31 +299,24 @@ class Company(NestedSet):
 			{"warehouse_name": _("Finished Goods"), "is_group": 0},
 			{"warehouse_name": _("Goods In Transit"), "is_group": 0, "warehouse_type": "Transit"},
 		]:
-			if frappe.db.exists(
-				"Warehouse",
-				{
-					"warehouse_name": wh_detail["warehouse_name"],
-					"company": self.name,
-				},
-			):
-				continue
-
-			warehouse = frappe.get_doc(
-				{
-					"doctype": "Warehouse",
-					"warehouse_name": wh_detail["warehouse_name"],
-					"is_group": wh_detail["is_group"],
-					"company": self.name,
-					"parent_warehouse": parent_warehouse,
-					"warehouse_type": wh_detail.get("warehouse_type"),
-				}
-			)
-			warehouse.flags.ignore_permissions = True
-			warehouse.flags.ignore_mandatory = True
-			warehouse.insert()
-
-			if wh_detail["is_group"]:
-				parent_warehouse = warehouse.name
+			if not frappe.db.exists("Warehouse", "{} - {}".format(wh_detail["warehouse_name"], self.abbr)):
+				warehouse = frappe.get_doc(
+					{
+						"doctype": "Warehouse",
+						"warehouse_name": wh_detail["warehouse_name"],
+						"is_group": wh_detail["is_group"],
+						"company": self.name,
+						"parent_warehouse": "{} - {}".format(_("All Warehouses"), self.abbr)
+						if not wh_detail["is_group"]
+						else "",
+						"warehouse_type": wh_detail["warehouse_type"]
+						if "warehouse_type" in wh_detail
+						else None,
+					}
+				)
+				warehouse.flags.ignore_permissions = True
+				warehouse.flags.ignore_mandatory = True
+				warehouse.insert()
 
 	def create_default_accounts(self):
 		from erpnext.accounts.doctype.account.chart_of_accounts.chart_of_accounts import create_charts
@@ -459,7 +461,7 @@ class Company(NestedSet):
 			):
 				frappe.throw(
 					_("Set default {0} account for non stock items").format(
-						frappe.bold(_("Provisional Account"))
+						frappe.bold("Provisional Account")
 					)
 				)
 
@@ -923,14 +925,6 @@ def get_default_company_address(name, sort_key="is_primary_address", existing_ad
 		return max(out, key=lambda x: x[1])[0]  # find max by sort_key
 	else:
 		return None
-
-
-@frappe.whitelist()
-def get_billing_shipping_address(name, billing_address=None, shipping_address=None):
-	primary_address = get_default_company_address(name, "is_primary_address", billing_address)
-	shipping_address = get_default_company_address(name, "is_shipping_address", shipping_address)
-
-	return {"primary_address": primary_address, "shipping_address": shipping_address}
 
 
 @frappe.whitelist()

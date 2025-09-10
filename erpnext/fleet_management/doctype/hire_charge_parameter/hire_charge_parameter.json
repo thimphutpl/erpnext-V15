@@ -1,0 +1,264 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "HCP.YYYY.####",
+ "creation": "2024-11-03 16:24:01.577194",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_d2nj",
+  "amended_from",
+  "equipment",
+  "equipment_name",
+  "column_break_lhne",
+  "equipment_model",
+  "column_break_erjd",
+  "equipment_type",
+  "external_rate_section",
+  "without_fuel_external",
+  "broadleaf_external",
+  "column_break_xfid",
+  "with_fuel_external",
+  "conifer_external",
+  "column_break_iebd",
+  "idle_external",
+  "internal_rate_section",
+  "without_fuel_internal",
+  "broadleaf_internal",
+  "column_break_vgbt",
+  "with_fuel_internal",
+  "conifer_internal",
+  "column_break_hmhm",
+  "idle_internal",
+  "yardstick_details_section",
+  "lph",
+  "column_break_yjau",
+  "kph",
+  "section_break_qdun",
+  "benchmark",
+  "column_break_mbjj",
+  "interval",
+  "hire_charge_parameters_section",
+  "items"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_d2nj",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Hire Charge Parameter",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fetch_from": "equipment.equipment_type",
+   "fieldname": "equipment_type",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Equipment Type",
+   "options": "Equipment Type",
+   "reqd": 1,
+   "set_only_once": 1
+  },
+  {
+   "fieldname": "column_break_erjd",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "equipment.equipment_model",
+   "fieldname": "equipment_model",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Equipment Model",
+   "options": "Equipment Model",
+   "reqd": 1,
+   "set_only_once": 1
+  },
+  {
+   "fieldname": "external_rate_section",
+   "fieldtype": "Section Break",
+   "label": "External Rate"
+  },
+  {
+   "fieldname": "column_break_xfid",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_iebd",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "internal_rate_section",
+   "fieldtype": "Section Break",
+   "label": "Internal Rate"
+  },
+  {
+   "fieldname": "without_fuel_internal",
+   "fieldtype": "Currency",
+   "label": "Without Fuel Internal",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_vgbt",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "with_fuel_internal",
+   "fieldtype": "Currency",
+   "label": "With Fuel Internal",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_hmhm",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "idle_internal",
+   "fieldtype": "Currency",
+   "label": "Idle Charge Internal",
+   "read_only": 1
+  },
+  {
+   "fieldname": "yardstick_details_section",
+   "fieldtype": "Section Break",
+   "label": "Yardstick Details"
+  },
+  {
+   "fieldname": "lph",
+   "fieldtype": "Float",
+   "label": "Based on Hours",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_yjau",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "kph",
+   "fieldtype": "Float",
+   "label": "Based on Kilometers",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_qdun",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "benchmark",
+   "fieldtype": "Float",
+   "label": "Current Benchmark",
+   "precision": "1",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_mbjj",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "interval",
+   "fieldtype": "Float",
+   "label": "Current Maintenance Interval",
+   "precision": "1",
+   "read_only": 1
+  },
+  {
+   "fieldname": "hire_charge_parameters_section",
+   "fieldtype": "Section Break",
+   "label": "Hire Charge Parameters"
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "options": "Hire Charge Item"
+  },
+  {
+   "fieldname": "column_break_lhne",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "equipment.equipment_name",
+   "fieldname": "equipment_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Registration Number",
+   "set_only_once": 1
+  },
+  {
+   "fieldname": "equipment",
+   "fieldtype": "Link",
+   "label": "Equipment",
+   "options": "Equipment"
+  },
+  {
+   "fieldname": "without_fuel_external",
+   "fieldtype": "Currency",
+   "label": "Without Fuel External",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "broadleaf_external",
+   "fieldtype": "Currency",
+   "label": "Broadleaf External",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "with_fuel_external",
+   "fieldtype": "Currency",
+   "label": "With Fuel External",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "conifer_external",
+   "fieldtype": "Currency",
+   "label": "Conifer External",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "idle_external",
+   "fieldtype": "Currency",
+   "label": "Idle Charge External",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "broadleaf_internal",
+   "fieldtype": "Currency",
+   "label": "Broadleaf Internal",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "conifer_internal",
+   "fieldtype": "Currency",
+   "label": "Conifer Internal",
+   "precision": "2",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-09-04 12:43:47.836907",
+ "modified_by": "kalden.dorji@thimphutechpark.bt",
+ "module": "Fleet Management",
+ "name": "Hire Charge Parameter",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

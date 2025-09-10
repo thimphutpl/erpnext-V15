@@ -11,17 +11,14 @@ doctype_list = [
 
 
 def get_message(doctype):
-	# Properly format the string with translated doctype
-	return _("{0} has been submitted successfully").format(doctype)
+	return _("{0} has been submitted successfully").format(_(doctype))
 
 
 def get_first_success_message(doctype):
-	# Reuse the get_message function for consistency
 	return get_message(doctype)
 
 
 def get_default_success_action():
-	# Loop through each doctype in the list and return formatted actions
 	return [
 		{
 			"doctype": "Success Action",

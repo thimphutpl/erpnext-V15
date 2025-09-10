@@ -1,0 +1,73 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-05-09 16:06:39.964060",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+    "competency",
+    "sub_competency",
+    "column_break_4",
+    "weightage",
+    "top_level",
+    "is_parent"
+   ],
+   "fields": [
+    {
+     "bold": 1,
+     "fieldname": "competency",
+     "fieldtype": "Data",
+     "in_list_view": 1,
+     "label": "Competency",
+     "read_only": 1
+    },
+    {
+     "columns": 1,
+     "fieldname": "weightage",
+     "fieldtype": "Data",
+     "in_list_view": 1,
+     "label": "Weightage",
+     "read_only": 1
+    },
+    {
+     "columns": 5,
+     "fieldname": "sub_competency",
+     "fieldtype": "Data",
+     "in_list_view": 1,
+     "label": "Sub Competency",
+     "read_only": 1
+    },
+    {
+     "fieldname": "column_break_4",
+     "fieldtype": "Column Break"
+    },
+    {
+     "default": "0",
+     "fieldname": "is_parent",
+     "fieldtype": "Check",
+     "hidden": 1,
+     "label": "Is Parent",
+     "read_only": 1
+    },
+    {
+     "fieldname": "top_level",
+     "fieldtype": "Data",
+     "hidden": 1,
+     "label": "Top Level",
+     "read_only": 1
+    }
+   ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-05-09 16:06:39.964060",
+ "modified_by": "Administrator",
+ "module": "PMS",
+ "name": "Competency Item",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

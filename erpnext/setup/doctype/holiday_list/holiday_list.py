@@ -8,7 +8,7 @@ from datetime import date
 import frappe
 from frappe import _, throw
 from frappe.model.document import Document
-from frappe.utils import formatdate, getdate, today
+from frappe.utils import formatdate, getdate, today, nowdate, cint
 
 
 class OverlapError(frappe.ValidationError):
@@ -22,28 +22,28 @@ class HolidayList(Document):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
+		from erpnext.setup.doctype.holiday.holiday import Holiday
+		from erpnext.setup.doctype.holiday_list_branch.holiday_list_branch import HolidayListBranch
 		from frappe.types import DF
 
-		from erpnext.setup.doctype.holiday.holiday import Holiday
-
+		branches: DF.Table[HolidayListBranch]
 		color: DF.Color | None
 		country: DF.Autocomplete | None
 		from_date: DF.Date
 		holiday_list_name: DF.Data
 		holidays: DF.Table[Holiday]
+		saturday_half: DF.Check
 		subdivision: DF.Autocomplete | None
 		to_date: DF.Date
 		total_holidays: DF.Int
-		weekly_off: DF.Literal[
-			"", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
-		]
+		weekly_off: DF.Literal["", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 	# end: auto-generated types
 
 	def validate(self):
 		self.validate_days()
+		self.add_holiday_list_branch()
 		self.total_holidays = len(self.holidays)
 		self.validate_duplicate_date()
-		self.sort_holidays()
 
 	@frappe.whitelist()
 	def get_weekly_off_dates(self):
@@ -57,6 +57,8 @@ class HolidayList(Document):
 				continue
 
 			self.append("holidays", {"description": _(self.weekly_off), "holiday_date": d, "weekly_off": 1})
+
+		self.sort_holidays()
 
 	@frappe.whitelist()
 	def get_supported_countries(self):
@@ -99,6 +101,8 @@ class HolidayList(Document):
 				"holidays", {"description": holiday_name, "holiday_date": holiday_date, "weekly_off": 0}
 			)
 
+		self.sort_holidays()
+
 	def sort_holidays(self):
 		self.holidays.sort(key=lambda x: getdate(x.holiday_date))
 		for i in range(len(self.holidays)):
@@ -118,6 +122,13 @@ class HolidayList(Document):
 						formatdate(day.holiday_date)
 					)
 				)
+	def add_holiday_list_branch(self):
+		if self.branches:
+			for a in self.branches:
+				branch_doc = frappe.get_doc("Branch", a.branch)
+				branch_doc.holiday_list = self.name
+				branch_doc.save()
+			frappe.msgprint(_("Holiday List added to Branch"))
 
 	def get_weekly_off_date_list(self, start_date, end_date):
 		start_date, end_date = getdate(start_date), getdate(end_date)
@@ -149,11 +160,7 @@ class HolidayList(Document):
 		unique_dates = []
 		for row in self.holidays:
 			if row.holiday_date in unique_dates:
-				frappe.throw(
-					_("Holiday Date {0} added multiple times").format(
-						frappe.bold(formatdate(row.holiday_date))
-					)
-				)
+				frappe.throw(_("Holiday Date {0} added multiple times").format(frappe.bold(row.holiday_date)))
 
 			unique_dates.append(row.holiday_date)
 

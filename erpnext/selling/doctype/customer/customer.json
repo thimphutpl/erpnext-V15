@@ -16,6 +16,7 @@
   "customer_name",
   "customer_type",
   "customer_group",
+  "customer_id",
   "column_break0",
   "territory",
   "gender",
@@ -135,7 +136,7 @@
    "label": "Customer Type",
    "oldfieldname": "customer_type",
    "oldfieldtype": "Select",
-   "options": "Company\nIndividual\nPartnership",
+   "options": "Company\nIndividual\nPartnership\nDomestic Customer\nInternational Customer",
    "reqd": 1
   },
   {
@@ -581,6 +582,16 @@
    "no_copy": 1,
    "options": "Prospect",
    "print_hide": 1
+  },
+  {
+   "fieldname": "customer_id",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Citizenship ID",
+   "oldfieldname": "customer_group",
+   "oldfieldtype": "Link",
+   "unique": 1
   }
  ],
  "icon": "fa fa-user",
@@ -594,7 +605,7 @@
    "link_fieldname": "party"
   }
  ],
- "modified": "2024-06-17 03:24:59.612974",
+ "modified": "2025-08-31 21:45:31.447258",
  "modified_by": "Administrator",
  "module": "Selling",
  "name": "Customer",
@@ -672,6 +683,7 @@
   }
  ],
  "quick_entry": 1,
+ "row_format": "Dynamic",
  "search_fields": "customer_group,territory, mobile_no,primary_address",
  "show_name_in_global_search": 1,
  "sort_field": "modified",

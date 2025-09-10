@@ -23,14 +23,11 @@
   "hide_unavailable_items",
   "auto_add_item_to_cart",
   "validate_stock_on_save",
-  "print_receipt_on_order_complete",
   "column_break_16",
   "update_stock",
   "ignore_pricing_rule",
   "allow_rate_change",
   "allow_discount_change",
-  "disable_grand_total_to_default_mop",
-  "allow_partial_payment",
   "section_break_23",
   "item_groups",
   "column_break_25",
@@ -57,8 +54,7 @@
   "apply_discount_on",
   "accounting_dimensions_section",
   "cost_center",
-  "dimension_col_break",
-  "project"
+  "dimension_col_break"
  ],
  "fields": [
   {
@@ -379,32 +375,6 @@
    "fieldname": "disable_rounded_total",
    "fieldtype": "Check",
    "label": "Disable Rounded Total"
-  },
-  {
-   "default": "0",
-   "fieldname": "print_receipt_on_order_complete",
-   "fieldtype": "Check",
-   "label": "Print Receipt on Order Complete"
-  },
-  {
-   "default": "0",
-   "fieldname": "disable_grand_total_to_default_mop",
-   "fieldtype": "Check",
-   "label": "Disable auto setting Grand Total to default Payment Mode"
-  },
-  {
-   "fieldname": "project",
-   "fieldtype": "Link",
-   "label": "Project",
-   "oldfieldname": "cost_center",
-   "oldfieldtype": "Link",
-   "options": "Project"
-  },
-  {
-   "default": "0",
-   "fieldname": "allow_partial_payment",
-   "fieldtype": "Check",
-   "label": "Allow Partial Payment"
   }
  ],
  "icon": "icon-cog",
@@ -432,7 +402,7 @@
    "link_fieldname": "pos_profile"
   }
  ],
- "modified": "2025-04-14 15:58:20.497426",
+ "modified": "2025-03-17 10:31:20.815763",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "POS Profile",
@@ -456,10 +426,20 @@
    "read": 1,
    "report": 1,
    "role": "Accounts User"
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales User",
+   "share": 1,
+   "write": 1
   }
  ],
- "row_format": "Dynamic",
- "sort_field": "creation",
+ "sort_field": "modified",
  "sort_order": "DESC",
  "states": []
 }

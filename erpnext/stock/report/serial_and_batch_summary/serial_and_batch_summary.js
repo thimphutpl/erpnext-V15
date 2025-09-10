@@ -50,7 +50,6 @@ frappe.query_reports["Serial and Batch Summary"] = {
 			fieldname: "voucher_no",
 			label: __("Voucher No"),
 			fieldtype: "MultiSelectList",
-			options: "voucher_type",
 			get_data: function (txt) {
 				if (!frappe.query_report.filters) return;
 

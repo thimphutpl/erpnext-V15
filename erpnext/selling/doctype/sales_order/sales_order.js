@@ -547,21 +547,208 @@ frappe.ui.form.on("Sales Order", {
 	},
 });
 
+// frappe.ui.form.on("Sales Order Item", {
+// 	item_code: function (frm, cdt, cdn) {
+// 		var row = locals[cdt][cdn];
+// 		if (frm.doc.delivery_date) {
+// 			row.delivery_date = frm.doc.delivery_date;
+// 			refresh_field("delivery_date", cdn, "items");
+// 		} else {
+// 			frm.script_manager.copy_from_first_row("items", row, ["delivery_date"]);
+// 		}
+// 	},
+// 	delivery_date: function (frm, cdt, cdn) {
+// 		if (!frm.doc.delivery_date) {
+// 			erpnext.utils.copy_value_in_all_rows(frm.doc, cdt, cdn, "items", "delivery_date");
+// 		}
+// 	},
+// });
+
+cur_frm.fields_dict['items'].grid.get_field('price_template').get_query = function(frm, cdt, cdn) {
+	var d = locals[cdt][cdn];
+	if(d.sales_uom){
+		uom = d.sales_uom
+	}else{
+		uom = ''
+	}
+	return {
+			query: "erpnext.controllers.queries.price_template_list",
+			filters: {'item_code': d.item_code, 'transaction_date': frm.transaction_date, 'branch': frm.branch, 'location': frm.location, 'selling_uom': uom}
+	}
+}
+
+//auto list the price_templates based on branch, transaction_date, item_code, customer written by Thukten on 12 Dec, 2021
+cur_frm.fields_dict['items'].grid.get_field('customer_price_list').get_query = function(frm, cdt, cdn) {
+var d = locals[cdt][cdn];
+return {
+		query: "erpnext.controllers.queries.customer_price_template_list",
+		filters: {'item_code': d.item_code, 'transaction_date': frm.transaction_date, 'branch': frm.branch, 'location': frm.location, 'customer': frm.customer}
+}
+}
+
+
 frappe.ui.form.on("Sales Order Item", {
-	item_code: function (frm, cdt, cdn) {
-		var row = locals[cdt][cdn];
-		if (frm.doc.delivery_date) {
-			row.delivery_date = frm.doc.delivery_date;
-			refresh_field("delivery_date", cdn, "items");
-		} else {
-			frm.script_manager.copy_from_first_row("items", row, ["delivery_date"]);
+	qty: function(frm, cdt, cdn) {
+		var item = locals[cdt][cdn]
+		if(frm.doc.naming_series == "Timber Products" && !frm.doc.is_kidu_sale) { 
+			if(item.lot_number){
+				get_balance(frm, cdt, cdn);
+			} 
+			if(item.conversion_req){
+				frappe.model.set_value(cdt, cdn, "stock_qty", '')
+				cur_frm.refresh_field("stock_qty")
+			}
+		}
+
+		if(item.item_code && item.stock_uom){
+			if(item.stock_uom != item.sales_uom && (typeof item.sales_uom != "undefined" && item.sales_uom != '')){
+				frappe.model.set_value(cdt, cdn, "stock_qty", item.conversion_factor * item.qty)
+				cur_frm.refresh_field("stock_qty")
+			}
+			else{
+				frappe.model.set_value(cdt, cdn, "stock_qty", item.qty)
+				cur_frm.refresh_field("stock_qty")
+			}
+		}
+	},	
+
+	sales_uom: function(frm, cdt, cdn) {
+		frappe.model.set_value(cdt, cdn, "price_template", "") 
+
+		var item = locals[cdt][cdn];
+		
+		if(item.item_code && item.sales_uom) {
+			frappe.call({
+				method: "erpnext.stock.get_item_details.get_conversion_factor",
+				args: {
+					item_code: item.item_code,
+					uom: item.sales_uom
+				},
+				callback: function(r) {
+					if(r.message.conversion_factor){
+						frappe.model.set_value(cdt, cdn, "conversion_factor", r.message.conversion_factor)
+						frappe.model.set_value(cdt, cdn, "stock_qty", r.message.conversion_factor * item.qty)
+						cur_frm.refresh_field("conversion_factor")
+						cur_frm.refresh_field("stock_qty")
+					}
+				}
+			});
 		}
 	},
-	delivery_date: function (frm, cdt, cdn) {
-		if (!frm.doc.delivery_date) {
-			erpnext.utils.copy_value_in_all_rows(frm.doc, cdt, cdn, "items", "delivery_date");
+
+	conversion_req: function(frm, cdt, cdn) {
+		frappe.model.set_value(cdt, cdn, "sales_uom", "") 
+		frappe.model.set_value(cdt, cdn, "price_template", "")
+		
+		var row = locals[cdt][cdn]
+		frm.fields_dict.items.grid.toggle_reqd("sales_uom", row.conversion_req?1:0)
+		frm.refresh_field('sales_uom')
+
+		if(frm.doc.naming_series == "Timber Products"){
+			frm.fields_dict.items.grid.toggle_reqd("stock_qty", 1)
+			frm.fields_dict.items.grid.toggle_enable("stock_qty", 1)
+			frm.refresh_field('stock_qty')
+		}
+
+	},
+	
+	form_render: (frm,cdt,cdn)=>{
+		var row = locals[cdt][cdn]
+		frm.fields_dict.items.grid.toggle_reqd("sales_uom", row.conversion_req?1:0)
+		frm.refresh_field('sales_uom')
+		if(frm.doc.naming_series == "Timber Products"){
+			frm.fields_dict.items.grid.toggle_reqd("stock_qty", 1)
+			frm.refresh_field('stock_qty')
 		}
 	},
+	
+	stock_qty: function(frm, cdt, cdn) {
+		if(frm.doc.naming_series == "Timber Products"){
+			var row = locals[cdt][cdn]
+			if(row.qty != 0){
+				frappe.model.set_value(cdt, cdn, "conversion_factor", row.stock_qty / row.qty)
+				cur_frm.refresh_field("conversion_factor")
+			}
+		}
+	},
+
+	price_template: function(frm, cdt, cdn) {
+		d = locals[cdt][cdn]
+		if(cur_frm.doc.location){
+			loc = cur_frm.doc.location;
+		}else{
+			loc = ''
+		}
+
+		if(d.sales_uom){
+			uom = d.sales_uom
+		}else{
+			uom = ''
+		}
+
+		frappe.call({
+			method: "erpnext.production.doctype.selling_price.selling_price.get_selling_rate",
+			args: {
+					"price_list": d.price_template,
+					"branch": cur_frm.doc.branch,
+					"item_code": d.item_code,
+					"transaction_date": cur_frm.doc.transaction_date,
+					"selling_uom": uom,
+					"location": loc
+				},
+			callback: function(r) {
+					frappe.model.set_value(cdt, cdn, "price_list_rate", r.message)
+					frappe.model.set_value(cdt, cdn, "rate", r.message)
+					cur_frm.refresh_field("price_list_rate")
+					cur_frm.refresh_field("rate")
+			}
+		})
+    },
+
+	customer_price_list: function(frm, cdt, cdn) {
+		d = locals[cdt][cdn]
+		if(cur_frm.doc.location){
+			loc = cur_frm.doc.location;
+		}else{
+			loc = "NA";
+		}
+		frappe.call({
+			method: "erpnext.production.doctype.customer_selling_price.customer_selling_price.get_customer_selling_rate",
+			args: {
+				"price_list": d.customer_price_list,
+				"branch": cur_frm.doc.branch,
+				"item_code": d.item_code,
+				"transaction_date": cur_frm.doc.transaction_date,
+				"location": loc,
+				"customer": cur_frm.doc.customer
+			},
+			callback: function(r) {
+				frappe.model.set_value(cdt, cdn, "price_list_rate", r.message);
+				frappe.model.set_value(cdt, cdn, "rate", r.message);
+				cur_frm.refresh_field("price_list_rate");
+				cur_frm.refresh_field("rate");
+			}
+		})
+	},
+
+	item_code: function(frm, cdt, cdn) {
+		frappe.model.set_value(cdt, cdn, "price_template", "") 
+	},
+
+	lot_number: function(frm, cdt, cdn) {
+		var d = locals[cdt][cdn];
+		if(d.item_code && d.lot_number) { get_balance(frm, cdt, cdn); }
+	},
+
+	sp_type: function(frm, cdt, cdn) {
+		var d = locals[cdt][cdn];
+		if(d.sp_type == "General Rate"){
+
+		}else{
+
+		}
+	}
+	
 });
 
 erpnext.selling.SalesOrderController = class SalesOrderController extends erpnext.selling.SellingController {

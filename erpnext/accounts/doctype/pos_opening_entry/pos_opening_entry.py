@@ -70,6 +70,3 @@ class POSOpeningEntry(StatusUpdater):
 
 	def on_submit(self):
 		self.set_status(update=True)
-
-	def on_cancel(self):
-		self.set_status(update=True)

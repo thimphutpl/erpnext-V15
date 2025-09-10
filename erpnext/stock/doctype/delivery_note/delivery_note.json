@@ -10,6 +10,7 @@
  "field_order": [
   "title",
   "naming_series",
+  "branch",
   "customer",
   "tax_id",
   "customer_name",
@@ -1399,13 +1400,23 @@
    "label": "Company Contact Person",
    "options": "Contact",
    "print_hide": 1
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "label": "Branch",
+   "oldfieldname": "naming_series",
+   "oldfieldtype": "Select",
+   "options": "Branch",
+   "print_hide": 1,
+   "reqd": 1
   }
  ],
  "icon": "fa fa-truck",
  "idx": 146,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-26 12:44:28.258215",
+ "modified": "2025-08-26 13:09:09.351379",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Delivery Note",
@@ -1496,6 +1507,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "search_fields": "status,customer,customer_name, territory,base_grand_total",
  "show_name_in_global_search": 1,
  "sort_field": "modified",

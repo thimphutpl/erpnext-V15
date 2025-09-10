@@ -38,7 +38,9 @@
   "tree_details",
   "lft",
   "rgt",
-  "old_parent"
+  "old_parent",
+  "warehouse_belong_to_section",
+  "items"
  ],
  "fields": [
   {
@@ -257,13 +259,24 @@
    "fieldname": "is_rejected_warehouse",
    "fieldtype": "Check",
    "label": "Is Rejected Warehouse"
+  },
+  {
+   "fieldname": "warehouse_belong_to_section",
+   "fieldtype": "Section Break",
+   "label": "Warehouse Belong To"
+  },
+  {
+   "allow_bulk_edit": 1,
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "options": "Warehouse Branch"
   }
  ],
  "icon": "fa fa-building",
  "idx": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2024-08-14 16:08:15.733597",
+ "modified": "2025-02-17 18:29:56.133618",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Warehouse",

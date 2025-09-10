@@ -4,7 +4,6 @@
 
 import frappe
 from frappe import _
-from frappe.utils import getdate
 
 
 def execute(filters=None):
@@ -34,7 +33,6 @@ def execute(filters=None):
 
 def validate_filters(filters):
 	"""Validate if dates are properly set"""
-	filters = frappe._dict(filters or {})
 	if filters.from_date > filters.to_date:
 		frappe.throw(_("From Date must be before To Date"))
 
@@ -70,12 +68,12 @@ def get_result(filters, tds_docs, tds_accounts, tax_category_map, journal_entry_
 				if not tax_withholding_category:
 					tax_withholding_category = party_map.get(party, {}).get("tax_withholding_category")
 
-				rate = get_tax_withholding_rates(tax_rate_map.get(tax_withholding_category, []), posting_date)
+				rate = tax_rate_map.get(tax_withholding_category)
 			if net_total_map.get((voucher_type, name)):
-				if voucher_type == "Journal Entry" and tax_amount and rate:
+				if voucher_type == "Journal Entry":
 					# back calcalute total amount from rate and tax_amount
-					base_total = min(tax_amount / (rate / 100), net_total_map.get((voucher_type, name))[0])
-					total_amount = grand_total = base_total
+					if rate:
+						total_amount = grand_total = base_total = tax_amount / (rate / 100)
 				elif voucher_type == "Purchase Invoice":
 					total_amount, grand_total, base_total, bill_no, bill_date = net_total_map.get(
 						(voucher_type, name)
@@ -407,7 +405,7 @@ def get_doc_info(vouchers, doctype, tax_category_map, net_total_map=None):
 			"paid_amount_after_tax",
 			"base_paid_amount",
 		],
-		"Journal Entry": ["tax_withholding_category", "total_debit"],
+		"Journal Entry": ["total_amount"],
 	}
 
 	entries = frappe.get_all(
@@ -429,7 +427,7 @@ def get_doc_info(vouchers, doctype, tax_category_map, net_total_map=None):
 		elif doctype == "Payment Entry":
 			value = [entry.paid_amount, entry.paid_amount_after_tax, entry.base_paid_amount]
 		else:
-			value = [entry.total_debit] * 3
+			value = [entry.total_amount] * 3
 
 		net_total_map[(doctype, entry.name)] = value
 
@@ -437,22 +435,12 @@ def get_doc_info(vouchers, doctype, tax_category_map, net_total_map=None):
 def get_tax_rate_map(filters):
 	rate_map = frappe.get_all(
 		"Tax Withholding Rate",
-		filters={"from_date": ("<=", filters.to_date), "to_date": (">=", filters.from_date)},
-		fields=["parent", "tax_withholding_rate", "from_date", "to_date"],
+		filters={
+			"from_date": ("<=", filters.get("from_date")),
+			"to_date": (">=", filters.get("to_date")),
+		},
+		fields=["parent", "tax_withholding_rate"],
+		as_list=1,
 	)
 
-	rate_list = frappe._dict()
-
-	for rate in rate_map:
-		rate_list.setdefault(rate.parent, []).append(frappe._dict(rate))
-
-	return rate_list
-
-
-def get_tax_withholding_rates(tax_withholding, posting_date):
-	# returns the row that matches with the fiscal year from posting date
-	for rate in tax_withholding:
-		if getdate(rate.from_date) <= getdate(posting_date) <= getdate(rate.to_date):
-			return rate.tax_withholding_rate
-
-	return 0
+	return frappe._dict(rate_map)

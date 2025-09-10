@@ -11,10 +11,25 @@ erpnext.buying.setup_buying_controller();
 
 frappe.ui.form.on("Purchase Receipt", {
 	setup: (frm) => {
+		frm.make_methods = {
+			"Landed Cost Voucher": () => {
+				let lcv = frappe.model.get_new_doc("Landed Cost Voucher");
+				lcv.company = frm.doc.company;
+
+				let lcv_receipt = frappe.model.get_new_doc("Landed Cost Purchase Receipt");
+				lcv_receipt.receipt_document_type = "Purchase Receipt";
+				lcv_receipt.receipt_document = frm.doc.name;
+				lcv_receipt.supplier = frm.doc.supplier;
+				lcv_receipt.grand_total = frm.doc.grand_total;
+				lcv.purchase_receipts = [lcv_receipt];
+
+				frappe.set_route("Form", lcv.doctype, lcv.name);
+			},
+		};
+
 		frm.custom_make_buttons = {
 			"Stock Entry": "Return",
 			"Purchase Invoice": "Purchase Invoice",
-			"Landed Cost Voucher": "Landed Cost Voucher",
 		};
 
 		frm.set_query("expense_account", "items", function () {
@@ -42,6 +57,12 @@ frappe.ui.form.on("Purchase Receipt", {
 					docstatus: 1,
 					supplier: frm.doc.supplier,
 				},
+			};
+		});
+
+		frm.set_query("branch", function (doc) {
+			return {
+				filters: { company: doc.company },
 			};
 		});
 	},
@@ -99,33 +120,7 @@ frappe.ui.form.on("Purchase Receipt", {
 			}
 		}
 
-		if (frm.doc.docstatus === 1) {
-			frm.add_custom_button(
-				__("Landed Cost Voucher"),
-				() => {
-					frm.events.make_lcv(frm);
-				},
-				__("Create")
-			);
-		}
-
 		frm.events.add_custom_buttons(frm);
-	},
-
-	make_lcv(frm) {
-		frappe.call({
-			method: "erpnext.stock.doctype.purchase_receipt.purchase_receipt.make_lcv",
-			args: {
-				doctype: frm.doc.doctype,
-				docname: frm.doc.name,
-			},
-			callback: (r) => {
-				if (r.message) {
-					var doc = frappe.model.sync(r.message);
-					frappe.set_route("Form", doc[0].doctype, doc[0].name);
-				}
-			},
-		});
 	},
 
 	add_custom_buttons: function (frm) {
@@ -185,7 +180,31 @@ frappe.ui.form.on("Purchase Receipt", {
 		var enabled = erpnext.is_perpetual_inventory_enabled(frm.doc.company);
 		frm.fields_dict["items"].grid.set_column_disp(["cost_center"], enabled);
 	},
+
+	freight_insurance_charges: function(frm) {
+		calculate_discount(frm)
+	},
+
+	discount: function(frm) {
+		calculate_discount(frm)
+	},
+
+	other_charges: function(frm) {
+		calculate_discount(frm)
+	},
+
+	tax: function(frm) {
+		calculate_discount(frm)
+	},
 });
+
+function calculate_discount(frm) {
+	console.log(frm.doc.freight_insurance_charges + frm.doc.other_charges - frm.doc.discount);
+	frm.set_value("total_add_ded", flt(frm.doc.freight_insurance_charges + frm.doc.other_charges + frm.doc.tax - frm.doc.discount)??0);
+	frm.set_value("discount_amount", flt(-frm.doc.freight_insurance_charges - frm.doc.other_charges - frm.doc.tax + frm.doc.discount)??0);
+	frm.refresh_field("discount_amount");
+	frm.refresh_field("total_add_ded");
+}
 
 erpnext.stock.PurchaseReceiptController = class PurchaseReceiptController extends (
 	erpnext.buying.BuyingController
@@ -287,6 +306,7 @@ erpnext.stock.PurchaseReceiptController = class PurchaseReceiptController extend
 					__("Create")
 				);
 
+				cur_frm.add_custom_button(__('Asset Issue Entry'), this.make_asset_issue_entry, __('Create'));
 				cur_frm.page.set_inner_btn_group_as_primary(__("Create"));
 			}
 		}
@@ -378,6 +398,87 @@ erpnext.stock.PurchaseReceiptController = class PurchaseReceiptController extend
 		});
 	}
 
+	make_asset_issue_entry() {
+		var doc = cur_frm.doc;
+		var dialog = new frappe.ui.Dialog({
+			title: __("For Issuing Asset"),
+			fields: [
+				{	"fieldtype": "Select",
+					"label": __("Material Name"),
+					"fieldname": "item_name",
+					"options": doc.items
+						.filter(d => d.is_fixed_asset === 1)
+						.map(d => d.idx+' '+d.item_name),
+					"reqd": 1 
+				},
+				{	"fieldtype": "Button", "label": __('Issue Asset'),
+					"fieldname": "make_asset_issue_entry", "cssClass": "btn-primary"
+				},
+			]
+		});
+		
+		dialog.fields_dict.make_asset_issue_entry.$input.click(function() {
+			var args = dialog.get_values();
+			var item = args.item_name;
+			var itemIdx = item.substr(0, item.indexOf(" "));
+			var itemName = item.substr(item.indexOf(" "), item.length - 1);
+
+			frappe.call({
+				method:'frappe.client.get_value',
+				args:{
+					'doctype':'Item',
+					fieldname:"is_fixed_asset",
+					filters: {
+						"item_name": itemName.trim(),
+						"is_fixed_asset":1
+					}
+				},
+				callback:(r)=>{
+					if(r.message){
+						if ( !r.message.is_fixed_asset){
+							frappe.msgprint('Item selected is not a fixed asset')
+							dialog.hide();
+							return;
+						}
+	
+						if(!args) return;
+						dialog.hide();
+	
+						let business_activity = ''
+						let item_code = ''
+						let asset_rate = ''
+						cur_frm.doc.items.map(d => {
+							if (d.idx == itemIdx){
+								business_activity = d.business_activity;
+								item_code = d.item_code;
+								asset_rate = d.valuation_rate;
+							}
+	
+						})
+	
+						var new_doc = frappe.model.get_new_doc('Asset Issue Details');
+						new_doc.branch = cur_frm.doc.branch;
+						new_doc.business_activity = business_activity;
+						new_doc.entry_date = new Date().toJSON().slice(0,10).replace(/-/g,'-');
+						new_doc.item_code = item_code;
+						new_doc.purchase_receipt = cur_frm.docname;
+						new_doc.asset_rate = asset_rate
+						new_doc.purchase_date = cur_frm.doc.posting_date
+						new_doc.company = cur_frm.doc.company
+						new_doc.qty = 1;
+						new_doc.amount = asset_rate * new_doc.qty
+						frappe.set_route('Form', 'Asset Issue Details', new_doc.name);
+					} else{
+						frappe.msgprint('There no such item')
+						dialog.hide();
+						return;
+					}
+				}
+			})
+		});
+		dialog.show()
+	}
+	
 	apply_putaway_rule() {
 		if (this.frm.doc.apply_putaway_rule) erpnext.apply_putaway_rule(this.frm);
 	}
@@ -434,12 +535,55 @@ frappe.ui.form.on("Purchase Receipt", "is_subcontracted", function (frm) {
 });
 
 frappe.ui.form.on("Purchase Receipt Item", {
+	refresh: function(frm, cdt, cdn){
+		var i = locals[cdt][cdn];
+		frappe.call({
+			method:'frappe.client.get_value',
+			args:{
+				'doctype':'Item',
+				fieldname:"is_fixed_asset",
+				filters: {
+					"name": i.name
+				}
+			},
+			callback:(r)=>{
+				if(r.message.is_fixed_asset){
+					frm.toggle_display(['brand', 'model'], r.message.is_fixed_asset);
+				}
+				else{
+					frm.toggle_display(['brand', 'model'], 0);
+					
+				}
+			}
+		})
+		frm.refresh_fields();
+	},
 	item_code: function (frm, cdt, cdn) {
 		var d = locals[cdt][cdn];
 		frappe.db.get_value("Item", { name: d.item_code }, "sample_quantity", (r) => {
 			frappe.model.set_value(cdt, cdn, "sample_quantity", r.sample_quantity);
 			validate_sample_quantity(frm, cdt, cdn);
 		});
+		frappe.call({
+			method:'frappe.client.get_value',
+			args:{
+				'doctype':'Item',
+				fieldname:"is_fixed_asset",
+				filters: {
+					"name": d.name
+				}
+			},
+			callback:(r)=>{
+				if(r.message.is_fixed_asset){
+					frm.toggle_display(['brand', 'model'], r.message.is_fixed_asset);
+				}
+				else{
+					frm.toggle_display(['brand', 'model'], 0);
+					
+				}
+			}
+		})
+		frm.refresh_fields();
 	},
 	qty: function (frm, cdt, cdn) {
 		validate_sample_quantity(frm, cdt, cdn);

@@ -284,7 +284,16 @@ sounds = [
 ]
 
 has_upload_permission = {"Employee": "erpnext.setup.doctype.employee.employee.has_upload_permission"}
+has_permission = {
+	# "Material Request":"erpnext.stock.doctype.material_request.material_request.has_record_permission",
+	"Employee": "erpnext.setup.doctype.employee.employee.has_record_permission",
+	
 
+}
+permission_query_conditions = {
+    "Employee": "erpnext.setup.doctype.employee.employee.get_permission_query_conditions",
+	"Leave Encashment Request":"hrms.hr.doctype.leave_encashment_request.leave_encashment_request.get_permission_query_conditions",
+}
 has_website_permission = {
 	"Sales Order": "erpnext.controllers.website_list_for_contact.has_website_permission",
 	"Quotation": "erpnext.controllers.website_list_for_contact.has_website_permission",
@@ -428,7 +437,7 @@ scheduler_events = {
 		],
 	},
 	"hourly": [
-		"erpnext.erpnext_integrations.doctype.plaid_settings.plaid_settings.automatic_synchronization",
+		#"erpnext.erpnext_integrations.doctype.plaid_settings.plaid_settings.automatic_synchronization",
 		"erpnext.projects.doctype.project.project.project_status_update_reminder",
 		"erpnext.projects.doctype.project.project.hourly_reminder",
 		"erpnext.projects.doctype.project.project.collect_project_status",
@@ -474,7 +483,7 @@ scheduler_events = {
 	],
 	"monthly_long": [
 		"erpnext.accounts.deferred_revenue.process_deferred_accounting",
-		"erpnext.accounts.utils.auto_create_exchange_rate_revaluation_monthly",
+		# "erpnext.accounts.utils.auto_create_exchange_rate_revaluation_monthly",
 	],
 }
 

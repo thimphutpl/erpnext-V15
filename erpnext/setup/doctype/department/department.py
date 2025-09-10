@@ -17,10 +17,18 @@ class Department(NestedSet):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		approver_designation: DF.Data | None
+		approver_hod: DF.Link | None
+		approver_id: DF.Link | None
+		approver_name: DF.Data | None
 		company: DF.Link
 		department_name: DF.Data
+		department_rating: DF.Percent
 		disabled: DF.Check
+		is_division: DF.Check
 		is_group: DF.Check
+		is_section: DF.Check
+		is_unit: DF.Check
 		lft: DF.Int
 		old_parent: DF.Data | None
 		parent_department: DF.Link | None

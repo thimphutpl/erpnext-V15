@@ -1,22 +1,36 @@
 {
  "actions": [],
  "allow_import": 1,
- "autoname": "format:ACC-ASM-{YYYY}-{#####}",
+ "autoname": "ASM.-.YY.-.MM.-.###",
  "creation": "2016-04-25 18:00:23.559973",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
   "company",
   "purpose",
+  "based_on",
   "column_break_4",
   "transaction_date",
+  "from_employee",
+  "project",
+  "cost_center",
+  "to_single",
+  "to_employee",
+  "to_employee_name",
+  "email",
   "section_break_10",
+  "get_asset",
+  "check_all",
   "assets",
   "reference",
   "reference_doctype",
+  "workflow_state",
   "column_break_9",
   "reference_name",
-  "amended_from"
+  "amended_from",
+  "section_break_vxpx",
+  "attachment_column",
+  "attachment"
  ],
  "fields": [
   {
@@ -33,7 +47,7 @@
    "fieldname": "purpose",
    "fieldtype": "Select",
    "label": "Purpose",
-   "options": "\nIssue\nReceipt\nTransfer",
+   "options": "\nTransfer\nReceipt",
    "reqd": 1
   },
   {
@@ -82,6 +96,7 @@
    "fieldtype": "Section Break"
   },
   {
+   "allow_bulk_edit": 1,
    "fieldname": "assets",
    "fieldtype": "Table",
    "label": "Assets",
@@ -91,16 +106,108 @@
   {
    "fieldname": "column_break_9",
    "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.based_on == 'Custodian'",
+   "fieldname": "from_employee",
+   "fieldtype": "Link",
+   "label": "From Employee",
+   "mandatory_depends_on": "eval:doc.based_on == 'Custodian'",
+   "options": "Employee"
+  },
+  {
+   "depends_on": "eval:doc.docstatus != 1",
+   "fieldname": "get_asset",
+   "fieldtype": "Button",
+   "label": "Get Asset"
+  },
+  {
+   "default": "0",
+   "fieldname": "to_single",
+   "fieldtype": "Check",
+   "label": "To Single Employee"
+  },
+  {
+   "fieldname": "to_employee",
+   "fieldtype": "Link",
+   "ignore_user_permissions": 1,
+   "label": "To Employee",
+   "mandatory_depends_on": "eval: doc.purpose == 'Transfer'",
+   "options": "Employee"
+  },
+  {
+   "fieldname": "workflow_state",
+   "fieldtype": "Data",
+   "label": "Workflow State",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_vxpx",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "attachment_column",
+   "fieldtype": "Column Break",
+   "label": "Attachment"
+  },
+  {
+   "fieldname": "attachment",
+   "fieldtype": "Attach",
+   "label": "attachment"
+  },
+  {
+   "depends_on": "eval:doc.purpose == \"Transfer\"",
+   "fieldname": "based_on",
+   "fieldtype": "Select",
+   "label": "Select Assets Based On",
+   "options": "\nCustodian\nCost Center"
+  },
+  {
+   "depends_on": "eval:doc.based_on == 'Cost Center'",
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "label": "Project",
+   "options": "Project"
+  },
+  {
+   "depends_on": "eval:doc.based_on == 'Cost Center'",
+   "fieldname": "cost_center",
+   "fieldtype": "Link",
+   "label": "Cost Center",
+   "mandatory_depends_on": "eval:doc.based_on == 'Cost Center'",
+   "options": "Cost Center"
+  },
+  {
+   "default": "0",
+   "depends_on": "eval: doc.workflow_state=='Waiting For Verification'",
+   "fieldname": "check_all",
+   "fieldtype": "Check",
+   "label": "Verify All",
+   "read_only_depends_on": "eval: doc.workflow_state!='Waiting For Verification'"
+  },
+  {
+   "fetch_from": "to_employee.employee_name",
+   "fieldname": "to_employee_name",
+   "fieldtype": "Data",
+   "label": "To Employee Name",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "to_employee.user_id",
+   "fieldname": "email",
+   "fieldtype": "Data",
+   "label": "Email",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-06-28 16:54:26.571083",
- "modified_by": "Administrator",
+ "modified": "2025-08-22 15:36:35.591596",
+ "modified_by": "kalden.dorji@thimphutechpark.bt",
  "module": "Assets",
  "name": "Asset Movement",
- "naming_rule": "Expression",
+ "naming_rule": "Expression (old style)",
  "owner": "Administrator",
  "permissions": [
   {
@@ -149,7 +256,9 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "track_changes": 1
 }

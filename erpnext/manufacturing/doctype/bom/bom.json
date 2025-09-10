@@ -7,11 +7,15 @@
  "engine": "InnoDB",
  "field_order": [
   "production_item_tab",
+  "branch",
+  "from_date",
   "item",
   "company",
   "uom",
   "quantity",
   "cb0",
+  "from_warehouse",
+  "to_date",
   "is_active",
   "is_default",
   "allow_alternative_item",
@@ -28,6 +32,8 @@
   "conversion_rate",
   "materials_section",
   "items",
+  "labor_and_manufacturing_overhead_section",
+  "labor_and_overhead_items",
   "section_break_21",
   "operations_section_section",
   "with_operations",
@@ -47,14 +53,21 @@
   "column_break_ssj2",
   "process_loss_qty",
   "costing",
-  "operating_cost",
   "raw_material_cost",
+  "manufacturing_cost",
+  "sales_margin",
+  "selling_price",
+  "operating_cost",
   "scrap_material_cost",
   "cb1",
+  "direct_labor_cost",
+  "other_overhead",
   "base_operating_cost",
   "base_raw_material_cost",
   "base_scrap_material_cost",
   "column_break_26",
+  "manufacturing_overhead",
+  "cost_of_production",
   "total_cost",
   "base_total_cost",
   "more_info_tab",
@@ -131,7 +144,6 @@
    "fieldname": "quantity",
    "fieldtype": "Float",
    "label": "Quantity",
-   "non_negative": 1,
    "oldfieldname": "quantity",
    "oldfieldtype": "Currency",
    "reqd": 1
@@ -315,7 +327,7 @@
   {
    "fieldname": "raw_material_cost",
    "fieldtype": "Currency",
-   "label": "Raw Material Cost",
+   "label": "1. Raw Material Cost",
    "options": "currency",
    "read_only": 1
   },
@@ -358,6 +370,7 @@
   {
    "fieldname": "total_cost",
    "fieldtype": "Currency",
+   "hidden": 1,
    "in_list_view": 1,
    "label": "Total Cost",
    "options": "currency",
@@ -631,6 +644,85 @@
   {
    "fieldname": "column_break_oxbz",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "labor_and_manufacturing_overhead_section",
+   "fieldtype": "Section Break",
+   "label": "Labor and Manufacturing Overhead"
+  },
+  {
+   "fieldname": "labor_and_overhead_items",
+   "fieldtype": "Table",
+   "label": "Labor & Manufacturing Overhead",
+   "options": "Cost Component Item"
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "label": "Branch",
+   "options": "Branch",
+   "reqd": 1
+  },
+  {
+   "fieldname": "from_warehouse",
+   "fieldtype": "Link",
+   "label": "Raw Material Warehouse",
+   "options": "Warehouse",
+   "reqd": 1
+  },
+  {
+   "fieldname": "from_date",
+   "fieldtype": "Date",
+   "label": "From Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "to_date",
+   "fieldtype": "Date",
+   "label": "To Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "manufacturing_cost",
+   "fieldtype": "Currency",
+   "label": "4. Manufacturing Cost [1+2+3]",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sales_margin",
+   "fieldtype": "Currency",
+   "label": "7. Sales Margin(15% of 6)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "direct_labor_cost",
+   "fieldtype": "Currency",
+   "label": "2. Direct Labor Cost",
+   "read_only": 1
+  },
+  {
+   "fieldname": "other_overhead",
+   "fieldtype": "Currency",
+   "label": "5. Administration & Other Overhead",
+   "read_only": 1
+  },
+  {
+   "fieldname": "manufacturing_overhead",
+   "fieldtype": "Currency",
+   "label": "3. Manufacturing Overhead",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cost_of_production",
+   "fieldtype": "Currency",
+   "label": "6. Cost of Production[1+2+3+5]",
+   "read_only": 1
+  },
+  {
+   "fieldname": "selling_price",
+   "fieldtype": "Currency",
+   "label": "Proposed Selling Price(6+7)",
+   "read_only": 1
   }
  ],
  "icon": "fa fa-sitemap",
@@ -638,7 +730,7 @@
  "image_field": "image",
  "is_submittable": 1,
  "links": [],
- "modified": "2025-06-16 16:13:22.497695",
+ "modified": "2025-08-22 16:28:01.228962",
  "modified_by": "Administrator",
  "module": "Manufacturing",
  "name": "BOM",

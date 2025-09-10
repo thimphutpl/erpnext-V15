@@ -32,8 +32,29 @@ frappe.ui.form.on("Warehouse", {
 			};
 		});
 	},
-
+	company: function(frm) {
+        frm.set_query("branch", "items", function(doc, cdt, cdn) {
+            let d = locals[cdt][cdn];
+            return {
+                filters: {
+                   
+                    company: frm.doc.company
+                }
+            };
+        });
+    },
 	refresh: function (frm) {
+		if (frm.doc.company){
+			frm.set_query("branch", "items", function(doc, cdt, cdn) {
+				let d = locals[cdt][cdn];
+				return {
+					filters: {
+					   
+						company: frm.doc.company
+					}
+				};
+			});
+		}
 		frm.toggle_display("warehouse_name", frm.doc.__islocal);
 		frm.toggle_display(["address_html", "contact_html"], !frm.doc.__islocal);
 

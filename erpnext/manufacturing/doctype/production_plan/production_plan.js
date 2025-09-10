@@ -116,9 +116,7 @@ frappe.ui.form.on("Production Plan", {
 					);
 				}
 
-				let items = frm.events.get_items_for_work_order(frm);
-
-				if (items?.length && frm.doc.status !== "Closed") {
+				if (frm.doc.po_items && frm.doc.status !== "Closed") {
 					frm.add_custom_button(
 						__("Work Order / Subcontract PO"),
 						() => {
@@ -193,24 +191,6 @@ frappe.ui.form.on("Production Plan", {
 		</table>`;
 
 		set_field_options("projected_qty_formula", projected_qty_formula);
-	},
-
-	get_items_for_work_order(frm) {
-		let items = frm.doc.po_items;
-		if (frm.doc.sub_assembly_items?.length) {
-			items = [...items, ...frm.doc.sub_assembly_items];
-		}
-
-		let has_items =
-			items.filter((item) => {
-				if (item.pending_qty) {
-					return item.pending_qty > item.ordered_qty;
-				} else {
-					return item.qty > (item.received_qty || item.ordered_qty);
-				}
-			}) || [];
-
-		return has_items;
 	},
 
 	close_open_production_plan(frm, close = false) {
@@ -582,28 +562,6 @@ frappe.ui.form.on("Production Plan Sales Order", {
 frappe.ui.form.on("Production Plan Sub Assembly Item", {
 	fg_warehouse(frm, cdt, cdn) {
 		erpnext.utils.copy_value_in_all_rows(frm.doc, cdt, cdn, "sub_assembly_items", "fg_warehouse");
-
-		let row = locals[cdt][cdn];
-		if (row.fg_warehouse && row.production_item) {
-			let child_row = {
-				item_code: row.production_item,
-				warehouse: row.fg_warehouse,
-			};
-
-			frappe.call({
-				method: "erpnext.manufacturing.doctype.production_plan.production_plan.get_bin_details",
-				args: {
-					row: child_row,
-					company: frm.doc.company,
-					for_warehouse: row.fg_warehouse,
-				},
-				callback: function (r) {
-					if (r.message && r.message.length) {
-						frappe.model.set_value(cdt, cdn, "actual_qty", r.message[0].actual_qty);
-					}
-				},
-			});
-		}
 	},
 });
 

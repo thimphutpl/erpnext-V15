@@ -1,0 +1,94 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-05-09 16:53:07.849044",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+    "additional_achievements",
+    "weightage",
+    "own_initiativedirected",
+    "appraisees_remarks",
+    "column_break_4",
+    "self_rating",
+    "supervisor_rating",
+    "appraisers_remarks",
+    "section_break_9",
+    "comment"
+   ],
+   "fields": [
+    {
+     "fieldname": "additional_achievements",
+     "fieldtype": "Data",
+     "in_list_view": 1,
+     "label": "Additional Achievements",
+     "read_only": 1
+    },
+    {
+     "fieldname": "weightage",
+     "fieldtype": "Float",
+     "in_list_view": 1,
+     "label": "Weightage",
+     "read_only": 1
+    },
+    {
+     "fieldname": "own_initiativedirected",
+     "fieldtype": "Data",
+     "label": "Own Initiative/Directed",
+     "read_only": 1
+    },
+    {
+     "fieldname": "appraisees_remarks",
+     "fieldtype": "Small Text",
+     "label": "Appraisee's Remarks",
+     "read_only": 1
+    },
+    {
+     "default": "0",
+     "fieldname": "column_break_4",
+     "fieldtype": "Column Break"
+    },
+    {
+     "fieldname": "self_rating",
+     "fieldtype": "Float",
+     "hidden": 1,
+     "label": "Self Rating"
+    },
+    {
+     "default": "0",
+     "fieldname": "supervisor_rating",
+     "fieldtype": "Float",
+     "in_list_view": 1,
+     "label": "Supervisor Rating",
+     "reqd": 1
+    },
+    {
+     "fieldname": "appraisers_remarks",
+     "fieldtype": "Small Text",
+     "label": "Appraiser's Remarks",
+     "read_only": 1
+    },
+    {
+     "fieldname": "section_break_9",
+     "fieldtype": "Section Break"
+    },
+    {
+     "fieldname": "comment",
+     "fieldtype": "Small Text",
+     "label": "Comment"
+    }
+   ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-05-09 16:53:07.849044",
+ "modified_by": "Administrator",
+ "module": "PMS",
+ "name": "Appeal Additional Achievements",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

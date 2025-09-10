@@ -15,6 +15,7 @@
   "col_break1",
   "delivery_date",
   "item_name",
+  "lot_number",
   "section_break_5",
   "description",
   "item_group",
@@ -24,12 +25,15 @@
   "image_view",
   "quantity_and_rate",
   "qty",
-  "stock_uom",
-  "col_break2",
   "uom",
+  "stock_uom",
   "conversion_factor",
   "stock_qty",
   "stock_reserved_qty",
+  "col_break2",
+  "sp_type",
+  "price_template",
+  "customer_price_list",
   "section_break_16",
   "price_list_rate",
   "base_price_list_rate",
@@ -268,7 +272,6 @@
    "label": "Price List Rate",
    "oldfieldname": "ref_rate",
    "oldfieldtype": "Currency",
-   "options": "currency",
    "print_hide": 1,
    "print_width": "70px",
    "read_only": 1,
@@ -419,6 +422,7 @@
    "default": "0",
    "fieldname": "is_free_item",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "Is Free Item",
    "print_hide": 1,
    "read_only": 1
@@ -468,6 +472,7 @@
    "collapsible_depends_on": "eval:doc.delivered_by_supplier==1||doc.supplier",
    "fieldname": "drop_ship_section",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Drop Ship",
    "print_hide": 1
   },
@@ -490,6 +495,7 @@
    "collapsible": 1,
    "fieldname": "item_weight_details",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Item Weight Details"
   },
   {
@@ -517,6 +523,7 @@
   {
    "fieldname": "warehouse_and_reference",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Warehouse and Reference"
   },
   {
@@ -695,6 +702,7 @@
   {
    "fieldname": "item_tax_template",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Item Tax Template",
    "options": "Item Tax Template",
    "print_hide": 1
@@ -704,6 +712,7 @@
    "default": "0",
    "fieldname": "page_break",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "Page Break",
    "oldfieldname": "page_break",
    "oldfieldtype": "Check",
@@ -765,6 +774,7 @@
   {
    "fieldname": "planning_section",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Planning"
   },
   {
@@ -775,12 +785,14 @@
    "collapsible": 1,
    "fieldname": "image_section",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Image"
   },
   {
    "collapsible": 1,
    "fieldname": "shopping_cart_section",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Shopping Cart"
   },
   {
@@ -805,6 +817,7 @@
   {
    "fieldname": "manufacturing_section_section",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Manufacturing Section"
   },
   {
@@ -821,6 +834,7 @@
    "fetch_from": "item_code.grant_commission",
    "fieldname": "grant_commission",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "Grant Commission",
    "read_only": 1
   },
@@ -939,7 +953,6 @@
    "label": "Available Quantity"
   },
   {
-   "collapsible": 1,
    "fieldname": "accounting_dimensions_section",
    "fieldtype": "Section Break",
    "label": "Accounting Dimensions"
@@ -963,21 +976,52 @@
    "allow_on_submit": 1,
    "fieldname": "project",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Project",
    "options": "Project",
    "search_index": 1
+  },
+  {
+   "default": "General Rate",
+   "fieldname": "sp_type",
+   "fieldtype": "Select",
+   "label": "Selling Price Type",
+   "options": "General Rate\nCustomer Based Rate",
+   "reqd": 1
+  },
+  {
+   "depends_on": "eval:doc.item_code && doc.sp_type == \"General Rate\"",
+   "fieldname": "price_template",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Price List",
+   "options": "Selling Price"
+  },
+  {
+   "depends_on": "eval:doc.item_code && doc.sp_type != \"General Rate\"",
+   "fieldname": "customer_price_list",
+   "fieldtype": "Link",
+   "label": "Customer Price List",
+   "options": "Customer Selling Price"
+  },
+  {
+   "fieldname": "lot_number",
+   "fieldtype": "Link",
+   "label": "Lot Number",
+   "options": "Lot List"
   }
  ],
  "idx": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-02-28 09:45:44.934947",
+ "modified": "2025-08-31 22:13:11.612683",
  "modified_by": "Administrator",
  "module": "Selling",
  "name": "Sales Order Item",
  "naming_rule": "Random",
  "owner": "Administrator",
  "permissions": [],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],

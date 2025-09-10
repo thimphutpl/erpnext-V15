@@ -23,7 +23,9 @@ class Location(NestedSet):
 
 		area: DF.Float
 		area_uom: DF.Link | None
+		branch: DF.Link | None
 		is_container: DF.Check
+		is_disabled: DF.Check
 		is_group: DF.Check
 		latitude: DF.Float
 		lft: DF.Int

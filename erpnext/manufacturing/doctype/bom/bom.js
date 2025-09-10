@@ -27,6 +27,18 @@ frappe.ui.form.on("BOM", {
 			};
 		});
 
+		
+		frm.set_query("cost_component", "labor_and_overhead_items", function() {
+			return {
+				query: "erpnext.controllers.queries.get_costing_component",
+				filters: {
+					'from_date': frm.doc.from_date,
+					'to_date': frm.doc.to_date,
+					"branch": frm.doc.branch
+				}
+			};
+		});
+
 		frm.set_query("item", function () {
 			return {
 				query: "erpnext.manufacturing.doctype.bom.bom.item_query",
@@ -179,6 +191,22 @@ frappe.ui.form.on("BOM", {
 				frappe.set_route("List", "Item", { variant_of: frm.doc.item });
 			});
 		}
+		cur_frm.set_query("from_warehouse", function() {
+			return {
+					query: "erpnext.controllers.queries.filter_branch_wh",
+					filters: {'branch': frm.doc.branch}
+			}
+		});
+	},
+	branch: function(frm) {
+		frm.refresh_field('from_warehouse');
+	},
+
+	from_warehouse: function(frm) {
+		var rm = frm.doc.items || [];
+		for(var i=0;i<rm.length;i++) {
+		   frappe.model.set_value('BOM Item', rm[i].name, 'source_warehouse', frm.doc.from_warehouse);
+		}
 	},
 
 	make_work_order(frm) {
@@ -195,6 +223,8 @@ frappe.ui.form.on("BOM", {
 						project: frm.doc.project,
 						variant_items: variant_items,
 						use_multi_level_bom: use_multi_level_bom,
+						branch: frm.doc.branch,
+						from_warehouse: frm.doc.from_warehouse,
 					},
 					freeze: true,
 					callback(r) {
@@ -480,10 +510,6 @@ erpnext.bom.BomController = class BomController extends erpnext.TransactionContr
 			child.bom_no = "";
 		}
 
-		if (doc.item == child.item_code) {
-			child.do_not_explode = 1;
-		}
-
 		get_bom_material_detail(doc, cdt, cdn, scrap_items);
 	}
 
@@ -732,6 +758,42 @@ frappe.ui.form.on("BOM Operation", "workstation", function (frm, cdt, cdn) {
 		},
 	});
 });
+
+frappe.ui.form.on("Cost Component Item", "cost_component", function(frm, cdt, cdn) {
+	settings(frm, cdt, cdn);
+});
+
+frappe.ui.form.on("Cost Component Item", "hour", function(frm, cdt, cdn) {
+	settings(frm, cdt, cdn);
+});
+
+let settings = function(frm, cdt, cdn) {
+	var d = locals[cdt][cdn]
+        var labor_amount =flt( d.rate_per_unit) * flt(d.hour);
+        if(labor_amount){
+		frappe.model.set_value(d.doctype, d.name, "labor_cost", flt(labor_amount,2));
+	}
+	
+        if(d.manufacturing_overhead) {
+		frappe.call({
+			doc: frm.doc,
+			method: "get_settings",
+			callback: function(r) {
+				if (r.message) {
+					frappe.model.set_value(d.doctype, d.name, "percent", r.message);
+					let overhead_amount = 0.01 * flt(r.message) * flt(labor_amount);
+					frappe.model.set_value(d.doctype, d.name, "overhead_amount", overhead_amount); 
+				}
+			}
+		});
+	}
+}
+
+frappe.ui.form.on("Cost Component Item", "labor_cost", function(frm, cdt, cdn) {
+	erpnext.bom.calculate_op_cost(frm.doc);
+	erpnext.bom.calculate_total(frm.doc);
+});
+
 
 frappe.ui.form.on("BOM Item", {
 	do_not_explode: function (frm, cdt, cdn) {

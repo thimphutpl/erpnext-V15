@@ -1,0 +1,331 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "SITE.YY.MM.#####",
+ "creation": "2025-08-27 20:46:37.072393",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "sb_site_details",
+  "site_type",
+  "purpose",
+  "enabled",
+  "column_break_15",
+  "product_category",
+  "sb_customer_details",
+  "user",
+  "full_name",
+  "customer",
+  "site_registration",
+  "column_break_0",
+  "customer_type",
+  "customer_group",
+  "territory",
+  "sb_construction_details",
+  "construction_type",
+  "construction_start_date",
+  "construction_end_date",
+  "extension_till_date",
+  "number_of_floors",
+  "column_break_12",
+  "approval_no",
+  "approval_document",
+  "extension_approval_document",
+  "sb_location",
+  "dzongkhag",
+  "gewog",
+  "plot_no",
+  "column_break_3",
+  "location",
+  "latitude",
+  "longitude",
+  "sb_materials",
+  "items",
+  "sb_private_pool",
+  "allow_private_pool",
+  "private_pool",
+  "sb_distance",
+  "distance",
+  "sb_remarks",
+  "remarks"
+ ],
+ "fields": [
+  {
+   "fieldname": "sb_site_details",
+   "fieldtype": "Section Break",
+   "label": "SITE DETAILS"
+  },
+  {
+   "fieldname": "site_type",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Site Type",
+   "options": "Site Type",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "purpose",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Purpose",
+   "options": "Site Purpose"
+  },
+  {
+   "default": "1",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Enabled"
+  },
+  {
+   "fieldname": "column_break_15",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "product_category",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Registered For Product",
+   "options": "Product Category",
+   "reqd": 1,
+   "set_only_once": 1
+  },
+  {
+   "fieldname": "sb_customer_details",
+   "fieldtype": "Section Break",
+   "label": "CUSTOMER DETAILS"
+  },
+  {
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Customer ID",
+   "options": "User",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "full_name",
+   "fieldtype": "Read Only",
+   "label": "Customer Name",
+   "options": "user.full_name"
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "label": "Customer",
+   "options": "Customer",
+   "read_only": 1
+  },
+  {
+   "fieldname": "site_registration",
+   "fieldtype": "Link",
+   "label": "Site Registration Request",
+   "options": "Site Registration",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_0",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "customer_type",
+   "fieldtype": "Select",
+   "label": "Customer Type",
+   "options": "\nDomestic Customer\nInternational Customer",
+   "read_only": 1
+  },
+  {
+   "fieldname": "customer_group",
+   "fieldtype": "Link",
+   "label": "Customer Group",
+   "options": "Customer Group",
+   "read_only": 1
+  },
+  {
+   "fieldname": "territory",
+   "fieldtype": "Link",
+   "label": "Territory",
+   "options": "Territory",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sb_construction_details",
+   "fieldtype": "Section Break",
+   "label": "CONSTRUCTION DETAILS"
+  },
+  {
+   "fieldname": "construction_type",
+   "fieldtype": "Link",
+   "label": "Construction Type",
+   "options": "Construction Type",
+   "reqd": 1
+  },
+  {
+   "fieldname": "construction_start_date",
+   "fieldtype": "Date",
+   "label": "Construction Start Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "construction_end_date",
+   "fieldtype": "Date",
+   "label": "Construction End Date",
+   "reqd": 1
+  },
+  {
+   "depends_on": "eval:doc.construction_end_date != doc.extension_till_date",
+   "fieldname": "extension_till_date",
+   "fieldtype": "Date",
+   "label": "Extension Till Date",
+   "read_only": 1
+  },
+  {
+   "fieldname": "number_of_floors",
+   "fieldtype": "Data",
+   "label": "Number of Floors"
+  },
+  {
+   "fieldname": "column_break_12",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "approval_no",
+   "fieldtype": "Data",
+   "label": "Construction Approval No.",
+   "reqd": 1
+  },
+  {
+   "fieldname": "approval_document",
+   "fieldtype": "Attach",
+   "hidden": 1,
+   "label": "Construction Approval Document"
+  },
+  {
+   "fieldname": "extension_approval_document",
+   "fieldtype": "Attach",
+   "hidden": 1,
+   "label": "Extension Approval Document",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sb_location",
+   "fieldtype": "Section Break",
+   "label": "SITE LOCATION DETAILS"
+  },
+  {
+   "fieldname": "dzongkhag",
+   "fieldtype": "Link",
+   "label": "Dzongkhag",
+   "options": "Dzongkhags",
+   "reqd": 1
+  },
+  {
+   "fieldname": "gewog",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Gewog",
+   "options": "Gewogs"
+  },
+  {
+   "fieldname": "plot_no",
+   "fieldtype": "Data",
+   "label": "Plot/Thram No."
+  },
+  {
+   "fieldname": "column_break_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "location",
+   "fieldtype": "Small Text",
+   "label": "Location of Construction Site"
+  },
+  {
+   "fieldname": "latitude",
+   "fieldtype": "Data",
+   "label": "Latitude"
+  },
+  {
+   "fieldname": "longitude",
+   "fieldtype": "Data",
+   "label": "Longitude"
+  },
+  {
+   "fieldname": "sb_materials",
+   "fieldtype": "Section Break",
+   "label": "MATERIAL DETAILS"
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "label": "materials",
+   "options": "Site Item",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sb_private_pool",
+   "fieldtype": "Section Break",
+   "label": "PRIVATE POOL DETAILS"
+  },
+  {
+   "default": "0",
+   "fieldname": "allow_private_pool",
+   "fieldtype": "Check",
+   "label": "Allow Private Pool ?"
+  },
+  {
+   "fieldname": "private_pool",
+   "fieldtype": "Table",
+   "label": "Private Pool",
+   "options": "Site Private Pool"
+  },
+  {
+   "fieldname": "sb_distance",
+   "fieldtype": "Section Break",
+   "label": "DISTANCE TO CUSTOMER SITE FROM SOURCE BRANCHES"
+  },
+  {
+   "fieldname": "distance",
+   "fieldtype": "Table",
+   "options": "Site Distance"
+  },
+  {
+   "fieldname": "sb_remarks",
+   "fieldtype": "Section Break",
+   "label": "REMARKS"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Long Text"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-08-27 22:02:21.001101",
+ "modified_by": "Administrator",
+ "module": "CRM",
+ "name": "Site",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

@@ -50,11 +50,7 @@ def get_returned_materials(work_orders):
 
 	raw_materials = frappe.get_all(
 		"Stock Entry",
-		fields=[
-			"`tabStock Entry`.`work_order`",
-			"`tabStock Entry Detail`.`item_code`",
-			"`tabStock Entry Detail`.`qty`",
-		],
+		fields=["`tabStock Entry Detail`.`item_code`", "`tabStock Entry Detail`.`qty`"],
 		filters=[
 			["Stock Entry", "is_return", "=", 1],
 			["Stock Entry Detail", "docstatus", "=", 1],
@@ -63,14 +59,12 @@ def get_returned_materials(work_orders):
 	)
 
 	for d in raw_materials:
-		key = (d.work_order, d.item_code)
-		raw_materials_qty[key] += d.qty
+		raw_materials_qty[d.item_code] += d.qty
 
 	for row in work_orders:
 		row.returned_qty = 0.0
-		key = (row.parent, row.raw_material_item_code)
-		if raw_materials_qty.get(key):
-			row.returned_qty = raw_materials_qty.get(key)
+		if raw_materials_qty.get(row.raw_material_item_code):
+			row.returned_qty = raw_materials_qty.get(row.raw_material_item_code)
 
 
 def get_fields():

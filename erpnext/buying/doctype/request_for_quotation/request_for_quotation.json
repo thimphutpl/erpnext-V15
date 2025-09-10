@@ -2,7 +2,7 @@
  "actions": [],
  "allow_import": 1,
  "autoname": "naming_series:",
- "creation": "2016-02-25 01:24:07.224790",
+ "creation": "2025-07-22 12:08:06.804976",
  "doctype": "DocType",
  "document_type": "Document",
  "engine": "InnoDB",
@@ -16,7 +16,6 @@
   "transaction_date",
   "schedule_date",
   "status",
-  "has_unit_price_items",
   "amended_from",
   "suppliers_section",
   "suppliers",
@@ -39,8 +38,13 @@
   "printing_settings",
   "select_print_heading",
   "letter_head",
+  "column_break_jfqx",
+  "quotation_header_and_footer_section",
+  "header_text",
+  "footer_text",
   "more_info",
-  "opportunity"
+  "opportunity",
+  "amended_from"
  ],
  "fields": [
   {
@@ -51,7 +55,7 @@
    "no_copy": 1,
    "oldfieldname": "naming_series",
    "oldfieldtype": "Select",
-   "options": "PUR-RFQ-.YYYY.-",
+   "options": "\nConsumables\nFixed Asset\nSales Product\nSpareparts\nServices Miscellaneous\nServices Works\nLabour Contract\nPUR-RFQ-.YYYY.-",
    "print_hide": 1,
    "reqd": 1,
    "set_only_once": 1
@@ -107,8 +111,7 @@
    "fieldtype": "Table",
    "label": "Suppliers",
    "options": "Request for Quotation Supplier",
-   "print_hide": 1,
-   "reqd": 1
+   "print_hide": 1
   },
   {
    "fieldname": "items_section",
@@ -264,6 +267,7 @@
   {
    "fieldname": "incoterm",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Incoterm",
    "options": "Incoterm"
   },
@@ -271,6 +275,7 @@
    "depends_on": "incoterm",
    "fieldname": "named_place",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Named Place"
   },
   {
@@ -309,25 +314,44 @@
    "read_only": 1
   },
   {
-   "default": "0",
-   "fieldname": "has_unit_price_items",
-   "fieldtype": "Check",
-   "hidden": 1,
-   "label": "Has Unit Price Items",
-   "no_copy": 1
+   "fieldname": "quotation_header_and_footer_section",
+   "fieldtype": "Section Break",
+   "label": "Quotation Header and Footer"
+  },
+  {
+   "fieldname": "column_break_jfqx",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "header_text",
+   "fieldtype": "Text Editor",
+   "label": "Header"
+  },
+  {
+   "fieldname": "footer_text",
+   "fieldtype": "Text Editor",
+   "label": "Footer"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Request for Quotation",
+   "print_hide": 1,
+   "read_only": 1
   }
  ],
- "grid_page_length": 50,
  "icon": "fa fa-shopping-cart",
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-03-03 16:48:39.856779",
- "modified_by": "Administrator",
+ "modified": "2025-07-22 12:08:06.804976",
+ "modified_by": "kalden.dorji@thimphutechpark.bt",
  "module": "Buying",
  "name": "Request for Quotation",
  "naming_rule": "By \"Naming Series\" field",
- "owner": "Administrator",
+ "owner": "kalden.dorji@thimphutechpark.bt",
  "permissions": [
   {
    "amend": 1,

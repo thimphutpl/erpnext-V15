@@ -1,0 +1,128 @@
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+import frappe
+from frappe import _
+from frappe.utils import get_bench_path
+import logging
+import sys
+import smpplib.gsm
+import smpplib.client
+import smpplib.consts
+import time
+from datetime import datetime
+
+def SendSMS(sender, receiver, message, debug=0):
+    doc = frappe.get_single("SMS Settings")
+    SENDER_ID =  str(sender)
+    DESTINATION_NO = str(receiver)
+    MESSAGE   = str(message)
+    flag	  = 0
+    timestamp = datetime.now().strftime("%Y%m%d")
+    
+    if not sender or not receiver or not message:
+        return flag
+    elif len(str(receiver)[-8:]) < 8:
+        return flag
+    elif str(receiver)[-8:][:2] not in ('17','16','77'):
+        return flag
+    else:
+        DESTINATION_NO = "975"+str(DESTINATION_NO)[-8:]
+
+    con = frappe.db.sql("""SELECT *
+                FROM `tabSMS Connectivity`
+                WHERE destination = SUBSTR('{}',1,LENGTH(destination))
+                LIMIT 1""".format(DESTINATION_NO), as_dict=True)
+    if not con:
+        return flag
+
+    SMSC_HOST = con[0].smsc_host
+    SMSC_PORT = con[0].smsc_port
+    SYSTEM_ID = con[0].system_id
+    SYSTEM_PASS = con[0].system_pass
+    USER_TYPE = con[0].user_type
+    
+
+    
+
+    try:
+        # if you want to know what's happening
+        if debug:
+            log_file = str(get_bench_path())+'/logs/sms_smpp_{0}.log'.format(timestamp)
+            logging.basicConfig(filename=log_file, filemode='w', level='DEBUG')
+            logger = logging.getLogger(__name__)
+            logger.info("MSISDN: {}".format(DESTINATION_NO))
+            logger.info("TRANSACTION_TIME: {}".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+
+        # Two parts, UCS2, SMS with UDH
+        parts, encoding_flag, msg_type_flag = smpplib.gsm.make_parts(MESSAGE)
+
+        client = smpplib.client.Client(SMSC_HOST, int(SMSC_PORT))
+
+        # Print when obtain message_id
+        client.set_message_sent_handler(
+            lambda pdu: sys.stdout.write('sent {} {}\n'.format(pdu.sequence, pdu.message_id))
+        )
+        client.set_message_received_handler(
+            lambda pdu: sys.stdout.write('delivered {}\n'.format(pdu.receipted_message_id))
+        )
+
+        client.connect()
+        if USER_TYPE == "bind_transceiver":
+            client.bind_transceiver(system_id=SYSTEM_ID, password=SYSTEM_PASS)
+        if USER_TYPE == "bind_transmitter":
+            client.bind_transmitter(system_id=SYSTEM_ID, password=SYSTEM_PASS)
+
+        for part in parts:
+            pdu = client.send_message(
+                source_addr_ton=5,
+                #source_addr_ton=smpplib.consts.SMPP_TON_INTL,
+                #source_addr_npi=smpplib.consts.SMPP_NPI_ISDN,
+                # Make sure it is a byte string, not unicode:
+                source_addr=str(SENDER_ID),
+                dest_addr_ton=5,
+                #dest_addr_ton=smpplib.consts.SMPP_TON_INTL,
+                #dest_addr_npi=smpplib.consts.SMPP_NPI_ISDN,
+                # Make sure thease two params are byte strings, not unicode:
+                destination_addr=str(DESTINATION_NO),
+                short_message=part,
+                data_coding=encoding_flag,
+                esm_class=msg_type_flag,
+                registered_delivery=True,
+            )
+            print(pdu.sequence)
+            client.read_pdu()
+            #client.listen()
+        client.unbind()
+        #client.disconnect()
+        flag = 1
+    except ValueError as e:
+        print(e)
+        pass
+    except Exception as e:
+        import traceback
+        print("Unexpected Exception:", str(e))
+        traceback.print_exc()
+        pass
+    print(flag)
+    return flag
+
+def test():
+    client = smpplib.client.Client('119.2.115.41', 9000)
+    client.connect()
+
+    # Set SMPP version (optional, default is 3.4)
+    # client.set_message_seqnum(1)  # sequence number for messages, required
+    client.interface_version = 0x33  # 0x33 = SMPP v3.3
+    try:
+        client.bind_transceiver(system_id=''.strip(), password=''.strip())
+        
+        print("Bind successful")
+    except Exception as e:
+        print("Bind failed:", e)
+    finally:
+        try:
+            client.unbind()
+            client.disconnect()
+        except:
+            pass
+

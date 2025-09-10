@@ -9,6 +9,7 @@
  "field_order": [
   "stock_entry_details_tab",
   "naming_series",
+  "branch",
   "stock_entry_type",
   "outgoing_stock_entry",
   "purpose",
@@ -49,6 +50,7 @@
   "target_warehouse_address",
   "target_address_display",
   "sb0",
+  "column_break_aivi",
   "scan_barcode",
   "items_section",
   "items",
@@ -127,7 +129,7 @@
    "label": "Purpose",
    "oldfieldname": "purpose",
    "oldfieldtype": "Select",
-   "options": "Material Issue\nMaterial Receipt\nMaterial Transfer\nMaterial Transfer for Manufacture\nMaterial Consumption for Manufacture\nManufacture\nRepack\nSend to Subcontractor\nDisassemble",
+   "options": "Material Issue\nMaterial Receipt\nMaterial Transfer\nCSR\nMaterial Transfer for Manufacture\nManufacture",
    "read_only": 1,
    "search_index": 1
   },
@@ -303,6 +305,7 @@
    "depends_on": "from_warehouse",
    "fieldname": "source_warehouse_address",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Source Warehouse Address Link",
    "options": "Address"
   },
@@ -350,6 +353,7 @@
   {
    "fieldname": "scan_barcode",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Scan Barcode",
    "options": "Barcode"
   },
@@ -690,6 +694,23 @@
    "fieldtype": "Tab Break",
    "label": "Connections",
    "show_dashboard": 1
+  },
+  {
+   "fieldname": "column_break_aivi",
+   "fieldtype": "Column Break",
+   "hidden": 1
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "label": "Branch",
+   "no_copy": 1,
+   "oldfieldname": "naming_series",
+   "oldfieldtype": "Select",
+   "options": "Branch",
+   "print_hide": 1,
+   "reqd": 1,
+   "set_only_once": 1
   }
  ],
  "icon": "fa fa-file-text",
@@ -697,7 +718,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-08-13 19:05:42.386955",
+ "modified": "2025-08-05 12:10:21.733862",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Stock Entry",
@@ -763,6 +784,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "search_fields": "posting_date, from_warehouse, to_warehouse, purpose, remarks",
  "show_name_in_global_search": 1,
  "sort_field": "modified",

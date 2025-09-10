@@ -1,0 +1,88 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-11-03 19:13:03.627854",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "equipment",
+  "registration_number",
+  "column_break_ianu",
+  "hsd_type",
+  "hsd_name",
+  "column_break_jtxl",
+  "system_balance",
+  "balance"
+ ],
+ "fields": [
+  {
+   "fieldname": "equipment",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Equipment",
+   "options": "Equipment",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_ianu",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "hsd_type",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "HSD Type",
+   "options": "Item",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "hsd_type.item_name",
+   "fieldname": "hsd_name",
+   "fieldtype": "Read Only",
+   "in_list_view": 1,
+   "label": "HSD Name",
+   "options": "hsd_type.item_name"
+  },
+  {
+   "fieldname": "column_break_jtxl",
+   "fieldtype": "Column Break"
+  },
+  {
+   "columns": 1,
+   "fieldname": "balance",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Physical Balance",
+   "reqd": 1
+  },
+  {
+   "columns": 1,
+   "fieldname": "system_balance",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "System Balance as of Date",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "equipment.engine_number",
+   "fieldname": "registration_number",
+   "fieldtype": "Read Only",
+   "in_list_view": 1,
+   "label": "Equipment Number",
+   "options": "equipment.equipment_number"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2024-11-26 09:56:39.123131",
+ "modified_by": "Administrator",
+ "module": "Fleet Management",
+ "name": "HSD Adjustment Item",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

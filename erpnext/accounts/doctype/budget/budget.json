@@ -7,10 +7,10 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "naming_series",
   "budget_against",
   "company",
   "cost_center",
+  "naming_series",
   "project",
   "fiscal_year",
   "column_break_3",
@@ -100,6 +100,7 @@
   {
    "fieldname": "section_break_6",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Control Action"
   },
   {
@@ -156,7 +157,8 @@
   },
   {
    "fieldname": "section_break_16",
-   "fieldtype": "Section Break"
+   "fieldtype": "Section Break",
+   "hidden": 1
   },
   {
    "default": "0",
@@ -195,19 +197,19 @@
   },
   {
    "fieldname": "naming_series",
-   "fieldtype": "Select",
+   "fieldtype": "Data",
+   "hidden": 1,
    "label": "Series",
    "no_copy": 1,
-   "options": "BUDGET-.YYYY.-",
    "print_hide": 1,
-   "reqd": 1,
+   "read_only": 1,
    "set_only_once": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-06-16 15:57:13.114981",
+ "modified": "2025-05-06 13:38:30.539420",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Budget",

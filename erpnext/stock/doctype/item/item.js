@@ -7,35 +7,6 @@ const SALES_DOCTYPES = ["Quotation", "Sales Order", "Delivery Note", "Sales Invo
 const PURCHASE_DOCTYPES = ["Purchase Order", "Purchase Receipt", "Purchase Invoice"];
 
 frappe.ui.form.on("Item", {
-	valuation_method(frm) {
-		if (!frm.is_new() && frm.doc.valuation_method === "Moving Average") {
-			let stock_exists = frm.doc.__onload && frm.doc.__onload.stock_exists ? 1 : 0;
-			let current_valuation_method = frm.doc.__onload.current_valuation_method;
-
-			if (stock_exists && current_valuation_method !== frm.doc.valuation_method) {
-				let msg = __(
-					"Changing the valuation method to Moving Average will affect new transactions. If backdated entries are added, earlier FIFO-based entries will be reposted, which may change closing balances."
-				);
-				msg += "<br>";
-				msg += __(
-					"Also you can't switch back to FIFO after setting the valuation method to Moving Average for this item."
-				);
-				msg += "<br>";
-				msg += __("Do you want to change valuation method?");
-
-				frappe.confirm(
-					msg,
-					() => {
-						frm.set_value("valuation_method", "Moving Average");
-					},
-					() => {
-						frm.set_value("valuation_method", current_valuation_method);
-					}
-				);
-			}
-		}
-	},
-
 	setup: function (frm) {
 		frm.add_fetch("attribute", "numeric_values", "numeric_values");
 		frm.add_fetch("attribute", "from_range", "from_range");
@@ -239,23 +210,39 @@ frappe.ui.form.on("Item", {
 	is_customer_provided_item: function (frm) {
 		frm.toggle_reqd("customer", frm.doc.is_customer_provided_item ? 1 : 0);
 	},
+	item_group: function (frm) {
 
-	is_fixed_asset: function (frm) {
-		// set serial no to false & toggles its visibility
-		frm.set_value("has_serial_no", 0);
-		frm.set_value("has_batch_no", 0);
-		frm.toggle_enable(["has_serial_no", "serial_no_series"], !frm.doc.is_fixed_asset);
-
-		frappe.call({
-			method: "erpnext.stock.doctype.item.item.get_asset_naming_series",
-			callback: function (r) {
-				frm.set_value("is_stock_item", frm.doc.is_fixed_asset ? 0 : 1);
-				frm.events.set_asset_naming_series(frm, r.message);
-			},
-		});
-
-		frm.trigger("auto_create_assets");
+		
+		// frappe.call({
+		// 	method: "erpnext.stock.doctype.item.item.get_is_fixed_asset",
+		// 	args: {
+		// 		item_group: frm.doc.item_group,
+		// 	},
+		// 	callback: function (r) {
+		// 		frm.set_value("is_fixed_asset", r.message ? 1 : 0);
+		// 		frm.set_value("is_stock_item", frm.doc.is_fixed_asset ? 0 : 1);
+		// 	},
+		// });
+		if (frm.doc.item_group === 'Fixed Asset'){
+			frm.set_value("is_fixed_asset", 1);
+		} 
 	},
+	// is_fixed_asset: function (frm) {
+	// 	// set serial no to false & toggles its visibility
+	// 	frm.set_value("has_serial_no", 0);
+	// 	frm.set_value("has_batch_no", 0);
+	// 	frm.toggle_enable(["has_serial_no", "serial_no_series"], !frm.doc.is_fixed_asset);
+
+	// 	frappe.call({
+	// 		method: "erpnext.stock.doctype.item.item.get_asset_naming_series",
+	// 		callback: function (r) {
+	// 			frm.set_value("is_stock_item", frm.doc.is_fixed_asset ? 0 : 1);
+	// 			frm.events.set_asset_naming_series(frm, r.message);
+	// 		},
+	// 	});
+
+	// 	frm.trigger("auto_create_assets");
+	// },
 
 	set_asset_naming_series: function (frm, asset_naming_series) {
 		if ((frm.doc.__onload && frm.doc.__onload.asset_naming_series) || asset_naming_series) {
@@ -288,6 +275,7 @@ frappe.ui.form.on("Item", {
 		erpnext.item.toggle_attributes(frm);
 	},
 });
+
 
 frappe.ui.form.on("Item Reorder", {
 	reorder_levels_add: function (frm, cdt, cdn) {
@@ -406,7 +394,11 @@ $.extend(erpnext.item, {
 
 		frm.fields_dict["item_group"].get_query = function (doc, cdt, cdn) {
 			return {
-				filters: [["Item Group", "docstatus", "!=", 2]],
+				filters: [
+					["Item Group", "is_group", "=", 1],
+					["Item Group", "parent_item_group", "!=", ""],
+					["Item Group", "docstatus", "!=", 2],
+				],
 			};
 		};
 

@@ -22,13 +22,13 @@ erpnext.setup.EmployeeController = class EmployeeController extends frappe.ui.fo
 
 frappe.ui.form.on("Employee", {
 	onload: function (frm) {
-		frm.set_query("department", function () {
-			return {
-				filters: {
-					company: frm.doc.company,
-				},
-			};
-		});
+		// frm.set_query("department", function () {
+		// 	return {
+		// 		filters: {
+		// 			company: frm.doc.company,
+		// 		},
+		// 	};
+		// });
 	},
 	prefered_contact_email: function (frm) {
 		frm.events.update_contact(frm);

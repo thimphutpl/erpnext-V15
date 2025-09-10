@@ -9,7 +9,7 @@ from frappe.permissions import (
 	has_permission,
 	remove_user_permission,
 )
-from frappe.utils import cstr, getdate, today, validate_email_address
+from frappe.utils import flt, cstr, getdate, today, validate_email_address
 from frappe.utils.nestedset import NestedSet
 
 from erpnext.utilities.transaction_base import delete_events
@@ -26,11 +26,26 @@ class InactiveEmployeeStatusError(frappe.ValidationError):
 class Employee(NestedSet):
 	nsm_parent_field = "reports_to"
 
-	def autoname(self):
-		set_name_by_naming_series(self)
-		self.employee = self.name
-
+	# def autoname(self):
+	# 	set_name_by_naming_series(self)
+	# 	self.employee = self.name
+		
 	def validate(self):
+		#frappe.log_error()
+		self.ignore_linked_doctypes = (
+			"Department",
+			"Stock Ledger Entry",
+			
+		)
+		joining_date = getdate(self.date_of_joining)
+		month = str(joining_date.month).zfill(2)
+		year = str(joining_date.year)[2:]
+
+		# Construct the full naming pattern
+		
+		#self.naming_series = self.naming_series + year + month 
+		#set_name_by_naming_series(self)
+		
 		from erpnext.controllers.status_updater import validate_status
 
 		validate_status(self.status, ["Active", "Inactive", "Suspended", "Left"])
@@ -41,14 +56,20 @@ class Employee(NestedSet):
 		self.validate_email()
 		self.validate_status()
 		self.validate_reports_to()
-		self.set_preferred_email()
 		self.validate_preferred_email()
+		
 
 		if self.user_id:
+			
 			self.validate_user_details()
 		else:
+			
 			existing_user_id = frappe.db.get_value("Employee", self.name, "user_id")
+			# frappe.throw(str(existing_user_id))
+			#frappe.log_error(str(existing_user_id))
+
 			if existing_user_id:
+				
 				user = frappe.get_doc("User", existing_user_id)
 				validate_employee_role(user, ignore_emp_check=True)
 				user.save(ignore_permissions=True)
@@ -58,49 +79,54 @@ class Employee(NestedSet):
 		self.db_set("employee", new)
 
 	def set_employee_name(self):
+		
 		self.employee_name = " ".join(
 			filter(lambda x: x, [self.first_name, self.middle_name, self.last_name])
 		)
+		
 
 	def validate_user_details(self):
 		if self.user_id:
-			data = frappe.db.get_value("User", self.user_id, ["enabled"], as_dict=1)
+			
+			data = frappe.db.get_value("User", self.user_id, ["enabled", "user_image"], as_dict=1)
 
 			if not data:
 				self.user_id = None
 				return
 
+			if data.get("user_image") and self.image == "":
+				self.image = data.get("user_image")
+			
 			self.validate_for_enabled_user_id(data.get("enabled", 0))
 			self.validate_duplicate_user_id()
 
 	def update_nsm_model(self):
+		
 		frappe.utils.nestedset.update_nsm(self)
-
+	
 	def on_update(self):
+	
 		self.update_nsm_model()
-		frappe.clear_cache()
 		if self.user_id:
 			self.update_user()
 			self.update_user_permissions()
 		self.reset_employee_emails_cache()
 
 	def update_user_permissions(self):
-		if not self.has_value_changed("user_id") and not self.has_value_changed("create_user_permission"):
+		if not self.create_user_permission:
 			return
-
-		if not has_permission("User Permission", ptype="write", raise_exception=False):
+		if not has_permission("User Permission", ptype="write", print_logs=False):
 			return
 
 		employee_user_permission_exists = frappe.db.exists(
 			"User Permission", {"allow": "Employee", "for_value": self.name, "user": self.user_id}
 		)
 
-		if employee_user_permission_exists and not self.create_user_permission:
-			remove_user_permission("Employee", self.name, self.user_id)
-			remove_user_permission("Company", self.company, self.user_id)
-		elif not employee_user_permission_exists and self.create_user_permission:
-			add_user_permission("Employee", self.name, self.user_id)
-			add_user_permission("Company", self.company, self.user_id)
+		if employee_user_permission_exists:
+			return
+
+		add_user_permission("Employee", self.name, self.user_id)
+		add_user_permission("Company", self.company, self.user_id)
 
 	def update_user(self):
 		# add employee role if missing
@@ -112,6 +138,7 @@ class Employee(NestedSet):
 
 		# copy details like Fullname, DOB and Image to User
 		if self.employee_name and not (user.first_name and user.last_name):
+			
 			employee_name = self.employee_name.split(" ")
 			if len(employee_name) >= 3:
 				user.last_name = " ".join(employee_name[2:])
@@ -128,7 +155,7 @@ class Employee(NestedSet):
 			user.gender = self.gender
 
 		if self.image:
-			if not user.user_image:
+			if not user.user_image or self.has_value_changed("image"):
 				user.user_image = self.image
 				try:
 					frappe.get_doc(
@@ -162,7 +189,9 @@ class Employee(NestedSet):
 
 	def set_preferred_email(self):
 		preferred_email_field = frappe.scrub(self.prefered_contact_email)
-		self.prefered_email = self.get(preferred_email_field) if preferred_email_field else None
+		if preferred_email_field:
+			preferred_email = self.get(preferred_email_field)
+			self.prefered_email = preferred_email
 
 	def validate_status(self):
 		if self.status == "Left":
@@ -187,7 +216,8 @@ class Employee(NestedSet):
 				throw(_("Please enter relieving date."))
 
 	def validate_for_enabled_user_id(self, enabled):
-		if not self.status == "Active":
+		
+		if self.status != "Active":
 			return
 
 		if enabled is None:
@@ -253,8 +283,9 @@ def validate_employee_role(doc, method=None, ignore_emp_check=False):
 
 def update_user_permissions(doc, method):
 	# called via User hook
+	
 	if "Employee" in [d.role for d in doc.get("roles")]:
-		if not has_permission("User Permission", ptype="write", raise_exception=False):
+		if not has_permission("User Permission", ptype="write"):
 			return
 		employee = frappe.get_doc("Employee", {"user_id": doc.name})
 		employee.update_user_permissions()
@@ -310,6 +341,14 @@ def is_holiday(employee, date=None, raise_exception=True, only_non_weekly=False,
 		return len(holidays) > 0, holidays
 
 	return len(holidays) > 0
+
+@frappe.whitelist()
+def get_overtime_rate(employee):
+		basic = frappe.db.sql("select a.amount as basic_pay from `tabSalary Detail` a, `tabSalary Structure` b where a.parent = b.name and a.salary_component = 'Basic Pay' and b.is_active = 'Yes' and b.employee = \'" + str(employee) + "\'", as_dict=True)
+		if basic:
+			return flt(((basic[0].basic_pay) * 1.5) / (30 * 8))
+		else:
+			frappe.throw("No Salary Structure foudn for the employee")
 
 
 @frappe.whitelist()
@@ -432,8 +471,58 @@ def has_user_permission_for_employee(user_name, employee_name):
 
 
 def has_upload_permission(doc, ptype="read", user=None):
+	
 	if not user:
 		user = frappe.session.user
 	if get_doc_permissions(doc, user=user, ptype=ptype).get(ptype):
 		return True
 	return doc.user_id == user
+
+
+def get_permission_query_conditions(user):
+	
+	if not user: user = frappe.session.user
+	user_roles = frappe.get_roles(user)
+	if "HR User" in user_roles or "HR Manager" in user_roles or "Accounts User" in user_roles or "CEO" in user_roles:
+		
+		return
+	if "Management" in user_roles:
+		
+		return """(
+			name in (select e1.name
+				from `tabEmployee` as e1, `tabEmployee` as e2
+				where e1.name = e2.name
+				and e1.user_id = '{user}')
+			or
+			name in (select e.name
+				from `tabEmployee` e
+				where e.branch in (
+					select bi.branch
+					from `tabEmployee` a, `tabAssign Branch` ab, `tabBranch Item` bi
+					where a.user_id = '{user}'
+					and ab.employee = a.name
+					and bi.parent = ab.name
+				))
+		)""".format(user=user)
+	else:
+		
+		return """(
+			name in (select e1.name
+				from `tabEmployee` as e1, `tabEmployee` as e2
+				where e1.name = e2.name
+				and e1.user_id = '{user}')
+		)""".format(user=user)
+
+def has_record_permission(doc, user):
+	
+	if not user: user = frappe.session.user
+	user_roles = frappe.get_roles(user)
+
+	if "HR User" in user_roles or "HR Manager" in user_roles:
+		return True
+	else:			
+		if frappe.db.exists("Employee", {"name":doc.name, "user_id": user}):
+			return True
+		else:
+			return False 
+		

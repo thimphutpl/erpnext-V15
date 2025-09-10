@@ -35,6 +35,7 @@ def execute(filters=None):
 		filters=filters,
 		accumulated_values=filters.accumulated_values,
 		ignore_closing_entries=True,
+		ignore_accumulated_values_for_fy=True,
 	)
 
 	expense = get_data(
@@ -45,6 +46,7 @@ def execute(filters=None):
 		filters=filters,
 		accumulated_values=filters.accumulated_values,
 		ignore_closing_entries=True,
+		ignore_accumulated_values_for_fy=True,
 	)
 
 	net_profit_loss = get_net_profit_loss(

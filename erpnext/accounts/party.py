@@ -71,7 +71,6 @@ def get_party_details(
 	party_address=None,
 	company_address=None,
 	shipping_address=None,
-	dispatch_address=None,
 	pos_profile=None,
 ):
 	if not party:
@@ -93,7 +92,6 @@ def get_party_details(
 		party_address,
 		company_address,
 		shipping_address,
-		dispatch_address,
 		pos_profile,
 	)
 
@@ -113,7 +111,6 @@ def _get_party_details(
 	party_address=None,
 	company_address=None,
 	shipping_address=None,
-	dispatch_address=None,
 	pos_profile=None,
 ):
 	party_details = frappe._dict(
@@ -137,7 +134,6 @@ def _get_party_details(
 		party_address,
 		company_address,
 		shipping_address,
-		dispatch_address,
 		ignore_permissions=ignore_permissions,
 	)
 	set_contact_details(party_details, party, party_type)
@@ -195,51 +191,34 @@ def set_address_details(
 	party_address=None,
 	company_address=None,
 	shipping_address=None,
-	dispatch_address=None,
 	*,
 	ignore_permissions=False,
 ):
-	# party_billing
-	party_billing_field = (
+	billing_address_field = (
 		"customer_address" if party_type in ["Lead", "Prospect"] else party_type.lower() + "_address"
 	)
-
-	party_details[party_billing_field] = party_address or get_default_address(party_type, party.name)
+	party_details[billing_address_field] = party_address or get_default_address(party_type, party.name)
 	if doctype:
 		party_details.update(
-			get_fetch_values(doctype, party_billing_field, party_details[party_billing_field])
+			get_fetch_values(doctype, billing_address_field, party_details[billing_address_field])
 		)
-
+	# address display
 	party_details.address_display = render_address(
-		party_details[party_billing_field], check_permissions=not ignore_permissions
+		party_details[billing_address_field], check_permissions=not ignore_permissions
 	)
-
-	# party_shipping
+	# shipping address
 	if party_type in ["Customer", "Lead"]:
-		party_shipping_field = "shipping_address_name"
-		party_shipping_display = "shipping_address"
-		default_shipping = shipping_address
-
-	else:
-		# Supplier
-		party_shipping_field = "dispatch_address"
-		party_shipping_display = "dispatch_address_display"
-		default_shipping = dispatch_address
-
-	party_details[party_shipping_field] = default_shipping or get_party_shipping_address(
-		party_type, party.name
-	)
-
-	party_details[party_shipping_display] = render_address(
-		party_details[party_shipping_field], check_permissions=not ignore_permissions
-	)
-
-	if doctype:
-		party_details.update(
-			get_fetch_values(doctype, party_shipping_field, party_details[party_shipping_field])
+		party_details.shipping_address_name = shipping_address or get_party_shipping_address(
+			party_type, party.name
 		)
+		party_details.shipping_address = render_address(
+			party_details["shipping_address_name"], check_permissions=not ignore_permissions
+		)
+		if doctype:
+			party_details.update(
+				get_fetch_values(doctype, "shipping_address_name", party_details.shipping_address_name)
+			)
 
-	# company_address
 	if company_address:
 		party_details.company_address = company_address
 	else:
@@ -277,20 +256,22 @@ def set_address_details(
 					**get_fetch_values(doctype, "shipping_address", party_details.billing_address),
 				)
 
-	party_billing, party_shipping = (
-		party_details.get(party_billing_field),
-		party_details.get(party_shipping_field),
+	party_address, shipping_address = (
+		party_details.get(billing_address_field),
+		party_details.shipping_address_name,
 	)
 
 	party_details["tax_category"] = get_address_tax_category(
-		party.get("tax_category"), party_billing, party_shipping
+		party.get("tax_category"),
+		party_address,
+		shipping_address if party_type != "Supplier" else party_address,
 	)
 
 	if doctype in TRANSACTION_TYPES:
 		with temporary_flag("company", company):
 			get_regional_address_details(party_details, doctype, company)
 
-	return party_billing, party_shipping
+	return party_address, shipping_address
 
 
 @erpnext.allow_regional
@@ -299,50 +280,32 @@ def get_regional_address_details(party_details, doctype, company):
 
 
 def complete_contact_details(party_details):
-	contact_details = frappe._dict()
-
-	if party_details.party_type == "Employee":
-		contact_details = frappe.db.get_value(
-			"Employee",
-			party_details.party,
-			[
-				"employee_name as contact_display",
-				"prefered_email as contact_email",
-				"cell_number as contact_mobile",
-				"designation as contact_designation",
-				"department as contact_department",
-			],
-			as_dict=True,
-		)
-
-		contact_details.update({"contact_person": None, "contact_phone": None})
-	elif party_details.contact_person:
-		contact_details = frappe.db.get_value(
-			"Contact",
-			party_details.contact_person,
-			[
-				"name as contact_person",
-				"full_name as contact_display",
-				"email_id as contact_email",
-				"mobile_no as contact_mobile",
-				"phone as contact_phone",
-				"designation as contact_designation",
-				"department as contact_department",
-			],
-			as_dict=True,
+	if not party_details.contact_person:
+		party_details.update(
+			{
+				"contact_person": None,
+				"contact_display": None,
+				"contact_email": None,
+				"contact_mobile": None,
+				"contact_phone": None,
+				"contact_designation": None,
+				"contact_department": None,
+			}
 		)
 	else:
-		contact_details = {
-			"contact_person": None,
-			"contact_display": None,
-			"contact_email": None,
-			"contact_mobile": None,
-			"contact_phone": None,
-			"contact_designation": None,
-			"contact_department": None,
-		}
+		fields = [
+			"name as contact_person",
+			"full_name as contact_display",
+			"email_id as contact_email",
+			"mobile_no as contact_mobile",
+			"phone as contact_phone",
+			"designation as contact_designation",
+			"department as contact_department",
+		]
 
-	party_details.update(contact_details)
+		contact_details = frappe.db.get_value("Contact", party_details.contact_person, fields, as_dict=True)
+
+		party_details.update(contact_details)
 
 
 def set_contact_details(party_details, party, party_type):
@@ -424,8 +387,6 @@ def get_party_account(party_type, party=None, company=None, include_advance=Fals
 	Will first search in party (Customer / Supplier) record, if not found,
 	will search in group (Customer Group / Supplier Group),
 	finally will return default."""
-	if not party_type:
-		frappe.throw(_("Party Type is mandatory"))
 	if not company:
 		frappe.throw(_("Please select a Company"))
 
@@ -461,12 +422,6 @@ def get_party_account(party_type, party=None, company=None, include_advance=Fals
 			account_currency = frappe.get_cached_value("Account", account, "account_currency")
 		if (account and account_currency != existing_gle_currency) or not account:
 			account = get_party_gle_account(party_type, party, company)
-
-	# get default account on the basis of party type
-	if not account:
-		account_type = frappe.get_cached_value("Party Type", party_type, "account_type")
-		default_account_name = "default_" + account_type.lower() + "_account"
-		account = frappe.get_cached_value("Company", company, default_account_name)
 
 	if include_advance and party_type in ["Customer", "Supplier", "Student"]:
 		advance_account = get_party_advance_account(party_type, party, company)
@@ -614,19 +569,20 @@ def validate_party_accounts(doc):
 
 		# validate if account is mapped for same company
 		if account.account:
-			validate_account_head(account.idx, account.account, account.company)
+			validate_account_head(account.idx, account.account, account.company, _("Debtor/Creditor"))
 		if account.advance_account:
-			validate_account_head(account.idx, account.advance_account, account.company)
+			validate_account_head(
+				account.idx, account.advance_account, account.company, _("Debtor/Creditor Advance")
+			)
 
 
 @frappe.whitelist()
-def get_due_date(posting_date, party_type, party, company=None, bill_date=None, template_name=None):
+def get_due_date(posting_date, party_type, party, company=None, bill_date=None):
 	"""Get due date from `Payment Terms Template`"""
 	due_date = None
 	if (bill_date or posting_date) and party:
 		due_date = bill_date or posting_date
-		if not template_name:
-			template_name = get_payment_terms_template(party, party_type, company)
+		template_name = get_payment_terms_template(party, party_type, company)
 
 		if template_name:
 			due_date = get_due_date_from_template(template_name, posting_date, bill_date).strftime("%Y-%m-%d")
@@ -667,12 +623,19 @@ def get_due_date_from_template(template_name, posting_date, bill_date):
 
 def validate_due_date(posting_date, due_date, bill_date=None, template_name=None, doctype=None):
 	if getdate(due_date) < getdate(posting_date):
-		frappe.throw(_("Due Date cannot be before Posting / Supplier Invoice Date"))
+		doctype_date = "Date"
+		if doctype == "Purchase Invoice":
+			doctype_date = "Supplier Invoice Date"
+
+		if doctype == "Sales Invoice":
+			doctype_date = "Posting Date"
+
+		frappe.throw(_("Due Date cannot be before {0}").format(doctype_date))
 	else:
-		validate_due_date_with_template(posting_date, due_date, bill_date, template_name, doctype)
+		validate_due_date_with_template(posting_date, due_date, bill_date, template_name)
 
 
-def validate_due_date_with_template(posting_date, due_date, bill_date, template_name, doctype=None):
+def validate_due_date_with_template(posting_date, due_date, bill_date, template_name):
 	if not template_name:
 		return
 
@@ -682,17 +645,17 @@ def validate_due_date_with_template(posting_date, due_date, bill_date, template_
 		return
 
 	if default_due_date != posting_date and getdate(due_date) > getdate(default_due_date):
-		if frappe.db.get_single_value("Accounts Settings", "credit_controller") in frappe.get_roles():
-			party_type = "supplier" if doctype == "Purchase Invoice" else "customer"
-
+		is_credit_controller = (
+			frappe.db.get_single_value("Accounts Settings", "credit_controller") in frappe.get_roles()
+		)
+		if is_credit_controller:
 			msgprint(
-				_("Note: Due Date exceeds allowed {0} credit days by {1} day(s)").format(
-					party_type, date_diff(due_date, default_due_date)
+				_("Note: Due Date exceeds allowed customer credit days by {0} day(s)").format(
+					date_diff(due_date, default_due_date)
 				)
 			)
-
 		else:
-			frappe.throw(_("Due / Reference Date cannot be after {0}").format(formatdate(default_due_date)))
+			frappe.throw(_("Due Date cannot be after {0}").format(formatdate(default_due_date)))
 
 
 @frappe.whitelist()
@@ -814,11 +777,11 @@ def validate_account_party_type(self):
 
 	if self.party_type and self.party:
 		account_type = frappe.get_cached_value("Account", self.account, "account_type")
-		if account_type and (account_type not in ["Receivable", "Payable", "Equity"]):
+		if account_type and (account_type not in ["Receivable", "Payable","Tax"]):
 			frappe.throw(
-				_("Party Type and Party can only be set for Receivable / Payable account<br><br>{0}").format(
-					self.account
-				)
+				_(
+					"Party Type and Party can only be set for Receivable / Payable account<br><br>" "{0}"
+				).format(self.account)
 			)
 
 
@@ -939,16 +902,12 @@ def get_party_shipping_address(doctype: str, name: str) -> str | None:
 			["is_shipping_address", "=", 1],
 			["address_type", "=", "Shipping"],
 		],
-		fields=["name", "is_shipping_address"],
+		pluck="name",
+		limit=1,
 		order_by="is_shipping_address DESC",
 	)
 
-	if shipping_addresses and shipping_addresses[0].is_shipping_address == 1:
-		return shipping_addresses[0].name
-	if len(shipping_addresses) == 1:
-		return shipping_addresses[0].name
-	else:
-		return None
+	return shipping_addresses[0] if shipping_addresses else None
 
 
 def get_partywise_advanced_payment_amount(

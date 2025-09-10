@@ -88,7 +88,6 @@ class StockLedgerEntry(Document):
 		self.flags.ignore_submit_comment = True
 		from erpnext.stock.utils import validate_disabled_warehouse, validate_warehouse_company
 
-		self.set_posting_datetime()
 		self.validate_mandatory()
 		self.validate_batch()
 		validate_disabled_warehouse(self.warehouse)
@@ -99,10 +98,15 @@ class StockLedgerEntry(Document):
 		self.validate_with_last_transaction_posting_time()
 		self.validate_inventory_dimension_negative_stock()
 
-	def set_posting_datetime(self):
+	def set_posting_datetime(self, save=False):
 		from erpnext.stock.utils import get_combine_datetime
 
-		self.posting_datetime = get_combine_datetime(self.posting_date, self.posting_time)
+		if save:
+			posting_datetime = get_combine_datetime(self.posting_date, self.posting_time)
+			if not self.posting_datetime or self.posting_datetime != posting_datetime:
+				self.db_set("posting_datetime", posting_datetime)
+		else:
+			self.posting_datetime = get_combine_datetime(self.posting_date, self.posting_time)
 
 	def validate_inventory_dimension_negative_stock(self):
 		if self.is_cancelled or self.actual_qty >= 0:
@@ -169,24 +173,21 @@ class StockLedgerEntry(Document):
 		return inv_dimension_dict
 
 	def on_submit(self):
+		self.set_posting_datetime(save=True)
 		self.check_stock_frozen_date()
-
 		# Added to handle few test cases where serial_and_batch_bundles are not required
 		if frappe.flags.in_test and frappe.flags.ignore_serial_batch_bundle_validation:
 			return
-
-		if self.is_adjustment_entry:
-			return
-
-		if not self.get("via_landed_cost_voucher"):
-			SerialBatchBundle(
-				sle=self,
-				item_code=self.item_code,
-				warehouse=self.warehouse,
-				company=self.company,
-			)
-
-		self.validate_serial_batch_no_bundle()
+		if self.voucher_type not in ('POL Receive','Production'):
+			if not self.get("via_landed_cost_voucher"):
+				SerialBatchBundle(
+					sle=self,
+					item_code=self.item_code,
+					warehouse=self.warehouse,
+					company=self.company,
+				)
+			
+			self.validate_serial_batch_no_bundle()
 
 	def validate_mandatory(self):
 		mandatory = ["warehouse", "posting_date", "voucher_type", "voucher_no", "company"]
@@ -348,4 +349,5 @@ class StockLedgerEntry(Document):
 def on_doctype_update():
 	frappe.db.add_index("Stock Ledger Entry", ["voucher_no", "voucher_type"])
 	frappe.db.add_index("Stock Ledger Entry", ["batch_no", "item_code", "warehouse"])
-	frappe.db.add_index("Stock Ledger Entry", ["item_code", "warehouse", "posting_datetime", "creation"])
+	frappe.db.add_index("Stock Ledger Entry", ["warehouse", "item_code"], "item_warehouse")
+	frappe.db.add_index("Stock Ledger Entry", ["posting_datetime", "creation"])
