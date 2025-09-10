@@ -20,6 +20,13 @@ frappe.ui.form.on('eNote', {
 				},
 			};
 		});
+		frm.set_query("branch", function () {
+			return {
+				filters: {
+					company: frm.doc.company,
+				},
+			};
+		});
 
 		
 

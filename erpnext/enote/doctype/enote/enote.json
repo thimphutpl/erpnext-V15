@@ -9,6 +9,7 @@
  "field_order": [
   "company",
   "department",
+  "branch",
   "enote_format",
   "title",
   "category",
@@ -191,12 +192,20 @@
    "in_list_view": 1,
    "label": "Department",
    "options": "Department"
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "ignore_user_permissions": 1,
+   "in_list_view": 1,
+   "label": "Branch",
+   "options": "Branch"
   }
  ],
  "icon": "fa fa-file-text",
  "is_submittable": 1,
  "links": [],
- "modified": "2025-09-09 10:35:35.320876",
+ "modified": "2025-09-10 17:30:51.221198",
  "modified_by": "Administrator",
  "module": "eNote",
  "name": "eNote",
