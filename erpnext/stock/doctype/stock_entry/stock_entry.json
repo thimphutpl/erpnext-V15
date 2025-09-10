@@ -28,6 +28,7 @@
   "col2",
   "branch",
   "cost_center",
+  "common",
   "column_break_eaoa",
   "posting_date",
   "posting_time",
@@ -103,6 +104,7 @@
    "oldfieldtype": "Select",
    "options": "MAT-STE-.YYYY.-",
    "print_hide": 1,
+   "read_only": 1,
    "reqd": 1,
    "set_only_once": 1
   },
@@ -732,6 +734,13 @@
    "label": "Cost Center",
    "options": "Cost Center",
    "read_only": 1
+  },
+  {
+   "fieldname": "common",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Common",
+   "options": "Business Activity"
   }
  ],
  "icon": "fa fa-file-text",
@@ -739,7 +748,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-09-24 10:11:00.820835",
+ "modified": "2025-09-10 11:40:45.450811",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Stock Entry",
