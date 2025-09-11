@@ -67,8 +67,6 @@ class VehicleRequest(Document):
 		if self.kilometer_reading:
 			if flt(self.previous_km) > flt(self.kilometer_reading):
 				frappe.throw("Kilometer reading must be greater than previous kilometer reading.")
-		if self.workflow_state != "Approved":
-			notify_workflow_states(self)
 		if self.workflow_state ==("Waiting Approval"):
 			if self.mode_of_travel != "Private Vehicle":
 				self.verifier= ''
@@ -82,7 +80,6 @@ class VehicleRequest(Document):
 
 	def on_submit(self):
 		self.notify_employee()
-
 	def on_cancel(self):
 		notify_workflow_states(self)
 		self.notify_employee()
