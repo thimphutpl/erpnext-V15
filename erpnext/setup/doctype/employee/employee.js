@@ -16,7 +16,7 @@ erpnext.setup.EmployeeController = class EmployeeController extends frappe.ui.fo
 	}
 
 	// refresh() {
-	// 	erpnext.toggle_naming_series();
+		// erpnext.toggle_naming_series();
 	// }
 
 	salutation() {
@@ -92,6 +92,29 @@ frappe.ui.form.on("Employee", {
 				};
 			}
 		});
+		frappe.call({
+			method: "check_logged_in_user_role_to_edit_data",
+			doc:frm.doc,
+			callback: function(r){     
+				console.log(r.message)
+				frm.set_df_property("status","read_only",r.message)
+				frm.set_df_property("employee","read_only",r.message)
+				frm.set_df_property("naming_series","read_only",r.message)
+				frm.set_df_property("gender","read_only",r.message)
+				frm.set_df_property("salutation","read_only",r.message)
+				frm.set_df_property("first_name","read_only",r.message)
+				frm.set_df_property("date_of_joining","read_only",r.message)
+				frm.set_df_property("middle_name","read_only",r.message)
+				frm.set_df_property("last_name","read_only",r.message)
+				frm.set_df_property("employee_name","read_only",r.message)
+				frm.set_df_property("old_id","read_only",r.message)
+				frm.set_df_property("employee_name","read_only",r.message)
+				frm.set_df_property("user_id","read_only",r.message)
+				frm.set_df_property("employment_type","read_only",r.message)
+				frm.set_df_property("employment_status","read_only",r.message)
+				frm.set_df_property("contract_summary","read_only",r.message)
+			}
+		})
 	},
 	refresh: function (frm) {
 		frm.set_query("division", function () {
@@ -210,3 +233,16 @@ frappe.tour['Employee'] = [
 		description: __("Here, you can select a senior of this Employee. Based on this, Organization Chart will be populated.")
 	},
 ];
+
+// var toggle_remarks_display = function(frm, ){
+// 	frm.set_df_property("supervisor_remarks","read_only",supervisor);
+// 	frm.set_df_property("supervisor_clearance","read_only",supervisor);
+// 	frm.set_df_property("finance_head_remarks","read_only",fd);
+// 	frm.set_df_property("finance_clearance","read_only",fd);
+// 	frm.set_df_property("erp_remarks","read_only",erp);
+// 	frm.set_df_property("erp_clearance","read_only",erp);
+// 	frm.set_df_property("hr_remarks","read_only",hra);
+// 	frm.set_df_property("hra_clearance","read_only",hra);
+// 	frm.set_df_property("adm_remarks","read_only",adm);
+// 	frm.set_df_property("adm_clearance","read_only",adm);
+// }

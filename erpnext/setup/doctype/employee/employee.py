@@ -320,7 +320,15 @@ class Employee(NestedSet):
 			frappe.cache().hdel("employees_with_number", cell_number)
 			frappe.cache().hdel("employees_with_number", prev_number)
 
-
+	@frappe.whitelist()
+	def check_logged_in_user_role_to_edit_data(self):
+		user = user = frappe.session.user
+		if user == "Administrator":
+			return 0
+		if "HR User" in frappe.get_roles(user) or "HR Manager" in frappe.get_roles(user):
+			return 0
+		else:
+			return 1
 def validate_employee_role(doc, method):
 	# called via User hook
 	if "Employee" in [d.role for d in doc.get("roles")]:
@@ -560,8 +568,6 @@ def has_user_permission_for_employee(user_name, employee_name):
 			"for_value": employee_name,
 		}
 	)
-
-
 def has_upload_permission(doc, ptype="read", user=None):
 	if not user:
 		user = frappe.session.user

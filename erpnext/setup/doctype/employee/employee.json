@@ -31,13 +31,11 @@
   "employment_type",
   "employee_group",
   "grade",
-  "pms_group",
   "designation",
+  "employee_group_type",
   "professional_category",
-  "region",
-  "reports_to_name",
-  "job_type",
   "parent_agency_eid",
+  "reports_to_name",
   "column_break_22",
   "employment_status",
   "probation_end_date",
@@ -45,6 +43,9 @@
   "promotion_cycle",
   "promotion_due_date",
   "parent_organization",
+  "job_type",
+  "pms_group",
+  "region",
   "leave_and_expense_claim_section",
   "reports_to",
   "second_approver",
@@ -221,7 +222,6 @@
    "fetch_if_empty": 1,
    "fieldname": "image",
    "fieldtype": "Attach Image",
-   "hidden": 1,
    "label": "Image",
    "no_copy": 1
   },
@@ -1214,6 +1214,12 @@
    "fieldname": "parent_organization",
    "fieldtype": "Data",
    "label": "Parent Organization"
+  },
+  {
+   "fieldname": "employee_group_type",
+   "fieldtype": "Link",
+   "label": "Employee Group Type",
+   "options": "Employee Group Type"
   }
  ],
  "icon": "fa fa-user",
@@ -1236,7 +1242,7 @@
    "link_fieldname": "employee"
   }
  ],
- "modified": "2025-04-25 12:08:30.205326",
+ "modified": "2025-09-12 10:48:24.147652",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee",
