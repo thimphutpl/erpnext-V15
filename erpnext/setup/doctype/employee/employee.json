@@ -2,7 +2,7 @@
  "actions": [],
  "allow_events_in_timeline": 1,
  "allow_import": 1,
- "autoname": "BTF.YY.MM.#####",
+ "autoname": "naming_series:",
  "creation": "2022-02-21 11:54:09.632218",
  "doctype": "DocType",
  "document_type": "Setup",
@@ -127,7 +127,6 @@
   "permanent_details_section",
   "country",
   "house_number",
-  "phone_number",
   "column_break_qnni",
   "dzongkhag",
   "gewog",
@@ -577,7 +576,6 @@
    "fieldtype": "Data",
    "label": "Place of Issue"
   },
-
   {
    "fieldname": "permanent_details_section",
    "fieldtype": "Section Break",
@@ -623,7 +621,7 @@
    "fieldtype": "Data",
    "label": "Thram Number"
   },
-   {
+  {
    "fieldname": "employee_family_details_section",
    "fieldtype": "Section Break",
    "label": "Employee Family Details"
@@ -634,7 +632,7 @@
    "label": "Family Details",
    "options": "Employee Family Details"
   },
-    {
+  {
    "fieldname": "employee_benefits_nominees_section",
    "fieldtype": "Section Break",
    "label": "Employee Benefits Nominees"
@@ -1111,11 +1109,11 @@
  "image_field": "image",
  "is_tree": 1,
  "links": [],
- "modified": "2025-07-13 18:32:15.813161",
+ "modified": "2025-09-13 21:03:19.441687",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee",
- "naming_rule": "Expression (old style)",
+ "naming_rule": "By \"Naming Series\" field",
  "nsm_parent_field": "reports_to",
  "owner": "Administrator",
  "permissions": [
