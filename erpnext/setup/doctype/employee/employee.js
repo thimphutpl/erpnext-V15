@@ -97,7 +97,6 @@ frappe.ui.form.on("Employee", {
 			doc:frm.doc,
 			callback: function(r){  
 				const lock = r.message ? 1 : 0;
-				console.log(r.message)
 				frm.set_df_property("status", "read_only", lock);
 				frm.set_df_property("employee","read_only", lock)
 				frm.set_df_property("naming_series","read_only", lock)
