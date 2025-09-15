@@ -295,9 +295,7 @@ function lock_section(frm, section_fieldname, read_only = 1) {
     if (df.fieldtype === "Table") {
       frm.set_df_property(df.fieldname, "read_only", RO);
       const grid = frm.get_field(df.fieldname)?.grid;
-      if (grid) {
-        grid.set_read_only(RO);
-        
+      if (grid) {       
         const child_meta = frappe.get_meta(df.options);
         child_meta.fields.forEach(cdf => {
           if (!layoutOnly.has(cdf.fieldtype)) {
