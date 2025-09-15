@@ -95,27 +95,57 @@ frappe.ui.form.on("Employee", {
 		frappe.call({
 			method: "check_logged_in_user_role_to_edit_data",
 			doc:frm.doc,
-			callback: function(r){     
+			callback: function(r){  
+				const lock = r.message ? 1 : 0;
 				console.log(r.message)
-				frm.set_df_property("status","read_only",r.message)
-				frm.set_df_property("employee","read_only",r.message)
-				frm.set_df_property("naming_series","read_only",r.message)
-				frm.set_df_property("gender","read_only",r.message)
-				frm.set_df_property("salutation","read_only",r.message)
-				frm.set_df_property("first_name","read_only",r.message)
-				frm.set_df_property("date_of_joining","read_only",r.message)
-				frm.set_df_property("middle_name","read_only",r.message)
-				frm.set_df_property("last_name","read_only",r.message)
-				frm.set_df_property("employee_name","read_only",r.message)
-				frm.set_df_property("old_id","read_only",r.message)
-				frm.set_df_property("employee_name","read_only",r.message)
-				frm.set_df_property("user_id","read_only",r.message)
-				frm.set_df_property("employment_type","read_only",r.message)
-				frm.set_df_property("employment_status","read_only",r.message)
-				frm.set_df_property("contract_summary","read_only",r.message)
+				frm.set_df_property("status", "read_only", lock);
+				frm.set_df_property("employee","read_only", lock)
+				frm.set_df_property("naming_series","read_only", lock)
+				frm.set_df_property("gender","read_only", lock)
+				frm.set_df_property("salutation","read_only", lock)
+				frm.set_df_property("first_name","read_only", lock)
+				frm.set_df_property("date_of_joining","read_only", lock)
+				frm.set_df_property("date_of_birth","read_only", lock)
+				frm.set_df_property("middle_name","read_only", lock)
+				frm.set_df_property("last_name","read_only", lock)
+				frm.set_df_property("employee_name","read_only", lock)
+				frm.set_df_property("old_id","read_only", lock)
+				frm.set_df_property("employee_name","read_only", lock)
+				frm.set_df_property("user_id","read_only", lock)
+				frm.set_df_property("unsubscribed","read_only", lock)
+				frm.set_df_property("contract_summary","read_only", lock)
+				frm.set_df_property("separation_benefits","read_only", lock)
+				frm.set_df_property("resignation_letter_date","read_only", lock)
+				frm.set_df_property("held_on","read_only", lock)
+				frm.set_df_property("leave_encashed","read_only", lock)
+				frm.set_df_property("relieving_date","read_only", lock)
+				frm.set_df_property("new_workplace","read_only", lock)
+				frm.set_df_property("encashment_date","read_only", lock)
+				frm.set_df_property("reason_for_leaving","read_only", lock)
+				frm.set_df_property("feedback","read_only", lock)
+				frm.set_df_property("attendance_device_id","read_only", lock)
+				frm.set_df_property("holiday_list","read_only", lock)
+				frm.set_df_property("leave_block_list","read_only", lock)
+				frm.set_df_property("default_shift","read_only", lock)
+				frm.set_df_property("expense_approver","read_only", lock)
+				frm.set_df_property("leave_approver","read_only", lock)
+				frm.set_df_property("shift_request_approver","read_only", lock)
+				lock_section(frm, "employment_details_section", lock);
+				lock_section(frm, "leave_and_expense_claim_section", lock);
+				lock_section(frm, "erpnext_user", lock);
+				lock_section(frm, "company_details_section", lock);
+				lock_section(frm, "joining_details", lock);
+				lock_section(frm, "salary_details", lock);
+				lock_section(frm, "bank_details", lock);
+				lock_section(frm, "pms_records_section", lock);
+				lock_section(frm, "contract_summary", lock);					
+
 			}
 		})
 	},
+
+	
+
 	refresh: function (frm) {
 		frm.set_query("division", function () {
 			return {
@@ -246,3 +276,49 @@ frappe.tour['Employee'] = [
 // 	frm.set_df_property("adm_remarks","read_only",adm);
 // 	frm.set_df_property("adm_clearance","read_only",adm);
 // }
+
+// Lock/unlock all fields inside a section (by Section Break fieldname)
+function lock_section(frm, section_fieldname, read_only = 1) {
+  const RO = !!read_only;
+  const layoutOnly = new Set(["Section Break", "Column Break", "Tab Break", "HTML"]);
+  const fields = frm.meta.fields;
+
+  let i = fields.findIndex(
+    df => df.fieldtype === "Section Break" && df.fieldname === section_fieldname
+  );
+  if (i === -1) return;
+
+  for (i = i + 1; i < fields.length; i++) {
+    const df = fields[i];
+    if (df.fieldtype === "Section Break") break;
+    if (layoutOnly.has(df.fieldtype)) continue;
+
+    if (df.fieldtype === "Table") {
+      frm.set_df_property(df.fieldname, "read_only", RO);
+      const grid = frm.get_field(df.fieldname)?.grid;
+      if (grid) {
+        grid.set_read_only(RO);
+        
+        const child_meta = frappe.get_meta(df.options);
+        child_meta.fields.forEach(cdf => {
+          if (!layoutOnly.has(cdf.fieldtype)) {
+            grid.update_docfield_property(cdf.fieldname, "read_only", RO);
+          }
+        });
+      }
+      frm.refresh_field(df.fieldname);
+    } else {
+      // Normal field
+      frm.set_df_property(df.fieldname, "read_only", RO);
+      const docfield = frm.get_docfield(df.fieldname);
+      if (docfield?.read_only_depends_on) {
+        frm.set_df_property(df.fieldname, "read_only_depends_on", null);
+      }
+      frm.toggle_enable(df.fieldname, !RO);
+      frm.refresh_field(df.fieldname);
+    }
+  }
+
+  frm.refresh_fields();
+}
+
