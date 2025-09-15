@@ -149,6 +149,7 @@ class StockBalanceReport:
 			self.data.append(report_data)
 
 	def get_item_warehouse_map(self):
+		
 		item_warehouse_map = {}
 		self.opening_vouchers = self.get_opening_vouchers()
 
@@ -173,6 +174,7 @@ class StockBalanceReport:
 
 		for group_by_key, entry in self.opening_data.items():
 			if group_by_key not in item_warehouse_map:
+			
 				self.initialize_data(item_warehouse_map, group_by_key, entry)
 
 		item_warehouse_map = filter_items_with_no_transactions(
@@ -225,12 +227,16 @@ class StockBalanceReport:
 
 	def initialize_data(self, item_warehouse_map, group_by_key, entry):
 		opening_data = self.opening_data.get(group_by_key, {})
+	
+
+
 
 		item_warehouse_map[group_by_key] = frappe._dict(
 			{
 				"item_code": entry.item_code,
 				"warehouse": entry.warehouse,
 				"item_group": entry.item_group,
+                "item_sub_group": entry.item_sub_group,
 				"company": entry.company,
 				"currency": self.company_currency,
 				"stock_uom": entry.stock_uom,
@@ -283,6 +289,7 @@ class StockBalanceReport:
 		return query.run(as_dict=True)
 
 	def prepare_stock_ledger_entries(self):
+	
 		sle = frappe.qb.DocType("Stock Ledger Entry")
 		item_table = frappe.qb.DocType("Item")
 
@@ -308,6 +315,7 @@ class StockBalanceReport:
 				sle.serial_and_batch_bundle,
 				sle.has_serial_no,
 				item_table.item_group,
+                item_table.item_sub_group,
 				item_table.stock_uom,
 				item_table.item_name,
 			)
@@ -392,6 +400,13 @@ class StockBalanceReport:
 				"options": "Item Group",
 				"width": 100,
 			},
+            { 
+                "label": _("Item Sub Group"),
+                "fieldname": "item_sub_group",
+                "fieldtype": "Link",
+                "options": "Item Sub Group",
+                "width" : 100,
+                },
 			{
 				"label": _("Warehouse"),
 				"fieldname": "warehouse",
@@ -628,6 +643,7 @@ def filter_items_with_no_transactions(
 				"warehouse",
 				"item_name",
 				"item_group",
+				"item_sub_group",
 				"project",
 				"stock_uom",
 				"company",
