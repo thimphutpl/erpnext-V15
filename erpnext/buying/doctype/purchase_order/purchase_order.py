@@ -105,7 +105,7 @@ class PurchaseOrder(BuyingController):
 		items: DF.Table[PurchaseOrderItem]
 		language: DF.Data | None
 		letter_head: DF.Link | None
-		material_request: DF.Link | None
+		material_request: DF.Data | None
 		material_request_date: DF.Date | None
 		method_of_procurement: DF.Literal["", "Open Bidding", "Limited Bidding", "Limited Enquiry", "Work Order/Direct Contacting", "Spot Purchase"]
 		naming_series: DF.Literal["", "Consumables", "Fixed Asset", "Sales Product", "Spare Parts", "Services Miscellaneous", "Services Works", "Labour Contract", "PUR-ORD-.YYYY.-"]
@@ -479,7 +479,7 @@ class PurchaseOrder(BuyingController):
 		# 	self.update_requested_qty()
 
 		self.update_ordered_qty()
-		self.validate_budget()
+		# self.validate_budget()
 		self.update_reserved_qty_for_subcontract()
 
 		frappe.get_doc("Authorization Control").validate_approving_authority(
@@ -491,6 +491,41 @@ class PurchaseOrder(BuyingController):
 		update_linked_doc(self.doctype, self.name, self.inter_company_order_reference)
 
 		# self.auto_create_subcontracting_order()
+		self.link_material_requests_to_po()
+
+	# def link_material_requests_to_po(po):
+	# 	# collect unique MR names from PO items
+	# 	mr_names = {d.material_request for d in po.items if d.material_request}
+	# 	if not mr_names:
+	# 		return
+
+	# 	# write the FINAL po.name to each MR
+	# 	placeholders = ", ".join(["%s"] * len(mr_names))
+	# 	frappe.db.sql(
+	# 		f"""UPDATE `tabMaterial Request`
+	# 			SET purchase_order = %s
+	# 			WHERE name IN ({placeholders})""",
+	# 		(po.name, *mr_names),
+	# 	)
+	# 	# optional: clear cache so forms show updated value immediately
+	# 	# for mr in mr_names:
+	# 	# 	frappe.clear_cache(doctype="Material Request", docname=mr)	
+
+	def link_material_requests_to_po(po):
+		mr_names = {d.material_request for d in po.items if d.material_request}
+		if not mr_names:
+			return
+
+		for mr in mr_names:
+			mr_doc = frappe.get_doc("Material Request", mr)
+
+			# avoid duplicates
+			if not any(row.purchase_order == po.name for row in mr_doc.item):
+				mr_doc.append("item", {
+					"purchase_order": po.name
+				})
+				mr_doc.save(ignore_permissions=True)
+
 
 	def on_cancel(self):
 		self.ignore_linked_doctypes = (

@@ -110,6 +110,7 @@
   "terms",
   "header_and_footer_section",
   "header",
+  "column_break_qjnx",
   "footer",
   "address_and_contact_tab",
   "section_addresses",
@@ -1224,7 +1225,7 @@
   },
   {
    "fieldname": "material_request",
-   "fieldtype": "Link",
+   "fieldtype": "Data",
    "label": "Material Request",
    "options": "Material Request",
    "read_only": 1
@@ -1331,13 +1332,17 @@
    "fieldname": "description",
    "fieldtype": "Text Editor",
    "label": "Description"
+  },
+  {
+   "fieldname": "column_break_qjnx",
+   "fieldtype": "Column Break"
   }
  ],
  "icon": "fa fa-file-text",
  "idx": 105,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-04-04 15:27:42.686039",
+ "modified": "2025-09-25 08:19:51.030740",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Purchase Order",

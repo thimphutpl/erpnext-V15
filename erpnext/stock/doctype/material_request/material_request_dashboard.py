@@ -1,6 +1,5 @@
 from frappe import _
 
-
 def get_data():
 	return {
 		"fieldname": "material_request",
@@ -8,6 +7,7 @@ def get_data():
 			"Sales Order": ["items", "sales_order"],
 			"Project": ["items", "project"],
 			"Cost Center": ["items", "cost_center"],
+			"Purchase Order": ["items", "purchase_order"],
 		},
 		"transactions": [
 			{

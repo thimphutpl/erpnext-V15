@@ -33,6 +33,7 @@ class MaterialRequest(BuyingController):
 
 	if TYPE_CHECKING:
 		from erpnext.stock.doctype.material_request_item.material_request_item import MaterialRequestItem
+		from erpnext.stock.doctype.material_request_purchase_order.material_request_purchase_order import MaterialRequestPurchaseOrder
 		from frappe.types import DF
 
 		amended_from: DF.Link | None
@@ -45,6 +46,7 @@ class MaterialRequest(BuyingController):
 		cost_center: DF.Link | None
 		customer: DF.Link | None
 		date: DF.Date | None
+		item: DF.Table[MaterialRequestPurchaseOrder]
 		items: DF.Table[MaterialRequestItem]
 		job_card: DF.Link | None
 		letter_head: DF.Link | None
@@ -54,6 +56,7 @@ class MaterialRequest(BuyingController):
 		naming_series: DF.Literal["", "Consumables", "Fixed Asset", "Sales Product", "Spare Parts", "Services Miscellaneous", "Services Works", "Labour Contract", "REORDER", "MAT-MR-.YYYY.-"]
 		per_ordered: DF.Percent
 		per_received: DF.Percent
+		purchase_order: DF.Link | None
 		schedule_date: DF.Date | None
 		select_print_heading: DF.Link | None
 		set_from_warehouse: DF.Link | None
@@ -407,6 +410,7 @@ def get_list_context(context=None):
 	)
 
 	return list_context
+
 # @frappe.whitelist()
 # def pull_material_approver(branch):
 
@@ -434,6 +438,12 @@ def make_purchase_order(source_name, target_doc=None, args=None):
 		args = json.loads(args)
 
 	def postprocess(source, target_doc):
+		# frappe.db.set_value("Material Request", source.name, "purchase_order", target_doc.name)
+
+		if target_doc.material_request:
+			target_doc.material_request += f", {source.name}"
+		else:
+			target_doc.material_request = source.name
 		if frappe.flags.args and frappe.flags.args.default_supplier:
 			# items only for given default supplier
 			supplier_items = []
@@ -444,6 +454,7 @@ def make_purchase_order(source_name, target_doc=None, args=None):
 			target_doc.items = supplier_items
 
 		set_missing_values(source, target_doc)
+	
 
 	def select_item(d):
 		filtered_items = args.get("filtered_children", [])
@@ -912,3 +923,7 @@ def get_permission_query_conditions(user):
 			and bi.parent = ab.name
 			and bi.branch = `tabMaterial Request`.branch)
 	)""".format(user = user, ceo_or_general_manager = ceo_or_general_manager)
+
+
+
+
