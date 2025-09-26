@@ -861,6 +861,8 @@ class NotifyCustomWorkflow:
 
 		parent_doc = frappe.get_doc(self.doc.doctype, self.doc.name)
 		args = parent_doc.as_dict()
+		new_state = getattr(self, "new_state", self.doc.workflow_state) 
+		args["workflow_state"] = new_state
 
 		if self.doc.doctype == "Leave Application":
 			template = frappe.db.get_single_value('HR Settings', 'leave_application_status_notification_template')
@@ -972,6 +974,9 @@ class NotifyCustomWorkflow:
 		if self.doc.get(self.doc_approver[0]):
 			parent_doc = frappe.get_doc(self.doc.doctype, self.doc.name)
 			args = parent_doc.as_dict()
+			 # FIX: Explicitly set the new workflow state for the notification
+			new_state = getattr(self, "new_state", None) or "Waiting Approval" 
+			args["workflow_state"] = new_state
 			if self.doc.doctype == "Leave Application":
 				template = frappe.db.get_single_value('HR Settings', 'leave_application_approval_notification_template')
 				if not template:
@@ -1029,8 +1034,8 @@ class NotifyCustomWorkflow:
 					frappe.msgprint(_("Please set default template for Employee Separation Clearance Approval Notification in HR Settings."))
 					return
 				
-			elif self.doc.doctype == "Vehicle Request":
-				template = frappe.db.get_single_value('HR Settings', 'vehicle_request_approval_notification_template')
+			elif self.doc.doctype == "Vehicle Request":				
+				template = frappe.db.get_single_value('HR Settings', 'vehicle_request_approval_notification_template')				
 				if not template:
 					frappe.msgprint(_("Please set default template for Vehicle Request Approval Notification in HR Settings."))
 					return	
@@ -1099,6 +1104,8 @@ class NotifyCustomWorkflow:
 			receipients = [a['email'] for a in hr_users]
 			parent_doc = frappe.get_doc(self.doc.doctype, self.doc.name)
 			args = parent_doc.as_dict()
+			new_state = getattr(self, "new_state", self.doc.workflow_state) 
+			args["workflow_state"] = new_state
 
 			if self.doc.doctype == "Leave Application":
 				template = frappe.db.get_single_value('HR Settings', 'leave_application_approval_notification_template')
@@ -1200,12 +1207,15 @@ class NotifyCustomWorkflow:
 		except frappe.OutgoingEmailError:
 			pass
 
-	def send_notification(self):		
+	def send_notification(self):
+				
 		if (self.doc.doctype not in self.field_map) or not frappe.db.exists("Workflow", {"document_type": self.doc.doctype, "is_active": 1}):
 			return
 		if self.new_state == "Draft" or self.new_state == self.old_state:
+			
 			return
 		elif self.new_state in ("Approved", "Rejected", "Cancelled", "Claimed", "Submitted"):
+			
 			if self.doc.doctype == "Material Request" and self.doc.owner != "Administrator":
 				self.notify_employee()
 			elif self.doc.doctype in ("Employee Benefits","Employee Separation","Vehicle Request"):
@@ -1213,7 +1223,7 @@ class NotifyCustomWorkflow:
 				self.notify_employee()
 			else:
 				self.notify_employee()
-		elif self.new_state.startswith("Waiting") and self.old_state != self.new_state and self.doc.doctype not in ("Asset Issue Details","Project Capitalization"):
+		elif self.new_state.startswith("Waiting") and self.old_state != self.new_state and self.doc.doctype not in ("Asset Issue Details","Project Capitalization"):			
 			self.notify_approver()
 		elif self.new_state.startswith("Verified") and self.old_state != self.new_state:
 			self.notify_approver()
