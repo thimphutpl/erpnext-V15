@@ -40,6 +40,7 @@ class Employee(NestedSet):
 		self.validate_status()
 		self.validate_reports_to()
 		self.validate_preferred_email()
+		self.update_salary_structure()
 
 		if self.user_id:
 			self.validate_user_details()
@@ -48,9 +49,46 @@ class Employee(NestedSet):
 			if existing_user_id:
 				remove_user_permission("Employee", self.name, existing_user_id)
 
-	
-		
-	
+	# added by sanga for auto update of cost center, branch, grade and joining date in salary structure.
+	def update_salary_structure(self):
+		# Fetch all Salary Structures for this employee
+		salary_structures = frappe.get_all(
+			"Salary Structure",
+			filters={"employee": self.name},
+			fields=["name"]
+		)
+
+		for ss in salary_structures:
+			doc = frappe.get_doc("Salary Structure", ss.name)
+
+			# Track if we need to save
+			updated = False
+
+			# Update branch and cost_center
+			if self.branch and doc.branch != self.branch:
+				doc.branch = self.branch
+				updated = True
+
+				# Update cost_center based on branch
+				if hasattr(doc, "cost_center"):
+					branch_doc = frappe.get_doc("Branch", self.branch)
+					if doc.cost_center != branch_doc.cost_center:
+						doc.cost_center = branch_doc.cost_center
+						updated = True
+
+			# Update employee_grade independently
+			if self.grade and doc.employee_grade != self.grade:
+				doc.employee_grade = self.grade
+				updated = True
+
+			# Update date_of_joining independently
+			if self.date_of_joining and doc.from_date != self.date_of_joining:
+				doc.from_date = self.date_of_joining
+				updated = True	
+
+			# Save only if any field changed
+			if updated:
+				doc.save(ignore_permissions=True)	
 
 	def after_rename(self, old, new, merge):
 		self.db_set("employee", new)
@@ -552,6 +590,7 @@ def has_upload_permission(doc, ptype="read", user=None):
 	return doc.user_id == user
 
 def get_permission_query_conditions(user):
+	#frappe.throw("hiii")
 	if not user: user = frappe.session.user
 	user_roles = frappe.get_roles(user)
 	if "HR User" in user_roles or "HR Manager" in user_roles or "Accounts User" in user_roles or "CEO" in user_roles:
