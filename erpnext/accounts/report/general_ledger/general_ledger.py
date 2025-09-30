@@ -605,12 +605,12 @@ def get_columns(filters):
 			"fieldtype": "Float",
 			"width": 130,
 		},
-		# {
-		# 	"label": _("Balance ({0})").format(currency),
-		# 	"fieldname": "balance",
-		# 	"fieldtype": "Float",
-		# 	"width": 130,
-		# },
+		{
+			"label": _("Balance ({0})").format(currency),
+			"fieldname": "balance",
+			"fieldtype": "Float",
+			"width": 130,
+		},
 	]
 
 	if filters.get("add_values_in_transaction_currency"):
