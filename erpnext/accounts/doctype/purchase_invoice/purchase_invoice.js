@@ -41,15 +41,15 @@ erpnext.accounts.PurchaseInvoice = class PurchaseInvoice extends erpnext.buying.
 			};
 		});
 	}
-	
+
 
 	onload() {
 		super.onload();
 		// this.frm.set_df_property("apply_tds", "read_only", 0);
 		// refresh_field("apply_tds");
 		// console.log(frm.fields_dict['apply_tds']);
-		
-		
+
+
 		// Ignore linked advances
 		this.frm.ignore_doctypes_on_cancel_all = [
 			"Journal Entry",
@@ -316,7 +316,7 @@ erpnext.accounts.PurchaseInvoice = class PurchaseInvoice extends erpnext.buying.
 
 		this.dialog.show();
 	}
-	
+
 
 	make_dialog_and_set_release_date() {
 		const me = this;
@@ -636,12 +636,12 @@ frappe.ui.form.on("Purchase Invoice", {
 			};
 		};
 
-		if(frm.doc.purchase_receipt && frm.doc.payment_schedule && frm.doc.payment_schedule.length > 0) {
-            frm.clear_table('payment_schedule');
-            frm.set_value('payment_terms_template', '');
-            refresh_field('payment_schedule');
-            frappe.show_alert(__('Payment Terms cleared as invoice was created from Purchase Receipt'));
-        }
+		// if(frm.doc.purchase_receipt && frm.doc.payment_schedule && frm.doc.payment_schedule.length > 0) {
+		//     frm.clear_table('payment_schedule');
+		//     frm.set_value('payment_terms_template', '');
+		//     refresh_field('payment_schedule');
+		//     frappe.show_alert(__('Payment Terms cleared as invoice was created from Purchase Receipt'));
+		// }
 	},
 
 	refresh: function (frm) {
@@ -649,10 +649,10 @@ frappe.ui.form.on("Purchase Invoice", {
 		frm.events.add_custom_buttons(frm);
 
 		// Make payment terms read-only if from purchase receipt
-        if(frm.doc.purchase_receipt) {
-            frm.set_df_property('payment_terms_template', 'read_only', 1);
-            frm.set_df_property('payment_schedule', 'read_only', 1);
-        }
+		if (frm.doc.purchase_receipt) {
+			frm.set_df_property('payment_terms_template', 'read_only', 1);
+			frm.set_df_property('payment_schedule', 'read_only', 1);
+		}
 	},
 
 	mode_of_payment: function (frm) {
@@ -662,28 +662,28 @@ frappe.ui.form.on("Purchase Invoice", {
 	},
 
 	// posting_date: function(frm) {
-    //     if (!frm.doc.posting_date) return;
-        
-    //     // Skip if this is a manual change
-    //     if (frm.doc._due_date_manually_changed) return;
-        
-    //     // Calculate new due date
-    //     var new_due_date = frappe.datetime.add_days(frm.doc.posting_date, 30);
-        
-    //     // Only update if different
-    //     if (!frm.doc.due_date || frm.doc.due_date !== new_due_date) {
-    //         frm.set_value('due_date', new_due_date);
-    //     }
-    // },
-	posting_date: function(frm) {
+	//     if (!frm.doc.posting_date) return;
+
+	//     // Skip if this is a manual change
+	//     if (frm.doc._due_date_manually_changed) return;
+
+	//     // Calculate new due date
+	//     var new_due_date = frappe.datetime.add_days(frm.doc.posting_date, 30);
+
+	//     // Only update if different
+	//     if (!frm.doc.due_date || frm.doc.due_date !== new_due_date) {
+	//         frm.set_value('due_date', new_due_date);
+	//     }
+	// },
+	posting_date: function (frm) {
 		if (!frm.doc.posting_date) return;
-		
+
 		// Skip if this is a manual change
 		if (frm.doc._due_date_manually_changed) return;
-		
+
 		// Calculate new due date
 		var new_due_date = frappe.datetime.add_days(frm.doc.posting_date, 30);
-		
+
 		// Only update if different
 		if (!frm.doc.due_date || frm.doc.due_date !== new_due_date) {
 			// Clear payment terms and schedule first
@@ -693,28 +693,28 @@ frappe.ui.form.on("Purchase Invoice", {
 				refresh_field('payment_schedule');
 				frappe.show_alert(__('Payment Terms cleared due to posting date change'));
 			}
-			
+
 			// Then set new due date
 			frm.set_value('due_date', new_due_date);
 		}
 	},
-    
-    due_date: function(frm) {
+
+	due_date: function (frm) {
 		if (!frm.doc.posting_date || !frm.doc.due_date) return;
-		
+
 		// Calculate expected due date
 		var calculated_due_date = frappe.datetime.add_days(frm.doc.posting_date, 30);
-		
+
 		// Set manual change flag if different from calculated
 		frm.doc._due_date_manually_changed = frm.doc.due_date !== calculated_due_date;
-		
+
 		// If payment terms exist but schedule is empty, refresh it
 		if (frm.doc.payment_terms_template && (!frm.doc.payment_schedule || frm.doc.payment_schedule.length === 0)) {
 			frm.trigger('payment_terms_template');
 		}
 	},
 
-	payment_terms_template: function(frm) {
+	payment_terms_template: function (frm) {
 		if (frm.doc.payment_terms_template && frm.doc.posting_date && frm.doc.due_date) {
 			// Standard behavior - fetch payment terms
 			erpnext.utils.get_payment_terms(
@@ -722,7 +722,7 @@ frappe.ui.form.on("Purchase Invoice", {
 				frm.doc.posting_date,
 				frm.doc.due_date,
 				frm.doc.grand_total,
-				function(r) {
+				function (r) {
 					if (r.message) {
 						frm.set_value('payment_schedule', r.message);
 					}
@@ -732,21 +732,21 @@ frappe.ui.form.on("Purchase Invoice", {
 			frm.set_value('payment_schedule', []);
 		}
 	},
-    
-    refresh: function(frm) {
-        // Initialize manual change flag
-        if (typeof frm.doc._due_date_manually_changed === 'undefined') {
-            frm.doc._due_date_manually_changed = false;
-        }
-        
-        // If not manually changed, ensure due_date is correct
-        if (!frm.doc._due_date_manually_changed && frm.doc.posting_date) {
-            var calculated_due_date = frappe.datetime.add_days(frm.doc.posting_date, 30);
-            if (!frm.doc.due_date || frm.doc.due_date !== calculated_due_date) {
-                frm.set_value('due_date', calculated_due_date);
-            }
-        }
-    },
+
+	refresh: function (frm) {
+		// Initialize manual change flag
+		if (typeof frm.doc._due_date_manually_changed === 'undefined') {
+			frm.doc._due_date_manually_changed = false;
+		}
+
+		// If not manually changed, ensure due_date is correct
+		if (!frm.doc._due_date_manually_changed && frm.doc.posting_date) {
+			var calculated_due_date = frappe.datetime.add_days(frm.doc.posting_date, 30);
+			if (!frm.doc.due_date || frm.doc.due_date !== calculated_due_date) {
+				frm.set_value('due_date', calculated_due_date);
+			}
+		}
+	},
 
 	create_landed_cost_voucher: function (frm) {
 		let lcv = frappe.model.get_new_doc("Landed Cost Voucher");
@@ -797,15 +797,15 @@ frappe.ui.form.on("Purchase Invoice", {
 		// Set initial due_date if not set
 		if (frm.is_new() && frm.doc.posting_date && !frm.doc.due_date) {
 			frm.set_value('due_date', frappe.datetime.add_days(frm.doc.posting_date, 30));
-			
+
 			// Initialize payment schedule if using payment terms template
 			if (frm.doc.payment_terms_template) {
-				setTimeout(function() {
+				setTimeout(function () {
 					frm.trigger('payment_terms_template');
 				}, 300);
 			}
 		}
-		
+
 		if (frm.doc.__onload && frm.is_new()) {
 			if (frm.doc.supplier) {
 				frm.doc.apply_tds = frm.doc.__onload.supplier_tds ? 1 : 0;
@@ -862,4 +862,36 @@ frappe.ui.form.on("Purchase Invoice", {
 			});
 		}
 	},
+
+	/* jai added */
+	schedule_date: function (frm) {
+		if (frm.doc.schedule_date) {
+			frm.doc.items.map(v => {
+				v.schedule_date = frm.doc.schedule_date
+			})
+		}
+	},
+
+	freight_and_insurance_charges: function (frm) {
+		calculate_discount(frm)
+	},
+
+	discount: function (frm) {
+		calculate_discount(frm)
+	},
+
+	other_charges: function (frm) {
+		calculate_discount(frm)
+	},
+
+	tax: function (frm) {
+		calculate_discount(frm)
+	},
 });
+
+function calculate_discount(frm) {
+	cur_frm.set_value("total_add_ded", frm.doc.freight_and_insurance_charges + frm.doc.other_charges + frm.doc.tax - frm.doc.discount)
+	cur_frm.set_value("discount_amount", -frm.doc.freight_and_insurance_charges - frm.doc.other_charges - frm.doc.tax + frm.doc.discount)
+	cur_frm.refresh_field("discount_amount")
+	cur_frm.refresh_field("total_add_ded")
+}

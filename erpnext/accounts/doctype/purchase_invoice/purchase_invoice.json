@@ -1768,7 +1768,6 @@
   {
    "fieldname": "total_add_ded",
    "fieldtype": "Currency",
-   "hidden": 1,
    "label": "Net Charges & Discount",
    "read_only": 1
   }
@@ -1777,7 +1776,7 @@
  "idx": 204,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-04-07 12:38:03.719593",
+ "modified": "2025-09-30 09:40:31.754528",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Purchase Invoice",

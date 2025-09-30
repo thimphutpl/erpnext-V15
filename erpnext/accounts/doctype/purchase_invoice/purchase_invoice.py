@@ -299,7 +299,7 @@ class PurchaseInvoice(BuyingController):
 		self.reset_default_field_value("rejected_warehouse", "items", "rejected_warehouse")
 		self.reset_default_field_value("set_from_warehouse", "items", "from_warehouse")
 		self.set_percentage_received()
-
+			
 	def set_percentage_received(self):
 		total_billed_qty = 0.0
 		total_received_qty = 0.0

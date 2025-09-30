@@ -526,14 +526,32 @@ class PurchaseOrder(BuyingController):
 				})
 				mr_doc.save(ignore_permissions=True)
 
+	def unlink_material_requests_from_po(po):
+		"""Remove Purchase Order reference from Material Requests when PO is cancelled"""
+		mr_names = {d.material_request for d in po.items if d.material_request}
+		if not mr_names:
+			return
+
+		for mr in mr_names:
+			rows = frappe.get_all(
+				"Material Request Purchase Order",
+				filters={"parent": mr, "purchase_order": po.name},
+				pluck="name"
+			)
+			for row_name in rows:
+				frappe.db.set_value("Material Request Purchase Order", row_name, "purchase_order", None)
 
 	def on_cancel(self):
 		self.ignore_linked_doctypes = (
 			"GL Entry",
 			"Payment Ledger Entry",
+			"Material Request",
+			"Purchase Order",
 			"Unreconcile Payment",
 			"Unreconcile Payment Entries",
 		)
+		# Unlink PO from Material Requests
+		self.unlink_material_requests_from_po()
 
 		super().on_cancel()
 
