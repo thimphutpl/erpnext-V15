@@ -38,6 +38,7 @@
   "column_break_ddzo",
   "blood_group",
   "nationality",
+  "dob",
   "wage_detail",
   "bank_name",
   "bank_branch",
@@ -399,12 +400,17 @@
    "fieldname": "reason",
    "fieldtype": "Data",
    "label": "Reason"
+  },
+  {
+   "fieldname": "dob",
+   "fieldtype": "Date",
+   "label": "DOB"
   }
  ],
  "in_create": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-04-01 12:47:04.809021",
+ "modified": "2025-10-01 11:57:41.471741",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Muster Roll Employee",

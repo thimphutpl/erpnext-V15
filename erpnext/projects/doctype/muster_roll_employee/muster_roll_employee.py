@@ -35,6 +35,7 @@ class MusterRollEmployee(Document):
 		cost_center: DF.Link
 		date_of_transfer: DF.Date | None
 		designation: DF.Data | None
+		dob: DF.Date | None
 		gender: DF.Literal["Male", "Female", "Other"]
 		id_card: DF.Data
 		internal_work_history: DF.Table[EmployeeInternalWorkHistory]
