@@ -670,7 +670,9 @@
    "role": "Fleet Manager",
    "share": 1,
    "submit": 1,
-   "write": 1
+   "write": 1,
+   "cancel": 1
+
   }
  ],
  "sort_field": "modified",
