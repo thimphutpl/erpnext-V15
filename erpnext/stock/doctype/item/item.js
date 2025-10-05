@@ -8,6 +8,8 @@ const PURCHASE_DOCTYPES = ["Purchase Order", "Purchase Receipt", "Purchase Invoi
 
 frappe.ui.form.on("Item", {
 
+
+
 	setup: function (frm) {
 		frm.add_fetch("attribute", "numeric_values", "numeric_values");
 		frm.add_fetch("attribute", "from_range", "from_range");
@@ -53,14 +55,23 @@ frappe.ui.form.on("Item", {
 			};
 		});
 
-		frm.set_query('item_sub_group', function() {
+		frm.set_query('item_sub_group', function () {
 			return {
 				filters: {
 					'item_group': frm.doc.item_group  // Replace 'parent_group' with the correct field 'item_group'
 				}
 			};
-        });
+		});
 	},
+
+
+
+
+
+
+
+
+
 	onload: function (frm) {
 		erpnext.item.setup_queries(frm);
 		if (frm.doc.variant_of) {
@@ -74,47 +85,94 @@ frappe.ui.form.on("Item", {
 
 	// refresh: function (frm) {
 	// 	// When the form loads or refreshes, set up the query filter
-    //     frm.set_query('item_sub_group', function() {
-    //         if (frm.doc.item_group) {
-    //             return {
-    //                 filters: {
-    //                     'item_group': frm.doc.item_group  // Replace 'parent_group' with the correct field 'item_group'
-    //                 }
-    //             };
-    //         }
-    //     });
-    // },
+	//     frm.set_query('item_sub_group', function() {
+	//         if (frm.doc.item_group) {
+	//             return {
+	//                 filters: {
+	//                     'item_group': frm.doc.item_group  // Replace 'parent_group' with the correct field 'item_group'
+	//                 }
+	//             };
+	//         }
+	//     });
+	// },
 
-    item_group: function(frm) {
-        frm.set_value('item_sub_group', null);  // Clear Item Sub Group
-        // frm.set_query('item_sub_group', function() {
-        //     if (frm.doc.item_group) {
-        //         return {
-        //             filters: {
-        //                 'item_group': frm.doc.item_group  // Filter based on the correct field 'item_group'
-        //             }
-        //         };
-        //     }
-        // });
-		
+
+	// item_group: function (frm) {
+	// 	if (frm.doc.item_group == "Fixed Asset") {
+	// 		frm.set_value("is_fixed_asset", 1);
+	// 		frm.set_value("is_stock_item", 0);
+
+	// 	} else {
+	// 		frm.set_value("is_fixed_asset", 0);
+	// 	}
+	// },
+
+
+	item_group: function (frm) {
+		frm.set_value('item_sub_group', null);  // Clear Item Sub Group
+
+
+		// Define mapping of item_group → field + value
+		//added by Kinzang, to select auto base on item group select
+		const mapping = {
+			"Fixed Asset": { is_fixed_asset: 1 },
+			"Consumables": { is_stock_item: 1 },
+			"Sales Product": { is_stock_item: 1 },
+			"Service Works": { is_services_item: 1 },
+			"Service Miscellaneous": { is_services_item: 1 },
+			"Construction Material": { is_stock_item: 1 },
+			"Spare Parts": { is_stock_item: 1 },
+		};
+
+		// Reset all to 0 first
+		frm.set_value("is_fixed_asset", 0);
+		frm.set_value("is_stock_item", 0);
+		frm.set_value("is_services_item", 0);
+
+		// Apply mapping if item_group exists in it
+		if (mapping[frm.doc.item_group]) {
+			Object.entries(mapping[frm.doc.item_group]).forEach(([field, value]) => {
+				frm.set_value(field, value);
+			});
+		}
+
+
+
+		// frm.set_query('item_sub_group', function() {
+		//     if (frm.doc.item_group) {
+		//         return {
+		//             filters: {
+		//                 'item_group': frm.doc.item_group  // Filter based on the correct field 'item_group'
+		//             }
+		//         };
+		//     }
+		// });
+
+
+
 		// if (frm.doc.item_group) {
-        //     frappe.db.get_value('Item Group', frm.doc.item_group, 'link', function (value) {
-        //         if (value && value.link === 'Fixed Asset') {
-        //             frm.set_value('is_fixed_asset', 1); 
-        //             frm.set_value('is_services_item', 0);
-        //         } else if (value && value.link === 'Consumables') {
-        //             frm.set_value('is_services_item', 1);
-        //             frm.set_value('is_fixed_asset', 0); 
-        //         } else {
-        //             frm.set_value('is_fixed_asset', 0);
-        //             frm.set_value('is_services_item', 0);
-        //         }
-        //     });
-        // } else {
-        //     frm.set_value('is_fixed_asset', 0);
-        //     frm.set_value('is_services_item', 0);
-        // }
-		
+		// 	frappe.db.get_value('Item Group', frm.doc.item_group, 'link', function (value) {
+		// 		if (value && value.link === 'Fixed Asset') {
+		// 			frm.set_value('is_fixed_asset', 1);
+		// 			frm.set_value('is_services_item', 0);
+		// 		} else if (value && value.link === 'Consumables') {
+		// 			frm.set_value('is_services_item', 1);
+		// 			frm.set_value('is_fixed_asset', 0);
+		// 		} else {
+		// 			frm.set_value('is_fixed_asset', 0);
+		// 			frm.set_value('is_services_item', 0);
+		// 		}
+		// 	});
+		// } else {
+		// 	frm.set_value('is_fixed_asset', 0);
+		// 	frm.set_value('is_services_item', 0);
+		// }
+
+
+
+
+
+
 		if (frm.doc.is_stock_item) {
 			frm.add_custom_button(
 				__("Stock Balance"),
@@ -321,41 +379,41 @@ frappe.ui.form.on("Item", {
 
 //custom Scripts
 //Auto populate material code
-cur_frm.cscript.item_group = function(doc) {
-//     cur_frm.call({
-// 		// method: "erpnext.stock.doctype.item.item.get_current_item_code",
-// 		method: "erpnext.stock.stock_custom_functions.get_current_item_code",
-//         args: {
-//              item_group: doc.item_group
-//         },
-//         callback: function(r) {
-//              cur_frm.set_value("item_code", r.message.toString());
-//         }
-//    });
+cur_frm.cscript.item_group = function (doc) {
+	//     cur_frm.call({
+	// 		// method: "erpnext.stock.doctype.item.item.get_current_item_code",
+	// 		method: "erpnext.stock.stock_custom_functions.get_current_item_code",
+	//         args: {
+	//              item_group: doc.item_group
+	//         },
+	//         callback: function(r) {
+	//              cur_frm.set_value("item_code", r.message.toString());
+	//         }
+	//    });
 
-   if (doc.item_group != 'All Item Groups') {
-     cur_frm.fields_dict['expense_account'].get_query = function(doc) {
-        return {
-               "filters": {
-                       "item_group": doc.item_group
-                }
-        }
-     }
-     refresh_field("expense_account");
-   }
+	if (doc.item_group != 'All Item Groups') {
+		cur_frm.fields_dict['expense_account'].get_query = function (doc) {
+			return {
+				"filters": {
+					"item_group": doc.item_group
+				}
+			}
+		}
+		refresh_field("expense_account");
+	}
 
-	if(doc.item_group) {
-		if(doc.item_group.match(/Service*/) ) {
+	if (doc.item_group) {
+		if (doc.item_group.match(/Service*/)) {
 			cur_frm.set_value("is_stock_item", 0)
 			cur_frm.set_value("is_fixed_asset", 0)
-			cur_frm.toggle_display("is_stock_item",  !doc.item_group.match(/Service*/))
-			cur_frm.toggle_display("is_fixed_asset",  !doc.item_group.match(/Service*/))
+			cur_frm.toggle_display("is_stock_item", !doc.item_group.match(/Service*/))
+			cur_frm.toggle_display("is_fixed_asset", !doc.item_group.match(/Service*/))
 		}
 		else {
 			cur_frm.set_value("is_stock_item", 1)
 			cur_frm.set_value("is_fixed_asset", 0)
-			cur_frm.toggle_display("is_stock_item",  !doc.item_group.match(/Service*/))
-			cur_frm.toggle_display("is_fixed_asset",  !doc.item_group.match(/Service*/))
+			cur_frm.toggle_display("is_stock_item", !doc.item_group.match(/Service*/))
+			cur_frm.toggle_display("is_fixed_asset", !doc.item_group.match(/Service*/))
 		}
 	}
 }
