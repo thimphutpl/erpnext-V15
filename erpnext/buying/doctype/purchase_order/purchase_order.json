@@ -1117,7 +1117,8 @@
    "fieldtype": "Link",
    "hidden": 1,
    "label": "Project",
-   "options": "Project"
+   "options": "Project",
+   "read_only": 1
   },
   {
    "default": "0",
@@ -1342,7 +1343,7 @@
  "idx": 105,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-09-25 08:19:51.030740",
+ "modified": "2025-10-05 11:25:55.299782",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Purchase Order",

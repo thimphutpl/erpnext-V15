@@ -441,9 +441,11 @@
   {
    "fieldname": "project",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Project",
    "options": "Project",
-   "print_hide": 1
+   "print_hide": 1,
+   "read_only": 1
   },
   {
    "fieldname": "material_request",
@@ -904,7 +906,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-04-17 15:30:55.327910",
+ "modified": "2025-10-05 11:29:23.300434",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Purchase Order Item",

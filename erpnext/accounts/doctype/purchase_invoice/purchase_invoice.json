@@ -1377,8 +1377,10 @@
    "allow_on_submit": 1,
    "fieldname": "project",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Project",
-   "options": "Project"
+   "options": "Project",
+   "read_only": 1
   },
   {
    "allow_on_submit": 1,
@@ -1776,7 +1778,7 @@
  "idx": 204,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-09-30 09:40:31.754528",
+ "modified": "2025-10-05 11:32:28.919281",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Purchase Invoice",

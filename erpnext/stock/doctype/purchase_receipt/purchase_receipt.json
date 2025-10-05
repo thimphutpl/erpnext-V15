@@ -190,6 +190,7 @@
   {
    "fieldname": "naming_series",
    "fieldtype": "Select",
+   "in_list_view": 1,
    "label": "Series",
    "oldfieldname": "naming_series",
    "oldfieldtype": "Select",
@@ -864,7 +865,7 @@
    "read_only": 1
   },
   {
-   "default": "0",
+   "default": "1",
    "fieldname": "disable_rounded_total",
    "fieldtype": "Check",
    "label": "Disable Rounded Total"
@@ -937,8 +938,10 @@
   {
    "fieldname": "project",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Project",
-   "options": "Project"
+   "options": "Project",
+   "read_only": 1
   },
   {
    "fieldname": "per_billed",
@@ -1306,7 +1309,7 @@
    "fieldname": "set_posting_time",
    "fieldtype": "Check",
    "label": "Edit Date and Time",
-   "permlevel": 2
+   "permlevel": 1
   },
   {
    "default": "0",
@@ -1348,7 +1351,7 @@
  "idx": 261,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-04-10 11:20:54.132780",
+ "modified": "2025-10-05 11:30:26.211269",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Purchase Receipt",
