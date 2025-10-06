@@ -51,6 +51,7 @@ class DataValidationError(frappe.ValidationError):
 
 
 class Item(Document):
+	
 	# begin: auto-generated types
 	# This code is auto-generated. Do not modify anything in this block.
 
@@ -110,6 +111,7 @@ class Item(Document):
 		is_purchase_item: DF.Check
 		is_sales_item: DF.Check
 		is_scrap_item: DF.Check
+		is_services_item: DF.Check
 		is_stock_item: DF.Check
 		is_sub_contracted_item: DF.Check
 		item_code: DF.Data | None
@@ -1434,8 +1436,7 @@ def validate_item_default_company_links(item_defaults: list[ItemDefault]) -> Non
 							frappe.bold(frappe.unscrub(field)),
 						),
 						title=_("Invalid Item Defaults"),
-					)
-
+					)		
 
 @frappe.whitelist()
 def get_asset_naming_series():
