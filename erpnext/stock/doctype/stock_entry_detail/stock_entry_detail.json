@@ -353,7 +353,7 @@
    "depends_on": "eval:cint(erpnext.is_perpetual_inventory_enabled(parent.company))",
    "fieldname": "cost_center",
    "fieldtype": "Link",
-   "label": "Cost Center",
+   "label": "Target Cost Center",
    "options": "Cost Center",
    "print_hide": 1
   },
@@ -506,6 +506,7 @@
   {
    "fieldname": "project",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Project",
    "options": "Project"
   },
@@ -651,7 +652,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-01-14 11:22:19.060287",
+ "modified": "2025-10-07 11:09:08.168548",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Stock Entry Detail",
