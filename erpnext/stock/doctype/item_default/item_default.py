@@ -23,7 +23,7 @@ class ItemDefault(Document):
 		default_warehouse: DF.Link | None
 		deferred_expense_account: DF.Link | None
 		deferred_revenue_account: DF.Link | None
-		expense_account: DF.Link
+		expense_account: DF.Link | None
 		income_account: DF.Link | None
 		parent: DF.Data
 		parentfield: DF.Data
