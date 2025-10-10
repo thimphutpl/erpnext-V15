@@ -1,0 +1,231 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "MAX.YY.####",
+ "creation": "2025-09-10 09:50:30.259791",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_tuid",
+  "appraisal_period",
+  "employee",
+  "designation",
+  "column_break_puth",
+  "company",
+  "employee_name",
+  "pms_group",
+  "required_to_set_target",
+  "section_break_lwzl",
+  "items",
+  "section_c_section",
+  "fetch_competency",
+  "competency_item",
+  "section_d_section",
+  "overall_score",
+  "column_break_gclx",
+  "section_break_ojiw",
+  "approver",
+  "approver_email",
+  "amended_from",
+  "column_break_qdqw",
+  "approver_name",
+  "column_break_yoyz",
+  "approver_designation"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_tuid",
+   "fieldtype": "Section Break",
+   "label": "SECTION A"
+  },
+  {
+   "fieldname": "appraisal_period",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Appraisal Period",
+   "options": "Appraisal Period",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_puth",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "employee",
+   "fieldtype": "Link",
+   "ignore_user_permissions": 1,
+   "in_list_view": 1,
+   "label": "Employee",
+   "options": "Employee",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "employee.employee_name",
+   "fieldname": "employee_name",
+   "fieldtype": "Data",
+   "label": "Employee Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Managing for Excellence",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fetch_from": "employee.company",
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Company",
+   "options": "Company",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fetch_from": "employee.designation",
+   "fieldname": "designation",
+   "fieldtype": "Link",
+   "label": "Designation",
+   "options": "Designation",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_lwzl",
+   "fieldtype": "Section Break",
+   "label": "SECTION B"
+  },
+  {
+   "fieldname": "section_c_section",
+   "fieldtype": "Section Break",
+   "label": "SECTION C"
+  },
+  {
+   "fieldname": "section_d_section",
+   "fieldtype": "Section Break",
+   "label": "SECTION D"
+  },
+  {
+   "depends_on": "eval: (doc.workflow_state==='Evaluation Submitted' || doc.workflow_state==='Evaluation Verified')",
+   "fieldname": "overall_score",
+   "fieldtype": "Select",
+   "label": "Overall Score",
+   "mandatory_depends_on": "eval: doc.workflow_state==='Evaluation Submitted'",
+   "options": "\nOutstanding\nVery Good\nGood\nPartially Meeting Expectations"
+  },
+  {
+   "fieldname": "column_break_gclx",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "employee.pms_group",
+   "fieldname": "pms_group",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "PMS Group",
+   "options": "PMS Group",
+   "reqd": 1
+  },
+  {
+   "fieldname": "fetch_competency",
+   "fieldtype": "Button",
+   "label": "Fetch Competency"
+  },
+  {
+   "fieldname": "section_break_ojiw",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "approver",
+   "fieldtype": "Link",
+   "ignore_user_permissions": 1,
+   "label": "Approver",
+   "options": "Employee",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_qdqw",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "approver.employee_name",
+   "fieldname": "approver_name",
+   "fieldtype": "Data",
+   "label": "Approver Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_yoyz",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "approver.designation",
+   "fieldname": "approver_designation",
+   "fieldtype": "Data",
+   "label": "Approver Designation",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fetch_from": "pms_group.required_to_set_target",
+   "fieldname": "required_to_set_target",
+   "fieldtype": "Check",
+   "label": "Required to set target",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "approver.user_id",
+   "fieldname": "approver_email",
+   "fieldtype": "Link",
+   "ignore_user_permissions": 1,
+   "label": "Approver Email",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval: doc.required_to_set_target===1",
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "mandatory_depends_on": "eval: doc.required_to_set_target===1",
+   "options": "MAX item"
+  },
+  {
+   "fieldname": "competency_item",
+   "fieldtype": "Table",
+   "options": "Max Competency Item",
+   "reqd": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2025-10-10 22:24:22.932824",
+ "modified_by": "Administrator",
+ "module": "MAX",
+ "name": "Managing for Excellence",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

@@ -1,0 +1,114 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:appraisal_period",
+ "creation": "2025-09-10 10:27:37.182084",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "appraisal_period",
+  "column_break_dugd",
+  "amended_from",
+  "section_break_hdlv",
+  "planning_start_date",
+  "column_break_ltzl",
+  "planning_end_date",
+  "section_break_xlrq",
+  "evaluation_start_date",
+  "column_break_qjdu",
+  "evaluation_end_date"
+ ],
+ "fields": [
+  {
+   "fieldname": "appraisal_period",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Appraisal Period",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "column_break_dugd",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Appraisal Period",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "section_break_hdlv",
+   "fieldtype": "Section Break",
+   "label": "Planning Schedule"
+  },
+  {
+   "fieldname": "planning_start_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Planning Start Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_ltzl",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "planning_end_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Planning End Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_xlrq",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "evaluation_start_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Evaluation Start Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_qjdu",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "evaluation_end_date",
+   "fieldtype": "Date",
+   "label": "Evaluation End Date",
+   "reqd": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-10-09 14:19:09.815430",
+ "modified_by": "Administrator",
+ "module": "MAX",
+ "name": "Appraisal Period",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

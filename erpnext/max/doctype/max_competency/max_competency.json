@@ -1,0 +1,56 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:pms_group",
+ "creation": "2025-09-12 00:05:37.318557",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "pms_group",
+  "section_break_rmsg",
+  "table_hpjh"
+ ],
+ "fields": [
+  {
+   "fieldname": "pms_group",
+   "fieldtype": "Link",
+   "label": "PMS Group",
+   "options": "PMS Group",
+   "unique": 1
+  },
+  {
+   "fieldname": "section_break_rmsg",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "table_hpjh",
+   "fieldtype": "Table",
+   "options": "Competency Master Item"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-09-12 00:39:11.203850",
+ "modified_by": "Administrator",
+ "module": "MAX",
+ "name": "Max Competency",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
