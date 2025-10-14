@@ -3,8 +3,8 @@
 
 frappe.ui.form.on("Fabrication And Bailey Bridge", {
 	refresh(frm) {
-        if(frm.doc.docstatus===1){
-			frm.add_custom_button(__('Accounting Ledger'), function(){
+		if (frm.doc.docstatus === 1) {
+			frm.add_custom_button(__('Accounting Ledger'), function () {
 				frappe.route_options = {
 					voucher_no: frm.doc.name,
 					from_date: frm.doc.finish_date,
@@ -16,7 +16,7 @@ frappe.ui.form.on("Fabrication And Bailey Bridge", {
 			}, __("View"));
 		}
 		if (frm.doc.jv && frappe.model.can_read("Journal Entry")) {
-			cur_frm.add_custom_button(__('Bank Entries'), function() {
+			cur_frm.add_custom_button(__('Bank Entries'), function () {
 				frappe.route_options = {
 					"Journal Entry Account.reference_type": me.frm.doc.doctype,
 					"Journal Entry Account.reference_name": me.frm.doc.name,
@@ -24,13 +24,13 @@ frappe.ui.form.on("Fabrication And Bailey Bridge", {
 				frappe.set_route("List", "Journal Entry");
 			}, __("View"));
 		}
-	
+
 		if (frm.doc.outstanding_amount > 0 && frm.doc.owned_by == "Others" && frappe.model.can_write("Journal Entry")) {
 			//cur_frm.toggle_display("receive_payment", 1)
 			/*cur_frm.add_custom_button(__('Payment'), function() {
 				cur_frm.cscript.receive_payment()
 			}, __("Receive"));*/
-			frm.add_custom_button("Receive Payment", function() {
+			frm.add_custom_button("Receive Payment", function () {
 				frappe.model.open_mapped_doc({
 					method: "erpnext.fleet_management.doctype.fabrication_and_bailey_bridge.fabrication_and_bailey_bridge.make_payment_entry",
 					frm: cur_frm
@@ -40,17 +40,32 @@ frappe.ui.form.on("Fabrication And Bailey Bridge", {
 		else {
 			cur_frm.toggle_display("receive_payment", 0)
 		}
-		
+
 		cur_frm.toggle_display("owned_by", 1)
 	},
-	"receive_payment": function(frm) {
-		if(frm.doc.paid == 0) {
+
+	validate: function (frm) {
+		// Block manual entry of past or future dates if needed
+		if (frm.doc.finish_date > frappe.datetime.get_today()) {
+			frappe.throw(__('Past dates are not allowed in Job Out Date.'));
+		}
+		//  New check: From Date should not be greater than To Date
+		if (frm.doc.posting_date && frm.doc.finish_date && frm.doc.posting_date > frm.doc.finish_date) {
+			frappe.throw(__('Job in Date cannot be greater than Job Out Date.'));
+		}
+
+
+	},
+
+
+	"receive_payment": function (frm) {
+		if (frm.doc.paid == 0) {
 			return frappe.call({
 				method: "erpnext.fleet_management.doctype.fabrication_and_bailey_bridge.fabrication_and_bailey_bridge.make_bank_entry",
 				args: {
 					"frm": cur_frm.doc.name,
 				},
-				callback: function(r) {
+				callback: function (r) {
 				}
 			});
 		}
@@ -58,56 +73,56 @@ frappe.ui.form.on("Fabrication And Bailey Bridge", {
 		cur_frm.refresh_field("receive_payment")
 		cur_frm.refresh()
 	},
-	"get_items": function(frm) {
+	"get_items": function (frm) {
 		//get_entries_from_min(frm.doc.stock_entry)
 		//load_accounts(frm.doc.company)
 		return frappe.call({
 			method: "get_job_items",
 			doc: frm.doc,
-			callback: function(r, rt) {
+			callback: function (r, rt) {
 				frm.refresh_field("items");
 				frm.refresh_fields();
 			}
 		});
 	},
-	"get_items": function(frm) {
+	"get_items": function (frm) {
 		//get_entries_from_min(frm.doc.stock_entry)
 		//load_accounts(frm.doc.company)
 		return frappe.call({
 			method: "get_job_items",
 			doc: frm.doc,
-			callback: function(r, rt) {
+			callback: function (r, rt) {
 				frm.refresh_field("items");
 				frm.refresh_fields();
 			}
 		});
 	},
-	"items_on_form_rendered": function(frm, grid_row, cdt, cdn) {
-                var row = cur_frm.open_grid_row();
-                var df = frappe.meta.get_docfield("Job Card Item", "quantity", cur_frm.doc.name)
-                if(!row.grid_form.fields_dict.stock_entry.value) {
-                        df.read_only = 0
-                        row.grid_form.fields_dict.quantity.refresh()
-                }
-                else {
-                        df.read_only = 1
-                        row.grid_form.fields_dict.quantity.refresh()
-                }
-        }
+	"items_on_form_rendered": function (frm, grid_row, cdt, cdn) {
+		var row = cur_frm.open_grid_row();
+		var df = frappe.meta.get_docfield("Job Card Item", "quantity", cur_frm.doc.name)
+		if (!row.grid_form.fields_dict.stock_entry.value) {
+			df.read_only = 0
+			row.grid_form.fields_dict.quantity.refresh()
+		}
+		else {
+			df.read_only = 1
+			row.grid_form.fields_dict.quantity.refresh()
+		}
+	}
 });
 
 //Job Card Item  Details
 frappe.ui.form.on("Job Cards Item", {
-	"start_time": function(frm, cdt, cdn) {
+	"start_time": function (frm, cdt, cdn) {
 		calculate_datetime(frm, cdt, cdn)
 	},
-	"end_time": function(frm, cdt, cdn) {
+	"end_time": function (frm, cdt, cdn) {
 		calculate_datetime(frm, cdt, cdn)
 	},
-	"job": function(frm, cdt, cdn) {
+	"job": function (frm, cdt, cdn) {
 		var item = locals[cdt][cdn]
-		
-		if(item.job) {
+
+		if (item.job) {
 			frappe.call({
 				method: "frappe.client.get_value",
 				args: {
@@ -117,7 +132,7 @@ frappe.ui.form.on("Job Cards Item", {
 						name: item.job
 					}
 				},
-				callback: function(r) {
+				callback: function (r) {
 					frappe.model.set_value(cdt, cdn, "job_name", r.message.item_name)
 					frappe.model.set_value(cdt, cdn, "amount", r.message.cost)
 					cur_frm.refresh_field("job_name")
@@ -130,65 +145,65 @@ frappe.ui.form.on("Job Cards Item", {
 
 function calculate_datetime(frm, cdt, cdn) {
 	var item = locals[cdt][cdn]
-	if(item.start_time && item.end_time && item.end_time >= item.start_time) {
-		frappe.model.set_value(cdt, cdn,"total_time", frappe.datetime.get_hour_diff(item.end_time, item.start_time))
+	if (item.start_time && item.end_time && item.end_time >= item.start_time) {
+		frappe.model.set_value(cdt, cdn, "total_time", frappe.datetime.get_hour_diff(item.end_time, item.start_time))
 	}
 	cur_frm.refresh_field("total_time")
 }
 
 //Job Card Mechanic Details
 frappe.ui.form.on("Mechanic Assigned", {
-	"start_time": function(frm, cdt, cdn) {
+	"start_time": function (frm, cdt, cdn) {
 		calculate_time(frm, cdt, cdn)
 	},
-	"end_time": function(frm, cdt, cdn) {
+	"end_time": function (frm, cdt, cdn) {
 		calculate_time(frm, cdt, cdn)
 	},
-	"mechanic": function(frm, cdt, cdn) {
-                var item = locals[cdt][cdn]
-                if(item.employee_type == "Employee") {
-                        frappe.call({
-                                method: "frappe.client.get_value",
-                                args: {
-                                        doctype: "Employee",
-                                        fieldname: "employee_name",
-                                        filters: {name: item.mechanic}
-                                },
-                                callback: function(r) {
-                                        if(r.message.employee_name) {
-                                                frappe.model.set_value(cdt, cdn, "employee_name", r.message.employee_name)
-                                                cur_frm.refresh_fields()
-                                        }
-                                }
-                        })
-                }
-                else {
+	"mechanic": function (frm, cdt, cdn) {
+		var item = locals[cdt][cdn]
+		if (item.employee_type == "Employee") {
+			frappe.call({
+				method: "frappe.client.get_value",
+				args: {
+					doctype: "Employee",
+					fieldname: "employee_name",
+					filters: { name: item.mechanic }
+				},
+				callback: function (r) {
+					if (r.message.employee_name) {
+						frappe.model.set_value(cdt, cdn, "employee_name", r.message.employee_name)
+						cur_frm.refresh_fields()
+					}
+				}
+			})
+		}
+		else {
 			var doc_type = "Muster Roll Employee"
-			if(item.employee_type == "GEP Employee") {
+			if (item.employee_type == "GEP Employee") {
 				doc_type = "GEP Employee"
 			}
-                        frappe.call({
-                                method: "frappe.client.get_value",
-                                args: {
-                                        doctype: doc_type,
-                                        fieldname: "person_name",
-                                        filters: {name: item.mechanic}
-                                },
-                                callback: function(r) {
-                                        if(r.message.person_name) {
-                                                frappe.model.set_value(cdt, cdn, "employee_name", r.message.person_name)
-                                                cur_frm.refresh_fields()
-                                        }
-                                }
-                        })
-                }
-        }
+			frappe.call({
+				method: "frappe.client.get_value",
+				args: {
+					doctype: doc_type,
+					fieldname: "person_name",
+					filters: { name: item.mechanic }
+				},
+				callback: function (r) {
+					if (r.message.person_name) {
+						frappe.model.set_value(cdt, cdn, "employee_name", r.message.person_name)
+						cur_frm.refresh_fields()
+					}
+				}
+			})
+		}
+	}
 })
 
 function calculate_time(frm, cdt, cdn) {
 	var item = locals[cdt][cdn]
-	if(item.start_time && item.end_time && item.end_time >= item.start_time) {
-		frappe.model.set_value(cdt, cdn,"total_time", frappe.datetime.get_hour_diff(item.end_time, item.start_time))
+	if (item.start_time && item.end_time && item.end_time >= item.start_time) {
+		frappe.model.set_value(cdt, cdn, "total_time", frappe.datetime.get_hour_diff(item.end_time, item.start_time))
 	}
 	cur_frm.refresh_field("total_time")
 }
@@ -200,11 +215,11 @@ function get_entries_from_min(form) {
 		args: {
 			"name": form,
 		},
-		callback: function(r) {
-			if(r.message) {
+		callback: function (r) {
+			if (r.message) {
 				var total_amount = 0;
-				r.message.forEach(function(logbook) {
-				        var row = frappe.model.add_child(cur_frm.doc, "Job Card Item", "items");
+				r.message.forEach(function (logbook) {
+					var row = frappe.model.add_child(cur_frm.doc, "Job Card Item", "items");
 					row.which = "Item"
 					row.job = logbook['item_code']
 					row.job_name = logbook['item_name']
@@ -216,7 +231,7 @@ function get_entries_from_min(form) {
 	})
 }
 
-cur_frm.cscript.receive_payment = function(){
+cur_frm.cscript.receive_payment = function () {
 	var doc = cur_frm.doc;
 	frappe.ui.form.is_saving = true;
 	frappe.call({
@@ -224,10 +239,10 @@ cur_frm.cscript.receive_payment = function(){
 		args: {
 			"frm": cur_frm.doc.name,
 		},
-		callback: function(r){
+		callback: function (r) {
 			cur_frm.reload_doc();
 		},
-		always: function() {
+		always: function () {
 			frappe.ui.form.is_saving = false;
 		}
 	});

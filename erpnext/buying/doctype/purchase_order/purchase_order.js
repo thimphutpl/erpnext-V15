@@ -132,6 +132,13 @@ frappe.ui.form.on("Purchase Order", {
 		}
 	},
 
+	validate: function (frm) {
+		if (frm.doc.transaction_date > frappe.datetime.get_today()) {
+			frappe.throw(__('Futures dates are not allowed.'));
+		}
+	},
+
+
 	apply_tds: function (frm) {
 		if (!frm.doc.apply_tds) {
 			frm.set_value("tax_withholding_category", "");
@@ -157,10 +164,10 @@ frappe.ui.form.on("Purchase Order", {
 			},
 		});
 	},
-	
-	cost_center:function(frm){
-		if (frm.doc.cost_center){
-			frm.doc.items.map(v=>{
+
+	cost_center: function (frm) {
+		if (frm.doc.cost_center) {
+			frm.doc.items.map(v => {
 				v.cost_center = frm.doc.cost_center
 			})
 		}
@@ -172,12 +179,12 @@ frappe.ui.form.on("Purchase Order", {
 				fieldname: "warehouse",
 				filters: { name: frm.doc.cost_center },
 			},
-			callback: function(r, rt) {
-				if(r.message.warehouse) {
-					frm.doc.items.map(v=>{
+			callback: function (r, rt) {
+				if (r.message.warehouse) {
+					frm.doc.items.map(v => {
 						v.warehouse = r.message.warehouse
 					})
-				}else{
+				} else {
 					frappe.throw(__('Warehouse not define in this Cost Center'))
 				}
 			}
@@ -186,26 +193,26 @@ frappe.ui.form.on("Purchase Order", {
 
 	/* jai added */
 	schedule_date: function (frm) {
-		if (frm.doc.schedule_date){
-			frm.doc.items.map(v=>{
+		if (frm.doc.schedule_date) {
+			frm.doc.items.map(v => {
 				v.schedule_date = frm.doc.schedule_date
 			})
 		}
 	},
 
-	freight_and_insurance_charges: function(frm) {
+	freight_and_insurance_charges: function (frm) {
 		calculate_discount(frm)
 	},
 
-	discount: function(frm) {
+	discount: function (frm) {
 		calculate_discount(frm)
 	},
 
-	other_charges: function(frm) {
+	other_charges: function (frm) {
 		calculate_discount(frm)
 	},
 
-	tax: function(frm) {
+	tax: function (frm) {
 		calculate_discount(frm)
 	},
 });
@@ -276,6 +283,7 @@ frappe.ui.form.on("Purchase Order Item", {
 			}
 		}
 	},
+
 
 	fg_item: async function (frm, cdt, cdn) {
 		if (frm.doc.is_subcontracted && !frm.doc.is_old_subcontracting_flow) {
@@ -672,12 +680,12 @@ erpnext.buying.PurchaseOrderController = class PurchaseOrderController extends (
 
 									frappe.msgprint(
 										"Assigning " +
-											d.mr_name +
-											" to " +
-											d.item_code +
-											" (row " +
-											me.frm.doc.items[i].idx +
-											")"
+										d.mr_name +
+										" to " +
+										d.item_code +
+										" (row " +
+										me.frm.doc.items[i].idx +
+										")"
 									);
 									if (qty > 0) {
 										frappe.msgprint("Splitting " + qty + " units of " + d.item_code);

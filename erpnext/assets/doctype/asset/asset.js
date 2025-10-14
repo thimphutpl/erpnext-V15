@@ -45,6 +45,41 @@ frappe.ui.form.on("Asset", {
 		erpnext.accounts.dimensions.update_dimension(frm, frm.doctype);
 	},
 
+
+
+
+	onload: function (frm) {
+		// Set today's date if empty
+		if (!frm.doc.posting_date) {
+			frm.set_value('posting_date', frappe.datetime.get_today());
+		}
+
+		// Make sure field is editable
+		frm.set_df_property('posting_date', 'read_only', 0);
+
+		// Apply datepicker restriction after field is ready
+		frappe.after_ajax(() => {
+			if (frm.fields_dict.posting_date && frm.fields_dict.posting_date.df.fieldtype === "Date") {
+				// Convert today's date to JS Date object
+				let today = frappe.datetime.str_to_obj(frappe.datetime.get_today());
+
+				// Update datepicker maxDate
+				frm.fields_dict.posting_date.datepicker.update({
+					minDate: today
+				});
+			}
+		});
+	},
+
+	validate: function (frm) {
+		if (frm.doc.posting_date < frappe.datetime.get_today()) {
+			frappe.throw(__('Past dates are not allowed.'));
+		}
+	},
+
+
+
+
 	setup: function (frm) {
 		frm.ignore_doctypes_on_cancel_all = ["Journal Entry"];
 
@@ -80,8 +115,8 @@ frappe.ui.form.on("Asset", {
 		});
 	},
 
-	branch: function(frm){
-		if(frm.doc.branch != null || frm.doc.branch != "" || frm.doc.branch != undefined){
+	branch: function (frm) {
+		if (frm.doc.branch != null || frm.doc.branch != "" || frm.doc.branch != undefined) {
 			frappe.call({
 				method: "frappe.client.get_value",
 				args: {
@@ -89,16 +124,16 @@ frappe.ui.form.on("Asset", {
 					fieldname: "cost_center",
 					filters: { name: frm.doc.branch },
 				},
-				callback: function(r, rt) {
-					if(r.message) {
+				callback: function (r, rt) {
+					if (r.message) {
 						frm.set_value("cost_center", r.message.cost_center);
 						frm.trigger("cost_center")
 					}
 				}
 			});
 		}
-		else{
-			frm.set_value("cost_center",null);
+		else {
+			frm.set_value("cost_center", null);
 		}
 		frm.refresh_fields();
 	},
@@ -109,8 +144,8 @@ frappe.ui.form.on("Asset", {
 
 		if (frm.doc.docstatus == 1) {
 			if (["Submitted", "Partially Depreciated", "Fully Depreciated"].includes(frm.doc.status)) {
-				if(in_list([...frappe.user_roles], 'Admin')){
-					frm.add_custom_button(__("Disable Depreciation"), function(){
+				if (in_list([...frappe.user_roles], 'Admin')) {
+					frm.add_custom_button(__("Disable Depreciation"), function () {
 						frappe.warn('Are you sure to proceed?',
 							'Asset Depreciation will be disabled here after.',
 							() => {
@@ -241,20 +276,20 @@ frappe.ui.form.on("Asset", {
 		}
 	},
 
-	available_for_use_date:function(frm){
-		if (frm.doc.available_for_use_date){
+	available_for_use_date: function (frm) {
+		if (frm.doc.available_for_use_date) {
 			frappe.call({
-				method:'get_month_end',
-				doc:frm.doc,
-				args:{
-					available_for_use_date:frm.doc.available_for_use_date
+				method: 'get_month_end',
+				doc: frm.doc,
+				args: {
+					available_for_use_date: frm.doc.available_for_use_date
 				},
-				callback:function(r){
-					frm.doc.finance_books.map(v=> v.depreciation_start_date = r.message)
+				callback: function (r) {
+					frm.doc.finance_books.map(v => v.depreciation_start_date = r.message)
 					frm.refresh_field('finance_books')
 				}
 			})
-			
+
 		}
 	},
 
@@ -500,8 +535,8 @@ frappe.ui.form.on("Asset", {
 				item_code: frm.doc.item_code,
 				asset_category: frm.doc.asset_category,
 				gross_purchase_amount: frm.doc.gross_purchase_amount,
-				asset_sub_category:frm.doc.asset_sub_category,
-                available_for_use_date: frm.doc.available_for_use_date
+				asset_sub_category: frm.doc.asset_sub_category,
+				available_for_use_date: frm.doc.available_for_use_date
 			},
 			callback: function (r, rt) {
 				if (r.message) {
@@ -514,7 +549,7 @@ frappe.ui.form.on("Asset", {
 
 	asset_category: function (frm) {
 		if (!frm.doc.asset_category) return
-		
+
 		frappe.call({
 			method: "erpnext.assets.doctype.asset.asset.get_account_info",
 			args: {
@@ -527,7 +562,7 @@ frappe.ui.form.on("Asset", {
 					frm.set_value("asset_account", r.message[0].fixed_asset_account);
 					// frm.set_value("credit_account", r.message);
 					frm.refresh_field('asset_account');
-					
+
 
 					frm.set_value("accumulated_depreciation_account", r.message[0].accumulated_depreciation_account);
 					// frm.set_value("credit_account", r.message);
@@ -544,7 +579,7 @@ frappe.ui.form.on("Asset", {
 	is_existing_asset: function (frm) {
 		frm.trigger("toggle_reference_doc");
 	},
-	
+
 	is_opening_asset: function (frm) {
 		frm.trigger("toggle_reference_doc");
 	},
@@ -823,14 +858,14 @@ frappe.ui.form.on("Asset", {
 		}
 	},
 
-	update_disable_depreciation: function(frm){
+	update_disable_depreciation: function (frm) {
 		return frappe.call({
 			method: "erpnext.assets.doctype.asset.asset.update_disable_depreciation",
-			args:{
+			args: {
 				'asset_id': frm.doc.name
 			},
-			callback: function(r, rt) {
-				if(r.message){
+			callback: function (r, rt) {
+				if (r.message) {
 					frappe.msgprint("Disable Depreciation updated for this Asset");
 				}
 				cur_frm.reload_doc()
