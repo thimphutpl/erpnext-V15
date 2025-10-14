@@ -126,10 +126,51 @@ frappe.ui.form.on("Purchase Order", {
 			return erpnext.queries.warehouse(frm.doc);
 		});
 
+		frm.set_query("warehouse", "items", function (doc) {
+			return {
+				filters: { company: doc.company },
+			};
+		});
+
+		frm.set_query("set_warehouse", function (doc) {
+			return {
+				filters: { company: doc.company },
+			};
+		});
+
 		// On cancel and amending a purchase order with advance payment, reset advance paid amount
 		if (frm.is_new()) {
 			frm.set_value("advance_paid", 0);
 		}
+	},
+
+	branch: function (frm) {
+		if (frm.is_new()) {
+			frappe.call({
+				method: "erpnext.custom_utils.get_user_info",
+				args: { "branch": frm.doc.branch },
+				callback(r) {
+					console.log(r.message);
+					// frm.set_value("approver", r.message.approver);
+					frm.set_value("warehouse", r.message.warehouse);
+					// frm.refresh_field('approver');
+					frm.refresh_field('warehouse');
+				}
+			});
+		}
+	},
+
+	cost_center: function (frm) {
+		frm.doc.items.map(v => {
+			v.cost_center = frm.doc.cost_center
+		})
+		frm.refresh_field("items")
+	},
+	warehouse: function (frm) {
+		frm.doc.items.map(v => {
+			v.warehouse = frm.doc.warehouse
+		})
+		frm.refresh_field("items")
 	},
 
 	validate: function (frm) {
@@ -191,6 +232,7 @@ frappe.ui.form.on("Purchase Order", {
 		});
 	},
 
+
 	/* jai added */
 	schedule_date: function (frm) {
 		if (frm.doc.schedule_date) {
@@ -224,17 +266,40 @@ function calculate_discount(frm) {
 	cur_frm.refresh_field("total_add_ded")
 }
 
+// frappe.ui.form.on("Purchase Order Item", {
+// 	schedule_date: function (frm, cdt, cdn) {
+// 		var row = locals[cdt][cdn];
+// 		if (row.schedule_date) {
+// 			if (!frm.doc.schedule_date) {
+// 				erpnext.utils.copy_value_in_all_rows(frm.doc, cdt, cdn, "items", "schedule_date");
+// 			} else {
+// 				set_schedule_date(frm);
+// 			}
+// 		}
+// 	},
+
+
+//auto pick cost center and warehouse in child table according to branch. by. Kinzang.N
 frappe.ui.form.on("Purchase Order Item", {
-	schedule_date: function (frm, cdt, cdn) {
+	items_add: function (frm, cdt, cdn) {
 		var row = locals[cdt][cdn];
-		if (row.schedule_date) {
-			if (!frm.doc.schedule_date) {
-				erpnext.utils.copy_value_in_all_rows(frm.doc, cdt, cdn, "items", "schedule_date");
-			} else {
-				set_schedule_date(frm);
+
+		// Set cost center from header
+		if (frm.doc.cost_center) {
+			frappe.model.set_value(cdt, cdn, "cost_center", frm.doc.cost_center);
+		}
+
+		// Set warehouse: pick from first row if available, otherwise header
+		if (frm.doc.items.length > 0) {
+			var first_row = frm.doc.items[0];
+			if (first_row.warehouse) {
+				frappe.model.set_value(cdt, cdn, "warehouse", first_row.warehouse);
+			} else if (frm.doc.warehouse) {
+				frappe.model.set_value(cdt, cdn, "warehouse", frm.doc.warehouse);
 			}
 		}
 	},
+
 
 	item_code: async function (frm, cdt, cdn) {
 		if (frm.doc.is_subcontracted && !frm.doc.is_old_subcontracting_flow) {

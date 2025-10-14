@@ -10,8 +10,8 @@
  "field_order": [
   "supplier_section",
   "title",
+  "branch",
   "naming_series",
-  "supplier",
   "supplier_name",
   "order_confirmation_no",
   "order_confirmation_date",
@@ -19,11 +19,11 @@
   "column_break_7",
   "transaction_date",
   "schedule_date",
-  "method_of_procurement",
   "column_break1",
   "company",
-  "branch",
   "apply_tds",
+  "method_of_procurement",
+  "supplier",
   "tax_withholding_category",
   "is_subcontracted",
   "supplier_warehouse",
@@ -46,6 +46,7 @@
   "set_warehouse",
   "items_section",
   "items",
+  "warehouse",
   "sb_last_purchase",
   "total_qty",
   "total_net_weight",
@@ -1337,13 +1338,20 @@
   {
    "fieldname": "column_break_qjnx",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "warehouse",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Warehouse",
+   "options": "Warehouse"
   }
  ],
  "icon": "fa fa-file-text",
  "idx": 105,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-10-05 11:25:55.299782",
+ "modified": "2025-10-14 22:55:06.339889",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Purchase Order",
