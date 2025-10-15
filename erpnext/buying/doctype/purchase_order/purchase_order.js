@@ -519,12 +519,14 @@ erpnext.buying.PurchaseOrderController = class PurchaseOrderController extends (
 							}
 						}
 					}
-					if (flt(doc.per_billed, 2) < 100)
-						cur_frm.add_custom_button(
-							__("Purchase Invoice"),
-							this.make_purchase_invoice,
-							__("Create")
-						);
+
+					// hide by Kinzang N, because end user are directly creating PI without creating PR.
+					// if (flt(doc.per_billed, 2) < 100)
+					// 	cur_frm.add_custom_button(
+					// 		__("Purchase Invoice"),
+					// 		this.make_purchase_invoice,
+					// 		__("Create")
+					// 	);
 
 					if (flt(doc.per_billed, 2) < 100 && doc.status != "Delivered") {
 						this.frm.add_custom_button(
