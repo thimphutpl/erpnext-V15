@@ -77,42 +77,51 @@ frappe.ui.form.on("Material Request", {
 
 		erpnext.accounts.dimensions.setup_dimension_filters(frm, frm.doctype);
 	},
-	"transaction_date": function(frm) {
-		if(frm.doc.transaction_date >= frappe.datetime.nowdate()){
+	"transaction_date": function (frm) {
+		if (frm.doc.transaction_date >= frappe.datetime.nowdate()) {
 			frappe.throw("Transaction Date cannot be future date")
 		}
 	},
-	
-	branch: function(frm){
-		if(frm.is_new()) {
+
+	branch: function (frm) {
+		if (frm.is_new()) {
 			frappe.call({
-					method: "erpnext.custom_utils.get_user_info",
-					args: {"branch": frm.doc.branch},
-					callback(r) {
-						console.log(r.message);
-						// frm.set_value("approver", r.message.approver);
-						frm.set_value("warehouse", r.message.warehouse);
-						// frm.refresh_field('approver');
-						frm.refresh_field('warehouse');
-					}
+				method: "erpnext.custom_utils.get_user_info",
+				args: { "branch": frm.doc.branch },
+				callback(r) {
+					console.log(r.message);
+					// frm.set_value("approver", r.message.approver);
+					frm.set_value("warehouse", r.message.warehouse);
+					// frm.refresh_field('approver');
+					frm.refresh_field('warehouse');
+				}
 			});
-        }
+		}
 	},
-	item_group: function(frm){
+	item_group: function (frm) {
 		frm.fields_dict["items"].grid.get_field("item_code").get_query = function (doc) {
 			return {
-				filters: { 'item_group': frm.doc.item_group}
+				filters: { 'item_group': frm.doc.item_group }
 			};
 		};
 	},
-	cost_center: function(frm){
-		frm.doc.items.map(v=>{
+
+	// item_sub_group: function (frm) {
+	// 	frm.fields_dict["items"].grid.get_field("item_code").get_query = function (doc) {
+	// 		return {
+	// 			filters: { 'item_sub_group': frm.doc.item_sub_group }
+	// 		};
+	// 	};
+	// },
+
+	cost_center: function (frm) {
+		frm.doc.items.map(v => {
 			v.cost_center = frm.doc.cost_center
 		})
 		frm.refresh_field("items")
 	},
-	warehouse: function(frm){
-		frm.doc.items.map(v=>{
+	warehouse: function (frm) {
+		frm.doc.items.map(v => {
 			v.warehouse = frm.doc.warehouse
 		})
 		frm.refresh_field("items")
@@ -202,7 +211,7 @@ frappe.ui.form.on("Material Request", {
 						() => frm.events.make_purchase_order(frm),
 						__("Create")
 					);
-					
+
 				}
 
 				if (frm.doc.material_request_type === "Requisition") {
@@ -222,7 +231,7 @@ frappe.ui.form.on("Material Request", {
 						() => frm.events.make_stock_entry(frm),
 						__("Create")
 					);
-					
+
 				}
 
 				console.log(frm.doc.material_request_type)
@@ -429,7 +438,7 @@ frappe.ui.form.on("Material Request", {
 		frappe.model.open_mapped_doc({
 			method: "erpnext.stock.doctype.material_request.material_request.make_purchase_order",
 			frm: frm,
-			args: {  },
+			args: {},
 			run_link_triggers: true,
 		});
 		// frappe.prompt(
@@ -550,9 +559,9 @@ frappe.ui.form.on("Material Request", {
 		if (frm.doc.material_request_type !== "Material Transfer" && frm.doc.set_from_warehouse) {
 			frm.set_value("set_from_warehouse", "");
 		}
-		if (/*frm.doc.workflow_state=="Waiting for Approval" && */frm.doc.material_request_type=="Purchase"){
-			let date=new Date();
-			let formatted_date=formatDate(date);
+		if (/*frm.doc.workflow_state=="Waiting for Approval" && */frm.doc.material_request_type == "Purchase") {
+			let date = new Date();
+			let formatted_date = formatDate(date);
 			// console.log(formatted_date);
 			frm.set_value("date", formatted_date);
 			frappe.call({
@@ -562,16 +571,16 @@ frappe.ui.form.on("Material Request", {
 					new_date: formatted_date,
 					purpose: frm.doc.material_request_type
 				},
-				callback: function(r, rt) {
-					if(r.message) {
+				callback: function (r, rt) {
+					if (r.message) {
 						console.log("works")
 						refresh();
 					}
 				}
 			});
 
-		}else{
-			
+		} else {
+
 		}
 	},
 });
@@ -583,7 +592,7 @@ const formatDate = (date) => {
 };
 
 frappe.ui.form.on("Material Request Item", {
-	items_add: function(frm, cdt, cdn) {
+	items_add: function (frm, cdt, cdn) {
 		frappe.model.set_value(cdt, cdn, "cost_center", frm.doc.cost_center);
 		frappe.model.set_value(cdt, cdn, "warehouse", frm.doc.warehouse);
 	},
@@ -618,9 +627,24 @@ frappe.ui.form.on("Material Request Item", {
 		item.rate = 0;
 		item.uom = "";
 		item.expense_account = "";
-		
+
 		set_schedule_date(frm);
 		frm.events.get_item_data(frm, item, true);
+
+		// Fetch and set item_sub_group automatically, added by Kinzang.N on 16/10/2025
+		frappe.call({
+			method: "frappe.client.get_value",
+			args: {
+				doctype: "Item",
+				filters: { name: item.item_code },
+				fieldname: "item_sub_group"
+			},
+			callback: function (r) {
+				if (r.message) {
+					frappe.model.set_value(doctype, name, "item_sub_group", r.message.item_sub_group);
+				}
+			}
+		});
 	},
 
 	schedule_date: function (frm, cdt, cdn) {
