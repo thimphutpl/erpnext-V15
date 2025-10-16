@@ -65,6 +65,7 @@ frappe.ui.form.on("Purchase Order", {
 		erpnext.accounts.dimensions.update_dimension(frm, frm.doctype);
 	},
 
+
 	refresh: function (frm) {
 		if (frm.doc.is_old_subcontracting_flow) {
 			frm.trigger("get_materials_from_supplier");
@@ -117,6 +118,17 @@ frappe.ui.form.on("Purchase Order", {
 	},
 
 	onload: function (frm) {
+
+		//added by Kinzang. N on 16/10/2025. to pop message to show 
+		if (frm.is_new() && !frm.doc.get_items_from_open_material_requests) {
+			frappe.msgprint({
+				title: __('Warning'),
+				message: __('Please do not create a Purchase Order directly without a Material Request, if its Consumables, Spare Parts and Asset. Other-wise close'),
+				indecator: 'orange'
+
+			});
+		}
+
 		set_schedule_date(frm);
 		if (!frm.doc.transaction_date) {
 			frm.set_value("transaction_date", frappe.datetime.get_today());
@@ -143,6 +155,9 @@ frappe.ui.form.on("Purchase Order", {
 			frm.set_value("advance_paid", 0);
 		}
 	},
+
+
+
 
 	branch: function (frm) {
 		if (frm.is_new()) {
