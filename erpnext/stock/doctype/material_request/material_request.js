@@ -645,6 +645,21 @@ frappe.ui.form.on("Material Request Item", {
 				}
 			}
 		});
+
+		// Fetch and set item_group automatically, added by Kinzang.N on 16/10/2025
+		frappe.call({
+			method: "frappe.client.get_value",
+			args: {
+				doctype: "Item",
+				filters: { name: item.item_code },
+				fieldname: "item_group"
+			},
+			callback: function (r) {
+				if (r.message) {
+					frappe.model.set_value(doctype, name, "item_group", r.message.item_group);
+				}
+			}
+		});
 	},
 
 	schedule_date: function (frm, cdt, cdn) {

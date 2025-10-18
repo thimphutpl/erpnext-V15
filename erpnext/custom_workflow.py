@@ -862,11 +862,11 @@ class CustomWorkflow:
 
 		elif self.new_state.lower() == ("Approved".lower()):
 			if self.doc.leave_approver != frappe.session.user:
-				frappe.throw("Only {} can Approve this Leave Application".format(self.doc.supervisor))
+				frappe.throw("Only {} can Approve this Leave Application".format(self.doc.leave_approver))
 
 		elif self.new_state.lower() == ("Rejected".lower()):
 			if self.doc.leave_approver != frappe.session.user:
-				frappe.throw("Only {} can Reject this Leave Application".format(self.doc.supervisor))
+				frappe.throw("Only {} can Reject this Leave Application".format(self.doc.leave_approver))
 		else:
 			frappe.throw(_("Invalid Workflow State {}").format(self.doc.workflow_state))
 
@@ -1341,8 +1341,8 @@ class CustomWorkflow:
 				frappe.throw("Only {} can Forward this document.".format(self.doc.supervisor))
 			self.set_approver("General Manager")
 
-		elif self.new_state.lower() == "Waiting Hr Approval".lower():
-			# frappe.throw(str(self.hrgm))
+		elif self.new_state.lower() == "Waiting for HR Approval".lower():
+               # frappe.throw(str(self.hrgm))
 			if self.doc.supervisor != frappe.session.user:
 				frappe.throw("Only {} can Forward this document.".format(self.doc.supervisor))
 			self.set_approver("HR")
@@ -1353,7 +1353,7 @@ class CustomWorkflow:
 					frappe.throw("Only {} or {} can reject this document.".format(self.doc.supervisor, self.hr_approver[0]))
 
 		elif self.new_state.lower() =="Approved".lower():
-			if self.doc.supervisor != frappe.session.user:
+			if self.hr_approver[0] != frappe.session.user:
 				frappe.throw("Only {} can approve or edit this document.".format(self.hr_approver[0]))
 
 	def notify(self, args):
