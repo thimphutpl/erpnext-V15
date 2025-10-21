@@ -137,7 +137,7 @@
    "read_only": 1
   },
   {
-   "description": "*** It must be ended with /. Based on this series, it will generate your dispatch number after the eNote is approved.***",
+   "description": "*** It must be ended without /. Based on this series, it will generate your dispatch number after the eNote is approved.***",
    "fieldname": "enote_series",
    "fieldtype": "Data",
    "in_list_view": 1,
@@ -173,7 +173,7 @@
    "options": "\nProcess\nPayment"
   },
   {
-   "description": "** This eNote type refers to department or division or section or unit if it has different series format. EG. If ITD has BOBL/ITD/01/Year/### and HRD has BOBL/HRD/01/Year/###, then in eNote type, it must include HRD and ITD ***.",
+   "description": "** This eNote type refers to department or division or section or unit if it has different series format. EG. If ITD has CDCL/ITD/01/Year/### and HRD has CDCL/HRD/01/Year/###, then in eNote type, it must include HRD and ITD ***.",
    "fieldname": "enote_category",
    "fieldtype": "Link",
    "label": "eNote  Category",
@@ -310,7 +310,7 @@
  "icon": "fa fa-file-text",
  "is_submittable": 1,
  "links": [],
- "modified": "2025-07-18 15:26:15.618328",
+ "modified": "2025-10-21 12:41:31.459100",
  "modified_by": "Administrator",
  "module": "eNote",
  "name": "eNote",
