@@ -265,6 +265,7 @@ def validate_expense_against_budget(args, throw_error=True):
 	'''
 	""" avoid budget check at MR """
 	# if frappe.db.get_single_value("Budget Settings", "budget_commit_on") != "Material Request":
+	# Hidden By Sanga Since project check is not needed
 	# for budget_against in ["project", "cost_center"] + get_accounting_dimensions():
 	for budget_against in ["cost_center"] + get_accounting_dimensions():
 		if (
@@ -316,12 +317,11 @@ def validate_expense_against_budget(args, throw_error=True):
 			# frappe.throw(str(budget_records))
 			if budget_records:
 				validate_budget_records(args, error, budget_records, throw_error)
-			# Hidden by Sanga
-			# elif throw_error:
-			# 	frappe.msgprint(_("Budget allocation not available for <b>%s </b> in %s <b>%s</b>" % (
-			# 					args.account, budget_against, frappe.db.escape(args.get(budget_against))
-			# 				)), raise_exception=True
-			# 			)
+			elif throw_error:
+				frappe.msgprint(_("Budget allocation not available for <b>%s </b> in %s <b>%s</b>" % (
+								args.account, budget_against, frappe.db.escape(args.get(budget_against))
+							)), raise_exception=True
+						)
 			else:
 				error.append("Budget allocation not available for <b>%s </b> in %s <b>%s</b>" % (
 								args.account, budget_against, frappe.db.escape(args.get(budget_against))
