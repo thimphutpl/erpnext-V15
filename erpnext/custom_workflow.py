@@ -488,8 +488,71 @@ class CustomWorkflow:
             self.review()
         elif self.doc.doctype == "Performance Evaluation":
             self.performance_evaluation()
+        elif self.doc.doctype == "Managing for Excellence":
+            self.managing_for_excellence()
         else:
             frappe.throw(_("Workflow not defined for {}").format(self.doc.doctype))
+    def managing_for_excellence(self):
+        # frappe.throw(frappe.as_json(self.doc.appraisal_period))
+        # if self.new_state.lower() in ("Plan Submitted".lower()):
+        appraissal_period = frappe.get_doc("Appraisal Period",{"name":self.doc.appraisal_period})
+        # frappe.throw(frappe.as_json(appraissal_period))
+        
+        if self.new_state.lower() in ("Plan Submitted".lower()):
+            user_id= frappe.db.get_value("Employee",self.doc.employee,'user_id')
+            approver_user_id= frappe.db.get_value("Employee",self.doc.approver,'user_id')
+            if nowdate() < str(appraissal_period.planning_start_date):
+                frappe.throw("Planning period not yet started")
+            if nowdate() > str(appraissal_period.planning_end_date):
+                frappe.throw("Planning period already ended")
+            if self.old_state.lower() not in ("Plan Submitted".lower()):
+                if user_id != frappe.session.user:
+                    frappe.throw("Only {} can save or edit this Document".format(self.doc.employee))
+            if self.old_state.lower() in ("Plan Submitted".lower()):
+                if approver_user_id != frappe.session.user:
+                    frappe.throw("Only {} can save or edit this Document".format(self.doc.approver))
+            self.set_approver("Supervisor")
+
+        if self.new_state.lower() in ("Plan Verified".lower()):
+            user_id= frappe.db.get_value("Employee",self.doc.approver,'user_id')
+            if self.old_state.lower() != self.new_state.lower():
+                if user_id != frappe.session.user:
+                    frappe.throw("Only {} can save or edit this Document".format(self.doc.approver))
+        if self.old_state:
+            if self.old_state.lower() in ("Plan Verified".lower()):
+                user_id= frappe.db.get_value("Employee",self.doc.employee,'user_id')
+
+                if user_id != frappe.session.user:
+                    frappe.throw("Only {} can save or edit this Document".format(self.doc.employee))
+
+        if self.new_state.lower() in ("Evaluation Submitted".lower()) and self.doc.is_new():
+            user_id= frappe.db.get_value("Employee",self.doc.employee,'user_id')
+            if nowdate() < str(appraissal_period.evaluation_start_date):
+                frappe.throw("Evaluation period not yet started")
+            if nowdate() > str(appraissal_period.evaluation_end_date):
+                frappe.throw("Evaluation period already ended")
+
+            if user_id != frappe.session.user:
+                frappe.throw("Only {} can save or edit this Document".format(self.doc.employee))
+        if self.new_state.lower() in ("Evaluation Submitted".lower()) and not self.doc.is_new():
+            user_id= frappe.db.get_value("Employee",self.doc.employee,'user_id')
+            if nowdate() < str(appraissal_period.evaluation_start_date):
+                frappe.throw("Evaluation period not yet started")
+            if nowdate() > str(appraissal_period.evaluation_end_date):
+                frappe.throw("Evaluation period already ended")
+            if self.old_state.lower() != self.new_state.lower():
+                if user_id != frappe.session.user:
+                    frappe.throw("Only {} can save or edit this Document".format(self.doc.employee))
+        if self.old_state:
+            if self.old_state.lower() in ("Evaluation Submitted".lower()):
+                user_id= frappe.db.get_value("Employee",self.doc.approver,'user_id')
+
+                if user_id != frappe.session.user:
+                    frappe.throw("Only {} can save or edit this Document".format(self.doc.approver))
+            
+            
+
+
     def performance_evaluation(self):
         user_id = frappe.db.get_value("Employee",self.doc.approver,'user_id')
         if self.new_state.lower() in ("Waiting Supervisor Approval".lower()):
@@ -1515,6 +1578,7 @@ def get_field_map():
          "Review": ["approver","approver_name","approver_designation"],
          "Performance Evaluation": ["approver","approver_name","approver_designation"],
         "POL": ["approver","approver_name","approver_designation"],
+         "Managing for Excellence": ["approver","approver_name","approver_designation"],
         "Asset Issue Details": [],
     }
 
