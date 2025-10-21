@@ -265,7 +265,8 @@ def validate_expense_against_budget(args, throw_error=True):
 	'''
 	""" avoid budget check at MR """
 	# if frappe.db.get_single_value("Budget Settings", "budget_commit_on") != "Material Request":
-	for budget_against in ["project", "cost_center"] + get_accounting_dimensions():
+	# for budget_against in ["project", "cost_center"] + get_accounting_dimensions():
+	for budget_against in ["cost_center"] + get_accounting_dimensions():
 		if (
 			args.get(budget_against)
 			and args.account
@@ -315,11 +316,12 @@ def validate_expense_against_budget(args, throw_error=True):
 			# frappe.throw(str(budget_records))
 			if budget_records:
 				validate_budget_records(args, error, budget_records, throw_error)
-			elif throw_error:
-				frappe.msgprint(_("Budget allocation not available for <b>%s </b> in %s <b>%s</b>" % (
-								args.account, budget_against, frappe.db.escape(args.get(budget_against))
-							)), raise_exception=True
-						)
+			# Hidden by Sanga
+			# elif throw_error:
+			# 	frappe.msgprint(_("Budget allocation not available for <b>%s </b> in %s <b>%s</b>" % (
+			# 					args.account, budget_against, frappe.db.escape(args.get(budget_against))
+			# 				)), raise_exception=True
+			# 			)
 			else:
 				error.append("Budget allocation not available for <b>%s </b> in %s <b>%s</b>" % (
 								args.account, budget_against, frappe.db.escape(args.get(budget_against))
@@ -415,15 +417,15 @@ def compare_expense_with_budget(args, error, budget_amount, action_for, action, 
 			action = "Warn"
 		
 		error.append(msg)
-		if throw_error:
-			if action == "Stop":
-				frappe.msgprint(msg, raise_exception=True)
-				frappe.throw(str(msg))
-			else:
-				frappe.msgprint(msg, indicator="orange")
-				frappe.throw(str(msg))
-		else:
-			return error[0]
+		# if throw_error:
+		# 	if action == "Stop":
+		# 		frappe.msgprint(msg, raise_exception=True)
+		# 		frappe.throw(str(msg))
+		# 	else:
+		# 		frappe.msgprint(msg, indicator="orange")
+		# 		frappe.throw(str(msg))
+		# else:
+		# 	return error[0]
 
 def commit_budget(args):
 	amount = args.amount if args.amount else args.debit
