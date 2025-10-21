@@ -15,6 +15,7 @@
   "required_area",
   "required_baselined",
   "required_key_result_areas",
+  "required_aligned_to_3_spec",
   "column_break_2",
   "weightage_for_competency",
   "description",
@@ -94,10 +95,16 @@
    "fieldname": "html_ruie",
    "fieldtype": "HTML",
    "options": "<label>Select the checkbox below to make the fields appear in the target setup</label>"
+  },
+  {
+   "default": "0",
+   "fieldname": "required_aligned_to_3_spec",
+   "fieldtype": "Check",
+   "label": "Required Result aligned to 3 specialist role"
   }
  ],
  "links": [],
- "modified": "2025-10-10 09:53:47.600902",
+ "modified": "2025-10-21 13:07:18.035503",
  "modified_by": "Administrator",
  "module": "PMS",
  "name": "PMS Group",

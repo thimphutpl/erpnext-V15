@@ -106,7 +106,8 @@ def get_target_fields(pms_group):
         select required_activity, 
 		required_area, 
 		required_baselined, 
-		required_key_result_areas 
+		required_key_result_areas,
+		required_aligned_to_3_spec
 		from `tabPMS Group` where name= %s
     ''', (pms_group,), as_dict=True)
 

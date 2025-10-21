@@ -23,6 +23,7 @@ class MAXitem(Document):
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
+		result_aligned_3_spec_role: DF.Data | None
 		self_rating: DF.Data | None
 		supervisor_rating: DF.Data | None
 	# end: auto-generated types

@@ -140,6 +140,7 @@ function toggle_file_area_mandatory(frm) {
                     const required_area = r.message[0].required_area;
                     const required_baselined = r.message[0].required_baselined;
                     const required_key_result_areas = r.message[0].required_key_result_areas;
+                    const required_aligned_to_3_spec = r.message[0].required_aligned_to_3_spec;
 
                     // Use grid_rows to access child doc objects
                     frm.fields_dict.items.grid.grid_rows.forEach(row_wrapper => {
@@ -151,11 +152,15 @@ function toggle_file_area_mandatory(frm) {
                         frm.fields_dict.items.grid.toggle_reqd('key_result_areas', required_key_result_areas, row);
                         frm.fields_dict.items.grid.toggle_reqd('baseline', required_baselined, row);
                         frm.fields_dict.items.grid.toggle_reqd('activity', required_activity, row);
+                        frm.fields_dict.items.grid.toggle_reqd('result_aligned_3_spec_role', required_aligned_to_3_spec, row);
+                        
 
                         frm.fields_dict.items.grid.toggle_display('area', required_area);
                         frm.fields_dict.items.grid.toggle_display('key_result_areas', required_key_result_areas);
                         frm.fields_dict.items.grid.toggle_display('baseline', required_baselined);
                         frm.fields_dict.items.grid.toggle_display('activity', required_activity);
+                        frm.fields_dict.items.grid.toggle_display('result_aligned_3_spec_role', equired_aligned_to_3_spec);
+                        
 
                                             
                      });
@@ -247,6 +252,7 @@ frappe.ui.form.on("MAX item", {
                     const required_area = r.message[0].required_area;
                     const required_baselined = r.message[0].required_baselined;
                     const required_key_result_areas = r.message[0].required_key_result_areas;
+                    const required_aligned_to_3_spec = r.message[0].required_aligned_to_3_spec;
 
                     // Apply to the newly added row
                     const row = frappe.get_doc(cdt, cdn);
@@ -265,11 +271,15 @@ frappe.ui.form.on("MAX item", {
                     frm.fields_dict.items.grid.update_docfield_property(
                         'activity', 'reqd', required_activity ? 1 : 0, cdn
                     );
+                    frm.fields_dict.items.grid.update_docfield_property(
+                        'result_aligned_3_spec_role', 'reqd', required_aligned_to_3_spec ? 1 : 0, cdn
+                    );
 
                     frm.fields_dict.items.grid.toggle_enable('area', required_area ? 1 : 0, row);
                     frm.fields_dict.items.grid.toggle_enable('key_result_areas', required_key_result_areas ? 1 : 0, row);
                     frm.fields_dict.items.grid.toggle_enable('baseline', required_baselined ? 1 : 0, row);
                     frm.fields_dict.items.grid.toggle_enable('activity', required_activity ? 1 : 0, row);
+                    frm.fields_dict.items.grid.toggle_enable('result_aligned_3_spec_role', required_aligned_to_3_spec ? 1 : 0, row);
 
                     // Toggle display
                     if (frm.is_new()) {
@@ -316,6 +326,7 @@ function check_item_fields(frm){
                 const required_area = r.message[0].required_area;
                 const required_baselined = r.message[0].required_baselined;
                 const required_key_result_areas = r.message[0].required_key_result_areas;
+                const required_aligned_to_3_spec = r.message[0].required_aligned_to_3_spec;
 
                 // Apply to the newly added row
                 const row = frappe.get_doc(cdt, cdn);
@@ -334,11 +345,15 @@ function check_item_fields(frm){
                 frm.fields_dict.items.grid.update_docfield_property(
                     'activity', 'reqd', required_activity ? 1 : 0, cdn
                 );
+                frm.fields_dict.items.grid.update_docfield_property(
+                    'result_aligned_3_spec_role', 'reqd', required_aligned_to_3_spec ? 1 : 0, cdn
+                );
 
                 frm.fields_dict.items.grid.toggle_enable('area', required_area ? 1 : 0, row);
                 frm.fields_dict.items.grid.toggle_enable('key_result_areas', required_key_result_areas ? 1 : 0, row);
                 frm.fields_dict.items.grid.toggle_enable('baseline', required_baselined ? 1 : 0, row);
                 frm.fields_dict.items.grid.toggle_enable('activity', required_activity ? 1 : 0, row);
+                frm.fields_dict.items.grid.toggle_enable('result_aligned_3_spec_role', required_aligned_to_3_spec ? 1 : 0, row);
 
                 // Toggle display
                 if (frm.is_new()) {
@@ -370,7 +385,7 @@ function restrict_child_fields_on_refresh(frm) {
             if (r.message && r.message.length > 0) {
                 console.log("🔄 Restricting child fields on refresh");
 
-                const { required_activity, required_area, required_baselined, required_key_result_areas } = r.message[0];
+                const { required_activity, required_area, required_baselined, required_key_result_areas, required_aligned_to_3_spec } = r.message[0];
 
                 // Loop through all existing rows
                 frm.fields_dict.items.grid.grid_rows.forEach(row_wrapper => {
@@ -381,12 +396,14 @@ function restrict_child_fields_on_refresh(frm) {
                     frm.fields_dict.items.grid.update_docfield_property('key_result_areas', 'reqd', required_key_result_areas ? 1 : 0, row.name);
                     frm.fields_dict.items.grid.update_docfield_property('baseline', 'reqd', required_baselined ? 1 : 0, row.name);
                     frm.fields_dict.items.grid.update_docfield_property('activity', 'reqd', required_activity ? 1 : 0, row.name);
+                    frm.fields_dict.items.grid.update_docfield_property('result_aligned_3_spec_role', 'reqd', required_aligned_to_3_spec ? 1 : 0, row.name);
 
                     // Enable/Disable
                     frm.fields_dict.items.grid.toggle_enable('area', required_area ? 1 : 0, row);
                     frm.fields_dict.items.grid.toggle_enable('key_result_areas', required_key_result_areas ? 1 : 0, row);
                     frm.fields_dict.items.grid.toggle_enable('baseline', required_baselined ? 1 : 0, row);
                     frm.fields_dict.items.grid.toggle_enable('activity', required_activity ? 1 : 0, row);
+                    frm.fields_dict.items.grid.toggle_enable('result_aligned_3_spec_role', required_aligned_to_3_spec ? 1 : 0, row);
 
                     if (frm.doc.workflow_state ==='Plan Verified' || frm.doc.workflow_state ==='Evaluation Submitted' || frm.doc.workflow_state ==='Evaluation Submitted' || frm.doc.workflow_state ==="Evaluation Verified"){
                         frm.fields_dict.items.grid.toggle_enable('area', 0, row);
@@ -395,6 +412,7 @@ function restrict_child_fields_on_refresh(frm) {
                         frm.fields_dict.items.grid.toggle_enable('activity', 0, row);
                         frm.fields_dict.items.grid.toggle_enable('output', 0, row);
                         frm.fields_dict.items.grid.toggle_enable('kpi', 0, row);
+                        frm.fields_dict.items.grid.toggle_enable('result_aligned_3_spec_role', 0, row);
 
                         frm.fields_dict.competency_item.grid.toggle_enable('competency', 0, row);
                         frm.fields_dict.competency_item.grid.toggle_enable('description', 0, row);
