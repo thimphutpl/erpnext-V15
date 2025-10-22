@@ -107,7 +107,7 @@ class StockEntry(StockController):
 		fabrication_bailey_bridge: DF.Link | None
 		fg_completed_qty: DF.Float
 		from_bom: DF.Check
-		from_warehouse: DF.Link | None
+		from_warehouse: DF.Link
 		in_transit: DF.Check
 		inspection_required: DF.Check
 		is_opening: DF.Literal["No", "Yes"]
@@ -3294,7 +3294,25 @@ def get_permission_query_conditions(user):
 			)
 		))
 	)""".format(user=user)
-	
+# Added by sanga
+@frappe.whitelist()
+def get_cost_center_from_warehouse(warehouse):
+	"""
+	Get cost center from the branch linked to the warehouse.
+	Path: Warehouse → Warehouse Branch (child table) → Branch → Cost Center
+	"""
+	if not warehouse:
+		return None
+
+	# Step 1: Get branch from Warehouse Branch child table
+	branch = frappe.db.get_value("Warehouse Branch", {"parent": warehouse}, "branch")
+	if not branch:
+		return None
+
+	# Step 2: Get cost center from Branch
+	cost_center = frappe.db.get_value("Branch", branch, "cost_center")
+	return cost_center
+
 @frappe.whitelist()
 def has_warehouse_permission(warehouse):
 	user = frappe.session.user

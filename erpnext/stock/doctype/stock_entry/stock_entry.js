@@ -6,6 +6,26 @@ frappe.provide("erpnext.accounts.dimensions");
 erpnext.landed_cost_taxes_and_charges.setup_triggers("Stock Entry");
 
 frappe.ui.form.on("Stock Entry", {
+	// Added by sanga to filter target cost center based on target warehouse
+	to_warehouse: function (frm) {
+		if (frm.doc.stock_entry_type === "Material Transfer" && frm.doc.to_warehouse) {
+			// Call server-side method to fetch cost center from warehouse → branch
+			frappe.call({
+				method: "erpnext.stock.doctype.stock_entry.stock_entry.get_cost_center_from_warehouse",
+				args: {
+					warehouse: frm.doc.to_warehouse
+				},
+				callback: function (r) {
+					if (r.message) {
+						// Set cost center in each stock entry detail row
+						(frm.doc.items || []).forEach(row => {
+							frappe.model.set_value(row.doctype, row.name, "cost_center", r.message);
+						});
+					}
+				}
+			});
+		}
+	},
 	setup: function (frm) {
 		frm.ignore_doctypes_on_cancel_all = ["Serial and Batch Bundle"];
 
@@ -16,6 +36,17 @@ frappe.ui.form.on("Stock Entry", {
 				return doc.qty <= doc.actual_qty ? "green" : "orange";
 			}
 		});
+
+		// added by Kinzang N. to  Hide disabled Stock Entry Types.
+
+		frm.set_query("stock_entry_type", function () {
+			return {
+				filters: {
+					disable: 0
+				}
+			};
+		});
+
 
 		frm.set_query("work_order", function () {
 			return {
@@ -151,12 +182,12 @@ frappe.ui.form.on("Stock Entry", {
 		}
 	},
 	// Ver2.0 Begins, onload added by SHIV on 26/11/2017
-	onload: function(frm){
+	onload: function (frm) {
 		var me = this;
-		if(frm.is_new() && frm.purpose == "Material Issue") {
+		if (frm.is_new() && frm.purpose == "Material Issue") {
 			frappe.call({
 				method: "erpnext.stock.doctype.material_request.material_request.get_cc_warehouse",
-				args: {"user": frappe.session.user},
+				args: { "user": frappe.session.user },
 				callback(r) {
 					//cur_frm.set_value("temp_cc", r.message[0]);		
 					//cur_frm.set_value("temp_wh", r.message[1]);		
@@ -164,18 +195,19 @@ frappe.ui.form.on("Stock Entry", {
 					cur_frm.set_value("from_warehouse", r.message[1])
 				}
 			})
-	
-			
-		}		
-		if(frm.is_new()) {
+
+
+		}
+		if (frm.is_new()) {
 			frappe.call({
-					method: "erpnext.custom_utils.get_user_info",
-					args: {"user": frappe.session.user},
-					callback(r) {
-							cur_frm.set_value("branch", r.message.branch);
-							cur_frm.set_value("from_warehouse", r.message.warehouse);
-							cur_frm.set_value("user_cost_center", r.message.cost_center);
-					}
+				method: "erpnext.custom_utils.get_user_info",
+
+				// args: { "user": frappe.session.user },// this is to pic user branch and warehouse auto command by kinzang.N
+				callback(r) {
+					cur_frm.set_value("branch", r.message.branch);
+					cur_frm.set_value("from_warehouse", r.message.warehouse);
+					cur_frm.set_value("user_cost_center", r.message.cost_center);
+				}
 			});
 		}
 	},
@@ -606,8 +638,15 @@ frappe.ui.form.on("Stock Entry", {
 			});
 	},
 
-	branch: function(frm, cdt, cdn){
-		if(frm.doc.branch != null || frm.doc.branch != "" || frm.doc.branch != undefined){
+	branch: function (frm, cdt, cdn) {
+		// Added by sanga for ignore auto cost center fetching when stock_entry_type === "Material Transfer"
+		// ✅ Don't run if stock_entry_type is "Material Transfer"
+		if (frm.doc.stock_entry_type === "Material Transfer") {
+			return;
+		}
+
+		// ✅ Proceed only if branch is properly set
+		if (frm.doc.branch) {
 			frappe.call({
 				method: "frappe.client.get_value",
 				args: {
@@ -615,16 +654,38 @@ frappe.ui.form.on("Stock Entry", {
 					fieldname: "cost_center",
 					filters: { name: frm.doc.branch },
 				},
-				callback: function(r, rt) {
-					if(r.message) {
+				callback: function (r) {
+					if (r.message && r.message.cost_center) {
 						let doctype = frm.doc.items[0].doctype;
 						$.each(frm.doc.items || [], function (i, item) {
 							frappe.model.set_value(doctype, item.name, "cost_center", r.message.cost_center);
 						});
+						frm.refresh_fields("items");
 					}
 				}
 			});
 		}
+		// if (frm.doc.branch != null || frm.doc.branch != "" || frm.doc.branch != undefined) {
+		// 	frappe.call({
+		// 		method: "frappe.client.get_value",
+		// 		args: {
+		// 			doctype: "Branch",
+		// 			fieldname: "cost_center",
+
+		// 			filters: { name: frm.doc.branch },
+		// 		},
+
+		// 		callback: function (r, rt) {
+		// 			if (r.message) {
+		// 				let doctype = frm.doc.items[0].doctype;
+		// 				$.each(frm.doc.items || [], function (i, item) {
+		// 					frappe.model.set_value(doctype, item.name, "cost_center", r.message.cost_center);
+
+		// 				});
+		// 			}
+		// 		}
+		// 	});
+		// }
 		frm.refresh_fields();
 	},
 
@@ -957,12 +1018,19 @@ frappe.ui.form.on("Stock Entry", {
 
 frappe.ui.form.on("Stock Entry Detail", {
 	// "form_render": function (frm, cdt, cdn) {
-		
+
 	// 	if(frm.doc.stock_entry_type!="Material Transfer"){
 	// 		frm.fields_dict['items'].grid.grid_rows_by_docname[cdn].docfields[4].hidden=1;
 	// 		refresh_field("items");
 	// 	}
 	// }, 
+
+
+
+
+
+
+
 	qty(frm, cdt, cdn) {
 		frm.events.set_basic_rate(frm, cdt, cdn);
 	},
@@ -989,6 +1057,9 @@ frappe.ui.form.on("Stock Entry Detail", {
 		var item = locals[cdt][cdn];
 		frm.events.calculate_basic_amount(frm, item);
 	},
+
+
+
 
 	uom(doc, cdt, cdn) {
 		var d = locals[cdt][cdn];
@@ -1085,36 +1156,36 @@ frappe.ui.form.on("Stock Entry Detail", {
 	},
 });
 
-frappe.ui.form.on("Stock Entry", "refresh", function(frm) {
-	cur_frm.set_query("job_cards", function() {
+frappe.ui.form.on("Stock Entry", "refresh", function (frm) {
+	cur_frm.set_query("job_cards", function () {
 		return {
 			"filters": {
-			"docstatus": 0,
-			"branch": frm.doc.branch
+				"docstatus": 0,
+				"branch": frm.doc.branch
 			}
 		};
 	});
-	cur_frm.set_query("fabrication_bailey_bridge", function() {
+	cur_frm.set_query("fabrication_bailey_bridge", function () {
 		return {
 			"filters": {
-			"docstatus": 0,
-			"branch": frm.doc.branch
+				"docstatus": 0,
+				"branch": frm.doc.branch
 			}
 		};
 	});
-	cur_frm.set_query("from_warehouse", function() {
+	cur_frm.set_query("from_warehouse", function () {
 		return {
 			query: "erpnext.controllers.queries.filter_branch_wh",
-			filters: {'branch': frm.doc.branch}
+			filters: { 'branch': frm.doc.branch }
 		}
 	});
 })
 
-frappe.ui.form.on("Stock Entry", "items_on_form_rendered", function(frm, grid_row, cdt, cdn) {
+frappe.ui.form.on("Stock Entry", "items_on_form_rendered", function (frm, grid_row, cdt, cdn) {
 	var row = cur_frm.open_grid_row();
-	if(!row.grid_form.fields_dict.cost_center.value) {
-			row.grid_form.fields_dict.cost_center.set_value(frm.doc.user_cost_center)
-			row.grid_form.fields_dict.cost_center.refresh()
+	if (!row.grid_form.fields_dict.cost_center.value) {
+		row.grid_form.fields_dict.cost_center.set_value(frm.doc.user_cost_center)
+		row.grid_form.fields_dict.cost_center.refresh()
 	}
 })
 
@@ -1481,9 +1552,9 @@ erpnext.stock.StockEntry = class StockEntry extends erpnext.stock.StockControlle
 		);
 		this.frm.fields_dict["items"].grid.set_column_disp(
 			"issue_to_employee",
-			doc.purpose=="Material Issue"
+			doc.purpose == "Material Issue"
 		);
-		
+
 
 		this.frm.fields_dict["items"].grid.set_column_disp(
 			"retain_sample",
@@ -1502,7 +1573,7 @@ erpnext.stock.StockEntry = class StockEntry extends erpnext.stock.StockControlle
 				doc.customer_address =
 				doc.delivery_note_no =
 				doc.sales_invoice_no =
-					null;
+				null;
 		} else {
 			doc.customer =
 				doc.customer_name =
@@ -1514,7 +1585,7 @@ erpnext.stock.StockEntry = class StockEntry extends erpnext.stock.StockControlle
 				doc.supplier_address =
 				doc.purchase_receipt_no =
 				doc.address_display =
-					null;
+				null;
 		}
 		if (doc.purpose == "Material Receipt") {
 			this.frm.set_value("from_bom", 0);

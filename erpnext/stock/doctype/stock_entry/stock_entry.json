@@ -9,10 +9,10 @@
  "field_order": [
   "stock_entry_details_tab",
   "title",
+  "stock_entry_type",
+  "naming_series",
   "branch",
   "user_cost_center",
-  "naming_series",
-  "stock_entry_type",
   "outgoing_stock_entry",
   "purpose",
   "add_to_transit",
@@ -308,7 +308,8 @@
    "oldfieldname": "from_warehouse",
    "oldfieldtype": "Link",
    "options": "Warehouse",
-   "print_hide": 1
+   "print_hide": 1,
+   "reqd": 1
   },
   {
    "depends_on": "from_warehouse",
@@ -793,7 +794,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-03-14 21:48:54.035145",
+ "modified": "2025-10-15 14:45:22.209379",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Stock Entry",
