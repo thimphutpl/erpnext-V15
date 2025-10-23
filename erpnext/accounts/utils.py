@@ -1417,7 +1417,7 @@ def get_voucherwise_gl_entries(future_stock_vouchers, posting_date):
 	Check compare_existing_and_expected_gle function below.
 
 	returns:
-	        Dict[Tuple[voucher_type, voucher_no], List[GL Entries]]
+			Dict[Tuple[voucher_type, voucher_no], List[GL Entries]]
 	"""
 	gl_entries = {}
 	if not future_stock_vouchers:
@@ -2133,91 +2133,224 @@ def get_tds_account(percent,company):
 def get_account_type(account,company):
 	return frappe.db.get_value("Account",{"name":account,"company":company},"account_type")
 
+# def make_asset_transfer_gl(self, asset, date, from_cc, to_cc, cancel, not_legacy_data=True):
+# 	if from_cc == to_cc:
+# 		frappe.throw("From Cost Center and To Cost Center cannot be the same")
+# 	if getdate(date) > getdate(nowdate()):
+# 		frappe.throw("The transaction date cannot be future date")
+
+# 	dep_schedules = frappe.db.sql("select d.name from tabAsset a, `tabDepreciation Schedule` d where d.parent = a.name and a.name = %s and a.docstatus = 1 and d.schedule_date >= %s and d.journal_entry is not null", (asset, date), as_dict=True)
+# 	if dep_schedules:
+# 		frappe.throw("The asset has been depreciated beyond the transfer date. Please change the transfer date and try again")	
+
+# 	asset = frappe.get_doc("Asset", asset)
+	
+# 	accumulated_dep = flt(asset.gross_purchase_amount) - flt(asset.value_after_depreciation)
+	
+# 	accumulated_dep_account = frappe.db.sql("select accumulated_depreciation_account from `tabAsset Category Account` where parent = %s", asset.asset_category, as_dict=True)[0].accumulated_depreciation_account
+# 	ic_account = frappe.db.get_single_value("Accounts Settings", "intra_company_account")
+# 	if not ic_account:
+# 		frappe.throw("Setup Intra Company Accounts under Accounts Settings")
+
+# 	from erpnext.accounts.general_ledger import make_gl_entries
+# 	from erpnext.custom_utils import prepare_gl
+
+# 	gl_entries = []
+# 	gl_entries.append(
+# 		prepare_gl(self, {
+# 		       "account":  asset.asset_account,
+# 		       "credit": asset.gross_purchase_amount,
+# 		       "credit_in_account_currency": asset.gross_purchase_amount,
+# 		       "against_voucher": asset.name,
+# 		       "against_voucher_type": "Asset",
+# 		       "cost_center": from_cc,
+# 		})
+# 	)
+# 	gl_entries.append(
+# 		prepare_gl(self, {
+# 		       "account":  asset.asset_account,
+# 		       "debit": asset.gross_purchase_amount,
+# 		       "debit_in_account_currency": asset.gross_purchase_amount,
+# 		       "against_voucher": asset.name,
+# 		       "against_voucher_type": "Asset",
+# 		       "cost_center": to_cc,
+# 		})
+# 	)
+# 	if flt(accumulated_dep) > 0:
+# 		gl_entries.append(
+# 			prepare_gl(self, {
+# 			       "account": accumulated_dep_account,
+# 			       "debit": accumulated_dep,
+# 			       "debit_in_account_currency": accumulated_dep,
+# 			       "against_voucher": asset.name,
+# 			       "against_voucher_type": "Asset",
+# 			       "cost_center": from_cc,
+# 			})
+# 		)
+# 		gl_entries.append(
+# 			prepare_gl(self, {
+# 			       "account": accumulated_dep_account,
+# 			       "credit": accumulated_dep,
+# 			       "credit_in_account_currency": accumulated_dep,
+# 			       "against_voucher": asset.name,
+# 			       "against_voucher_type": "Asset",
+# 			       "cost_center": to_cc,
+# 			})
+# 		)
+
+# 	if flt(asset.value_after_depreciation) > 0:
+# 		gl_entries.append(
+# 			prepare_gl(self, {
+# 			       "account": ic_account,
+# 			       "debit": asset.value_after_depreciation,
+# 			       "debit_in_account_currency": asset.value_after_depreciation,
+# 			       "against_voucher": asset.name,
+# 			       "against_voucher_type": "Asset",
+# 			       "cost_center": from_cc,
+# 			})
+# 		)
+# 		gl_entries.append(
+# 			prepare_gl(self, {
+# 			       "account": ic_account,
+# 			       "credit": asset.value_after_depreciation,
+# 			       "credit_in_account_currency": asset.value_after_depreciation,
+# 			       "against_voucher": asset.name,
+# 			       "against_voucher_type": "Asset",
+# 			       "cost_center": to_cc,
+# 			})
+# 		)
+
+# 	make_gl_entries(gl_entries, cancel=cancel, update_outstanding="No", merge_entries=False)
+
+
+
+# updated function
 def make_asset_transfer_gl(self, asset, date, from_cc, to_cc, cancel, not_legacy_data=True):
-	if from_cc == to_cc:
-		frappe.throw("From Cost Center and To Cost Center cannot be the same")
-	if getdate(date) > getdate(nowdate()):
-		frappe.throw("The transaction date cannot be future date")
+    
+    if from_cc == to_cc:
+        frappe.throw("From Cost Center and To Cost Center cannot be the same")
+    if getdate(date) > getdate(nowdate()):
+        frappe.throw("The transaction date cannot be a future date")
 
-	dep_schedules = frappe.db.sql("select d.name from tabAsset a, `tabDepreciation Schedule` d where d.parent = a.name and a.name = %s and a.docstatus = 1 and d.schedule_date >= %s and d.journal_entry is not null", (asset, date), as_dict=True)
-	if dep_schedules:
-		frappe.throw("The asset has been depreciated beyond the transfer date. Please change the transfer date and try again")	
+    asset_doc = frappe.get_doc("Asset", asset)
 
-	asset = frappe.get_doc("Asset", asset)
-	
-	accumulated_dep = flt(asset.gross_purchase_amount) - flt(asset.value_after_depreciation)
-	
-	accumulated_dep_account = frappe.db.sql("select accumulated_depreciation_account from `tabAsset Category Account` where parent = %s", asset.asset_category, as_dict=True)[0].accumulated_depreciation_account
-	ic_account = frappe.db.get_single_value("Accounts Settings", "intra_company_account")
-	if not ic_account:
-		frappe.throw("Setup Intra Company Accounts under Accounts Settings")
+    ads_list = frappe.get_all(
+        "Asset Depreciation Schedule",
+        filters={"asset": asset_doc.name},
+        fields=["name", "status"]
+    )
+    
+    accumulated_dep = flt(asset_doc.opening_accumulated_depreciation)
+    
+    if ads_list:
+        ads_doc = frappe.get_doc("Asset Depreciation Schedule", ads_list[0].name)
+        
+        for schedule in ads_doc.get("depreciation_schedule", []):
+            if (schedule.journal_entry and 
+                schedule.journal_entry.strip() != "" and 
+                getdate(schedule.schedule_date) <= getdate(date)):
+                
+                accumulated_dep = flt(schedule.accumulated_depreciation_amount)
 
-	from erpnext.accounts.general_ledger import make_gl_entries
-	from erpnext.custom_utils import prepare_gl
+    has_after = False
+    
+    if ads_list:
+        ads_doc = frappe.get_doc("Asset Depreciation Schedule", ads_list[0].name)
+        for schedule in ads_doc.get("depreciation_schedule", []):
+            if (schedule.journal_entry and 
+                schedule.journal_entry.strip() != "" and 
+                getdate(schedule.schedule_date) > getdate(date)):
+                has_after = True
+                break
+    
+    if not has_after:
+        has_after = frappe.db.sql("""
+            SELECT 1
+            FROM `tabDepreciation Schedule` d
+            WHERE d.parent = %s
+              AND d.journal_entry IS NOT NULL
+              AND d.journal_entry != ''
+              AND d.schedule_date > %s
+            LIMIT 1
+        """, (asset, getdate(date)))
+    
+    if has_after:
+        frappe.throw("The asset has been depreciated beyond the transfer date. Please change the transfer date and try again.")
 
-	gl_entries = []
-	gl_entries.append(
-		prepare_gl(self, {
-		       "account":  asset.asset_account,
-		       "credit": asset.gross_purchase_amount,
-		       "credit_in_account_currency": asset.gross_purchase_amount,
-		       "against_voucher": asset.name,
-		       "against_voucher_type": "Asset",
-		       "cost_center": from_cc,
-		})
-	)
-	gl_entries.append(
-		prepare_gl(self, {
-		       "account":  asset.asset_account,
-		       "debit": asset.gross_purchase_amount,
-		       "debit_in_account_currency": asset.gross_purchase_amount,
-		       "against_voucher": asset.name,
-		       "against_voucher_type": "Asset",
-		       "cost_center": to_cc,
-		})
-	)
-	if flt(accumulated_dep) > 0:
-		gl_entries.append(
-			prepare_gl(self, {
-			       "account": accumulated_dep_account,
-			       "debit": accumulated_dep,
-			       "debit_in_account_currency": accumulated_dep,
-			       "against_voucher": asset.name,
-			       "against_voucher_type": "Asset",
-			       "cost_center": from_cc,
-			})
-		)
-		gl_entries.append(
-			prepare_gl(self, {
-			       "account": accumulated_dep_account,
-			       "credit": accumulated_dep,
-			       "credit_in_account_currency": accumulated_dep,
-			       "against_voucher": asset.name,
-			       "against_voucher_type": "Asset",
-			       "cost_center": to_cc,
-			})
-		)
+    gross = flt(asset_doc.gross_purchase_amount)
+    if accumulated_dep < 0:
+        accumulated_dep = 0.0
+    if accumulated_dep > gross:
+        accumulated_dep = gross
 
-	if flt(asset.value_after_depreciation) > 0:
-		gl_entries.append(
-			prepare_gl(self, {
-			       "account": ic_account,
-			       "debit": asset.value_after_depreciation,
-			       "debit_in_account_currency": asset.value_after_depreciation,
-			       "against_voucher": asset.name,
-			       "against_voucher_type": "Asset",
-			       "cost_center": from_cc,
-			})
-		)
-		gl_entries.append(
-			prepare_gl(self, {
-			       "account": ic_account,
-			       "credit": asset.value_after_depreciation,
-			       "credit_in_account_currency": asset.value_after_depreciation,
-			       "against_voucher": asset.name,
-			       "against_voucher_type": "Asset",
-			       "cost_center": to_cc,
-			})
-		)
+    # ---------------- Accounts ----------------
+    accumulated_dep_account = frappe.db.sql("""
+        SELECT accumulated_depreciation_account
+        FROM `tabAsset Category Account`
+        WHERE parent = %s
+    """, (asset_doc.asset_category), as_dict=True)[0].accumulated_depreciation_account
 
-	make_gl_entries(gl_entries, cancel=cancel, update_outstanding="No", merge_entries=False)
+    ic_account = frappe.db.get_single_value("Accounts Settings", "intra_company_account")
+    if not ic_account:
+        frappe.throw("Setup Intra Company Accounts under Accounts Settings")
+
+    from erpnext.accounts.general_ledger import make_gl_entries
+    from erpnext.custom_utils import prepare_gl
+
+    gl_entries = []
+
+    gl_entries.append(prepare_gl(self, {
+        "account": asset_doc.asset_account,
+        "credit": asset_doc.gross_purchase_amount,
+        "credit_in_account_currency": asset_doc.gross_purchase_amount,
+        "against_voucher": asset_doc.name,
+        "against_voucher_type": "Asset",
+        "cost_center": from_cc,
+    }))
+    gl_entries.append(prepare_gl(self, {
+        "account": asset_doc.asset_account,
+        "debit": asset_doc.gross_purchase_amount,
+        "debit_in_account_currency": asset_doc.gross_purchase_amount,
+        "against_voucher": asset_doc.name,
+        "against_voucher_type": "Asset",
+        "cost_center": to_cc,
+    }))
+
+    if accumulated_dep > 0:
+        gl_entries.append(prepare_gl(self, {
+            "account": accumulated_dep_account,
+            "debit": accumulated_dep,
+            "debit_in_account_currency": accumulated_dep,
+            "against_voucher": asset_doc.name,
+            "against_voucher_type": "Asset",
+            "cost_center": from_cc,
+        }))
+        gl_entries.append(prepare_gl(self, {
+            "account": accumulated_dep_account,
+            "credit": accumulated_dep,
+            "credit_in_account_currency": accumulated_dep,
+            "against_voucher": asset_doc.name,
+            "against_voucher_type": "Asset",
+            "cost_center": to_cc,
+        }))
+
+    nbv = flt(asset_doc.value_after_depreciation)
+    if nbv > 0:
+        gl_entries.append(prepare_gl(self, {
+            "account": ic_account,
+            "debit": nbv,
+            "debit_in_account_currency": nbv,
+            "against_voucher": asset_doc.name,
+            "against_voucher_type": "Asset",
+            "cost_center": from_cc,
+        }))
+        gl_entries.append(prepare_gl(self, {
+            "account": ic_account,
+            "credit": nbv,
+            "credit_in_account_currency": nbv,
+            "against_voucher": asset_doc.name,
+            "against_voucher_type": "Asset",
+            "cost_center": to_cc,
+        }))
+
+    make_gl_entries(gl_entries, cancel=cancel, update_outstanding="No", merge_entries=False)
