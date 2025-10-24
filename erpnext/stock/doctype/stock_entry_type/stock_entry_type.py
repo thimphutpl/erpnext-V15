@@ -16,17 +16,8 @@ class StockEntryType(Document):
 		from frappe.types import DF
 
 		add_to_transit: DF.Check
-		purpose: DF.Literal[
-			"",
-			"Material Issue",
-			"Material Receipt",
-			"Material Transfer",
-			"Material Transfer for Manufacture",
-			"Material Consumption for Manufacture",
-			"Manufacture",
-			"Repack",
-			"Send to Subcontractor",
-		]
+		disable: DF.Check
+		purpose: DF.Literal["", "Material Issue", "Material Receipt", "Material Transfer", "Material Transfer for Manufacture", "Material Consumption for Manufacture", "Manufacture", "Repack", "Send to Subcontractor"]
 	# end: auto-generated types
 
 	def validate(self):
