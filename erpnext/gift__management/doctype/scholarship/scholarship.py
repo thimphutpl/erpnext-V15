@@ -22,7 +22,7 @@ class Scholarship(Document):
 		college_name: DF.Data | None
 		completed_datexii: DF.Date | None
 		contact_number: DF.Data
-		country: DF.Data
+		country: DF.Link
 		course: DF.Link
 		cumulative_gpa: DF.Data | None
 		date_of_birth: DF.Date
@@ -36,8 +36,8 @@ class Scholarship(Document):
 		highschool: DF.Data | None
 		middle_school: DF.Data | None
 		name1: DF.Data
-		percentage: DF.Data | None
-		percentagex: DF.Data | None
+		percentage: DF.Percent
+		percentagex: DF.Float
 		permanent_address: DF.Data
 		present_address: DF.Data | None
 		profile_picture: DF.AttachImage | None

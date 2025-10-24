@@ -70,8 +70,9 @@
   },
   {
    "fieldname": "country",
-   "fieldtype": "Data",
+   "fieldtype": "Link",
    "label": "Country",
+   "options": "Country",
    "reqd": 1
   },
   {
@@ -250,7 +251,7 @@
   },
   {
    "fieldname": "percentage",
-   "fieldtype": "Data",
+   "fieldtype": "Percent",
    "label": "Percentage(XII)"
   },
   {
@@ -295,7 +296,7 @@
   },
   {
    "fieldname": "percentagex",
-   "fieldtype": "Data",
+   "fieldtype": "Float",
    "label": "Percentage(X)"
   },
   {
@@ -329,7 +330,7 @@
  "index_web_pages_for_search": 1,
  "links": [],
  "make_attachments_public": 1,
- "modified": "2025-10-09 15:41:00.216090",
+ "modified": "2025-10-24 15:19:44.711386",
  "modified_by": "Administrator",
  "module": "Gift  Management",
  "name": "Scholarship",
