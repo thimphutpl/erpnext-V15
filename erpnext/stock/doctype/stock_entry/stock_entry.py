@@ -107,7 +107,7 @@ class StockEntry(StockController):
 		fabrication_bailey_bridge: DF.Link | None
 		fg_completed_qty: DF.Float
 		from_bom: DF.Check
-		from_warehouse: DF.Link
+		from_warehouse: DF.Link | None
 		in_transit: DF.Check
 		inspection_required: DF.Check
 		is_opening: DF.Literal["No", "Yes"]
