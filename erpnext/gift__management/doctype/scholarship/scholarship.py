@@ -27,12 +27,12 @@ class Scholarship(Document):
 		cumulative_gpa: DF.Data | None
 		date_of_birth: DF.Date
 		disbursement: DF.SmallText | None
-		dzongkhag: DF.Data | None
+		dzongkhag: DF.Link | None
 		email_address: DF.Data
 		end_date: DF.Date
 		english: DF.Data | None
 		family_details: DF.Table[FamilyDetailTable]
-		gewog: DF.Data | None
+		gewog: DF.Link | None
 		highschool: DF.Data | None
 		middle_school: DF.Data | None
 		name1: DF.Data
@@ -50,7 +50,7 @@ class Scholarship(Document):
 		student_achievements: DF.Table[StudentAchievementTable]
 		student_id: DF.Data | None
 		tuition_fee: DF.Data | None
-		village: DF.Data | None
+		village: DF.Link | None
 	# end: auto-generated types
 
 	def before_save(self):
