@@ -79,6 +79,7 @@
   "section_break_10",
   "discount_amount",
   "total_amount",
+  "total_amounts",
   "paid_amount",
   "outstanding_amount",
   "column_break_12",
@@ -360,6 +361,7 @@
   {
    "fieldname": "current_km_reading",
    "fieldtype": "Float",
+   "hidden": 1,
    "label": "Current KM Reading"
   },
   {
@@ -609,12 +611,17 @@
    "fieldname": "date_of_last_pol",
    "fieldtype": "Date",
    "label": "11. Date of Last POL/HSD recoupment made"
+  },
+  {
+   "fieldname": "total_amounts",
+   "fieldtype": "Data",
+   "label": "Total Amount"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-03-31 11:27:52.257165",
+ "modified": "2025-06-24 16:19:10.731707",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Receive",

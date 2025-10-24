@@ -78,17 +78,17 @@ class POLAdvance(AccountsController):
 		if not self.is_opening:
 			# check_budget_available(self.cost_center,advance_account,self.entry_date,self.amount,self.business_activity)
 			self.update_od_balance()
-			# self.post_journal_entry()
-			abstract_bill = frappe.db.sql('''
-                                 select abstract_bill_required from `tabCompany` where name="{name}" limit 1
-                                 '''.format(name=self.company))
-			# frappe.throw(str(abstract_bill[0][0]))
-			if abstract_bill and abstract_bill[0][0] == 1:
-				self.create_abstract_bill()
-				self.send_email()
+			self.post_journal_entry()
+			# abstract_bill = frappe.db.sql('''
+            #                      select abstract_bill_required from `tabCompany` where name="{name}" limit 1
+            #                      '''.format(name=self.company))
+			# # frappe.throw(str(abstract_bill[0][0]))
+			# if abstract_bill and abstract_bill[0][0] == 1:
+			# 	self.create_abstract_bill()
+			# 	self.send_email()
 
-			else:
-				self.post_journal_entry()
+			# else:
+			# 	self.post_journal_entry()
 
 	def on_cancel(self):
 		if not self.is_opening:
@@ -257,6 +257,7 @@ class POLAdvance(AccountsController):
 		})
 
 		je.insert()
+		je.submit()
 
 		self.db_set("journal_entry",je.name)
 		frappe.msgprint(_('Journal Entry {} posted to accounts').format(frappe.get_desk_link(je.doctype,je.name)))
