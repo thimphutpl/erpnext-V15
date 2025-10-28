@@ -453,6 +453,7 @@ def scrap_asset(asset_name,scrap_date=None):
 
 	depreciation_series = frappe.get_cached_value("Company", asset.company, "series_for_depreciation_entry")
 
+
 	je = frappe.new_doc("Journal Entry")
 	je.voucher_type = "Journal Entry"
 	je.naming_series = depreciation_series
@@ -704,8 +705,9 @@ def get_gl_entries_on_asset_disposal(
 				item=asset,
 			),
 		)
-
+	asset_cost_center = depreciation_cost_center
 	loss_disposal_account, gain_disposal_account, depreciation_cost_center = get_disposal_account_and_cost_center(asset.company)
+	depreciation_cost_center = asset_cost_center
 	profit_amount = flt(selling_amount) - flt(value_after_depreciation)
 	disposal_account = loss_disposal_account if flt(profit_amount) < 0 else gain_disposal_account
 	if profit_amount:
