@@ -50,6 +50,11 @@ def get_data(filters):
 				d.update({
 					"tds_rate": frappe.db.get_value("EME Invoice",{"tds_amount":(">",0),"name":d.invoice_no},"tds_percent")
 				})
+			case "Mechanical Payment":
+				d.update({
+					"tds_rate": frappe.db.get_value("Mechanical Payment",{"tds_amount":(">",0),"name":d.invoice_no},"tax_withholding_rate")
+				})
+			
 		data.append(d)
 	return data
 def get_condition(filters):
