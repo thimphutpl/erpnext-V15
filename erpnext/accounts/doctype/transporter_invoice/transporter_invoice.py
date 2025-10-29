@@ -32,11 +32,12 @@ class TransporterInvoice(AccountsController):
 		cost_center: DF.Link
 		credit_account: DF.Link | None
 		currency: DF.Link | None
+		equipment: DF.Link | None
 		expense_account: DF.Link | None
 		journal_entry: DF.Data | None
 		landed_cost_voucher: DF.Link | None
 		posting_date: DF.Date
-		status: DF.Literal["", "Paid", "Unpaid"]
+		status: DF.Literal["", "Paid", "Unpaid", "Submitted", "Partly Paid", "Draft", "Cancelled"]
 		supplier: DF.Link
 		title: DF.Data | None
 		transportation_details: DF.Table[TransporterInvoiceItem]

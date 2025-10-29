@@ -17,6 +17,7 @@
   "posting_date",
   "supplier",
   "landed_cost_voucher",
+  "equipment",
   "sb_accounts_details",
   "currency",
   "expense_account",
@@ -156,12 +157,19 @@
    "fieldtype": "Data",
    "label": "Journal Entry",
    "read_only": 1
+  },
+  {
+   "fieldname": "equipment",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Equipment",
+   "options": "Equipment"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-04-23 16:39:29.068294",
+ "modified": "2025-10-29 22:50:07.460379",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Transporter Invoice",
