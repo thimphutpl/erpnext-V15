@@ -1378,6 +1378,7 @@ class PaymentEntry(AccountsController):
 				against = self.party or self.paid_from
 			elif self.payment_type == "Receive":
 				dr_or_cr = "credit" if d.add_deduct_tax == "Add" else "debit"
+				# rev_dr_or_cr = "credit" if dr_or_cr == "debit" else "debit"
 				rev_dr_or_cr = ""
 				against = self.party or self.paid_to
 
