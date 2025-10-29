@@ -736,10 +736,14 @@ class PaymentEntry(AccountsController):
 			self.status = "Cancelled"
 		elif self.docstatus == 1:
 			self.status = "Submitted"
+			self.db_set("docstatus", 1, update_modified=True)
+			frappe.db.commit()
+
 		else:
 			self.status = "Draft"
-
 		self.db_set("status", self.status, update_modified=True)
+		# self.db_set("docstatus", 1, update_modified=True)
+		# frappe.db.commit()
 
 	def set_total_in_words(self):
 		from frappe.utils import money_in_words
@@ -1110,6 +1114,7 @@ class PaymentEntry(AccountsController):
 		return gl_entries
 
 	def make_gl_entries(self, cancel=0, adv_adj=0):
+		# frappe.throw(str(self))
 		gl_entries = self.build_gl_map()
 		gl_entries = process_gl_map(gl_entries)
 		make_gl_entries(gl_entries, cancel=cancel, adv_adj=adv_adj)
@@ -1313,12 +1318,17 @@ class PaymentEntry(AccountsController):
 		gl_entries.append(gle)
 
 	def add_bank_gl_entries(self, gl_entries):
+		# frappe.throw(str(self))
 		total_deductions = 0
-		for d in self.get("deductions"):
-			if d.amount:
-				total_deductions += flt(d.amount)
+		# for d in self.get("deductions"):
+		# 	if d.amount:
+		# 		total_deductions += flt(d.amount)
+		for d in self.get("taxes"):
+			if d.tax_amount:
+				total_deductions += flt(d.tax_amount)
 		
 		if self.payment_type in ("Pay", "Internal Transfer"):
+			frappe.throw(str(self.paid_from))
 			gl_entries.append(
 				self.get_gl_dict(
 					{
@@ -1334,6 +1344,7 @@ class PaymentEntry(AccountsController):
 				)
 			)
 		if self.payment_type in ("Receive", "Internal Transfer"):
+			# frappe.throw(str(self.paid_to))
 			party, party_type = '', ''
 			if frappe.get_value("Account", self.paid_to, "account_type") in ('Payable', 'Receivable'):
 				party = self.party
@@ -1367,7 +1378,7 @@ class PaymentEntry(AccountsController):
 				against = self.party or self.paid_from
 			elif self.payment_type == "Receive":
 				dr_or_cr = "credit" if d.add_deduct_tax == "Add" else "debit"
-				rev_dr_or_cr = "credit" if dr_or_cr == "debit" else "debit"
+				rev_dr_or_cr = ""
 				against = self.party or self.paid_to
 
 			payment_account = self.get_party_account_for_taxes()
@@ -2279,6 +2290,7 @@ def get_payment_entry(
 		party_account = doc.credit_to
 	elif dt == "Purchase Order" and doc.status in ["To Receive and Bill","To Bill"]:
 		party_account = frappe.db.get_single_value("Accounts Settings", "advance_to_supplier")
+		
 		if not party_account:
 			frappe.throw("Setup Advance to Supplier Account in Accounts Settings")
 		# Ver 2.0 Begins, Following code added by SHIV on 03/01/2018
@@ -2338,6 +2350,7 @@ def get_payment_entry(
 
 	pe.paid_from = party_account if payment_type == "Receive" else bank_acc
 	pe.paid_to = party_account if payment_type == "Pay" else bank_acc
+	#frappe.throw(party_account)
 	pe.paid_from_account_currency = (
 		party_account_currency if payment_type == "Receive" else bank.account_currency
 	)
