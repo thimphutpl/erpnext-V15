@@ -33,6 +33,7 @@ class ManagingforExcellence(Document):
 		overall_score: DF.Literal["", "Outstanding", "Very Good", "Good", "Partially Meeting Expectations"]
 		pms_group: DF.Link
 		required_to_set_target: DF.Check
+		test: DF.Data | None
 	# end: auto-generated types
 	def validate(self):
 		validate_workflow_states(self)

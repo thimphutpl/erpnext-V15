@@ -27,6 +27,7 @@
   "approver",
   "approver_email",
   "amended_from",
+  "test",
   "column_break_qdqw",
   "approver_name",
   "column_break_yoyz",
@@ -198,12 +199,18 @@
    "fieldtype": "Table",
    "options": "Max Competency Item",
    "reqd": 1
+  },
+  {
+   "fieldname": "test",
+   "fieldtype": "Data",
+   "label": "Test",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-10-10 22:24:22.932824",
+ "modified": "2025-10-29 09:55:11.353854",
  "modified_by": "Administrator",
  "module": "MAX",
  "name": "Managing for Excellence",
