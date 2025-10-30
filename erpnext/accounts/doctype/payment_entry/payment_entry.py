@@ -1328,7 +1328,7 @@ class PaymentEntry(AccountsController):
 				total_deductions += flt(d.tax_amount)
 		
 		if self.payment_type in ("Pay", "Internal Transfer"):
-			frappe.throw(str(self.paid_from))
+			# frappe.throw(str(self.paid_from))
 			gl_entries.append(
 				self.get_gl_dict(
 					{
