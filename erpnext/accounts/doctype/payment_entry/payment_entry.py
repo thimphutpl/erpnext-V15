@@ -1111,10 +1111,11 @@ class PaymentEntry(AccountsController):
 		self.add_deductions_gl_entries(gl_entries)
 		self.add_tax_gl_entries(gl_entries)
 		add_regional_gl_entries(gl_entries, self)
+		# frappe.throw(str(gl_entries))
 		return gl_entries
 
 	def make_gl_entries(self, cancel=0, adv_adj=0):
-		# frappe.throw(str(self))
+		# frappe.throw(str("here"))
 		gl_entries = self.build_gl_map()
 		gl_entries = process_gl_map(gl_entries)
 		make_gl_entries(gl_entries, cancel=cancel, adv_adj=adv_adj)
@@ -1318,7 +1319,6 @@ class PaymentEntry(AccountsController):
 		gl_entries.append(gle)
 
 	def add_bank_gl_entries(self, gl_entries):
-		# frappe.throw(str(self))
 		total_deductions = 0
 		# for d in self.get("deductions"):
 		# 	if d.amount:
@@ -1326,6 +1326,10 @@ class PaymentEntry(AccountsController):
 		for d in self.get("taxes"):
 			if d.tax_amount:
 				total_deductions += flt(d.tax_amount)
+				
+		for d in self.get("deductions"):
+			if d.amount:
+				total_deductions += flt(d.amount)		
 		
 		if self.payment_type in ("Pay", "Internal Transfer"):
 			# frappe.throw(str(self.paid_from))
@@ -1335,7 +1339,7 @@ class PaymentEntry(AccountsController):
 						"account": self.paid_from,
 						"account_currency": self.paid_from_account_currency,
 						"against": self.party if self.payment_type == "Pay" else self.paid_to,
-						"credit_in_account_currency": self.paid_amount + total_deductions,
+						"credit_in_account_currency": self.paid_amount - total_deductions,
 						"credit": self.base_paid_amount + total_deductions,
 						"cost_center": self.cost_center,
 						"post_net_value": True,
