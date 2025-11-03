@@ -13,6 +13,7 @@
   "column_break0",
   "title",
   "naming_series",
+  "sales_order_series",
   "tax_id",
   "order_type",
   "is_allotment",
@@ -46,6 +47,10 @@
   "cost_center",
   "dimension_col_break",
   "project",
+  "site_details_section",
+  "site",
+  "column_break_hojo",
+  "customer_order",
   "currency_and_price_list",
   "currency",
   "conversion_rate",
@@ -100,6 +105,8 @@
   "base_discount_amount",
   "additional_discount_percentage",
   "discount_amount",
+  "discount_or_cost_amount",
+  "challan_cost",
   "column_break_50",
   "coupon_code",
   "additional_charges_section",
@@ -112,6 +119,7 @@
   "column_break_acmi",
   "total_distance",
   "total_quantity",
+  "transportation_charges",
   "terms_section_break",
   "tc_name",
   "terms",
@@ -1839,14 +1847,64 @@
    "fieldname": "footer",
    "fieldtype": "Text Editor",
    "label": "Footer"
+  },
+  {
+   "fieldname": "sales_order_series",
+   "fieldtype": "Link",
+   "hide_days": 1,
+   "hide_seconds": 1,
+   "label": "Sales Order Series",
+   "no_copy": 1,
+   "oldfieldname": "naming_series",
+   "oldfieldtype": "Select",
+   "options": "Item Group",
+   "print_hide": 1,
+   "reqd": 1,
+   "set_only_once": 1
+  },
+  {
+   "fieldname": "transportation_charges",
+   "fieldtype": "Currency",
+   "label": "Transportation Charges"
+  },
+  {
+   "fieldname": "site_details_section",
+   "fieldtype": "Section Break",
+   "label": "Site Details"
+  },
+  {
+   "fieldname": "site",
+   "fieldtype": "Link",
+   "label": "Site",
+   "options": "Site"
+  },
+  {
+   "fieldname": "column_break_hojo",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "customer_order",
+   "fieldtype": "Link",
+   "label": "Customer Order",
+   "options": "Customer Order"
+  },
+  {
+   "fieldname": "discount_or_cost_amount",
+   "fieldtype": "Currency",
+   "label": "Discount Cost"
+  },
+  {
+   "fieldname": "challan_cost",
+   "fieldtype": "Currency",
+   "label": "Challan Cost"
   }
  ],
  "icon": "fa fa-file-text",
  "idx": 105,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-07-16 16:08:41.224216",
- "modified_by": "kalden.dorji@thimphutechpark.bt",
+ "modified": "2025-09-20 12:25:04.203696",
+ "modified_by": "Administrator",
  "module": "Selling",
  "name": "Sales Order",
  "naming_rule": "By \"Naming Series\" field",

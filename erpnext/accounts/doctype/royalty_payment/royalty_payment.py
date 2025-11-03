@@ -7,8 +7,9 @@ import frappe
 from frappe.model.document import Document
 from frappe.utils import flt
 from erpnext.custom_utils import check_future_date, get_branch_cc, prepare_gl, prepare_sl, get_settings_value
+from erpnext.controllers.stock_controller import StockController
 
-class RoyaltyPayment(Document):
+class RoyaltyPayment(StockController):
 	# begin: auto-generated types
 	# This code is auto-generated. Do not modify anything in this block.
 
@@ -349,6 +350,9 @@ class RoyaltyPayment(Document):
 		self.make_royalty_payment()
 
 	def on_cancel(self):
+		self.ignore_linked_doctypes = (
+			"GL Entry","Stock Ledger Entry")
+		super().on_cancel()
 		self.update_production()
 		self.update_reference()
 

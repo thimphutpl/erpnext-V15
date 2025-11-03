@@ -99,14 +99,17 @@ class StockEntry(StockController):
 		bom_no: DF.Link | None
 		branch: DF.Link
 		company: DF.Link
+		cost_center: DF.Link | None
 		credit_note: DF.Link | None
 		delivery_note_no: DF.Link | None
 		fg_completed_qty: DF.Float
 		from_bom: DF.Check
 		from_warehouse: DF.Link | None
+		in_transit: DF.Check
 		inspection_required: DF.Check
 		is_opening: DF.Literal["No", "Yes"]
 		is_return: DF.Check
+		issued_by: DF.Data | None
 		items: DF.Table[StockEntryDetail]
 		job_card: DF.Link | None
 		letter_head: DF.Link | None
@@ -122,6 +125,7 @@ class StockEntry(StockController):
 		purchase_order: DF.Link | None
 		purchase_receipt_no: DF.Link | None
 		purpose: DF.Literal["Material Issue", "Material Receipt", "Material Transfer", "CSR", "Material Transfer for Manufacture", "Manufacture"]
+		received_by: DF.Data | None
 		remarks: DF.Text | None
 		sales_invoice_no: DF.Link | None
 		scan_barcode: DF.Data | None
@@ -129,6 +133,7 @@ class StockEntry(StockController):
 		set_posting_time: DF.Check
 		source_address_display: DF.SmallText | None
 		source_warehouse_address: DF.Link | None
+		status: DF.Data | None
 		stock_entry_type: DF.Link
 		subcontracting_order: DF.Link | None
 		supplier: DF.Link | None
@@ -183,7 +188,6 @@ class StockEntry(StockController):
 		self.pro_doc = frappe._dict()
 		if self.work_order:
 			self.pro_doc = frappe.get_doc("Work Order", self.work_order)
-
 		self.validate_duplicate_serial_and_batch_bundle("items")
 		self.validate_posting_time()
 		self.validate_purpose()
@@ -221,6 +225,8 @@ class StockEntry(StockController):
 		self.calculate_rate_and_amount()
 		self.validate_putaway_capacity()
 		self.validate_component_quantities()
+		self.validate_lot_list()
+
 
 		if not self.get("purpose") == "Manufacture":
 			# ignore scrap item wh difference and empty source/target wh
@@ -229,6 +235,8 @@ class StockEntry(StockController):
 			self.reset_default_field_value("to_warehouse", "items", "t_warehouse")
 
 	def on_submit(self):
+		if self.purpose == "Material Transfer":
+			self.update_lot_list(action="submit")
 		self.validate_closed_subcontracting_order()
 		self.make_bundle_using_old_serial_batch_fields()
 		self.update_stock_ledger()
@@ -251,6 +259,8 @@ class StockEntry(StockController):
 			self.set_material_request_transfer_status("Completed")
 
 	def on_cancel(self):
+		if self.purpose == "Material Transfer":
+			self.update_lot_list(action="cancel")
 		self.validate_closed_subcontracting_order()
 		self.update_subcontract_order_supplied_items()
 		self.update_subcontracting_order_status()
@@ -283,6 +293,58 @@ class StockEntry(StockController):
 
 	def on_update(self):
 		self.set_serial_and_batch_bundle()
+
+	def validate_lot_list(self):
+		for item in self.items:
+			item_sub_group = frappe.db.get_value("Item", item.item_code, "item_sub_group")
+			lot_check = frappe.db.get_value("Item Sub Group", item_sub_group, "lot_check")
+		#	sub_groups = ["Pole","Log","Block","Sawn", "Hakaries","Block (Special Size)"]
+		#	if item_sub_group in sub_groups:
+			if lot_check:
+				data = frappe.db.sql(""" select ll.name, lld.total_volume from `tabLot List` ll, `tabLot List Details` lld where ll.name = lld.parent and ll.branch='{0}' and lld.item = '{1}' and ll.name="{2}" and ll.docstatus=1""".format(self.branch, item.item_code, item.lot_number), as_dict=1)
+				transaction_data = frappe.db.sql(""" select ll.name, td.quantity from `tabLot List` ll, `tabLot List Transaction Details` td where ll.name = td.parent and ll.branch='{0}' and ll.name="{1}" and ll.docstatus=1""".format(self.branch, item.lot_number), as_dict=1)
+				if not data:
+					frappe.throw("Invalid Lot selection, Please check Branch and Material")
+				else:
+					transaction_total_qty = sum(a.quantity for a in transaction_data)
+					data_total_qty = sum(a.total_volume for a in data)
+					# for a in data:
+					balance = flt(data_total_qty) - (flt(transaction_total_qty)+flt(item.qty))
+					if flt(data_total_qty) < (flt(transaction_total_qty)+flt(item.qty)):
+						frappe.throw("Not available balance {0} in the selected Lot {1}".format(balance, item.lot_number))
+						# else:
+						# 	item.lot_balance_volume = balance
+		# for item in self.items:
+		# 	if item.lot_number:
+		# 		lot_dtl = frappe.db.sql("""
+		# 					select name from `tabLot List` ll
+		# 					where ll.docstatus = 1 and (ll.sales_order is NULL or ll.sales_order = '')
+		# 					and ll.name = '{0}'
+		# 					and (ll.stock_entry is NULL or ll.stock_entry ='')
+		# 				""".format(item.lot_number), as_dict = True)	
+		# 		if not lot_dtl:
+		# 			frappe.throw("Lot No {0} is either sold or previously transferred".format(item.lot_number))
+
+	def update_lot_list(self, action):
+		for item in self.items:
+			if item.lot_number:
+				if action == "submit":
+					doc = frappe.get_doc({
+						"doctype": "Lot List Transaction Details",
+						"transaction_type": "Stock Entry",
+						"transaction_id": self.name,
+						"parent": item.lot_number,
+						"parentfield": "transaction_details",
+						"parenttype": "Lot List",
+						"quantity": item.qty,
+					})
+					doc.insert()
+					# frappe.db.sql("update `tabLot List` set stock_entry='{0}' where name = '{1}'".format(self.name, item.lot_number))
+				elif action == "cancel":
+					frappe.db.sql("""
+						DELETE FROM `tabLot List Transaction Details` WHERE transaction_id = %s
+					""", (self.name))
+					# frappe.db.sql("update `tabLot List` set stock_entry=NULL where name = '{0}'".format(item.lot_number))
 
 	def set_job_card_data(self):
 		if self.job_card and not self.work_order:
@@ -3272,3 +3334,32 @@ def get_batchwise_serial_nos(item_code, row):
 			batchwise_serial_nos[batch_no] = sorted([serial_no.name for serial_no in serial_nos])
 
 	return batchwise_serial_nos
+
+@frappe.whitelist()
+def has_warehouse_permission(warehouse):
+	user = frappe.session.user
+	user_roles = frappe.get_roles(user)
+
+	if user == "Administrator" or "System Manager" in user_roles:
+		return 1
+	res = frappe.db.sql("""
+			select 1
+			from `tabWarehouse` w, `tabWarehouse Branch` as wb
+			where wb.parent = w.name
+			and w.name = '{warehouse}'
+			and (
+				   exists(select 1
+						   from `tabEmployee` e
+						 where e.user_id = '{user}'
+						 and e.branch = wb.branch)
+				or
+				exists(select 1
+					from `tabEmployee` e,`tabAssign Branch` ab, `tabBranch Item` bi
+					 where e.user_id = '{user}'
+					and ab.employee = e.name
+					  and bi.parent = ab.name
+					   and bi.branch = wb.branch)
+			)
+			""".format(warehouse=warehouse, user=frappe.session.user))
+	
+	return res[0][0] if res else 0

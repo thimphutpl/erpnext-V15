@@ -7,6 +7,7 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "section_break_ulwc",
   "barcode",
   "has_item_scanned",
   "section_break_2",
@@ -17,6 +18,7 @@
   "item_code",
   "item_name",
   "col_break2",
+  "lot_number",
   "is_finished_item",
   "is_scrap_item",
   "quality_inspection",
@@ -171,6 +173,7 @@
   {
    "fieldname": "image_view",
    "fieldtype": "Image",
+   "hidden": 1,
    "label": "Image View",
    "options": "image",
    "print_hide": 1
@@ -279,6 +282,7 @@
    "fetch_from": "item_code.retain_sample",
    "fieldname": "retain_sample",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "Retain Sample",
    "read_only": 1
   },
@@ -291,6 +295,7 @@
   {
    "fieldname": "serial_no_batch",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Serial No / Batch",
    "no_copy": 1
   },
@@ -496,6 +501,7 @@
   {
    "fieldname": "project",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Project",
    "options": "Project"
   },
@@ -552,12 +558,14 @@
    "default": "0",
    "fieldname": "is_scrap_item",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "Is Scrap Item"
   },
   {
    "default": "0",
    "fieldname": "is_finished_item",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "Is Finished Item"
   },
   {
@@ -602,7 +610,8 @@
   {
    "depends_on": "eval:doc.use_serial_batch_fields === 1",
    "fieldname": "section_break_rdtg",
-   "fieldtype": "Section Break"
+   "fieldtype": "Section Break",
+   "hidden": 1
   },
   {
    "fieldname": "column_break_prps",
@@ -618,13 +627,24 @@
   {
    "fieldname": "column_break_avdm",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_ulwc",
+   "fieldtype": "Section Break",
+   "hidden": 1
+  },
+  {
+   "fieldname": "lot_number",
+   "fieldtype": "Link",
+   "label": "Lot Number",
+   "options": "Lot List"
   }
  ],
  "idx": 1,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-08-25 10:21:47.691544",
+ "modified": "2025-09-17 16:50:49.990908",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Stock Entry Detail",

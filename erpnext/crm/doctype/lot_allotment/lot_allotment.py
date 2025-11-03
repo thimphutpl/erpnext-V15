@@ -29,7 +29,8 @@ class LotAllotment(Document):
 		lot_list_details: DF.Table[Document]
 		lot_list_lot: DF.Table[Document]
 		posting_date: DF.Date
-		site: DF.Link
+		product_category: DF.Link
+		site: DF.Link | None
 		total_amount: DF.Currency
 		total_payable: DF.Currency
 		total_pieces: DF.Data | None

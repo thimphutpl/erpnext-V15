@@ -52,6 +52,7 @@ class Site(Document):
         site_type: DF.Link
         territory: DF.Link | None
         user: DF.Link
+        user_id: DF.Data
     # end: auto-generated types
     def validate(self):
         self.validate_defaults()

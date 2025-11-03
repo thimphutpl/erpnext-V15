@@ -52,13 +52,14 @@ class SiteRegistration(Document):
 		status: DF.Literal["", "Pending", "Approved", "Rejected", "Cancelled"]
 		territory: DF.Link | None
 		user: DF.Link
+		user_id: DF.Data
 	# end: auto-generated types
 	def validate(self):
 		self.validate_site_registration()
 		self.validate_user()
 		self.update_user_details()
 		self.update_status()
-		#self.validate_cid()
+		# self.validate_cid()
 		self.validate_defaults()
 		self.validate_approval_no()
 		self.validate_items()
@@ -97,13 +98,13 @@ class SiteRegistration(Document):
 			frappe.throw(_("Site Registration is not applicable for {}").format(self.product_category))
 
 		# validate construction duration
-		if self.construction_type:
-			maximum_duration = frappe.db.get_value("Construction Type", self.construction_type, "maximum_duration")
-			max_end_date = add_days(add_months(self.construction_start_date, cint(maximum_duration)),-1)
+		# if self.construction_type:
+		# 	maximum_duration = frappe.db.get_value("Construction Type", self.construction_type, "maximum_duration")
+		# 	max_end_date = add_days(add_months(self.construction_start_date, cint(maximum_duration)),-1)
 
-			if cint(maximum_duration) and str(self.construction_end_date) > str(max_end_date):
-				frappe.throw(_("Construction duration is currently restricted to {} month(s) only. \
-					Your construction end date cannot be beyond {}").format(cint(maximum_duration), max_end_date))
+		# 	if cint(maximum_duration) and str(self.construction_end_date) > str(max_end_date):
+		# 		frappe.throw(_("Construction duration is currently restricted to {} month(s) only. \
+		# 			Your construction end date cannot be beyond {}").format(cint(maximum_duration), max_end_date))
 
 	def attach_cid(self):
 		target_doc = None
@@ -156,8 +157,10 @@ class SiteRegistration(Document):
 				if i.approval_status == "Approved":
 					if i.site:
 						link = frappe.get_desk_link("Site", i.site)
-						frappe.throw(_("A Site already exists for Construction Approval No. {0}. Ref# {1}")\
-							.format(self.approval_no, link), title="Duplicate Entry")
+						# frappe.throw(_("A Site already exists for Construction Approval No. {0}. Ref# {1}")\
+						# 	.format(self.approval_no, link), title="Duplicate Entry")
+						frappe.throw(_("A Site already exists for Construction Approval No. {0}.")\
+							.format(self.approval_no), title="Duplicate Entry")
 					else:
 						link = frappe.get_desk_link("Site Registration", i.name)
 						frappe.throw(_("A request already exists for Construction Approval No. {0}. Ref# {1}")\
@@ -174,9 +177,12 @@ class SiteRegistration(Document):
 		if not self.user:
 			frappe.throw(_("User is mandatory"))
 		else:
-			if not frappe.db.exists("User Request",{"user":self.user,"request_category": "CID Details",\
-				"docstatus":1,"approval_status": "Approved"}):
-				if frappe.db.exists("User Request",{"user":self.user,"request_category":"CID Details","docstatus":0}):
+			# if not frappe.db.exists("User Request",{"user":self.user,"request_category": "CID Details",\
+			# 	"docstatus":1,"approval_status": "Approved"}):
+			
+			if not frappe.db.exists("User Request",{"new_cid":self.user,"request_category": "CID Details","docstatus":1,"approval_status": "Approved"}):
+				
+				if frappe.db.exists("User Request",{"new_cid":self.user,"request_category":"CID Details","docstatus":0}):
 					frappe.throw(_("Your request for account verification is pending approval"))
 				else:
 					frappe.throw(_("You need to submit a copy of CID document first"))

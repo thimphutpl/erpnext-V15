@@ -44,8 +44,10 @@ class BFSSecure:
 		self.amount	 = flt(amount)
 
 		if flt(self.amount) < 0:
+			return "Amount cannot be a negative value"
 			frappe.throw(_("Amount cannot be a negative value"))
 		elif not frappe.db.exists('Customer Order', self.customer_order):
+			return ("Customer Order {0} not found").format(self.customer_order)
 			frappe.throw(_("Customer Order {0} not found").format(self.customer_order))
 
 		co = frappe.get_doc("Customer Order", customer_order)
@@ -56,6 +58,7 @@ class BFSSecure:
 		co.save(ignore_permissions=True)
 
 		transaction_time = get_datetime().strftime("%Y%m%d%H%M%S")
+
 		if flt(self.amount) > 0:
 			op = frappe.new_doc('Online Payment')
 			op.update({
@@ -153,7 +156,8 @@ class BFSSecure:
 					status = 'Pending'
 					self.transaction_id = res.get('bfs_bfsTxnId')[0]
 				else:
-					error_msg = res.get('bfs_responseDesc')[0]
+					# error_msg = res.get('bfs_responseDesc')[0]
+					error_msg = self.mobile_rc.get(res.get('bfs_responseCode')[0])
 					status = 'Failed'
 			else:
 				error_msg = 'Authorization Request Failed: RC not received'
@@ -219,7 +223,8 @@ class BFSSecure:
 					error_msg = None
 					status = 'Pending'
 				else:
-					error_msg = res.get('bfs_responseDesc')[0]
+					# error_msg = res.get('bfs_responseDesc')[0]
+					error_msg = self.mobile_rc.get(res.get('bfs_responseCode')[0])
 					status = 'Failed'
 			else:
 				error_msg = 'Account Inquiry Failed: EC not received'
@@ -228,6 +233,7 @@ class BFSSecure:
 			'error_msg': error_msg, 
 			'status': status}) 
 		self.update_online_payment(out)
+		print(error_msg)
 		return out
 
 	def debit_request(self, customer_order, otp):
@@ -286,6 +292,8 @@ class BFSSecure:
 		return out
 
 	def get_payload(self, req_type):
+		print('-------AR TEST-----')
+		print(self.order_no)
 		''' generate url based on request type '''
 		if req_type in ('AR', 'AS'):
 			params = [
@@ -296,7 +304,7 @@ class BFSSecure:
 				{'key': 'benfBankCode', 'value': '01'},
 				{'key': 'txnCurrency', 'value': 'BTN'},
 				{'key': 'txnAmount', 'value': self.amount},
-				{'key': 'remitterEmail', 'value': 'sivasankar.k2003@gmail.com'},
+				{'key': 'remitterEmail', 'value': 'tsheringwangchuky@gmail.com'},
 				{'key': 'paymentDesc', 'value': self.customer_order},
 				{'key': 'version', 'value': 1.0}
 			]
@@ -378,6 +386,8 @@ class BFSSecure:
 
 		#digest = SHA256.new()
 		digest = SHA.new()
+		if isinstance(message, str):
+			message = message.encode("utf-8")
 		digest.update(message)
 
 		# Read shared key from file
@@ -397,5 +407,6 @@ class BFSSecure:
 		if not verified:
 			frappe.throw(_("Signature verification failed"))
 
-		return sig.encode('hex').upper()	
+		# return sig.encode('hex').upper()	
+		return sig.hex().upper()
 

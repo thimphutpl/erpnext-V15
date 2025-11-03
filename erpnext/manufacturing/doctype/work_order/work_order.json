@@ -13,6 +13,7 @@
   "status",
   "production_item",
   "item_name",
+  "item_group",
   "image",
   "bom_no",
   "sales_order",
@@ -596,6 +597,15 @@
    "label": "Raw Material Warehouse",
    "options": "Warehouse",
    "reqd": 1
+  },
+  {
+   "depends_on": "eval:doc.production_item",
+   "fetch_from": "production_item.item_group",
+   "fetch_if_empty": 1,
+   "fieldname": "item_group",
+   "fieldtype": "Data",
+   "label": "Item Group",
+   "read_only": 1
   }
  ],
  "icon": "fa fa-cogs",
@@ -603,7 +613,7 @@
  "image_field": "image",
  "is_submittable": 1,
  "links": [],
- "modified": "2025-08-25 11:52:02.873530",
+ "modified": "2025-09-15 11:04:07.648858",
  "modified_by": "Administrator",
  "module": "Manufacturing",
  "name": "Work Order",

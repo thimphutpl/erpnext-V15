@@ -121,7 +121,7 @@ class Item(Document):
 		item_defaults: DF.Table[ItemDefault]
 		item_group: DF.Link
 		item_name: DF.Data
-		item_sub_group: DF.Link
+		item_sub_group: DF.Link | None
 		last_purchase_rate: DF.Float
 		lead_time_days: DF.Int
 		material_measurement: DF.Link | None
@@ -130,6 +130,7 @@ class Item(Document):
 		naming_series: DF.Literal["STO-ITEM-.YYYY.-"]
 		no_of_months: DF.Int
 		no_of_months_exp: DF.Int
+		old_item_code: DF.Data | None
 		opening_stock: DF.Float
 		over_billing_allowance: DF.Float
 		over_delivery_receipt_allowance: DF.Float
@@ -172,7 +173,10 @@ class Item(Document):
 				),
 				title=_("Missing Item Code Base")
 			)
-		self.item_code = make_autoname(f"{base}.#######")
+		if self.old_item_code:
+			self.item_code = self.old_item_code
+		else:
+			self.item_code = make_autoname(f"{base}.#######")
 		
 		if not self.item_code:
 			frappe.throw(

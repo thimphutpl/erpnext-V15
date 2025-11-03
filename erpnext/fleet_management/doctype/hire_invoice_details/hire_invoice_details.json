@@ -31,6 +31,7 @@
   {
    "fieldname": "vehicle_logbook",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Vehicle Logbook",
    "options": "Vehicle Logbook",
    "read_only": 1,
@@ -47,6 +48,7 @@
   {
    "fieldname": "equipment",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Equipment",
    "options": "Equipment",
    "read_only": 1
@@ -58,6 +60,7 @@
   {
    "fieldname": "rate_type",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "Rate Type",
    "read_only": 1
   },
@@ -68,7 +71,6 @@
   {
    "fieldname": "number_of_days",
    "fieldtype": "Int",
-   "in_list_view": 1,
    "label": "Number of Days",
    "read_only": 1
   },
@@ -118,7 +120,6 @@
   {
    "fieldname": "equipment_name",
    "fieldtype": "Data",
-   "in_list_view": 1,
    "label": "Equipment Number",
    "read_only": 1
   },
@@ -151,16 +152,15 @@
    "fetch_from": "vehicle_logbook.consumption",
    "fieldname": "hsd_consumption",
    "fieldtype": "Float",
-   "in_list_view": 1,
+   "hidden": 1,
    "label": "HSD Consumption",
-   "read_only": 1,
-   "reqd": 1
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-09-09 10:19:06.552471",
+ "modified": "2025-09-15 11:04:33.598365",
  "modified_by": "kalden.dorji@thimphutechpark.bt",
  "module": "Fleet Management",
  "name": "Hire Invoice Details",

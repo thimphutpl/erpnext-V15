@@ -20,19 +20,19 @@ frappe.ui.form.on('Site Extension', {
 			}
 		});
 	},
-	refresh: function(frm) {
-		custom.apply_default_settings(frm);
-		get_user_details(frm,'refresh');
-	},
+	// refresh: function(frm) {
+	// 	custom.apply_default_settings(frm);
+	// 	get_user_details(frm,'refresh');
+	// },
 	user: function(frm){
-		get_user_details(frm,'update');
+		// get_user_details(frm,'update');
 		if(!frm.doc.user){
 			cur_frm.set_value("site", null);
 		}
 	},
-	site: function(frm){
-		get_site_details(frm);
-	},
+	// site: function(frm){
+	// 	get_site_details(frm);
+	// },
 	approval_status: function(frm){
 		cur_frm.toggle_reqd("rejection_reason", (frm.doc.approval_status == "Rejected") ? 1:0);
 	}

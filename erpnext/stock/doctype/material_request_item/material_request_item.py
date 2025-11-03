@@ -21,6 +21,7 @@ class MaterialRequestItem(Document):
 		amount: DF.Currency
 		bom_no: DF.Link | None
 		brand: DF.Link | None
+		business_activity: DF.Link | None
 		conversion_factor: DF.Float
 		cost_center: DF.Link | None
 		description: DF.TextEditor | None

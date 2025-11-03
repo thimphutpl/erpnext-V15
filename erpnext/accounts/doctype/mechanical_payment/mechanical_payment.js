@@ -87,7 +87,10 @@ frappe.ui.form.on('Mechanical Payment', {
         let row = frm.open_grid_row();
         row.grid_form.fields_dict.reference_type.set_value(frm.doc.payment_for);
         row.grid_form.fields_dict.reference_type.refresh();
-    }
+    },
+    get_delivery_note: function(frm) {
+		get_delivery_notes(frm);
+	},
 });
 
 function calculate_totals(frm) {
@@ -96,6 +99,55 @@ function calculate_totals(frm) {
         frm.refresh_field("net_amount");
     }
 }
+
+function get_delivery_notes(frm){
+    if (frm.doc.transporter || frm.doc.vehicle){
+            return frappe.call({
+                    method: "get_delivery_note_list",
+                    doc: frm.doc,
+                    callback: function(r, rt){
+                //             if(r.message){
+                // console.log(r.message);
+                //                     var total_amount = 0;
+                //                     console.log(r.message);
+                //                     frm.clear_table("transporter_payment_item");
+                //                     r.message.forEach(function(rec) {
+                //                             var row = frappe.model.add_child(frm.doc, "Transporter Payment Item", "transporter_payment_item");
+                //                             row.delivery_note = rec['delivery_note'];
+                //                             row.vehicle = rec['vehicle'];
+                //                             row.amount = rec['amount'];
+                //                             total_amount += rec['amount'];
+                //                     });
+                //                     frm.set_value("receivable_amount", total_amount);
+                //             }else{
+                //                   frm.clear_table("transporter_payment_item");
+                //                   frappe.msgprint("No Delivery Note for the above selected vehicle or transporter");
+                //             }
+                //             frm.refresh();
+                //     },
+                
+                    frm.refresh_field("transporter_payment_item");
+                    frm.refresh_fields();
+                },
+                freeze: true,
+                freeze_message: "Fetching Delivery Note... Please Wait"
+            });
+    }else{
+            frappe.msgprint("To retrieve Delivery Note, Please Provide Transporter or Vehicle no");
+    }
+}
+
+frappe.ui.form.on("Transporter Payment Item", {
+    "delivery_note": function(frm, cdt, cdn){
+        var items = frm.doc.transporter_payment_item;
+        var total = 0;
+        for(var i = 0; i < items.length ; i++){
+                   total += parseFloat(items[i].amount);
+              }
+        frm.set_value('receivable_amount', total);
+        calculate_totals(frm);
+    }
+})
 
 frappe.ui.form.on("Mechanical Payment Item", {
     "reference_name": function(frm, cdt, cdn) {
@@ -136,21 +188,3 @@ frappe.ui.form.on("Mechanical Payment Item", {
         frm.trigger("receivable_amount");
     }
 });
-
-frappe.ui.form.on('Mechanical Payment', {
-    refresh: function(frm) {
-        // Add custom logic if required
-    }
-});
-
-// frm.fields_dict['items'].grid.get_field('reference_name').get_query = function(frm, cdt, cdn) {
-//     var d = locals[cdt][cdn];
-//     return {
-//         filters: {
-//             "docstatus": 1,
-//             "branch": frm.branch,
-//             "customer": frm.customer,
-//             "outstanding_amount": [">", 0]
-//         }
-//     };
-// };

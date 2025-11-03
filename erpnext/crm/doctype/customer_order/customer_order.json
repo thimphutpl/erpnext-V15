@@ -1,13 +1,15 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "ORDR.YY.MM.#####",
+ "autoname": "ORDR.YY.MM.DD.####",
  "creation": "2025-08-31 18:03:07.556682",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
   "sb_customer_details",
+  "sales_order_series",
   "user",
+  "user_id",
   "full_name",
   "mobile_no",
   "alternate_mobile_no",
@@ -698,13 +700,29 @@
    "label": "Balance Payable Amount",
    "precision": "2",
    "read_only": 1
+  },
+  {
+   "default": "Timber Products",
+   "fieldname": "sales_order_series",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Sales Order Series",
+   "options": "Item Group"
+  },
+  {
+   "fetch_from": "user.login_id",
+   "fieldname": "user_id",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "User ID",
+   "reqd": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-08-31 20:33:29.612155",
+ "modified": "2025-10-08 12:21:26.927802",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Customer Order",

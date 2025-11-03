@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "MP.YY.MM.####",
+ "autoname": "format:{MP}{YY}{MM}{####}",
  "creation": "2025-03-05 11:55:42.131769",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -23,7 +23,7 @@
   "deduction_amount",
   "column_break_10",
   "net_amount",
-  "income_account",
+  "bank_account",
   "cheque_no",
   "cheque_date",
   "clearance_date",
@@ -36,6 +36,9 @@
   "section_break_19",
   "get_transactions",
   "items",
+  "section_break_nbny",
+  "get_delivery_note",
+  "transporter_payment_item",
   "sb_321",
   "deducts",
   "section_break_18",
@@ -97,6 +100,7 @@
   {
    "fieldname": "payment_for",
    "fieldtype": "Select",
+   "in_standard_filter": 1,
    "label": "Payment For",
    "options": "\nHire Charge Invoice\nJob Cards\nTransporter",
    "reqd": 1
@@ -141,13 +145,6 @@
    "reqd": 1
   },
   {
-   "fieldname": "income_account",
-   "fieldtype": "Link",
-   "label": "Incoming Account",
-   "options": "Account",
-   "reqd": 1
-  },
-  {
    "allow_on_submit": 1,
    "fieldname": "cheque_no",
    "fieldtype": "Data",
@@ -182,13 +179,13 @@
    "fieldtype": "Column Break"
   },
   {
-   "default": "TDS - wittheld by Client - CDCL",
    "fieldname": "tds_account",
    "fieldtype": "Link",
-   "label": "TDS Account",
+   "label": "TDS/Misc. Income Account",
    "options": "Account"
   },
   {
+   "depends_on": "eval:doc.payment_for != \"Transporter\"",
    "fieldname": "section_break_19",
    "fieldtype": "Section Break"
   },
@@ -200,8 +197,7 @@
   {
    "fieldname": "items",
    "fieldtype": "Table",
-   "options": "Mechanical Payment Item",
-   "reqd": 1
+   "options": "Mechanical Payment Item"
   },
   {
    "fieldname": "sb_321",
@@ -306,16 +302,38 @@
    "fieldtype": "Link",
    "label": "Vehicle",
    "options": "Vehicle"
+  },
+  {
+   "fieldname": "bank_account",
+   "fieldtype": "Link",
+   "label": "Bank Account",
+   "options": "Account",
+   "reqd": 1
+  },
+  {
+   "depends_on": "eval:doc.payment_for == \"Transporter\"",
+   "fieldname": "section_break_nbny",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "get_delivery_note",
+   "fieldtype": "Button",
+   "label": "Get Delivery Note"
+  },
+  {
+   "fieldname": "transporter_payment_item",
+   "fieldtype": "Table",
+   "options": "Transporter Payment Item"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-07-24 11:35:01.952413",
- "modified_by": "kalden.dorji@thimphutechpark.bt",
+ "modified": "2025-09-20 11:02:15.770684",
+ "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Mechanical Payment",
- "naming_rule": "Expression (old style)",
+ "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
   {

@@ -70,6 +70,7 @@ class CustomerOrder(Document):
 		quantity: DF.Float
 		remarks: DF.Text | None
 		sales_order: DF.Link | None
+		sales_order_series: DF.Link | None
 		sawns: DF.Table[CustomerOrderSawn]
 		selection_based_on: DF.Data | None
 		selling_price: DF.Link | None
@@ -91,6 +92,7 @@ class CustomerOrder(Document):
 		transportation_rate: DF.Link | None
 		uom: DF.Data | None
 		user: DF.Link
+		user_id: DF.Data
 		vehicle_capacity: DF.Link | None
 		vehicles: DF.Table[CustomerOrderVehicle]
 		weekly_available_quantity: DF.Float
@@ -189,11 +191,19 @@ class CustomerOrder(Document):
 		if self.site:
 	 		if frappe.db.sql("""select count(*) from `tabCustomer Order` where user = "{}" and site = "{}" and item="{}" 
 		 		and docstatus = 0 and name != "{}" """.format(self.user, self.site,self.item, self.name))[0][0]:
-		 		frappe.throw(_("New orders not allowed as you already have unpaid order(s). Please complete the payment/cancel the previous order(s)"))
+					return {
+						"status": "error",
+						"message": "New orders not allowed as you already have unpaid order(s). Please complete the payment/cancel the previous order(s)."
+					}
+		 		# frappe.throw(_("New orders not allowed as you already have unpaid order(s). Please complete the payment/cancel the previous order(s)"))
 		else:
 			if frappe.db.sql("""select count(*) from `tabCustomer Order` where user = "{}"
 				and docstatus = 0 and name != "{}" """.format(self.user, self.name))[0][0]:
-				frappe.throw(_("New orders not allowed as you already have unpaid order(s). Please complete the payment/cancel the previous order(s)"))
+					return {
+						"status": "error",
+						"message": "New orders not allowed as you already have unpaid order(s). Please complete the payment/cancel the previous order(s)."
+					}
+					# frappe.throw(_("New orders not allowed as you already have unpaid order(s). Please complete the payment/cancel the previous order(s)"))
 
 	def update_user_details(self):
 		if frappe.db.exists("User Account", self.user):
@@ -447,7 +457,7 @@ class CustomerOrder(Document):
 		if self.selection_based_on != "Lot": 
 			wh = frappe.db.get_value("CRM Branch Setting", {"branch": self.branch}, "default_warehouse")
 			if not wh:
-				frappe.throw(_("Default warehouse is not linked for the branch {0}").format(self.branch))
+				frappe.throw(_("Default warehouse is not linked for the branch {0} in CRM Branch Setting").format(self.branch))
 		if not(self.selection_based_on == "Lot" or self.selection_based_on == "Measurement"):
 			if frappe.db.exists("Business Activity", item.item_sub_group):
 				business_activity = item.item_sub_group
@@ -457,6 +467,7 @@ class CustomerOrder(Document):
 		if self.selection_based_on != "Lot" and self.selection_based_on != "Measurement":
 			doc = frappe.get_doc({
 				"doctype": "Sales Order",
+				"sales_order_series":self.sales_order_series,
 				"branch": self.branch,
 				"site": self.site,
 				"customer_order": self.name,
@@ -486,6 +497,7 @@ class CustomerOrder(Document):
 				}]
 			})
 			doc.save(ignore_permissions=True)
+			frappe.db.commit()
 			doc.submit()
 		elif self.selection_based_on == "Lot":
 			discount = additional = 0
@@ -512,6 +524,7 @@ class CustomerOrder(Document):
 
 			doc = frappe.get_doc({
 				"doctype": "Sales Order",
+				"sales_order_series":self.sales_order_series,
 				"branch": self.branch,
 				"site": self.site,
 				"customer_order": self.name,

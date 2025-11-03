@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "allow_rename": 1,
  "autoname": "field:party_type",
  "creation": "2016-12-26 11:26:51.508286",
  "doctype": "DocType",
@@ -30,7 +31,7 @@
  ],
  "in_create": 1,
  "links": [],
- "modified": "2024-08-14 12:49:31.801500",
+ "modified": "2025-09-19 09:53:39.152841",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Party Type",
@@ -38,6 +39,7 @@
  "owner": "Administrator",
  "permissions": [
   {
+   "create": 1,
    "delete": 1,
    "email": 1,
    "export": 1,
@@ -45,7 +47,9 @@
    "read": 1,
    "report": 1,
    "role": "System Manager",
-   "share": 1
+   "select": 1,
+   "share": 1,
+   "write": 1
   },
   {
    "email": 1,
@@ -66,6 +70,7 @@
    "share": 1
   }
  ],
+ "row_format": "Dynamic",
  "show_name_in_global_search": 1,
  "sort_field": "modified",
  "sort_order": "DESC",

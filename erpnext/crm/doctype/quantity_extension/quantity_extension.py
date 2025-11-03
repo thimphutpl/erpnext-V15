@@ -45,6 +45,8 @@ class QuantityExtension(Document):
 
 	def on_cancel(self):
 		self.update_site()
+
+	
 	
 	def validate_duplciate_request(self):
 		if frappe.db.exists("Quantity Extension",{"user":self.user, "approval_status":"Pending", "name":('!=', self.name), "docstatus":('!=', 2), "site":self.site}):
@@ -89,7 +91,8 @@ class QuantityExtension(Document):
 
 			if not i.site_item_name:
 				frappe.throw(_("Row#{0} : <b>Site Item Name</b> not found").format(i.idx))
-			initial_quantity = frappe.db.get_value("Site Item", i.site_item_name, "overall_expected_quantity")
+
+			initial_quantity = frappe.db.get_value("Site Item", {"parent": i.site_item_name}, "overall_expected_quantity")
 
 			i.initial_quantity = flt(initial_quantity)
 			i.final_quantity   = flt(initial_quantity) + flt(i.additional_quantity)
@@ -108,7 +111,7 @@ class QuantityExtension(Document):
 		#	frappe.throw(_("Please attach <b>Quantity Extension Approval Document</b>"))
 	
 		for i in self.get("items"):
-			doc = frappe.get_doc("Site Item", i.site_item_name)
+			doc = frappe.get_doc("Site Item", {"parent": i.site_item_name})
 			extended_quantity = -1*flt(i.additional_quantity) if self.docstatus == 2 else flt(i.additional_quantity)
 
 			# check for negative quantity adjustment

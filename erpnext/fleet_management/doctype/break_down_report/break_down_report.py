@@ -20,7 +20,7 @@ class BreakDownReport(Document):
 		branch: DF.Link
 		client: DF.Data | None
 		cost_center: DF.Link
-		customer: DF.Link
+		customer: DF.Link | None
 		customer_branch: DF.ReadOnly | None
 		customer_cost_center: DF.ReadOnly | None
 		date: DF.Date

@@ -31,6 +31,8 @@ class PurchaseTaxesandCharges(Document):
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
+		party: DF.DynamicLink | None
+		party_type: DF.Literal["", "Supplier", "Employee"]
 		rate: DF.Float
 		row_id: DF.Data | None
 		tax_amount: DF.Currency

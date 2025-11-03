@@ -48,7 +48,7 @@ frappe.ui.form.on('Customer Order', {
 				"filters": [
 					["customer_id", "=", frm.doc.user],
 					["docstatus", "=", "1"],
-					["site", "=", frm.doc.site ]
+					// ["site", "=", frm.doc.site ]
 				]
 			}
 		})
@@ -126,7 +126,7 @@ frappe.ui.form.on('Customer Order', {
 
 	refresh: function(frm) {
 		// apply_local_settings(frm);
-		custom.apply_default_settings(frm);
+		// custom.apply_default_settings(frm);
 		add_custom_buttons(frm);
 		get_user_details(frm,'refresh');
 
@@ -141,7 +141,7 @@ frappe.ui.form.on('Customer Order', {
 		}
 		apply_product_category_settings(frm);
 		check_product_group(frm, 'refresh');
-		apply_qty_based_validations(frm);
+		// apply_qty_based_validations(frm);
 	},
 
 	user: function(frm){
@@ -165,7 +165,7 @@ frappe.ui.form.on('Customer Order', {
 			cur_frm.set_value("selection_based_on",null)
 		}
 		check_selection_based_on(frm, cur_frm.doc.selection_based_on,0);
-		apply_qty_based_validations(frm);
+		// apply_qty_based_validations(frm);
 	},
 
 	lot_allotment_no: function(frm){
@@ -173,11 +173,11 @@ frappe.ui.form.on('Customer Order', {
 			cur_frm.set_value("lot_allotment_no",null)
 			cur_frm.set_value("branch",null)
 		}
-		if(cur_frm.doc.site != null && cur_frm.doc.lot_allotment_no != null){
+		// if(cur_frm.doc.site != null && cur_frm.doc.lot_allotment_no != null){
 			if(cur_frm.doc.selection_based_on == "Lot"){
 			cur_frm.clear_table("lots")
 			populate_lots(frm, cur_frm.doc.lot_allotment_no);
-			}
+			// }
 		}
 	},
 
@@ -273,9 +273,9 @@ frappe.ui.form.on('Customer Order', {
 		create_order_and_payment(frm);
 	},
 
-	total_quantity: function(frm){
-		apply_qty_based_validations(frm);
-	}
+	// total_quantity: function(frm){
+	// 	apply_qty_based_validations(frm);
+	// }
 });
 
 frappe.ui.form.on('Customer Order Vehicle', {
@@ -500,11 +500,11 @@ var get_user_details = function(frm, mode){
 				fieldname: '*'
 			},
 			callback: function(r){
-				custom.update_user_details(frm, r, mode);
+				// custom.update_user_details(frm, r, mode);
 			}
 		});
 	} else {
-		custom.update_user_details(frm, {}, mode);
+		// custom.update_user_details(frm, {}, mode);
 	}
 }
 
@@ -1039,7 +1039,7 @@ var testPay = function(frm) {
 		data: data,
 		dataType: 'html',
 		success: function (data, textStatus, xhr) {
-			console.log(data)
+			// console.log(data)
 			msgprint(("Success!! "));
 			//msgprint(('<div class="row">'+data+'</div>'));
 			//console.log(xhr);
@@ -1100,6 +1100,7 @@ var check_product_group = function(frm, mode){
 				"product_category":frm.doc.product_category
 			},
 			callback: function(r){
+				// console.log(r.message)
 				if(r.message){
 					cur_frm.toggle_display("product_group",1);
 					cur_frm.toggle_reqd("product_group",1);
@@ -1146,7 +1147,7 @@ var clear_fields = function(mode="refresh"){
 		cur_frm.toggle_display("transport_mode",1);
 		cur_frm.toggle_display("total_quantity",1);
 		cur_frm.toggle_display("total_item_rate",1);
-		cur_frm.set_value("challan_cost",null);
+		// cur_frm.set_value("challan_cost",null);
 		cur_frm.toggle_display("lot_allotment_no",null);
 		cur_frm.toggle_display("challan_cost",0);
 		cur_frm.toggle_display("lot_allotment_no",0);

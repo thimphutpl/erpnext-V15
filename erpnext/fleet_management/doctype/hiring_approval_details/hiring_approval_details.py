@@ -28,7 +28,8 @@ class HiringApprovalDetails(Document):
 		from_time: DF.Time | None
 		grand_total: DF.Currency
 		hourly: DF.Literal["", "With Fuel (Internal)", "Without Fuel (Internal)", "Conifer - Cft (Internal)", "Broadleaf - Cft (Internal)", "With Fuel (External)", "Without Fuel (External)", "Conifer - Cft (External)", "Broadleaf - Cft (External)"]
-		idle_rate: DF.Link | None
+		idle_rate: DF.Data | None
+		idle_rate_type: DF.Literal["", "Internal", "External"]
 		irate1: DF.Currency
 		irate2: DF.Currency
 		irate3: DF.Currency

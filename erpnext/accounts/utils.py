@@ -585,7 +585,7 @@ def check_if_advance_entry_modified(args):
 				& (journal_acc.party == args.get("party"))
 				& (
 					(journal_acc.reference_type.isnull())
-					| (journal_acc.reference_type.isin(["", "Sales Order", "Purchase Order"]))
+					| (journal_acc.reference_type.isin(["Equipment Hiring Form", "Sales Order", "Purchase Order"]))
 				)
 				& (journal_entry.name == args.get("voucher_no"))
 				& (journal_acc.name == args.get("voucher_detail_no"))
@@ -1564,7 +1564,7 @@ def get_voucherwise_gl_entries(future_stock_vouchers, posting_date):
 	Check compare_existing_and_expected_gle function below.
 
 	returns:
-	        Dict[Tuple[voucher_type, voucher_no], List[GL Entries]]
+			Dict[Tuple[voucher_type, voucher_no], List[GL Entries]]
 	"""
 	gl_entries = {}
 	if not future_stock_vouchers:
@@ -2367,13 +2367,13 @@ def make_asset_transfer_gl(self, asset, date, from_cc, to_cc, cancel, not_legacy
 	
 	# accumulated_dep_account = frappe.db.sql("select accumulated_depreciation_account from `tabAsset Category Account` where parent = %s and company= %s", asset.asset_category,asset.company, as_dict=True)[0].accumulated_depreciation_account
 	accumulated_dep_account = frappe.db.sql(
-    """
-    SELECT accumulated_depreciation_account 
-    FROM `tabAsset Category Account` 
-    WHERE parent = %s AND company_name = %s
-    """,
-    (asset.asset_category, self.company),
-    as_dict=True)[0].accumulated_depreciation_account
+	"""
+	SELECT accumulated_depreciation_account 
+	FROM `tabAsset Category Account` 
+	WHERE parent = %s AND company_name = %s
+	""",
+	(asset.asset_category, self.company),
+	as_dict=True)[0].accumulated_depreciation_account
 
 	# frappe.throw(str(accumulated_dep_account))
 	ic_account = frappe.db.get_single_value("Accounts Settings", "intra_company_account")
@@ -2386,66 +2386,110 @@ def make_asset_transfer_gl(self, asset, date, from_cc, to_cc, cancel, not_legacy
 	gl_entries = []
 	gl_entries.append(
 		prepare_gl(self, {
-		       "account":  asset.asset_account,
-		       "credit": asset.gross_purchase_amount,
-		       "credit_in_account_currency": asset.gross_purchase_amount,
-		       "against_voucher": asset.name,
-		       "against_voucher_type": "Asset",
-		       "cost_center": from_cc,
+			   "account":  asset.asset_account,
+			   "credit": asset.gross_purchase_amount,
+			   "credit_in_account_currency": asset.gross_purchase_amount,
+			   "against_voucher": asset.name,
+			   "against_voucher_type": "Asset",
+			   "cost_center": from_cc,
 		})
 	)
 	gl_entries.append(
 		prepare_gl(self, {
-		       "account":  asset.asset_account,
-		       "debit": asset.gross_purchase_amount,
-		       "debit_in_account_currency": asset.gross_purchase_amount,
-		       "against_voucher": asset.name,
-		       "against_voucher_type": "Asset",
-		       "cost_center": to_cc,
+			   "account":  asset.asset_account,
+			   "debit": asset.gross_purchase_amount,
+			   "debit_in_account_currency": asset.gross_purchase_amount,
+			   "against_voucher": asset.name,
+			   "against_voucher_type": "Asset",
+			   "cost_center": to_cc,
 		})
 	)
 	if flt(accumulated_dep) > 0:
 		gl_entries.append(
 			prepare_gl(self, {
-			       "account": accumulated_dep_account,
-			       "debit": accumulated_dep,
-			       "debit_in_account_currency": accumulated_dep,
-			       "against_voucher": asset.name,
-			       "against_voucher_type": "Asset",
-			       "cost_center": from_cc,
+				   "account": accumulated_dep_account,
+				   "debit": accumulated_dep,
+				   "debit_in_account_currency": accumulated_dep,
+				   "against_voucher": asset.name,
+				   "against_voucher_type": "Asset",
+				   "cost_center": from_cc,
 			})
 		)
 		gl_entries.append(
 			prepare_gl(self, {
-			       "account": accumulated_dep_account,
-			       "credit": accumulated_dep,
-			       "credit_in_account_currency": accumulated_dep,
-			       "against_voucher": asset.name,
-			       "against_voucher_type": "Asset",
-			       "cost_center": to_cc,
+				   "account": accumulated_dep_account,
+				   "credit": accumulated_dep,
+				   "credit_in_account_currency": accumulated_dep,
+				   "against_voucher": asset.name,
+				   "against_voucher_type": "Asset",
+				   "cost_center": to_cc,
 			})
 		)
 
 	if flt(asset.value_after_depreciation) > 0:
 		gl_entries.append(
 			prepare_gl(self, {
-			       "account": ic_account,
-			       "debit": asset.value_after_depreciation,
-			       "debit_in_account_currency": asset.value_after_depreciation,
-			       "against_voucher": asset.name,
-			       "against_voucher_type": "Asset",
-			       "cost_center": from_cc,
+				   "account": ic_account,
+				   "debit": asset.value_after_depreciation,
+				   "debit_in_account_currency": asset.value_after_depreciation,
+				   "against_voucher": asset.name,
+				   "against_voucher_type": "Asset",
+				   "cost_center": from_cc,
 			})
 		)
 		gl_entries.append(
 			prepare_gl(self, {
-			       "account": ic_account,
-			       "credit": asset.value_after_depreciation,
-			       "credit_in_account_currency": asset.value_after_depreciation,
-			       "against_voucher": asset.name,
-			       "against_voucher_type": "Asset",
-			       "cost_center": to_cc,
+				   "account": ic_account,
+				   "credit": asset.value_after_depreciation,
+				   "credit_in_account_currency": asset.value_after_depreciation,
+				   "against_voucher": asset.name,
+				   "against_voucher_type": "Asset",
+				   "cost_center": to_cc,
 			})
 		)
 
 	make_gl_entries(gl_entries, cancel=cancel, update_outstanding="No", merge_entries=False)
+
+@frappe.whitelist()
+def get_child_cost_centers(current_cs=None):
+	allchilds = [str('DUMMY') ]
+	allcs = []
+	cs_name = cs_par_name = ""
+
+	if current_cs:
+	  #Get all cost centers
+	  allcs = frappe.db.sql("SELECT name, parent_cost_center FROM `tabCost Center`", as_dict=True)
+	  #get the current cost center name
+	  query ="SELECT name, parent_cost_center FROM `tabCost Center` where name = \"" + current_cs + "\";"
+	  current = frappe.db.sql(query, as_dict=True)
+
+	if(current):
+		for a in current:
+			cs_name = a['name']
+			cs_par_name = a['parent_cost_center']
+
+		#loop through the cost centers to search for the child cost centers
+		allchilds.append(str(cs_name))
+		for b in allcs:
+			for c in allcs:
+				if(c['parent_cost_center'] in allchilds):
+					if(c['name'] not in allchilds):
+						allchilds.append(str(c['name']))
+	return allchilds
+
+
+### Return CC based on lft and rtg
+def get_cost_centers_with_children(cost_centers=None):
+	if not isinstance(cost_centers, list):
+		cost_centers = [d.strip() for d in cost_centers.strip().split(',') if d]
+
+	all_cost_centers = []
+	for d in cost_centers:
+		if frappe.db.exists("Cost Center", d):
+			lft, rgt = frappe.db.get_value("Cost Center", d, ["lft", "rgt"])
+			children = frappe.get_all("Cost Center", filters={"lft": [">=", lft], "rgt": ["<=", rgt]})
+			all_cost_centers += [c.name for c in children]
+		else:
+			frappe.throw(_("Cost Center: {0} does not exist".format(d)))
+
+	return list(set(all_cost_centers))

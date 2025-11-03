@@ -190,7 +190,7 @@ class PaymentEntry(AccountsController):
 		self.validate_allocated_amount()
 		self.validate_paid_invoices()
 		self.ensure_supplier_is_not_blocked()
-		self.set_tax_withholding()
+		#self.set_tax_withholding()
 		self.set_status()
 		self.set_total_in_words()
 
@@ -963,14 +963,14 @@ class PaymentEntry(AccountsController):
 		if not accounts or tax_withholding_details.get("account_head") not in accounts:
 			self.append("taxes", tax_withholding_details)
 
-		to_remove = [
-			d
-			for d in self.taxes
-			if not d.tax_amount and d.account_head == tax_withholding_details.get("account_head")
-		]
+		# to_remove = [
+		# 	d
+		# 	for d in self.taxes
+		# 	if not d.tax_amount and d.account_head == tax_withholding_details.get("account_head")
+		# ]
 
-		for d in to_remove:
-			self.remove(d)
+		# for d in to_remove:
+		# 	self.remove(d)
 
 	def calculate_tax_withholding_net_total(self):
 		net_total = 0

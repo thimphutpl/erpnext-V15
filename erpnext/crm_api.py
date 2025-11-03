@@ -12,12 +12,16 @@ def init_payment(customer_order=None, bank_code=None, bank_account=None, amount=
 	''' start new payment transaction '''
 	# TEMPORARILY MADE AMOUNT 1
 	if not customer_order:
+		return ({'error': "Invalid Order"})
 		frappe.throw(_("Invalid Order"))
 	elif not bank_code:
+		return ({'error': "Invalid Remitter Bank"})
 		frappe.throw(_("Invalid Remitter Bank"))
 	elif not bank_account:
+		return ({'error': "Invalid Remitter Account No"})
 		frappe.throw(_("Invalid Remitter Account No"))
 	elif not flt(amount):
+		return ({'error': "Invalid Amount"})
 		frappe.throw(_("Invalid Amount"))
 	#amount = 1
 
@@ -64,6 +68,7 @@ def init_payment(customer_order=None, bank_code=None, bank_account=None, amount=
 	print()  # another blank line
 
 	if error_msg:
+		return ({'error': error_msg})
 		frappe.throw(_(error_msg))
 	return ({'transaction_id': bfs.transaction_id})
 
@@ -71,8 +76,10 @@ def init_payment(customer_order=None, bank_code=None, bank_account=None, amount=
 def make_payment(customer_order=None, otp=None):
 	''' make debit request '''
 	if not customer_order:
+		return ({'error': "Invalid Order"})		
 		frappe.throw(_("Invalid Order"))
 	elif not otp:
+		return ({'error': "Invalid OTP"})
 		frappe.throw(_("Invalid OTP"))
 		
 	# LOG
@@ -88,7 +95,7 @@ def make_payment(customer_order=None, otp=None):
 	response	= None
 	error_msg	= None
 	status		= None
-
+	frappe.set_user("Administrator")
 	req = bfs.debit_request(customer_order, otp)
 	if req.error_msg:
 		response  = req.response
@@ -98,6 +105,7 @@ def make_payment(customer_order=None, otp=None):
 		pass
 
 	if error_msg:
+		return ({'error': error_msg})
 		frappe.throw(_(error_msg))
 	return({
 		'transaction_id': bfs.order_no,
@@ -123,6 +131,7 @@ def check_payment(customer_order):
 		pass
 
 	if error_msg:
+		return ({'error': error_msg})
 		frappe.throw(_(error_msg))
 
 @frappe.whitelist()
@@ -455,3 +464,33 @@ def make_payment_request(**args):
 def cancel_customer_order(customer_order):
 	cancel_draft_doc('Customer Order', customer_order)
 
+
+@frappe.whitelist(allow_guest=True)
+def get_all_contacts():
+    """
+    Fetch all fields from CRM Contact List and return as JSON.
+    Guest access enabled.
+    """
+    # List of fields to fetch
+    fields = [
+        "company",
+        "country",
+        "dzongkhag",
+        "exact_location",
+        "telephone",
+        "mobile_number",
+        "fax",
+        "email",
+        "focal_name",
+        "enable"
+    ]
+
+    # Fetch all documents
+    contacts = frappe.get_all(
+        "CRM Contact List",
+		filters={"enable": 1},
+        fields=fields,
+        order_by="modified desc"
+    )
+
+    return contacts

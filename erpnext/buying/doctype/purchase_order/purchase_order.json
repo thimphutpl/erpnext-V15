@@ -2,7 +2,7 @@
  "actions": [],
  "allow_auto_repeat": 1,
  "allow_import": 1,
- "autoname": "naming_series:",
+ "autoname": "PO.YY.MM.####",
  "creation": "2013-05-21 16:16:39",
  "doctype": "DocType",
  "document_type": "Document",
@@ -1338,11 +1338,11 @@
  "idx": 105,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-07-15 10:54:14.587423",
- "modified_by": "kalden.dorji@thimphutechpark.bt",
+ "modified": "2025-09-10 23:14:38.698547",
+ "modified_by": "Administrator",
  "module": "Buying",
  "name": "Purchase Order",
- "naming_rule": "By \"Naming Series\" field",
+ "naming_rule": "Expression (old style)",
  "owner": "Administrator",
  "permissions": [
   {

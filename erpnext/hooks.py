@@ -286,12 +286,12 @@ sounds = [
 has_upload_permission = {"Employee": "erpnext.setup.doctype.employee.employee.has_upload_permission"}
 has_permission = {
 	# "Material Request":"erpnext.stock.doctype.material_request.material_request.has_record_permission",
-	"Employee": "erpnext.setup.doctype.employee.employee.has_record_permission",
+	#"Employee": "erpnext.setup.doctype.employee.employee.has_record_permission",
 	
 
 }
 permission_query_conditions = {
-    "Employee": "erpnext.setup.doctype.employee.employee.get_permission_query_conditions",
+    # "Employee": "erpnext.setup.doctype.employee.employee.get_permission_query_conditions",
 	"Leave Encashment Request":"hrms.hr.doctype.leave_encashment_request.leave_encashment_request.get_permission_query_conditions",
 }
 has_website_permission = {
@@ -405,6 +405,9 @@ doc_events = {
 	"Integration Request": {
 		"validate": "erpnext.accounts.doctype.payment_request.payment_request.validate_payment"
 	},
+	# "Hire Charge Invoice": {
+	# 	"on_cancel": "erpnext.fleet_management.doctype.hire_charge_invoice.hire_charge_invoice.on_cancel"
+	# },
 }
 
 # function should expect the variable and doc as arguments

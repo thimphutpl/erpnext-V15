@@ -22,6 +22,8 @@
   "accounting_dimensions_section",
   "cost_center",
   "dimension_col_break",
+  "party_type",
+  "party",
   "section_break_9",
   "account_currency",
   "tax_amount",
@@ -209,7 +211,8 @@
   },
   {
    "fieldname": "dimension_col_break",
-   "fieldtype": "Column Break"
+   "fieldtype": "Column Break",
+   "hidden": 1
   },
   {
    "default": "0",
@@ -233,18 +236,33 @@
    "fieldtype": "Check",
    "label": "Is Tax Withholding Account",
    "read_only": 1
+  },
+  {
+   "fieldname": "party_type",
+   "fieldtype": "Select",
+   "hidden": 1,
+   "label": "Party Type",
+   "options": "\nSupplier\nEmployee"
+  },
+  {
+   "fieldname": "party",
+   "fieldtype": "Dynamic Link",
+   "hidden": 1,
+   "label": "Party",
+   "options": "party_type"
   }
  ],
  "idx": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-06-17 17:50:07.849953",
- "modified_by": "Administrator",
+ "modified": "2025-09-17 10:43:51.962382",
+ "modified_by": "kalden.dorji@thimphutechpark.bt",
  "module": "Accounts",
  "name": "Purchase Taxes and Charges",
  "naming_rule": "Random",
  "owner": "Administrator",
  "permissions": [],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],

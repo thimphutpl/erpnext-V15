@@ -1,0 +1,54 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-09-30 10:32:35.118992",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "customer_order_manual_section",
+  "html_bnor",
+  "html_dvrx"
+ ],
+ "fields": [
+  {
+   "fieldname": "customer_order_manual_section",
+   "fieldtype": "Section Break",
+   "label": "Customer Order Manual"
+  },
+  {
+   "fieldname": "html_bnor",
+   "fieldtype": "HTML",
+   "options": "<h3>How to get data in each field</h3>\n\n<h4>1. Transport Mode</h4>\n\n<ol>\n  <li><strong>CRM Branch Setting</strong> should have the <em>Branch</em> you select in the Customer Order  \n      (e.g., <code>SHA Sand and Stone</code>).</li>\n\n  <li><strong>CRM Branch Setting</strong> should have the <em>Product Category</em> you select in the Customer Order  \n      (e.g., <code>Sand</code>).</li>\n\n  <li>The selected <strong>Product Category</strong> and the one in <strong>CRM Branch Setting</strong> must match,  \n      and the <em>Product Category</em> must have <code>transport_mode_required</code> enabled.</li>\n</ol>\n"
+  },
+  {
+   "fieldname": "html_dvrx",
+   "fieldtype": "HTML",
+   "options": "<h4>2. Item</h4>\n<ol>\n  <li>\n    <strong>CRM Branch Setting</strong> should have the <em>Item</em> you want available in that particular branch  \n    (e.g., <code>SHA Sand and Stone</code>).\n  </li>\n\n  <li>\n    <strong>CRM Branch Setting</strong> should have <em>has_stock</em> enabled for that item.\n  </li>\n\n  <li>\n    The <strong>Selling Price</strong> should have the <strong>Branch</strong> linked to the <strong>Item</strong>,  \n    and the <em>Prices</em> should be valid within the date range that includes today\u2019s date. \n  </li>\n\n\n <li>\n    The <strong>price_based_on</strong> in the <em>table selling price rate</em>in <strong>CRM Branch Setting</strong> should be <strong>Item</strong> \n  </li>\n\n<li>\n    The <strong>Item Sub-Group</strong> should be added in the <em>Material Sub-Group</em> table  \n    in the <strong>Product Category</strong> of the item.\n  </li>\n</ol>\n"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2025-09-30 14:43:00.419517",
+ "modified_by": "Administrator",
+ "module": "CRM",
+ "name": "Customer Order User Manual",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

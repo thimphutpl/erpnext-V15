@@ -34,6 +34,8 @@
   "section_break_12",
   "items",
   "total_production_qty",
+  "length_details_section",
+  "length_details",
   "section_break_13",
   "company",
   "column_break_5",
@@ -262,13 +264,23 @@
    "hidden": 1,
    "label": "Workflow State",
    "options": "Workflow State"
+  },
+  {
+   "fieldname": "length_details_section",
+   "fieldtype": "Section Break",
+   "label": "Length Details"
+  },
+  {
+   "fieldname": "length_details",
+   "fieldtype": "Table",
+   "options": "Production Product Item Details"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-08-13 14:31:08.538019",
+ "modified": "2025-09-17 15:17:19.875576",
  "modified_by": "Administrator",
  "module": "Production",
  "name": "Production",

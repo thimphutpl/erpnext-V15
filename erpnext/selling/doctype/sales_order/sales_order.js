@@ -993,6 +993,67 @@ erpnext.selling.SalesOrderController = class SalesOrderController extends erpnex
 				__("Get Items From")
 			);
 		}
+		
+		if (this.frm.doc.docstatus === 0 && frappe.model.can_read("Product Requisition")) {
+			let company = this.frm.doc.company;
+			this.frm.add_custom_button(
+				__("Product Requisition"),
+				function () {
+					let d = erpnext.utils.map_current_doc({
+						method: "erpnext.selling.doctype.product_requisition.product_requisition.make_sales_order",
+						source_doctype: "Product Requisition",
+						target: me.frm,
+						setters: [
+							{
+								label: __("Product Requisition"),
+								fieldname: "product_requisition",
+								fieldtype: "Link",
+								options: "Product Requisition",
+							},
+						],
+						get_query_filters: {
+							docstatus: 1,
+							company: company
+						}
+					});
+
+					setTimeout(() => {
+						d.$parent.append(`
+							<span class='small text-muted'>
+								${__("Note: Please create Sales Orders to select from among Alternative Items.")}
+							</span>
+					`);
+					}, 200);
+				},
+				__("Get Items From")
+			);
+		}
+
+		if (this.frm.doc.docstatus === 0 && frappe.model.can_read("Lot List")) {
+			this.frm.add_custom_button(
+				__("Lot List"),
+				function () {
+					custom_map_current_doc({
+						method: "erpnext.production.doctype.lot_list.lot_list.make_sales_order",
+						source_doctype: "Lot List",
+						target: me.frm,
+						setters: [
+							{
+								label: __("Lot List"),
+								fieldname: "lot_list",
+								fieldtype: "Link",
+								options: "Lot List",
+							},
+						],
+						get_query_filters: {
+							query: "erpnext.production.doctype.lot_list.lot_list.get_lot_list",
+							filters: {branch:cur_frm.doc.branch}
+						}
+					});
+				},
+				__("Get Items From")
+			);
+		}
 
 		this.order_type(doc);
 	}
@@ -1247,9 +1308,22 @@ erpnext.selling.SalesOrderController = class SalesOrderController extends erpnex
 		d.show();
 	}
 
-	make_delivery_note_based_on_delivery_date(for_reserved_stock = false) {
+	async make_delivery_note_based_on_delivery_date(for_reserved_stock = false) {
 		var me = this;
+		let all_submitted = await frappe.call({
+			method: "erpnext.selling.doctype.sales_order.sales_order.get_payment_entries_for_sales_order",
+			args: { sales_order: this.frm.doc.name }
+		}).then(r => {
+			if (r.message && r.message.length > 0) {
+				return r.message.every(ref => ref.docstatus === 1);
+			}
+			return false;
+		});
 
+		if ((this.frm.doc.is_credit === 0 || this.frm.doc.is_export === 0) && !all_submitted) {
+			frappe.msgprint(__("Cannot make Delivery Note without making Payment"));
+			return false; 
+		}
 		var delivery_dates = this.frm.doc.items.map((i) => i.delivery_date);
 		delivery_dates = [...new Set(delivery_dates)];
 
@@ -1567,5 +1641,99 @@ erpnext.selling.SalesOrderController = class SalesOrderController extends erpnex
 		});
 	}
 };
+
+
+function get_balance(frm, cdt, cdn){
+	var d = locals[cdt][cdn];
+	frappe.call({
+		method: "erpnext.selling.doctype.sales_order.sales_order.get_lot_detail",
+		args: {
+			"branch": cur_frm.doc.branch,
+			"item_code": d.item_code,
+			"lot_number": d.lot_number,
+			"total_pieces": d.total_pieces
+		},
+		callback: function(r) {
+			if(r.message){
+			var balance = r.message[0]['total_volume'];
+			var lot_check = r.message[0]['lot_check'];
+				if(lot_check)
+				{
+					if(balance < 0){
+						frappe.msgprint("No available volume under the selected Lot");
+					}
+					else{
+						frappe.model.set_value(cdt, cdn, "qty", balance);
+					}
+				}
+			}
+			else{
+				frappe.msgprint("Invalid Lot Number. Please verify the lot number with Material and Branch");
+			}
+		}
+	});
+}
+
+
+
+var custom_map_current_doc = function(opts) {
+	if(opts.get_query_filters) {
+		opts.get_query = function() {
+			//return {filters: opts.get_query_filters};
+			return opts.get_query_filters;
+		}
+	}
+	var _map = function() {
+		// remove first item row if empty
+		if($.isArray(cur_frm.doc.items) && cur_frm.doc.items.length > 0) {
+			if(!cur_frm.doc.items[0].item_code) {
+				cur_frm.doc.items = cur_frm.doc.items.splice(1);
+			}
+		}
+
+		return frappe.call({
+			// Sometimes we hit the limit for URL length of a GET request
+			// as we send the full target_doc. Hence this is a POST request.
+			type: "POST",
+			method: opts.method,
+			args: {
+				"source_name": opts.source_name,
+				"target_doc": cur_frm.doc
+			},
+			callback: function(r) {
+				if(!r.exc) {
+					var doc = frappe.model.sync(r.message);
+					cur_frm.refresh();
+				}
+			}
+		});
+	}
+	if(opts.source_doctype) {
+		var d = new frappe.ui.Dialog({
+			title: __("Get From ") + __(opts.source_doctype),
+			fields: [
+				{
+					fieldtype: "Link",
+					label: __(opts.source_doctype),
+					fieldname: opts.source_doctype,
+					options: opts.source_doctype,
+					get_query: opts.get_query,
+					reqd:1
+				},
+			]
+		});
+		d.set_primary_action(__('Get Items'), function() {
+			var values = d.get_values();
+			if(!values)
+				return;
+			opts.source_name = values[opts.source_doctype];
+			d.hide();
+			_map();
+		})
+		d.show();
+	} else if(opts.source_name) {
+		_map();
+	}
+}
 
 extend_cscript(cur_frm.cscript, new erpnext.selling.SalesOrderController({ frm: cur_frm }));

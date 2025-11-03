@@ -14,6 +14,11 @@ class SiteDistance(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		branch: DF.Link | None
+		distance: DF.Float
+		item: DF.Link | None
+		item_name: DF.ReadOnly | None
+		item_sub_group: DF.Link | None
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data

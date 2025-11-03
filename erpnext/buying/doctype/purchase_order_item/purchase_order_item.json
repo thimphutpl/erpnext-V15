@@ -10,14 +10,16 @@
   "fg_item",
   "fg_item_qty",
   "item_code",
-  "supplier_part_no",
   "item_name",
+  "item_group",
+  "supplier_part_no",
   "brand",
+  "model",
   "product_bundle",
   "column_break_4",
   "schedule_date",
   "expected_delivery_date",
-  "item_group",
+  "specification",
   "section_break_5",
   "description",
   "warehouse_and_reference",
@@ -28,12 +30,12 @@
   "company_total_stock",
   "accounting_dimensions_section",
   "cost_center",
-  "business_activity",
   "dimension_col_break",
   "project",
   "accounting_details",
   "expense_account",
   "column_break_fyqr",
+  "business_activity",
   "wip_composite_asset",
   "quantity_and_rate",
   "qty",
@@ -543,26 +545,22 @@
    "fieldtype": "Column Break"
   },
   {
+   "fetch_from": "item_code.item_group",
    "fieldname": "item_group",
    "fieldtype": "Link",
-   "hidden": 1,
    "label": "Item Group",
    "oldfieldname": "item_group",
    "oldfieldtype": "Link",
    "options": "Item Group",
-   "print_hide": 1,
    "read_only": 1
   },
   {
    "fieldname": "brand",
-   "fieldtype": "Link",
-   "hidden": 1,
+   "fieldtype": "Data",
    "label": "Brand",
+   "mandatory_depends_on": "eval doc.item_group == \"Fixed Asset\"",
    "oldfieldname": "brand",
-   "oldfieldtype": "Link",
-   "options": "Brand",
-   "print_hide": 1,
-   "read_only": 1
+   "oldfieldtype": "Link"
   },
   {
    "depends_on": "eval:parent.is_old_subcontracting_flow",
@@ -909,15 +907,24 @@
    "fieldname": "business_activity",
    "fieldtype": "Link",
    "label": "Business Activity",
-   "options": "Business Activity",
-   "read_only": 1
+   "options": "Business Activity"
+  },
+  {
+   "fieldname": "model",
+   "fieldtype": "Data",
+   "label": "Model"
+  },
+  {
+   "fieldname": "specification",
+   "fieldtype": "Small Text",
+   "label": "Specification"
   }
  ],
  "idx": 1,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-07-25 12:07:56.818420",
+ "modified": "2025-09-11 11:22:18.538439",
  "modified_by": "kalden.dorji@thimphutechpark.bt",
  "module": "Buying",
  "name": "Purchase Order Item",

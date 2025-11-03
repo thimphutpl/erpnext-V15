@@ -241,6 +241,10 @@ frappe.ui.form.on("Hiring Approval Details", {
 	"hourly": function (frm, cdt, cdn) {
 		get_rates(frm, cdt, cdn)
 		calculate_amount(frm, cdt, cdn)
+	},
+	"idle_rate_type": function (frm, cdt, cdn) {
+		get_idle_rates(frm, cdt, cdn)
+		calculate_amount(frm, cdt, cdn)
 	}
 })
 
@@ -261,6 +265,22 @@ function get_rates(frm, cdt, cdn) {
 			callback: function (r) {
 				if (r.message) {
 					frappe.model.set_value(cdt, cdn, "rate", r.message[0].rate)
+				}
+				cur_frm.refresh_fields()
+			}
+		})
+	}
+}
+
+function get_idle_rates(frm, cdt, cdn) {
+	doc = locals[cdt][cdn]
+	if (doc.equipment && doc.rate_type && doc.from_date) {
+		return frappe.call({
+			method: "erpnext.fleet_management.doctype.equipment_hiring_form.equipment_hiring_form.get_idle_rates",
+			args: { equipment: doc.equipment, from_date: doc.from_date, idle_rate_type: doc.idle_rate_type },
+			callback: function (r) {
+				if (r.message) {
+					frappe.model.set_value(cdt, cdn, "idle_rate", r.message[0].idle_rate)
 				}
 				cur_frm.refresh_fields()
 			}

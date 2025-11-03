@@ -1,0 +1,111 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:CCL-{focal_name}-{exact_location}",
+ "creation": "2025-10-25 21:14:44.389027",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "company",
+  "country",
+  "dzongkhag",
+  "exact_location",
+  "telephone",
+  "mobile_number",
+  "fax",
+  "email",
+  "focal_name",
+  "column_break_rfxv",
+  "enable"
+ ],
+ "fields": [
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company"
+  },
+  {
+   "fieldname": "country",
+   "fieldtype": "Link",
+   "label": "Country",
+   "options": "Country"
+  },
+  {
+   "fieldname": "dzongkhag",
+   "fieldtype": "Link",
+   "label": "Dzongkhag",
+   "options": "Dzongkhag"
+  },
+  {
+   "fieldname": "telephone",
+   "fieldtype": "Data",
+   "label": "Telephone"
+  },
+  {
+   "fieldname": "mobile_number",
+   "fieldtype": "Data",
+   "label": "Mobile Number"
+  },
+  {
+   "fieldname": "fax",
+   "fieldtype": "Data",
+   "label": "Fax"
+  },
+  {
+   "fieldname": "email",
+   "fieldtype": "Data",
+   "label": "Email"
+  },
+  {
+   "fieldname": "column_break_rfxv",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "description": "Enabling this option will display the contact details in the My Resource app.",
+   "fieldname": "enable",
+   "fieldtype": "Check",
+   "label": "Enable this contact"
+  },
+  {
+   "fieldname": "exact_location",
+   "fieldtype": "Data",
+   "label": "Exact Location"
+  },
+  {
+   "fieldname": "focal_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Focal Name",
+   "reqd": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-10-25 21:25:31.395338",
+ "modified_by": "Administrator",
+ "module": "CRM",
+ "name": "CRM Contact List",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

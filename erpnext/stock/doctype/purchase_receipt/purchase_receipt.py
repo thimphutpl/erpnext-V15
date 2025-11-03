@@ -140,23 +140,23 @@ class PurchaseReceipt(BuyingController):
 		total_taxes_and_charges: DF.Currency
 		transporter_name: DF.Data | None
 	# end: auto-generated types
-	def autoname(self):
-		# if self.n_series == 'Consumables':
-		# 	series = 'PRCO'
-		# elif self.n_series == 'Fixed Asset':
-		# 	series = 'PRFA'
-		# elif self.n_series == 'Sales Product':
-		# 	series = 'PRSA'
-		# elif self.n_series == 'Spare Parts':
-		# 	series ='PRSP'
-		# elif self.n_series == 'Services Miscellaneous':
-		# 	series = 'PRSM'
-		# elif self.n_series == 'Services Works':
-		# 	series ='PRSW'
-		# else:
-		com_abbr = frappe.db.get_value('Company',self.company,'abbr')
-		series = 'PR'+com_abbr
-		self.name = make_autoname(str(series) + ".YY.MM.####")
+	# def autoname(self):
+	# 	# if self.n_series == 'Consumables':
+	# 	# 	series = 'PRCO'
+	# 	# elif self.n_series == 'Fixed Asset':
+	# 	# 	series = 'PRFA'
+	# 	# elif self.n_series == 'Sales Product':
+	# 	# 	series = 'PRSA'
+	# 	# elif self.n_series == 'Spare Parts':
+	# 	# 	series ='PRSP'
+	# 	# elif self.n_series == 'Services Miscellaneous':
+	# 	# 	series = 'PRSM'
+	# 	# elif self.n_series == 'Services Works':
+	# 	# 	series ='PRSW'
+	# 	# else:
+	# 	com_abbr = frappe.db.get_value('Company',self.company,'abbr')
+	# 	series = 'PR'+com_abbr
+	# 	self.name = make_autoname(str(series) + ".YY.MM.####")
 
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)

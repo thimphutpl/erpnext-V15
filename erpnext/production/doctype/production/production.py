@@ -29,6 +29,7 @@ class Production(StockController):
 		from erpnext.production.doctype.production_machine_details.production_machine_details import ProductionMachineDetails
 		from erpnext.production.doctype.production_material_item.production_material_item import ProductionMaterialItem
 		from erpnext.production.doctype.production_product_item.production_product_item import ProductionProductItem
+		from erpnext.production.doctype.production_product_item_details.production_product_item_details import ProductionProductItemDetails
 		from frappe.types import DF
 
 		adhoc_production: DF.Link | None
@@ -40,6 +41,7 @@ class Production(StockController):
 		cost_center: DF.Link | None
 		currency: DF.Link
 		items: DF.Table[ProductionProductItem]
+		length_details: DF.Table[ProductionProductItemDetails]
 		location: DF.Link | None
 		machine_details: DF.Table[ProductionMachineDetails]
 		posting_date: DF.Date
@@ -98,7 +100,7 @@ class Production(StockController):
 
 	def on_cancel(self):
 		self.ignore_linked_doctypes = (
-			"GL Entry","Stock Ledger Entry",)
+			"GL Entry","Stock Ledger Entry")
 		super().on_cancel()
 		self.assign_default_dummy()
 		if self.raw_materials:
@@ -250,7 +252,7 @@ class Production(StockController):
 				frappe.throw(_("COP for <b>{0}</b> cannot be zero or less").format(item.item_code))
 
 			if doc.material_measurement and item.reading_select and doc.material_measurement != item.reading_select:
-				frappe.throw(_("Row#{}: Only Reading {} is permitted for material {}").format(item.idx, frappe.bold(doc.material_measurement), frppe.get_desk_link("Item", item.item_code)))
+				frappe.throw(_("Row#{}: Only Reading {} is permitted for material {}").format(item.idx, frappe.bold(doc.material_measurement), frappe.get_desk_link("Item", item.item_code)))
 
 			if item.reading_select:
 				if not frappe.db.exists("Item Sub Group Measurement", {"parent": item.item_sub_group, "material_measurement": item.reading_select}):

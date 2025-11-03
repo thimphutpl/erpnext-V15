@@ -174,8 +174,8 @@ class PurchaseOrder(BuyingController):
 			}
 		]
 
-	def autoname(self):
-		self.name = make_autoname(get_auto_name(self, self.naming_series) + ".####")	
+	# def autoname(self):
+	# 	self.name = make_autoname(get_auto_name(self, self.naming_series) + ".####")	
 
 	def onload(self):
 		supplier_tds = frappe.db.get_value("Supplier", self.supplier, "tax_withholding_category")

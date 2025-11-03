@@ -110,7 +110,6 @@
   {
    "fieldname": "cid_file_front",
    "fieldtype": "Attach Image",
-   "hidden": 1,
    "label": "CID Front"
   },
   {
@@ -120,7 +119,6 @@
   {
    "fieldname": "cid_file_back",
    "fieldtype": "Attach Image",
-   "hidden": 1,
    "label": "CID Back"
   },
   {
@@ -265,7 +263,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-08-26 21:34:19.305757",
+ "modified": "2025-09-19 18:08:10.200226",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "User Account",

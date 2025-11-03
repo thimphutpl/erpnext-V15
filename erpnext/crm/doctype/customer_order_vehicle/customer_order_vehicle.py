@@ -14,8 +14,15 @@ class CustomerOrderVehicle(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		contact_no: DF.ReadOnly | None
+		driver_cid: DF.ReadOnly | None
+		drivers_name: DF.ReadOnly | None
+		noof_truck_load: DF.Int
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
+		quantity: DF.Float
+		vehicle: DF.Link | None
+		vehicle_capacity: DF.ReadOnly | None
 	# end: auto-generated types
 	pass

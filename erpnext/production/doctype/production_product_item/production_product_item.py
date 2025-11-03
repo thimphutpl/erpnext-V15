@@ -14,8 +14,12 @@ class ProductionProductItem(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		item_code: DF.Link
+		item_length: DF.Float
+		item_name: DF.Data
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
+		qty: DF.Float
 	# end: auto-generated types
 	pass

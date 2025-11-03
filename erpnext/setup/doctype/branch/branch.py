@@ -29,6 +29,7 @@ class Branch(Document):
 		company: DF.Link
 		cost_center: DF.Link
 		disabled: DF.Check
+		dzongkhag: DF.Link | None
 		expense_bank_account: DF.Link | None
 		gis_policy_number: DF.Data | None
 		holiday_list: DF.Data | None

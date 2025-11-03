@@ -11,6 +11,7 @@
   "branch",
   "abbr",
   "cost_center",
+  "dzongkhag",
   "column_break_qvlo",
   "company",
   "disabled",
@@ -168,12 +169,18 @@
    "fieldname": "branch_code",
    "fieldtype": "Data",
    "label": "Branch Code"
+  },
+  {
+   "fieldname": "dzongkhag",
+   "fieldtype": "Link",
+   "label": "Dzongkhag",
+   "options": "Dzongkhags"
   }
  ],
  "icon": "fa fa-code-fork",
  "idx": 1,
  "links": [],
- "modified": "2024-12-28 11:41:22.080873",
+ "modified": "2025-10-06 16:08:08.104597",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Branch",
@@ -204,6 +211,7 @@
   }
  ],
  "quick_entry": 1,
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],

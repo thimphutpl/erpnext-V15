@@ -35,10 +35,10 @@ class CustomWorkflow:
 			self.reports_to = frappe.db.get_value("Employee", {"name":frappe.db.get_value("Employee", self.doc.employee, "reports_to")}, self.field_list)
 			
 			if self.doc.doctype in ("Travel Request","Travel Authorization", "Travel Claim","Employee Separation", "Employee Transfer"):
-				if frappe.db.get_value("Employee", self.doc.employee, "expense_approver"):
-					self.expense_approver = frappe.db.get_value("Employee", {"user_id":frappe.db.get_value("Employee", self.doc.employee, "expense_approver")}, self.field_list)
+				if frappe.db.get_value("Employee", self.doc.employee, "reports_to"):
+					self.verifier = frappe.db.get_value("Employee", {"user_id":frappe.db.get_value("Employee", self.doc.employee, "expense_approver")}, self.field_list)
 				else:
-					frappe.throw('Expense Approver not set for employee {}'.format(self.doc.employee))
+					frappe.throw('Report to is  not set for employee {}'.format(self.doc.employee))
 			self.supervisors_supervisor = frappe.db.get_value("Employee", frappe.db.get_value("Employee", frappe.db.get_value("Employee", self.doc.employee, "reports_to"), "reports_to"), self.field_list)
 			self.reports_to = frappe.db.get_value("Employee", {"name":frappe.db.get_value("Employee", self.doc.employee, "reports_to")}, self.field_list)
 			self.hr_approver	= frappe.db.get_value("Employee", frappe.db.get_single_value("HR Settings", "hr_approver"), self.field_list)
@@ -978,12 +978,20 @@ class CustomWorkflow:
 			self.doc.document_status = "Cancelled"
 
 	def travel_authorization(self):
+		#frappe.throw(str(self.new_state))
+		
 		if self.new_state.lower() in ("Waiting Supervisor Approval".lower()):
+			
 			if self.doc.owner != frappe.session.user and self.new_state.lower() != self.old_state.lower():
 				frappe.throw("Only <b>{}</b> can Apply this request".format(self.doc.owner))
-			self.set_approver("Supervisor")
+			#self.set_approver("Supervisor")
+		elif self.new_state.lower() in ("Verified By Supervisor".lower()):
+			
+			if self.doc.verifier != frappe.session.user:
+				frappe.throw("Only <b>{}</b> can Apply this request".format(self.doc.verifier_name))
 			
 		elif self.new_state.lower() == "Approved".lower():
+
 			if self.doc.approver != frappe.session.user:
 				frappe.throw("Only <b>{}</b> can Approve this request".format(self.doc.approver_name))
 

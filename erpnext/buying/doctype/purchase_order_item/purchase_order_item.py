@@ -29,7 +29,7 @@ class PurchaseOrderItem(Document):
 		blanket_order: DF.Link | None
 		blanket_order_rate: DF.Currency
 		bom: DF.Link | None
-		brand: DF.Link | None
+		brand: DF.Data | None
 		business_activity: DF.Link | None
 		company_total_stock: DF.Float
 		conversion_factor: DF.Float
@@ -58,6 +58,7 @@ class PurchaseOrderItem(Document):
 		margin_type: DF.Literal["", "Percentage", "Amount"]
 		material_request: DF.Link | None
 		material_request_item: DF.Data | None
+		model: DF.Data | None
 		net_amount: DF.Currency
 		net_rate: DF.Currency
 		page_break: DF.Check
@@ -80,6 +81,7 @@ class PurchaseOrderItem(Document):
 		sales_order_item: DF.Data | None
 		sales_order_packed_item: DF.Data | None
 		schedule_date: DF.Date
+		specification: DF.SmallText | None
 		stock_qty: DF.Float
 		stock_uom: DF.Link
 		stock_uom_rate: DF.Currency

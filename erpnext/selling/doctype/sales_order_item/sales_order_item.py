@@ -92,7 +92,7 @@ class SalesOrderItem(Document):
 		target_warehouse: DF.Link | None
 		total_weight: DF.Float
 		transaction_date: DF.Date | None
-		uom: DF.Link
+		uom: DF.Link | None
 		valuation_rate: DF.Currency
 		warehouse: DF.Link | None
 		weight_per_unit: DF.Float

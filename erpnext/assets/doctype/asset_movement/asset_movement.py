@@ -47,8 +47,8 @@ class AssetMovement(Document):
 		self.validate_asset()
 		self.validate_cost_center()
 		self.validate_employee()
-		self.manual_workflow_states()
-		self.manual_notify_workflow_states()
+		# self.manual_workflow_states()
+		# self.manual_notify_workflow_states()
 
 	def manual_workflow_states(self):
 		if self.workflow_state == "Draft":

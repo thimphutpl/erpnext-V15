@@ -10,6 +10,25 @@ from frappe.model.document import Document
 from frappe.core.doctype.user.user import send_sms
 
 class OnlinePayment(Document):
+	# begin: auto-generated types
+	# This code is auto-generated. Do not modify anything in this block.
+
+	from typing import TYPE_CHECKING
+
+	if TYPE_CHECKING:
+		from frappe.types import DF
+
+		amount: DF.Currency
+		bank_account: DF.Data | None
+		bank_code: DF.Data | None
+		customer_order: DF.Link
+		error_msg: DF.LongText | None
+		response: DF.Code | None
+		status: DF.Literal["", "Pending", "Successful", "Failed", "Cancelled"]
+		transaction_id: DF.Data | None
+		transaction_time: DF.Datetime | None
+		user: DF.Link | None
+	# end: auto-generated types
 	def validate(self):
 		#self.update_customer_order()
 		self.make_customer_payment()

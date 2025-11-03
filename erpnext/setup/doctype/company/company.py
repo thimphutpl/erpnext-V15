@@ -71,6 +71,7 @@ class Company(NestedSet):
 		default_provisional_account: DF.Link | None
 		default_receivable_account: DF.Link | None
 		default_selling_terms: DF.Link | None
+		default_transportation_account: DF.Link | None
 		default_warehouse_for_sales_return: DF.Link | None
 		depreciation_cost_center: DF.Link | None
 		depreciation_expense_account: DF.Link | None
@@ -87,6 +88,7 @@ class Company(NestedSet):
 		expenses_included_in_valuation: DF.Link | None
 		fax: DF.Data | None
 		gain_disposal_account: DF.Link | None
+		hire_charge: DF.Link | None
 		imprest_advance_account: DF.Link | None
 		is_group: DF.Check
 		lft: DF.Int
@@ -111,6 +113,7 @@ class Company(NestedSet):
 		tax_id: DF.Data | None
 		total_monthly_sales: DF.Currency
 		transactions_annual_history: DF.Code | None
+		travel_advance_account: DF.Link | None
 		unrealized_exchange_gain_loss_account: DF.Link | None
 		unrealized_profit_loss_account: DF.Link | None
 		website: DF.Data | None

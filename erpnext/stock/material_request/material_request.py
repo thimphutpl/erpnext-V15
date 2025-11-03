@@ -62,7 +62,6 @@ class MaterialRequest(BuyingController):
 		pass
 
 	def validate_qty_against_so(self):
-		so_items = {}  # Format --> {'SO/00001': {'Item/001': 120, 'Item/002': 24}}
 		for d in self.get("items"):
 			if d.sales_order:
 				if d.sales_order not in so_items:

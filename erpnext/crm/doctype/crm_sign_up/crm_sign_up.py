@@ -25,6 +25,7 @@ class CRMSignup(Document):
 		cid_front: DF.Attach | None
 		email_id: DF.Data | None
 		full_name: DF.Data
+		is_license: DF.Check
 		mobile_no: DF.Data
 		pin: DF.Data
 		send_sms: DF.Check
@@ -47,6 +48,7 @@ class CRMSignup(Document):
 			"first_name": self.full_name,
 			"username": self.cid,
 			"login_id": self.cid,
+			"is_license":self.is_license,
 			"mobile_no": self.mobile_no,
 			"alternate_mobile_no": self.alternate_mobile_no,
 			"email": self.email_id,

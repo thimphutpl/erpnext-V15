@@ -89,8 +89,16 @@ class MechanicalPayment(AccountsController):
 				frappe.throw("Allocated Amount should be between zero and Outstanding Amount on row {0}".format(d.idx))
 			total = flt(total) + flt(d.allocated_amount)
 
-		if total != self.receivable_amount:
+		for d in self.transporter_payment_item:
+			if flt(d.amount) < 0:
+				frappe.throw("Amount should be greater than zero on row {0}".format(d.idx))
+			total = flt(total) + flt(d.amount)
+
+		if total != self.receivable_amount and self.payment_for != "Transporter":
 			frappe.throw("Total Allocated Amount should be equal to Receivable Amount")
+
+		if total != self.receivable_amount and self.payment_for == "Transporter":
+			frappe.throw("Total Amount should be equal to Receivable Amount")
 		# if self.receivable_amount > self.actual_amount:
 		#     frappe.throw("Receivable Amount Cannot be greater than Total Outstanding Amount")
 
@@ -159,9 +167,9 @@ class MechanicalPayment(AccountsController):
 			else:
 				payable_amount = doc.balance_amount
 					
-			if a.reference_type in ["Job Cards", "Fabrication And Bailey Bridge", "Hire Charge Invoice"]:
-				status = "Payment Received" if not cancel else "Pending Payment"
-				doc.db_set("status", status)
+			# if a.reference_type in ["Job Cards", "Fabrication And Bailey Bridge", "Hire Charge Invoice"]:
+			# 	status = "Payment Received" if not cancel else "Pending Payment"
+			# 	doc.db_set("status", status)
 
 			# Existing validations
 			payable_amount = doc.total_amount if hasattr(doc, 'total_amount') else doc.balance_amount
@@ -178,25 +186,59 @@ class MechanicalPayment(AccountsController):
 	def make_gl_entry(self):
 		from erpnext.accounts.general_ledger import make_gl_entries
 		receivable_account = frappe.db.get_value("Company", "Natural Resources Development Corporation Limited","default_receivable_account")
-		if not receivable_account:
+		payable_account = frappe.db.get_value("Company", "Natural Resources Development Corporation Limited","default_payable_account")
+		transportation_account = frappe.db.get_value("Company", "Natural Resources Development Corporation Limited","default_transportation_account")
+		if not receivable_account and self.payment_for == "Hire Charge Invoice":
 			frappe.throw("Setup Receivable Account in Company")
+		if not payable_account and self.payment_for == "Job Cards":
+			frappe.throw("Setup Payable Account in Company")
+		if not transportation_account and self.payment_for == "Tranporter":
+			frappe.throw("Setup Transportation Account in Company")
 
 		gl_entries = []
 		if flt(self.net_amount) > 0:
-			gl_entries.append(
-				self.get_gl_dict({"account": self.income_account,
-								  "debit": flt(self.net_amount),
-								  "debit_in_account_currency": flt(self.net_amount),
+			if self.payment_for != "Hire Charge Invoice":
+				gl_entries.append(
+				self.get_gl_dict({"account": self.bank_account,
+								  "credit": flt(self.net_amount),
+								  "credit_in_account_currency": flt(self.net_amount),
 								  "cost_center": self.cost_center,
 								  "party_check": 1,
 								  "reference_type": self.doctype,
 								  "reference_name": self.name,
 								  "remarks": self.remarks
 								  })
-			)
+				)
+			else:
+				gl_entries.append(
+					self.get_gl_dict({"account": self.bank_account,
+									"debit": flt(self.net_amount),
+									"debit_in_account_currency": flt(self.net_amount),
+									"cost_center": self.cost_center,
+									"party_check": 1,
+									"reference_type": self.doctype,
+									"reference_name": self.name,
+									"remarks": self.remarks
+									})
+				)
 
 		if self.tds_amount:
-			gl_entries.append(
+			if self.payment_for != "Hire Charge Invoice":
+				gl_entries.append(
+					self.get_gl_dict({"account": self.tds_account,
+									"credit": flt(self.tds_amount),
+									"credit_in_account_currency": flt(self.tds_amount),
+									"cost_center": self.cost_center,
+									"party_check": 1,
+									"party_type": "Customer" if self.customer else "Supplier",
+									"party": self.customer,
+									"reference_type": self.doctype,
+									"reference_name": self.name,
+									"remarks": self.remarks
+									})
+				)
+			else:
+				gl_entries.append(
 				self.get_gl_dict({"account": self.tds_account,
 								  "debit": flt(self.tds_amount),
 								  "debit_in_account_currency": flt(self.tds_amount),
@@ -208,37 +250,88 @@ class MechanicalPayment(AccountsController):
 								  "reference_name": self.name,
 								  "remarks": self.remarks
 								  })
-			)
+				)
+		if self.payment_for == "Transporter":
+			for a in self.transporter_payment_item:
+				against_voucher, against_voucher_type = None, None
+				doc = frappe.get_doc("Delivery Note", a.delivery_note)
+				gl_entries.append(
+					self.get_gl_dict({"account": transportation_account,
+									"debit": flt(a.amount),
+									"debit_in_account_currency": flt(a.amount),
+									"cost_center": self.cost_center,
+									"party_check": 1,
+									"party_type": "",
+									"party": "",
+									"reference_type": self.doctype,
+									"reference_name": self.name,
+									"against_voucher_type": against_voucher_type if against_voucher_type else "Delivery Note",
+									"against_voucher": against_voucher if against_voucher else a.delivery_note,
+									"remarks": self.remarks
+									})
+					)
+		else:
+			for a in self.items:
+				against_voucher, against_voucher_type = None, None
+				doc = frappe.get_doc(a.reference_type, a.reference_name)
+				if a.reference_type == "Job Cards":
+					if doc.jv:
+						against_voucher_type = "Journal Entry"
+						against_voucher = doc.jv
+				if doc.customer != a.customer:
+					frappe.throw(" {} customer selected but the customer must be {} as per {} {}. ".format(a.customer, doc.customer, a.reference_type, a.reference_name))
+				if a.reference_type == "Job Cards":
+					gl_entries.append(
+						self.get_gl_dict({"account": payable_account,
+										"debit": flt(a.allocated_amount),
+										"debit_in_account_currency": flt(a.allocated_amount),
+										"cost_center": self.cost_center,
+										"party_check": 1,
+										"party_type": "Customer" if self.customer else "Supplier",
+										"party": a.customer if a.customer else self.customer,
+										"reference_type": self.doctype,
+										"reference_name": self.name,
+										"against_voucher_type": against_voucher_type if against_voucher_type else a.reference_type,
+										"against_voucher": against_voucher if against_voucher else a.reference_name,
+										"remarks": self.remarks
+										})
+					)
+				else:
+					gl_entries.append(
+					self.get_gl_dict({"account": receivable_account,
+									"credit": flt(a.allocated_amount),
+									"credit_in_account_currency": flt(a.allocated_amount),
+									"cost_center": self.cost_center,
+									"party_check": 1,
+									"party_type": "Customer" if self.customer else "Supplier",
+									"party": a.customer if a.customer else self.customer,
+									"reference_type": self.doctype,
+									"reference_name": self.name,
+									"against_voucher_type": against_voucher_type if against_voucher_type else a.reference_type,
+									"against_voucher": against_voucher if against_voucher else a.reference_name,
+									"remarks": self.remarks
+									})
+					)
 
-		for a in self.items:
-			against_voucher, against_voucher_type = None, None
-			doc = frappe.get_doc(a.reference_type, a.reference_name)
-			if a.reference_type == "Job Cards":
-				if doc.jv:
-					against_voucher_type = "Journal Entry"
-					against_voucher = doc.jv
-			if doc.customer != a.customer:
-				frappe.throw(" {} customer selected but the customer must be {} as per {} {}. ".format(a.customer, doc.customer, a.reference_type, a.reference_name))
-
-			gl_entries.append(
-				self.get_gl_dict({"account": receivable_account,
-								  "credit": flt(a.allocated_amount),
-								  "credit_in_account_currency": flt(a.allocated_amount),
-								  "cost_center": self.cost_center,
-								  "party_check": 1,
-								  "party_type": "Customer" if self.customer else "Supplier",
-								  "party": a.customer if a.customer else self.customer,
-								  "reference_type": self.doctype,
-								  "reference_name": self.name,
-								  "against_voucher_type": against_voucher_type if against_voucher_type else a.reference_type,
-								  "against_voucher": against_voucher if against_voucher else a.reference_name,
-								  "remarks": self.remarks
-								  })
-			)
 
 		if self.deducts:
 			for a in self.deducts:
-				gl_entries.append(
+				if self.payment_for != "Hire Charge Invoice":
+					gl_entries.append(
+						self.get_gl_dict({"account": a.accounts,
+										"credit": flt(a.amount),
+										"credit_in_account_currency": flt(a.amount),
+										"cost_center": self.cost_center,
+										"party_check": 1,
+										"party_type": a.party_type,
+										"party": a.party,
+										"reference_type": self.doctype,
+										"reference_name": self.name,
+										"remarks": self.remarks
+										})
+					)
+				else:
+					gl_entries.append(
 					self.get_gl_dict({"account": a.accounts,
 									  "debit": flt(a.amount),
 									  "debit_in_account_currency": flt(a.amount),
@@ -250,12 +343,13 @@ class MechanicalPayment(AccountsController):
 									  "reference_name": self.name,
 									  "remarks": self.remarks
 									  })
-				)
+					)
 
 		make_gl_entries(gl_entries, cancel=(self.docstatus == 2), update_outstanding="No", merge_entries=False)
 		
 	@frappe.whitelist()
 	def get_transactions(self):
+		self.set('transporter_payment_item', [])
 		if not self.branch or not (self.customer or self.supplier) or not self.payment_for:
 			frappe.throw("Branch, Customer/Supplier and Payment For is Mandatory")
 
@@ -278,6 +372,7 @@ class MechanicalPayment(AccountsController):
 				conditions.append("supplier = %s")
 			params.append(self.supplier)
 
+		query = ""
 		# Final query
 		query = f"""
 			SELECT name, outstanding_amount, customer
@@ -285,7 +380,6 @@ class MechanicalPayment(AccountsController):
 			WHERE {" AND ".join(conditions)}
 			ORDER BY creation
 		"""
-
 		# frappe.throw(str(query))
 
 		transactions = frappe.db.sql(query, params, as_dict=1)
@@ -304,7 +398,50 @@ class MechanicalPayment(AccountsController):
 			total += flt(d.outstanding_amount)
 		self.receivable_amount = total
 		self.actual_amount = total
-  
+
+	@frappe.whitelist()
+	def get_delivery_note_list(self):
+		self.set('items', [])
+
+		cond = ""
+		if not self.transporter and not self.vehicle:
+			frappe.throw("Please select vehicle or transporter to get Delivery Note")
+
+		if self.vehicle:
+			cond = " and d.vehicle_no = '{0}'".format(self.vehicle)
+
+		if self.transporter and not self.vehicle:
+			cond = " and exists (select 1 from `tabTransporter` t, `tabVehicle` v where t.transporter_id = v.user and t.name = '{0}')".format(self.transporter)
+		dn_list = frappe.db.sql("""
+					select d.name as delivery_note, d.vehicle_no, d.transportation_charges
+					from `tabDelivery Note` d
+					where d.docstatus = 1
+					and d.transportation_charges > 0
+					and d.branch = '{0}'
+					and not exists(
+						select 1 
+						from `tabMechanical Payment` m, `tabTransporter Payment Item` t
+						where m.name = t.parent
+						and t.delivery_note = d.name
+						and m.docstatus < 2
+					) 
+					{1}
+				""".format(self.branch, cond), as_dict=True)
+		self.set('transporter_payment_item', [])
+
+		total = 0
+		for a in dn_list:
+		# 	data.append({"delivery_note":a.delivery_note, "vehicle": a.vehicle_no, "amount": a.transportation_charges})
+
+		# return data
+			a.vehicle = a.vehicle_no
+			a.amount = a.transportation_charges
+			row = self.append('transporter_payment_item', {})
+			row.update(a)
+			total += flt(a.transportation_charges)
+		self.receivable_amount = total
+		self.actual_amount = total
+		
 	@frappe.whitelist()
 	def get_tax_rate(self):
 		# if not self.branch or not self.customer or not self.payment_for:
@@ -316,6 +453,6 @@ class MechanicalPayment(AccountsController):
 		
 		self.tax_withholding_rate = transactions[0]['tax_withholding_rate']
 
-		self.tds_amount = (flt(self.net_amount) * flt(self.tax_withholding_rate))/100
+		self.tds_amount = (flt(self.receivable_amount) * flt(self.tax_withholding_rate))/100
 
 

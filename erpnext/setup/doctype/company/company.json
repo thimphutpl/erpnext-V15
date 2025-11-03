@@ -83,6 +83,7 @@
   "exception_budget_approver_role",
   "additional_hr_payroll_account_section",
   "employer_contribution_to_pf",
+  "travel_advance_account",
   "cb_hr_1",
   "imprest_advance_account",
   "fixed_asset_defaults",
@@ -124,8 +125,10 @@
   "fleet_management_tab",
   "pol_settings_section",
   "pol_advance_account",
+  "hire_charge",
   "column_break_jfxu",
   "repair_and_service_account",
+  "default_transportation_account",
   "dashboard_tab"
  ],
  "fields": [
@@ -900,6 +903,24 @@
    "fieldtype": "Link",
    "label": "Advance From Customer Supplier",
    "options": "Account"
+  },
+  {
+   "fieldname": "travel_advance_account",
+   "fieldtype": "Link",
+   "label": "Travel Advance Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "hire_charge",
+   "fieldtype": "Link",
+   "label": "Hire Charge Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "default_transportation_account",
+   "fieldtype": "Link",
+   "label": "Transportation Account",
+   "options": "Account"
   }
  ],
  "icon": "fa fa-building",
@@ -907,8 +928,8 @@
  "image_field": "company_logo",
  "is_tree": 1,
  "links": [],
- "modified": "2025-09-05 12:01:47.709035",
- "modified_by": "kalden.dorji@thimphutechpark.bt",
+ "modified": "2025-09-18 14:33:38.863313",
+ "modified_by": "Administrator",
  "module": "Setup",
  "name": "Company",
  "naming_rule": "By fieldname",

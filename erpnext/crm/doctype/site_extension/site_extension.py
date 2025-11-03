@@ -36,6 +36,7 @@ class SiteExtension(Document):
 		self.validate_mandatory()
 		self.validate_extension_date()
 		self.update_user_details()
+		self.validate_duplciate_request()
 
 	def after_insert(self):
 		#msg = "Your request for Site Extension is Pending Approval. Tran Ref No {0}".format(self.name)
@@ -48,6 +49,10 @@ class SiteExtension(Document):
 
 	def on_cancel(self):
 		self.update_site()
+
+	def validate_duplciate_request(self):
+			if frappe.db.exists("Site Extension",{"user":self.user, "approval_status":"Pending", "name":('!=', self.name), "docstatus":('!=', 2), "site":self.site}):
+				frappe.throw("Site Extension already requested and still Pending")
 
 	def update_user_details(self):
 		if frappe.db.exists("User Account", self.user):

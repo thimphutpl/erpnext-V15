@@ -14,8 +14,13 @@ class ProductCategoryItem(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		item_group: DF.ReadOnly | None
+		item_sub_group: DF.Link | None
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
+		product_group: DF.Link | None
+		selection_based_on: DF.ReadOnly
+		use_product_group: DF.Check
 	# end: auto-generated types
 	pass

@@ -107,20 +107,18 @@
    "fieldname": "bank_code",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Bank Code",
-   "read_only": 1
+   "label": "Bank Code"
   },
   {
    "fieldname": "bank_status",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Bank Status",
-   "read_only": 1
+   "label": "Bank Status"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-18 17:43:12.712326",
+ "modified": "2025-09-24 16:03:34.356155",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Financial Institution",

@@ -25,6 +25,8 @@
   "items",
   "section_break_15",
   "lot_list_items",
+  "section_break_scyi",
+  "transaction_details",
   "sb_02",
   "total_volume",
   "total_pieces",
@@ -35,7 +37,8 @@
   "auto_calculate",
   "amended_from",
   "section_break_19",
-  "reference_document"
+  "reference_document",
+  "is_partially_sold"
  ],
  "fields": [
   {
@@ -213,13 +216,30 @@
    "fieldname": "reference_document",
    "fieldtype": "Attach",
    "label": "Lot List Reference"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_partially_sold",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Is Partially Sold"
+  },
+  {
+   "fieldname": "section_break_scyi",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "transaction_details",
+   "fieldtype": "Table",
+   "options": "Lot List Transaction Details",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-08-31 18:16:01.076738",
+ "modified": "2025-09-19 16:33:23.148031",
  "modified_by": "Administrator",
  "module": "Production",
  "name": "Lot List",

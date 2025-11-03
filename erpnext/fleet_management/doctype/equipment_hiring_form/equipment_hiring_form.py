@@ -78,7 +78,7 @@ class EquipmentHiringForm(AccountsController):
 	# def before_submit(self):
 	# 	self.check_equipment_free()		
 	def on_cancel(self):
-		self.ignore_linked_doctypes = ("Journal Entry","GL Entry", "Stock Ledger Entry","Payment Ledger Entry")
+		self.ignore_linked_doctypes = ("Journal Entry","GL Entry", "Stock Ledger Entry","Payment Ledger Entry", "Hire Charge Invoice", "Vehicle Logbook")
 		super().on_cancel()
 		self.update_equipment_request(0)
 
@@ -90,7 +90,7 @@ class EquipmentHiringForm(AccountsController):
 		#self.update_journal()
 
 	def before_cancel(self):		
-		check_uncancelled_linked_doc(self.doctype, self.name)
+		# check_uncancelled_linked_doc(self.doctype, self.name)
 		cl_status = frappe.db.get_value("Journal Entry", self.advance_journal, "docstatus")
 		if cl_status and cl_status != 2:
 			frappe.throw("You need to cancel the journal entry related to this job card first!")
@@ -259,22 +259,29 @@ def get_hire_rates(equipment, from_date, hourly):
 				frappe.throw("Equipment Details are mandatory")
 		
 		hourly_name = fetch_fuel_rate(hourly)
-		# c = frappe.get_doc("Customer", customer)
-		# wf = "a.rate_fuel"
-		# wof = "a.rate_wofuel"
-		# ir = "a.idle_rate"
-
-		# if c.customer_group == "Internal":
-		#         wf = "a.rate_fuel_internal"
-		#         wof = "a.rate_wofuel_internal"
-		#         ir = "a.idle_rate_internal"
-
 		e = frappe.get_doc("Equipment", equipment)
 		data = frappe.db.sql('''
 							 select {hourly_name} as rate from `tabHire Charge Parameter` where equipment ='{equipment}';
 							 '''.format(hourly_name=hourly_name,equipment=e.name),as_dict=True)
 		if not data:
-				frappe.throw(_("No Hire Rates has been assigned for equipment type {0} and model {1}").format(e.equipment_type, e.equipment_model), title="No Data Found!")
+			frappe.throw(_("No Hire Rates has been assigned for equipment type {0} and model {1}").format(e.equipment_type, e.equipment_model), title="No Data Found!")
+		return data	
+
+@frappe.whitelist()
+def get_idle_rates(equipment, from_date, idle_rate_type):
+		if not equipment:
+				frappe.throw("Equipment Details are mandatory")
+		e = frappe.get_doc("Equipment", equipment)
+		idle_type = ""
+		if idle_rate_type == "Internal":
+			idle_type = "idle_internal"
+		else:
+			idle_type = "idle_external"
+		data = frappe.db.sql('''
+							 select {idle_rate_type} as idle_rate from `tabHire Charge Parameter` where equipment ='{equipment}';
+							 '''.format(idle_rate_type=idle_type ,equipment=e.name),as_dict=True)
+		if not data:
+			frappe.throw(_("No Idle Rates has been assigned for equipment type {0} and model {1}").format(e.equipment_type, e.equipment_model), title="No Data Found!")
 		return data		
 
 @frappe.whitelist()
@@ -288,7 +295,7 @@ def get_diff_hire_rates(tr):
 @frappe.whitelist()
 def get_rates(form):
 	if form:
-		return frappe.db.sql('''select equipment, rate_type, rate, from_date, to_date, from_time, to_time, tender_hire_rate from `tabHiring Approval Details` where docstatus = 1 and parent ='{form}';
+		return frappe.db.sql('''select equipment, idle_rate, total_hours, rate_type, rate, from_date, to_date, from_time, to_time, tender_hire_rate from `tabHiring Approval Details` where docstatus = 1 and parent ='{form}';
 							 '''.format(form=form),as_dict=True)
 
 # @frappe.whitelist()
@@ -429,7 +436,7 @@ def equipment_query(doctype, txt, searchfield, start, page_len, filters):
 						select
 								e.name,
 								e.equipment_type,
-								e.equipment_number
+								e.registration_number
 						from `tabEquipment` e
 						where e.equipment_type = %(equipment_type)s
 						and e.is_disabled != 1
@@ -439,15 +446,15 @@ def equipment_query(doctype, txt, searchfield, start, page_len, filters):
 								or
 								equipment_type like %(txt)s
 								or
-								equipment_number like %(txt)s
+								registration_number like %(txt)s
 						)
 						{mcond}
 						order by
 								if(locate(%(_txt)s, name), locate(%(_txt)s, name), 99999),
 								if(locate(%(_txt)s, equipment_type), locate(%(_txt)s, equipment_type), 99999),
-								if(locate(%(_txt)s, equipment_number), locate(%(_txt)s, equipment_number), 99999),
+								if(locate(%(_txt)s, registration_number), locate(%(_txt)s, registration_number), 99999),
 								idx desc,
-								name, equipment_type, equipment_number
+								name, equipment_type, registration_number
 						limit %(start)s, %(page_len)s
 						""".format(**{
 								'key': searchfield,

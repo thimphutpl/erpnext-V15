@@ -268,6 +268,8 @@ class JournalEntry(AccountsController):
 			"Equipment Hiring Form",
 			"Production",
 			"Royalty Payment",
+			"Hire Charge Invoice",
+			"Vehicle Logbook"
 		)
 		self.make_gl_entries(1)
 		self.update_advance_paid()
@@ -418,10 +420,14 @@ class JournalEntry(AccountsController):
 		frappe.db.commit()
 
 	def update_advance_paid(self):
+		#frappe.throw("hiii")
 		advance_paid = frappe._dict()
 		for d in self.get("accounts"):
+			#frappe.throw("hiii11")
 			if d.is_advance:
-				if d.reference_type in frappe.get_hooks("advance_payment_doctypes"):
+				
+				if d.reference_type in frappe.get_hooks("advance_payment_payable_doctypes"):
+					#frappe.throw("hi555")
 					advance_paid.setdefault(d.reference_type, []).append(d.reference_name)
 
 		for voucher_type, order_list in advance_paid.items():
@@ -792,6 +798,63 @@ class JournalEntry(AccountsController):
 	# 						d.idx, d.account, d.party_type
 	# 					)
 	# 				)
+	def update_reference_document(self, cancel=False):
+		for d in self.get("accounts"):
+			# update project advance 
+			if cancel:
+				if d.reference_type == "Travel Advance" and d.reference_name:
+					doc = frappe.get_doc("Travel Advance", d.reference_name)
+					doc.db_set('paid_amount', flt(doc.paid_amount) - flt(d.debit))
+					doc.db_set('journal_entry_status', "Cancelled on {0}".format(now_datetime().strftime("%Y-%m-%d %H:%M:%S")))
+
+				if d.reference_type == "Travel Claim" and d.reference_name:
+					doc = frappe.get_doc("Travel Claim", d.reference_name)
+					doc.db_set('journal_entry_status', "Cancelled on {0}".format(now_datetime().strftime("%Y-%m-%d %H:%M:%S")))
+				
+				elif d.reference_type == "Employee Advance" and d.reference_name:
+					doc = frappe.get_doc("Employee Advance", d.reference_name)
+					doc.db_set('journal_entry_status', "Cancelled on {0}".format(now_datetime().strftime("%Y-%m-%d %H:%M:%S")))
+
+				elif d.reference_type == "Leave Encashment" and d.reference_name:
+					doc = frappe.get_doc("Leave Encashment", d.reference_name)
+					doc.db_set('journal_entry_status', "Cancelled on {0}".format(now_datetime().strftime("%Y-%m-%d %H:%M:%S")))
+
+				elif d.reference_type == "POL Advance" and d.reference_name:
+					doc = frappe.get_doc("POL Advance", d.reference_name)
+					doc.db_set('status', "Cancelled")
+					doc.db_set('journal_entry_status', "Cancelled on {0}".format(now_datetime().strftime("%Y-%m-%d %H:%M:%S")))
+
+				elif d.reference_type == "Cash Deposit Entry" and d.reference_name:
+					doc = frappe.get_doc("Cash Deposit Entry", d.reference_name)
+					doc.db_set('journal_entry_status', "Cancelled on {0}".format(now_datetime().strftime("%Y-%m-%d %H:%M:%S")))
+				
+				# removing references
+				d.reference_type = ""
+				d.reference_name = ""
+				d.db_update()
+			else:
+				if d.reference_type == "Travel Advance" and d.reference_name:
+					doc = frappe.get_doc("Travel Advance", d.reference_name)
+					doc.db_set('paid_amount', d.debit)
+					doc.db_set('journal_entry_status', "Paid on {0}".format(now_datetime().strftime("%Y-%m-%d %H:%M:%S")))
+
+				elif d.reference_type == "Travel Claim" and d.reference_name:
+					doc = frappe.get_doc("Travel Claim", d.reference_name)
+					doc.db_set('journal_entry_status', "Paid on {0}".format(now_datetime().strftime("%Y-%m-%d %H:%M:%S")))
+
+				elif d.reference_type == "Employee Advance" and d.reference_name:
+					#frappe.throw("hiii")
+					doc = frappe.get_doc("Employee Advance", d.reference_name)
+					doc.db_set('journal_entry_status', "Paid on {0}".format(now_datetime().strftime("%Y-%m-%d %H:%M:%S")))
+
+				elif d.reference_type == "Leave Encashment" and d.reference_name:
+					doc = frappe.get_doc("Leave Encashment", d.reference_name)
+					doc.db_set('journal_entry_status', "Paid on {0}".format(now_datetime().strftime("%Y-%m-%d %H:%M:%S")))
+
+				elif d.reference_type == "POL Advance" and d.reference_name:
+					doc = frappe.get_doc("POL Advance", d.reference_name)
+					doc.db_set('status', "Paid")
+					doc.db_set('journal_entry_status', "Paid on {0}".format(now_datetime().strftime("%Y-%m-%d %H:%M:%S")))
 
 	def check_credit_limit(self):
 		customers = list(
@@ -1294,17 +1357,17 @@ class JournalEntry(AccountsController):
 
 		self.set_total_amount(total_amount, currency)
 
-	def update_reference_document(self, cancel=False):
-		for a in self.get("accounts"):
-			if a.reference_type == "Abstract Bill" and a.reference_name:
-				doc = frappe.get_doc("Abstract Bill", a.reference_name)
-				if cancel:
-					doc.journal_entry_status = "Cancelled on {0}".format(
-						now_datetime().strftime("%Y-%m-%d %H:%M:%S")
-					)
-					doc.db_set("journal_entry_status", "Cancelled on {0}".format(now_datetime().strftime('%Y-%m-%d %H:%M:%S')))
-				else:
-					doc.db_set("journal_entry_status", "Paid on {0}".format(now_datetime().strftime('%Y-%m-%d %H:%M:%S')))
+	# def update_reference_document(self, cancel=False):
+	# 	for a in self.get("accounts"):
+	# 		if a.reference_type == "Abstract Bill" and a.reference_name:
+	# 			doc = frappe.get_doc("Abstract Bill", a.reference_name)
+	# 			if cancel:
+	# 				doc.journal_entry_status = "Cancelled on {0}".format(
+	# 					now_datetime().strftime("%Y-%m-%d %H:%M:%S")
+	# 				)
+	# 				doc.db_set("journal_entry_status", "Cancelled on {0}".format(now_datetime().strftime('%Y-%m-%d %H:%M:%S')))
+	# 			else:
+	# 				doc.db_set("journal_entry_status", "Paid on {0}".format(now_datetime().strftime('%Y-%m-%d %H:%M:%S')))
 
 	def set_total_amount(self, amt, currency):
 		self.total_amount = amt
@@ -2014,7 +2077,7 @@ def make_reverse_journal_entry(source_name, target_doc=None):
 	return doclist
 
 @frappe.whitelist()
-def get_tds_account(tax_withholding_category):
+def get_tds_account(tax_withholding_category,company=None):
 	account = frappe.db.sql("""select t.name,
 			ifnull((select tax_withholding_rate
 				from `tabTax Withholding Rate` r

@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_import": 1,
- "autoname": "naming_series:",
+ "autoname": "PI.YY.MM.####",
  "creation": "2013-05-21 16:16:39",
  "doctype": "DocType",
  "document_type": "Document",
@@ -100,6 +100,7 @@
   "ld_days",
   "write_off_amount",
   "base_write_off_amount",
+  "ld_description",
   "column_break_61",
   "write_off_account",
   "write_off_cost_center",
@@ -126,7 +127,7 @@
   "apply_discount_on",
   "discount",
   "additional_discount_percentage",
-  "discount_amount",
+  "additional_discount_amount",
   "base_discount_amount",
   "references_section",
   "material_request",
@@ -829,36 +830,8 @@
    "label": "Additional Charges and Discount"
   },
   {
-   "default": "Grand Total",
-   "fieldname": "apply_discount_on",
-   "fieldtype": "Select",
-   "label": "Apply Additional Discount On",
-   "options": "\nGrand Total\nNet Total",
-   "print_hide": 1
-  },
-  {
-   "fieldname": "base_discount_amount",
-   "fieldtype": "Currency",
-   "label": "Additional Discount Amount (Company Currency)",
-   "options": "Company:company:default_currency",
-   "print_hide": 1
-  },
-  {
    "fieldname": "column_break_46",
    "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "additional_discount_percentage",
-   "fieldtype": "Float",
-   "label": "Additional Discount Percentage",
-   "print_hide": 1
-  },
-  {
-   "fieldname": "discount_amount",
-   "fieldtype": "Currency",
-   "label": "Additional Discount Amount",
-   "options": "currency",
-   "print_hide": 1
   },
   {
    "fieldname": "section_break_49",
@@ -1765,17 +1738,51 @@
    "hidden": 1,
    "label": "For Project",
    "read_only": 1
+  },
+  {
+   "fieldname": "ld_description",
+   "fieldtype": "Small Text",
+   "label": "LD Description"
+  },
+  {
+   "fieldname": "additional_discount_percentage",
+   "fieldtype": "Float",
+   "label": "Additional Discount Percentage",
+   "print_hide": 1
+  },
+  {
+   "fieldname": "additional_discount_amount",
+   "fieldtype": "Currency",
+   "label": "Additional Discount Amount",
+   "options": "currency",
+   "print_hide": 1
+  },
+  {
+   "fetch_if_empty": 1,
+   "fieldname": "base_discount_amount",
+   "fieldtype": "Currency",
+   "label": "Additional Discount Amount (Company Currency)",
+   "options": "Company:company:default_currency",
+   "print_hide": 1
+  },
+  {
+   "default": "Grand Total",
+   "fieldname": "apply_discount_on",
+   "fieldtype": "Select",
+   "label": "Apply Additional Discount On",
+   "options": "\nGrand Total\nNet Total",
+   "print_hide": 1
   }
  ],
  "icon": "fa fa-file-text",
  "idx": 204,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-07-20 19:30:54.044031",
+ "modified": "2025-09-17 10:34:58.555290",
  "modified_by": "kalden.dorji@thimphutechpark.bt",
  "module": "Accounts",
  "name": "Purchase Invoice",
- "naming_rule": "By \"Naming Series\" field",
+ "naming_rule": "Expression (old style)",
  "owner": "Administrator",
  "permissions": [
   {

@@ -43,8 +43,16 @@ frappe.ui.form.on('Hire Charge Invoice', {
 		}
 	},
 	onload: function(frm) {
+		// super.onload();
+
+		// frm.ignore_doctypes_on_cancel_all = [
+		// 	"Journal Entry",
+		// 	"Payment Entry",
+		// 	"Vehicle Logbook",
+		// 	"Equipment Hiring Form",
+		// ];
 		if (!frm.doc.posting_date) {
-			frm.set_value("posting_date", get_today());
+			frm.set_value("posting_date", frappe.datetime.get_today());
 		}
 	},
 	"get_vehicle_logbooks": function(frm) {

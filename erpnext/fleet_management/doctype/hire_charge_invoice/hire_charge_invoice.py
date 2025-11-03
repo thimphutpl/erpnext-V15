@@ -45,7 +45,10 @@ class HireChargeInvoice(AccountsController):
 		payment_jv: DF.Data | None
 		posting_date: DF.Date
 		supplier: DF.Link | None
+		total_hire_charge_amount: DF.Float
+		total_hsd_consumption: DF.Float
 		total_invoice_amount: DF.Currency
+		total_operator_salary: DF.Float
 		workflow_state: DF.Link | None
 	# end: auto-generated types
 	def validate(self):
@@ -90,7 +93,7 @@ class HireChargeInvoice(AccountsController):
 		self.set_advance_data()
 		self.update_advance_amount()
 		self.update_vlogs(1)
-		if self.owned_by == "GYALSUNG INFRA":
+		if self.owned_by == "Natural Resources Development Corporation Limited":
 			self.post_journal_entry()
 			self.db_set("outstanding_amount", 0)
 		else:
@@ -99,32 +102,38 @@ class HireChargeInvoice(AccountsController):
 			self.refund_of_excess_advance()
 		self.check_close()
 
-	# def on_cancel(self):
-	# 	# if frappe.session.user == "Administrator":
-	# 	#     frappe.throw('Dont cancel') 
-	# 	# frappe.throw("hhhhhhhhh")
-	# 	if self.owned_by != "GYALSUNG INFRA":
-	# 		self.ignore_linked_doctypes = (
-	# 			"Payment Ledger Entry",
-	# 		)
-	# 		super().on_cancel()
-	# 		self.make_gl_entries()
-	# 		#self.make_gl_entries_on_cancel()
-	# 	check_uncancelled_linked_doc(self.doctype, self.name)
-	# 	cl_status = frappe.db.get_value("Journal Entry", self.invoice_jv, "docstatus")
-	# 	if cl_status and cl_status != 2:
-	# 		frappe.throw("You need to cancel the journal entry ("+ str(self.invoice_jv) + ")related to this invoice first!")
-	# 	if self.payment_jv:
-	# 		cl_status = frappe.db.get_value("Journal Entry", self.payment_jv, "docstatus")
-	# 		if cl_status and cl_status != 2:
-	# 			frappe.throw("You need to cancel the journal entry ("+ str(self.payment_jv) + ")related to this invoice first!")
-	# 	self.readjust_advance()
-	# 	if self.close:
-	# 		self.check_advances()
-	# 	self.update_vlogs(0)
-	# 	self.check_close(1)
-	# 	self.db_set("invoice_jv", "")
-	# 	self.db_set("payment_jv", "")
+	def before_cancel(self):
+		# Tell frappe to ignore linked doctypes when cancelling
+		self.ignore_linked_doctypes = ["Journal Entry", "Equipment Hiring Form", "Vehicle Logbook"]
+
+	def on_cancel(self):
+		# if frappe.session.user == "Administrator":
+		#     frappe.throw('Dont cancel') 
+		# frappe.throw("hhhhhhhhh")
+		# if self.owned_by != "Natural Resources Development Corporation Limited":
+		self.ignore_linked_doctypes = (
+			"GL Entry",
+			"Payment Ledger Entry",
+		)
+		# super().on_cancel()
+		self.make_gl_entries()
+		#self.make_gl_entries_on_cancel()
+		# check_uncancelled_linked_doc(self.doctype, self.name)
+		cl_status = frappe.db.get_value("Journal Entry", self.invoice_jv, "docstatus")
+		if cl_status and cl_status != 2:
+			frappe.throw("You need to cancel the journal entry ("+ str(self.invoice_jv) + ")related to this invoice first!")
+		if self.payment_jv:
+			cl_status = frappe.db.get_value("Journal Entry", self.payment_jv, "docstatus")
+			if cl_status and cl_status != 2:
+				frappe.throw("You need to cancel the journal entry ("+ str(self.payment_jv) + ")related to this invoice first!")
+		self.readjust_advance()
+		self.cancel_and_unlink_payment_ledger_entry()
+		if self.close:
+			self.check_advances()
+		self.update_vlogs(0)
+		self.check_close(1)
+		self.db_set("invoice_jv", "")
+		self.db_set("payment_jv", "")
 
 	# def on_cancel(self):
 	# 	# if self.clearance_date:
@@ -137,19 +146,6 @@ class HireChargeInvoice(AccountsController):
 
 	# 	self.make_gl_entries()
 	# 	# self.update_ref_doc(cancel=1)
-
-	def on_cancel(self):
-		# Cancel and unlink the linked Payment Ledger Entry
-		self.cancel_and_unlink_payment_ledger_entry()
-
-		# Ignore linked Payment Ledger Entry during cancellation
-		self.ignore_linked_doctypes = ("Payment Ledger Entry",)
-
-		# Call the parent class's on_cancel method
-		super().on_cancel()
-
-		# Make GL entries for cancellation
-		self.make_gl_entries()
 
 	def cancel_and_unlink_payment_ledger_entry(self):
 		# Fetch all linked Payment Ledger Entries
@@ -258,11 +254,11 @@ class HireChargeInvoice(AccountsController):
 		je.title = "Hire Charge Invoice (" + self.name + ")"
 		je.voucher_type = 'Hire Invoice'
 		je.naming_series = 'Hire Invoice'
-		je.remark = 'Payment against : ' + self.name;
+		je.remark = 'Payment against : ' + self.name
 		je.posting_date = self.posting_date
 		je.branch = self.branch
 
-		if self.owned_by == "GYALSUNG INFRA":
+		if self.owned_by == "Natural Resources Development Corporation Limited":
 			customer_cost_center = frappe.db.get_value("Equipment Hiring Form", self.ehf_name, "customer_cost_center")
 			je.append("accounts", {
 					"account": hea_account,
@@ -366,21 +362,21 @@ class HireChargeInvoice(AccountsController):
 			gl_entries = []
 			self.posting_date = self.posting_date
 
-		payable_account = frappe.db.get_value("Company", "GYALSUNG INFRA", "default_payable_account")
-		if not payable_account:
-			frappe.throw("Setup Payable Account in Company")
-		# advance_account = frappe.db.get_single_value("Maintenance Accounts Settings", "default_advance_account")
-		# if not advance_account:
-		# 	frappe.throw("Setup Advance Account in Maintenance Accounts Settings")
-		hire_account = frappe.db.get_value("Company", "GYALSUNG INFRA",  "hire_charge")
+		receivable_account = frappe.db.get_value("Company", "Natural Resources Development Corporation Limited", "default_receivable_account")
+		if not receivable_account:
+			frappe.throw("Setup Receivable Account in Company")
+		advance_account = frappe.db.get_single_value("Maintenance Accounts Settings", "default_advance_account")
+		if not advance_account:
+			frappe.throw("Setup Advance Account in Maintenance Accounts Settings")
+		hire_account = frappe.db.get_value("Company", "Natural Resources Development Corporation Limited",  "hire_charge")
 		if not hire_account:
 			frappe.throw("Setup Hire Account in Company")
-		operator_account = frappe.db.get_value("Company", "GYALSUNG INFRA", "operator_allowance")
-		if not operator_account:
-			frappe.throw("Setup Operator Account in Company")
-		hsd_account = frappe.db.get_value("Company", "GYALSUNG INFRA", "hsd")
-		if not hsd_account:
-			frappe.throw("Setup Hsd Account in Company")		
+		# operator_account = frappe.db.get_value("Company", "Natural Resources Development Corporation Limited", "operator_allowance")
+		# if not operator_account:
+		# 	frappe.throw("Setup Operator Account in Company")
+		# hsd_account = frappe.db.get_value("Company", "Natural Resources Development Corporation Limited", "hsd")
+		# if not hsd_account:
+		# 	frappe.throw("Setup Hsd Account in Company")		
 		# discount_account = frappe.db.get_single_value("Maintenance Accounts Settings", "discount_account")
 		# if not discount_account:
 		# 	frappe.throw("Setup Discount Account in Maintenance Accounts Settings") 
@@ -398,15 +394,31 @@ class HireChargeInvoice(AccountsController):
 		# 						"cost_center": self.cost_center
 		# 				}, self.currency)
 		# )
-		if self.total_invoice_amount: 
+		if self.outstanding_amount: 
 			gl_entries.append(
 				self.get_gl_dict({
-							"account": payable_account,
+							"account": receivable_account,
 							# "against_voucher_type": "Equipment Hiring Form",
-							# "against": self.ehf_name,
+							"against": self.ehf_name,
+							"party_type": "Customer",
+							"party": self.customer,
 							# for item in items:
-							"credit": self.total_invoice_amount,
-							"credit_in_account_currency": self.total_invoice_amount,
+							"credit": self.outstanding_amount,
+							"credit_in_account_currency": self.outstanding_amount,
+							"cost_center": self.cost_center
+					}, self.currency)
+		)
+		if self.advance_amount: 
+			gl_entries.append(
+				self.get_gl_dict({
+							"account": receivable_account,
+							# "against_voucher_type": "Equipment Hiring Form",
+							"against": self.ehf_name,
+							"party_type": "Customer",
+							"party": self.customer,
+							# for item in items:
+							"credit": self.advance_amount,
+							"credit_in_account_currency": self.advance_amount,
 							"cost_center": self.cost_center
 					}, self.currency)
 		)
@@ -429,7 +441,7 @@ class HireChargeInvoice(AccountsController):
 			gl_entries.append(
 				self.get_gl_dict({
 					"account": hire_account,
-					"against": self.supplier,
+					"against": self.customer,
 					# "party_type": "supplier",
 					# "party": self.supplier,
 					"debit": self.total_invoice_amount,
@@ -464,20 +476,20 @@ class HireChargeInvoice(AccountsController):
 		# 			}, self.currency)
 		# 		)
 
-		# 	if item.hsd_consumption:
-		# 		gl_entries.append(
-		# 			self.get_gl_dict({
-		# 					"account": hsd_account,
-		# 					"against": self.supplier,
-		# 					# "party_type": "supplier",
-		# 					# "party": self.supplier,
-		# 					# "against_voucher": self.name,
-		# 					# "against_voucher_type": self.doctype,
-		# 					"debit": item.hsd_consumption,
-		# 					"debit_in_account_currency": item.hsd_consumption,
-		# 					"cost_center": self.cost_center
-		# 			}, self.currency)
-		# 		)
+			# if item.hsd_consumption:
+			# 	gl_entries.append(
+			# 		self.get_gl_dict({
+			# 				"account": hsd_account,
+			# 				"against": self.supplier,
+			# 				# "party_type": "supplier",
+			# 				# "party": self.supplier,
+			# 				# "against_voucher": self.name,
+			# 				# "against_voucher_type": self.doctype,
+			# 				"debit": item.hsd_consumption,
+			# 				"debit_in_account_currency": item.hsd_consumption,
+			# 				"cost_center": self.cost_center
+			# 		}, self.currency)
+			# 	)
 			# frappe.msgprint(format(gl_entries))
 			make_gl_entries(gl_entries, cancel=(self.docstatus == 2),update_outstanding="No", merge_entries=False)
 
@@ -533,59 +545,59 @@ class HireChargeInvoice(AccountsController):
 
 @frappe.whitelist()
 def get_vehicle_logs(form=None):
-    if form:
-        # return frappe.db.sql("""
-        #     SELECT 
-        #         a.name, 
-        #         a.equipment, 
-        #         a.total_amount, 
-        #         a.hire_charge_amount, 
-        #         a.consumption, 
-        #         a.operator_salary, 
-        #         a.rate_type, 
-        #         a.registration_number, 
-        #         (a.total_work_time + a.hour_taken) AS total_work_time, 
-        #         a.total_idle_time, 
-        #         a.work_rate, 
-        #         a.idle_rate, 
-        #         b.project, 
-        #         (SELECT COUNT(1) 
-        #          FROM `tabVehicle Log` b 
-        #          WHERE b.parent = a.name) AS no_of_days 
-        #     FROM 
-        #         `tabVehicle Logbook` a
-        #     LEFT JOIN
-        #         `tabVehicle Log` b ON b.parent = a.name
-        #     WHERE 
-        #         a.docstatus = 1 
-        #         AND a.invoice_created = 0 
-        #         AND a.ehf_name = %s
-        # """, (form,), as_dict=True)
-        return frappe.db.sql("""
-            SELECT 
-                a.name, 
-                a.equipment, 
-                a.total_amount, 
-                a.hire_charge_amount, 
-                a.consumption, 
-                a.operator_salary, 
-                a.rate_type, 
-                a.registration_number, 
-                (a.total_work_time + a.hour_taken) AS total_work_time, 
-                a.total_idle_time, 
-                a.work_rate, 
-                a.idle_rate
-                
+	if form:
+		# return frappe.db.sql("""
+		#     SELECT 
+		#         a.name, 
+		#         a.equipment, 
+		#         a.total_amount, 
+		#         a.hire_charge_amount, 
+		#         a.consumption, 
+		#         a.operator_salary, 
+		#         a.rate_type, 
+		#         a.registration_number, 
+		#         (a.total_work_time + a.hour_taken) AS total_work_time, 
+		#         a.total_idle_time, 
+		#         a.work_rate, 
+		#         a.idle_rate, 
+		#         b.project, 
+		#         (SELECT COUNT(1) 
+		#          FROM `tabVehicle Log` b 
+		#          WHERE b.parent = a.name) AS no_of_days 
+		#     FROM 
+		#         `tabVehicle Logbook` a
+		#     LEFT JOIN
+		#         `tabVehicle Log` b ON b.parent = a.name
+		#     WHERE 
+		#         a.docstatus = 1 
+		#         AND a.invoice_created = 0 
+		#         AND a.ehf_name = %s
+		# """, (form,), as_dict=True)
+		return frappe.db.sql("""
+			SELECT 
+				a.name, 
+				a.equipment, 
+				a.total_amount, 
+				a.hire_charge_amount, 
+				a.consumption, 
+				a.operator_salary, 
+				a.rate_type, 
+				a.registration_number, 
+				(a.total_work_time + a.hour_taken) AS total_work_time, 
+				a.total_idle_time, 
+				a.work_rate, 
+				a.idle_rate
+				
 
-            FROM 
-                `tabVehicle Logbook` a
-            WHERE 
-                a.docstatus = 1 
-                AND a.invoice_created = 0 
-                AND a.ehf_name = %s
-        """, (form,), as_dict=True)
-    else:
-        frappe.throw("Select Equipment Hiring Form first!")
+			FROM 
+				`tabVehicle Logbook` a
+			WHERE 
+				a.docstatus = 1 
+				AND a.invoice_created = 0 
+				AND a.ehf_name = %s
+		""", (form,), as_dict=True)
+	else:
+		frappe.throw("Select Equipment Hiring Form first!")
 
 
 @frappe.whitelist()
@@ -614,7 +626,7 @@ def get_advances(hire_name):
 		return frappe.db.sql("select t1.name, t1.remark, t2.credit_in_account_currency as amount, t2.account as advance_account, t2.cost_center, t2.name as reference_row from `tabJournal Entry` t1, `tabJournal Entry Account` t2 where t1.name = t2.parent and t2.is_advance = 'Yes' and t1.docstatus = 1 and t2.reference_name = \'" + str(hire_name)  + "\'", as_dict=True)
 		# frappe.throw(str(a))
 	else:
-	    frappe.throw("Select Equipment Hiring Form first!")
+		frappe.throw("Select Equipment Hiring Form first!")
 
 @frappe.whitelist()
 def make_payment_entry(source_name, target_doc=None): 

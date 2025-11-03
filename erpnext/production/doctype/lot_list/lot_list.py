@@ -17,12 +17,14 @@ class LotList(Document):
 	if TYPE_CHECKING:
 		from erpnext.production.doctype.lot_list_details.lot_list_details import LotListDetails
 		from erpnext.production.doctype.lot_list_item.lot_list_item import LotListItem
+		from erpnext.production.doctype.lot_list_transaction_details.lot_list_transaction_details import LotListTransactionDetails
 		from frappe.types import DF
 
 		amended_from: DF.Link | None
 		auto_calculate: DF.Check
 		branch: DF.Link
 		company: DF.Link | None
+		is_partially_sold: DF.Check
 		item: DF.Link | None
 		item_name: DF.Data | None
 		item_sub_group: DF.Link | None
@@ -38,6 +40,7 @@ class LotList(Document):
 		stock_entry: DF.Data | None
 		total_pieces: DF.Data | None
 		total_volume: DF.Float
+		transaction_details: DF.Table[LotListTransactionDetails]
 		warehouse: DF.Link
 	# end: auto-generated types
 	def validate(self):
@@ -56,11 +59,7 @@ class LotList(Document):
 			frappe.throw("Lot List can only be created for Timber Products")
 		
 		self.total_volume = total_volume
-
-
-
 		self.lot_no = self.name
-		
 
 	def on_submit(self):
 		pass
@@ -98,7 +97,7 @@ class LotList(Document):
 		# 	self.total_volume = total_vol
 
 		# self.total_pieces = count
-	
+	@frappe.whitelist()
 	def get_item_details(self, item=None):
 		data = []
 		for d in frappe.db.sql("select item_name, item_sub_group, species, case when species != \"\" then (select ts.timber_class from `tabTimber Species` ts where ts.species = i.species) end as timber_class from `tabItem` i where i.name = '{0}'".format(item),as_dict = True):
@@ -109,6 +108,7 @@ class LotList(Document):
 		if not filters.get("branch"):
 			frappe.throw("Please Select Branch First")
 		return frappe.db.sql("select parent from `tabWarehouse Branch` where branch = {0}".format(filters.get("branch")))
+
 @frappe.whitelist()
 def make_sales_order(source_name, target_doc=None):
 	def set_missing_values(source, target):
@@ -118,88 +118,47 @@ def make_sales_order(source_name, target_doc=None):
 		target.warehouse = source_parent.warehouse
 		sub_group = frappe.db.get_value("Item", source.item, "item_sub_group")
 		lot_check = frappe.db.get_value("Item Sub Group", sub_group, "lot_check")
+		lot_qtys = frappe.get_all(
+			"Lot List Transaction Details",
+			filters={"parent": source_parent.name},
+			fields=["quantity"]
+		)
 		target.item_name = frappe.db.get_value("Item", source.item, "item_name")
 		target.stock_uom = frappe.db.get_value("Item", source.item, "stock_uom")
 		target.business_activity = frappe.db.get_value("Item", source.item, "business_activity")
-		
+		target_balance_qty = sum(a.quantity for a in lot_qtys)
 		if lot_check:
 			if source.total_volume < 0:
 				frappe.msgprint("Not available volume under the selected Lot")
 			else:
-				target.qty = source.total_volume
-				target.stock_qty = source.total_volume
+				target.qty = source.total_volume - target_balance_qty
+				target.stock_qty = source.total_volume - target_balance_qty
 
 
 	target_doc = get_mapped_doc("Lot List", source_name, {
-                "Lot List": {
-                        "doctype": "Sales Order",
-                        "field_map": {
-				"branch": "branch",
-				"posting_date":"po_date",
+				"Lot List": {
+					"doctype": "Sales Order",
+					"field_map": {
+					"branch": "branch",
+					"posting_date":"po_date",
 				# "currency": "price_list_currency"
-                #         },
-                #         "validation": {
-                #                 "docstatus": ["=", 1]
-                #         }
-						}
-                },
-                "Lot List Details": {
-                        "doctype": "Sales Order Item",
-                        "field_map": [
-								["parent", "lot_number"],
-                                ["item", "item_code"],
-                                ["total_volume", "balance"],
-								["total_pieces", "total_pieces"]
-                        ],
-						"postprocess": update_item,
-                },
-    }, target_doc, set_missing_values)
-
-	return target_doc
-
-@frappe.whitelist()
-def make_stock_entry(source_name, target_doc=None):
-	def set_missing_values(source, target):
-		pass
-
-	def update_item(source, target, source_parent):
-		target.s_warehouse = source_parent.warehouse
-		sub_group = frappe.db.get_value("Item", source.item, "item_sub_group")
-		lot_check = frappe.db.get_value("Item Sub Group", sub_group, "lot_check")
-		target.item_name = frappe.db.get_value("Item", source.item, "item_name")
-		target.stock_uom = frappe.db.get_value("Item", source.item, "stock_uom")
-		target.uom = frappe.db.get_value("Item", source.item, "stock_uom")
-		if lot_check:
-			if source.total_volume < 0:
-				frappe.msgprint("Not available volume under the selected Lot")
-			else:
-				target.qty = source.total_volume
-
-
-	target_doc = get_mapped_doc("Lot List", source_name, {
-                "Lot List": {
-                        "doctype": "Stock Entry",
-                        "field_map": {
-				"branch": "branch",
-				"posting_date":"po_date",
-				# "currency": "price_list_currency"
-                #         },
-                #         "validation": {
-                #                 "docstatus": ["=", 1]
-                #         }
-						}
-                },
-                "Lot List Details": {
-                        "doctype": "Stock Entry Detail",
-                        "field_map": [
-								["parent", "lot_number"],
-                                ["item", "item_code"],
-                                ["total_volume", "qty"],
-                                ["total_volume", "transfer_qty"],
-                        ],
-						"postprocess": update_item,
-                },
-    }, target_doc, set_missing_values)
+				#         },
+				#         "validation": {
+				#                 "docstatus": ["=", 1]
+				#         }
+					}
+				},
+				"Lot List Details": {
+					"doctype": "Sales Order Item",
+					"field_map": [
+						["parent", "lot_number"],
+						["item", "item_code"],
+						["total_volume", "balance"],
+						["total_pieces", "total_pieces"]
+					],
+					"postprocess": update_item,
+				},
+	}, target_doc, set_missing_values)
 
 	return target_doc
 
@@ -212,21 +171,153 @@ def get_lot_list(doctype=None, txt=None, searchfield=None, start=None, page_len=
 		frappe.throw("Please select Branch first")
 
 	return frappe.db.sql("""
-		select name from `tabLot List` l
-		where (l.sales_order is NULL or l.sales_order = "")
-        and (l.stock_entry is NULL or l.stock_entry = "")
-		and (l.production is NULL or l.production = "")
-		and l.docstatus = 1
-		and not exists(select 1
-				from `tabLot Allotment Lots` la
-				where la.lot_number = l.name
-				and la.docstatus != 2)
-		and `{key}` LIKE %(txt)s {cond}
-		order by name limit %(start)s, %(page_len)s
-		""".format(key=searchfield, cond=cond), {
-			'txt': '%' + txt + '%',
-			'start': start, 'page_len': page_len
-		})
+		SELECT l.name
+		FROM `tabLot List` l
+		LEFT JOIN `tabLot List Transaction Details` td ON l.name = td.parent
+		WHERE (l.production IS NULL OR l.production = '')
+		AND l.docstatus = 1
+		AND l.{key} LIKE %(txt)s {cond}
+		AND NOT EXISTS(
+			SELECT 1
+			FROM `tabLot Allotment Lots` la
+			WHERE la.lot_number = l.name
+				AND la.docstatus != 2
+		)
+		GROUP BY l.name, l.total_volume
+		HAVING COALESCE(SUM(td.quantity), 0) < l.total_volume
+		ORDER BY l.name
+		LIMIT %(start)s, %(page_len)s
+	""".format(key=searchfield, cond=cond), {
+		'txt': '%' + txt + '%',
+		'start': start,
+		'page_len': page_len
+	})
+
+
+# @frappe.whitelist()
+# def make_sales_order(source_name, target_doc=None):
+# 	def set_missing_values(source, target):
+# 		pass
+
+# 	def update_item(source, target, source_parent):
+# 		target.warehouse = source_parent.warehouse
+# 		sub_group = frappe.db.get_value("Item", source.item, "item_sub_group")
+# 		lot_check = frappe.db.get_value("Item Sub Group", sub_group, "lot_check")
+# 		target.item_name = frappe.db.get_value("Item", source.item, "item_name")
+# 		target.stock_uom = frappe.db.get_value("Item", source.item, "stock_uom")
+# 		target.business_activity = frappe.db.get_value("Item", source.item, "business_activity")
+		
+# 		if lot_check:
+# 			if source.total_volume < 0:
+# 				frappe.msgprint("Not available volume under the selected Lot")
+# 			else:
+# 				target.qty = source.total_volume
+# 				target.stock_qty = source.total_volume
+
+
+# 	target_doc = get_mapped_doc("Lot List", source_name, {
+#                 "Lot List": {
+#                         "doctype": "Sales Order",
+#                         "field_map": {
+# 				"branch": "branch",
+# 				"posting_date":"po_date",
+# 				# "currency": "price_list_currency"
+#                 #         },
+#                 #         "validation": {
+#                 #                 "docstatus": ["=", 1]
+#                 #         }
+# 						}
+#                 },
+#                 "Lot List Details": {
+#                         "doctype": "Sales Order Item",
+#                         "field_map": [
+# 								["parent", "lot_number"],
+#                                 ["item", "item_code"],
+#                                 ["total_volume", "balance"],
+# 								["total_pieces", "total_pieces"]
+#                         ],
+# 						"postprocess": update_item,
+#                 },
+#     }, target_doc, set_missing_values)
+
+# 	return target_doc
+
+@frappe.whitelist()
+def make_stock_entry(source_name, target_doc=None):
+	def set_missing_values(source, target):
+		pass
+
+	def update_item(source, target, source_parent):
+		target.s_warehouse = source_parent.warehouse
+		sub_group = frappe.db.get_value("Item", source.item, "item_sub_group")
+		lot_check = frappe.db.get_value("Item Sub Group", sub_group, "lot_check")
+		lot_qtys = frappe.get_all(
+			"Lot List Transaction Details",
+			filters={"parent": source_parent.name},
+			fields=["quantity"]
+		)
+		target_balance_qty = sum(a.quantity for a in lot_qtys)
+		target.item_name = frappe.db.get_value("Item", source.item, "item_name")
+		target.stock_uom = frappe.db.get_value("Item", source.item, "stock_uom")
+		target.uom = frappe.db.get_value("Item", source.item, "stock_uom")
+		if lot_check:
+			if source.total_volume < 0:
+				frappe.msgprint("Not available volume under the selected Lot")
+			else:
+				target.qty = source.total_volume - target_balance_qty
+
+
+	target_doc = get_mapped_doc("Lot List", source_name, {
+				"Lot List": {
+						"doctype": "Stock Entry",
+						"field_map": {
+				"branch": "branch",
+				"posting_date":"po_date",
+				# "currency": "price_list_currency"
+				#         },
+				#         "validation": {
+				#                 "docstatus": ["=", 1]
+				#         }
+						}
+				},
+				"Lot List Details": {
+						"doctype": "Stock Entry Detail",
+						"field_map": [
+								["parent", "lot_number"],
+								["item", "item_code"],
+								["total_volume", "qty"],
+								["total_volume", "transfer_qty"],
+						],
+						"postprocess": update_item,
+				},
+	}, target_doc, set_missing_values)
+
+	return target_doc
+
+# @frappe.whitelist()
+# def get_lot_list(doctype=None, txt=None, searchfield=None, start=None, page_len=None, filters=None):
+# 	cond = ""
+# 	if filters.get("branch"):
+# 		cond += " and l.branch = '{0}'".format(filters.get("branch"))
+# 	else:
+# 		frappe.throw("Please select Branch first")
+
+# 	return frappe.db.sql("""
+# 		select name from `tabLot List` l
+# 		where (l.sales_order is NULL or l.sales_order = "")
+#         and (l.stock_entry is NULL or l.stock_entry = "")
+# 		and (l.production is NULL or l.production = "")
+# 		and l.docstatus = 1
+# 		and not exists(select 1
+# 				from `tabLot Allotment Lots` la
+# 				where la.lot_number = l.name
+# 				and la.docstatus != 2)
+# 		and `{key}` LIKE %(txt)s {cond}
+# 		order by name limit %(start)s, %(page_len)s
+# 		""".format(key=searchfield, cond=cond), {
+# 			'txt': '%' + txt + '%',
+# 			'start': start, 'page_len': page_len
+# 		})
 
 @frappe.whitelist()
 def get_la_lot_list(doctype=None, txt=None, searchfield=None, start=None, page_len=None, filters=None):
@@ -236,7 +327,7 @@ def get_la_lot_list(doctype=None, txt=None, searchfield=None, start=None, page_l
 	return frappe.db.sql("""
 		select name from `tabLot List` l
 		where l.branch = '{}' and (l.sales_order is NULL or l.sales_order = "")
-        and (l.stock_entry is NULL or l.stock_entry = "")
+		and (l.stock_entry is NULL or l.stock_entry = "")
 		and (l.production is NULL or l.production = "")
 		and l.docstatus = 1
 		and not exists(select 1
@@ -244,3 +335,26 @@ def get_la_lot_list(doctype=None, txt=None, searchfield=None, start=None, page_l
 				where la.lot_number = l.name
 				and la.docstatus != 2)
 		""".format(filters.get("branch")))
+
+
+@frappe.whitelist()
+def get_lot_sale_status(lot_name):
+	# Sum quantities from child table
+	result = frappe.db.sql("""
+		SELECT SUM(td.quantity) as total_sold, transaction_type
+		FROM `tabLot List Transaction Details` td
+		WHERE td.parent=%s
+	""", lot_name, as_dict=True)
+	
+	# Get total quantity from Lot List
+	lot = frappe.get_doc("Lot List", lot_name)
+	
+	total_sold = result[0].total_sold or 0
+	total_qty = lot.total_volume or 0
+
+	if total_sold >= total_qty:
+		return "Sold" if result[0].transaction_type == "Sales Order" else "Stock Transferred"
+	elif total_sold > 0:
+		return "Partially Sold" if result[0].transaction_type == "Sales Order" else "Stock Partially Transferred"
+	else:
+		return "Unsold"

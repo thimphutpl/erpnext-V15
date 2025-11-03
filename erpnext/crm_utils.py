@@ -64,8 +64,8 @@ def get_vehicle_list(user):
 			lr.location, lr.customer_name, lr.contact_mobile, lr.delivery_note
 		from `tabVehicle` v
 		left join `tabLoad Request` lr
-                        on lr.vehicle = v.name
-                        and lr.load_status = "Loaded" 
+						on lr.vehicle = v.name
+						and lr.load_status = "Loaded" 
 		where v.user = "{0}" 
 		and v.vehicle_status = 'Active'
 		and v.common_pool = 1
@@ -80,7 +80,7 @@ def get_vehicle_list(user):
 @frappe.whitelist()
 def get_branch_source_query(doctype=None, txt=None, searchfield=None, start=None, page_len=None, filters=None):
 	""" get list of `CRM Branch`s based on `Item Sub Group` 
-	    used under:
+		used under:
 		1. Site Registration
 	"""
 	if not filters.get("product_category"):
@@ -106,7 +106,7 @@ def get_branch_source_query(doctype=None, txt=None, searchfield=None, start=None
 @frappe.whitelist()
 def get_branch_source_query(doctype=None, txt=None, searchfield=None, start=None, page_len=None, filters=None):
 	""" get list of `CRM Branch`s based on `Item Sub Group` 
-	    used under:
+		used under:
 		1. Site Registration
 	"""
 	if not filters.get("item_sub_group"):
@@ -146,7 +146,7 @@ def get_branch_source_query(doctype=None, txt=None, searchfield=None, start=None
 @frappe.whitelist()
 def get_branch_source(product_category):
 	""" get list of `CRM Branch`s based on `Item Sub Group` 
-	    used under:
+		used under:
 		1. Site Registration
 	"""
 	if not product_category:
@@ -175,7 +175,7 @@ def get_branch_source(product_category):
 @frappe.whitelist()
 def get_branch_source(item_sub_group):
 	""" get list of `CRM Branch`s based on `Item Sub Group` 
-	    used under:
+		used under:
 		1. Site Registration
 	"""
 	if not item_sub_group:
@@ -264,6 +264,7 @@ def get_branch_source_for_item(doctype=None, txt=None, searchfield=None, start=N
 
 @frappe.whitelist()
 def get_items(doctype=None, txt=None, searchfield=None, start=None, page_len=None, filters=None):
+	frappe.throw('jo')
 	""" get list of `Item`s based on CRM Branch """
 	if not filters.get("branch"):
 		frappe.throw(_("Please select branch first"))
@@ -288,7 +289,7 @@ def get_items(doctype=None, txt=None, searchfield=None, start=None, page_len=Non
 def get_site_items(doctype=None, txt=None, searchfield=None, start=None, page_len=None, filters=None):
 	""" returns item list 
 		WARNING: Please do not change the column order as the mobile app has direct impact
-	    used under:
+		used under:
 			1. Customer Order
 	"""
 	
@@ -300,7 +301,7 @@ def get_site_items(doctype=None, txt=None, searchfield=None, start=None, page_le
 	elif filters.get("product_category") == "Timber By Products" and not filters.get("item_type"):
 		frappe.throw(_("Please select an Item Type first"))
 
-	if not filters.get("site") and frappe.db.exists("Product Category", {"name": filters.get("product_category"), "site_required": 1}):
+	if not filters.get("site") and frappe.db.exists("Product Category", {"name": filters.get("product_category"), "site_required": 1}) and filters.get("product_category") != "Timber":
 		frappe.throw(_("Please select a Site first"))
 
 	if filters.get("site"):
@@ -324,8 +325,30 @@ def get_site_items(doctype=None, txt=None, searchfield=None, start=None, page_le
 	# item_type based filters (passed only for By-Products)
 	if filters.get("item_type"):
 		cond += ' and i.item_sub_group = "{}"'.format(filters.get("item_type"))
-
-	il = frappe.db.sql("""
+	# frappe.throw("""
+	# 	select i.name item, i.item_name, i.item_sub_group, i.stock_uom
+	# 	from `tabItem` i
+	# 	{}
+	# 	and exists(select 1
+	# 		from 
+	# 			`tabCRM Branch Setting` cbs, 
+	# 			`tabCRM Branch Setting Item` cbsi,
+	# 			`tabSelling Price` sp,
+	# 			`tabSelling Price Branch` spb,
+	# 			`tabSelling Price Rate` spr
+	# 		where cbsi.item = i.name
+	# 		and cbsi.has_stock = 1
+	# 		and cbs.name = cbsi.parent
+	# 		and spb.branch 	= cbs.branch
+	# 		and sp.name 	= spb.parent
+	# 		and DATE(now()) between sp.from_date and sp.to_date
+	# 		and spr.parent 	= sp.name 
+	# 		and spr.price_based_on = 'Item'
+	# 		and spr.particular = cbsi.item
+	# 		)
+	# 	""".format(cond, filters.get("site")))
+	if (filters.get("product_category") == "Timber" or filters.get("product_category") == "Timber By Products"):
+		il = frappe.db.sql("""
 		select i.name item, i.item_name, i.item_sub_group, i.stock_uom
 		from `tabItem` i
 		{}
@@ -345,19 +368,75 @@ def get_site_items(doctype=None, txt=None, searchfield=None, start=None, page_le
 			and spr.parent 	= sp.name 
 			and spr.price_based_on = 'Item'
 			and spr.particular = cbsi.item
-			and (
-				cbs.has_common_pool = 0
-				or
-				exists(select 1
-					from 
-						`tabSite Distance` sd
-					where sd.parent = "{}" 
-					and sd.branch 	= cbs.branch
-					and sd.item_sub_group = i.item_sub_group
+			)
+		""".format(cond, filters.get("site")))
+	else:
+		# frappe.throw("""
+		# 	select i.name item, i.item_name, i.item_sub_group, i.stock_uom
+		# 	from `tabItem` i
+		# 	{}
+		# 	and exists(select 1
+		# 		from 
+		# 			`tabCRM Branch Setting` cbs, 
+		# 			`tabCRM Branch Setting Item` cbsi,
+		# 			`tabSelling Price` sp,
+		# 			`tabSelling Price Branch` spb,
+		# 			`tabSelling Price Rate` spr
+		# 		where cbsi.item = i.name
+		# 		and cbsi.has_stock = 1
+		# 		and cbs.name = cbsi.parent
+		# 		and spb.branch 	= cbs.branch
+		# 		and sp.name 	= spb.parent
+		# 		and DATE(now()) between sp.from_date and sp.to_date
+		# 		and spr.parent 	= sp.name 
+		# 		and spr.price_based_on = 'Item'
+		# 		and spr.particular = cbsi.item
+		# 		and (
+		# 			cbs.has_common_pool = 0
+		# 			or
+		# 			exists(select 1
+		# 				from 
+		# 					`tabSite Distance` sd
+		# 				where sd.parent = "{}" 
+		# 				and sd.branch 	= cbs.branch
+		# 				and sd.item_sub_group = i.item_sub_group
+		# 			)
+		# 		)
+		# 	)
+		# """.format(cond, filters.get("site")))
+		il = frappe.db.sql("""
+			select i.name item, i.item_name, i.item_sub_group, i.stock_uom
+			from `tabItem` i
+			{}
+			and exists(select 1
+				from 
+					`tabCRM Branch Setting` cbs, 
+					`tabCRM Branch Setting Item` cbsi,
+					`tabSelling Price` sp,
+					`tabSelling Price Branch` spb,
+					`tabSelling Price Rate` spr
+				where cbsi.item = i.name
+				and cbsi.has_stock = 1
+				and cbs.name = cbsi.parent
+				and spb.branch 	= cbs.branch
+				and sp.name 	= spb.parent
+				and DATE(now()) between sp.from_date and sp.to_date
+				and spr.parent 	= sp.name 
+				and spr.price_based_on = 'Item'
+				and spr.particular = cbsi.item
+				and (
+					cbs.has_common_pool = 0
+					or
+					exists(select 1
+						from 
+							`tabSite Distance` sd
+						where sd.parent = "{}" 
+						and sd.branch 	= cbs.branch
+						and sd.item_sub_group = i.item_sub_group
+					)
 				)
 			)
-		)
-	""".format(cond, filters.get("site")))
+		""".format(cond, filters.get("site")))
 
 	if not il:
 		frappe.throw(_("No materials found"))
@@ -365,13 +444,15 @@ def get_site_items(doctype=None, txt=None, searchfield=None, start=None, page_le
 
 #to get lots alloted to customer Kinley Dorji
 @frappe.whitelist()
-def get_lot_allotments(site=None):
+def get_lot_allotments(site=None,customer_id=None):
 	cond = ""
 	data = []
 	if site:
 		cond = " and la.site = '{0}'".format(site)
+	elif customer_id:
+		cond = " and la.customer_id = '{0}'".format(customer_id)
 	else:
-		frappe.throw("Please select site")
+		frappe.throw("Please select site or customer_id")
 	
 	result = frappe.db.sql("""
 		select distinct la.name, la.posting_date from `tabLot Allotment` la, `tabLot Allotment Lots` lal where la.name = lal.parent and la.docstatus = 1 {}
@@ -446,7 +527,7 @@ def get_lot_details(lot_number = None):
 	if lot_number:
 		cond = " and a.lot_number = '{0}'".format(lot_number)
 
-	details = frappe.db.sql("""select @rownumber:=@rownumber+1 as id, lot_number, item, item_name, item_sub_group,
+	details = frappe.db.sql("""select @rownumber:=@rownumber+1 as id, lot_number, item_code, item_name, item_sub_group,
 	a.branch, location, price_template, round(a.total_volume,2) as total_volume, a.total_pieces,
 	round(price_list_rate,2) as price_list_rate, round(rate,2) as rate, round(amount,2) as amount,
 	round(a.discount_amount,2) as discount_amount, round(a.additional_cost,2) as additional_cost
@@ -461,7 +542,7 @@ def get_lot_details(lot_number = None):
 def get_site_items(doctype=None, txt=None, searchfield=None, start=None, page_len=None, filters=None):
 	""" get all site items 
 		WARNING: Please do not change the column order as the mobile app has direct impact
-	    used under:
+		used under:
 		1. Customer Order
 	"""
 	
@@ -540,10 +621,11 @@ def get_crm_dzongkhags(product_category = None, item_type = None, item = None):
 # following method is created as a replacement for the following one to accommodate Phase-II by SHIV on 2020/11/19
 @frappe.whitelist()
 def get_branch_rate_query(doctype=None, txt=None, searchfield=None, start=None, page_len=None, filters=None):
+	
 	""" get list of source branches along with rates based on selected item/item_sub_group or both 
-	    used under:
+		used under:
 		1. Customer Order
-	    conditions:
+		conditions:
 		list of branches are returned based on following conditions
 			1. Branches are pulled from 'CRM Branch Setting'
 			2. Return only branches having stock(has_stock) for selected item
@@ -551,7 +633,10 @@ def get_branch_rate_query(doctype=None, txt=None, searchfield=None, start=None, 
 			4. If is a common pool branch, return only branches having rates defined
 				under 'Selling Price' asof current date, distance defined under 
 				'Site Distance' table, and 'Transportation Rate' exists.
+			5.The distance in the site should be within the distance mentioned in the transporter rate
 	"""
+	# if isinstance(filters, str):
+	# 	filters = frappe.parse_json(filters)
 	if filters.get("product_group") != "Timber Prime Products":
 		cond 	  = []
 		site_cond = ""
@@ -602,7 +687,34 @@ def get_branch_rate_query(doctype=None, txt=None, searchfield=None, start=None, 
 
 		cond = " and ".join(cond)
 		columns = ", ".join(columns)
-
+		
+		# frappe.throw("""
+		# 	select distinct  
+		# 		cbs.branch,
+		# 		(case
+		# 			when cbs.has_common_pool = 1 then 'Has Common Pool facility'
+		# 			else '<span style = "color:white;padding: 0px 5px;border-radius: 2px; background-color:tomato;">Does not have Common Pool facility</span>'
+		# 		end) as has_common_pool_msg,
+		# 		{columns}
+		# 	from 
+		# 		`tabCRM Branch Setting` cbs,
+		# 		`tabCRM Branch Setting Item` cbsi,
+		# 		`tabItem` i
+		# 	where {cond}
+		# 	{tbp_cond}
+		# 	and cbs.name 	= cbsi.parent
+		# 	and i.name 	= cbsi.item
+		# 	and cbsi.has_stock = 1
+		# 	and exists(select 1
+		# 			from `tabSelling Price` sp, `tabSelling Price Branch` spb, `tabSelling Price Rate` spr
+		# 			where DATE(now()) between sp.from_date and sp.to_date
+		# 			and spb.parent = sp.name
+		# 			and spb.branch = cbs.branch
+		# 			and spr.parent = sp.name
+		# 			and spr.price_based_on = 'Item'
+		# 			and spr.particular = i.name)
+		# 	{site_cond}
+		# """.format(cond=cond, site_cond=site_cond, tbp_cond=tbp_cond, columns=columns))
 		bl = frappe.db.sql("""
 			select distinct  
 				cbs.branch,
@@ -645,9 +757,9 @@ def get_branch_rate_query(doctype=None, txt=None, searchfield=None, start=None, 
 @frappe.whitelist()
 def get_branch_rate_query(doctype=None, txt=None, searchfield=None, start=None, page_len=None, filters=None):
 	""" get list of source branches along with rates based on selected item/item_sub_group or both 
-	    used under:
+		used under:
 		1. Customer Order
-	    conditions:
+		conditions:
 		list of branches are returned based on following conditions
 			1. Branches are pulled from 'CRM Branch Setting'
 			2. Return only branches having stock(has_stock) for selected item
@@ -724,9 +836,9 @@ def get_branch_rate_query(doctype=None, txt=None, searchfield=None, start=None, 
 @frappe.whitelist()
 def get_branch_rate_query_old(doctype=None, txt=None, searchfield=None, start=None, page_len=None, filters=None):
 	""" get list of source branches along with rates based on selected item/item_sub_group or both 
-	    used under:
+		used under:
 		1. Customer Order
-	    conditions:
+		conditions:
 		list of branches are returned based on following conditions
 			1. Branches are pulled from 'CRM Branch Setting'
 			2. Return only branches having stock(has_stock) for selected item
@@ -804,9 +916,9 @@ def get_branch_rate_query_old(doctype=None, txt=None, searchfield=None, start=No
 @frappe.whitelist()
 def get_branch_rate(branch=None, item_sub_group=None, item=None, site=None, product_category=None, destination_dzongkhag=None):
 	""" get list of source branches along with rates based on selected item/item_sub_group or both 
-	    used under:
+		used under:
 		1. Customer Order
-	    conditions:
+		conditions:
 		list of branches are returned based on following conditions
 			1. Branches are pulled from 'CRM Branch Setting'
 			2. Return only branches having stock(has_stock) for selected item
@@ -901,9 +1013,9 @@ def get_branch_rate(branch=None, item_sub_group=None, item=None, site=None, prod
 @frappe.whitelist()
 def get_branch_rate(branch=None, item_sub_group=None, item=None, site=None):
 	""" get list of source branches along with rates based on selected item/item_sub_group or both 
-	    used under:
+		used under:
 		1. Customer Order
-	    conditions:
+		conditions:
 		list of branches are returned based on following conditions
 			1. Branches are pulled from 'CRM Branch Setting'
 			2. Return only branches having stock(has_stock) for selected item
@@ -991,9 +1103,9 @@ def get_branch_rate(branch=None, item_sub_group=None, item=None, site=None):
 @frappe.whitelist()
 def get_branch_rate_old(branch=None, item_sub_group=None, item=None, site=None):
 	""" get list of source branches along with rates based on selected item/item_sub_group or both 
-	    used under:
+		used under:
 		1. Customer Order
-	    conditions:
+		conditions:
 		list of branches are returned based on following conditions
 			1. Branches are pulled from 'CRM Branch Setting'
 			2. Return only branches having stock(has_stock) for selected item
@@ -1237,7 +1349,65 @@ def get_branch_location(site, item, branch=None, location=None):
 						and sd.distance between tr.from_distance and tr.to_distance))
 			)
 		""".format(site)
-
+	# frappe.throw("""
+	# 	select distinct 
+	# 		spb.branch,
+	# 		(case
+	# 			when spr.location is null then "Departmental"
+	# 			when ifnull(spr.location,'') = '' then "Departmental"
+	# 			else spr.location
+	# 		end) as location,
+	# 		spr.parent as selling_price,
+	# 		spr.selling_price as item_rate,
+	# 		cbs.lead_time,
+	# 		(case
+	# 			when spr.location is null then
+	# 				(case
+	# 					when exists(select 1
+	# 							from `tabSelling Price Rate` spr2, `tabLocation` l2
+	# 							where spr2.parent = spr.parent
+	# 							and spr2.location is not null
+	# 							and l2.name = spr2.location
+	# 							and l2.branch = spb.branch
+	# 							and l2.is_crm_item = 1) then 0
+	# 					else 1
+	# 				end)
+	# 			else 1
+	# 		end) display
+	# 	from 
+	# 		`tabSelling Price` sp, 
+	# 		`tabSelling Price Branch` spb, 
+	# 		`tabSelling Price Rate` spr,
+	# 		`tabItem` i,
+	# 		`tabCRM Branch Setting` cbs,
+	# 		`tabCRM Branch Setting Item` cbsi
+	# 	where DATE(now()) between sp.from_date and sp.to_date  
+	# 	and spb.parent = sp.name
+	# 	and spr.parent = sp.name 
+	# 	and spr.price_based_on = "Item"
+	# 	and spr.particular = "{item}"
+	# 	and i.name = "{item}"
+	# 	and (ifnull(spr.selling_uom,'') = '' or ifnull(spr.selling_uom,'') = i.stock_uom)
+	# 	{cond}
+	# 	and (
+	# 		spr.location is null
+	# 		or
+	# 		ifnull(spr.location,'') = ''
+	# 		or
+	# 		exists(select 1
+	# 			from `tabLocation` l
+	# 			where l.name = spr.location 
+	# 			and l.branch = spb.branch
+	# 			and l.is_crm_item = 1
+	# 		)
+	# 	)
+	# 	and cbs.branch = spb.branch
+	# 	and cbsi.parent = cbs.name
+	# 	and cbsi.item = "{item}"
+	# 	and cbsi.has_stock = 1
+	# 	{site_cond}
+	# 	order by spb.branch, cbs.lead_time
+	# """.format(cond=cond, item=item, site_cond=site_cond))
 	query = """
 		select distinct 
 			spb.branch,
@@ -1693,25 +1863,25 @@ def filter_vehicle_customer_order(doctype, txt, searchfield, start, page_len, fi
 		else:
 			return frappe.db.sql("""
 					 select name, drivers_name, contact_no from `tabVehicle`
-                                        where vehicle_status = 'Active'
-                                        and ({key} like %(txt)s
-                                                or drivers_name like %(txt)s
-                                                or contact_no like %(txt)s)
-                                        {mcond}
-                                order by
-                                        if(locate(%(_txt)s, name), locate(%(_txt)s, name), 99999),
-                                        if(locate(%(_txt)s, drivers_name), locate(%(_txt)s, drivers_name), 99999),
-                                        if(locate(%(_txt)s, contact_no), locate(%(_txt)s, contact_no), 99999),
-                                        idx desc,
-                                        name, drivers_name, contact_no
-                                limit %(start)s, %(page_len)s""".format(**{
-                                        'key': searchfield,
-                                        'mcond': get_match_cond(doctype)
-                                }), {
-                                        'txt': "%%%s%%" % txt,
-                                        '_txt': txt.replace("%", ""),
-                                        'start': start,
-                                        'page_len': page_len
+										where vehicle_status = 'Active'
+										and ({key} like %(txt)s
+												or drivers_name like %(txt)s
+												or contact_no like %(txt)s)
+										{mcond}
+								order by
+										if(locate(%(_txt)s, name), locate(%(_txt)s, name), 99999),
+										if(locate(%(_txt)s, drivers_name), locate(%(_txt)s, drivers_name), 99999),
+										if(locate(%(_txt)s, contact_no), locate(%(_txt)s, contact_no), 99999),
+										idx desc,
+										name, drivers_name, contact_no
+								limit %(start)s, %(page_len)s""".format(**{
+										'key': searchfield,
+										'mcond': get_match_cond(doctype)
+								}), {
+										'txt': "%%%s%%" % txt,
+										'_txt': txt.replace("%", ""),
+										'start': start,
+										'page_len': page_len
 				})
 
 	if transport_mode in ["Self Owned Transport", "Private Pool"]:
@@ -1743,12 +1913,12 @@ def filter_vehicle_customer_order(doctype, txt, searchfield, start, page_len, fi
 				})
 	else:
 		'''
-                return frappe.db.sql("""select vehicle_no, drivers_name, contact_no from `tabVehicle`
-                                        where vehicle_status = 'Active'
-                                """.format(key=frappe.db.escape(searchfield),
-                                 match_condition=get_match_cond(doctype)), {
-                                'txt': "%%%s%%" % frappe.db.escape(txt)
-                        })
+				return frappe.db.sql("""select vehicle_no, drivers_name, contact_no from `tabVehicle`
+										where vehicle_status = 'Active'
+								""".format(key=frappe.db.escape(searchfield),
+								 match_condition=get_match_cond(doctype)), {
+								'txt': "%%%s%%" % frappe.db.escape(txt)
+						})
 		'''
 		return frappe.db.sql("""
 				select name, drivers_name, contact_no from `tabVehicle`
@@ -2181,6 +2351,7 @@ def get_transport_mode(site="", branch="", product_category=""):
 			and pc.name = cbs.product_category
 			and pc.transport_mode_required = 1
 		""".format(site, branch, product_category), as_dict=True)
+		
 	else:
 		tl = frappe.db.sql("""
 			select
@@ -2260,13 +2431,16 @@ def notify_customers(msg=None, debug=1):
 # following method created for Timber by SHIV on 2020/11/25
 @frappe.whitelist()
 def get_product_groups(product_category):
-	return frappe.db.sql("""
+	data= frappe.db.sql("""
 		select distinct product_group, selection_based_on
 		from `tabProduct Category Item`
 		where parent = "{}"
 		and product_group is not null
+		and use_product_group =1
 		order by product_group
 	""".format(product_category), as_dict=True)
+	if data:
+		return data
 
 # following method created for Timber by SHIV on 2020/11/25
 @frappe.whitelist()
@@ -2336,9 +2510,9 @@ def get_sawn_timber(branch, item=None, size=None, length=None):
 						and a.item = '{1}'
 						and a.size = '{2}'
 						and a.creation = (select max(b.creation) from `tabStandard Sawn Balance` b
-                                                	where b.docstatus = 1 and b.item=a.item
-                                                	and b.size = a.size
-                                                	and b.branch='{0}' and b.length = a.length)
+													where b.docstatus = 1 and b.item=a.item
+													and b.size = a.size
+													and b.branch='{0}' and b.length = a.length)
 					""".format(branch, item, size), as_dict=True)
 				else:
 					

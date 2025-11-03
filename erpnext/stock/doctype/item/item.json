@@ -14,6 +14,7 @@
   "details",
   "naming_series",
   "item_code",
+  "old_item_code",
   "item_name",
   "item_group",
   "item_sub_group",
@@ -932,7 +933,6 @@
    "oldfieldname": "item_group",
    "oldfieldtype": "Link",
    "options": "Item Sub Group",
-   "reqd": 1,
    "search_index": 1
   },
   {
@@ -974,6 +974,11 @@
    "fieldtype": "Link",
    "label": "Default Expense Account",
    "options": "Account"
+  },
+  {
+   "fieldname": "old_item_code",
+   "fieldtype": "Data",
+   "label": "Old Item Code"
   }
  ],
  "icon": "fa fa-tag",
@@ -982,7 +987,7 @@
  "index_web_pages_for_search": 1,
  "links": [],
  "make_attachments_public": 1,
- "modified": "2025-08-13 19:01:52.101145",
+ "modified": "2025-09-12 14:16:12.391420",
  "modified_by": "sangay.choden@thimphutechpark.bt",
  "module": "Stock",
  "name": "Item",

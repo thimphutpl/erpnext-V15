@@ -93,6 +93,7 @@ class WorkOrder(Document):
 		has_batch_no: DF.Check
 		has_serial_no: DF.Check
 		image: DF.AttachImage | None
+		item_group: DF.Data | None
 		item_name: DF.Data | None
 		lead_time: DF.Float
 		material_request: DF.Link | None
@@ -1303,7 +1304,7 @@ def make_work_order(bom_no, item, qty=0, project=None, variant_items=None, use_m
 	wo_doc.bom_no = bom_no
 	wo_doc.use_multi_level_bom = cint(use_multi_level_bom)
 	wo_doc.branch = branch
-	wo_doc.from_warehouse = branch
+	wo_doc.from_warehouse = from_warehouse
 
 	if flt(qty) > 0:
 		wo_doc.qty = flt(qty)

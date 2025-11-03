@@ -16,6 +16,7 @@
   "send_sms",
   "sb_cid_details",
   "cid",
+  "is_license",
   "column_break_3",
   "cid_front",
   "column_break_6",
@@ -57,7 +58,6 @@
    "label": "Alternate Mobile Number"
   },
   {
-   "default": "NRDCL@1234",
    "fieldname": "pin",
    "fieldtype": "Data",
    "label": "PIN",
@@ -107,13 +107,19 @@
    "options": "CRM Sign up",
    "print_hide": 1,
    "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_license",
+   "fieldtype": "Check",
+   "label": "is_license"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-08-26 23:52:21.447175",
+ "modified": "2025-10-23 16:11:48.144808",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "CRM Sign up",

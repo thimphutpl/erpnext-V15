@@ -22,9 +22,11 @@ frappe.ui.form.on('Vehicle Logbook', {
 						frm.set_value("from_time", r.message[0].from_time);
 						frm.set_value("to_time", r.message[0].to_time);
 						frm.set_value("place", r.message[0].place);
+						// frm.set_value("total_work_time", r.message[0].total_hours);
 					}
 				}
 			});
+			
 
 			// frappe.call({
 			// 	method: "erpnext.fleet_management.doctype.equipment.equipment.get_yards",
@@ -39,6 +41,40 @@ frappe.ui.form.on('Vehicle Logbook', {
 			// 		}
 			// 	}
 			// });
+		}
+		if (frm.doc.equipment) {
+			// frappe.throw("Tanker Balance")
+            frappe.call({
+                method: "erpnext.fleet_management.doctype.vehicle_logbook.vehicle_logbook.get_equipment_data", // Update with the correct path
+                args: {
+                    equipment_name: frm.doc.equipment,
+                    // to_date: frm.doc.to_date,
+                    // all_equipment: frm.doc.all_equipment || 1,
+                    branch: frm.doc.branch
+                },
+                callback: function(response) {
+                    if (response.message) {
+                        let data = response.message;
+						frm.set_value("equipment_name", data[0].equipment_name);
+						frm.set_value("equipment_type", data[0].equipment_type);
+						frm.set_value("equipment_model", data[0].equipment_model);
+
+                        // Process and display the fetched data
+                        // frappe.msgprint({
+                        //     title: __('Fetched Equipment Data'),
+                        //     message: `<pre>${JSON.stringify(data, null, 4)}</pre>`,
+                        //     indicator: 'green'
+                        // });
+
+                        // Optional: You can set a field value with specific data
+                        // if (data.length > 0) {
+                        //     frm.set_value('tank_balance', data[0].balance);
+                        // }
+                    } else {
+                        frappe.msgprint(__('No data found for the selected equipment.'));
+                    }
+                }
+            });
 		}
 			// frappe.throw("Tanker Balance")
 		
@@ -545,3 +581,21 @@ frappe.ui.form.on("Vehicle Logbook", "refresh", function(frm) {
     });
 	
 });
+
+// frappe.ui.form.on("Vehicle Log", {
+// 	"operator": function (frm, cdt, cdn) {
+// 		doc = locals[cdt][cdn]
+// 		if (doc.operator) {
+// 			return frappe.call({
+// 				method: "hrms.hr.doctype.employee_benefits.employee_benefits.get_net_salary",
+// 				args: { employee: doc.operator },
+// 				callback: function (r) {
+// 					if (r.message) {
+// 						frappe.model.set_value(cdt, cdn, "operator_salary", r.message)
+// 					}
+// 					cur_frm.refresh_fields()
+// 				}
+// 			})
+// 		}
+// 	}
+// })

@@ -155,6 +155,49 @@ frappe.ui.form.on("Stock Entry", {
 		}
 	},
 
+	create_custom_buttons: function (frm) {
+		if (frm.doc.__unsaved) {
+			frm.set_value("in_transit", 0);
+			//frm.set_value("status", "Draft");
+			return;
+		}
+
+		if (frm.doc.purpose == "Material Transfer" && frm.doc.from_warehouse && frm.doc.to_warehouse && frm.doc.docstatus === 0) {
+		
+			frm.page.clear_primary_action();
+			frappe.call({
+				method: 'erpnext.stock.doctype.stock_entry.stock_entry.has_warehouse_permission',
+				args: {
+					warehouse: frm.doc.items[0].t_warehouse
+				},
+				callback: (r) => {
+					if (!frm.doc.in_transit) {
+						frm.page.set_primary_action(__('Transfer'), () => {
+							frm.set_value("in_transit", 1);
+							frm.set_value("issued_by", frappe.session.user_fullname);
+							frm.save().then(() => {
+								frm.page.clear_primary_action();
+								frm.refresh();
+								// frm.events.refresh(frm);
+							});
+						});
+					} else {
+						if (r.message) {
+							frm.page.set_primary_action(__('Confirm Receipt'), () => {
+								frm.set_value("received_by", frappe.session.user_fullname);
+								frm.save('Submit').then(() => {
+									frm.page.clear_primary_action();
+									frm.refresh();
+									// frm.events.refresh(frm);
+								});
+							});
+						}
+					}
+				}
+			});
+		}
+		
+	},
 	setup_quality_inspection: function (frm) {
 		if (!frm.doc.inspection_required) {
 			return;
@@ -211,6 +254,8 @@ frappe.ui.form.on("Stock Entry", {
 
 	refresh: function (frm) {
 		frm.trigger("get_items_from_transit_entry");
+		frm.events.create_custom_buttons(frm)
+	
 
 		if (!frm.doc.docstatus) {
 			frm.trigger("validate_purpose_consumption");
@@ -359,6 +404,30 @@ frappe.ui.form.on("Stock Entry", {
 							material_request_type: ["in", allowed_request_types],
 							status: ["not in", ["Transferred", "Issued", "Cancelled", "Stopped"]],
 						},
+					});
+				},
+				__("Get Items From")
+			);
+			
+			frm.add_custom_button(
+				__("Lot List"),
+				function () {
+					custom_map_current_doc({
+						method: "erpnext.production.doctype.lot_list.lot_list.make_stock_entry",
+						source_doctype: "Lot List",
+						target: frm,
+						setters: [
+							{
+								label: __("Lot List"),
+								fieldname: "lot_list",
+								fieldtype: "Link",
+								options: "Lot List",
+							},
+						],
+						get_query_filters: {
+							query: "erpnext.production.doctype.lot_list.lot_list.get_lot_list",
+							filters: {branch:cur_frm.doc.branch}
+						}
 					});
 				},
 				__("Get Items From")
@@ -1398,6 +1467,66 @@ function attach_bom_items(bom_no) {
 
 function check_should_not_attach_bom_items(bom_no) {
 	return bom_no === undefined || (erpnext.stock.bom && erpnext.stock.bom.name === bom_no);
+}
+
+var custom_map_current_doc = function(opts) {
+	if(opts.get_query_filters) {
+		opts.get_query = function() {
+			//return {filters: opts.get_query_filters};
+			return opts.get_query_filters;
+		}
+	}
+	var _map = function() {
+		// remove first item row if empty
+		if($.isArray(cur_frm.doc.items) && cur_frm.doc.items.length > 0) {
+			if(!cur_frm.doc.items[0].item_code) {
+				cur_frm.doc.items = cur_frm.doc.items.splice(1);
+			}
+		}
+
+		return frappe.call({
+			// Sometimes we hit the limit for URL length of a GET request
+			// as we send the full target_doc. Hence this is a POST request.
+			type: "POST",
+			method: opts.method,
+			args: {
+				"source_name": opts.source_name,
+				"target_doc": cur_frm.doc
+			},
+			callback: function(r) {
+				if(!r.exc) {
+					var doc = frappe.model.sync(r.message);
+					cur_frm.refresh();
+				}
+			}
+		});
+	}
+	if(opts.source_doctype) {
+		var d = new frappe.ui.Dialog({
+			title: __("Get From ") + __(opts.source_doctype),
+			fields: [
+				{
+					fieldtype: "Link",
+					label: __(opts.source_doctype),
+					fieldname: opts.source_doctype,
+					options: opts.source_doctype,
+					get_query: opts.get_query,
+					reqd:1
+				},
+			]
+		});
+		d.set_primary_action(__('Get Items'), function() {
+			var values = d.get_values();
+			if(!values)
+				return;
+			opts.source_name = values[opts.source_doctype];
+			d.hide();
+			_map();
+		})
+		d.show();
+	} else if(opts.source_name) {
+		_map();
+	}
 }
 
 extend_cscript(cur_frm.cscript, new erpnext.stock.StockEntry({ frm: cur_frm }));

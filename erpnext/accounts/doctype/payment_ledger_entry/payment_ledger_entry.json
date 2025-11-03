@@ -159,8 +159,8 @@
  "in_create": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-03 16:39:58.904113",
- "modified_by": "Administrator",
+ "modified": "2025-09-15 12:15:06.900056",
+ "modified_by": "kalden.dorji@thimphutechpark.bt",
  "module": "Accounts",
  "name": "Payment Ledger Entry",
  "owner": "Administrator",
@@ -191,8 +191,21 @@
    "report": 1,
    "role": "Auditor",
    "share": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "search_fields": "voucher_no, against_voucher_no",
  "sort_field": "modified",
  "sort_order": "DESC",

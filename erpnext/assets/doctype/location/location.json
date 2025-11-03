@@ -15,6 +15,7 @@
   "is_container",
   "is_group",
   "is_disabled",
+  "is_crm_item",
   "sb_location_details",
   "latitude",
   "longitude",
@@ -154,11 +155,17 @@
    "fieldname": "is_disabled",
    "fieldtype": "Check",
    "label": "Is Disabled"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_crm_item",
+   "fieldtype": "Check",
+   "label": "is CRM Item ?"
   }
  ],
  "is_tree": 1,
  "links": [],
- "modified": "2025-08-14 16:58:24.618241",
+ "modified": "2025-09-19 20:39:21.106560",
  "modified_by": "Administrator",
  "module": "Assets",
  "name": "Location",

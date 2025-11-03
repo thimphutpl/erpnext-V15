@@ -14,6 +14,7 @@
   "product_category",
   "sb_customer_details",
   "user",
+  "user_id",
   "full_name",
   "customer",
   "site_registration",
@@ -61,8 +62,7 @@
    "in_list_view": 1,
    "label": "Site Type",
    "options": "Site Type",
-   "reqd": 1,
-   "unique": 1
+   "reqd": 1
   },
   {
    "fieldname": "purpose",
@@ -299,12 +299,20 @@
   {
    "fieldname": "remarks",
    "fieldtype": "Long Text"
+  },
+  {
+   "fieldname": "user_id",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "User ID",
+   "read_only": 1,
+   "reqd": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-08-27 22:02:21.001101",
+ "modified": "2025-09-20 16:24:29.963405",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Site",

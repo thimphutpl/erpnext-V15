@@ -18,6 +18,7 @@
   "posting_date",
   "posting_time",
   "set_posting_time",
+  "customer_order",
   "column_break_10",
   "company",
   "amended_from",
@@ -38,7 +39,6 @@
   "plc_conversion_rate",
   "ignore_pricing_rule",
   "items_section",
-  "scan_barcode",
   "pick_list",
   "col_break_warehouse",
   "set_warehouse",
@@ -79,12 +79,31 @@
   "rounded_total",
   "in_words",
   "disable_rounded_total",
+  "transporter_info",
+  "select_vehicle_from_common_pool_queue",
+  "vehicle_no",
+  "driver_name",
+  "driver_contact_no",
+  "load_request",
+  "transporter",
+  "lr_no",
+  "col_break34",
+  "lr_date",
+  "transportation_rate",
+  "total_distance",
+  "total_quantity",
+  "transportation_charges",
+  "driver_cid",
+  "transporter_name",
   "section_break_49",
   "apply_discount_on",
   "base_discount_amount",
+  "additional_cost_or_discount_description",
   "column_break_51",
   "additional_discount_percentage",
   "discount_amount",
+  "additional_cost",
+  "challan_cost",
   "sec_tax_breakup",
   "other_charges_calculation",
   "packing_list",
@@ -124,15 +143,6 @@
   "installation_status",
   "column_break_89",
   "per_returned",
-  "transporter_info",
-  "transporter",
-  "driver",
-  "lr_no",
-  "vehicle_no",
-  "col_break34",
-  "transporter_name",
-  "driver_name",
-  "lr_date",
   "customer_po_details",
   "po_no",
   "column_break_17",
@@ -490,6 +500,7 @@
    "default": "0",
    "fieldname": "ignore_pricing_rule",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "Ignore Pricing Rule",
    "permlevel": 1,
    "print_hide": 1
@@ -512,12 +523,6 @@
    "label": "Items",
    "oldfieldtype": "Section Break",
    "options": "fa fa-shopping-cart"
-  },
-  {
-   "fieldname": "scan_barcode",
-   "fieldtype": "Data",
-   "label": "Scan Barcode",
-   "options": "Barcode"
   },
   {
    "allow_bulk_edit": 1,
@@ -892,22 +897,17 @@
   {
    "fieldname": "transporter",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Transporter",
-   "options": "Supplier",
+   "options": "Vehicle",
    "print_hide": 1,
    "print_width": "150px",
    "width": "150px"
   },
   {
-   "fieldname": "driver",
-   "fieldtype": "Link",
-   "label": "Driver",
-   "options": "Driver",
-   "print_hide": 1
-  },
-  {
    "fieldname": "lr_no",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Transport Receipt No",
    "oldfieldname": "lr_no",
    "oldfieldtype": "Data",
@@ -917,8 +917,9 @@
   },
   {
    "fieldname": "vehicle_no",
-   "fieldtype": "Data",
+   "fieldtype": "Link",
    "label": "Vehicle No",
+   "options": "Vehicle",
    "print_hide": 1
   },
   {
@@ -931,21 +932,23 @@
    "fetch_from": "transporter.supplier_name",
    "fieldname": "transporter_name",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Transporter Name",
    "print_hide": 1,
    "read_only": 1
   },
   {
-   "fetch_from": "driver.full_name",
+   "fetch_from": "vehicle_no.drivers_name",
    "fieldname": "driver_name",
    "fieldtype": "Data",
-   "label": "Driver Name",
+   "label": "Driver's Name",
    "print_hide": 1
   },
   {
    "default": "Today",
    "fieldname": "lr_date",
    "fieldtype": "Date",
+   "hidden": 1,
    "label": "Transport Receipt Date",
    "oldfieldname": "lr_date",
    "oldfieldtype": "Date",
@@ -965,6 +968,7 @@
   {
    "fieldname": "project",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Project",
    "oldfieldname": "project",
    "oldfieldtype": "Link",
@@ -1410,13 +1414,82 @@
    "options": "Branch",
    "print_hide": 1,
    "reqd": 1
+  },
+  {
+   "fetch_from": "vehicle_no.contact_no",
+   "fieldname": "driver_contact_no",
+   "fieldtype": "Data",
+   "label": "Driver's Contact No",
+   "print_hide": 1
+  },
+  {
+   "fieldname": "driver_cid",
+   "fieldtype": "Data",
+   "label": "Driver's CID",
+   "print_hide": 1
+  },
+  {
+   "default": "0",
+   "description": "If checked, Vehicle will be loaded from Common Pool Queue (Load Request)",
+   "fieldname": "select_vehicle_from_common_pool_queue",
+   "fieldtype": "Check",
+   "label": " Select Vehicle From Common Pool Queue"
+  },
+  {
+   "fieldname": "load_request",
+   "fieldtype": "Data",
+   "label": "Load Request"
+  },
+  {
+   "fieldname": "transportation_rate",
+   "fieldtype": "Data",
+   "label": "Transportation Rate"
+  },
+  {
+   "fieldname": "total_distance",
+   "fieldtype": "Data",
+   "label": "Total Distance"
+  },
+  {
+   "fieldname": "total_quantity",
+   "fieldtype": "Data",
+   "label": "Total Quantity"
+  },
+  {
+   "fieldname": "transportation_charges",
+   "fieldtype": "Data",
+   "label": "Transportation Charges"
+  },
+  {
+   "fieldname": "additional_cost_or_discount_description",
+   "fieldtype": "Text",
+   "label": "Additional cost or discount description",
+   "read_only": 1
+  },
+  {
+   "fieldname": "additional_cost",
+   "fieldtype": "Currency",
+   "label": "Additional Cost",
+   "precision": "2"
+  },
+  {
+   "fieldname": "challan_cost",
+   "fieldtype": "Currency",
+   "label": "Challan Cost"
+  },
+  {
+   "fieldname": "customer_order",
+   "fieldtype": "Link",
+   "label": "Customer Order",
+   "options": "Customer Order",
+   "read_only": 1
   }
  ],
  "icon": "fa fa-truck",
  "idx": 146,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-08-26 13:09:09.351379",
+ "modified": "2025-10-09 11:44:27.139106",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Delivery Note",

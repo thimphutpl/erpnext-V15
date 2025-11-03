@@ -32,7 +32,7 @@ class JobCards(AccountsController):
 		amended_from: DF.Link | None
 		branch: DF.Link
 		break_down_report: DF.Link | None
-		break_down_report_date: DF.Data | None
+		break_down_report_date: DF.Datetime | None
 		company: DF.Link
 		cost_center: DF.Link
 		currency: DF.Link
@@ -56,7 +56,7 @@ class JobCards(AccountsController):
 		locations: DF.Data | None
 		name_of_the_job: DF.Data | None
 		outstanding_amount: DF.Currency
-		owned_by: DF.Data
+		owned_by: DF.Data | None
 		paid: DF.Check
 		payment_jv: DF.Data | None
 		posting_date: DF.Date | None
@@ -65,6 +65,7 @@ class JobCards(AccountsController):
 		remarks: DF.LongText | None
 		repair_type: DF.Literal["Minor Repair", "Major Repair", "Preventive Maintenance", "Regular Maintenance", "Breakdown"]
 		services_amount: DF.Currency
+		status: DF.Literal["", "Payment Received", "Pending Payment"]
 		table_jqvd: DF.Table[MechanicAssigned]
 		total_amount: DF.Currency
 	# end: auto-generated types
@@ -101,7 +102,7 @@ class JobCards(AccountsController):
 		self.outstanding_amount = self.total_amount
 
 	def validate_owned_by(self):
-		if self.owned_by == "CDCL" and self.cost_center == self.customer_cost_center:
+		if self.owned_by == "Natural Resources Development Corporation Limited" and self.cost_center == self.customer_cost_center:
 			self.owned_by = "Own"
 			self.customer_cost_center = None
 			self.customer_branch = None
@@ -289,7 +290,7 @@ class JobCards(AccountsController):
 			je.posting_date = self.finish_date
 			je.branch = self.branch
 
-			if self.owned_by == "CDCL":
+			if self.owned_by == "Natural Resources Development Corporation Limited":
 				ir_account = frappe.db.get_single_value("Maintenance Accounts Settings", "hire_revenue_internal_account")
 				ic_account = frappe.db.get_single_value("Accounts Settings", "intra_company_account")
 				if not ic_account:

@@ -125,6 +125,11 @@ class Asset(AccountsController):
 		vehicle_number: DF.Data | None
 	# end: auto-generated types
 
+	def autoname(self):
+		from frappe.model.naming import make_autoname
+
+		self.name = make_autoname(f"AS-{self.abbr}-.YY.MM.#####")
+
 	def validate(self):
 		self.validate_asset_values()
 		self.validate_asset_and_reference()

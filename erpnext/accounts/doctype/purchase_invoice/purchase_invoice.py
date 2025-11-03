@@ -72,6 +72,7 @@ class PurchaseInvoice(BuyingController):
 		from erpnext.buying.doctype.purchase_receipt_item_supplied.purchase_receipt_item_supplied import PurchaseReceiptItemSupplied
 		from frappe.types import DF
 
+		additional_discount_amount: DF.Currency
 		additional_discount_percentage: DF.Float
 		address_display: DF.SmallText | None
 		advance_tax: DF.Table[AdvanceTax]
@@ -115,7 +116,6 @@ class PurchaseInvoice(BuyingController):
 		currency: DF.Link | None
 		disable_rounded_total: DF.Check
 		discount: DF.Currency
-		discount_amount: DF.Currency
 		dispatch: DF.Data | None
 		due_date: DF.Date | None
 		for_project: DF.Check
@@ -138,6 +138,7 @@ class PurchaseInvoice(BuyingController):
 		items: DF.Table[PurchaseInvoiceItem]
 		language: DF.Data | None
 		ld_days: DF.Data | None
+		ld_description: DF.SmallText | None
 		letter_head: DF.Link | None
 		material_request: DF.Link | None
 		material_request_date: DF.Date | None
@@ -220,24 +221,24 @@ class PurchaseInvoice(BuyingController):
 		write_off_amount: DF.Currency
 		write_off_cost_center: DF.Link | None
 	# end: auto-generated types
-	def autoname(self):
-		# if self.n_series == 'Consumables':
-		# 	series = 'PICO'
-		# elif self.n_series == 'Fixed Asset':
-		# 	series = 'PIFA'
-		# elif self.n_series == 'Sales Product':
-		# 	series = 'PISA'
-		# elif self.n_series == 'Spare Parts':
-		# 	series ='PISP'
-		# elif self.n_series == 'Services Miscellaneous':
-		# 	series = 'PISM'
-		# elif self.n_series == 'Services Works':
-		# 	series ='PISW'
-		# else:
+	# def autoname(self):
+	# 	# if self.n_series == 'Consumables':
+	# 	# 	series = 'PICO'
+	# 	# elif self.n_series == 'Fixed Asset':
+	# 	# 	series = 'PIFA'
+	# 	# elif self.n_series == 'Sales Product':
+	# 	# 	series = 'PISA'
+	# 	# elif self.n_series == 'Spare Parts':
+	# 	# 	series ='PISP'
+	# 	# elif self.n_series == 'Services Miscellaneous':
+	# 	# 	series = 'PISM'
+	# 	# elif self.n_series == 'Services Works':
+	# 	# 	series ='PISW'
+	# 	# else:
 		
-		com_abbr = frappe.db.get_value('Company',self.company,'abbr')
-		series = 'PI'+com_abbr
-		self.name = make_autoname(str(series) + ".YY.MM.####")
+	# 	com_abbr = frappe.db.get_value('Company',self.company,'abbr')
+	# 	series = 'PI'+com_abbr
+	# 	self.name = make_autoname(str(series) + ".YY.MM.####")
 
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)

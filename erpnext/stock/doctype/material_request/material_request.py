@@ -41,12 +41,12 @@ class MaterialRequest(BuyingController):
 		items: DF.Table[MaterialRequestItem]
 		job_card: DF.Link | None
 		letter_head: DF.Link | None
-		material_request_type: DF.Literal["Purchase", "Material Transfer", "Material Issue", "Write-Off", "Material Receipt"]
-		naming_series: DF.Literal["MAT-MR-.YYYY.-"]
+		material_request_type: DF.Literal["", "Purchase", "Requsition"]
 		per_ordered: DF.Percent
 		per_received: DF.Percent
 		schedule_date: DF.Date | None
 		select_print_heading: DF.Link | None
+		series: DF.Link
 		set_from_warehouse: DF.Link | None
 		set_warehouse: DF.Link | None
 		status: DF.Literal["", "Draft", "Submitted", "Stopped", "Cancelled", "Pending", "Partially Ordered", "Partially Received", "Ordered", "Issued", "Transferred", "Received"]
