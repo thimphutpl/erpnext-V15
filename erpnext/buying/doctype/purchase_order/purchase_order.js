@@ -313,12 +313,130 @@ frappe.ui.form.on("Purchase Order Item", {
 				frappe.model.set_value(cdt, cdn, "warehouse", frm.doc.warehouse);
 			}
 		}
+
 	},
 
 
 	item_code: async function (frm, cdt, cdn) {
+		let row = locals[cdt][cdn];
+		if (!row.item_code) return;
+
+		// //added by kinzang.n
+		frappe.call({
+			method: "frappe.client.get",
+			args: { doctype: "Item", name: row.item_code },
+			callback: function (r) {
+				if (!r.message) return;
+				let item = r.message;
+
+				// Get UOMs from child table 'uoms' ONLY
+				let uom_list = [];
+				if (item.uoms && item.uoms.length) {
+					uom_list = item.uoms.map(u => u.uom);
+				}
+
+				// If no child UOMs, use only stock_uom
+				if (uom_list.length === 0 && item.stock_uom) {
+					uom_list = [item.stock_uom];
+				}
+
+				// Set default UOM if empty
+				if (!row.uom && uom_list.length > 0) {
+					frappe.model.set_value(cdt, cdn, "uom", uom_list[0]);
+				}
+
+				// Show popup if multiple UOMs
+				if (uom_list.length > 1) {
+					const dialog = new frappe.ui.Dialog({
+						title: __("Select UOM"),
+						fields: [
+							{
+								fieldname: "uom",
+								fieldtype: "Autocomplete",
+								options: uom_list,
+								label: __("UOM")
+							}
+						],
+						primary_action_label: __("Select"),
+						primary_action: function () {
+							let selected = dialog.get_value("uom");
+							frappe.model.set_value(cdt, cdn, "uom", selected);
+							dialog.hide();
+						}
+					});
+					dialog.show();
+				}
+
+				// Restrict UOM dropdown for this row only
+				frm.fields_dict.items.grid.get_field("uom").get_query = function (doc, cdt2, cdn2) {
+					let d = locals[cdt2][cdn2];
+					if (d.name === row.name) {
+						return { filters: [["UOM", "name", "in", uom_list]] };
+					}
+				};
+
+				frm.refresh_field("items");
+			}
+		});
+		//-------.................................../////
+
+		// let row = locals[cdt][cdn];
+		// if (!row.item_code) return;
+
+		// frappe.call({
+		// 	method: "erpnext.buying.doctype.purchase_order.purchase_order.get_item_uom",
+		// 	args: { item_code: row.item_code },
+		// 	callback: function (r) {
+		// 		if (r.message) {
+		// 			frappe.model.set_value(cdt, cdn, "uom", r.message);
+		// 		} else {
+		// 			frappe.msgprint(__("No UOM found in UOM Conversion Detail for this Item."));
+		// 		}
+		// 	}
+		// });
+
+
+
+
+		// //added by kinzang.n
+
+		// let row = locals[cdt][cdn];
+		// if (!row.item_code) return;
+
+		// // Fetch the Item document to get child table 'uoms'
+		// frappe.call({
+		// 	method: "frappe.client.get",
+		// 	args: { doctype: "Item", name: row.item_code },
+		// 	callback: function (r) {
+		// 		if (!r.message) return;
+
+		// 		let item = r.message;
+		// 		let uom_list = [];
+
+		// 		// Fetch only UOMs from the child table 'uoms'
+		// 		if (item.uoms && item.uoms.length > 0) {
+		// 			uom_list = item.uoms.map(u => u.uom); // u.uom comes from child table
+		// 		}
+
+		// 		// Set default UOM if empty
+		// 		if (!row.uom && item.stock_uom) {
+		// 			if (uom_list.includes(item.stock_uom)) {
+		// 				frappe.model.set_value(cdt, cdn, "uom", item.stock_uom);
+		// 			} else {
+		// 				frappe.model.set_value(cdt, cdn, "uom", uom_list[0]);
+		// 			}
+		// 		}
+
+		// 		// No need to override options; Link field will let user select only valid UOMs
+		// 		frm.refresh_field("items");
+		// 	}
+		// });
+
+
+		//-------.................................../////
+
 		if (frm.doc.is_subcontracted && !frm.doc.is_old_subcontracting_flow) {
-			var row = locals[cdt][cdn];
+			//var row = locals[cdt][cdn];
 
 			if (row.item_code && !row.fg_item) {
 				var result = await frm.events.get_subcontracting_boms_for_service_item(row.item_code);

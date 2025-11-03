@@ -35,6 +35,7 @@ from erpnext.subcontracting.doctype.subcontracting_bom.subcontracting_bom import
 
 form_grid_templates = {"items": "templates/form_grid/item_grid.html"}
 
+from erpnext.stock.get_item_details import get_item_details
 
 class PurchaseOrder(BuyingController):
 	# begin: auto-generated types
@@ -1103,3 +1104,13 @@ def get_permission_query_conditions(user):
 			and bi.parent = ab.name
 			and bi.branch = `tabPurchase Order`.branch)
 	)""".format(user=user)
+
+@frappe.whitelist()
+def get_item_uom(item_code):
+    """Return the first UOM from UOM Conversion Detail for the given item"""
+    if not item_code:
+        return
+
+    uom = frappe.db.get_value("UOM Conversion Detail", {"parent": item_code}, "uom")
+
+    return uom
