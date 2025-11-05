@@ -81,6 +81,7 @@
    "print_hide": 1
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "material_request_type",
    "fieldtype": "Select",
    "ignore_user_permissions": 1,
@@ -417,7 +418,7 @@
    "fieldname": "series",
    "fieldtype": "Select",
    "label": "Series",
-   "options": "\nConsumables\nFixed Asset\nSales Product\nSpare Parts\nServices Miscellaneous\nServices Works"
+   "options": "\nConsumables\nFixed Asset\nSales Product\nSpare Parts\nServices Miscellaneous\nServices Works\nConstruction Materials"
   },
   {
    "fieldname": "headfooter",
@@ -487,7 +488,7 @@
  "idx": 70,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-06-11 17:05:22.532398",
+ "modified": "2025-11-05 15:15:28.563283",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Material Request",

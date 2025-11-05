@@ -56,7 +56,7 @@ class MaterialRequest(BuyingController):
 		repair_and_services: DF.Data | None
 		schedule_date: DF.Date
 		select_print_heading: DF.Link | None
-		series: DF.Literal["", "Consumables", "Fixed Asset", "Sales Product", "Spare Parts", "Services Miscellaneous", "Services Works"]
+		series: DF.Literal["", "Consumables", "Fixed Asset", "Sales Product", "Spare Parts", "Services Miscellaneous", "Services Works", "Construction Materials"]
 		set_from_warehouse: DF.Link | None
 		set_warehouse: DF.Link | None
 		status: DF.Literal["", "Draft", "Submitted", "Stopped", "Cancelled", "Pending", "Partially Ordered", "Partially Received", "Ordered", "Issued", "Transferred", "Received"]
@@ -73,17 +73,17 @@ class MaterialRequest(BuyingController):
 		if self.series == 'Consumables':
 			series = 'MRCO'
 		elif self.series == 'Fixed Asset':
-			series = 'SEFA'
+			series = 'MRFA'
 		elif self.series == 'Sales Product':
-			series = 'SESA'
+			series = 'MRSA'
 		elif self.series == 'Spare Parts':
-			series ='SESP'
+			series ='MRSP'
 		elif self.series == 'Services Miscellaneous':
-			series = 'SESM'
+			series = 'MRSM'
 		elif self.series == 'Services Works':
-			series ='SESW'
-		elif self.series == 'REORDER PR':
-			series ='SERE'
+			series ='MRSW'
+		elif self.series == 'Construction Materials':
+			series ='MRCM'
 		else:
 			series = 'MRMR'
 		self.name = make_autoname(str(series) + ".YY.MM.####")
@@ -931,7 +931,7 @@ def get_permission_query_conditions(user):
 
 	if user == "Administrator":
 		return
-	if user_roles == "System Manager":
+	if "System Manager" in user_roles:
 		return
 		
 	return """(
