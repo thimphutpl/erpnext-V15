@@ -1320,6 +1320,7 @@ class PaymentEntry(AccountsController):
 
 	def add_bank_gl_entries(self, gl_entries):
 		total_deductions = 0
+		deductions = 0
 		# for d in self.get("deductions"):
 		# 	if d.amount:
 		# 		total_deductions += flt(d.amount)
@@ -1329,7 +1330,7 @@ class PaymentEntry(AccountsController):
 				
 		for d in self.get("deductions"):
 			if d.amount:
-				total_deductions += flt(d.amount)		
+				deductions += flt(d.amount)		
 		
 		if self.payment_type in ("Pay", "Internal Transfer"):
 			# frappe.throw(str(self.paid_from))
@@ -1339,8 +1340,12 @@ class PaymentEntry(AccountsController):
 						"account": self.paid_from,
 						"account_currency": self.paid_from_account_currency,
 						"against": self.party if self.payment_type == "Pay" else self.paid_to,
-						"credit_in_account_currency": self.paid_amount - total_deductions,
-						"credit": self.base_paid_amount + total_deductions,
+						# "credit_in_account_currency": self.paid_amount + total_deductions - deductions,
+						# "credit": self.base_paid_amount + total_deductions - deductions,
+
+						# when both taxes and deductions are given
+						"credit_in_account_currency": self.paid_amount + deductions,
+						"credit": self.base_paid_amount + deductions,
 						"cost_center": self.cost_center,
 						"post_net_value": True,
 					},
@@ -1359,8 +1364,8 @@ class PaymentEntry(AccountsController):
 						"account": self.paid_to,
 						"account_currency": self.paid_to_account_currency,
 						"against": self.party if self.payment_type == "Receive" else self.paid_from,
-						"debit_in_account_currency": self.received_amount - total_deductions,
-						"debit": self.base_received_amount - total_deductions,
+						"debit_in_account_currency": self.received_amount - total_deductions - deductions,
+						"debit": self.base_received_amount - total_deductions - deductions,
 						"cost_center": self.cost_center,
 						"post_net_value": True,
 						"party": party,
@@ -1379,6 +1384,7 @@ class PaymentEntry(AccountsController):
 			if self.payment_type in ("Pay", "Internal Transfer"):
 				dr_or_cr = "debit" if d.add_deduct_tax == "Add" else "credit"
 				rev_dr_or_cr = "credit" if dr_or_cr == "debit" else "debit"
+				# rev_dr_or_cr = ""
 				against = self.party or self.paid_from
 			elif self.payment_type == "Receive":
 				dr_or_cr = "credit" if d.add_deduct_tax == "Add" else "debit"

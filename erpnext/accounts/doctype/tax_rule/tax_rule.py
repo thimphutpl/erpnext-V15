@@ -156,14 +156,14 @@ def get_party_details(party, party_type, args=None):
 
 	if billing_address:
 		out["billing_city"] = billing_address.city
-		out["billing_county"] = billing_address.county
+		out["billing_county"] = billing_address.city
 		out["billing_state"] = billing_address.state
 		out["billing_zipcode"] = billing_address.pincode
 		out["billing_country"] = billing_address.country
 
 	if shipping_address:
 		out["shipping_city"] = shipping_address.city
-		out["shipping_county"] = shipping_address.county
+		out["shipping_county"] = shipping_address.city
 		out["shipping_state"] = shipping_address.state
 		out["shipping_zipcode"] = shipping_address.pincode
 		out["shipping_country"] = shipping_address.country
