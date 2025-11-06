@@ -86,7 +86,7 @@ class PurchaseReceipt(BuyingController):
 		lr_no: DF.Data | None
 		material_request: DF.Link | None
 		material_request_date: DF.Date | None
-		n_series: DF.Literal["", "Consumables", "Fixed Asset", "Sales Product", "Spare Parts", "Services Miscellaneous", "Services Works"]
+		n_series: DF.Literal["", "Consumables", "Fixed Asset", "Sales Product", "Spare Parts", "Services Miscellaneous", "Services Works", "Construction Materials"]
 		named_place: DF.Data | None
 		naming_series: DF.Literal["MAT-PRE-.YYYY.-"]
 		net_total: DF.Currency
@@ -152,6 +152,8 @@ class PurchaseReceipt(BuyingController):
 			series = 'PRSM'
 		elif self.n_series == 'Services Works':
 			series ='PRSW'
+		elif self.n_series == 'Construction Materials':
+			series ='POCM'
 		else:
 			series = 'PRPR'
 		self.name = make_autoname(str(series) + ".YY.MM.####")

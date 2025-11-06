@@ -111,7 +111,7 @@ class PurchaseOrder(BuyingController):
 		material_request: DF.Link | None
 		material_request_date: DF.Link | None
 		material_requst: DF.Link | None
-		n_series: DF.Literal["", "Consumables", "Fixed Asset", "Sales Product", "Spare Parts", "Services Miscellaneous", "Services Works"]
+		n_series: DF.Literal["", "Consumables", "Fixed Asset", "Sales Product", "Spare Parts", "Services Miscellaneous", "Services Works", "Construction Materials"]
 		naming_series: DF.Literal["PUR-ORD-.YYYY.-"]
 		net_total: DF.Currency
 		order_confirmation_date: DF.Date | None
@@ -174,6 +174,8 @@ class PurchaseOrder(BuyingController):
 			series = 'POSM'
 		elif self.n_series == 'Services Works':
 			series ='POSW'
+		elif self.n_series == 'Construction Materials':
+			series ='POCM'
 		else:
 			series = 'POPO'
 		self.name = make_autoname(str(series) + ".YY.MM.####")

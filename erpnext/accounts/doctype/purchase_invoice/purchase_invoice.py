@@ -142,7 +142,7 @@ class PurchaseInvoice(BuyingController):
 		material_request: DF.Link | None
 		material_request_date: DF.Date | None
 		mode_of_payment: DF.Link | None
-		n_series: DF.Literal["", "Consumables", "Fixed Asset", "Sales Product", "Spare Parts", "Services Miscellaneous", "Services Works"]
+		n_series: DF.Literal["", "Consumables", "Fixed Asset", "Sales Product", "Spare Parts", "Services Miscellaneous", "Services Works", "Construction Materials"]
 		naming_series: DF.Literal["ACC-PINV-.YYYY.-", "ACC-PINV-RET-.YYYY.-"]
 		net_total: DF.Currency
 		on_hold: DF.Check
@@ -233,6 +233,8 @@ class PurchaseInvoice(BuyingController):
 			series = 'PISM'
 		elif self.n_series == 'Services Works':
 			series ='PISW'
+		elif self.n_series == 'Construction Materials':
+			series ='POCM'
 		else:
 			series = 'PIPI'
 		self.name = make_autoname(str(series) + ".YY.MM.####")

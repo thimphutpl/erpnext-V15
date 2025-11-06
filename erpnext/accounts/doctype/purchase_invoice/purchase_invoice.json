@@ -1748,7 +1748,7 @@
    "fieldname": "n_series",
    "fieldtype": "Select",
    "label": "Naming Series",
-   "options": "\nConsumables\nFixed Asset\nSales Product\nSpare Parts\nServices Miscellaneous\nServices Works",
+   "options": "\nConsumables\nFixed Asset\nSales Product\nSpare Parts\nServices Miscellaneous\nServices Works\nConstruction Materials",
    "reqd": 1
   },
   {
@@ -1768,7 +1768,7 @@
  "idx": 204,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-06-04 16:27:52.332711",
+ "modified": "2025-11-06 12:12:25.452184",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Purchase Invoice",
