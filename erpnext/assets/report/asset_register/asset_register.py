@@ -108,7 +108,7 @@ def get_depreciation_details(filters):
 def get_data(filters):
     query = """
             SELECT
-            a.name, a.asset_name, a.asset_category, a.asset_sub_category,
+            a.posting_date, a.name, a.asset_name, a.asset_category, a.asset_sub_category,
             a.vehicle_number, a.serial_number, a.old_asset_code,
             a.cost_center, a.purchase_date, a.purchase_date as date_of_issue, a.status, a.asset_status, 
             a.disposal_date, a.journal_entry_for_scrap,
@@ -176,14 +176,15 @@ def get_data(filters):
             `tabAsset` AS a
             LEFT JOIN `tabAsset Finance Book` AS f ON f.parent = a.name       
         WHERE a.docstatus = 1 
-        AND a.purchase_date <= '{to_date}'
+        AND a.posting_date BETWEEN '{from_date}' AND '{to_date}'
         AND (
             a.status not in ('Scrapped', 'Sold')
             OR
             (a.status in ('Scrapped', 'Sold') AND a.disposal_date >= '{from_date}')
         )
         """.format(from_date=filters.from_date, to_date=filters.to_date)
-                
+    
+          # AND a.purchase_date <= '{to_date}'      
     if filters.cost_center:
         query+=" and a.cost_center = \'" + filters.cost_center + "\'"
 
@@ -258,6 +259,7 @@ def get_data(filters):
             total_income 	 += flt(a.depreciation_income_tax, 2)
             total_net_income += flt(net_income_tax, 2)
             row = {
+                    "posting_date": a.posting_date,
                 "asset_code": a.name,
                 "asset_name": a.asset_name,
                 "serial_number": a.serial_number,
@@ -358,6 +360,14 @@ def get_data(filters):
 
 def get_columns():
     return [
+
+            {
+                "fieldname": "posting_date",
+                "label": _("Posting Date"),
+                "fieldtype": "Data",
+                "with": 150
+
+                },
         {
             "fieldname": "asset_code",
             "label": _("Asset Code"),
