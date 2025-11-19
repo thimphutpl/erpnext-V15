@@ -23,7 +23,7 @@ def get_columns(filters):
 	return [
 		("POL Advance") + ":Link/POL Advance:120",
 		("Equipment") + ":Link/Equipment:120",
-		("Equipment Type") + ":Link/Equipment Type:120",
+		# ("Equipment Type") + ":Link/Equipment Type:120",
 		("Fuelbook Branch") + ":Data:120",
 		("Cost Center") + ":Link/Cost Center:120",
 		("Entry Date") + ":Date:100",
@@ -56,12 +56,12 @@ def get_data(filters):
 									p.fuelbook_branch, 
 									p.cost_center, 
 									p.entry_date,
-									p.fuel_book, 
-									p.party, 
+									p.fuelbook, 
+									p.supplier, 
 									p.amount, 
 									p.adjusted_amount, 
 									p.balance_amount, 
-									p.credit_account
+									p.expense_account
 								from 
 									`tabPOL Advance` p 
 								where docstatus = 1 {} """.format(conditions))
