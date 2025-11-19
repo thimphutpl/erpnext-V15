@@ -15,11 +15,11 @@ def execute(filters=None):
 	if filters.from_fiscal_year > filters.to_fiscal_year:
 		frappe.throw("From Fiscal Year Cannot Be Greater Than To Fiscal Year")
 	period_list = get_period_list(filters.from_fiscal_year, filters.to_fiscal_year, filters.periodicity, filters.company)
-
+	project_definition = filters.get("project_definition")
 	income = get_data(filters.cost_center, filters.company, "Income", "Credit", period_list,
-		accumulated_values=filters.accumulated_values, ignore_closing_entries=True, show_zero_values=show_zero, project=filters.project)
+		accumulated_values=filters.accumulated_values, ignore_closing_entries=True, show_zero_values=show_zero, project=filters.project, project_definition=project_definition)
 	expense = get_data(filters.cost_center, filters.company, "Expense", "Debit", period_list,
-		accumulated_values=filters.accumulated_values, ignore_closing_entries=True, show_zero_values=show_zero, project=filters.project)
+		accumulated_values=filters.accumulated_values, ignore_closing_entries=True, show_zero_values=show_zero, project=filters.project, project_definition=project_definition)
 
 	net_profit_loss = get_net_profit_loss(income, expense, period_list, filters.company)
 

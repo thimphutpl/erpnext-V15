@@ -114,49 +114,51 @@ def get_label(periodicity, from_date, to_date):
 	return label
 
 def get_data(
-    cost_center,
-    company,
-    root_type,
-    balance_must_be,
-    period_list,
-    accumulated_values=1,
-    only_current_fiscal_year=True,
-    ignore_closing_entries=False,
-    show_zero_values=False,
-    project=None
+	cost_center,
+	company,
+	root_type,
+	balance_must_be,
+	period_list,
+	accumulated_values=1,
+	only_current_fiscal_year=True,
+	ignore_closing_entries=False,
+	show_zero_values=False,
+	project=None,
+	project_definition=None
 ):
-    accounts = get_accounts(company, root_type)
-    if not accounts:
-        return None
+	accounts = get_accounts(company, root_type)
+	if not accounts:
+		return None
 
-    accounts, accounts_by_name, parent_children_map = filter_accounts(accounts)
+	accounts, accounts_by_name, parent_children_map = filter_accounts(accounts)
 
-    company_currency = frappe.db.get_value("Company", company, "default_currency")
+	company_currency = frappe.db.get_value("Company", company, "default_currency")
 
-    gl_entries_by_account = {}
-    for root in frappe.db.sql("""select lft, rgt from tabAccount
-            where root_type=%s and ifnull(parent_account, '') = ''""", root_type, as_dict=1):
+	gl_entries_by_account = {}
+	for root in frappe.db.sql("""select lft, rgt from tabAccount
+			where root_type=%s and ifnull(parent_account, '') = ''""", root_type, as_dict=1):
 
-        set_gl_entries_by_account(
-            cost_center,
-            company,
-            period_list[0]["year_start_date"] if only_current_fiscal_year else None,
-            period_list[-1]["to_date"],
-            root.lft, root.rgt,
-            gl_entries_by_account,
-            ignore_closing_entries=ignore_closing_entries,
-            project=project  # <-- Pass project here
-        )
+		set_gl_entries_by_account(
+			cost_center,
+			company,
+			period_list[0]["year_start_date"] if only_current_fiscal_year else None,
+			period_list[-1]["to_date"],
+			root.lft, root.rgt,
+			gl_entries_by_account,
+			ignore_closing_entries=ignore_closing_entries,
+			project=project,  # <-- Pass project here
+			project_definition=project_definition
+		)
 
-    calculate_values(accounts_by_name, gl_entries_by_account, period_list, accumulated_values)
-    accumulate_values_into_parents(accounts, accounts_by_name, period_list, accumulated_values)
-    out = prepare_data(accounts, balance_must_be, period_list, company_currency)
-    out = filter_out_zero_value_rows(out, parent_children_map, show_zero_values)
+	calculate_values(accounts_by_name, gl_entries_by_account, period_list, accumulated_values)
+	accumulate_values_into_parents(accounts, accounts_by_name, period_list, accumulated_values)
+	out = prepare_data(accounts, balance_must_be, period_list, company_currency)
+	out = filter_out_zero_value_rows(out, parent_children_map, show_zero_values)
 
-    if out:
-        add_total_row(out, root_type, balance_must_be, period_list, company_currency)
+	if out:
+		add_total_row(out, root_type, balance_must_be, period_list, company_currency)
 
-    return out
+	return out
 
 def calculate_values(accounts_by_name, gl_entries_by_account, period_list, accumulated_values):
 	for entries in gl_entries_by_account.values():
@@ -237,23 +239,23 @@ def filter_out_zero_value_rows(data, parent_children_map, show_zero_values=False
 	return data_with_value
 
 def add_total_row(out, root_type, balance_must_be, period_list, company_currency):
-    total_row = {
-        "account_name": "'Total'",
-        "account": "'Total'",
-        "warn_if_negative": True,
-        "currency": company_currency
-    }
+	total_row = {
+		"account_name": "'Total'",
+		"account": "'Total'",
+		"warn_if_negative": True,
+		"currency": company_currency
+	}
 
-    for period in period_list:
-        total = 0.0
-        for row in out:
-            if not row.get("parent_account"):  # Check if it's a root account
-                total += flt(row.get(period.key, 0.0))
+	for period in period_list:
+		total = 0.0
+		for row in out:
+			if not row.get("parent_account"):  # Check if it's a root account
+				total += flt(row.get(period.key, 0.0))
 
-        total_row[period.key] = total
+		total_row[period.key] = total
 
-    total_row["total"] = total_row[period_list[-1].key]
-    out.append(total_row)
+	total_row["total"] = total_row[period_list[-1].key]
+	out.append(total_row)
 
 def get_accounts(company, root_type):
 	return frappe.db.sql("""select is_group, name, account_number, parent_account, lft, rgt, root_type, report_type, account_name from `tabAccount`
@@ -285,109 +287,123 @@ def filter_accounts(accounts, depth=10):
 
 
 def sort_root_accounts(roots):
-    """Sort root types as Asset, Liability, Equity, Income, Expense"""
+	"""Sort root types as Asset, Liability, Equity, Income, Expense"""
 
-    def compare_roots(a, b):
-        if a.report_type != b.report_type and a.report_type == "Balance Sheet":
-            return -1
-        if a.root_type != b.root_type and a.root_type == "Asset":
-            return -1
-        if a.root_type == "Liability" and b.root_type == "Equity":
-            return -1
-        if a.root_type == "Income" and b.root_type == "Expense":
-            return -1
-        return 1
+	def compare_roots(a, b):
+		if a.report_type != b.report_type and a.report_type == "Balance Sheet":
+			return -1
+		if a.root_type != b.root_type and a.root_type == "Asset":
+			return -1
+		if a.root_type == "Liability" and b.root_type == "Equity":
+			return -1
+		if a.root_type == "Income" and b.root_type == "Expense":
+			return -1
+		return 1
 
-    roots.sort(key=cmp_to_key(compare_roots))
+	roots.sort(key=cmp_to_key(compare_roots))
 
 def set_gl_entries_by_account(
-    cost_center, 
-    company, 
-    from_date, 
-    to_date, 
-    root_lft, 
-    root_rgt, 
-    gl_entries_by_account,
-    ignore_closing_entries=False, 
-    open_date=None,
-    project=None
+	cost_center, 
+	company, 
+	from_date, 
+	to_date, 
+	root_lft, 
+	root_rgt, 
+	gl_entries_by_account,
+	ignore_closing_entries=False, 
+	open_date=None,
+	project=None,
+	project_definition=None
+	
 ):
-    """Returns a dict like { "account": [gl entries], ... }"""
-    additional_conditions = []
+	"""Returns a dict like { "account": [gl entries], ... }"""
+	additional_conditions = []
 
-    # Use alias 'gl' for tabGL Entry
-    if ignore_closing_entries:
-        additional_conditions.append(" and ifnull(gl.voucher_type, '') != 'Period Closing Voucher' ")
+	# Use alias 'gl' for tabGL Entry
+	if ignore_closing_entries:
+		additional_conditions.append(" and ifnull(gl.voucher_type, '') != 'Period Closing Voucher' ")
 
-    if from_date and to_date:
-        if open_date:
-            # Use alias 'gl' for fields
-            additional_conditions.append(f" and gl.posting_date < '{open_date}' and gl.docstatus = 1 ")
-        else:
-            additional_conditions.append(" and gl.posting_date BETWEEN %(from_date)s AND %(to_date)s and gl.docstatus = 1 ")
+	if from_date and to_date:
+		if open_date:
+			# Use alias 'gl' for fields
+			additional_conditions.append(f" and gl.posting_date < '{open_date}' and gl.docstatus = 1 ")
+		else:
+			additional_conditions.append(" and gl.posting_date BETWEEN %(from_date)s AND %(to_date)s and gl.docstatus = 1 ")
 
-    # Add project filter condition
-    if project:
-        additional_conditions.append(" AND gl.project IN %(projects)s ")  # Use alias 'gl'
+	# Add project filter condition
+	if project:
+		additional_conditions.append(" AND gl.project IN %(projects)s ")  # Use alias 'gl'
+	
+	if project_definition:
+		additional_conditions.append("""
+			AND gl.project IN (
+				SELECT name
+				FROM `tabProject`
+				WHERE project_definition = %(project_definition)s
+			)
+		""")
 
-    if not cost_center:
-        gl_entries = frappe.db.sql(f"""
-            SELECT 
-                gl.posting_date, 
-                gl.account, 
-                gl.debit, 
-                gl.credit, 
-                gl.is_opening 
-            FROM `tabGL Entry` gl  # <-- Alias 'gl'
-            WHERE 
-                gl.company = %(company)s
-                {" ".join(additional_conditions)}
-                AND gl.account IN (
-                    SELECT name FROM `tabAccount`
-                    WHERE lft >= %(lft)s AND rgt <= %(rgt)s
-                )
-            ORDER BY gl.account, gl.posting_date
-        """, {
-            "company": company,
-            "from_date": from_date,
-            "to_date": to_date,
-            "lft": root_lft,
-            "rgt": root_rgt,
-            "projects": tuple(project) if project else ()  # Pass as tuple for SQL IN
-        }, as_dict=True)
-    else:
-        cost_centers = get_cost_centers_with_children(cost_center)
-        additional_conditions.append(" AND gl.cost_center IN %(cost_center)s ")  # Use alias 'gl'
-        gl_entries = frappe.db.sql(f"""
-            SELECT 
-                gl.posting_date, 
-                gl.account, 
-                gl.debit, 
-                gl.credit, 
-                gl.is_opening 
-            FROM `tabGL Entry` gl  # <-- Alias 'gl'
-            WHERE 
-                gl.company = %(company)s
-                {" ".join(additional_conditions)}
-                AND gl.account IN (
-                    SELECT name FROM `tabAccount`
-                    WHERE lft >= %(lft)s AND rgt <= %(rgt)s
-                )
-            ORDER BY gl.account, gl.posting_date
-        """, {
-            "cost_center": cost_centers,
-            "company": company,
-            "from_date": from_date,
-            "to_date": to_date,
-            "lft": root_lft,
-            "rgt": root_rgt,
-            "projects": tuple(project) if project else ()  # Pass as tuple for SQL IN
-        }, as_dict=True)
 
-    for entry in gl_entries:
-        gl_entries_by_account.setdefault(entry.account, []).append(entry)
+	if not cost_center:
+		gl_entries = frappe.db.sql(f"""
+			SELECT 
+				gl.posting_date, 
+				gl.account, 
+				gl.debit, 
+				gl.credit, 
+				gl.is_opening 
+			FROM `tabGL Entry` gl  # <-- Alias 'gl'
+			WHERE 
+				gl.company = %(company)s
+				{" ".join(additional_conditions)}
+				AND gl.account IN (
+					SELECT name FROM `tabAccount`
+					WHERE lft >= %(lft)s AND rgt <= %(rgt)s
+				)
+			ORDER BY gl.account, gl.posting_date
+		""", {
+			"company": company,
+			"from_date": from_date,
+			"to_date": to_date,
+			"lft": root_lft,
+			"rgt": root_rgt,
+			"projects": tuple(project) if project else (),  # Pass as tuple for SQL IN
+			"project_definition": project_definition
+		}, as_dict=True)
+	else:
+		cost_centers = get_cost_centers_with_children(cost_center)
+		additional_conditions.append(" AND gl.cost_center IN %(cost_center)s ")  # Use alias 'gl'
+		gl_entries = frappe.db.sql(f"""
+			SELECT 
+				gl.posting_date, 
+				gl.account, 
+				gl.debit, 
+				gl.credit, 
+				gl.is_opening 
+			FROM `tabGL Entry` gl  # <-- Alias 'gl'
+			WHERE 
+				gl.company = %(company)s
+				{" ".join(additional_conditions)}
+				AND gl.account IN (
+					SELECT name FROM `tabAccount`
+					WHERE lft >= %(lft)s AND rgt <= %(rgt)s
+				)
+			ORDER BY gl.account, gl.posting_date
+		""", {
+			"cost_center": cost_centers,
+			"company": company,
+			"from_date": from_date,
+			"to_date": to_date,
+			"lft": root_lft,
+			"rgt": root_rgt,
+			"projects": tuple(project) if project else (),  # Pass as tuple for SQL IN
+			"project_definition": project_definition
+		}, as_dict=True)
 
-    return gl_entries_by_account
+	for entry in gl_entries:
+		gl_entries_by_account.setdefault(entry.account, []).append(entry)
+
+	return gl_entries_by_account
 
 def get_cost_centers_with_children(cost_centers):
 	if not isinstance(cost_centers, list):

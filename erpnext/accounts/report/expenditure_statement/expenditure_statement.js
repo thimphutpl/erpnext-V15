@@ -8,6 +8,12 @@ frappe.query_reports["Expenditure Statement"].filters = frappe.query_reports["Ex
 
 frappe.query_reports["Expenditure Statement"].filters.push(
     {
+        fieldname: "project_definition",
+        label: __("Project Definition"),
+        fieldtype: "Link",
+        options:"Project Definition",
+    },
+    {
         "fieldname": "accumulated_values",
         "label": __("Accumulated Values"),
         "fieldtype": "Check"
