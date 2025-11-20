@@ -1066,11 +1066,13 @@ class PaymentEntry(AccountsController):
 				)
 			]
 		else:
+			amount = self.paid_amount if self.payment_type == "Receive" else self.received_amount
+			formatted_amount = f"{amount:,}"
 			remarks = [
 				_("Amount {0} {1} {2} {3}").format(
 					_(self.party_account_currency),
-					self.paid_amount if self.payment_type == "Receive" else self.received_amount,
-					_("received from") if self.payment_type == "Receive" else _("to"),
+					formatted_amount,
+					_("received from") if self.payment_type == "Receive" else _("paid to"),
 					self.party,
 				)
 			]
