@@ -2,7 +2,7 @@
  "actions": [],
  "allow_auto_repeat": 1,
  "allow_import": 1,
- "autoname": "naming_series:",
+ "autoname": "format:ACC-PAY-{YYYY}-{MM}-{####}",
  "creation": "2016-06-01 14:38:51.012597",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -136,7 +136,7 @@
    "fieldname": "naming_series",
    "fieldtype": "Select",
    "label": "Series",
-   "options": "ACC-PAY-.YYYY.-",
+   "options": "ACC-PAY-.YYYY.-.MMM.-",
    "print_hide": 1,
    "reqd": 1,
    "set_only_once": 1
@@ -961,11 +961,11 @@
    "table_fieldname": "payment_entries"
   }
  ],
- "modified": "2025-06-16 10:50:32.145801",
+ "modified": "2025-11-20 14:44:18.607830",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Payment Entry",
- "naming_rule": "By \"Naming Series\" field",
+ "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
   {
