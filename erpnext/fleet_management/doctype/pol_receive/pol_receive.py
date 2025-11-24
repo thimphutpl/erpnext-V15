@@ -180,8 +180,9 @@ class POLReceive(StockController):
 		self.make_pol_entry()
 		# if self.settled_using_imprest:
 		# 	self.make_gl_entry()
-		if self.direct_consumption:
-			self.post_journal_entry()
+		# if self.direct_consumption:
+		# 	self.post_journal_entry()
+		self.post_journal_entry()
 
 	def on_cancel(self):
 		# if not self.direct_consumption and self.company !='De-suung Skilling':
@@ -403,16 +404,17 @@ class POLReceive(StockController):
 	# 	frappe.db.sql("delete from `tabConsumed Budget` where reference_no = %s", self.name)
 
 	def post_journal_entry(self):
-		veh_cat = frappe.db.get_value("Equipment", self.equipment, "equipment_category")
-		if veh_cat:
-			if veh_cat == "Pool Vehicle":
-				pol_account = frappe.db.get_single_value("Maintenance Accounts Settings", "pool_vehicle_pol_expenses")
-			else:
-				pol_account = frappe.db.get_single_value("Maintenance Accounts Settings", "default_pol_expense_account")
-		else:
-			frappe.throw("Can not determine machine category")
+		# veh_cat = frappe.db.get_value("Equipment", self.equipment, "equipment_category")
+		# if veh_cat:
+		# 	if veh_cat == "Pool Vehicle":
+		# 		pol_account = frappe.db.get_single_value("Maintenance Accounts Settings", "pool_vehicle_pol_expenses")
+		# 	else:
+		# 		pol_account = frappe.db.get_single_value("Maintenance Accounts Settings", "default_pol_expense_account")
+		# else:
+		# 	frappe.throw("Can not determine machine category")
 
-		expense_bank_account = frappe.db.get_value("Company", self.company, "default_payable_account")
+		expense_bank_account = frappe.db.get_value("Company", self.company, "pol_advance_account")
+		pol_account = frappe.db.get_value("Company", self.company, "pol_expense_account")
 		
 		if not expense_bank_account:
 			frappe.throw("No Default Payable Account set in Company")
@@ -421,13 +423,13 @@ class POLReceive(StockController):
 			je = frappe.new_doc("Journal Entry")
 			je.flags.ignore_permissions = 1 
 			je.title = "POL Receive (" + self.pol_type + " for " + self.equipment_number + ")"
-			je.voucher_type = 'Bank Entry'
-			je.naming_series = 'Bank Payment Voucher'
+			je.voucher_type = 'Journal Entry'
+			je.naming_series = 'Journal Voucher'
 			je.remark = 'Payment against : ' + self.name;
 			je.posting_date = self.posting_date
 			je.branch = self.branch
 			je.company = self.company,
-			je.mode_of_payment = 'ePayment',
+			# je.mode_of_payment = 'ePayment',
 
 			je.append("accounts", {
 					"account": pol_account,
@@ -450,6 +452,7 @@ class POLReceive(StockController):
 				})
 
 			je.insert()
+			je.submit()
 			self.db_set("jv", je.name)
 			frappe.msgprint(_('Journal Entry {} posted to accounts').format(frappe.get_desk_link(je.doctype,je.name)))
 

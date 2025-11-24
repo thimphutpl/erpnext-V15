@@ -132,8 +132,14 @@
   "fleet_management_tab",
   "pol_settings_section",
   "pol_advance_account",
+  "pol_expense_account",
   "default_travel_advance_account",
+  "insurance_expense_account",
+  "registration_expense_account",
+  "fitness_expense_account",
+  "emission_expense_account",
   "column_break_jfxu",
+  "default_pol_credit_account",
   "repair_and_service_account",
   "dashboard_tab"
  ],
@@ -965,6 +971,42 @@
    "fieldtype": "Link",
    "label": "Imprest Advance Account",
    "options": "Account"
+  },
+  {
+   "fieldname": "insurance_expense_account",
+   "fieldtype": "Link",
+   "label": "Insurance Expense Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "registration_expense_account",
+   "fieldtype": "Link",
+   "label": "Registration Expense Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "fitness_expense_account",
+   "fieldtype": "Link",
+   "label": "Fitness Expense Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "emission_expense_account",
+   "fieldtype": "Link",
+   "label": "Emission Expense Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "default_pol_credit_account",
+   "fieldtype": "Link",
+   "label": "Default POL Credit Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "pol_expense_account",
+   "fieldtype": "Link",
+   "label": "POL Expense Account",
+   "options": "Account"
   }
  ],
  "icon": "fa fa-building",
@@ -972,7 +1014,7 @@
  "image_field": "company_logo",
  "is_tree": 1,
  "links": [],
- "modified": "2024-10-28 16:53:54.291159",
+ "modified": "2025-11-24 13:32:52.232239",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Company",

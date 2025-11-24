@@ -91,6 +91,17 @@ class POLAdvance(AccountsController):
 			# 	self.post_journal_entry()
 
 	def on_cancel(self):
+		self.ignore_linked_doctypes = (
+			"GL Entry",
+			"Stock Ledger Entry",
+			"Payment Ledger Entry",
+			"Repost Payment Ledger",
+			"Repost Payment Ledger Items",
+			"Repost Accounting Ledger",
+			"Repost Accounting Ledger Items",
+			"Unreconcile Payment",
+			"Unreconcile Payment Entries",
+		)
 		if not self.is_opening:
 			# self.cancel_budget_entry()
 			self.update_od_balance()

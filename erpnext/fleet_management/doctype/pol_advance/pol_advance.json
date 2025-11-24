@@ -148,6 +148,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "fetch_from": "company.default_pol_credit_account",
    "fieldname": "expense_account",
    "fieldtype": "Link",
    "label": "Credit Account",
@@ -375,7 +376,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-07-24 15:53:02.521212",
+ "modified": "2025-11-24 13:39:03.484356",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Advance",

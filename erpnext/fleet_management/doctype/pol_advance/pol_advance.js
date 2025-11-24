@@ -2,19 +2,19 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on('POL Advance', {
-	company: function(frm) {
-        if (frm.doc.company) {
-            frappe.db.get_value('Company', frm.doc.company, 'pol_advance_account', (r) => {
-                if (r && r.pol_advance_account) {
-                    frm.set_value('expense_account', r.pol_advance_account);
-                } else {
-                    frm.set_value('expense_account', null); // Clear the field if no value is found
-                }
-            });
-        }
+	// company: function(frm) {
+    //     if (frm.doc.company) {
+    //         frappe.db.get_value('Company', frm.doc.company, 'pol_advance_account', (r) => {
+    //             if (r && r.pol_advance_account) {
+    //                 frm.set_value('expense_account', r.pol_advance_account);
+    //             } else {
+    //                 frm.set_value('expense_account', null); // Clear the field if no value is found
+    //             }
+    //         });
+    //     }
     
 
-    },
+    // },
 	onload: function(frm) {
 		set_party_type(frm);
 		
