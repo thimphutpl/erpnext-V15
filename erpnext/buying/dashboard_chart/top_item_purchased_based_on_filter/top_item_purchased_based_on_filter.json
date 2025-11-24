@@ -1,0 +1,37 @@
+{
+ "chart_name": "Top Item Purchased based on Filter",
+ "chart_type": "Report",
+ "creation": "2025-08-11 13:25:14.840053",
+ "docstatus": 0,
+ "doctype": "Dashboard Chart",
+ "dynamic_filters_json": "{}",
+ "filters_json": "{\"company\":\"Construction Development Corporation Limited\",\"group_by\":\"Item\",\"from_date\":\"2025-10-24\",\"to_date\":\"2025-11-24\"}",
+ "group_by_type": "Count",
+ "idx": 2,
+ "is_public": 1,
+ "is_standard": 1,
+ "modified": "2025-11-24 16:00:33.246713",
+ "modified_by": "kinzang.namgyal@cdcl.bt",
+ "module": "Buying",
+ "name": "Top Item Purchased based on Filter",
+ "number_of_groups": 0,
+ "owner": "kinzang.namgyal@cdcl.bt",
+ "report_name": "Item-wise Purchase Register",
+ "roles": [],
+ "time_interval": "Yearly",
+ "timeseries": 0,
+ "timespan": "Last Year",
+ "type": "Bar",
+ "use_report_chart": 0,
+ "x_field": "item_name",
+ "y_axis": [
+  {
+   "color": "#CB2929",
+   "y_field": "stock_qty"
+  },
+  {
+   "color": "#39E4A5",
+   "y_field": "amount"
+  }
+ ]
+}
