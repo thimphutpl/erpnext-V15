@@ -30,6 +30,7 @@ class ProjectDefinition(Document):
 		end_date: DF.Date
 		f_progress: DF.Data | None
 		fiscal_year: DF.Link | None
+		freeze_project: DF.Check
 		overall_mandays: DF.Data | None
 		percent_completed: DF.Percent
 		physical_progress: DF.Percent
@@ -108,7 +109,20 @@ class ProjectDefinition(Document):
 						update `tabProject Definition` set overall_mandays = {}, physical_progress_weightage = {}, physical_progress = {}, percent_completed = {} where name = '{}'
 						""".format(overall_mandays, physical_progress_weightage, contribution_per_prj, physical_progress, pc.name))
 				# frappe.db.commit()	
+	@frappe.whitelist()
+	def check_logged_in_user_role(self):
+		#return values initialization-----------------
+		freeze_project = 1
+		#----------------------------Supervisor------------------------------------------------------------------------------------------------------------------------------------------------------------|
+		user = frappe.session.user
+		user_roles = frappe.get_roles(user)
 
+		if user == "Administrator":
+			freeze_project = 0
+		if "Freeze Project" in user_roles:
+			freeze_project = 0
+		
+		return freeze_project 
 # ADDED BY Kinley ON 04-06-2024
 @frappe.whitelist()
 def make_purchase_requisition(source_name, target_doc=None):

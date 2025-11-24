@@ -98,5 +98,17 @@ frappe.ui.form.on('Project Definition', {
 			},
 		});
 		frm.refresh_fields();
+
+		frappe.call({
+			method: "check_logged_in_user_role",
+			doc:frm.doc,
+			callback: function(r){     
+				console.log(r.message)
+				toggle_remarks_display(frm, r.message[0])
+			}
+		})
 	}
 });
+var toggle_remarks_display = function(frm, freeze_project){
+	frm.set_df_property("freeze_project","read_only",freeze_project)
+}

@@ -124,6 +124,10 @@ class GLEntry(Document):
 				)
 	def check_project_freeze(self):
 		if self.project:
+			project_defination = frappe.db.get_value("Project", self.project,"project_definition")
+			def_freeze = frappe.db.get_value("Project Definition", project_defination,"freeze_project")
+			if def_freeze:
+				frappe.throw("The All Project under {} defination is freezed".format(project_defination))
 			freeze_project = frappe.db.get_value("Project", self.project,"freeze_project")
 			if freeze_project:
 				freeze_date = frappe.db.get_value("Project", self.project,"freeze_till")
