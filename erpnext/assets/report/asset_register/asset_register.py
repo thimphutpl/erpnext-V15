@@ -81,22 +81,24 @@ def get_depreciation_details(filters):
                 ELSE 0
             END) AS depreciation_income_tax
         FROM `tabDepreciation Schedule` as ds, `tabAsset Depreciation Schedule` ads
-        WHERE ads.name=ds.parent AND ds.schedule_date <= '{to_date}'
+        WHERE ads.name=ds.parent
+        AND ads.docstatus = 1
+        AND ds.schedule_date <= '{to_date}'
         AND (IFNULL(ds.journal_entry,'') != '' )
         GROUP BY ds.parent
     """.format(from_date=filters.from_date, to_date=filters.to_date, fiscal_year = filters.fiscal_year)
-
     query_two= """
         SELECT
             ads.asset AS asset,
             SUM(ds.depreciation_amount) AS dep_total_next_year
         FROM `tabDepreciation Schedule` AS ds, `tabAsset Depreciation Schedule` ads
-        WHERE ads.name=ds.parent AND YEAR(ds.schedule_date) = '{fiscal_year}' 
+        WHERE ads.name=ds.parent 
+        AND ads.docstatus = 1
+        AND YEAR(ds.schedule_date) = '{fiscal_year}' 
         AND (SELECT status FROM `tabAsset` WHERE name = ads.asset) IN ('Submitted','Partially Depreciated')
         GROUP BY ds.parent
 
     """.format(fiscal_year = str(int(filters.fiscal_year)+1))
-
     depreciation_details = frappe._dict()
     depreciation_details_two = frappe._dict()
     for row in frappe.db.sql(query, as_dict=True):
@@ -175,12 +177,11 @@ def get_data(filters):
                 FROM 
             `tabAsset` AS a
             LEFT JOIN `tabAsset Finance Book` AS f ON f.parent = a.name       
-        WHERE a.docstatus = 1 
-        AND a.posting_date BETWEEN '{from_date}' AND '{to_date}'
+        WHERE a.docstatus = 1  
+        AND a.purchase_date <= '{to_date}'
         AND (
-            a.status not in ('Scrapped', 'Sold')
-            OR
-            (a.status in ('Scrapped', 'Sold') AND a.disposal_date >= '{from_date}')
+            a.status NOT IN ('Scrapped', 'Sold')
+            OR (a.status IN ('Scrapped', 'Sold') AND a.disposal_date >= '{from_date}')
         )
         """.format(from_date=filters.from_date, to_date=filters.to_date)
     
