@@ -101,6 +101,19 @@ class CostCenter(NestedSet):
 		self.save()
 		return 1
 
+	# @frappe.whitelist()
+	# def update_branch(self):
+	# 	frappe.throw("i am here")
+	# 	if cint(self.is_group) == 1 or cint(self.branch_created) == 1:
+	# 		return 1
+	# 	branch = frappe.get_all("Branch", filters={"cost_center": self.name}, limit=1)
+	# 	if not branch:
+	# 		frappe.throw(f"No Branch found linked to Cost Center: {cost_center}")
+		
+	# 	branch_name = branch[0].name
+	# 	frappe.rename_doc("Branch", branch_name, self.cost_center_name)
+	# 	return 1
+
 	def check_gle_exists(self):
 		return frappe.db.get_value("GL Entry", {"cost_center": self.name})
 

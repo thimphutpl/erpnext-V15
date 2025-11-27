@@ -1,0 +1,138 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:C0{YY}{MM}{####}",
+ "creation": "2025-11-11 12:35:37.529184",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "customer_details_section",
+  "customer_id",
+  "salutation",
+  "customer_name",
+  "phone_number",
+  "email_id",
+  "customer_track_id",
+  "column_break_oiup",
+  "responsible_branch",
+  "customer_report",
+  "customer_inquiry_section",
+  "inquiry",
+  "response",
+  "section_break_lgfb",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "customer_details_section",
+   "fieldtype": "Section Break",
+   "label": "Customer Details"
+  },
+  {
+   "fieldname": "customer_id",
+   "fieldtype": "Link",
+   "label": "Customer ID",
+   "options": "Customer"
+  },
+  {
+   "fieldname": "salutation",
+   "fieldtype": "Data",
+   "label": "Salutation"
+  },
+  {
+   "fieldname": "customer_name",
+   "fieldtype": "Data",
+   "label": "Customer Name"
+  },
+  {
+   "fieldname": "phone_number",
+   "fieldtype": "Data",
+   "label": "Phone Number"
+  },
+  {
+   "fieldname": "email_id",
+   "fieldtype": "Data",
+   "label": "Email ID"
+  },
+  {
+   "fieldname": "column_break_oiup",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "responsible_branch",
+   "fieldtype": "Link",
+   "label": "Responsible Branch",
+   "options": "Branch"
+  },
+  {
+   "fieldname": "customer_report",
+   "fieldtype": "Long Text",
+   "label": "Customer Report"
+  },
+  {
+   "fieldname": "customer_inquiry_section",
+   "fieldtype": "Section Break",
+   "label": "Customer Inquiry"
+  },
+  {
+   "fieldname": "inquiry",
+   "fieldtype": "Long Text",
+   "label": "Inquiry"
+  },
+  {
+   "fieldname": "response",
+   "fieldtype": "Long Text",
+   "label": "Response"
+  },
+  {
+   "fieldname": "section_break_lgfb",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "C0 Status",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "customer_track_id",
+   "fieldtype": "Link",
+   "label": "Customer Track ID",
+   "options": "Customer Track",
+   "read_only": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2025-11-18 12:50:23.957337",
+ "modified_by": "Administrator",
+ "module": "CRM",
+ "name": "C0 Status",
+ "naming_rule": "Expression",
+ "owner": "kalden.dorji@thimphutechpark.bt",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

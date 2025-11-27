@@ -63,7 +63,6 @@ class PurchaseOrder(BuyingController):
 		base_net_total: DF.Currency
 		base_rounded_total: DF.Currency
 		base_rounding_adjustment: DF.Currency
-		base_tax_withholding_net_total: DF.Currency
 		base_taxes_and_charges_added: DF.Currency
 		base_taxes_and_charges_deducted: DF.Currency
 		base_total: DF.Currency
@@ -71,6 +70,7 @@ class PurchaseOrder(BuyingController):
 		billing_address: DF.Link | None
 		billing_address_display: DF.SmallText | None
 		branch: DF.Link
+		business_activity: DF.Link | None
 		buying_price_list: DF.Link | None
 		company: DF.Link
 		contact_display: DF.SmallText | None
@@ -86,16 +86,13 @@ class PurchaseOrder(BuyingController):
 		customer_contact_mobile: DF.SmallText | None
 		customer_contact_person: DF.Link | None
 		customer_name: DF.Data | None
-		description: DF.TextEditor | None
+		deliver_to: DF.Link | None
 		disable_rounded_total: DF.Check
-		discount: DF.Currency
 		discount_amount: DF.Currency
-		footer: DF.TextEditor | None
-		freight_and_insurance_charges: DF.Currency
+		enote_id: DF.Link | None
 		from_date: DF.Date | None
 		grand_total: DF.Currency
 		group_same_items: DF.Check
-		header: DF.TextEditor | None
 		ignore_pricing_rule: DF.Check
 		in_words: DF.Data | None
 		inter_company_order_reference: DF.Link | None
@@ -105,20 +102,21 @@ class PurchaseOrder(BuyingController):
 		items: DF.Table[PurchaseOrderItem]
 		language: DF.Data | None
 		letter_head: DF.Link | None
-		material_request: DF.Link | None
-		material_request_date: DF.Date | None
-		method_of_procurement: DF.Literal["", "Open Bidding", "Limited Bidding", "Limited Enquiry", "Work Order/Direct Contacting", "Spot Purchase"]
-		naming_series: DF.Literal["", "Consumables", "Fixed Asset", "Sales Product", "Spare Parts", "Services Miscellaneous", "Services Works", "Labour Contract"]
+		naming_series: DF.Literal["", "Consumables", "Fixed Asset", "Sales Product", "Spare Parts", "Services Miscellaneous", "Services Works", "Labour Contract", "PUR-ORD-.YYYY.-"]
 		net_total: DF.Currency
 		order_confirmation_date: DF.Date | None
 		order_confirmation_no: DF.Data | None
-		other_charges: DF.Currency
+		order_tracking: DF.Check
+		order_tracking_id: DF.Data | None
+		other_charges_calculation: DF.LongText | None
 		party_account_currency: DF.Link | None
 		payment_schedule: DF.Table[PaymentSchedule]
 		payment_terms_template: DF.Link | None
 		per_billed: DF.Percent
 		per_received: DF.Percent
 		plc_conversion_rate: DF.Float
+		po_footer_text: DF.TextEditor | None
+		po_header: DF.TextEditor | None
 		price_list_currency: DF.Link | None
 		pricing_rules: DF.Table[PricingRuleDetail]
 		project: DF.Link | None
@@ -126,22 +124,21 @@ class PurchaseOrder(BuyingController):
 		represents_company: DF.Link | None
 		rounded_total: DF.Currency
 		rounding_adjustment: DF.Currency
-		schedule_date: DF.Date | None
+		schedule_date: DF.Date
 		select_print_heading: DF.Link | None
-		set_from_warehouse: DF.Link | None
 		set_reserve_warehouse: DF.Link | None
-		set_warehouse: DF.Data | None
+		set_warehouse: DF.Link | None
 		shipping_address: DF.Link | None
 		shipping_address_display: DF.SmallText | None
+		shipping_rule: DF.Link | None
 		status: DF.Literal["", "Draft", "On Hold", "To Receive and Bill", "To Bill", "To Receive", "Completed", "Cancelled", "Closed", "Delivered"]
 		supplied_items: DF.Table[PurchaseOrderItemSupplied]
 		supplier: DF.Link
 		supplier_address: DF.Link | None
 		supplier_name: DF.Data | None
 		supplier_warehouse: DF.Link | None
-		tax: DF.Currency
+		tax_category: DF.Link | None
 		tax_withholding_category: DF.Link | None
-		tax_withholding_net_total: DF.Currency
 		taxes: DF.Table[PurchaseTaxesandCharges]
 		taxes_and_charges: DF.Link | None
 		taxes_and_charges_added: DF.Currency
@@ -151,7 +148,6 @@ class PurchaseOrder(BuyingController):
 		title: DF.Data
 		to_date: DF.Date | None
 		total: DF.Currency
-		total_add_ded: DF.Currency
 		total_net_weight: DF.Float
 		total_qty: DF.Float
 		total_taxes_and_charges: DF.Currency
@@ -174,8 +170,8 @@ class PurchaseOrder(BuyingController):
 			}
 		]
 
-	def autoname(self):
-		self.name = make_autoname(get_auto_name(self, self.naming_series) + ".####")	
+	# def autoname(self):
+	# 	self.name = make_autoname(get_auto_name(self, self.naming_series) + ".####")	
 
 	def onload(self):
 		supplier_tds = frappe.db.get_value("Supplier", self.supplier, "tax_withholding_category")
@@ -402,6 +398,7 @@ class PurchaseOrder(BuyingController):
 		for d in self.get("items"):
 			if d.item_code:
 				last_purchase_details = get_last_purchase_details(d.item_code, self.name)
+				frappe.throw(str(last_purchase_details))
 				if last_purchase_details:
 					d.base_price_list_rate = last_purchase_details["base_price_list_rate"] * (
 						flt(d.conversion_factor) or 1.0

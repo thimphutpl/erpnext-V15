@@ -24,11 +24,12 @@
   "rate_type",
   "lumpsum",
   "hourly",
+  "rate",
   "project",
   "place",
   "column_break_pvzv",
   "lumpsum_rate",
-  "rate",
+  "idle_rate_type",
   "idle_rate",
   "column_break_qeii",
   "diff_rate",
@@ -86,6 +87,7 @@
    "depends_on": "eval:doc.from_date",
    "fieldname": "from_time",
    "fieldtype": "Time",
+   "hidden": 1,
    "label": "From Time"
   },
   {
@@ -102,6 +104,7 @@
    "depends_on": "eval:doc.from_time && doc.to_date",
    "fieldname": "to_time",
    "fieldtype": "Time",
+   "hidden": 1,
    "label": "To Time"
   },
   {
@@ -362,17 +365,25 @@
    "label": "Lumpsum Rate"
   },
   {
+   "depends_on": "eval: doc.idle_rate_type",
    "fieldname": "idle_rate",
-   "fieldtype": "Link",
+   "fieldtype": "Data",
    "label": "Idle Rate",
-   "options": "Hire Charge Parameter"
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval: doc.rate",
+   "fieldname": "idle_rate_type",
+   "fieldtype": "Select",
+   "label": "Idle Rate Type",
+   "options": "\nInternal\nExternal"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-09-09 10:30:22.357852",
- "modified_by": "kalden.dorji@thimphutechpark.bt",
+ "modified": "2025-09-20 12:19:06.764161",
+ "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Hiring Approval Details",
  "owner": "Administrator",

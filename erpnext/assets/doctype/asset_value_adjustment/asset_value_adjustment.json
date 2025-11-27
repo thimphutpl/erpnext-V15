@@ -85,6 +85,7 @@
    "fieldtype": "Currency",
    "in_list_view": 1,
    "label": "New Asset Value",
+   "read_only": 1,
    "reqd": 1
   },
   {
@@ -138,6 +139,7 @@
    "default": "0",
    "fieldname": "re_valued",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "Revalued Asset"
   },
   {
@@ -165,8 +167,8 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-21 10:43:06.055875",
- "modified_by": "Administrator",
+ "modified": "2025-11-12 15:43:56.278234",
+ "modified_by": "sonam.bomjan@thimphutechpark.bt",
  "module": "Assets",
  "name": "Asset Value Adjustment",
  "naming_rule": "Expression",
@@ -218,6 +220,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],

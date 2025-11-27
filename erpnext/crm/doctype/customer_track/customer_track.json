@@ -1,0 +1,191 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:CT{YY}{MM}{####}",
+ "creation": "2025-11-11 12:16:55.784336",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "customer_details_section",
+  "customer_id",
+  "customer_type",
+  "country",
+  "column_break_sgjz",
+  "salutation",
+  "customer_name",
+  "phone_number",
+  "email_id",
+  "cid_number",
+  "primary_address",
+  "customer_details",
+  "customer_status_details_section",
+  "customer_status",
+  "column_break_rkat",
+  "co_status",
+  "c1_status",
+  "c2_status",
+  "warranty",
+  "customer_report_section",
+  "branch",
+  "customer_report"
+ ],
+ "fields": [
+  {
+   "fieldname": "customer_details_section",
+   "fieldtype": "Section Break",
+   "label": "Customer Details"
+  },
+  {
+   "fieldname": "customer_id",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Customer ID",
+   "options": "Customer",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "customer_id.customer_type",
+   "fieldname": "customer_type",
+   "fieldtype": "Data",
+   "label": "Customer Type"
+  },
+  {
+   "fetch_from": "customer_id.country",
+   "fieldname": "country",
+   "fieldtype": "Data",
+   "label": "Country"
+  },
+  {
+   "fieldname": "column_break_sgjz",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "customer_id.salutation",
+   "fieldname": "salutation",
+   "fieldtype": "Data",
+   "label": "Salutation"
+  },
+  {
+   "fetch_from": "customer_id.customer_name",
+   "fieldname": "customer_name",
+   "fieldtype": "Data",
+   "label": "Customer Name"
+  },
+  {
+   "fetch_from": "customer_id.mobile_no",
+   "fieldname": "phone_number",
+   "fieldtype": "Data",
+   "label": "Phone Number"
+  },
+  {
+   "fetch_from": "customer_id.email_id",
+   "fieldname": "email_id",
+   "fieldtype": "Data",
+   "label": "Email ID"
+  },
+  {
+   "fetch_from": "customer_id.cid_no",
+   "fieldname": "cid_number",
+   "fieldtype": "Data",
+   "label": "CID Number"
+  },
+  {
+   "fetch_from": "customer_id.primary_address",
+   "fieldname": "primary_address",
+   "fieldtype": "Data",
+   "label": "Primary Address"
+  },
+  {
+   "fetch_from": "customer_id.customer_details",
+   "fieldname": "customer_details",
+   "fieldtype": "Small Text",
+   "label": "Customer Details"
+  },
+  {
+   "fieldname": "customer_status_details_section",
+   "fieldtype": "Section Break",
+   "label": "Customer Status Details"
+  },
+  {
+   "fieldname": "customer_status",
+   "fieldtype": "Select",
+   "label": "Customer Status",
+   "options": "\nC0\nC1\nC2\nOn Warranty\nCompleted"
+  },
+  {
+   "fieldname": "column_break_rkat",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "co_status",
+   "fieldtype": "Link",
+   "label": "C0 Status",
+   "options": "C0 Status",
+   "read_only": 1
+  },
+  {
+   "fieldname": "c1_status",
+   "fieldtype": "Link",
+   "label": "C1 Status",
+   "options": "C1 Status",
+   "read_only": 1
+  },
+  {
+   "fieldname": "c2_status",
+   "fieldtype": "Link",
+   "label": "C2 Status",
+   "options": "C2 Status",
+   "read_only": 1
+  },
+  {
+   "fieldname": "warranty",
+   "fieldtype": "Link",
+   "label": "Warranty",
+   "options": "Warranty",
+   "read_only": 1
+  },
+  {
+   "fieldname": "customer_report_section",
+   "fieldtype": "Section Break",
+   "label": "Customer Report"
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "label": "Branch",
+   "options": "Branch"
+  },
+  {
+   "fieldname": "customer_report",
+   "fieldtype": "Long Text",
+   "label": "Customer Report"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-11-12 13:13:26.371815",
+ "modified_by": "Administrator",
+ "module": "CRM",
+ "name": "Customer Track",
+ "naming_rule": "Expression",
+ "owner": "kalden.dorji@thimphutechpark.bt",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

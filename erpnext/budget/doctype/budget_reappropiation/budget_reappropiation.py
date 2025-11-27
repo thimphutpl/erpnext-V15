@@ -5,7 +5,7 @@ from frappe import _, msgprint, scrub
 from frappe.model.document import Document
 from frappe.utils import cint, cstr, flt, fmt_money, formatdate, get_link_to_form, nowdate, datetime, getdate
 from erpnext.budget.doctype.budget.budget import validate_expense_against_budget
-from erpnext.custom_workflow import validate_workflow_states, notify_workflow_states
+# from erpnext.custom_workflow import validate_workflow_states, notify_workflow_states
 
 class BudgetReappropiation(Document):
 	# begin: auto-generated types
@@ -35,18 +35,18 @@ class BudgetReappropiation(Document):
 		total_reappropiation_amount: DF.Currency
 	# end: auto-generated types
 	def validate(self):
-		validate_workflow_states(self)
+		# validate_workflow_states(self)
 		self.validate_budget()
 		self.budget_check()
-		if self.workflow_state != "Submitted":
-			notify_workflow_states(self)
+		# if self.workflow_state != "Submitted":
+		# 	notify_workflow_states(self)
 	def on_submit(self):
-		notify_workflow_states(self)
+		# notify_workflow_states(self)
 		self.budget_appropriate(cancel=False)
 
 	def on_cancel(self):
 		self.budget_appropriate(cancel=True)
-		notify_workflow_states(self)
+		# notify_workflow_states(self)
 	
 	#Added by Thukten on 13th Sept, 2023
 	def validate_budget(self):

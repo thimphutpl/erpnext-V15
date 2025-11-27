@@ -94,6 +94,7 @@
   "status",
   "booked_fixed_asset",
   "residual_value",
+  "emi_sales_id",
   "column_break_51",
   "purchase_amount",
   "default_finance_book",
@@ -110,7 +111,6 @@
    "options": "ACC-ASS-.YYYY.-"
   },
   {
-   "depends_on": "item_code",
    "fetch_from": "item_code.item_name",
    "fetch_if_empty": 1,
    "fieldname": "asset_name",
@@ -124,8 +124,7 @@
    "fieldtype": "Link",
    "in_standard_filter": 1,
    "label": "Item Code",
-   "options": "Item",
-   "reqd": 1
+   "options": "Item"
   },
   {
    "depends_on": "item_code",
@@ -715,6 +714,13 @@
    "fieldtype": "Link",
    "label": "Business Activity",
    "options": "Business Activity"
+  },
+  {
+   "fieldname": "emi_sales_id",
+   "fieldtype": "Link",
+   "label": "EMI Sales ID",
+   "options": "EMI Sales",
+   "read_only": 1
   }
  ],
  "idx": 72,
@@ -753,8 +759,8 @@
    "link_fieldname": "target_asset"
   }
  ],
- "modified": "2025-07-25 11:41:16.407361",
- "modified_by": "kalden.dorji@thimphutechpark.bt",
+ "modified": "2025-11-27 12:27:08.394717",
+ "modified_by": "Administrator",
  "module": "Assets",
  "name": "Asset",
  "naming_rule": "By \"Naming Series\" field",

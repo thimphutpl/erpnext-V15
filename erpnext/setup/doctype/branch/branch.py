@@ -37,6 +37,7 @@ class Branch(Document):
 		items: DF.Table[BranchImprestItem]
 		letter_head: DF.Link | None
 		revenue_bank_account: DF.Link | None
+		warehouse: DF.Link | None
 	# end: auto-generated types
 
 	def validate(self):

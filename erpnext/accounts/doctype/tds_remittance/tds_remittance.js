@@ -14,6 +14,8 @@ frappe.ui.form.on('TDS Remittance', {
 			return {
 				filters: {
 					'is_group': 0,
+					'company': 'State Trading Corporation of Bhutan Limited',
+					'account_type': 'Bank',
 				}
 			}
 		});

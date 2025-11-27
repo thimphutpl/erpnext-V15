@@ -905,9 +905,9 @@
    "fieldtype": "Column Break"
   },
   {
-   "fetch_from": "item_code.business_activity",
    "fieldname": "business_activity",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Business Activity",
    "options": "Business Activity",
    "read_only": 1
@@ -917,8 +917,8 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-07-25 12:07:56.818420",
- "modified_by": "kalden.dorji@thimphutechpark.bt",
+ "modified": "2025-11-12 12:01:00.632190",
+ "modified_by": "Administrator",
  "module": "Buying",
  "name": "Purchase Order Item",
  "naming_rule": "Random",

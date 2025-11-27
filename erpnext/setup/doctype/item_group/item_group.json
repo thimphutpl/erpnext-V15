@@ -16,6 +16,7 @@
   "image",
   "item_code_base",
   "column_break_5",
+  "is_fixed_asset",
   "defaults",
   "item_group_defaults",
   "sec_break_taxes",
@@ -133,7 +134,7 @@
    "fieldname": "item_code_base",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Item Code Base",
+   "label": "Item Group Abbreviation",
    "options": "\n",
    "reqd": 1,
    "unique": 1
@@ -143,6 +144,12 @@
    "fieldname": "show_subgroup_in_print",
    "fieldtype": "Check",
    "label": "Show Subgroup in Print"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_fixed_asset",
+   "fieldtype": "Check",
+   "label": "Is Fixed Asset"
   }
  ],
  "icon": "fa fa-sitemap",
@@ -151,7 +158,7 @@
  "is_tree": 1,
  "links": [],
  "max_attachments": 3,
- "modified": "2024-12-14 14:18:20.553352",
+ "modified": "2025-11-26 11:20:14.430537",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Item Group",
@@ -218,9 +225,11 @@
    "share": 1
   }
  ],
+ "row_format": "Dynamic",
  "search_fields": "parent_item_group",
  "show_name_in_global_search": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "track_changes": 1
 }

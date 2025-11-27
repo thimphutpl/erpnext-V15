@@ -30,6 +30,7 @@ class MaterialRequestItem(Document):
 		item_code: DF.Link
 		item_group: DF.Link | None
 		item_name: DF.Data | None
+		item_subgroup: DF.Data | None
 		job_card_item: DF.Data | None
 		lead_time_date: DF.Date | None
 		manufacturer: DF.Link | None

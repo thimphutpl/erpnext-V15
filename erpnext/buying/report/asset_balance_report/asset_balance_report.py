@@ -20,11 +20,12 @@ def get_data(filters):
 			SELECT t.item_code, i.item_name, i.asset_category, i.asset_sub_category, t.cost_center,
 			SUM(IFNULL(t.received_qty,0)) total_qty,
 			SUM(IFNULL(t.issued_qty,0)) issued_qty,
+			IFNULL(t.rec_qty,0) rec_qty,
 			SUM(IFNULL(t.received_qty,0))-SUM(IFNULL(t.issued_qty,0)) balance_qty,
 			GROUP_CONCAT(IF(IFNULL(t.received_qty, 0)-IFNULL(t.issued_qty, 0) > 0, CONCAT('<a href="/app/purchase-receipt/',t.ref_doc,'">',t.ref_doc,'(',IFNULL(t.received_qty,0)-IFNULL(t.issued_qty, 0),')','</a>'),NULL)) purchase_receipt
 			FROM(
 			SELECT ar.item_code, ar.ref_doc, ar.cost_center, (select distinct pr.warehouse from `tabPurchase Receipt Item` pr where pr.name = ar.child_ref) as warehouse,
-				SUM(ar.qty) received_qty,
+				SUM(ar.qty) received_qty, (select sum(pri.qty) from `tabPurchase Receipt Item` pri where pri.parent = ar.ref_doc and pri.docstatus = 1 and pri.item_code = ar.item_code) as rec_qty,
 				IFNULL((SELECT SUM(ai.qty)
 					FROM `tabAsset Issue Details` ai
 					WHERE ai.item_code = ar.item_code
@@ -103,6 +104,12 @@ def get_columns():
 		  "fieldname": "balance_qty",
 		  "label": "Balance Quantity",
 		  "fieldtype": "Int",
+		  "width": 120
+		},
+		{
+		  "fieldname": "rec_qty",
+		  "label": "Reconciliation Quantity",
+		  "fieldtype": "Float",
 		  "width": 120
 		},
 		{

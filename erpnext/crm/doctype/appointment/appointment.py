@@ -2,13 +2,12 @@
 # For license information, please see license.txt
 
 
+
 from collections import Counter
 
 import frappe
 from frappe import _
-from frappe.desk.form.assign_to import add as add_assignment
 from frappe.model.document import Document
-from frappe.share import add_docshare
 from frappe.utils import get_url, getdate, now
 from frappe.utils.verified_command import get_signed_params
 
@@ -152,18 +151,21 @@ class Appointment(Document):
 		self.party = lead.name
 
 	def auto_assign(self):
+		from frappe.desk.form.assign_to import add as add_assignemnt
+
 		existing_assignee = self.get_assignee_from_latest_opportunity()
 		if existing_assignee:
 			# If the latest opportunity is assigned to someone
 			# Assign the appointment to the same
-			self.assign_agent(existing_assignee)
+			add_assignemnt({"doctype": self.doctype, "name": self.name, "assign_to": [existing_assignee]})
 			return
 		if self._assign:
 			return
 		available_agents = _get_agents_sorted_by_asc_workload(getdate(self.scheduled_time))
 		for agent in available_agents:
 			if _check_agent_availability(agent, self.scheduled_time):
-				self.assign_agent(agent[0])
+				agent = agent[0]
+				add_assignemnt({"doctype": self.doctype, "name": self.name, "assign_to": [agent]})
 			break
 
 	def get_assignee_from_latest_opportunity(self):
@@ -198,9 +200,7 @@ class Appointment(Document):
 				"starts_on": self.scheduled_time,
 				"status": "Open",
 				"type": "Public",
-				"send_reminder": frappe.db.get_single_value(
-					"Appointment Booking Settings", "email_reminders"
-				),
+				"send_reminder": frappe.db.get_single_value("Appointment Booking Settings", "email_reminders"),
 				"event_participants": [
 					dict(reference_doctype=self.appointment_with, reference_docname=self.party)
 				],
@@ -220,15 +220,9 @@ class Appointment(Document):
 		params = {"email": self.customer_email, "appointment": self.name}
 		return get_url(verify_route + "?" + get_signed_params(params))
 
-	def assign_agent(self, agent):
-		if not frappe.has_permission(doc=self, user=agent):
-			add_docshare(self.doctype, self.name, agent, flags={"ignore_share_permission": True})
-
-		add_assignment({"doctype": self.doctype, "name": self.name, "assign_to": [agent]})
-
 
 def _get_agents_sorted_by_asc_workload(date):
-	appointments = frappe.get_all("Appointment", fields="*")
+	appointments = frappe.db.get_list("Appointment", fields="*")
 	agent_list = _get_agent_list_as_strings()
 	if not appointments:
 		return agent_list
@@ -253,7 +247,9 @@ def _get_agent_list_as_strings():
 
 
 def _check_agent_availability(agent_email, scheduled_time):
-	appointemnts_at_scheduled_time = frappe.get_all("Appointment", filters={"scheduled_time": scheduled_time})
+	appointemnts_at_scheduled_time = frappe.get_list(
+		"Appointment", filters={"scheduled_time": scheduled_time}
+	)
 	for appointment in appointemnts_at_scheduled_time:
 		if appointment._assign == agent_email:
 			return False

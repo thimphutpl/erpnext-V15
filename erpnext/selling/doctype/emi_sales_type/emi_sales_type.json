@@ -1,0 +1,147 @@
+{
+ "actions": [],
+ "autoname": "field:order_type_name",
+ "creation": "2021-09-20 14:29:26.046311",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "order_type_name",
+  "order_type_code",
+  "company",
+  "column_break_3",
+  "required_commission",
+  "disabled",
+  "enable_cost_sharing",
+  "section_break_5",
+  "customer_group",
+  "restrict"
+ ],
+ "fields": [
+  {
+   "fieldname": "order_type_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Order Type Name",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "customer_group",
+   "fieldtype": "Table",
+   "label": "Customer Group",
+   "options": "EMI Sales Type Item",
+   "reqd": 1
+  },
+  {
+   "fieldname": "order_type_code",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Order Type Code",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "required_commission",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Required Commission"
+  },
+  {
+   "fieldname": "section_break_5",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "disabled",
+   "fieldtype": "Check",
+   "label": "Disabled"
+  },
+  {
+   "default": "0",
+   "fieldname": "restrict",
+   "fieldtype": "Check",
+   "label": "Restrict To Specific Customers"
+  },
+  {
+   "default": "0",
+   "fieldname": "enable_cost_sharing",
+   "fieldtype": "Check",
+   "label": "Enable Cost Sharing"
+  }
+ ],
+ "links": [],
+ "modified": "2025-11-27 10:38:16.801016",
+ "modified_by": "Administrator",
+ "module": "Selling",
+ "name": "EMI Sales Type",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales User",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales Master",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "quick_entry": 1,
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

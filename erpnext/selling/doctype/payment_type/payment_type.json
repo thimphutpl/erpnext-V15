@@ -1,0 +1,75 @@
+{
+ "autoname": "field:payment_type",
+ "creation": "2021-11-25 17:00:08.198094",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "payment_type",
+  "customer_group",
+  "allowed_credit",
+  "company"
+ ],
+ "fields": [
+  {
+   "fieldname": "payment_type",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Payment Type",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "customer_group",
+   "fieldtype": "Table",
+   "label": "Customer Group",
+   "options": "Payment Type Item",
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "allowed_credit",
+   "fieldtype": "Check",
+   "label": "Allowed Credit"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company",
+   "read_only": 1
+  }
+ ],
+ "modified": "2021-12-20 14:20:01.436630",
+ "modified_by": "Administrator",
+ "module": "Selling",
+ "name": "Payment Type",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales User",
+   "share": 1
+  }
+ ],
+ "quick_entry": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

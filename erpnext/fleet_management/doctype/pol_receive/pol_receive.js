@@ -3,15 +3,15 @@
 
 frappe.ui.form.on('POL Receive', {	
 	setup(frm){
-        frm.set_query("equipment", function(){
-            return {
-                filters: {
-                    'company': frm.doc.company,
-                    'branch': frm.doc.branch,
-                    'disabled': 0,
-                }
-            }
-        });
+        // frm.set_query("equipment", function(){
+        //     return {
+        //         filters: {
+        //             'company': frm.doc.company,
+        //             'branch': frm.doc.branch,
+        //             'disabled': 0,
+        //         }
+        //     }
+        // });
 
         frm.set_query("fuelbook", function(){
             return {
@@ -49,6 +49,17 @@ frappe.ui.form.on('POL Receive', {
 		// get_previous_km_reading(frm);
 	},
 
+	equipment: function (frm) {
+		get_previous_km_reading(frm)
+	},
+	
+	outsourced: function(frm) {
+        if (frm.doc.outsourced) {
+            // Clear child table
+            frm.doc.advances = [];
+            frm.refresh_field("advances");
+        }
+    },
 	
 	// fuelbook: function (frm) {
 	// 	get_pol_advance(frm);

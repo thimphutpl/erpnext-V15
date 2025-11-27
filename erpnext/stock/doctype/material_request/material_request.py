@@ -12,6 +12,8 @@ from frappe import _, msgprint
 from frappe.model.mapper import get_mapped_doc
 from frappe.query_builder.functions import Sum
 from frappe.utils import cint, cstr, flt, get_link_to_form, getdate, new_line_sep, nowdate
+from frappe.model.naming import make_autoname
+from erpnext.custom_autoname import get_auto_name
 
 from erpnext.buying.utils import check_on_hold_or_closed_status, validate_for_items
 from erpnext.controllers.buying_controller import BuyingController
@@ -38,11 +40,12 @@ class MaterialRequest(BuyingController):
 		company: DF.Link
 		cost_center: DF.Link
 		customer: DF.Link | None
+		enote_id: DF.Link | None
 		items: DF.Table[MaterialRequestItem]
 		job_card: DF.Link | None
 		letter_head: DF.Link | None
 		material_request_type: DF.Literal["Purchase", "Material Transfer", "Material Issue", "Write-Off", "Material Receipt"]
-		naming_series: DF.Literal["MAT-MR-.YYYY.-"]
+		naming_series: DF.Literal["", "Consumables", "Fixed Asset", "Sales Product", "Spare Parts", "Services Miscellaneous", "Services Works", "Labour Contract", "REORDER", "MAT-MR-.YYYY.-"]
 		per_ordered: DF.Percent
 		per_received: DF.Percent
 		schedule_date: DF.Date | None
@@ -57,6 +60,8 @@ class MaterialRequest(BuyingController):
 		transfer_status: DF.Literal["", "Not Started", "In Transit", "Completed"]
 		work_order: DF.Link | None
 	# end: auto-generated types
+	# def autoname(self):
+	# 	self.name = make_autoname(get_auto_name(self, self.naming_series) + ".####")
 
 	def check_if_already_pulled(self):
 		pass
@@ -429,6 +434,12 @@ def make_purchase_order(source_name, target_doc=None, args=None):
 		{
 			"Material Request": {
 				"doctype": "Purchase Order",
+				"field_map": [
+					["name", "material_request"],
+					["title", "title"],
+					["branch", "branch"],
+					["schedule_date", "schedule_date"],
+				],
 				"validation": {"docstatus": ["=", 1], "material_request_type": ["=", "Purchase"]},
 			},
 			"Material Request Item": {
@@ -502,6 +513,12 @@ def make_purchase_order_based_on_supplier(source_name, target_doc=None, args=Non
 		{
 			"Material Request": {
 				"doctype": "Purchase Order",
+				"field_map": [
+					["name", "material_request"],
+					["title", "title"],
+					["branch", "branch"],
+					["schedule_date", "schedule_date"],
+				],
 			},
 			"Material Request Item": {
 				"doctype": "Purchase Order Item",
@@ -794,7 +811,7 @@ def create_pick_list(source_name, target_doc=None):
 		{
 			"Material Request": {
 				"doctype": "Pick List",
-				"field_map": {"material_request_type": "purpose"},
+				"field_map": {"material_request_type": "purpose", "title": "title"},
 				"validation": {"docstatus": ["=", 1]},
 			},
 			"Material Request Item": {

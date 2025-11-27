@@ -9,61 +9,61 @@
  "document_type": "Setup",
  "engine": "InnoDB",
  "field_order": [
-  "campaign",
-  "campaign_name",
-  "naming_series",
-  "campaign_schedules_section",
-  "campaign_schedules",
-  "description_section",
-  "description"
- ],
- "fields": [
-  {
-   "fieldname": "campaign",
-   "fieldtype": "Section Break",
-   "label": "Campaign",
-   "oldfieldtype": "Section Break"
-  },
-  {
-   "fieldname": "campaign_name",
-   "fieldtype": "Data",
-   "label": "Campaign Name",
-   "oldfieldname": "campaign_name",
-   "oldfieldtype": "Data",
-   "reqd": 1
-  },
-  {
-   "fieldname": "naming_series",
-   "fieldtype": "Select",
-   "label": "Naming Series",
-   "options": "SAL-CAM-.YYYY.-",
-   "set_only_once": 1
-  },
-  {
-   "fieldname": "campaign_schedules_section",
-   "fieldtype": "Section Break",
-   "label": "Campaign Schedules"
-  },
-  {
-   "fieldname": "campaign_schedules",
-   "fieldtype": "Table",
-   "label": "Campaign Schedules",
-   "options": "Campaign Email Schedule"
-  },
-  {
-   "fieldname": "description_section",
-   "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "description",
-   "fieldtype": "Text",
-   "in_list_view": 1,
-   "label": "Description",
-   "oldfieldname": "description",
-   "oldfieldtype": "Text",
-   "width": "300px"
-  }
- ],
+    "campaign",
+    "campaign_name",
+    "naming_series",
+    "campaign_schedules_section",
+    "campaign_schedules",
+    "description_section",
+    "description"
+   ],
+   "fields": [
+    {
+     "fieldname": "campaign",
+     "fieldtype": "Section Break",
+     "label": "Campaign",
+     "oldfieldtype": "Section Break"
+    },
+    {
+     "fieldname": "campaign_name",
+     "fieldtype": "Data",
+     "label": "Campaign Name",
+     "oldfieldname": "campaign_name",
+     "oldfieldtype": "Data",
+     "reqd": 1
+    },
+    {
+     "fieldname": "naming_series",
+     "fieldtype": "Select",
+     "label": "Naming Series",
+     "options": "SAL-CAM-.YYYY.-",
+     "set_only_once": 1
+    },
+    {
+     "fieldname": "campaign_schedules_section",
+     "fieldtype": "Section Break",
+     "label": "Campaign Schedules"
+    },
+    {
+     "fieldname": "campaign_schedules",
+     "fieldtype": "Table",
+     "label": "Campaign Schedules",
+     "options": "Campaign Email Schedule"
+    },
+    {
+     "fieldname": "description_section",
+     "fieldtype": "Section Break"
+    },
+    {
+     "fieldname": "description",
+     "fieldtype": "Text",
+     "in_list_view": 1,
+     "label": "Description",
+     "oldfieldname": "description",
+     "oldfieldtype": "Text",
+     "width": "300px"
+    }
+   ],
  "icon": "fa fa-bullhorn",
  "idx": 1,
  "links": [],

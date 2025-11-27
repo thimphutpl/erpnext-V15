@@ -23,7 +23,7 @@ class VehicleLog(Document):
 		from_time: DF.Time | None
 		idle_time: DF.Float
 		operator: DF.Link | None
-		operator_salary: DF.Data | None
+		operator_salary: DF.Currency
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data

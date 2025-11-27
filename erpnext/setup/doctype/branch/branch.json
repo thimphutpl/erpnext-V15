@@ -11,6 +11,7 @@
   "branch",
   "abbr",
   "cost_center",
+  "warehouse",
   "column_break_qvlo",
   "company",
   "disabled",
@@ -168,13 +169,19 @@
    "fieldname": "branch_code",
    "fieldtype": "Data",
    "label": "Branch Code"
+  },
+  {
+   "fieldname": "warehouse",
+   "fieldtype": "Link",
+   "label": "Warehouse",
+   "options": "Warehouse"
   }
  ],
  "icon": "fa fa-code-fork",
  "idx": 1,
  "links": [],
- "modified": "2024-12-28 11:41:22.080873",
- "modified_by": "Administrator",
+ "modified": "2025-11-12 15:22:04.539661",
+ "modified_by": "kalden.dorji@thimphutechpark.bt",
  "module": "Setup",
  "name": "Branch",
  "naming_rule": "By fieldname",
@@ -204,6 +211,7 @@
   }
  ],
  "quick_entry": 1,
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],

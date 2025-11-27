@@ -29,6 +29,7 @@ class AssetIssueDetails(Document):
         emp_branch: DF.Data | None
         employee_name: DF.Data | None
         engine_no: DF.Data | None
+        enote_id: DF.Link | None
         entry_date: DF.Date
         equipment_type: DF.Link | None
         issued_date: DF.Date

@@ -187,9 +187,9 @@ def get_datax(filters):
 						b.posting_date,i.taxable_amount as tds_taxable_amount,
 						 i.tds_percent as tds_rate,	i.tds_amount, 
 						rr.cheque_number,  rr.cheque_date, rr.receipt_number, rr.receipt_date  
-					FROM `tabBTL Sales` b 
+					FROM `tabEMI Sales` b 
 					INNER JOIN 
-						`tabBTL Sales Item` i ON b.name = i.parent
+						`tabEMI Sales Item` i ON b.name = i.parent
 					INNER JOIN
 						`tabRRCO Receipt Entries` AS rr ON rr.purchase_invoice = b.name
 					WHERE b.required_commission = 1 

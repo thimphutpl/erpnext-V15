@@ -42,6 +42,7 @@
   "rate",
   "amount",
   "item_tax_template",
+  "deferred_revenue_amount",
   "col_break3",
   "base_rate",
   "base_amount",
@@ -945,18 +946,25 @@
    "no_copy": 1,
    "print_hide": 1,
    "read_only": 1
+  },
+  {
+   "fieldname": "deferred_revenue_amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Deferred Revenue amount"
   }
  ],
  "idx": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-11-25 16:27:33.287341",
+ "modified": "2025-11-21 11:39:45.193613",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Sales Invoice Item",
  "naming_rule": "Random",
  "owner": "Administrator",
  "permissions": [],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []

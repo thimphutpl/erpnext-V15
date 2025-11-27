@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"KMRLJII0Es\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h2\\\">Masters Data, Transactions and Reports</span>\",\"col\":12}},{\"id\":\"O5b3VdawHl\",\"type\":\"card\",\"data\":{\"card_name\":\"Assets Management \",\"col\":4}},{\"id\":\"8b0kxvMGfF\",\"type\":\"card\",\"data\":{\"card_name\":\"Transaction\",\"col\":4}},{\"id\":\"A2zZfrLLBU\",\"type\":\"card\",\"data\":{\"card_name\":\"Reports\",\"col\":4}}]",
+ "content": "[{\"id\":\"KMRLJII0Es\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h2\\\">Masters Data, Transactions and Reports</span>\",\"col\":12}},{\"id\":\"O5b3VdawHl\",\"type\":\"card\",\"data\":{\"card_name\":\"Master Data\",\"col\":4}},{\"id\":\"8b0kxvMGfF\",\"type\":\"card\",\"data\":{\"card_name\":\"Transaction\",\"col\":4}},{\"id\":\"A2zZfrLLBU\",\"type\":\"card\",\"data\":{\"card_name\":\"Reports\",\"col\":4}}]",
  "creation": "2020-03-02 15:43:27.634865",
  "custom_blocks": [],
  "docstatus": 0,
@@ -58,47 +58,6 @@
    "label": "Asset Issue Details",
    "link_count": 0,
    "link_to": "Asset Issue Details",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Assets Management ",
-   "link_count": 3,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "dependencies": "",
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Asset",
-   "link_count": 0,
-   "link_to": "Asset",
-   "link_type": "DocType",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "dependencies": "",
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Asset Category",
-   "link_count": 0,
-   "link_to": "Asset Category",
-   "link_type": "DocType",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Asset Sub Category",
-   "link_count": 0,
-   "link_to": "Asset Sub Category",
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
@@ -185,16 +144,57 @@
   {
    "hidden": 0,
    "is_query_report": 1,
-   "label": "Check Asset Not Depreciation Report",
+   "label": "Asset History Report",
    "link_count": 0,
-   "link_to": "Check Asset Depreciation",
+   "link_to": "Asset History Report",
    "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Master Data",
+   "link_count": 3,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Asset",
+   "link_count": 0,
+   "link_to": "Asset",
+   "link_type": "DocType",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Asset Category",
+   "link_count": 0,
+   "link_to": "Asset Category",
+   "link_type": "DocType",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Asset Sub Category",
+   "link_count": 0,
+   "link_to": "Asset Sub Category",
+   "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
   }
  ],
- "modified": "2025-03-13 10:57:44.236605",
- "modified_by": "kinzang.namgyal@cdcl.bt",
+ "modified": "2025-11-26 15:35:48.072835",
+ "modified_by": "sonam.bomjan@thimphutechpark.bt",
  "module": "Assets",
  "name": "Assets",
  "number_cards": [],

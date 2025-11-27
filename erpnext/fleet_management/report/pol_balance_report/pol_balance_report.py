@@ -16,7 +16,7 @@ def execute(filters=None):
 
 def get_data(filters=None):
 	data = []
-	query = "select e.name, e.branch, e.registration_number, e.hsd_type, e.equipment_type from tabEquipment e, `tabEquipment Type`et where e.equipment_type = et.name"
+	query = "select e.name, e.branch, e.equipment_name, e.equipment_type from tabEquipment e, `tabEquipment Type`et where e.equipment_type = et.name"
 	if not filters.all_equipment:
 		query += " and et.is_container = 1"
 	if filters.branch:

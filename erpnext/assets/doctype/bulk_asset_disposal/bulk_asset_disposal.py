@@ -182,8 +182,8 @@ class BulkAssetDisposal(Document):
 	def on_submit(self):
 		if self.scrap == "Scrap Asset":
 			self.scrap_asset()
-		else: 
-			self.sale_asset()
+		# else: 
+		# 	self.sale_asset()
 	
 	def before_cancel(self):
 		if self.scrap == "Scrap Asset":
@@ -194,7 +194,7 @@ class BulkAssetDisposal(Document):
 							select ds.journal_entry, ds.name, ds.depreciation_amount from `tabDepreciation Schedule` ds, `tabAsset Depreciation Schedule` ads  
 							where ds.parent = ads.name and ads.asset = '{0}' and  year(ds.schedule_date) = year('{1}')
 							and month(ds.schedule_date) = month('{1}') and ds.journal_entry is not NULL
-                         """.format(a.asset, self.scrap_date), as_dict=1)
+						 """.format(a.asset, self.scrap_date), as_dict=1)
 				if jede:
 					vad_reverse += flt(jede[0].depreciation_amount,2)
 					jede_doc = frappe.get_doc("Journal Entry", jede[0].journal_entry)
@@ -222,7 +222,7 @@ class BulkAssetDisposal(Document):
 			frappe.db.sql("update `tabAsset` set status = '{}' where name = '{}'".format(a.status, a.asset))		
 
 @frappe.whitelist()
-def sale_asset(branch, name, scrap_date, customer, posting_date):
+def sale_asset(branch, name, scrap_date, posting_date,employee=None, customer=None):
 	item = frappe.db.sql("""select a.item_code, a.item_name, a.asset, a.uom
 						from `tabBulk Asset Disposal Item` as a, `tabBulk Asset Disposal` as b 
 						where a.parent = b.name 
@@ -236,11 +236,12 @@ def sale_asset(branch, name, scrap_date, customer, posting_date):
 	# si.business_activity = business_activity
 	si.company = frappe.defaults.get_user_default("company")
 	si.customer = customer
+	si.employee = employee
 	si.set_posting_time = 1
 	si.posting_date = posting_date
 	company = frappe.defaults.get_user_default("company")
 	si.currency = frappe.get_cached_value('Company', company ,  "default_currency")
-	disposal_account, depreciation_cost_center = get_disposal_account_and_cost_center(company)
+	loss_disposal_account,disposal_account, depreciation_cost_center = get_disposal_account_and_cost_center(company)
 	si.bulk_asset_disposal = name
 	for data in item:
 		si.append("items", {
@@ -256,7 +257,38 @@ def sale_asset(branch, name, scrap_date, customer, posting_date):
 			# "business_activity":business_activity, 
 			"rate": 0
 		})
-		frappe.throw(str(depreciation_cost_center))
+		# frappe.throw(str(depreciation_cost_center))
 		# frappe.log_error(f"here:{depreciation_cost_center}")
 	return si
 
+
+@frappe.whitelist()
+def get_filtered_assets(doctype, txt, searchfield, start, page_len, filters=None):
+    """
+    Return Assets filtered by parent form's asset_category and branch.
+    """
+    if not filters:
+        filters = {}
+
+    return frappe.get_all(
+        "Asset",
+        filters={
+            "asset_category": filters.get("asset_category"),
+            "branch": filters.get("branch"),
+            "status": ["not in", ["Draft", "Sold", "Scrapped", "Submitted", "Cancelled"]]
+        },
+        fields=["name", "asset_name", "item_code", "item_name"],
+        limit_start=start,
+        limit_page_length=page_len
+    )
+
+@frappe.whitelist()
+def get_asset_details(asset_name):
+    """
+    Return item_code, item_name, uom for a selected asset.
+    """
+    asset = frappe.get_doc("Asset", asset_name)
+    return {
+        "item_code": asset.item_code,
+        "item_name": asset.item_name
+    }

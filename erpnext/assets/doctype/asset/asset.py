@@ -83,6 +83,7 @@ class Asset(AccountsController):
 		depreciation_method: DF.Literal["", "Straight Line", "Double Declining Balance", "Manual"]
 		disable_depreciation: DF.Check
 		disposal_date: DF.Date | None
+		emi_sales_id: DF.Link | None
 		existing_pr_reference: DF.Data | None
 		finance_books: DF.Table[AssetFinanceBook]
 		frequency_of_depreciation: DF.Int
@@ -97,7 +98,7 @@ class Asset(AccountsController):
 		is_existing_asset: DF.Check
 		is_fully_depreciated: DF.Check
 		is_opening_asset: DF.Check
-		item_code: DF.Link
+		item_code: DF.Link | None
 		item_name: DF.ReadOnly | None
 		journal_entry_for_scrap: DF.Link | None
 		location: DF.Link | None

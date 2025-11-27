@@ -20,7 +20,7 @@ class Fuelbook(Document):
 		fuelbook_number: DF.Data | None
 		pol_expense_limit: DF.Currency
 		security_deposit: DF.Currency
-		supplier: DF.Link
+		supplier: DF.Link | None
 		type: DF.Literal["Own", "Common"]
 	# end: auto-generated types
 	pass

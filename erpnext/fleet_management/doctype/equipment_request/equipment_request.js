@@ -11,6 +11,14 @@ frappe.ui.form.on("Equipment Request", {
                     })
             });
         }
+        if (frm.doc.docstatus == 1 ) {
+            frm.add_custom_button("Create Vehicle Log", function() {
+				frappe.model.open_mapped_doc({
+					method: "erpnext.fleet_management.doctype.equipment_request.equipment_request.make_vehicle_log",
+					frm: cur_frm
+				})
+            });
+        }
         frm.toggle_reqd("approval_status", frm.doc.docstatus == 1)
         },
 
@@ -21,7 +29,7 @@ frappe.ui.form.on("Equipment Request", {
 	},
 
     "approval_status": function(doc, cdt, cdn) {
-	frm.set_indicator_formatter('equipment_type',
+	frm.set_indicator_formatter('equipment_id',
 			function(doc) {
 			return doc.approved ? "green" : "orange"
 			 })

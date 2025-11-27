@@ -37,6 +37,13 @@ frappe.query_reports["Asset Register"] = {
 			"default": frappe.defaults.get_user_default("year_start_date"),
 		},
 		{
+			"fieldname": "status",
+			"label": __("Status"),
+			"fieldtype": "Select",
+			"options": ["Draft", "Submitted", "Partially Depreciated", "Fully Depreciated", "Sold", "Scrapped", "In Maintenance", "Out of Order", "Issue", "Receipt", "Capitalized", "Decapitalized"],
+			"default": frappe.defaults.get_user_default("year_start_date"),
+		},
+		{
 			"fieldname": "to_date",
 			"label": __("To Date"),
 			"fieldtype": "Date",

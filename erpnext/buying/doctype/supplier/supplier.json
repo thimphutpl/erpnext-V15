@@ -22,8 +22,11 @@
   "image",
   "registered",
   "is_dhi_company",
+  "internal_supplier",
+  "cost_center",
   "location_and_contact_details_section",
   "location",
+  "internal_customer_account",
   "cb_sb_lcd",
   "telephone_and_fax",
   "email_address",
@@ -581,6 +584,7 @@
    "default": "0",
    "fieldname": "registered",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "Registered Vendor?"
   },
   {
@@ -654,6 +658,25 @@
    "fieldname": "is_dhi_company",
    "fieldtype": "Check",
    "label": "Is DHI Company?"
+  },
+  {
+   "default": "0",
+   "fieldname": "internal_supplier",
+   "fieldtype": "Check",
+   "label": "Internal Supplier"
+  },
+  {
+   "fieldname": "cost_center",
+   "fieldtype": "Link",
+   "label": "Cost Center",
+   "options": "Cost Center"
+  },
+  {
+   "fieldname": "internal_customer_account",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Internal Customer Account",
+   "options": "Account"
   }
  ],
  "icon": "fa fa-user",
@@ -666,8 +689,8 @@
    "link_fieldname": "party"
   }
  ],
- "modified": "2025-08-28 11:21:54.204644",
- "modified_by": "kalden.dorji@thimphutechpark.bt",
+ "modified": "2025-11-25 16:50:31.588425",
+ "modified_by": "Administrator",
  "module": "Buying",
  "name": "Supplier",
  "naming_rule": "By \"Naming Series\" field",

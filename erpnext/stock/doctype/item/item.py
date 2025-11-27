@@ -69,6 +69,7 @@ class Item(Document):
 		from erpnext.stock.doctype.uom_conversion_detail.uom_conversion_detail import UOMConversionDetail
 		from frappe.types import DF
 
+		abb: DF.Data | None
 		allow_alternative_item: DF.Check
 		allow_negative_stock: DF.Check
 		asset_category: DF.Link | None
@@ -78,30 +79,36 @@ class Item(Document):
 		auto_create_assets: DF.Check
 		barcodes: DF.Table[ItemBarcode]
 		batch_number_series: DF.Data | None
+		bin: DF.Data | None
 		brand: DF.Link | None
 		business_activity: DF.Link | None
 		country_of_origin: DF.Link | None
 		create_new_batch: DF.Check
 		customer: DF.Link | None
-		customer_code: DF.SmallText | None
+		customer_code: DF.Data | None
 		customer_items: DF.Table[ItemCustomerDetail]
 		customs_tariff_number: DF.Link | None
 		default_bom: DF.Link | None
 		default_item_manufacturer: DF.Link | None
 		default_manufacturer_part_no: DF.Data | None
 		default_material_request_type: DF.Literal["Purchase", "Material Transfer", "Material Issue", "Manufacture", "Customer Provided"]
+		deferred_expense_account: DF.Link | None
+		deferred_revenue_account: DF.Link | None
 		delivered_by_supplier: DF.Check
 		description: DF.TextEditor | None
 		disabled: DF.Check
 		enable_deferred_expense: DF.Check
 		enable_deferred_revenue: DF.Check
 		end_of_life: DF.Date | None
-		expense_account: DF.Link | None
+		engine_cc: DF.Data | None
+		fuel_type: DF.Literal["Petrol", "Diesel", "EV"]
 		grant_commission: DF.Check
+		gvw_tonnage: DF.Data | None
 		has_batch_no: DF.Check
 		has_expiry_date: DF.Check
 		has_serial_no: DF.Check
 		has_variants: DF.Check
+		hsn_code: DF.Data | None
 		image: DF.AttachImage | None
 		include_item_in_manufacturing: DF.Check
 		inspection_required_before_delivery: DF.Check
@@ -109,7 +116,6 @@ class Item(Document):
 		is_customer_provided_item: DF.Check
 		is_fixed_asset: DF.Check
 		is_grouped_asset: DF.Check
-		is_hsd_item: DF.Check
 		is_pol_item: DF.Check
 		is_production_item: DF.Check
 		is_purchase_item: DF.Check
@@ -121,18 +127,25 @@ class Item(Document):
 		item_defaults: DF.Table[ItemDefault]
 		item_group: DF.Link
 		item_name: DF.Data
-		item_sub_group: DF.Link
+		item_old_code: DF.Data | None
+		item_sub_group: DF.Link | None
+		item_type: DF.Link | None
 		last_purchase_rate: DF.Float
 		lead_time_days: DF.Int
-		material_measurement: DF.Link | None
+		make: DF.Data | None
 		max_discount: DF.Float
 		min_order_qty: DF.Float
+		model: DF.Data | None
+		model_year: DF.Data | None
 		naming_series: DF.Literal["STO-ITEM-.YYYY.-"]
 		no_of_months: DF.Int
 		no_of_months_exp: DF.Int
 		opening_stock: DF.Float
 		over_billing_allowance: DF.Float
 		over_delivery_receipt_allowance: DF.Float
+		part_name: DF.Data | None
+		parts_no: DF.Link | None
+		published_in_website: DF.Check
 		purchase_uom: DF.Link | None
 		quality_inspection_template: DF.Link | None
 		reorder_levels: DF.Table[ItemReorder]
@@ -140,16 +153,18 @@ class Item(Document):
 		safety_stock: DF.Float
 		sales_uom: DF.Link | None
 		sample_quantity: DF.Int
+		seating_capacity: DF.Data | None
 		serial_no_series: DF.Data | None
+		shelf: DF.Data | None
 		shelf_life_in_days: DF.Int
-		species: DF.Link | None
 		standard_rate: DF.Currency
 		stock_uom: DF.Link
 		supplier_items: DF.Table[ItemSupplier]
 		taxes: DF.Table[ItemTax]
 		total_projected_qty: DF.Float
+		transmission_type_manualautomatic: DF.Data | None
 		uoms: DF.Table[UOMConversionDetail]
-		valuation_method: DF.Literal["", "FIFO", "Moving Average", "LIFO"]
+		valuation_method: DF.Literal["", "FIFO", "Moving Average", "LIFO", "SPECIFIC"]
 		valuation_rate: DF.Currency
 		variant_based_on: DF.Literal["Item Attribute", "Manufacturer"]
 		variant_of: DF.Link | None
@@ -159,28 +174,39 @@ class Item(Document):
 	# end: auto-generated types
 
 	def onload(self):
-		self.set_onload("stock_exists", self.stock_ledger_created())
-		self.set_onload("asset_naming_series", get_asset_naming_series())
-
+		if self.get("__islocal"):
+			self.set_onload("stock_exists", self.stock_ledger_created())
+			self.set_onload("asset_naming_series", get_asset_naming_series())
+			self.db_set("is_fixed_asset", frappe.db.get_value("Item Group", self.item_group, "is_fixed_asset"))
 
 	def autoname(self):
-		base = frappe.db.get_value("Item Group", self.item_group, "item_code_base")
-		if not base:
-			frappe.throw(
-				_("Setup Item Code Base in Item Group '{}'").format(
-					frappe.get_desk_link("Item Group", self.item_group)
-				),
-				title=_("Missing Item Code Base")
-			)
-		self.item_code = make_autoname(f"{base}.#######")
+		# if frappe.db.exists("Item",{"item_group":self.item_group}):
+		# 	prev_item = frappe.db.sql("select name from `tabItem` where item_group = '{}' order by name desc limit 1".format(self.item_group))
+		# 	self.item_code = self.name = cstr(cint(prev_item[0][0]) + 1)
+		# else:
+		# 	self.item_code = self.name = make_autoname('ABC{}.#####'.format(frappe.db.get_value('Item Group',self.item_group,'item_code_base')))[3:]
 		
-		if not self.item_code:
-			frappe.throw(
-				_("Item Code is mandatory because Item is not automatically numbered."),
-				title=_("Missing Item Code")
-			)
-		self.item_code = strip(self.item_code)
-		self.name = self.item_code
+		# abb = frappe.db.get_value('Item Group', self.item_group, 'item_group_abbreviation')
+		self.item_code = make_autoname(('{}.######'.format(self.abb)))
+
+	# def autoname(self):
+	# 	base = frappe.db.get_value("Item Group", self.item_group, "item_code_base")
+	# 	if not base:
+	# 		frappe.throw(
+	# 			_("Setup Item Code Base in Item Group '{}'").format(
+	# 				frappe.get_desk_link("Item Group", self.item_group)
+	# 			),
+	# 			title=_("Missing Item Code Base")
+	# 		)
+	# 	self.item_code = make_autoname(f"{base}.#######")
+		
+	# 	if not self.item_code:
+	# 		frappe.throw(
+	# 			_("Item Code is mandatory because Item is not automatically numbered."),
+	# 			title=_("Missing Item Code")
+	# 		)
+	# 	self.item_code = strip(self.item_code)
+	# 	self.name = self.item_code
 
 		# if frappe.db.get_default("item_naming_by") == "Naming Series":
 		# 	if self.variant_of:
@@ -321,6 +347,8 @@ class Item(Document):
 				stock_entry.add_comment("Comment", _("Opening Stock"))
 
 	def validate_fixed_asset(self):
+		if self.item_group == "Fixed Asset":
+			self.db_set("is_fixed_asset", 1)
 		if self.is_fixed_asset:
 			# if self.is_stock_item:
 			# 	frappe.throw(_("Fixed Asset Item must be a non-stock item."))

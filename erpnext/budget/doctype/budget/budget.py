@@ -11,7 +11,7 @@ from erpnext.accounts.doctype.accounting_dimension.accounting_dimension import (
 	get_accounting_dimensions,
 )
 from erpnext.accounts.utils import get_fiscal_year
-
+# from erpnext.custom_workflow import validate_workflow_states, notify_workflow_states
 
 class BudgetError(frappe.ValidationError):
 	pass
@@ -70,6 +70,7 @@ class Budget(Document):
 		self.set_initial_budget()
 		self.calculate_budget()
 		self.calculate_totals()
+		# validate_workflow_states(self)
 
 	def validate_duplicate(self):
 		budget_against_field = frappe.scrub(self.budget_against)
@@ -184,12 +185,14 @@ class Budget(Document):
 	# 		row.update(d)
 
 	def get_accounts(self):
+		# frappe.throw(str(self.cost_center))
 		condition = " and a.budget_type = '{}'".format(self.budget_type) if self.budget_type else ""
 		entries = frappe.db.sql("""select parent_account, a.name as account, a.budget_type, account_number
 							from tabAccount a
 							where a.is_group = 0
 							and (a.freeze_account is null or a.freeze_account != 'Yes')
-							and (a.is_centralized_budget = 0 or (a.is_centralized_budget =1 and a.cost_center='{cost_center}'))
+							
+							and a.company='{company}'
 							and NOT EXISTS( select 1
 								from `tabBudget` b 
 								inner join `tabBudget Account` i
@@ -198,6 +201,7 @@ class Budget(Document):
 								and i.account = a.name
 								and b.cost_center = '{cost_center}'
 								and b.fiscal_year = '{fiscal_year}'
+								and b.company='{company}'
 								and b.name != '{name}'
 							)
 							and EXISTS(select 1 
@@ -205,7 +209,20 @@ class Budget(Document):
 												where s.parent = 'Budget Settings'
 												and s.account_type = a.account_type)
 							{condition}
-						""".format(fiscal_year =self.fiscal_year, cost_center=self.cost_center, name=self.name, condition = condition), as_dict=True)
+
+							
+							 
+							 ORDER BY 
+								CASE root_type
+									WHEN 'Income' THEN 1
+									WHEN 'Expense' THEN 2
+									WHEN 'Asset' THEN 3
+									WHEN 'Liability' THEN 4
+									WHEN 'Equity' THEN 5
+									ELSE 6
+								END;
+							
+						""".format(fiscal_year =self.fiscal_year, cost_center=self.cost_center, name=self.name, condition = condition,company=self.company), as_dict=True)
 		self.set('accounts', [])
 		p_account = ""
 		for d in entries:
@@ -216,6 +233,7 @@ class Budget(Document):
 				p_account = d.parent_account
 			row = self.append('accounts', {})
 			row.update(d)
+
 	
 def delete_committed_consumed_budget(reference=None, reference_no=None):
 	if reference and reference_no:
@@ -253,6 +271,7 @@ def validate_expense_against_budget(args, throw_error=True):
 
 	account_dtl = frappe.get_doc("Account", args.account)
 	account_type = account_dtl.account_type
+	
 	if not account_type:
 		frappe.throw("Account Type missing for Budget account <b>{}</b>".format(args.account))
 
@@ -283,13 +302,13 @@ def validate_expense_against_budget(args, throw_error=True):
 				else:
 					#Check Budget Cost for child cost centers
 					cc_doc = frappe.get_doc("Cost Center", args.cost_center)
-					budget_cost_center = cc_doc.budget_cost_center if cc_doc.use_budget_from_parent else args.cost_center
-				condition = " and b.cost_center='{}'".format(budget_cost_center)
+					#budget_cost_center = cc_doc.budget_cost_center if cc_doc.use_budget_from_parent else args.cost_center
+				condition = " and b.cost_center='{}'".format(args.cost_center)
 				
 			args.is_tree = False
 			if not args.project:
 				args.committed_cost_center = args.cost_center
-				args.cost_center = budget_cost_center
+				args.cost_center = args.cost_center
 			
 			budget_records = frappe.db.sql(
 				"""
@@ -312,7 +331,8 @@ def validate_expense_against_budget(args, throw_error=True):
 				fiscal_year=args.fiscal_year, account=args.account),
 				as_dict=True,
 			)  # nosec
-			# frappe.throw(str(budget_records))
+	
+			
 			if budget_records:
 				validate_budget_records(args, error, budget_records, throw_error)
 			elif throw_error:
@@ -331,6 +351,7 @@ def validate_expense_against_budget(args, throw_error=True):
 	commit_budget(args)
 
 def validate_budget_records(args, error, budget_records, throw_error):
+
 	for budget in budget_records:
 		amount = get_amount(args, budget)
 		yearly_action, monthly_action = get_actions(args, budget)
@@ -344,6 +365,7 @@ def validate_budget_records(args, error, budget_records, throw_error):
 				args.cost_center, budget_account, transaction_date, args.amount, args.fiscal_year
 			)
 			args["month_end_date"] = get_last_day(args.posting_date)
+
 			compare_expense_with_budget(
 				args, error, budget_amount, _("Accumulated Monthly"), monthly_action, budget.budget_against, amount, throw_error
 			)

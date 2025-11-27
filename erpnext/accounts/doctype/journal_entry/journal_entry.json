@@ -64,6 +64,7 @@
   "select_print_heading",
   "addtional_info",
   "payment_order",
+  "emi_sales_installment",
   "column_break3",
   "is_opening",
   "stock_entry",
@@ -104,7 +105,7 @@
    "label": "Entry Type",
    "oldfieldname": "voucher_type",
    "oldfieldtype": "Select",
-   "options": "Journal Entry\nBank Entry\nCash Entry\nContra Entry\nDepreciation Entry\nHire Charge Invoice\nOpening Entry",
+   "options": "Journal Entry\nInter Company Journal Entry\nBank Entry\nCash Entry\nCredit Card Entry\nDebit Note\nCredit Note\nContra Entry\nExcise Entry\nWrite Off Entry\nOpening Entry\nDepreciation Entry\nExchange Rate Revaluation\nExchange Gain Or Loss\nDeferred Revenue\nDeferred Expense\nHire Invoice",
    "reqd": 1,
    "search_index": 1
   },
@@ -197,11 +198,12 @@
   {
    "fieldname": "user_remark",
    "fieldtype": "Small Text",
-   "label": "User Remark",
+   "label": "Narration",
    "no_copy": 1,
    "oldfieldname": "user_remark",
    "oldfieldtype": "Small Text",
-   "print_hide": 1
+   "print_hide": 1,
+   "reqd": 1
   },
   {
    "fieldname": "column_break99",
@@ -253,7 +255,6 @@
    "default": "0",
    "fieldname": "multi_currency",
    "fieldtype": "Check",
-   "hidden": 1,
    "label": "Multi Currency",
    "print_hide": 1
   },
@@ -655,6 +656,14 @@
    "fieldname": "journal_no",
    "fieldtype": "Data",
    "label": "Journal No."
+  },
+  {
+   "default": "0",
+   "fieldname": "emi_sales_installment",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Is EMI Sales Installment",
+   "read_only": 1
   }
  ],
  "icon": "fa fa-file-text",
@@ -669,8 +678,8 @@
    "table_fieldname": "payment_entries"
   }
  ],
- "modified": "2025-08-22 14:28:59.872616",
- "modified_by": "kalden.dorji@thimphutechpark.bt",
+ "modified": "2025-11-20 12:24:14.132287",
+ "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Journal Entry",
  "naming_rule": "By \"Naming Series\" field",
@@ -715,10 +724,10 @@
   }
  ],
  "row_format": "Dynamic",
- "search_fields": "voucher_type,posting_date, due_date, cheque_no",
+ "search_fields": "voucher_type,posting_date, due_date, cheque_no, user_remark",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],
- "title_field": "title",
+ "title_field": "user_remark",
  "track_changes": 1
 }

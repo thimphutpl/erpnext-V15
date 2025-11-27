@@ -7,6 +7,7 @@ erpnext.buying.setup_buying_controller();
 
 frappe.ui.form.on("Material Request", {
 	setup: function (frm) {
+		frm.toggle_display("naming_series", 0);
 		frm.custom_make_buttons = {
 			"Stock Entry": "Issue Material",
 			"Pick List": "Pick List",
@@ -45,6 +46,7 @@ frappe.ui.form.on("Material Request", {
 	},
 
 	onload: function (frm) {
+		frm.toggle_display("naming_series", 0);
 		// add item, if previous view was item
 		erpnext.utils.add_item(frm);
 
@@ -246,8 +248,8 @@ frappe.ui.form.on("Material Request", {
 			args: {
 				args: {
 					item_code: item.item_code,
-					from_warehouse: item.from_warehouse,
-					warehouse: item.warehouse,
+					// from_warehouse: item.from_warehouse,
+					// warehouse: item.warehouse,
 					doctype: frm.doc.doctype,
 					buying_price_list: frappe.defaults.get_default("buying_price_list"),
 					currency: frappe.defaults.get_default("Currency"),
@@ -528,6 +530,36 @@ frappe.ui.form.on("Material Request Item", {
 		item.uom = "";
 		set_schedule_date(frm);
 		frm.events.get_item_data(frm, item, true);
+
+		// Fetch and set item_sub_group automatically, added by ST
+		frappe.call({
+			method: "frappe.client.get_value",
+			args: {
+				doctype: "Item",
+				filters: { name: item.item_code },
+				fieldname: "item_sub_group"
+			},
+			callback: function (r) {
+				if (r.message) {
+					frappe.model.set_value(doctype, name, "item_sub_group", r.message.item_sub_group);
+				}
+			}
+		});
+
+		// Fetch and set item_group automatically, added by st
+		frappe.call({
+			method: "frappe.client.get_value",
+			args: {
+				doctype: "Item",
+				filters: { name: item.item_code },
+				fieldname: "item_group"
+			},
+			callback: function (r) {
+				if (r.message) {
+					frappe.model.set_value(doctype, name, "item_group", r.message.item_group);
+				}
+			}
+		});
 	},
 
 	schedule_date: function (frm, cdt, cdn) {

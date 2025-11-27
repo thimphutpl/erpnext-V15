@@ -372,6 +372,7 @@
   {
    "fieldname": "helper_details_section",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Helper Details "
   },
   {
@@ -388,7 +389,8 @@
   },
   {
    "fieldname": "section_break_ckxd",
-   "fieldtype": "Section Break"
+   "fieldtype": "Section Break",
+   "hidden": 1
   },
   {
    "default": "Natural Resources Development Corporation Limited",
@@ -397,12 +399,6 @@
    "label": "Company",
    "options": "Company",
    "reqd": 1
-  },
-  {
-   "default": "0",
-   "fieldname": "is_disabled",
-   "fieldtype": "Check",
-   "label": "Is Disabled"
   },
   {
    "fieldname": "fuel_type",
@@ -415,12 +411,18 @@
    "fieldtype": "Link",
    "label": "Fuel Expense Account",
    "options": "Account"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_disabled",
+   "fieldtype": "Check",
+   "label": "Is Disabled"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-08-14 12:22:46.141385",
- "modified_by": "kalden.dorji@thimphutechpark.bt",
+ "modified": "2025-11-12 14:43:31.064225",
+ "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Equipment",
  "naming_rule": "Expression (old style)",

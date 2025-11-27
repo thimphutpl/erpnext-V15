@@ -20,7 +20,13 @@ $.extend(erpnext, {
 	},
 
 	toggle_naming_series: function () {
-		if (cur_frm && cur_frm.fields_dict.naming_series) {
+		// if (cur_frm && cur_frm.fields_dict.naming_series) {
+		// 	cur_frm.toggle_display("naming_series", cur_frm.doc.__islocal ? true : false);
+		// }
+		if (cur_frm && cur_frm.fields_dict.naming_series && cur_frm.doc.doctype == "Material Request" || cur_frm.doc.doctype == "Purchase Order" || cur_frm.doc.doctype == "Purchase Receipt" || cur_frm.doc.doctype == "Purchase Invoice") {
+			cur_frm.toggle_display("naming_series",  false);
+		}
+		else if (cur_frm && cur_frm.fields_dict.naming_series) {
 			cur_frm.toggle_display("naming_series", cur_frm.doc.__islocal ? true : false);
 		}
 	},

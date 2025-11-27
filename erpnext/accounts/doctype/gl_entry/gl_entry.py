@@ -14,7 +14,7 @@ from erpnext.accounts.doctype.accounting_dimension.accounting_dimension import (
 	get_checks_for_pl_and_bs_accounts,
 )
 from erpnext.accounts.party import (
-	validate_account_party_type,
+	# validate_account_party_type,
 	validate_party_frozen_disabled,
 	validate_party_gle_currency,
 )
@@ -275,7 +275,7 @@ class GLEntry(Document):
 
 	def validate_party(self):
 		validate_party_frozen_disabled(self.party_type, self.party)
-		validate_account_party_type(self)
+		# validate_account_party_type(self)
 
 	def validate_currency(self):
 		if self.is_cancelled:
@@ -364,7 +364,10 @@ def update_outstanding_amt(
 				f"""
 			select sum(debit_in_account_currency) - sum(credit_in_account_currency)
 			from `tabGL Entry` where voucher_type = 'Journal Entry' and voucher_no = %s
-			and account = %s and (against_voucher is null or against_voucher='') {party_condition}""",
+			and account = %s and (against_voucher is null or against_voucher='' or against_voucher_type in ('Task','Project','Travel Claim','Leave Encashment',
+					'Employee Benefits','Travel Claim Compilation Tool','Process Shift Payment',
+					'Overtime Application','POL','PBVA','Leave Travel Concession', 'Rental Detail', 
+					'Journal Entry', 'Job Card')) {party_condition}""",
 				(against_voucher, account),
 			)[0][0]
 		)

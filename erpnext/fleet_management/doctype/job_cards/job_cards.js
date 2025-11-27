@@ -3,6 +3,16 @@
 
 frappe.ui.form.on('Job Cards', {
 	refresh: function(frm) {
+		frm.set_query("job", "items", function(doc, cdt, cdn) {
+			let row = locals[cdt][cdn];
+		
+			let filters = {};
+			if (row.which === "Service") {
+				filters.item_group = "Service";
+			}
+		
+			return { filters: filters };
+		});
 		if(frm.doc.docstatus===1){
 			frm.add_custom_button(__('Accounting Ledger'), function(){
 				frappe.route_options = {
@@ -95,17 +105,19 @@ frappe.ui.form.on("Job Cards Item", {
 	},
 	"job": function(frm, cdt, cdn) {
 		var item = locals[cdt][cdn]
-		var fields
-		if (item.which == 'Service') {
-			fields = ["item_name", "cost"]
-		} else if (item.which == 'Item') {
-			fields = ["item_name"]
-		}
+		// var fields
+		var fields = ["item_name"]
+		
+		
 		if(item.job) {
+			var filters = {
+				'name': item.job
+			}
+			
 			frappe.call({
 				method: "frappe.client.get_value",
 				args: {
-					doctype: item.which,
+					doctype: "Item",
 					fieldname: fields,
 					filters: {
 						name: item.job
@@ -119,8 +131,29 @@ frappe.ui.form.on("Job Cards Item", {
 				}
 			})
 		}
+	},
+	amount(frm, cdt, cdn) {
+        calculate_total(frm, cdt, cdn);
+    },
+
+    quantity(frm, cdt, cdn) {
+        calculate_total(frm, cdt, cdn);
 	}
 })
+
+function calculate_total(frm, cdt, cdn) {
+    let row = locals[cdt][cdn];
+    let total = (row.amount || 0) * (row.quantity || 0);
+
+    frappe.model.set_value(cdt, cdn, "total_amount", total);
+
+	let parent_total = 0;
+    frm.doc.items.forEach(function(r) {
+        parent_total += r.total_amount || 0;
+    });
+
+   frm.set_value("total_amount", parent_total);
+}
 
 function calculate_datetime(frm, cdt, cdn) {
 	var item = locals[cdt][cdn]

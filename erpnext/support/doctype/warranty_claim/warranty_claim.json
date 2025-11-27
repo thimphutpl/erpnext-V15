@@ -1,18 +1,17 @@
 {
  "actions": [],
  "allow_import": 1,
- "autoname": "naming_series:",
+ "autoname": "format:WC{YY}{MM}{####}",
  "creation": "2013-01-10 16:34:30",
  "doctype": "DocType",
  "document_type": "Setup",
  "engine": "InnoDB",
  "field_order": [
-  "naming_series",
   "status",
+  "serial_no",
   "complaint_date",
   "column_break0",
-  "customer",
-  "serial_no",
+  "customer_track_id",
   "section_break_7",
   "complaint",
   "issue_details",
@@ -48,17 +47,6 @@
  ],
  "fields": [
   {
-   "fieldname": "naming_series",
-   "fieldtype": "Select",
-   "label": "Series",
-   "no_copy": 1,
-   "oldfieldname": "naming_series",
-   "oldfieldtype": "Select",
-   "options": "SER-WRN-.YYYY.-",
-   "reqd": 1,
-   "set_only_once": 1
-  },
-  {
    "default": "Open",
    "fieldname": "status",
    "fieldtype": "Select",
@@ -93,19 +81,6 @@
    "fieldtype": "Link",
    "label": "Serial No",
    "options": "Serial No",
-   "search_index": 1
-  },
-  {
-   "fieldname": "customer",
-   "fieldtype": "Link",
-   "in_global_search": 1,
-   "in_standard_filter": 1,
-   "label": "Customer",
-   "oldfieldname": "customer",
-   "oldfieldtype": "Link",
-   "options": "Customer",
-   "print_hide": 1,
-   "reqd": 1,
    "search_index": 1
   },
   {
@@ -374,16 +349,22 @@
    "options": "Warranty Claim",
    "print_hide": 1,
    "width": "150px"
+  },
+  {
+   "fieldname": "customer_track_id",
+   "fieldtype": "Link",
+   "label": "Customer Track ID",
+   "options": "Customer Track"
   }
  ],
  "icon": "fa fa-bug",
  "idx": 1,
  "links": [],
- "modified": "2023-11-28 17:30:35.676410",
- "modified_by": "Administrator",
+ "modified": "2025-11-11 13:53:12.823724",
+ "modified_by": "kalden.dorji@thimphutechpark.bt",
  "module": "Support",
  "name": "Warranty Claim",
- "naming_rule": "By \"Naming Series\" field",
+ "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
   {
@@ -398,11 +379,9 @@
    "write": 1
   }
  ],
- "search_fields": "status,customer,customer_name,territory",
+ "row_format": "Dynamic",
  "show_name_in_global_search": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": [],
- "timeline_field": "customer",
- "title_field": "customer_name"
+ "states": []
 }

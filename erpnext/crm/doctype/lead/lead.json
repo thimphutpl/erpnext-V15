@@ -313,8 +313,7 @@
    "fieldtype": "Data",
    "hidden": 1,
    "label": "Title",
-   "print_hide": 1,
-   "read_only": 1
+   "print_hide": 1
   },
   {
    "fieldname": "language",
@@ -508,7 +507,7 @@
   {
    "fieldname": "dashboard_tab",
    "fieldtype": "Tab Break",
-   "label": "Connections",
+   "label": "Dashboard",
    "show_dashboard": 1
   }
  ],

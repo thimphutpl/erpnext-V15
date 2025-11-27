@@ -3,15 +3,15 @@
 
 frappe.ui.form.on("POL Advance", {
     setup(frm){
-        frm.set_query("equipment", function(){
-            return {
-                filters: {
-                    'company': frm.doc.company,
-                    'branch': frm.doc.branch,
-                    'disabled': 0,
-                }
-            }
-        });
+        // frm.set_query("equipment", function(){
+        //     return {
+        //         filters: {
+        //             'company': frm.doc.company,
+        //             'branch': frm.doc.branch,
+        //             'disabled': 0,
+        //         }
+        //     }
+        // });
 
         frm.set_query("fuelbook", function(){
             return {

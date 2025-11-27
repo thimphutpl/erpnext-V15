@@ -95,7 +95,7 @@ class TDSRemittance(AccountsController):
 
 	def make_gl_entries(self):
 		gl_entries   = []
-		tds_account  = get_tds_account(self.tax_withholding_category,self.company)
+		tds_account  = get_tds_account(self.tax_withholding_category)
 
 		if flt(self.total_tds) > 0:
 			for item in self.items:
@@ -248,14 +248,14 @@ def get_tds_invoices(tax_withholding_category,company, from_date, to_date, name,
 		(case when t1.party_type = 'Customer' then c.tax_id 
 			when t1.party_type = 'Supplier' then s.supplier_tpn_no else null end) as tpn, 
 		t1.cost_center,
-		(case when t1.tax_amount > 0 and t1.debit > 0 and ifnull(t1.apply_tds) = 1 
+		(case when t1.tax_amount > 0 and t1.debit > 0 and ifnull(t1.apply_tds, 0) = 1 
 				then t1.taxable_amount 
 			else 0 end) as bill_amount, 
-		(case when t1.tax_amount > 0 and t1.debit > 0 and ifnull(t1.apply_tds) = 1 
+		(case when t1.tax_amount > 0 and t1.debit > 0 and ifnull(t1.apply_tds, 0) = 1 
 				then t1.tax_amount
 			when t1.tax_amount = 0 and t1.credit > 0 then t1.credit
 			else 0 end) as tds_amount,
-		(case when t1.tax_amount > 0 and t1.debit > 0 and ifnull(t1.apply_tds) = 1 
+		(case when t1.tax_amount > 0 and t1.debit > 0 and ifnull(t1.apply_tds, 0) = 1 
 				then t1.tax_account
 			else t1.account end) as tax_account, tre.tds_remittance, tre.tds_receipt_update, t.bill_no, t.bill_date,
 		(case when tre.tds_receipt_update is not null then 'Paid' else 'Unpaid' end) remittance_status

@@ -17,13 +17,14 @@ class JobCardsItem(Document):
 		amount: DF.Currency
 		checked_by: DF.Link | None
 		imprest: DF.Check
-		job: DF.DynamicLink
+		job: DF.Link
 		job_name: DF.Data | None
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
 		quantity: DF.Float
 		stock_entry: DF.Link | None
+		total_amount: DF.Currency
 		which: DF.Literal["", "Service", "Item"]
 	# end: auto-generated types
 	pass

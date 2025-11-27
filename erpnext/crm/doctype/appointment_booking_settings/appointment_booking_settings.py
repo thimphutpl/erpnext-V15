@@ -37,7 +37,7 @@ class AppointmentBookingSettings(Document):
 		success_redirect_url: DF.Data | None
 	# end: auto-generated types
 
-	agent_list: typing.ClassVar[list] = []  # Hack
+	agent_list = []  # Hack
 	min_date = "01/01/1970 "
 	format_string = "%d/%m/%Y %H:%M:%S"
 
@@ -46,13 +46,13 @@ class AppointmentBookingSettings(Document):
 
 	def save(self):
 		self.number_of_agents = len(self.agent_list)
-		super().save()
+		super(AppointmentBookingSettings, self).save()
 
 	def validate_availability_of_slots(self):
 		for record in self.availability_of_slots:
 			from_time = datetime.datetime.strptime(self.min_date + record.from_time, self.format_string)
 			to_time = datetime.datetime.strptime(self.min_date + record.to_time, self.format_string)
-			to_time - from_time
+			timedelta = to_time - from_time
 			self.validate_from_and_to_time(from_time, to_time, record)
 			self.duration_is_divisible(from_time, to_time)
 
@@ -66,4 +66,6 @@ class AppointmentBookingSettings(Document):
 	def duration_is_divisible(self, from_time, to_time):
 		timedelta = to_time - from_time
 		if timedelta.total_seconds() % (self.appointment_duration * 60):
-			frappe.throw(_("The difference between from time and To Time must be a multiple of Appointment"))
+			frappe.throw(
+				_("The difference between from time and To Time must be a multiple of Appointment")
+			)

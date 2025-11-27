@@ -14,6 +14,7 @@ class AssetFinanceBook(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		additional_number_of_depreciations: DF.Float
 		asset_sub_category: DF.Link | None
 		daily_prorata_based: DF.Check
 		depreciation_method: DF.Literal["", "Straight Line", "Double Declining Balance", "Written Down Value", "Manual"]

@@ -1,0 +1,522 @@
+{
+ "actions": [],
+ "autoname": "hash",
+ "creation": "2021-09-22 11:56:15.959043",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "item_code",
+  "uom",
+  "business_activity",
+  "column_break_2",
+  "item_name",
+  "item_subgroup",
+  "is_foc_item",
+  "column_break_4",
+  "item_group",
+  "selling_price",
+  "sim_type",
+  "section_break_4",
+  "rate",
+  "actual_qty",
+  "purchase_limit",
+  "column_break_10",
+  "qty",
+  "tds_deducted_by_customer",
+  "discount_percent",
+  "interest_amount",
+  "column_break_12",
+  "base_amount",
+  "amount",
+  "data_package",
+  "total_data_package",
+  "discount_amount",
+  "serial_number_details_section",
+  "serial_number",
+  "ime_number",
+  "column_break_11",
+  "to_serial_number",
+  "ime_number_ii",
+  "commission_section",
+  "commission_percent",
+  "commission_amount",
+  "column_break_17",
+  "taxable_percent",
+  "taxable_amount",
+  "column_break_19",
+  "tds_percent",
+  "tds_amount",
+  "section_break_38",
+  "total_amount_received",
+  "account_details_section",
+  "income_account",
+  "prepaid_income_account",
+  "commission_account",
+  "discount_account",
+  "tds_deducted_by_customer_account",
+  "column_break_28",
+  "cash_bank_account",
+  "tds_account",
+  "prepaid_expense_account",
+  "column_break_30",
+  "expense_account",
+  "other_details_section",
+  "warehouse",
+  "column_break_35",
+  "cost_center",
+  "so_detail",
+  "stock_qty",
+  "stock_uom",
+  "conversion_factor",
+  "target_warehouse",
+  "allow_zero_valuation_rate",
+  "section_break_11",
+  "description"
+ ],
+ "fields": [
+  {
+   "columns": 2,
+   "fieldname": "item_code",
+   "fieldtype": "Link",
+   "ignore_user_permissions": 1,
+   "in_list_view": 1,
+   "label": "Item Code",
+   "options": "Item",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "columns": 2,
+   "fetch_from": "item_code.item_name",
+   "fieldname": "item_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Item Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_4",
+   "fieldtype": "Section Break",
+   "label": "Quantity & Rate Details"
+  },
+  {
+   "columns": 2,
+   "fieldname": "rate",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Rate",
+   "reqd": 1
+  },
+  {
+   "columns": 1,
+   "default": "1",
+   "fieldname": "qty",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Qty",
+   "reqd": 1
+  },
+  {
+   "columns": 2,
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "label": "Amount",
+   "options": "Company:company:default_currency",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.item_code",
+   "fieldname": "selling_price",
+   "fieldtype": "Link",
+   "label": "Selling Price",
+   "options": "Selling Price",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "item_code.stock_uom",
+   "fetch_if_empty": 1,
+   "fieldname": "uom",
+   "fieldtype": "Link",
+   "label": "UOM",
+   "options": "UOM"
+  },
+  {
+   "fieldname": "column_break_12",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "item_code.item_sub_group",
+   "fieldname": "item_subgroup",
+   "fieldtype": "Link",
+   "label": "Item Subgroup",
+   "options": "Item Sub Group",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_10",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "item_code.item_group",
+   "fieldname": "item_group",
+   "fieldtype": "Link",
+   "label": "Item Group",
+   "options": "Item Group",
+   "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "commission_section",
+   "fieldtype": "Section Break",
+   "label": "Commission Details"
+  },
+  {
+   "fieldname": "tds_percent",
+   "fieldtype": "Percent",
+   "label": "TDS(%)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "taxable_percent",
+   "fieldtype": "Percent",
+   "label": "Taxable(%)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "commission_percent",
+   "fieldtype": "Percent",
+   "label": "Commission(%)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_17",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_19",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "commission_amount",
+   "fieldtype": "Currency",
+   "label": "Commission Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "taxable_amount",
+   "fieldtype": "Currency",
+   "label": "Taxable Amount",
+   "read_only": 1
+  },
+  {
+   "columns": 1,
+   "fieldname": "tds_amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "TDS Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_11",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "commission_account",
+   "fieldtype": "Link",
+   "label": "Commission Account",
+   "options": "Account",
+   "read_only": 1
+  },
+  {
+   "fieldname": "tds_account",
+   "fieldtype": "Link",
+   "label": "TDS Account",
+   "options": "Account",
+   "read_only": 1
+  },
+  {
+   "fieldname": "account_details_section",
+   "fieldtype": "Section Break",
+   "label": "Accounting Details"
+  },
+  {
+   "fieldname": "column_break_28",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_30",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "other_details_section",
+   "fieldtype": "Section Break",
+   "label": "Other Details"
+  },
+  {
+   "fieldname": "warehouse",
+   "fieldtype": "Link",
+   "label": "Warehouse",
+   "options": "Warehouse",
+   "read_only": 1
+  },
+  {
+   "fieldname": "so_detail",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Against Sales Order Item",
+   "read_only": 1
+  },
+  {
+   "fieldname": "stock_qty",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Stock Qty",
+   "read_only": 1
+  },
+  {
+   "fieldname": "stock_uom",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Stock UOM",
+   "read_only": 1
+  },
+  {
+   "fieldname": "conversion_factor",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Conversion Factor",
+   "read_only": 1
+  },
+  {
+   "fieldname": "target_warehouse",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Target Warehouse",
+   "options": "Warehouse",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "allow_zero_valuation_rate",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Allow Zero Valuation Rate",
+   "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "serial_number",
+   "fieldtype": "Data",
+   "label": "From Serial Number"
+  },
+  {
+   "fieldname": "expense_account",
+   "fieldtype": "Link",
+   "label": "Expense Account",
+   "options": "Account",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cost_center",
+   "fieldtype": "Link",
+   "label": "Cost Center",
+   "options": "Cost Center",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_35",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "item_code.business_activity",
+   "fieldname": "business_activity",
+   "fieldtype": "Link",
+   "label": "Business Activity",
+   "options": "Business Activity",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "income_account",
+   "fieldtype": "Link",
+   "label": "Income Account",
+   "options": "Account",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cash_bank_account",
+   "fieldtype": "Link",
+   "label": "Cash/Bank Account",
+   "options": "Account",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_amount_received",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Receivable Amount",
+   "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "to_serial_number",
+   "fieldtype": "Data",
+   "label": "To Serial Number"
+  },
+  {
+   "fieldname": "serial_number_details_section",
+   "fieldtype": "Section Break",
+   "label": "Serial Number details"
+  },
+  {
+   "allow_on_submit": 1,
+   "description": "<b>Applicable for mobile phone</b>",
+   "fieldname": "ime_number",
+   "fieldtype": "Data",
+   "label": "IME Number I"
+  },
+  {
+   "fieldname": "base_amount",
+   "fieldtype": "Currency",
+   "hidden": 1,
+   "label": "Base Amount",
+   "options": "Company:company:default_currency",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.item_group != 'Services'",
+   "description": "<b>This is actual quantity available in stock</b>",
+   "fieldname": "actual_qty",
+   "fieldtype": "Float",
+   "label": "Actual Qty",
+   "read_only": 1
+  },
+  {
+   "fieldname": "discount_amount",
+   "fieldtype": "Currency",
+   "label": "Discount Amount"
+  },
+  {
+   "fieldname": "discount_percent",
+   "fieldtype": "Currency",
+   "label": "Discount Percent"
+  },
+  {
+   "fieldname": "discount_account",
+   "fieldtype": "Link",
+   "label": "Discount Account",
+   "options": "Account",
+   "read_only": 1
+  },
+  {
+   "fieldname": "purchase_limit",
+   "fieldtype": "Currency",
+   "label": "Purchase Limit",
+   "read_only": 1
+  },
+  {
+   "description": "<b>Applicable for mobile phone</b>",
+   "fieldname": "ime_number_ii",
+   "fieldtype": "Data",
+   "label": "IME Number II"
+  },
+  {
+   "default": "0",
+   "description": "<b>Tick this for Free Of Cost Item</b>",
+   "fieldname": "is_foc_item",
+   "fieldtype": "Check",
+   "label": "IS FOC/Discount Item"
+  },
+  {
+   "description": "<b>Provide brief Description of Material</b>",
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Description"
+  },
+  {
+   "fieldname": "section_break_11",
+   "fieldtype": "Section Break",
+   "label": "Description/Remark"
+  },
+  {
+   "fieldname": "sim_type",
+   "fieldtype": "Select",
+   "label": "Sim Type",
+   "options": "\nNEW SIM\nSIM REPLACEMENT\nSIM RECONNECTION"
+  },
+  {
+   "fieldname": "section_break_38",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "tds_deducted_by_customer",
+   "fieldtype": "Currency",
+   "label": "TDS Deducted By Customer"
+  },
+  {
+   "depends_on": "eval:doc.tds_deducted_by_customer",
+   "fieldname": "tds_deducted_by_customer_account",
+   "fieldtype": "Link",
+   "label": "TDS Deducted By Customer Account",
+   "options": "Account",
+   "read_only": 1
+  },
+  {
+   "fieldname": "data_package",
+   "fieldtype": "Currency",
+   "label": "Data Package",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "total_data_package",
+   "fieldtype": "Currency",
+   "label": "Total Data Package",
+   "read_only": 1
+  },
+  {
+   "fieldname": "prepaid_income_account",
+   "fieldtype": "Link",
+   "label": "Prepaid Income Account",
+   "options": "Account",
+   "read_only": 1
+  },
+  {
+   "fieldname": "prepaid_expense_account",
+   "fieldtype": "Link",
+   "label": "Prepaid Expense Account",
+   "options": "Account",
+   "read_only": 1
+  },
+  {
+   "fieldname": "interest_amount",
+   "fieldtype": "Currency",
+   "label": "Interest Amount",
+   "read_only": 1
+  }
+ ],
+ "istable": 1,
+ "links": [],
+ "modified": "2025-11-20 16:18:12.957847",
+ "modified_by": "Administrator",
+ "module": "Selling",
+ "name": "EMI Sales Item",
+ "naming_rule": "Random",
+ "owner": "Administrator",
+ "permissions": [],
+ "quick_entry": 1,
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

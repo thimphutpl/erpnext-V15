@@ -16,14 +16,14 @@ class EquipmentRequestItem(Document):
 
 		approved: DF.Check
 		approved_qty: DF.Data | None
-		equipment_type: DF.Link
+		equipment_id: DF.Link
 		from_date: DF.Date
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
 		percent_share: DF.Percent
 		place: DF.Data
-		qty: DF.Data
+		qty: DF.Data | None
 		rate_type: DF.Literal["", "With Fuel (Internal)", "Without Fuel (Internal)", "Cft - Broadleaf (Internal)", "Cft - Conifer (Internal)", "With Fuel (External)", "Without Fuel (External)", "Cft - Broadleaf (External)", "Cft - Conifer (External)"]
 		reason: DF.Text | None
 		to_date: DF.Date

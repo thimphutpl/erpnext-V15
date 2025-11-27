@@ -29,15 +29,14 @@ class WarrantyClaim(TransactionBase):
 		contact_email: DF.Data | None
 		contact_mobile: DF.Data | None
 		contact_person: DF.Link | None
-		customer: DF.Link
 		customer_address: DF.Link | None
 		customer_group: DF.Link | None
 		customer_name: DF.Data | None
+		customer_track_id: DF.Link | None
 		description: DF.SmallText | None
 		from_company: DF.Data | None
 		item_code: DF.Link | None
 		item_name: DF.Data | None
-		naming_series: DF.Literal["SER-WRN-.YYYY.-"]
 		resolution_date: DF.Datetime | None
 		resolution_details: DF.Text | None
 		resolved_by: DF.Link | None

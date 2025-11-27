@@ -1,6 +1,7 @@
 {
  "actions": [],
  "allow_import": 1,
+ "allow_rename": 1,
  "creation": "2023-05-29 13:02:17.121296",
  "description": "A logical Warehouse against which stock entries are made.",
  "doctype": "DocType",
@@ -276,7 +277,7 @@
  "idx": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2025-02-17 18:29:56.133618",
+ "modified": "2025-11-24 09:58:12.487447",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Warehouse",
@@ -329,6 +330,7 @@
    "role": "Manufacturing User"
   }
  ],
+ "row_format": "Dynamic",
  "show_name_in_global_search": 1,
  "sort_field": "modified",
  "sort_order": "DESC",

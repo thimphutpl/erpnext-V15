@@ -379,9 +379,12 @@ def make_entry(args, adv_adj, update_outstanding, from_repost=False):
 	gle.update(args)
 	gle.flags.ignore_permissions = 1
 	gle.flags.from_repost = from_repost
-	gle.flags.adv_adj = adv_adj
-	gle.flags.update_outstanding = update_outstanding or "Yes"
+	gle.validate()
+	gle.db_insert()
+	gle.run_method("on_update_with_args", adv_adj,
+				   update_outstanding, from_repost)
 	gle.flags.notify_update = False
+	gle.flags.ignore_validate = True
 	gle.submit()
 
 	if not from_repost and gle.voucher_type != "Period Closing Voucher":

@@ -20,17 +20,15 @@ class StockEntryDetail(Document):
 		allow_alternative_item: DF.Check
 		allow_zero_valuation_rate: DF.Check
 		amount: DF.Currency
-		barcode: DF.Data | None
 		basic_amount: DF.Currency
 		basic_rate: DF.Currency
 		batch_no: DF.Link | None
 		bom_no: DF.Link | None
-		business_activity: DF.Link
+		business_activity: DF.Link | None
 		conversion_factor: DF.Float
 		cost_center: DF.Link | None
 		description: DF.TextEditor | None
 		expense_account: DF.Link | None
-		has_item_scanned: DF.Check
 		image: DF.Attach | None
 		is_finished_item: DF.Check
 		is_scrap_item: DF.Check

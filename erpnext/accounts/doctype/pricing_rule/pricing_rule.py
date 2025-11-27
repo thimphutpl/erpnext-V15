@@ -400,8 +400,8 @@ def get_pricing_rule_for_item(args, doc=None, for_validate=False):
 	if isinstance(doc, str):
 		doc = json.loads(doc)
 
-	if doc:
-		doc = frappe.get_doc(doc)
+	# if doc:
+	# 	doc = frappe.get_doc(doc)
 
 	if args.get("is_free_item") or args.get("parenttype") == "Material Request":
 		return {}

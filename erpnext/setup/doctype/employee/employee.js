@@ -16,19 +16,38 @@ erpnext.setup.EmployeeController = class EmployeeController extends frappe.ui.fo
 	}
 
 	refresh() {
-		erpnext.toggle_naming_series();
+		// erpnext.toggle_naming_series();
 	}
 };
 
 frappe.ui.form.on("Employee", {
 	onload: function (frm) {
-		// frm.set_query("department", function () {
-		// 	return {
-		// 		filters: {
-		// 			company: frm.doc.company,
-		// 		},
-		// 	};
-		// });
+		frm.set_query("department", function () {
+			return {
+				filters: {
+					company: frm.doc.company,
+					is_department: 1
+				},
+			};
+		});
+
+		frm.set_query("division", function(){
+			return {
+				filters: {
+					is_division: 1,
+					parent_department: frm.doc.department
+				}
+			}
+		});
+
+		frm.set_query("section", function(){
+			return {
+				filters: {
+					is_section: 1,
+					parent_department: frm.doc.division
+				}
+			}
+		});
 	},
 	prefered_contact_email: function (frm) {
 		frm.events.update_contact(frm);

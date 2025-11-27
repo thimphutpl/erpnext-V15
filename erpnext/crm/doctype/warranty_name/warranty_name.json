@@ -1,0 +1,55 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:warranty_name",
+ "creation": "2025-11-11 13:23:46.883674",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "warranty_name",
+  "itemservice"
+ ],
+ "fields": [
+  {
+   "fieldname": "warranty_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Warranty Name",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "itemservice",
+   "fieldtype": "Data",
+   "label": "Warranty Type",
+   "options": "Item\nService"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-11-12 12:13:35.947527",
+ "modified_by": "Administrator",
+ "module": "CRM",
+ "name": "Warranty Name",
+ "naming_rule": "By fieldname",
+ "owner": "kalden.dorji@thimphutechpark.bt",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

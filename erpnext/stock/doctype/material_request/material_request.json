@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_import": 1,
- "autoname": "naming_series:",
+ "autoname": "MR.YYYY.MM.#####",
  "creation": "2013-03-07 14:48:38",
  "doctype": "DocType",
  "document_type": "Document",
@@ -43,6 +43,7 @@
   "select_print_heading",
   "reference",
   "job_card",
+  "enote_id",
   "column_break_35",
   "work_order",
   "connections_tab"
@@ -56,13 +57,12 @@
   {
    "fieldname": "naming_series",
    "fieldtype": "Select",
+   "hidden": 1,
    "label": "Series",
    "no_copy": 1,
    "oldfieldname": "naming_series",
    "oldfieldtype": "Select",
-   "options": "MAT-MR-.YYYY.-",
-   "print_hide": 1,
-   "reqd": 1,
+   "options": "\nConsumables\nFixed Asset\nSales Product\nSpare Parts\nServices Miscellaneous\nServices Works\nLabour Contract\nREORDER\nMAT-MR-.YYYY.-",
    "set_only_once": 1
   },
   {
@@ -353,8 +353,6 @@
    "fieldtype": "Link",
    "label": "Branch",
    "no_copy": 1,
-   "oldfieldname": "naming_series",
-   "oldfieldtype": "Select",
    "options": "Branch",
    "print_hide": 1,
    "reqd": 1,
@@ -368,17 +366,24 @@
    "options": "Cost Center",
    "read_only": 1,
    "reqd": 1
+  },
+  {
+   "fieldname": "enote_id",
+   "fieldtype": "Link",
+   "label": "eNote ID",
+   "options": "eNote",
+   "read_only": 1
   }
  ],
  "icon": "fa fa-ticket",
  "idx": 70,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-08-12 16:09:25.462491",
- "modified_by": "kalden.dorji@thimphutechpark.bt",
+ "modified": "2025-11-24 10:29:18.630108",
+ "modified_by": "Administrator",
  "module": "Stock",
  "name": "Material Request",
- "naming_rule": "By \"Naming Series\" field",
+ "naming_rule": "Expression (old style)",
  "owner": "Administrator",
  "permissions": [
   {

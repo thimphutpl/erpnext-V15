@@ -15,7 +15,6 @@
   "col_break1",
   "delivery_date",
   "item_name",
-  "lot_number",
   "section_break_5",
   "description",
   "item_group",
@@ -145,6 +144,7 @@
    "default": "0",
    "fieldname": "ensure_delivery_based_on_produced_serial_no",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "Ensure Delivery Based on Produced Serial No"
   },
   {
@@ -985,9 +985,9 @@
    "default": "General Rate",
    "fieldname": "sp_type",
    "fieldtype": "Select",
+   "hidden": 1,
    "label": "Selling Price Type",
-   "options": "General Rate\nCustomer Based Rate",
-   "reqd": 1
+   "options": "General Rate\nCustomer Based Rate"
   },
   {
    "depends_on": "eval:doc.item_code && doc.sp_type == \"General Rate\"",
@@ -1003,19 +1003,13 @@
    "fieldtype": "Link",
    "label": "Customer Price List",
    "options": "Customer Selling Price"
-  },
-  {
-   "fieldname": "lot_number",
-   "fieldtype": "Link",
-   "label": "Lot Number",
-   "options": "Lot List"
   }
  ],
  "idx": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-08-31 22:13:11.612683",
- "modified_by": "Administrator",
+ "modified": "2025-11-21 14:46:48.742163",
+ "modified_by": "kalden.dorji@thimphutechpark.bt",
  "module": "Selling",
  "name": "Sales Order Item",
  "naming_rule": "Random",

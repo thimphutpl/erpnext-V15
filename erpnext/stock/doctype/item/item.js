@@ -49,9 +49,16 @@ frappe.ui.form.on("Item", {
 		if (frm.doc.variant_of) {
 			frm.fields_dict["attributes"].grid.set_column_disp("attribute_value", true);
 		}
-
-		if (frm.doc.is_fixed_asset) {
-			frm.trigger("set_asset_naming_series");
+		frappe.db.get_value("Item Group", frm.doc.item_group, "is_fixed_asset", (r)=>{
+			if(r){
+				frm.set_value("is_fixed_asset", r.is_fixed_asset);
+				frm.refresh_field("is_fixed_asset");
+			}
+		})
+		if(frm.doc.__islocal){
+			if (frm.doc.is_fixed_asset) {
+				frm.trigger("set_asset_naming_series");
+			}
 		}
 	},
 
@@ -197,6 +204,8 @@ frappe.ui.form.on("Item", {
 		});
 
 		frm.toggle_reqd("customer", frm.doc.is_customer_provided_item ? 1 : 0);
+		frm.events.apply_filter(frm)
+
 	},
 
 	validate: function (frm) {
@@ -206,26 +215,64 @@ frappe.ui.form.on("Item", {
 	image: function () {
 		refresh_field("image_view");
 	},
-
+	
 	is_customer_provided_item: function (frm) {
 		frm.toggle_reqd("customer", frm.doc.is_customer_provided_item ? 1 : 0);
 	},
-	item_group: function (frm) {
+	asset_category: function(frm){
+		frm.events.apply_filter(frm)
+	},
+	// item_group: function (frm) {
 
 		
-		// frappe.call({
-		// 	method: "erpnext.stock.doctype.item.item.get_is_fixed_asset",
-		// 	args: {
-		// 		item_group: frm.doc.item_group,
-		// 	},
-		// 	callback: function (r) {
-		// 		frm.set_value("is_fixed_asset", r.message ? 1 : 0);
-		// 		frm.set_value("is_stock_item", frm.doc.is_fixed_asset ? 0 : 1);
-		// 	},
-		// });
-		if (frm.doc.item_group === 'Fixed Asset'){
-			frm.set_value("is_fixed_asset", 1);
-		} 
+	// 	// frappe.call({
+	// 	// 	method: "erpnext.stock.doctype.item.item.get_is_fixed_asset",
+	// 	// 	args: {
+	// 	// 		item_group: frm.doc.item_group,
+	// 	// 	},
+	// 	// 	callback: function (r) {
+	// 	// 		frm.set_value("is_fixed_asset", r.message ? 1 : 0);
+	// 	// 		frm.set_value("is_stock_item", frm.doc.is_fixed_asset ? 0 : 1);
+	// 	// 	},
+	// 	// });
+	// 	if (frm.doc.item_group === 'Fixed Asset'){
+	// 		frm.set_value("is_fixed_asset", 1);
+	// 	} 
+	// },
+	item_group:function(frm){
+		frm.events.apply_filter(frm)
+		if(frm.doc.item_group == 'Fixed Asset'){
+			frm.set_value('is_fixed_asset',1)
+			frm.trigger('is_fixed_asset')
+		}
+		if (frm.doc.item_group == "Service"){
+			frm.set_value("is_stock_item", 0);
+			frm.set_value('is_fixed_asset',0)
+			frm.trigger('is_service_item')
+		}
+		if (frm.doc.item_group == "Consumable"){
+			frm.set_value("is_stock_item", 1);
+			frm.set_value("is_fixed_asset", 0);
+			frm.trigger('is_stock_item')
+		}
+		// if(frm.doc.item_group == 'Fixed Asset'){
+		// 	frm.set_value("is_stock_item", frm.doc.is_fixed_asset ? 0 : 1);
+		// }
+		if(in_list(["Tata Vehicles", "Toyota Vehicle", "Eicher Vehicle", "SML Vehicle"], frm.doc.item_group)) {
+			frm.set_value("valuation_method", "SPECIFIC");
+			frm.set_value("has_serial_no", 1);
+		}
+		if(in_list(["Fixed Asset", "Consumable", "Service", "Export"], frm.doc.item_group)){
+			frm.toggle_reqd("parts_no", 0);
+		}else{
+			frm.toggle_reqd("parts_no", 0);
+		}
+	},
+	is_fixed_asset: function (frm) {
+		if(frm.doc.is_fixed_asset == 1){
+			frm.set_value("is_stock_item", 0);
+			frm.refresh_field("is_stock_item");
+		}
 	},
 	// is_fixed_asset: function (frm) {
 	// 	// set serial no to false & toggles its visibility
@@ -268,12 +315,46 @@ frappe.ui.form.on("Item", {
 			frm.set_value("has_batch_no", 0);
 			frm.set_value("create_new_batch", 0);
 			frm.set_value("has_serial_no", 0);
+			frm.set_value("is_fixed_asset", 0);
+			frm.refresh_fields();
 		}
 	},
 
 	has_variants: function (frm) {
 		erpnext.item.toggle_attributes(frm);
 	},
+	apply_filter:function(frm){
+		
+		// if (frm.doc.item_group){
+		// 	frm.set_query('item_sub_group',(doc)=>{
+		// 		return {
+		// 			filters: {
+		// 						'parent_item_group':frm.doc.item_group,
+		// 					   'is_sub_group':1
+		// 					}
+		// 		}
+				
+		// 	})
+		// }
+		if (frm.doc.asset_category){
+			frm.set_query('asset_sub_category',(doc)=>{
+				return {
+					filters: {
+						'asset_category':frm.doc.asset_category,
+					}
+				}
+				
+			})
+		}
+		frm.set_query('item_group',(doc)=>{
+			return {
+				filters: {
+						   'is_sub_group':0
+						}
+			}
+			
+		})
+	}
 });
 
 
@@ -392,15 +473,22 @@ $.extend(erpnext.item, {
 			};
 		};
 
-		frm.fields_dict["item_group"].get_query = function (doc, cdt, cdn) {
+		// frm.fields_dict["item_group"].get_query = function (doc, cdt, cdn) {
+		// 	return {
+		// 		filters: [
+		// 			["Item Group", "is_group", "=", 1],
+		// 			["Item Group", "parent_item_group", "!=", ""],
+		// 			["Item Group", "docstatus", "!=", 2],
+		// 		],
+		// 	};
+		// };
+		frm.fields_dict['item_group'].get_query = function(doc, cdt, cdn) {
 			return {
 				filters: [
-					["Item Group", "is_group", "=", 1],
-					["Item Group", "parent_item_group", "!=", ""],
-					["Item Group", "docstatus", "!=", 2],
-				],
-			};
-		};
+					['Item Group', 'docstatus', '!=', 2]
+				]
+			}
+		}
 
 		frm.fields_dict["item_defaults"].grid.get_field("deferred_revenue_account").get_query = function (
 			doc,

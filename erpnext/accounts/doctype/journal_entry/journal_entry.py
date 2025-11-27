@@ -51,15 +51,9 @@ class JournalEntry(AccountsController):
 		from frappe.types import DF
 
 		accounts: DF.Table[JournalEntryAccount]
-		advance_payment: DF.Check
 		amended_from: DF.Link | None
 		apply_tds: DF.Check
-		approver: DF.Link | None
 		auto_repeat: DF.Link | None
-		bank_account_number: DF.Data | None
-		bank_app_ref_no: DF.Data | None
-		bank_branch: DF.Data | None
-		bank_name: DF.Data | None
 		bank_payment: DF.Link | None
 		bill_date: DF.Date | None
 		bill_no: DF.Data | None
@@ -68,22 +62,19 @@ class JournalEntry(AccountsController):
 		cheque_no: DF.Data | None
 		clearance_date: DF.Date | None
 		company: DF.Link
-		declaration_reference_no: DF.Data | None
 		difference: DF.Currency
-		dispatch_number: DF.Data | None
 		due_date: DF.Date | None
-		final_payment: DF.Check
+		emi_sales_installment: DF.Check
 		finance_book: DF.Link | None
 		from_template: DF.Link | None
-		ifsc_code: DF.Data | None
 		inter_company_journal_entry_reference: DF.Link | None
 		is_opening: DF.Literal["No", "Yes"]
 		is_system_generated: DF.Check
+		journal_no: DF.Data | None
 		letter_head: DF.Link | None
 		mode_of_payment: DF.Link | None
 		money_receipt_no: DF.Data | None
 		money_receipt_prefix: DF.Data | None
-		month: DF.Literal["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
 		multi_currency: DF.Check
 		naming_series: DF.Link
 		paid_loan: DF.Data | None
@@ -93,27 +84,21 @@ class JournalEntry(AccountsController):
 		posting_date: DF.Date
 		process_deferred_accounting: DF.Link | None
 		remark: DF.SmallText | None
-		remit_bank: DF.Literal["", "Bank of Bhutan Limited", "Bhutan National Bank Limited", "Bhutan Development Bank Limited", "National Pension and Provident Fund", "Royal Insurance Corporation of Bhutan Limited", "Bhutan Insurance Limited"]
-		remit_purpose: DF.Literal["", "Salary Remittance", "Financial Institution Loan", "Group Insurance Scheme", "Provident Fund", "Salary Saving Scheme"]
-		remitter_tpan_no: DF.Data | None
 		repost_required: DF.Check
 		reversal_of: DF.Link | None
 		select_cheque_lot: DF.Link | None
 		select_print_heading: DF.Link | None
 		stock_entry: DF.Link | None
-		supplier_name: DF.Link | None
 		tax_withholding_category: DF.Link | None
 		title: DF.Data | None
 		total_amount: DF.Currency
 		total_amount_currency: DF.Link | None
-		total_amount_in_words: DF.LongText | None
+		total_amount_in_words: DF.Data | None
 		total_credit: DF.Currency
 		total_debit: DF.Currency
 		use_check_lot: DF.Check
-		user_remark: DF.SmallText | None
-		vendor_invoice_no: DF.SmallText | None
-		verifier: DF.Link | None
-		voucher_type: DF.Literal["Journal Entry", "Inter Company Journal Entry", "Bank Entry", "Cash Entry", "Credit Card Entry", "Debit Note", "Credit Note", "Contra Entry", "Excise Entry", "Write Off Entry", "Opening Entry", "Depreciation Entry", "Exchange Rate Revaluation", "Exchange Gain Or Loss", "Deferred Revenue", "Deferred Expense"]
+		user_remark: DF.SmallText
+		voucher_type: DF.Literal["Journal Entry", "Inter Company Journal Entry", "Bank Entry", "Cash Entry", "Credit Card Entry", "Debit Note", "Credit Note", "Contra Entry", "Excise Entry", "Write Off Entry", "Opening Entry", "Depreciation Entry", "Exchange Rate Revaluation", "Exchange Gain Or Loss", "Deferred Revenue", "Deferred Expense", "Hire Invoice"]
 		write_off_amount: DF.Currency
 		write_off_based_on: DF.Literal["Accounts Receivable", "Accounts Payable"]
 	# end: auto-generated types
@@ -127,7 +112,49 @@ class JournalEntry(AccountsController):
 			frappe.throw("Please set prefix {}".format(
 				frappe.get_desk_link("Journal Entry Series", self.naming_series)
 			))
-		self.name = make_autoname(str(prefix) + ".YYYY.MM.####")	
+		self.name = make_autoname(str(prefix) + ".YYYY.MM.####")
+
+	    # Ver 1.0 by SSK on 09/08/2016, autoname() method is added
+	# def autoname(self):
+    #             series_seq = ""
+    #             if self.voucher_type == 'Journal Entry':
+    #                     series_seq = 'JEJV'
+    #             elif self.voucher_type == 'Bank Entry':
+    #                     if self.naming_series == 'Bank Payment Voucher':
+    #                             series_seq = 'JEBP'
+    #                     elif self.naming_series == 'Bank Receipt Voucher':
+    #                             series_seq = 'JEBR'
+    #                     else:
+    #                             series_seq = 'JEBE'
+    #             elif self.voucher_type == 'Cash Entry':
+    #                     if self.naming_series == 'Cash Payment Voucher':
+    #                             series_seq = 'JECP'
+    #                     elif self.naming_series == 'Cash Receipt Voucher':
+    #                             series_seq = 'JECR'
+    #                     else:
+    #                             series_seq = 'JECA'
+    #             elif self.voucher_type == 'Debit Note':
+    #                     series_seq = 'JEDN'
+    #             elif self.voucher_type == 'Credit Note':
+    #                     series_seq = 'JECN'
+    #             elif self.voucher_type == 'Contra Entry':
+    #                     series_seq = 'JECE'
+    #             elif self.voucher_type == 'Excise Entry':
+    #                     series_seq = 'JEEE'
+    #             elif self.voucher_type == 'Write Off Entry':
+    #                     series_seq = 'JEWE'
+    #             elif self.voucher_type == 'Opening Entry':
+    #                     series_seq = 'JEOP'
+    #             elif self.voucher_type == 'Depreciation Entry':
+    #                     series_seq = 'JEDE'
+    #             elif self.voucher_type == 'Maintenance Invoice':
+    #                     series_seq = 'JEMA'
+    #             elif self.voucher_type == 'Hire Invoice':
+    #                     series_seq = 'JEHI'
+	# 			else:
+	# 				series_seq = 'JEJE'
+
+    #             self.name = make_autoname(str(series_seq) + '.YY.MM.#####')	
 
 	def validate(self):
 		if self.voucher_type == "Opening Entry":
@@ -162,19 +189,13 @@ class JournalEntry(AccountsController):
 		self.validate_inter_company_accounts()
 		self.validate_depr_entry_voucher_type()
 		self.validate_advance_accounts()
-		# for a in self.accounts:
-		# 	# if a.project:
-		# 	if a.project:
-		# 		if self.voucher_type != "Opening Entry" and not a.task:
-		# 			frappe.throw("Task is mandatory in row {}".format(row))
-		# 		# if not a.business_activity:
-		# 		# 	frappe.throw("Business Activity is mandatory")
+
 		if self.docstatus == 0:
 			self.apply_tax_withholding()
 
 		if not self.title:
 			self.title = self.get_title()
-				
+
 	def validate_advance_accounts(self):
 		journal_accounts = set([x.account for x in self.accounts])
 		advance_accounts = set()
@@ -201,7 +222,6 @@ class JournalEntry(AccountsController):
 			return self._submit()
 
 	def cancel(self):
-		
 		if len(self.accounts) > 100:
 			msgprint(_("The task has been enqueued as a background job."), alert=True)
 			self.queue_action("cancel", timeout=4600)
@@ -219,30 +239,14 @@ class JournalEntry(AccountsController):
 		self.update_booked_depreciation()
 		self.update_reference_document()
 		self.update_project_advance(cancel=self.docstatus == 2)
+		self.link_je_to_imprest(cancel=self.docstatus == 2)
 		# travel_claim = frappe.db.sql("""select name from `tabTravel Claim` where claim_journal like '%{}%'""".format(self.name),as_dict=1)
 		# if travel_claim == [] and "Travel Payable" not in self.title:
-		# 	row = 1
-		# 	for_project = 0
 		# 	for a in self.accounts:
-		# 		# if a.project:
-		# 		# if a.project and self.voucher_type != "Opening Entry" and not a.task:
-		# 		# 	frappe.throw("Task is mandatory in row {}".format(row))
-		# 		if a.project:
-		# 			for_project = 1
-		# 			# if self.voucher_type != "Opening Entry" and not a.task:
-		# 			# 	frappe.throw("Task is andatory in row {}".format(row))
-		# 			# if not a.business_activity:
-		# 			# 	frappe.throw("Business Activity is mandatory")
-		# 			# self.update_project_cost(a.reference_name, a.is_advance, a.is_settlement, a.debit_in_account_currency, a.advance_settlement_id) // why debit in account currency
-		# 			self.update_project_cost(a.project, a.is_advance, a.credit, a.debit, a.task)
-		# 		# if a.task:
-		# 		# 	# self.update_project_task(a.reference_name, a.is_advance, a.is_settlement, a.debit_in_account_currency, a.advance_settlement_id)
-		# 		# 	self.update_project_task(a.reference_name, a.is_advance, a.actual_amount, a.is_settlement, a.debit, a.advance_settlement_id)
-		# 		# elif a.reference_type == "Job Card":
-		# 		# 	self.update_job_card(a.reference_name)
-		# 		row += 1
-		# 	if for_project == 1:
-		# 		self.update_project_task()
+		# 		if a.reference_type and a.reference_name:
+		# 			if a.reference_type == "EMI Sales" and self.emi_sales_installment == 1:
+		# 				self.adjust_outstanding_amount_for_emi_sales(a.reference_name, a.debit)
+
 	def on_update_after_submit(self):
 		if hasattr(self, "repost_required"):
 			self.needs_repost = self.check_if_fields_updated(
@@ -266,8 +270,6 @@ class JournalEntry(AccountsController):
 			"Unreconcile Payment",
 			"Unreconcile Payment Entries",
 			"Equipment Hiring Form",
-			"Production",
-			"Royalty Payment",
 		)
 		self.make_gl_entries(1)
 		self.update_advance_paid()
@@ -280,142 +282,29 @@ class JournalEntry(AccountsController):
 		self.update_reference_document(cancel=True)
 		check_clearance_date(self.doctype, self.name)
 		self.update_project_advance(cancel=self.docstatus == 2)
+		self.link_je_to_imprest(cancel=self.docstatus == 2)
 		# travel_claim = frappe.db.sql("""select name from `tabTravel Claim` where claim_journal like '%{}%'""".format(self.name),as_dict=1)
 		# if travel_claim == [] and "Travel Payable" not in self.title:
-		# 	row = 1
-		# 	for_project = 0
 		# 	for a in self.accounts:
-		# 		# if a.project:
-		# 		if a.task and not a.project:
-		# 			frappe.throw("Project is Mandatory in row {}".format(row))
-		# 		# if not a.task and a.project and self.is_opening == "No":
-		# 		# 	frappe.throw("Task is Mandatory in row {}".format(row))
-		# 		for_project = 1
-		# 		if a.project:
-		# 			# if self.voucher_type != "Opening Entry" and not a.task:
-		# 			# 	frappe.throw("Task is Mandatory in row {}".format(row))
-		# 			# self.update_project_cost(a.reference_name, a.is_advance, a.is_settlement, a.debit_in_account_currency, a.advance_settlement_id) // why debit in account currency
-		# 			self.update_project_cost(a.project, a.is_advance, a.credit, a.debit, a.task)
-		# 		# if a.task:
-		# 		# 	# self.update_project_task(a.reference_name, a.is_advance, a.is_settlement, a.debit_in_account_currency, a.advance_settlement_id)
-		# 		# 	self.update_project_task(a.reference_name, a.is_advance, a.actual_amount, a.is_settlement, a.debit, a.advance_settlement_id)
-		# 		# elif a.reference_type == "Job Card":
-		# 		# 	self.update_job_card(a.reference_name)
-		# 		row += 1
-		# 	if for_project == 1:
-		# 		self.update_project_task()
-		# 		# self.update_project_cost()
-		# 		# self.update_project_maintenance_cost()
-		self.workflow_state = "Cancelled"
-	def update_project_task(self):
-		""" update the items child table for the respective doctype: Task or Maintenance order """
-		if self.docstatus == 1:
-			for d in self.accounts:
-				if d.project:
-					project = frappe.get_doc("Project",d.project)
-					p_row = project.append("other_doc_item", {})
-					#Project Update
-					p_row.reference_type = "Journal Entry"
-					p_row.reference_name = self.name
-					p_row.voucher_type = self.voucher_type
-					if d.task:
-						task = frappe.get_doc("Task",d.task)
-						t_row = task.append("other_doc_item", {})
-						#Task Update
-						t_row.reference_type = "Journal Entry"
-						t_row.reference_name = self.name
-						t_row.voucher_type = self.voucher_type
-					if d.debit > 0:
-						#Project
-						p_row.amount = d.debit
-						#Task
-						if d.task:
-							t_row.amount = d.debit
-					elif d.credit > 0:
-						#Project
-						p_row.amount = -1 * d.credit
-						#Task
-						if d.task:
-							t_row.amount = -1 * d.credit
-					if d.task:
-						task.save(ignore_permissions=True)
-					project.load_activity_tasks()
-					project.save(ignore_permissions=True)
-		elif self.docstatus == 2:
-			for item in self.accounts:
-				if item.project:
-					frappe.db.sql("""
-						DELETE FROM
-							`tabProject Expense Item` 
-						WHERE 
-							reference_name = '{mr}'
-					""".format(
-						mr = self.name, 
-					))
+		# 		if a.reference_type and a.reference_name:
+		# 			if a.reference_type == "EMI Sales" and self.emi_sales_installment == 1:
+		# 				self.adjust_outstanding_amount_for_emi_sales(a.reference_name, a.debit)
 
 	def get_title(self):
 		return self.pay_to_recd_from or self.accounts[0].account
 
-	def update_project_cost(self, reference_name, is_advance, credit_in_account_currency, debit_in_account_currency, task):
-		""" update other expenses and total cost in project """
-		# if is_advance == 'No' and is_settlement == 0 and is_opening_adjustment == 0 and self.voucher_type != "Credit Note":
-		# 	total_previous_cost = frappe.db.get_value("Project", reference_name, "total_cost", as_dict=1)
-		# 	other_previous_cost = frappe.db.get_value("Project", reference_name, "other_expenses",as_dict=1)
-		# 	total_other_cost = (flt(other_previous_cost.other_expenses) + flt(debit_in_account_currency)) if self.docstatus == 1 else (flt(other_previous_cost.other_expenses) - flt(debit_in_account_currency))
-		# 	total_overall_cost = (flt(total_previous_cost.total_cost) + flt(debit_in_account_currency)) if self.docstatus == 1 else (flt(total_previous_cost.total_cost) - flt(debit_in_account_currency))
-		# 	frappe.db.sql("update `tabProject` set total_cost={}, other_expenses={} where name ='{}'".format(total_overall_cost, total_other_cost, reference_name))
-		# elif is_settlement == 1 and is_advance == "No" and is_opening_adjustment == 0 and self.voucher_type != "Credit Note":
-		# 	# frappe.throw(str(total_advance))
-		# 	project_previous = frappe.db.get_value("Project", reference_name, ["advance","total_cost","other_expenses"], as_dict=1)
-		# 	project_total_cost = (flt(project_previous.total_cost) + flt(debit_in_account_currency)) if self.docstatus == 1 else (flt(project_previous.total_cost) - flt(debit_in_account_currency))
-		# 	if flt(debit_in_account_currency,2) == flt(actual_amount,2):
-		# 		project_advance = (flt(project_previous.advance) - flt(debit_in_account_currency)) if self.docstatus == 1 else (flt(project_previous.advance) + flt(debit_in_account_currency))
-		# 	elif datetime.datetime.strptime(str(self.creation).split(" ")[0],"%Y-%m-%d") >= datetime.datetime.strptime("2022-01-07", "%Y-%m-%d"):
-		# 		project_advance = (flt(project_previous.advance) - flt(actual_amount,2)) if self.docstatus == 1 else (flt(project_previous.advance) + flt(actual_amount,2))
-		# 	else:
-		# 		project_advance = (flt(project_previous.advance) - flt(debit_in_account_currency)) if self.docstatus == 1 else (flt(project_previous.advance) + flt(debit_in_account_currency))
-		# 	project_other_cost = (flt(project_previous.other_expenses) + flt(debit_in_account_currency)) if self.docstatus == 1 else (flt(project_previous.other_expenses) - flt(debit_in_account_currency))
-		# 	project = frappe.get_doc("Project",reference_name)
-		# 	advance_settlement = frappe.get_doc("Advance Settlement", advance_settlement_id)
-		# 	if self.docstatus == 1:
-		# 		advance_settlement.db_set("journal_entry_ref", self.name)
-		# 	elif self.docstatus == 2:
-		# 		advance_settlement.db_set("journal_entry_ref", None)
-		# 	project.db_set("advance",project_advance)
-		# 	project.db_set("total_cost",project_total_cost)
-		# 	project.db_set("other_expenses",project_other_cost)
-		# elif is_advance == "Yes" and is_settlement == 0 and is_opening_adjustment == 0 and self.voucher_type != "Credit Note":
-		# 	advance_previous_cost = frappe.db.get_value("Project", reference_name, "advance",as_dict=1)
-		# 	total_advance_cost = (flt(advance_previous_cost.advance) + flt(debit_in_account_currency)) if self.docstatus == 1 else (flt(advance_previous_cost.advance) - flt(debit_in_account_currency))
-		# 	frappe.db.sql("update `tabProject` set advance={} where name ='{}'".format(total_advance_cost, reference_name))
-		if self.is_opening == 'Yes' and is_advance == "No" and self.voucher_type != "Credit Note":
-			previous_opening = frappe.db.get_value("Project", reference_name, ["opening_balance","total_cost"],as_dict=1)
-			total_opening_balance = (flt(previous_opening.opening_balance) + flt(debit_in_account_currency)) if self.docstatus == 1 else (flt(previous_opening.opening_balance) - flt(debit_in_account_currency))
-			# total_opening_adjustment = (flt(previous_opening.opening_adjustment) + flt(credit_in_account_currency)) if self.docstatus == 1 else (flt(previous_opening.opening_adjustment) - flt(credit_in_account_currency))
-			total_project_cost = (flt(previous_opening.total_cost) + flt(debit_in_account_currency)) if self.docstatus == 1 else (flt(previous_opening.total_cost) - flt(debit_in_account_currency))
-			frappe.db.sql("update `tabProject` set opening_balance = {}, total_cost = {} where name ='{}'".format(total_opening_balance, total_project_cost, reference_name))
-		elif self.is_opening == 'No' and is_advance == "No" and self.voucher_type != "Credit Note":
-			previous_other_expenses = frappe.db.get_value("Project", reference_name, ["other_expenses","total_cost"],as_dict=1)
-			total_other_expenses = (flt(previous_other_expenses.other_expenses) + flt(debit_in_account_currency)) if self.docstatus == 1 else (flt(previous_other_expenses.other_expenses) - flt(debit_in_account_currency))
-			total_other_expenses = (flt(total_other_expenses) - flt(credit_in_account_currency)) if self.docstatus == 1 else (flt(total_other_expenses) + flt(credit_in_account_currency))
-			# total_opening_adjustment = (flt(previous_opening.opening_adjustment) + flt(credit_in_account_currency)) if self.docstatus == 1 else (flt(previous_opening.opening_adjustment) - flt(credit_in_account_currency))
-			total_project_cost = (flt(previous_other_expenses.total_cost) + flt(debit_in_account_currency)) if self.docstatus == 1 else (flt(previous_other_expenses.total_cost) - flt(debit_in_account_currency))
-			total_project_cost = (flt(total_project_cost) - flt(credit_in_account_currency)) if self.docstatus == 1 else (flt(total_project_cost) + flt(credit_in_account_currency))
-			frappe.db.sql("update `tabProject` set other_expenses = {}, total_cost = {} where name ='{}'".format(total_other_expenses, total_project_cost, reference_name))
-			if task:
-				previous_task_other_expenses = frappe.db.get_value("Task", task, ["other_expenses","total_cost"],as_dict=1)
-				total_task_other_expenses = (flt(previous_task_other_expenses.other_expenses) + flt(debit_in_account_currency)) if self.docstatus == 1 else (flt(previous_task_other_expenses.other_expenses) - flt(debit_in_account_currency))
-				total_task_other_expenses = (flt(total_task_other_expenses) - flt(credit_in_account_currency)) if self.docstatus == 1 else (flt(total_task_other_expenses) + flt(credit_in_account_currency))
-				total_task_cost = (flt(previous_task_other_expenses.total_cost) + flt(debit_in_account_currency)) if self.docstatus == 1 else (flt(previous_task_other_expenses.total_cost) - flt(debit_in_account_currency))
-				total_task_cost = (flt(total_task_cost) - flt(credit_in_account_currency)) if self.docstatus == 1 else (flt(total_task_cost) + flt(credit_in_account_currency))
-				frappe.db.sql("update `tabTask` set other_expenses = {}, total_cost = {} where name ='{}'".format(total_task_other_expenses, total_task_cost, task))
-		# elif is_advance == "No" and is_opening_adjustment == 0 and is_settlement == 0 and self.voucher_type == "Credit Note":
-		# 	total_previous_cost = frappe.db.get_value("Project", reference_name, "total_cost", as_dict=1)
-		# 	adjustment_previous = frappe.db.get_value("Project", reference_name, "adjustments_made",as_dict=1)
-		# 	total_adjustment = (flt(adjustment_previous.adjustments_made) + flt(credit_in_account_currency)) if self.docstatus == 1 else (flt(adjustment_previous.adjustments_made) - flt(credit_in_account_currency))
-		# 	total_overall_cost = (flt(total_previous_cost.total_cost) - flt(credit_in_account_currency)) if self.docstatus == 1 else (flt(total_previous_cost.total_cost) + flt(credit_in_account_currency))
-		# 	frappe.db.sql("update `tabProject` set total_cost={}, adjustments_made={} where name ='{}'".format(total_overall_cost, total_adjustment, reference_name))
+	def adjust_outstanding_amount_for_emi_sales(self, reference_no, amount):
+		emi_sale_previous = frappe.db.get_value("EMI Sales", reference_no, "outstanding_amount", as_dict=1)
+		emi_sale_outstanding = flt(emi_sale_previous.outstanding_amount)-flt(amount) if self.docstatus == 1 else flt(emi_sale_previous.outstanding_amount)+flt(amount)
+		emi_sale = frappe.get_doc("EMI Sales",reference_no)
+		emi_sale.db_set("outstanding_amount",emi_sale_outstanding)
 		frappe.db.commit()
+		# payment_jv = self.name if self.docstatus == 1 else None
+		# job_card.db_set("payment_jv",payment_jv)
+		# if (self.references[0].reference_doctype == 'EMI Sales' or self.references[0].reference_doctype == 'Sales Invocie') and flt(self.references[0].outstanding_amount)>0 and self.tds_amount_deducted > 0:
+		# 	if self.tds_amount_deducted > self.paid_amount:
+		# 		frappe.throw('TDS amount should not be greater than paid amount')
+		# 	self.references[0].outstanding_amount = flt(self.references[0].outstanding_amount) - flt(self.tds_amount_deducted)
 
 	def update_advance_paid(self):
 		advance_paid = frappe._dict()
@@ -725,73 +614,26 @@ class JournalEntry(AccountsController):
 			self.name,
 		)
 
-
 	def validate_party(self):
 		for d in self.get("accounts"):
-			# if cint(d.party_check):
 			account_type = frappe.get_cached_value("Account", d.account, "account_type")
 			if account_type in ["Receivable", "Payable"]:
-				if d.party_type in ("Employee", "Supplier"):
-					continue
-				elif not (d.party_type and d.party):
-					return
+				if not (d.party_type and d.party):
 					frappe.throw(
 						_(
-							"Row {0}: Party Type and Party are required for Receivable / Payable account {1}"
+							"Row {0}: Party Type and Party is required for Receivable / Payable account {1}"
 						).format(d.idx, d.account)
 					)
-				elif (
-					d.party_type
-					and frappe.db.get_value("Party Type", d.party_type, "account_type") != account_type
-				):
-					frappe.throw(
-						_("Row {0}: Account {1} and Party Type {2} have different account types").format(
-							d.idx, d.account, d.party_type
-						)
-					)
-		
-
-	# def validate_party(self):
-	# 	for d in self.get("accounts"):
-	# 		account_type = frappe.get_cached_value("Account", d.account, "account_type")
-	# 		if account_type in ["Receivable", "Payable"]:
-	# 			if d.party_type == "Employee":
-	# 				if not (d.party_type and d.party):
-	# 					frappe.throw(
-	# 						_(
-	# 							"Row {0}: Party Type and Party are required for Receivable / Payable account {1}"
-	# 						).format(d.idx, d.account)
-	# 					)
-	# 				elif (
-	# 					d.party_type
-	# 					and frappe.db.get_value("Party Type", d.party_type, "account_type") != account_type
-	# 				):
-	# 					frappe.throw(
-	# 						_("Row {0}: Account {1} and Party Type {2} have different account types").format(
-	# 							d.idx, d.account, d.party_type
-	# 						)
-	# 					)
-
-
-	# def validate_party(self):
-	# 	for d in self.get("accounts"):
-	# 		account_type = frappe.get_cached_value("Account", d.account, "account_type")
-	# 		if account_type in ["Receivable", "Payable"]:
-	# 			if not (d.party_type and d.party):
-	# 				frappe.throw(
-	# 					_(
-	# 						"Row {0}: Party Type and Party is required for Receivable / Payable account {1}"
-	# 					).format(d.idx, d.account)
-	# 				)
-	# 			elif (
-	# 				d.party_type
-	# 				and frappe.db.get_value("Party Type", d.party_type, "account_type") != account_type
-	# 			):
-	# 				frappe.throw(
-	# 					_("Row {0}: Account {1} and Party Type {2} have different account types").format(
-	# 						d.idx, d.account, d.party_type
-	# 					)
-	# 				)
+				# elif (
+				# 	d.party_type
+				# 	and frappe.db.get_value("Party Type", d.party_type, "account_type") != account_type 
+				# 	and d.party_type != "Employee"
+				# ):
+				# 	frappe.throw(
+				# 		_("Row {0}: Account {1} and Party Type {2} have different account types").format(
+				# 			d.idx, d.account, d.party_type
+				# 		)
+				# 	)
 
 	def check_credit_limit(self):
 		customers = list(
@@ -880,7 +722,7 @@ class JournalEntry(AccountsController):
 				against_entries = frappe.db.sql(
 					"""select * from `tabJournal Entry Account`
 					where account = %s and docstatus = 1 and parent = %s
-					and (reference_type is null or reference_type in ('', 'Sales Order', 'Purchase Order', 'Leave Encashment', 'Travel Claim', 'Employee Benefits'))
+					and (reference_type is null or reference_type in ('', 'Sales Order', 'Purchase Order', 'Leave Encashment', 'Travel Claim', 'Journal Entry'))
 					""",
 					(d.account, d.reference_name),
 					as_dict=True,
@@ -888,8 +730,6 @@ class JournalEntry(AccountsController):
 
 				if not against_entries:
 					if self.voucher_type != "Exchange Gain Or Loss":
-						# pass
-						# frappe.throw(d.reference_name)
 						frappe.throw(
 							_(
 								"Journal Entry {0} does not have account {1} or already matched against other voucher"
@@ -900,8 +740,6 @@ class JournalEntry(AccountsController):
 					valid = False
 					for jvd in against_entries:
 						if flt(jvd[dr_or_cr]) > 0:
-							valid = True
-						if jvd.reference_type == "Employee Benefits":
 							valid = True
 					if not valid and not self.system_generated_gain_loss():
 						frappe.throw(
@@ -1087,9 +925,9 @@ class JournalEntry(AccountsController):
 					accounts_debited.append(d.party or d.account)
 				if flt(d.credit) > 0:
 					accounts_credited.append(d.party or d.account)
+
 			for d in self.get("accounts"):
 				if flt(d.debit) > 0:
-					# d.against_account = ", ".join(str(account) for account in set(accounts_credited) if account is not None)
 					d.against_account = ", ".join(list(set(accounts_credited)))
 				if flt(d.credit) > 0:
 					d.against_account = ", ".join(list(set(accounts_debited)))
@@ -1103,8 +941,6 @@ class JournalEntry(AccountsController):
 	def validate_total_debit_and_credit(self):
 		if not (self.voucher_type == "Exchange Gain Or Loss" and self.multi_currency):
 			if self.difference:
-				# frappe.throw(self.title)
-				# frappe.throw("Dibit "+str(self.total_debit)+" Credit "+str(self.total_credit))
 				frappe.throw(
 					_("Total Debit must be equal to Total Credit. The difference is {0}").format(
 						self.difference
@@ -1131,6 +967,7 @@ class JournalEntry(AccountsController):
 					tax_cr = tax_amount if flt(d.debit) else 0
 			self.total_debit = flt(self.total_debit) + flt(d.debit, d.precision("debit")) + flt(tax_dr)
 			self.total_credit = flt(self.total_credit) + flt(d.credit, d.precision("credit")) + flt(tax_cr)
+
 		self.difference = flt(self.total_debit, self.precision("total_debit")) - flt(
 			self.total_credit, self.precision("total_credit")
 		)
@@ -1342,7 +1179,6 @@ class JournalEntry(AccountsController):
 					tax_amount_in_account_currency, tax_amount = 0, 0
 					tax_amount_in_account_currency_dr, tax_amount_in_account_currency_cr = 0, 0
 					tax_amount_dr, tax_amount_cr = 0, 0
-					tax_account_name = d.tax_account if (acc == d.tax_account) else None
 					
 					if tax_account:
 						tax_amount_in_account_currency = flt(d.tax_amount_in_account_currency)
@@ -1367,10 +1203,10 @@ class JournalEntry(AccountsController):
 					gl_map.append(
 						self.get_gl_dict(
 							{
-								"account": d.account if not tax_account_name else tax_account_name,
-								"party_type": d.party_type,
+								"account": acc,
+								"party_type": party_type,
 								"due_date": self.due_date,
-								"party": d.party,
+								"party": party,
 								"against": d.against_account,
 								"debit": flt(abs(tax_amount_dr), d.precision("tax_amount")) if tax_account \
 									else flt(d.debit, d.precision("debit")),
@@ -1386,8 +1222,7 @@ class JournalEntry(AccountsController):
 								"remarks": remarks,
 								"voucher_detail_no": d.reference_detail_no,
 								"cost_center": d.cost_center,
-								"project": d.project, # Added by Kinley on 2024/12/26
-								# "party_check": d.party_check,
+								"project": d.project,
 								"finance_book": self.finance_book,
 								# "business_activity": d.business_activity,
 							},
@@ -1406,7 +1241,6 @@ class JournalEntry(AccountsController):
 			update_outstanding = "No"
 		else:
 			update_outstanding = "Yes"
-
 		if gl_map:
 			make_gl_entries(
 				gl_map,
@@ -1561,6 +1395,18 @@ class JournalEntry(AccountsController):
 				doc.paid_amount = flt(doc.paid_amount) + (value["debit"] * factor)
 
 			doc.save(ignore_permissions=True)
+	
+	def link_je_to_imprest(self, cancel=False):
+		ref_list = ['Imprest Advance', 'POL Advance']
+		for d in self.accounts:
+			if d.reference_type in ref_list and d.reference_name:
+				doc = frappe.get_doc(d.reference_type, d.reference_name)
+				if cancel:
+					doc.journal_entry = ""
+				else:
+					doc.journal_entry = self.name
+
+				doc.save(ignore_permissions=True)
 			
 @frappe.whitelist()
 def get_default_bank_cash_account(company, account_type=None, mode_of_payment=None, account=None):
@@ -2028,6 +1874,27 @@ def get_tds_account(tax_withholding_category):
 		where t.name = "{}" """.format(tax_withholding_category), as_dict=True)
 	return account[0] if account else None
 
+def get_permission_query_conditions(user):
+	if not user: user = frappe.session.user
+	user_roles = frappe.get_roles(user)
+
+	if user == "Administrator" or "System Manager" in user_roles or "Accounts Manager" in user_roles or "Accounts User" in user_roles: 
+		return
+
+	return """(
+		exists(select 1
+			from `tabEmployee` as e
+			where e.branch = `tabJournal Entry`.branch
+			and e.user_id = '{user}')
+		or
+		exists(select 1
+			from `tabEmployee` e, `tabAssign Branch` ab, `tabBranch Item` bi
+			where e.user_id = '{user}'
+			and ab.employee = e.name
+			and bi.parent = ab.name
+			and bi.branch = `tabJournal Entry`.branch)
+	)""".format(user=user)
+
 # ePayment Begins
 @frappe.whitelist()
 def make_bank_payment(source_name, target_doc=None):
@@ -2051,15 +1918,3 @@ def make_bank_payment(source_name, target_doc=None):
 	}, target_doc, ignore_permissions=True)
 	return doc
 # ePayment Ends
-@frappe.whitelist()
-def get_permission_query_conditions(user):
-	if not user: user = frappe.session.user
-	user_roles = frappe.get_roles(user)
-	employee=frappe.db.get_value("Employee",{"user_id": user},"name")
-
-	if user == "Administrator":
-		return
-	if "HR Master" in user_roles or "Auditor" in user_roles or "HR User" in user_roles or "HR Manager" in user_roles:
-		return
-	else:
-		return

@@ -23,248 +23,264 @@ class POLReceive(StockController):
 	# begin: auto-generated types
 	# This code is auto-generated. Do not modify anything in this block.
 
+	from typing import TYPE_CHECKING
 
-   from typing import TYPE_CHECKING
+	if TYPE_CHECKING:
+		from erpnext.fleet_management.doctype.pol_receive_advance.pol_receive_advance import POLReceiveAdvance
+		from erpnext.fleet_management.doctype.pol_receive_item.pol_receive_item import POLReceiveItem
+		from frappe.types import DF
 
-
-   if TYPE_CHECKING:
-       from erpnext.fleet_management.doctype.pol_receive_advance.pol_receive_advance import POLReceiveAdvance
-       from erpnext.fleet_management.doctype.pol_receive_item.pol_receive_item import POLReceiveItem
-       from frappe.types import DF
-
-
-       advances: DF.Table[POLReceiveAdvance]
-       amended_from: DF.Link | None
-       branch: DF.Link
-       company: DF.Link
-       cost_center: DF.Link | None
-       current_km: DF.Float
-       equipment: DF.Link
-       equipment_category: DF.Link | None
-       equipment_name: DF.Data | None
-       for_machineries: DF.Check
-       fuel_type: DF.Link
-       fuelbook: DF.Link | None
-       item_name: DF.Data | None
-       items: DF.Table[POLReceiveItem]
-       jv: DF.Data | None
-       km_difference: DF.Float
-       mileage: DF.Float
-       od_amount: DF.Currency
-       posting_date: DF.Date
-       posting_time: DF.Time | None
-       previous_km: DF.Float
-       remarks: DF.SmallText | None
-       supplier: DF.Link
-       total_allocated_amount: DF.Currency
-       total_amount: DF.Currency
-       total_qty: DF.Float
-       uom: DF.Link | None
-   # end: auto-generated types
-
-
-   def validate(self):
-       check_future_date(self.posting_date)
-       self.set_allocated_amount()
+		advances: DF.Table[POLReceiveAdvance]
+		amended_from: DF.Link | None
+		branch: DF.Link
+		company: DF.Link
+		cost_center: DF.Link | None
+		current_km: DF.Float
+		equipment: DF.Link
+		equipment_category: DF.Link | None
+		equipment_name: DF.Data | None
+		for_machineries: DF.Check
+		fuel_type: DF.Link | None
+		fuelbook: DF.Link
+		item_name: DF.Data | None
+		items: DF.Table[POLReceiveItem]
+		jv: DF.Data | None
+		km_difference: DF.Float
+		mileage: DF.Float
+		od_amount: DF.Currency
+		outsourced: DF.Check
+		posting_date: DF.Date
+		posting_time: DF.Time | None
+		previous_km: DF.Float
+		remarks: DF.SmallText | None
+		supplier: DF.Link | None
+		supplier_branch: DF.Link | None
+		supplier_cost_center: DF.Data | None
+		total_allocated_amount: DF.Currency
+		total_amount: DF.Currency
+		total_qty: DF.Float
+		uom: DF.Link | None
+	# end: auto-generated types
 
 
-   def on_submit(self):
-       self.update_pol_advance()
-       self.make_gl_entries()
-       # if not self.is_opening:
-       #   self.post_journal_entry()
-       #   self.update_pol_advance()
-       # else:
-       #   self.status = "Paid"
-      
-   #Cancel
-   def on_cancel(self):
-       self.update_pol_advance(cancel=True)
+	def validate(self):
+		check_future_date(self.posting_date)
+		self.set_allocated_amount()
 
 
-   def before_save(self):
-       if not self.advances:
-           frappe.throw("Advanced for POL is needed for the equipment", self.equipment)   
+	def on_submit(self):
+		if not self.outsourced:
+			self.update_pol_advance()
+		self.make_gl_entries()
+		# if not self.is_opening:
+		#   self.post_journal_entry()
+		#   self.update_pol_advance()
+		# else:
+		#   self.status = "Paid"
+		
+	#Cancel
+	def on_cancel(self):
+		if not self.outsourced:
+			self.update_pol_advance(cancel=True)
+		self.ignore_linked_doctypes = (
+			"GL Entry",
+			"Payment Ledger Entry",
+		)
 
 
-   def update_pol_advance(self, cancel=False):
-       for adv in self.advances:
-           allocated_amount = 0.0
-           if flt(adv.allocated_amount) > 0:
-               if flt(adv.balance_amount) < flt(adv.allocated_amount) and self.docstatus < 2:
-                   frappe.throw(_("Advance#{0} : Allocated amount Nu. {1}/- cannot be more than Advance Balance Nu. {2}/-").format(adv.reference_name, "{:,.2f}".format(flt(adv.allocated_amount)),"{:,.2f}".format(flt(adv.balance_amount))))
-               else:
-                   allocated_amount = -1 * flt(adv.allocated_amount) if cancel else flt(adv.allocated_amount)
+	def before_save(self):
+		if not self.advances and not self.outsourced:
+			frappe.throw("Advance for POL is needed for the equipment", self.equipment) 
+		if self.outsourced:
+			self.advances = []
 
 
-                   adv_doc = frappe.get_doc("POL Advance", adv.reference_name)
-                   adv_doc.adjusted_amount = flt(adv_doc.adjusted_amount) + flt(allocated_amount)
-                   adv_doc.balance_amount    = flt(adv_doc.balance_amount) - flt(allocated_amount)
-                   adv_doc.save(ignore_permissions = True)
-      
-       if flt(self.od_amount):
-           for d in self.get('advances'):
-               od = -1 * flt(self.od_amount) if cancel else flt(self.od_amount)
-               doc = frappe.get_doc("POL Advance", d.reference_name)
-               doc.od_amount = flt(doc.od_amount) + flt(od)
-               doc.od_balance = flt(doc.od_balance) + flt(od)
-               doc.save(ignore_permissions = True)
+	def update_pol_advance(self, cancel=False):
+		for adv in self.advances:
+			allocated_amount = 0.0
+			if flt(adv.allocated_amount) > 0:
+				if flt(adv.balance_amount) < flt(adv.allocated_amount) and self.docstatus < 2:
+					frappe.throw(_("Advance#{0} : Allocated amount Nu. {1}/- cannot be more than Advance Balance Nu. {2}/-").format(adv.reference_name, "{:,.2f}".format(flt(adv.allocated_amount)),"{:,.2f}".format(flt(adv.balance_amount))))
+				else:
+					allocated_amount = -1 * flt(adv.allocated_amount) if cancel else flt(adv.allocated_amount)
 
 
-   def set_allocated_amount(self):
-       total_allocated = 0.0
-       if flt(self.total_amount):
-           allocated_amount = flt(self.total_amount)
-           for d in self.get("advances"):
-               if d.balance_amount >= allocated_amount:
-                   d.allocated_amount = allocated_amount
-                   total_allocated += flt(d.allocated_amount)
-                   allocated_amount = 0
-               elif d.balance_amount < allocated_amount:
-                   d.allocated_amount = d.balance_amount
-                   total_allocated += flt(d.allocated_amount)
-                   allocated_amount = flt(allocated_amount) - flt(d.balance_amount)
+					adv_doc = frappe.get_doc("POL Advance", adv.reference_name)
+					adv_doc.adjusted_amount = flt(adv_doc.adjusted_amount) + flt(allocated_amount)
+					adv_doc.balance_amount    = flt(adv_doc.balance_amount) - flt(allocated_amount)
+					adv_doc.save(ignore_permissions = True)
+		
+		if flt(self.od_amount):
+			for d in self.get('advances'):
+				od = -1 * flt(self.od_amount) if cancel else flt(self.od_amount)
+				doc = frappe.get_doc("POL Advance", d.reference_name)
+				doc.od_amount = flt(doc.od_amount) + flt(od)
+				doc.od_balance = flt(doc.od_balance) + flt(od)
+				doc.save(ignore_permissions = True)
 
 
-       self.total_allocated_amount = flt(total_allocated)
-       if flt(self.total_amount) > flt(self.total_allocated_amount):
-           self.od_amount = flt(self.total_amount) - flt(self.total_allocated_amount)
+	def set_allocated_amount(self):
+		total_allocated = 0.0
+		if flt(self.total_amount):
+			allocated_amount = flt(self.total_amount)
+			balance = 0.0
+			if not self.outsourced:
+				for d in self.get("advances"):
+					balance += flt(d.balance_amount)
+					if d.balance_amount >= allocated_amount:
+						d.allocated_amount = allocated_amount
+						total_allocated += flt(d.allocated_amount)
+						allocated_amount = 0
+					elif d.balance_amount < allocated_amount:
+						d.allocated_amount = d.balance_amount
+						total_allocated += flt(d.allocated_amount)
+						allocated_amount = flt(allocated_amount) - flt(d.balance_amount)
+				# frappe.throw(balance)
+				if self.total_amount > balance:
+					frappe.throw("Total amount is more than balance amount")
+		self.total_allocated_amount = flt(total_allocated)
+		if flt(self.total_amount) > flt(self.total_allocated_amount):
+			self.od_amount = flt(self.total_amount) - flt(self.total_allocated_amount)
 
 
-   # Ver 2.0.190509, Following method created by SHIV on 2019/05/24
-   def get_gl_entries(self, warehouse_account):
-       gl_entries = []
+	# Ver 2.0.190509, Following method created by SHIV on 2019/05/24
+	def get_gl_entries(self, warehouse_account):
+		gl_entries = []
 
 
-       # creditor_account = frappe.db.get_single_value("Maintenance Accounts Settings", "default_pol_advance_account")
-       creditor_account = frappe.db.get_value("Company", self.company, "pol_advance_account")
-       if not creditor_account:
-           frappe.throw("Set Default Payable Account in Company")
+		# creditor_account = frappe.db.get_single_value("Maintenance Accounts Settings", "default_pol_advance_account")
+		creditor_account = frappe.db.get_value("Company", self.company, "pol_advance_account")
+		outsourced_creditor_account = frappe.db.get_value("Branch", self.branch, "expense_bank_account")
+		if not creditor_account and not self.outsourced:
+			frappe.throw("Set Default Payable Account in Company")
+		elif not outsourced_creditor_account:
+			frappe.throw("Set Expense Account in Branch")
 
 
-       # expense_account = self.get_expense_account()
-       expense_account = frappe.db.get_value("Equipment Category", self.equipment_category, "pol_advance_account")
+		# expense_account = self.get_expense_account()
+		expense_account = frappe.db.get_value("Equipment Category", self.equipment_category, "pol_advance_account")
 
 
-       # if self.hiring_cost_center:
-       #     cost_center = self.hiring_cost_center
-       # else:
-       # cost_center = get_branch_cc(self.vehicle_branch)
+		# if self.hiring_cost_center:
+		#     cost_center = self.hiring_cost_center
+		# else:
+		# cost_center = get_branch_cc(self.vehicle_branch)
 
 
-       # ba = get_equipment_ba(self.vehicle)
-       # default_ba = get_default_ba()
+		# ba = get_equipment_ba(self.vehicle)
+		# default_ba = get_default_ba()
 
 
-       gl_entries.append(
-           prepare_gl(self, {"account": expense_account,
-               "debit": flt(self.total_amount),
-               "debit_in_account_currency": flt(self.total_amount),
-               "cost_center": self.cost_center,
-               # "business_activity": ba
-               })
-       )
+		gl_entries.append(
+			prepare_gl(self, {"account": expense_account,
+				"debit": flt(self.total_amount),
+				"debit_in_account_currency": flt(self.total_amount),
+				"cost_center": self.cost_center,
+				# "business_activity": ba
+				})
+		)
 
 
-       gl_entries.append(
-           prepare_gl(self, {"account": creditor_account,
-               "credit": flt(self.total_amount),
-               "credit_in_account_currency": flt(self.total_amount),
-               "cost_center": self.cost_center,
-               "party_type": "Supplier",
-               "party": self.supplier,
-               "against_voucher": self.name,
-               "against_voucher_type": self.doctype,
-               # "business_activity": default_ba
-               })
-       )
+		gl_entries.append(
+			prepare_gl(self, {"account": creditor_account if not self.outsourced else outsourced_creditor_account,
+				"credit": flt(self.total_amount),
+				"credit_in_account_currency": flt(self.total_amount),
+				"cost_center": self.cost_center,
+				"party_type": "Supplier",
+				"party": self.supplier,
+				"against_voucher": self.name,
+				"against_voucher_type": self.doctype,
+				# "business_activity": default_ba
+				})
+		)
 
 
-       return gl_entries              
+		return gl_entries              
 
 
-   @frappe.whitelist()
-   def get_previous_km_reading(self):
-       previous_km_reading = 0.0
+	@frappe.whitelist()
+	def get_previous_km_reading(self):
+		previous_km_reading = 0.0
 
 
-       previous_km_reading = self.get_previous_km()
+		previous_km_reading = self.get_previous_km()
 
 
-       if not previous_km_reading:
-           previous_km_reading = frappe.db.get_value("Equipment", self.equipment, "initial_km_reading")
+		# if not previous_km_reading:
+		# 	previous_km_reading = frappe.db.get_value("Equipment", self.equipment, "initial_km_reading")
 
 
-       self.previous_km = flt(previous_km_reading)
+		# self.previous_km = flt(previous_km_reading)
 
 
-       return previous_km_reading
+		return previous_km_reading
 
 
-   def get_previous_km(self):
-       pol_receive = frappe.qb.DocType("POL Receive")
+	def get_previous_km(self):
+		pol_receive = frappe.qb.DocType("POL Receive")
 
 
-       query = (
-           frappe.qb.from_(pol_receive)
-           .select(pol_receive.current_km)
-           .where(
-               (pol_receive.docstatus == 1) &
-               (pol_receive.equipment == self.equipment)
-           )
-           .orderby(pol_receive.creation, order=frappe.qb.desc)
-           .limit(1)
-       ).run(as_dict=True)
+		query = (
+			frappe.qb.from_(pol_receive)
+			.select(pol_receive.current_km)
+			.where(
+				(pol_receive.docstatus == 1) &
+				(pol_receive.equipment == self.equipment)
+			)
+			.orderby(pol_receive.creation, order=frappe.qb.desc)
+			.limit(1)
+		).run(as_dict=True)
 
 
-       return query[0].get("current_km") if query else 0
-      
-   @frappe.whitelist()
-   def get_pol_advance(self):
-       # self.set("advances", [])
-      
-       Advance = frappe.qb.DocType("POL Advance")
-       if not self.for_machineries:
-           query = (
-               frappe.qb.from_(Advance)
-               .select(
-                   Advance.name.as_("reference_name"),
-                   Advance.advance_amount,
-                   Advance.balance_amount,
-                   Advance.posting_date.as_("advance_date"),
-               )
-               .where(
-                   (Advance.docstatus == 1)
-                   & (Advance.balance_amount > 0)
-                   & (Advance.status == "Paid")
-                   & (Advance.equipment == self.equipment)
-                   & (Advance.fuelbook == self.fuelbook)
-                   & (Advance.company == self.company)
-               )
-           )
-          
-       else:
-           query = (
-               frappe.qb.from_(Advance)
-               .select(
-                   Advance.name.as_("reference_name"),
-                   Advance.advance_amount,
-                   Advance.balance_amount,
-                   Advance.posting_date.as_("advance_date"),
-               )
-               .where(
-                   (Advance.docstatus == 1)
-                   & (Advance.balance_amount > 0)
-                   & (Advance.status == "Paid")
-                   & (Advance.equipment == self.equipment)
-                   & (Advance.supplier == self.supplier)
-                   & (Advance.company == self.company)
-               )
-           )
-      
-       advances = query.run(as_dict=True)
-      
-       if advances:
-           self.set("advances", advances)
-       else:
-           frappe.msgprint("No advances found for this request.", alert=True)
+		return query[0].get("current_km") if query else 0
+		
+	@frappe.whitelist()
+	def get_pol_advance(self):
+		# self.set("advances", [])
+		
+		Advance = frappe.qb.DocType("POL Advance")
+		if not self.for_machineries:
+			query = (
+				frappe.qb.from_(Advance)
+				.select(
+					Advance.name.as_("reference_name"),
+					Advance.advance_amount,
+					Advance.balance_amount,
+					Advance.posting_date.as_("advance_date"),
+				)
+				.where(
+					(Advance.docstatus == 1)
+					& (Advance.balance_amount > 0)
+					& (Advance.status == "Paid")
+					& (Advance.equipment == self.equipment)
+					& (Advance.fuelbook == self.fuelbook)
+					& (Advance.company == self.company)
+				)
+			)
+			
+		else:
+			query = (
+				frappe.qb.from_(Advance)
+				.select(
+					Advance.name.as_("reference_name"),
+					Advance.advance_amount,
+					Advance.balance_amount,
+					Advance.posting_date.as_("advance_date"),
+				)
+				.where(
+					(Advance.docstatus == 1)
+					& (Advance.balance_amount > 0)
+					& (Advance.status == "Paid")
+					& (Advance.equipment == self.equipment)
+					& (Advance.supplier == self.supplier)
+					& (Advance.company == self.company)
+				)
+			)
+		# frappe.throw(str(query))
+		
+		advances = query.run(as_dict=True)
+		
+		if advances:
+			self.set("advances", advances)
+		else:
+			frappe.msgprint("No advances found for this request.", alert=True)

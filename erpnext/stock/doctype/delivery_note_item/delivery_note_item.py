@@ -30,18 +30,17 @@ class DeliveryNoteItem(Document):
 		batch_no: DF.Link | None
 		billed_amt: DF.Currency
 		brand: DF.Link | None
-		business_activity: DF.Link
-		company_total_stock: DF.Float
 		conversion_factor: DF.Float
-		cost_center: DF.Link | None
+		cost_center: DF.Link
 		customer_item_code: DF.Data | None
-		description: DF.TextEditor | None
+		description: DF.SmallText
 		discount_amount: DF.Currency
 		discount_percentage: DF.Float
 		dn_detail: DF.Data | None
-		expense_account: DF.Link | None
+		engine_no: DF.Data | None
+		equipment: DF.Link | None
+		expense_account: DF.Link
 		grant_commission: DF.Check
-		has_item_scanned: DF.Check
 		image: DF.Attach | None
 		incoming_rate: DF.Currency
 		installed_qty: DF.Float
@@ -53,29 +52,24 @@ class DeliveryNoteItem(Document):
 		item_tax_template: DF.Link | None
 		margin_rate_or_amount: DF.Float
 		margin_type: DF.Literal["", "Percentage", "Amount"]
-		material_request: DF.Link | None
-		material_request_item: DF.Data | None
 		net_amount: DF.Currency
 		net_rate: DF.Currency
-		packed_qty: DF.Float
 		page_break: DF.Check
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
+		parts_name: DF.Data | None
+		parts_no: DF.Link | None
 		pick_list_item: DF.Data | None
 		price_list_rate: DF.Currency
 		pricing_rules: DF.SmallText | None
 		project: DF.Link | None
-		purchase_order: DF.Link | None
-		purchase_order_item: DF.Data | None
 		qty: DF.Float
 		quality_inspection: DF.Link | None
 		rate: DF.Currency
 		rate_with_margin: DF.Currency
-		received_qty: DF.Float
 		returned_qty: DF.Float
-		serial_and_batch_bundle: DF.Link | None
-		serial_no: DF.Text | None
+		serial_no: DF.SmallText | None
 		si_detail: DF.Data | None
 		so_detail: DF.Data | None
 		stock_qty: DF.Float
@@ -83,9 +77,10 @@ class DeliveryNoteItem(Document):
 		stock_uom_rate: DF.Currency
 		target_warehouse: DF.Link | None
 		total_weight: DF.Float
+		tvo_no: DF.Data | None
 		uom: DF.Link
-		use_serial_batch_fields: DF.Check
-		warehouse: DF.Link | None
+		vehicle_number: DF.Data | None
+		warehouse: DF.Link
 		weight_per_unit: DF.Float
 		weight_uom: DF.Link | None
 	# end: auto-generated types

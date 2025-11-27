@@ -37,7 +37,9 @@ class POLAdvance(Document):
 		posting_date: DF.Date
 		posting_time: DF.Time
 		status: DF.Literal["Draft", "Paid", "Unpaid", "Cancelled"]
-		supplier: DF.Link
+		supplier: DF.Link | None
+		supplier_branch: DF.Link | None
+		supplier_cost_center: DF.Data | None
 	# end: auto-generated types
 	
 	def validate(self):
@@ -51,6 +53,8 @@ class POLAdvance(Document):
 		if not self.is_opening:
 			self.update_pol_advance()
 			self.post_journal_entry()
+			self.post_advance_journal_entry()
+			self.status = "Paid"
 		else:
 			self.status = "Paid"
 
@@ -98,10 +102,11 @@ class POLAdvance(Document):
 			if self.docstatus == 2:
 				status = "Cancelled"
 			elif self.docstatus == 1:
-				if self.is_opening:
-					self.status = "Paid"
-				else:
-					self.status = "Unpaid"
+				self.status = "Paid"
+				# if self.is_opening:
+				# 	self.status = "Paid"
+				# else:
+				# 	self.status = "Unpaid"
 		else:
 			self.status = "Draft"
 
@@ -115,10 +120,10 @@ class POLAdvance(Document):
 
 
 	def post_journal_entry(self):
-		default_bank_account = frappe.db.get_value("Branch", self.branch, "expense_bank_account")
-		advance_account = frappe.db.get_value("Company", self.company, "pol_advance_account")
+		credit_bank_account = frappe.db.get_value("Branch", self.branch, "expense_bank_account")
+		debit_bank_account = frappe.db.get_value("Branch", self.supplier_branch, "expense_bank_account")
 
-		if not default_bank_account:
+		if not credit_bank_account:
 			frappe.throw(
 				"Default Expense Bank Account is not set for {}. Please configure it in the Branch.".format(
 					frappe.get_desk_link("Branch", self.branch)
@@ -126,9 +131,72 @@ class POLAdvance(Document):
 				title="Missing Account"
 			)
 
-		if not advance_account:
+		if not debit_bank_account:
+			frappe.throw(
+				"Supplier Expense Bank Account is not set for {}. Please configure it in the Branch.".format(
+					frappe.get_desk_link("Branch", self.supplier_branch)
+				),
+				title="Missing Account"
+			)
+
+		# Posting Journal Entry
+		accounts = []
+		accounts.append({
+			"account": debit_bank_account,
+			"debit": flt(self.advance_amount),
+			"debit_in_account_currency": flt(self.advance_amount),
+			"cost_center": self.supplier_cost_center,
+			"party_check": 1,
+			"party_type": "Supplier",
+			"party": self.supplier,
+			"is_advance": "Yes",
+			"reference_type": self.doctype,
+			"reference_name": self.name,
+		})
+
+		accounts.append({
+			"account": credit_bank_account,
+			"credit": flt(self.advance_amount),
+			"credit_in_account_currency": flt(self.advance_amount),
+			"cost_center": self.cost_center,
+		})
+
+		je = frappe.new_doc("Journal Entry")
+		voucher_type = "Bank Entry"
+		naming_series = "Bank Payment Voucher"
+		
+		je.update({
+				"doctype": "Journal Entry",
+				"voucher_type": voucher_type,
+				"naming_series": naming_series,
+				"title": "POL Advance - "+self.equipment,
+				"user_remark": "POL Advance - "+self.equipment,
+				"posting_date": nowdate(),
+				"company": self.company,
+				"accounts": accounts,
+				"branch": self.branch
+		})
+
+		je.save(ignore_permissions = True)
+		self.db_set("journal_entry", je.name)
+		self.db_set("journal_entry_status", "Forwarded to accounts for processing payment on {0}".format(now_datetime().strftime('%Y-%m-%d %H:%M:%S')))
+		frappe.msgprint(_('{} posted to accounts').format(frappe.get_desk_link(je.doctype,je.name)))
+
+	def post_advance_journal_entry(self):
+		default_bank_account = frappe.db.get_value("Company", self.company, "pol_advance_account")
+		advance_account = frappe.db.get_value("Company", self.company, "temporary_account")
+
+		if not default_bank_account:
 			frappe.throw(
 				"POL Advance Account is not set for {}. Please configure it in the Company.".format(
+					frappe.get_desk_link("Company", self.company)
+				),
+				title="Missing Account"
+			)
+
+		if not advance_account:
+			frappe.throw(
+				"Temporary Advance Account is not set for {}. Please configure it in the Company.".format(
 					frappe.get_desk_link("Company", self.company)
 				),
 				title="Missing Account"
@@ -137,7 +205,7 @@ class POLAdvance(Document):
 		# Posting Journal Entry
 		accounts = []
 		accounts.append({
-			"account": advance_account,
+			"account": default_bank_account,
 			"debit": flt(self.advance_amount),
 			"debit_in_account_currency": flt(self.advance_amount),
 			"cost_center": self.cost_center,
@@ -150,7 +218,7 @@ class POLAdvance(Document):
 		})
 
 		accounts.append({
-			"account": default_bank_account,
+			"account": advance_account,
 			"credit": flt(self.advance_amount),
 			"credit_in_account_currency": flt(self.advance_amount),
 			"cost_center": self.cost_center,

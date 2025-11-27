@@ -15,9 +15,9 @@
   "party",
   "accounting_dimensions_section",
   "cost_center",
-  "business_activity",
   "dimension_col_break",
   "project",
+  "business_activity",
   "currency_section",
   "account_currency",
   "column_break_10",
@@ -97,7 +97,7 @@
    "fieldname": "party_type",
    "fieldtype": "Select",
    "label": "Party Type",
-   "options": "\nCustomer\nSupplier\nEmployee",
+   "options": "\nCustomer\nSupplier\nEmployee\nMuster Roll Employee",
    "search_index": 1
   },
   {
@@ -196,7 +196,7 @@
    "fieldtype": "Select",
    "label": "Reference Type",
    "no_copy": 1,
-   "options": "\nBonus\nPBVA\nSales Invoice\nSWS Application\nPurchase Invoice\nJournal Entry\nSales Order\nPurchase Order\nExpense Claim\nAsset\nLoan\nPayroll Entry\nEmployee Advance\nExchange Rate Revaluation\nInvoice Discounting\nFees\nFull and Final Statement\nPayment Entry\nAbstract Bill\nImprest Advance\nImprest Recoup\nPOL Advance\nProcess MR Payment\nTravel Claim\nTravel Authorization\nFund Requisition\nLeave Encashment\nBulk Leave Encashment\nLeave Travel Concession\nEquipment Hiring Form\nJob Cards\nEmployee Benefits\nHire Charge Invoice\nHire Invoice\nFabrication And Bailey Bridge\nTransporter Invoice\nTravel Advance\nAsset Value Adjustment\nRoyalty Payment",
+   "options": "\nBonus\nPBVA\nSales Invoice\nSWS Application\nPurchase Invoice\nJournal Entry\nSales Order\nPurchase Order\nExpense Claim\nAsset\nLoan\nPayroll Entry\nEmployee Advance\nExchange Rate Revaluation\nInvoice Discounting\nFees\nFull and Final Statement\nPayment Entry\nAbstract Bill\nImprest Advance\nImprest Recoup\nPOL Advance\nProcess MR Payment\nTravel Claim\nTravel Authorization\nFund Requisition\nLeave Encashment\nBulk Leave Encashment\nLeave Travel Concession\nEquipment Hiring Form\nJob Cards\nEmployee Benefits\nHire Charge Invoice\nHire Invoice\nFabrication And Bailey Bridge\nTransporter Invoice\nAsset Value Adjustment\nTravel Advance",
    "search_index": 1
   },
   {
@@ -219,7 +219,6 @@
    "allow_on_submit": 1,
    "fieldname": "project",
    "fieldtype": "Link",
-   "hidden": 1,
    "label": "Project",
    "options": "Project"
   },
@@ -290,6 +289,7 @@
   {
    "fieldname": "business_activity",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Business Activity",
    "options": "Business Activity"
   },
@@ -314,12 +314,14 @@
    "print_hide": 1
   },
   {
+   "depends_on": "eval:doc.apply_tds",
    "fieldname": "tax_account",
    "fieldtype": "Link",
    "label": "Tax Account",
    "mandatory_depends_on": "add_deduct_tax",
    "options": "Account",
-   "print_hide": 1
+   "print_hide": 1,
+   "read_only": 1
   },
   {
    "depends_on": "eval:doc.apply_tds",
@@ -368,7 +370,7 @@
  "idx": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-08-14 19:02:48.492247",
+ "modified": "2025-11-11 00:56:49.129054",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Journal Entry Account",

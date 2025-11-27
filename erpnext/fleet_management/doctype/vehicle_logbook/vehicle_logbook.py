@@ -5,11 +5,12 @@
 from __future__ import unicode_literals
 import frappe
 from frappe.model.document import Document
-from frappe.utils import flt, cint, getdate, add_days, get_datetime
+from frappe.utils import flt, cint, getdate, today, add_days, get_datetime
 from erpnext.custom_utils import check_uncancelled_linked_doc, check_future_date
 from erpnext.fleet_management.report.hsd_consumption_report.fleet_management_report import get_pol_till, get_pol_tills, get_pol_consumed_tills
+from erpnext.controllers.accounts_controller import AccountsController
 
-class VehicleLogbook(Document):
+class VehicleLogbook(AccountsController):
 	# begin: auto-generated types
 	# This code is auto-generated. Do not modify anything in this block.
 
@@ -214,6 +215,8 @@ class VehicleLogbook(Document):
 	
 	def on_cancel(self):
 		# check_uncancelled_linked_doc(self.doctype, self.name)
+		self.ignore_linked_doctypes = ("Payment Ledger Entry", "Hire Charge Invoice", "Journal Entry", "Equipment Hiring Form")
+		super().on_cancel()
 		frappe.db.sql("delete from `tabEquipment Status Entry` where ehf_name = \'"+str(self.name)+"\'")
 		
 
@@ -266,15 +269,15 @@ class VehicleLogbook(Document):
 		if self.vlogs:
 			# total_w = total_i = 0
 			# total_hsd_amount = 0 
-			total_w = total_i = total_operator_salary = total_hsd_amount = 0
+			total_w = total_i = total_hsd_amount = 0
 
 			for vlog in self.vlogs:
 				total_w += flt(vlog.work_time)
 				total_i += flt(vlog.idle_time)
 
 				# Sum operator salaries
-				if flt(vlog.operator_salary):
-					total_operator_salary += flt(vlog.operator_salary)
+				# if flt(vlog.operator_salary):
+				# 	total_operator_salary += flt(vlog.operator_salary)
 
 				# Calculate HSD amount for each row in vlogs
 				if flt(vlog.pol_issued) and flt(vlog.hsd_rate):
@@ -282,7 +285,7 @@ class VehicleLogbook(Document):
 
 			self.total_work_time = total_w
 			self.total_idle_time = total_i
-			self.operator_salary = total_operator_salary
+			# self.operator_salary = total_operator_salary
 			self.hsd_amount = total_hsd_amount  
 				
 
@@ -322,12 +325,16 @@ class VehicleLogbook(Document):
 		# 	if flt(item.pol_issued) and flt((item.hsd_rate)):
 		# 		item.hsd_amount = flt(item.pol_issued) * flt(item.hsd_rate)
 
-		if flt(self.hire_charge_amount) or flt((self.operator_salary)) or flt((self.consumption)):
-				self.total_amount = flt(self.hire_charge_amount)
-
 		# Auto-calculate hsd_amount as ys_km * distance_km
-		if flt(self.hire_charge_rate) and flt(self.total_work_time):
-			self.hire_charge_amount = flt(self.hire_charge_rate) * flt(self.total_work_time)				
+		if flt(self.total_work_time):
+			total_work_amount = flt(self.work_rate) * flt(self.total_work_time)
+			total_idle_amount = flt(self.idle_rate) * flt(self.total_idle_time)
+			self.hire_charge_amount = flt(total_work_amount) + flt(total_idle_amount)
+
+		# if (flt(self.hire_charge_amount) and flt(self.operator_salary)) or flt((self.consumption)):
+		# 	self.total_amount = flt(self.hire_charge_amount) + flt(self.operator_salary)			
+		if flt(self.hire_charge_amount) or flt(self.operator_salary) or flt((self.consumption)):
+			self.total_amount = flt(self.hire_charge_amount) + flt(self.operator_salary)			
 
 	def update_hire(self):
 		if self.ehf_name:

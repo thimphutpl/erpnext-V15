@@ -199,6 +199,12 @@ def get_gl_entries(filters, accounting_dimensions):
 		as_dict=1,
 	)
 
+	# if filters.get("party_type") === "Employee":
+	# 	for row in enumerate(gl_entries, start=1):
+	# 		employee_name = frappe.db.get_value("Employee",{'name':row['party']},'employee_name')
+	# 		row["party_name"] = employee_name
+			
+
 	if filters.get("presentation_currency"):
 		return convert_to_presentation_currency(gl_entries, currency_map)
 	else:
@@ -529,6 +535,13 @@ def get_accountwise_gle(filters, accounting_dimensions, gl_entries, gle_map, tot
 					gle.get("party_type"),
 					gle.get("party"),
 				]
+				if filters.get("party_type") == "Employee":
+					gle["party_name"] = frappe.db.get_value(
+						"Employee",
+						gle.get("party"),
+						"employee_name"
+					)
+					keylist.append(gle.get("party_name"))
 
 				if immutable_ledger:
 					keylist.append(gle.get("creation"))
@@ -682,6 +695,16 @@ def get_columns(filters):
 		{"label": _("Against Account"), "fieldname": "against", "width": 120},
 		{"label": _("Party Type"), "fieldname": "party_type", "width": 100},
 		{"label": _("Party"), "fieldname": "party", "width": 100},
+	]
+
+	if filters.get("party_type") == "Employee":
+		columns.append({
+			"label": _("Party Name"),
+			"fieldname": "party_name",
+			"width": 150
+		})
+
+	columns += [
 		{"label": _("Project"), "options": "Project", "fieldname": "project", "width": 100},
 	]
 

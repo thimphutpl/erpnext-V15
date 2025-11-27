@@ -10,7 +10,7 @@ import frappe
 from frappe.model.document import Document
 from frappe.utils import flt
 
-from erpnext.stock.get_item_details import get_item_details, get_price_list_rate
+# from erpnext.stock.get_item_details import get_item_details, get_price_list_rate
 
 
 class PackedItem(Document):
@@ -60,7 +60,9 @@ def make_packing_list(doc):
 		return
 
 	parent_items_price, reset = {}, False
-	set_price_from_children = frappe.db.get_single_value("Selling Settings", "editable_bundle_item_rates")
+	set_price_from_children = frappe.db.get_single_value(
+		"Selling Settings", "editable_bundle_item_rates"
+	)
 
 	stale_packed_items_table = get_indexed_packed_items_table(doc)
 
@@ -83,14 +85,14 @@ def make_packing_list(doc):
 				update_packed_item_from_cancelled_doc(item_row, bundle_item, pi_row, doc)
 
 				if set_price_from_children:  # create/update bundle item wise price dict
-					update_product_bundle_rate(parent_items_price, pi_row, item_row)
+					update_product_bundle_rate(parent_items_price, pi_row)
 
 	if parent_items_price:
 		set_product_bundle_rate_amount(doc, parent_items_price)  # set price in bundle item
 
 
 def is_product_bundle(item_code: str) -> bool:
-	return bool(frappe.db.exists("Product Bundle", {"new_item_code": item_code, "disabled": 0}))
+	return bool(frappe.db.exists("Product Bundle", {"new_item_code": item_code}))
 
 
 def get_indexed_packed_items_table(doc):
@@ -118,8 +120,8 @@ def reset_packing_list(doc):
 		# 1. items were deleted
 		# 2. if bundle item replaced by another item (same no. of items but different items)
 		# we maintain list to track recurring item rows as well
-		items_before_save = [(item.name, item.item_code) for item in doc_before_save.get("items")]
-		items_after_save = [(item.name, item.item_code) for item in doc.get("items")]
+		items_before_save = [item.item_code for item in doc_before_save.get("items")]
+		items_after_save = [item.item_code for item in doc.get("items")]
 		reset_table = items_before_save != items_after_save
 	else:
 		# reset: if via Update Items OR
@@ -146,7 +148,7 @@ def get_product_bundle_items(item_code):
 			product_bundle_item.uom,
 			product_bundle_item.description,
 		)
-		.where((product_bundle.new_item_code == item_code) & (product_bundle.disabled == 0))
+		.where(product_bundle.new_item_code == item_code)
 		.orderby(product_bundle_item.idx)
 	)
 	return query.run(as_dict=True)
@@ -225,7 +227,6 @@ def update_packed_item_stock_data(main_item_row, pi_row, packing_item, item_data
 	bin = get_packed_item_bin_qty(packing_item.item_code, pi_row.warehouse)
 	pi_row.actual_qty = flt(bin.get("actual_qty"))
 	pi_row.projected_qty = flt(bin.get("projected_qty"))
-	pi_row.use_serial_batch_fields = frappe.db.get_single_value("Stock Settings", "use_serial_batch_fields")
 
 
 def update_packed_item_price_data(pi_row, item_data, doc):
@@ -243,9 +244,6 @@ def update_packed_item_price_data(pi_row, item_data, doc):
 			"conversion_rate": doc.get("conversion_rate"),
 		}
 	)
-	if not row_data.get("transaction_date"):
-		row_data.update({"transaction_date": doc.get("transaction_date")})
-
 	rate = get_price_list_rate(row_data, item_doc).get("price_list_rate")
 
 	pi_row.rate = rate or item_data.get("valuation_rate") or 0.0
@@ -280,11 +278,13 @@ def get_packed_item_bin_qty(item, warehouse):
 def get_cancelled_doc_packed_item_details(old_packed_items):
 	prev_doc_packed_items_map = {}
 	for items in old_packed_items:
-		prev_doc_packed_items_map.setdefault((items.item_code, items.parent_item), []).append(items.as_dict())
+		prev_doc_packed_items_map.setdefault((items.item_code, items.parent_item), []).append(
+			items.as_dict()
+		)
 	return prev_doc_packed_items_map
 
 
-def update_product_bundle_rate(parent_items_price, pi_row, item_row):
+def update_product_bundle_rate(parent_items_price, pi_row):
 	"""
 	Update the price dict of Product Bundles based on the rates of the Items in the bundle.
 
@@ -296,7 +296,7 @@ def update_product_bundle_rate(parent_items_price, pi_row, item_row):
 	if not rate:
 		parent_items_price[key] = 0.0
 
-	parent_items_price[key] += flt((pi_row.rate * pi_row.qty) / item_row.stock_qty)
+	parent_items_price[key] += flt(pi_row.rate)
 
 
 def set_product_bundle_rate_amount(doc, parent_items_price):

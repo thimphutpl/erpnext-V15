@@ -22,13 +22,13 @@ def get_columns(filters):
             },
             {
                 "label": ("Equipment No."),
-                "fieldname": "equipment_number",
+                "fieldname": "equipment_name",
                 "fieldtype": "Data",
                 "width": 120,
             },
             {
-                "label": ("Book Type"),
-                "fieldname": "book_type",
+                "label": ("Fuel Type"),
+                "fieldname": "fuel_type",
                 "fieldtype": "Data",
                 "width": 120,
             },
@@ -51,12 +51,12 @@ def get_columns(filters):
                 "fieldtype": "Data",
                 "width": 120,
             },
-            {
-                "label": ("Item Code"),
-                "fieldname": "pol_type",
-                "fieldtype": "Data",
-                "width": 100,
-            },
+            # {
+            #     "label": ("Item Code"),
+            #     "fieldname": "pol_type",
+            #     "fieldtype": "Data",
+            #     "width": 100,
+            # },
             {
                 "label": ("Item Name"),
                 "fieldname": "item_name",
@@ -99,13 +99,13 @@ def get_columns(filters):
             },
             {
                 "label": ("Equipment No."),
-                "fieldname": "equipment_number",
+                "fieldname": "equipment_name",
                 "fieldtype": "Data",
                 "width": 120,
             },
             {
-                "label": ("Book Type"),
-                "fieldname": "book_type",
+                "label": ("Fuel Type"),
+                "fieldname": "fuel_type",
                 "fieldtype": "Data",
                 "width": 120,
             },
@@ -121,13 +121,13 @@ def get_columns(filters):
                 "fieldtype": "Data",
                 "width": 120,
             },
-            {
-                "label": ("Item Code"),
-                "fieldname": "pol_type",
-                "fieldtype": "Link",
-                "options": "Item",
-                "width": 100,
-            },
+            # {
+            #     "label": ("Item Code"),
+            #     "fieldname": "pol_type",
+            #     "fieldtype": "Link",
+            #     "options": "Item",
+            #     "width": 100,
+            # },
             {
                 "label": ("Item Name"),
                 "fieldname": "item_name",
@@ -164,9 +164,9 @@ def get_columns(filters):
 def get_data(filters):
     query = """
         SELECT 
-            p.equipment, p.equipment_number, p.book_type, p.fuelbook, 
-            p.supplier, p.pol_type, p.pol_type, p.item_name, p.posting_date, 
-            p.qty, p.rate, IFNULL(p.total_amount, 0) AS amount
+            p.equipment, p.equipment_name, p.fuel_type, p.fuelbook, 
+            p.supplier, p.item_name, p.posting_date, 
+            IFNULL(p.total_amount, 0) AS amount
         FROM `tabPOL Receive` AS p 
         WHERE p.docstatus = 1
     """

@@ -1,0 +1,775 @@
+{
+ "actions": [],
+ "autoname": "EMI.YY.MM.DD.######",
+ "creation": "2021-09-22 11:19:51.552359",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "other_details_section",
+  "branch",
+  "cost_center",
+  "status",
+  "set_price_date_manually",
+  "column_break_2",
+  "delivery_warehouse",
+  "business_activity",
+  "company",
+  "pricing_date",
+  "column_break_8",
+  "posting_date",
+  "posting_time",
+  "is_return",
+  "section_break_4",
+  "customer_type",
+  "customer_name",
+  "location_segregation",
+  "customer_email",
+  "column_break_19",
+  "customer",
+  "customer_group",
+  "apply_purchase_limit",
+  "is_opening_bal",
+  "is_discounted",
+  "column_break_21",
+  "sales_order_type",
+  "required_commission",
+  "air_time",
+  "is_on_credit",
+  "section_break_13",
+  "one_time_customer_name",
+  "cid_passort_work_permit_no",
+  "address",
+  "column_break_15",
+  "contact",
+  "email_address",
+  "deduction_details_for_employee_section",
+  "payment_type",
+  "due_date",
+  "interest_percentage",
+  "cost_sharing_percentage",
+  "column_break_38",
+  "credit_type",
+  "recovery_start_date",
+  "monthly_deduction",
+  "down_payment",
+  "down_payment_amount",
+  "column_break_34",
+  "no_of_installation",
+  "no_of_installation_external",
+  "no_of_installation_employee",
+  "salary_component",
+  "recovery_end_date",
+  "salary_structure",
+  "sb_installment_details",
+  "installment_details",
+  "item_details_section",
+  "items",
+  "total_receivable_amount",
+  "total_interest_amount",
+  "payment_details_section",
+  "total_tds_amount",
+  "mode_of_payment_items",
+  "account_details_section",
+  "commission_amount",
+  "grand_total",
+  "purchase_limit_on_total_amount",
+  "currency",
+  "column_break_26",
+  "taxable_amount",
+  "outstanding_amount",
+  "discount_amount",
+  "total_tds_deducted_by_customer",
+  "column_break_28",
+  "tds_amount",
+  "net_amount",
+  "debit_to",
+  "conversion_rate",
+  "paid_amount",
+  "base_paid_amount",
+  "remarks_section",
+  "remarks",
+  "column_break_30",
+  "billing_user",
+  "profit_center",
+  "collection_center",
+  "amended_from",
+  "tb_amortization",
+  "payment_terms_section",
+  "recalculate_amortization",
+  "payment_schedule",
+  "taxes_and_charges"
+ ],
+ "fields": [
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Branch ",
+   "options": "Branch",
+   "reqd": 1
+  },
+  {
+   "fieldname": "sales_order_type",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "EMI Sales Type",
+   "options": "EMI Sales Type",
+   "reqd": 1
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "EMI Sales",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "customer_group",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Customer Group",
+   "options": "Customer Group",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "branch.cost_center",
+   "fieldname": "cost_center",
+   "fieldtype": "Link",
+   "label": "Cost Center",
+   "options": "Cost Center",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_4",
+   "fieldtype": "Section Break",
+   "label": "Customer Details"
+  },
+  {
+   "default": "Today",
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Posting Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "posting_time",
+   "fieldtype": "Time",
+   "label": "Posting Time"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company",
+   "read_only": 1
+  },
+  {
+   "fieldname": "contact",
+   "fieldtype": "Data",
+   "in_standard_filter": 1,
+   "label": "Contact(Mobile)"
+  },
+  {
+   "fieldname": "item_details_section",
+   "fieldtype": "Section Break",
+   "label": "Item Details"
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "label": "Items",
+   "options": "EMI Sales Item"
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Dynamic Link",
+   "ignore_user_permissions": 1,
+   "label": "Customer",
+   "options": "customer_type",
+   "reqd": 1
+  },
+  {
+   "depends_on": "eval:doc.customer_group == \"One Time Customer\"",
+   "fieldname": "section_break_13",
+   "fieldtype": "Section Break",
+   "label": "One Time Customer Details"
+  },
+  {
+   "fieldname": "column_break_15",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "address",
+   "fieldtype": "Data",
+   "label": "Address"
+  },
+  {
+   "fieldname": "email_address",
+   "fieldtype": "Data",
+   "label": "Email Address"
+  },
+  {
+   "default": "0",
+   "fetch_from": "sales_order_type.required_commission",
+   "fieldname": "required_commission",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Required Commission",
+   "read_only": 1
+  },
+  {
+   "fieldname": "account_details_section",
+   "fieldtype": "Section Break",
+   "label": "Account Details"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "outstanding_amount",
+   "fieldtype": "Currency",
+   "label": "Outstanding Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_26",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_28",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "paid_amount",
+   "fieldtype": "Currency",
+   "hidden": 1,
+   "label": "Paid Amount",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.branch",
+   "fieldname": "delivery_warehouse",
+   "fieldtype": "Link",
+   "label": "Delivery Warehouse",
+   "options": "Warehouse",
+   "reqd": 1
+  },
+  {
+   "fieldname": "business_activity",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Business Activity",
+   "options": "Business Activity"
+  },
+  {
+   "depends_on": "eval:doc.required_commission",
+   "fieldname": "commission_amount",
+   "fieldtype": "Currency",
+   "label": "Commission Amount",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.required_commission",
+   "fieldname": "taxable_amount",
+   "fieldtype": "Currency",
+   "label": "Taxable Amount",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.required_commission",
+   "fieldname": "tds_amount",
+   "fieldtype": "Currency",
+   "label": "TDS Amount",
+   "read_only": 1
+  },
+  {
+   "default": "1",
+   "depends_on": "eval:doc.customer_type == 'Employee' || doc.sales_order_type == 'External Customers Installment' || doc.sales_order_type == \"Employee Installment\" || (doc.customer_type == \"Customer\");",
+   "description": "<b>Tick this for Credit Sales only</b>",
+   "fieldname": "is_on_credit",
+   "fieldtype": "Check",
+   "label": "Is On Credit",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_8",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "grand_total",
+   "fieldtype": "Currency",
+   "label": "Total Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "currency",
+   "fieldtype": "Link",
+   "label": "Currency",
+   "options": "Currency",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_return",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Is Return",
+   "read_only": 1
+  },
+  {
+   "default": "Customer",
+   "fieldname": "customer_type",
+   "fieldtype": "Select",
+   "label": "Customer Type",
+   "options": "Customer\nEmployee",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_19",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "Draft",
+   "fieldname": "status",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "in_standard_filter": 1,
+   "label": "Status",
+   "options": "\nDraft\nReturn\nCredit Note Issued\nSubmitted\nPaid\nUnpaid\nUnpaid and Discounted\nOverdue and Discounted\nOverdue\nCancelled",
+   "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "depends_on": "eval:doc.is_on_credit",
+   "fieldname": "due_date",
+   "fieldtype": "Date",
+   "label": "Payment Due Date",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:!doc.required_commission && doc.customer_group == \"Regular\"",
+   "description": "<b>Tick this for discount sales</b>",
+   "fieldname": "is_discounted",
+   "fieldtype": "Check",
+   "label": "Is Discounted"
+  },
+  {
+   "fieldname": "debit_to",
+   "fieldtype": "Link",
+   "label": "Debit To",
+   "options": "Account",
+   "read_only": 1
+  },
+  {
+   "default": "1",
+   "fieldname": "conversion_rate",
+   "fieldtype": "Float",
+   "hidden": 1,
+   "label": "Exchange Rate",
+   "read_only": 1
+  },
+  {
+   "fieldname": "deduction_details_for_employee_section",
+   "fieldtype": "Section Break",
+   "label": "RECOVERY DETAILS"
+  },
+  {
+   "depends_on": "eval:doc.credit_type == 'Installment Payment' && doc.sales_order_type != \"External Customers\" && doc.sales_order_type != \"Cost Sharing Installment\" && doc.sales_order_type != \"Employee Installment\" && doc.payment_type;",
+   "fieldname": "no_of_installation",
+   "fieldtype": "Select",
+   "label": "No. of Installation",
+   "options": "\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12"
+  },
+  {
+   "fieldname": "column_break_34",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.credit_type == 'Installment Payment'",
+   "fieldname": "monthly_deduction",
+   "fieldtype": "Currency",
+   "label": "Monthly Deduction",
+   "read_only": 1
+  },
+  {
+   "fieldname": "salary_component",
+   "fieldtype": "Link",
+   "label": "Salary Component",
+   "options": "Salary Component",
+   "read_only": 1
+  },
+  {
+   "fieldname": "recovery_start_date",
+   "fieldtype": "Date",
+   "hidden": 1,
+   "label": "Recovery Start Date",
+   "read_only": 1
+  },
+  {
+   "fieldname": "recovery_end_date",
+   "fieldtype": "Date",
+   "hidden": 1,
+   "label": "Recovery End Date",
+   "read_only": 1
+  },
+  {
+   "fieldname": "salary_structure",
+   "fieldtype": "Link",
+   "label": "Salary Structure",
+   "options": "Salary Structure",
+   "read_only": 1
+  },
+  {
+   "fieldname": "one_time_customer_name",
+   "fieldtype": "Data",
+   "label": "One Time Customer Name"
+  },
+  {
+   "fieldname": "other_details_section",
+   "fieldtype": "Section Break",
+   "label": "Outlet Details"
+  },
+  {
+   "description": "<b>Select value if the Selling Price differ for CUSTOMER</b>",
+   "fieldname": "payment_type",
+   "fieldtype": "Link",
+   "label": "Payment Type",
+   "options": "Payment Type",
+   "read_only": 1
+  },
+  {
+   "fieldname": "payment_details_section",
+   "fieldtype": "Section Break",
+   "label": "Payment Mode Details"
+  },
+  {
+   "fieldname": "base_paid_amount",
+   "fieldtype": "Currency",
+   "hidden": 1,
+   "label": "Base Paid Amount",
+   "options": "Company:company:default_currency",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_21",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.is_discounted",
+   "fieldname": "discount_amount",
+   "fieldtype": "Currency",
+   "label": "Discount Amount",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "description": "<b>Tick this if you dont want to apply purchase limit</b>",
+   "fieldname": "apply_purchase_limit",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Ignore Purchase Limit?",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.is_on_credit",
+   "fieldname": "payment_terms_section",
+   "fieldtype": "Section Break",
+   "label": "Payment Terms"
+  },
+  {
+   "fieldname": "payment_schedule",
+   "fieldtype": "Table",
+   "label": "Payment Schedule/Amortization Sheet",
+   "options": "EMI Payment Schedule",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "taxes_and_charges",
+   "fieldtype": "Float",
+   "hidden": 1,
+   "label": "Taxes And Charges",
+   "read_only": 1
+  },
+  {
+   "fieldname": "customer_name",
+   "fieldtype": "Data",
+   "label": "Customer Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "location_segregation",
+   "fieldtype": "Data",
+   "label": "Location Segregation",
+   "read_only": 1
+  },
+  {
+   "fieldname": "purchase_limit_on_total_amount",
+   "fieldtype": "Currency",
+   "label": "Purchase Limit On Total Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "net_amount",
+   "fieldtype": "Currency",
+   "label": "Net Amount(Receivable)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cid_passort_work_permit_no",
+   "fieldtype": "Data",
+   "label": "CID/Passport/Work Permit No"
+  },
+  {
+   "fieldname": "customer_email",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Customer Email",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "description": "<b>Tick this to ignore purchase limit check</b>",
+   "fieldname": "air_time",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Ignore Purchase Limit?"
+  },
+  {
+   "default": "Installment Payment",
+   "description": "<b>Select value only if you are selling on CREDIT</b>",
+   "fieldname": "credit_type",
+   "fieldtype": "Select",
+   "label": "Credit Type",
+   "options": "\nInstallment Payment\nDue Date Payment",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_38",
+   "fieldtype": "Column Break"
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "remarks_section",
+   "fieldtype": "Section Break",
+   "label": "Remarks"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Small Text",
+   "label": "Remarks"
+  },
+  {
+   "fieldname": "mode_of_payment_items",
+   "fieldtype": "Table",
+   "label": "Mode Of Payment",
+   "options": "EMI Sales Payment Mode",
+   "reqd": 1
+  },
+  {
+   "fieldname": "profit_center",
+   "fieldtype": "Data",
+   "label": "Profit Center",
+   "read_only": 1
+  },
+  {
+   "fieldname": "collection_center",
+   "fieldtype": "Data",
+   "label": "Collection Center",
+   "read_only": 1
+  },
+  {
+   "fieldname": "billing_user",
+   "fieldtype": "Data",
+   "label": "Billing User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_30",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_receivable_amount",
+   "fieldtype": "Currency",
+   "label": "Total Receivable Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_tds_amount",
+   "fieldtype": "Currency",
+   "label": "Total TDS Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_tds_deducted_by_customer",
+   "fieldtype": "Currency",
+   "label": "Total TDS Deducted By Customer",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_opening_bal",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Is Opening"
+  },
+  {
+   "depends_on": "eval:doc.set_price_date_manually == 1",
+   "fieldname": "pricing_date",
+   "fieldtype": "Date",
+   "label": "Pricing Date"
+  },
+  {
+   "default": "0",
+   "fieldname": "set_price_date_manually",
+   "fieldtype": "Check",
+   "label": "Set Price Date(Manually)"
+  },
+  {
+   "depends_on": "eval:doc.credit_type == \"Installment Payment\";",
+   "fieldname": "installment_details",
+   "fieldtype": "Table",
+   "options": "EMI Sales Installments"
+  },
+  {
+   "fieldname": "sb_installment_details",
+   "fieldtype": "Section Break",
+   "hidden": 1,
+   "label": "External Installment Details"
+  },
+  {
+   "depends_on": "eval:doc.sales_order_type == \"External Customers\" && doc.credit_type == 'Installment Payment';",
+   "fieldname": "no_of_installation_external",
+   "fieldtype": "Select",
+   "label": "No of Installation(External Installment)",
+   "options": "\n12\n24"
+  },
+  {
+   "depends_on": "eval:(doc.sales_order_type == \"Employee Installment\" || doc.sales_order_type == \"Cost Sharing Installment\") && doc.credit_type == 'Installment Payment';",
+   "fieldname": "no_of_installation_employee",
+   "fieldtype": "Select",
+   "label": "No of Installation(Employee Installment)",
+   "options": "\n12\n24"
+  },
+  {
+   "default": "0",
+   "description": "<b>Tick this to enter down payment amount.</b>",
+   "fieldname": "down_payment",
+   "fieldtype": "Check",
+   "label": "Down Payment"
+  },
+  {
+   "depends_on": "eval:doc.down_payment == 1;",
+   "fieldname": "down_payment_amount",
+   "fieldtype": "Currency",
+   "label": "Down Payment Amount",
+   "mandatory_depends_on": "eval:doc.down_payment == 1;"
+  },
+  {
+   "fieldname": "interest_percentage",
+   "fieldtype": "Percent",
+   "label": "Interest Percentage",
+   "reqd": 1
+  },
+  {
+   "fieldname": "total_interest_amount",
+   "fieldtype": "Currency",
+   "label": "Total Interest Amount",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "tb_amortization",
+   "fieldtype": "Tab Break",
+   "label": "Amortization Sheet"
+  },
+  {
+   "default": "0",
+   "fieldname": "recalculate_amortization",
+   "fieldtype": "Check",
+   "label": "Recalculate Amortization"
+  },
+  {
+   "fieldname": "cost_sharing_percentage",
+   "fieldtype": "Percent",
+   "label": "Cost Sharing Percentage",
+   "precision": "2",
+   "read_only": 1
+  }
+ ],
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2025-11-27 12:08:20.807445",
+ "modified_by": "Administrator",
+ "module": "Selling",
+ "name": "EMI Sales",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "cancel": 1,
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Administrator",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales User",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "cancel": 1,
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "customer_name",
+ "track_changes": 1
+}

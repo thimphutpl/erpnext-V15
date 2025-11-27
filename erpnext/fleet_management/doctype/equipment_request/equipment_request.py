@@ -22,13 +22,18 @@ class EquipmentRequest(Document):
 		amended_form: DF.Link | None
 		amended_from: DF.Link | None
 		cost_center: DF.ReadOnly | None
+		designation: DF.Data | None
 		ehf: DF.Data | None
+		employee_id: DF.Link
+		employee_name: DF.Data | None
+		from_date: DF.Date
 		items: DF.Table[EquipmentRequestItem]
 		percent_completed: DF.Percent
+		posting_date: DF.Date
 		purpose: DF.Text | None
-		request_date: DF.Date
-		requesting_branch: DF.Link | None
-		sbranch: DF.Link
+		requesting_branch: DF.Link
+		sbranch: DF.Link | None
+		to_date: DF.Date
 	# end: auto-generated types
 	def validate(self):
 		self.calculate_percent()
@@ -59,14 +64,14 @@ class EquipmentRequest(Document):
 					frappe.throw("Approved Qty Is Mandiatory")
 				if i.approved_qty > i.qty:
 					frappe.throw(" Approved Qty Cannot Be Greater Than Requested Qty")
-				msg1 = "({0}: No. Requested: {1}, No. Approved: {2})".format(i.equipment_type, i.qty, i.approved_qty)
+				msg1 = "({0}: No. Requested: {1}, No. Approved: {2})".format(i.equipment_id, i.qty, i.approved_qty)
 				msg = ','.join([msg1])
 			message = "The Equipment Request No: '{0}' is Partially Approved as follows: \n {2}".format(self.name, self.approval_status, msg)
 		frappe.msgprint(message)
 		sendmail(recipent, subject, message)
 	# def check_rejection_msg(self):
 	# 	if self.approval_status == 'Unavailable' and self.message == None:
-    #                     frappe.throw("Rejection Reason Should Be Mandatory")
+	#                     frappe.throw("Rejection Reason Should Be Mandatory")
 
 @frappe.whitelist()
 def make_hire_form(source_name, target_doc=None):
@@ -86,8 +91,8 @@ def make_hire_form(source_name, target_doc=None):
 	def adjust_last_date(source, target):
 		pass
 		"""target.items[len(target.items) - 1].dsa_percent = 50 
-        target.items[len(target.items) - 1].actual_amount = target.items[len(target.items) - 1].actual_amount / 2
-        target.items[len(target.items) - 1].amount = target.items[len(target.items) - 1].amount / 2"""
+		target.items[len(target.items) - 1].actual_amount = target.items[len(target.items) - 1].actual_amount / 2
+		target.items[len(target.items) - 1].amount = target.items[len(target.items) - 1].amount / 2"""
 
 	doc = get_mapped_doc("Equipment Request", source_name, {
 		"Equipment Request": {
@@ -102,3 +107,36 @@ def make_hire_form(source_name, target_doc=None):
 		},
 	}, target_doc, adjust_last_date)
 	return doc 	
+
+@frappe.whitelist()
+def make_vehicle_log(source_name, target_doc=None, ignore_permissions=False):
+	def postprocess(source, target):
+		target.flags.ignore_permissions = ignore_permissions
+
+	fields = {
+		"Equipment Request": {
+			"doctype": "Vehicle Logs",
+			"field_map": {
+				"equipment_request": "equipment_request",
+				"requesting_branch": "branch",
+				"from_date": "from_date",
+				"to_date": "to_date",
+			},
+			"validation": {
+				"docstatus": ["=", 1],
+			},
+		},
+		"Equipment Request Item": {
+			"doctype": "Vehicle Logs Details",
+		},
+	}
+
+	doc = get_mapped_doc(
+		"Equipment Request",
+		source_name,
+		fields,
+		target_doc,
+		postprocess,
+		ignore_permissions=ignore_permissions,
+	)
+	return doc

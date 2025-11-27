@@ -47,11 +47,11 @@
   {
    "fieldname": "supplier",
    "fieldtype": "Link",
+   "hidden": 1,
    "ignore_user_permissions": 1,
    "in_list_view": 1,
    "label": "Supplier",
-   "options": "Supplier",
-   "reqd": 1
+   "options": "Supplier"
   },
   {
    "allow_on_submit": 1,
@@ -88,7 +88,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-25 09:57:49.310843",
+ "modified": "2025-11-25 12:15:31.054944",
  "modified_by": "kalden.dorji@thimphutechpark.bt",
  "module": "Fleet Management",
  "name": "Fuelbook",

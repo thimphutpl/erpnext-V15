@@ -192,6 +192,8 @@ def get_data(filters):
 
     if filters.asset_code:
         query +=" and a.name in %(asset_code)s "
+    if filters.status:
+        query +=" and a.status = '{}'".format(filters.status)
 
     asset_data = frappe.db.sql(query, filters, as_dict=True)
     depreciation_details, depreciation_details_two = get_depreciation_details(filters)

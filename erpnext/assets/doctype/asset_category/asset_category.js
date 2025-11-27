@@ -2,6 +2,15 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on("Asset Category", {
+	refresh:function(frm){
+		frm.set_query('asset_sub_category', 'finance_books', function(doc, cdt, cdn) {
+			return {
+				"filters": {
+					"asset_category":doc.name
+				}
+			};
+		});
+	},
 	onload: function (frm) {
 		frm.add_fetch("company_name", "accumulated_depreciation_account", "accumulated_depreciation_account");
 		frm.add_fetch("company_name", "depreciation_expense_account", "depreciation_expense_account");
@@ -17,7 +26,14 @@ frappe.ui.form.on("Asset Category", {
 				},
 			};
 		});
-
+		frm.set_query('asset_sub_category', 'finance_book', function(doc, cdt, cdn) {
+			var d  = locals[cdt][cdn];
+			return {
+				"filters": {
+					"asset_category":frm.doc.asset_category
+				}
+			};
+		});
 		frm.set_query("accumulated_depreciation_account", "accounts", function (doc, cdt, cdn) {
 			var d = locals[cdt][cdn];
 			return {

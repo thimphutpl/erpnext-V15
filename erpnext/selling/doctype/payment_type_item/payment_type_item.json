@@ -1,0 +1,41 @@
+{
+ "actions": [],
+ "creation": "2021-11-26 11:01:49.157715",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "customer_group",
+  "sales_order_type"
+ ],
+ "fields": [
+  {
+   "fieldname": "customer_group",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Customer Group",
+   "options": "Customer Group"
+  },
+  {
+   "fieldname": "sales_order_type",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "EMI Sales Type",
+   "options": "EMI Sales Type"
+  }
+ ],
+ "istable": 1,
+ "links": [],
+ "modified": "2025-11-19 11:20:30.663626",
+ "modified_by": "Administrator",
+ "module": "Selling",
+ "name": "Payment Type Item",
+ "owner": "Administrator",
+ "permissions": [],
+ "quick_entry": 1,
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

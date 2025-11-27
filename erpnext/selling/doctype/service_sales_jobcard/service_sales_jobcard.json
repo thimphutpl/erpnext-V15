@@ -1,0 +1,270 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:SJ{YY}{MM}{####}",
+ "creation": "2025-11-15 13:45:34.518304",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "jobcard_details_section",
+  "posting_date",
+  "branch",
+  "cost_center",
+  "start_date",
+  "end_date",
+  "column_break_csjz",
+  "jobcard_status",
+  "jocard_type",
+  "warehouse",
+  "set_warehouse",
+  "customer_information_section",
+  "customer_id",
+  "customer_name",
+  "customer_group",
+  "mobile_no",
+  "address",
+  "location",
+  "column_break_uhxs",
+  "warranty_id",
+  "chassis_number",
+  "vehicle_number",
+  "allocated_amount",
+  "balance_amount",
+  "technicai_details_section",
+  "table_vvwk",
+  "service_report_section",
+  "items",
+  "payable_amount",
+  "jobcard_report",
+  "section_break_hejn",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "jobcard_details_section",
+   "fieldtype": "Section Break",
+   "label": "Jobcard Details"
+  },
+  {
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Posting Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "start_date",
+   "fieldtype": "Date",
+   "label": "Start Date ",
+   "reqd": 1
+  },
+  {
+   "fieldname": "end_date",
+   "fieldtype": "Date",
+   "label": "End Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_csjz",
+   "fieldtype": "Column Break"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "jobcard_status",
+   "fieldtype": "Select",
+   "label": "Jobcard Status",
+   "options": "Ongoing\nCompleted"
+  },
+  {
+   "fieldname": "jocard_type",
+   "fieldtype": "Link",
+   "label": "Jocard Type",
+   "options": "Jobcard Type"
+  },
+  {
+   "fieldname": "customer_information_section",
+   "fieldtype": "Section Break",
+   "label": "Customer Information"
+  },
+  {
+   "fieldname": "customer_id",
+   "fieldtype": "Link",
+   "label": "Customer ID",
+   "options": "Customer",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "customer_id.customer_name",
+   "fieldname": "customer_name",
+   "fieldtype": "Data",
+   "label": "Customer Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "customer_group",
+   "fieldtype": "Data",
+   "label": "Customer Group"
+  },
+  {
+   "fetch_from": "customer_id.mobile_no",
+   "fieldname": "mobile_no",
+   "fieldtype": "Data",
+   "label": "Mobile No",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "customer_id.primary_address",
+   "fieldname": "address",
+   "fieldtype": "Small Text",
+   "label": "Address",
+   "read_only": 1
+  },
+  {
+   "fieldname": "location",
+   "fieldtype": "Link",
+   "label": "Location",
+   "options": "Location"
+  },
+  {
+   "fieldname": "column_break_uhxs",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "If the servicing is covered under-warranty",
+   "fieldname": "warranty_id",
+   "fieldtype": "Link",
+   "label": "Warranty ID",
+   "options": "Warranty"
+  },
+  {
+   "fieldname": "vehicle_number",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Vehicle Number"
+  },
+  {
+   "fieldname": "chassis_number",
+   "fieldtype": "Link",
+   "label": "Chassis Number",
+   "options": "Serial No"
+  },
+  {
+   "fieldname": "technicai_details_section",
+   "fieldtype": "Section Break",
+   "label": "Technicai Details"
+  },
+  {
+   "fieldname": "table_vvwk",
+   "fieldtype": "Table",
+   "options": "Jobcard Technican Details"
+  },
+  {
+   "fieldname": "service_report_section",
+   "fieldtype": "Section Break",
+   "label": "Service Report"
+  },
+  {
+   "fieldname": "payable_amount",
+   "fieldtype": "Currency",
+   "label": "Payable Amount"
+  },
+  {
+   "fieldname": "jobcard_report",
+   "fieldtype": "Long Text",
+   "label": "Remarks"
+  },
+  {
+   "fieldname": "section_break_hejn",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Service Sales Jobcard",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "label": "Branch",
+   "options": "Branch",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "branch.cost_center",
+   "fieldname": "cost_center",
+   "fieldtype": "Data",
+   "label": "Cost Center",
+   "read_only": 1
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "label": "Items",
+   "options": "Jobcard Service Details"
+  },
+  {
+   "fetch_from": "chassis_number.allotted_amount",
+   "fieldname": "allocated_amount",
+   "fieldtype": "Data",
+   "label": "Allocated Amount",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "chassis_number.balance_amount",
+   "fieldname": "balance_amount",
+   "fieldtype": "Data",
+   "label": "Balance Amount",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "branch.warehouse",
+   "fieldname": "warehouse",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Warehouse"
+  },
+  {
+   "fetch_from": "branch.warehouse",
+   "fieldname": "set_warehouse",
+   "fieldtype": "Link",
+   "label": "Set Warehouse",
+   "options": "Warehouse"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2025-11-27 15:54:09.302123",
+ "modified_by": "Administrator",
+ "module": "Selling",
+ "name": "Service Sales Jobcard",
+ "naming_rule": "Expression",
+ "owner": "kalden.dorji@thimphutechpark.bt",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

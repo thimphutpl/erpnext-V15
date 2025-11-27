@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "allow_import": 1,
  "allow_rename": 1,
  "autoname": "field:month",
  "creation": "2024-10-15 15:49:01.293910",
@@ -29,8 +30,8 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-10-15 15:50:58.801362",
- "modified_by": "Administrator",
+ "modified": "2025-11-17 11:51:57.968366",
+ "modified_by": "sonam.norbu@thimphutechpark.bt",
  "module": "Setup",
  "name": "Month",
  "naming_rule": "By fieldname",
@@ -49,6 +50,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []

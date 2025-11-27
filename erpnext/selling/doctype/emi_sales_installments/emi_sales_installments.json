@@ -1,0 +1,113 @@
+{
+ "actions": [],
+ "creation": "2025-03-18 14:29:19.815455",
+ "doctype": "DocType",
+ "document_type": "Document",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "fiscal_year",
+  "month",
+  "amount",
+  "recharge_amount",
+  "cb_01",
+  "begining_balance",
+  "interest",
+  "principal",
+  "ending_balance",
+  "sb_references",
+  "reference_documents"
+ ],
+ "fields": [
+  {
+   "fieldname": "fiscal_year",
+   "fieldtype": "Link",
+   "label": "Fiscal Year",
+   "options": "Fiscal Year",
+   "read_only": 1
+  },
+  {
+   "fieldname": "month",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Posting Date",
+   "read_only": 1
+  },
+  {
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "label": "EMI Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sb_references",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "reference_documents",
+   "fieldtype": "Data",
+   "label": "Reference Documents",
+   "read_only": 1
+  },
+  {
+   "fieldname": "recharge_amount",
+   "fieldtype": "Currency",
+   "label": "Recharge Amount",
+   "read_only": 1
+  },
+  {
+   "columns": 2,
+   "fieldname": "begining_balance",
+   "fieldtype": "Currency",
+   "label": "Begining Balance",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "ending_balance",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "label": "Ending Balance",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "interest",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "label": "Interest",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "principal",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "label": "Principal",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cb_01",
+   "fieldtype": "Column Break"
+  }
+ ],
+ "idx": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-11-21 10:23:23.536576",
+ "modified_by": "Administrator",
+ "module": "Selling",
+ "name": "EMI Sales Installments",
+ "owner": "Administrator",
+ "permissions": [],
+ "quick_entry": 1,
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

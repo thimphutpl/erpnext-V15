@@ -1,0 +1,83 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-11-11 13:23:11.284232",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "item_details_section",
+  "item_code",
+  "item_name",
+  "section_break_qkms",
+  "warranty_name",
+  "data_nefu",
+  "quantity_allotted",
+  "number_of_times_claimed"
+ ],
+ "fields": [
+  {
+   "fieldname": "item_details_section",
+   "fieldtype": "Section Break",
+   "label": "Item Details"
+  },
+  {
+   "fieldname": "item_code",
+   "fieldtype": "Link",
+   "label": "Item Code",
+   "options": "Item"
+  },
+  {
+   "fetch_from": "item_code.item_name",
+   "fieldname": "item_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Item Name"
+  },
+  {
+   "fieldname": "section_break_qkms",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "warranty_name",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Warranty Name",
+   "options": "Warranty Name",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "warranty_name.itemservice",
+   "fieldname": "data_nefu",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Warranty Type"
+  },
+  {
+   "fieldname": "quantity_allotted",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Quantity Allotted "
+  },
+  {
+   "fieldname": "number_of_times_claimed",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Number of Times Claimed"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-11-12 12:13:36.552385",
+ "modified_by": "Administrator",
+ "module": "CRM",
+ "name": "Warranty Details",
+ "owner": "kalden.dorji@thimphutechpark.bt",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

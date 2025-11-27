@@ -39,6 +39,7 @@ class SalesInvoiceItem(Document):
 		cost_center: DF.Link
 		customer_item_code: DF.Data | None
 		deferred_revenue_account: DF.Link | None
+		deferred_revenue_amount: DF.Currency
 		delivered_by_supplier: DF.Check
 		delivered_qty: DF.Float
 		delivery_note: DF.Link | None
@@ -46,7 +47,6 @@ class SalesInvoiceItem(Document):
 		discount_account: DF.Link | None
 		discount_amount: DF.Currency
 		discount_percentage: DF.Percent
-		distributed_discount_amount: DF.Currency
 		dn_detail: DF.Data | None
 		enable_deferred_revenue: DF.Check
 		expense_account: DF.Link | None

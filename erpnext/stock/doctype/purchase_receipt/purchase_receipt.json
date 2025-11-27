@@ -2,7 +2,7 @@
  "actions": [],
  "allow_auto_repeat": 1,
  "allow_import": 1,
- "autoname": "naming_series:",
+ "autoname": "PR.YYYY.MM.#####",
  "creation": "2013-05-21 16:16:39",
  "doctype": "DocType",
  "document_type": "Document",
@@ -10,28 +10,41 @@
  "engine": "InnoDB",
  "field_order": [
   "supplier_section",
-  "column_break0",
-  "branch",
   "title",
-  "n_series",
   "naming_series",
+  "branch",
   "supplier",
   "supplier_name",
+  "supplier_delivery_note",
+  "business_activity",
   "column_break1",
-  "posting_date",
-  "schedule_date",
-  "posting_time",
-  "actual_receipt_date",
-  "set_posting_time",
-  "for_project",
-  "column_break_12",
   "company",
+  "posting_date",
+  "actual_receipt_date",
+  "posting_time",
+  "delay_by",
+  "schedule_date",
+  "set_posting_time",
+  "apply_putaway_rule",
   "is_return",
   "return_against",
+  "voucher_no",
   "accounting_dimensions_section",
   "cost_center",
   "dimension_col_break",
   "project",
+  "section_addresses",
+  "supplier_address",
+  "contact_person",
+  "address_display",
+  "contact_display",
+  "contact_mobile",
+  "contact_email",
+  "col_break_address",
+  "shipping_address",
+  "shipping_address_display",
+  "billing_address",
+  "billing_address_display",
   "currency_and_price_list",
   "currency",
   "conversion_rate",
@@ -42,35 +55,35 @@
   "ignore_pricing_rule",
   "sec_warehouse",
   "set_warehouse",
-  "column_break_31",
   "rejected_warehouse",
   "col_break_warehouse",
+  "set_from_warehouse",
   "is_subcontracted",
   "supplier_warehouse",
   "items_section",
   "items",
   "section_break0",
   "total_qty",
-  "total_net_weight",
-  "column_break_43",
   "base_total",
   "base_net_total",
   "column_break_27",
+  "total_net_weight",
   "total",
   "net_total",
-  "tax_withholding_net_total",
-  "base_tax_withholding_net_total",
+  "pricing_rule_details",
+  "pricing_rules",
+  "raw_material_details",
+  "get_current_stock",
+  "supplied_items",
   "taxes_charges_section",
   "tax_category",
-  "taxes_and_charges",
   "shipping_col",
   "shipping_rule",
-  "column_break_53",
-  "incoterm",
-  "named_place",
   "taxes_section",
-  "column_break_vegp",
+  "taxes_and_charges",
   "taxes",
+  "sec_tax_breakup",
+  "other_charges_calculation",
   "totals",
   "base_taxes_and_charges_added",
   "base_taxes_and_charges_deducted",
@@ -79,92 +92,54 @@
   "taxes_and_charges_added",
   "taxes_and_charges_deducted",
   "total_taxes_and_charges",
+  "section_break_42",
+  "apply_discount_on",
+  "base_discount_amount",
+  "column_break_44",
+  "additional_discount_percentage",
+  "discount_amount",
   "section_break_46",
   "base_grand_total",
   "base_rounding_adjustment",
-  "base_rounded_total",
   "base_in_words",
+  "base_rounded_total",
   "column_break_50",
   "grand_total",
   "rounding_adjustment",
   "rounded_total",
   "in_words",
   "disable_rounded_total",
-  "section_break_42",
-  "discount",
-  "total_add_ded",
-  "apply_discount_on",
-  "base_discount_amount",
-  "column_break_44",
-  "tax",
-  "freight_insurance_charges",
-  "other_charges",
-  "additional_discount_percentage",
-  "discount_amount",
-  "sec_tax_breakup",
-  "other_charges_calculation",
-  "pricing_rule_details",
-  "pricing_rules",
-  "raw_material_details",
-  "get_current_stock",
-  "supplied_items",
-  "references_section",
-  "material_request",
-  "purchase_order",
-  "column_break_rndc",
-  "material_request_date",
-  "purchase_order_date",
+  "terms_section_break",
+  "tc_name",
+  "terms",
+  "more_info",
+  "status",
+  "amended_from",
+  "range",
+  "enote_id",
+  "column_break4",
+  "per_billed",
+  "per_returned",
+  "is_internal_supplier",
+  "inter_company_reference",
+  "represents_company",
+  "subscription_detail",
+  "auto_repeat",
+  "printing_settings",
+  "letter_head",
+  "language",
+  "instructions",
+  "column_break_97",
+  "select_print_heading",
+  "other_details",
+  "remarks",
+  "group_same_items",
   "transporter_info",
   "transporter_name",
   "column_break5",
   "lr_no",
   "lr_date",
-  "address_and_contact_tab",
-  "section_addresses",
-  "supplier_address",
-  "address_display",
-  "col_break_address",
-  "contact_person",
-  "contact_display",
-  "contact_mobile",
-  "contact_email",
-  "section_break_98",
-  "shipping_address",
-  "column_break_100",
-  "shipping_address_display",
-  "billing_address_section",
-  "billing_address",
-  "column_break_104",
-  "billing_address_display",
-  "terms_tab",
-  "tc_name",
-  "terms",
-  "more_info_tab",
-  "status_section",
-  "status",
-  "column_break4",
-  "per_billed",
-  "per_returned",
-  "subscription_detail",
-  "auto_repeat",
-  "printing_settings",
-  "letter_head",
-  "group_same_items",
-  "column_break_97",
-  "select_print_heading",
-  "language",
-  "additional_info_section",
-  "instructions",
-  "is_internal_supplier",
-  "represents_company",
-  "inter_company_reference",
-  "column_break_131",
-  "remarks",
-  "range",
-  "amended_from",
-  "is_old_subcontracting_flow",
-  "other_details",
-  "connections_tab"
+  "is_old_subcontracting_flow"
  ],
  "fields": [
   {
@@ -173,40 +148,19 @@
    "options": "fa fa-user"
   },
   {
-   "fieldname": "column_break0",
-   "fieldtype": "Column Break",
-   "oldfieldtype": "Column Break",
-   "print_width": "50%",
-   "width": "50%"
-  },
-  {
    "allow_on_submit": 1,
    "default": "{supplier_name}",
    "fieldname": "title",
    "fieldtype": "Data",
-   "hidden": 1,
    "label": "Title",
    "no_copy": 1,
    "print_hide": 1
-  },
-  {
-   "fieldname": "naming_series",
-   "fieldtype": "Select",
-   "hidden": 1,
-   "label": "Series",
-   "no_copy": 1,
-   "oldfieldname": "naming_series",
-   "oldfieldtype": "Select",
-   "options": "MAT-PRE-.YYYY.-",
-   "print_hide": 1,
-   "set_only_once": 1
   },
   {
    "bold": 1,
    "fieldname": "supplier",
    "fieldtype": "Link",
    "in_global_search": 1,
-   "in_list_view": 1,
    "label": "Supplier",
    "oldfieldname": "supplier",
    "oldfieldtype": "Link",
@@ -228,6 +182,11 @@
    "read_only": 1
   },
   {
+   "fieldname": "supplier_delivery_note",
+   "fieldtype": "Data",
+   "label": "Supplier Delivery Note"
+  },
+  {
    "fieldname": "column_break1",
    "fieldtype": "Column Break",
    "oldfieldtype": "Column Break",
@@ -235,19 +194,21 @@
    "width": "50%"
   },
   {
+   "default": "Today",
    "fieldname": "posting_date",
-   "fieldtype": "Date",
+   "fieldtype": "Datetime",
    "in_list_view": 1,
    "label": "Date",
+   "no_copy": 1,
    "oldfieldname": "posting_date",
    "oldfieldtype": "Date",
-   "options": "Today",
    "print_width": "100px",
    "reqd": 1,
    "search_index": 1,
    "width": "100px"
   },
   {
+   "description": "Time at which materials were received",
    "fieldname": "posting_time",
    "fieldtype": "Time",
    "label": "Posting Time",
@@ -258,6 +219,15 @@
    "print_width": "100px",
    "reqd": 1,
    "width": "100px"
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:doc.docstatus==0",
+   "fieldname": "set_posting_time",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Edit Posting Date and Time",
+   "print_hide": 1
   },
   {
    "fieldname": "company",
@@ -277,6 +247,7 @@
    "default": "0",
    "fieldname": "is_return",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "Is Return",
    "no_copy": 1,
    "print_hide": 1,
@@ -290,18 +261,19 @@
    "no_copy": 1,
    "options": "Purchase Receipt",
    "print_hide": 1,
-   "read_only": 1,
-   "search_index": 1
+   "read_only": 1
   },
   {
+   "collapsible": 1,
    "fieldname": "section_addresses",
    "fieldtype": "Section Break",
-   "label": "Supplier Address"
+   "hidden": 1,
+   "label": "Address and Contact"
   },
   {
    "fieldname": "supplier_address",
    "fieldtype": "Link",
-   "label": "Supplier Address",
+   "label": "Select Supplier Address",
    "options": "Address",
    "print_hide": 1
   },
@@ -329,7 +301,6 @@
    "fieldname": "contact_mobile",
    "fieldtype": "Small Text",
    "label": "Mobile No",
-   "options": "Phone",
    "read_only": 1
   },
   {
@@ -347,7 +318,7 @@
   {
    "fieldname": "shipping_address",
    "fieldtype": "Link",
-   "label": "Shipping Address Template",
+   "label": "Select Shipping Address",
    "options": "Address",
    "print_hide": 1
   },
@@ -421,29 +392,29 @@
    "default": "0",
    "fieldname": "ignore_pricing_rule",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "Ignore Pricing Rule",
+   "no_copy": 1,
    "permlevel": 1,
    "print_hide": 1
   },
   {
    "fieldname": "sec_warehouse",
-   "fieldtype": "Section Break",
-   "hide_border": 1,
-   "label": "Items"
+   "fieldtype": "Section Break"
   },
   {
+   "description": "Sets 'Accepted Warehouse' in each row of the items table.",
    "fieldname": "set_warehouse",
    "fieldtype": "Link",
    "label": "Accepted Warehouse",
    "options": "Warehouse",
-   "print_hide": 1,
-   "read_only": 1
+   "print_hide": 1
   },
   {
+   "description": "Sets 'Rejected Warehouse' in each row of the items table.",
    "fieldname": "rejected_warehouse",
    "fieldtype": "Link",
    "hidden": 1,
-   "ignore_user_permissions": 1,
    "label": "Rejected Warehouse",
    "no_copy": 1,
    "oldfieldname": "rejected_warehouse",
@@ -470,7 +441,6 @@
    "depends_on": "eval:doc.is_subcontracted",
    "fieldname": "supplier_warehouse",
    "fieldtype": "Link",
-   "ignore_user_permissions": 1,
    "label": "Supplier Warehouse",
    "no_copy": 1,
    "oldfieldname": "supplier_warehouse",
@@ -478,13 +448,11 @@
    "options": "Warehouse",
    "print_hide": 1,
    "print_width": "50px",
-   "read_only": 1,
    "width": "50px"
   },
   {
    "fieldname": "items_section",
    "fieldtype": "Section Break",
-   "hide_border": 1,
    "oldfieldtype": "Section Break",
    "options": "fa fa-shopping-cart"
   },
@@ -502,7 +470,6 @@
    "collapsible": 1,
    "fieldname": "pricing_rule_details",
    "fieldtype": "Section Break",
-   "hidden": 1,
    "label": "Pricing Rules"
   },
   {
@@ -597,7 +564,6 @@
    "read_only": 1
   },
   {
-   "depends_on": "total_net_weight",
    "fieldname": "total_net_weight",
    "fieldtype": "Float",
    "label": "Total Net Weight",
@@ -605,16 +571,17 @@
    "read_only": 1
   },
   {
+   "description": "Add / Edit Taxes and Charges",
    "fieldname": "taxes_charges_section",
    "fieldtype": "Section Break",
    "hidden": 1,
-   "hide_border": 1,
-   "label": "Taxes and Charges",
-   "oldfieldtype": "Section Break"
+   "oldfieldtype": "Section Break",
+   "options": "fa fa-money"
   },
   {
    "fieldname": "tax_category",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Tax Category",
    "options": "Tax Category",
    "print_hide": 1
@@ -626,14 +593,13 @@
   {
    "fieldname": "shipping_rule",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Shipping Rule",
    "options": "Shipping Rule"
   },
   {
    "fieldname": "taxes_section",
-   "fieldtype": "Section Break",
-   "hidden": 1,
-   "hide_border": 1
+   "fieldtype": "Section Break"
   },
   {
    "fieldname": "taxes_and_charges",
@@ -660,7 +626,7 @@
   },
   {
    "fieldname": "other_charges_calculation",
-   "fieldtype": "Text Editor",
+   "fieldtype": "Long Text",
    "label": "Taxes and Charges Calculation",
    "no_copy": 1,
    "oldfieldtype": "HTML",
@@ -696,6 +662,7 @@
   {
    "fieldname": "base_total_taxes_and_charges",
    "fieldtype": "Currency",
+   "hidden": 1,
    "label": "Total Taxes and Charges (Company Currency)",
    "oldfieldname": "total_tax",
    "oldfieldtype": "Currency",
@@ -739,6 +706,7 @@
   },
   {
    "collapsible": 1,
+   "collapsible_depends_on": "discount_amount",
    "fieldname": "section_break_42",
    "fieldtype": "Section Break",
    "label": "Additional Discount"
@@ -747,7 +715,6 @@
    "default": "Grand Total",
    "fieldname": "apply_discount_on",
    "fieldtype": "Select",
-   "hidden": 1,
    "label": "Apply Additional Discount On",
    "options": "\nGrand Total\nNet Total",
    "print_hide": 1
@@ -755,7 +722,6 @@
   {
    "fieldname": "base_discount_amount",
    "fieldtype": "Currency",
-   "hidden": 1,
    "label": "Additional Discount Amount (Company Currency)",
    "options": "Company:company:default_currency",
    "print_hide": 1,
@@ -768,22 +734,19 @@
   {
    "fieldname": "additional_discount_percentage",
    "fieldtype": "Float",
-   "hidden": 1,
    "label": "Additional Discount Percentage",
    "print_hide": 1
   },
   {
    "fieldname": "discount_amount",
    "fieldtype": "Currency",
-   "hidden": 1,
    "label": "Additional Discount Amount",
    "options": "currency",
    "print_hide": 1
   },
   {
    "fieldname": "section_break_46",
-   "fieldtype": "Section Break",
-   "label": "Totals"
+   "fieldtype": "Section Break"
   },
   {
    "fieldname": "base_grand_total",
@@ -832,6 +795,7 @@
   {
    "fieldname": "grand_total",
    "fieldtype": "Currency",
+   "in_list_view": 1,
    "label": "Grand Total",
    "oldfieldname": "grand_total_import",
    "oldfieldtype": "Currency",
@@ -876,6 +840,15 @@
    "read_only": 1
   },
   {
+   "collapsible": 1,
+   "collapsible_depends_on": "terms",
+   "fieldname": "terms_section_break",
+   "fieldtype": "Section Break",
+   "label": "Terms and Conditions",
+   "oldfieldtype": "Section Break",
+   "options": "fa fa-legal"
+  },
+  {
    "fieldname": "tc_name",
    "fieldtype": "Link",
    "label": "Terms",
@@ -890,6 +863,14 @@
    "label": "Terms and Conditions",
    "oldfieldname": "terms",
    "oldfieldtype": "Text Editor"
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "more_info",
+   "fieldtype": "Section Break",
+   "label": "More Information",
+   "oldfieldtype": "Section Break",
+   "options": "fa fa-file-text"
   },
   {
    "default": "Draft",
@@ -941,8 +922,10 @@
    "width": "50%"
   },
   {
+   "description": "Track this Purchase Receipt against any Project",
    "fieldname": "project",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Project",
    "options": "Project"
   },
@@ -957,7 +940,7 @@
   {
    "fieldname": "subscription_detail",
    "fieldtype": "Section Break",
-   "label": "Auto Repeat"
+   "label": "Auto Repeat Detail"
   },
   {
    "fieldname": "auto_repeat",
@@ -976,6 +959,7 @@
   },
   {
    "allow_on_submit": 1,
+   "fetch_from": "branch.letter_head",
    "fieldname": "letter_head",
    "fieldtype": "Link",
    "label": "Letter Head",
@@ -1041,7 +1025,7 @@
    "collapsible_depends_on": "transporter_name",
    "fieldname": "transporter_info",
    "fieldtype": "Section Break",
-   "label": "Transporter",
+   "label": "Transporter Details",
    "options": "fa fa-truck"
   },
   {
@@ -1097,7 +1081,7 @@
   {
    "fieldname": "billing_address",
    "fieldtype": "Link",
-   "label": "Billing Address",
+   "label": "Select Billing Address",
    "options": "Address"
   },
   {
@@ -1107,6 +1091,13 @@
    "read_only": 1
   },
   {
+   "default": "0",
+   "fieldname": "apply_putaway_rule",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Apply Putaway Rule"
+  },
+  {
    "depends_on": "eval:!doc.__islocal",
    "fieldname": "per_returned",
    "fieldtype": "Percent",
@@ -1114,6 +1105,14 @@
    "no_copy": 1,
    "print_hide": 1,
    "read_only": 1
+  },
+  {
+   "depends_on": "eval: doc.is_internal_supplier",
+   "description": "Sets 'From Warehouse' in each row of the items table.",
+   "fieldname": "set_from_warehouse",
+   "fieldtype": "Link",
+   "label": "Set From Warehouse",
+   "options": "Warehouse"
   },
   {
    "fetch_from": "supplier.represents_company",
@@ -1128,7 +1127,6 @@
    "collapsible": 1,
    "fieldname": "accounting_dimensions_section",
    "fieldtype": "Section Break",
-   "hidden": 1,
    "label": "Accounting Dimensions"
   },
   {
@@ -1151,161 +1149,21 @@
    "read_only": 1
   },
   {
-   "fieldname": "address_and_contact_tab",
-   "fieldtype": "Tab Break",
-   "label": "Address & Contact"
-  },
-  {
-   "fieldname": "terms_tab",
-   "fieldtype": "Tab Break",
-   "label": "Terms"
-  },
-  {
-   "fieldname": "more_info_tab",
-   "fieldtype": "Tab Break",
-   "label": "More Info"
-  },
-  {
-   "fieldname": "connections_tab",
-   "fieldtype": "Tab Break",
-   "label": "Connections",
-   "show_dashboard": 1
-  },
-  {
-   "fieldname": "column_break_12",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "column_break_31",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "column_break_43",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "column_break_53",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "section_break_98",
-   "fieldtype": "Section Break",
-   "label": "Company Shipping Address"
-  },
-  {
-   "fieldname": "billing_address_section",
-   "fieldtype": "Section Break",
-   "label": "Company Billing Address"
-  },
-  {
-   "collapsible": 1,
-   "fieldname": "status_section",
-   "fieldtype": "Section Break",
-   "label": "Status",
-   "oldfieldtype": "Section Break",
-   "options": "fa fa-file-text"
-  },
-  {
-   "fieldname": "additional_info_section",
-   "fieldtype": "Section Break",
-   "label": "Additional Info"
-  },
-  {
-   "fieldname": "column_break_131",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "column_break_100",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "column_break_104",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "incoterm",
-   "fieldtype": "Link",
-   "label": "Incoterm",
-   "options": "Incoterm"
-  },
-  {
-   "depends_on": "incoterm",
-   "fieldname": "named_place",
-   "fieldtype": "Data",
-   "label": "Named Place"
-  },
-  {
-   "fieldname": "tax_withholding_net_total",
-   "fieldtype": "Currency",
-   "hidden": 1,
-   "label": "Tax Withholding Net Total",
-   "no_copy": 1,
-   "options": "currency",
-   "read_only": 1
-  },
-  {
-   "fieldname": "base_tax_withholding_net_total",
-   "fieldtype": "Currency",
-   "hidden": 1,
-   "label": "Base Tax Withholding Net Total",
-   "no_copy": 1,
-   "print_hide": 1,
-   "read_only": 1
-  },
-  {
-   "allow_on_submit": 1,
    "fieldname": "branch",
    "fieldtype": "Link",
-   "in_list_view": 1,
-   "in_standard_filter": 1,
    "label": "Branch",
+   "oldfieldtype": "Column Break",
    "options": "Branch",
-   "reqd": 1
+   "print_width": "50%",
+   "reqd": 1,
+   "width": "50%"
   },
   {
-   "fieldname": "schedule_date",
-   "fieldtype": "Date",
+   "fieldname": "business_activity",
+   "fieldtype": "Link",
    "hidden": 1,
-   "label": "Required By",
-   "options": "1"
-  },
-  {
-   "fieldname": "references_section",
-   "fieldtype": "Section Break",
-   "label": "References"
-  },
-  {
-   "fieldname": "purchase_order",
-   "fieldtype": "Link",
-   "label": "Purchase Order",
-   "options": "Purchase Order"
-  },
-  {
-   "fieldname": "material_request",
-   "fieldtype": "Link",
-   "label": "Material Request",
-   "options": "Material Request"
-  },
-  {
-   "fieldname": "column_break_vegp",
-   "fieldtype": "Column Break",
-   "hidden": 1
-  },
-  {
-   "fieldname": "column_break_rndc",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fetch_from": "material_request.transaction_date",
-   "fieldname": "material_request_date",
-   "fieldtype": "Date",
-   "label": "MR Date"
-  },
-  {
-   "fetch_from": "purchase_order.transaction_date",
-   "fieldname": "purchase_order_date",
-   "fieldtype": "Date",
-   "label": "PO Date"
+   "label": "Business Activity",
+   "options": "Business Activity"
   },
   {
    "fieldname": "actual_receipt_date",
@@ -1314,56 +1172,37 @@
    "reqd": 1
   },
   {
-   "default": "0",
-   "fieldname": "discount",
-   "fieldtype": "Currency",
-   "label": "Discount"
-  },
-  {
-   "default": "0",
-   "fieldname": "total_add_ded",
-   "fieldtype": "Currency",
-   "label": "Net Charges & Discount",
+   "fieldname": "delay_by",
+   "fieldtype": "Int",
+   "hidden": 1,
+   "label": "Delay By(Days)",
    "read_only": 1
   },
   {
-   "default": "0",
-   "fieldname": "freight_insurance_charges",
-   "fieldtype": "Currency",
-   "label": "Freight and Insurance Charges"
-  },
-  {
-   "default": "0",
-   "fieldname": "other_charges",
-   "fieldtype": "Currency",
-   "label": "Installation Charges"
-  },
-  {
-   "default": "0",
-   "fieldname": "set_posting_time",
-   "fieldtype": "Check",
-   "label": "Edit Date and Time"
-  },
-  {
-   "default": "0",
-   "fieldname": "tax",
-   "fieldtype": "Currency",
-   "label": "Tax",
-   "precision": "2"
-  },
-  {
-   "fieldname": "n_series",
-   "fieldtype": "Select",
+   "fieldname": "schedule_date",
+   "fieldtype": "Date",
    "hidden": 1,
-   "label": "Naming Series",
-   "options": "\nConsumables\nFixed Asset\nSales Product\nSpare Parts\nServices Miscellaneous\nServices Works",
+   "read_only": 1
+  },
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Series",
+   "options": "\nConsumables\nFixed Asset\nSales Product\nSpare Parts\nServices Miscellaneous\nServices Works\nLabour Contract\nMAT-PRE-.YYYY.-\nMAT-PR-RET-.YYYY.-",
+   "print_hide": 1,
    "set_only_once": 1
   },
   {
-   "default": "0",
-   "fieldname": "for_project",
-   "fieldtype": "Check",
-   "label": "For Project",
+   "fieldname": "voucher_no",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Voucher No"
+  },
+  {
+   "fieldname": "enote_id",
+   "fieldtype": "Link",
+   "label": "eNote ID",
+   "options": "eNote",
    "read_only": 1
   }
  ],
@@ -1371,11 +1210,11 @@
  "idx": 261,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-07-11 11:09:59.896313",
- "modified_by": "Administrator",
+ "modified": "2025-11-25 12:23:09.041320",
+ "modified_by": "kalden.dorji@thimphutechpark.bt",
  "module": "Stock",
  "name": "Purchase Receipt",
- "naming_rule": "By \"Naming Series\" field",
+ "naming_rule": "Expression (old style)",
  "owner": "Administrator",
  "permissions": [
   {
@@ -1432,6 +1271,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "search_fields": "status, posting_date, supplier",
  "show_name_in_global_search": 1,
  "sort_field": "modified",

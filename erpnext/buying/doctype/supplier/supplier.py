@@ -42,6 +42,7 @@ class Supplier(TransactionBase):
 		bank_branch: DF.Link | None
 		bank_name: DF.Link | None
 		companies: DF.Table[AllowedToTransactWith]
+		cost_center: DF.Link | None
 		country: DF.Link | None
 		credit_days: DF.Int
 		credit_days_based_on: DF.Literal["", "Fixed Days", "Last Day of the Next Month"]
@@ -55,6 +56,8 @@ class Supplier(TransactionBase):
 		image: DF.AttachImage | None
 		inr_bank_code: DF.Literal["", "01 - AXIS BANK", "02- SBI", "03 -Others", "04 - SCB"]
 		inr_purpose_code: DF.Literal["", "01- INVT IN EQUITY SHARE", "02- INVT IN MUTUAL FUND", "03- INVT IN DEBENTURES", "04- BILL PAYMENT", "05- CREDIT TO NRE A/c", "06- PAYMENT TO HOTELS", "07- TRAVEL & TOURISM", "08- INVT IN REAL ESTATE", "09- PYMNT TO ESTATE DEVELOPER", "10- LIC PREMIUM", "11- EDUCATIONAL EXPENSES", "12- FAMILY MAINTENANCE", "13- POSTMASTER / UTI PREMIUM", "14- PROPERTY Pymnt-Co-op Hsg.Soc", "15- PROPERTY Pymnt-Govt. Hsg.Scheme", "16- MEDICAL EXPENSES", "17- UTILITY PAYMENTS", "18- TAX PAYMENTS", "19- EMI FOR LOAN REPAYMENT", "20- COMPENSATION OF EMPLOYEES", "21- SALARY"]
+		internal_customer_account: DF.Link | None
+		internal_supplier: DF.Check
 		is_dhi_company: DF.Check
 		is_frozen: DF.Check
 		is_internal_supplier: DF.Check

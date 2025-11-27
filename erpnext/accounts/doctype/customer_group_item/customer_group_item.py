@@ -14,7 +14,7 @@ class CustomerGroupItem(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
-		customer_group: DF.Link | None
+		customer_group: DF.Literal["Customer", "Employee"]
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data

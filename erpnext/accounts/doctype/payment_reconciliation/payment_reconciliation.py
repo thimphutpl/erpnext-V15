@@ -20,7 +20,7 @@ from erpnext.accounts.utils import (
 	get_outstanding_invoices,
 	reconcile_against_document,
 )
-from erpnext.controllers.accounts_controller import get_advance_payment_entries_for_regional
+# from erpnext.controllers.accounts_controller import get_advance_payment_entries_for_regional
 
 
 class PaymentReconciliation(Document):

@@ -317,6 +317,7 @@ class StatusUpdater(Document):
 				self.warn_about_bypassing_with_role(item, qty_or_amount, role)
 
 	def limits_crossed_error(self, args, item, qty_or_amount):
+		# frappe.throw(str(item))
 		"""Raise exception for limits crossed"""
 		if (
 			self.doctype in ["Sales Invoice", "Delivery Note"]

@@ -21,6 +21,7 @@ class ItemGroup(NestedSet):
 		from frappe.types import DF
 
 		image: DF.AttachImage | None
+		is_fixed_asset: DF.Check
 		is_group: DF.Check
 		item_code_base: DF.Data
 		item_group_defaults: DF.Table[ItemDefault]
@@ -29,6 +30,7 @@ class ItemGroup(NestedSet):
 		old_parent: DF.Link | None
 		parent_item_group: DF.Link | None
 		rgt: DF.Int
+		show_subgroup_in_print: DF.Check
 		taxes: DF.Table[ItemTax]
 	# end: auto-generated types
 

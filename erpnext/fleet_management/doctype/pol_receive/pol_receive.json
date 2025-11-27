@@ -17,14 +17,19 @@
   "column_break_rszp",
   "posting_date",
   "posting_time",
+  "outsourced",
   "section_break_6",
   "fuelbook",
-  "supplier",
   "column_break_waxq",
   "fuel_type",
   "item_name",
   "column_break_wecb",
   "uom",
+  "outsourced_supplier_section",
+  "supplier",
+  "internal_supplier_section",
+  "supplier_branch",
+  "supplier_cost_center",
   "section_break_zdgm",
   "items",
   "total_qty",
@@ -98,13 +103,11 @@
    "label": "Equipment Details"
   },
   {
-   "fetch_from": "fuelbook.supplier",
    "fieldname": "supplier",
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Supplier",
-   "options": "Supplier",
-   "reqd": 1
+   "options": "Supplier"
   },
   {
    "fetch_from": "fuel_type.item_name",
@@ -161,7 +164,6 @@
    "read_only": 1
   },
   {
-   "depends_on": "eval:!doc.hired_equipment",
    "fieldname": "mileage_details",
    "fieldtype": "Section Break",
    "label": "Mileage Details"
@@ -232,6 +234,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "depends_on": "eval: doc.outsourced != 1",
    "fieldname": "section_break_ozym",
    "fieldtype": "Section Break"
   },
@@ -305,6 +308,7 @@
    "description": "Check this button only if you are going to recive POL to machinery other than vehicles",
    "fieldname": "for_machineries",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "For Machineries"
   },
   {
@@ -328,12 +332,42 @@
    "fieldname": "posting_time",
    "fieldtype": "Time",
    "label": "Posting Time"
+  },
+  {
+   "default": "0",
+   "fieldname": "outsourced",
+   "fieldtype": "Check",
+   "label": "Outsourced"
+  },
+  {
+   "depends_on": "eval: doc.outsourced == 1",
+   "fieldname": "outsourced_supplier_section",
+   "fieldtype": "Section Break",
+   "label": "Outsourced Supplier"
+  },
+  {
+   "depends_on": "eval: doc.outsourced == 0",
+   "fieldname": "internal_supplier_section",
+   "fieldtype": "Section Break",
+   "label": "Internal Supplier"
+  },
+  {
+   "fieldname": "supplier_branch",
+   "fieldtype": "Link",
+   "label": "Supplier Branch",
+   "options": "Branch"
+  },
+  {
+   "fetch_from": "supplier_branch.cost_center",
+   "fieldname": "supplier_cost_center",
+   "fieldtype": "Data",
+   "label": "Supplier Cost Center"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-08-14 12:16:13.398070",
+ "modified": "2025-11-25 15:57:57.798669",
  "modified_by": "kalden.dorji@thimphutechpark.bt",
  "module": "Fleet Management",
  "name": "POL Receive",

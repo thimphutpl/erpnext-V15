@@ -16,8 +16,13 @@
   "posting_date",
   "posting_time",
   "status",
+  "section_break_jdap",
+  "supplier_branch",
+  "column_break_calz",
+  "supplier_cost_center",
   "section_break_wclk",
   "column_break_kyxr",
+  "advance_amount",
   "fuelbook",
   "supplier",
   "column_break_xbwn",
@@ -25,7 +30,6 @@
   "od_adjusted",
   "od_balance",
   "column_break_xwwp",
-  "advance_amount",
   "adjusted_amount",
   "balance_amount",
   "more_info_section",
@@ -134,11 +138,11 @@
    "fetch_from": "fuelbook.supplier",
    "fieldname": "supplier",
    "fieldtype": "Link",
+   "hidden": 1,
    "in_list_view": 1,
    "label": "Supplier",
    "options": "Supplier",
-   "read_only_depends_on": "eval:doc.for_machineries === 0;",
-   "reqd": 1
+   "read_only_depends_on": "eval:doc.for_machineries === 0;"
   },
   {
    "fieldname": "section_break_wclk",
@@ -250,13 +254,34 @@
    "description": "Check this button only if you are going to give an advance to machinery other than vehicles",
    "fieldname": "for_machineries",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "For Machineries"
+  },
+  {
+   "fieldname": "section_break_jdap",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "supplier_branch",
+   "fieldtype": "Link",
+   "label": "Supplier Branch",
+   "options": "Branch"
+  },
+  {
+   "fetch_from": "supplier_branch.cost_center",
+   "fieldname": "supplier_cost_center",
+   "fieldtype": "Data",
+   "label": "Supplier Cost Center"
+  },
+  {
+   "fieldname": "column_break_calz",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-08-14 10:38:33.300648",
+ "modified": "2025-11-25 12:07:00.564971",
  "modified_by": "kalden.dorji@thimphutechpark.bt",
  "module": "Fleet Management",
  "name": "POL Advance",

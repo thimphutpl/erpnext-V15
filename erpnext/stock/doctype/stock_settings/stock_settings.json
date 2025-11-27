@@ -20,6 +20,7 @@
   "update_existing_price_list_rate",
   "conversion_factor_section",
   "allow_to_edit_stock_uom_qty_for_sales",
+  "allow_uom_with_conversion_rate_defined_in_item",
   "column_break_lznj",
   "allow_to_edit_stock_uom_qty_for_purchase",
   "stock_validations_tab",
@@ -474,6 +475,12 @@
    "fieldname": "allow_to_make_quality_inspection_after_purchase_or_delivery",
    "fieldtype": "Check",
    "label": "Allow to Make Quality Inspection after Purchase/Delivery"
+  },
+  {
+   "default": "0",
+   "fieldname": "allow_uom_with_conversion_rate_defined_in_item",
+   "fieldtype": "Check",
+   "label": "Allow UMO"
   }
  ],
  "icon": "icon-cog",
@@ -481,7 +488,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-08-05 12:45:23.678337",
+ "modified": "2025-11-24 11:09:38.267951",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Stock Settings",
