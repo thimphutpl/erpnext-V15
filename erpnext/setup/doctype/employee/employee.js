@@ -26,12 +26,12 @@ frappe.ui.form.on("Employee", {
 			return {
 				filters: {
 					company: frm.doc.company,
-					is_department: 1
+					// is_department: 1
 				},
 			};
 		});
 
-		frm.set_query("division", function(){
+		frm.set_query("division", function () {
 			return {
 				filters: {
 					is_division: 1,
@@ -40,7 +40,7 @@ frappe.ui.form.on("Employee", {
 			}
 		});
 
-		frm.set_query("section", function(){
+		frm.set_query("section", function () {
 			return {
 				filters: {
 					is_section: 1,

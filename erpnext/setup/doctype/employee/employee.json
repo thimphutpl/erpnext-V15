@@ -183,7 +183,7 @@
    "no_copy": 1,
    "oldfieldname": "naming_series",
    "oldfieldtype": "Select",
-   "options": "BTF\nHR-EMP-",
+   "options": "HR-EMP-",
    "reqd": 1,
    "set_only_once": 1
   },
@@ -484,6 +484,7 @@
    "options": "Phone"
   },
   {
+   "default": "Company Email",
    "fieldname": "prefered_contact_email",
    "fieldtype": "Select",
    "label": "Prefered Contact Email",
@@ -1109,7 +1110,7 @@
  "image_field": "image",
  "is_tree": 1,
  "links": [],
- "modified": "2025-09-13 21:03:19.441687",
+ "modified": "2025-11-09 19:16:44.196296",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee",

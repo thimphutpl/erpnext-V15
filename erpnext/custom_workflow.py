@@ -147,8 +147,6 @@ class CustomWorkflow:
 	
 		elif self.doc.doctype == "Travel Request":
 			self.travel_request()
-		
-		### =============== *** =============== *** === NYUTHYUE === *** =============== *** =============== ### 
 		elif self.doc.doctype == "Leave Encashment":			
 			self.leave_encashment()
 		elif self.doc.doctype == "Employee Advance":
@@ -161,7 +159,7 @@ class CustomWorkflow:
 			self.travel_advance()	
 		elif self.doc.doctype == "Travel Adjustment":				
 			self.travel_adjustment()
-		### =============== *** =============== *** === NYUTHYUE === *** =============== *** =============== ###
+
 		
 		elif self.doc.doctype == "Vehicle Request":
 			self.vehicle_request()
@@ -432,21 +430,17 @@ class CustomWorkflow:
 		if self.new_state.lower() in ("Draft".lower()):
 			if frappe.session.user != self.doc.owner:
 				frappe.throw("Only {} can apply this leave".format(self.doc.owner))
-
-		elif self.new_state.lower() == ("Waiting Approval".lower()):
+		elif self.new_state.lower() == ("Waiting For Approval".lower()):
 			self.set_approver("Supervisor")
-
 		elif self.new_state.lower() == ("Approved".lower()):
 			if frappe.session.user != self.doc.leave_approver:
 				frappe.throw(f"Only {self.doc.leave_approver} can Approved this Leave Application.")
-			
 		elif self.new_state.lower() == ("Rejected".lower()):
 			if frappe.session.user != self.doc.leave_approver:
 				frappe.throw(f"Only {self.doc.leave_approver} can Reject this Leave Application.")
 		else:
 			frappe.throw(_("Invalid Workflow State {}").format(self.doc.workflow_state))
 
-	### =============== *** =============== *** === NYUTHYUE === *** =============== *** =============== ###
 	def leave_encashment(self):
 		if self.new_state and self.old_state and self.new_state.lower() == self.old_state.lower():
 			return
@@ -476,33 +470,25 @@ class CustomWorkflow:
 			frappe.throw(_("Invalid Workflow State {}").format(self.doc.workflow_state))
 
 	def travel_authorization(self):
-		#frappe.throw(str(self.doc.reports_to))
-		if self.new_state and self.old_state and self.new_state.lower() == self.old_state.lower():
-			return
+		state = self.new_state.lower()
+		user = frappe.session.user
 
-		# elif self.new_state.lower() in ("Draft".lower()):			
-		# 	if frappe.session.user != self.doc.owner:
-		# 		frappe.throw("Only {} can apply this Request".format(self.doc.owner))
-
-		elif self.new_state.lower() == ("Verified".lower()):
-			if frappe.session.user != self.reports_to[0]:
-				frappe.throw("Only {} can apply this Request".format(self.reports_to[0]))
-		# 	self.set_approver("Supervisor")
-
-		# elif self.new_state.lower() == ("Waiting HR Approval".lower()):
-		# 	if frappe.session.user != self.doc.approver:
-		# 		frappe.throw(f"Only {self.doc.approver} can Forward this Request.")
-		# 	self.set_approver("HR Manager")
-
-		# elif self.new_state.lower() == ("Approved".lower()):
-		# 	if frappe.session.user != self.doc.approver:
-		# 		frappe.throw(f"Only {self.doc.approver} can Approved this Request.")			
-
-		# elif self.new_state.lower() == ("Rejected".lower()):
-		# 	if frappe.session.user != self.doc.approver:
-		# 		frappe.throw(f"Only {self.doc.approver} can Reject this Request.")
-		# else:
-		# 	frappe.throw(_("Invalid Workflow State {}").format(self.doc.workflow_state))
+		if state == "draft":
+			if user != self.doc.owner:
+				frappe.throw(
+					f"Only {self.doc.owner} can apply this travel authorization"
+				)
+		elif state == "waiting for approval":
+			
+			if user != self.doc.owner:
+				frappe.throw(
+					f"Only {self.doc.owner} have permission to move to Waiting For Approval"
+				)
+		elif state == "approved":
+			if user != self.doc.reports_to:
+				frappe.throw(
+					f"Only {self.doc.reports_to}  have permission to approve"
+				)
 
 	def travel_claim(self):
 		if self.new_state and self.old_state and self.new_state.lower() == self.old_state.lower():
@@ -756,10 +742,10 @@ class NotifyCustomWorkflow:
 			})
 
 	def notify_approver(self):
-		#frappe.throw("hi")
 		if self.doc.get(self.doc_approver[0]):
 			parent_doc = frappe.get_doc(self.doc.doctype, self.doc.name)
 			args = parent_doc.as_dict()
+			args["workflow_state"] = self.new_state
 			if self.doc.doctype == "Leave Application":
 				template = frappe.db.get_single_value('HR Settings', 'leave_application_approval_notification_template')
 				if not template:
@@ -869,6 +855,64 @@ class NotifyCustomWorkflow:
 				# for email
 				"subject": email_template.subject
 			})
+
+	def notify_verifier(self):
+		verifier_email = self.doc.get("verifier") or self.doc.get("reports_to")
+
+		if not verifier_email:
+			frappe.throw(_("Verifier not assigned for this document"))
+
+		# ✅ Use the current in-memory doc (not refetch from DB)
+		self.doc.workflow_state = self.new_state
+		args = self.doc.as_dict()
+		args["workflow_state"] = self.new_state
+		frappe.msgprint(str(self.new_state))
+
+		# ✅ Pick email template
+		if self.doc.doctype == "Leave Application":
+			template = frappe.db.get_single_value(
+				"HR Settings", "leave_application_approval_notification_template"
+			)
+			if not template:
+				frappe.msgprint(
+					_(
+						"Please set default template for Leave Approval Notification in HR Settings."
+					)
+				)
+				return
+		elif self.doc.doctype == "Travel Authorization":
+			template = frappe.db.get_single_value(
+				"HR Settings",
+				"travel_authorization_approval_notification_template",
+			)
+			if not template:
+				frappe.msgprint(
+					_(
+						"Please set default template for Travel Authorization Approval Notification HR Settings."
+					)
+				)
+				return
+		else:
+			template = ""
+
+		if not template:
+			frappe.msgprint(
+				_("Please set default template for {}.").format(self.doc.doctype)
+			)
+			return
+
+		email_template = frappe.get_doc("Email Template", template)
+		message = frappe.render_template(email_template.response, args)
+
+		# ✅ Send notification
+		self.notify(
+			{
+				"message": message,
+				"message_to": verifier_email,
+				"subject": email_template.subject,
+			}
+		)
+		
 			
 
 	def notify_hr_users(self):
@@ -982,10 +1026,14 @@ class NotifyCustomWorkflow:
 			pass
 
 	def send_notification(self):
+
+		
 		if (self.doc.doctype not in self.field_map) or not frappe.db.exists("Workflow", {"document_type": self.doc.doctype, "is_active": 1}):
 			return
 		if self.new_state == "Draft":
 			return
+		elif self.new_state.lower() == "Waiting For Approval":
+			self.notify_verifier()
 		elif self.new_state in ("Approved", "Rejected", "Cancelled", "Claimed", "Submitted"):
 			if self.doc.doctype == "Material Request" and self.doc.owner != "Administrator":
 				self.notify_employee()

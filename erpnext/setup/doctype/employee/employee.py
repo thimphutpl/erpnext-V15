@@ -366,6 +366,7 @@ def create_user(employee, user=None, email=None):
 			"birth_date": emp.date_of_birth,
 			"phone": emp.cell_number,
 			"bio": emp.bio,
+			"send_welcome_email":0
 		}
 	)
 	user.insert()
