@@ -26,7 +26,7 @@ frappe.ui.form.on("Employee", {
 			return {
 				filters: {
 					company: frm.doc.company,
-					is_department: 1
+					
 				},
 			};
 		});
