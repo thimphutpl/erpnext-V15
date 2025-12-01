@@ -26,6 +26,8 @@
   "quality_inspection",
   "actual_qty",
   "subcontracted_item",
+  "issue_to_mr",
+  "mr_name",
   "section_break_8",
   "description",
   "column_break_10",
@@ -646,13 +648,25 @@
    "fieldtype": "Link",
    "label": "Issued To",
    "options": "Employee"
+  },
+  {
+   "fieldname": "issue_to_mr",
+   "fieldtype": "Link",
+   "label": "Issue to MR",
+   "options": "Muster Roll Employee"
+  },
+  {
+   "fetch_from": "issue_to_mr.person_name",
+   "fieldname": "mr_name",
+   "fieldtype": "Data",
+   "label": "MR Name"
   }
  ],
  "idx": 1,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-10-07 11:09:08.168548",
+ "modified": "2025-12-01 11:28:37.410666",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Stock Entry Detail",

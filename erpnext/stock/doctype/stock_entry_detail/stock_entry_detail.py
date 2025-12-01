@@ -35,6 +35,7 @@ class StockEntryDetail(Document):
 		is_scrap_item: DF.Check
 		issue_to_employee: DF.Check
 		issue_to_employee_name: DF.Data | None
+		issue_to_mr: DF.Link | None
 		issued_to: DF.Link | None
 		item_code: DF.Link
 		item_group: DF.Data | None
@@ -42,6 +43,7 @@ class StockEntryDetail(Document):
 		job_card_item: DF.Data | None
 		material_request: DF.Link | None
 		material_request_item: DF.Link | None
+		mr_name: DF.Data | None
 		original_item: DF.Link | None
 		parent: DF.Data
 		parentfield: DF.Data
