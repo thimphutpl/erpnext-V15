@@ -254,7 +254,8 @@ def add_total_row(out, root_type, balance_must_be, period_list, company_currency
 
 		total_row[period.key] = total
 
-	total_row["total"] = total_row[period_list[-1].key]
+	# total_row["total"] = total_row[period_list[-1].key]
+	total_row["total"] = sum(total_row[period.key] for period in period_list)
 	out.append(total_row)
 
 def get_accounts(company, root_type):

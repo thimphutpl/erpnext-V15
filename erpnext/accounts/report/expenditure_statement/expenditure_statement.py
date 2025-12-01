@@ -26,8 +26,8 @@ def execute(filters=None):
 	data = []
 	data.extend(income or [])
 	data.extend(expense or [])
-	if net_profit_loss:
-		data.append(net_profit_loss)
+	# if net_profit_loss:
+	# 	data.append(net_profit_loss)
 
 	columns = get_columns(filters.periodicity, period_list, filters.accumulated_values, filters.company)
 
