@@ -19,7 +19,6 @@ erpnext.setup.EmployeeController = class EmployeeController extends frappe.ui.fo
 		// erpnext.toggle_naming_series();
 	}
 };
-
 frappe.ui.form.on("Employee", {
 	onload: function (frm) {
 		frm.set_query("department", function () {
