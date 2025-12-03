@@ -1146,7 +1146,7 @@ class SalesInvoice(SellingController):
 		auto_accounting_for_stock = erpnext.is_perpetual_inventory_enabled(self.company)
 		if not gl_entries:
 			gl_entries = self.get_gl_entries()
-
+		# frappe.throw(str(gl_entries))
 		if gl_entries:
 			# if POS and amount is written off, updating outstanding amt after posting all gl entries
 			update_outstanding = (
@@ -1389,68 +1389,125 @@ class SalesInvoice(SellingController):
 								item=item,
 							)
 						)
-						if item.normal_loss_amt:
-							normal_account = frappe.db.get_value('Company', self.company, 'normal_loss_account') 
-							account_currency = get_account_currency(normal_account)
-							gl_entries.append(
-								self.get_gl_dict({
-									"account": normal_account,
-									"against": self.customer,
-									#"party_type": "Customer",
-									#"party": self.customer,
-									"debit": item.normal_loss_amt,
-									"debit_in_account_currency": item.normal_loss_amt \
-										if account_currency==self.company_currency else (item.normal_loss_amt * self.conversion_rate, self.precision("grand_total")) ,
-									"cost_center": item.cost_center,
-								}, account_currency)
+						
+						normal_loss_amt = flt(getattr(item, "normal_loss_amt", 0) or 0)
+
+						if normal_loss_amt:
+							normal_account = frappe.db.get_value("Company", self.company, "normal_loss_account")
+							if normal_account:
+								account_currency = get_account_currency(normal_account)
+
+								debit_in_account_currency = (
+									normal_loss_amt
+									if account_currency == self.company_currency
+									else flt(normal_loss_amt * self.conversion_rate, self.precision("grand_total"))
+								)
+
+								gl_entries.append(
+									self.get_gl_dict(
+										{
+											"account": normal_account,
+											"against": self.customer,
+											"debit": normal_loss_amt,
+											"debit_in_account_currency": debit_in_account_currency,
+											"cost_center": item.cost_center,
+										},
+										account_currency,
+										item=item,
+									)
+								)
+															
+					abnormal_loss_amt = flt(getattr(item, "abnormal_loss_amt", 0) or 0)
+					if abnormal_loss_amt:
+						abnormal_account = frappe.db.get_value("Company", self.company, "abnormal_loss_account")
+						if abnormal_account:
+							account_currency = get_account_currency(abnormal_account)
+
+							debit_in_account_currency = (
+								abnormal_loss_amt
+								if account_currency == self.company_currency
+								else flt(abnormal_loss_amt * self.conversion_rate, self.precision("grand_total"))
 							)
-					if item.abnormal_loss_amt:
-						abnormal_account = frappe.db.get_value('Company', self.company, 'abnormal_loss_account') 
-						account_currency = get_account_currency(abnormal_account)
-						gl_entries.append(
-							self.get_gl_dict({
-								"account": abnormal_account,
-								"against": self.customer,
-								"debit": item.abnormal_loss_amt,
-								"debit_in_account_currency": item.abnormal_loss_amt \
-									if account_currency==self.company_currency else (item.abnormal_loss_amt * self.conversion_rate, self.precision("grand_total")) ,
-								"cost_center": item.cost_center,
-							}, account_currency)
-						)
+
+							gl_entries.append(
+								self.get_gl_dict(
+									{
+										"account": abnormal_account,
+										"against": self.customer,
+										"debit": abnormal_loss_amt,
+										"debit_in_account_currency": debit_in_account_currency,
+										"cost_center": item.cost_center,
+									},
+									account_currency,
+									item=item,
+            					)
+							)						
 					
-					if item.excess_qty:
+					excess_qty = flt(getattr(item, "excess_qty", 0) or 0)
+					if excess_qty:
 						excess_account = item.income_account
-						excess_amount = flt(item.excess_qty) * flt(item.rate)
-						remark = "Excess Amount due to weight difference by " + str(item.excess_qty) + "MT",
-						account_currency = get_account_currency(excess_account)
-						gl_entries.append(
-							self.get_gl_dict({
-								"account": excess_account,
-								"against": self.customer,
-								"credit": excess_amount,
-								"credit_in_account_currency": excess_amount \
-									if account_currency==self.company_currency else (excess_amount * self.conversion_rate, self.precision("grand_total")) ,
-								"cost_center": item.cost_center,
-								"remark": remark,
-								"remarks": remark,
-							}, account_currency)
+						excess_amount = excess_qty * flt(item.rate)
+
+						remark = "Excess Amount due to weight difference by {} MT".format(excess_qty)
+
+						# Credit extra income
+						income_acc_currency = get_account_currency(excess_account)
+						credit_in_acc_curr = (
+							excess_amount
+							if income_acc_currency == self.company_currency
+							else flt(
+								excess_amount * self.conversion_rate,
+								self.precision("grand_total"),
+							)
 						)
-					
+
 						gl_entries.append(
-							self.get_gl_dict({
-								"account": self.debit_to,
-								"party_type": "Customer",
-								"party": self.customer,
-								"debit": excess_amount,
-								"debit_in_account_currency": excess_amount \
-									if account_currency==self.company_currency else (excess_amount * self.conversion_rate, self.precision("grand_total")) ,
-								"against_voucher": self.return_against if cint(self.is_return) else self.name,
-								"against_voucher_type": self.doctype,
-								"remark": remark,
-								"remarks": remark,
-								"cost_center": item.cost_center
-							}, account_currency)
-						)		
+							self.get_gl_dict(
+								{
+									"account": excess_account,
+									"against": self.customer,
+									"credit": excess_amount,
+									"credit_in_account_currency": credit_in_acc_curr,
+									"cost_center": item.cost_center,
+									"remark": remark,
+									"remarks": remark,
+								},
+								income_acc_currency,
+								item=item,
+							)
+						)
+
+						# Debit customer (extra receivable)
+						party_currency = self.party_account_currency or self.company_currency
+						debit_in_party_curr = (
+							excess_amount
+							if party_currency == self.company_currency
+							else flt(
+								excess_amount * self.conversion_rate,
+								self.precision("grand_total"),
+							)
+						)
+
+						gl_entries.append(
+							self.get_gl_dict(
+								{
+									"account": self.debit_to,
+									"party_type": "Customer",
+									"party": self.customer,
+									"debit": excess_amount,
+									"debit_in_account_currency": debit_in_party_curr,
+									"against_voucher": self.return_against
+									if cint(self.is_return)
+									else self.name,
+									"against_voucher_type": self.doctype,
+									"remark": remark,
+									"remarks": remark,
+									"cost_center": item.cost_center,
+								},
+								party_currency,
+								item=item,
+							)
+						)
 		# frappe.throw(str(gl_entries))
 		# expense account gl entries
 		if cint(self.update_stock) and erpnext.is_perpetual_inventory_enabled(self.company):
