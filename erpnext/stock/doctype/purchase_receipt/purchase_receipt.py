@@ -57,6 +57,8 @@ class PurchaseReceipt(BuyingController):
 		billing_address_display: DF.SmallText | None
 		branch: DF.Link
 		buying_price_list: DF.Link | None
+		challan_date: DF.Date | None
+		challan_no: DF.Data | None
 		company: DF.Link
 		contact_display: DF.SmallText | None
 		contact_email: DF.SmallText | None

@@ -15,6 +15,8 @@
   "naming_series",
   "supplier",
   "supplier_name",
+  "challan_no",
+  "challan_date",
   "column_break1",
   "posting_date",
   "schedule_date",
@@ -1345,13 +1347,23 @@
    "fieldtype": "Currency",
    "label": "Net Charges & Discount",
    "no_copy": 1
+  },
+  {
+   "fieldname": "challan_no",
+   "fieldtype": "Data",
+   "label": "Challan No"
+  },
+  {
+   "fieldname": "challan_date",
+   "fieldtype": "Date",
+   "label": "Challan Date"
   }
  ],
  "icon": "fa fa-truck",
  "idx": 261,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-10-05 11:30:26.211269",
+ "modified": "2025-12-04 14:27:48.738422",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Purchase Receipt",
