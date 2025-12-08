@@ -1,12 +1,10 @@
-# Copyright (c) 2013, Frappe Technologies Pvt. Ltd. and contributors
-# For license information, please see license.txt
 import datetime
 
 import frappe
 from frappe import _, scrub
 from frappe.query_builder.functions import CombineDatetime
 from frappe.utils import get_first_day as get_first_day_of_month
-from frappe.utils import get_first_day_of_week, get_quarter_start, getdate, flt
+from frappe.utils import get_first_day_of_week, get_quarter_start, getdate
 from frappe.utils.nestedset import get_descendants_of
 
 from erpnext.accounts.utils import get_fiscal_year
@@ -19,7 +17,7 @@ def execute(filters=None):
 	filters = frappe._dict(filters or {})
 	columns = get_columns(filters)
 	data = get_data(filters)
-	chart = get_chart_data(columns)
+	chart = get_chart_data(columns, filters)
 
 	return columns, data, None, chart
 
@@ -43,18 +41,45 @@ def get_columns(filters):
 		},
 		{"label": _("Brand"), "fieldname": "brand", "fieldtype": "Data", "width": 120},
 		{"label": _("UOM"), "fieldname": "uom", "fieldtype": "Data", "width": 120},
-		{"label": _("Warehouse"), "fieldname": "warehouse", "fieldtype": "Data", "width": 120},
 	]
 
 	ranges = get_period_date_ranges(filters)
-
-	for _dummy, end_date in ranges:
-		period = get_period(end_date, filters)
-		if filters["value_quantity"] != "Both":
-			columns.append({"label": _(period), "fieldname": scrub(period), "fieldtype": "Float", "width": 120})
-		else:
-			columns.append({"label": _(period)+" (Qty)", "fieldname": scrub(period), "fieldtype": "Float", "width": 120})
-			columns.append({"label": _(period+"(Val)"), "fieldname": scrub(period)+"_val", "fieldtype": "Float", "width": 120})
+	
+	value_quantity = filters.get("value_quantity", "Quantity")
+	
+	if value_quantity == "Both":
+		for _dummy, end_date in ranges:
+			period = get_period(end_date, filters)
+			period_key = scrub(period)
+			
+			# Add quantity column
+			columns.append({
+				"label": _(f"{period} Qty"), 
+				"fieldname": f"{period_key}_qty", 
+				"fieldtype": "Float", 
+				"width": 120
+			})
+			
+			# Add value column
+			columns.append({
+				"label": _(f"{period} Value"), 
+				"fieldname": f"{period_key}_value", 
+				"fieldtype": "Currency", 
+				"width": 120,
+				"options": "currency" if filters.get("company") else None
+			})
+	else:
+		fieldtype = "Currency" if value_quantity == "Value" else "Float"
+		for _dummy, end_date in ranges:
+			period = get_period(end_date, filters)
+			
+			columns.append({
+				"label": _(period), 
+				"fieldname": scrub(period), 
+				"fieldtype": fieldtype, 
+				"width": 120,
+				"options": "currency" if value_quantity == "Value" and filters.get("company") else None
+			})
 
 	return columns
 
@@ -158,50 +183,46 @@ def get_periodic_data(entry, filters):
 	for d in entry:
 		period = get_period(d.posting_date, filters)
 		bal_qty = 0
-		value_qty = 0
+
 		fill_intermediate_periods(periodic_data, d.item_code, period, expected_periods)
 
 		# if period against item does not exist yet, instantiate it
 		# insert existing balance dict against period, and add/subtract to it
 		if periodic_data.get(d.item_code) and not periodic_data.get(d.item_code).get(period):
-			previous_balance = periodic_data[d.item_code]["balance"].copy()
-			periodic_data[d.item_code][period] = previous_balance
+			previous_balance_qty = periodic_data[d.item_code]["balance_qty"].copy()
+			previous_balance_value = periodic_data[d.item_code]["balance_value"].copy()
+			periodic_data[d.item_code][period] = {
+				"qty": previous_balance_qty,
+				"value": previous_balance_value
+			}
 
 		if d.voucher_type == "Stock Reconciliation" and not d.batch_no:
-			if periodic_data.get(d.item_code) and periodic_data.get(d.item_code).get("balance").get(
+			if periodic_data.get(d.item_code) and periodic_data.get(d.item_code).get("balance_qty").get(
 				d.warehouse
 			):
-				if filters["value_quantity"] in ("Value", "Quantity"):
-					bal_qty = periodic_data[d.item_code]["balance"][d.warehouse]
-				else:
-					bal_qty = periodic_data[d.item_code]["balance"][d.warehouse]["qty"]
+				bal_qty = periodic_data[d.item_code]["balance_qty"][d.warehouse]
 
 			qty_diff = d.qty_after_transaction - bal_qty
 		else:
 			qty_diff = d.actual_qty
-		if filters["value_quantity"] == "Both":
-			value = d.stock_value_difference
-			value_qty = qty_diff
-		elif filters["value_quantity"] == "Quantity":
-			value = qty_diff
-		else:
-			value = d.stock_value_difference
 
-		# period-warehouse wise balance
+		# Calculate value difference
+		value_diff = d.stock_value_difference
 
-		if filters["value_quantity"] in ("Value", "Quantity"):
-			periodic_data.setdefault(d.item_code, {}).setdefault("balance", {}).setdefault(d.warehouse, 0.0)
-			periodic_data.setdefault(d.item_code, {}).setdefault(period, {}).setdefault(d.warehouse, 0.0)
-			periodic_data[d.item_code]["balance"][d.warehouse] += value
-			periodic_data[d.item_code][period][d.warehouse] = periodic_data[d.item_code]["balance"][d.warehouse]
-		else:
-			periodic_data.setdefault(d.item_code, {}).setdefault("balance", {}).setdefault(d.warehouse, {"qty": 0.0, "value": 0.0})
-			periodic_data.setdefault(d.item_code, {}).setdefault(period, {}).setdefault(d.warehouse, {"qty": 0.0, "value": 0.0})
-			periodic_data[d.item_code]["balance"][d.warehouse]["value"] += value
-			periodic_data[d.item_code]["balance"][d.warehouse]["qty"] += value_qty
-			periodic_data[d.item_code][period][d.warehouse]["value"] = periodic_data[d.item_code]["balance"][d.warehouse]["value"]
-			periodic_data[d.item_code][period][d.warehouse]["qty"] = periodic_data[d.item_code]["balance"][d.warehouse]["qty"]
+		# period-warehouse wise balance for quantity
+		periodic_data.setdefault(d.item_code, {}).setdefault("balance_qty", {}).setdefault(d.warehouse, 0.0)
+		periodic_data.setdefault(d.item_code, {}).setdefault("balance_value", {}).setdefault(d.warehouse, 0.0)
+		
+		periodic_data.setdefault(d.item_code, {}).setdefault(period, {}).setdefault("qty", {}).setdefault(d.warehouse, 0.0)
+		periodic_data.setdefault(d.item_code, {}).setdefault(period, {}).setdefault("value", {}).setdefault(d.warehouse, 0.0)
 
+		# Update balances
+		periodic_data[d.item_code]["balance_qty"][d.warehouse] += qty_diff
+		periodic_data[d.item_code]["balance_value"][d.warehouse] += value_diff
+		
+		# Store period values
+		periodic_data[d.item_code][period]["qty"][d.warehouse] = periodic_data[d.item_code]["balance_qty"][d.warehouse]
+		periodic_data[d.item_code][period]["value"][d.warehouse] = periodic_data[d.item_code]["balance_value"][d.warehouse]
 
 	return periodic_data
 
@@ -245,49 +266,65 @@ def get_data(filters):
 	ranges = get_period_date_ranges(filters)
 
 	today = getdate()
+	value_quantity = filters.get("value_quantity", "Quantity")
 
-	for  item_data in sle:
+	for _dummy, item_data in item_details.items():
 		row = {
-			"name": item_data.item_code,
+			"name": item_data.name,
 			"item_name": item_data.item_name,
 			"item_group": item_data.item_group,
 			"uom": item_data.stock_uom,
 			"brand": item_data.brand,
-			"warehouse": item_data.warehouse,
 		}
+		
+		# Add currency field if company is selected
+		if filters.get("company") and value_quantity in ["Value", "Both"]:
+			row["currency"] = frappe.get_cached_value("Company", filters.company, "default_currency")
+		
+		previous_period_qty = 0.0
 		previous_period_value = 0.0
-		no_val = 1
+		
 		for start_date, end_date in ranges:
 			period = get_period(end_date, filters)
+			period_key = scrub(period)
 			period_data = periodic_data.get(item_data.name, {}).get(period)
-			if filters["value_quantity"] == "Both":
+			
+			if value_quantity == "Both":
 				if period_data:
-					row[scrub(period)+"_val"] = previous_period_value = period_data[item_data.warehouse]['value']
-					row[scrub(period)] = previous_period_value = period_data[item_data.warehouse]['qty']
+					row[f"{period_key}_qty"] = previous_period_qty = sum(period_data.get("qty", {}).values())
+					row[f"{period_key}_value"] = previous_period_value = sum(period_data.get("value", {}).values())
 				else:
-					row[scrub(period)+"_val"] = previous_period_value if today >= start_date else None
-					row[scrub(period)] = previous_period_value if today >= start_date else None
-				if flt(row[scrub(period)+"_val"]) != 0:
-					no_val = 0
-			else:
+					row[f"{period_key}_qty"] = previous_period_qty if today >= start_date else None
+					row[f"{period_key}_value"] = previous_period_value if today >= start_date else None
+			elif value_quantity == "Quantity":
 				if period_data:
-					row[scrub(period)] = previous_period_value = sum(period_data.values())
+					row[period_key] = previous_period_qty = sum(period_data.get("qty", {}).values())
 				else:
-					row[scrub(period)] = previous_period_value if today >= start_date else None
-				if flt(row[scrub(period)]) != 0:
-					no_val = 0
+					row[period_key] = previous_period_qty if today >= start_date else None
+			else:  # Value
+				if period_data:
+					row[period_key] = previous_period_value = sum(period_data.get("value", {}).values())
+				else:
+					row[period_key] = previous_period_value if today >= start_date else None
 
-		if no_val == 0:
-			data.append(row)
-
+		data.append(row)
 
 	return data
 
 
-def get_chart_data(columns):
-	labels = [d.get("label") for d in columns[5:]]
-	chart = {"data": {"labels": labels, "datasets": []}}
-	chart["type"] = "line"
+def get_chart_data(columns, filters):
+	value_quantity = filters.get("value_quantity", "Quantity")
+	
+	if value_quantity == "Both":
+		# For "Both" option, we might want to show two datasets or just quantity
+		# Let's show quantity by default for chart
+		labels = [d.get("label") for d in columns if "_qty" in d.get("fieldname", "")]
+		chart = {"data": {"labels": labels, "datasets": []}}
+		chart["type"] = "line"
+	else:
+		labels = [d.get("label") for d in columns[5:]]
+		chart = {"data": {"labels": labels, "datasets": []}}
+		chart["type"] = "line"
 
 	return chart
 
@@ -309,15 +346,11 @@ def get_items(filters):
 
 def get_stock_ledger_entries(filters, items):
 	sle = frappe.qb.DocType("Stock Ledger Entry")
-	item = frappe.qb.DocType("Item")
+
 	query = (
 		frappe.qb.from_(sle)
-		.inner_join(item).on(sle.item_code == item.name).select(
+		.select(
 			sle.item_code,
-			item.item_name,
-			item.item_group,
-			item.brand,
-			item.stock_uom,
 			sle.warehouse,
 			sle.posting_date,
 			sle.actual_qty,
@@ -335,8 +368,6 @@ def get_stock_ledger_entries(filters, items):
 		.orderby(CombineDatetime(sle.posting_date, sle.posting_time))
 		.orderby(sle.creation)
 		.orderby(sle.actual_qty)
-		.groupby(sle.warehouse)
-		.groupby(sle.item_code)
 	)
 
 	if items:
