@@ -54,6 +54,7 @@ class JournalEntry(AccountsController):
 		advance_payment: DF.Check
 		amended_from: DF.Link | None
 		apply_tds: DF.Check
+		approved_date: DF.Date | None
 		approver: DF.Link | None
 		auto_repeat: DF.Link | None
 		bank_account_number: DF.Data | None
