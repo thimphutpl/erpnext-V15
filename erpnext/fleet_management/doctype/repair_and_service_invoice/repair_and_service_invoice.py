@@ -73,7 +73,7 @@ class RepairAndServiceInvoice(AccountsController):
 		gl_entries = []
 		expense_account = frappe.db.get_value("Equipment Category", self.equipment_category, "r_m_expense_account")
 		if not expense_account:
-			expense_account = frappe.db.get_value("Company", self.company, "repair_and_service_expense_account")
+			expense_account = frappe.db.get_value("Company", self.company, "repair_and_service_account")
 		
 		if not expense_account:
 			frappe.throw(
