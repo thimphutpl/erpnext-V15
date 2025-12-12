@@ -436,19 +436,18 @@ def get_comma_separated_links(names, doctype):
 @frappe.whitelist()
 def scrap_asset(asset_name,scrap_date=None):
 	asset = frappe.get_doc("Asset", asset_name)
-
 	if asset.docstatus != 1:
 		frappe.throw(_("Asset {0} must be submitted").format(asset.name))
 	elif asset.status in ("Cancelled", "Sold", "Scrapped", "Capitalized", "Decapitalized"):
 		frappe.throw(_("Asset {0} cannot be scrapped, as it is already {1}").format(asset.name, asset.status))
 
-	date = today()
-
+	# date = today()
+	date = scrap_date if scrap_date else today()
 	notes = _("This schedule was created when Asset {0} was scrapped.").format(
 		get_link_to_form(asset.doctype, asset.name)
 	)
 
-	depreciate_asset(asset, date, notes)
+	# depreciate_asset(asset, date, notes)
 	asset.reload()
 
 	depreciation_series = frappe.get_cached_value("Company", asset.company, "series_for_depreciation_entry")
@@ -625,7 +624,6 @@ def get_gl_entries_on_asset_regain(
 		disposal_account,
 		value_after_depreciation,
 	) = get_asset_details(asset, finance_book)
-
 	gl_entries = [
 		asset.get_gl_dict(
 			{
@@ -652,7 +650,7 @@ def get_gl_entries_on_asset_regain(
 	profit_amount = abs(flt(value_after_depreciation)) - abs(flt(selling_amount))
 	if profit_amount:
 		get_profit_gl_entries(
-			asset, profit_amount, gl_entries, disposal_account, depreciation_cost_center, date
+			asset, profit_amount, gl_entries, disposal_account, depreciation_cost_center, date 
 		)
 
 	if voucher_type and voucher_no:
@@ -710,11 +708,12 @@ def get_gl_entries_on_asset_disposal(
 	depreciation_cost_center = asset_cost_center
 	profit_amount = flt(selling_amount) - flt(value_after_depreciation)
 	disposal_account = loss_disposal_account if flt(profit_amount) < 0 else gain_disposal_account
+	# frappe.throw(str(gl_entries))
 	if profit_amount:
 		get_profit_gl_entries(
 			asset, profit_amount, gl_entries, disposal_account, depreciation_cost_center, date
 		)
-
+		
 	if voucher_type and voucher_no:
 		for entry in gl_entries:
 			entry["voucher_type"] = voucher_type
@@ -746,12 +745,15 @@ def get_asset_details(asset, finance_book=None):
 
 
 def get_profit_gl_entries(
-	asset, profit_amount, gl_entries, disposal_account, depreciation_cost_center, date=None
-):
+	asset, profit_amount, gl_entries, disposal_account, depreciation_cost_center, date=None):
 	if not date:
 		date = getdate()
 
 	debit_or_credit = "debit" if profit_amount < 0 else "credit"
+	if debit_or_credit =="debit":
+		disposal_account = frappe.db.get_value("Company","GYALSUNG INFRA", "loss_disposal_account")
+	if debit_or_credit =="credit":
+		disposal_account = frappe.db.get_value("Company", "GYALSUNG INFRA", "gain_disposal_account")
 	gl_entries.append(
 		asset.get_gl_dict(
 			{
