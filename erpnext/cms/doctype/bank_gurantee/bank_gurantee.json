@@ -1,0 +1,211 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "GI-BG-.#####",
+ "creation": "2025-12-11 11:27:08.497931",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "contract_details_section",
+  "contract",
+  "supplier",
+  "focal_person",
+  "column_break_ucst",
+  "contract_name",
+  "supplier_name",
+  "focal_person_name",
+  "column_break_dmho",
+  "reference_number",
+  "supplier_type",
+  "contract_final_price",
+  "bank_guarantee_section_section",
+  "bg_amount",
+  "bg_date",
+  "column_break_wyzb",
+  "bg_type",
+  "bg_expiry_date",
+  "column_break_bwct",
+  "bg_number",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "contract",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Contract",
+   "options": "Contract Details",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_ucst",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "contract.contract_name",
+   "fieldname": "contract_name",
+   "fieldtype": "Data",
+   "label": "Contract Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_dmho",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "contract.reference_number",
+   "fieldname": "reference_number",
+   "fieldtype": "Data",
+   "label": "Reference Number",
+   "read_only": 1
+  },
+  {
+   "fieldname": "contract_details_section",
+   "fieldtype": "Section Break",
+   "label": "Contract Details"
+  },
+  {
+   "fetch_from": "contract.supplier",
+   "fieldname": "supplier",
+   "fieldtype": "Link",
+   "label": "Supplier",
+   "options": "Supplier",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fetch_from": "contract.supplier_name",
+   "fieldname": "supplier_name",
+   "fieldtype": "Data",
+   "label": "Supplier Name",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "contract.supplier_type",
+   "fieldname": "supplier_type",
+   "fieldtype": "Select",
+   "label": "Supplier Type",
+   "options": "\nDomestic Vendor\nIndian Vendor\nInternational Vendor",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "contract.focal_person",
+   "fieldname": "focal_person",
+   "fieldtype": "Link",
+   "label": "Focal Person",
+   "options": "Employee",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "contract.focal_person_name",
+   "fieldname": "focal_person_name",
+   "fieldtype": "Data",
+   "label": "Focal Person Name",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "contract.final_amount",
+   "fieldname": "contract_final_price",
+   "fieldtype": "Data",
+   "label": "Contract Final Price",
+   "read_only": 1
+  },
+  {
+   "fieldname": "bank_guarantee_section_section",
+   "fieldtype": "Section Break",
+   "label": "Bank Guarantee Section"
+  },
+  {
+   "fieldname": "bg_amount",
+   "fieldtype": "Data",
+   "label": "BG Amount"
+  },
+  {
+   "fieldname": "column_break_wyzb",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "bg_type",
+   "fieldtype": "Select",
+   "label": "BG Type",
+   "options": "\nAdvance Bank Guarantee\nPerformance Bank Guarantee\nPerformance Security\nRetention Bank Guarantee"
+  },
+  {
+   "fieldname": "column_break_bwct",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "bg_date",
+   "fieldtype": "Date",
+   "label": "BG Date"
+  },
+  {
+   "fieldname": "bg_expiry_date",
+   "fieldtype": "Date",
+   "label": "BG Expiry Date"
+  },
+  {
+   "fieldname": "bg_number",
+   "fieldtype": "Data",
+   "label": "BG Number"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Bank Gurantee",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-12-11 14:42:18.114403",
+ "modified_by": "Administrator",
+ "module": "CMS",
+ "name": "Bank Gurantee",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Contract User",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Contract Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

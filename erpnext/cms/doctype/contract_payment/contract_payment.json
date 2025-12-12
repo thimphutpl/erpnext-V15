@@ -1,0 +1,229 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "GI-C-PAY-.#####",
+ "creation": "2025-12-11 10:46:18.188924",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "contract_details_section",
+  "contract",
+  "supplier",
+  "column_break_swli",
+  "reference_number",
+  "supplier_name",
+  "initial_amount",
+  "column_break_xmei",
+  "contract_name",
+  "supplier_type",
+  "final_amount",
+  "payment_section_section",
+  "posting_date",
+  "currency",
+  "column_break_kklx",
+  "payment_date",
+  "bill_amount_in_currency",
+  "exchange_rate",
+  "column_break_mwrt",
+  "payment_type",
+  "payment",
+  "payable_amount",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "contract_details_section",
+   "fieldtype": "Section Break",
+   "label": "Contract Details"
+  },
+  {
+   "fieldname": "contract",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Contract",
+   "options": "Contract Details",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "contract.reference_number",
+   "fieldname": "reference_number",
+   "fieldtype": "Data",
+   "label": "Reference Number",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "contract.contract_name",
+   "fieldname": "contract_name",
+   "fieldtype": "Data",
+   "label": "Contract Name",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "contract.supplier",
+   "fieldname": "supplier",
+   "fieldtype": "Link",
+   "label": "Supplier",
+   "options": "Supplier",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_swli",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "contract.supplier_name",
+   "fieldname": "supplier_name",
+   "fieldtype": "Data",
+   "label": "Supplier Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_xmei",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "contract.supplier_type",
+   "fieldname": "supplier_type",
+   "fieldtype": "Select",
+   "label": "Supplier Type",
+   "options": "\nDomestic Vendor\nIndian Vendor\nInternational Vendor",
+   "read_only": 1
+  },
+  {
+   "fieldname": "payment_section_section",
+   "fieldtype": "Section Break",
+   "label": "Payment Section"
+  },
+  {
+   "default": "Today",
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "label": "Posting Date",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "payment_date",
+   "fieldtype": "Date",
+   "label": "Payment Date"
+  },
+  {
+   "fieldname": "column_break_kklx",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_mwrt",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.payment_type==\"RA Bill\" || doc.payment_type==\"Milestone\"",
+   "fieldname": "payment",
+   "fieldtype": "Select",
+   "label": "Payment",
+   "options": "\n1\n2\n3\n4\n5\n6\n7\n8\n9\nFinal"
+  },
+  {
+   "fieldname": "payment_type",
+   "fieldtype": "Select",
+   "label": "Payment Type",
+   "options": "\nAdvance\nMobilization Advance\nMaterial Advance\nMilestone\nRA Bill"
+  },
+  {
+   "fetch_from": "contract.initial_amount",
+   "fieldname": "initial_amount",
+   "fieldtype": "Data",
+   "label": "Initial Amount",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "contract.final_amount",
+   "fieldname": "final_amount",
+   "fieldtype": "Data",
+   "label": "Final Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "currency",
+   "fieldtype": "Link",
+   "label": "Currency",
+   "options": "Currency",
+   "reqd": 1
+  },
+  {
+   "fieldname": "exchange_rate",
+   "fieldtype": "Data",
+   "label": "Exchange Rate",
+   "reqd": 1
+  },
+  {
+   "fieldname": "bill_amount_in_currency",
+   "fieldtype": "Data",
+   "label": "Bill Amount In Currency"
+  },
+  {
+   "fieldname": "payable_amount",
+   "fieldtype": "Data",
+   "label": "Payable Amount In BTN"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Contract Payment",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2025-12-11 14:42:50.779907",
+ "modified_by": "Administrator",
+ "module": "CMS",
+ "name": "Contract Payment",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Contract User",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Contract Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

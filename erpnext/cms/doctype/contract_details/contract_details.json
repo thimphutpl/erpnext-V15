@@ -1,0 +1,191 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "GI-CONTRACT-.#####",
+ "creation": "2025-12-11 10:03:40.950385",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "supplier_section_section",
+  "supplier",
+  "column_break_shsq",
+  "supplier_name",
+  "column_break_aoas",
+  "supplier_type",
+  "contract_section_section",
+  "contract_name",
+  "start_date",
+  "focal_person",
+  "column_break_wzat",
+  "reference_number",
+  "end_date",
+  "focal_person_name",
+  "column_break_mokv",
+  "initial_amount",
+  "discount",
+  "additional",
+  "final_amount"
+ ],
+ "fields": [
+  {
+   "fieldname": "supplier",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Supplier",
+   "options": "Supplier",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "supplier.supplier_name",
+   "fieldname": "supplier_name",
+   "fieldtype": "Data",
+   "label": "Supplier Name",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "supplier.supplier_type",
+   "fieldname": "supplier_type",
+   "fieldtype": "Select",
+   "label": "Supplier Type",
+   "options": "\nDomestic Vendor\nIndian Vendor\nInternational Vendor",
+   "read_only": 1
+  },
+  {
+   "fieldname": "supplier_section_section",
+   "fieldtype": "Section Break",
+   "label": "Supplier Section"
+  },
+  {
+   "fieldname": "contract_section_section",
+   "fieldtype": "Section Break",
+   "label": "Contract Section"
+  },
+  {
+   "fieldname": "contract_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Contract Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "reference_number",
+   "fieldtype": "Data",
+   "label": "Contract Reference Number",
+   "reqd": 1
+  },
+  {
+   "fieldname": "start_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Contract Start Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "end_date",
+   "fieldtype": "Date",
+   "label": "Contract End Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "initial_amount",
+   "fieldtype": "Data",
+   "label": "Initial Amount",
+   "reqd": 1
+  },
+  {
+   "fieldname": "discount",
+   "fieldtype": "Data",
+   "label": "Discount"
+  },
+  {
+   "fieldname": "additional",
+   "fieldtype": "Data",
+   "label": "Additional "
+  },
+  {
+   "fieldname": "final_amount",
+   "fieldtype": "Data",
+   "label": "Final Amount",
+   "reqd": 1
+  },
+  {
+   "fieldname": "focal_person",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Focal Person",
+   "options": "Employee",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_wzat",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_mokv",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "focal_person.employee_name",
+   "fieldname": "focal_person_name",
+   "fieldtype": "Data",
+   "label": "Focal Person name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_shsq",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_aoas",
+   "fieldtype": "Column Break"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-12-11 14:41:11.092610",
+ "modified_by": "Administrator",
+ "module": "CMS",
+ "name": "Contract Details",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Contract User",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Contract Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
