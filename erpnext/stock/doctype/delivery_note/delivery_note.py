@@ -69,6 +69,8 @@ class DeliveryNote(SellingController):
 		customer_name: DF.Data | None
 		date_time_in: DF.Datetime | None
 		date_time_out: DF.Datetime | None
+		declaration_date: DF.Date | None
+		declaration_numbers: DF.Int
 		disable_rounded_total: DF.Check
 		discount_amount: DF.Currency
 		dispatch: DF.Link | None
@@ -102,6 +104,7 @@ class DeliveryNote(SellingController):
 		per_billed: DF.Percent
 		per_installed: DF.Percent
 		per_returned: DF.Percent
+		performer_index: DF.Int
 		pick_list: DF.Link | None
 		plc_conversion_rate: DF.Float
 		po_date: DF.Date | None

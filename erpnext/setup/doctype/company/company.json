@@ -97,6 +97,9 @@
   "selling_section",
   "default_prepaid_income_account",
   "default_prepaid_expense_account",
+  "service_sales_jobcard_section",
+  "revenue_account",
+  "internal_expense_account",
   "exchange_rate_revaluation_settings_section",
   "auto_exchange_rate_revaluation",
   "auto_err_frequency",
@@ -1138,6 +1141,23 @@
    "fieldtype": "Link",
    "label": "Temporary Account",
    "options": "Account"
+  },
+  {
+   "fieldname": "service_sales_jobcard_section",
+   "fieldtype": "Section Break",
+   "label": "Service Sales Jobcard"
+  },
+  {
+   "fieldname": "revenue_account",
+   "fieldtype": "Link",
+   "label": "Revenue Account ",
+   "options": "Account"
+  },
+  {
+   "fieldname": "internal_expense_account",
+   "fieldtype": "Link",
+   "label": "Internal Expense Account",
+   "options": "Account"
   }
  ],
  "icon": "fa fa-building",
@@ -1145,7 +1165,7 @@
  "image_field": "company_logo",
  "is_tree": 1,
  "links": [],
- "modified": "2025-11-25 15:07:48.385085",
+ "modified": "2025-11-28 11:12:07.292989",
  "modified_by": "kalden.dorji@thimphutechpark.bt",
  "module": "Setup",
  "name": "Company",

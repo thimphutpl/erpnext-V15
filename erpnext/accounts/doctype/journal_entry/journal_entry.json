@@ -43,15 +43,17 @@
   "total_amount",
   "total_amount_in_words",
   "reference",
+  "journal_no",
+  "money_receipt_id",
   "clearance_date",
   "remark",
   "paid_loan",
   "inter_company_journal_entry_reference",
-  "journal_no",
   "column_break98",
   "bill_no",
   "bill_date",
   "due_date",
+  "money_receipt",
   "write_off",
   "write_off_based_on",
   "get_outstanding_invoices",
@@ -92,7 +94,6 @@
    "allow_on_submit": 1,
    "fieldname": "title",
    "fieldtype": "Data",
-   "hidden": 1,
    "label": "Title",
    "no_copy": 1,
    "print_hide": 1
@@ -202,8 +203,7 @@
    "no_copy": 1,
    "oldfieldname": "user_remark",
    "oldfieldtype": "Small Text",
-   "print_hide": 1,
-   "reqd": 1
+   "print_hide": 1
   },
   {
    "fieldname": "column_break99",
@@ -513,7 +513,6 @@
   {
    "fieldname": "from_template",
    "fieldtype": "Link",
-   "hidden": 1,
    "label": "From Template",
    "no_copy": 1,
    "options": "Journal Entry Template",
@@ -664,6 +663,18 @@
    "hidden": 1,
    "label": "Is EMI Sales Installment",
    "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "money_receipt",
+   "fieldtype": "Check",
+   "label": "Money Receipt"
+  },
+  {
+   "depends_on": "eval:doc.money_receipt == 1",
+   "fieldname": "money_receipt_id",
+   "fieldtype": "Data",
+   "label": "Money Receipt ID"
   }
  ],
  "icon": "fa fa-file-text",
@@ -678,7 +689,7 @@
    "table_fieldname": "payment_entries"
   }
  ],
- "modified": "2025-11-20 12:24:14.132287",
+ "modified": "2025-12-11 23:39:59.361220",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Journal Entry",

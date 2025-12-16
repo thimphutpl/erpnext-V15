@@ -2,11 +2,14 @@
 # For license information, please see license.txt
 
 import frappe
+import erpnext
 from frappe.model.document import Document
 from frappe.model.mapper import get_mapped_doc
+from erpnext.accounts.general_ledger import make_gl_entries
+from erpnext.controllers.selling_controller import SellingController
 
 
-class ServiceSalesJobcard(Document):
+class ServiceSalesJobcard(SellingController):
 	# begin: auto-generated types
 	# This code is auto-generated. Do not modify anything in this block.
 
@@ -22,25 +25,39 @@ class ServiceSalesJobcard(Document):
 		balance_amount: DF.Data | None
 		branch: DF.Link
 		chassis_number: DF.Link | None
+		company: DF.Link | None
+		contact_number: DF.Data | None
 		cost_center: DF.Data | None
 		customer_group: DF.Data | None
 		customer_id: DF.Link
 		customer_name: DF.Data | None
+		delayed_date_from: DF.Date | None
+		delayed_date_to: DF.Date | None
+		delayed_reason: DF.LongText | None
+		delivery_date_from: DF.Date | None
+		delivery_date_to: DF.Data | None
+		driver_name: DF.Data | None
 		end_date: DF.Date
 		items: DF.Table[Document]
 		jobcard_report: DF.LongText | None
 		jobcard_status: DF.Literal["Ongoing", "Completed"]
 		jocard_type: DF.Link | None
+		km_reading: DF.Data | None
 		location: DF.Link | None
 		mobile_no: DF.Data | None
 		payable_amount: DF.Currency
 		posting_date: DF.Date
+		requesting_branch: DF.Link | None
+		requesting_cost_center: DF.Data | None
 		set_warehouse: DF.Link | None
 		start_date: DF.Date
+		supplier_order: DF.Data | None
 		table_vvwk: DF.Table[Document]
+		used_amount: DF.Data | None
 		vehicle_number: DF.Data | None
 		warehouse: DF.Data | None
 		warranty_id: DF.Link | None
+		workorder: DF.Data | None
 	# end: auto-generated types
 	# pass
 
@@ -61,6 +78,18 @@ class ServiceSalesJobcard(Document):
 
 	def on_submit(self):
 		self.update_serial_no_used_amount()
+		# self.make_gl_entries()
+
+		# Check if selected Jobcard Type has inter_company = 1
+		inter_company = frappe.db.get_value(
+			"Jobcard Type",
+			self.jocard_type,
+			"inter_company"
+		)
+
+		if inter_company:
+			self.make_gl_entries()
+			# self.get_gl_entries()
 
 	def update_serial_no_used_amount(self):
 		
@@ -106,6 +135,73 @@ class ServiceSalesJobcard(Document):
 			sn_doc = frappe.get_doc("Serial No", serial_no)
 			sn_doc.used_amount = payable_amount
 			sn_doc.save(ignore_permissions=True)
+
+	def make_gl_entries(self, gl_entries=None, from_repost=False):
+		from erpnext.accounts.general_ledger import make_gl_entries, make_reverse_gl_entries
+		
+		if not gl_entries:
+			gl_entries = self.get_gl_entries()
+		
+		if gl_entries:
+			if self.docstatus == 1:
+				make_gl_entries(
+					gl_entries,
+					update_outstanding="No",
+					merge_entries=False,
+					from_repost=from_repost,
+				)
+
+	def get_gl_entries(self, warehouse_account=None):
+		gl_entries = []
+		self.make_customer_gl_entries(gl_entries)
+		self.make_income_gl_entries(gl_entries)
+		return gl_entries
+
+	def make_customer_gl_entries(self, gl_entries):
+		"""Create debit entry for customer receivable"""
+		default_receivable_account = frappe.get_cached_value('Company', self.company, 'default_receivable_account')
+		
+		if not default_receivable_account:
+			frappe.throw(f"Default Receivable Account not set for Company: {self.company}")
+		
+		gl_entries.append(
+			self.get_gl_dict(
+				{
+					"account": default_receivable_account,
+					"party_type": "Customer",
+					"party": self.customer_id,
+					"debit": self.payable_amount,
+					"debit_in_account_currency": self.payable_amount,
+					"against": self.cost_center,
+					"cost_center": self.cost_center,
+					"voucher_type": self.doctype,
+					"voucher_no": self.name,
+					"against_voucher_type": self.doctype,
+					"against_voucher": self.name,
+				}
+			)
+		)
+
+	def make_income_gl_entries(self, gl_entries):
+		"""Create credit entry for income account"""
+		income_account = frappe.get_cached_value("Cost Center", self.cost_center, "revenue_account")
+		
+		if not income_account:
+			frappe.throw(f"Revenue Account not set for Cost Center: {self.cost_center}")
+		
+		gl_entries.append(
+			self.get_gl_dict(
+				{
+					"account": income_account,
+					"credit": self.payable_amount,
+					"credit_in_account_currency": self.payable_amount,
+					"against": self.customer_id,
+					"cost_center": self.cost_center,
+					"voucher_type": self.doctype,
+					"voucher_no": self.name,
+				}
+			)
+		)					
 
 @frappe.whitelist()
 def make_service_sales_jobcard(source_name, target_doc=None):

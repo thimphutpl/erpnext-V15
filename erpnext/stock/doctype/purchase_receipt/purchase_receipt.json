@@ -139,7 +139,43 @@
   "column_break5",
   "lr_no",
   "lr_date",
-  "is_old_subcontracting_flow"
+  "is_old_subcontracting_flow",
+  "tb_petrol_diesel",
+  "indian_tanker_no",
+  "loading_date",
+  "rate_per_kl",
+  "depot_charges_per_kl",
+  "pi_no_and_date",
+  "challan_date",
+  "stcbl_tanker",
+  "column_break_doan",
+  "hpcl_tt_receipt_date",
+  "export_invoice_no",
+  "invoice_no",
+  "cost_per_kl",
+  "cost_per_kl_incl",
+  "challan_no",
+  "sb_calibrated_dip",
+  "dip_details",
+  "sb_product_details",
+  "dispatch_quantity",
+  "column_break_ggzs",
+  "receipt_qty",
+  "sb_ug_tank",
+  "ug_qty",
+  "shrinkage_amt",
+  "column_break_jyzj",
+  "shrinkage_qty",
+  "fro_density_section",
+  "fro_i",
+  "fro_iv",
+  "fro_combined",
+  "column_break_uxst",
+  "fro_ii",
+  "fro_v",
+  "column_break_ncdo",
+  "fro_iii",
+  "fro_vi"
  ],
  "fields": [
   {
@@ -1204,14 +1240,201 @@
    "label": "eNote ID",
    "options": "eNote",
    "read_only": 1
+  },
+  {
+   "fieldname": "tb_petrol_diesel",
+   "fieldtype": "Tab Break",
+   "label": "Petrol and Diesel Information"
+  },
+  {
+   "fieldname": "indian_tanker_no",
+   "fieldtype": "Data",
+   "label": "Indian Tanker No"
+  },
+  {
+   "fieldname": "loading_date",
+   "fieldtype": "Date",
+   "label": "Loading Date"
+  },
+  {
+   "fieldname": "rate_per_kl",
+   "fieldtype": "Currency",
+   "label": "Rate Per KL"
+  },
+  {
+   "fieldname": "depot_charges_per_kl",
+   "fieldtype": "Currency",
+   "label": "Depot Charges Per KL"
+  },
+  {
+   "fieldname": "column_break_doan",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "hpcl_tt_receipt_date",
+   "fieldtype": "Date",
+   "label": "HPCL TT Receipt Date"
+  },
+  {
+   "fieldname": "export_invoice_no",
+   "fieldtype": "Data",
+   "label": "Export Invoice No"
+  },
+  {
+   "fieldname": "invoice_no",
+   "fieldtype": "Data",
+   "label": "Invoice No"
+  },
+  {
+   "fieldname": "cost_per_kl",
+   "fieldtype": "Currency",
+   "label": "Cost Per KL"
+  },
+  {
+   "fieldname": "cost_per_kl_incl",
+   "fieldtype": "Currency",
+   "label": "Cost Per KL Incl. Tax"
+  },
+  {
+   "fieldname": "pi_no_and_date",
+   "fieldtype": "Data",
+   "label": "PI No and Date"
+  },
+  {
+   "fieldname": "sb_calibrated_dip",
+   "fieldtype": "Section Break",
+   "label": "Dip Details"
+  },
+  {
+   "description": "<b>*Note: For Additional Compartment Details click on the pen/pencil icon.</b>",
+   "fieldname": "dip_details",
+   "fieldtype": "Table",
+   "options": "Dip Details"
+  },
+  {
+   "fieldname": "sb_product_details",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "dispatch_quantity",
+   "fieldtype": "Float",
+   "label": "Dispatch Quantity",
+   "precision": "2"
+  },
+  {
+   "fieldname": "column_break_ggzs",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "receipt_qty",
+   "fieldtype": "Float",
+   "label": "Receipt Quantity at Outlet",
+   "precision": "2"
+  },
+  {
+   "fieldname": "challan_date",
+   "fieldtype": "Date",
+   "label": "Challan Date"
+  },
+  {
+   "fieldname": "stcbl_tanker",
+   "fieldtype": "Link",
+   "label": "STCBL Tanker",
+   "options": "Equipment"
+  },
+  {
+   "fieldname": "challan_no",
+   "fieldtype": "Data",
+   "label": "Challan No"
+  },
+  {
+   "fieldname": "fro_density_section",
+   "fieldtype": "Section Break",
+   "label": "FRO Density"
+  },
+  {
+   "fieldname": "fro_i",
+   "fieldtype": "Float",
+   "label": "I",
+   "precision": "2"
+  },
+  {
+   "fieldname": "fro_iv",
+   "fieldtype": "Float",
+   "label": "IV",
+   "precision": "2"
+  },
+  {
+   "fieldname": "column_break_uxst",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "fro_ii",
+   "fieldtype": "Float",
+   "label": "II",
+   "precision": "2"
+  },
+  {
+   "fieldname": "fro_v",
+   "fieldtype": "Float",
+   "label": "V",
+   "precision": "2"
+  },
+  {
+   "fieldname": "column_break_ncdo",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "fro_iii",
+   "fieldtype": "Float",
+   "label": "III",
+   "precision": "2"
+  },
+  {
+   "fieldname": "fro_vi",
+   "fieldtype": "Float",
+   "label": "VI",
+   "precision": "2"
+  },
+  {
+   "fieldname": "fro_combined",
+   "fieldtype": "Float",
+   "label": "Combined",
+   "precision": "2"
+  },
+  {
+   "fieldname": "sb_ug_tank",
+   "fieldtype": "Section Break",
+   "label": "UG Tank Details"
+  },
+  {
+   "fieldname": "ug_qty",
+   "fieldtype": "Float",
+   "label": "UG Receipt Quantity",
+   "precision": "2"
+  },
+  {
+   "fieldname": "shrinkage_amt",
+   "fieldtype": "Currency",
+   "label": "Amount(Shrinkage)"
+  },
+  {
+   "fieldname": "column_break_jyzj",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "shrinkage_qty",
+   "fieldtype": "Float",
+   "label": "Shrinkage Quantity",
+   "precision": "2"
   }
  ],
  "icon": "fa fa-truck",
  "idx": 261,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-25 12:23:09.041320",
- "modified_by": "kalden.dorji@thimphutechpark.bt",
+ "modified": "2025-12-08 12:56:23.322968",
+ "modified_by": "Administrator",
  "module": "Stock",
  "name": "Purchase Receipt",
  "naming_rule": "Expression (old style)",

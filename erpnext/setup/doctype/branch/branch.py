@@ -36,6 +36,7 @@ class Branch(Document):
 		is_hq_branch: DF.Check
 		items: DF.Table[BranchImprestItem]
 		letter_head: DF.Link | None
+		revenue_account: DF.Link | None
 		revenue_bank_account: DF.Link | None
 		warehouse: DF.Link | None
 	# end: auto-generated types

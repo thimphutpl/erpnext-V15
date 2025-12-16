@@ -45,6 +45,16 @@ frappe.ui.form.on("Sales Order", {
 				}
 			}
 		});
+
+		frm.set_query("price_template", "items", function (doc, cdt, cdn) {
+			var row = locals[cdt][cdn];
+			return {
+				filters: {
+					"docstatus": 1
+				}
+			}
+		});
+
 		frm.set_query("branch", function (doc) {
 			return {
 				filters: { 
@@ -140,6 +150,7 @@ frappe.ui.form.on("Sales Order Item", {
 	item_code: function (frm, cdt, cdn) {
 		// frappe.throw("bbb")
 		var row = locals[cdt][cdn];
+		frappe.model.set_value(cdt, cdn, 'price_template', '');
 		if (frm.doc.delivery_date) {
 			row.delivery_date = frm.doc.delivery_date;
 			refresh_field("delivery_date", cdn, "items");
@@ -160,7 +171,52 @@ frappe.ui.form.on("Sales Order Item", {
 		if (!frm.doc.delivery_date) {
 			erpnext.utils.copy_value_in_all_rows(frm.doc, cdt, cdn, "items", "delivery_date");
 		}
-	}
+	},
+	price_template: function (frm, cdt, cdn) {
+		var row = locals[cdt][cdn];
+		frappe.call({
+			method: 'erpnext.selling.doctype.sales_order.sales_order.get_selling_price',
+			args: { item_code: row.item_code, price_template: row.price_template},
+			callback: function (r) {
+				if (r.message) {
+					frappe.model.set_value(cdt, cdn, 'rate', r.message);
+				}else{
+					frappe.msgprint('Selling Price not found for the selected Item');
+				}
+			}
+		});
+	},
+	get_chassis_no: function(frm, cdt, cdn) {
+		let row = locals[cdt][cdn];
+		let already_selected = (row.serial_no_chassis_no || "").split("\n").filter(Boolean);
+		if (frm.doc.docstatus == 0) {
+			let msd = new frappe.ui.form.MultiSelectDialog({
+				doctype: "Serial No", // the doctype to fetch
+				target: frm,
+				setters: {
+					status: "Active"  // filter: only Active serials
+				},
+				add_filters_group: 1,
+				primary_action_label: "Select",
+				get_query() {
+					return {
+						filters: {
+							status: "Active",
+							name: ["not in", already_selected]
+						}
+					};
+				},
+				action(selections) {
+					// selections is an array of selected Serial No names
+					// row.serial_no_chassis_no = selections.join(", "); 
+					let current = row.serial_no_chassis_no ? row.serial_no_chassis_no.split("\n") : [];
+                	row.serial_no_chassis_no = current.concat(selections).join("\n");
+					frm.refresh_field("serial_no_chassis_no");
+					msd.dialog.hide();
+				}
+			});
+		}
+	},
 });
 
 erpnext.selling.SalesOrderController = class SalesOrderController extends erpnext.selling.SellingController {

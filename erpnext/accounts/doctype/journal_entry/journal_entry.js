@@ -295,7 +295,7 @@ frappe.ui.form.on("Journal Entry", {
 				erpnext.journal_entry.set_tds_account(frm, row.doctype, row.name);
 			}
 		})
-	}
+	},
 });
 
 var render_tds_table=function(frm){

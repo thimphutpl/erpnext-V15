@@ -33,6 +33,9 @@
   "due_date",
   "return_against",
   "amended_from",
+  "performer_index",
+  "declaration_numbers",
+  "declaration_date",
   "accounting_dimensions_section",
   "cost_center",
   "dimension_col_break",
@@ -2163,6 +2166,24 @@
    "fieldname": "completed_service",
    "fieldtype": "Check",
    "label": "Completed"
+  },
+  {
+   "fieldname": "performer_index",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Performer Index No"
+  },
+  {
+   "fieldname": "declaration_numbers",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Declaration Number"
+  },
+  {
+   "fieldname": "declaration_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Declaration Date"
   }
  ],
  "icon": "fa fa-file-text",
@@ -2175,8 +2196,8 @@
    "link_fieldname": "consolidated_invoice"
   }
  ],
- "modified": "2025-11-26 15:00:23.675721",
- "modified_by": "kalden.dorji@thimphutechpark.bt",
+ "modified": "2025-12-04 11:42:04.005320",
+ "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Sales Invoice",
  "naming_rule": "Expression (old style)",

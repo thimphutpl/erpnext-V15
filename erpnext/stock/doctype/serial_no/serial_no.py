@@ -85,7 +85,10 @@ class SerialNo(StockController):
 		delivery_time: DF.Time | None
 		description: DF.Text | None
 		employee: DF.Link | None
+		engine_cc: DF.Data | None
 		engine_no: DF.Data | None
+		fuel_type: DF.Data | None
+		gvw_tonnage: DF.Data | None
 		item_code: DF.Link
 		item_group: DF.Link | None
 		item_name: DF.Data | None
@@ -93,22 +96,28 @@ class SerialNo(StockController):
 		item_type: DF.Data | None
 		location: DF.Link | None
 		maintenance_status: DF.Literal["", "Under Warranty", "Out of Warranty", "Under AMC", "Out of AMC"]
+		make: DF.Data | None
+		model: DF.Data | None
+		model_year: DF.Data | None
 		outgoing_rate: DF.Currency
 		purchase_date: DF.Date | None
 		purchase_document_no: DF.DynamicLink | None
 		purchase_document_type: DF.Link | None
 		purchase_rate: DF.Currency
 		purchase_time: DF.Time | None
-		sales_invoice: DF.Link | None
 		sales_order: DF.Link | None
+		seating_capacity: DF.Data | None
 		serial_no: DF.Data
 		serial_no_details: DF.TextEditor | None
 		status: DF.Literal["", "Active", "Inactive", "Delivered", "Expired"]
 		supplier: DF.Link | None
 		supplier_name: DF.Data | None
+		transmission_type_manualautomatic: DF.Data | None
 		tvo_no: DF.Data | None
+		tvo_number: DF.Data | None
 		used_amount: DF.Currency
 		valuation_rate: DF.Currency
+		vehicle_color: DF.Data | None
 		warehouse: DF.Link | None
 		warranty_expiry_date: DF.Date | None
 		warranty_period: DF.Int
@@ -954,3 +963,48 @@ def fetch_serial_numbers(filters, qty, do_not_include=None):
 
 	serial_numbers = query.run(as_dict=True)
 	return serial_numbers
+
+	
+# @frappe.whitelist()
+# def get_chasis_no(source_name, target_doc=None):
+# 	def update_item(obj, target, source_parent):
+# 		target.qty = flt(obj.qty) - flt(obj.received_qty)
+# 		target.received_qty = flt(obj.qty) - flt(obj.received_qty)
+# 		target.stock_qty = (flt(obj.qty) - flt(obj.received_qty)) * flt(obj.conversion_factor)
+# 		target.amount = (flt(obj.qty) - flt(obj.received_qty)) * flt(obj.rate)
+# 		target.base_amount = (
+# 			(flt(obj.qty) - flt(obj.received_qty)) * flt(obj.rate) * flt(source_parent.conversion_rate)
+# 		)
+
+# 	doc = get_mapped_doc(
+# 		"Purchase Invoice",
+# 		source_name,
+# 		{
+# 			"Purchase Invoice": {
+# 				"doctype": "Purchase Receipt",
+# 				"validation": {
+# 					"docstatus": ["=", 1],
+# 				},
+# 			},
+# 			"Purchase Invoice Item": {
+# 				"doctype": "Purchase Receipt Item",
+# 				"field_map": {
+# 					"name": "purchase_invoice_item",
+# 					"parent": "purchase_invoice",
+# 					"bom": "bom",
+# 					"purchase_order": "purchase_order",
+# 					"po_detail": "purchase_order_item",
+# 					"material_request": "material_request",
+# 					"material_request_item": "material_request_item",
+# 				},
+# 				"postprocess": update_item,
+# 				"condition": lambda doc: abs(doc.received_qty) < abs(doc.qty),
+# 			},
+# 			"Purchase Taxes and Charges": {"doctype": "Purchase Taxes and Charges"},
+# 		},
+# 		target_doc,
+# 	)
+
+# 	doc.set_onload("ignore_price_list", True)
+
+# 	return doc

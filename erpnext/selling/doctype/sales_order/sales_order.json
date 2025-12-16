@@ -28,6 +28,10 @@
   "location_required",
   "po_date",
   "tax_id",
+  "supplier_order_no",
+  "performer_index",
+  "declaration_numbers",
+  "declaration_date",
   "accounting_dimensions_section",
   "cost_center",
   "dimension_col_break",
@@ -35,7 +39,6 @@
   "contact_info",
   "customer_group",
   "customer_address",
-  "contact_person",
   "contact_display",
   "contact_phone",
   "contact_mobile",
@@ -221,6 +224,7 @@
    "default": "Sales",
    "fieldname": "order_type",
    "fieldtype": "Select",
+   "hidden": 1,
    "hide_days": 1,
    "hide_seconds": 1,
    "label": "Order Type",
@@ -333,15 +337,6 @@
    "hide_days": 1,
    "hide_seconds": 1,
    "label": "Customer Address",
-   "print_hide": 1
-  },
-  {
-   "fieldname": "contact_person",
-   "fieldtype": "Link",
-   "hide_days": 1,
-   "hide_seconds": 1,
-   "label": "Contact Person",
-   "options": "Contact",
    "print_hide": 1
   },
   {
@@ -1443,6 +1438,7 @@
    "label": "Update Auto Repeat Reference"
   },
   {
+   "fetch_from": "customer.mobile_no",
    "fieldname": "contact_phone",
    "fieldtype": "Data",
    "hide_days": 1,
@@ -1695,13 +1691,35 @@
    "fieldtype": "Link",
    "label": "Location",
    "options": "Location"
+  },
+  {
+   "fieldname": "supplier_order_no",
+   "fieldtype": "Data",
+   "label": "Supplier Order No."
+  },
+  {
+   "fieldname": "declaration_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Declaration Date"
+  },
+  {
+   "fieldname": "performer_index",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Performer Index No"
+  },
+  {
+   "fieldname": "declaration_numbers",
+   "fieldtype": "Int",
+   "label": "Declaration Number"
   }
  ],
  "icon": "fa fa-file-text",
  "idx": 105,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-26 14:46:43.539357",
+ "modified": "2025-12-05 10:48:00.785387",
  "modified_by": "kalden.dorji@thimphutechpark.bt",
  "module": "Selling",
  "name": "Sales Order",

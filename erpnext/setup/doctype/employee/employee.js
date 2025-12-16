@@ -21,6 +21,14 @@ erpnext.setup.EmployeeController = class EmployeeController extends frappe.ui.fo
 };
 frappe.ui.form.on("Employee", {
 	onload: function (frm) {
+		frm.set_query("cost_center", function () {
+			return {
+				filters: {
+					is_group: 0,
+					
+				},
+			};
+		});
 		frm.set_query("department", function () {
 			return {
 				filters: {
@@ -44,6 +52,14 @@ frappe.ui.form.on("Employee", {
 				filters: {
 					is_section: 1,
 					parent_department: frm.doc.division
+				}
+			}
+		});
+		frm.set_query("unit", function(){
+			return {
+				filters: {
+					is_unit: 1,
+					parent_department: frm.doc.unit
 				}
 			}
 		});

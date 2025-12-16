@@ -1,0 +1,98 @@
+{% extends "templates/web.html" %}
+
+{% block title %}{{ _("Search Asset") }}{% endblock %}
+
+{% block script %}
+<!-- <script src="assets/js/moment-bundle.min.js"></script>
+<script src="book_appointment/index.js"></script> -->
+<script src="check-status/index.js"></script>
+{% endblock %}
+
+{% block page_content %}
+<div class="container">
+    <div class="row mb-12">
+        <div class="col-sm-5">
+            <div class="row">
+                <div class="col">
+                    <form onsubmit="getApplicantInfo(); return false;">
+                        <div class="input-group">
+                            <input name="asset_code" class="form-control" type="text" value="{{ frappe.form_dict.asset_code or '' }}"
+                                placeholder="{{ _('Enter Asset Code') }}" >
+                            
+                            <div class="input-group-append">
+                                <button type="submit" class="btn btn-sm btn-primary btn-search">
+                                    {{ _('Submit') }}
+                                </button>
+                            </div>
+                        </div>
+                        <!-- <div class="input-description">
+                            <span class="input-description-text">[Note: CID should be an integer with 11 digits.]</span>
+                        </div> -->
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="asset-info"></div>
+
+    <style>
+        .table-bordered {
+            border: 1px solid #dee2e6;
+        }
+
+        .table-striped tbody tr:nth-of-type(odd) {
+            background-color: #f9f9f9;
+        }
+
+        .table-heading {
+            font-weight: bold;
+            background-color: #f5f5f5;
+            text-align: left;
+            font-family: 'Times New Roman';
+        }
+
+        .table-heading-one {
+            font-weight: bold;
+            background-color: grey;
+            text-align: center;
+            color: white;
+            font-family: 'Times New Roman';
+            text-transform: uppercase;
+        }
+
+        .table-condensed td {
+            padding: 4px 8px;
+            vertical-align: top;
+            font-family: 'Times New Roman';
+        }
+
+        .table-condensed th {
+            padding: 8px;
+        }
+
+        .table-custom-width {
+            max-width: 400px;
+            width: 100%;
+            margin-left: 0;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            max-width: 100%;
+        }
+
+        .input-description {
+            margin-top: 10px;
+            font-style: italic;
+            color: blue;
+            font-size: 14px;
+        }
+        /*
+        .input-description-text {
+            font-weight: bold;
+            text-decoration: underline;
+        } */
+    </style>
+</div>
+{% endblock %}

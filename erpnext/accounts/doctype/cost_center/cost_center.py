@@ -25,9 +25,11 @@ class CostCenter(NestedSet):
 		cost_center_number: DF.Data | None
 		disabled: DF.Check
 		is_group: DF.Check
+		jobcard_expense_account: DF.Link | None
 		lft: DF.Int
 		old_parent: DF.Link | None
 		parent_cost_center: DF.Link
+		revenue_account: DF.Link | None
 		rgt: DF.Int
 		warehouse: DF.Link | None
 	# end: auto-generated types

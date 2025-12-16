@@ -82,6 +82,7 @@ class SalesOrderItem(Document):
 		rate_with_margin: DF.Currency
 		reserve_stock: DF.Check
 		returned_qty: DF.Float
+		serial_no_chassis_no: DF.SmallText | None
 		sp_type: DF.Literal["General Rate", "Customer Based Rate"]
 		stock_qty: DF.Float
 		stock_reserved_qty: DF.Float
@@ -91,6 +92,7 @@ class SalesOrderItem(Document):
 		target_warehouse: DF.Link | None
 		total_weight: DF.Float
 		transaction_date: DF.Date | None
+		tvo_no: DF.Data | None
 		uom: DF.Link
 		valuation_rate: DF.Currency
 		warehouse: DF.Link | None

@@ -71,9 +71,9 @@
   "weight_per_unit",
   "weight_uom",
   "allow_negative_stock",
+  "column_break_fpyv",
   "bin_and_shelf_management_section",
-  "bin",
-  "shelf",
+  "items",
   "sb_barcodes",
   "barcodes",
   "reorder_section",
@@ -996,7 +996,6 @@
   {
    "fieldname": "item_type",
    "fieldtype": "Link",
-   "hidden": 1,
    "label": "Item Type",
    "mandatory_depends_on": "// eval:!in_list([\"Export\", \"Service\", \"Fixed Assets\", \"Consumable\"], doc.item_group) ",
    "options": "Item Type"
@@ -1021,23 +1020,13 @@
    "label": "Bin and Shelf Management"
   },
   {
-   "fieldname": "bin",
-   "fieldtype": "Data",
-   "label": "Bin"
-  },
-  {
-   "fieldname": "shelf",
-   "fieldtype": "Data",
-   "label": "Shelf"
-  },
-  {
    "default": "0",
    "fieldname": "is_service_item",
    "fieldtype": "Check",
    "label": "Is Service Item"
   },
   {
-   "depends_on": "eval: doc.item_subgroup == \"Vehicle\"",
+   "depends_on": "eval: doc.item_sub_group == \"Vehicle\";",
    "fieldname": "vehicle_details_section",
    "fieldtype": "Section Break",
    "label": "Vehicle Details"
@@ -1073,8 +1062,9 @@
   },
   {
    "fieldname": "transmission_type_manualautomatic",
-   "fieldtype": "Data",
-   "label": "Transmission Type (Manual/Automatic)"
+   "fieldtype": "Select",
+   "label": "Transmission Type (Manual/Automatic)",
+   "options": "\nManual\nAutomatic"
   },
   {
    "fieldname": "engine_cc",
@@ -1085,7 +1075,17 @@
    "fieldname": "fuel_type",
    "fieldtype": "Select",
    "label": "Fuel Type",
-   "options": "Petrol\nDiesel\nEV"
+   "options": "\nPetrol\nDiesel\nEV"
+  },
+  {
+   "fieldname": "column_break_fpyv",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "label": "items",
+   "options": "Bin and Shelf Management"
   }
  ],
  "icon": "fa fa-tag",
@@ -1093,7 +1093,7 @@
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-11-27 16:28:09.950665",
+ "modified": "2025-12-05 10:53:22.399237",
  "modified_by": "kalden.dorji@thimphutechpark.bt",
  "module": "Stock",
  "name": "Item",
@@ -1158,7 +1158,7 @@
   }
  ],
  "row_format": "Dynamic",
- "search_fields": "item_name,description,item_group,customer_code",
+ "search_fields": "item_name,description,item_group,customer_code,parts_no",
  "show_name_in_global_search": 1,
  "show_preview_popup": 1,
  "sort_field": "modified",

@@ -24,14 +24,19 @@ class C1Status(Document):
 		customer_report: DF.LongText | None
 		customer_track_id: DF.Link | None
 		email_id: DF.Data | None
+		items: DF.Table[CustomerQuotationDetails]
 		phone_number: DF.Data | None
 		primary_address: DF.Data | None
 		responsible_branch: DF.Data | None
 		salutation: DF.Data | None
-		table_jrmr: DF.Table[CustomerQuotationDetails]
 	# end: auto-generated types
 
 	def validate(self):
+		total_payable = 0
+		for item in self.items:
+			item.net_price = item.amount - item.discount_amount
+			total_payable += item.net_price
+
 		if self.customer_track_id:
 			frappe.db.sql("update `tabCustomer Track` set c1_status = '{}' where name = '{}'".format(self.name, self.customer_track_id))
 
@@ -60,6 +65,9 @@ def make_c1_status(source_name, target_doc=None):
 			},
 			"Customer Quotation Details": {
 				"doctype": "Order Confirmation Details",
+				"field_map": {
+					"amount": "gross_price",
+				},
 				"postprocess": transfer_currency,
 			},
 		}, target_doc, adjust_last_date)

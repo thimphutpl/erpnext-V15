@@ -1151,7 +1151,7 @@ def get_outstanding_invoices(
 
 	if account:
 		root_type, account_type = frappe.get_cached_value(
-			"Account", account[0], ["root_type", "account_type"]
+			"Account", account, ["root_type", "account_type"]
 		)
 		party_account_type = "Receivable" if root_type == "Asset" else "Payable"
 		party_account_type = account_type or party_account_type
@@ -1162,7 +1162,7 @@ def get_outstanding_invoices(
 
 	common_filter = common_filter or []
 	common_filter.append(ple.account_type == party_account_type)
-	common_filter.append(ple.account.isin(account))
+	common_filter.append(ple.account)
 	common_filter.append(ple.party_type == party_type)
 	common_filter.append(ple.party == party)
 

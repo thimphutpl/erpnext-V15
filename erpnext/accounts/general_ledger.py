@@ -36,7 +36,9 @@ def make_gl_entries(
 			validate_accounting_period(gl_map)
 			validate_disabled_accounts(gl_map)
 			gl_map = process_gl_map(gl_map, merge_entries)
+			# frappe.throw(str(gl_map))
 			if gl_map and len(gl_map) > 1:
+				# frappe.throw("nnn")
 				create_payment_ledger_entry(
 					gl_map,
 					cancel=0,
@@ -131,6 +133,28 @@ def validate_disabled_accounts(gl_map):
 			_("Cannot create accounting entries against disabled accounts: {0}").format(account_list),
 			title=_("Disabled Account Selected"),
 		)
+
+# def validate_disabled_accounts(gl_map):
+#     accounts = [d.account for d in gl_map if d.account]
+
+#     if not accounts:
+#         return  # nothing to validate
+
+#     Account = frappe.qb.DocType("Account")
+
+#     disabled_accounts = (
+#         frappe.qb.from_(Account)
+#         .where(Account.name.isin(accounts) & (Account.disabled == 1))
+#         .select(Account.name, Account.disabled)
+#     ).run(as_dict=True)
+
+#     if disabled_accounts:
+#         account_list = "<br>" + ", ".join([frappe.bold(d.name) for d in disabled_accounts])
+#         frappe.throw(
+#             _("Cannot create accounting entries against disabled accounts: {0}").format(account_list),
+#             title=_("Disabled Account Selected"),
+#         )
+
 
 
 def validate_accounting_period(gl_map):

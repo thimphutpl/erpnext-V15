@@ -30,6 +30,11 @@
   "is_return",
   "apply_tds",
   "amended_from",
+  "declaration_details_section",
+  "declaration_no",
+  "declaration_date",
+  "employee_id",
+  "employee_name",
   "accounting_dimensions_section",
   "cost_center",
   "dimension_col_break",
@@ -1463,13 +1468,40 @@
    "label": "eNote ID",
    "options": "eNote",
    "read_only": 1
+  },
+  {
+   "fieldname": "declaration_details_section",
+   "fieldtype": "Section Break",
+   "label": "Declaration Details"
+  },
+  {
+   "fieldname": "declaration_no",
+   "fieldtype": "Data",
+   "label": "Declaration No."
+  },
+  {
+   "fieldname": "declaration_date",
+   "fieldtype": "Date",
+   "label": "Declaration Date"
+  },
+  {
+   "fieldname": "employee_id",
+   "fieldtype": "Link",
+   "label": "Employee ID",
+   "options": "Employee"
+  },
+  {
+   "fetch_from": "employee_id.employee_name",
+   "fieldname": "employee_name",
+   "fieldtype": "Data",
+   "label": "Employee Name"
   }
  ],
  "icon": "fa fa-file-text",
  "idx": 204,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-26 10:01:09.990756",
+ "modified": "2025-12-01 10:12:44.992356",
  "modified_by": "kalden.dorji@thimphutechpark.bt",
  "module": "Accounts",
  "name": "Purchase Invoice",

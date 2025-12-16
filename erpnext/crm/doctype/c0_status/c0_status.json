@@ -35,21 +35,25 @@
    "options": "Customer"
   },
   {
+   "fetch_from": "customer_id.salutation",
    "fieldname": "salutation",
    "fieldtype": "Data",
    "label": "Salutation"
   },
   {
+   "fetch_from": "customer_id.customer_name",
    "fieldname": "customer_name",
    "fieldtype": "Data",
    "label": "Customer Name"
   },
   {
+   "fetch_from": "customer_id.mobile_no",
    "fieldname": "phone_number",
    "fieldtype": "Data",
    "label": "Phone Number"
   },
   {
+   "fetch_from": "customer_id.email_id",
    "fieldname": "email_id",
    "fieldtype": "Data",
    "label": "Email ID"
@@ -110,8 +114,8 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-18 12:50:23.957337",
- "modified_by": "Administrator",
+ "modified": "2025-11-28 10:54:40.034943",
+ "modified_by": "kalden.dorji@thimphutechpark.bt",
  "module": "CRM",
  "name": "C0 Status",
  "naming_rule": "Expression",

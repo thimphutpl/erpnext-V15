@@ -10,7 +10,10 @@
   "item_code",
   "item_name",
   "quantity",
+  "section_break_skbh",
   "amount",
+  "discount_amount",
+  "net_price",
   "details_section",
   "item_details"
  ],
@@ -45,7 +48,7 @@
    "fieldname": "amount",
    "fieldtype": "Currency",
    "in_list_view": 1,
-   "label": "Amount"
+   "label": "Gross Price"
   },
   {
    "fieldname": "details_section",
@@ -57,14 +60,29 @@
    "fieldtype": "Long Text",
    "in_list_view": 1,
    "label": "Item Details"
+  },
+  {
+   "fieldname": "section_break_skbh",
+   "fieldtype": "Section Break",
+   "label": "Pricing Details"
+  },
+  {
+   "fieldname": "discount_amount",
+   "fieldtype": "Currency",
+   "label": "Discount Amount"
+  },
+  {
+   "fieldname": "net_price",
+   "fieldtype": "Currency",
+   "label": "Net Price"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-11-12 12:13:34.579127",
- "modified_by": "Administrator",
+ "modified": "2025-11-28 10:20:33.153074",
+ "modified_by": "kalden.dorji@thimphutechpark.bt",
  "module": "CRM",
  "name": "Customer Quotation Details",
  "owner": "kalden.dorji@thimphutechpark.bt",

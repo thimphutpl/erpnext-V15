@@ -176,6 +176,7 @@
    "allow_on_submit": 1,
    "fieldname": "commission_section",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Commission Details"
   },
   {
@@ -341,8 +342,7 @@
    "fieldtype": "Link",
    "label": "Business Activity",
    "options": "Business Activity",
-   "read_only": 1,
-   "reqd": 1
+   "read_only": 1
   },
   {
    "fieldname": "income_account",
@@ -433,6 +433,7 @@
    "description": "<b>Tick this for Free Of Cost Item</b>",
    "fieldname": "is_foc_item",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "IS FOC/Discount Item"
   },
   {
@@ -449,6 +450,7 @@
   {
    "fieldname": "sim_type",
    "fieldtype": "Select",
+   "hidden": 1,
    "label": "Sim Type",
    "options": "\nNEW SIM\nSIM REPLACEMENT\nSIM RECONNECTION"
   },
@@ -473,6 +475,7 @@
   {
    "fieldname": "data_package",
    "fieldtype": "Currency",
+   "hidden": 1,
    "label": "Data Package",
    "read_only": 1
   },
@@ -480,6 +483,7 @@
    "default": "0",
    "fieldname": "total_data_package",
    "fieldtype": "Currency",
+   "hidden": 1,
    "label": "Total Data Package",
    "read_only": 1
   },
@@ -506,8 +510,8 @@
  ],
  "istable": 1,
  "links": [],
- "modified": "2025-11-20 16:18:12.957847",
- "modified_by": "Administrator",
+ "modified": "2025-12-11 22:43:53.344581",
+ "modified_by": "sonam.norbu@thimphutechpark.bt",
  "module": "Selling",
  "name": "EMI Sales Item",
  "naming_rule": "Random",

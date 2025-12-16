@@ -78,7 +78,6 @@ class SalesOrder(SellingController):
 		contact_display: DF.SmallText | None
 		contact_email: DF.Data | None
 		contact_mobile: DF.SmallText | None
-		contact_person: DF.Link | None
 		contact_phone: DF.Data | None
 		conversion_rate: DF.Float
 		cost_center: DF.Link
@@ -91,6 +90,8 @@ class SalesOrder(SellingController):
 		customer_name: DF.Data | None
 		date_time_in: DF.Datetime | None
 		date_time_out: DF.Datetime | None
+		declaration_date: DF.Date | None
+		declaration_numbers: DF.Int
 		delivery_date: DF.Date
 		delivery_status: DF.Literal["Not Delivered", "Fully Delivered", "Partly Delivered", "Closed", "Not Applicable"]
 		disable_rounded_total: DF.Check
@@ -127,6 +128,7 @@ class SalesOrder(SellingController):
 		per_billed: DF.Percent
 		per_delivered: DF.Percent
 		per_picked: DF.Percent
+		performer_index: DF.Int
 		plc_conversion_rate: DF.Float
 		po_date: DF.Date | None
 		price_list_currency: DF.Link
@@ -148,6 +150,7 @@ class SalesOrder(SellingController):
 		skip_delivery_note: DF.Check
 		source: DF.Link | None
 		status: DF.Literal["", "Draft", "On Hold", "To Deliver and Bill", "To Bill", "To Deliver", "Completed", "Cancelled", "Closed"]
+		supplier_order_no: DF.Data | None
 		tax_category: DF.Link | None
 		tax_id: DF.Data | None
 		taxes: DF.Table[SalesTaxesandCharges]
@@ -385,7 +388,6 @@ class SalesOrder(SellingController):
 
 		# frappe.db.set_value(self, "status", "Cancelled")
 		frappe.db.set_value(self.doctype, self.name, "status", "Cancelled")
-
 
 		self.update_blanket_order()
 
@@ -1363,6 +1365,23 @@ def make_inter_company_purchase_order(source_name, target_doc=None):
 
 	return make_inter_company_transaction("Sales Order", source_name, target_doc)
 
+@frappe.whitelist()
+def get_selling_price(item_code, price_template):
+	data = frappe.db.sql(
+		"""
+		select pci.selling_price from `tabPrice Costing` pc
+		INNER JOIN `tabPrice Costing Item` pci
+		ON pc.name = pci.parent
+		WHERE pc.name = %(price_template)s
+			AND pci.item = %(item_code)s
+			AND pc.docstatus = 1
+		""",
+		{
+			"price_template": price_template,
+			"item_code": item_code
+		}, as_dict=1,
+	)
+	return data[0].selling_price if data else None
 
 @frappe.whitelist()
 def create_pick_list(source_name, target_doc=None):

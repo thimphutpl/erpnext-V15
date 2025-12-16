@@ -442,6 +442,7 @@
   },
   {
    "description": "Sets 'Warehouse' in each row of the Items table.",
+   "fetch_from": "branch.warehouse",
    "fieldname": "set_warehouse",
    "fieldtype": "Link",
    "label": "Set Target Warehouse",
@@ -1240,7 +1241,7 @@
  "idx": 105,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-26 09:52:12.316993",
+ "modified": "2025-12-11 10:29:17.575149",
  "modified_by": "kalden.dorji@thimphutechpark.bt",
  "module": "Buying",
  "name": "Purchase Order",

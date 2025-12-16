@@ -51,12 +51,12 @@ def get_columns(filters):
                 "fieldtype": "Data",
                 "width": 120,
             },
-            # {
-            #     "label": ("Item Code"),
-            #     "fieldname": "pol_type",
-            #     "fieldtype": "Data",
-            #     "width": 100,
-            # },
+            {
+                "label": ("POL Title"),
+                "fieldname": "title",
+                "fieldtype": "Data",
+                "width": 100,
+            },
             {
                 "label": ("Item Name"),
                 "fieldname": "item_name",
@@ -121,13 +121,13 @@ def get_columns(filters):
                 "fieldtype": "Data",
                 "width": 120,
             },
-            # {
-            #     "label": ("Item Code"),
-            #     "fieldname": "pol_type",
-            #     "fieldtype": "Link",
-            #     "options": "Item",
-            #     "width": 100,
-            # },
+            {
+                "label": ("POL Title"),
+                "fieldname": "title",
+                "fieldtype": "Link",
+                "options": "POL Receive",
+                "width": 100,
+            },
             {
                 "label": ("Item Name"),
                 "fieldname": "item_name",
@@ -165,9 +165,11 @@ def get_data(filters):
     query = """
         SELECT 
             p.equipment, p.equipment_name, p.fuel_type, p.fuelbook, 
-            p.supplier, p.item_name, p.posting_date, 
-            IFNULL(p.total_amount, 0) AS amount
+            p.supplier, p.name AS title, p.item_name, p.posting_date, pi.qty, pi.rate,
+            IFNULL(pi.qty * pi.rate, 0) AS amount
         FROM `tabPOL Receive` AS p 
+        JOIN `tabPOL Receive Item` as pi
+        ON pi.parent = p.name
         WHERE p.docstatus = 1
     """
 
@@ -188,6 +190,6 @@ def get_data(filters):
     if conditions:
         query += " AND " + " AND ".join(conditions)
 
-    query += " ORDER BY p.equipment"
+    query += " ORDER BY p.equipment ASC, p.posting_date DESC, p.name ASC"
 
     return frappe.db.sql(query, filters, as_dict=True)

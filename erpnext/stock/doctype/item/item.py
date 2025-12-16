@@ -59,6 +59,7 @@ class Item(Document):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
+		from erpnext.stock.doctype.bin_and_shelf_management.bin_and_shelf_management import BinandShelfManagement
 		from erpnext.stock.doctype.item_barcode.item_barcode import ItemBarcode
 		from erpnext.stock.doctype.item_customer_detail.item_customer_detail import ItemCustomerDetail
 		from erpnext.stock.doctype.item_default.item_default import ItemDefault
@@ -79,7 +80,6 @@ class Item(Document):
 		auto_create_assets: DF.Check
 		barcodes: DF.Table[ItemBarcode]
 		batch_number_series: DF.Data | None
-		bin: DF.Data | None
 		brand: DF.Link | None
 		business_activity: DF.Link | None
 		country_of_origin: DF.Link | None
@@ -101,7 +101,7 @@ class Item(Document):
 		enable_deferred_revenue: DF.Check
 		end_of_life: DF.Date | None
 		engine_cc: DF.Data | None
-		fuel_type: DF.Literal["Petrol", "Diesel", "EV"]
+		fuel_type: DF.Literal["", "Petrol", "Diesel", "EV"]
 		grant_commission: DF.Check
 		gvw_tonnage: DF.Data | None
 		has_batch_no: DF.Check
@@ -130,6 +130,7 @@ class Item(Document):
 		item_old_code: DF.Data | None
 		item_sub_group: DF.Link | None
 		item_type: DF.Link | None
+		items: DF.Table[BinandShelfManagement]
 		last_purchase_rate: DF.Float
 		lead_time_days: DF.Int
 		make: DF.Data | None
@@ -155,14 +156,13 @@ class Item(Document):
 		sample_quantity: DF.Int
 		seating_capacity: DF.Data | None
 		serial_no_series: DF.Data | None
-		shelf: DF.Data | None
 		shelf_life_in_days: DF.Int
 		standard_rate: DF.Currency
 		stock_uom: DF.Link
 		supplier_items: DF.Table[ItemSupplier]
 		taxes: DF.Table[ItemTax]
 		total_projected_qty: DF.Float
-		transmission_type_manualautomatic: DF.Data | None
+		transmission_type_manualautomatic: DF.Literal["", "Manual", "Automatic"]
 		uoms: DF.Table[UOMConversionDetail]
 		valuation_method: DF.Literal["", "FIFO", "Moving Average", "LIFO", "SPECIFIC"]
 		valuation_rate: DF.Currency
@@ -187,8 +187,8 @@ class Item(Document):
 		# 	self.item_code = self.name = make_autoname('ABC{}.#####'.format(frappe.db.get_value('Item Group',self.item_group,'item_code_base')))[3:]
 		
 		# abb = frappe.db.get_value('Item Group', self.item_group, 'item_group_abbreviation')
-		self.item_code = make_autoname(('{}.######'.format(self.abb)))
-
+		# self.item_code = make_autoname(('YY{}.######'.format(self.abb)))
+		self.item_code = self.name
 	# def autoname(self):
 	# 	base = frappe.db.get_value("Item Group", self.item_group, "item_code_base")
 	# 	if not base:

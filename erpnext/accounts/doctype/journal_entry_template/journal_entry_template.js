@@ -3,21 +3,31 @@
 
 frappe.ui.form.on("Journal Entry Template", {
 	onload: function (frm) {
-		if (frm.is_new()) {
-			frappe.call({
-				type: "GET",
-				method: "erpnext.accounts.doctype.journal_entry_template.journal_entry_template.get_naming_series",
-				callback: function (r) {
-					if (r.message) {
-						frm.set_df_property("naming_series", "options", r.message.split("\n"));
-						frm.set_value("naming_series", r.message.split("\n")[0]);
-						frm.refresh_field("naming_series");
-					}
-				},
-			});
-		}
+		// if (frm.is_new()) {
+		// 	frappe.call({
+		// 		type: "GET",
+		// 		method: "erpnext.accounts.doctype.journal_entry_template.journal_entry_template.get_naming_series",
+		// 		callback: function (r) {
+		// 			if (r.message) {
+		// 				frm.set_df_property("naming_series", "options", r.message.split("\n"));
+		// 				frm.set_value("naming_series", r.message.split("\n")[0]);
+		// 				frm.refresh_field("naming_series");
+		// 			}
+		// 		},
+		// 	});
+		// }
 	},
 	refresh: function (frm) {
+		frm.set_query("naming_series", function() {
+			var entry_type = in_list(["Journal Entry", "Opening Entry", "Depreciation Entry"], frm.doc.voucher_type) ?
+				"Journal Entry" : frm.doc.voucher_type;
+			
+			return {
+				filters: {
+					"entry_type": entry_type,
+				}
+			}
+		});
 		frappe.model.set_default_values(frm.doc);
 
 		frm.set_query("account", "accounts", function () {
@@ -38,6 +48,7 @@ frappe.ui.form.on("Journal Entry Template", {
 			return { filters: filters };
 		});
 	},
+	
 	voucher_type: function (frm) {
 		var add_accounts = function (doc, r) {
 			$.each(r, function (i, d) {

@@ -29,6 +29,9 @@
   "location_required",
   "issue_credit_note",
   "return_against",
+  "performer_index",
+  "declaration_numbers",
+  "declaration_date",
   "accounting_dimensions_section",
   "cost_center",
   "dimension_col_break",
@@ -624,6 +627,7 @@
   {
    "fieldname": "tax_category",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Tax Category",
    "options": "Tax Category",
    "print_hide": 1
@@ -635,6 +639,7 @@
   {
    "fieldname": "shipping_rule",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Shipping Rule",
    "oldfieldtype": "Button",
    "options": "Shipping Rule",
@@ -645,7 +650,6 @@
    "fieldtype": "Section Break"
   },
   {
-   "description": "If you have created a standard template in Sales Taxes and Charges Template, select one and click on the button below.",
    "fieldname": "taxes_and_charges",
    "fieldtype": "Link",
    "label": "Sales Taxes and Charges Template",
@@ -1397,14 +1401,32 @@
    "fieldname": "completed_service",
    "fieldtype": "Check",
    "label": "Completed"
+  },
+  {
+   "fieldname": "performer_index",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Performer Index No"
+  },
+  {
+   "fieldname": "declaration_numbers",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Declaration Number"
+  },
+  {
+   "fieldname": "declaration_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Declaration Date"
   }
  ],
  "icon": "fa fa-truck",
  "idx": 146,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-26 14:59:14.398237",
- "modified_by": "kalden.dorji@thimphutechpark.bt",
+ "modified": "2025-12-04 11:43:17.799326",
+ "modified_by": "Administrator",
  "module": "Stock",
  "name": "Delivery Note",
  "naming_rule": "Expression (old style)",

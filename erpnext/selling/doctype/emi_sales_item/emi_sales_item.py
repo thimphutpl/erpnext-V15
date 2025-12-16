@@ -19,7 +19,7 @@ class EMISalesItem(Document):
 		allow_zero_valuation_rate: DF.Check
 		amount: DF.Currency
 		base_amount: DF.Currency
-		business_activity: DF.Link
+		business_activity: DF.Link | None
 		cash_bank_account: DF.Link | None
 		commission_account: DF.Link | None
 		commission_amount: DF.Currency

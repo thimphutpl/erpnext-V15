@@ -427,6 +427,7 @@ def get_account_currency(account):
 		return
 
 	def generator():
+
 		account_currency, company = frappe.get_cached_value(
 			"Account", account, ["account_currency", "company"]
 		)

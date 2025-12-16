@@ -60,9 +60,10 @@
   },
   {
    "fieldname": "naming_series",
-   "fieldtype": "Select",
+   "fieldtype": "Link",
    "label": "Series",
    "no_copy": 1,
+   "options": "Journal Entry Series",
    "print_hide": 1,
    "reqd": 1,
    "set_only_once": 1
@@ -86,7 +87,7 @@
   }
  ],
  "links": [],
- "modified": "2020-05-01 18:32:01.420488",
+ "modified": "2025-12-11 12:27:12.486997",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Journal Entry Template",
@@ -126,9 +127,11 @@
    "share": 1
   }
  ],
+ "row_format": "Dynamic",
  "search_fields": "voucher_type, company",
  "sort_field": "modified",
  "sort_order": "DESC",
+ "states": [],
  "title_field": "template_title",
  "track_changes": 1
 }

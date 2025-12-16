@@ -1,0 +1,229 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-12-04 10:59:08.629619",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "item",
+  "description",
+  "column_break_dycc",
+  "item_name",
+  "section_break_akne",
+  "source_rate",
+  "landed_cost",
+  "column_break_qfmq",
+  "selling_price",
+  "section_break_tqug",
+  "processing_percent",
+  "bank_charges_percent",
+  "stock_holding_percent",
+  "margin_percent",
+  "column_break_zlsb",
+  "processing_amount",
+  "bank_charges_amount",
+  "stock_holding_amount",
+  "margin_amount",
+  "section_break_ckrf",
+  "frieght",
+  "custom_duty",
+  "service_charges",
+  "bank_charges",
+  "labour_charges",
+  "column_break_zkjl",
+  "insurance",
+  "gst",
+  "excise_duty",
+  "clearing_and_forwarding_charges",
+  "transportation_charges"
+ ],
+ "fields": [
+  {
+   "fieldname": "item",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Item",
+   "options": "Item"
+  },
+  {
+   "fetch_from": "item.description",
+   "fieldname": "description",
+   "fieldtype": "Data",
+   "label": "Description"
+  },
+  {
+   "fieldname": "column_break_dycc",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "item.item_name",
+   "fieldname": "item_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Item Name"
+  },
+  {
+   "fieldname": "section_break_ckrf",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "frieght",
+   "fieldtype": "Currency",
+   "label": "Frieght",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_zkjl",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "insurance",
+   "fieldtype": "Currency",
+   "label": "Insurance",
+   "read_only": 1
+  },
+  {
+   "fieldname": "source_rate",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Source Rate"
+  },
+  {
+   "fieldname": "custom_duty",
+   "fieldtype": "Currency",
+   "label": "Custom Duty",
+   "read_only": 1
+  },
+  {
+   "fieldname": "service_charges",
+   "fieldtype": "Currency",
+   "label": "Service Charges",
+   "read_only": 1
+  },
+  {
+   "fieldname": "bank_charges",
+   "fieldtype": "Currency",
+   "label": "Bank Charges",
+   "read_only": 1
+  },
+  {
+   "fieldname": "labour_charges",
+   "fieldtype": "Currency",
+   "label": "Labour Charges",
+   "read_only": 1
+  },
+  {
+   "fieldname": "gst",
+   "fieldtype": "Currency",
+   "label": "GST",
+   "read_only": 1
+  },
+  {
+   "fieldname": "excise_duty",
+   "fieldtype": "Currency",
+   "label": "Excise Duty",
+   "read_only": 1
+  },
+  {
+   "fieldname": "clearing_and_forwarding_charges",
+   "fieldtype": "Currency",
+   "label": "Clearing and Forwarding Charges",
+   "read_only": 1
+  },
+  {
+   "fieldname": "transportation_charges",
+   "fieldtype": "Currency",
+   "label": "Transportation Charges",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_tqug",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "landed_cost",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Landed Cost",
+   "read_only": 1
+  },
+  {
+   "fieldname": "processing_percent",
+   "fieldtype": "Percent",
+   "label": "Processing Percent"
+  },
+  {
+   "fieldname": "bank_charges_percent",
+   "fieldtype": "Percent",
+   "label": "Bank Charges Percent"
+  },
+  {
+   "fieldname": "stock_holding_percent",
+   "fieldtype": "Percent",
+   "label": "Stock Holding Percent"
+  },
+  {
+   "fieldname": "margin_percent",
+   "fieldtype": "Percent",
+   "label": "Margin Percent"
+  },
+  {
+   "fieldname": "column_break_zlsb",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "selling_price",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Selling Price",
+   "read_only": 1
+  },
+  {
+   "fieldname": "processing_amount",
+   "fieldtype": "Currency",
+   "label": "Processing Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "bank_charges_amount",
+   "fieldtype": "Currency",
+   "label": "Bank Charges Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "stock_holding_amount",
+   "fieldtype": "Currency",
+   "label": "Stock Holding Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "margin_amount",
+   "fieldtype": "Currency",
+   "label": "Margin Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_akne",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_qfmq",
+   "fieldtype": "Column Break"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-12-04 14:13:56.689060",
+ "modified_by": "Administrator",
+ "module": "Selling",
+ "name": "Price Costing Item",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

@@ -520,6 +520,26 @@ frappe.ui.form.on('EMI Sales', {
 			});
 		}
 	},
+	down_payment_amount: (frm)=>{
+		let quota = 0
+		if(frm.doc.sales_order_type == "Cost Sharing Installment"){
+			frappe.db.get_value("Employee", frm.doc.customer, "grade", (r)=>{
+				frappe.db.get_value("Employee Grade", r.grade, "cost_sharing_quotaamount", (m)=>{
+					quota = m.cost_sharing_quotaamount
+					frm.doc.items.forEach(function(row) {
+						// row is the child table row object
+						let cdt = row.doctype;  // child doctype
+						let cdn = row.name;     // child docname
+						if(frm.doc.down_payment_amount<row.rate-quota){
+							frappe.throw("Down Payment Amount cannot be less than Nu."+String(row.rate-quota)+" due to Employee "+frm.doc.customer+" quota amount Nu."+String(quota)+".")
+						}
+						// now you can use cdt and cdn
+						calculate_amount(frm, cdt, cdn)
+					});
+				})
+			})
+		}
+	}
 });
 frappe.ui.form.on('EMI Sales Payment Mode',{
 	mode_of_payment:(frm,cdt,cdn)=>{
@@ -532,7 +552,27 @@ frappe.ui.form.on('EMI Sales Payment Mode',{
 				total += flt(frm.doc.mode_of_payment_items[i].amount)
 			}
 			// frappe.model.set_value(cdt, cdn, "amount", flt(frm.doc.total_receivable_amount) - total)
-			frappe.model.set_value(cdt, cdn, "amount", flt(frm.doc.total_receivable_amount) - flt(frm.doc.down_payment_amount))
+			if(frm.doc.sales_order_type != "Cost Sharing Installment"){
+				frappe.model.set_value(cdt, cdn, "amount", flt(frm.doc.total_receivable_amount) - flt(frm.doc.down_payment_amount))
+			}
+			else{
+				var rate = 0
+				var quota = 0
+				frm.doc.items.forEach(function(d) {
+					rate = d.rate
+				});
+				frappe.db.get_value("Employee", frm.doc.customer, "grade", (r)=>{
+					frappe.db.get_value("Employee Grade", r.grade, "cost_sharing_quotaamount", (m)=>{
+						quota = m.cost_sharing_quotaamount
+						if(frm.doc.down_payment_amount>rate-quota){
+							frappe.model.set_value(cdt, cdn, "amount", flt((quota*frm.doc.cost_sharing_percentage*0.01)-(frm.doc.down_payment_amount - (rate - quota))));
+						}
+						else{
+							frappe.model.set_value(cdt, cdn, "amount", flt(quota*frm.doc.cost_sharing_percentage*0.01))
+						}
+					})
+				})
+			}
 		}
 		frm.refresh_field('mode_of_payment_items')
 	}
@@ -872,18 +912,19 @@ frappe.ui.form.on('EMI Sales Item',{
 		if (row.is_foc_item){
 			row.rate = 0
 			frm.refresh_field('items')
-			calculate_commission(frm, cdt, cdn)
+			// calculate_commission(frm, cdt, cdn)
 			calculate_amount(frm, cdt, cdn)
 		}
 		frappe.meta.get_docfield("EMI Sales Item","rate",cur_frm.doc.name).read_only = row.is_foc_item?0:1
 		frm.refresh_field('items')
 	},
 	qty:(frm,cdt,cdn)=>{
-		calculate_commission(frm, cdt, cdn)
+		// calculate_commission(frm, cdt, cdn)
 		calculate_amount(frm, cdt, cdn)
 	},
 	rate:(frm,cdt,cdn)=>{
-		calculate_commission(frm, cdt, cdn)
+		// calculate_commission(frm, cdt, cdn)
+		calculate_down_payment(frm, cdt, cdn);
 		calculate_amount(frm, cdt, cdn)
 	},
 	discount_percent:(frm,cdt,cdn)=>{
@@ -1392,27 +1433,12 @@ cur_frm.fields_dict['items'].grid.get_field('uom').get_query = function(frm, cdt
 }
 var calculate_amount=(frm,cdt,cdn)=>{
 	var item = locals[cdt][cdn]
-	if (item.qty && item.rate ) item.amount = flt(item.qty) * flt(item.rate)
-	else if (flt(item.rate) == 0 ){
-		item.amount = flt(item.qty) * flt(item.rate)
-	}
-	if ( frm.doc.is_discounted && !frm.doc.required_commission){
-		if (item.discount_percent){
-			item.discount_amount = flt(flt(item.discount_percent) * flt(item.amount)/100)
-		}
-		item.total_amount_received = flt(item.amount) - flt(item.discount_amount)
-	}else{
-		item.discount_percent = 0
-		item.discount_amount = 0
-		item.total_amount_received = flt(item.amount) - flt(item.discount_amount)
-	}
-	if (flt(item.tds_deducted_by_customer) > 0 ){
-		item.total_amount_received = flt(item.total_amount_received) - flt(item.tds_deducted_by_customer)
-	}
 	frm.refresh_field('items')
 	let total_amount_received = 0
+	let rate = 0
 	frm.doc.items.forEach(ele => {
 		total_amount_received += flt(ele.total_amount_received)
+		rate = ele.rate
 	});
 	if(frm.doc.sales_order_type){
 		frappe.call({
@@ -1428,19 +1454,81 @@ var calculate_amount=(frm,cdt,cdn)=>{
 					if(rows?.[0]?.customer_group == frm.doc.customer_group){
 						per = rows?.[0]?.cost_sharing_percentage;
 					}
-					frm.set_value('total_receivable_amount',total_amount_received*per*0.01)
+					if(frm.doc.sales_order_type != "Cost Sharing Installment"){
+						frm.set_value("total_receivable_amount", flt(total_amount_received) - flt(frm.doc.down_payment_amount))
+					}
+					else{
+						var quota = 0
+						frappe.db.get_value("Employee", frm.doc.customer, "grade", (r)=>{
+							frappe.db.get_value("Employee Grade", r.grade, "cost_sharing_quotaamount", (m)=>{
+								quota = m.cost_sharing_quotaamount
+								let receivable_amount = 0
+								if(frm.doc.down_payment_amount>rate-quota){
+									 receivable_amount = flt((quota*per*0.01)-(frm.doc.down_payment_amount - (rate - quota)));
+
+								}
+								else{
+									receivable_amount = flt(quota*per*0.01);
+								}
+								frm.set_value("total_receivable_amount", receivable_amount)
+								frappe.model.set_value(cdt, cdn, "total_amount_received", receivable_amount)
+							})
+						})
+					}
+					frm.refresh_fields();
+					// cur_frm.refresh_field('total_receivable_amount')
 					cur_frm.refresh_field('total_receivable_amount')
 				}
 
 			}
 		});
+		// if(frm.doc.sales_order_type != "Cost Sharing Installment"){
+		// 	if (item.qty && item.rate ) item.amount = flt(item.qty) * flt(item.rate)
+		// 	else if (flt(item.rate) == 0 ){
+		// 		item.amount = flt(item.qty) * flt(item.rate)
+		// 	}
+		// 	if ( frm.doc.is_discounted && !frm.doc.required_commission){
+		// 		if (item.discount_percent){
+		// 			item.discount_amount = flt(flt(item.discount_percent) * flt(item.amount)/100)
+		// 		}
+		// 		item.total_amount_received = flt(item.amount) - flt(item.discount_amount)
+		// 	}else{
+		// 		item.discount_percent = 0
+		// 		item.discount_amount = 0
+		// 		item.total_amount_received = flt(item.amount) - flt(item.discount_amount)
+		// 	}
+		// 	if (flt(item.tds_deducted_by_customer) > 0 ){
+		// 		item.total_amount_received = flt(item.total_amount_received) - flt(item.tds_deducted_by_customer)
+		// 	}
+		// }
 	}
 	else{
 		frm.set_value('total_receivable_amount',total_amount_received)
 		cur_frm.refresh_field('total_receivable_amount')
 	}
 }
+var calculate_down_payment = (frm, cdt, cdn)=>{
+	var row = locals[cdt][cdn];
+	frappe.call({
+		method: "calculate_down_payment",
+		doc: frm.doc,
+		args: {"rate": row.rate},
+		callback: function(r){
+			if(r.message){
+				frm.set_value("down_payment_amount", r.message);
+				if(r.message > 0){
+					frm.set_value("down_payment", 1)
+				}
+				else{
+					frm.set_value("down_payment", 0)
+				}
+				frm.refresh_field("down_payment");
+				frm.refresh_field("down_payment_amount");
 
+			}
+		}
+	})
+}
 var calculate_commission = (frm, cdt, cdn)=>{
 	var row = locals[cdt][cdn]
 	if ( !frm.doc.required_commission){

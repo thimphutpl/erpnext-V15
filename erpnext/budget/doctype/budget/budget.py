@@ -43,7 +43,7 @@ class Budget(Document):
 		applicable_on_material_request: DF.Check
 		applicable_on_purchase_order: DF.Check
 		budget_against: DF.Literal["", "Cost Center", "Project"]
-		budget_type: DF.Data | None
+		budget_type: DF.Link | None
 		company: DF.Link
 		cost_center: DF.Link | None
 		deviation: DF.Percent

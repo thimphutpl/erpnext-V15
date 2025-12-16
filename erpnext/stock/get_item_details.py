@@ -315,7 +315,7 @@ def get_basic_details(args, item, overwrite_warehouse=True):
 
 	expense_account = None
 
-	if args.get("doctype") in ("Purchase Invoice", "Purchase Order","Purchase Receipt") and item.is_fixed_asset:
+	if args.get("doctype") in ("Purchase Invoice", "Purchase Order","Purchase Receipt", "Material Request") and item.is_fixed_asset:
 		from erpnext.assets.doctype.asset_category.asset_category import get_asset_category_account
 
 		expense_account = get_asset_category_account(
@@ -589,7 +589,7 @@ def get_item_tax_template(args, item=None, out=None):
 			item_tax_template = _get_item_tax_template(args, item_group_doc.taxes, out)
 			item_group = item_group_doc.parent_item_group
 
-
+# @frappe.whitelist()
 def _get_item_tax_template(args, taxes, out=None, for_validate=False):
 	if out is None:
 		out = {}

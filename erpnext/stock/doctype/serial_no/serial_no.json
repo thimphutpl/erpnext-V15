@@ -22,8 +22,20 @@
   "item_group",
   "item_subgroup",
   "brand",
+  "tvo_number",
   "item_type",
   "sales_order",
+  "vehicle_specifications_section",
+  "make",
+  "model",
+  "model_year",
+  "seating_capacity",
+  "gvw_tonnage",
+  "column_break_rzsi",
+  "transmission_type_manualautomatic",
+  "engine_cc",
+  "fuel_type",
+  "vehicle_color",
   "purchase_details",
   "purchase_document_type",
   "purchase_document_no",
@@ -48,8 +60,6 @@
   "customer",
   "customer_name",
   "outgoing_rate",
-  "invoice_details",
-  "sales_invoice",
   "warranty_amc_details",
   "column_break6",
   "warranty_expiry_date",
@@ -332,18 +342,6 @@
    "read_only": 1
   },
   {
-   "fieldname": "invoice_details",
-   "fieldtype": "Section Break",
-   "label": "Invoice Details"
-  },
-  {
-   "fieldname": "sales_invoice",
-   "fieldtype": "Link",
-   "label": "Sales Invoice",
-   "options": "Sales Invoice",
-   "read_only": 1
-  },
-  {
    "fieldname": "warranty_amc_details",
    "fieldtype": "Section Break",
    "label": "Warranty / AMC Details"
@@ -467,6 +465,7 @@
    "label": "Outgoing Rate"
   },
   {
+   "fetch_from": "item_code.item_sub_group",
    "fieldname": "item_subgroup",
    "fieldtype": "Data",
    "label": "Item Subgroup"
@@ -476,12 +475,88 @@
    "fieldtype": "Data",
    "hidden": 1,
    "label": "Item Type"
+  },
+  {
+   "fieldname": "vehicle_specifications_section",
+   "fieldtype": "Section Break",
+   "label": "Vehicle Specifications"
+  },
+  {
+   "fetch_from": "item_code.make",
+   "fieldname": "make",
+   "fieldtype": "Data",
+   "label": "Make",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "item_code.model",
+   "fieldname": "model",
+   "fieldtype": "Data",
+   "label": "Model",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "item_code.model_year",
+   "fieldname": "model_year",
+   "fieldtype": "Data",
+   "label": "Model Year",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "item_code.seating_capacity",
+   "fieldname": "seating_capacity",
+   "fieldtype": "Data",
+   "label": "Seating Capacity",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "item_code.gvw_tonnage",
+   "fieldname": "gvw_tonnage",
+   "fieldtype": "Data",
+   "label": "GVW (Tonnage)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_rzsi",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "item_code.transmission_type_manualautomatic",
+   "fieldname": "transmission_type_manualautomatic",
+   "fieldtype": "Data",
+   "label": "Transmission Type (Manual/Automatic)",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "item_code.engine_cc",
+   "fieldname": "engine_cc",
+   "fieldtype": "Data",
+   "label": "Engine (CC)",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "item_code.fuel_type",
+   "fieldname": "fuel_type",
+   "fieldtype": "Data",
+   "label": "Fuel Type",
+   "read_only": 1
+  },
+  {
+   "fieldname": "vehicle_color",
+   "fieldtype": "Data",
+   "label": "Vehicle Color"
+  },
+  {
+   "depends_on": "eval: doc.brand == \"Toyota\"",
+   "fieldname": "tvo_number",
+   "fieldtype": "Data",
+   "label": "TVO Number"
   }
  ],
  "icon": "fa fa-barcode",
  "idx": 1,
  "links": [],
- "modified": "2025-11-22 14:47:28.826716",
+ "modified": "2025-12-01 10:10:31.517002",
  "modified_by": "kalden.dorji@thimphutechpark.bt",
  "module": "Stock",
  "name": "Serial No",

@@ -104,6 +104,31 @@ frappe.ui.form.on("Asset", {
 	},
 
 	refresh: function (frm) {
+		frm.add_custom_button(
+			__("Regenerate QR Code"),
+			function () {
+				frappe.call({
+					method: "generate_qr_code",
+					doc: frm.doc,
+					callback: function(r){
+						let alert_dialog = new frappe.ui.Dialog({
+							title: "QR Code Generated. Window will be reloaded to reflect changes",
+							primary_action: values => {
+								alert_dialog.disable_primary_action();
+								window.location.reload()
+						},
+						primary_action_label: 'OK'
+						});
+						alert_dialog.show();
+
+					}
+				})
+			},
+			__("QR Code")
+		);
+		if(frm.doc.qr_code_link){
+			render_qr_code(frm)
+		}
 		frappe.ui.form.trigger("Asset", "is_existing_asset");
 		frm.toggle_display("next_depreciation_date", frm.doc.docstatus < 1);
 
@@ -945,3 +970,14 @@ erpnext.asset.transfer_asset = function () {
 		},
 	});
 };
+var render_qr_code=function(frm){
+	if (frm.doc.qr_code_link) {
+		let img_html = `<img src="${frm.doc.qr_code_link}" 
+						   style="max-width:200px; border:1px solid #ccc; border-radius:5px;" />`;
+
+		frm.fields_dict.qr_code.$wrapper.html(img_html);
+	} else {
+		frm.fields_dict.qr_code.$wrapper.html("<p>QR not generated</p>");
+	}
+
+}

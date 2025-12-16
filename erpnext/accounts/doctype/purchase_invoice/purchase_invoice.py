@@ -108,11 +108,15 @@ class PurchaseInvoice(BuyingController):
 		cost_center: DF.Link | None
 		credit_to: DF.Link
 		currency: DF.Link | None
+		declaration_date: DF.Date | None
+		declaration_no: DF.Data | None
 		delay_by: DF.Int
 		disable_rounded_total: DF.Check
 		discount_amount: DF.Currency
 		due_date: DF.Date | None
 		dv_no: DF.Data | None
+		employee_id: DF.Link | None
+		employee_name: DF.Data | None
 		enote_id: DF.Link | None
 		from_date: DF.Date | None
 		grand_total: DF.Currency

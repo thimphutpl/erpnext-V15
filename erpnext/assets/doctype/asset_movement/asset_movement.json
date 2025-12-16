@@ -18,6 +18,7 @@
   "to_employee",
   "to_employee_name",
   "email",
+  "to_cost_center",
   "section_break_10",
   "get_asset",
   "check_all",
@@ -132,7 +133,6 @@
    "fieldtype": "Link",
    "ignore_user_permissions": 1,
    "label": "To Employee",
-   "mandatory_depends_on": "eval: doc.purpose == 'Transfer'",
    "options": "Employee"
   },
   {
@@ -166,6 +166,7 @@
    "depends_on": "eval:doc.based_on == 'Cost Center'",
    "fieldname": "project",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Project",
    "options": "Project"
   },
@@ -198,13 +199,23 @@
    "fieldtype": "Data",
    "label": "Email",
    "read_only": 1
+  },
+  {
+   "fetch_from": "to_employee.cost_center",
+   "fetch_if_empty": 1,
+   "fieldname": "to_cost_center",
+   "fieldtype": "Link",
+   "label": "To Cost Center",
+   "options": "Cost Center",
+   "read_only_depends_on": "eval:doc.to_employee;",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-08-22 15:36:35.591596",
- "modified_by": "kalden.dorji@thimphutechpark.bt",
+ "modified": "2025-12-01 16:23:36.883444",
+ "modified_by": "Administrator",
  "module": "Assets",
  "name": "Asset Movement",
  "naming_rule": "Expression (old style)",

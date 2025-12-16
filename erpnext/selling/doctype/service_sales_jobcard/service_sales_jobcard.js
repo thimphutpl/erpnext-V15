@@ -19,6 +19,11 @@ frappe.ui.form.on("Service Sales Jobcard", {
 				__("Create")
 			);
 		}
+        if(frm.doc.docstatus == 1) {
+            frm.add_custom_button(__('View GL Entries'), function() {
+                frappe.set_route('query-report', 'General Ledger', {voucher_no: frm.doc.name});
+            }, __('View'));
+        }
 	},
 
     jobcard_status(frm) {
@@ -32,6 +37,37 @@ frappe.ui.form.on("Service Sales Jobcard", {
 			frm: cur_frm
 		})
 	},
+
+    // jocard type for showing requesting branch and cost center
+    jocard_type(frm) {
+        frm.trigger("toggle_inter_company_fields");
+    },
+
+    onload(frm) {
+        frm.trigger("toggle_inter_company_fields");
+    },
+
+    toggle_inter_company_fields(frm) {
+        if (!frm.doc.jocard_type) {
+            frm.set_df_property("requesting_branch", "hidden", 1);
+            frm.set_df_property("requesting_cost_center", "hidden", 1);
+            return;
+        }
+
+        // Fetch inter_company value from Jobcard Type
+        frappe.db.get_value("Jobcard Type", frm.doc.jocard_type, "inter_company")
+            .then(r => {
+                let inter_company = r.message.inter_company;
+
+                if (inter_company == 1) {
+                    frm.set_df_property("requesting_branch", "hidden", 0);
+                    frm.set_df_property("requesting_cost_center", "hidden", 0);
+                } else {
+                    frm.set_df_property("requesting_branch", "hidden", 1);
+                    frm.set_df_property("requesting_cost_center", "hidden", 1);
+                }
+            });
+    }
 });
 
 function control_submit_button(frm) {

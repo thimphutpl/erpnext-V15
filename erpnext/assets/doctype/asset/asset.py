@@ -4,7 +4,7 @@
 
 import json
 import math
-
+import qrcode
 import frappe
 from frappe import _
 from frappe.utils import (
@@ -74,7 +74,7 @@ class Asset(AccountsController):
 		comprehensive_insurance: DF.Data | None
 		cost_center: DF.Link | None
 		credit_account: DF.Link | None
-		custodian: DF.Link
+		custodian: DF.Link | None
 		custodian_name: DF.Data | None
 		customer: DF.Link | None
 		default_finance_book: DF.Link | None
@@ -114,6 +114,7 @@ class Asset(AccountsController):
 		purchase_date: DF.Date | None
 		purchase_invoice: DF.Link | None
 		purchase_receipt: DF.Link | None
+		qr_code_link: DF.Data | None
 		remarks: DF.SmallText | None
 		residual_value: DF.Data | None
 		serial_number: DF.Data | None
@@ -205,6 +206,45 @@ class Asset(AccountsController):
 
 	def after_delete(self):
 		add_asset_activity(self.name, _("Asset deleted"))
+
+
+	@frappe.whitelist()
+	def generate_qr_code(self):
+		# if not self.qr_code_link:
+		if self.docstatus == 1:
+			qr = qrcode.QRCode(
+				version=1,
+				error_correction=qrcode.constants.ERROR_CORRECT_L,
+				box_size=10,
+				border=4,
+			)
+			url = "https://dev.stcb.bt/check-status?asset_code="+str(self.name)
+			qr.add_data(url)
+			# qr.add_data(get_link_to_form("Asset", self.name))
+
+			qr.make(fit=True)
+
+			img = qr.make_image(fill_color="black", back_color="white")
+			file_name = f"QR-{self.name}.png"
+			file_name = file_name.replace("/",".")
+			file_path = frappe.get_site_path("public", "files", file_name)
+			img.save(file_path)
+			file_doc = frappe.get_doc(
+				{
+					"doctype": "File",
+					"file_name": file_name,
+					"file_url": f"/files/{file_name}",
+					"attached_to_doctype": "Asset",
+					"attached_to_name": self.name,
+					"is_private": 0,
+				}
+			)
+			file_doc.insert(ignore_permissions=True)
+			self.qr_code_link = file_doc.file_url
+			self.db_update()
+		else:
+			self.qr_code_link = None
+			self.db_update()
 
 	def validate_asset_and_reference(self):
 		if self.purchase_invoice or self.purchase_receipt:

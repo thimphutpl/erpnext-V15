@@ -1,0 +1,197 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:CP{YY}{MM}{####}",
+ "creation": "2025-12-04 10:58:15.235491",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_gzki",
+  "price_costing_name",
+  "purchase_type",
+  "column_break_dfwa",
+  "posting_date",
+  "section_break_uwdd",
+  "insurance",
+  "gst",
+  "excise_duty",
+  "clearing_and_forwarding_charges",
+  "transportation_charges",
+  "column_break_geir",
+  "frieght",
+  "custom_duty",
+  "service_charges",
+  "bank_charges",
+  "labour_charges",
+  "section_break_xfeo",
+  "items",
+  "section_break_wp7h",
+  "amended_from",
+  "column_break_exhd",
+  "total_source_rate"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_wp7h",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Price Costing",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "section_break_gzki",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "price_costing_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Price Costing Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Posting Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "purchase_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Purchase Type",
+   "options": "\nAir Order\nSea Order\nFull Container",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_xfeo",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "options": "Price Costing Item"
+  },
+  {
+   "fieldname": "column_break_dfwa",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_uwdd",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "insurance",
+   "fieldtype": "Currency",
+   "label": "Insurance",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_geir",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "gst",
+   "fieldtype": "Currency",
+   "label": "GST",
+   "reqd": 1
+  },
+  {
+   "fieldname": "excise_duty",
+   "fieldtype": "Currency",
+   "label": "Excise Duty",
+   "reqd": 1
+  },
+  {
+   "fieldname": "frieght",
+   "fieldtype": "Currency",
+   "label": "Frieght",
+   "reqd": 1
+  },
+  {
+   "fieldname": "custom_duty",
+   "fieldtype": "Currency",
+   "label": "Custom Duty",
+   "reqd": 1
+  },
+  {
+   "fieldname": "service_charges",
+   "fieldtype": "Currency",
+   "label": "Service Charges",
+   "reqd": 1
+  },
+  {
+   "fieldname": "clearing_and_forwarding_charges",
+   "fieldtype": "Currency",
+   "label": "Clearing and Forwarding Charges",
+   "reqd": 1
+  },
+  {
+   "fieldname": "transportation_charges",
+   "fieldtype": "Currency",
+   "label": "Transportation Charges",
+   "reqd": 1
+  },
+  {
+   "fieldname": "bank_charges",
+   "fieldtype": "Currency",
+   "label": "Bank Charges",
+   "reqd": 1
+  },
+  {
+   "fieldname": "labour_charges",
+   "fieldtype": "Currency",
+   "label": "Labour Charges",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_exhd",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_source_rate",
+   "fieldtype": "Currency",
+   "hidden": 1,
+   "label": "Total Source Rate",
+   "read_only": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2025-12-11 10:23:28.588582",
+ "modified_by": "kalden.dorji@thimphutechpark.bt",
+ "module": "Selling",
+ "name": "Price Costing",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

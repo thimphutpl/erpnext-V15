@@ -74,8 +74,8 @@ class EMISales(SellingController):
 		monthly_deduction: DF.Currency
 		net_amount: DF.Currency
 		no_of_installation: DF.Literal["", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
-		no_of_installation_employee: DF.Literal["", "12", "24"]
-		no_of_installation_external: DF.Literal["", "12", "24"]
+		no_of_installation_employee: DF.Literal["", "1", "2", "3", "4", "5"]
+		no_of_installation_external: DF.Literal["", "1", "2", "3", "4", "5", "6", "7"]
 		one_time_customer_name: DF.Data | None
 		outstanding_amount: DF.Currency
 		paid_amount: DF.Currency
@@ -213,7 +213,7 @@ class EMISales(SellingController):
 	def validate_mandatory(self):
 		row = 1
 		if self.customer_type == "Customer" and self.payment_type == "External Customers Installment" and not self.no_of_installation_external:
-			frappe.throw("No of Installation(External Customers) is mandatory")
+			frappe.throw("No of Installation In Years(External Customers) is mandatory")
 		for a in self.items:
 			missing = []
 			if not a.income_account:
@@ -336,7 +336,7 @@ class EMISales(SellingController):
 				row.payable_amount = self.net_amount
 				row.due_date = self.due_date
 			if self.credit_type and self.credit_type in ('Installment Payment') and self.customer_type == "Employee":
-				for i in range(int(self.no_of_installation_employee)):
+				for i in range(int(self.no_of_installation_employee)*12):
 					row = self.append('payment_schedule',{})
 					row.payable_amount = self.monthly_deduction
 					row.beginning_balance = flt(beginning_balance)
@@ -475,11 +475,11 @@ class EMISales(SellingController):
 			# self.monthly_deduction = math.ceil(monthly_deduction)
 			self.monthly_deduction = flt(monthly_deduction)
 			if self.customer_type == "Employee" and self.sales_order_type not in ("Employee Installment", "Cost Sharing Installment"):
-				due_date = get_last_day(add_months(self.posting_date,flt(self.no_of_installation)))
+				due_date = get_last_day(add_months(self.posting_date,flt(self.no_of_installation)*12))
 			elif self.customer_type == "Employee" and self.sales_order_type in ("Employee Installment", "Cost Sharing Installment"):
-				due_date = get_last_day(add_months(self.posting_date,flt(self.no_of_installation_employee)))	
+				due_date = get_last_day(add_months(self.posting_date,flt(self.no_of_installation_employee)*12))	
 			else:
-				due_date = get_last_day(add_months(self.posting_date,flt(self.no_of_installation_external)))
+				due_date = get_last_day(add_months(self.posting_date,flt(self.no_of_installation_external)*12))
 			if getdate(due_date) > getdate(frappe.defaults.get_user_default("year_end_date")) and self.sales_order_type not in ("External Customers", "Employee Installment"):
 				self.due_date = frappe.defaults.get_user_default("year_end_date")
 			else:
@@ -841,6 +841,18 @@ class EMISales(SellingController):
 						})
 				consume.flags.ignore_permissions=1
 				consume.submit()
+
+	@frappe.whitelist()
+	def calculate_down_payment(self, rate):
+		down_payment = 0
+		if self.sales_order_type == "Cost Sharing Installment":
+			if self.customer_type != "Employee":
+				frappe.throw("Cost sharing installment is only applicable for Employees.")
+			quota = frappe.db.get_value("Employee Grade", frappe.db.get_value("Employee", self.customer, "grade"), "cost_sharing_quotaamount")
+			if rate > quota:
+				down_payment = flt(rate-quota,2)
+		return down_payment
+
 	def get_gl_entries_for_payment(self):
 		gl_entries = []
 		club_amt_ba_wise = frappe._dict()
@@ -901,9 +913,9 @@ class EMISales(SellingController):
 						item.prepaid_income_account = frappe.db.get_value("Company", self.company, "default_prepaid_income_account")
 						# item.prepaid_income_account = frappe.db.get_single_value("Selling Settings", "default_prepaid_income_account")
 					if self.sales_order_type == "External Customers":
-						no_of_installation = self.no_of_installation_external
+						no_of_installation = self.no_of_installation_external * 12
 					else:
-						no_of_installation = self.no_of_installation_employee
+						no_of_installation = self.no_of_installation_employee * 12
 					if item.total_data_package == 0 and item.data_package != 0 and no_of_installation > 0:
 						item.total_data_package = flt(item.data_package) * flt(no_of_installation)
 					# if frappe.session.user == "Administrator":
@@ -1153,9 +1165,9 @@ class EMISales(SellingController):
 			if self.sales_order_type in ("External Customers", "Employee Installment", "Cost Sharing Installment"):
 				no_of_installation = 0
 				if self.sales_order_type == "External Customers":
-					no_of_installation = self.no_of_installation_external
+					no_of_installation = self.no_of_installation_external * 12
 				else:
-					no_of_installation = self.no_of_installation_employee
+					no_of_installation = self.no_of_installation_employee * 12
 				if item.total_data_package == 0 and item.data_package != 0 and flt(no_of_installation) > 0:
 					item.total_data_package = flt(item.data_package) * flt(no_of_installation)
 				
@@ -1390,13 +1402,12 @@ def get_default_income_account(item_code, company):
 	return row
 @frappe.whitelist()
 def apply_item_filter(doctype, txt, searchfield, start, page_len, filters):
-
 	cond = ''
 	txt = txt.replace("'", "''")
 	if frappe.db.exists({'doctype': 'Customer Group','apply_material_restriction': 1,'name': filters['customer_group']}):
 		cond = " AND EXISTS (SELECT 1 FROM `tabRestricted Item Sub Group` where parent = '{}' and sub_group = i.item_sub_group)".format(filters['customer_group'])
 	return frappe.db.sql("""select i.name, i.item_name, i.item_group, i.item_sub_group from `tabItem` i
-			where i.item_group IN ('Vehicle', 'Trading Goods')
+			where i.item_group IN ('Vehicle', 'Sales Product')
 			AND i.disabled = 0 AND i.is_sales_item = 1 
 			AND (`{key}` LIKE %(txt)s OR i.item_name LIKE %(txt)s OR i.item_group LIKE %(txt)s OR i.item_sub_group LIKE %(txt)s )
 			{cond}

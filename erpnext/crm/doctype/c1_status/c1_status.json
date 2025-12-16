@@ -19,7 +19,7 @@
   "responsible_branch",
   "customer_report",
   "customer_quotations_section",
-  "table_jrmr",
+  "items",
   "c1_status_report",
   "section_break_atog",
   "amended_from"
@@ -89,11 +89,6 @@
    "label": "Customer Quotations"
   },
   {
-   "fieldname": "table_jrmr",
-   "fieldtype": "Table",
-   "options": "Customer Quotation Details"
-  },
-  {
    "fieldname": "section_break_atog",
    "fieldtype": "Section Break"
   },
@@ -118,14 +113,20 @@
    "fieldname": "c1_status_report",
    "fieldtype": "Long Text",
    "label": "C1 Status Report"
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "label": "Item",
+   "options": "Customer Quotation Details"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-24 10:29:39.181614",
- "modified_by": "kalden.dorji@thimphutechpark.bt",
+ "modified": "2025-11-28 10:41:53.632347",
+ "modified_by": "Administrator",
  "module": "CRM",
  "name": "C1 Status",
  "naming_rule": "Expression",

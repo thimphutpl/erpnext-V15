@@ -29,12 +29,14 @@
   "asset_name",
   "asset_category",
   "asset_sub_category",
+  "qr_code_link",
   "abbr",
   "location",
   "split_from",
   "department",
   "disposal_date",
   "posting_date",
+  "qr_code",
   "accounting_dimensions_section",
   "branch",
   "cost_center",
@@ -208,8 +210,7 @@
    "fieldtype": "Link",
    "ignore_user_permissions": 1,
    "label": "Custodian",
-   "options": "Employee",
-   "reqd": 1
+   "options": "Employee"
   },
   {
    "fieldname": "cost_center",
@@ -721,6 +722,20 @@
    "label": "EMI Sales ID",
    "options": "EMI Sales",
    "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "qr_code_link",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "QR Code Link"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "qr_code",
+   "fieldtype": "HTML",
+   "label": "QR Code",
+   "read_only": 1
   }
  ],
  "idx": 72,
@@ -759,7 +774,7 @@
    "link_fieldname": "target_asset"
   }
  ],
- "modified": "2025-11-27 12:27:08.394717",
+ "modified": "2025-12-01 15:59:06.977268",
  "modified_by": "Administrator",
  "module": "Assets",
  "name": "Asset",

@@ -7,16 +7,25 @@
  "engine": "InnoDB",
  "field_order": [
   "jobcard_details_section",
+  "company",
   "posting_date",
   "branch",
   "cost_center",
   "start_date",
   "end_date",
+  "workorder",
+  "supplier_order",
   "column_break_csjz",
   "jobcard_status",
   "jocard_type",
+  "requesting_branch",
+  "requesting_cost_center",
   "warehouse",
   "set_warehouse",
+  "delivery_details_section",
+  "delivery_date_from",
+  "column_break_svln",
+  "delivery_date_to",
   "customer_information_section",
   "customer_id",
   "customer_name",
@@ -26,18 +35,28 @@
   "location",
   "column_break_uhxs",
   "warranty_id",
+  "driver_name",
+  "contact_number",
+  "vehicle_details_section",
   "chassis_number",
-  "vehicle_number",
   "allocated_amount",
+  "used_amount",
   "balance_amount",
-  "technicai_details_section",
+  "column_break_cuoe",
+  "vehicle_number",
+  "km_reading",
+  "technician_details_section",
   "table_vvwk",
   "service_report_section",
   "items",
   "payable_amount",
   "jobcard_report",
   "section_break_hejn",
-  "amended_from"
+  "amended_from",
+  "delayed_details_tab",
+  "delayed_date_from",
+  "delayed_date_to",
+  "delayed_reason"
  ],
  "fields": [
   {
@@ -133,6 +152,7 @@
    "description": "If the servicing is covered under-warranty",
    "fieldname": "warranty_id",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Warranty ID",
    "options": "Warranty"
   },
@@ -148,11 +168,6 @@
    "fieldtype": "Link",
    "label": "Chassis Number",
    "options": "Serial No"
-  },
-  {
-   "fieldname": "technicai_details_section",
-   "fieldtype": "Section Break",
-   "label": "Technicai Details"
   },
   {
    "fieldname": "table_vvwk",
@@ -233,16 +248,120 @@
    "fetch_from": "branch.warehouse",
    "fieldname": "set_warehouse",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Set Warehouse",
    "options": "Warehouse"
+  },
+  {
+   "fieldname": "requesting_branch",
+   "fieldtype": "Link",
+   "label": "Requesting Branch",
+   "options": "Branch"
+  },
+  {
+   "fetch_from": "requesting_branch.cost_center",
+   "fieldname": "requesting_cost_center",
+   "fieldtype": "Data",
+   "label": "Requesting Cost Center",
+   "read_only": 1
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company"
+  },
+  {
+   "fieldname": "workorder",
+   "fieldtype": "Data",
+   "label": "Workorder"
+  },
+  {
+   "fieldname": "supplier_order",
+   "fieldtype": "Data",
+   "label": "Supplier Order"
+  },
+  {
+   "fieldname": "technician_details_section",
+   "fieldtype": "Section Break",
+   "label": "Technician Details"
+  },
+  {
+   "fieldname": "delayed_details_tab",
+   "fieldtype": "Tab Break",
+   "label": "Delayed Details"
+  },
+  {
+   "fieldname": "delayed_date_from",
+   "fieldtype": "Date",
+   "label": "Delayed Date From "
+  },
+  {
+   "fieldname": "delayed_date_to",
+   "fieldtype": "Date",
+   "label": "Delayed Date To"
+  },
+  {
+   "fieldname": "delayed_reason",
+   "fieldtype": "Long Text",
+   "label": "Delayed Reason"
+  },
+  {
+   "fieldname": "driver_name",
+   "fieldtype": "Data",
+   "label": "Driver Name"
+  },
+  {
+   "fieldname": "contact_number",
+   "fieldtype": "Data",
+   "label": "Contact Number"
+  },
+  {
+   "fieldname": "vehicle_details_section",
+   "fieldtype": "Section Break",
+   "label": "Vehicle Details"
+  },
+  {
+   "fetch_from": "chassis_number.used_amount",
+   "fieldname": "used_amount",
+   "fieldtype": "Data",
+   "label": "Used Amount"
+  },
+  {
+   "fieldname": "column_break_cuoe",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "km_reading",
+   "fieldtype": "Data",
+   "label": "KM Reading"
+  },
+  {
+   "fieldname": "delivery_details_section",
+   "fieldtype": "Section Break",
+   "label": "Delivery Details"
+  },
+  {
+   "fieldname": "delivery_date_from",
+   "fieldtype": "Date",
+   "label": "Delivery Date From "
+  },
+  {
+   "fieldname": "column_break_svln",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "delivery_date_to",
+   "fieldtype": "Data",
+   "label": "Delivery Date To"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-27 15:54:09.302123",
- "modified_by": "Administrator",
+ "modified": "2025-12-03 11:38:23.595706",
+ "modified_by": "kalden.dorji@thimphutechpark.bt",
  "module": "Selling",
  "name": "Service Sales Jobcard",
  "naming_rule": "Expression",

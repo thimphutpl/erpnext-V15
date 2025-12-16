@@ -528,6 +528,7 @@ frappe.ui.form.on("Material Request Item", {
 		const item = locals[doctype][name];
 		item.rate = 0;
 		item.uom = "";
+		item.expense_account = "";
 		set_schedule_date(frm);
 		frm.events.get_item_data(frm, item, true);
 

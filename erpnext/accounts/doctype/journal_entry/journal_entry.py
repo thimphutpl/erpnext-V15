@@ -73,6 +73,8 @@ class JournalEntry(AccountsController):
 		journal_no: DF.Data | None
 		letter_head: DF.Link | None
 		mode_of_payment: DF.Link | None
+		money_receipt: DF.Check
+		money_receipt_id: DF.Data | None
 		money_receipt_no: DF.Data | None
 		money_receipt_prefix: DF.Data | None
 		multi_currency: DF.Check

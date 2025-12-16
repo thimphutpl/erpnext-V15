@@ -121,6 +121,8 @@ class SalesInvoice(SellingController):
 		date_time_in: DF.Datetime | None
 		date_time_out: DF.Datetime | None
 		debit_to: DF.Link
+		declaration_date: DF.Date | None
+		declaration_numbers: DF.Int
 		disable_rounded_total: DF.Check
 		discount_amount: DF.Currency
 		dispatch: DF.Data | None
@@ -164,6 +166,7 @@ class SalesInvoice(SellingController):
 		payment_schedule: DF.Table[PaymentSchedule]
 		payment_terms_template: DF.Link | None
 		payments: DF.Table[SalesInvoicePayment]
+		performer_index: DF.Data | None
 		plc_conversion_rate: DF.Float
 		po_date: DF.Date | None
 		po_no: DF.Data | None
@@ -1172,19 +1175,19 @@ class SalesInvoice(SellingController):
 		return gl_entries
 	def make_advance_gl_entry(self, gl_entries):
 		for a in self.get("advances"):
-			if flt(a.allocated_amount) and a.advance_account:
-				advance_account_currency = get_account_currency(a.advance_account)
+			if flt(a.allocated_amount) and a.advance_amount:
+				advance_account_currency = get_account_currency(a.advance_amount)
 			allocated_amount = round(flt(a.allocated_amount), 2)
 			gl_entries.append(
 				self.get_gl_dict({
-					"account": a.advance_account,
+					"account": a.advance_amount,
 					"party_type": "Customer",
 					"party": self.customer,
 					"debit": a.allocated_amount,
 					"debit_in_account_currency": a.allocated_amount,
 					"against_voucher": self.return_against if cint(self.is_return) else self.name,
 					"against_voucher_type": self.doctype,
-					"cost_center": a.cost_center,
+					"cost_center": self.cost_center,
 				}, advance_account_currency))
 			
 	def make_customer_gl_entry(self, gl_entries):

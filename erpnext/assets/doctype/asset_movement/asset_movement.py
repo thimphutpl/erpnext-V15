@@ -33,6 +33,7 @@ class AssetMovement(Document):
 		purpose: DF.Literal["", "Transfer", "Receipt"]
 		reference_doctype: DF.Link | None
 		reference_name: DF.DynamicLink | None
+		to_cost_center: DF.Link
 		to_employee: DF.Link | None
 		to_employee_name: DF.Data | None
 		to_single: DF.Check
@@ -338,9 +339,9 @@ class AssetMovement(Document):
 		if not self.from_employee and self.based_on == 'Custodian' or not self.cost_center and self.based_on == 'Cost Center':
 			frappe.throw("From Employee/Cost Center is required.")
 		else:
-			if not self.to_employee:
-				frappe.throw("To Employee is Mandatory")
-			elif self.from_employee == self.to_employee:
+			# if not self.to_employee:
+			# 	frappe.throw("To Employee is Mandatory")
+			if self.from_employee == self.to_employee and self.from_employee and self.to_employee:
 				frappe.throw("Select Different Employee")
 			# if self.to_single:
 			# 	if not self.to_employee:

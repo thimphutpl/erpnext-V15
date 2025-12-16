@@ -99,6 +99,7 @@ class Company(NestedSet):
 		insurance_claim_expense_account: DF.Link | None
 		insurance_expense_account: DF.Link | None
 		internal_customer_account: DF.Link | None
+		internal_expense_account: DF.Link | None
 		international_travel_expense: DF.Link | None
 		is_group: DF.Check
 		leave_encashment_expense_account: DF.Link | None
@@ -117,6 +118,7 @@ class Company(NestedSet):
 		registration_certificate_expense_account: DF.Link | None
 		registration_details: DF.Code | None
 		registration_expense_account: DF.Link | None
+		revenue_account: DF.Link | None
 		rgt: DF.Int
 		round_off_account: DF.Link | None
 		round_off_cost_center: DF.Link | None

@@ -31,6 +31,7 @@ class PurchaseReceipt(BuyingController):
 		from erpnext.accounts.doctype.pricing_rule_detail.pricing_rule_detail import PricingRuleDetail
 		from erpnext.accounts.doctype.purchase_taxes_and_charges.purchase_taxes_and_charges import PurchaseTaxesandCharges
 		from erpnext.buying.doctype.purchase_receipt_item_supplied.purchase_receipt_item_supplied import PurchaseReceiptItemSupplied
+		from erpnext.petrol_diesel_unit.doctype.dip_details.dip_details import DipDetails
 		from erpnext.stock.doctype.purchase_receipt_item.purchase_receipt_item import PurchaseReceiptItem
 		from frappe.types import DF
 
@@ -56,6 +57,8 @@ class PurchaseReceipt(BuyingController):
 		branch: DF.Link
 		business_activity: DF.Link | None
 		buying_price_list: DF.Link | None
+		challan_date: DF.Date | None
+		challan_no: DF.Data | None
 		company: DF.Link
 		contact_display: DF.SmallText | None
 		contact_email: DF.SmallText | None
@@ -63,17 +66,33 @@ class PurchaseReceipt(BuyingController):
 		contact_person: DF.Link | None
 		conversion_rate: DF.Float
 		cost_center: DF.Link | None
+		cost_per_kl: DF.Currency
+		cost_per_kl_incl: DF.Currency
 		currency: DF.Link
 		delay_by: DF.Int
+		depot_charges_per_kl: DF.Currency
+		dip_details: DF.Table[DipDetails]
 		disable_rounded_total: DF.Check
 		discount_amount: DF.Currency
+		dispatch_quantity: DF.Float
 		enote_id: DF.Link | None
+		export_invoice_no: DF.Data | None
+		fro_combined: DF.Float
+		fro_i: DF.Float
+		fro_ii: DF.Float
+		fro_iii: DF.Float
+		fro_iv: DF.Float
+		fro_v: DF.Float
+		fro_vi: DF.Float
 		grand_total: DF.Currency
 		group_same_items: DF.Check
+		hpcl_tt_receipt_date: DF.Date | None
 		ignore_pricing_rule: DF.Check
 		in_words: DF.Data | None
+		indian_tanker_no: DF.Data | None
 		instructions: DF.SmallText | None
 		inter_company_reference: DF.Link | None
+		invoice_no: DF.Data | None
 		is_internal_supplier: DF.Check
 		is_old_subcontracting_flow: DF.Check
 		is_return: DF.Check
@@ -81,6 +100,7 @@ class PurchaseReceipt(BuyingController):
 		items: DF.Table[PurchaseReceiptItem]
 		language: DF.Data | None
 		letter_head: DF.Link | None
+		loading_date: DF.Date | None
 		lr_date: DF.Date | None
 		lr_no: DF.Data | None
 		naming_series: DF.Literal["", "Consumables", "Fixed Asset", "Sales Product", "Spare Parts", "Services Miscellaneous", "Services Works", "Labour Contract", "MAT-PRE-.YYYY.-", "MAT-PR-RET-.YYYY.-"]
@@ -88,6 +108,7 @@ class PurchaseReceipt(BuyingController):
 		other_charges_calculation: DF.LongText | None
 		per_billed: DF.Percent
 		per_returned: DF.Percent
+		pi_no_and_date: DF.Data | None
 		plc_conversion_rate: DF.Float
 		posting_date: DF.Datetime
 		posting_time: DF.Time
@@ -95,6 +116,8 @@ class PurchaseReceipt(BuyingController):
 		pricing_rules: DF.Table[PricingRuleDetail]
 		project: DF.Link | None
 		range: DF.Data | None
+		rate_per_kl: DF.Currency
+		receipt_qty: DF.Float
 		rejected_warehouse: DF.Link | None
 		remarks: DF.SmallText | None
 		represents_company: DF.Link | None
@@ -109,7 +132,10 @@ class PurchaseReceipt(BuyingController):
 		shipping_address: DF.Link | None
 		shipping_address_display: DF.SmallText | None
 		shipping_rule: DF.Link | None
+		shrinkage_amt: DF.Currency
+		shrinkage_qty: DF.Float
 		status: DF.Literal["", "Draft", "To Bill", "Completed", "Return Issued", "Cancelled", "Closed"]
+		stcbl_tanker: DF.Link | None
 		supplied_items: DF.Table[PurchaseReceiptItemSupplied]
 		supplier: DF.Link
 		supplier_address: DF.Link | None
@@ -129,6 +155,7 @@ class PurchaseReceipt(BuyingController):
 		total_qty: DF.Float
 		total_taxes_and_charges: DF.Currency
 		transporter_name: DF.Data | None
+		ug_qty: DF.Float
 		voucher_no: DF.Data | None
 	# end: auto-generated types
 	def __init__(self, *args, **kwargs):
@@ -801,7 +828,6 @@ class PurchaseReceipt(BuyingController):
 			"against": against_account,
 			"remarks": remarks,
 		}
-
 		if voucher_detail_no:
 			gl_entry.update({"voucher_detail_no": voucher_detail_no})
 
@@ -821,6 +847,8 @@ class PurchaseReceipt(BuyingController):
 			if item.is_fixed_asset:
 				# if is_cwip_accounting_enabled(item.asset_category):
 				self.add_asset_gl_entries(item, gl_entries)
+				self.add_lcv_gl_entries(item, gl_entries)
+				self.update_assets(item, item.valuation_rate)
 				if flt(item.landed_cost_voucher_amount):
 					self.add_lcv_gl_entries(item, gl_entries)
 					# update assets gross amount by its valuation rate
@@ -845,17 +873,17 @@ class PurchaseReceipt(BuyingController):
 			base_asset_amount if cwip_account_currency == self.company_currency else asset_amount
 		)
 
-		self.add_gl_entry(
-			gl_entries=gl_entries,
-			account=cwip_account,
-			cost_center=item.cost_center,
-			debit=base_asset_amount,
-			credit=0.0,
-			remarks=remarks,
-			against_account=arbnb_account,
-			debit_in_account_currency=debit_in_account_currency,
-			item=item,
-		)
+		# self.add_gl_entry(
+		# 	gl_entries=gl_entries,
+		# 	account=cwip_account,
+		# 	cost_center=item.cost_center,
+		# 	debit=base_asset_amount,
+		# 	credit=0.0,
+		# 	remarks=remarks,
+		# 	against_account=arbnb_account,
+		# 	debit_in_account_currency=debit_in_account_currency,
+		# 	item=item,
+		# )
 
 		asset_rbnb_currency = get_account_currency(arbnb_account)
 		# credit arbnb account
@@ -889,23 +917,28 @@ class PurchaseReceipt(BuyingController):
 
 		remarks = self.get("remarks") or _("Accounting Entry for Stock")
 
-		self.add_gl_entry(
-			gl_entries=gl_entries,
-			account=expenses_included_in_asset_valuation,
-			cost_center=item.cost_center,
-			debit=0.0,
-			credit=flt(item.landed_cost_voucher_amount),
-			remarks=remarks,
-			against_account=asset_account,
-			project=item.project,
-			item=item,
-		)
+		asset_amount = flt(item.net_amount) + flt(item.item_tax_amount / self.conversion_rate)
+		base_asset_amount = flt(item.base_net_amount + item.item_tax_amount)
+
+		# self.add_gl_entry(
+		# 	gl_entries=gl_entries,
+		# 	account=expenses_included_in_asset_valuation,
+		# 	cost_center=item.cost_center,
+		# 	debit=0.0,
+		# 	# credit=flt(item.landed_cost_voucher_amount),
+		# 	credit = base_asset_amount,
+		# 	remarks=remarks,
+		# 	against_account=asset_account,
+		# 	project=item.project,
+		# 	item=item,
+		# )
 
 		self.add_gl_entry(
 			gl_entries=gl_entries,
 			account=asset_account,
 			cost_center=item.cost_center,
-			debit=flt(item.landed_cost_voucher_amount),
+			# debit=flt(item.landed_cost_voucher_amount),
+			debit = base_asset_amount,
 			credit=0.0,
 			remarks=remarks,
 			against_account=expenses_included_in_asset_valuation,
