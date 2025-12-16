@@ -2214,7 +2214,7 @@ def make_purchase_receipt(source_name, target_doc=None):
 @frappe.whitelist()
 def set_discount_value(rate, qty):
 	amount = flt(rate)* flt(qty)
-	account = frappe.db.get_value("Company","GYALSUNG INFRA", "default_discount_account")
+	account = frappe.db.get_value("Company","Dzong Neykhang Chorten Project", "default_discount_account")
 	if not account:
 		frappe.throw("Please set default discount account in company")
 	if amount:
