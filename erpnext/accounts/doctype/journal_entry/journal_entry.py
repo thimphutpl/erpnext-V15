@@ -202,11 +202,13 @@ class JournalEntry(AccountsController):
 		validate_docs_for_deferred_accounting([self.name], [])
 
 	def submit(self):
+		self.approved_date = nowdate()
 		if len(self.accounts) > 100:
 			msgprint(_("The task has been enqueued as a background job."), alert=True)
 			self.queue_action("submit", timeout=4600)
 		else:
 			return self._submit()
+
 
 	def cancel(self):
 		if len(self.accounts) > 100:
