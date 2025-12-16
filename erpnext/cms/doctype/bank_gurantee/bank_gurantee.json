@@ -26,6 +26,7 @@
   "bg_expiry_date",
   "column_break_bwct",
   "bg_number",
+  "revised_expiry_date",
   "amended_from"
  ],
  "fields": [
@@ -158,11 +159,16 @@
    "print_hide": 1,
    "read_only": 1,
    "search_index": 1
+  },
+  {
+   "fieldname": "revised_expiry_date",
+   "fieldtype": "Date",
+   "label": "Revised Expiry Date"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-12-11 14:42:18.114403",
+ "modified": "2025-12-16 14:53:03.375110",
  "modified_by": "Administrator",
  "module": "CMS",
  "name": "Bank Gurantee",

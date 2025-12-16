@@ -26,6 +26,7 @@ class BankGurantee(Document):
 		focal_person: DF.Link | None
 		focal_person_name: DF.Data | None
 		reference_number: DF.Data | None
+		revised_expiry_date: DF.Date | None
 		supplier: DF.Link
 		supplier_name: DF.Data | None
 		supplier_type: DF.Literal["", "Domestic Vendor", "Indian Vendor", "International Vendor"]
