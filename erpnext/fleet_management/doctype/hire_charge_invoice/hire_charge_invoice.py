@@ -90,7 +90,7 @@ class HireChargeInvoice(AccountsController):
 		self.set_advance_data()
 		self.update_advance_amount()
 		self.update_vlogs(1)
-		if self.owned_by == "GYALSUNG INFRA":
+		if self.owned_by == "Dzong Neykhang Chorten Project":
 			self.post_journal_entry()
 			self.db_set("outstanding_amount", 0)
 		else:
@@ -258,11 +258,11 @@ class HireChargeInvoice(AccountsController):
 		je.title = "Hire Charge Invoice (" + self.name + ")"
 		je.voucher_type = 'Hire Invoice'
 		je.naming_series = 'Hire Invoice'
-		je.remark = 'Payment against : ' + self.name;
+		je.remark = 'Payment against : ' + self.name
 		je.posting_date = self.posting_date
 		je.branch = self.branch
 
-		if self.owned_by == "GYALSUNG INFRA":
+		if self.owned_by == "Dzong Neykhang Chorten Project":
 			customer_cost_center = frappe.db.get_value("Equipment Hiring Form", self.ehf_name, "customer_cost_center")
 			je.append("accounts", {
 					"account": hea_account,
@@ -366,19 +366,19 @@ class HireChargeInvoice(AccountsController):
 			gl_entries = []
 			self.posting_date = self.posting_date
 
-		payable_account = frappe.db.get_value("Company", "GYALSUNG INFRA", "default_payable_account")
+		payable_account = frappe.db.get_value("Company", "Dzong Neykhang Chorten Project", "default_payable_account")
 		if not payable_account:
 			frappe.throw("Setup Payable Account in Company")
 		# advance_account = frappe.db.get_single_value("Maintenance Accounts Settings", "default_advance_account")
 		# if not advance_account:
 		# 	frappe.throw("Setup Advance Account in Maintenance Accounts Settings")
-		hire_account = frappe.db.get_value("Company", "GYALSUNG INFRA",  "hire_charge")
+		hire_account = frappe.db.get_value("Company", "Dzong Neykhang Chorten Project",  "hire_charge")
 		if not hire_account:
 			frappe.throw("Setup Hire Account in Company")
-		operator_account = frappe.db.get_value("Company", "GYALSUNG INFRA", "operator_allowance")
+		operator_account = frappe.db.get_value("Company", "Dzong Neykhang Chorten Project", "operator_allowance")
 		if not operator_account:
 			frappe.throw("Setup Operator Account in Company")
-		hsd_account = frappe.db.get_value("Company", "GYALSUNG INFRA", "hsd")
+		hsd_account = frappe.db.get_value("Company", "Dzong Neykhang Chorten Project", "hsd")
 		if not hsd_account:
 			frappe.throw("Setup Hsd Account in Company")		
 		# discount_account = frappe.db.get_single_value("Maintenance Accounts Settings", "discount_account")
