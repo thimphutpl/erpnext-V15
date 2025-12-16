@@ -23,6 +23,29 @@ class ContractDetails(Document):
 		focal_person_name: DF.Data | None
 		initial_amount: DF.Data
 		reference_number: DF.Data
+		revised_expiry_date: DF.Date | None
+		start_date: DF.Date
+		supplier: DF.Link
+		supplier_name: DF.Data | None
+		supplier_type: DF.Literal["", "Domestic Vendor", "Indian Vendor", "International Vendor"]
+	# end: auto-generated types
+	# begin: auto-generated types
+	# This code is auto-generated. Do not modify anything in this block.
+
+	from typing import TYPE_CHECKING
+
+	if TYPE_CHECKING:
+		from frappe.types import DF
+
+		additional: DF.Data | None
+		contract_name: DF.Data
+		discount: DF.Data | None
+		end_date: DF.Date
+		final_amount: DF.Data
+		focal_person: DF.Link
+		focal_person_name: DF.Data | None
+		initial_amount: DF.Data
+		reference_number: DF.Data
 		start_date: DF.Date
 		supplier: DF.Link
 		supplier_name: DF.Data | None

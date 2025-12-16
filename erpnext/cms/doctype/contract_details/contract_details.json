@@ -16,10 +16,11 @@
   "contract_name",
   "start_date",
   "focal_person",
+  "focal_person_name",
   "column_break_wzat",
   "reference_number",
   "end_date",
-  "focal_person_name",
+  "revised_expiry_date",
   "column_break_mokv",
   "initial_amount",
   "discount",
@@ -138,11 +139,16 @@
   {
    "fieldname": "column_break_aoas",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "revised_expiry_date",
+   "fieldtype": "Date",
+   "label": "Revised Expiry Date "
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-12-11 14:41:11.092610",
+ "modified": "2025-12-16 14:36:36.135339",
  "modified_by": "Administrator",
  "module": "CMS",
  "name": "Contract Details",

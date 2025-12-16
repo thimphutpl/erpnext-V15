@@ -1,8 +1,9 @@
 # Copyright (c) 2025, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
-# import frappe
+import frappe
 from frappe.model.document import Document
+from frappe.utils import flt
 
 
 class ContractPayment(Document):
@@ -32,4 +33,17 @@ class ContractPayment(Document):
 		supplier_name: DF.Data | None
 		supplier_type: DF.Literal["", "Domestic Vendor", "Indian Vendor", "International Vendor"]
 	# end: auto-generated types
-	pass
+	def validate(self):
+		self.calculate_amount_in_btn()
+	
+	def calculate_amount_in_btn(self):
+		if self.currency !="BTN":
+			if not self.exchange_rate:
+				frappe.throw("Exchange Rate is required")
+			if not self.bill_amount_in_currency:
+				frappe.throw("Bill amount in currency is required")
+			self.payable_amount = flt(self.bill_amount_in_currency)* flt(self.exchange_rate)
+		else:
+			if not self.bill_amount_in_currency:
+				frappe.throw("Bill amount in currency is required")
+			self.payable_amount = self.bill_amount_in_currency
