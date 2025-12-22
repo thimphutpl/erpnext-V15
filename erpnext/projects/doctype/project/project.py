@@ -1509,7 +1509,7 @@ def make_project_advance(source_name, target_doc=None):
 		}
 	}, target_doc)
 	return doclist
-# +++++++++++++++++++++ Ver 2.0 ENDS +++++++++++++++++++++
+
 
 @frappe.whitelist()
 def make_boq(source_name, target_doc=None):
@@ -1575,3 +1575,33 @@ def update_project_dlp_date():
 			self.db_set('remaining_days', remaining_days, update_modified=False)
 			if remaining_days == 6 and self.sent_email_notification:
 				sent_dlp_mail(self.name)
+
+
+def get_permission_query_conditions(user):
+	if not user:
+		user = frappe.session.user
+	user_roles = frappe.get_roles(user)
+	if "Administrator" in user_roles or "HR Manager" in user_roles:
+		return
+
+	# Limited access by branch
+	if "HR User" in user_roles or "Employee" in user_roles or "Projects User" in user_roles:
+
+		assign_branch_name = frappe.db.get_value(
+			"Assign Branch",
+			{"user": user},
+			"name"
+		)
+
+		if assign_branch_name:
+			# Get branches from child table
+			branches = frappe.get_all(
+				"Branch Item",
+				filters={"parent": assign_branch_name},
+				pluck="branch"
+			)
+
+			if branches:
+				branches = "', '".join(branches)
+				return f"`tabProject`.`branch` IN ('{branches}')"
+		return "1=0"
