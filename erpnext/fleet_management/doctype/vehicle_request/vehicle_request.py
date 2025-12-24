@@ -86,16 +86,25 @@ class VehicleRequest(Document):
 
 	def check_duplicate_entry(self):
 		data = frappe.db.sql("""
-			SELECT vehicle
+			SELECT name
 			FROM `tabVehicle Request`
-			WHERE vehicle = '{0}'
+			WHERE vehicle = %s
 			AND docstatus = 1
-			AND (from_date BETWEEN '{1}' AND '{2}'
-				OR to_date BETWEEN '{1}' AND '{2}')
-		""".format(self.vehicle,self.from_date,self.to_date),as_dict=1)
+			AND name != %s
+			AND from_date <= %s
+			AND to_date >= %s
+		""", (
+			self.vehicle,
+			self.name or "",
+			self.to_date,
+			self.from_date
+		), as_dict=True)
+
 		if data:
-			frappe.throw("Vehicle <b>{}</b> is already booked".format(self.vehicle_number))
-	
+			frappe.throw(
+				f"Vehicle <b>{self.vehicle_number}</b> is already booked for the selected period"
+			)
+
 	def calculate_time(self):
 		time = time_diff(self.to_date, self.from_date)
 		self.total_days_and_hours=time
