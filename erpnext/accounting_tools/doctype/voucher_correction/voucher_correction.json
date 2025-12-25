@@ -1,0 +1,123 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-12-23 16:57:29.812200",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "voucher_doctype",
+  "reason",
+  "column_break_kofi",
+  "posting_date",
+  "voucher_name",
+  "column_break_yvuc",
+  "applied",
+  "applied_by",
+  "applied_on",
+  "child_table_section",
+  "changes",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "reason",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "label": "Reason",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_kofi",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_yvuc",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "label": "Posting Date"
+  },
+  {
+   "default": "0",
+   "fieldname": "applied",
+   "fieldtype": "Check",
+   "label": "Applied"
+  },
+  {
+   "fieldname": "applied_by",
+   "fieldtype": "Link",
+   "label": "Applied By",
+   "options": "User"
+  },
+  {
+   "fieldname": "applied_on",
+   "fieldtype": "Datetime",
+   "label": "Applied On"
+  },
+  {
+   "fieldname": "voucher_doctype",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Voucher Doctype",
+   "options": "DocType",
+   "reqd": 1
+  },
+  {
+   "fieldname": "voucher_name",
+   "fieldtype": "Dynamic Link",
+   "in_list_view": 1,
+   "label": "Voucher Name",
+   "options": "voucher_doctype",
+   "reqd": 1
+  },
+  {
+   "fieldname": "child_table_section",
+   "fieldtype": "Section Break",
+   "label": "Child Table"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Voucher Correction",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "changes",
+   "fieldtype": "Table",
+   "options": "Voucher Corection Detail"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2025-12-25 14:58:58.494250",
+ "modified_by": "Administrator",
+ "module": "Accounting Tools",
+ "name": "Voucher Correction",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "voucher_name",
+ "track_changes": 1
+}
