@@ -282,6 +282,13 @@ class VoucherCorrection(Document):
 			""",
 			(doc.doctype, doc.name),
 		)
+		# 1b) Delete Payment Ledger (prevents duplicates)
+		frappe.db.sql(
+			"""
+			DELETE FROM `tabPayment Ledger Entry`
+			WHERE voucher_type=%s AND voucher_no=%s
+			""", (doc.doctype, doc.name)
+		)
 		frappe.db.commit()
 
 		# 2) Repost correctly based on doctype
