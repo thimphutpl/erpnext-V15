@@ -1,6 +1,3 @@
-// Copyright (c) 2024, Frappe Technologies Pvt. Ltd. and contributors
-// For license information, please see license.txt
-
 frappe.ui.form.on("Bulk Asset Disposal", {
     onload: function (frm) {
 		frm.set_query("asset", "item", (doc) => {
@@ -35,7 +32,7 @@ frappe.ui.form.on("Bulk Asset Disposal", {
 			method: "erpnext.assets.doctype.bulk_asset_disposal.bulk_asset_disposal.sale_asset",
 			args: {
 				branch: frm.doc.branch,
-				// business_activity: frm.doc.business_activity,
+				business_activity: "Common",
 				name: frm.doc.name,
 				scrap_date: frm.doc.scrap_date,
 				customer: frm.doc.customer,

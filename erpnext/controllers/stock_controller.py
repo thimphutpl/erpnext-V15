@@ -143,6 +143,7 @@ class StockController(AccountsController):
 			or is_asset_pr
 		):
 			warehouse_account = get_warehouse_account_map(self.company)
+
 			
 			if self.docstatus == 1:
 				if not gl_entries:

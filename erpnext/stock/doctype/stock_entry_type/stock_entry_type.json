@@ -17,7 +17,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Purpose",
-   "options": "\nMaterial Issue\nMaterial Receipt\nMaterial Transfer\nCSR\nWrite-Off",
+   "options": "\nMaterial Issue\nMaterial Receipt\nMaterial Transfer",
    "reqd": 1,
    "set_only_once": 1
   },
@@ -37,7 +37,7 @@
   }
  ],
  "links": [],
- "modified": "2025-02-24 13:00:24.315084",
+ "modified": "2025-12-07 12:33:41.125919",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Stock Entry Type",

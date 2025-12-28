@@ -24,6 +24,8 @@ class HRAccountsSettings(Document):
 		ltc_payable: DF.Link | None
 		meeting_and_seminars_in_account: DF.Link
 		meeting_and_seminars_out_account: DF.Link
+		mr_overtime_account: DF.Link
+		mr_wages_account: DF.Link
 		muster_roll_payable_account: DF.Link | None
 		overtime_account: DF.Link
 		pbva_account: DF.Link

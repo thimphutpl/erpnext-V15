@@ -131,7 +131,7 @@
    "read_only": 1
   },
   {
-   "description": "** This eNote type refers to department or division or section or unit if it has different series format. EG. If ITD has BTF/ITD/01/Year/### and HRD has BTF/HRD/01/Year/###, then in eNote type, it must include HRD and ITD ***.",
+   "description": "** This eNote type refers to department or division or section or unit if it has different series format. EG. If ITD has BAIL/ITD/01/Year/### and HRD has BAIL/HRD/01/Year/###, then in eNote type, it must include HRD and ITD ***.",
    "fieldname": "enote_type",
    "fieldtype": "Link",
    "label": "eNote Type",
@@ -177,7 +177,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-07-07 12:54:38.818122",
+ "modified": "2025-12-12 14:55:38.710250",
  "modified_by": "Administrator",
  "module": "eNote",
  "name": "eNote",

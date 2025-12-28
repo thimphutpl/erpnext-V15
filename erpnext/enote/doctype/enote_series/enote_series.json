@@ -1,50 +1,52 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "field:series",
  "creation": "2025-03-07 16:17:58.386669",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-    "type",
-    "series",
-    "amended_from",
-    "description"
-   ],
-   "fields": [
-    {
-     "fieldname": "type",
-     "fieldtype": "Link",
-     "in_list_view": 1,
-     "label": "Type",
-     "options": "eNote Type"
-    },
-    {
-     "fieldname": "series",
-     "fieldtype": "Data",
-     "label": "Series",
-     "unique": 1
-    },
-    {
-     "fieldname": "amended_from",
-     "fieldtype": "Link",
-     "label": "Amended From",
-     "no_copy": 1,
-     "options": "eNote Series",
-     "print_hide": 1,
-     "read_only": 1
-    },
-    {
-     "fieldname": "description",
-     "fieldtype": "Data",
-     "label": "Description"
-    }
-   ],
+  "type",
+  "series",
+  "amended_from",
+  "description"
+ ],
+ "fields": [
+  {
+   "fieldname": "type",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Type",
+   "options": "eNote Type"
+  },
+  {
+   "fieldname": "series",
+   "fieldtype": "Data",
+   "label": "Series",
+   "unique": 1
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "eNote Series",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Data",
+   "label": "Description"
+  }
+ ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-03-07 16:23:47.369946",
+ "modified": "2025-12-16 14:43:35.733097",
  "modified_by": "Administrator",
  "module": "eNote",
  "name": "eNote Series",
+ "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [
   {

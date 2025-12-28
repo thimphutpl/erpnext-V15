@@ -18,7 +18,7 @@ from erpnext.accounts.doctype.accounting_dimension_filter.accounting_dimension_f
 	get_dimension_filter_map,
 )
 from erpnext.accounts.doctype.accounting_period.accounting_period import ClosedAccountingPeriod
-from erpnext.accounts.doctype.budget.budget import validate_expense_against_budget
+from erpnext.budget.doctype.budget.budget import validate_expense_against_budget
 from erpnext.accounts.utils import create_payment_ledger_entry
 from erpnext.exceptions import InvalidAccountDimensionError, MandatoryAccountDimensionError
 
@@ -186,8 +186,13 @@ def distribute_gl_based_on_cost_center_allocation(gl_map, precision=None, from_r
 
 		# Validate budget against main cost center
 		if not from_repost:
+			# validate_expense_against_budget(
+			# 	d, expense_amount=flt(d.debit, precision) - flt(d.credit, precision)
+			# )
+			d.amount=flt(d.debit, precision) - flt(d.credit, precision)
+
 			validate_expense_against_budget(
-				d, expense_amount=flt(d.debit, precision) - flt(d.credit, precision)
+				d
 			)
 
 		cost_center_allocation = get_cost_center_allocation_data(
@@ -389,9 +394,54 @@ def make_entry(args, adv_adj, update_outstanding, from_repost=False):
 	gle.flags.update_outstanding = update_outstanding or "Yes"
 	gle.flags.notify_update = False
 	gle.submit()
-
 	if not from_repost and gle.voucher_type != "Period Closing Voucher":
-		validate_expense_against_budget(args)
+		#validate_expense_against_budget(args)
+		transactions = [d.transaction for d in frappe.get_all("Budget Transaction", fields='transaction')]
+		if args.voucher_type in transactions and args.against_voucher_type != 'Asset':
+			account_types = [d.account_type for d in frappe.get_all("Budget Settings Account Types", fields='account_type')]
+			if frappe.db.get_value("Account", args.account, "account_type") in account_types:
+				validate_expense_against_budget(args)
+				
+				cc_doc = frappe.get_doc("Cost Center", args.cost_center)
+				
+				budget_cost_center = cc_doc.parent_cost_center if cc_doc.use_budget_from_parent else cc_doc.parent_cost_center
+				if not args.is_cancelled:
+					#frappe.throw("hi1")
+					#Commit Budget
+					bud_obj = frappe.get_doc({
+						"doctype": "Committed Budget",
+						"account": args.account,
+						"cost_center": budget_cost_center,
+						"committed_cost_center": budget_cost_center,
+						"project": args.project,
+						"reference_type": args.voucher_type,
+						"reference_no": args.voucher_no,
+						"reference_date": args.posting_date,
+						"amount": flt(args.debit_in_account_currency),
+						"company": args.company,
+						"closed": 1,
+						# "business_activity": args.business_activity,
+					})
+					bud_obj.flags.ignore_permissions=1
+					bud_obj.submit()
+				
+					#Consume Budget
+					con_obj = frappe.get_doc({
+						"doctype": "Consumed Budget",
+						"account": args.account,
+						"cost_center": budget_cost_center,
+						"consumed_cost_center": budget_cost_center,
+						"project": args.project,
+						"reference_type": args.voucher_type,
+						"reference_no": args.voucher_no,
+						"reference_date": args.posting_date,
+						"amount": flt(args.debit_in_account_currency),
+						"company": args.company,
+						"com_ref": bud_obj.name,
+						# "business_activity": args.business_activity,
+					})
+					con_obj.flags.ignore_permissions=1
+					con_obj.submit()
 
 
 def validate_cwip_accounts(gl_map):

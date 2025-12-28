@@ -46,8 +46,6 @@ def construct_query(filters=None):
 			condition += " and com.cost_center = '{}' and (com.project = '' or com.project is NULL)".format(filters.cost_center)
 		else:
 			condition += " and (com.project = '' or com.project is NULL)"
-	if filters.company:
-		condition += " and com.company = '{}'".format(filters.company)
 	
 	query = """SELECT com.account, com.cost_center, com.reference_type, com.reference_no, 
 				com.reference_date, com.project, com.amount, com.item_code
@@ -70,9 +68,6 @@ def construct_query(filters=None):
 def validate_filters(filters):
 	if not filters.fiscal_year:
 		frappe.throw(_("Fiscal Year {0} is required").format(filters.fiscal_year))
-	
-	if not filters.company:
-		frappe.throw(_("Company is required"))
 
 	fiscal_year = frappe.db.get_value("Fiscal Year", filters.fiscal_year, ["year_start_date", "year_end_date"], as_dict=True)
 	if not fiscal_year:

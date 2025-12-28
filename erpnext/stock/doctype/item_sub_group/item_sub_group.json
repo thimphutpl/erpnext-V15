@@ -10,8 +10,9 @@
   "item_group",
   "item_sub_group",
   "item_code_base",
-  "column_break_sqsl",
-  "disabled"
+  "lot_check",
+  "disabled",
+  "column_break_sqsl"
  ],
  "fields": [
   {
@@ -48,11 +49,17 @@
    "in_list_view": 1,
    "label": "Sub Group Code Base",
    "unique": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "lot_check",
+   "fieldtype": "Check",
+   "label": "Maintained in Lot"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-16 23:36:24.276219",
+ "modified": "2025-12-15 10:25:33.458326",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Item Sub Group",

@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 import frappe
 from frappe import _
 from frappe.model.document import Document
-from frappe.utils import cint, flt, getdate, nowdate
+from frappe.utils import cint, flt, getdate, nowdate, get_last_day
 
 class AssetIssueDetails(Document):
     # begin: auto-generated types
@@ -21,6 +21,7 @@ class AssetIssueDetails(Document):
         asset_rate: DF.Currency
         branch: DF.Link
         brand: DF.Data | None
+        business_activity: DF.Link | None
         chesis_no: DF.Data | None
         company: DF.Link
         cost_center: DF.ReadOnly | None
@@ -36,6 +37,7 @@ class AssetIssueDetails(Document):
         item_name: DF.Data
         location: DF.Link | None
         model: DF.Link | None
+        purchase_date: DF.Date | None
         purchase_receipt: DF.Link | None
         qty: DF.Int
         reference_code: DF.Link | None
@@ -82,9 +84,7 @@ class AssetIssueDetails(Document):
                         """.format(self.item_code, self.branch, self.purchase_receipt, self.name))[0][0]
         
         balance_qty = flt(total_qty) - flt(issued_qty)
-
         if flt(self.qty) > flt(balance_qty):
-            #frappe.throw(str(self.qty))
             frappe.throw(_("Issuing Quantity cannot be greater than Balance Quantity i.e., {}").format(flt(balance_qty)), title="Insufficient Balance")
 
     def make_asset(self, qty):
@@ -94,7 +94,7 @@ class AssetIssueDetails(Document):
 
         if item_doc.asset_category:
             asset_category = frappe.db.get_value("Asset Category", item_doc.asset_category, "name")
-            fixed_asset_account, credit_account=frappe.db.get_value("Asset Category Account", {'parent':asset_category}, ['fixed_asset_account','credit_account'])
+            fixed_asset_account, credit_account=frappe.db.get_value("Asset Category Account", {'parent':asset_category,'company_name':self.company}, ['fixed_asset_account','credit_account'])
             if item_doc.asset_sub_category:
                 for a in frappe.db.sql("""select total_number_of_depreciations, income_depreciation_percent 
                                         from `tabAsset Finance Book` where parent = '{0}' 
@@ -111,20 +111,22 @@ class AssetIssueDetails(Document):
             "Item", self.item_code, ["asset_naming_series", "asset_category","asset_sub_category"], as_dict=1
         )
         asset_abbr = frappe.db.get_value('Asset Category',item_data.get("asset_category"),'abbr')
+        # pr_date = frappe.db.get_value('Purchase Receipt',self.purchase_receipt,'actual_receipt_date')
+        
         if not self.create_single_asset:
             asset = frappe.get_doc(
                 {
                     "doctype": "Asset",
                     "item_code": self.item_code,
                     "asset_name": self.item_name,
-                    "naming_series": item_data.get("asset_naming_series") or "AST",
+                    # "naming_series": item_data.get("asset_naming_series") or "AST",
                     "asset_category": item_data.get("asset_category"),
                     "asset_sub_category":item_data.get("asset_sub_category"),
                     "abbr": asset_abbr,
                     "cost_center": frappe.db.get_value("Branch", self.branch, "cost_center"),
                     "company": self.company,
                     "purchase_date": self.issued_date,
-                    "calculate_depreciation": 1,
+                    "calculate_depreciation": 0,
                     "asset_rate": self.asset_rate,
                     "purchase_amount": self.asset_rate,
                     "gross_purchase_amount": flt(self.asset_rate) * flt(qty),
@@ -138,7 +140,8 @@ class AssetIssueDetails(Document):
                     "asset_account": fixed_asset_account,
                     "credit_account": credit_account,
                     "asset_issue_details":self.name,
-                    "serial_number":self.reg_number
+                    "serial_number":self.reg_number,
+                    "next_depreciation_date":get_last_day(self.issued_date)
                 }
             )
         else:
@@ -147,14 +150,14 @@ class AssetIssueDetails(Document):
                     "doctype": "Asset",
                     "item_code": self.item_code,
                     "asset_name": self.item_name,
-                    "naming_series": item_data.get("asset_naming_series") or "AST",
+                    # "naming_series": item_data.get("asset_naming_series") or "AST",
                     "asset_category": item_data.get("asset_category"),
                     "asset_sub_category":item_data.get("asset_sub_category"),
                     "abbr": asset_abbr,
                     "cost_center": frappe.db.get_value("Branch", self.branch, "cost_center"),
                     "company": self.company,
-                    "purchase_date": self.issued_date,
-                    "calculate_depreciation": 1,
+                    "purchase_date": self.entry_date,
+                    "calculate_depreciation": 0,
                     "asset_rate": self.asset_rate,
                     "purchase_amount": self.asset_rate,
                     "gross_purchase_amount": flt(self.asset_rate) * flt(self.qty),
@@ -169,7 +172,8 @@ class AssetIssueDetails(Document):
                     "credit_account": credit_account,
                     "asset_issue_details":self.name,
                     "serial_number":self.reg_number,
-                    "is_single_asset":1
+                    "is_single_asset":1,
+                    "next_depreciation_date":get_last_day(self.issued_date)
                 }
             )
         asset.flags.ignore_validate = True
@@ -217,7 +221,19 @@ def check_item_code(doctype, txt, searchfield, start, page_len, filters):
     if filters.get('item_code'):
         cond += " ar.item_code = '{}'".format(filters.get('item_code'))
         cond += " and ar.cost_center = '{}'".format(cost_center)
+        # cond += " and ar.cost_center = '{}'".format(filters.get("cost_center"))
     query = "select ar.ref_doc from `tabAsset Received Entries` ar where {cond}".format(cond=cond)
+    # query = """select ar.ref_doc 
+	# 			from `tabAsset Received Entries` ar 
+	# 			where {cond}
+	# 			and not exists(
+	# 				select 1 
+	# 				from `tabAsset Issue Details` aid
+	# 				where aid.purchase_receipt = ar.ref_doc
+	# 				and aid.docstatus != 2
+	# 				and (select sum(ad.qty) from `tabAsset Issue Details` ad where ad.docstatus != 2 and ad.purchase_receipt = ar.ref_doc and ad.item_code = '{item}') > ar.qty
+	# 			)
+	# 		""".format(cond=cond, item=filters.get('item_code'))
  
     return frappe.db.sql(query)
 

@@ -1,0 +1,95 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:range_name",
+ "creation": "2025-08-06 12:26:07.648972",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "range_name",
+  "company",
+  "branch",
+  "column_break_3",
+  "location",
+  "items",
+  "is_disabled"
+ ],
+ "fields": [
+  {
+   "fieldname": "range_name",
+   "fieldtype": "Data",
+   "label": "Range Name",
+   "unique": 1
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Company",
+   "options": "Company",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Branch",
+   "options": "Branch",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "location",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Location",
+   "options": "Location"
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "label": "Location",
+   "options": "Range Location",
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_disabled",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Is Disabled",
+   "reqd": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-08-13 14:33:18.029659",
+ "modified_by": "Administrator",
+ "module": "Production",
+ "name": "Range",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

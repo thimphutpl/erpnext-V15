@@ -2,12 +2,14 @@
  "actions": [],
  "allow_rename": 1,
  "autoname": "AID.YY.MM.####",
- "creation": "2025-07-09 14:58:30.780218",
+ "creation": "2022-10-31 12:20:21.978835",
  "doctype": "DocType",
+ "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
   "branch",
   "entry_date",
+  "business_activity",
   "column_break_3",
   "cost_center",
   "company",
@@ -15,6 +17,7 @@
   "item_code",
   "item_name",
   "engine_no",
+  "purchase_date",
   "column_break_8",
   "purchase_receipt",
   "warehouse",
@@ -81,7 +84,7 @@
    "fieldname": "item_code",
    "fieldtype": "Link",
    "in_list_view": 1,
-   "label": "Material Code",
+   "label": "Item Code",
    "options": "Item",
    "reqd": 1
   },
@@ -103,7 +106,7 @@
   {
    "fieldname": "item_name",
    "fieldtype": "Data",
-   "label": "Material Name",
+   "label": "Item Name",
    "read_only": 1,
    "reqd": 1
   },
@@ -113,9 +116,11 @@
    "label": "Asset Issue Detail"
   },
   {
+   "default": "1",
    "fieldname": "qty",
    "fieldtype": "Int",
    "label": "Issued Quantity",
+   "read_only": 1,
    "reqd": 1
   },
   {
@@ -241,14 +246,27 @@
    "default": "0",
    "fieldname": "create_single_asset",
    "fieldtype": "Check",
-   "label": "Create Single Asset"
+   "label": "Create Single Asset",
+   "permlevel": 3
+  },
+  {
+   "fieldname": "purchase_date",
+   "fieldtype": "Date",
+   "label": "Purchase Date",
+   "read_only": 1
+  },
+  {
+   "fieldname": "business_activity",
+   "fieldtype": "Link",
+   "label": "Business Activity",
+   "options": "Business Activity"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-07-24 13:12:13.144811",
- "modified_by": "Administrator",
+ "modified": "2025-07-25 11:48:32.833815",
+ "modified_by": "kalden.dorji@thimphutechpark.bt",
  "module": "Buying",
  "name": "Asset Issue Details",
  "naming_rule": "Expression (old style)",
@@ -312,6 +330,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],

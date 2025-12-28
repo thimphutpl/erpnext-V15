@@ -26,10 +26,10 @@ frappe.ui.form.on("Delivery Note", {
 				return doc.docstatus == 1 || doc.qty <= doc.actual_qty ? "green" : "orange";
 			});
 
-		erpnext.queries.setup_queries(frm, "Warehouse", function () {
-			return erpnext.queries.warehouse(frm.doc);
-		});
-		erpnext.queries.setup_warehouse_query(frm);
+		// erpnext.queries.setup_queries(frm, "Warehouse", function () {
+		// 	return erpnext.queries.warehouse(frm.doc);
+		// });
+		// erpnext.queries.setup_warehouse_query(frm);
 
 		frm.set_query("transporter", function () {
 			return {
@@ -447,3 +447,83 @@ frappe.tour["Delivery Note"] = [
 		description: __("This option can be checked to edit the 'Posting Date' and 'Posting Time' fields."),
 	},
 ];
+
+// Simple Vehicle Availability Check for Delivery Note
+frappe.ui.form.on('Delivery Note', {
+    // When vehicle_no or posting_date changes
+    vehicle_no: function(frm) {
+        check_vehicle_simple(frm);
+    },
+    
+    posting_date: function(frm) {
+        check_vehicle_simple(frm);
+    },
+    
+    // When form loads
+    onload: function(frm) {
+        if (frm.doc.vehicle_no && frm.doc.posting_date) {
+            check_vehicle_simple(frm);
+        }
+    },
+    
+    // Before saving
+    validate: function(frm) {
+        if (frm.doc.vehicle_no && frm.doc.posting_date) {
+            return check_vehicle_before_save(frm);
+        }
+    }
+});
+
+// Simple check function
+function check_vehicle_simple(frm) {
+    if (!frm.doc.vehicle_no || !frm.doc.posting_date) return;
+    
+    frappe.call({
+        method: "erpnext.stock.doctype.delivery_note.delivery_note.check_vehicle_simple",
+        args: {
+            vehicle_no: frm.doc.vehicle_no,
+            posting_date: frm.doc.posting_date,
+            docname: frm.doc.name || ""
+        },
+        callback: function(r) {
+            if (r.message && r.message.conflict) {
+                frappe.show_alert({
+                    message: __("Vehicle {0} is already booked from {1} to {2}", [
+                        frm.doc.vehicle_no,
+                        r.message.from_date,
+                        r.message.to_date
+                    ]),
+                    indicator: 'orange'
+                }, 8);
+            }
+        }
+    });
+}
+
+// Check before saving
+function check_vehicle_before_save(frm) {
+    return new Promise((resolve) => {
+        frappe.call({
+            method: "erpnext.stock.doctype.delivery_note.delivery_note.check_vehicle_simple",
+            args: {
+                vehicle_no: frm.doc.vehicle_no,
+                posting_date: frm.doc.posting_date,
+                docname: frm.doc.name || ""
+            },
+            callback: function(r) {
+                if (r.message && r.message.conflict) {
+                    frappe.throw({
+                        title: __('Vehicle Not Available'),
+                        message: __("Vehicle {0} is already booked from {1} to {2}. Please choose another vehicle or date.", [
+                            frm.doc.vehicle_no,
+                            r.message.from_date,
+                            r.message.to_date
+                        ])
+                    });
+                    frappe.validated = false;
+                }
+                resolve();
+            }
+        });
+    });
+}

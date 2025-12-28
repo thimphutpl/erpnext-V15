@@ -13,6 +13,7 @@
   "tot_target_amount",
   "tot_adjustment_amount",
   "tot_net_target_amount",
+  "cost_center",
   "section_break_9",
   "get_accounts",
   "sb_target",
@@ -114,12 +115,19 @@
    "hidden": 1,
    "label": "Final Target Amount",
    "read_only": 1
+  },
+  {
+   "fieldname": "cost_center",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Cost Center",
+   "options": "Cost Center"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-06-18 14:41:52.378250",
+ "modified": "2025-06-27 17:12:08.673053",
  "modified_by": "Administrator",
  "module": "Budget",
  "name": "Revenue Target",

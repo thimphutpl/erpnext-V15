@@ -9,7 +9,7 @@
  "hide_custom": 0,
  "icon": "sell",
  "idx": 0,
- "is_hidden": 1,
+ "is_hidden": 0,
  "label": "Selling",
  "links": [
   {
@@ -542,8 +542,8 @@
    "type": "Link"
   }
  ],
- "modified": "2025-07-03 10:26:22.469414",
- "modified_by": "sonam.norbu@thimphutechpark.bt",
+ "modified": "2025-11-28 09:58:44.392799",
+ "modified_by": "Administrator",
  "module": "Selling",
  "name": "Selling",
  "number_cards": [],

@@ -15,6 +15,8 @@
   "pbva_account",
   "bonus_account",
   "ltc_account",
+  "mr_wages_account",
+  "mr_overtime_account",
   "section_break_8",
   "travel_incountry_account",
   "travel_outcountry_account",
@@ -246,12 +248,28 @@
    "fieldtype": "Link",
    "label": "LTC Payable",
    "options": "Account"
+  },
+  {
+   "fieldname": "mr_wages_account",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "MR Wages Account",
+   "options": "Account",
+   "reqd": 1
+  },
+  {
+   "fieldname": "mr_overtime_account",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "MR Overtime Account",
+   "options": "Account",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-08-14 20:25:50.259725",
+ "modified": "2025-12-07 12:58:58.148011",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "HR Accounts Settings",

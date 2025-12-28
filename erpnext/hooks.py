@@ -663,3 +663,9 @@ default_log_clearing_doctypes = {
 export_python_type_annotations = True
 
 fields_for_group_similar_items = ["qty", "amount"]
+
+doc_events = {
+    "Delivery Note": {
+        "validate": "erpnext.stock.doctype.delivery_note.delivery_note.validate_vehicle_simple"
+    }
+}

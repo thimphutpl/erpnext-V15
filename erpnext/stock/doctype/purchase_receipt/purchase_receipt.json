@@ -603,6 +603,7 @@
   {
    "fieldname": "taxes_charges_section",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "hide_border": 1,
    "label": "Taxes and Charges",
    "oldfieldtype": "Section Break"
@@ -627,6 +628,7 @@
   {
    "fieldname": "taxes_section",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "hide_border": 1
   },
   {
@@ -1281,7 +1283,7 @@
  "idx": 261,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-03-10 11:28:55.982881",
+ "modified": "2025-12-07 10:41:58.589378",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Purchase Receipt",

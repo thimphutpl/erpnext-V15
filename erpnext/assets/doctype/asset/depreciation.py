@@ -1628,15 +1628,27 @@ def get_profit_gl_entries(
 # 	return loss_disposal_account, gain_disposal_account, depreciation_cost_center
 
 
+# @frappe.whitelist()
+# def get_disposal_account_and_cost_center(company):
+# 	loss_disposal_account = frappe.get_cached_value(
+# 		"Company", company, ["disposal_account"]
+# 	)
+# 	if not loss_disposal_account:
+# 		frappe.throw(_("Please set 'Gain/Loss Account on Asset Disposal' in Company {0}").format(company))
+
+# 	return loss_disposal_account
 @frappe.whitelist()
 def get_disposal_account_and_cost_center(company):
-	loss_disposal_account = frappe.get_cached_value(
-		"Company", company, ["disposal_account"]
+	disposal_account, depreciation_cost_center = frappe.get_cached_value(
+		"Company", company, ["disposal_account","depreciation_cost_center"]
 	)
-	if not loss_disposal_account:
-		frappe.throw(_("Please set 'Gain/Loss Account on Asset Disposal' in Company {0}").format(company))
 
-	return loss_disposal_account
+	if not disposal_account:
+		frappe.throw(_("Please set 'Gain/Loss Account on Asset Disposal' in Company {0}").format(company))
+	# if not depreciation_cost_center:
+	# 	frappe.throw(_("Please set 'Asset Depreciation Cost Center' in Company {0}").format(company))
+
+	return disposal_account, depreciation_cost_center
 
 
 @frappe.whitelist()

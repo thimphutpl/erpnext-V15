@@ -1,7 +1,6 @@
 # Copyright (c) 2015, Frappe Technologies Pvt. Ltd. and Contributors
 # License: GNU General Public License v3. See license.txt
 
-
 import frappe
 from frappe import _
 from frappe.utils import cint, flt
@@ -32,6 +31,7 @@ def execute(filters=None):
 		"Company", filters.company, "default_currency"
 	)
 
+	# Fetch financial data
 	asset = get_data(
 		filters.company,
 		"Asset",
@@ -62,16 +62,20 @@ def execute(filters=None):
 		accumulated_values=filters.accumulated_values,
 	)
 
+	# Calculate provisional profit/loss
 	provisional_profit_loss, total_credit = get_provisional_profit_loss(
 		asset, liability, equity, period_list, filters.company, currency
 	)
 
 	message, opening_balance = check_opening_balance(asset, liability, equity)
 
+	# Combine all data
 	data = []
 	data.extend(asset or [])
 	data.extend(liability or [])
 	data.extend(equity or [])
+
+	# Handle unclosed fiscal year
 	if opening_balance and round(opening_balance, 2) != 0:
 		unclosed = {
 			"account_name": "'" + _("Unclosed Fiscal Years Profit / Loss (Credit)") + "'",
@@ -92,12 +96,37 @@ def execute(filters=None):
 	if total_credit:
 		data.append(total_credit)
 
+	# Add sequential Note column for accounts with is_note checked
+	note_counter = 1
+	for row in data:
+		account_name = row.get("account") or row.get("account_name")
+		if account_name:
+			is_note = frappe.db.get_value("Account", account_name.strip("'"), "is_note")
+			if is_note:
+				row['note'] = note_counter
+				note_counter += 1
+			else:
+				row['note'] = ""
+		else:
+			row['note'] = ""
+
 	columns = get_columns(
-		filters.periodicity, period_list, filters.accumulated_values, company=filters.company
-	)
+		filters.periodicity,
+		period_list,
+		filters.accumulated_values,
+		company=filters.companyerp)
+	note_column = {
+		"label": _("Note"),
+		"fieldname": "note",
+		"fieldtype": "Int",
+		"width": 80
+	}
 
+	# Insert after Account column (index 1)
+	columns.insert(1, note_column)
+
+	# Chart and report summary
 	chart = get_chart_data(filters, columns, asset, liability, equity, currency)
-
 	report_summary, primitive_summary = get_report_summary(
 		period_list, asset, liability, equity, provisional_profit_loss, currency, filters
 	)
@@ -108,9 +137,7 @@ def execute(filters=None):
 	return columns, data, message, chart, report_summary, primitive_summary
 
 
-def get_provisional_profit_loss(
-	asset, liability, equity, period_list, company, currency=None, consolidated=False
-):
+def get_provisional_profit_loss(asset, liability, equity, period_list, company, currency=None, consolidated=False):
 	provisional_profit_loss = {}
 	total_row = {}
 	if asset:
@@ -176,22 +203,12 @@ def check_opening_balance(asset, liability, equity):
 	return None, None
 
 
-def get_report_summary(
-	period_list,
-	asset,
-	liability,
-	equity,
-	provisional_profit_loss,
-	currency,
-	filters,
-	consolidated=False,
-):
+def get_report_summary(period_list, asset, liability, equity, provisional_profit_loss, currency, filters, consolidated=False):
 	net_asset, net_liability, net_equity, net_provisional_profit_loss = 0.0, 0.0, 0.0, 0.0
 
 	if filters.get("accumulated_values"):
 		period_list = [period_list[-1]]
 
-	# from consolidated financial statement
 	if filters.get("accumulated_in_group_company"):
 		period_list = get_filtered_list_for_consolidated_report(filters, period_list)
 
@@ -208,20 +225,11 @@ def get_report_summary(
 
 	return [
 		{"value": net_asset, "label": _("Total Asset"), "datatype": "Currency", "currency": currency},
-		{
-			"value": net_liability,
-			"label": _("Total Liability"),
-			"datatype": "Currency",
-			"currency": currency,
-		},
+		{"value": net_liability, "label": _("Total Liability"), "datatype": "Currency", "currency": currency},
 		{"value": net_equity, "label": _("Total Equity"), "datatype": "Currency", "currency": currency},
-		{
-			"value": net_provisional_profit_loss,
-			"label": _("Provisional Profit / Loss (Credit)"),
-			"indicator": "Green" if net_provisional_profit_loss > 0 else "Red",
-			"datatype": "Currency",
-			"currency": currency,
-		},
+		{"value": net_provisional_profit_loss, "label": _("Provisional Profit / Loss (Credit)"),
+		 "indicator": "Green" if net_provisional_profit_loss > 0 else "Red",
+		 "datatype": "Currency", "currency": currency},
 	], (net_asset - net_liability + net_equity)
 
 

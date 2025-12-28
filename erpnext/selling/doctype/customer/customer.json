@@ -16,6 +16,7 @@
   "customer_name",
   "customer_type",
   "customer_group",
+  "customer_id",
   "column_break0",
   "territory",
   "gender",
@@ -42,10 +43,18 @@
   "language",
   "column_break_45",
   "customer_details",
+  "bank_details_tab",
+  "bank_name",
+  "bank_branch",
+  "column_break_wjzx",
+  "bank_account_type",
+  "account_number",
   "dashboard_tab",
   "contact_and_address_tab",
   "address_contacts",
   "address_html",
+  "location",
+  "dzongkhag",
   "column_break1",
   "contact_html",
   "primary_address_and_contact_detail",
@@ -135,7 +144,7 @@
    "label": "Customer Type",
    "oldfieldname": "customer_type",
    "oldfieldtype": "Select",
-   "options": "Company\nIndividual\nPartnership",
+   "options": "Company\nIndividual\nPartnership\nDomestic Customer\nInternational Customer",
    "reqd": 1
   },
   {
@@ -260,7 +269,6 @@
    "options": "Language"
   },
   {
-   "depends_on": "eval:!doc.__islocal",
    "fieldname": "address_contacts",
    "fieldtype": "Section Break",
    "label": "Address and Contact",
@@ -581,6 +589,60 @@
    "no_copy": 1,
    "options": "Prospect",
    "print_hide": 1
+  },
+  {
+   "fieldname": "customer_id",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Citizenship ID",
+   "oldfieldname": "customer_group",
+   "oldfieldtype": "Link",
+   "unique": 1
+  },
+  {
+   "fieldname": "location",
+   "fieldtype": "Data",
+   "label": "Location"
+  },
+  {
+   "fieldname": "dzongkhag",
+   "fieldtype": "Link",
+   "label": "Dzongkhag",
+   "options": "Dzongkhag",
+   "reqd": 1
+  },
+  {
+   "fieldname": "bank_details_tab",
+   "fieldtype": "Tab Break",
+   "label": "Bank Details"
+  },
+  {
+   "fieldname": "bank_name",
+   "fieldtype": "Link",
+   "label": "Bank Name",
+   "options": "Financial Institution"
+  },
+  {
+   "fieldname": "bank_branch",
+   "fieldtype": "Link",
+   "label": "Bank Branch",
+   "options": "Financial Institution Branch"
+  },
+  {
+   "fieldname": "column_break_wjzx",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "bank_account_type",
+   "fieldtype": "Link",
+   "label": "Bank Account Type",
+   "options": "Bank Account Type"
+  },
+  {
+   "fieldname": "account_number",
+   "fieldtype": "Data",
+   "label": "Account Number"
   }
  ],
  "icon": "fa fa-user",
@@ -594,7 +656,7 @@
    "link_fieldname": "party"
   }
  ],
- "modified": "2024-06-17 03:24:59.612974",
+ "modified": "2025-12-07 15:34:21.802576",
  "modified_by": "Administrator",
  "module": "Selling",
  "name": "Customer",

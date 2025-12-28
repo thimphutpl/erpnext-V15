@@ -9,6 +9,7 @@
   "charge_type",
   "row_id",
   "account_head",
+  "add_deduct_tax",
   "col_break_1",
   "description",
   "included_in_print_rate",
@@ -212,13 +213,21 @@
    "label": "Account Currency",
    "options": "Currency",
    "read_only": 1
+  },
+  {
+   "fieldname": "add_deduct_tax",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Add or Deduct",
+   "options": "Add\nDeduct",
+   "reqd": 1
   }
  ],
  "idx": 1,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-01-14 10:08:17.776528",
+ "modified": "2025-12-25 12:41:51.186970",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Sales Taxes and Charges",

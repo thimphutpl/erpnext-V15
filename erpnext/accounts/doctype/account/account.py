@@ -40,11 +40,16 @@ class Account(NestedSet):
 		bank_account_type: DF.Link | None
 		bank_branch: DF.Link | None
 		bank_name: DF.Link | None
+		budget_type: DF.Link | None
 		company: DF.Link
+		cost_center: DF.Link | None
 		disabled: DF.Check
 		freeze_account: DF.Literal["No", "Yes"]
+		ignore_budget_check: DF.Check
 		include_in_gross: DF.Check
+		is_centralized_budget: DF.Check
 		is_group: DF.Check
+		is_note: DF.Check
 		lft: DF.Int
 		old_parent: DF.Data | None
 		parent_account: DF.Link

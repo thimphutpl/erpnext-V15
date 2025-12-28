@@ -13,20 +13,36 @@
   "column_break0",
   "title",
   "naming_series",
-  "branch",
-  "customer",
-  "customer_name",
+  "sales_order_series",
   "tax_id",
   "order_type",
+  "is_allotment",
+  "allotment_date",
+  "supply_order_ref",
   "column_break_7",
   "transaction_date",
   "delivery_date",
+  "is_export",
+  "country",
+  "skip_delivery_note",
+  "has_unit_price_items",
   "column_break1",
+  "branch",
+  "company",
+  "amended_from",
+  "is_rural_sale",
+  "is_credit",
+  "bg_no",
+  "bg_date",
+  "is_kidu_sale",
+  "customer_details_section",
+  "customer",
+  "customer_name",
+  "customer_id",
+  "column_break_gfns",
   "po_no",
   "po_date",
-  "company",
-  "skip_delivery_note",
-  "amended_from",
+  "customers_product_requisition_no",
   "accounting_dimensions_section",
   "cost_center",
   "dimension_col_break",
@@ -40,9 +56,8 @@
   "plc_conversion_rate",
   "ignore_pricing_rule",
   "sec_warehouse",
-  "scan_barcode",
-  "column_break_28",
   "set_warehouse",
+  "column_break_28",
   "reserve_stock",
   "items_section",
   "items",
@@ -56,14 +71,15 @@
   "total",
   "net_total",
   "taxes_section",
-  "tax_category",
   "taxes_and_charges",
+  "tax_category",
   "column_break_38",
   "shipping_rule",
   "column_break_49",
   "incoterm",
   "named_place",
   "section_break_40",
+  "column_break_cdwj",
   "taxes",
   "section_break_43",
   "base_total_taxes_and_charges",
@@ -84,10 +100,29 @@
   "section_break_48",
   "apply_discount_on",
   "base_discount_amount",
-  "coupon_code",
-  "column_break_50",
   "additional_discount_percentage",
   "discount_amount",
+  "discount_or_cost_amount",
+  "challan_cost",
+  "column_break_50",
+  "coupon_code",
+  "additional_charges_section",
+  "loading_cost",
+  "additional_cost",
+  "transportation_charges_section",
+  "rate_template",
+  "transportation_rate",
+  "net_transportation_charges",
+  "column_break_acmi",
+  "total_distance",
+  "total_quantity",
+  "transportation_charges",
+  "terms_section_break",
+  "tc_name",
+  "terms",
+  "header_and_footer_section",
+  "header",
+  "footer",
   "sec_tax_breakup",
   "other_charges_calculation",
   "packing_list",
@@ -121,9 +156,6 @@
   "payment_terms_section",
   "payment_terms_template",
   "payment_schedule",
-  "terms_section_break",
-  "tc_name",
-  "terms",
   "more_info",
   "section_break_78",
   "status",
@@ -193,7 +225,8 @@
    "hide_seconds": 1,
    "label": "Title",
    "no_copy": 1,
-   "print_hide": 1
+   "print_hide": 1,
+   "reqd": 1
   },
   {
    "fieldname": "naming_series",
@@ -245,7 +278,7 @@
    "label": "Order Type",
    "oldfieldname": "order_type",
    "oldfieldtype": "Select",
-   "options": "\nSales\nMaintenance\nShopping Cart",
+   "options": "\nSales",
    "print_hide": 1,
    "reqd": 1
   },
@@ -295,7 +328,7 @@
    "hide_days": 1,
    "hide_seconds": 1,
    "in_standard_filter": 1,
-   "label": "Date",
+   "label": "Posting Date",
    "no_copy": 1,
    "oldfieldname": "transaction_date",
    "oldfieldtype": "Date",
@@ -331,6 +364,7 @@
    "depends_on": "eval:doc.po_no",
    "fieldname": "po_date",
    "fieldtype": "Date",
+   "hidden": 1,
    "hide_days": 1,
    "hide_seconds": 1,
    "label": "Customer's Purchase Order Date",
@@ -479,7 +513,6 @@
    "print_hide": 1
   },
   {
-   "collapsible": 1,
    "fieldname": "currency_and_price_list",
    "fieldtype": "Section Break",
    "hide_days": 1,
@@ -561,6 +594,7 @@
    "default": "0",
    "fieldname": "ignore_pricing_rule",
    "fieldtype": "Check",
+   "hidden": 1,
    "hide_days": 1,
    "hide_seconds": 1,
    "label": "Ignore Pricing Rule",
@@ -576,11 +610,12 @@
    "label": "Items"
   },
   {
+   "fetch_from": "cost_center.warehouse",
    "fieldname": "set_warehouse",
    "fieldtype": "Link",
    "hide_days": 1,
    "hide_seconds": 1,
-   "label": "Set Source Warehouse",
+   "label": "Warehouse",
    "options": "Warehouse",
    "print_hide": 1
   },
@@ -592,14 +627,6 @@
    "hide_seconds": 1,
    "oldfieldtype": "Section Break",
    "options": "fa fa-shopping-cart"
-  },
-  {
-   "fieldname": "scan_barcode",
-   "fieldtype": "Data",
-   "hide_days": 1,
-   "hide_seconds": 1,
-   "label": "Scan Barcode",
-   "options": "Barcode"
   },
   {
    "allow_bulk_edit": 1,
@@ -710,6 +737,7 @@
   {
    "fieldname": "taxes_section",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "hide_days": 1,
    "hide_seconds": 1,
    "label": "Taxes",
@@ -753,6 +781,7 @@
   {
    "fieldname": "taxes_and_charges",
    "fieldtype": "Link",
+   "hidden": 1,
    "hide_days": 1,
    "hide_seconds": 1,
    "label": "Sales Taxes and Charges Template",
@@ -764,6 +793,7 @@
   {
    "fieldname": "taxes",
    "fieldtype": "Table",
+   "hidden": 1,
    "hide_days": 1,
    "hide_seconds": 1,
    "label": "Sales Taxes and Charges",
@@ -864,6 +894,7 @@
   {
    "fieldname": "coupon_code",
    "fieldtype": "Link",
+   "hidden": 1,
    "hide_days": 1,
    "hide_seconds": 1,
    "label": "Coupon Code",
@@ -898,6 +929,7 @@
   {
    "fieldname": "additional_discount_percentage",
    "fieldtype": "Float",
+   "hidden": 1,
    "hide_days": 1,
    "hide_seconds": 1,
    "label": "Additional Discount Percentage",
@@ -906,6 +938,7 @@
   {
    "fieldname": "discount_amount",
    "fieldtype": "Currency",
+   "hidden": 1,
    "hide_days": 1,
    "hide_seconds": 1,
    "label": "Additional Discount Amount",
@@ -1156,7 +1189,8 @@
    "label": "Project",
    "oldfieldname": "project",
    "oldfieldtype": "Link",
-   "options": "Project"
+   "options": "Project",
+   "search_index": 1
   },
   {
    "fieldname": "party_account_currency",
@@ -1550,12 +1584,12 @@
    "read_only": 1
   },
   {
-   "collapsible": 1,
    "fieldname": "accounting_dimensions_section",
    "fieldtype": "Section Break",
    "label": "Accounting Dimensions"
   },
   {
+   "fetch_from": "branch.cost_center",
    "fieldname": "cost_center",
    "fieldtype": "Link",
    "label": "Cost Center",
@@ -1656,16 +1690,196 @@
    "print_hide": 1
   },
   {
+   "default": "0",
+   "fieldname": "has_unit_price_items",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Has Unit Price Items",
+   "no_copy": 1
+  },
+  {
    "fieldname": "branch",
    "fieldtype": "Link",
-   "hide_days": 1,
-   "hide_seconds": 1,
    "label": "Branch",
-   "no_copy": 1,
-   "oldfieldname": "naming_series",
-   "oldfieldtype": "Select",
    "options": "Branch",
-   "print_hide": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "customer_details_section",
+   "fieldtype": "Section Break",
+   "label": "Customer Details "
+  },
+  {
+   "fieldname": "customer_id",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Customer ID"
+  },
+  {
+   "fieldname": "column_break_gfns",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "customers_product_requisition_no",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Customer's Product Requisition No."
+  },
+  {
+   "default": "0",
+   "fieldname": "is_allotment",
+   "fieldtype": "Check",
+   "label": "Is Allotment"
+  },
+  {
+   "depends_on": "eval: doc.is_allotment",
+   "fieldname": "allotment_date",
+   "fieldtype": "Date",
+   "hidden": 1,
+   "label": "Allotment Date"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_export",
+   "fieldtype": "Check",
+   "label": "Is Export"
+  },
+  {
+   "depends_on": "eval: doc.is_export",
+   "fieldname": "country",
+   "fieldtype": "Link",
+   "label": "Country",
+   "options": "Country"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_credit",
+   "fieldtype": "Check",
+   "label": "Is Credit"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_rural_sale",
+   "fieldtype": "Check",
+   "label": "Is Rural Sale"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_kidu_sale",
+   "fieldtype": "Check",
+   "label": "Is Kidu Sale"
+  },
+  {
+   "depends_on": "eval: doc.is_credit",
+   "fieldname": "bg_no",
+   "fieldtype": "Data",
+   "label": "BG No: "
+  },
+  {
+   "depends_on": "eval: doc.is_credit",
+   "fieldname": "bg_date",
+   "fieldtype": "Date",
+   "label": "BG Validity Date"
+  },
+  {
+   "fieldname": "supply_order_ref",
+   "fieldtype": "Data",
+   "label": "Supply Order Reference"
+  },
+  {
+   "fieldname": "additional_charges_section",
+   "fieldtype": "Section Break",
+   "label": "Additional Charges "
+  },
+  {
+   "fieldname": "loading_cost",
+   "fieldtype": "Data",
+   "label": "Loading Cost "
+  },
+  {
+   "fieldname": "additional_cost",
+   "fieldtype": "Data",
+   "label": "Additional Cost"
+  },
+  {
+   "fieldname": "transportation_charges_section",
+   "fieldtype": "Section Break",
+   "label": "Transportation Charges"
+  },
+  {
+   "fieldname": "rate_template",
+   "fieldtype": "Link",
+   "label": "Rate Template",
+   "options": "Transportation Rate"
+  },
+  {
+   "fieldname": "column_break_acmi",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_distance",
+   "fieldtype": "Data",
+   "label": "Total Distance"
+  },
+  {
+   "fetch_from": "rate_template.rate",
+   "fieldname": "transportation_rate",
+   "fieldtype": "Data",
+   "label": "Transportation Rate"
+  },
+  {
+   "fieldname": "net_transportation_charges",
+   "fieldtype": "Data",
+   "label": "Net Transportation Charges",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_quantity",
+   "fieldtype": "Data",
+   "label": "Total Quantity"
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "header_and_footer_section",
+   "fieldtype": "Section Break",
+   "label": "Header and Footer"
+  },
+  {
+   "fieldname": "header",
+   "fieldtype": "Text Editor",
+   "label": "Header"
+  },
+  {
+   "fieldname": "footer",
+   "fieldtype": "Text Editor",
+   "label": "Footer"
+  },
+  {
+   "fieldname": "transportation_charges",
+   "fieldtype": "Currency",
+   "label": "Transportation Charges"
+  },
+  {
+   "fieldname": "discount_or_cost_amount",
+   "fieldtype": "Currency",
+   "label": "Discount Cost"
+  },
+  {
+   "fieldname": "challan_cost",
+   "fieldtype": "Currency",
+   "label": "Challan Cost"
+  },
+  {
+   "fieldname": "column_break_cdwj",
+   "fieldtype": "Column Break",
+   "hidden": 1
+  },
+  {
+   "fieldname": "sales_order_series",
+   "fieldtype": "Link",
+   "label": "Sales Order Series",
+   "no_copy": 1,
+   "options": "Item Group",
    "reqd": 1,
    "set_only_once": 1
   }
@@ -1674,7 +1888,7 @@
  "idx": 105,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-03-20 10:55:04.016680",
+ "modified": "2025-12-15 21:32:28.997506",
  "modified_by": "Administrator",
  "module": "Selling",
  "name": "Sales Order",

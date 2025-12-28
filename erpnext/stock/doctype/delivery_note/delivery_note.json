@@ -64,6 +64,18 @@
   "named_place",
   "section_break_41",
   "taxes",
+  "transporter_info",
+  "transporter",
+  "driver",
+  "lr_no",
+  "vehicle_no",
+  "col_break34",
+  "transporter_name",
+  "driver_name",
+  "lr_date",
+  "transportation_rate",
+  "total_quantity",
+  "transportation_charges",
   "section_break_44",
   "base_total_taxes_and_charges",
   "column_break_47",
@@ -124,15 +136,6 @@
   "installation_status",
   "column_break_89",
   "per_returned",
-  "transporter_info",
-  "transporter",
-  "driver",
-  "lr_no",
-  "vehicle_no",
-  "col_break34",
-  "transporter_name",
-  "driver_name",
-  "lr_date",
   "customer_po_details",
   "po_no",
   "column_break_17",
@@ -721,6 +724,7 @@
    "collapsible": 1,
    "fieldname": "section_break_49",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Additional Discount"
   },
   {
@@ -1252,7 +1256,6 @@
    "read_only": 1
   },
   {
-   "depends_on": "eval: doc.is_internal_customer",
    "fieldname": "set_target_warehouse",
    "fieldtype": "Link",
    "ignore_user_permissions": 1,
@@ -1412,13 +1415,28 @@
    "print_hide": 1,
    "reqd": 1,
    "set_only_once": 1
+  },
+  {
+   "fieldname": "transportation_rate",
+   "fieldtype": "Data",
+   "label": "Transportation rate"
+  },
+  {
+   "fieldname": "total_quantity",
+   "fieldtype": "Data",
+   "label": "Total Quantity"
+  },
+  {
+   "fieldname": "transportation_charges",
+   "fieldtype": "Data",
+   "label": "Transportation Charges"
   }
  ],
  "icon": "fa fa-truck",
  "idx": 146,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-03-20 10:56:45.317048",
+ "modified": "2025-12-25 10:52:53.521328",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Delivery Note",

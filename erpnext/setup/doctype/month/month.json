@@ -1,6 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "field:month",
  "creation": "2025-06-18 14:07:19.358085",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -12,7 +13,8 @@
   {
    "fieldname": "month",
    "fieldtype": "Data",
-   "label": "Month"
+   "label": "Month",
+   "unique": 1
   },
   {
    "fieldname": "month_no",
@@ -23,10 +25,11 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-06-18 14:09:26.452482",
+ "modified": "2025-12-15 22:56:37.402222",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Month",
+ "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [
   {

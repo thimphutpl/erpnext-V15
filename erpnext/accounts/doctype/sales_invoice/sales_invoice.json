@@ -1145,7 +1145,6 @@
    "oldfieldtype": "Currency",
    "options": "Company:company:default_currency",
    "print_hide": 1,
-   "read_only": 1,
    "reqd": 1
   },
   {
@@ -2207,7 +2206,7 @@
    "link_fieldname": "consolidated_invoice"
   }
  ],
- "modified": "2025-03-20 10:59:07.744972",
+ "modified": "2025-12-22 15:34:53.941923",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Sales Invoice",

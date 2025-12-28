@@ -20,7 +20,9 @@
   "branch_created",
   "lft",
   "rgt",
-  "old_parent"
+  "old_parent",
+  "use_budget_from_parent",
+  "budget_cost_center"
  ],
  "fields": [
   {
@@ -134,13 +136,26 @@
    "fieldtype": "Link",
    "label": "Warehouse",
    "options": "Warehouse"
+  },
+  {
+   "default": "0",
+   "fieldname": "use_budget_from_parent",
+   "fieldtype": "Check",
+   "label": "Use Budget from Parent Cost Centers"
+  },
+  {
+   "fieldname": "budget_cost_center",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Budget Cost Center",
+   "options": "Cost Center"
   }
  ],
  "icon": "fa fa-money",
  "idx": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2025-02-17 16:33:59.117696",
+ "modified": "2025-12-25 18:06:54.098911",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Cost Center",

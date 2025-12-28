@@ -24,7 +24,7 @@ def get_warehouse_account_map(company=None):
 
 	if not warehouse_account_map or not company_warehouse_account_map or frappe.flags.in_test:
 		warehouse_account = frappe._dict()
-
+	
 		filters = {}
 		if company:
 			filters["company"] = company

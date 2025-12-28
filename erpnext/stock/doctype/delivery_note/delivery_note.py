@@ -3,6 +3,7 @@
 
 
 import frappe
+from frappe.utils import getdate
 from frappe import _
 from frappe.contacts.doctype.address.address import get_company_address
 from frappe.desk.notifications import clear_doctype_notifications
@@ -133,7 +134,10 @@ class DeliveryNote(SellingController):
 		total_commission: DF.Currency
 		total_net_weight: DF.Float
 		total_qty: DF.Float
+		total_quantity: DF.Data | None
 		total_taxes_and_charges: DF.Currency
+		transportation_charges: DF.Data | None
+		transportation_rate: DF.Data | None
 		transporter: DF.Link | None
 		transporter_name: DF.Data | None
 		vehicle_no: DF.Data | None
@@ -348,7 +352,7 @@ class DeliveryNote(SellingController):
 							"type_of_transaction": "Outward",
 							"serial_and_batch_bundle": bundle_id,
 							"item_code": item.get("item_code"),
-							"warehouse": item.get("warehouse"),
+							# "warehouse": item.get("warehouse"),
 						}
 					)
 
@@ -1389,3 +1393,57 @@ def make_inter_company_transaction(doctype, source_name, target_doc=None):
 	)
 
 	return doclist
+
+@frappe.whitelist()
+def check_vehicle_simple(vehicle_no, posting_date, docname=None):
+	"""
+	Simple check: Is vehicle already booked on this date?
+	"""
+	if not vehicle_no or not posting_date:
+		return {"conflict": False}
+	
+	posting_date = getdate(posting_date)
+	
+	# Simple SQL query
+	conflict = frappe.db.sql("""
+		SELECT 
+			ta.vehicle_number,
+			tai.from_date,
+			tai.to_date,
+			ta.name as ta_name
+		FROM 
+			`tabTravel Authorization` ta
+		JOIN 
+			`tabTravel Authorization Item` tai ON ta.name = tai.parent
+		WHERE 
+			ta.vehicle_number = %s
+			AND ta.docstatus = 1
+			AND %s BETWEEN tai.from_date AND tai.to_date
+			AND ta.name != %s
+		LIMIT 1
+	""", (vehicle_no, posting_date, docname or ""), as_dict=True)
+	
+	if conflict:
+		return {
+			"conflict": True,
+			"vehicle_no": conflict[0].vehicle_no,
+			"from_date": frappe.utils.format_date(conflict[0].from_date),
+			"to_date": frappe.utils.format_date(conflict[0].to_date),
+			"ta_name": conflict[0].ta_name
+		}
+	
+	return {"conflict": False}
+
+@frappe.whitelist()
+def validate_vehicle_simple(doc, method):
+	"""
+	Simple server validation
+	"""
+	if doc.docstatus == 0 and doc.vehicle_no and doc.posting_date:
+		conflict = check_vehicle_simple(doc.vehicle_no, doc.posting_date, doc.name)
+		
+		if conflict.get("conflict"):
+			frappe.throw(
+				_("Cannot save: Vehicle {0} is booked from {1} to {2}"),
+				title=_("Vehicle Not Available")
+			)

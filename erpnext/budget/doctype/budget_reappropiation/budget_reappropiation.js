@@ -13,8 +13,7 @@ frappe.ui.form.on('Budget Reappropiation', {
 			return {
 				filters: {
 					company: frm.doc.company,
-					disabled: 0,
-					is_group: 0
+					use_budget_from_parent:1
 				}
 			}
 		});
@@ -22,8 +21,7 @@ frappe.ui.form.on('Budget Reappropiation', {
 			return {
 				filters: {
 					company: frm.doc.company,
-					disabled: 0,
-					is_group: 0
+					use_budget_from_parent:1
 				}
 			}
 		});
@@ -39,7 +37,7 @@ var apply_account_filter = function(frm){
 			filters: {
 				company: frm.doc.company,
 				is_group: 0,
-				// account_type:["in",["Expense Account","Fixed Asset"]],
+				account_type:["in",["Expense Account","Fixed Asset"]],
 				budget_type:frm.doc.budget_type
 			}
 		};

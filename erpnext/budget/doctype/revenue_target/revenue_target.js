@@ -13,10 +13,12 @@ frappe.ui.form.on('Revenue Target', {
 		});
 		frm.set_query("cost_center", function(){
 			return {
-				"filters": [
-					["is_group","=", "0"]
+				"filters": {
+					is_group:1,
+					use_budget_from_parent:1
+
 						
-				]
+			}
 			}
 		});
 	},

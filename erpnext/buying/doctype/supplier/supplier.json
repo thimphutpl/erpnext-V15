@@ -12,25 +12,24 @@
  "field_order": [
   "naming_series",
   "supplier_name",
+  "supplier_tpn_no",
   "country",
-  "tpn_no",
+  "attention_person",
   "column_break0",
   "supplier_group",
   "supplier_type",
   "is_transporter",
   "image",
-  "section_break_yhma",
-  "bank_items",
-  "section_break_hwoe",
-  "bank_name",
-  "bank_branch",
-  "column_break_gxxz",
-  "bank_account_type",
-  "account_number",
+  "registered",
+  "is_dhi_company",
   "location_and_contact_details_section",
   "location",
-  "column_break_ipqd",
+  "cb_sb_lcd",
   "telephone_and_fax",
+  "email_address",
+  "section_credit_limit",
+  "credit_days_based_on",
+  "credit_days",
   "defaults_section",
   "default_currency",
   "default_bank_account",
@@ -48,9 +47,24 @@
   "language",
   "tax_tab",
   "tax_id",
+  "tax_holiday",
   "column_break_27",
   "tax_category",
   "tax_withholding_category",
+  "bank_account_details_tab",
+  "default_bank_account_section",
+  "bank_name",
+  "bank_account_type",
+  "account_number",
+  "column_break_ilcg",
+  "bank_branch",
+  "inr_bank_code",
+  "inr_purpose_code",
+  "international_bank_details_section",
+  "bank",
+  "swift_code",
+  "column_break_ldue",
+  "bank_address",
   "dashboard_tab",
   "contact_and_address_tab",
   "address_contacts",
@@ -69,9 +83,6 @@
   "payment_terms",
   "default_accounts_section",
   "accounts",
-  "portal_users_tab",
-  "portal_users",
-  "column_break_1mqv",
   "settings_tab",
   "allow_purchase_invoice_creation_without_purchase_order",
   "allow_purchase_invoice_creation_without_purchase_receipt",
@@ -86,7 +97,10 @@
   "on_hold",
   "hold_type",
   "column_break_59",
-  "release_date"
+  "release_date",
+  "portal_users_tab",
+  "portal_users",
+  "column_break_1mqv"
  ],
  "fields": [
   {
@@ -108,7 +122,8 @@
    "no_copy": 1,
    "oldfieldname": "supplier_name",
    "oldfieldtype": "Data",
-   "reqd": 1
+   "reqd": 1,
+   "unique": 1
   },
   {
    "fieldname": "country",
@@ -119,6 +134,7 @@
   {
    "fieldname": "default_bank_account",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Default Company Bank Account",
    "options": "Bank Account"
   },
@@ -143,6 +159,7 @@
    "default": "0",
    "fieldname": "is_transporter",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "Is Transporter"
   },
   {
@@ -183,16 +200,17 @@
    "options": "Supplier Group"
   },
   {
-   "default": "Company",
+   "default": "Domestic Supplier",
    "fieldname": "supplier_type",
    "fieldtype": "Select",
    "label": "Supplier Type",
-   "options": "Company\nIndividual\nPartnership",
+   "options": "Domestic Supplier\nIndian Supplier\nInternational Supplier",
    "reqd": 1
   },
   {
    "fieldname": "language",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Print Language",
    "options": "Language"
   },
@@ -330,6 +348,7 @@
   {
    "fieldname": "website",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Website",
    "oldfieldname": "website",
    "oldfieldtype": "Data"
@@ -424,6 +443,7 @@
   {
    "fieldname": "accounting_tab",
    "fieldtype": "Tab Break",
+   "hidden": 1,
    "label": "Accounting"
   },
   {
@@ -434,12 +454,14 @@
   {
    "fieldname": "tax_tab",
    "fieldtype": "Tab Break",
+   "hidden": 1,
    "label": "Tax"
   },
   {
    "collapsible": 1,
    "fieldname": "internal_supplier_section",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Internal Supplier"
   },
   {
@@ -488,47 +510,78 @@
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "account_number",
-   "fieldtype": "Data",
-   "label": "Account Number",
-   "read_only": 1
+   "fieldname": "tax_holiday",
+   "fieldtype": "Link",
+   "label": "Tax Holiday",
+   "options": "Tax Holiday"
   },
   {
-   "fieldname": "section_break_hwoe",
-   "fieldtype": "Section Break"
+   "fieldname": "bank_account_details_tab",
+   "fieldtype": "Tab Break",
+   "label": "Bank Information"
+  },
+  {
+   "fieldname": "default_bank_account_section",
+   "fieldtype": "Section Break",
+   "label": "Default Bank Account"
   },
   {
    "fieldname": "bank_name",
-   "fieldtype": "Data",
+   "fieldtype": "Link",
    "label": "Bank Name",
-   "read_only": 1
+   "options": "Financial Institution"
+  },
+  {
+   "fieldname": "column_break_ilcg",
+   "fieldtype": "Column Break"
   },
   {
    "fieldname": "bank_branch",
-   "fieldtype": "Data",
+   "fieldtype": "Link",
    "label": "Bank Branch",
-   "read_only": 1
-  },
-  {
-   "fieldname": "column_break_gxxz",
-   "fieldtype": "Column Break"
+   "options": "Financial Institution Branch"
   },
   {
    "fieldname": "bank_account_type",
    "fieldtype": "Link",
    "label": "Bank Account Type",
-   "options": "Bank Account Type",
-   "read_only": 1
+   "options": "Bank Account Type"
   },
   {
-   "fieldname": "section_break_yhma",
-   "fieldtype": "Section Break"
+   "fieldname": "international_bank_details_section",
+   "fieldtype": "Section Break",
+   "hidden": 1,
+   "label": "International Bank Details"
   },
   {
-   "fieldname": "bank_items",
-   "fieldtype": "Table",
-   "label": "Accounts",
-   "options": "Supplier Bank Account"
+   "fieldname": "bank",
+   "fieldtype": "Data",
+   "label": "Bank"
+  },
+  {
+   "fieldname": "swift_code",
+   "fieldtype": "Data",
+   "label": "Swift Code"
+  },
+  {
+   "fieldname": "column_break_ldue",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "bank_address",
+   "fieldtype": "Data",
+   "label": "Bank Address"
+  },
+  {
+   "fieldname": "account_number",
+   "fieldtype": "Data",
+   "label": "Account Number"
+  },
+  {
+   "default": "0",
+   "fieldname": "registered",
+   "fieldtype": "Check",
+   "label": "Registered Vendor?"
   },
   {
    "fieldname": "location_and_contact_details_section",
@@ -538,23 +591,69 @@
   {
    "fieldname": "location",
    "fieldtype": "Data",
-   "in_list_view": 1,
    "label": "Location"
   },
   {
-   "fieldname": "column_break_ipqd",
+   "fieldname": "cb_sb_lcd",
    "fieldtype": "Column Break"
   },
   {
    "fieldname": "telephone_and_fax",
    "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Telephone  And Fax"
+   "label": "Telephone and Fax"
   },
   {
-   "fieldname": "tpn_no",
+   "fieldname": "section_credit_limit",
+   "fieldtype": "Section Break",
+   "label": "Payment due terms"
+  },
+  {
+   "fieldname": "credit_days_based_on",
+   "fieldtype": "Select",
+   "label": "Payment days Based On",
+   "options": "\nFixed Days\nLast Day of the Next Month"
+  },
+  {
+   "depends_on": "eval:doc.credit_days_based_on == 'Fixed Days'",
+   "fieldname": "credit_days",
+   "fieldtype": "Int",
+   "label": "Payment due days"
+  },
+  {
+   "fieldname": "inr_bank_code",
+   "fieldtype": "Select",
+   "label": "Bank Code",
+   "options": "\n01 - AXIS BANK\n02- SBI\n03 -Others\n04 - SCB",
+   "read_only": 1
+  },
+  {
+   "fieldname": "inr_purpose_code",
+   "fieldtype": "Select",
+   "label": "Purpose Code",
+   "options": "\n01- INVT IN EQUITY SHARE\n02- INVT IN MUTUAL FUND\n03- INVT IN DEBENTURES\n04- BILL PAYMENT\n05- CREDIT TO NRE A/c\n06- PAYMENT TO HOTELS\n07- TRAVEL & TOURISM\n08- INVT IN REAL ESTATE\n09- PYMNT TO ESTATE DEVELOPER\n10- LIC PREMIUM\n11- EDUCATIONAL EXPENSES\n12- FAMILY MAINTENANCE\n13- POSTMASTER / UTI PREMIUM\n14- PROPERTY Pymnt-Co-op Hsg.Soc\n15- PROPERTY Pymnt-Govt. Hsg.Scheme\n16- MEDICAL EXPENSES\n17- UTILITY PAYMENTS\n18- TAX PAYMENTS\n19- EMI FOR LOAN REPAYMENT\n20- COMPENSATION OF EMPLOYEES\n21- SALARY",
+   "read_only": 1
+  },
+  {
+   "fieldname": "supplier_tpn_no",
    "fieldtype": "Data",
-   "label": "TPN No."
+   "label": "Supplier TPN No/CID",
+   "reqd": 1
+  },
+  {
+   "fieldname": "attention_person",
+   "fieldtype": "Data",
+   "label": "Attention Person"
+  },
+  {
+   "fieldname": "email_address",
+   "fieldtype": "Data",
+   "label": "Email Address"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_dhi_company",
+   "fieldtype": "Check",
+   "label": "Is DHI Company?"
   }
  ],
  "icon": "fa fa-user",
@@ -567,8 +666,8 @@
    "link_fieldname": "party"
   }
  ],
- "modified": "2025-03-10 11:19:02.683471",
- "modified_by": "Administrator",
+ "modified": "2025-08-28 11:21:54.204644",
+ "modified_by": "kalden.dorji@thimphutechpark.bt",
  "module": "Buying",
  "name": "Supplier",
  "naming_rule": "By \"Naming Series\" field",
@@ -590,11 +689,7 @@
    "write": 1
   },
   {
-   "create": 1,
-   "delete": 1,
    "email": 1,
-   "export": 1,
-   "import": 1,
    "print": 1,
    "read": 1,
    "report": 1,
@@ -623,8 +718,21 @@
    "read": 1,
    "report": 1,
    "role": "Accounts Manager"
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Admin",
+   "share": 1,
+   "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "search_fields": "supplier_group",
  "show_name_in_global_search": 1,
  "sort_field": "modified",

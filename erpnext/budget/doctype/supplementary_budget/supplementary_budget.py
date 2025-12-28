@@ -30,20 +30,21 @@ class SupplementaryBudget(Document):
 		posting_date: DF.Date
 		project: DF.Link | None
 		remarks: DF.SmallText | None
+		workflow_state: DF.Link | None
 	# end: auto-generated types
 	def validate(self):
-		# validate_workflow_states(self)
+		#validate_workflow_states(self)
 		self.validate_budget()
 		# if self.workflow_state != "Submitted":
 		# 	notify_workflow_states(self)
 
 	def on_submit(self):
-		# notify_workflow_states(self)
+		#notify_workflow_states(self)
 		self.supplement_budget(cancel=False)
 
 	def on_cancel(self):
 		self.supplement_budget(cancel=True)
-		notify_workflow_states(self)
+		#notify_workflow_states(self)
 
 	#Added by Thukten on 13th Sept, 2023
 	def validate_budget(self):
@@ -73,7 +74,7 @@ class SupplementaryBudget(Document):
 
 	# Written by Thukten to perform budget supplement, 13 Sept 2022
 	def supplement_budget(self, cancel = False):
-		if frappe.db.get_value("Fiscal Year", self.fiscal_year, "closed"):
+		if frappe.db.get_value("Fiscal Year", self.fiscal_year, "disabled"):
 			frappe.throw("Fiscal Year " + fiscal_year + " has already been closed")
 		else:
 			budget_against_field = frappe.scrub(self.budget_against)

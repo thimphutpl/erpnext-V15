@@ -26,7 +26,8 @@
   "approver_designation",
   "column_break_16",
   "approver_name",
-  "amended_from"
+  "amended_from",
+  "workflow_state"
  ],
  "fields": [
   {
@@ -164,12 +165,18 @@
    "fieldtype": "Currency",
    "label": "Total Reappropiation Amount",
    "read_only": 1
+  },
+  {
+   "fieldname": "workflow_state",
+   "fieldtype": "Link",
+   "label": "Workflow State",
+   "options": "Workflow State"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-06-18 14:29:43.236401",
+ "modified": "2025-12-15 22:41:35.842335",
  "modified_by": "Administrator",
  "module": "Budget",
  "name": "Budget Reappropiation",

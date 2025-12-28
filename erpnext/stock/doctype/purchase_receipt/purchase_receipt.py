@@ -449,6 +449,7 @@ class PurchaseReceipt(BuyingController):
 				ae.submit()
 	def make_item_gl_entries(self, gl_entries, warehouse_account=None):
 		
+		# frappe.throw(str(warehouse_account))
 		from erpnext.accounts.doctype.purchase_invoice.purchase_invoice import (
 			get_purchase_document_details,
 		)
@@ -482,7 +483,7 @@ class PurchaseReceipt(BuyingController):
 			)
 
 		def make_stock_received_but_not_billed_entry(item):
-			#frappe.throw(stock_asset_account_name)
+			# frappe.throw(stock_asset_account_name)
 			account = (
 				warehouse_account[item.from_warehouse]["account"] if item.from_warehouse else stock_asset_rbnb
 			)
@@ -697,18 +698,19 @@ class PurchaseReceipt(BuyingController):
 					account_type = (
 						"capital_work_in_progress_account"
 						if is_cwip_accounting_enabled(d.asset_category)
-						else "fixed_asset_account"
+						else "credit_account"
 					)
 
 					stock_asset_account_name = get_asset_account(
 						account_type, asset_category=d.asset_category, company=self.company
 					)
-					#frappe.throw("hh")
+					# frappe.throw(str(stock_asset_account_name))
 					stock_value_diff = (
 						flt(d.base_net_amount) + flt(d.item_tax_amount) + flt(d.landed_cost_voucher_amount)
 					)
-					stock_asset_account_name = warehouse_account[d.warehouse]["account"]
-					#frappe.throw(stock_asset_account_name)
+					# stock_asset_account_name = warehouse_account[d.warehouse]["account"]
+
+			
 
 				elif warehouse_account.get(d.warehouse):
 					
@@ -734,6 +736,7 @@ class PurchaseReceipt(BuyingController):
 
 				if (flt(d.valuation_rate) or self.is_return or d.is_fixed_asset) and flt(d.qty):
 					make_item_asset_inward_gl_entry(d, stock_value_diff, stock_asset_account_name)
+
 					outgoing_amount = make_stock_received_but_not_billed_entry(d)
 					make_landed_cost_gl_entries(d)
 					make_rate_difference_entry(d)

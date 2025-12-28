@@ -193,11 +193,13 @@ class AssetMovement(Document):
 
 		for a in self.assets:
 			doc_list = frappe.db.sql("select asm.name FROM `tabAsset Movement Item` asm_item, `tabAsset Movement` asm where asm_item.parent=asm.name and asm.docstatus = 1 and asm_item.asset = %s and asm.transaction_date >= %s", (a.asset, self.transaction_date), as_dict=1)
+			# frappe.msgprint(str(doc_list))
 			for a in doc_list:
 				frappe.throw("Cannot modify Asset <b>"+ str(a.asset) +"</b> since the asset has already been modified at through Asset Movement " + str(a.name))	
 
 	
 	def on_submit(self):
+		
 		self.set_latest_location_and_custodian_in_asset()
 
 	def on_cancel(self):

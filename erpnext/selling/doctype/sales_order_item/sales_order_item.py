@@ -32,13 +32,16 @@ class SalesOrderItem(Document):
 		brand: DF.Link | None
 		company_total_stock: DF.Float
 		conversion_factor: DF.Float
+		cost_center: DF.Data | None
 		customer_item_code: DF.Data | None
+		customer_price_list: DF.Link | None
 		delivered_by_supplier: DF.Check
 		delivered_qty: DF.Float
 		delivery_date: DF.Date | None
 		description: DF.TextEditor | None
 		discount_amount: DF.Currency
 		discount_percentage: DF.Percent
+		distributed_discount_amount: DF.Currency
 		ensure_delivery_based_on_produced_serial_no: DF.Check
 		grant_commission: DF.Check
 		gross_profit: DF.Currency
@@ -50,6 +53,7 @@ class SalesOrderItem(Document):
 		item_name: DF.Data
 		item_tax_rate: DF.Code | None
 		item_tax_template: DF.Link | None
+		lot_number: DF.Link | None
 		margin_rate_or_amount: DF.Float
 		margin_type: DF.Literal["", "Percentage", "Amount"]
 		material_request: DF.Link | None
@@ -65,9 +69,11 @@ class SalesOrderItem(Document):
 		planned_qty: DF.Float
 		prevdoc_docname: DF.Link | None
 		price_list_rate: DF.Currency
+		price_template: DF.Link | None
 		pricing_rules: DF.SmallText | None
 		produced_qty: DF.Float
 		production_plan_qty: DF.Float
+		project: DF.Link | None
 		projected_qty: DF.Float
 		purchase_order: DF.Link | None
 		purchase_order_item: DF.Data | None
@@ -77,6 +83,7 @@ class SalesOrderItem(Document):
 		rate_with_margin: DF.Currency
 		reserve_stock: DF.Check
 		returned_qty: DF.Float
+		sp_type: DF.Literal["General Rate", "Customer Based Rate"]
 		stock_qty: DF.Float
 		stock_reserved_qty: DF.Float
 		stock_uom: DF.Link | None
@@ -85,7 +92,7 @@ class SalesOrderItem(Document):
 		target_warehouse: DF.Link | None
 		total_weight: DF.Float
 		transaction_date: DF.Date | None
-		uom: DF.Link
+		uom: DF.Link | None
 		valuation_rate: DF.Currency
 		warehouse: DF.Link | None
 		weight_per_unit: DF.Float

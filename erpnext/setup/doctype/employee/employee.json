@@ -140,6 +140,8 @@
   "bio",
   "educational_qualification",
   "education",
+  "award_section",
+  "award",
   "previous_work_experience",
   "external_work_history",
   "history_in_company",
@@ -159,7 +161,11 @@
   "feedback",
   "lft",
   "rgt",
-  "old_parent"
+  "old_parent",
+  "pms_rating_tab",
+  "table_xzfj",
+  "disciplinary_tab",
+  "table_lxgr"
  ],
  "fields": [
   {
@@ -180,12 +186,9 @@
    "fieldname": "naming_series",
    "fieldtype": "Select",
    "label": "Series",
-   "no_copy": 1,
    "oldfieldname": "naming_series",
    "oldfieldtype": "Select",
-   "options": "HR-EMP-",
-   "reqd": 1,
-   "set_only_once": 1
+   "options": "BA\nHR-EMP-"
   },
   {
    "fieldname": "salutation",
@@ -1103,6 +1106,38 @@
    "fieldtype": "Data",
    "label": "Approver Name",
    "read_only": 1
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "award_section",
+   "fieldtype": "Section Break",
+   "label": "Award"
+  },
+  {
+   "fieldname": "award",
+   "fieldtype": "Table",
+   "label": "Award",
+   "options": "Award"
+  },
+  {
+   "fieldname": "pms_rating_tab",
+   "fieldtype": "Tab Break",
+   "label": "PMS Rating"
+  },
+  {
+   "fieldname": "table_xzfj",
+   "fieldtype": "Table",
+   "options": "PMS Rating"
+  },
+  {
+   "fieldname": "disciplinary_tab",
+   "fieldtype": "Tab Break",
+   "label": "Disciplinary"
+  },
+  {
+   "fieldname": "table_lxgr",
+   "fieldtype": "Table",
+   "options": "Disciplinary"
   }
  ],
  "icon": "fa fa-user",
@@ -1110,7 +1145,7 @@
  "image_field": "image",
  "is_tree": 1,
  "links": [],
- "modified": "2025-11-09 19:16:44.196296",
+ "modified": "2025-12-20 13:59:31.024924",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee",
@@ -1148,6 +1183,18 @@
    "read": 1,
    "report": 1,
    "role": "HR Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Administrator",
    "share": 1,
    "write": 1
   }

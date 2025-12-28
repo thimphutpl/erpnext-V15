@@ -10,19 +10,33 @@
   "fg_item",
   "fg_item_qty",
   "item_code",
-  "supplier_part_no",
   "item_name",
+  "item_group",
+  "supplier_part_no",
   "brand",
+  "model",
   "product_bundle",
   "column_break_4",
   "schedule_date",
   "expected_delivery_date",
-  "item_group",
+  "specification",
   "section_break_5",
   "description",
-  "col_break1",
-  "image",
-  "image_view",
+  "warehouse_and_reference",
+  "from_warehouse",
+  "warehouse",
+  "column_break_54",
+  "actual_qty",
+  "company_total_stock",
+  "accounting_dimensions_section",
+  "cost_center",
+  "dimension_col_break",
+  "project",
+  "accounting_details",
+  "expense_account",
+  "column_break_fyqr",
+  "business_activity",
+  "wip_composite_asset",
   "quantity_and_rate",
   "qty",
   "stock_uom",
@@ -47,7 +61,7 @@
   "rate",
   "amount",
   "item_tax_template",
-  "col_break4",
+  "column_break_kwjd",
   "base_rate",
   "base_amount",
   "pricing_rules",
@@ -60,12 +74,6 @@
   "column_break_32",
   "base_net_rate",
   "base_net_amount",
-  "warehouse_and_reference",
-  "from_warehouse",
-  "warehouse",
-  "column_break_54",
-  "actual_qty",
-  "company_total_stock",
   "references_section",
   "material_request",
   "material_request_item",
@@ -84,10 +92,6 @@
   "returned_qty",
   "column_break_60",
   "billed_amt",
-  "accounting_details",
-  "expense_account",
-  "column_break_fyqr",
-  "wip_composite_asset",
   "manufacture_details",
   "manufacturer",
   "manufacturer_part_no",
@@ -99,10 +103,6 @@
   "total_weight",
   "column_break_40",
   "weight_uom",
-  "accounting_dimensions_section",
-  "project",
-  "dimension_col_break",
-  "cost_center",
   "more_info_section_break",
   "is_fixed_asset",
   "item_tax_rate",
@@ -134,6 +134,7 @@
    "read_only": 1
   },
   {
+   "fetch_from": "item_code.item_name",
    "fieldname": "item_name",
    "fieldtype": "Data",
    "in_global_search": 1,
@@ -177,29 +178,10 @@
   {
    "fieldname": "description",
    "fieldtype": "Text Editor",
+   "in_list_view": 1,
    "label": "Description",
    "oldfieldname": "description",
-   "oldfieldtype": "Small Text",
-   "print_width": "300px",
-   "width": "300px"
-  },
-  {
-   "fieldname": "col_break1",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fetch_from": "item_code.image",
-   "fieldname": "image",
-   "fieldtype": "Attach",
-   "hidden": 1,
-   "label": "Image"
-  },
-  {
-   "fieldname": "image_view",
-   "fieldtype": "Image",
-   "label": "Image View",
-   "options": "image",
-   "print_hide": 1
+   "oldfieldtype": "Small Text"
   },
   {
    "fieldname": "quantity_and_rate",
@@ -216,7 +198,6 @@
    "non_negative": 1,
    "oldfieldname": "qty",
    "oldfieldtype": "Currency",
-   "precision": "0",
    "print_width": "60px",
    "reqd": 1,
    "width": "60px"
@@ -265,11 +246,13 @@
   },
   {
    "fieldname": "sec_break1",
-   "fieldtype": "Section Break"
+   "fieldtype": "Section Break",
+   "hidden": 1
   },
   {
    "fieldname": "price_list_rate",
    "fieldtype": "Currency",
+   "hidden": 1,
    "label": "Price List Rate",
    "options": "currency",
    "print_hide": 1
@@ -332,10 +315,6 @@
    "oldfieldtype": "Currency",
    "options": "currency",
    "read_only": 1
-  },
-  {
-   "fieldname": "col_break4",
-   "fieldtype": "Column Break"
   },
   {
    "fieldname": "base_rate",
@@ -420,6 +399,7 @@
    "collapsible": 1,
    "fieldname": "item_weight_details",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Item Weight Details"
   },
   {
@@ -455,15 +435,17 @@
    "fieldname": "warehouse",
    "fieldtype": "Link",
    "in_list_view": 1,
-   "label": "Target Warehouse",
+   "label": "Warehouse",
    "oldfieldname": "warehouse",
    "oldfieldtype": "Link",
    "options": "Warehouse",
-   "print_hide": 1
+   "print_hide": 1,
+   "reqd": 1
   },
   {
    "fieldname": "project",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Project",
    "options": "Project",
    "print_hide": 1
@@ -471,6 +453,7 @@
   {
    "fieldname": "material_request",
    "fieldtype": "Link",
+   "in_standard_filter": 1,
    "label": "Material Request",
    "mandatory_depends_on": "eval: doc.material_request_item",
    "no_copy": 1,
@@ -499,6 +482,7 @@
   {
    "fieldname": "sales_order",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Sales Order",
    "no_copy": 1,
    "options": "Sales Order",
@@ -561,26 +545,22 @@
    "fieldtype": "Column Break"
   },
   {
+   "fetch_from": "item_code.item_group",
    "fieldname": "item_group",
    "fieldtype": "Link",
-   "hidden": 1,
    "label": "Item Group",
    "oldfieldname": "item_group",
    "oldfieldtype": "Link",
    "options": "Item Group",
-   "print_hide": 1,
    "read_only": 1
   },
   {
    "fieldname": "brand",
-   "fieldtype": "Link",
-   "hidden": 1,
+   "fieldtype": "Data",
    "label": "Brand",
+   "mandatory_depends_on": "eval doc.item_group == \"Fixed Asset\"",
    "oldfieldname": "brand",
-   "oldfieldtype": "Link",
-   "options": "Brand",
-   "print_hide": 1,
-   "read_only": 1
+   "oldfieldtype": "Link"
   },
   {
    "depends_on": "eval:parent.is_old_subcontracting_flow",
@@ -611,7 +591,6 @@
    "fieldtype": "Float",
    "label": "Qty in Stock UOM",
    "no_copy": 1,
-   "precision": "0",
    "print_hide": 1,
    "print_width": "100px",
    "read_only": 1,
@@ -664,7 +643,6 @@
    "report_hide": 1
   },
   {
-   "collapsible": 1,
    "fieldname": "accounting_details",
    "fieldtype": "Section Break",
    "label": "Accounting Details"
@@ -674,14 +652,16 @@
    "fieldtype": "Link",
    "label": "Expense Account",
    "options": "Account",
-   "print_hide": 1
+   "print_hide": 1,
+   "reqd": 1
   },
   {
    "fieldname": "cost_center",
    "fieldtype": "Link",
    "label": "Cost Center",
    "options": "Cost Center",
-   "print_hide": 1
+   "print_hide": 1,
+   "reqd": 1
   },
   {
    "allow_on_submit": 1,
@@ -697,6 +677,7 @@
   {
    "fieldname": "item_tax_template",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Item Tax Template",
    "options": "Item Tax Template"
   },
@@ -705,7 +686,6 @@
    "fieldtype": "Section Break"
   },
   {
-   "collapsible": 1,
    "fieldname": "accounting_dimensions_section",
    "fieldtype": "Section Break",
    "label": "Accounting Dimensions "
@@ -718,6 +698,7 @@
    "collapsible": 1,
    "fieldname": "manufacture_details",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Manufacture"
   },
   {
@@ -739,6 +720,7 @@
    "default": "0",
    "fieldname": "against_blanket_order",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "Against Blanket Order"
   },
   {
@@ -768,7 +750,7 @@
    "allow_on_submit": 1,
    "fieldname": "actual_qty",
    "fieldtype": "Float",
-   "label": "Available Qty at Target Warehouse",
+   "label": "Stock Balance at Warehouse",
    "print_hide": 1,
    "read_only": 1
   },
@@ -776,6 +758,7 @@
    "allow_on_submit": 1,
    "fieldname": "company_total_stock",
    "fieldtype": "Float",
+   "hidden": 1,
    "label": "Available Qty at Company",
    "no_copy": 1,
    "read_only": 1
@@ -858,6 +841,7 @@
   {
    "fieldname": "sales_order_packed_item",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Sales Order Packed Item",
    "no_copy": 1,
    "print_hide": 1
@@ -876,13 +860,13 @@
    "fieldname": "fg_item_qty",
    "fieldtype": "Float",
    "label": "Finished Good Qty",
-   "mandatory_depends_on": "eval:parent.is_subcontracted && !parent.is_old_subcontracting_flow",
-   "precision": "0"
+   "mandatory_depends_on": "eval:parent.is_subcontracted && !parent.is_old_subcontracting_flow"
   },
   {
    "depends_on": "eval:parent.is_internal_supplier",
    "fieldname": "from_warehouse",
    "fieldtype": "Link",
+   "hidden": 1,
    "ignore_user_permissions": 1,
    "label": "From Warehouse",
    "options": "Warehouse"
@@ -898,7 +882,7 @@
    "fieldtype": "Column Break"
   },
   {
-   "default": "1",
+   "default": "0",
    "fieldname": "apply_tds",
    "fieldtype": "Check",
    "label": "Apply TDS"
@@ -906,19 +890,41 @@
   {
    "fieldname": "wip_composite_asset",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "WIP Composite Asset",
    "options": "Asset"
   },
   {
    "fieldname": "column_break_fyqr",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_kwjd",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "item_code.business_activity",
+   "fieldname": "business_activity",
+   "fieldtype": "Link",
+   "label": "Business Activity",
+   "options": "Business Activity"
+  },
+  {
+   "fieldname": "model",
+   "fieldtype": "Data",
+   "label": "Model"
+  },
+  {
+   "fieldname": "specification",
+   "fieldtype": "Small Text",
+   "label": "Specification"
   }
  ],
  "idx": 1,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-08-14 22:48:30.808858",
+ "modified": "2025-12-01 10:36:08.341102",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Purchase Order Item",

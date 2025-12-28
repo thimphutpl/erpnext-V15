@@ -451,12 +451,13 @@ class calculate_taxes_and_totals:
 				"Supplier Quotation",
 			]:
 				tax_amount *= -1.0 if (tax.add_deduct_tax == "Deduct") else 1.0
+		if self.doc.doctype == "Sales Invoice":
+			tax_amount *= -1.0 if (tax.add_deduct_tax == "Deduct") else 1.0
 		return tax_amount
 
 	def set_cumulative_total(self, row_idx, tax):
 		tax_amount = tax.tax_amount_after_discount_amount
 		tax_amount = self.get_tax_amount_if_for_valuation_or_deduction(tax_amount, tax)
-
 		if row_idx == 0:
 			tax.total = flt(self.doc.net_total + tax_amount, tax.precision("total"))
 		else:

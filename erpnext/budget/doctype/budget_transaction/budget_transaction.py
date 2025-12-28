@@ -5,18 +5,4 @@
 from frappe.model.document import Document
 
 class BudgetTransaction(Document):
-	# begin: auto-generated types
-	# This code is auto-generated. Do not modify anything in this block.
-
-	from typing import TYPE_CHECKING
-
-	if TYPE_CHECKING:
-		from frappe.types import DF
-
-		name: DF.Int | None
-		parent: DF.Data
-		parentfield: DF.Data
-		parenttype: DF.Data
-		transaction: DF.Link
-	# end: auto-generated types
 	pass

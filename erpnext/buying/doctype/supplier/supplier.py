@@ -28,7 +28,6 @@ class Supplier(TransactionBase):
 	if TYPE_CHECKING:
 		from erpnext.accounts.doctype.allowed_to_transact_with.allowed_to_transact_with import AllowedToTransactWith
 		from erpnext.accounts.doctype.party_account.party_account import PartyAccount
-		from erpnext.buying.doctype.supplier_bank_account.supplier_bank_account import SupplierBankAccount
 		from erpnext.utilities.doctype.portal_user.portal_user import PortalUser
 		from frappe.types import DF
 
@@ -36,19 +35,27 @@ class Supplier(TransactionBase):
 		accounts: DF.Table[PartyAccount]
 		allow_purchase_invoice_creation_without_purchase_order: DF.Check
 		allow_purchase_invoice_creation_without_purchase_receipt: DF.Check
+		attention_person: DF.Data | None
+		bank: DF.Data | None
 		bank_account_type: DF.Link | None
-		bank_branch: DF.Data | None
-		bank_items: DF.Table[SupplierBankAccount]
-		bank_name: DF.Data | None
+		bank_address: DF.Data | None
+		bank_branch: DF.Link | None
+		bank_name: DF.Link | None
 		companies: DF.Table[AllowedToTransactWith]
 		country: DF.Link | None
+		credit_days: DF.Int
+		credit_days_based_on: DF.Literal["", "Fixed Days", "Last Day of the Next Month"]
 		default_bank_account: DF.Link | None
 		default_currency: DF.Link | None
 		default_price_list: DF.Link | None
 		disabled: DF.Check
+		email_address: DF.Data | None
 		email_id: DF.ReadOnly | None
 		hold_type: DF.Literal["", "All", "Invoices", "Payments"]
 		image: DF.AttachImage | None
+		inr_bank_code: DF.Literal["", "01 - AXIS BANK", "02- SBI", "03 -Others", "04 - SCB"]
+		inr_purpose_code: DF.Literal["", "01- INVT IN EQUITY SHARE", "02- INVT IN MUTUAL FUND", "03- INVT IN DEBENTURES", "04- BILL PAYMENT", "05- CREDIT TO NRE A/c", "06- PAYMENT TO HOTELS", "07- TRAVEL & TOURISM", "08- INVT IN REAL ESTATE", "09- PYMNT TO ESTATE DEVELOPER", "10- LIC PREMIUM", "11- EDUCATIONAL EXPENSES", "12- FAMILY MAINTENANCE", "13- POSTMASTER / UTI PREMIUM", "14- PROPERTY Pymnt-Co-op Hsg.Soc", "15- PROPERTY Pymnt-Govt. Hsg.Scheme", "16- MEDICAL EXPENSES", "17- UTILITY PAYMENTS", "18- TAX PAYMENTS", "19- EMI FOR LOAN REPAYMENT", "20- COMPENSATION OF EMPLOYEES", "21- SALARY"]
+		is_dhi_company: DF.Check
 		is_frozen: DF.Check
 		is_internal_supplier: DF.Check
 		is_transporter: DF.Check
@@ -62,6 +69,7 @@ class Supplier(TransactionBase):
 		prevent_pos: DF.Check
 		prevent_rfqs: DF.Check
 		primary_address: DF.Text | None
+		registered: DF.Check
 		release_date: DF.Date | None
 		represents_company: DF.Link | None
 		supplier_details: DF.Text | None
@@ -69,12 +77,14 @@ class Supplier(TransactionBase):
 		supplier_name: DF.Data
 		supplier_primary_address: DF.Link | None
 		supplier_primary_contact: DF.Link | None
-		supplier_type: DF.Literal["Company", "Individual", "Partnership"]
+		supplier_tpn_no: DF.Data
+		supplier_type: DF.Literal["Domestic Supplier", "Indian Supplier", "International Supplier"]
+		swift_code: DF.Data | None
 		tax_category: DF.Link | None
+		tax_holiday: DF.Link | None
 		tax_id: DF.Data | None
 		tax_withholding_category: DF.Link | None
 		telephone_and_fax: DF.Data | None
-		tpn_no: DF.Data | None
 		warn_pos: DF.Check
 		warn_rfqs: DF.Check
 		website: DF.Data | None
@@ -103,11 +113,12 @@ class Supplier(TransactionBase):
 		elif supp_master_name == "Naming Series":
 			set_name_by_naming_series(self)
 		else:
-			set_name_from_naming_options(frappe.get_meta(self.doctype).autoname, self)
+			self.name = set_name_from_naming_options(frappe.get_meta(self.doctype).autoname, self)
 
 	def on_update(self):
-		self.create_primary_contact()
-		self.create_primary_address()
+		pass
+		# self.create_primary_contact()
+		# self.create_primary_address()
 
 	def add_role_for_user(self):
 		for portal_user in self.portal_users:
@@ -145,22 +156,6 @@ class Supplier(TransactionBase):
 		self.validate_internal_supplier()
 		self.add_role_for_user()
 		self.validate_currency_for_receivable_payable_and_advance_account()
-		self.set_default_bank_account()
-
-	def set_default_bank_account(self):
-		if self.get("bank_items"):
-			default_bank_account = 0
-			for a in self.get("bank_items"):
-				if a.default:
-					default_bank_account += 1
-					self.bank_name = a.bank
-					self.bank_branch  = a.bank_branch
-					self.bank_account_type = a.bank_account_type
-					self.account_number = a.account_number
-			if default_bank_account == 0:
-				frappe.throw("Please set a default bank account under Bank Information")
-			elif default_bank_account > 1:
-				frappe.throw("Only one bank account is allowed to set a default")
 
 	@frappe.whitelist()
 	def get_supplier_group_details(self):

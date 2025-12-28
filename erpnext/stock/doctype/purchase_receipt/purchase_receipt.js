@@ -384,60 +384,62 @@ erpnext.stock.PurchaseReceiptController = class PurchaseReceiptController extend
 		var dialog = new frappe.ui.Dialog({
 			title: __("For Issuing Asset"),
 			fields: [
-				{	"fieldtype": "Select",
+				{
+					"fieldtype": "Select",
 					"label": __("Material Name"),
 					"fieldname": "item_name",
 					"options": doc.items
 						.filter(d => d.is_fixed_asset === 1)
-						.map(d => d.idx+' '+d.item_name),
-					"reqd": 1 
+						.map(d => d.idx + ' ' + d.item_name),
+					"reqd": 1
 				},
-				{	"fieldtype": "Button", "label": __('Issue Asset'),
+				{
+					"fieldtype": "Button", "label": __('Issue Asset'),
 					"fieldname": "make_asset_issue_entry", "cssClass": "btn-primary"
 				},
 			]
 		});
-		
-		dialog.fields_dict.make_asset_issue_entry.$input.click(function() {
+
+		dialog.fields_dict.make_asset_issue_entry.$input.click(function () {
 			var args = dialog.get_values();
 			var item = args.item_name;
 			var itemIdx = item.substr(0, item.indexOf(" "));
 			var itemName = item.substr(item.indexOf(" "), item.length - 1);
 
 			frappe.call({
-				method:'frappe.client.get_value',
-				args:{
-					'doctype':'Item',
-					fieldname:"is_fixed_asset",
+				method: 'frappe.client.get_value',
+				args: {
+					'doctype': 'Item',
+					fieldname: "is_fixed_asset",
 					filters: {
-						"item_name": itemName.trim(),
-						"is_fixed_asset":1
-					}
+						"is_fixed_asset": 1
+					},
+					fields: ['name', 'item_code', 'item_name'],
 				},
-				callback:(r)=>{
-					if(r.message){
-						if ( !r.message.is_fixed_asset){
+				callback: (r) => {
+					if (r.message) {
+						if (!r.message.is_fixed_asset) {
 							frappe.msgprint('Item selected is not a fixed asset')
 							dialog.hide();
 							return;
 						}
-	
-						if(!args) return;
+
+						if (!args) return;
 						dialog.hide();
-	
+
 						let item_code = ''
 						let asset_rate = ''
 						cur_frm.doc.items.map(d => {
-							if (d.idx == itemIdx){
+							if (d.idx == itemIdx) {
 								item_code = d.item_code;
 								asset_rate = d.valuation_rate;
 							}
-	
+
 						})
-	
+
 						var new_doc = frappe.model.get_new_doc('Asset Issue Details');
 						new_doc.branch = cur_frm.doc.branch;
-						new_doc.entry_date = new Date().toJSON().slice(0,10).replace(/-/g,'-');
+						new_doc.entry_date = new Date().toJSON().slice(0, 10).replace(/-/g, '-');
 						new_doc.item_code = item_code;
 						new_doc.purchase_receipt = cur_frm.docname;
 						new_doc.asset_rate = asset_rate
@@ -446,7 +448,7 @@ erpnext.stock.PurchaseReceiptController = class PurchaseReceiptController extend
 						new_doc.qty = 1;
 						new_doc.amount = asset_rate * new_doc.qty
 						frappe.set_route('Form', 'Asset Issue Details', new_doc.name);
-					} else{
+					} else {
 						frappe.msgprint('There no such item')
 						dialog.hide();
 						return;
@@ -563,4 +565,4 @@ var validate_sample_quantity = function (frm, cdt, cdn) {
 	}
 };
 
-	
+

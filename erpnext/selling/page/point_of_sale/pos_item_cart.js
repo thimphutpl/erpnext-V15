@@ -188,6 +188,7 @@ erpnext.PointOfSale.ItemCart = class {
 
 			await me.events.checkout();
 			me.toggle_checkout_btn(false);
+			me.disable_customer_selection();
 
 			me.allow_discount_change && me.$add_discount_elem.removeClass("d-none");
 		});
@@ -195,6 +196,7 @@ erpnext.PointOfSale.ItemCart = class {
 		this.$totals_section.on("click", ".edit-cart-btn", () => {
 			this.events.edit_cart();
 			this.toggle_checkout_btn(true);
+			me.enable_customer_selection();
 		});
 
 		this.$component.on("click", ".add-discount-wrapper", () => {
@@ -390,6 +392,14 @@ erpnext.PointOfSale.ItemCart = class {
 				input_class: "input-xs",
 				onchange: function () {
 					this.value = flt(this.value);
+					if (this.value > 100) {
+						frappe.msgprint({
+							title: __("Invalid Discount"),
+							indicator: "red",
+							message: __("Discount cannot be greater than 100%."),
+						});
+						this.value = 0;
+					}
 					frappe.model.set_value(
 						frm.doc.doctype,
 						frm.doc.name,
@@ -690,6 +700,25 @@ erpnext.PointOfSale.ItemCart = class {
 		}
 	}
 
+	disable_customer_selection() {
+		this.$customer_section.find(".reset-customer-btn").css("visibility", "hidden");
+		this.$customer_section.off("click", ".customer-display");
+		this.$customer_section.off("click", ".reset-customer-btn");
+	}
+
+	enable_customer_selection() {
+		this.$customer_section.find(".reset-customer-btn").css("visibility", "visible");
+		this.$customer_section.on("click", ".customer-display", (e) => {
+			if ($(e.target).closest(".reset-customer-btn").length) return;
+
+			const show = this.$cart_container.is(":visible");
+			this.toggle_customer_info(show);
+		});
+		this.$customer_section.on("click", ".reset-customer-btn", () => {
+			this.reset_customer_selector();
+		});
+	}
+
 	highlight_checkout_btn(toggle) {
 		if (toggle) {
 			this.$add_discount_elem.css("display", "flex");
@@ -740,6 +769,7 @@ erpnext.PointOfSale.ItemCart = class {
 				frappe.utils.play_sound("error");
 				return;
 			}
+			this.highlight_numpad_btn($btn, current_action);
 
 			if (first_click_event || field_to_edit_changed) {
 				this.prev_action = current_action;
@@ -785,7 +815,6 @@ erpnext.PointOfSale.ItemCart = class {
 			this.numpad_value = current_action;
 		}
 
-		this.highlight_numpad_btn($btn, current_action);
 		this.events.numpad_event(this.numpad_value, this.prev_action);
 	}
 
@@ -920,9 +949,12 @@ erpnext.PointOfSale.ItemCart = class {
 		const me = this;
 		dfs.forEach((df) => {
 			this[`customer_${df.fieldname}_field`] = frappe.ui.form.make_control({
-				df: { ...df, onchange: handle_customer_field_change },
+				df: df,
 				parent: $customer_form.find(`.${df.fieldname}-field`),
 				render_input: true,
+			});
+			this[`customer_${df.fieldname}_field`].$input?.on("blur", () => {
+				handle_customer_field_change.apply(this[`customer_${df.fieldname}_field`]);
 			});
 			this[`customer_${df.fieldname}_field`].set_value(this.customer_info[df.fieldname]);
 		});
@@ -977,8 +1009,8 @@ erpnext.PointOfSale.ItemCart = class {
 					.html(`${__("Last transacted")} ${__(elapsed_time)}`);
 
 				res.forEach((invoice) => {
-					const posting_datetime = moment(invoice.posting_date + " " + invoice.posting_time).format(
-						"Do MMMM, h:mma"
+					const posting_datetime = frappe.datetime.str_to_user(
+						invoice.posting_date + " " + invoice.posting_time
 					);
 					let indicator_color = {
 						Paid: "green",

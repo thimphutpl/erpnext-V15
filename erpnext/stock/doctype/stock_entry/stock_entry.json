@@ -10,6 +10,7 @@
   "stock_entry_details_tab",
   "naming_series",
   "branch",
+  "cost_center",
   "stock_entry_type",
   "outgoing_stock_entry",
   "purpose",
@@ -26,10 +27,14 @@
   "company",
   "posting_date",
   "posting_time",
+  "received_by",
+  "issued_by",
+  "status",
   "column_break_eaoa",
   "set_posting_time",
   "inspection_required",
   "apply_putaway_rule",
+  "in_transit",
   "bom_info_section",
   "from_bom",
   "use_multi_level_bom",
@@ -129,7 +134,7 @@
    "label": "Purpose",
    "oldfieldname": "purpose",
    "oldfieldtype": "Select",
-   "options": "Material Issue\nMaterial Receipt\nMaterial Transfer\nCSR",
+   "options": "Material Issue\nMaterial Receipt\nMaterial Transfer\nCSR\nMaterial Transfer for Manufacture\nManufacture",
    "read_only": 1,
    "search_index": 1
   },
@@ -294,7 +299,7 @@
    "fieldtype": "Link",
    "in_list_view": 1,
    "in_standard_filter": 1,
-   "label": "Default Source Warehouse",
+   "label": "Source Warehouse",
    "no_copy": 1,
    "oldfieldname": "from_warehouse",
    "oldfieldtype": "Link",
@@ -325,7 +330,7 @@
    "fieldtype": "Link",
    "in_list_view": 1,
    "in_standard_filter": 1,
-   "label": "Default Target Warehouse",
+   "label": "Target Warehouse",
    "no_copy": 1,
    "oldfieldname": "to_warehouse",
    "oldfieldtype": "Link",
@@ -348,6 +353,7 @@
   {
    "fieldname": "sb0",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "options": "Simple"
   },
   {
@@ -370,6 +376,7 @@
   {
    "fieldname": "get_stock_and_rate",
    "fieldtype": "Button",
+   "hidden": 1,
    "label": "Update Rate and Availability",
    "oldfieldtype": "Button",
    "options": "get_stock_and_rate",
@@ -625,6 +632,7 @@
    "collapsible": 1,
    "fieldname": "bom_info_section",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "BOM Info"
   },
   {
@@ -711,6 +719,34 @@
    "print_hide": 1,
    "reqd": 1,
    "set_only_once": 1
+  },
+  {
+   "fieldname": "cost_center",
+   "fieldtype": "Link",
+   "label": "Cost Center",
+   "options": "Cost Center",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "in_transit",
+   "fieldtype": "Check",
+   "label": "In transit"
+  },
+  {
+   "fieldname": "received_by",
+   "fieldtype": "Data",
+   "label": "Received By"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Data",
+   "label": "Status"
+  },
+  {
+   "fieldname": "issued_by",
+   "fieldtype": "Data",
+   "label": "Issued By"
   }
  ],
  "icon": "fa fa-file-text",
@@ -718,7 +754,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-03-20 10:39:59.220170",
+ "modified": "2025-09-15 12:07:55.503720",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Stock Entry",
@@ -784,6 +820,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "search_fields": "posting_date, from_warehouse, to_warehouse, purpose, remarks",
  "show_name_in_global_search": 1,
  "sort_field": "modified",

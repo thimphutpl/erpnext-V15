@@ -26,6 +26,7 @@ def get_data(query, filters):
             else:
                 condition = " and project = '{}'".format(d.project)
         elif filters.budget_against == "Cost Center":
+           
             if filters.cost_center:
                 condition = " and cost_center = '{0}'".format(filters.cost_center)
             else:
@@ -33,9 +34,6 @@ def get_data(query, filters):
         
         if filters.voucher_no:
             condition += " and reference_no = '{0}'".format(filters.voucher_no)
-        
-        company_condition = " and company = '{0}'".format(filters.company) if filters.company else ""
-        
         query = """ SELECT 
                         com_ref, account, 
                         (select a.account_number from `tabAccount` a where a.name = b.account) as account_number, 
@@ -45,23 +43,15 @@ def get_data(query, filters):
                     WHERE account = {account} 
                     and reference_date BETWEEN {start_date} and {end_date}
                     {condition}
-                    {company_condition}
                     order by reference_date Desc
-                """.format(
-                    account=frappe.db.escape(d.account), 
-                    start_date=frappe.db.escape(filters.from_date), 
-                    end_date=frappe.db.escape(filters.to_date), 
-                    condition=condition,
-                    company_condition=company_condition
-                )
-        
-        ini += flt(d.initial_budget)
-        su += flt(d.supplement)
+                """.format(account=frappe.db.escape(d.account), start_date=frappe.db.escape(filters.from_date), 
+                end_date=frappe.db.escape(filters.to_date), condition=frappe.db.escape(condition))
+        ini+=flt(d.initial_budget)
+        su+=flt(d.supplement)
         query = frappe.db.sql(query, as_dict=True)
-        
         for a in query:
             if not a.committed:
-                a.committed = 0
+                    a.committed = 0
             if not a.amount:
                 a.amount = 0
                 
@@ -73,7 +63,7 @@ def get_data(query, filters):
                 if a.committed < 0:
                     a.committed = 0
             available = flt(d.initial_budget) + flt(adjustment) + flt(d.supplement) - flt(a.amount) - flt(a.committed)
-            current = flt(d.initial_budget) + flt(d.supplement) + flt(d.adjustment)
+            current   = flt(d.initial_budget) + flt(d.supplement) +flt(d.adjustment)
 
             if filters.budget_against != "Project":
                 row = {
@@ -112,20 +102,20 @@ def get_data(query, filters):
                 }
 
             data.append(row)
-            cm += a.committed
-            co += a.amount
-            ad += adjustment
+            cm+=a.committed
+            co+=a.amount
+            ad+=adjustment
 
     if filters.budget_against != "Project":	
         row = {
-            "date": "",
+            "date":"",
             "account": "Total",
-            "account_number": '',
+            "account_number":'',
             "cost_center": "",
             "initial": ini,
             "supplementary": su,
             "adjustment": ad,
-            "current": flt(ini) + flt(ad) + flt(su),
+            "current":flt(ini)+flt(ad)+flt(su),
             "committed": cm,
             "consumed": co,
             "available": flt(ini) + flt(ad) + flt(su) - flt(co) - flt(cm)
@@ -133,12 +123,12 @@ def get_data(query, filters):
         data.insert(0, row)
     else:
         row = {
-            "date": "",
+            "date":"",
             "project": "Total",
             "initial": ini,
             "supplementary": su,
             "adjustment": ad,
-            "current": flt(ini) + flt(ad) + flt(su),
+            "current":flt(ini)+flt(ad)+flt(su),
             "committed": cm,
             "consumed": co,
             "available": flt(ini) + flt(ad) + flt(su) - flt(co) - flt(cm)
@@ -147,11 +137,6 @@ def get_data(query, filters):
     return data
 
 def construct_query(filters=None):
-    condition = ""
-    # Add company filter condition
-    if filters.company:
-        condition += " and b.company = '{}' ".format(filters.company)
-  
     if filters.budget_against == "Cost Center":
         query = """
             select 
@@ -162,7 +147,7 @@ def construct_query(filters=None):
                 ba.supplementary_budget as supplement
             from `tabBudget` b, `tabBudget Account` ba 
             where b.docstatus = 1 and b.name = ba.parent
-            and ba.initial_budget != 0 and b.fiscal_year = """ + str(filters.fiscal_year) + condition
+            and ba.initial_budget != 0 and b.fiscal_year = """ + str(filters.fiscal_year)
         
         if filters.cost_center:
             lft, rgt = frappe.db.get_value("Cost Center", filters.cost_center, ["lft", "rgt"])
@@ -173,37 +158,34 @@ def construct_query(filters=None):
                         or b.cost_center = '{0}')
                 """.format(filters.cost_center, lft, rgt)
         if filters.budget_type:
-            query += " and ba.budget_type = '" + str(filters.budget_type) + "' "
+            query += " and ba.budget_type = \'" + str(filters.budget_type) + "\' "
                 
         if filters.account:
-            query += " and ba.account = '" + str(filters.account) + "' "
+            query += " and ba.account = \'" + str(filters.account) + "\' "
             
     else:
         query = """select 
-                b.project, pd.project_name, ba.cost_center, 
-                ba.budget_amount as budget_amount, 
-                ba.initial_budget as initial_budget, 
-                ba.budget_received as added, 
-                ba.budget_sent as deducted, 
-                ba.supplementary_budget as supplement
-            from `tabBudget` b, `tabBudget Cost Center` ba, `tabProject` pd 
-            where b.docstatus = 1 
-            and b.name = ba.parent
-            and pd.name = b.project 
-            and b.fiscal_year = """ + str(filters.fiscal_year) + condition
-            
+				b.project, pd.project_name, ba.cost_center, 
+				ba.budget_amount as budget_amount, 
+				ba.initial_budget as initial_budget, 
+				ba.budget_received as added, 
+				ba.budget_sent as deducted, 
+				ba.supplementary_budget as supplement
+			from `tabBudget` b, `tabBudget Cost Center` ba, `tabProject` pd 
+         	where b.docstatus = 1 
+          	and b.name = ba.parent
+			and pd.name = b.project 
+           	and b.fiscal_year = """ + str(filters.fiscal_year)
         if filters.project:
-            query += " and b.project = '" + str(filters.project) + "' "
+            query += " and b.project = \'" + str(filters.project) + "\' "\
     
     query += " order by ba.account, b.cost_center"
+
     return query
 
 def validate_filters(filters):
     if not filters.fiscal_year:
         frappe.throw(_("Fiscal Year {0} is required").format(filters.fiscal_year))
-    
-    if not filters.company:
-        frappe.throw(_("Company is required"))
 
     fiscal_year = frappe.db.get_value("Fiscal Year", filters.fiscal_year, ["year_start_date", "year_end_date"], as_dict=True)
     if not fiscal_year:
@@ -314,7 +296,7 @@ def get_columns(filters):
                 "fieldtype": "Currency",
                 "width": 140
             },
-            {
+                        {
                 "fieldname": "reference_type",
                 "label": "Voucher Type",
                 "fieldtype": "Data",

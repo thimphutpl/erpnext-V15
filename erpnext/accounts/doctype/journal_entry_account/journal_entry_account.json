@@ -13,10 +13,13 @@
   "bank_account",
   "party_type",
   "party",
+  "party_check",
   "accounting_dimensions_section",
   "cost_center",
+  "business_activity",
   "dimension_col_break",
   "project",
+  "task",
   "currency_section",
   "account_currency",
   "column_break_10",
@@ -27,12 +30,12 @@
   "col_break2",
   "credit_in_account_currency",
   "credit",
-  "taxes_section",
+  "sb_taxes",
   "apply_tds",
   "add_deduct_tax",
   "tax_account",
   "rate",
-  "column_break_eyxg",
+  "col_break_taxes",
   "taxable_amount_in_account_currency",
   "taxable_amount",
   "tax_amount_in_account_currency",
@@ -42,6 +45,8 @@
   "reference_name",
   "reference_due_date",
   "reference_detail_no",
+  "bill_no",
+  "bill_date",
   "col_break3",
   "is_advance",
   "user_remark",
@@ -72,11 +77,11 @@
    "print_hide": 1
   },
   {
-   "allow_on_submit": 1,
    "default": ":Company",
    "description": "If Income or Expense",
    "fieldname": "cost_center",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Cost Center",
    "oldfieldname": "cost_center",
    "oldfieldtype": "Link",
@@ -92,7 +97,6 @@
   {
    "fieldname": "party_type",
    "fieldtype": "Link",
-   "in_list_view": 1,
    "label": "Party Type",
    "options": "DocType",
    "search_index": 1
@@ -193,7 +197,7 @@
    "fieldtype": "Select",
    "label": "Reference Type",
    "no_copy": 1,
-   "options": "\nSales Invoice\nPurchase Invoice\nJournal Entry\nSales Order\nPurchase Order\nExpense Claim\nAsset\nLoan\nPayroll Entry\nEmployee Advance\nExchange Rate Revaluation\nInvoice Discounting\nFees\nFull and Final Statement\nPayment Entry\nTravel Advance\nTravel Claim\nMuster Roll Payment Entry\nLeave Encashment\nVisitor Pass Registry\nInsurance and Registration\nPOL Advance\nFee Closing Entry\nCash Deposit Entry\nAsset Value Adjustment\nLeave Travel Concession\nTravel Authorization\nEmployee Benefits",
+   "options": "\nBonus\nPBVA\nSales Invoice\nSWS Application\nPurchase Invoice\nJournal Entry\nSales Order\nPurchase Order\nExpense Claim\nAsset\nLoan\nPayroll Entry\nEmployee Advance\nExchange Rate Revaluation\nInvoice Discounting\nFees\nFull and Final Statement\nPayment Entry\nAbstract Bill\nImprest Advance\nImprest Recoup\nPOL Advance\nProcess MR Payment\nTravel Claim\nTravel Authorization\nFund Requisition\nLeave Encashment\nBulk Leave Encashment\nLeave Travel Concession\nEquipment Hiring Form\nJob Cards\nOvertime Application\nEmployee Benefits\nInsurance and Registration\nAsset Value Adjustment",
    "search_index": 1
   },
   {
@@ -216,7 +220,6 @@
    "allow_on_submit": 1,
    "fieldname": "project",
    "fieldtype": "Link",
-   "hidden": 1,
    "label": "Project",
    "options": "Project"
   },
@@ -275,7 +278,23 @@
    "search_index": 1
   },
   {
-   "fieldname": "taxes_section",
+   "fieldname": "bill_no",
+   "fieldtype": "Data",
+   "label": "Ref. No/Bill No."
+  },
+  {
+   "fieldname": "bill_date",
+   "fieldtype": "Date",
+   "label": "Bill Date"
+  },
+  {
+   "fieldname": "business_activity",
+   "fieldtype": "Link",
+   "label": "Business Activity",
+   "options": "Business Activity"
+  },
+  {
+   "fieldname": "sb_taxes",
    "fieldtype": "Section Break",
    "label": "Taxes"
   },
@@ -286,18 +305,22 @@
    "label": "Apply TDS"
   },
   {
+   "depends_on": "eval:doc.apply_tds",
    "fieldname": "add_deduct_tax",
    "fieldtype": "Select",
    "label": "Add Or Deduct",
+   "mandatory_depends_on": "eval:doc.apply_tds",
    "options": "\nAdd\nDeduct",
-   "read_only": 1
+   "print_hide": 1
   },
   {
    "depends_on": "eval:doc.apply_tds",
    "fieldname": "tax_account",
    "fieldtype": "Link",
    "label": "Tax Account",
+   "mandatory_depends_on": "add_deduct_tax",
    "options": "Account",
+   "print_hide": 1,
    "read_only": 1
   },
   {
@@ -305,10 +328,11 @@
    "fieldname": "rate",
    "fieldtype": "Float",
    "label": "Rate",
-   "read_only": 1
+   "precision": "2",
+   "print_hide": 1
   },
   {
-   "fieldname": "column_break_eyxg",
+   "fieldname": "col_break_taxes",
    "fieldtype": "Column Break"
   },
   {
@@ -316,13 +340,14 @@
    "fieldname": "taxable_amount_in_account_currency",
    "fieldtype": "Currency",
    "label": "Taxable Amount in Account Currency",
-   "read_only": 1
+   "print_hide": 1
   },
   {
    "depends_on": "eval:doc.apply_tds",
    "fieldname": "taxable_amount",
    "fieldtype": "Currency",
    "label": "Taxable Amount in Company Currency",
+   "print_hide": 1,
    "read_only": 1
   },
   {
@@ -330,6 +355,7 @@
    "fieldname": "tax_amount_in_account_currency",
    "fieldtype": "Currency",
    "label": "Tax Amount in Account Currency",
+   "print_hide": 1,
    "read_only": 1
   },
   {
@@ -338,12 +364,26 @@
    "fieldtype": "Currency",
    "label": "Tax Amount in Company Currency",
    "read_only": 1
+  },
+  {
+   "default": "1",
+   "fieldname": "party_check",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Party Check",
+   "read_only": 1
+  },
+  {
+   "fieldname": "task",
+   "fieldtype": "Link",
+   "label": "Task",
+   "options": "Task"
   }
  ],
  "idx": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-08-28 12:05:47.687893",
+ "modified": "2025-07-11 12:18:43.375599",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Journal Entry Account",

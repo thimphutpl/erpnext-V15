@@ -1,0 +1,325 @@
+{
+ "actions": [],
+ "autoname": "PREQ.YY.####",
+ "creation": "2025-09-12 14:08:24.895073",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "branch",
+  "column_break10",
+  "customer",
+  "customer_type",
+  "column_break01",
+  "is_new_customer",
+  "posting_date",
+  "cb_01",
+  "is_allotment",
+  "allotment_date",
+  "section_break00",
+  "construction_type",
+  "destination",
+  "destination_dzongkha",
+  "supply_rate",
+  "column_break1",
+  "start_date",
+  "location",
+  "no_of_story",
+  "column_break2",
+  "end_date",
+  "tharm",
+  "section_break1",
+  "applicant_name",
+  "current_dzongkha",
+  "column_break02",
+  "applicant_contact",
+  "current_resident",
+  "section_break01",
+  "items",
+  "section_break001",
+  "others",
+  "column_break05",
+  "remarks",
+  "product_list",
+  "amended_from",
+  "section_break_31",
+  "company",
+  "column_break_33",
+  "currency",
+  "so_reference",
+  "delivered"
+ ],
+ "fields": [
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Branch",
+   "options": "Branch",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break10",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Customer",
+   "options": "Customer",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "customer.customer_type",
+   "fieldname": "customer_type",
+   "fieldtype": "Data",
+   "label": "Customer Type",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break01",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_new_customer",
+   "fieldtype": "Check",
+   "label": "Is New Customer"
+  },
+  {
+   "default": "Today",
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "label": "Posting Date"
+  },
+  {
+   "fieldname": "cb_01",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_allotment",
+   "fieldtype": "Check",
+   "label": "Is Allotment"
+  },
+  {
+   "fieldname": "allotment_date",
+   "fieldtype": "Date",
+   "label": "Allotment Date"
+  },
+  {
+   "fieldname": "section_break00",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "construction_type",
+   "fieldtype": "Link",
+   "label": "Construction Type",
+   "options": "Construction Type",
+   "reqd": 1
+  },
+  {
+   "depends_on": "eval:doc.customer_type!=\"Domestic Customer\"",
+   "fieldname": "destination",
+   "fieldtype": "Data",
+   "label": "Destination"
+  },
+  {
+   "depends_on": "eval:doc.customer_type == \"Domestic Customer\"",
+   "fieldname": "destination_dzongkha",
+   "fieldtype": "Link",
+   "label": "Destination Dzongkhag",
+   "options": "Dzongkhags"
+  },
+  {
+   "fieldname": "supply_rate",
+   "fieldtype": "Select",
+   "label": "SUPPLY RATE",
+   "options": "\nNRPC Rate\nConcessional Royalty\nNegotiation Rate"
+  },
+  {
+   "fieldname": "column_break1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "start_date",
+   "fieldtype": "Date",
+   "label": "Start Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "location",
+   "fieldtype": "Data",
+   "label": "Location",
+   "reqd": 1
+  },
+  {
+   "fieldname": "no_of_story",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "No. Of Story"
+  },
+  {
+   "fieldname": "column_break2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "end_date",
+   "fieldtype": "Date",
+   "label": "End Date"
+  },
+  {
+   "fieldname": "tharm",
+   "fieldtype": "Data",
+   "label": "Plot/ Tharm No."
+  },
+  {
+   "fieldname": "section_break1",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "applicant_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Applicant Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "current_dzongkha",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Current Residential Dzongkhag",
+   "options": "Dzongkhags",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break02",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "applicant_contact",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Applicant Contact No",
+   "reqd": 1
+  },
+  {
+   "fieldname": "current_resident",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Current Residential Address",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break01",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "label": "Product List",
+   "options": "Product Requisition Item",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break001",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "others",
+   "fieldtype": "Text",
+   "in_list_view": 1,
+   "label": "Others"
+  },
+  {
+   "fieldname": "column_break05",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Text",
+   "in_list_view": 1,
+   "label": "Remarks"
+  },
+  {
+   "fieldname": "product_list",
+   "fieldtype": "Section Break",
+   "label": "Product List"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Product Requisition",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_31",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_33",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "currency",
+   "fieldtype": "Link",
+   "label": "Currency",
+   "options": "Currency",
+   "reqd": 1
+  },
+  {
+   "fieldname": "so_reference",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "SO",
+   "options": "Sales Order"
+  },
+  {
+   "default": "0",
+   "fieldname": "delivered",
+   "fieldtype": "Check",
+   "label": "Delivery Completed",
+   "read_only": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2025-09-12 14:24:33.967396",
+ "modified_by": "Administrator",
+ "module": "Selling",
+ "name": "Product Requisition",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

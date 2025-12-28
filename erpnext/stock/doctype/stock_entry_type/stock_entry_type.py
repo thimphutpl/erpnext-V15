@@ -17,7 +17,7 @@ class StockEntryType(Document):
 
 		add_to_transit: DF.Check
 		is_standard: DF.Check
-		purpose: DF.Literal["", "Material Issue", "Material Receipt", "Material Transfer", "CSR", "Write-Off"]
+		purpose: DF.Literal["", "Material Issue", "Material Receipt", "Material Transfer"]
 	# end: auto-generated types
 
 	def validate(self):

@@ -14,6 +14,7 @@
   "account_name",
   "account_number",
   "is_group",
+  "is_note",
   "company",
   "root_type",
   "report_type",
@@ -33,7 +34,13 @@
   "bank_branch",
   "column_break_cykx",
   "bank_account_type",
-  "bank_ac_no"
+  "bank_ac_no",
+  "section_break_zmjg",
+  "ignore_budget_check",
+  "is_centralized_budget",
+  "cost_center",
+  "column_break_bgxo",
+  "budget_type"
  ],
  "fields": [
   {
@@ -222,13 +229,53 @@
    "fieldname": "bank_ac_no",
    "fieldtype": "Data",
    "label": "Bank A/C No."
+  },
+  {
+   "fieldname": "section_break_zmjg",
+   "fieldtype": "Section Break",
+   "label": "Budget Details"
+  },
+  {
+   "default": "0",
+   "fieldname": "ignore_budget_check",
+   "fieldtype": "Check",
+   "label": "Ignore Budget Check"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_centralized_budget",
+   "fieldtype": "Check",
+   "label": "Is Centralized Budget"
+  },
+  {
+   "fieldname": "column_break_bgxo",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.is_centralized_budget",
+   "fieldname": "cost_center",
+   "fieldtype": "Link",
+   "label": "Cost Center",
+   "options": "Cost Center"
+  },
+  {
+   "fieldname": "budget_type",
+   "fieldtype": "Link",
+   "label": "Budget Type",
+   "options": "Budget Type"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_note",
+   "fieldtype": "Check",
+   "label": "Is Note"
   }
  ],
  "icon": "fa fa-money",
  "idx": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2025-02-03 12:04:37.699618",
+ "modified": "2025-12-24 12:27:45.198792",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Account",

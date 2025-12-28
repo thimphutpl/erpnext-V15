@@ -30,29 +30,29 @@ class Customer(TransactionBase):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
-		from frappe.types import DF
-
-		from erpnext.accounts.doctype.allowed_to_transact_with.allowed_to_transact_with import (
-			AllowedToTransactWith,
-		)
+		from erpnext.accounts.doctype.allowed_to_transact_with.allowed_to_transact_with import AllowedToTransactWith
 		from erpnext.accounts.doctype.party_account.party_account import PartyAccount
-		from erpnext.selling.doctype.customer_credit_limit.customer_credit_limit import (
-			CustomerCreditLimit,
-		)
+		from erpnext.selling.doctype.customer_credit_limit.customer_credit_limit import CustomerCreditLimit
 		from erpnext.selling.doctype.sales_team.sales_team import SalesTeam
 		from erpnext.utilities.doctype.portal_user.portal_user import PortalUser
+		from frappe.types import DF
 
 		account_manager: DF.Link | None
+		account_number: DF.Data | None
 		accounts: DF.Table[PartyAccount]
+		bank_account_type: DF.Link | None
+		bank_branch: DF.Link | None
+		bank_name: DF.Link | None
 		companies: DF.Table[AllowedToTransactWith]
 		credit_limits: DF.Table[CustomerCreditLimit]
 		customer_details: DF.Text | None
 		customer_group: DF.Link | None
+		customer_id: DF.Data | None
 		customer_name: DF.Data
 		customer_pos_id: DF.Data | None
 		customer_primary_address: DF.Link | None
 		customer_primary_contact: DF.Link | None
-		customer_type: DF.Literal["Company", "Individual", "Partnership"]
+		customer_type: DF.Literal["Company", "Individual", "Partnership", "Domestic Customer", "International Customer"]
 		default_bank_account: DF.Link | None
 		default_commission_rate: DF.Float
 		default_currency: DF.Link | None
@@ -60,6 +60,7 @@ class Customer(TransactionBase):
 		default_sales_partner: DF.Link | None
 		disabled: DF.Check
 		dn_required: DF.Check
+		dzongkhag: DF.Link
 		email_id: DF.ReadOnly | None
 		gender: DF.Link | None
 		image: DF.AttachImage | None
@@ -68,6 +69,7 @@ class Customer(TransactionBase):
 		is_internal_customer: DF.Check
 		language: DF.Link | None
 		lead_name: DF.Link | None
+		location: DF.Data | None
 		loyalty_program: DF.Link | None
 		loyalty_program_tier: DF.Data | None
 		market_segment: DF.Link | None

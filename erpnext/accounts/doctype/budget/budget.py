@@ -142,6 +142,7 @@ class Budget(Document):
 
 def validate_expense_against_budget(args, expense_amount=0):
 	args = frappe._dict(args)
+	
 	if not frappe.get_all("Budget", limit=1):
 		return
 
@@ -185,6 +186,7 @@ def validate_expense_against_budget(args, expense_amount=0):
 			doctype = dimension.get("document_type")
 
 			if frappe.get_cached_value("DocType", doctype, "is_tree"):
+				
 				lft, rgt = frappe.get_cached_value(doctype, args.get(budget_against), ["lft", "rgt"])
 				condition = f"""and exists(select name from `tab{doctype}`
 					where lft<={lft} and rgt>={rgt} and name=b.{budget_against})"""  # nosec

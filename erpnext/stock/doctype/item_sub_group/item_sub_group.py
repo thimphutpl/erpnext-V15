@@ -18,6 +18,7 @@ class ItemSubGroup(Document):
 		item_code_base: DF.Data | None
 		item_group: DF.Link
 		item_sub_group: DF.Data
+		lot_check: DF.Check
 	# end: auto-generated types
 	pass
 

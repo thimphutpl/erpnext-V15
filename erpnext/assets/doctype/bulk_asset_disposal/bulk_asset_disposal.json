@@ -14,10 +14,11 @@
   "column_break_xosw",
   "scrap",
   "customer",
+  "journal_entry",
+  "sales_invoice",
   "section_break_zrkq",
   "item",
-  "amended_form",
-  "refernece"
+  "amended_form"
  ],
  "fields": [
   {
@@ -38,7 +39,7 @@
    "fieldname": "scrap_date",
    "fieldtype": "Date",
    "in_list_view": 1,
-   "label": "Scrap Date",
+   "label": "Scrap/Sale Date",
    "reqd": 1
   },
   {
@@ -63,8 +64,8 @@
    "fieldname": "scrap",
    "fieldtype": "Select",
    "in_list_view": 1,
-   "label": "Scrap",
-   "options": "\nScrap Asset",
+   "label": "Scrap/Sale",
+   "options": "\nScrap Asset\nSale Asset",
    "reqd": 1
   },
   {
@@ -94,9 +95,16 @@
    "read_only": 1
   },
   {
-   "fieldname": "refernece",
+   "fieldname": "journal_entry",
    "fieldtype": "Data",
-   "label": "Refernece"
+   "label": "Journal Entry",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sales_invoice",
+   "fieldtype": "Data",
+   "label": "Sales Invoice",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,

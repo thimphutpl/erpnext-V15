@@ -21,6 +21,7 @@ class RevenueTarget(Document):
 		amended_from: DF.Link | None
 		attachment: DF.Attach | None
 		company: DF.Link
+		cost_center: DF.Link | None
 		fiscal_year: DF.Link
 		revenue_target_account: DF.Table[RevenueTargetAccount]
 		title: DF.Data | None
@@ -63,13 +64,15 @@ class RevenueTarget(Document):
 				item.account_number = frappe.db.get_value("Account", item.account, "account_number")
 	
 	def calculate_targets(self):
+
+
 		tot_target_amount     = flt(0.0)
 
 		for d in self.revenue_target_account:
 			# d.net_target_amount = flt(d.target_amount)
 			tot_target_amount += flt(d.target_amount)
 
-		self.tot_target_amount     = tot_target_amount
+		self.tot_target_amount = tot_target_amount
 		# self.tot_net_target_amount = flt(tot_target_amount)
 			
 	@frappe.whitelist()

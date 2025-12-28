@@ -15,6 +15,7 @@
   "default_currency",
   "country",
   "is_group",
+  "cheque_required",
   "default_holiday_list",
   "cb0",
   "default_letter_head",
@@ -1029,6 +1030,12 @@
    "fieldtype": "Link",
    "label": "Default Interest Free Loan Account",
    "options": "Account"
+  },
+  {
+   "default": "0",
+   "fieldname": "cheque_required",
+   "fieldtype": "Check",
+   "label": " Cheque Required"
   }
  ],
  "icon": "fa fa-building",
@@ -1036,7 +1043,7 @@
  "image_field": "company_logo",
  "is_tree": 1,
  "links": [],
- "modified": "2025-08-18 19:41:21.521596",
+ "modified": "2025-12-22 11:21:55.278984",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Company",

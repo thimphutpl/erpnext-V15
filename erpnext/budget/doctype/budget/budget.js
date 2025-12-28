@@ -8,7 +8,7 @@ frappe.ui.form.on('Budget', {
 			return {
 				filters: {
 					company: frm.doc.company,
-					is_group: 0
+					is_group: 0,
 				}
 			};
 		});
@@ -17,7 +17,8 @@ frappe.ui.form.on('Budget', {
 			return {
 				filters: {
 					company: frm.doc.company,
-					is_group: 0
+					use_budget_from_parent:1
+
 				}
 			};
 		});

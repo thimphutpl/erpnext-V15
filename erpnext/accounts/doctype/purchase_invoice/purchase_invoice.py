@@ -43,6 +43,7 @@ from erpnext.stock.doctype.purchase_receipt.purchase_receipt import (
 	get_item_account_wise_additional_cost,
 	update_billed_amount_based_on_po,
 )
+from erpnext.budget.doctype.budget.budget import validate_expense_against_budget
 
 
 class WarehouseMissingError(frappe.ValidationError):
@@ -422,6 +423,7 @@ class PurchaseInvoice(BuyingController):
 		for d in self.get("items"):
 			if not d.item_code:
 				frappe.msgprint(_("Item Code required at Row No {0}").format(d.idx), raise_exception=True)
+				
 
 	def set_expense_account(self, for_validate=False):
 		auto_accounting_for_stock = erpnext.is_perpetual_inventory_enabled(self.company)
@@ -739,6 +741,7 @@ class PurchaseInvoice(BuyingController):
 			self.update_billing_status_for_zero_amount_refdoc("Purchase Order")
 
 		self.update_billing_status_in_pr()
+		self.consume_budget(cancel=False)
 
 		# Updating stock ledger should always be called after updating prevdoc status,
 		# because updating ordered qty in bin depends upon updated ordered qty in PO
@@ -776,6 +779,138 @@ class PurchaseInvoice(BuyingController):
 		if self.needs_repost:
 			self.validate_for_repost()
 			self.repost_accounting_entries()
+	def consume_budget(self, cancel=False):
+	
+		if cancel:
+			frappe.db.sql("delete from `tabCommitted Budget` where reference_type='{}' and reference_no='{}'".format(self.doctype, self.name))
+			frappe.db.sql("delete from `tabConsumed Budget` where reference_type='{}' and reference_no='{}'".format(self.doctype, self.name))
+			return
+		for item in self.get("items"):
+			expense, cost_center = item.expense_account, item.cost_center
+			if item.po_detail:
+				expense, cost_center = frappe.db.get_value("Purchase Order Item", item.po_detail, ["expense_account", "cost_center"])
+			else:
+				if frappe.db.get_value("Item", item.item_code, "is_fixed_asset"):
+					expense = get_asset_category_account('fixed_asset_account', item=item.item_code,
+																  company=self.company)
+			# frappe.throw(str(expense))
+			budget_cost_center = budget_account = ""
+			bud_acc_dtl = frappe.get_doc("Account", expense)
+			if bud_acc_dtl.is_centralized_budget:
+				budget_cost_center = bud_acc_dtl.cost_center
+			else:
+				#check Budget Cost for child cost centers
+				cc_doc = frappe.get_doc("Cost Center", cost_center)
+				
+				parent_cc = frappe.db.get_value("Cost Center", cc_doc.name, "parent_cost_center")
+				if cc_doc.use_budget_from_parent:
+					budget_cost_center = parent_cc
+				else:
+					#frappe.throw(str("hi1"))
+					pass
+				# budget_cost_center = cc_doc.budget_cost_center if cc_doc.use_budget_from_parent else cost_center
+				committed_consumed_cost_center = parent_cc
+			if expense:
+				
+				if bud_acc_dtl.account_type in ("Fixed Asset", "Expense Account"):
+					
+					reference_date = commited_budget_id = None
+					amount = item.base_net_amount if flt(item.base_net_amount,2) else flt(item.base_amount,2)
+					if frappe.db.get_single_value("Budget Settings", "budget_commit_on") == "Purchase Order":
+						#mr_name = frappe.db.get_value("Purchase Order Item", {"parent":item.purchase_order, "item_code":item.item_code}, "material_request")
+						reference_date = frappe.db.get_value("Purchase Order", item.purchase_order, "transaction_date") if item.purchase_order else self.posting_date
+						commited_budget_id = frappe.db.get_value("Committed Budget", {"reference_type":"Purchase Order", "reference_no":item.purchase_order,"item_code":item.item_code},"name")
+						#mr_child_id = frappe.db.get_value("Material Request Item", {"parent": mr_name, "item_code": item.item_code}, "name")
+						if commited_budget_id:
+							frappe.db.set_value('Committed Budget',commited_budget_id, 'closed', 1)
+							frappe.db.commit()
+							# consume = frappe.get_doc({
+							# 	"doctype": "Consumed Budget",
+							# 	"account": expense,
+							# 	"cost_center": budget_cost_center,
+							# 	"project": item.project,
+							# 	"reference_type": self.doctype,
+							# 	"reference_no": self.name,
+							# 	"reference_date": reference_date if reference_date else self.posting_date,
+							# 	"company": self.company,
+							# 	"amount": flt(amount,2),
+							# 	"reference_id": item.name,
+							# 	"item_code": item.item_code,
+							# 	"com_ref": commited_budget_id,
+							# 	# "business_activity": self.business_activity,
+							# 	"consumed_cost_center": committed_consumed_cost_center
+							# })
+							# consume.flags.ignore_permissions=1
+							# consume.submit()
+							# com_doc = frappe.get_doc("Committed Budget", commited_budget_id)
+							# if amount == com_doc.amount and not com_doc.closed:
+							# 	frappe.db.sql("update `tabCommitted Budget` set closed = 1 where name = '{}'".format(commited_budget_id))
+
+
+						# if mr_name:
+						# 	reference_date = frappe.db.get_value("Material Request", mr_name, "transaction_date") if mr_name else self.posting_date
+						# 	commited_budget_id = frappe.db.get_value("Committed Budget", {"reference_type":"Material Request", "reference_no": mr_name, "reference_id": mr_child_id}, "name")
+					else:
+						
+						reference_date = frappe.db.get_value("Purchase Order", item.purchase_order, "transaction_date") if item.purchase_order else self.posting_date
+						commited_budget_id = frappe.db.get_value("Committed Budget", {"reference_type":"Purchase Order", "reference_no":item.purchase_order, "reference_id":item.po_detail},"name")
+					args = frappe._dict({
+							"account": expense,
+							"cost_center": budget_cost_center,
+							"project": item.project,
+							"posting_date": self.posting_date,
+							"company": self.company,
+							"amount": flt(amount,2),
+							"voucher_type": self.doctype
+							# "business_activity": self.business_activity,
+						})
+					if not commited_budget_id:			
+						validate_expense_against_budget(args)
+						#Commit Budget
+						bud_obj = frappe.get_doc({
+							"doctype": "Committed Budget",
+							"account": expense,
+							"cost_center": budget_cost_center,
+							"project": item.project,
+							"reference_type": self.doctype,
+							"reference_no": self.name,
+							"reference_date": self.posting_date,
+							"company": self.company,
+							"amount": flt(amount,2),
+							"reference_id": item.name,
+							"item_code": item.item_code,
+							"company": self.company,
+							"closed":1,
+							# "business_activity": self.business_activity,
+							"committed_cost_center": committed_consumed_cost_center
+						})
+						
+						bud_obj.flags.ignore_permissions=1
+						bud_obj.submit()
+						commited_budget_id = bud_obj.name
+						
+
+					consume = frappe.get_doc({
+						"doctype": "Consumed Budget",
+						"account": expense,
+						"cost_center": budget_cost_center,
+						"project": item.project,
+						"reference_type": self.doctype,
+						"reference_no": self.name,
+						"reference_date": reference_date if reference_date else self.posting_date,
+						"company": self.company,
+						"amount": flt(amount,2),
+						"reference_id": item.name,
+						"item_code": item.item_code,
+						"com_ref": commited_budget_id,
+						# "business_activity": self.business_activity,
+						"consumed_cost_center": committed_consumed_cost_center
+					})
+					consume.flags.ignore_permissions=1
+					consume.submit()
+					com_doc = frappe.get_doc("Committed Budget", commited_budget_id)
+					if amount == com_doc.amount and not com_doc.closed:
+						frappe.db.sql("update `tabCommitted Budget` set closed = 1 where name = '{}'".format(commited_budget_id))
 
 	def make_gl_entries(self, gl_entries=None, from_repost=False):
 		update_outstanding = "No" if (cint(self.is_paid) or self.write_off_account) else "Yes"
@@ -1593,6 +1728,7 @@ class PurchaseInvoice(BuyingController):
 				self.set_consumed_qty_in_subcontract_order()
 
 		self.make_gl_entries_on_cancel()
+		self.consume_budget(cancel=True)
 
 		if self.update_stock == 1:
 			self.repost_future_sle_and_gle()
@@ -2027,3 +2163,4 @@ def make_purchase_receipt(source_name, target_doc=None):
 	)
 
 	return doc
+	

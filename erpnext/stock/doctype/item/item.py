@@ -79,6 +79,7 @@ class Item(Document):
 		barcodes: DF.Table[ItemBarcode]
 		batch_number_series: DF.Data | None
 		brand: DF.Link | None
+		business_activity: DF.Data | None
 		country_of_origin: DF.Link | None
 		create_new_batch: DF.Check
 		customer: DF.Link | None

@@ -2329,7 +2329,16 @@ def check_clearance_date(dt, dn):
 	if doc.clearance_date:
 		frappe.msgprint("Cannot cancel this document as <b>Bank Reconciliation</b> has already done on {}".format(doc.clearance_date), raise_exception= True)
 
+@frappe.whitelist()
+def get_tds_account(percent,company):
+	if not percent:
+		frappe.throw("TDS Percent is mandatory")
+	return frappe.db.get_value("TDS Account Item",{"parent":company,"tds_percent":percent}, "account")
 
+@frappe.whitelist()
+def get_account_type(account,company):
+	return frappe.db.get_value("Account",{"name":account,"company":company},"account_type")
+	
 def make_asset_transfer_gl(self, asset, date, from_cc, to_cc, cancel, not_legacy_data=True):
 	if from_cc == to_cc:
 		frappe.throw("From Cost Center and To Cost Center cannot be the same")
@@ -2345,9 +2354,9 @@ def make_asset_transfer_gl(self, asset, date, from_cc, to_cc, cancel, not_legacy
 	accumulated_dep = flt(asset.gross_purchase_amount) - flt(asset.value_after_depreciation)
 	
 	accumulated_dep_account = frappe.db.sql("select accumulated_depreciation_account from `tabAsset Category Account` where parent = %s", asset.asset_category, as_dict=True)[0].accumulated_depreciation_account
-	ic_account = frappe.db.get_single_value("Accounts Settings", "intra_company_account")
-	if not ic_account:
-		frappe.throw("Setup Intra Company Accounts under Accounts Settings")
+	# ic_account = frappe.db.get_single_value("Accounts Settings", "intra_company_account")
+	# if not ic_account:
+	# 	frappe.throw("Setup Intra Company Accounts under Accounts Settings")
 
 	from erpnext.accounts.general_ledger import make_gl_entries
 	from erpnext.custom_utils import prepare_gl
@@ -2398,7 +2407,7 @@ def make_asset_transfer_gl(self, asset, date, from_cc, to_cc, cancel, not_legacy
 	if flt(asset.value_after_depreciation) > 0:
 		gl_entries.append(
 			prepare_gl(self, {
-			       "account": ic_account,
+			    #    "account": ic_account,
 			       "debit": asset.value_after_depreciation,
 			       "debit_in_account_currency": asset.value_after_depreciation,
 			       "against_voucher": asset.name,
@@ -2408,7 +2417,7 @@ def make_asset_transfer_gl(self, asset, date, from_cc, to_cc, cancel, not_legacy
 		)
 		gl_entries.append(
 			prepare_gl(self, {
-			       "account": ic_account,
+			    #    "account": ic_account,
 			       "credit": asset.value_after_depreciation,
 			       "credit_in_account_currency": asset.value_after_depreciation,
 			       "against_voucher": asset.name,

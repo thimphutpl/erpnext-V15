@@ -14,6 +14,9 @@ class eNoteSeries(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
-
+		amended_from: DF.Link | None
+		description: DF.Data | None
+		series: DF.Data | None
+		type: DF.Link | None
 	# end: auto-generated types
 	pass

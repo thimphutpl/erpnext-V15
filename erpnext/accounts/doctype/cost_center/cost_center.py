@@ -20,6 +20,7 @@ class CostCenter(NestedSet):
 		from frappe.types import DF
 
 		branch_created: DF.Check
+		budget_cost_center: DF.Link | None
 		company: DF.Link
 		cost_center_name: DF.Data
 		cost_center_number: DF.Data | None
@@ -29,6 +30,7 @@ class CostCenter(NestedSet):
 		old_parent: DF.Link | None
 		parent_cost_center: DF.Link
 		rgt: DF.Int
+		use_budget_from_parent: DF.Check
 		warehouse: DF.Link | None
 	# end: auto-generated types
 

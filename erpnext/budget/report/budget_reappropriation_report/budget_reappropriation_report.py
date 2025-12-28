@@ -15,9 +15,6 @@ def execute(filters=None):
 def validate_filters(filters):
 	if not filters.fiscal_year:
 		frappe.throw(_("Fiscal Year {0} is required").format(filters.fiscal_year))
-  
-	if not filters.company:
-		frappe.throw(_("Company is required"))
 
 	fiscal_year = frappe.db.get_value("Fiscal Year", filters.fiscal_year, ["year_start_date", "year_end_date"], as_dict=True)
 	if not fiscal_year:
@@ -52,12 +49,12 @@ def validate_filters(filters):
 def get_data(filters):
 	query = """
 		select 
-			t2.from_cost_center as from_cc,
-			t2.to_cost_center as to_cc, 
-			t2.from_account as from_acc, 
-			t2.to_account as to_acc, 
-			t2.amount as amount, 
-			t1.remark,
+			t2.from_cost_center 	as from_cc,
+			t2.to_cost_center 	as to_cc, 
+			t2.from_account 	as from_acc, 
+			t2.to_account 		as to_acc, 
+			t2.amount		as amount, 
+			t1.remarks as remarks,
 			t2.posting_date as date 
 		from 
 			`tabBudget Reappropiation` as t1,
@@ -66,10 +63,7 @@ def get_data(filters):
 		and t1.docstatus = 1 
 		and t2.posting_date between '{0}' and '{1}'
 		""".format(filters.from_date, filters.to_date)
-	# Add company filter
-	if filters.company:
-		query += " and t1.company = '{}'".format(filters.company)
-		
+
 	if filters.to_cc:
 		query+=" and t2.to_cost_center = \'" + filters.to_cc  + "\'"
 
@@ -95,7 +89,6 @@ def get_data(filters):
 				"from_acc": a.from_acc,
 				"amount": a.amount,
 				"date": a.date,
-				"remark":a.remark,
 			}
 			data.append(row)
 	
@@ -144,7 +137,7 @@ def get_columns():
 			"width": 130
 		},
 		{
-			"fieldname": "remark",
+			"fieldname": "remarks",
 			"label": _("Remarks"),
 			"fieldtype": "Data",
 			"width": 200

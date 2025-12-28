@@ -28,6 +28,8 @@ class StockEntryDetail(Document):
 		conversion_factor: DF.Float
 		cost_center: DF.Link | None
 		description: DF.TextEditor | None
+		employee: DF.Link | None
+		employee_name: DF.ReadOnly | None
 		expense_account: DF.Link | None
 		has_item_scanned: DF.Check
 		image: DF.Attach | None
@@ -37,6 +39,7 @@ class StockEntryDetail(Document):
 		item_group: DF.Data | None
 		item_name: DF.Data | None
 		job_card_item: DF.Data | None
+		lot_number: DF.Link | None
 		material_request: DF.Link | None
 		material_request_item: DF.Link | None
 		original_item: DF.Link | None

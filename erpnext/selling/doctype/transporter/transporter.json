@@ -1,0 +1,203 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:transporter_name",
+ "creation": "2025-08-31 13:45:57.978195",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "basic_info",
+  "transporter_name",
+  "transporter_id",
+  "bank_name",
+  "bank_branch",
+  "account_number",
+  "bank_account_type",
+  "column_break0",
+  "tpn_no",
+  "enabled",
+  "blacklist",
+  "dzongkhag",
+  "detail_section",
+  "mobile_no",
+  "telephone_and_fax",
+  "address_contacts",
+  "column_break1",
+  "transport_request",
+  "contact_html",
+  "amended_from",
+  "user"
+ ],
+ "fields": [
+  {
+   "fieldname": "basic_info",
+   "fieldtype": "Section Break",
+   "label": "Name and Type",
+   "oldfieldtype": "Section Break",
+   "options": "icon-user"
+  },
+  {
+   "bold": 1,
+   "fieldname": "transporter_name",
+   "fieldtype": "Data",
+   "in_filter": 1,
+   "in_list_view": 1,
+   "label": "Transporter Name",
+   "oldfieldname": "customer_name",
+   "oldfieldtype": "Data",
+   "reqd": 1,
+   "search_index": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "transporter_id",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Transporter CID/License No",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "bank_name",
+   "fieldtype": "Link",
+   "label": "Bank Name",
+   "options": "Financial Institution"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "bank_branch",
+   "fieldtype": "Link",
+   "label": "Bank Branch",
+   "options": "Financial Institution Branch"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "account_number",
+   "fieldtype": "Data",
+   "label": "Account Number"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "bank_account_type",
+   "fieldtype": "Link",
+   "label": "Bank Account Type",
+   "options": "Bank Account Type"
+  },
+  {
+   "fieldname": "column_break0",
+   "fieldtype": "Column Break",
+   "width": "50%"
+  },
+  {
+   "fieldname": "tpn_no",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "TPN No."
+  },
+  {
+   "default": "1",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "Enabled"
+  },
+  {
+   "allow_on_submit": 1,
+   "default": "0",
+   "fieldname": "blacklist",
+   "fieldtype": "Check",
+   "label": "Suspended"
+  },
+  {
+   "fieldname": "dzongkhag",
+   "fieldtype": "Link",
+   "label": "Dzongkhag",
+   "options": "Dzongkhags"
+  },
+  {
+   "fieldname": "detail_section",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "mobile_no",
+   "fieldtype": "Int",
+   "label": "Mobile No."
+  },
+  {
+   "fieldname": "telephone_and_fax",
+   "fieldtype": "Data",
+   "label": "Telephone and Fax"
+  },
+  {
+   "depends_on": "eval:!doc.__islocal",
+   "fieldname": "address_contacts",
+   "fieldtype": "Section Break",
+   "hidden": 1,
+   "label": "Address and Contact",
+   "options": "icon-map-marker"
+  },
+  {
+   "fieldname": "column_break1",
+   "fieldtype": "Column Break",
+   "width": "50%"
+  },
+  {
+   "fieldname": "transport_request",
+   "fieldtype": "Link",
+   "label": "Transport Request",
+   "options": "Transport Request"
+  },
+  {
+   "fieldname": "contact_html",
+   "fieldtype": "HTML",
+   "label": "Contact HTML",
+   "oldfieldtype": "HTML",
+   "read_only": 1
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Transporter",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "label": "User",
+   "options": "User"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2025-08-31 13:57:56.215300",
+ "modified_by": "Administrator",
+ "module": "Selling",
+ "name": "Transporter",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

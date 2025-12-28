@@ -33,15 +33,16 @@ class BudgetReappropiation(Document):
 		to_cost_center: DF.Link | None
 		to_project: DF.Link | None
 		total_reappropiation_amount: DF.Currency
+		workflow_state: DF.Link | None
 	# end: auto-generated types
 	def validate(self):
-		# validate_workflow_states(self)
+		#validate_workflow_states(self)
 		self.validate_budget()
 		self.budget_check()
 		# if self.workflow_state != "Submitted":
 		# 	notify_workflow_states(self)
 	def on_submit(self):
-		# notify_workflow_states(self)
+		#notify_workflow_states(self)
 		self.budget_appropriate(cancel=False)
 
 	def on_cancel(self):
@@ -104,6 +105,7 @@ class BudgetReappropiation(Document):
 		args.project = self.from_project if self.budget_against == "Project" else None
 		args.fiscal_year = self.fiscal_year
 		args.company = self.company
+		first_day=nowdate()
 		for a in self.get('items'):
 			for month_id in range(1, 13):
 				month = datetime.date(2023, month_id, 1).strftime("%B")
@@ -119,7 +121,7 @@ class BudgetReappropiation(Document):
 
 	# Added by Thukten on 13th September, 2022
 	def budget_appropriate(self, cancel=False):
-		if frappe.db.get_value("Fiscal Year", self.fiscal_year, "closed"):
+		if frappe.db.get_value("Fiscal Year", self.fiscal_year, "disabled"):
 			frappe.throw("Fiscal Year " + fiscal_year + " has already been closed")
 		else:
 			budget_against_field = frappe.scrub(self.budget_against)
