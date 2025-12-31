@@ -25,6 +25,7 @@
   "is_production_item",
   "has_variants",
   "is_pol_item",
+  "gst_exempted",
   "opening_stock",
   "valuation_rate",
   "standard_rate",
@@ -914,6 +915,12 @@
    "fieldname": "is_production_item",
    "fieldtype": "Check",
    "label": " Is Production Item"
+  },
+  {
+   "default": "0",
+   "fieldname": "gst_exempted",
+   "fieldtype": "Check",
+   "label": "GST Exempted"
   }
  ],
  "icon": "fa fa-tag",
@@ -922,7 +929,7 @@
  "index_web_pages_for_search": 1,
  "links": [],
  "make_attachments_public": 1,
- "modified": "2025-06-27 08:49:26.593563",
+ "modified": "2025-12-31 12:33:49.297890",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Item",
