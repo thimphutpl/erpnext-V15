@@ -375,9 +375,16 @@ class calculate_taxes_and_totals:
 
 		for n, item in enumerate(self._items):
 			item_tax_map = self._load_item_tax_rate(item.item_tax_rate)
+			# frappe.throw(frappe.as_json(item))
 			for i, tax in enumerate(self.doc.get("taxes")):
+				# frappe.throw(frappe.as_json(item.item_code))
 				# tax_amount represents the amount of tax for the current step
-				current_tax_amount = self.get_current_tax_amount(item, tax, item_tax_map)
+				exempt_gst = frappe.db.get_value("Item",{"name":item.item_code},'gst_exempted')
+				if cint(exempt_gst) == 1:
+					current_tax_amount = 0
+				else:
+					current_tax_amount = self.get_current_tax_amount(item, tax, item_tax_map)
+				# frappe.throw(str(current_tax_amount))
 				if frappe.flags.round_row_wise_tax:
 					current_tax_amount = flt(current_tax_amount, tax.precision("tax_amount"))
 
