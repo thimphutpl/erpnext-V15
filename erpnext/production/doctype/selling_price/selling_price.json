@@ -74,6 +74,7 @@
    "label": "Selling Rate Information"
   },
   {
+   "allow_bulk_edit": 1,
    "fieldname": "item_rates",
    "fieldtype": "Table",
    "options": "Selling Price Rate"
@@ -86,12 +87,11 @@
    "options": "\nSelling Price\nSelling Price Rate"
   }
  ],
- "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-08-28 11:54:39.817465",
+ "modified": "2025-12-31 20:27:39.016828",
  "modified_by": "Administrator",
- "module": "Production",
+ "module": "production",
  "name": "Selling Price",
  "naming_rule": "By \"Naming Series\" field",
  "owner": "Administrator",
@@ -109,7 +109,6 @@
    "write": 1
   }
  ],
- "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []

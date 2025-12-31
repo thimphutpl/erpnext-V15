@@ -27,9 +27,6 @@ class SellingPrice(Document):
 		item_rates: DF.Table[SellingPriceRate]
 		naming_series: DF.Literal["", "Selling Price", "Selling Price Rate"]
 		to_date: DF.Date
-
-	def autoname(self):
-		self.name = make_autoname(get_auto_name(self, self.naming_series) + ".####")	
 	# end: auto-generated types
 	def validate(self):
 		self.check_sp_rate()
