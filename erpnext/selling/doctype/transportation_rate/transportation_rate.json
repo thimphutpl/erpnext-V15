@@ -1,0 +1,97 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "TRA.YY.MM.###",
+ "creation": "2025-12-15 20:27:01.453722",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "branch",
+  "rate",
+  "from_date",
+  "to_date",
+  "column_break_wxwq",
+  "item_sub_group",
+  "from_distance",
+  "to_distance"
+ ],
+ "fields": [
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Branch",
+   "options": "Branch",
+   "reqd": 1
+  },
+  {
+   "fieldname": "rate",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Transporation Rate",
+   "reqd": 1
+  },
+  {
+   "fieldname": "from_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "From Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "to_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "To Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_wxwq",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "item_sub_group",
+   "fieldtype": "Link",
+   "label": "Item Sub Group",
+   "options": "Item Sub Group",
+   "reqd": 1
+  },
+  {
+   "fieldname": "from_distance",
+   "fieldtype": "Float",
+   "label": "From Distance",
+   "reqd": 1
+  },
+  {
+   "fieldname": "to_distance",
+   "fieldtype": "Float",
+   "label": "To Distance",
+   "reqd": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-12-31 21:07:47.403772",
+ "modified_by": "Administrator",
+ "module": "Selling",
+ "name": "Transportation Rate",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
