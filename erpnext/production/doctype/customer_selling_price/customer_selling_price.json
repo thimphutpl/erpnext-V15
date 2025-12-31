@@ -83,17 +83,17 @@
    "label": "Define Selling Price"
   },
   {
+   "allow_bulk_edit": 1,
    "fieldname": "item_rates",
    "fieldtype": "Table",
    "options": "Selling Price Rate"
   }
  ],
- "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-10-10 11:18:12.564297",
+ "modified": "2025-12-31 21:15:27.203616",
  "modified_by": "Administrator",
- "module": "Production",
+ "module": "production",
  "name": "Customer Selling Price",
  "naming_rule": "Expression",
  "owner": "Administrator",
@@ -111,7 +111,6 @@
    "write": 1
   }
  ],
- "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []
