@@ -28,6 +28,8 @@
   "rgt",
   "old_parent",
   "include_in_gross",
+  "dhi_company",
+  "dhi_company_name",
   "section_break_tvam",
   "bank_name",
   "bank_branch",
@@ -263,13 +265,25 @@
    "fieldtype": "Link",
    "label": "Budget Type",
    "options": "Budget Type"
+  },
+  {
+   "fieldname": "dhi_company",
+   "fieldtype": "Link",
+   "label": "DHI Company",
+   "options": "DHI Company"
+  },
+  {
+   "fieldname": "dhi_company_name",
+   "fieldtype": "Data",
+   "label": "DHI Company Name",
+   "read_only": 1
   }
  ],
  "icon": "fa fa-money",
  "idx": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2025-05-05 20:20:10.044084",
+ "modified": "2025-12-23 11:15:23.183923",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Account",
@@ -324,6 +338,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "search_fields": "account_number",
  "show_name_in_global_search": 1,
  "sort_field": "modified",
