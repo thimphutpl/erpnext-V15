@@ -212,43 +212,43 @@ def price_template_list(doctype, txt, searchfield, start, page_len, filters):
 
     item_price = frappe.db.sql(query)
 
-    if not item_price:
-        item_species = frappe.db.get_value("Item", filters.get("item_code"), "species")
-        if not item_species:
-            return item_price
-        else:
-            timber_class, timber_type = frappe.db.get_value("Timber Species", item_species, ["timber_class", "timber_type"])
-            item_sub_group = frappe.db.get_value("Item", filters.get("item_code"), "item_sub_group")
-            cond = ''
+    # if not item_price:
+    #     item_species = frappe.db.get_value("Item", filters.get("item_code"), "species")
+    #     if not item_species:
+    #     return item_price
+    #     else:
+    #         timber_class, timber_type = frappe.db.get_value("Timber Species", item_species, ["timber_class", "timber_type"])
+    #         item_sub_group = frappe.db.get_value("Item", filters.get("item_code"), "item_sub_group")
+    #         cond = ''
 
-            if selling_uom == '':
-                cond += "IF(b.selling_uom IS NULL,'',b.selling_uom) = '' and "
-            elif selling_uom != '':
-                check_loc = frappe.db.sql(
-                    "select 1 from `tabSelling Price` sp, `tabSelling Price Rate` spr where spr.parent = sp.name and spr.particular='{0}' and spr.selling_uom='{1}' and sp.to_date >= '{2}'".format(
-                        filters.get("item_code"), selling_uom, nowdate()
-                    )
-                )
-                if not check_loc:
-                    cond += "IF(b.selling_uom IS NULL,'',b.selling_uom) = '' and "
-                else:
-                    cond += "IF(b.selling_uom IS NULL,'',b.selling_uom) = '{}' and ".format(selling_uom)
+    #         if selling_uom == '':
+    #             cond += "IF(b.selling_uom IS NULL,'',b.selling_uom) = '' and "
+    #         elif selling_uom != '':
+    #             check_loc = frappe.db.sql(
+    #                 "select 1 from `tabSelling Price` sp, `tabSelling Price Rate` spr where spr.parent = sp.name and spr.particular='{0}' and spr.selling_uom='{1}' and sp.to_date >= '{2}'".format(
+    #                     filters.get("item_code"), selling_uom, nowdate()
+    #                 )
+    #             )
+    #             if not check_loc:
+    #                 cond += "IF(b.selling_uom IS NULL,'',b.selling_uom) = '' and "
+    #             else:
+    #                 cond += "IF(b.selling_uom IS NULL,'',b.selling_uom) = '{}' and ".format(selling_uom)
 
-            item_price = frappe.db.sql(
-                """ 
-                select 
-                    a.parent, b.particular, b.timber_type, b.selling_price, b.selling_uom, b.location 
-                from 
-                    `tabSelling Price Branch` a, `tabSelling Price Rate` b 
-                where 
-                    a.parent = b.parent and a.branch = '{0}' and b.particular = '{1}' and b.timber_type = '{2}' 
-                    and b.item_sub_group = '{3}' and {4}
-                    exists (select 1 from `tabSelling Price` where name = a.parent and '{5}' between from_date and to_date) 
-                group by a.parent
-            """.format(
-                    filters.get("branch"), timber_class, timber_type, item_sub_group, cond, filters.get("transaction_date")
-                )
-            )
+    #         item_price = frappe.db.sql(
+    #             """ 
+    #             select 
+    #                 a.parent, b.particular, b.timber_type, b.selling_price, b.selling_uom, b.location 
+    #             from 
+    #                 `tabSelling Price Branch` a, `tabSelling Price Rate` b 
+    #             where 
+    #                 a.parent = b.parent and a.branch = '{0}' and b.particular = '{1}' and b.timber_type = '{2}' 
+    #                 and b.item_sub_group = '{3}' and {4}
+    #                 exists (select 1 from `tabSelling Price` where name = a.parent and '{5}' between from_date and to_date) 
+    #             group by a.parent
+    #         """.format(
+    #                 filters.get("branch"), timber_class, timber_type, item_sub_group, cond, filters.get("transaction_date")
+    #             )
+    #         )
 
     if not item_price:
         frappe.throw(

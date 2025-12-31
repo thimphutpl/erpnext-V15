@@ -16,6 +16,7 @@ class SellingPriceRate(Document):
 
 		item_name: DF.Data | None
 		item_sub_group: DF.Link | None
+		location: DF.Data | None
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
