@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "allow_import": 1,
  "allow_rename": 1,
  "autoname": "GI-CONTRACT-.#####",
  "creation": "2025-12-11 10:03:40.950385",
@@ -12,6 +13,7 @@
   "supplier_name",
   "column_break_aoas",
   "supplier_type",
+  "status",
   "contract_section_section",
   "contract_name",
   "start_date",
@@ -20,12 +22,23 @@
   "column_break_wzat",
   "reference_number",
   "end_date",
+  "types_of_contract",
   "revised_expiry_date",
+  "column_break_xoon",
+  "actual_completion_date",
+  "delay_days",
+  "defect_liability_amount",
+  "currency",
   "column_break_mokv",
   "initial_amount",
   "discount",
   "additional",
-  "final_amount"
+  "negotiation_amount",
+  "column_break_nbbd",
+  "final_amount",
+  "actual_amount",
+  "contract_revised_detail_section",
+  "table_fwbc"
  ],
  "fields": [
   {
@@ -63,15 +76,16 @@
   },
   {
    "fieldname": "contract_name",
-   "fieldtype": "Data",
+   "fieldtype": "Small Text",
    "in_list_view": 1,
    "label": "Contract Name",
+   "read_only_depends_on": "eval: doc.status !=\"Active\"",
    "reqd": 1
   },
   {
    "fieldname": "reference_number",
    "fieldtype": "Data",
-   "label": "Contract Reference Number",
+   "label": "Contract Ref Number",
    "reqd": 1
   },
   {
@@ -90,7 +104,7 @@
   {
    "fieldname": "initial_amount",
    "fieldtype": "Data",
-   "label": "Initial Amount",
+   "label": "Offer Amount",
    "reqd": 1
   },
   {
@@ -106,7 +120,7 @@
   {
    "fieldname": "final_amount",
    "fieldtype": "Data",
-   "label": "Final Amount",
+   "label": "Contract Amount",
    "reqd": 1
   },
   {
@@ -138,17 +152,85 @@
   },
   {
    "fieldname": "column_break_aoas",
-   "fieldtype": "Column Break"
+   "fieldtype": "Column Break",
+   "options": "Active\nClosed\nTerminated"
   },
   {
    "fieldname": "revised_expiry_date",
    "fieldtype": "Date",
    "label": "Revised Expiry Date "
+  },
+  {
+   "fieldname": "negotiation_amount",
+   "fieldtype": "Data",
+   "label": "Negotiation Amount"
+  },
+  {
+   "fieldname": "actual_amount",
+   "fieldtype": "Data",
+   "label": "Actual Amount"
+  },
+  {
+   "fieldname": "types_of_contract",
+   "fieldtype": "Select",
+   "label": "Types of Contract",
+   "options": "\nGoods\nService\nWorks"
+  },
+  {
+   "fieldname": "column_break_nbbd",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "actual_completion_date",
+   "fieldtype": "Date",
+   "label": "Actual Completion Date"
+  },
+  {
+   "fieldname": "delay_days",
+   "fieldtype": "Data",
+   "label": "Delay (Days)"
+  },
+  {
+   "fieldname": "defect_liability_amount",
+   "fieldtype": "Select",
+   "label": "Defect Liability Period",
+   "options": "\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12"
+  },
+  {
+   "fieldname": "column_break_xoon",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "currency",
+   "fieldtype": "Link",
+   "label": "Currency",
+   "options": "Currency",
+   "reqd": 1
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_filter": 1,
+   "in_global_search": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Status",
+   "options": "Active\nClosed\nTerminated"
+  },
+  {
+   "fieldname": "contract_revised_detail_section",
+   "fieldtype": "Section Break",
+   "label": "Contract Revised Detail"
+  },
+  {
+   "fieldname": "table_fwbc",
+   "fieldtype": "Table",
+   "options": "Contract Revised Detail"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-12-16 14:36:36.135339",
+ "modified": "2025-12-30 10:12:08.027162",
  "modified_by": "Administrator",
  "module": "CMS",
  "name": "Contract Details",

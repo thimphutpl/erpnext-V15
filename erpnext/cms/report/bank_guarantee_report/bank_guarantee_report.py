@@ -9,7 +9,6 @@ def execute(filters=None):
 	data = get_data(filters)
 	return columns, data
 
-
 def get_columns():
 	return [
 		{"label": "BG ID", "fieldname": "bg_id", "fieldtype": "Link", "options": "Bank Guarantee", "width": 140},
@@ -27,6 +26,8 @@ def get_columns():
 		{"label": "BG Number", "fieldname": "bg_number", "fieldtype": "Data", "width": 140},
 		{"label": "BG Date", "fieldname": "bg_date", "fieldtype": "Date", "width": 110},
 		{"label": "BG Expiry Date", "fieldname": "bg_expiry_date", "fieldtype": "Date", "width": 130},
+		{"label": "Revised Expiry Date", "fieldname": "revised_expiry_date", "fieldtype": "Date", "width": 130},
+
 	]
 
 
@@ -69,7 +70,8 @@ def get_data(filters):
 			bg.bg_type AS bg_type,
 			bg.bg_number AS bg_number,
 			bg.bg_date AS bg_date,
-			bg.bg_expiry_date AS bg_expiry_date
+			bg.bg_expiry_date AS bg_expiry_date,
+			bg.revised_expiry_date AS revised_expiry_date
 
 		FROM `tabBank Gurantee` bg
 		INNER JOIN `tabContract Details` cd

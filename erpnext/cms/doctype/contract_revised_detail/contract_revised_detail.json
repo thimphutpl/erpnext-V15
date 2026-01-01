@@ -1,0 +1,55 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-12-25 16:35:05.033776",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "initial_contract_end_date",
+  "column_break_bheh",
+  "revised_contract_end_date",
+  "column_break_szai",
+  "revised_approved_date"
+ ],
+ "fields": [
+  {
+   "fieldname": "initial_contract_end_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Initial Contract End Date"
+  },
+  {
+   "fieldname": "column_break_bheh",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "revised_contract_end_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Revised Contract End Date"
+  },
+  {
+   "fieldname": "column_break_szai",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "revised_approved_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Revised Approved Date"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-12-25 16:40:32.508065",
+ "modified_by": "Administrator",
+ "module": "CMS",
+ "name": "Contract Revised Detail",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

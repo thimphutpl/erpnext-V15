@@ -1,0 +1,131 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-12-25 16:42:22.069037",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_wo10",
+  "contract",
+  "focal_person",
+  "new_focal_person",
+  "column_break_vrbw",
+  "posting_date",
+  "focal_person_name",
+  "new_focal_person_name",
+  "column_break_iwyb",
+  "start_date",
+  "end_date",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_wo10",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "label": "Posting Date"
+  },
+  {
+   "fieldname": "contract",
+   "fieldtype": "Link",
+   "label": "Contract",
+   "options": "Contract Details"
+  },
+  {
+   "fieldname": "column_break_vrbw",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_iwyb",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "focal_person",
+   "fieldtype": "Link",
+   "label": "Focal Person",
+   "options": "Employee",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "focal_person.employee_name",
+   "fieldname": "focal_person_name",
+   "fieldtype": "Data",
+   "label": "Focal Person Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "new_focal_person",
+   "fieldtype": "Link",
+   "label": "New Focal Person",
+   "options": "Employee"
+  },
+  {
+   "fetch_from": "new_focal_person.employee_name",
+   "fieldname": "new_focal_person_name",
+   "fieldtype": "Data",
+   "label": "New Focal Person Name"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Contract Focal Transfer",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Contract Focal Transfer",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "start_date",
+   "fieldtype": "Date",
+   "label": "Start Date"
+  },
+  {
+   "fieldname": "end_date",
+   "fieldtype": "Date",
+   "label": "End Date"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2025-12-26 09:59:22.542597",
+ "modified_by": "Administrator",
+ "module": "CMS",
+ "name": "Contract Focal Transfer",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "contract"
+}
