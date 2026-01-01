@@ -224,10 +224,12 @@ frappe.ui.form.on("Purchase Order Item", {
 		})
 		frm.refresh_fields();
 	},
+	
+	
 	items_add: function(frm, cdt, cdn){
-		if (frm.doc.cost_center){
-			frappe.model.set_value(cdt, cdn, "cost_center", frm.doc.cost_center)
-		}
+		if (!frm.doc.cost_center) return;
+
+		frappe.model.set_value(cdt, cdn, "cost_center", frm.doc.cost_center);
 
 		frappe.call({
 			method: "frappe.client.get_value",
@@ -236,16 +238,18 @@ frappe.ui.form.on("Purchase Order Item", {
 				fieldname: "warehouse",
 				filters: { name: frm.doc.cost_center },
 			},
-			callback: function(r, rt) {
-				if(r.message.warehouse) {
-					frappe.model.set_value("warehouse", r.message.warehouse)
-				}else{
-					frappe.throw(__('Warehouse not define in this Cost Center'))
+			callback: function(r) {
+				if (r.message && r.message.warehouse) {
+					frappe.model.set_value(cdt, cdn, "warehouse", r.message.warehouse);
+				} else {
+					frappe.throw(__('Warehouse not define in this Cost Center'));
 				}
 			}
 		});
-		frm.refresh_fields();
 	},
+
+
+
 	schedule_date: function (frm, cdt, cdn) {
 		var row = locals[cdt][cdn];
 		if (row.schedule_date) {
