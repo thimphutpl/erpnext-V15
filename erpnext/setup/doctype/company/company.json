@@ -25,6 +25,7 @@
   "domain",
   "date_of_establishment",
   "parent_company",
+  "company_tpn_number",
   "company_info",
   "company_logo",
   "date_of_incorporation",
@@ -1007,6 +1008,11 @@
    "fieldtype": "Link",
    "label": "POL Expense Account",
    "options": "Account"
+  },
+  {
+   "fieldname": "company_tpn_number",
+   "fieldtype": "Data",
+   "label": "Company TPN Number"
   }
  ],
  "icon": "fa fa-building",
@@ -1014,7 +1020,7 @@
  "image_field": "company_logo",
  "is_tree": 1,
  "links": [],
- "modified": "2025-11-24 13:32:52.232239",
+ "modified": "2026-01-02 13:51:58.594100",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Company",
