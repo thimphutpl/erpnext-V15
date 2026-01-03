@@ -9,7 +9,7 @@
   "default_warehouse",
   "product_category",
   "items_section",
-  "table_vhhr",
+  "items",
   "transport_settings_section",
   "has_common_pool",
   "allow_self_owned_transport",
@@ -24,7 +24,7 @@
    "fieldtype": "Link",
    "label": "Branch",
    "options": "Branch",
-   "unique": 0
+   "unique": 1
   },
   {
    "fieldname": "default_warehouse",
@@ -42,11 +42,6 @@
    "fieldname": "items_section",
    "fieldtype": "Section Break",
    "label": "Items "
-  },
-  {
-   "fieldname": "table_vhhr",
-   "fieldtype": "Table",
-   "options": "CRM Branch Setting Item"
   },
   {
    "fieldname": "transport_settings_section",
@@ -89,12 +84,17 @@
    "fieldname": "local_distance",
    "fieldtype": "Float",
    "label": "Local Distance Allowed Till (KM)"
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "options": "CRM Branch Setting Item"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-01-04 01:32:58.242172",
+ "modified": "2026-01-04 02:09:20.265767",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "CRM Branch Setting",
