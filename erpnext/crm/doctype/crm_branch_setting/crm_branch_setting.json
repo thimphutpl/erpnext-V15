@@ -1,0 +1,121 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-08-18 10:32:43.374899",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "branch",
+  "default_warehouse",
+  "product_category",
+  "items_section",
+  "table_vhhr",
+  "transport_settings_section",
+  "has_common_pool",
+  "allow_self_owned_transport",
+  "allow_other_transport",
+  "column_break_mtvl",
+  "lead_time",
+  "local_distance"
+ ],
+ "fields": [
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "label": "Branch",
+   "options": "Branch",
+   "unique": 1
+  },
+  {
+   "fieldname": "default_warehouse",
+   "fieldtype": "Link",
+   "label": "Default Warehouse",
+   "options": "Warehouse"
+  },
+  {
+   "fieldname": "product_category",
+   "fieldtype": "Link",
+   "label": "Product Category",
+   "options": "Product Category"
+  },
+  {
+   "fieldname": "items_section",
+   "fieldtype": "Section Break",
+   "label": "Items "
+  },
+  {
+   "fieldname": "table_vhhr",
+   "fieldtype": "Table",
+   "options": "CRM Branch Setting Item"
+  },
+  {
+   "fieldname": "transport_settings_section",
+   "fieldtype": "Section Break",
+   "label": "Transport Settings"
+  },
+  {
+   "default": "0",
+   "fieldname": "has_common_pool",
+   "fieldtype": "Check",
+   "label": "Has Common Pool?"
+  },
+  {
+   "default": "0",
+   "description": "* When selected, customer is required to provide self/spouse owned vehicle information at the time of placing order",
+   "fieldname": "allow_self_owned_transport",
+   "fieldtype": "Check",
+   "label": "Allow transport mode \"Self Owned Transport\" ?"
+  },
+  {
+   "default": "0",
+   "description": "* When selected, customer need not provide vehicle information at the time of placing orders. Instead customer is asked to specify Vehicle Capacity wise no. of Truck Loads.",
+   "fieldname": "allow_other_transport",
+   "fieldtype": "Check",
+   "label": "Allow transport mode \"Others\"?"
+  },
+  {
+   "fieldname": "column_break_mtvl",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "* Average time ( in Days ) taken to provide the materials\n",
+   "fieldname": "lead_time",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Lead Time (Days)"
+  },
+  {
+   "description": "Distance less than or equal to this value is considered as Local\n",
+   "fieldname": "local_distance",
+   "fieldtype": "Float",
+   "label": "Local Distance Allowed Till (KM)"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-01-04 01:32:58.242172",
+ "modified_by": "Administrator",
+ "module": "CRM",
+ "name": "CRM Branch Setting",
+ "owner": "kalden.dorji@thimphutechpark.bt",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}
