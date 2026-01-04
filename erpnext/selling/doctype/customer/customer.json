@@ -43,10 +43,18 @@
   "language",
   "column_break_45",
   "customer_details",
+  "bank_details_tab",
+  "bank_name",
+  "bank_branch",
+  "column_break_wjzx",
+  "bank_account_type",
+  "account_number",
   "dashboard_tab",
   "contact_and_address_tab",
   "address_contacts",
   "address_html",
+  "location",
+  "dzongkhag",
   "column_break1",
   "contact_html",
   "primary_address_and_contact_detail",
@@ -592,6 +600,50 @@
    "oldfieldname": "customer_group",
    "oldfieldtype": "Link",
    "unique": 1
+  },
+  {
+   "fieldname": "location",
+   "fieldtype": "Data",
+   "label": "Location"
+  },
+  {
+   "fieldname": "dzongkhag",
+   "fieldtype": "Link",
+   "label": "Dzongkhag",
+   "options": "Dzongkhag",
+   "reqd": 1
+  },
+  {
+   "fieldname": "bank_details_tab",
+   "fieldtype": "Tab Break",
+   "label": "Bank Details"
+  },
+  {
+   "fieldname": "bank_name",
+   "fieldtype": "Link",
+   "label": "Bank Name",
+   "options": "Financial Institution"
+  },
+  {
+   "fieldname": "bank_branch",
+   "fieldtype": "Link",
+   "label": "Bank Branch",
+   "options": "Financial Institution Branch"
+  },
+  {
+   "fieldname": "column_break_wjzx",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "bank_account_type",
+   "fieldtype": "Link",
+   "label": "Bank Account Type",
+   "options": "Bank Account Type"
+  },
+  {
+   "fieldname": "account_number",
+   "fieldtype": "Data",
+   "label": "Account Number"
   }
  ],
  "icon": "fa fa-user",
@@ -605,7 +657,7 @@
    "link_fieldname": "party"
   }
  ],
- "modified": "2025-08-31 21:45:31.447258",
+ "modified": "2025-11-04 11:12:46.239369",
  "modified_by": "Administrator",
  "module": "Selling",
  "name": "Customer",
