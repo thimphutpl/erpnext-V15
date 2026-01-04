@@ -2,7 +2,7 @@
  "actions": [],
  "allow_auto_repeat": 1,
  "allow_import": 1,
- "autoname": "naming_series:",
+ "autoname": "format:DN{YYYY}{MM}{####}",
  "creation": "2013-05-24 19:29:09",
  "doctype": "DocType",
  "document_type": "Document",
@@ -14,17 +14,24 @@
   "customer",
   "tax_id",
   "customer_name",
+  "location",
   "column_break1",
   "posting_date",
   "posting_time",
   "set_posting_time",
   "customer_order",
+  "item_series",
   "column_break_10",
   "company",
   "amended_from",
   "is_return",
   "issue_credit_note",
   "return_against",
+  "is_allotment",
+  "is_export",
+  "is_rural_sale",
+  "is_credit",
+  "is_kidu_sale",
   "accounting_dimensions_section",
   "cost_center",
   "column_break_18",
@@ -95,6 +102,8 @@
   "transportation_charges",
   "driver_cid",
   "transporter_name",
+  "footer_section",
+  "delivery_note_footer_text",
   "section_break_49",
   "apply_discount_on",
   "base_discount_amount",
@@ -1483,17 +1492,75 @@
    "label": "Customer Order",
    "options": "Customer Order",
    "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_allotment",
+   "fieldtype": "Check",
+   "label": "Is Allotment",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_export",
+   "fieldtype": "Check",
+   "label": "Is Export",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_rural_sale",
+   "fieldtype": "Check",
+   "label": "Is Rural Sale",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_credit",
+   "fieldtype": "Check",
+   "label": "Is Credit",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_kidu_sale",
+   "fieldtype": "Check",
+   "label": "Is Kidu Sale",
+   "read_only": 1
+  },
+  {
+   "fieldname": "location",
+   "fieldtype": "Link",
+   "label": "Location",
+   "options": "Location"
+  },
+  {
+   "fieldname": "footer_section",
+   "fieldtype": "Section Break",
+   "label": "Footer"
+  },
+  {
+   "default": "It is the responsibility of the Customer to check the goods before purchase or taking delivery. Goods once sold are not returnable",
+   "fieldname": "delivery_note_footer_text",
+   "fieldtype": "Small Text",
+   "label": "Delivery Note Footer Text"
+  },
+  {
+   "fieldname": "item_series",
+   "fieldtype": "Link",
+   "label": "Item Series",
+   "options": "Item Group"
   }
  ],
  "icon": "fa fa-truck",
  "idx": 146,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-10-09 11:44:27.139106",
+ "modified": "2026-01-04 18:57:50.730187",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Delivery Note",
- "naming_rule": "By \"Naming Series\" field",
+ "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
   {

@@ -125,7 +125,7 @@
   "terms",
   "header_and_footer_section",
   "header",
-  "footer",
+  "footer_text",
   "sec_tax_breakup",
   "other_charges_calculation",
   "packing_list",
@@ -220,10 +220,8 @@
   },
   {
    "allow_on_submit": 1,
-   "default": "{customer_name}",
    "fieldname": "title",
    "fieldtype": "Data",
-   "hidden": 1,
    "hide_days": 1,
    "hide_seconds": 1,
    "label": "Title",
@@ -927,6 +925,7 @@
   {
    "fieldname": "additional_discount_percentage",
    "fieldtype": "Float",
+   "hidden": 1,
    "hide_days": 1,
    "hide_seconds": 1,
    "label": "Additional Discount Percentage",
@@ -935,6 +934,7 @@
   {
    "fieldname": "discount_amount",
    "fieldtype": "Currency",
+   "hidden": 1,
    "hide_days": 1,
    "hide_seconds": 1,
    "label": "Additional Discount Amount",
@@ -1844,11 +1844,6 @@
    "label": "Header"
   },
   {
-   "fieldname": "footer",
-   "fieldtype": "Text Editor",
-   "label": "Footer"
-  },
-  {
    "fieldname": "sales_order_series",
    "fieldtype": "Link",
    "hide_days": 1,
@@ -1897,13 +1892,19 @@
    "fieldname": "challan_cost",
    "fieldtype": "Currency",
    "label": "Challan Cost"
+  },
+  {
+   "default": "It is the responsibility of the Customer to check the goods before purchase or taking delivery. Goods once sold are not returnable.",
+   "fieldname": "footer_text",
+   "fieldtype": "Text Editor",
+   "label": "Footer"
   }
  ],
  "icon": "fa fa-file-text",
  "idx": 105,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-09-20 12:25:04.203696",
+ "modified": "2026-01-04 19:19:54.813928",
  "modified_by": "Administrator",
  "module": "Selling",
  "name": "Sales Order",
