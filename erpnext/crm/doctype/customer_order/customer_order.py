@@ -105,6 +105,12 @@ class CustomerOrder(Document):
 		yearly_quantity_limit_count: DF.Int
 	# end: auto-generated types
 	def validate(self):
+		if self.product_category in ("Sand", "product_category"):
+			self.sales_order_series = "Mineral Products"
+		else:
+			self.sales_order_series = "Timber Products"
+
+		
 		self.check_for_duplicates()
 
 		if self.selection_based_on == "Lot":
@@ -139,9 +145,10 @@ class CustomerOrder(Document):
 						and co.product_category="Sand"
 						and co.site="{}"
 						""".format(self.customer, self.item, self.site), as_dict=True):
-			if a.name:
-				# frappe.throw(str(a.name))
-				frappe.throw("Making order not allowed for {} as the previous order {} is still not delivered".format(self.product_category, a.name))
+			pass
+			# if a.name:
+			# 	# frappe.throw(str(a.name))
+			# 	frappe.throw("Making order not allowed for {} as the previous order {} is still not delivered".format(self.product_category, a.name))
 
 	def before_submit(self):
 		self.posting_date = now()
