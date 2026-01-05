@@ -16,6 +16,7 @@ class EmployeeGroup(Document):
 		from frappe.types import DF
 		from hrms.hr.doctype.employee_group_item.employee_group_item import EmployeeGroupItem
 
+		day_care_deduction: DF.Currency
 		employee_group_name: DF.Data
 		employee_list: DF.Table[EmployeeGroupTable]
 		employee_pf: DF.Percent

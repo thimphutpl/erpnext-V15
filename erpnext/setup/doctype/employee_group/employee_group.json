@@ -16,6 +16,7 @@
   "employer_pf",
   "column_break_htfk",
   "health_contribution",
+  "day_care_deduction",
   "salary_advance_setting_section",
   "salary_advance_type",
   "salary_advance_max_months",
@@ -216,10 +217,16 @@
    "fieldname": "minimum_services_required",
    "fieldtype": "Data",
    "label": "Minimum Services Required"
+  },
+  {
+   "default": "0",
+   "fieldname": "day_care_deduction",
+   "fieldtype": "Currency",
+   "label": "Day Care Deduction"
   }
  ],
  "links": [],
- "modified": "2025-12-16 10:38:45.794320",
+ "modified": "2026-01-05 16:42:28.555165",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee Group",
