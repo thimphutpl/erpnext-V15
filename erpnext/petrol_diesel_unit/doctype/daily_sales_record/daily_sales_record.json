@@ -1,0 +1,264 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:PDSR{YY}{MM}{##}",
+ "creation": "2025-12-17 14:10:22.126449",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "posting_date",
+  "shift",
+  "shift_from_time",
+  "shift_to_time",
+  "branch",
+  "employee",
+  "employee_name",
+  "column_break_vhkf",
+  "ug_tank",
+  "warehouse",
+  "item_code",
+  "item_name",
+  "rate",
+  "nozzle_readings_section",
+  "nozzle_1",
+  "nozzle_2",
+  "column_break_dzhq",
+  "nozzle_3",
+  "nozzle_4",
+  "cash_sales_section",
+  "quantity_sold",
+  "amount",
+  "bill_sales_section",
+  "bill_sales",
+  "bill_sales_quantity",
+  "bill_sales_amount",
+  "quantity_and_amount_sold_section",
+  "total_quantity_sold",
+  "column_break_vgzo",
+  "total_amount",
+  "section_break_fqzg",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Posting Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "shift",
+   "fieldtype": "Link",
+   "label": "Shift",
+   "options": "PD Shift",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "shift.from_time",
+   "fieldname": "shift_from_time",
+   "fieldtype": "Data",
+   "label": "Shift From Time",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "shift.to_time",
+   "fieldname": "shift_to_time",
+   "fieldtype": "Data",
+   "label": "Shift To Time",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "ug_tank.branch",
+   "fieldname": "branch",
+   "fieldtype": "Data",
+   "label": "Branch",
+   "read_only": 1
+  },
+  {
+   "fieldname": "employee",
+   "fieldtype": "Link",
+   "label": "Employee",
+   "options": "Employee"
+  },
+  {
+   "fieldname": "column_break_vhkf",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "ug_tank",
+   "fieldtype": "Link",
+   "label": "UG Tank",
+   "options": "UG Tank",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "ug_tank.warehouse",
+   "fieldname": "warehouse",
+   "fieldtype": "Data",
+   "label": "Warehouse",
+   "read_only": 1
+  },
+  {
+   "fieldname": "item_code",
+   "fieldtype": "Data",
+   "label": "Item Code",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "ug_tank.item_name",
+   "fieldname": "item_name",
+   "fieldtype": "Data",
+   "label": "Item Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "rate",
+   "fieldtype": "Currency",
+   "label": "Rate",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "nozzle_readings_section",
+   "fieldtype": "Section Break",
+   "label": "Nozzle Readings"
+  },
+  {
+   "fieldname": "nozzle_1",
+   "fieldtype": "Float",
+   "label": "Nozzle 1 "
+  },
+  {
+   "fieldname": "nozzle_2",
+   "fieldtype": "Float",
+   "label": "Nozzle 2"
+  },
+  {
+   "fieldname": "column_break_dzhq",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "nozzle_3",
+   "fieldtype": "Float",
+   "label": "Nozzle 3"
+  },
+  {
+   "fieldname": "nozzle_4",
+   "fieldtype": "Float",
+   "label": "Nozzle 4"
+  },
+  {
+   "fieldname": "cash_sales_section",
+   "fieldtype": "Section Break",
+   "label": "Cash Sales "
+  },
+  {
+   "default": "0",
+   "fieldname": "quantity_sold",
+   "fieldtype": "Float",
+   "label": "Quantity Sold",
+   "precision": "2"
+  },
+  {
+   "fieldname": "bill_sales_section",
+   "fieldtype": "Section Break",
+   "label": "Bill Sales"
+  },
+  {
+   "default": "0",
+   "fieldname": "bill_sales_quantity",
+   "fieldtype": "Float",
+   "label": "Bill Sales Quantity ",
+   "precision": "2"
+  },
+  {
+   "default": "0",
+   "fieldname": "bill_sales_amount",
+   "fieldtype": "Currency",
+   "label": "Bill Sales Amount "
+  },
+  {
+   "fieldname": "quantity_and_amount_sold_section",
+   "fieldtype": "Section Break",
+   "label": "Quantity and Amount Sold"
+  },
+  {
+   "fieldname": "total_quantity_sold",
+   "fieldtype": "Data",
+   "label": "Total Quantity Sold"
+  },
+  {
+   "fieldname": "column_break_vgzo",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "total_amount",
+   "fieldtype": "Currency",
+   "label": "Total Amount",
+   "precision": "2"
+  },
+  {
+   "fieldname": "section_break_fqzg",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Daily Sales Record",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fetch_from": "employee.employee_name",
+   "fieldname": "employee_name",
+   "fieldtype": "Data",
+   "label": "Employee Name"
+  },
+  {
+   "default": "0",
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "label": "Amount (Nu.) ",
+   "precision": "2"
+  },
+  {
+   "fieldname": "bill_sales",
+   "fieldtype": "Table",
+   "options": "Bill Sales Items"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2025-12-27 17:06:46.344529",
+ "modified_by": "Administrator",
+ "module": "Petrol Diesel Unit",
+ "name": "Daily Sales Record",
+ "naming_rule": "Expression",
+ "owner": "kalden.dorji@thimphutechpark.bt",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

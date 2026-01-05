@@ -501,36 +501,6 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Fleet Transaction",
-   "link_count": 2,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Equipment Request",
-   "link_count": 0,
-   "link_to": "Equipment Request",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "dependencies": "Vehicle Logbook",
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Vehicle Logs",
-   "link_count": 0,
-   "link_to": "Vehicle Logs",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
    "label": "POL Reports",
    "link_count": 3,
    "link_type": "DocType",
@@ -567,9 +537,49 @@
    "onboard": 0,
    "report_ref_doctype": "POL Entry",
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Fleet Transaction",
+   "link_count": 3,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Equipment Request",
+   "link_count": 0,
+   "link_to": "Equipment Request",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "dependencies": "Vehicle Logbook",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Vehicle Logs",
+   "link_count": 0,
+   "link_to": "Vehicle Logs",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Insurance and Registration",
+   "link_count": 0,
+   "link_to": "Insurance and Registration",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2025-11-19 11:37:06.287112",
+ "modified": "2025-12-29 15:23:42.137947",
  "modified_by": "kalden.dorji@thimphutechpark.bt",
  "module": "Fleet Management",
  "name": "Fleet Management",

@@ -25,7 +25,7 @@ class CustomerTrack(Document):
 		customer_id: DF.Link
 		customer_name: DF.Data | None
 		customer_report: DF.LongText | None
-		customer_status: DF.Literal["", "C0", "C1", "C2", "On Warranty", "Completed"]
+		customer_status: DF.Literal["", "C0", "C1", "C2", "Completed"]
 		customer_type: DF.Data | None
 		email_id: DF.Data | None
 		phone_number: DF.Data | None

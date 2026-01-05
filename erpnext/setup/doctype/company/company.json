@@ -52,6 +52,7 @@
   "write_off_account",
   "unrealized_profit_loss_account",
   "csr_account",
+  "company_cost_center",
   "column_break0",
   "allow_account_creation_against_child_company",
   "default_expense_account",
@@ -60,6 +61,12 @@
   "payment_terms",
   "cost_center",
   "default_finance_book",
+  "sb_gst_account",
+  "international_supplier_input_gst_template",
+  "domestic_supplier_input_gst_template",
+  "column_break_wvaj",
+  "output_gst_template",
+  "gst_clearing_account",
   "fleet_accounts_section",
   "insurance_expense_account",
   "pol_expense_account",
@@ -95,8 +102,11 @@
   "column_break_vlyw",
   "advance_account",
   "selling_section",
-  "default_prepaid_income_account",
+  "default_interest_income_account",
   "default_prepaid_expense_account",
+  "default_revenue_bank_account",
+  "column_break_eyiz",
+  "default_income_interest_account",
   "service_sales_jobcard_section",
   "revenue_account",
   "internal_expense_account",
@@ -106,11 +116,14 @@
   "submit_err_jv",
   "budget_detail",
   "exception_budget_approver_role",
+  "pd_unit_defaults_section",
+  "gainloss_account",
   "fixed_asset_defaults",
   "accumulated_depreciation_account",
   "depreciation_expense_account",
   "series_for_depreciation_entry",
   "expenses_included_in_asset_valuation",
+  "asset_received_account",
   "column_break_40",
   "disposal_account",
   "depreciation_cost_center",
@@ -1117,12 +1130,6 @@
    "label": "Selling"
   },
   {
-   "fieldname": "default_prepaid_income_account",
-   "fieldtype": "Link",
-   "label": "Default Prepaid Income Account",
-   "options": "Account"
-  },
-  {
    "fieldname": "default_prepaid_expense_account",
    "fieldtype": "Link",
    "label": "Default Prepaid Expense Account",
@@ -1158,6 +1165,85 @@
    "fieldtype": "Link",
    "label": "Internal Expense Account",
    "options": "Account"
+  },
+  {
+   "fieldname": "default_interest_income_account",
+   "fieldtype": "Link",
+   "label": "Default Interest Income Account (Accrued Account)",
+   "options": "Account"
+  },
+  {
+   "fieldname": "default_revenue_bank_account",
+   "fieldtype": "Link",
+   "label": "Default Revenue Bank Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "column_break_eyiz",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "default_income_interest_account",
+   "fieldtype": "Link",
+   "label": "Default Income from Interest Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "company_cost_center",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Default Cost Center",
+   "options": "Cost Center"
+  },
+  {
+   "fieldname": "asset_received_account",
+   "fieldtype": "Link",
+   "label": "Asset Received Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "pd_unit_defaults_section",
+   "fieldtype": "Section Break",
+   "label": "PD Unit Defaults"
+  },
+  {
+   "fieldname": "gainloss_account",
+   "fieldtype": "Link",
+   "label": "Gain/Loss Account ",
+   "options": "Account"
+  },
+  {
+   "fieldname": "sb_gst_account",
+   "fieldtype": "Section Break",
+   "label": "GST Accounts"
+  },
+  {
+   "fieldname": "international_supplier_input_gst_template",
+   "fieldtype": "Link",
+   "label": "International Supplier Input GST Template",
+   "options": "Purchase Taxes and Charges Template"
+  },
+  {
+   "fieldname": "domestic_supplier_input_gst_template",
+   "fieldtype": "Link",
+   "label": "Domestic Supplier Input GST Template",
+   "options": "Purchase Taxes and Charges Template"
+  },
+  {
+   "fieldname": "column_break_wvaj",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "output_gst_template",
+   "fieldtype": "Link",
+   "label": "Output GST Template",
+   "options": "Sales Taxes and Charges Template"
+  },
+  {
+   "fieldname": "gst_clearing_account",
+   "fieldtype": "Link",
+   "label": "GST Clearing Account",
+   "options": "Account"
   }
  ],
  "icon": "fa fa-building",
@@ -1165,8 +1251,8 @@
  "image_field": "company_logo",
  "is_tree": 1,
  "links": [],
- "modified": "2025-11-28 11:12:07.292989",
- "modified_by": "kalden.dorji@thimphutechpark.bt",
+ "modified": "2025-12-31 12:02:27.281005",
+ "modified_by": "Administrator",
  "module": "Setup",
  "name": "Company",
  "naming_rule": "By fieldname",

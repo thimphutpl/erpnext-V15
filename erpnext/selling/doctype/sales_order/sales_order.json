@@ -174,7 +174,9 @@
   "sales_order_header_text",
   "column_break_144",
   "sales_order_footer_text",
-  "amended_from"
+  "amended_from",
+  "service_sales_jobcard",
+  "c2_status"
  ],
  "fields": [
   {
@@ -321,7 +323,6 @@
    "width": "100px"
   },
   {
-   "collapsible": 1,
    "fieldname": "contact_info",
    "fieldtype": "Section Break",
    "hide_days": 1,
@@ -1478,8 +1479,8 @@
    "depends_on": "grand_total",
    "fieldname": "disable_rounded_total",
    "fieldtype": "Check",
-   "hidden": 1,
-   "label": "Disable Rounded Total"
+   "label": "Disable Rounded Total",
+   "read_only": 1
   },
   {
    "allow_on_submit": 1,
@@ -1686,7 +1687,7 @@
    "label": "Address"
   },
   {
-   "depends_on": "eval: doc.customer_group == \"Corporation\"",
+   "depends_on": "eval: doc.customer_group == \"Corporation\" || doc.customer_group == \"Government\"",
    "fieldname": "location",
    "fieldtype": "Link",
    "label": "Location",
@@ -1713,14 +1714,29 @@
    "fieldname": "declaration_numbers",
    "fieldtype": "Int",
    "label": "Declaration Number"
+  },
+  {
+   "fieldname": "service_sales_jobcard",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Service Sales Jobcard",
+   "options": "Service Sales Jobcard",
+   "read_only": 1
+  },
+  {
+   "fieldname": "c2_status",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "C2 Status",
+   "options": "C2 Status"
   }
  ],
  "icon": "fa fa-file-text",
  "idx": 105,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-12-05 10:48:00.785387",
- "modified_by": "kalden.dorji@thimphutechpark.bt",
+ "modified": "2025-12-30 10:07:56.642030",
+ "modified_by": "Administrator",
  "module": "Selling",
  "name": "Sales Order",
  "naming_rule": "Expression",

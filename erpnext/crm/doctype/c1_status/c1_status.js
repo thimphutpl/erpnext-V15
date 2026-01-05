@@ -9,7 +9,14 @@ frappe.ui.form.on("C1 Status", {
 				},
 				__("Create")
 			);
-		}
+		};
+        frm.fields_dict["items"].grid.get_field("item_code").get_query = () => {
+            return {
+                filters: {
+                    item_group: "Sales Product"
+                }
+            };
+        };
 	},
     create_c2_status: function (frm) {
 		frappe.model.open_mapped_doc({

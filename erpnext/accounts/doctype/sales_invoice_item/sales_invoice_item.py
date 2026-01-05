@@ -25,7 +25,6 @@ class SalesInvoiceItem(Document):
 		allow_zero_valuation_rate: DF.Check
 		amount: DF.Currency
 		asset: DF.Link | None
-		barcode: DF.Data | None
 		base_amount: DF.Currency
 		base_net_amount: DF.Currency
 		base_net_rate: DF.Currency

@@ -294,7 +294,10 @@ class AssetDepreciationSchedule(Document):
 		depreciation_amount = days = income_depreciation_amount = 0
 		if asset_doc.income_tax_opening_depreciation_amount:
 			income_accumulated_depreciation = asset_doc.income_tax_opening_depreciation_amount
-
+		# frappe.throw(str(start)+str(date_of_disposal)+" "+str(getdate(get_last_day(date_of_disposal))))
+		if date_of_disposal:
+			if str(date_of_disposal).split("-")[2] != str(get_last_day(date_of_disposal)).split("-")[2]:
+				has_pro_rata = True
 		count = 1
 		for n in range(start, final_number_of_depreciations):
 			count += 1
@@ -483,22 +486,36 @@ class AssetDepreciationSchedule(Document):
 				monthly_schedule_date = add_months(schedule_date, - row.frequency_of_depreciation + 1)
 
 			# if asset is being sold or scrapped
-			if date_of_disposal and getdate(schedule_date) >= getdate(date_of_disposal):
+			if date_of_disposal and str(date_of_disposal).split("-")[1] == str(schedule_date).split("-")[1] and str(schedule_date).split("-")[0] == str(date_of_disposal).split("-")[0] and str(schedule_date).split("-")[2] >= str(date_of_disposal).split("-")[2]:
 				from_date = add_months(
 					getdate(asset_doc.available_for_use_date),
 					(asset_doc.opening_number_of_booked_depreciations * row.frequency_of_depreciation),
 				)
-				if self.depreciation_schedule:
-					from_date = self.depreciation_schedule[-1].schedule_date
+				if date_of_disposal and str(date_of_disposal).split("-")[1] == str(schedule_date).split("-")[1] and str(date_of_disposal).split("-")[0] == str(schedule_date).split("-")[0]:
+					schedule_date = date_of_disposal
+				# elif self.depreciation_schedule:
+				# 	from_date = self.depreciation_schedule[-1].schedule_date
+				# depreciation_amount, days, months = _get_pro_rata_amt(
+				# 	row,
+				# 	depreciation_amount,
+				# 	from_date,
+				# 	date_of_disposal,
+				# 	original_schedule_date=schedule_date,
+				# )
 
+				depreciation_amount = frappe.db.sql("select ds.depreciation_amount from `tabDepreciation Schedule` ds, `tabAsset Depreciation Schedule` ads where ds.parent = ads.name and ads.asset = '{}' and ds.schedule_date = '{}' and ads.docstatus = 1".format(asset_doc.name, str(get_last_day(date_of_disposal))),as_dict = 1)
+				if depreciation_amount:
+					depreciation_amount = depreciation_amount[0].depreciation_amount
+				else:
+					depreciation_amount = 0
 				depreciation_amount, days, months = _get_pro_rata_amt(
 					row,
 					depreciation_amount,
-					from_date,
 					date_of_disposal,
+					schedule_date,
 					original_schedule_date=schedule_date,
 				)
-
+				no_of_days_in_a_schedule = date_diff(date_of_disposal, get_first_day(date_of_disposal))+1
 				if depreciation_amount > 0:
 					self.add_depr_schedule_row(
 						date_of_disposal, 
@@ -511,7 +528,7 @@ class AssetDepreciationSchedule(Document):
 				break
 
 			# For first row
-			if (n == 0):
+			if (n == 0) and not has_pro_rata:
 				from_date = add_days(
 					asset_doc.available_for_use_date, -1
 				)  # needed to calc depr amount for available_for_use_date too
@@ -536,6 +553,7 @@ class AssetDepreciationSchedule(Document):
 					schedule_date = get_last_day(schedule_date)
 				
 				depreciation_amount_without_pro_rata = depreciation_amount
+				# frappe.throw("here "+str(has_pro_rata))
 
 				from_date = get_first_day(schedule_date)
 				days = cint(date_diff(schedule_date, from_date))+1
@@ -776,12 +794,13 @@ def _get_pro_rata_amt(
 	has_wdv_or_dd_non_yearly_pro_rata=False,
 	original_schedule_date=None,
 ):
-	days = date_diff(to_date, from_date)
+	days = date_diff(from_date, get_first_day(from_date))+1
 	months = month_diff(to_date, from_date)
 	if has_wdv_or_dd_non_yearly_pro_rata:
 		total_days = get_total_days(original_schedule_date or to_date, 12)
 	else:
 		total_days = get_total_days(original_schedule_date or to_date, row.frequency_of_depreciation)
+	# frappe.throw(str((depreciation_amount * flt(days)) / flt(total_days))+" "+str(depreciation_amount)+" "+str(str(days)))
 	return (depreciation_amount * flt(days)) / flt(total_days), days, months
 
 
@@ -1222,6 +1241,52 @@ def make_new_active_asset_depr_schedules_and_cancel_current_ones(
 
 		new_asset_depr_schedule_doc.submit()
 
+def make_new_active_asset_depr_schedules_and_cancel_current_ones_asset_life_extension(
+	asset_doc,
+	notes,
+	date_of_disposal=None,
+	date_of_return=None,
+	value_after_depreciation=None,
+	new_remaining_months = None,
+	ignore_booked_entry=False,
+):
+	for row in asset_doc.get("finance_books"):
+		current_asset_depr_schedule_doc = get_asset_depr_schedule_doc(
+			asset_doc.name, "Active", row.finance_book
+		)
+
+		if not current_asset_depr_schedule_doc:
+			frappe.throw(
+				_("Asset Depreciation Schedule not found for Asset {0} and Finance Book {1}").format(
+					asset_doc.name, row.finance_book
+				)
+			)
+
+		new_asset_depr_schedule_doc = frappe.copy_doc(current_asset_depr_schedule_doc)
+
+		if asset_doc.flags.increase_in_asset_value_due_to_repair and row.depreciation_method in (
+			"Written Down Value",
+			"Double Declining Balance",
+		):
+			new_rate_of_depreciation = flt(
+				asset_doc.get_depreciation_rate(row), row.precision("rate_of_depreciation")
+			)
+			row.rate_of_depreciation = new_rate_of_depreciation
+			new_asset_depr_schedule_doc.rate_of_depreciation = new_rate_of_depreciation
+
+		new_asset_depr_schedule_doc.make_depr_schedule(
+			asset_doc, row, date_of_disposal, value_after_depreciation=value_after_depreciation, new_remaining_months=new_
+		)
+		new_asset_depr_schedule_doc.set_accumulated_depreciation(
+			asset_doc, row, date_of_disposal, date_of_return, ignore_booked_entry
+		)
+
+		new_asset_depr_schedule_doc.notes = notes
+
+		current_asset_depr_schedule_doc.flags.should_not_cancel_depreciation_entries = True
+		current_asset_depr_schedule_doc.cancel()
+
+		new_asset_depr_schedule_doc.submit()
 
 def get_temp_asset_depr_schedule_doc(
 	asset_doc,

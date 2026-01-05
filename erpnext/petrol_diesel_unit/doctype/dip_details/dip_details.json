@@ -9,25 +9,41 @@
   "sb_location",
   "cost_center",
   "sb_calibrated_dip",
+  "dip_column",
   "c_i",
-  "c_iv",
-  "c_total",
-  "column_break_diel",
   "c_ii",
-  "c_v",
-  "column_break_yext",
   "c_iii",
+  "c_iv",
+  "c_v",
   "c_vi",
+  "column_break_diel",
+  "c_i_qty",
+  "c_ii_qty",
+  "c_iii_qty",
+  "c_iv_qty",
+  "c_v_qty",
+  "c_vi_qty",
+  "column_break_yext",
+  "c_total",
+  "c_total_qty",
   "sb_actual_dip",
+  "cb_dip",
   "a_i",
-  "a_iv",
-  "a_total",
-  "column_break_bvud",
   "a_ii",
-  "a_v",
-  "column_break_ltkx",
   "a_iii",
+  "a_iv",
+  "a_v",
   "a_vi",
+  "column_break_bvud",
+  "a_i_qty",
+  "a_ii_qty",
+  "a_iii_qty",
+  "a_iv_qty",
+  "a_v_qty",
+  "a_vi_qty",
+  "column_break_ltkx",
+  "a_total",
+  "a_total_qty",
   "sb_variance_loss",
   "variance_in_dip",
   "column_break_swax",
@@ -72,18 +88,21 @@
    "reqd": 1
   },
   {
+   "default": "0",
    "fieldname": "c_i",
    "fieldtype": "Float",
    "label": "I",
    "precision": "2"
   },
   {
+   "default": "0",
    "fieldname": "c_iii",
    "fieldtype": "Float",
    "label": "III",
    "precision": "2"
   },
   {
+   "default": "0",
    "fieldname": "c_v",
    "fieldtype": "Float",
    "label": "V",
@@ -91,21 +110,25 @@
   },
   {
    "fieldname": "column_break_diel",
-   "fieldtype": "Column Break"
+   "fieldtype": "Column Break",
+   "label": "Quantity"
   },
   {
+   "default": "0",
    "fieldname": "c_ii",
    "fieldtype": "Float",
    "label": "II",
    "precision": "2"
   },
   {
+   "default": "0",
    "fieldname": "c_iv",
    "fieldtype": "Float",
    "label": "IV",
    "precision": "2"
   },
   {
+   "default": "0",
    "fieldname": "c_vi",
    "fieldtype": "Float",
    "label": "VI",
@@ -122,18 +145,21 @@
    "label": "Actual Dip Details"
   },
   {
+   "default": "0",
    "fieldname": "a_i",
    "fieldtype": "Float",
    "label": "I",
    "precision": "2"
   },
   {
+   "default": "0",
    "fieldname": "a_iii",
    "fieldtype": "Float",
    "label": "III",
    "precision": "2"
   },
   {
+   "default": "0",
    "fieldname": "a_v",
    "fieldtype": "Float",
    "label": "V",
@@ -141,21 +167,25 @@
   },
   {
    "fieldname": "column_break_bvud",
-   "fieldtype": "Column Break"
+   "fieldtype": "Column Break",
+   "label": "Quantity"
   },
   {
+   "default": "0",
    "fieldname": "a_ii",
    "fieldtype": "Float",
    "label": "II",
    "precision": "2"
   },
   {
+   "default": "0",
    "fieldname": "a_iv",
    "fieldtype": "Float",
    "label": "IV",
    "precision": "2"
   },
   {
+   "default": "0",
    "fieldname": "a_vi",
    "fieldtype": "Float",
    "label": "VI",
@@ -163,11 +193,13 @@
   },
   {
    "fieldname": "column_break_yext",
-   "fieldtype": "Column Break"
+   "fieldtype": "Column Break",
+   "label": "Total"
   },
   {
    "fieldname": "column_break_ltkx",
-   "fieldtype": "Column Break"
+   "fieldtype": "Column Break",
+   "label": "Total"
   },
   {
    "fieldname": "sb_variance_loss",
@@ -179,7 +211,8 @@
    "fieldtype": "Float",
    "in_list_view": 1,
    "label": "Variance in Dip",
-   "precision": "2"
+   "precision": "2",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_swax",
@@ -190,7 +223,8 @@
    "fieldtype": "Float",
    "in_list_view": 1,
    "label": "Variance in Litres",
-   "precision": "2"
+   "precision": "2",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_mjgg",
@@ -201,7 +235,8 @@
    "fieldtype": "Currency",
    "in_list_view": 1,
    "label": "Variance in Amount",
-   "precision": "2"
+   "precision": "2",
+   "read_only": 1
   },
   {
    "fieldname": "sb_density",
@@ -324,23 +359,134 @@
    "precision": "2"
   },
   {
+   "default": "0",
    "fieldname": "c_total",
    "fieldtype": "Float",
-   "label": "Total",
+   "label": "Total Dip",
    "precision": "2"
   },
   {
+   "default": "0",
    "fieldname": "a_total",
    "fieldtype": "Float",
-   "label": "Total",
+   "label": "Total Dip",
    "precision": "2"
+  },
+  {
+   "default": "0",
+   "fieldname": "c_i_qty",
+   "fieldtype": "Float",
+   "label": "I Calibrated Quantity (Ltrs)",
+   "precision": "2"
+  },
+  {
+   "default": "0",
+   "fieldname": "c_iv_qty",
+   "fieldtype": "Float",
+   "label": "IV Calibrated Quantity (Ltrs)",
+   "precision": "2"
+  },
+  {
+   "default": "0",
+   "fieldname": "c_total_qty",
+   "fieldtype": "Float",
+   "label": "Total Quantity",
+   "precision": "2"
+  },
+  {
+   "default": "0",
+   "fieldname": "c_ii_qty",
+   "fieldtype": "Float",
+   "label": "II Calibrated Quantity (Ltrs)",
+   "precision": "2"
+  },
+  {
+   "default": "0",
+   "fieldname": "c_v_qty",
+   "fieldtype": "Float",
+   "label": "V Calibrated Quantity (Ltrs)",
+   "precision": "2"
+  },
+  {
+   "default": "0",
+   "fieldname": "c_iii_qty",
+   "fieldtype": "Float",
+   "label": "III Calibrated Quantity (Ltrs)",
+   "precision": "2"
+  },
+  {
+   "default": "0",
+   "fieldname": "c_vi_qty",
+   "fieldtype": "Float",
+   "label": "VI Calibrated Quantity (Ltrs)",
+   "precision": "2"
+  },
+  {
+   "default": "0",
+   "fieldname": "a_i_qty",
+   "fieldtype": "Float",
+   "label": "I Actual Quantity (Ltrs)",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "a_iv_qty",
+   "fieldtype": "Float",
+   "label": "IV Actual Quantity (Ltrs)",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "a_total_qty",
+   "fieldtype": "Float",
+   "label": "Total Quantity",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "a_ii_qty",
+   "fieldtype": "Float",
+   "label": "II Actual Quantity (Ltrs)",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "a_v_qty",
+   "fieldtype": "Float",
+   "label": "V Actual Quantity (Ltrs)",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "a_iii_qty",
+   "fieldtype": "Float",
+   "label": "III Actual Quantity (Ltrs)",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "a_vi_qty",
+   "fieldtype": "Float",
+   "label": "VI Actual Quantity (Ltrs)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "dip_column",
+   "fieldtype": "Column Break",
+   "label": "Dip"
+  },
+  {
+   "fieldname": "cb_dip",
+   "fieldtype": "Column Break",
+   "label": "Dip"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-12-08 11:28:20.265437",
+ "modified": "2025-12-17 15:17:33.283237",
  "modified_by": "Administrator",
  "module": "Petrol Diesel Unit",
  "name": "Dip Details",

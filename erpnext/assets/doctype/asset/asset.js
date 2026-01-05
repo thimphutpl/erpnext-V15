@@ -300,7 +300,7 @@ frappe.ui.form.on("Asset", {
 		if (frm.doc.purchase_receipt && frm.doc.purchase_invoice && frm.doc.docstatus === 1) {
 			frm.set_df_property("purchase_invoice", "read_only", 1);
 			frm.set_df_property("purchase_receipt", "read_only", 1);
-		} else if (frm.doc.is_existing_asset || frm.doc.is_composite_asset || frm.doc.is_opening_asset) {
+		} else if (frm.doc.is_existing_asset || frm.doc.is_composite_asset || frm.doc.is_opening_asset || frm.doc.emi_sales_id) {
 			frm.toggle_reqd("purchase_receipt", 0);
 			frm.toggle_reqd("purchase_invoice", 0);
 		} else if (frm.doc.purchase_receipt) {

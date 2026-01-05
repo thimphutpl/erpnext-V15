@@ -76,61 +76,8 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Items & Pricing",
-   "link_count": 4,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "dependencies": "",
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Item",
-   "link_count": 0,
-   "link_to": "Item",
-   "link_type": "DocType",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "dependencies": "",
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Item Price",
-   "link_count": 0,
-   "link_to": "Item Price",
-   "link_type": "DocType",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "dependencies": "",
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Price List",
-   "link_count": 0,
-   "link_to": "Price List",
-   "link_type": "DocType",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "dependencies": "",
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Item Group",
-   "link_count": 0,
-   "link_to": "Item Group",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
    "label": "Key Reports",
-   "link_count": 8,
+   "link_count": 5,
    "link_type": "DocType",
    "onboard": 0,
    "type": "Card Break"
@@ -144,26 +91,6 @@
    "link_to": "Purchase Analytics",
    "link_type": "Report",
    "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Item Wise Purchase History",
-   "link_count": 0,
-   "link_to": "Item-wise Purchase History",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Procurement Tracker",
-   "link_count": 0,
-   "link_to": "Procurement Tracker",
-   "link_type": "Report",
-   "onboard": 0,
    "type": "Link"
   },
   {
@@ -208,11 +135,53 @@
   },
   {
    "hidden": 0,
-   "is_query_report": 1,
-   "label": "Item-wise Purchase Register",
+   "is_query_report": 0,
+   "label": "Items & Pricing",
+   "link_count": 4,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Item",
    "link_count": 0,
-   "link_to": "Item-wise Purchase Register",
-   "link_type": "Report",
+   "link_to": "Item",
+   "link_type": "DocType",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Item Price",
+   "link_count": 0,
+   "link_to": "Item Price",
+   "link_type": "DocType",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Item Group",
+   "link_count": 0,
+   "link_to": "Item Group",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Price Costing",
+   "link_count": 0,
+   "link_to": "Price Costing",
+   "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
   },
@@ -220,7 +189,7 @@
    "hidden": 0,
    "is_query_report": 0,
    "label": "Buying",
-   "link_count": 6,
+   "link_count": 5,
    "link_type": "DocType",
    "onboard": 0,
    "type": "Card Break"
@@ -276,20 +245,10 @@
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Landed Cost Voucher",
-   "link_count": 0,
-   "link_to": "Landed Cost Voucher",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
   }
  ],
- "modified": "2024-12-23 10:32:04.152908",
- "modified_by": "kinzang.namgyal@cdcl.bt",
+ "modified": "2025-12-24 09:43:45.039053",
+ "modified_by": "kalden.dorji@thimphutechpark.bt",
  "module": "Buying",
  "name": "Buying",
  "number_cards": [],
@@ -304,11 +263,13 @@
   {
    "label": "Purchase Analytics",
    "link_to": "Purchase Analytics",
+   "report_ref_doctype": "Purchase Order",
    "type": "Report"
   },
   {
    "label": "Purchase Order Analysis",
    "link_to": "Purchase Order Analysis",
+   "report_ref_doctype": "Purchase Order",
    "type": "Report"
   },
   {

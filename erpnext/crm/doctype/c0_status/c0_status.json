@@ -13,6 +13,7 @@
   "phone_number",
   "email_id",
   "customer_track_id",
+  "id_card_no",
   "column_break_oiup",
   "responsible_branch",
   "customer_report",
@@ -108,13 +109,19 @@
    "label": "Customer Track ID",
    "options": "Customer Track",
    "read_only": 1
+  },
+  {
+   "fetch_from": "customer_id.cid_no",
+   "fieldname": "id_card_no",
+   "fieldtype": "Data",
+   "label": "ID Card No."
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-28 10:54:40.034943",
+ "modified": "2025-12-25 10:29:22.680150",
  "modified_by": "kalden.dorji@thimphutechpark.bt",
  "module": "CRM",
  "name": "C0 Status",

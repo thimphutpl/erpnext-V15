@@ -206,6 +206,7 @@ class BulkAssetDisposal(Document):
 
 	def on_cancel(self):
 		self.revert_asset()
+		self.revert_depreciation_schedule()
 	
 	def scrap_asset(self):
 		for data in self.item: 
@@ -221,6 +222,29 @@ class BulkAssetDisposal(Document):
 		for a in self.get("item"):
 			frappe.db.sql("update `tabAsset` set status = '{}' where name = '{}'".format(a.status, a.asset))		
 
+	def revert_depreciation_schedule(self):
+		for a in self.get("item"):
+			frappe.db.delete(
+				"Depreciation Schedule",
+				{"parent": frappe.get_value("Asset Depreciation Schedule",{"asset":a.asset, "docstatus": "1"}, "name")}
+			)
+			old_rows = frappe.get_all(
+				"Depreciation Schedule",
+				filters={"parent": frappe.get_value("Asset Depreciation Schedule",{"asset":a.asset, "docstatus": "2"}, "name")},
+				fields="*"
+			)
+
+			for row in old_rows:
+				for key in ("name", "creation", "modified", "owner", "modified_by"):
+					row.pop(key, None)
+				row["parent"] = frappe.get_value("Asset Depreciation Schedule",{"asset":a.asset, "docstatus": "1"}, "name")
+				row["docstatus"] = 1
+
+				frappe.get_doc({
+					"doctype": "Depreciation Schedule",
+					**row
+				}).insert()
+				
 @frappe.whitelist()
 def sale_asset(branch, name, scrap_date, posting_date,employee=None, customer=None):
 	item = frappe.db.sql("""select a.item_code, a.item_name, a.asset, a.uom
@@ -235,13 +259,14 @@ def sale_asset(branch, name, scrap_date, posting_date,employee=None, customer=No
 	si.branch = branch
 	# si.business_activity = business_activity
 	si.company = frappe.defaults.get_user_default("company")
-	si.customer = customer
-	si.employee = employee
+	si.customer = employee if employee else customer
+	si.customer_type = "Employee" if employee else "Customer"
+	# si.employee = employee
 	si.set_posting_time = 1
 	si.posting_date = posting_date
 	company = frappe.defaults.get_user_default("company")
 	si.currency = frappe.get_cached_value('Company', company ,  "default_currency")
-	loss_disposal_account,disposal_account, depreciation_cost_center = get_disposal_account_and_cost_center(company)
+	disposal_account, depreciation_cost_center = get_disposal_account_and_cost_center(company)
 	si.bulk_asset_disposal = name
 	for data in item:
 		si.append("items", {

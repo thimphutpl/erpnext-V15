@@ -110,7 +110,7 @@
    "fieldname": "customer_status",
    "fieldtype": "Select",
    "label": "Customer Status",
-   "options": "\nC0\nC1\nC2\nOn Warranty\nCompleted"
+   "options": "\nC0\nC1\nC2\nCompleted"
   },
   {
    "fieldname": "column_break_rkat",
@@ -164,8 +164,8 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-11-12 13:13:26.371815",
- "modified_by": "Administrator",
+ "modified": "2025-12-23 11:04:46.286254",
+ "modified_by": "kalden.dorji@thimphutechpark.bt",
  "module": "CRM",
  "name": "Customer Track",
  "naming_rule": "Expression",

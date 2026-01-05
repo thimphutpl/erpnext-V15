@@ -10,13 +10,17 @@
   "employee_id",
   "employee_name",
   "designation",
+  "one_day",
+  "from_date",
+  "from_time",
+  "to_date",
+  "to_time",
   "column_break_svpo",
   "posting_date",
   "requesting_branch",
   "cost_center",
-  "from_date",
-  "to_date",
   "sbranch",
+  "driver_not_required",
   "column_break_xjxz",
   "purpose",
   "equipment_details_section",
@@ -57,7 +61,8 @@
   {
    "fieldname": "purpose",
    "fieldtype": "Text",
-   "label": "Purpose"
+   "label": "Purpose",
+   "reqd": 1
   },
   {
    "fieldname": "equipment_details_section",
@@ -151,12 +156,36 @@
    "fieldtype": "Date",
    "label": "Posting Date",
    "reqd": 1
+  },
+  {
+   "depends_on": "eval: doc.one_day == 1",
+   "fieldname": "from_time",
+   "fieldtype": "Time",
+   "label": "From Time"
+  },
+  {
+   "depends_on": "eval: doc.one_day == 1",
+   "fieldname": "to_time",
+   "fieldtype": "Time",
+   "label": "To Time "
+  },
+  {
+   "default": "0",
+   "fieldname": "one_day",
+   "fieldtype": "Check",
+   "label": "One Day"
+  },
+  {
+   "default": "0",
+   "fieldname": "driver_not_required",
+   "fieldtype": "Check",
+   "label": "Driver Not Required"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-25 12:20:32.826386",
+ "modified": "2025-12-29 15:54:25.485691",
  "modified_by": "kalden.dorji@thimphutechpark.bt",
  "module": "Fleet Management",
  "name": "Equipment Request",

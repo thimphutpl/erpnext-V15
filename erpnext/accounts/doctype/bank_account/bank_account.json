@@ -52,7 +52,8 @@
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Company Account",
-   "options": "Account"
+   "options": "Account",
+   "reqd": 1
   },
   {
    "fieldname": "bank",
@@ -250,8 +251,8 @@
    "link_fieldname": "default_bank_account"
   }
  ],
- "modified": "2024-10-30 09:41:14.113414",
- "modified_by": "Administrator",
+ "modified": "2025-12-16 10:46:17.262991",
+ "modified_by": "sonam.norbu@thimphutechpark.bt",
  "module": "Accounts",
  "name": "Bank Account",
  "owner": "Administrator",
@@ -282,6 +283,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "search_fields": "bank,account",
  "sort_field": "modified",
  "sort_order": "DESC",

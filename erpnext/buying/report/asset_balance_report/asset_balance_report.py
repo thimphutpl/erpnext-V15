@@ -30,7 +30,8 @@ def get_data(filters):
 					FROM `tabAsset Issue Details` ai
 					WHERE ai.item_code = ar.item_code
 					AND ai.issued_date BETWEEN '{from_date}' AND '{to_date}' 
-					AND ai.purchase_receipt = ar.ref_doc
+					AND CASE WHEN ai.purchase_receipt is not null THEN ai.purchase_receipt = ar.ref_doc
+					ELSE ai.emi_sales = ar.ref_doc END
 					AND ai.docstatus = 1
 					),0) issued_qty
 			FROM `tabAsset Received Entries` ar

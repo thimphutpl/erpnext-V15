@@ -21,6 +21,7 @@ class C0Status(Document):
 		customer_report: DF.LongText | None
 		customer_track_id: DF.Link | None
 		email_id: DF.Data | None
+		id_card_no: DF.Data | None
 		inquiry: DF.LongText | None
 		phone_number: DF.Data | None
 		response: DF.LongText | None

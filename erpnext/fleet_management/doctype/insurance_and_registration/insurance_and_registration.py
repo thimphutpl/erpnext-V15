@@ -41,6 +41,7 @@ class InsuranceandRegistration(Document):
         project: DF.ReadOnly | None
         reference: DF.Data | None
         registration_item: DF.Table[RegistrationDetails]
+        registration_number: DF.Data | None
         settle_imprest_advance: DF.Check
         vehicle_model: DF.Data | None
         vehicle_type: DF.Link | None

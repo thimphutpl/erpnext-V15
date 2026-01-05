@@ -7,6 +7,7 @@
  "engine": "InnoDB",
  "field_order": [
   "customer_details_section",
+  "posting_date",
   "customer_id",
   "salutation",
   "customer_name",
@@ -15,12 +16,19 @@
   "primary_address",
   "customer_details",
   "customer_track_id",
+  "id_card_no",
   "column_break_zsdv",
   "responsible_branch",
   "customer_report",
   "customer_quotations_section",
   "items",
+  "grand_total",
   "c1_status_report",
+  "print_details_section",
+  "header",
+  "footer",
+  "terms_and_cond_tempate",
+  "terms_and_conditions",
   "section_break_atog",
   "amended_from"
  ],
@@ -119,14 +127,60 @@
    "fieldtype": "Table",
    "label": "Item",
    "options": "Customer Quotation Details"
+  },
+  {
+   "fetch_from": "customer_id.cid_no",
+   "fieldname": "id_card_no",
+   "fieldtype": "Data",
+   "label": "ID Card No."
+  },
+  {
+   "fieldname": "print_details_section",
+   "fieldtype": "Section Break",
+   "label": "Print Details"
+  },
+  {
+   "default": "Dear Sir,\nWe are pleased to submit the quotation for",
+   "fieldname": "header",
+   "fieldtype": "Small Text",
+   "label": "Header"
+  },
+  {
+   "default": "We look forward for receiving your order\n\n\n.\nYours sincerely,",
+   "fieldname": "footer",
+   "fieldtype": "Small Text",
+   "label": "Footer"
+  },
+  {
+   "fieldname": "terms_and_cond_tempate",
+   "fieldtype": "Link",
+   "label": "Terms and Conditions",
+   "options": "Terms and Conditions"
+  },
+  {
+   "fetch_from": "terms_and_cond_tempate.terms",
+   "fieldname": "terms_and_conditions",
+   "fieldtype": "Text Editor"
+  },
+  {
+   "fieldname": "grand_total",
+   "fieldtype": "Float",
+   "label": "Grand Total"
+  },
+  {
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Posting Date",
+   "reqd": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-28 10:41:53.632347",
- "modified_by": "Administrator",
+ "modified": "2025-12-28 20:54:16.727630",
+ "modified_by": "kalden.dorji@thimphutechpark.bt",
  "module": "CRM",
  "name": "C1 Status",
  "naming_rule": "Expression",

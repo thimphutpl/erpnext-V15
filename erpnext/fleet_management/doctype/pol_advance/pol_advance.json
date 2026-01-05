@@ -18,13 +18,14 @@
   "status",
   "section_break_jdap",
   "supplier_branch",
-  "column_break_calz",
   "supplier_cost_center",
+  "column_break_calz",
+  "outsourced",
+  "supplier",
   "section_break_wclk",
   "column_break_kyxr",
   "advance_amount",
   "fuelbook",
-  "supplier",
   "column_break_xbwn",
   "od_amount",
   "od_adjusted",
@@ -135,14 +136,11 @@
    "label": "Is Opening"
   },
   {
-   "fetch_from": "fuelbook.supplier",
+   "depends_on": "eval: doc.outsourced == 1",
    "fieldname": "supplier",
    "fieldtype": "Link",
-   "hidden": 1,
-   "in_list_view": 1,
    "label": "Supplier",
-   "options": "Supplier",
-   "read_only_depends_on": "eval:doc.for_machineries === 0;"
+   "options": "Supplier"
   },
   {
    "fieldname": "section_break_wclk",
@@ -259,15 +257,18 @@
   },
   {
    "fieldname": "section_break_jdap",
-   "fieldtype": "Section Break"
+   "fieldtype": "Section Break",
+   "label": "Supplier Details"
   },
   {
+   "depends_on": "eval: doc.outsourced == 0",
    "fieldname": "supplier_branch",
    "fieldtype": "Link",
    "label": "Supplier Branch",
    "options": "Branch"
   },
   {
+   "depends_on": "eval: doc.outsourced == 0",
    "fetch_from": "supplier_branch.cost_center",
    "fieldname": "supplier_cost_center",
    "fieldtype": "Data",
@@ -276,12 +277,18 @@
   {
    "fieldname": "column_break_calz",
    "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "outsourced",
+   "fieldtype": "Check",
+   "label": "Outsourced"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-25 12:07:00.564971",
+ "modified": "2025-12-29 16:10:12.070627",
  "modified_by": "kalden.dorji@thimphutechpark.bt",
  "module": "Fleet Management",
  "name": "POL Advance",

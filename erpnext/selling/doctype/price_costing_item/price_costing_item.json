@@ -71,6 +71,7 @@
    "fieldname": "frieght",
    "fieldtype": "Currency",
    "label": "Frieght",
+   "precision": "2",
    "read_only": 1
   },
   {
@@ -81,60 +82,70 @@
    "fieldname": "insurance",
    "fieldtype": "Currency",
    "label": "Insurance",
+   "precision": "2",
    "read_only": 1
   },
   {
    "fieldname": "source_rate",
    "fieldtype": "Currency",
    "in_list_view": 1,
-   "label": "Source Rate"
+   "label": "Source Rate",
+   "precision": "2"
   },
   {
    "fieldname": "custom_duty",
    "fieldtype": "Currency",
    "label": "Custom Duty",
+   "precision": "2",
    "read_only": 1
   },
   {
    "fieldname": "service_charges",
    "fieldtype": "Currency",
    "label": "Service Charges",
+   "precision": "2",
    "read_only": 1
   },
   {
    "fieldname": "bank_charges",
    "fieldtype": "Currency",
    "label": "Bank Charges",
+   "precision": "2",
    "read_only": 1
   },
   {
    "fieldname": "labour_charges",
    "fieldtype": "Currency",
    "label": "Labour Charges",
+   "precision": "2",
    "read_only": 1
   },
   {
    "fieldname": "gst",
    "fieldtype": "Currency",
    "label": "GST",
+   "precision": "2",
    "read_only": 1
   },
   {
    "fieldname": "excise_duty",
    "fieldtype": "Currency",
    "label": "Excise Duty",
+   "precision": "2",
    "read_only": 1
   },
   {
    "fieldname": "clearing_and_forwarding_charges",
    "fieldtype": "Currency",
    "label": "Clearing and Forwarding Charges",
+   "precision": "2",
    "read_only": 1
   },
   {
    "fieldname": "transportation_charges",
    "fieldtype": "Currency",
    "label": "Transportation Charges",
+   "precision": "2",
    "read_only": 1
   },
   {
@@ -146,12 +157,14 @@
    "fieldtype": "Currency",
    "in_list_view": 1,
    "label": "Landed Cost",
+   "precision": "2",
    "read_only": 1
   },
   {
    "fieldname": "processing_percent",
    "fieldtype": "Percent",
-   "label": "Processing Percent"
+   "label": "Processing Percent",
+   "precision": "2"
   },
   {
    "fieldname": "bank_charges_percent",
@@ -183,24 +196,28 @@
    "fieldname": "processing_amount",
    "fieldtype": "Currency",
    "label": "Processing Amount",
+   "precision": "2",
    "read_only": 1
   },
   {
    "fieldname": "bank_charges_amount",
    "fieldtype": "Currency",
    "label": "Bank Charges Amount",
+   "precision": "2",
    "read_only": 1
   },
   {
    "fieldname": "stock_holding_amount",
    "fieldtype": "Currency",
    "label": "Stock Holding Amount",
+   "precision": "2",
    "read_only": 1
   },
   {
    "fieldname": "margin_amount",
    "fieldtype": "Currency",
    "label": "Margin Amount",
+   "precision": "2",
    "read_only": 1
   },
   {
@@ -216,7 +233,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-12-04 14:13:56.689060",
+ "modified": "2025-12-26 11:34:47.162650",
  "modified_by": "Administrator",
  "module": "Selling",
  "name": "Price Costing Item",

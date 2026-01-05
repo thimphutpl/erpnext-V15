@@ -36,6 +36,7 @@ class EMISalesItem(Document):
 		ime_number_ii: DF.Data | None
 		income_account: DF.Link | None
 		interest_amount: DF.Currency
+		interest_income_account: DF.Link | None
 		is_foc_item: DF.Check
 		item_code: DF.Link
 		item_group: DF.Link | None

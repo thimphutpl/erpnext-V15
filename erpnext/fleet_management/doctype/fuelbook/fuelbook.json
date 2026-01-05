@@ -77,7 +77,7 @@
   {
    "fieldname": "account_number",
    "fieldtype": "Data",
-   "label": "Account Number",
+   "label": "Fuel Book Number",
    "unique": 1
   },
   {
@@ -88,7 +88,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-11-25 12:15:31.054944",
+ "modified": "2025-12-29 15:36:07.977029",
  "modified_by": "kalden.dorji@thimphutechpark.bt",
  "module": "Fleet Management",
  "name": "Fuelbook",

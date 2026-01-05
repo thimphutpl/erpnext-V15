@@ -18,11 +18,12 @@ class C2Status(Document):
 
 		amended_from: DF.Link | None
 		customer_details: DF.SmallText | None
-		customer_id: DF.Data | None
+		customer_id: DF.Link | None
 		customer_name: DF.Data | None
 		customer_report: DF.LongText | None
 		customer_track_id: DF.Link | None
 		email_id: DF.Data | None
+		id_card_no: DF.Data | None
 		order_information: DF.LongText | None
 		phone_number: DF.Data | None
 		primary_address: DF.Data | None
@@ -46,19 +47,32 @@ def make_c2_status(source_name, target_doc=None):
 	def adjust_last_date(source, target):
 		return
 
+	def update_branch_fields(obj, target, source_parent):
+		# Keep your original date logic
+		update_date(obj, target, source_parent)
+
+		# Safely set cost_center and warehouse from branch
+		if target.branch:
+			branch_doc = frappe.get_doc("Branch", target.branch)
+			target.cost_center = getattr(branch_doc, "cost_center", None)
+			target.set_warehouse = getattr(branch_doc, "warehouse", None)
+
 	doc = get_mapped_doc("C2 Status", source_name, {
 			"C2 Status": {
 				"doctype": "Sales Order",
 				"field_map": {
-					"name": "sales_order",
+					"name": "c2_status",
 					"customer_id": "customer_id",
 					"company": "company",
 					"customer_name": "customer",
 					"phone_number": "contact_person",
 					"primary_address": "address",
-					"name": "c2_id"
+					"name": "c2_id",
+					"responsible_branch": "branch",
+					"cost_center": "cost_center",
+					"warehouse": "set_warehouse"
 				},
-				"postprocess": update_date,
+				"postprocess": update_branch_fields,
 				"validation": {"docstatus": ["=", 1]}
 			},
 			"Order Confirmation Details": {
@@ -67,6 +81,60 @@ def make_c2_status(source_name, target_doc=None):
 					"quantity": "qty",
 					"amount":"rate"
 				},
+				"field_no_map": ["discount_amount"],
+
+				"postprocess": transfer_currency,
+			},
+		}, target_doc, adjust_last_date)
+	return doc
+
+@frappe.whitelist()
+def create_purchase_order(source_name, target_doc=None):
+	def update_date(obj, target, source_parent):
+		return
+
+	def transfer_currency(obj, target, source_parent):
+		return
+		
+	def adjust_last_date(source, target):
+		return
+
+	def update_branch_fields(obj, target, source_parent):
+		# Keep your original date logic
+		update_date(obj, target, source_parent)
+
+		# Safely set cost_center and warehouse from branch
+		if target.branch:
+			branch_doc = frappe.get_doc("Branch", target.branch)
+			target.cost_center = getattr(branch_doc, "cost_center", None)
+			target.set_warehouse = getattr(branch_doc, "warehouse", None)
+
+	doc = get_mapped_doc("C2 Status", source_name, {
+			"C2 Status": {
+				"doctype": "Purchase Order",
+				"field_map": {
+					"name": "c2_status",
+					"customer_id": "customer_id",
+					"company": "company",
+					"customer_name": "customer",
+					"phone_number": "contact_person",
+					"primary_address": "address",
+					"name": "c2_id",
+					"responsible_branch": "branch",
+					"cost_center": "cost_center",
+					"warehouse": "set_warehouse"
+				},
+				"postprocess": update_branch_fields,
+				"validation": {"docstatus": ["=", 1]}
+			},
+			"Order Confirmation Details": {
+				"doctype": "Purchase Order Item",
+				"field_map": {
+					"quantity": "qty",
+					"amount":"rate"
+				},
+				"field_no_map": ["discount_amount"],
+
 				"postprocess": transfer_currency,
 			},
 		}, target_doc, adjust_last_date)

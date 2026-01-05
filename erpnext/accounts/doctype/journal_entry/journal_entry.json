@@ -10,13 +10,13 @@
  "field_order": [
   "entry_type_and_date",
   "is_system_generated",
-  "title",
   "branch",
   "voucher_type",
   "naming_series",
   "finance_book",
   "process_deferred_accounting",
   "reversal_of",
+  "title",
   "column_break1",
   "mode_of_payment",
   "from_template",
@@ -67,6 +67,7 @@
   "addtional_info",
   "payment_order",
   "emi_sales_installment",
+  "tax_payment_jv",
   "column_break3",
   "is_opening",
   "stock_entry",
@@ -89,14 +90,6 @@
    "fieldname": "entry_type_and_date",
    "fieldtype": "Section Break",
    "options": "fa fa-flag"
-  },
-  {
-   "allow_on_submit": 1,
-   "fieldname": "title",
-   "fieldtype": "Data",
-   "label": "Title",
-   "no_copy": 1,
-   "print_hide": 1
   },
   {
    "default": "Journal Entry",
@@ -675,6 +668,19 @@
    "fieldname": "money_receipt_id",
    "fieldtype": "Data",
    "label": "Money Receipt ID"
+  },
+  {
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Title"
+  },
+  {
+   "default": "0",
+   "fieldname": "tax_payment_jv",
+   "fieldtype": "Check",
+   "label": "Tax Payment JV",
+   "read_only": 1
   }
  ],
  "icon": "fa fa-file-text",
@@ -689,7 +695,7 @@
    "table_fieldname": "payment_entries"
   }
  ],
- "modified": "2025-12-11 23:39:59.361220",
+ "modified": "2025-12-31 13:50:38.567126",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Journal Entry",

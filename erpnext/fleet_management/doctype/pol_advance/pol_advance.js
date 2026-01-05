@@ -25,6 +25,11 @@ frappe.ui.form.on("POL Advance", {
 
 	refresh(frm) {
         refresh_html(frm);
+        if(!frm.doc.outsourced){
+            frm.set_value("supplier", null);
+            frm.refresh_field("supplier");
+
+        }
         // if (frm.doc.docstatus == 1) {
 		
 		// 	cur_frm.add_custom_button(__('Accounting Ledger'), function() {
@@ -44,6 +49,12 @@ frappe.ui.form.on("POL Advance", {
     advance_amount: (frm) => {
 		calculate_balance(frm);
 	},
+    outsourced: (frm) => {
+        if(!frm.doc.outsourced){
+            frm.set_value("supplier", null);
+            frm.refresh_field("supplier");
+        }
+    },
 });
 
 var calculate_balance=(frm)=>{

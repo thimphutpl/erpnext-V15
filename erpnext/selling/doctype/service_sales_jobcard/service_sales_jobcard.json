@@ -17,7 +17,7 @@
   "supplier_order",
   "column_break_csjz",
   "jobcard_status",
-  "jocard_type",
+  "jobcard_type",
   "requesting_branch",
   "requesting_cost_center",
   "warehouse",
@@ -35,7 +35,7 @@
   "location",
   "column_break_uhxs",
   "warranty_id",
-  "driver_name",
+  "contact_person",
   "contact_number",
   "vehicle_details_section",
   "chassis_number",
@@ -45,12 +45,17 @@
   "column_break_cuoe",
   "vehicle_number",
   "km_reading",
+  "customer_request",
   "technician_details_section",
   "table_vvwk",
   "service_report_section",
   "items",
   "payable_amount",
   "jobcard_report",
+  "spareparts_report_section",
+  "spareparts_branch",
+  "table_fspm",
+  "spareparts_remarks",
   "section_break_hejn",
   "amended_from",
   "delayed_details_tab",
@@ -92,13 +97,7 @@
    "fieldname": "jobcard_status",
    "fieldtype": "Select",
    "label": "Jobcard Status",
-   "options": "Ongoing\nCompleted"
-  },
-  {
-   "fieldname": "jocard_type",
-   "fieldtype": "Link",
-   "label": "Jocard Type",
-   "options": "Jobcard Type"
+   "options": "Ongoing\nDelayed\nWaiting for Spareparts Divison\nSpareparts Delivered\nCompleted"
   },
   {
    "fieldname": "customer_information_section",
@@ -120,9 +119,11 @@
    "read_only": 1
   },
   {
+   "fetch_from": "customer_id.customer_group",
    "fieldname": "customer_group",
    "fieldtype": "Data",
-   "label": "Customer Group"
+   "label": "Customer Group",
+   "read_only": 1
   },
   {
    "fetch_from": "customer_id.mobile_no",
@@ -139,6 +140,7 @@
    "read_only": 1
   },
   {
+   "depends_on": "eval: doc.customer_group == \"Government\" || doc.customer_group == \"Corporation\"",
    "fieldname": "location",
    "fieldtype": "Link",
    "label": "Location",
@@ -287,6 +289,7 @@
    "label": "Technician Details"
   },
   {
+   "depends_on": "eval: doc.jobcard_status == \"Delayed\"",
    "fieldname": "delayed_details_tab",
    "fieldtype": "Tab Break",
    "label": "Delayed Details"
@@ -305,11 +308,6 @@
    "fieldname": "delayed_reason",
    "fieldtype": "Long Text",
    "label": "Delayed Reason"
-  },
-  {
-   "fieldname": "driver_name",
-   "fieldtype": "Data",
-   "label": "Driver Name"
   },
   {
    "fieldname": "contact_number",
@@ -352,16 +350,53 @@
   },
   {
    "fieldname": "delivery_date_to",
-   "fieldtype": "Data",
+   "fieldtype": "Date",
    "label": "Delivery Date To"
+  },
+  {
+   "fieldname": "contact_person",
+   "fieldtype": "Data",
+   "label": "Contact Person"
+  },
+  {
+   "fieldname": "jobcard_type",
+   "fieldtype": "Link",
+   "label": "Jobcard Type",
+   "options": "Jobcard Type"
+  },
+  {
+   "fieldname": "spareparts_report_section",
+   "fieldtype": "Section Break",
+   "label": "Spareparts Report"
+  },
+  {
+   "fieldname": "table_fspm",
+   "fieldtype": "Table",
+   "options": "Jobcard Spareparts Details"
+  },
+  {
+   "fieldname": "spareparts_remarks",
+   "fieldtype": "Long Text",
+   "label": "Remarks"
+  },
+  {
+   "fieldname": "customer_request",
+   "fieldtype": "Small Text",
+   "label": "Customer Request"
+  },
+  {
+   "fieldname": "spareparts_branch",
+   "fieldtype": "Link",
+   "label": "Spareparts Branch",
+   "options": "Branch"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-12-03 11:38:23.595706",
- "modified_by": "kalden.dorji@thimphutechpark.bt",
+ "modified": "2025-12-28 14:16:47.672861",
+ "modified_by": "Administrator",
  "module": "Selling",
  "name": "Service Sales Jobcard",
  "naming_rule": "Expression",
@@ -385,5 +420,7 @@
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],
- "track_changes": 1
+ "track_changes": 1,
+ "track_seen": 1,
+ "track_views": 1
 }

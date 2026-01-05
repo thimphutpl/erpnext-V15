@@ -23,6 +23,7 @@
   "column_break_uukl",
   "salary_advance_limit",
   "no_of_installment_for_salary",
+  "minimum_services_required",
   "section_break_lqip",
   "minimum_months",
   "increment_prorated",
@@ -210,10 +211,15 @@
    "fieldname": "retirement_age",
    "fieldtype": "Int",
    "label": "Retirement Age"
+  },
+  {
+   "fieldname": "minimum_services_required",
+   "fieldtype": "Data",
+   "label": "Minimum Services Required"
   }
  ],
  "links": [],
- "modified": "2024-11-14 15:52:09.354840",
+ "modified": "2025-12-16 10:38:45.794320",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee Group",
@@ -234,6 +240,7 @@
   }
  ],
  "quick_entry": 1,
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],

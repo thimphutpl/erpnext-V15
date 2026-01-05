@@ -91,6 +91,7 @@ class JournalEntry(AccountsController):
 		select_cheque_lot: DF.Link | None
 		select_print_heading: DF.Link | None
 		stock_entry: DF.Link | None
+		tax_payment_jv: DF.Check
 		tax_withholding_category: DF.Link | None
 		title: DF.Data | None
 		total_amount: DF.Currency
@@ -99,7 +100,7 @@ class JournalEntry(AccountsController):
 		total_credit: DF.Currency
 		total_debit: DF.Currency
 		use_check_lot: DF.Check
-		user_remark: DF.SmallText
+		user_remark: DF.SmallText | None
 		voucher_type: DF.Literal["Journal Entry", "Inter Company Journal Entry", "Bank Entry", "Cash Entry", "Credit Card Entry", "Debit Note", "Credit Note", "Contra Entry", "Excise Entry", "Write Off Entry", "Opening Entry", "Depreciation Entry", "Exchange Rate Revaluation", "Exchange Gain Or Loss", "Deferred Revenue", "Deferred Expense", "Hire Invoice"]
 		write_off_amount: DF.Currency
 		write_off_based_on: DF.Literal["Accounts Receivable", "Accounts Payable"]
@@ -782,11 +783,12 @@ class JournalEntry(AccountsController):
 					)
 
 				if d.reference_type == "Purchase Order" and flt(d.credit) > 0:
-					frappe.throw(
-						_("Row {0}: Credit entry can not be linked with a {1}").format(
-							d.idx, d.reference_type
+					if self.tax_payment_jv == 0:
+						frappe.throw(
+							_("Row {0}: Credit entry can not be linked with a {1}").format(
+								d.idx, d.reference_type
+							)
 						)
-					)
 
 				# set totals
 				if d.reference_name not in self.reference_totals:
@@ -842,11 +844,12 @@ class JournalEntry(AccountsController):
 				if d.reference_type in ("Sales Order", "Purchase Order"):
 					# set totals
 					if against_voucher != d.party:
-						frappe.throw(
-							_("Row {0}: {1} {2} does not match with {3}").format(
-								d.idx, d.party_type, d.party, d.reference_type
+						if self.tax_payment_jv == 0:
+							frappe.throw(
+								_("Row {0}: {1} {2} does not match with {3}").format(
+									d.idx, d.party_type, d.party, d.reference_type
+								)
 							)
-						)
 
 		self.validate_orders()
 		self.validate_invoices()

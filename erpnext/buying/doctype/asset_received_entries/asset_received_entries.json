@@ -8,6 +8,7 @@
  "field_order": [
   "branch",
   "cost_center",
+  "reference_type",
   "ref_doc",
   "item_code",
   "qty",
@@ -54,10 +55,10 @@
   },
   {
    "fieldname": "ref_doc",
-   "fieldtype": "Link",
+   "fieldtype": "Dynamic Link",
    "in_list_view": 1,
    "label": "Reference Document",
-   "options": "Purchase Receipt",
+   "options": "reference_type",
    "reqd": 1
   },
   {
@@ -105,12 +106,20 @@
    "fieldtype": "Link",
    "label": "Warehouse",
    "options": "Warehouse"
+  },
+  {
+   "fieldname": "reference_type",
+   "fieldtype": "Link",
+   "label": "Reference Type",
+   "options": "DocType",
+   "read_only": 1,
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-20 20:50:33.962627",
+ "modified": "2025-12-22 16:51:16.657210",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Asset Received Entries",
@@ -154,6 +163,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []

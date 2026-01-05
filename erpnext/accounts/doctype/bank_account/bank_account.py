@@ -21,7 +21,7 @@ class BankAccount(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
-		account: DF.Link | None
+		account: DF.Link
 		account_name: DF.Data
 		account_subtype: DF.Link | None
 		account_type: DF.Link | None

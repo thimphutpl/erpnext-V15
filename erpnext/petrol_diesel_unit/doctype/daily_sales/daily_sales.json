@@ -1,0 +1,208 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-12-17 14:47:24.627614",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "posting_date",
+  "ug_tank_calibration",
+  "warehouse",
+  "column_break_byml",
+  "ug_tank_list",
+  "branch",
+  "item_code",
+  "item_name",
+  "rate",
+  "section_break_hbdx",
+  "get_details",
+  "table_wyam",
+  "daily_sales_details_section",
+  "total_quantity_sold",
+  "total_amount_sold",
+  "variation_details_section",
+  "pump_test_quantity",
+  "net_sales",
+  "column_break_cgun",
+  "sales_dip_measurement_cm",
+  "data_mepz",
+  "daily_variation_litres",
+  "daily_variation_amount",
+  "section_break_pmyg",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Posting Date",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "ug_tank_list.dip_stick_calibration",
+   "fieldname": "ug_tank_calibration",
+   "fieldtype": "Data",
+   "label": "UG Tank Calibration (1cm=__L)",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "ug_tank_list.warehouse",
+   "fieldname": "warehouse",
+   "fieldtype": "Data",
+   "label": "Warehouse ",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_byml",
+   "fieldtype": "Column Break",
+   "read_only": 1
+  },
+  {
+   "fieldname": "ug_tank_list",
+   "fieldtype": "Link",
+   "label": "UG Tank",
+   "options": "UG Tank",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "ug_tank_list.branch",
+   "fieldname": "branch",
+   "fieldtype": "Data",
+   "label": "Branch",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "ug_tank_list.item_code",
+   "fieldname": "item_code",
+   "fieldtype": "Data",
+   "label": "Item Code"
+  },
+  {
+   "fetch_from": "ug_tank_list.item_name",
+   "fieldname": "item_name",
+   "fieldtype": "Data",
+   "label": "Item Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "rate",
+   "fieldtype": "Data",
+   "label": "Rate",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_hbdx",
+   "fieldtype": "Section Break",
+   "label": "Shift Details"
+  },
+  {
+   "fieldname": "table_wyam",
+   "fieldtype": "Table",
+   "options": "Daily Sales Items"
+  },
+  {
+   "fieldname": "daily_sales_details_section",
+   "fieldtype": "Section Break",
+   "label": "Daily Sales Details"
+  },
+  {
+   "fieldname": "total_quantity_sold",
+   "fieldtype": "Data",
+   "label": "Total Quantity Sold"
+  },
+  {
+   "fieldname": "total_amount_sold",
+   "fieldtype": "Data",
+   "label": "Total Amount Sold"
+  },
+  {
+   "fieldname": "variation_details_section",
+   "fieldtype": "Section Break",
+   "label": "Variation Details"
+  },
+  {
+   "fieldname": "pump_test_quantity",
+   "fieldtype": "Data",
+   "label": "Pump Test Quantity"
+  },
+  {
+   "fieldname": "net_sales",
+   "fieldtype": "Data",
+   "label": "Net Sales by Meter(Liters, less: Pump Test)"
+  },
+  {
+   "fieldname": "column_break_cgun",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "sales_dip_measurement_cm",
+   "fieldtype": "Data",
+   "label": "Sales DIP Measurement (CM)"
+  },
+  {
+   "fieldname": "data_mepz",
+   "fieldtype": "Data",
+   "label": "Net Sales as per DIP (Litres)"
+  },
+  {
+   "fieldname": "daily_variation_litres",
+   "fieldtype": "Data",
+   "label": "Daily Variation (Litres)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "daily_variation_amount",
+   "fieldtype": "Data",
+   "label": "Daily Variation (Amount)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_pmyg",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Daily Sales",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "get_details",
+   "fieldtype": "Button",
+   "label": "Get Details"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2025-12-28 16:01:41.888340",
+ "modified_by": "kalden.dorji@thimphutechpark.bt",
+ "module": "Petrol Diesel Unit",
+ "name": "Daily Sales",
+ "owner": "kalden.dorji@thimphutechpark.bt",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

@@ -24,11 +24,18 @@ class C1Status(Document):
 		customer_report: DF.LongText | None
 		customer_track_id: DF.Link | None
 		email_id: DF.Data | None
+		footer: DF.SmallText | None
+		grand_total: DF.Float
+		header: DF.SmallText | None
+		id_card_no: DF.Data | None
 		items: DF.Table[CustomerQuotationDetails]
 		phone_number: DF.Data | None
+		posting_date: DF.Date
 		primary_address: DF.Data | None
 		responsible_branch: DF.Data | None
 		salutation: DF.Data | None
+		terms_and_cond_tempate: DF.Link | None
+		terms_and_conditions: DF.TextEditor | None
 	# end: auto-generated types
 
 	def validate(self):

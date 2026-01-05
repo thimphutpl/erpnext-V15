@@ -50,7 +50,8 @@ frappe.ui.form.on("Sales Order", {
 			var row = locals[cdt][cdn];
 			return {
 				filters: {
-					"docstatus": 1
+					"docstatus": 1,
+					"item": row.item_code,
 				}
 			}
 		});
@@ -134,7 +135,7 @@ frappe.ui.form.on("Sales Order", {
 			}
 			return query;
 		});
-
+		frm.set_value("disable_rounded_total", 1);
 		frm.ignore_doctypes_on_cancel_all = ['Purchase Order'];
 	},
 

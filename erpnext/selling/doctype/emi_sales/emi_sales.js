@@ -85,22 +85,22 @@ frappe.ui.form.on('EMI Sales', {
 		});
 		if ( !frm.doc.__islocal || frm.doc.docstatus == 1 || frappe.session.user == 'Administrator') return
 
-		frappe.call({
-			method:'frappe.client.get_value',
-			args: {
-				doctype: 'Employee',
-				filters: {
-					'user_id': frappe.session.user
-				},
-				fieldname: ['branch']
-			},
-			callback: function(r){
-				if(r.message){
-					frm.set_value('branch',r.message.branch)
-					frm.refresh_field('branch')
-				}
-			}
-		})
+		// frappe.call({
+		// 	method:'frappe.client.get_value',
+		// 	args: {
+		// 		doctype: 'Employee',
+		// 		filters: {
+		// 			'user_id': frappe.session.user
+		// 		},
+		// 		fieldname: ['branch']
+		// 	},
+		// 	callback: function(r){
+		// 		if(r.message){
+		// 			frm.set_value('branch',r.message.branch)
+		// 			frm.refresh_field('branch')
+		// 		}
+		// 	}
+		// })
 	},
 	no_of_installation_external:(frm)=>{
 		if(frm.doc.no_of_installation){
@@ -145,6 +145,7 @@ frappe.ui.form.on('EMI Sales', {
 			method:'get_customer_details',
 			doc:cur_frm.doc,
 			callback:(r)=>{
+				frm.set_value("interest_percentage", r.message)
 				frm.refresh_field('customer_name')
 				frm.refresh_field('customer_group')
 				// frm.refresh_field('location_segregation')
@@ -202,8 +203,8 @@ frappe.ui.form.on('EMI Sales', {
 			else if(frm.doc.payment_type == "Employee Installment"){
 				frm.add_custom_button(__('Installment Deducted in Salary Slip'), function () {
 					frappe.route_options = {
-						"Salary Detail.salary_component": me.frm.doc.doctype,
-						"Salary Detail.reference_number": me.frm.doc.name,
+						"Salary Detail.salary_component": frm.doc.doctype,
+						"Salary Detail.reference_number": frm.doc.name,
 					};
 					frappe.set_route("List", "Salary Slip");
 				}, __("View"));
@@ -305,22 +306,25 @@ frappe.ui.form.on('EMI Sales', {
 					}
 				})
 			}
-
-			else if ((frm.doc.is_on_credit || frm.doc.is_opening_bal)  && frm.doc.status!= 'Received' && frm.doc.docstatus == 1 && frm.doc.payment_type == "Employee Installment"){
-				frappe.call({
-					method: "check_balance",
-					doc: frm.doc,
-					callback: function(r){
-						if(r.message[0]==1){
-							frm.add_custom_button(__('Installment Payment Entries'),()=> make_installment_pe(frm, 0, r.message[2]),__('Create'));
-							// frm.add_custom_button(__('Installment Prepaid Journal Entries'),()=> make_installment_je_prepaid(frm, 0, r.message[2]),__('Create'));
-						}
-						// if(r.message[1]==1){
-						// 	frm.add_custom_button(__('Remaining Full Payment Journal Entries'),()=> make_installment_je(frm, 1),__('Create'));
-						// }
-					}
-				})
+			if (frm.doc.sales_order_type == 'Cost Sharing Installment'  && frm.doc.docstatus == 1 && !frm.doc.asset_code){
+				cur_frm.add_custom_button(__('Asset Issue Entry'),()=> make_asset_issue_entry(frm), __('Create'));
 			}
+
+			// else if ((frm.doc.is_on_credit || frm.doc.is_opening_bal)  && frm.doc.status!= 'Received' && frm.doc.docstatus == 1 && frm.doc.payment_type == "Employee Installment"){
+			// 	frappe.call({
+			// 		method: "check_balance",
+			// 		doc: frm.doc,
+			// 		callback: function(r){
+			// 			if(r.message[0]==1){
+			// 				frm.add_custom_button(__('Installment Payment Entries'),()=> make_installment_pe(frm, 0, r.message[2]),__('Create'));
+			// 				// frm.add_custom_button(__('Installment Prepaid Journal Entries'),()=> make_installment_je_prepaid(frm, 0, r.message[2]),__('Create'));
+			// 			}
+			// 			// if(r.message[1]==1){
+			// 			// 	frm.add_custom_button(__('Remaining Full Payment Journal Entries'),()=> make_installment_je(frm, 1),__('Create'));
+			// 			// }
+			// 		}
+			// 	})
+			// }
 		}
 		if ((frm.doc.is_on_credit || frm.doc.is_opening_bal) && frm.doc.docstatus == 1 && frm.doc.payment_type == "External Customers"){
 			frappe.call({
@@ -478,6 +482,10 @@ frappe.ui.form.on('EMI Sales', {
 		toggle_views(frm);
 		// frm.set_df_property('no_of_installation_external','reqd',frm.doc.credit_type == 'Installment Payment' && frm.doc.customer_type == "Customer" ?1:0)
 	},
+	is_existing: (frm)=>{
+		frm.set_df_property('no_of_installation','reqd', frm.doc.is_existing == 1 ? 1:0)
+		toggle_views(frm);
+	},
 	sales_order_type:(frm)=>{
 		frappe.call({
 			method:'get_payment_type',
@@ -494,7 +502,7 @@ frappe.ui.form.on('EMI Sales', {
 		// frm.set_df_property('no_of_installation','reqd',frm.doc.credit_type == 'Installment Payment' && frm.doc.customer_type == "Employee" && frm.doc.sales_order_type != "Employee Installment" ?1:0)
 		frm.set_df_property('no_of_installation_employee','reqd', frm.doc.credit_type == 'Installment Payment' && frm.doc.customer_type == "Employee" && (frm.doc.sales_order_type == "Employee Installment" || frm.doc.sales_order_type == "Cost Sharing Installment") ?1:0)
 		// frm.set_df_property('no_of_installation_external','reqd',frm.doc.credit_type == 'Installment Payment' && frm.doc.customer_type == "Customer" ?1:0)
-		frm.set_df_property('one_time_customer_name', 'reqd', frm.doc.customer_group=="One Time Customer")
+		// frm.set_df_property('one_time_customer_name', 'reqd', frm.doc.customer_group=="One Time Customer")
 		if(cur_frm.doc.sales_order_type!="External Customers" && cur_frm.doc.sales_order_type!="Employee Installment"){
 			frm.set_query("customer", function() {
 				return {
@@ -608,6 +616,7 @@ var toggle_views = function(frm){
 	});
 	frm.toggle_display('no_of_installation_external', frm.doc.sales_order_type == "External Customers")
 	frm.toggle_display('no_of_installation_employee', frm.doc.sales_order_type == "Employee Installment" || frm.doc.sales_order_type == "Cost Sharing Installment")
+	frm.toggle_display('no_of_installation', frm.doc.is_existing==1)
 	if(frm.doc.sales_order_type && frm.doc.docstatus == 0){
 		if(frm.doc.sales_order_type == "External Customers" || frm.doc.sales_order_type == "Employee Installment" || frm.doc.payment_type == "Staff Installment"){
 			frm.set_value("is_on_credit", 1);
@@ -655,7 +664,8 @@ var make_installment_je = function(frm, remaining, remaining_installment){
             "label": "No of Installment(s)",
             "fieldname": "no_of_installment",
             "fieldtype": "Int",
-            "default": 1, 
+            "default": 1,
+			"read_only": 1,
             "reqd": 1
         },
         {
@@ -734,6 +744,62 @@ var filter_payment_type = function(frm){
 		};
 	})
 }
+
+var make_asset_issue_entry = function(frm){
+	var branch = ""
+	var asset_rate = 0
+	var item_code = ""
+	var item_name = ""
+	var asset_category = ""
+	var asset_sub_category = ""
+	var fixed_asset_account = ""
+	var credit_account = ""
+	var next_depreciation_date = ""
+	var exists = 0
+	frappe.call({
+		method: "get_asset_details",
+		doc: cur_frm.doc,
+		async: false,
+		callback: function(r){
+			if(r.message){
+				branch = r.message[0];
+				asset_rate = r.message[1];
+				item_code = r.message[2];
+				item_name = r.message[3];
+				asset_category = r.message[4];
+				asset_sub_category = r.message[5];
+				fixed_asset_account = r.message[6];
+				credit_account = r.message[7];
+				next_depreciation_date = r.message[8];
+				exists = r.message[9];
+			}
+		}
+	})
+	if(exists == 0){
+		var new_doc = frappe.model.get_new_doc('Asset Issue Details');
+		new_doc.branch = branch;
+		// new_doc.business_activity = business_activity;
+		new_doc.entry_date = new Date().toJSON().slice(0,10).replace(/-/g,'-');
+		new_doc.item_code = item_code;
+		new_doc.emi_sales = cur_frm.doc.name;
+		new_doc.asset_rate = asset_rate
+		new_doc.purchase_amount = asset_rate
+		new_doc.purchase_date = cur_frm.doc.posting_date
+		new_doc.issued_date = cur_frm.doc.posting_date
+		new_doc.available_for_use_date = cur_frm.doc.posting_date
+		new_doc.company = cur_frm.doc.company
+		new_doc.asset_account = fixed_asset_account;
+		new_doc.credit_account = credit_account;
+		new_doc.issued_to = cur_frm.doc.customer;
+		new_doc.qty = 1;
+		new_doc.calculate_depreciation = 1;
+		new_doc.next_depreciation_date = next_depreciation_date;
+		new_doc.amount = cur_frm.doc.grand_total
+		frappe.set_route('Form', 'Asset Issue Details', new_doc.name);
+	}
+
+
+}
 var make_installment_pe = function(frm, remaining, remaining_installment){
 	var d = new frappe.ui.Dialog({
 		title: __('Create Installment Payment Entry'),
@@ -764,7 +830,8 @@ var make_installment_pe = function(frm, remaining, remaining_installment){
 				"label": "No of Installment(s)",
 				"fieldname": "no_of_installment",
 				"fieldtype": "Int",
-				"default": 1, 
+				"default": 1,
+				"read_only": 1,
 				"reqd": 1
 			},
 			{
@@ -1039,8 +1106,8 @@ frappe.ui.form.on('EMI Sales Item',{
 				callback(r) {
 					if(r.message) {
 						d.income_account = r.message.income_account
-						d.prepaid_income_account = r.message.prepaid_income_account
-						if (d.item_group == 'Trading Goods') d.expense_account = r.message.expense_account
+						d.interest_income_account = r.message.interest_income_account
+						if (d.item_group == 'Sales Product') d.expense_account = r.message.expense_account
 						frm.refresh_field("items")
 					}
 				}
@@ -1057,7 +1124,7 @@ frappe.ui.form.on('EMI Sales Item',{
 				},
 				callback: function(r){
 					if(r.message){
-						if (d.item_group != 'Trading Goods') d.expense_account = r.message.default_expense_account;
+						if (d.item_group != 'Sales Product') d.expense_account = r.message.default_expense_account;
 						if (frm.doc.is_on_credit || frm.doc.is_opening_bal){
 							d.cash_bank_account = r.message.default_receivable_account
 							frm.set_value('debit_to',r.message.default_receivable_account)
@@ -1133,8 +1200,8 @@ frappe.ui.form.on('EMI Sales Item',{
 				callback(r) {
 					if(r.message) {
 						d.income_account = r.message.income_account
-						d.prepaid_income_account = r.message.prepaid_income_account
-						if (d.item_group == 'Trading Goods') d.expense_account = r.message.expense_account
+						d.interest_income_account = r.message.interest_income_account
+						if (d.item_group == 'Sales Product') d.expense_account = r.message.expense_account
 						frm.refresh_field("items")
 					}
 				}
@@ -1151,7 +1218,7 @@ frappe.ui.form.on('EMI Sales Item',{
 				},
 				callback: function(r){
 					if(r.message){
-						if (d.item_group != 'Trading Goods') d.expense_account = r.message.default_expense_account;
+						if (d.item_group != 'Sales Product') d.expense_account = r.message.default_expense_account;
 						if (frm.doc.is_on_credit || frm.doc.is_opening_bal){
 							d.cash_bank_account = r.message.default_receivable_account
 							frm.set_value('debit_to',r.message.default_receivable_account)
@@ -1241,8 +1308,8 @@ frappe.ui.form.on('EMI Sales Item',{
 				callback(r) {
 					if(r.message) {
 						d.income_account = r.message.income_account
-						d.prepaid_income_account = r.message.prepaid_income_account
-						if (d.item_group == 'Trading Goods') d.expense_account = r.message.expense_account
+						d.interest_income_account = r.message.interest_income_account
+						if (d.item_group == 'Sales Product') d.expense_account = r.message.expense_account
 						frm.refresh_field("items")
 					}
 				}
@@ -1259,7 +1326,7 @@ frappe.ui.form.on('EMI Sales Item',{
 				},
 				callback: function(r){
 					if(r.message){
-						if (d.item_group != 'Trading Goods') d.expense_account = r.message.default_expense_account;
+						if (d.item_group != 'Sales Product') d.expense_account = r.message.default_expense_account;
 						if (frm.doc.is_on_credit || frm.doc.is_opening_bal){
 							d.cash_bank_account = r.message.default_receivable_account
 							frm.set_value('debit_to',r.message.default_receivable_account)
@@ -1336,8 +1403,8 @@ frappe.ui.form.on('EMI Sales Item',{
 				callback(r) {
 					if(r.message) {
 						d.income_account = r.message.income_account
-						d.prepaid_income_account = r.message.prepaid_income_account
-						if (d.item_group == 'Trading Goods') d.expense_account = r.message.expense_account
+						d.interest_income_account = r.message.interest_income_account
+						if (d.item_group == 'Sales Product') d.expense_account = r.message.expense_account
 						frm.refresh_field("items")
 					}
 				}
@@ -1354,7 +1421,7 @@ frappe.ui.form.on('EMI Sales Item',{
 				},
 				callback: function(r){
 					if(r.message){
-						if (d.item_group != 'Trading Goods') d.expense_account = r.message.default_expense_account;
+						if (d.item_group != 'Sales Product') d.expense_account = r.message.default_expense_account;
 						if (frm.doc.is_on_credit || frm.doc.is_opening_bal){
 							d.cash_bank_account = r.message.default_receivable_account
 							frm.set_value('debit_to',r.message.default_receivable_account)
@@ -1413,6 +1480,7 @@ frappe.ui.form.on('EMI Sales Item',{
 			// })
 		}
 		//fetch actual qty 
+		calculate_down_payment(frm, cdt, cdn)
 		var subgroups = ["Voucher", "Sim"]
 		frappe.meta.get_docfield("EMI Sales Item","serial_number",cur_frm.doc.name).reqd = subgroups.includes(d.item_subgroup)? 1 : 0
 		// frappe.meta.get_docfield("EMI Sales Item","serial_number",cur_frm.doc.name).reqd = d.item_group == 'Services' ? 0 : 1

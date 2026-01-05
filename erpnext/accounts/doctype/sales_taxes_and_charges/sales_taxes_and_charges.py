@@ -16,22 +16,17 @@ class SalesTaxesandCharges(Document):
 
 		account_currency: DF.Link | None
 		account_head: DF.Link
+		add_deduct_tax: DF.Literal["", "Add", "Deduct"]
 		base_tax_amount: DF.Currency
 		base_tax_amount_after_discount_amount: DF.Currency
 		base_total: DF.Currency
-		charge_type: DF.Literal[
-			"",
-			"Actual",
-			"On Net Total",
-			"On Previous Row Amount",
-			"On Previous Row Total",
-			"On Item Quantity",
-		]
+		charge_type: DF.Literal["", "Actual", "On Net Total", "On Previous Row Amount", "On Previous Row Total", "On Item Quantity"]
 		cost_center: DF.Link | None
 		description: DF.SmallText
 		dont_recompute_tax: DF.Check
 		included_in_paid_amount: DF.Check
 		included_in_print_rate: DF.Check
+		is_gst: DF.Check
 		item_wise_tax_detail: DF.Code | None
 		parent: DF.Data
 		parentfield: DF.Data

@@ -15,19 +15,33 @@ class DipDetails(Document):
 		from frappe.types import DF
 
 		a_i: DF.Float
+		a_i_qty: DF.Float
 		a_ii: DF.Float
+		a_ii_qty: DF.Float
 		a_iii: DF.Float
+		a_iii_qty: DF.Float
 		a_iv: DF.Float
+		a_iv_qty: DF.Float
 		a_total: DF.Float
+		a_total_qty: DF.Float
 		a_v: DF.Float
+		a_v_qty: DF.Float
 		a_vi: DF.Float
+		a_vi_qty: DF.Float
 		c_i: DF.Float
+		c_i_qty: DF.Float
 		c_ii: DF.Float
+		c_ii_qty: DF.Float
 		c_iii: DF.Float
+		c_iii_qty: DF.Float
 		c_iv: DF.Float
+		c_iv_qty: DF.Float
 		c_total: DF.Float
+		c_total_qty: DF.Float
 		c_v: DF.Float
+		c_v_qty: DF.Float
 		c_vi: DF.Float
+		c_vi_qty: DF.Float
 		cost_center: DF.Link
 		density_as_per_invoice: DF.Float
 		ld_combined: DF.Float

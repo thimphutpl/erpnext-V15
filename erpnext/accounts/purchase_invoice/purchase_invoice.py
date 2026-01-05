@@ -621,7 +621,7 @@ class PurchaseInvoice(BuyingController):
 	def make_gl_entries(self, gl_entries=None, from_repost=False):
 		if not gl_entries:
 			gl_entries = self.get_gl_entries()
-
+		frappe.throw("here "+str(gl_entries))
 		if gl_entries:
 			# update_outstanding = "No" if (cint(self.is_paid) or self.write_off_account) else "Yes"
 			# above line commented as it was making outs zero when there is advance and advance account is different. we need to check on this

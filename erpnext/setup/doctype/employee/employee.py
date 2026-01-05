@@ -13,6 +13,9 @@ from frappe.utils import cstr, getdate, today, validate_email_address
 from frappe.utils.nestedset import NestedSet
 
 from erpnext.utilities.transaction_base import delete_events
+from frappe.utils import cint
+from frappe.utils import flt
+
 
 
 class EmployeeUserDisabledError(frappe.ValidationError):
@@ -467,6 +470,20 @@ def get_employee_emails(employee_list):
             employee_emails.append(email)
     return employee_emails
 
+@frappe.whitelist()
+def branch_with_non_group_cost_center(doctype, txt, searchfield, start, page_len, filters):
+    return frappe.db.sql("""
+        SELECT b.name
+        FROM `tabBranch` b
+        JOIN `tabCost Center` cc ON cc.name = b.cost_center
+        WHERE cc.is_group = 0
+        AND b.name LIKE %(txt)s
+        LIMIT %(start)s, %(page_len)s
+    """, {
+        "txt": f"%{txt}%",
+        "start": start,
+        "page_len": page_len
+    })
 
 @frappe.whitelist()
 def get_children(doctype, parent=None, company=None, is_root=False, is_tree=False):
@@ -564,4 +581,16 @@ def has_record_permission(doc, user):
 			return True
 		else:
 			return False 
-		
+
+# Following code moved from NRDCL by SHIV on 2020/10/05
+@frappe.whitelist()
+def get_overtime_rate(employee):
+    basic = frappe.db.sql("select b.eligible_for_overtime_and_payment, a.amount as basic_pay from `tabSalary Detail` a, `tabSalary Structure` b where a.parent = b.name and a.salary_component = 'Basic Pay' and b.is_active = 'Yes' and b.employee = \'" + str(employee) + "\'", as_dict=True)
+    if basic:
+            if not cint(basic[0].eligible_for_overtime_and_payment):
+                if not frappe.db.get_value("Employee Grade", frappe.db.get_value("Employee", employee, "grade"), "eligible_for_overtime"):
+                    frappe.throw(_("Employee is not eligible for Overtime"))
+
+            return ((flt(basic[0].basic_pay) * 1.5) / (30 * 8))
+    else:
+            frappe.throw("No Salary Structure found for the employee")

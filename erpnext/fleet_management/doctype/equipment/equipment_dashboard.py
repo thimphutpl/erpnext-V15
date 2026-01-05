@@ -4,7 +4,7 @@ def get_data():
 	return {
         "fieldname": "equipment",
 		"non_standard_fieldnames": {
-			"Insurance and Registration": "equipment_name",
+			"Insurance and Registration": "registration_number",
 		},
 		"transactions": [
 			{"label": _("POL Transaction"), "items": ["POL Receive", "POL Expense", "POL Issue","Fleet Engagement"]},

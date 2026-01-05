@@ -705,9 +705,10 @@ def get_gl_entries_on_asset_disposal(
 			),
 		)
 
-	loss_disposal_account, gain_disposal_account, depreciation_cost_center = get_disposal_account_and_cost_center(asset.company)
+	disposal_account, depreciation_cost_center = get_disposal_account_and_cost_center(asset.company)
 	profit_amount = flt(selling_amount) - flt(value_after_depreciation)
-	disposal_account = loss_disposal_account if flt(profit_amount) < 0 else gain_disposal_account
+	# disposal_account = loss_disposal_account if flt(profit_amount) < 0 else gain_disposal_account
+	disposal_account = disposal_account
 	if profit_amount:
 		get_profit_gl_entries(
 			asset, profit_amount, gl_entries, disposal_account, depreciation_cost_center, date
@@ -725,7 +726,7 @@ def get_asset_details(asset, finance_book=None):
 	fixed_asset_account, accumulated_depr_account, _ = get_depreciation_accounts(
 		asset.asset_category, asset.company
 	)
-	loss_disposal_account, gain_disposal_account, depreciation_cost_center = get_disposal_account_and_cost_center(asset.company)
+	disposal_account, depreciation_cost_center = get_disposal_account_and_cost_center(asset.company)
 	depreciation_cost_center = asset.cost_center or depreciation_cost_center
 
 	value_after_depreciation = asset.get_value_after_depreciation(finance_book)
@@ -738,7 +739,7 @@ def get_asset_details(asset, finance_book=None):
 		depreciation_cost_center,
 		accumulated_depr_account,
 		accumulated_depr_amount,
-		gain_disposal_account,
+		disposal_account,
 		value_after_depreciation,
 	)
 
@@ -766,16 +767,16 @@ def get_profit_gl_entries(
 
 @frappe.whitelist()
 def get_disposal_account_and_cost_center(company):
-	loss_disposal_account, gain_disposal_account, depreciation_cost_center = frappe.get_cached_value(
-		"Company", company, ["loss_disposal_account", "gain_disposal_account", "depreciation_cost_center"]
+	disposal_account, depreciation_cost_center = frappe.get_cached_value(
+		"Company", company, ["disposal_account", "depreciation_cost_center"]
 	)
 
-	if not gain_disposal_account or not loss_disposal_account:
+	if not disposal_account:
 		frappe.throw(_("Please set 'Gain/Loss Account on Asset Disposal' in Company {0}").format(company))
 	# if not depreciation_cost_center:
 	# 	frappe.throw(_("Please set 'Asset Depreciation Cost Center' in Company {0}").format(company))
 
-	return loss_disposal_account, gain_disposal_account, depreciation_cost_center
+	return disposal_account, depreciation_cost_center
 
 
 @frappe.whitelist()

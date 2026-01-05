@@ -23,17 +23,21 @@ class EquipmentRequest(Document):
 		amended_from: DF.Link | None
 		cost_center: DF.ReadOnly | None
 		designation: DF.Data | None
+		driver_not_required: DF.Check
 		ehf: DF.Data | None
 		employee_id: DF.Link
 		employee_name: DF.Data | None
 		from_date: DF.Date
+		from_time: DF.Time | None
 		items: DF.Table[EquipmentRequestItem]
+		one_day: DF.Check
 		percent_completed: DF.Percent
 		posting_date: DF.Date
-		purpose: DF.Text | None
+		purpose: DF.Text
 		requesting_branch: DF.Link
 		sbranch: DF.Link | None
 		to_date: DF.Date
+		to_time: DF.Time | None
 	# end: auto-generated types
 	def validate(self):
 		self.calculate_percent()

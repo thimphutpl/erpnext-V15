@@ -93,6 +93,7 @@
    "fieldname": "insurance",
    "fieldtype": "Currency",
    "label": "Insurance",
+   "precision": "2",
    "reqd": 1
   },
   {
@@ -158,10 +159,12 @@
    "fieldtype": "Column Break"
   },
   {
+   "default": "0",
    "fieldname": "total_source_rate",
-   "fieldtype": "Currency",
+   "fieldtype": "Float",
    "hidden": 1,
    "label": "Total Source Rate",
+   "precision": "2",
    "read_only": 1
   }
  ],
@@ -169,8 +172,8 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-12-11 10:23:28.588582",
- "modified_by": "kalden.dorji@thimphutechpark.bt",
+ "modified": "2025-12-26 11:03:21.252926",
+ "modified_by": "Administrator",
  "module": "Selling",
  "name": "Price Costing",
  "naming_rule": "Expression",

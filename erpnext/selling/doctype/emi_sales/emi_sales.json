@@ -20,6 +20,7 @@
   "posting_date",
   "posting_time",
   "is_return",
+  "is_existing",
   "section_break_4",
   "customer_type",
   "customer_name",
@@ -56,6 +57,7 @@
   "down_payment_amount",
   "column_break_34",
   "no_of_installation",
+  "no_of_installments_paid",
   "no_of_installation_external",
   "no_of_installation_employee",
   "salary_component",
@@ -94,6 +96,8 @@
   "profit_center",
   "collection_center",
   "amended_from",
+  "sb_asset",
+  "asset_code",
   "tb_amortization",
   "payment_terms_section",
   "recalculate_amortization",
@@ -387,7 +391,7 @@
    "fieldname": "no_of_installation",
    "fieldtype": "Select",
    "label": "No. of Installation In Years",
-   "options": "\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12"
+   "options": "\n0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12"
   },
   {
    "fieldname": "column_break_34",
@@ -704,11 +708,38 @@
    "label": "Cost Sharing Percentage",
    "precision": "2",
    "read_only": 1
+  },
+  {
+   "default": "0",
+   "description": "*Please use this for only <b>Opening Data Entry</b> purpose",
+   "fieldname": "is_existing",
+   "fieldtype": "Check",
+   "label": "Is Existing"
+  },
+  {
+   "fieldname": "sb_asset",
+   "fieldtype": "Section Break",
+   "label": "Asset Details"
+  },
+  {
+   "fieldname": "asset_code",
+   "fieldtype": "Link",
+   "label": "Asset Created",
+   "options": "Asset",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:doc.is_existing == 1;",
+   "fieldname": "no_of_installments_paid",
+   "fieldtype": "Int",
+   "label": "No of Installments Paid",
+   "mandatory_depends_on": "eval:doc.is_existing == 1;"
   }
  ],
  "is_submittable": 1,
  "links": [],
- "modified": "2025-12-11 21:43:53.335603",
+ "modified": "2025-12-28 15:01:33.101447",
  "modified_by": "Administrator",
  "module": "Selling",
  "name": "EMI Sales",

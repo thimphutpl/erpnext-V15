@@ -25,6 +25,7 @@ class SupplementaryBudget(Document):
 		budget_against: DF.Literal["", "Cost Center", "Project"]
 		company: DF.Link
 		cost_center: DF.Link | None
+		enote_id: DF.Link | None
 		fiscal_year: DF.Link
 		items: DF.Table[SupplementaryBudgetItem]
 		posting_date: DF.Date

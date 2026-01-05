@@ -1169,19 +1169,24 @@ class CustomWorkflow:
 		if self.new_state and self.old_state and self.new_state.lower() == self.old_state.lower():
 			return
 		if self.new_state.lower() in ("Draft".lower()):
-			if self.doc.owner != frappe.session.user:
-				frappe.throw("Only the document owner can Apply this document")
+			# if self.doc.owner != frappe.session.user:
+			# 	frappe.throw("Only the document owner can Apply this document")
 			self.set_approver("Supervisor")
+   
+		if self.new_state.lower() in ("Waiting Supervisor Approval".lower()):
+			if self.doc.approver != frappe.session.user:
+				frappe.throw("Only the {} can Approve this Overtime Application".format(self.doc.approver))
+			self.set_approver("Supervisor")	
 
-		if self.new_state.lower() in ("Waiting Approval".lower()):
+		if self.new_state.lower() in ("Waiting for Varification".lower()):
 			# if self.doc.approver != frappe.session.user:
 			# 	frappe.throw("Only the {} can Approve this Overtime Application".format(self.doc.approver))
 			self.set_approver("Supervisor")	
 
-		if self.new_state.lower() in ("Verified By Supervisor".lower()):
-			if self.doc.approver != frappe.session.user:
-				frappe.throw("Only the {} can Approve this Overtime Application".format(self.doc.approver))
-			self.set_approver("Supervisors Supervisor")		
+		# if self.new_state.lower() in ("Verified By Supervisor".lower()):
+		# 	if self.doc.approver != frappe.session.user:
+		# 		frappe.throw("Only the {} can Approve this Overtime Application".format(self.doc.approver))
+		# 	self.set_approver("Supervisors Supervisor")		
 
 		elif self.new_state.lower() in ("Approved".lower()):
 			if self.doc.approver != frappe.session.user:

@@ -214,10 +214,11 @@ class PaymentEntry(AccountsController):
 		update_payment_req_status(self, None)
 
 	def adjust_outstanding_amount_for_emi_sale(self):
-		if (self.references[0].reference_doctype == 'EMI Sales' or self.references[0].reference_doctype == 'Sales Invoice') and flt(self.references[0].outstanding_amount)>0 and self.tds_amount_deducted > 0:
-			if self.tds_amount_deducted > self.paid_amount:
-				frappe.throw('TDS amount should not be greater than paid amount')
-			self.references[0].outstanding_amount = flt(self.references[0].outstanding_amount) - flt(self.tds_amount_deducted)
+		if (self.references[0].reference_doctype == 'EMI Sales' or self.references[0].reference_doctype == 'Sales Invoice') and flt(self.references[0].outstanding_amount)>0:
+			# if self.tds_amount_deducted > self.paid_amount:
+			# 	frappe.throw('TDS amount should not be greater than paid amount')
+			# self.references[0].outstanding_amount = flt(self.references[0].outstanding_amount) - flt(self.tds_amount_deducted)
+			self.references[0].outstanding_amount = flt(self.references[0].outstanding_amount)
 			if self.references[0].reference_doctype == "EMI Sales":
 				amount = self.paid_amount if self.currency == "BTN" else self.base_paid_amount
 				reference_no = self.references[0].reference_name
@@ -232,7 +233,7 @@ class PaymentEntry(AccountsController):
 		for item in self.references:
 			if item.reference_doctype == 'EMI Sales' and self.party_type == 'Employee':
 				ref_doc = frappe.get_doc(item.reference_doctype, item.reference_name)
-				if ref_doc.salary_component and ref_doc.salary_structure and ref_doc.payment_type =='Staff Installment':
+				if ref_doc.salary_component and ref_doc.salary_structure and ref_doc.sales_order_type in ("Cost Sharing Installment", "Employee Installment"):
 					ssl = frappe.get_doc('Salary Structure',ref_doc.salary_structure)
 					for d in ssl.deductions:
 						if d.salary_component == ref_doc.salary_component and d.reference_number == item.reference_name and d.total_outstanding_amount > 0 and d.total_outstanding_amount == item.allocated_amount:
@@ -1949,6 +1950,178 @@ def get_payment_entry(
 
 	return pe
 
+#for BTL Sales "Employee Installment" below method was replicated and modified from the above get_payment_entry method-------------------------------------
+@frappe.whitelist()
+def get_payment_entry_installment(dt, dn, party_amount=None, bank_account=None, bank_amount=None, emi_amount=None, cheque_no=None, mode_of_payment=None):
+	doc = frappe.get_doc(dt, dn)
+	if doc.branch:
+		branch = doc.branch
+	ba = ""
+	ba = doc.items[0].business_activity
+	party_type = doc.customer_type
+
+	# party account
+	party_account = doc.debit_to
+	party_account_currency = doc.get("party_account_currency") or get_account_currency(party_account)
+	is_rental = 0
+	tenant_email = None
+	month = None
+	payment_type = "Receive"
+	# amounts
+	grand_total = outstanding_amount = 0
+	if party_amount:
+		grand_total = outstanding_amount = party_amount
+	else:
+		grand_total = doc.grand_total
+		outstanding_amount = doc.outstanding_amount
+
+	# bank or cash
+	bank = get_default_bank_cash_account(doc.company, "Bank", mode_of_payment=doc.get("mode_of_payment"),
+		account=bank_account)
+
+	if not bank:
+		bank = get_default_bank_cash_account(doc.company, "Cash", mode_of_payment=doc.get("mode_of_payment"),
+			account=bank_account)
+	paid_amount = received_amount = 0
+	if party_account_currency == bank.account_currency:
+		paid_amount = received_amount = abs(outstanding_amount)
+	elif payment_type == "Receive":
+		paid_amount = abs(outstanding_amount)
+		if bank_amount:
+			received_amount = bank_amount
+		else:
+			received_amount = paid_amount * doc.conversion_rate
+	if dt == "BTL Sales" and doc.payment_type and doc.payment_type.lower() in ('Staff Installment'.lower(),'External Installment'.lower()) and doc.customer_type != 'Employee':
+		paid_amount = doc.monthly_deduction
+		received_amount = flt(doc.monthly_deduction) * flt(doc.conversion_rate)
+		
+	pe = frappe.new_doc("Payment Entry")
+	pe.payment_type = payment_type
+	pe.company = doc.company
+	pe.cost_center = doc.get("cost_center")
+	pe.posting_date = nowdate()
+	pe.is_rental = is_rental
+	pe.tenant_email =tenant_email
+	pe.month =month
+	pe.mode_of_payment = mode_of_payment
+	pe.party_type = party_type
+	pe.party = doc.get("customer")
+	pe.contact_person = doc.get("contact_person")
+	pe.contact_email = doc.get("contact_email")
+	pe.ensure_supplier_is_not_blocked()
+
+	pe.paid_from = party_account
+	pe.paid_to = bank.account
+	pe.paid_from_account_currency = party_account_currency
+	pe.paid_to_account_currency = bank.account_currency
+	#pe.paid_amount = paid_amount if dt != "Purchase Invoice" else flt(doc.base_total + doc.base_total_taxes_and_charges - doc.late_delivery_penalty_charges,2)
+	#pe.paid_amount = paid_amount if dt != "Purchase Invoice" else flt(doc.base_grand_total - doc.late_delivery_penalty_charges,2)
+	taxes_and_charges = 0
+	base_taxes_and_charges = 0
+	# if dt == "Purchase Invoice":
+	# 	advance_amount_pe_currency = 0.00
+	# 	for a in doc.advances:
+	# 		advance_amount_pe_currency += flt(flt(a.allocated_amount)/(flt(a.exchange_rate) if a.exchange_rate > 0 else 1),2)
+
+	# 	outstanding_pe_currency = doc.grand_total - advance_amount_pe_currency
+
+	# 	#added by Kinley-------------------------------------------------------------------------------
+	# 	# for ded in doc.taxes:
+	# 	# 	if ded.account_posting_document == "Payment Entry" and ded.add_deduct_tax == "Deduct":
+	# 	# 		taxes_and_charges += flt(ded.tax_amount,2)
+	# 	# 		base_taxes_and_charges == flt(ded.base_tax_amount,2)
+	# 	#----------------------------------------------------------------------------------------------
+	# 	# base_actual_outstanding = flt(outstanding_amount,2) - flt(doc.base_late_delivery_penalty_charges,2) - flt(doc.base_taxes_and_charges_deducted,2)
+	# 	# actual_outstanding = outstanding_pe_currency - flt(doc.late_delivery_penalty_charges,2) - flt(doc.taxes_and_charges_deducted,2)
+	# 	base_actual_outstanding = flt(outstanding_amount,2) - flt(doc.base_late_delivery_penalty_charges,2) - flt(base_taxes_and_charges,2)
+	# 	actual_outstanding = outstanding_pe_currency - flt(doc.late_delivery_penalty_charges,2) - flt(taxes_and_charges,2)
+	# 	pe.base_paid_amount = base_actual_outstanding
+	# 	# frappe.throw(str(actual_outstanding))
+	# 	pe.paid_amount = actual_outstanding
+	# elif dt == "Purchase Order":
+	# 	pe.paid_amount = doc.grand_total
+	# 	pe.base_paid_amount = doc.base_grand_total
+	# else:
+	pe.paid_amount = emi_amount
+
+	pe.received_amount = received_amount
+	pe.letter_head = doc.get("letter_head")
+	pe.branch = branch
+	pe.business_activity = ba
+
+	#Following three lines Added by Thukten 
+	pe.currency = doc.currency
+	pe.source_exchange_rate = flt(doc.conversion_rate,2)
+	pe.target_exchange_rate = flt(doc.conversion_rate,2)
+
+	if pe.party_type in ["Customer", "Supplier"]:
+		bank_account = get_party_bank_account(pe.party_type, pe.party)
+		pe.set("bank_account", bank_account)
+		pe.set_bank_account_data()
+
+	# # only Purchase Invoice can be blocked individually
+	# if doc.doctype == "Purchase Invoice" and doc.invoice_is_blocked():
+	# 	frappe.msgprint(_('{0} is on hold till {1}'.format(doc.name, doc.release_date)))
+	# else:
+	pe.taxes_and_charges = doc.taxes_and_charges if doc.doctype == "Purchase Invoice" else None
+	tds_amount = doc.taxes_and_charges_deducted if doc.doctype == "Purchase Invoice" else None
+	late_delivery_charges = doc.late_delivery_penalty_charges if doc.doctype == "Purchase Invoice" else None
+
+	if (doc.doctype in ('Sales Invoice', 'Purchase Invoice')
+		and frappe.get_value('Payment Terms Template',
+		{'name': doc.payment_terms_template}, 'allocate_payment_based_on_payment_terms')):
+
+		for reference in get_reference_as_per_payment_terms(doc.payment_schedule, dt, dn, doc, grand_total, outstanding_amount,tds_amount, late_delivery_charges):
+			pe.append('references', reference)
+	else:
+		# if dt ==  "Purchase Invoice":
+		# 	# allocated_amount = flt(outstanding_pe_currency,2) - flt(doc.late_delivery_penalty_charges,2) - flt(doc.taxes_and_charges_deducted,2)
+		# 	allocated_amount = flt(outstanding_pe_currency,2) - flt(doc.late_delivery_penalty_charges,2) - flt(taxes_and_charges,2)
+		# elif dt ==  "Purchase Order":
+		# 	allocated_amount = doc.grand_total
+			
+		pe.append("references", {
+			'reference_doctype': dt,
+			'reference_name': dn,
+			"bill_no": doc.get("bill_no"),
+			"due_date": doc.get("due_date"),
+			'total_amount': grand_total if dt not in ("Purchase Invoice","Purchase Order") else doc.grand_total,
+			'outstanding_amount': outstanding_amount,
+			#'allocated_amount': paid_amount if dt != "Purchase Invoice" else doc.base_grand_total - doc.late_delivery_penalty_charges,
+			'allocated_amount': emi_amount,
+			'late_delivery_charges': flt(late_delivery_charges,2),
+		})
+
+	#Added by Thukten to map tax and charges from PI to PE
+	pe.set('taxes', [])
+	for d in frappe.db.sql("select *from `tabPurchase Taxes and Charges`\
+						 where parenttype = 'Purchase Invoice' \
+						 and parent = '{}'".format(doc.name), as_dict=True):
+		'''
+		if doc.conversion_rate != 1:
+			d.tax_amount = d.tax_amount * doc.conversion_rate
+			d.tax_amount_after_discount_amount= d.tax_amount_after_discount_amount * doc.conversion_rate
+			d.total = d.total * doc.conversion_rate
+		'''
+		row = pe.append('taxes', {})
+		row.update(d)
+
+	pe.setup_party_account_field()
+	pe.set_missing_values()
+	pe.append("cheques", {
+			"account": bank.account,
+			"cheque_no": cheque_no,
+			"pay_to_recd_from": doc.get("customer"),
+			"posting_date": pe.posting_date,
+			"cheque_date": pe.posting_date,
+			"amount": flt(emi_amount,2),
+			"debit": flt(emi_amount,2),
+
+		})
+	if party_account and bank:
+		pe.set_exchange_rate()
+		pe.set_amounts()
+	return pe
 
 def get_bank_cash_account(doc, bank_account):
 	bank = get_default_bank_cash_account(

@@ -26,6 +26,7 @@ class AssetIssueDetails(Document):
         company: DF.Link
         cost_center: DF.ReadOnly | None
         create_single_asset: DF.Check
+        emi_sales: DF.Link | None
         emp_branch: DF.Data | None
         employee_name: DF.Data | None
         engine_no: DF.Data | None
@@ -70,20 +71,36 @@ class AssetIssueDetails(Document):
         #         frappe.throw("You cannot cancel the document before cancelling asset with code {0}".format(self.reference_code))    
     
     def check_qty_balance(self):
-        total_qty = frappe.db.sql("""select sum(ifnull(qty,0)) total_qty 
-                                  from `tabAsset Received Entries`
-                                  where item_code="{}"
-                                  and ref_doc = "{}"
-                                  and docstatus = 1
-                        """.format(self.item_code, self.purchase_receipt))[0][0]
-        issued_qty = frappe.db.sql("""select sum(ifnull(qty,0)) issued_qty
-                                   from `tabAsset Issue Details` 
-                                   where item_code ='{}'
-                                   and branch = '{}'
-                                   and purchase_receipt = '{}'
-                                   and docstatus = 1 
-                                   and name != '{}'
-                        """.format(self.item_code, self.branch, self.purchase_receipt, self.name))[0][0]
+        if self.purchase_receipt:
+            total_qty = frappe.db.sql("""select sum(ifnull(qty,0)) total_qty 
+                                    from `tabAsset Received Entries`
+                                    where item_code="{}"
+                                    and ref_doc = "{}"
+                                    and docstatus = 1
+                            """.format(self.item_code, self.purchase_receipt))[0][0]
+            issued_qty = frappe.db.sql("""select sum(ifnull(qty,0)) issued_qty
+                                    from `tabAsset Issue Details` 
+                                    where item_code ='{}'
+                                    and branch = '{}'
+                                    and purchase_receipt = '{}'
+                                    and docstatus = 1 
+                                    and name != '{}'
+                            """.format(self.item_code, self.branch, self.purchase_receipt, self.name))[0][0]
+        else:
+            total_qty = frappe.db.sql("""select sum(ifnull(qty,0)) total_qty 
+                                    from `tabAsset Received Entries`
+                                    where item_code="{}"
+                                    and ref_doc = "{}"
+                                    and docstatus = 1
+                            """.format(self.item_code, self.emi_sales))[0][0]
+            issued_qty = frappe.db.sql("""select sum(ifnull(qty,0)) issued_qty
+                                    from `tabAsset Issue Details` 
+                                    where item_code ='{}'
+                                    and branch = '{}'
+                                    and emi_sales = '{}'
+                                    and docstatus = 1 
+                                    and name != '{}'
+                            """.format(self.item_code, self.branch, self.emi_sales, self.name))[0][0]
         
         balance_qty = flt(total_qty) - flt(issued_qty)
         if flt(self.qty) > flt(balance_qty):
@@ -92,7 +109,8 @@ class AssetIssueDetails(Document):
     def make_asset(self, qty):
         item_doc = frappe.get_doc("Item",self.item_code)
         if not cint(item_doc.is_fixed_asset):
-            frappe.throw(_("Item selected is not a fixed asset"))
+            if not cint(item_doc.item_sub_group != "Sales Product"):
+                frappe.throw(_("Item selected is not a fixed asset"))
 
         if item_doc.asset_category:
             asset_category = frappe.db.get_value("Asset Category", item_doc.asset_category, "name")
@@ -130,6 +148,7 @@ class AssetIssueDetails(Document):
                     "purchase_date": pr_date,
                     "calculate_depreciation": 0,
                     "asset_rate": self.asset_rate,
+                    "emi_sales_id": self.emi_sales,
                     "purchase_amount": self.asset_rate,
                     "gross_purchase_amount": flt(self.asset_rate) * flt(qty),
                     "asset_quantity": qty,
@@ -165,6 +184,7 @@ class AssetIssueDetails(Document):
                     "gross_purchase_amount": flt(self.asset_rate) * flt(self.qty),
                     "asset_quantity": self.qty,
                     "purchase_receipt": self.purchase_receipt,
+                    "emi_sales_id": self.emi_sales,
                     "location": self.location,
                     "branch": self.branch,
                     "custodian": self.issued_to,

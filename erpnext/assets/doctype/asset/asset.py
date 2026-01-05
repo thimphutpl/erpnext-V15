@@ -273,15 +273,15 @@ class Asset(AccountsController):
 
 	def validate_item(self):
 		item = frappe.get_cached_value(
-			"Item", self.item_code, ["is_fixed_asset", "is_stock_item", "disabled"], as_dict=1
+			"Item", self.item_code, ["is_fixed_asset", "is_stock_item", "disabled", "item_group"], as_dict=1
 		)
 		if not item:
 			frappe.throw(_("Item {0} does not exist").format(self.item_code))
 		elif item.disabled:
 			frappe.throw(_("Item {0} has been disabled").format(self.item_code))
-		elif not item.is_fixed_asset:
+		elif not item.is_fixed_asset and frappe.db.get_value("Item Group", item.item_group, "can_be_capitalized") == 0:
 			frappe.throw(_("Item {0} must be a Fixed Asset Item").format(self.item_code))
-		elif item.is_stock_item:
+		elif item.is_stock_item and frappe.db.get_value("Item Group", item.item_group, "can_be_capitalized") == 0:
 			frappe.throw(_("Item {0} must be a non-stock item").format(self.item_code))
 
 	def validate_cost_center(self):
@@ -456,6 +456,7 @@ class Asset(AccountsController):
 				"purpose": "Receipt",
 				"company": self.company,
 				"transaction_date": transaction_date,
+				"to_cost_center": self.cost_center,
 				"reference_doctype": reference_doctype,
 				"reference_name": reference_docname,
 			}
@@ -975,14 +976,14 @@ def make_sales_invoice(asset, item_code, company, serial_no=None, cost_center=No
 	si.branch = branch
 	si.cost_center = cost_center
 	si.currency = frappe.get_cached_value("Company", company, "default_currency")
-	loss_disposal_account, gain_disposal_account, depreciation_cost_center = get_disposal_account_and_cost_center(company)
+	disposal_account, depreciation_cost_center = get_disposal_account_and_cost_center(company)
 	si.append(
 		"items",
 		{
 			"item_code": item_code,
 			"is_fixed_asset": 1,
 			"asset": asset,
-			"income_account": gain_disposal_account,
+			"income_account": disposal_account,
 			"serial_no": serial_no,
 			"cost_center": cost_center if cost_center else depreciation_cost_center,
 			"qty": 1,

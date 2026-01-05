@@ -11,6 +11,7 @@
   "business_activity",
   "branch",
   "title",
+  "customer_type",
   "customer",
   "customer_name",
   "tax_id",
@@ -21,6 +22,7 @@
   "is_debit_note",
   "update_billed_amount_in_sales_order",
   "order_type",
+  "supplier",
   "column_break1",
   "company",
   "company_tax_id",
@@ -75,6 +77,14 @@
   "update_stock",
   "items",
   "total",
+  "section_break_49",
+  "apply_discount_on",
+  "is_cash_or_non_trade_discount",
+  "base_discount_amount",
+  "additional_discount_account",
+  "column_break_51",
+  "additional_discount_percentage",
+  "discount_amount",
   "pricing_rule_details",
   "pricing_rules",
   "packing_list",
@@ -112,14 +122,6 @@
   "loyalty_program",
   "loyalty_redemption_account",
   "loyalty_redemption_cost_center",
-  "section_break_49",
-  "apply_discount_on",
-  "is_cash_or_non_trade_discount",
-  "base_discount_amount",
-  "additional_discount_account",
-  "column_break_51",
-  "additional_discount_percentage",
-  "discount_amount",
   "totals",
   "base_grand_total",
   "base_rounding_adjustment",
@@ -240,21 +242,20 @@
   {
    "bold": 1,
    "fieldname": "customer",
-   "fieldtype": "Link",
+   "fieldtype": "Dynamic Link",
    "hide_days": 1,
    "hide_seconds": 1,
    "in_standard_filter": 1,
    "label": "Customer",
    "oldfieldname": "customer",
    "oldfieldtype": "Link",
-   "options": "Customer",
+   "options": "customer_type",
    "print_hide": 1,
    "search_index": 1
   },
   {
    "bold": 1,
    "depends_on": "customer",
-   "fetch_from": "customer.customer_name",
    "fieldname": "customer_name",
    "fieldtype": "Small Text",
    "hide_days": 1,
@@ -328,6 +329,7 @@
    "oldfieldtype": "Column Break"
   },
   {
+   "default": "State Trading Corporation of Bhutan Limited",
    "fieldname": "company",
    "fieldtype": "Link",
    "hide_days": 1,
@@ -1030,7 +1032,6 @@
    "hide_seconds": 1
   },
   {
-   "fetch_from": "customer.loyalty_program",
    "fieldname": "loyalty_program",
    "fieldtype": "Link",
    "hide_days": 1,
@@ -1062,7 +1063,6 @@
    "options": "Cost Center"
   },
   {
-   "collapsible": 1,
    "collapsible_depends_on": "discount_amount",
    "fieldname": "section_break_49",
    "fieldtype": "Section Break",
@@ -1926,7 +1926,6 @@
   },
   {
    "default": "0",
-   "fetch_from": "customer.is_internal_customer",
    "fieldname": "is_internal_customer",
    "fieldtype": "Check",
    "hide_days": 1,
@@ -1953,7 +1952,6 @@
   {
    "depends_on": "eval:doc.is_internal_customer",
    "description": "Company which internal customer represents",
-   "fetch_from": "customer.represents_company",
    "fieldname": "represents_company",
    "fieldtype": "Link",
    "ignore_user_permissions": 1,
@@ -1986,7 +1984,8 @@
    "depends_on": "grand_total",
    "fieldname": "disable_rounded_total",
    "fieldtype": "Check",
-   "label": "Disable Rounded Total"
+   "label": "Disable Rounded Total",
+   "read_only": 1
   },
   {
    "fieldname": "additional_discount_account",
@@ -2035,6 +2034,7 @@
    "depends_on": "eval: doc.apply_discount_on == \"Grand Total\"",
    "fieldname": "is_cash_or_non_trade_discount",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "Is Cash or Non Trade Discount"
   },
   {
@@ -2077,7 +2077,6 @@
    "label": "Vehicle Details"
   },
   {
-   "default": "Sales",
    "fieldname": "order_type",
    "fieldtype": "Select",
    "hide_days": 1,
@@ -2085,9 +2084,9 @@
    "label": "Order Type",
    "oldfieldname": "order_type",
    "oldfieldtype": "Select",
-   "options": "Sales\nMaintenance\nVehicle Repairing\nShopping Cart",
+   "options": "\nSales\nWarranty",
    "print_hide": 1,
-   "read_only": 1
+   "reqd": 1
   },
   {
    "fieldname": "type",
@@ -2184,6 +2183,20 @@
    "fieldtype": "Date",
    "in_list_view": 1,
    "label": "Declaration Date"
+  },
+  {
+   "default": "Customer",
+   "fieldname": "customer_type",
+   "fieldtype": "Select",
+   "label": "Customer Type",
+   "options": "\nEmployee\nCustomer"
+  },
+  {
+   "depends_on": "eval: doc.order_type == \"Warranty\"",
+   "fieldname": "supplier",
+   "fieldtype": "Link",
+   "label": "Supplier ",
+   "options": "Supplier"
   }
  ],
  "icon": "fa fa-file-text",
@@ -2196,8 +2209,8 @@
    "link_fieldname": "consolidated_invoice"
   }
  ],
- "modified": "2025-12-04 11:42:04.005320",
- "modified_by": "Administrator",
+ "modified": "2026-01-05 10:53:22.517802",
+ "modified_by": "kalden.dorji@thimphutechpark.bt",
  "module": "Accounts",
  "name": "Sales Invoice",
  "naming_rule": "Expression (old style)",

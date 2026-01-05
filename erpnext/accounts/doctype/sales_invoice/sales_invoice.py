@@ -37,8 +37,12 @@ from erpnext.assets.doctype.asset.depreciation import (
 	get_gl_entries_on_asset_disposal,
 	get_gl_entries_on_asset_regain,
 	make_depreciation_entry,
+	depreciate_asset,
+	reset_depreciation_schedule
+
 	# reset_asset_value_for_scrap_sales
 )
+from erpnext.assets.doctype.asset_activity.asset_activity import add_asset_activity
 from erpnext.controllers.accounts_controller import validate_account_head
 from erpnext.controllers.selling_controller import SellingController
 from erpnext.projects.doctype.timesheet.timesheet import get_projectwise_timesheet_data
@@ -114,10 +118,11 @@ class SalesInvoice(SellingController):
 		cost_center: DF.Link | None
 		currency: DF.Link
 		current_readingkm: DF.Data | None
-		customer: DF.Link | None
+		customer: DF.DynamicLink | None
 		customer_address: DF.Link | None
 		customer_group: DF.Link | None
 		customer_name: DF.SmallText | None
+		customer_type: DF.Literal["", "Employee", "Customer"]
 		date_time_in: DF.Datetime | None
 		date_time_out: DF.Datetime | None
 		debit_to: DF.Link
@@ -157,7 +162,7 @@ class SalesInvoice(SellingController):
 		make: DF.Data | None
 		model_name: DF.Data | None
 		net_total: DF.Currency
-		order_type: DF.Literal["Sales", "Maintenance", "Vehicle Repairing", "Shopping Cart"]
+		order_type: DF.Literal["", "Sales", "Warranty"]
 		other_charges_calculation: DF.LongText | None
 		outstanding_amount: DF.Currency
 		packed_items: DF.Table[PackedItem]
@@ -196,6 +201,7 @@ class SalesInvoice(SellingController):
 		shipping_rule: DF.Link | None
 		source: DF.Link | None
 		status: DF.Literal["", "Draft", "Return", "Credit Note Issued", "Submitted", "Paid", "Partly Paid", "Unpaid", "Unpaid and Discounted", "Partly Paid and Discounted", "Overdue and Discounted", "Overdue", "Cancelled", "Internal Transfer"]
+		supplier: DF.Link | None
 		tax_category: DF.Link | None
 		tax_id: DF.Data | None
 		taxes: DF.Table[SalesTaxesandCharges]
@@ -269,6 +275,11 @@ class SalesInvoice(SellingController):
 
 		if not self.is_pos:
 			self.so_dn_required()
+		if self.customer_type == "Employee":
+			self.customer_name = frappe.db.get_value("Employee", self.customer, "employee_name")
+		else:
+			self.customer_name = frappe.db.get_value("Customer", self.customer, "customer_name")
+			self.address_display = frappe.db.get_value("Customer", self.customer, "primary_address")
 
 		self.set_tax_withholding()
 		self.validate_proj_cust()
@@ -310,16 +321,16 @@ class SalesInvoice(SellingController):
 		if self._action != "submit" and self.update_stock and not self.is_return:
 			set_batch_nos(self, "warehouse", True)
 
-		if self.redeem_loyalty_points:
-			lp = frappe.get_doc("Loyalty Program", self.loyalty_program)
-			self.loyalty_redemption_account = (
-				lp.expense_account if not self.loyalty_redemption_account else self.loyalty_redemption_account
-			)
-			self.loyalty_redemption_cost_center = (
-				lp.cost_center
-				if not self.loyalty_redemption_cost_center
-				else self.loyalty_redemption_cost_center
-			)
+		# if self.redeem_loyalty_points:
+		# 	lp = frappe.get_doc("Loyalty Program", self.loyalty_program)
+		# 	self.loyalty_redemption_account = (
+		# 		lp.expense_account if not self.loyalty_redemption_account else self.loyalty_redemption_account
+		# 	)
+		# 	self.loyalty_redemption_cost_center = (
+		# 		lp.cost_center
+		# 		if not self.loyalty_redemption_cost_center
+		# 		else self.loyalty_redemption_cost_center
+		# 	)
 
 		self.set_against_income_account()
 		self.validate_time_sheets_are_submitted()
@@ -339,13 +350,13 @@ class SalesInvoice(SellingController):
 		if self.is_pos and self.is_return:
 			self.verify_payment_amount_is_negative()
 
-		if (
-			self.redeem_loyalty_points
-			and self.loyalty_program
-			and self.loyalty_points
-			and not self.is_consolidated
-		):
-			validate_loyalty_points(self, self.loyalty_points)
+		# if (
+		# 	self.redeem_loyalty_points
+		# 	# and self.loyalty_program
+		# 	and self.loyalty_points
+		# 	and not self.is_consolidated
+		# ):
+		# 	validate_loyalty_points(self, self.loyalty_points)
 
 		self.reset_default_field_value("set_warehouse", "items", "warehouse")
 	def validate_fixed_asset(self):
@@ -461,16 +472,16 @@ class SalesInvoice(SellingController):
 		update_linked_doc(self.doctype, self.name, self.inter_company_invoice_reference)
 
 		# create the loyalty point ledger entry if the customer is enrolled in any loyalty program
-		if not self.is_return and not self.is_consolidated and self.loyalty_program:
-			self.make_loyalty_point_entry()
-		elif (
-			self.is_return and self.return_against and not self.is_consolidated and self.loyalty_program
-		):
-			against_si_doc = frappe.get_doc("Sales Invoice", self.return_against)
-			against_si_doc.delete_loyalty_point_entry()
-			against_si_doc.make_loyalty_point_entry()
-		if self.redeem_loyalty_points and not self.is_consolidated and self.loyalty_points:
-			self.apply_loyalty_points()
+		# if not self.is_return and not self.is_consolidated and self.loyalty_program:
+		# 	self.make_loyalty_point_entry()
+		# if (
+		# 	self.is_return and self.return_against and not self.is_consolidated
+		# ):
+		# 	against_si_doc = frappe.get_doc("Sales Invoice", self.return_against)
+		# 	against_si_doc.delete_loyalty_point_entry()
+			# against_si_doc.make_loyalty_point_entry()
+		# if self.redeem_loyalty_points and not self.is_consolidated and self.loyalty_points:
+		# 	self.apply_loyalty_points()
 		self.process_common_party_accounting()
 
 	# Auto update allotted amount in Serial No
@@ -554,21 +565,21 @@ class SalesInvoice(SellingController):
 		if self.update_stock == 1:
 			self.repost_future_sle_and_gle()
 
-		frappe.db.set(self, "status", "Cancelled")
+		frappe.db.set_value(self.doctype, self.name, "status", "Cancelled")
 
 		if (
 			frappe.db.get_single_value("Selling Settings", "sales_update_frequency") == "Each Transaction"
 		):
 			update_company_current_month_sales(self.company)
 			self.update_project()
-		if not self.is_return and not self.is_consolidated and self.loyalty_program:
-			self.delete_loyalty_point_entry()
-		elif (
-			self.is_return and self.return_against and not self.is_consolidated and self.loyalty_program
-		):
-			against_si_doc = frappe.get_doc("Sales Invoice", self.return_against)
-			against_si_doc.delete_loyalty_point_entry()
-			against_si_doc.make_loyalty_point_entry()
+		# if not self.is_return and not self.is_consolidated and self.loyalty_program:
+		# 	self.delete_loyalty_point_entry()
+		# elif (
+		# 	self.is_return and self.return_against and not self.is_consolidated and self.loyalty_program
+		# ):
+		# 	against_si_doc = frappe.get_doc("Sales Invoice", self.return_against)
+		# 	against_si_doc.delete_loyalty_point_entry()
+		# 	against_si_doc.make_loyalty_point_entry()
 
 		unlink_inter_company_doc(self.doctype, self.name, self.inter_company_invoice_reference)
 
@@ -1094,11 +1105,11 @@ class SalesInvoice(SellingController):
 		for d in self.get("items"):
 			if d.is_fixed_asset:
 				if not disposal_account:
-					loss_disposal_account, gain_disposal_account, depreciation_cost_center = get_disposal_account_and_cost_center(
+					disposal_account, depreciation_cost_center = get_disposal_account_and_cost_center(
 						self.company
 					)
 
-				d.income_account = gain_disposal_account
+				d.income_account = disposal_account
 				if not d.cost_center:
 					d.cost_center = depreciation_cost_center
 
@@ -1152,8 +1163,11 @@ class SalesInvoice(SellingController):
 		from erpnext.accounts.general_ledger import merge_similar_entries
 
 		gl_entries = []
-
-		self.make_customer_gl_entry(gl_entries)
+		
+		if self.order_type == "Warranty":
+			self.make_supplier_gl_entry(gl_entries)
+		else:
+			self.make_customer_gl_entry(gl_entries)
 
 		self.make_tax_gl_entries(gl_entries)
 		self.make_exchange_gain_loss_gl_entries(gl_entries)
@@ -1256,7 +1270,45 @@ class SalesInvoice(SellingController):
 						self.party_account_currency,
 						item=self,
 					)
-				)				
+				)	
+
+	def make_supplier_gl_entry(self, gl_entries):
+		grand_total = (
+			self.rounded_total if (self.rounding_adjustment and self.rounded_total) else self.grand_total
+		)
+		base_grand_total = flt(flt(
+			self.base_rounded_total
+			if (self.base_rounding_adjustment and self.base_rounded_total)
+			else self.base_grand_total,
+			self.precision("base_grand_total"),
+		) - flt(self.total_advance),2)
+		credit_account = frappe.db.get_value("Company", self.company, "default_payable_account")
+		revenue_account = frappe.db.get_value("Cost center", self.cost_center, "revenue_account")
+		if grand_total and not self.is_internal_transfer():
+			# Did not use base_grand_total to book rounding loss gle
+			gl_entries.append(
+				self.get_gl_dict(
+					{
+						"account": credit_account,
+						"party_type": "Supplier",
+						"party": self.supplier,
+						"due_date": self.due_date,
+						"against": revenue_account,
+						"debit": base_grand_total,
+						"debit_in_account_currency": base_grand_total
+						if self.party_account_currency == self.company_currency
+						else grand_total,
+						"against_voucher": self.return_against
+						if cint(self.is_return) and self.return_against
+						else self.name,
+						"against_voucher_type": self.doctype,
+						"cost_center": self.cost_center,
+						"project": self.project,
+					},
+					self.party_account_currency,
+					item=self,
+				)
+			)				
 
 	def make_tax_gl_entries(self, gl_entries):
 		enable_discount_accounting = cint(
@@ -1315,28 +1367,84 @@ class SalesInvoice(SellingController):
 				deductions += flt(item.deferred_revenue_amount)
 
 			if flt(item.base_net_amount, item.precision("base_net_amount")):
+				# if item.is_fixed_asset:
+				# 	asset = self.get_asset(item)
+
+				# 	if self.is_return:
+				# 		fixed_asset_gl_entries = get_gl_entries_on_asset_regain(
+				# 			asset, item.base_net_amount, item.finance_book
+				# 		)
+				# 		asset.db_set("disposal_date", None)
+
+				# 		if asset.calculate_depreciation:
+				# 			self.reverse_depreciation_entry_made_after_sale(asset)
+				# 			self.reset_depreciation_schedule(asset)
+
+				# 	else:
+				# 		# reset_asset_value_for_scrap_sales(asset.name, self.posting_date)
+				# 		fixed_asset_gl_entries = get_gl_entries_on_asset_disposal(
+				# 			asset, item.base_net_amount, item.finance_book
+				# 		)
+				# 		asset.db_set("disposal_date", self.posting_date)
+
+				# 		# if asset.calculate_depreciation:
+				# 		# 	self.depreciate_asset(asset)
+
+				# 	for gle in fixed_asset_gl_entries:
+				# 		gle["against"] = self.customer
+				# 		gl_entries.append(self.get_gl_dict(gle, item=item))
+
+				# 	self.set_asset_status(asset)
 				if item.is_fixed_asset:
 					asset = self.get_asset(item)
 
 					if self.is_return:
 						fixed_asset_gl_entries = get_gl_entries_on_asset_regain(
-							asset, item.base_net_amount, item.finance_book
+							asset,
+							item.base_net_amount,
+							item.finance_book,
+							self.get("doctype"),
+							self.get("name"),
+							self.get("posting_date"),
 						)
 						asset.db_set("disposal_date", None)
+						add_asset_activity(asset.name, _("Asset returned"))
 
 						if asset.calculate_depreciation:
-							self.reverse_depreciation_entry_made_after_sale(asset)
-							self.reset_depreciation_schedule(asset)
+							posting_date = frappe.db.get_value(
+								"Sales Invoice", self.return_against, "posting_date"
+							)
+							reverse_depreciation_entry_made_after_disposal(asset, posting_date)
+							notes = _(
+								"This schedule was created when Asset {0} was returned through Sales Invoice {1}."
+							).format(
+								get_link_to_form(asset.doctype, asset.name),
+								get_link_to_form(self.doctype, self.get("name")),
+							)
+							reset_depreciation_schedule(asset, self.posting_date, notes)
+							asset.reload()
 
 					else:
-						reset_asset_value_for_scrap_sales(asset.name, self.posting_date)
+						if asset.calculate_depreciation:
+							notes = _(
+								"This schedule was created when Asset {0} was sold through Sales Invoice {1}."
+							).format(
+								get_link_to_form(asset.doctype, asset.name),
+								get_link_to_form(self.doctype, self.get("name")),
+							)
+							depreciate_asset(asset, self.posting_date, notes)
+							asset.reload()
+
 						fixed_asset_gl_entries = get_gl_entries_on_asset_disposal(
-							asset, item.base_net_amount, item.finance_book
+							asset,
+							item.base_net_amount,
+							item.finance_book,
+							self.get("doctype"),
+							self.get("name"),
+							self.get("posting_date"),
 						)
 						asset.db_set("disposal_date", self.posting_date)
-
-						# if asset.calculate_depreciation:
-						# 	self.depreciate_asset(asset)
+						add_asset_activity(asset.name, _("Asset sold"))
 
 					for gle in fixed_asset_gl_entries:
 						gle["against"] = self.customer
@@ -1378,7 +1486,7 @@ class SalesInvoice(SellingController):
 			gl_entries += super(SalesInvoice, self).get_gl_entries()
 	
 	def make_deferred_revenue_amount_gl_entries(self, gl_entries):
-		account = frappe.get_cached_value("Company", self.company, "default_bank_account")
+		account = frappe.get_cached_value("Company", self.company, "default_deferred_revenue_account")
 		deductions = 0	
 		for d in self.get("items"):
 			if d.deferred_revenue_amount:
@@ -2238,7 +2346,8 @@ def get_inter_company_details(doc, doctype):
 		parties = frappe.db.get_all(
 			"Supplier",
 			fields=["name"],
-			filters={"disabled": 0, "is_internal_supplier": 1, "represents_company": doc.company},
+			# filters={"disabled": 0, "is_internal_supplier": 1, "represents_company": doc.company},
+			filters={"disabled": 0, "branch": doc.branch},
 		)
 		company = frappe.get_cached_value("Customer", doc.customer, "represents_company")
 

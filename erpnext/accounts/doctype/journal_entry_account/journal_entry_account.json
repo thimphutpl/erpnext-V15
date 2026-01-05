@@ -196,7 +196,7 @@
    "fieldtype": "Select",
    "label": "Reference Type",
    "no_copy": 1,
-   "options": "\nBonus\nPBVA\nSales Invoice\nSWS Application\nPurchase Invoice\nJournal Entry\nSales Order\nPurchase Order\nExpense Claim\nAsset\nLoan\nPayroll Entry\nEmployee Advance\nExchange Rate Revaluation\nInvoice Discounting\nFees\nFull and Final Statement\nPayment Entry\nAbstract Bill\nImprest Advance\nImprest Recoup\nPOL Advance\nProcess MR Payment\nTravel Claim\nTravel Authorization\nFund Requisition\nLeave Encashment\nBulk Leave Encashment\nLeave Travel Concession\nEquipment Hiring Form\nJob Cards\nEmployee Benefits\nHire Charge Invoice\nHire Invoice\nFabrication And Bailey Bridge\nTransporter Invoice\nAsset Value Adjustment\nTravel Advance",
+   "options": "\nBonus\nPBVA\nSales Invoice\nSWS Application\nPurchase Invoice\nJournal Entry\nSales Order\nPurchase Order\nPurchase Receipt\nExpense Claim\nAsset\nLoan\nPayroll Entry\nEmployee Advance\nExchange Rate Revaluation\nInvoice Discounting\nFees\nFull and Final Statement\nPayment Entry\nAbstract Bill\nImprest Advance\nImprest Recoup\nPOL Advance\nProcess MR Payment\nTravel Claim\nTravel Authorization\nFund Requisition\nLeave Encashment\nBulk Leave Encashment\nLeave Travel Concession\nEquipment Hiring Form\nJob Cards\nEmployee Benefits\nHire Charge Invoice\nHire Invoice\nFabrication And Bailey Bridge\nTransporter Invoice\nAsset Value Adjustment\nTravel Advance\nOvertime Application\nBulk Leave Encashment",
    "search_index": 1
   },
   {
@@ -370,7 +370,7 @@
  "idx": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-11-11 00:56:49.129054",
+ "modified": "2025-12-23 10:44:23.811265",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Journal Entry Account",

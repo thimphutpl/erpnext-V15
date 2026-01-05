@@ -965,6 +965,7 @@
    "depends_on": "eval:doc.salary_mode == 'Bank'",
    "fieldname": "employee_bank_accounts",
    "fieldtype": "Table",
+   "hidden": 1,
    "label": "Bank Details",
    "options": "Employee Bank Account"
   },
@@ -1128,7 +1129,7 @@
  "image_field": "image",
  "is_tree": 1,
  "links": [],
- "modified": "2025-12-11 16:44:40.167573",
+ "modified": "2025-12-16 11:49:26.867757",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee",

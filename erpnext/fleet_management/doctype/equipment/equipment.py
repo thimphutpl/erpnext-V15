@@ -13,7 +13,6 @@ class Equipment(Document):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
-		from erpnext.fleet_management.doctype.equipment_helper.equipment_helper import EquipmentHelper
 		from erpnext.fleet_management.doctype.equipment_history.equipment_history import EquipmentHistory
 		from erpnext.fleet_management.doctype.equipment_model_history.equipment_model_history import EquipmentModelHistory
 		from erpnext.fleet_management.doctype.equipment_operator.equipment_operator import EquipmentOperator
@@ -42,7 +41,6 @@ class Equipment(Document):
 		fuel_type: DF.Link | None
 		fuelbook: DF.Link | None
 		gewog: DF.Link | None
-		helper: DF.Table[EquipmentHelper]
 		hired_equipment: DF.Check
 		is_disabled: DF.Check
 		kph: DF.Float

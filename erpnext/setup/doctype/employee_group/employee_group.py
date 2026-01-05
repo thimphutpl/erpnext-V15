@@ -33,6 +33,7 @@ class EmployeeGroup(Document):
 		max_encashment_days: DF.Float
 		min_encashment_days: DF.Float
 		minimum_months: DF.Float
+		minimum_services_required: DF.Data | None
 		no_of_installment_for_salary: DF.Literal["", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
 		retirement_age: DF.Int
 		salary_advance_limit: DF.Data | None

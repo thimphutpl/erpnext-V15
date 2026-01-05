@@ -23,7 +23,7 @@ frappe.ui.form.on('Equipment Hiring Form', {
 		frm.set_query("equipment", function() {
 			return {
 				filters: {
-					hired_equipment: 1,
+					// hired_equipment: 1,
 					branch : frm.doc.branch
 				}
 			}

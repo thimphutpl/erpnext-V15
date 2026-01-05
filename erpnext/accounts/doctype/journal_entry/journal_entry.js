@@ -600,6 +600,9 @@ cur_frm.cscript.validate = function (doc, cdt, cdn) {
 };
 
 frappe.ui.form.on("Journal Entry Account", {
+	onload: function (frm, cdt, cdn) {
+		erpnext.journal_entry.set_tds_account(frm, cdt, cdn);
+	},
 	party: function (frm, cdt, cdn) {
 		var d = frappe.get_doc(cdt, cdn);
 		if (!d.account && d.party_type && d.party) {

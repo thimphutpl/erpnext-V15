@@ -41,6 +41,7 @@ class Supplier(TransactionBase):
 		bank_address: DF.Data | None
 		bank_branch: DF.Link | None
 		bank_name: DF.Link | None
+		branch: DF.Link | None
 		companies: DF.Table[AllowedToTransactWith]
 		cost_center: DF.Link | None
 		country: DF.Link | None

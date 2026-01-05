@@ -52,8 +52,6 @@
   "equipment_operator_section",
   "operators",
   "model_items",
-  "helper_details_section",
-  "helper",
   "equipment_history_section",
   "equipment_history",
   "details",
@@ -222,6 +220,7 @@
    "default": "0",
    "fieldname": "not_cdcl",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "Not Own"
   },
   {
@@ -360,20 +359,9 @@
    "label": "Tanker Capacity"
   },
   {
-   "fieldname": "helper",
-   "fieldtype": "Table",
-   "options": "Equipment Helper"
-  },
-  {
    "fieldname": "equipment_history_section",
    "fieldtype": "Section Break",
    "label": "Equipment History"
-  },
-  {
-   "fieldname": "helper_details_section",
-   "fieldtype": "Section Break",
-   "hidden": 1,
-   "label": "Helper Details "
   },
   {
    "allow_in_quick_entry": 1,
@@ -384,6 +372,7 @@
   {
    "fieldname": "business_activity",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Business Activity",
    "options": "Business Activity"
   },
@@ -421,7 +410,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-11-12 14:43:31.064225",
+ "modified": "2025-12-30 11:08:19.457503",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Equipment",

@@ -18,6 +18,7 @@
   "to_cost_center",
   "to_project",
   "remark",
+  "enote_id",
   "section_break_10",
   "items",
   "total_reappropiation_amount",
@@ -164,12 +165,19 @@
    "fieldtype": "Currency",
    "label": "Total Reappropiation Amount",
    "read_only": 1
+  },
+  {
+   "fieldname": "enote_id",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "eNote ID",
+   "options": "eNote"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-12-02 11:41:03.360668",
+ "modified": "2025-12-22 15:16:52.902792",
  "modified_by": "Administrator",
  "module": "Budget",
  "name": "Budget Reappropiation",
@@ -214,6 +222,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],

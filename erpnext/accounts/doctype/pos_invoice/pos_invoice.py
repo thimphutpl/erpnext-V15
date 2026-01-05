@@ -361,7 +361,7 @@ class POSInvoice(SalesInvoice):
 				(not d.use_serial_batch_fields and not d.serial_and_batch_bundle)
 				or (d.use_serial_batch_fields and not d.serial_no)
 			):
-				error_msg = f"Row #{d.idx}: Please select Serial No. for item {bold(d.item_code)}"
+				error_msg = f"Row #{d.idx}: Please select . for item {bold(d.item_code)}"
 
 			elif d.get("has_batch_no") and (
 				(not d.use_serial_batch_fields and not d.serial_and_batch_bundle)

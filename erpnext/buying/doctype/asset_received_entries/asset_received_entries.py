@@ -25,7 +25,8 @@ class AssetReceivedEntries(Document):
 		model: DF.Data | None
 		qty: DF.Data
 		received_date: DF.Date
-		ref_doc: DF.Link
+		ref_doc: DF.DynamicLink
+		reference_type: DF.Link
 		warehouse: DF.Link | None
 	# end: auto-generated types
 	pass

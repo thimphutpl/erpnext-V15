@@ -30,6 +30,7 @@ class SalesOrderItem(Document):
 		blanket_order_rate: DF.Currency
 		bom_no: DF.Link | None
 		brand: DF.Link | None
+		color: DF.Data | None
 		company_total_stock: DF.Float
 		conversion_factor: DF.Float
 		cost_center: DF.Link | None
@@ -42,21 +43,28 @@ class SalesOrderItem(Document):
 		discount_amount: DF.Currency
 		discount_percentage: DF.Percent
 		distributed_discount_amount: DF.Currency
+		engine_cc: DF.Float
 		ensure_delivery_based_on_produced_serial_no: DF.Check
+		fuel_type: DF.Literal["", "Petrol", "Diesel", "EV"]
 		grant_commission: DF.Check
 		gross_profit: DF.Currency
+		gvw_tonnage: DF.Float
 		image: DF.Attach | None
 		is_free_item: DF.Check
 		is_stock_item: DF.Check
 		item_code: DF.Link
 		item_group: DF.Link | None
 		item_name: DF.Data
+		item_sub_group: DF.Data | None
 		item_tax_rate: DF.Code | None
 		item_tax_template: DF.Link | None
+		make: DF.Data | None
 		margin_rate_or_amount: DF.Float
 		margin_type: DF.Literal["", "Percentage", "Amount"]
 		material_request: DF.Link | None
 		material_request_item: DF.Data | None
+		model: DF.Data | None
+		model_year: DF.Data | None
 		net_amount: DF.Currency
 		net_rate: DF.Currency
 		ordered_qty: DF.Float
@@ -82,6 +90,7 @@ class SalesOrderItem(Document):
 		rate_with_margin: DF.Currency
 		reserve_stock: DF.Check
 		returned_qty: DF.Float
+		seating_capacity: DF.Float
 		serial_no_chassis_no: DF.SmallText | None
 		sp_type: DF.Literal["General Rate", "Customer Based Rate"]
 		stock_qty: DF.Float
@@ -92,6 +101,7 @@ class SalesOrderItem(Document):
 		target_warehouse: DF.Link | None
 		total_weight: DF.Float
 		transaction_date: DF.Date | None
+		transmission_type: DF.Literal["", "Manual", "Automatic"]
 		tvo_no: DF.Data | None
 		uom: DF.Link
 		valuation_rate: DF.Currency

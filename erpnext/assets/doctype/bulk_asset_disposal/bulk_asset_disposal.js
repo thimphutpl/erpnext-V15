@@ -52,23 +52,37 @@ frappe.ui.form.on("Bulk Asset Disposal", {
 		});
 	},
 
-	scrap: function (frm) {
-		// frm.doc.scrap_date = Date.now(); #comment by Jai, 20 July 2022
-		// frm.refresh_fields()
-		frm.set_df_property('customer', 'reqd', frm.doc.scrap == 'Sale Asset' ? 1 : 0)
-	},
-	to_employee: function (frm) {
-		if (frm.doc.to_employee) {
-			// Checkbox is checked → hide customer
-			frm.set_df_property("customer", "hidden", 1);
-			frm.set_df_property("customer", "reqd", 0)
-
-		} else {
-			// Checkbox is unchecked → show customer
-			frm.set_df_property("customer", "hidden", 0);
-			frm.set_df_property("employee", "reqd", 1)
-		}
-	},
+	// scrap: function (frm) {
+	// 	// frm.doc.scrap_date = Date.now(); #comment by Jai, 20 July 2022
+	// 	// frm.refresh_fields()
+	// 	frm.set_df_property('customer', 'reqd', frm.doc.scrap == 'Sale Asset' ? 1 : 0)
+	// 	frm.toggle_display('customer', frm.doc.scrap == 'Sale Asset' && frm.doc.to_employee == 1 ? 1 : 0)
+	// },
+	// to_employee: function (frm) {
+	// 	if(frm.doc.scrap == "Sale Asset"){
+	// 		if (frm.doc.to_employee) {
+	// 			// Checkbox is checked → hide customer
+	// 			frm.set_df_property("customer", "hidden", 1);
+	// 			frm.set_df_property("employee", "reqd", 1)
+	
+	// 		} else {
+	// 			// Checkbox is unchecked → show customer
+	// 			frm.set_df_property("customer", "hidden", 0);
+	// 			frm.set_df_property("customer", "reqd", 1)
+	// 		}
+	// 	}
+	// 	else{
+	// 		// if (frm.doc.to_employee) {
+	// 			// Checkbox is checked → hide customer
+	// 		frm.set_df_property("customer", "hidden", 1);
+	// 		frm.set_df_property("employee", "reqd", 0)
+	// 		// } else {
+	// 		// Checkbox is unchecked → show customer
+	// 		frm.set_df_property("customer", "hidden", 1);
+	// 		frm.set_df_property("customer", "reqd", 0)
+	// 		// }
+	// 	}
+	// },
 	branch: function (frm) {
 		// Clear items when branch changes
 		frm.clear_table("item");

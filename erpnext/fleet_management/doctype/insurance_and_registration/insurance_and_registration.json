@@ -263,7 +263,7 @@
    "fieldtype": "Column Break"
   },
   {
-   "fetch_from": "equipment.registration_number",
+   "fetch_from": "equipment.equipment_name",
    "fieldname": "registration_number",
    "fieldtype": "Data",
    "label": "Registration Number",
@@ -272,7 +272,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-03-19 14:57:01.315356",
+ "modified": "2025-12-30 10:51:45.141881",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Insurance and Registration",
@@ -339,6 +339,7 @@
   }
  ],
  "quick_entry": 1,
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],

@@ -32,7 +32,7 @@ erpnext.accounts.SalesInvoiceController = class SalesInvoiceController extends e
 	onload() {
 		var me = this;
 		super.onload();
-
+		this.frm.set_value("disable_rounded_total", 1);
 		this.frm.ignore_doctypes_on_cancel_all = ['POS Invoice', 'Timesheet', 'POS Invoice Merge Log',
 			'POS Closing Entry', 'Journal Entry', 'Payment Entry'];
 
@@ -74,8 +74,9 @@ erpnext.accounts.SalesInvoiceController = class SalesInvoiceController extends e
 
 		if (doc.docstatus == 1 && doc.outstanding_amount!=0
 			&& !(cint(doc.is_return) && doc.return_against)) {
-			cur_frm.add_custom_button(__('Payment'),
-				this.make_payment_entry, __('Create'));
+				cur_frm.add_custom_button(__('Payment'), () => {
+					this.make_payment_entry(cur_frm);
+				}, __('Create'));
 			cur_frm.page.set_inner_btn_group_as_primary(__('Create'));
 		}
 
@@ -301,19 +302,19 @@ erpnext.accounts.SalesInvoiceController = class SalesInvoiceController extends e
 				me.apply_pricing_rule();
 			});
 
-		if(this.frm.doc.customer) {
-			frappe.call({
-				"method": "erpnext.accounts.doctype.sales_invoice.sales_invoice.get_loyalty_programs",
-				"args": {
-					"customer": this.frm.doc.customer
-				},
-				callback: function(r) {
-					if(r.message && r.message.length > 1) {
-						select_loyalty_program(me.frm, r.message);
-					}
-				}
-			});
-		}
+		// if(this.frm.doc.customer) {
+		// 	frappe.call({
+		// 		"method": "erpnext.accounts.doctype.sales_invoice.sales_invoice.get_loyalty_programs",
+		// 		"args": {
+		// 			"customer": this.frm.doc.customer
+		// 		},
+		// 		callback: function(r) {
+		// 			if(r.message && r.message.length > 1) {
+		// 				select_loyalty_program(me.frm, r.message);
+		// 			}
+		// 		}
+		// 	});
+		// }
 		if (this.frm.doc.company && !this.frm.doc.debit_to && this.frm.doc.customer) {
 			frappe.call({
 				method:
@@ -479,12 +480,12 @@ erpnext.accounts.SalesInvoiceController = class SalesInvoiceController extends e
 		this.frm.refresh_fields();
 	}
 
-	loyalty_amount(){
-		this.calculate_outstanding_amount();
-		this.frm.refresh_field("outstanding_amount");
-		this.frm.refresh_field("paid_amount");
-		this.frm.refresh_field("base_paid_amount");
-	}
+	// loyalty_amount(){
+	// 	this.calculate_outstanding_amount();
+	// 	this.frm.refresh_field("outstanding_amount");
+	// 	this.frm.refresh_field("paid_amount");
+	// 	this.frm.refresh_field("base_paid_amount");
+	// }
 
 	currency() {
 		var me = this;
@@ -728,24 +729,24 @@ frappe.ui.form.on('Sales Invoice', {
 		});
 
 		// set get_query for loyalty redemption account
-		frm.fields_dict["loyalty_redemption_account"].get_query = function() {
-			return {
-				filters:{
-					"company": frm.doc.company,
-					"is_group": 0
-				}
-			}
-		};
+		// frm.fields_dict["loyalty_redemption_account"].get_query = function() {
+		// 	return {
+		// 		filters:{
+		// 			"company": frm.doc.company,
+		// 			"is_group": 0
+		// 		}
+		// 	}
+		// };
 
 		// set get_query for loyalty redemption cost center
-		frm.fields_dict["loyalty_redemption_cost_center"].get_query = function() {
-			return {
-				filters:{
-					"company": frm.doc.company,
-					"is_group": 0
-				}
-			}
-		};
+		// frm.fields_dict["loyalty_redemption_cost_center"].get_query = function() {
+		// 	return {
+		// 		filters:{
+		// 			"company": frm.doc.company,
+		// 			"is_group": 0
+		// 		}
+		// 	}
+		// };
 	},
 	// When multiple companies are set up. in case company name is changed set default company address
 	company: function(frm){
@@ -776,28 +777,28 @@ frappe.ui.form.on('Sales Invoice', {
 		frm.trigger('reset_posting_time');
 	},
 
-	redeem_loyalty_points: function(frm) {
-		frm.events.get_loyalty_details(frm);
-	},
+	// redeem_loyalty_points: function(frm) {
+	// 	frm.events.get_loyalty_details(frm);
+	// },
 
-	loyalty_points: function(frm) {
-		if (frm.redemption_conversion_factor) {
-			frm.events.set_loyalty_points(frm);
-		} else {
-			frappe.call({
-				method: "erpnext.accounts.doctype.loyalty_program.loyalty_program.get_redeemption_factor",
-				args: {
-					"loyalty_program": frm.doc.loyalty_program
-				},
-				callback: function(r) {
-					if (r) {
-						frm.redemption_conversion_factor = r.message;
-						frm.events.set_loyalty_points(frm);
-					}
-				}
-			});
-		}
-	},
+	// loyalty_points: function(frm) {
+	// 	if (frm.redemption_conversion_factor) {
+	// 		frm.events.set_loyalty_points(frm);
+	// 	} else {
+	// 		frappe.call({
+	// 			method: "erpnext.accounts.doctype.loyalty_program.loyalty_program.get_redeemption_factor",
+	// 			args: {
+	// 				"loyalty_program": frm.doc.loyalty_program
+	// 			},
+	// 			callback: function(r) {
+	// 				if (r) {
+	// 					frm.redemption_conversion_factor = r.message;
+	// 					frm.events.set_loyalty_points(frm);
+	// 				}
+	// 			}
+	// 		});
+	// 	}
+	// },
 
 	hide_fields: function(frm) {
 		let doc = frm.doc;
@@ -816,38 +817,38 @@ frappe.ui.form.on('Sales Invoice', {
 		frm.refresh_fields();
 	},
 
-	get_loyalty_details: function(frm) {
-		if (frm.doc.customer && frm.doc.redeem_loyalty_points) {
-			frappe.call({
-				method: "erpnext.accounts.doctype.loyalty_program.loyalty_program.get_loyalty_program_details",
-				args: {
-					"customer": frm.doc.customer,
-					"loyalty_program": frm.doc.loyalty_program,
-					"expiry_date": frm.doc.posting_date,
-					"company": frm.doc.company
-				},
-				callback: function(r) {
-					if (r) {
-						frm.set_value("loyalty_redemption_account", r.message.expense_account);
-						frm.set_value("loyalty_redemption_cost_center", r.message.cost_center);
-						frm.redemption_conversion_factor = r.message.conversion_factor;
-					}
-				}
-			});
-		}
-	},
+	// get_loyalty_details: function(frm) {
+	// 	if (frm.doc.customer && frm.doc.redeem_loyalty_points) {
+	// 		frappe.call({
+	// 			method: "erpnext.accounts.doctype.loyalty_program.loyalty_program.get_loyalty_program_details",
+	// 			args: {
+	// 				"customer": frm.doc.customer,
+	// 				"loyalty_program": frm.doc.loyalty_program,
+	// 				"expiry_date": frm.doc.posting_date,
+	// 				"company": frm.doc.company
+	// 			},
+	// 			callback: function(r) {
+	// 				if (r) {
+	// 					frm.set_value("loyalty_redemption_account", r.message.expense_account);
+	// 					frm.set_value("loyalty_redemption_cost_center", r.message.cost_center);
+	// 					frm.redemption_conversion_factor = r.message.conversion_factor;
+	// 				}
+	// 			}
+	// 		});
+	// 	}
+	// },
 
-	set_loyalty_points: function(frm) {
-		if (frm.redemption_conversion_factor) {
-			let loyalty_amount = flt(frm.redemption_conversion_factor*flt(frm.doc.loyalty_points), precision("loyalty_amount"));
-			var remaining_amount = flt(frm.doc.grand_total) - flt(frm.doc.total_advance) - flt(frm.doc.write_off_amount);
-			if (frm.doc.grand_total && (remaining_amount < loyalty_amount)) {
-				let redeemable_points = parseInt(remaining_amount/frm.redemption_conversion_factor);
-				frappe.throw(__("You can only redeem max {0} points in this order.",[redeemable_points]));
-			}
-			frm.set_value("loyalty_amount", loyalty_amount);
-		}
-	},
+	// set_loyalty_points: function(frm) {
+	// 	if (frm.redemption_conversion_factor) {
+	// 		let loyalty_amount = flt(frm.redemption_conversion_factor*flt(frm.doc.loyalty_points), precision("loyalty_amount"));
+	// 		var remaining_amount = flt(frm.doc.grand_total) - flt(frm.doc.total_advance) - flt(frm.doc.write_off_amount);
+	// 		if (frm.doc.grand_total && (remaining_amount < loyalty_amount)) {
+	// 			let redeemable_points = parseInt(remaining_amount/frm.redemption_conversion_factor);
+	// 			frappe.throw(__("You can only redeem max {0} points in this order.",[redeemable_points]));
+	// 		}
+	// 		frm.set_value("loyalty_amount", loyalty_amount);
+	// 	}
+	// },
 
 	project: function(frm) {
 		if (frm.doc.project) {
@@ -1033,36 +1034,36 @@ var set_timesheet_detail_rate = function(cdt, cdn, currency, timelog) {
 	});
 }
 
-var select_loyalty_program = function(frm, loyalty_programs) {
-	var dialog = new frappe.ui.Dialog({
-		title: __("Select Loyalty Program"),
-		fields: [
-			{
-				"label": __("Loyalty Program"),
-				"fieldname": "loyalty_program",
-				"fieldtype": "Select",
-				"options": loyalty_programs,
-				"default": loyalty_programs[0]
-			}
-		]
-	});
+// var select_loyalty_program = function(frm, loyalty_programs) {
+// 	var dialog = new frappe.ui.Dialog({
+// 		title: __("Select Loyalty Program"),
+// 		fields: [
+// 			{
+// 				"label": __("Loyalty Program"),
+// 				"fieldname": "loyalty_program",
+// 				"fieldtype": "Select",
+// 				"options": loyalty_programs,
+// 				"default": loyalty_programs[0]
+// 			}
+// 		]
+// 	});
 
-	dialog.set_primary_action(__("Set"), function() {
-		dialog.hide();
-		return frappe.call({
-			method: "frappe.client.set_value",
-			args: {
-				doctype: "Customer",
-				name: frm.doc.customer,
-				fieldname: "loyalty_program",
-				value: dialog.get_value("loyalty_program"),
-			},
-			callback: function(r) { }
-		});
-	});
+// 	dialog.set_primary_action(__("Set"), function() {
+// 		dialog.hide();
+// 		return frappe.call({
+// 			method: "frappe.client.set_value",
+// 			args: {
+// 				doctype: "Customer",
+// 				name: frm.doc.customer,
+// 				fieldname: "loyalty_program",
+// 				value: dialog.get_value("loyalty_program"),
+// 			},
+// 			callback: function(r) { }
+// 		});
+// 	});
 
-	dialog.show();
-}
+// 	dialog.show();
+// }
 
 frappe.ui.form.on("Sales Invoice","items_on_form_rendered", function(frm, grid_row) {
    cur_frm.call({

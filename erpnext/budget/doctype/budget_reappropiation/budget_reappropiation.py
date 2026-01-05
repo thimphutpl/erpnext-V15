@@ -25,6 +25,7 @@ class BudgetReappropiation(Document):
 		budget_against: DF.Literal["Cost Center", "Project"]
 		budget_type: DF.Link | None
 		company: DF.Link | None
+		enote_id: DF.Link | None
 		fiscal_year: DF.Link
 		from_cost_center: DF.Link | None
 		from_project: DF.Link | None

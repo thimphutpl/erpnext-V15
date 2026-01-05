@@ -8,9 +8,22 @@
  "field_order": [
   "item_code",
   "item_name",
+  "item_group",
+  "item_sub_group",
+  "column_break_yiyk",
   "quantity",
   "amount",
-  "column_break_yiyk",
+  "vehicle_specification_section",
+  "make",
+  "model",
+  "model_year",
+  "seating_capacity",
+  "gvw_tonnage",
+  "column_break_cpmx",
+  "transmission_type",
+  "engine_cc",
+  "fuel_type",
+  "vehicle_color",
   "pricing_and_payment_details_section",
   "gross_price",
   "discount_amount",
@@ -98,13 +111,84 @@
    "fieldname": "advance__remarks",
    "fieldtype": "Small Text",
    "label": "Advance  Remarks"
+  },
+  {
+   "depends_on": "eval: doc.item_sub_group == \"Vehicle\"",
+   "fieldname": "vehicle_specification_section",
+   "fieldtype": "Section Break",
+   "label": "Vehicle Specification"
+  },
+  {
+   "fieldname": "make",
+   "fieldtype": "Data",
+   "label": "Make"
+  },
+  {
+   "fieldname": "model",
+   "fieldtype": "Data",
+   "label": "Model"
+  },
+  {
+   "fieldname": "model_year",
+   "fieldtype": "Data",
+   "label": "Model Year"
+  },
+  {
+   "fieldname": "seating_capacity",
+   "fieldtype": "Float",
+   "label": "Seating Capacity"
+  },
+  {
+   "fieldname": "gvw_tonnage",
+   "fieldtype": "Float",
+   "label": "GVW (Tonnage)"
+  },
+  {
+   "fieldname": "column_break_cpmx",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "transmission_type",
+   "fieldtype": "Select",
+   "label": "Transmission Type",
+   "options": "\nManual\nAutomatic"
+  },
+  {
+   "fieldname": "engine_cc",
+   "fieldtype": "Float",
+   "label": "Engine (CC)"
+  },
+  {
+   "fieldname": "fuel_type",
+   "fieldtype": "Select",
+   "label": "Fuel Type",
+   "options": "\nPetrol\nDiesel\nEV"
+  },
+  {
+   "fieldname": "vehicle_color",
+   "fieldtype": "Data",
+   "label": "Vehicle Color"
+  },
+  {
+   "fetch_from": "item_code.item_group",
+   "fieldname": "item_group",
+   "fieldtype": "Data",
+   "label": "Item Group",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "item_code.item_sub_group",
+   "fieldname": "item_sub_group",
+   "fieldtype": "Data",
+   "label": "Item Sub Group",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-12-01 09:42:41.212706",
+ "modified": "2025-12-29 15:08:30.495277",
  "modified_by": "kalden.dorji@thimphutechpark.bt",
  "module": "CRM",
  "name": "Order Confirmation Details",

@@ -13,7 +13,7 @@ def get_data():
 		'transactions': [
 			{
 				'label': _('Related'),
-				'items': ['Payment Entry', 'Journal Entry', 'Asset']
+				'items': ['Payment Entry', 'Journal Entry', 'Asset', 'Asset Issue Details']
 			},
 		]
 	}

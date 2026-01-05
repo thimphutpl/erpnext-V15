@@ -35,6 +35,7 @@ class EMISales(SellingController):
 		air_time: DF.Check
 		amended_from: DF.Link | None
 		apply_purchase_limit: DF.Check
+		asset_code: DF.Link | None
 		base_paid_amount: DF.Currency
 		billing_user: DF.Data | None
 		branch: DF.Link
@@ -65,6 +66,7 @@ class EMISales(SellingController):
 		installment_details: DF.Table[EMISalesInstallments]
 		interest_percentage: DF.Percent
 		is_discounted: DF.Check
+		is_existing: DF.Check
 		is_on_credit: DF.Check
 		is_opening_bal: DF.Check
 		is_return: DF.Check
@@ -73,9 +75,10 @@ class EMISales(SellingController):
 		mode_of_payment_items: DF.Table[EMISalesPaymentMode]
 		monthly_deduction: DF.Currency
 		net_amount: DF.Currency
-		no_of_installation: DF.Literal["", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
+		no_of_installation: DF.Literal["", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
 		no_of_installation_employee: DF.Literal["", "1", "2", "3", "4", "5"]
 		no_of_installation_external: DF.Literal["", "1", "2", "3", "4", "5", "6", "7"]
+		no_of_installments_paid: DF.Int
 		one_time_customer_name: DF.Data | None
 		outstanding_amount: DF.Currency
 		paid_amount: DF.Currency
@@ -131,24 +134,25 @@ class EMISales(SellingController):
 		self.update_salary_structure()
 		self.make_gl_entries()
 		self.post_gl_for_payment()
+		# self.capitalize_material()
 		# self.set_status()
 		# if self.customer_type == 'Employee':
 		# 	nofity_hr(self.doctype,self.name)
-		self.consume_budget()
+		# self.consume_budget()
 
 	def on_cancel(self):
 		self.calculate_amount()
 		self.update_stock_ledger()
 		self.make_gl_entries_on_cancel()
 		self.update_salary_structure(True)
-		self.cancel_budget()
+		# self.cancel_budget() commented as commission not required for STCBL
 
 	def on_update_after_submit(self):
 		# frappe.throw("here")
 		user = frappe.session.user
 		user_roles = frappe.get_roles(user)
-		if "Sales Editor" not in user_roles and self.docstatus == 1:
-			frappe.throw("Only users with role <b>Sales Editor</b> are allowed to edit submitted documents.")
+		# if "Sales Editor" not in user_roles and self.docstatus == 1:
+		# 	frappe.throw("Only users with role <b>Sales Editor</b> are allowed to edit submitted documents.")
 
 	def validate_sales_user(self):
 		if not frappe.db.exists('User Mapping',{"user": frappe.session.user}):
@@ -167,6 +171,122 @@ class EMISales(SellingController):
 					frappe.throw("Range between From Serial Number and To Serial Number does not match with quantity in table at row {}".format(str(count)))
 			count += 1
 
+	# def capitalize_material(self):
+	# 	if self.sales_order_type == "Cost Sharing Installment":
+	# 		self.update_asset_from_old_code_base()
+
+	@frappe.whitelist()
+	def get_asset_details(self):
+		exists = 0
+		if frappe.db.exists("Asset Issue Details", {"emi_sales":self.name, "docstatus": ["<", 2]}):
+			exists = 1
+			frappe.throw("Asset Issue Details for this EMI Sales already exists.")
+
+		cost_sharing_quotaamount = frappe.db.get_value("Employee Grade", frappe.db.get_value("Employee", self.customer, "grade"), "cost_sharing_quotaamount")
+
+		for item in self.items:
+			# ae.flags.ignore_permissions = 1
+			# ae.item_code = a.item_code
+			# # ae.brand = a.brand
+			# # ae.model = a.model
+			# ae.child_ref = a.name
+			# ae.item_name = a.item_name
+			# ae.qty = int(b)
+			# #ae.company = self.company
+			# ae.received_date = self.posting_date
+			# ae.reference_type = "EMI Sales"
+			# ae.ref_doc = self.name
+			ae = frappe.new_doc("Asset Received Entries")
+			ae.flags.ignore_permissions = 1
+			ae.item_code = item.item_code
+			# ae.brand = a.brand
+			# ae.model = a.model
+			ae.child_ref = item.name
+			ae.item_name = item.item_name
+			ae.qty = int(item.qty)
+			#ae.company = self.company
+			ae.received_date = self.posting_date
+			ae.reference_type = "EMI Sales"
+			ae.ref_doc = self.name
+			ae.branch = frappe.db.get_value("Branch",{"cost_center":self.cost_center},"name")
+			#ae.branch = frappe.db.get_value("Cost Center", a.cost_center, "branch")
+			ae.submit()
+			branch = frappe.db.get_value("Branch",{"cost_center":self.cost_center},"name")
+			asset_rate = flt(flt(cost_sharing_quotaamount)/2,2)
+			item_code = item.item_code
+			item_name = item.item_name
+			asset_category = frappe.db.get_value("Item", item.item_code, "asset_category")
+			asset_sub_category = frappe.db.get_value("Item", item.item_code, "asset_sub_category")
+			fixed_asset_account, credit_account=frappe.db.get_value("Asset Category Account", {'parent':asset_category}, ['fixed_asset_account','credit_account'])
+			next_depreciation_date = get_last_day(self.posting_date)
+			#ae.branch = frappe.db.get_value("Cost Center", a.cost_center, "branch")
+			# ae.submit()
+			# asset_code = self.create_asset(a.item_code, a.business_activity)
+			# if count == 0:
+			# 	asset_codes += str(asset_code)
+			# else:
+			# 	asset_codes += " ,"+str(asset_code)
+
+			# count+=1
+			return branch, asset_rate, item_code, item_name, asset_category, asset_sub_category, fixed_asset_account, credit_account, next_depreciation_date, exists
+
+	def create_asset(self, item_code, business_activity):
+		cost_sharing_quotaamount = frappe.db.get_value("Employee Grade", frappe.db.get_value("Employee", self.customer, "grade"), "cost_sharing_quotaamount")
+		item_doc = frappe.get_doc("Item",item_code)
+		employee_grade_quota_amt = frappe.db.get_value("Employee Grade", frappe.db.get_value("Employee", self.customer, "grade"), "cost_sharing_quotaamount")
+		if item_doc.asset_category:
+			asset_category = frappe.db.get_value("Asset Category", item_doc.asset_category, "name")
+			fixed_asset_account, credit_account=frappe.db.get_value("Asset Category Account", {'parent':asset_category}, ['fixed_asset_account','credit_account'])
+			if item_doc.asset_sub_category:
+				for a in frappe.db.sql("select total_number_of_depreciations, income_depreciation_percent from `tabAsset Finance Book` where parent = '{0}' and asset_sub_category = '{1}'".format(asset_category, item_doc.asset_sub_category), as_dict=1):
+					total_number_of_depreciations = a.total_number_of_depreciations
+					depreciation_percent = a.income_depreciation_percent
+			else:
+				frappe.throw(_("No Asset Sub-Category for Item: " +"{}").format(item_doc.item_name))
+		else:
+			frappe.throw(_("<b>Asset Category</b> is missing for material {}").format(frappe.get_desk_link("Item", item_code)))
+		
+		asset = frappe.new_doc("Asset")
+		# cost_center = frappe.db.get_value("Branch", self.branch, "cost_center")
+		asset_category = frappe.db.get_value("Item", item_code, "asset_category")
+		asset_sub_category = frappe.db.get_value("Item", item_code, "asset_sub_category")
+		asset.item_code = item_code
+		asset.asset_name = item_doc.item_name 
+		asset.cost_center = self.cost_center
+		asset.asset_category = asset_category
+		asset.asset_sub_category = asset_sub_category
+		asset.branch = self.branch
+		asset.purchase_date = self.posting_date
+		asset.next_depreciation_date = get_last_day(self.posting_date)
+		asset.credit_account = credit_account
+		asset.asset_account = fixed_asset_account
+		asset.calculate_depreciation = 1
+		asset.issued_to = self.customer
+		asset.brand = item_doc.brand
+		asset.model = item_doc.model
+		# asset.serial_number = serial_no
+		asset.asset_quantity_ = 1
+		asset.asset_rate = flt(flt(cost_sharing_quotaamount)/2,2)
+		asset.purchase_amount = flt(flt(cost_sharing_quotaamount)/2,2)
+		asset.available_for_use_date = self.posting_date
+		asset.business_activity = business_activity
+		asset.company = self.company
+		asset.gross_purchase_amount = flt(flt(cost_sharing_quotaamount)/2,2)
+		asset.total_number_of_depreciations = total_number_of_depreciations
+		asset.asset_depreciation_percent = depreciation_percent
+		asset.stock_entry = self.name
+		# asset.location = self.location
+		asset.insert()
+		asset.submit()
+		asset_code = asset.name
+		
+		if asset_code:
+			return asset_code
+			# asset.submit()
+		else:
+			frappe.throw("Asset not able to create for asset issue no.".format(self.name))
+
+	@frappe.whitelist()
 	def check_balance(self):
 		# balance = 0
 		# data_balance = 0
@@ -203,8 +323,8 @@ class EMISales(SellingController):
 				a.cash_bank_account = default_receiveable_account
 			else:
 				a.cash_bank_account = default_cash_account
-			if self.required_commission == 1:
-				a.commission_account = frappe.db.get_single_value("Selling Settings", "default_commission_account")
+			# if self.required_commission == 1:
+			# 	a.commission_account = frappe.db.get_single_value("Selling Settings", "default_commission_account")
 			actual_qty = frappe.db.sql("""select actual_qty from `tabBin`
 				where item_code = %s and warehouse = %s""", (a.item_code, self.delivery_warehouse))
 			actual_qty = actual_qty and flt(actual_qty[0][0]) or 0
@@ -222,17 +342,13 @@ class EMISales(SellingController):
 				missing.append("Cash/Bank Account")
 			if not a.expense_account:
 				missing.append("Expense Account")
-			if self.required_commission == 1:
-				if not a.commission_account:
-					missing.append("Commission Account")
+			# if self.required_commission == 1:
+			# 	if not a.commission_account:
+			# 		missing.append("Commission Account")
 			if len(missing) != 0:
 				frappe.throw("{} missing in row {} of Items table.".format(", ".join(b for b in missing), row))
 			row += 1
-
-
-			
-			
-
+	@frappe.whitelist()
 	def post_accounting_entry(self):
 		user_roles = frappe.get_roles(frappe.session.user)
 		cash_bank_account = ''
@@ -326,7 +442,7 @@ class EMISales(SellingController):
 				msg="You cannot buy more than 3 item from EMI Sales as an Employee")
 				
 	def create_payment_schedule(self):
-		beginning_balance = self.total_receivable_amount
+		beginning_balance = self.total_receivable_amount - self.no_of_installments_paid * self.monthly_deduction
 		if not self.payment_schedule or self.recalculate_amortization == 1:
 			if not self.is_on_credit:
 				return
@@ -336,17 +452,21 @@ class EMISales(SellingController):
 				row.payable_amount = self.net_amount
 				row.due_date = self.due_date
 			if self.credit_type and self.credit_type in ('Installment Payment') and self.customer_type == "Employee":
-				for i in range(int(self.no_of_installation_employee)*12):
+				for i in range(int(self.no_of_installation_employee)*12-int(self.no_of_installments_paid)):
 					row = self.append('payment_schedule',{})
 					row.payable_amount = self.monthly_deduction
 					row.beginning_balance = flt(beginning_balance)
 					row.interest = flt(beginning_balance) * ((self.interest_percentage * 0.01)/12)
 					row.principal = row.payable_amount-row.interest
 					row.ending_balance = flt(row.beginning_balance - row.principal)
+					if row.ending_balance < 0:
+						row.principal += row.ending_balance
+						row.ending_balance -= row.ending_balance
+						row.payable_amount += row.ending_balance
 					beginning_balance = row.ending_balance
 					row.due_date = get_last_day(add_months(self.posting_date,i))	
 			if self.credit_type and self.credit_type in ('Installment Payment') and self.payment_type == "External Customers Installment" and self.customer_type == "Customer":
-				for i in range(int(self.no_of_installation_external)):
+				for i in range(int(self.no_of_installation_external)-int(self.no_of_installments_paid)):
 					row = self.append('payment_schedule',{})
 					row.payable_amount = self.monthly_deduction
 					row.beginning_balance = flt(beginning_balance)
@@ -428,7 +548,7 @@ class EMISales(SellingController):
 					row.amount                  = flt(self.monthly_deduction)
 					row.default_amount          = flt(self.monthly_deduction)
 					row.reference_number        = self.name
-					row.ref_docname             = self.name
+					row.reference_name          = self.name
 					row.reference_type          = 'EMI Sales'
 					row.total_deductible_amount = flt(self.grand_total)
 					row.total_deducted_amount   = 0
@@ -471,7 +591,15 @@ class EMISales(SellingController):
 			# 	monthly_deduction = flt(self.grand_total) / flt(self.no_of_installation_employee)	
 			# else:
 				# monthly_deduction = flt(self.grand_total) / flt(self.no_of_installation_external)
-			monthly_deduction = self.pmt(flt((self.interest_percentage*0.01)/12), 24, self.total_receivable_amount)
+			# monthly_deduction = self.pmt(flt((self.interest_percentage*0.01)/12), 24, self.total_receivable_amount)
+			if self.customer_type == "Employee":
+				no_of_installments = self.no_of_installation_employee
+			else:
+				no_of_installments = self.no_of_installation_external
+			if self.interest_percentage > 0:
+				monthly_deduction = self.pmt(flt((self.interest_percentage*0.01)/12), flt(no_of_installments)*12, self.total_receivable_amount)
+			else:
+				monthly_deduction = flt(flt(self.total_receivable_amount)/(flt(no_of_installments)*12),2)
 			# self.monthly_deduction = math.ceil(monthly_deduction)
 			self.monthly_deduction = flt(monthly_deduction)
 			if self.customer_type == "Employee" and self.sales_order_type not in ("Employee Installment", "Cost Sharing Installment"):
@@ -489,7 +617,11 @@ class EMISales(SellingController):
 				self.recovery_end_date = self.due_date
 		elif self.credit_type == 'Due Date Payment':
 			self.monthly_deduction = self.net_amount
+		if self.is_existing == 1:
+			self.total_receivable_amount = flt(self.total_receivable_amount - self.no_of_installments_paid * self.monthly_deduction, 2)
+			self.outstanding_amount = flt(self.total_receivable_amount - self.no_of_installments_paid * self.monthly_deduction, 2)
 
+	@frappe.whitelist()
 	def set_status(self, update=False, status=None, update_modified=True):
 		if self.is_new():
 			if self.get('amended_from'):
@@ -524,7 +656,6 @@ class EMISales(SellingController):
 
 	def post_gl_for_payment(self):
 		gl_entries = self.get_gl_entries_for_payment()
-		# frappe.throw(str(gl_entries))
 		from erpnext.accounts.general_ledger import make_gl_entries
 		make_gl_entries(gl_entries, cancel=(self.docstatus == 2), update_outstanding="No", merge_entries=False, from_repost=False)
 
@@ -539,7 +670,7 @@ class EMISales(SellingController):
 		# revenue_bank_account = frappe.db.get_value("Branch", branch, "revenue_bank_account")
 		revenue_bank_account = frappe.db.get_single_value("Selling Settings", "default_revenue_bank_account")
 		cash_bank_account = None
-		prepaid_income_account = frappe.db.get_value("Company", self.company, "default_prepaid_income_account")
+		interest_income_account = frappe.db.get_value("Company", self.company, "default_interest_income_account")
 		income_account = None
 		# income_prepaid_account = frappe.db.get_single_value("Selling Settings", "default_income_prepaid_account")
 		income_prepaid_account = None
@@ -551,15 +682,15 @@ class EMISales(SellingController):
 			remaining = 1
 		elif flt(installment) < flt(remaining_installment) and flt(installment) > 1:
 			multi_installment = 1
-		for item in self.items:
-			if item.cash_bank_account:
-				cash_bank_account = item.cash_bank_account
-			if item.data_package:
-				data_package = item.data_package
-			if item.prepaid_income_account:
-				prepaid_income_account = item.prepaid_income_account
-			if item.income_account:
-				income_account = item.income_account
+		# for item in self.items:
+		# 	if item.cash_bank_account:
+		# 		cash_bank_account = item.cash_bank_account
+		# 	if item.data_package:
+		# 		data_package = item.data_package
+		# 	if item.interest_income_account:
+		# 		interest_income_account = item.interest_income_account
+		# 	if item.income_account:
+		# 		income_account = item.income_account
 		if not revenue_bank_account:
 			# frappe.throw("Setup Revenue Bank Account in Branch {}".format(branch))
 			frappe.throw("Setup Default Revenue Bank Account in Selling Settings")
@@ -581,8 +712,8 @@ class EMISales(SellingController):
 		emi_amount = flt(self.monthly_deduction * installment, 2)
 		if (flt(self.outstanding_amount) < self.monthly_deduction) or remaining == 1:
 			emi_amount = self.outstanding_amount
-		if remaining == 1:
-			data_package = data_package * remaining_installment
+		# if remaining == 1:
+		# 	data_package = data_package * remaining_installment
 		je.append("accounts", {
 				"account": revenue_bank_account,
 				"debit_in_account_currency": flt(emi_amount,2),
@@ -623,7 +754,7 @@ class EMISales(SellingController):
 		# jeb_branch = frappe.db.get_single_value("HR Accounts Settings", "le_payment_branch")
 		jeb = frappe.new_doc("Journal Entry")
 		jeb.flags.ignore_permissions = 1
-		jeb.title = "Prepaid Income from EMI Sales (" + self.customer + ")"
+		jeb.title = "Interest Income from EMI Sales (" + self.customer + ")"
 		jeb.voucher_type = "Journal Entry"
 		jeb.naming_series = "Journal Voucher"
 		jeb.remark = 'Prepaid Income from EMI Sales : ' + self.name +"\n Mode of Payment: "+mode_of_payment
@@ -632,24 +763,24 @@ class EMISales(SellingController):
 		jeb.branch = branch
 		jeb.emi_sales_installment = 0
 		jeb.append("accounts", {
-				"account": prepaid_income_account,
+				"account": interest_income_account,
 				"reference_type": "EMI Sales",
 				"reference_name": self.name,
 				"cost_center": cost_center,
-				"debit_in_account_currency": data_package,
-				"debit": data_package,
+				"debit_in_account_currency": self.total_interest_amount,
+				"debit": self.total_interest_amount,
 				"business_activity": "MBL",
 				"party_type": "Customer",
 				"party": self.customer
 			})
 
 		jeb.append("accounts", {
-				"account": income_prepaid_account if remaining == 0 else income_account,
+				"account": income_interest_account if remaining == 0 else income_account,
 				"cost_center": cost_center,
 				"reference_type": "EMI Sales",
 				"reference_name": self.name,
-				"credit_in_account_currency": data_package,
-				"credit": data_package,
+				"credit_in_account_currency": self.total_interest_amount,
+				"credit": self.total_interest_amount,
 				"business_activity": "MBL",
 			})
 		jeb.insert()
@@ -668,7 +799,7 @@ class EMISales(SellingController):
 			jep.branch = branch
 			jep.emi_sales_installment = 0
 			jep.append("accounts", {
-					"account": prepaid_income_account,
+					"account": interest_income_account,
 					"reference_type": "EMI Sales",
 					"reference_name": self.name,
 					"cost_center": cost_center,
@@ -704,8 +835,8 @@ class EMISales(SellingController):
 		# revenue_bank_account = frappe.db.get_value("Branch", branch, "revenue_bank_account")
 		revenue_bank_account = frappe.db.get_single_value("Selling Settings", "default_revenue_bank_account")
 		cash_bank_account = None
-		# prepaid_income_account = frappe.db.get_single_value("Selling Settings", "default_prepaid_income_account")
-		prepaid_income_account = frappe.db.get_value("Company", self.company, "default_prepaid_income_account")
+		# interest_income_account = frappe.db.get_single_value("Selling Settings", "default_interest_income_account")
+		interest_income_account = frappe.db.get_value("Company", self.company, "default_interest_income_account")
 		income_account = None
 		# income_prepaid_account = frappe.db.get_single_value("Selling Settings", "default_income_prepaid_account")
 		income_prepaid_account = None
@@ -722,8 +853,8 @@ class EMISales(SellingController):
 				cash_bank_account = item.cash_bank_account
 			if item.data_package:
 				data_package = item.data_package
-			if item.prepaid_income_account:
-				prepaid_income_account = item.prepaid_income_account
+			if item.interest_income_account:
+				interest_income_account = item.interest_income_account
 			if item.income_account:
 				income_account = item.income_account
 		if not revenue_bank_account:
@@ -745,7 +876,7 @@ class EMISales(SellingController):
 		jeb.branch = branch
 		jeb.emi_sales_installment = 0
 		jeb.append("accounts", {
-				"account": prepaid_income_account,
+				"account": interest_income_account,
 				"reference_type": "EMI Sales",
 				"reference_name": self.name,
 				"cost_center": cost_center,
@@ -781,7 +912,7 @@ class EMISales(SellingController):
 			jep.branch = branch
 			jep.emi_sales_installment = 0
 			jep.append("accounts", {
-					"account": prepaid_income_account,
+					"account": interest_income_account,
 					"reference_type": "EMI Sales",
 					"reference_name": self.name,
 					"cost_center": cost_center,
@@ -815,9 +946,9 @@ class EMISales(SellingController):
 			party = party_type = ''
 		return party, party_type
 
-	def cancel_budget(self):
-		if self.required_commission:
-			frappe.db.sql("delete from `tabConsumed Budget` where reference_type = %s and reference_no = %s",(str(self.doctype), str(self.name)))
+	# def cancel_budget(self):
+	# 	if self.required_commission:
+	# 		frappe.db.sql("delete from `tabConsumed Budget` where reference_type = %s and reference_no = %s",(str(self.doctype), str(self.name)))
 	
 	def consume_budget(self):
 		# check budget only for commission account
@@ -845,7 +976,7 @@ class EMISales(SellingController):
 	@frappe.whitelist()
 	def calculate_down_payment(self, rate):
 		down_payment = 0
-		if self.sales_order_type == "Cost Sharing Installment":
+		if self.sales_order_type == "Cost Sharing Installment" and rate > 0 and self.is_existing == 0:
 			if self.customer_type != "Employee":
 				frappe.throw("Cost sharing installment is only applicable for Employees.")
 			quota = frappe.db.get_value("Employee Grade", frappe.db.get_value("Employee", self.customer, "grade"), "cost_sharing_quotaamount")
@@ -854,12 +985,45 @@ class EMISales(SellingController):
 		return down_payment
 
 	def get_gl_entries_for_payment(self):
+		# commission_account	= frappe.db.get_single_value('Selling Settings','default_commission_account')
+		# tds_account			= frappe.db.get_single_value('Selling Settings','default_tds_account')
+		discount_account 	= frappe.db.get_value('Company', self.company, 'default_discount_account')
+		for a in self.items:
+			income_account = a.income_account
+		# tds_deducted_by_customer_account = frappe.db.get_single_value('Accounts Settings','tds_deducted')
+		bank_account = frappe.db.get_value("Company", self.company, "default_bank_account")
 		gl_entries = []
 		club_amt_ba_wise = frappe._dict()
 		count = 1
+		party_type = self.customer_type
+		party = self.customer
 		no_of_installation = 0
+		if self.down_payment == 1 and self.down_payment_amount > 0 and self.is_existing == 0:
+			gl_entries.append(
+				self.get_gl_dict({
+					"account": bank_account,
+					"against": self.customer,
+					"debit": flt(self.down_payment_amount,2),
+					"party_type":party_type,
+					"party":party,
+					"debit_in_account_currency": flt(self.down_payment_amount,2),
+					"cost_center": self.cost_center,
+					"company":self.company,
+					"currency":self.currency
+				}))
+			gl_entries.append(
+				self.get_gl_dict({
+					"account": income_account,
+					"against": self.customer,
+					"credit": flt(self.down_payment_amount,2),
+					"credit_in_account_currency": flt(self.down_payment_amount,2),
+					"cost_center": self.cost_center,
+					"company":self.company,
+					"currency":self.currency
+				}))
+
 		for item in self.items:
-			# frappe.msgprint("Here "+str(item.prepaid_income_account))
+			# frappe.msgprint("Here "+str(item.interest_income_account))
 			row = frappe._dict({'commission_amount':0,'tds_amount':0,
 								'tds_deducted_by_customer':0,'discount_amount':0,
 								'business_activity':item.business_activity,
@@ -876,42 +1040,56 @@ class EMISales(SellingController):
 
 				account_currency = get_account_currency(item.income_account)
 				party, party_type = self.account_type(item.income_account)
-				prepaid_party, prepaid_party_type = self.account_type(item.prepaid_income_account)
-				if self.payment_type not in ("External Customers", "Employee Installment"):
+				prepaid_party, prepaid_party_type = self.account_type(item.interest_income_account)
+				if self.payment_type not in ("External Customers", "Employee Installment", "Cost Sharing Installment"):
 					gl_entries.append(
 						self.get_gl_dict({
 							"account": item.income_account,
 							"against": self.customer,
-							"credit": flt(item.amount),
+							"credit": flt(item.amount-self.no_of_installments_paid * self.monthly_deduction,2),
 							"party_type":party_type,
 							"party":party,
-							"credit_in_account_currency": (flt(item.amount, item.precision("amount"))
+							"credit_in_account_currency": (flt(item.amount-self.no_of_installments_paid * self.monthly_deduction, item.precision("amount"))
 								if account_currency==self.company_currency
-								else flt(item.amount, item.precision("amount"))),
+								else flt(item.amount-self.no_of_installments_paid * self.monthly_deduction, item.precision("amount"))),
 							"cost_center": item.cost_center,
 							"business_activity": item.business_activity,
 							"company":self.company,
 							"currency":self.currency
 						}, account_currency, item=item))
 				else:
+					amount = flt(flt(item.rate)*flt(item.qty)-flt(self.down_payment_amount)-self.no_of_installments_paid * self.monthly_deduction,item.precision("amount"))
+					asset_received_account = frappe.db.get_value("Company", self.company, "asset_received_account")
 					gl_entries.append(
 						self.get_gl_dict({
 							"account": item.income_account,
 							"against": self.customer,
-							"credit": flt(flt(item.rate)*flt(item.qty),item.precision("amount")),
+							"credit": amount,
 							"party_type":party_type,
 							"party":party,
-							"credit_in_account_currency": (flt(flt(item.rate)*flt(item.qty), item.precision("amount"))
-								if account_currency==self.company_currency
-								else flt(flt(item.rate)*flt(item.qty), item.precision("amount"))),
+							"credit_in_account_currency": amount,
 							"cost_center": item.cost_center,
 							"business_activity": item.business_activity,
 							"company":self.company,
 							"currency":self.currency
 						}, account_currency, item=item))
-					if not item.prepaid_income_account:
-						item.prepaid_income_account = frappe.db.get_value("Company", self.company, "default_prepaid_income_account")
-						# item.prepaid_income_account = frappe.db.get_single_value("Selling Settings", "default_prepaid_income_account")
+					if self.sales_order_type == "Cost Sharing Installment":
+						gl_entries.append(
+							self.get_gl_dict({
+								"account": asset_received_account,
+								"against": self.customer,
+								"debit": flt(item.total_amount_received - self.no_of_installments_paid * self.monthly_deduction,2),
+								"party_type":party_type,
+								"party":party,
+								"debit_in_account_currency": flt(item.total_amount_received - self.no_of_installments_paid * self.monthly_deduction,2),
+								"cost_center": item.cost_center,
+								"business_activity": item.business_activity,
+								"company":self.company,
+								"currency":self.currency
+							}, account_currency, item=item))
+					if not item.interest_income_account:
+						item.interest_income_account = frappe.db.get_value("Company", self.company, "default_interest_income_account")
+						# item.interest_income_account = frappe.db.get_single_value("Selling Settings", "default_interest_income_account")
 					if self.sales_order_type == "External Customers":
 						no_of_installation = self.no_of_installation_external * 12
 					else:
@@ -920,21 +1098,20 @@ class EMISales(SellingController):
 						item.total_data_package = flt(item.data_package) * flt(no_of_installation)
 					# if frappe.session.user == "Administrator":
 					# 	frappe.throw(str(item.total_data_package))
-					gl_entries.append(
-						self.get_gl_dict({
-							"account": item.prepaid_income_account,
-							"against": self.customer,
-							"credit": flt(flt(item.total_data_package),item.precision("amount")),
-							"party_type":prepaid_party_type,
-							"party":prepaid_party,
-							"credit_in_account_currency": (flt(flt(item.total_data_package), item.precision("amount"))
-								if account_currency==self.company_currency
-								else flt(flt(item.total_data_package), item.precision("amount"))),
-							"cost_center": item.cost_center,
-							"business_activity": item.business_activity,
-							"company":self.company,
-							"currency":self.currency
-						}, account_currency, item=item))
+					if self.total_interest_amount > 0:
+						gl_entries.append(
+							self.get_gl_dict({
+								"account": item.interest_income_account,
+								"against": self.customer,
+								"credit": flt(flt(self.total_interest_amount),item.precision("amount")),
+								"party_type":prepaid_party_type,
+								"party":prepaid_party,
+								"credit_in_account_currency": flt(flt(self.total_interest_amount), item.precision("amount")),
+								"cost_center": item.cost_center,
+								"business_activity": item.business_activity,
+								"company":self.company,
+								"currency":self.currency
+							}, account_currency, item=item))
 				club_amt_ba_wise.setdefault(item.business_activity,[]).append(row)
 			count += 1
 
@@ -943,10 +1120,7 @@ class EMISales(SellingController):
 		else:
 			cash_bank_account =  frappe.db.get_value('Company',self.company,'default_cash_account')
 
-		commission_account	= frappe.db.get_single_value('Selling Settings','default_commission_account')
-		tds_account			= frappe.db.get_single_value('Selling Settings','default_tds_account')
-		discount_account 	= frappe.db.get_single_value('Selling Settings','default_discount_account')
-		tds_deducted_by_customer_account = frappe.db.get_single_value('Accounts Settings','tds_deducted')
+
 		if len(club_amt_ba_wise.keys()) > 1:
 			for key, item in club_amt_ba_wise.items():
 				row = frappe._dict({'commission_amount':0,'tds_amount':0,
@@ -978,42 +1152,42 @@ class EMISales(SellingController):
 							"against_voucher_type":self.doctype,
 							"against_voucher":self.name
 						}, account_currency))
-				if row.commission_amount > 0:
-					account_currency = get_account_currency(commission_account)
-					party, party_type = self.account_type(commission_account)
-					gl_entries.append(
-						self.get_gl_dict({
-							"account": commission_account,
-							"against": self.customer,
-							"party_type":party_type,
-							"party":party,
-							"debit": row.commission_amount,
-							"debit_in_account_currency": flt(row.commission_amount, self.precision("commission_amount"))
-								if account_currency == self.company_currency
-								else flt(row.commission_amount, self.precision("commission_amount")),
-							"company":self.company,
-							"currency":self.currency,
-							"cost_center": row.cost_center,
-							"business_activity": row.business_activity,
-						}, account_currency))
-				if row.tds_amount > 0:
-					account_currency = get_account_currency(tds_account)
-					party, party_type = self.account_type(tds_account)
-					gl_entries.append(
-						self.get_gl_dict({
-							"account": tds_account,
-							"party_type":party_type,
-							"party":party,
-							"against": self.customer ,
-							"credit": row.tds_amount,
-							"credit_in_account_currency": flt(row.tds_amount, self.precision("tds_amount"))
-								if account_currency == self.company_currency
-								else flt(row.tds_amount, self.precision("tds_amount")),
-							"cost_center": row.cost_center,
-							"business_activity": row.business_activity,
-							"company":self.company,
-							"currency":self.currency
-						}, account_currency))
+				# if row.commission_amount > 0:
+				# 	account_currency = get_account_currency(commission_account)
+				# 	party, party_type = self.account_type(commission_account)
+				# 	gl_entries.append(
+				# 		self.get_gl_dict({
+				# 			"account": commission_account,
+				# 			"against": self.customer,
+				# 			"party_type":party_type,
+				# 			"party":party,
+				# 			"debit": row.commission_amount,
+				# 			"debit_in_account_currency": flt(row.commission_amount, self.precision("commission_amount"))
+				# 				if account_currency == self.company_currency
+				# 				else flt(row.commission_amount, self.precision("commission_amount")),
+				# 			"company":self.company,
+				# 			"currency":self.currency,
+				# 			"cost_center": row.cost_center,
+				# 			"business_activity": row.business_activity,
+				# 		}, account_currency))
+				# if row.tds_amount > 0:
+				# 	account_currency = get_account_currency(tds_account)
+				# 	party, party_type = self.account_type(tds_account)
+				# 	gl_entries.append(
+				# 		self.get_gl_dict({
+				# 			"account": tds_account,
+				# 			"party_type":party_type,
+				# 			"party":party,
+				# 			"against": self.customer ,
+				# 			"credit": row.tds_amount,
+				# 			"credit_in_account_currency": flt(row.tds_amount, self.precision("tds_amount"))
+				# 				if account_currency == self.company_currency
+				# 				else flt(row.tds_amount, self.precision("tds_amount")),
+				# 			"cost_center": row.cost_center,
+				# 			"business_activity": row.business_activity,
+				# 			"company":self.company,
+				# 			"currency":self.currency
+				# 		}, account_currency))
 				if row.discount_amount > 0:
 					account_currency = get_account_currency(discount_account)
 					party, party_type = self.account_type(discount_account)
@@ -1033,25 +1207,25 @@ class EMISales(SellingController):
 							"against_voucher_type":self.doctype,
 							"against_voucher":self.name
 						}, account_currency))
-				if row.tds_deducted_by_customer > 0:
-					account_currency = get_account_currency(tds_deducted_by_customer_account)
-					party, party_type = self.account_type(tds_deducted_by_customer_account)
-					gl_entries.append(
-						self.get_gl_dict({
-							"account": tds_deducted_by_customer_account,
-							"party_type":party_type,
-							"party":party,
-							"debit": row.tds_deducted_by_customer,
-							"debit_in_account_currency": flt(row.tds_deducted_by_customer, self.precision("tds_deducted_by_customer"))
-								if account_currency==self.company_currency
-								else flt(row.tds_deducted_by_customer, self.precision("tds_deducted_by_customer")),
-							"cost_center": row.cost_center,
-							"business_activity": row.business_activity,
-							"company":self.company,
-							"currency":self.currency,
-							"against_voucher_type":self.doctype,
-							"against_voucher":self.name
-						}, account_currency))
+				# if row.tds_deducted_by_customer > 0:
+				# 	account_currency = get_account_currency(tds_deducted_by_customer_account)
+				# 	party, party_type = self.account_type(tds_deducted_by_customer_account)
+				# 	gl_entries.append(
+				# 		self.get_gl_dict({
+				# 			"account": tds_deducted_by_customer_account,
+				# 			"party_type":party_type,
+				# 			"party":party,
+				# 			"debit": row.tds_deducted_by_customer,
+				# 			"debit_in_account_currency": flt(row.tds_deducted_by_customer, self.precision("tds_deducted_by_customer"))
+				# 				if account_currency==self.company_currency
+				# 				else flt(row.tds_deducted_by_customer, self.precision("tds_deducted_by_customer")),
+				# 			"cost_center": row.cost_center,
+				# 			"business_activity": row.business_activity,
+				# 			"company":self.company,
+				# 			"currency":self.currency,
+				# 			"against_voucher_type":self.doctype,
+				# 			"against_voucher":self.name
+				# 		}, account_currency))
 		else:
 			for key, item in club_amt_ba_wise.items():
 				ba = key
@@ -1075,42 +1249,42 @@ class EMISales(SellingController):
 						"against_voucher_type":self.doctype,
 						"against_voucher":self.name
 					}, account_currency))
-			if self.commission_amount > 0:
-				account_currency = get_account_currency(commission_account)
-				party, party_type = self.account_type(commission_account)
-				gl_entries.append(
-					self.get_gl_dict({
-						"account": commission_account,
-						"against": self.customer,
-						"party_type":party_type,
-						"party":party,
-						"debit": self.commission_amount,
-						"debit_in_account_currency": flt(self.commission_amount, self.precision("commission_amount"))
-							if account_currency==self.company_currency
-							else flt(self.commission_amount, self.precision("commission_amount")),
-						"company":self.company,
-						"currency":self.currency,
-						"cost_center": self.cost_center,
-						"business_activity": ba,
-					}, account_currency))
-			if self.tds_amount > 0:
-				account_currency = get_account_currency(tds_account)
-				party, party_type = self.account_type(tds_account)
-				gl_entries.append(
-					self.get_gl_dict({
-						"account": tds_account,
-						"party_type":party_type,
-						"party":party,
-						"against": self.customer ,
-						"credit": self.tds_amount,
-						"credit_in_account_currency": flt(self.tds_amount, self.precision("tds_amount"))
-							if account_currency==self.company_currency
-							else flt(self.tds_amount, self.precision("tds_amount")),
-						"cost_center": self.cost_center,
-						"business_activity": ba,
-						"company":self.company,
-						"currency":self.currency
-					}, account_currency))
+			# if self.commission_amount > 0:
+			# 	account_currency = get_account_currency(commission_account)
+			# 	party, party_type = self.account_type(commission_account)
+			# 	gl_entries.append(
+			# 		self.get_gl_dict({
+			# 			"account": commission_account,
+			# 			"against": self.customer,
+			# 			"party_type":party_type,
+			# 			"party":party,
+			# 			"debit": self.commission_amount,
+			# 			"debit_in_account_currency": flt(self.commission_amount, self.precision("commission_amount"))
+			# 				if account_currency==self.company_currency
+			# 				else flt(self.commission_amount, self.precision("commission_amount")),
+			# 			"company":self.company,
+			# 			"currency":self.currency,
+			# 			"cost_center": self.cost_center,
+			# 			"business_activity": ba,
+			# 		}, account_currency))
+			# if self.tds_amount > 0:
+			# 	account_currency = get_account_currency(tds_account)
+			# 	party, party_type = self.account_type(tds_account)
+			# 	gl_entries.append(
+			# 		self.get_gl_dict({
+			# 			"account": tds_account,
+			# 			"party_type":party_type,
+			# 			"party":party,
+			# 			"against": self.customer ,
+			# 			"credit": self.tds_amount,
+			# 			"credit_in_account_currency": flt(self.tds_amount, self.precision("tds_amount"))
+			# 				if account_currency==self.company_currency
+			# 				else flt(self.tds_amount, self.precision("tds_amount")),
+			# 			"cost_center": self.cost_center,
+			# 			"business_activity": ba,
+			# 			"company":self.company,
+			# 			"currency":self.currency
+			# 		}, account_currency))
 			if self.discount_amount > 0:
 				account_currency = get_account_currency(discount_account)
 				party, party_type = self.account_type(discount_account)
@@ -1130,25 +1304,25 @@ class EMISales(SellingController):
 						"against_voucher_type":self.doctype,
 						"against_voucher":self.name
 					}, account_currency))
-			if self.total_tds_deducted_by_customer > 0:
-				account_currency = get_account_currency(tds_deducted_by_customer_account)
-				party, party_type = self.account_type(tds_deducted_by_customer_account)
-				gl_entries.append(
-					self.get_gl_dict({
-						"account": tds_deducted_by_customer_account,
-						"party_type":party_type,
-						"party":party,
-						"debit": self.total_tds_deducted_by_customer,
-						"debit_in_account_currency": flt(self.total_tds_deducted_by_customer, self.precision("total_tds_deducted_by_customer"))
-							if account_currency==self.company_currency
-							else flt(self.total_tds_deducted_by_customer, self.precision("total_tds_deducted_by_customer")),
-						"cost_center": self.cost_center,
-						"business_activity": ba,
-						"company":self.company,
-						"currency":self.currency,
-						"against_voucher_type":self.doctype,
-						"against_voucher":self.name
-					}, account_currency))
+			# if self.total_tds_deducted_by_customer > 0:
+			# 	account_currency = get_account_currency(tds_deducted_by_customer_account)
+			# 	party, party_type = self.account_type(tds_deducted_by_customer_account)
+			# 	gl_entries.append(
+			# 		self.get_gl_dict({
+			# 			"account": tds_deducted_by_customer_account,
+			# 			"party_type":party_type,
+			# 			"party":party,
+			# 			"debit": self.total_tds_deducted_by_customer,
+			# 			"debit_in_account_currency": flt(self.total_tds_deducted_by_customer, self.precision("total_tds_deducted_by_customer"))
+			# 				if account_currency==self.company_currency
+			# 				else flt(self.total_tds_deducted_by_customer, self.precision("total_tds_deducted_by_customer")),
+			# 			"cost_center": self.cost_center,
+			# 			"business_activity": ba,
+			# 			"company":self.company,
+			# 			"currency":self.currency,
+			# 			"against_voucher_type":self.doctype,
+			# 			"against_voucher":self.name
+			# 		}, account_currency))
 		return gl_entries
 			
 	def calculate_amount(self):
@@ -1298,6 +1472,19 @@ class EMISales(SellingController):
 
 		elif self.customer_type == 'Employee':
 			self.customer_name, self.customer_group = frappe.db.get_value('Employee',self.customer,['employee_name','customer_group'])
+		interest = 0
+		count = frappe.db.get_value("select count(name) count from `tabEMI Sales` where customer = '{}' and docstatus = 1 and status != 'Paid'".format(self.customer), as_dict=1)
+		if not count:
+			count = 0
+		else:
+			count = count[0].count
+		if self.sales_order_type == "Cost Sharing Installment":
+			if count > 0:
+				interest = 7
+		else:
+			interest = 12
+
+		return interest
 
 	# assign warehouse if there is only one
 	@frappe.whitelist()
@@ -1387,9 +1574,9 @@ def set_actual_qty(item_code,warehouse):
 @frappe.whitelist()
 def get_default_income_account(item_code, company):
 	# acc = frappe.db.get_value("Item",{'name':item_code},["credit_or_debit_acc"])
-	# if not frappe.db.get_value("Company", company, "default_prepaid_income_account"):
-	if not frappe.db.get_value("Company", company, "default_prepaid_expense_account"):
-		frappe.throw("Please set Default Prepaid Expense Account in Company Settings.".format(company))
+	# if not frappe.db.get_value("Company", company, "default_interest_income_account"):
+	# if not frappe.db.get_value("Company", company, "default_prepaid_expense_account"):
+	# 	frappe.throw("Please set Default Prepaid Expense Account in Company Settings.".format(company))
 	row = {}
 	# if acc:
 	# 	row['income_account'] = acc
@@ -1397,8 +1584,8 @@ def get_default_income_account(item_code, company):
 	income_acc, exp_acc = frappe.db.get_value("Item Default",{"parent":item_code},["income_account","expense_account"])
 	row['income_account'] = income_acc
 	row['expense_account'] = exp_acc
-	# row['prepaid_income_account'] = frappe.db.get_single_value("Selling Settings", "default_prepaid_income_account")
-	row['prepaid_income_account'] = frappe.db.get_value("Company", company, "default_prepaid_income_account")
+	# row['interest_income_account'] = frappe.db.get_single_value("Selling Settings", "default_interest_income_account")
+	row['interest_income_account'] = frappe.db.get_value("Company", company, "default_interest_income_account")
 	return row
 @frappe.whitelist()
 def apply_item_filter(doctype, txt, searchfield, start, page_len, filters):
@@ -1450,6 +1637,14 @@ def get_payment_type(doctype, txt, searchfield, start, page_len, filters):
 def get_sales_order(doctype, txt, searchfield, start, page_len, filters):
 	cond = ''
 	txt = txt.replace("'", "''")
+	interest = 0
+	count = frappe.db.get_value("select count(name) count from `tabEMI Sales` where customer = '{}' and docstatus = 1 and status != 'Paid'".format(self.customer), as_dict=1)
+	if not count:
+		count = 0
+	else:
+		count = count[0].count
+	if int(count) > 0:
+		interest = 7
 	if txt:
 		cond += ' or `tabEMI Sales Type Item`.customer_group like "{}"'.format(txt)
 	if filters['customer_type'] != 'Customer':

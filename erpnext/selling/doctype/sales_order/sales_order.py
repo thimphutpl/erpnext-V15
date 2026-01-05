@@ -68,6 +68,7 @@ class SalesOrder(SellingController):
 		branch: DF.Link
 		business_activity: DF.Link | None
 		c2_id: DF.Data | None
+		c2_status: DF.Link | None
 		campaign: DF.Link | None
 		chasses_no: DF.Data | None
 		commission_rate: DF.Float
@@ -143,6 +144,7 @@ class SalesOrder(SellingController):
 		sales_team: DF.Table[SalesTeam]
 		select_print_heading: DF.Link | None
 		selling_price_list: DF.Link
+		service_sales_jobcard: DF.Link | None
 		set_warehouse: DF.Link
 		shipping_address: DF.SmallText | None
 		shipping_address_name: DF.Link | None

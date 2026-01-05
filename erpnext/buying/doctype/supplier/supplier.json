@@ -15,6 +15,7 @@
   "supplier_tpn_no",
   "country",
   "attention_person",
+  "branch",
   "column_break0",
   "supplier_group",
   "supplier_type",
@@ -677,6 +678,13 @@
    "in_list_view": 1,
    "label": "Internal Customer Account",
    "options": "Account"
+  },
+  {
+   "depends_on": "eval: doc.supplier_group == \"Internal\"",
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "label": "Branch",
+   "options": "Branch"
   }
  ],
  "icon": "fa fa-user",
@@ -689,8 +697,8 @@
    "link_fieldname": "party"
   }
  ],
- "modified": "2025-11-25 16:50:31.588425",
- "modified_by": "Administrator",
+ "modified": "2025-12-22 12:31:32.712973",
+ "modified_by": "kalden.dorji@thimphutechpark.bt",
  "module": "Buying",
  "name": "Supplier",
  "naming_rule": "By \"Naming Series\" field",

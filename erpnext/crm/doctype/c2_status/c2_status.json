@@ -15,6 +15,7 @@
   "primary_address",
   "customer_details",
   "customer_track_id",
+  "id_card_no",
   "column_break_mblg",
   "responsible_branch",
   "customer_report",
@@ -32,8 +33,9 @@
   },
   {
    "fieldname": "customer_id",
-   "fieldtype": "Data",
-   "label": "Customer ID"
+   "fieldtype": "Link",
+   "label": "Customer ID",
+   "options": "Customer"
   },
   {
    "fieldname": "salutation",
@@ -114,14 +116,20 @@
    "label": "Customer Track ID",
    "options": "Customer Track",
    "read_only": 1
+  },
+  {
+   "fetch_from": "customer_id.cid_no",
+   "fieldname": "id_card_no",
+   "fieldtype": "Data",
+   "label": "ID Card No."
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-12 13:21:47.801335",
- "modified_by": "Administrator",
+ "modified": "2025-12-25 10:30:25.823255",
+ "modified_by": "kalden.dorji@thimphutechpark.bt",
  "module": "CRM",
  "name": "C2 Status",
  "naming_rule": "Expression",

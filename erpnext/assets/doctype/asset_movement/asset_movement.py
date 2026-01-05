@@ -114,13 +114,16 @@ class AssetMovement(Document):
 
 			if company != self.company:
 				frappe.throw(_("Asset {0} does not belong to company {1}").format(d.asset, self.company))
-
-			if not (d.source_cost_center and d.from_employee and d.to_employee):
-				frappe.throw(_("Source Cost Center, From Employee, To Employee must be required"))
+			if self.based_on == "Custodian":
+				if not (d.from_employee and (d.to_employee or d.target_cost_center)):
+					frappe.throw(_("From Employee, To Employee, Target Cost Center must be required"))
+			else:
+				if not (d.source_cost_center and (d.to_employee or d.target_cost_center)):
+					frappe.throw(_("Source Cost Center, To Employee, Target Cost Center must be required"))
 
 			""" update target details """
-			d.target_cost_center = frappe.get_value("Employee", d.to_employee, "cost_center")
-			d.to_employee_name = frappe.get_value("Employee", d.to_employee, "employee_name")
+			d.target_cost_center = d.target_cost_center if not d.to_employee else frappe.get_value("Employee", d.to_employee, "cost_center")
+			d.to_employee_name = "" if not d.to_employee else frappe.get_value("Employee", d.to_employee, "employee_name")
 			if not d.target_cost_center:
 				frappe.throw(_("Missing Cost Center value in Employee for {0}").format(d.to_employee))
 
@@ -150,7 +153,7 @@ class AssetMovement(Document):
 					frappe.throw(_("Employee is required while issuing Asset {0}").format(d.asset))
 
 			if self.purpose == "Transfer":
-				if not d.to_employee:
+				if not d.to_employee and not d.target_cost_center:
 					frappe.throw(
 						_(
 							"Missing To Employee at #Row:{0}"
@@ -352,10 +355,16 @@ class AssetMovement(Document):
 			# 	self.to_employee=''
 
 			condition_statement=''
+			target_cost_center=''
 			if self.based_on == 'Custodian':
 				condition_statement = f"custodian = '{self.from_employee}'"
+				if self.to_employee:
+					target_cost_center = frappe.db.get_value("Employee",self.to_employee,"cost_center")
+				else:
+					target_cost_center = self.to_cost_center
 			else:
-				condition_statement = f"cost_center = '{self.cost_center}'"
+				condition_statement = f"cost_center = '{self.cost_center}' AND (custodian IS NULL OR custodian = '')"
+				target_cost_center = self.to_cost_center
 			
 			asset_list = frappe.db.sql("""
 				select name, custodian_name, custodian, cost_center
@@ -373,7 +382,7 @@ class AssetMovement(Document):
 							"to_employee":self.to_employee,
 							"from_employee_name":x.custodian_name, 
 							"source_cost_center":x.cost_center,
-							"target_cost_center":frappe.db.get_value("Employee",self.to_employee,"cost_center"),
+							"target_cost_center":target_cost_center,
 							}
 					row.update(data)
 			else:

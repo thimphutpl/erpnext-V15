@@ -23,6 +23,9 @@ class CustomerQuotationDetails(Document):
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
+		price_costing: DF.Link | None
 		quantity: DF.Data | None
+		rate: DF.Data | None
+		uom: DF.Data | None
 	# end: auto-generated types
 	pass

@@ -34,6 +34,7 @@ class POLAdvance(Document):
 		od_adjusted: DF.Currency
 		od_amount: DF.Currency
 		od_balance: DF.Currency
+		outsourced: DF.Check
 		posting_date: DF.Date
 		posting_time: DF.Time
 		status: DF.Literal["Draft", "Paid", "Unpaid", "Cancelled"]

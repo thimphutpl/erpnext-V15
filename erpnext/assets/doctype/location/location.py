@@ -38,6 +38,9 @@ class Location(NestedSet):
 
 	nsm_parent_field = "parent_location"
 
+	def autoname(self):
+		self.location_name_to_uppercase()
+
 	def validate(self):
 		self.calculate_location_area()
 
@@ -53,6 +56,10 @@ class Location(NestedSet):
 		update_nsm(self)
 		self.remove_ancestor_location_features()
 		# super(Location, self).on_update()
+	
+	def location_name_to_uppercase(self):
+		self.location_name = self.location_name.upper()
+		self.name = self.location_name.upper()
 
 	def calculate_location_area(self):
 		features = self.get_location_features()
