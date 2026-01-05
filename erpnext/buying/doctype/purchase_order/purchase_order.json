@@ -13,6 +13,7 @@
   "business_activity",
   "naming_series",
   "title",
+  "order_type",
   "branch",
   "supplier",
   "get_items_from_open_material_requests",
@@ -141,6 +142,8 @@
   "more_info",
   "ref_sq",
   "enote_id",
+  "c2_status",
+  "tax_payment_jv",
   "column_break_74",
   "party_account_currency",
   "is_internal_supplier",
@@ -164,7 +167,7 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "in_standard_filter": 1,
-   "label": "Title",
+   "label": "Order Reference ",
    "print_hide": 1,
    "reqd": 1
   },
@@ -598,13 +601,11 @@
   {
    "fieldname": "section_break_52",
    "fieldtype": "Section Break",
-   "hidden": 1,
    "hide_border": 1
   },
   {
    "fieldname": "taxes",
    "fieldtype": "Table",
-   "label": "Purchase Taxes and Charges",
    "oldfieldname": "purchase_tax_details",
    "oldfieldtype": "Table",
    "options": "Purchase Taxes and Charges"
@@ -824,8 +825,8 @@
    "default": "1",
    "fieldname": "disable_rounded_total",
    "fieldtype": "Check",
-   "hidden": 1,
-   "label": "Disable Rounded Total"
+   "label": "Disable Rounded Total",
+   "read_only": 1
   },
   {
    "fieldname": "in_words",
@@ -1235,14 +1236,35 @@
    "label": "eNote ID",
    "options": "eNote",
    "read_only": 1
+  },
+  {
+   "fieldname": "order_type",
+   "fieldtype": "Select",
+   "label": "Order Type",
+   "options": "\nConfirm Order\nStock Order",
+   "reqd": 1
+  },
+  {
+   "fieldname": "c2_status",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "C2 Status",
+   "options": "C2 Status"
+  },
+  {
+   "fieldname": "tax_payment_jv",
+   "fieldtype": "Link",
+   "label": "Tax Payment Journal",
+   "options": "Journal Entry",
+   "read_only": 1
   }
  ],
  "icon": "fa fa-file-text",
  "idx": 105,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-12-11 10:29:17.575149",
- "modified_by": "kalden.dorji@thimphutechpark.bt",
+ "modified": "2025-12-31 13:50:02.822216",
+ "modified_by": "Administrator",
  "module": "Buying",
  "name": "Purchase Order",
  "naming_rule": "Expression (old style)",

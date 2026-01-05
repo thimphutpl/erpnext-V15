@@ -66,15 +66,15 @@ class PurchaseReceipt(BuyingController):
 		contact_person: DF.Link | None
 		conversion_rate: DF.Float
 		cost_center: DF.Link | None
-		cost_per_kl: DF.Currency
-		cost_per_kl_incl: DF.Currency
+		cost_per_l: DF.Currency
+		cost_per_l_incl: DF.Currency
 		currency: DF.Link
 		delay_by: DF.Int
 		depot_charges_per_kl: DF.Currency
 		dip_details: DF.Table[DipDetails]
 		disable_rounded_total: DF.Check
 		discount_amount: DF.Currency
-		dispatch_quantity: DF.Float
+		dispatch_qty: DF.Float
 		enote_id: DF.Link | None
 		export_invoice_no: DF.Data | None
 		fro_combined: DF.Float
@@ -155,6 +155,8 @@ class PurchaseReceipt(BuyingController):
 		total_qty: DF.Float
 		total_taxes_and_charges: DF.Currency
 		transporter_name: DF.Data | None
+		ug_loss_amt: DF.Currency
+		ug_loss_ltrs: DF.Float
 		ug_qty: DF.Float
 		voucher_no: DF.Data | None
 	# end: auto-generated types
@@ -269,8 +271,9 @@ class PurchaseReceipt(BuyingController):
 		self.reset_default_field_value("set_warehouse", "items", "warehouse")
 		self.reset_default_field_value("rejected_warehouse", "items", "rejected_warehouse")
 		self.reset_default_field_value("set_from_warehouse", "items", "from_warehouse")
+
 	def calculate_delay_days(self):
-		if self.actual_receipt_date and self.schedule_date < self.actual_receipt_date:
+		if self.actual_receipt_date and self.schedule_date and self.schedule_date < self.actual_receipt_date:
 			self.delay_by = flt(date_diff(self.actual_receipt_date,self.schedule_date)) -1
 		else:
 			self.delay_by = 0
@@ -1227,7 +1230,6 @@ def make_stock_entry(source_name, target_doc=None):
 	)
 
 	return doclist
-
 
 @frappe.whitelist()
 def make_inter_company_delivery_note(source_name, target_doc=None):

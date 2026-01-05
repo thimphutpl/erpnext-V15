@@ -11,6 +11,8 @@
   "add_deduct_tax",
   "charge_type",
   "row_id",
+  "is_gst",
+  "is_custom_charges",
   "included_in_print_rate",
   "included_in_paid_amount",
   "col_break1",
@@ -22,6 +24,8 @@
   "accounting_dimensions_section",
   "cost_center",
   "dimension_col_break",
+  "party_type",
+  "party",
   "section_break_9",
   "account_currency",
   "tax_amount",
@@ -41,7 +45,7 @@
    "label": "Consider Tax or Charge for",
    "oldfieldname": "category",
    "oldfieldtype": "Select",
-   "options": "Valuation and Total\nValuation\nTotal",
+   "options": "Valuation and Total\nValuation\nTotal\nNone",
    "reqd": 1
   },
   {
@@ -51,7 +55,7 @@
    "label": "Add or Deduct",
    "oldfieldname": "add_deduct_tax",
    "oldfieldtype": "Select",
-   "options": "Deduct\nAdd",
+   "options": "Deduct\nAdd\nNone",
    "reqd": 1
   },
   {
@@ -233,18 +237,43 @@
    "fieldtype": "Check",
    "label": "Is Tax Withholding Account",
    "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_gst",
+   "fieldtype": "Check",
+   "label": "Is GST?"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_custom_charges",
+   "fieldtype": "Check",
+   "label": "Is Custom Charges?"
+  },
+  {
+   "fieldname": "party_type",
+   "fieldtype": "Select",
+   "label": "Party Type",
+   "options": "\nSupplier"
+  },
+  {
+   "fieldname": "party",
+   "fieldtype": "Dynamic Link",
+   "label": "Party",
+   "options": "party_type"
   }
  ],
  "idx": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-06-17 17:50:07.849953",
+ "modified": "2025-12-31 13:45:55.019482",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Purchase Taxes and Charges",
  "naming_rule": "Random",
  "owner": "Administrator",
  "permissions": [],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],

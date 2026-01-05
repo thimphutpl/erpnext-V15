@@ -10,14 +10,15 @@
   "fg_item",
   "fg_item_qty",
   "item_code",
-  "supplier_part_no",
+  "part_number",
   "item_name",
+  "item_group",
+  "item_sub_group",
   "brand",
   "product_bundle",
   "column_break_4",
   "schedule_date",
   "expected_delivery_date",
-  "item_group",
   "section_break_5",
   "description",
   "warehouse_and_reference",
@@ -59,6 +60,7 @@
   "rate",
   "amount",
   "item_tax_template",
+  "gst_amount",
   "column_break_kwjd",
   "base_rate",
   "base_amount",
@@ -124,14 +126,6 @@
    "reqd": 1
   },
   {
-   "fieldname": "supplier_part_no",
-   "fieldtype": "Data",
-   "hidden": 1,
-   "label": "Supplier Part Number",
-   "print_hide": 1,
-   "read_only": 1
-  },
-  {
    "fetch_from": "item_code.item_name",
    "fieldname": "item_name",
    "fieldtype": "Data",
@@ -152,12 +146,10 @@
    "columns": 2,
    "fieldname": "schedule_date",
    "fieldtype": "Date",
-   "in_list_view": 1,
    "label": "Required By",
    "oldfieldname": "schedule_date",
    "oldfieldtype": "Date",
-   "print_hide": 1,
-   "reqd": 1
+   "print_hide": 1
   },
   {
    "allow_on_submit": 1,
@@ -176,7 +168,6 @@
   {
    "fieldname": "description",
    "fieldtype": "Text Editor",
-   "in_list_view": 1,
    "label": "Description",
    "oldfieldname": "description",
    "oldfieldtype": "Small Text"
@@ -222,7 +213,6 @@
    "columns": 1,
    "fieldname": "uom",
    "fieldtype": "Link",
-   "in_list_view": 1,
    "label": "UOM",
    "oldfieldname": "uom",
    "oldfieldtype": "Link",
@@ -543,9 +533,9 @@
    "fieldtype": "Column Break"
   },
   {
+   "fetch_from": "item_code.item_group",
    "fieldname": "item_group",
    "fieldtype": "Link",
-   "hidden": 1,
    "label": "Item Group",
    "oldfieldname": "item_group",
    "oldfieldtype": "Link",
@@ -911,14 +901,36 @@
    "label": "Business Activity",
    "options": "Business Activity",
    "read_only": 1
+  },
+  {
+   "fetch_from": "item_code.parts_no",
+   "fieldname": "part_number",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Part Number",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fetch_from": "item_code.item_sub_group",
+   "fieldname": "item_sub_group",
+   "fieldtype": "Data",
+   "label": "Item Sub Group",
+   "read_only": 1
+  },
+  {
+   "fieldname": "gst_amount",
+   "fieldtype": "Currency",
+   "label": "GST Amount",
+   "read_only": 1
   }
  ],
  "idx": 1,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-11-12 12:01:00.632190",
- "modified_by": "Administrator",
+ "modified": "2025-12-30 11:55:41.106088",
+ "modified_by": "kalden.dorji@thimphutechpark.bt",
  "module": "Buying",
  "name": "Purchase Order Item",
  "naming_rule": "Random",

@@ -43,12 +43,14 @@ class PurchaseOrderItem(Document):
 		fg_item: DF.Link | None
 		fg_item_qty: DF.Float
 		from_warehouse: DF.Link | None
+		gst_amount: DF.Currency
 		include_exploded_items: DF.Check
 		is_fixed_asset: DF.Check
 		is_free_item: DF.Check
 		item_code: DF.Link
 		item_group: DF.Link | None
 		item_name: DF.Data
+		item_sub_group: DF.Data | None
 		item_tax_rate: DF.Code | None
 		item_tax_template: DF.Link | None
 		last_purchase_rate: DF.Currency
@@ -64,6 +66,7 @@ class PurchaseOrderItem(Document):
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
+		part_number: DF.Data | None
 		price_list_rate: DF.Currency
 		pricing_rules: DF.SmallText | None
 		product_bundle: DF.Link | None
@@ -79,11 +82,10 @@ class PurchaseOrderItem(Document):
 		sales_order: DF.Link | None
 		sales_order_item: DF.Data | None
 		sales_order_packed_item: DF.Data | None
-		schedule_date: DF.Date
+		schedule_date: DF.Date | None
 		stock_qty: DF.Float
 		stock_uom: DF.Link
 		stock_uom_rate: DF.Currency
-		supplier_part_no: DF.Data | None
 		supplier_quotation: DF.Link | None
 		supplier_quotation_item: DF.Link | None
 		total_weight: DF.Float

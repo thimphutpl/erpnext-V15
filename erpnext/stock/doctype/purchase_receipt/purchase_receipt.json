@@ -152,20 +152,22 @@
   "hpcl_tt_receipt_date",
   "export_invoice_no",
   "invoice_no",
-  "cost_per_kl",
-  "cost_per_kl_incl",
+  "cost_per_l",
+  "cost_per_l_incl",
   "challan_no",
   "sb_calibrated_dip",
   "dip_details",
   "sb_product_details",
-  "dispatch_quantity",
+  "dispatch_qty",
+  "shrinkage_qty",
   "column_break_ggzs",
   "receipt_qty",
+  "shrinkage_amt",
   "sb_ug_tank",
   "ug_qty",
-  "shrinkage_amt",
   "column_break_jyzj",
-  "shrinkage_qty",
+  "ug_loss_ltrs",
+  "ug_loss_amt",
   "fro_density_section",
   "fro_i",
   "fro_iv",
@@ -188,7 +190,7 @@
    "default": "{supplier_name}",
    "fieldname": "title",
    "fieldtype": "Data",
-   "label": "Title",
+   "label": "Order Reference ",
    "no_copy": 1,
    "print_hide": 1
   },
@@ -1257,14 +1259,18 @@
    "label": "Loading Date"
   },
   {
+   "default": "0",
    "fieldname": "rate_per_kl",
    "fieldtype": "Currency",
-   "label": "Rate Per KL"
+   "label": "Rate Per KL",
+   "precision": "2"
   },
   {
+   "default": "0",
    "fieldname": "depot_charges_per_kl",
    "fieldtype": "Currency",
-   "label": "Depot Charges Per KL"
+   "label": "Depot Charges Per KL",
+   "precision": "2"
   },
   {
    "fieldname": "column_break_doan",
@@ -1286,16 +1292,6 @@
    "label": "Invoice No"
   },
   {
-   "fieldname": "cost_per_kl",
-   "fieldtype": "Currency",
-   "label": "Cost Per KL"
-  },
-  {
-   "fieldname": "cost_per_kl_incl",
-   "fieldtype": "Currency",
-   "label": "Cost Per KL Incl. Tax"
-  },
-  {
    "fieldname": "pi_no_and_date",
    "fieldtype": "Data",
    "label": "PI No and Date"
@@ -1314,12 +1310,6 @@
   {
    "fieldname": "sb_product_details",
    "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "dispatch_quantity",
-   "fieldtype": "Float",
-   "label": "Dispatch Quantity",
-   "precision": "2"
   },
   {
    "fieldname": "column_break_ggzs",
@@ -1427,13 +1417,44 @@
    "fieldtype": "Float",
    "label": "Shrinkage Quantity",
    "precision": "2"
+  },
+  {
+   "default": "0",
+   "fieldname": "cost_per_l",
+   "fieldtype": "Currency",
+   "label": "Cost Per Litre",
+   "precision": "2"
+  },
+  {
+   "default": "0",
+   "fieldname": "cost_per_l_incl",
+   "fieldtype": "Currency",
+   "label": "Cost Per Litre Incl. Tax",
+   "precision": "2"
+  },
+  {
+   "fieldname": "dispatch_qty",
+   "fieldtype": "Float",
+   "label": "Dispatch Quantity",
+   "precision": "2"
+  },
+  {
+   "fieldname": "ug_loss_ltrs",
+   "fieldtype": "Float",
+   "label": "UG Loss (Litres)"
+  },
+  {
+   "fieldname": "ug_loss_amt",
+   "fieldtype": "Currency",
+   "label": "UG Loss (Amount)",
+   "precision": "2"
   }
  ],
  "icon": "fa fa-truck",
  "idx": 261,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-12-08 12:56:23.322968",
+ "modified": "2025-12-30 11:33:14.368279",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Purchase Receipt",

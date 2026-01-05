@@ -73,6 +73,20 @@ frappe.ui.form.on("Purchase Order", {
 	},
 
 	refresh: function (frm) {
+		if(cur_frm.doc.supplier && cur_frm.doc.docstatus == 1){
+			frappe.db.get_value("Supplier", frm.doc.supplier, "country", (r)=>{
+				if(r.country != "Bhutan" && frm.doc.supplier && frm.doc.docstatus == 1){
+					if(!cur_frm.doc.tax_payment_jv){
+						cur_frm.add_custom_button(
+							__("Tax Payment Journal"),
+							make_tax_payment,
+							__("Create")
+						);
+					}
+				}
+			})
+
+		}
 		if (frm.doc.is_old_subcontracting_flow) {
 			frm.trigger("get_materials_from_supplier");
 
@@ -86,7 +100,18 @@ frappe.ui.form.on("Purchase Order", {
 		}
 		
 	},
-
+	supplier: function(frm){
+		frappe.call({
+			method:"get_gst_template",
+			doc: frm.doc,
+			callback: function(r){
+				if(r.message){
+					frm.set_value("taxes_and_charges", r.message);
+					frm.refresh_field("taxes_and_charges");
+				}
+			}
+		})
+	},
 	get_materials_from_supplier: function (frm) {
 		let po_details = [];
 
@@ -122,9 +147,12 @@ frappe.ui.form.on("Purchase Order", {
 				__("Create")
 			);
 		}
+		
+		
 	},
 
 	onload: function (frm) {
+		frm.set_value("disable_rounded_total", 1);
 		set_schedule_date(frm);
 		if (!frm.doc.transaction_date) {
 			frm.set_value("transaction_date", frappe.datetime.get_today());
@@ -138,6 +166,16 @@ frappe.ui.form.on("Purchase Order", {
 		if (frm.is_new()) {
 			frm.set_value("advance_paid", 0);
 		}
+		frappe.call({
+			method:"get_gst_template",
+			doc: frm.doc,
+			callback: function(r){
+				if(r.message){
+					frm.set_value("taxes_and_charges", r.message);
+					frm.refresh_field("taxes_and_charges");
+				}
+			}
+		})
 	},
 
 	apply_tds: function (frm) {
@@ -525,6 +563,21 @@ erpnext.buying.PurchaseOrderController = class PurchaseOrderController extends (
 							);
 						}
 					}
+					// if (doc.docstatus === 1) {
+					// 	me.frm.add_custom_button(
+					// 		__("Make Tax Entry"),
+					// 		function () {
+					// 			frappe.call({
+					// 				method:"make_tax_entry",
+					// 				doc : me.frm.doc,
+					// 				callback: function (r) {
+										
+					// 				},
+					// 			});
+					// 		},
+					// 		__("Create")
+					// 	);
+					// }
 				}
 
 				cur_frm.page.set_inner_btn_group_as_primary(__("Create"));
@@ -533,7 +586,6 @@ erpnext.buying.PurchaseOrderController = class PurchaseOrderController extends (
 			cur_frm.cscript.add_from_mappers();
 		}
 	}
-
 	get_items_from_open_material_requests() {
 		erpnext.utils.map_current_doc({
 			method: "erpnext.stock.doctype.material_request.material_request.make_purchase_order_based_on_supplier",
@@ -856,7 +908,12 @@ cur_frm.fields_dict["items"].grid.get_field("project").get_query = function (doc
 // cur_frm.fields_dict["items"].grid.get_field("item_code").on("change", function(frm, cdt, cdn) {
 //     frappe.model.set_value(cdt, cdn, "expense_account", "Text");
 // });
-
+var make_tax_payment = function() {
+	frappe.model.open_mapped_doc({
+		method: "erpnext.buying.doctype.purchase_order.purchase_order.make_tax_payment",
+		frm: cur_frm,
+	});
+}
 
 if (cur_frm.doc.is_old_subcontracting_flow) {
 	cur_frm.fields_dict["items"].grid.get_field("bom").get_query = function (doc, cdt, cdn) {

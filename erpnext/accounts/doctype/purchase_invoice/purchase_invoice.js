@@ -44,6 +44,7 @@ erpnext.accounts.PurchaseInvoice = class PurchaseInvoice extends erpnext.buying.
 
 	onload() {
 		super.onload();
+		this.frm.set_value("disable_rounded_total", 1);
 		// this.frm.set_df_property("apply_tds", "read_only", 0);
 		// refresh_field("apply_tds");
 		// console.log(frm.fields_dict['apply_tds']);

@@ -72,6 +72,7 @@ class PurchaseOrder(BuyingController):
 		branch: DF.Link
 		business_activity: DF.Link | None
 		buying_price_list: DF.Link | None
+		c2_status: DF.Link | None
 		company: DF.Link
 		contact_display: DF.SmallText | None
 		contact_email: DF.SmallText | None
@@ -108,6 +109,7 @@ class PurchaseOrder(BuyingController):
 		order_confirmation_no: DF.Data | None
 		order_tracking: DF.Check
 		order_tracking_id: DF.Data | None
+		order_type: DF.Literal["", "Confirm Order", "Stock Order"]
 		other_charges_calculation: DF.LongText | None
 		party_account_currency: DF.Link | None
 		payment_schedule: DF.Table[PaymentSchedule]
@@ -138,6 +140,7 @@ class PurchaseOrder(BuyingController):
 		supplier_name: DF.Data | None
 		supplier_warehouse: DF.Link | None
 		tax_category: DF.Link | None
+		tax_payment_jv: DF.Link | None
 		tax_withholding_category: DF.Link | None
 		taxes: DF.Table[PurchaseTaxesandCharges]
 		taxes_and_charges: DF.Link | None
@@ -213,10 +216,10 @@ class PurchaseOrder(BuyingController):
 	def warehouse_from_branch(doc):
 		branchname=doc.branch
 		query = """
-        SELECT parent 
-        FROM `tabWarehouse Branch` 
-        WHERE branch=%s
-        """
+		SELECT parent 
+		FROM `tabWarehouse Branch` 
+		WHERE branch=%s
+		"""
 
 		warehouse = frappe.db.sql(query, (branchname,), as_dict=True)
 		if warehouse:
@@ -660,6 +663,93 @@ class PurchaseOrder(BuyingController):
 	# 		if sco:
 	# 			update_sco_status(sco, "Closed" if self.status == "Closed" else None)
 
+	@frappe.whitelist()
+	def get_gst_template(self):
+		if frappe.db.get_value("Supplier", self.supplier, "country") != "Bhutan" or self.supplier == None:
+			gst_template = frappe.db.get_value("Company", self.company, "international_supplier_input_gst_template")
+		else:
+			gst_template = frappe.db.get_value("Company", self.company, "domestic_supplier_input_gst_template")
+		return gst_template
+
+	# @frappe.whitelist()
+	# def make_tax_entry(self):
+	# 	# Prevent duplicate JE
+	# 	# if self.journal_entry and frappe.db.exists(
+	# 	# 	"Journal Entry",
+	# 	# 	{"name": self.journal_entry, "docstatus": ("!=", 2)}
+	# 	# ):
+	# 	# 	frappe.msgprint(
+	# 	# 		_("Journal Entry Already Exists {0}").format(
+	# 	# 			frappe.get_desk_link("Journal Entry", self.journal_entry)
+	# 	# 		)
+	# 	# 	)
+	# 	# 	return
+
+	# 	# Get Bank Account
+	# 	bank_account = frappe.db.get_value(
+	# 		"Branch", self.branch, "expense_bank_account"
+	# 	)
+	# 	if not bank_account:
+	# 		frappe.throw(
+	# 			_("Expense Bank Account not set for Branch {0}").format(
+	# 				frappe.bold(self.branch)
+	# 			)
+	# 		)
+
+	# 	total_debit = 0
+
+	# 	# Create Journal Entry
+	# 	je = frappe.new_doc("Journal Entry")
+	# 	je.flags.ignore_permissions = 1
+	# 	je.update({
+	# 		"voucher_type": "Journal Entry",
+	# 		"posting_date": self.transaction_date,
+	# 		"naming_series": "Journal Entry",
+	# 		# "user_remark": "Tax adjustment for Purchase Order " + self.name,
+	# 		"branch": self.branch,
+	# 		"reference_type": "Purchase Order",
+	# 		"reference_name": self.name,
+	# 	})
+
+	# 	# Debit rows from Purchase Taxes and Charges
+	# 	for tax in self.taxes:
+	# 		if not tax.tax_amount:
+	# 			continue
+
+	# 		je.append("accounts", {
+	# 			"account": tax.account_head,
+	# 			"debit_in_account_currency": abs(tax.tax_amount),
+	# 			"cost_center": tax.cost_center or self.cost_center,
+	# 			"party_type": "Supplier",
+	# 			"party": self.supplier,
+	# 			"reference_type": "Purchase Order",
+	# 			"reference_name": self.name,
+	# 		})
+
+	# 		total_debit += abs(tax.tax_amount)
+
+	# 	# Credit Bank Account (single row)
+	# 	if total_debit:
+	# 		je.append("accounts", {
+	# 			"account": bank_account,
+	# 			"credit_in_account_currency": total_debit,
+	# 			"cost_center": self.cost_center,
+	# 			# "reference_type": "Purchase Order",
+	# 			# "reference_name": self.name,
+	# 		})
+
+	# 	# Save & Submit
+	# 	je.insert()
+
+	# 	# Save reference back to PO
+	# 	# self.db_set("journal_entry", je.name)
+
+	# 	frappe.msgprint(
+	# 		_("{0} posted successfully").format(
+	# 			frappe.get_desk_link("Journal Entry", je.name)
+	# 		)
+	# 	)	
+		
 
 @frappe.request_cache
 def item_last_purchase_rate(name, conversion_rate, item_code, conversion_factor=1.0):
@@ -841,7 +931,6 @@ def get_mapped_purchase_invoice(source_name, target_doc=None, ignore_permissions
 
 	return doc
 
-
 def get_list_context(context=None):
 	from erpnext.controllers.website_list_for_contact import get_list_context
 
@@ -947,6 +1036,91 @@ def get_mapped_subcontracting_order(source_name, target_doc=None):
 
 
 @frappe.whitelist()
+def make_tax_payment(source_name, target_doc=None, args=None):
+	# if args is None:
+	# 	args = {}
+	# if isinstance(args, str):
+	# 	args = json.loads(args)
+
+	# from erpnext.accounts.party import get_payment_terms_template
+
+	# doc = frappe.get_doc("Purchase Receipt", source_name)
+	# returned_qty_map = get_returned_qty_map(source_name)
+	# invoiced_qty_map = get_invoiced_qty_map(source_name)
+
+	def set_missing_values(source, target):
+		# if len(target.get("items")) == 0:
+		# 	frappe.throw(_("All items have already been Invoiced/Returned"))
+
+		# doc = frappe.get_doc(target)
+		# doc.payment_terms_template = get_payment_terms_template(source.supplier, "Supplier", source.company)
+		# doc.run_method("onload")
+		# doc.run_method("set_missing_values")
+		gst_input_account = None
+		for tax in source.taxes:
+			if tax.is_gst == 1:
+				gst_input_account = tax.account_head
+		bank_account = frappe.db.get_value("Company", source.company, "default_bank_account")
+		gst_amount = total_charges = 0
+		post_gst_jv = 0
+		party_type = "Supplier"
+		party = source.supplier
+		target.tax_payment_jv = 1
+		target.purchase_invoice = source.name
+		target.voucher_type = 'Bank Entry'
+		target.naming_series = 'Bank Payment Voucher'
+		for tax in source.taxes:
+			if tax.is_gst == 0 and tax.is_custom_charges == 1:
+				custom_row = target.append("accounts")
+				custom_row.account = tax.account_head
+				custom_row.debit = flt(tax.base_tax_amount_after_discount_amount,2)
+				custom_row.debit_in_account_currency = flt(tax.base_tax_amount_after_discount_amount,2)
+				custom_row.cost_center = cost_center
+				custom_row.reference_type = "Purchase Order"
+				custom_row.reference_name = source.name
+				total_charges += tax.base_tax_amount_after_discount_amount
+			else:
+				gst_amount += tax.base_tax_amount_after_discount_amount
+				cost_center = tax.cost_center if tax.cost_center else cost_center
+				party_type = tax.party_type if tax.party_type else party_type
+				party = tax.party if tax.party else party
+				total_charges += tax.base_tax_amount_after_discount_amount
+		gst_row = target.append("accounts")
+		gst_row.account = gst_input_account
+		gst_row.party_type = party_type
+		gst_row.debit = flt(gst_amount,2)
+		gst_row.debit_in_account_currency = flt(gst_amount,2)
+		gst_row.cost_center = cost_center
+		gst_row.reference_type = "Purchase Order"
+		gst_row.reference_name = source.name
+		bank_row = target.append("accounts")
+		bank_row.account = bank_account
+		bank_row.credit = flt(total_charges,2)
+		bank_row.credit_in_account_currency = flt(total_charges,2)
+		bank_row.cost_center = cost_center
+		bank_row.reference_type = "Purchase Order"
+		bank_row.reference_name = source.name
+
+
+
+	doclist = get_mapped_doc(
+		"Purchase Order",
+		source_name,
+		{
+			"Purchase Order": {
+				"doctype": "Journal Entry",
+				"validation": {
+					"docstatus": ["=", 1],
+				},
+			},
+		},
+		target_doc,
+		set_missing_values,
+	)
+
+	return doclist
+
+@frappe.whitelist()
 def is_subcontracting_order_created(po_name) -> bool:
 	return (
 		True
@@ -993,36 +1167,36 @@ def is_subcontracting_order_created(po_name) -> bool:
 
 @frappe.whitelist()
 def create_purchase_order(source_name, target_doc=None):
-    from frappe.model.mapper import get_mapped_doc
+	from frappe.model.mapper import get_mapped_doc
 
-    def set_missing_values(source, target):
-        # Assuming the first supplier from the child table is mapped to the supplier field
-        if source.suppliers:  
-            target.supplier = source.suppliers[0].supplier  # Maps the first supplier in the list
-        target.run_method("set_missing_values")
-        target.run_method("calculate_taxes_and_totals")
+	def set_missing_values(source, target):
+		# Assuming the first supplier from the child table is mapped to the supplier field
+		if source.suppliers:  
+			target.supplier = source.suppliers[0].supplier  # Maps the first supplier in the list
+		target.run_method("set_missing_values")
+		target.run_method("calculate_taxes_and_totals")
 
-    doc = get_mapped_doc(
-        "Request for Quotation",  # Source Doctype
-        source_name,
-        {
-            "Request for Quotation": {  
-                "doctype": "Purchase Order", 
-                "field_map": {
-                    "field_in_source": "field_in_target",  
-                },
-            },
-            "Request for Quotation Item": {  
-                "doctype": "Purchase Order Item",
-                "field_map": {
-                    "child_field_in_source": "child_field_in_target",
-                },
-            },
-        },
-        target_doc,
-        set_missing_values,
-    )
-    return doc
+	doc = get_mapped_doc(
+		"Request for Quotation",  # Source Doctype
+		source_name,
+		{
+			"Request for Quotation": {  
+				"doctype": "Purchase Order", 
+				"field_map": {
+					"field_in_source": "field_in_target",  
+				},
+			},
+			"Request for Quotation Item": {  
+				"doctype": "Purchase Order Item",
+				"field_map": {
+					"child_field_in_source": "child_field_in_target",
+				},
+			},
+		},
+		target_doc,
+		set_missing_values,
+	)
+	return doc
 
 def get_permission_query_conditions(user):
 	if not user: user = frappe.session.user

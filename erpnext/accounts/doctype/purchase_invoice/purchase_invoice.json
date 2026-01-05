@@ -33,7 +33,7 @@
   "declaration_details_section",
   "declaration_no",
   "declaration_date",
-  "employee_id",
+  "column_break_msoq",
   "employee_name",
   "accounting_dimensions_section",
   "cost_center",
@@ -143,6 +143,10 @@
   "payment_terms_template",
   "ignore_default_payment_terms_template",
   "payment_schedule",
+  "custom_taxes_section",
+  "service_tax",
+  "custom_duties",
+  "green_tax",
   "terms_section_break",
   "tc_name",
   "terms",
@@ -936,8 +940,8 @@
    "depends_on": "grand_total",
    "fieldname": "disable_rounded_total",
    "fieldtype": "Check",
-   "hidden": 1,
-   "label": "Disable Rounded Total"
+   "label": "Disable Rounded Total",
+   "read_only": 1
   },
   {
    "collapsible": 1,
@@ -1324,6 +1328,7 @@
   {
    "fieldname": "project",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Project",
    "options": "Project"
   },
@@ -1485,23 +1490,42 @@
    "label": "Declaration Date"
   },
   {
-   "fieldname": "employee_id",
-   "fieldtype": "Link",
-   "label": "Employee ID",
-   "options": "Employee"
-  },
-  {
    "fetch_from": "employee_id.employee_name",
    "fieldname": "employee_name",
    "fieldtype": "Data",
-   "label": "Employee Name"
+   "label": "Declared by"
+  },
+  {
+   "fieldname": "custom_taxes_section",
+   "fieldtype": "Section Break",
+   "hidden": 1,
+   "label": "Custom Taxes"
+  },
+  {
+   "fieldname": "service_tax",
+   "fieldtype": "Currency",
+   "label": "Service Tax"
+  },
+  {
+   "fieldname": "custom_duties",
+   "fieldtype": "Currency",
+   "label": "Custom Duties"
+  },
+  {
+   "fieldname": "green_tax",
+   "fieldtype": "Data",
+   "label": "Green Tax"
+  },
+  {
+   "fieldname": "column_break_msoq",
+   "fieldtype": "Column Break"
   }
  ],
  "icon": "fa fa-file-text",
  "idx": 204,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-12-01 10:12:44.992356",
+ "modified": "2025-12-26 11:03:25.554095",
  "modified_by": "kalden.dorji@thimphutechpark.bt",
  "module": "Accounts",
  "name": "Purchase Invoice",

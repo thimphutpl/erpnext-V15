@@ -108,6 +108,7 @@ class PurchaseInvoice(BuyingController):
 		cost_center: DF.Link | None
 		credit_to: DF.Link
 		currency: DF.Link | None
+		custom_duties: DF.Currency
 		declaration_date: DF.Date | None
 		declaration_no: DF.Data | None
 		delay_by: DF.Int
@@ -115,11 +116,11 @@ class PurchaseInvoice(BuyingController):
 		discount_amount: DF.Currency
 		due_date: DF.Date | None
 		dv_no: DF.Data | None
-		employee_id: DF.Link | None
 		employee_name: DF.Data | None
 		enote_id: DF.Link | None
 		from_date: DF.Date | None
 		grand_total: DF.Currency
+		green_tax: DF.Data | None
 		group_same_items: DF.Check
 		hold_comment: DF.SmallText | None
 		ignore_default_payment_terms_template: DF.Check
@@ -161,6 +162,7 @@ class PurchaseInvoice(BuyingController):
 		rounded_total: DF.Currency
 		rounding_adjustment: DF.Currency
 		select_print_heading: DF.Link | None
+		service_tax: DF.Currency
 		set_from_warehouse: DF.Link | None
 		set_posting_time: DF.Check
 		set_warehouse: DF.Link | None
@@ -769,7 +771,6 @@ class PurchaseInvoice(BuyingController):
 	def make_gl_entries(self, gl_entries=None, from_repost=False):
 		if not gl_entries:
 			gl_entries = self.get_gl_entries()
-
 		if gl_entries:
 			# update_outstanding = "No" if (cint(self.is_paid) or self.write_off_account) else "Yes"
 			# above line commented as it was making outs zero when there is advance and advance account is different. we need to check on this
@@ -941,7 +942,7 @@ class PurchaseInvoice(BuyingController):
 			else self.base_grand_total,
 			self.precision("base_grand_total"),
 		) - flt(self.total_advance)
-
+		base_grand_total += self.total_taxes_and_charges
 		if grand_total and not self.is_internal_transfer():
 			# Did not use base_grand_total to book rounding loss gle
 			gl_entries.append(
@@ -1747,7 +1748,7 @@ class PurchaseInvoice(BuyingController):
 			self.repost_future_sle_and_gle()
 
 		self.update_project()
-		frappe.db.set(self, "status", "Cancelled")
+		frappe.db.set_value(self.doctype, self.name, "status", "Cancelled")
 
 		unlink_inter_company_doc(self.doctype, self.name, self.inter_company_invoice_reference)
 		self.ignore_linked_doctypes = (
