@@ -14,6 +14,49 @@ erpnext.accounts.taxes.setup_tax_validations("Delivery Note");
 erpnext.sales_common.setup_selling_controller();
 
 frappe.ui.form.on("Delivery Note", {
+	onload: function(frm){
+		cur_frm.set_query("vehicle", function() {
+			var items = frm.doc.items || [];
+			var total_vol = 0;
+			for(var i = 0; i < items.length; i++ ){
+				total_vol += items[i].qty;
+			}
+			return {
+				 query: "erpnext.crm_utils.filter_vehicle_customer_order",
+				 filters: {
+					'customer_order': frm.doc.customer_order, 
+					'branch': frm.doc.branch, 
+					'total_quantity': total_vol, 
+					'select_vehicle_queue': frm.doc.select_vehicle_queue,
+					'distance': flt(frm.doc.total_distance || 0)
+
+				     }
+			      }
+        	});
+
+	},
+	"select_vehicle_queue": function(frm) {
+		cur_frm.set_value("vehicle","");
+		cur_frm.set_query("vehicle", function() {
+			var items = frm.doc.items || [];
+			var total_vol = 0;
+			for(var i = 0; i < items.length; i++ ){
+				total_vol += items[i].qty;
+			}
+			return {
+				 query: "erpnext.crm_utils.filter_vehicle_customer_order",
+				 filters: {
+					   'customer_order': frm.doc.customer_order, 
+					   'branch': frm.doc.branch, 
+					   'total_quantity': total_vol, 
+					   'select_vehicle_queue': frm.doc.select_vehicle_queue,
+					   'distance': flt(frm.doc.total_distance || 0)
+
+					}
+			      }
+
+        	});	
+	},
 	setup: function (frm) {
 		(frm.custom_make_buttons = {
 			"Packing Slip": "Packing Slip",

@@ -68,6 +68,7 @@ class DeliveryNote(SellingController):
 		customer_group: DF.Link | None
 		customer_name: DF.Data | None
 		customer_order: DF.Link | None
+		delivery_note_footer_text: DF.SmallText | None
 		disable_rounded_total: DF.Check
 		discount_amount: DF.Currency
 		dispatch_address: DF.SmallText | None
@@ -84,13 +85,22 @@ class DeliveryNote(SellingController):
 		installation_status: DF.Literal[None]
 		instructions: DF.Text | None
 		inter_company_reference: DF.Link | None
+		is_allotment: DF.Check
+		is_credit: DF.Check
+		is_export: DF.Check
 		is_internal_customer: DF.Check
+		is_kidu_sale: DF.Check
 		is_return: DF.Check
+		is_rural_sale: DF.Check
 		issue_credit_note: DF.Check
+		item_series: DF.Link | None
 		items: DF.Table[DeliveryNoteItem]
 		language: DF.Data | None
 		letter_head: DF.Link | None
 		load_request: DF.Data | None
+		loading_cost: DF.Currency
+		loading_rate: DF.Currency
+		location: DF.Link | None
 		lr_date: DF.Date | None
 		lr_no: DF.Data | None
 		named_place: DF.Data | None
@@ -119,6 +129,7 @@ class DeliveryNote(SellingController):
 		sales_team: DF.Table[SalesTeam]
 		select_print_heading: DF.Link | None
 		select_vehicle_from_common_pool_queue: DF.Check
+		select_vehicle_queue: DF.Check
 		selling_price_list: DF.Link
 		set_posting_time: DF.Check
 		set_target_warehouse: DF.Link | None
@@ -147,6 +158,7 @@ class DeliveryNote(SellingController):
 		transportation_rate: DF.Data | None
 		transporter: DF.Link | None
 		transporter_name: DF.Data | None
+		vehicle: DF.Link | None
 		vehicle_no: DF.Link | None
 	# end: auto-generated types
 
@@ -1108,7 +1120,11 @@ def make_sales_invoice(source_name, target_doc=None, args=None):
 		{
 			"Delivery Note": {
 				"doctype": "Sales Invoice",
-				"field_map": {"is_return": "is_return"},
+				"field_map": {
+					"is_return": "is_return",
+					# "loading_rate" : "rate_per_unit",
+					# "loading_cost" : "total_loading_amount"  
+				},
 				"validation": {"docstatus": ["=", 1]},
 			},
 			"Delivery Note Item": {
