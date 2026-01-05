@@ -349,14 +349,14 @@ frappe.ui.form.on("Item", {
 				
 			})
 		}
-		frm.set_query('item_group',(doc)=>{
-			return {
-				filters: {
-						   'is_sub_group':0
-						}
-			}
+		// frm.set_query('item_group',(doc)=>{
+		// 	return {
+		// 		filters: {
+		// 				   'is_sub_group':0
+		// 				}
+		// 	}
 			
-		})
+		// })
 	},
 	hsn_code: function(frm) {
 		hsn_code_formatter(frm)
