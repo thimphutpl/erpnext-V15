@@ -102,7 +102,6 @@
    "in_list_view": 1,
    "label": "Customer ID",
    "options": "User",
-   "read_only": 1,
    "reqd": 1
   },
   {
@@ -301,6 +300,7 @@
    "fieldtype": "Long Text"
   },
   {
+   "fetch_from": "user.login_id",
    "fieldname": "user_id",
    "fieldtype": "Data",
    "in_list_view": 1,
@@ -312,7 +312,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-09-20 16:24:29.963405",
+ "modified": "2026-01-05 16:29:50.124256",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Site",
