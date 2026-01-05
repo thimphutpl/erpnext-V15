@@ -20,6 +20,7 @@ class ItemGroup(NestedSet):
 		from erpnext.stock.doctype.item_tax.item_tax import ItemTax
 		from frappe.types import DF
 
+		can_be_capitalized: DF.Check
 		image: DF.AttachImage | None
 		is_fixed_asset: DF.Check
 		is_group: DF.Check

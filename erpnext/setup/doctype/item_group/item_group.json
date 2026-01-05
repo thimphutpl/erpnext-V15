@@ -17,6 +17,7 @@
   "item_code_base",
   "column_break_5",
   "is_fixed_asset",
+  "can_be_capitalized",
   "defaults",
   "item_group_defaults",
   "sec_break_taxes",
@@ -150,6 +151,12 @@
    "fieldname": "is_fixed_asset",
    "fieldtype": "Check",
    "label": "Is Fixed Asset"
+  },
+  {
+   "default": "0",
+   "fieldname": "can_be_capitalized",
+   "fieldtype": "Check",
+   "label": "Can Be Capitalized"
   }
  ],
  "icon": "fa fa-sitemap",
@@ -158,7 +165,7 @@
  "is_tree": 1,
  "links": [],
  "max_attachments": 3,
- "modified": "2025-11-26 11:20:14.430537",
+ "modified": "2025-12-22 14:44:08.754547",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Item Group",
