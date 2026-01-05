@@ -202,26 +202,12 @@ frappe.ui.form.on("Item", {
 		["is_stock_item", "has_serial_no", "has_batch_no", "has_variants"].forEach((fieldname) => {
 			frm.set_df_property(fieldname, "read_only", stock_exists);
 		});
-		frappe.call({
-			"method": "check_capitalizability",
-			doc: frm.doc,
-			callback: function(r){
-				if(r.message == 1 || frm.doc.is_fixed_asset == 1){
-					if(frm.doc.is_fixed_asset == 1){
-						frm.toggle_reqd(['asset_category'], 1);
-					}
-					frm.toggle_display("asset_category",1)
 
-				}
-				else{
-					frm.toggle_display("asset_category",0)
-					frm.toggle_reqd(['asset_category'], 0);
-				}
-			}
-		})
-		hsn_code_formatter(frm)
 		frm.toggle_reqd("customer", frm.doc.is_customer_provided_item ? 1 : 0);
 		frm.events.apply_filter(frm)
+		// if(hsn_code){
+		hsn_code_formatter(frm)
+		// }
 
 	},
 
@@ -239,23 +225,23 @@ frappe.ui.form.on("Item", {
 	asset_category: function(frm){
 		frm.events.apply_filter(frm)
 	},
-	item_group: function (frm) {
+	// item_group: function (frm) {
 
 		
-		frappe.call({
-			method: "erpnext.stock.doctype.item.item.get_is_fixed_asset",
-			args: {
-				item_group: frm.doc.item_group,
-			},
-			callback: function (r) {
-				frm.set_value("is_fixed_asset", r.message ? 1 : 0);
-				frm.set_value("is_stock_item", frm.doc.is_fixed_asset ? 0 : 1);
-			},
-		});
-		// if (frm.doc.item_group === 'Fixed Asset'){
-		// 	frm.set_value("is_fixed_asset", 1);
-		// } 
-	},
+	// 	// frappe.call({
+	// 	// 	method: "erpnext.stock.doctype.item.item.get_is_fixed_asset",
+	// 	// 	args: {
+	// 	// 		item_group: frm.doc.item_group,
+	// 	// 	},
+	// 	// 	callback: function (r) {
+	// 	// 		frm.set_value("is_fixed_asset", r.message ? 1 : 0);
+	// 	// 		frm.set_value("is_stock_item", frm.doc.is_fixed_asset ? 0 : 1);
+	// 	// 	},
+	// 	// });
+	// 	if (frm.doc.item_group === 'Fixed Asset'){
+	// 		frm.set_value("is_fixed_asset", 1);
+	// 	} 
+	// },
 	item_group:function(frm){
 		frm.events.apply_filter(frm)
 		if(frm.doc.item_group == 'Fixed Asset'){
@@ -289,8 +275,6 @@ frappe.ui.form.on("Item", {
 		if(frm.doc.is_fixed_asset == 1){
 			frm.set_value("is_stock_item", 0);
 			frm.refresh_field("is_stock_item");
-			frm.set_value("is_service_item", 0);
-			frm.refresh_field("is_service_item");
 		}
 	},
 	// is_fixed_asset: function (frm) {
@@ -330,24 +314,11 @@ frappe.ui.form.on("Item", {
 	},
 
 	is_stock_item: function (frm) {
-		if (!frm.doc.is_stock_item == 1) {
+		if (!frm.doc.is_stock_item) {
 			frm.set_value("has_batch_no", 0);
 			frm.set_value("create_new_batch", 0);
 			frm.set_value("has_serial_no", 0);
-			// frm.set_value("is_fixed_asset", 0);
-			// frm.set_value("is_service_item", 0);
-			frm.refresh_fields();
-		}else{
 			frm.set_value("is_fixed_asset", 0);
-			frm.set_value("is_service_item", 0);
-		}
-		frm.refresh_fields();
-	},
-
-	is_service_item: function(frm){
-		if(frm.doc.is_service_item == 1) {
-			frm.set_value("is_fixed_asset", 0);
-			frm.set_value("is_stock_item", 0);
 			frm.refresh_fields();
 		}
 	},

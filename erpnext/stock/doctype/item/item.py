@@ -145,6 +145,7 @@ class Item(Document):
 		opening_stock: DF.Float
 		over_billing_allowance: DF.Float
 		over_delivery_receipt_allowance: DF.Float
+		part_name: DF.Data | None
 		parts_no: DF.Link | None
 		published_in_website: DF.Check
 		purchase_uom: DF.Link | None
@@ -164,7 +165,7 @@ class Item(Document):
 		total_projected_qty: DF.Float
 		transmission_type_manualautomatic: DF.Literal["", "Manual", "Automatic"]
 		uoms: DF.Table[UOMConversionDetail]
-		valuation_method: DF.Literal["", "Moving Average", "SPECIFIC"]
+		valuation_method: DF.Literal["", "FIFO", "Moving Average", "LIFO", "SPECIFIC"]
 		valuation_rate: DF.Currency
 		variant_based_on: DF.Literal["Item Attribute", "Manufacturer"]
 		variant_of: DF.Link | None
@@ -232,12 +233,11 @@ class Item(Document):
 			self.set_opening_stock()
 
 	def validate(self):
-		if self.hsn_code:
-			if not re.match(r"^\d{4}\.\d{2}\.\d{2}$", self.hsn_code):
-				frappe.throw("BTC/HSC Code must be in format 0000.00.00")
-
 		if not self.item_name:
 			self.item_name = self.item_code
+		if self.hsn_code:
+			if not re.match(r"^\d{4}\.\d{2}\.\d{2}$", self.hsn_code):
+				frappe.throw("Code must be in format 0000.00.00")
 
 		if not strip_html(cstr(self.description)).strip():
 			self.description = self.item_name
@@ -274,7 +274,6 @@ class Item(Document):
 
 		if not self.is_new():
 			self.old_item_group = frappe.db.get_value(self.doctype, self.name, "item_group")
-			
 
 	def on_update(self):
 		self.update_variants()
@@ -312,10 +311,6 @@ class Item(Document):
 				}
 			)
 			item_price.insert()
-
-	@frappe.whitelist()
-	def check_capitalizability(self):
-		return frappe.db.get_value("Item Group", self.item_group, "can_be_capitalized")
 
 	def set_opening_stock(self):
 		"""set opening stock"""
