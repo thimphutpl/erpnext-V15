@@ -162,6 +162,7 @@
   "is_internal_supplier",
   "represents_company",
   "ref_sq",
+  "tax_payment_jv",
   "column_break_74",
   "party_account_currency",
   "inter_company_order_reference",
@@ -591,7 +592,6 @@
   {
    "fieldname": "taxes_section",
    "fieldtype": "Section Break",
-   "hidden": 1,
    "hide_border": 1,
    "label": "Taxes and Charges",
    "oldfieldtype": "Section Break",
@@ -613,7 +613,6 @@
   {
    "fieldname": "section_break_52",
    "fieldtype": "Section Break",
-   "hidden": 1,
    "hide_border": 1
   },
   {
@@ -1332,13 +1331,20 @@
    "fieldname": "description",
    "fieldtype": "Text Editor",
    "label": "Description"
+  },
+  {
+   "fieldname": "tax_payment_jv",
+   "fieldtype": "Link",
+   "label": "Tax Payment Journal",
+   "options": "Journal Entry",
+   "read_only": 1
   }
  ],
  "icon": "fa fa-file-text",
  "idx": 105,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-09-10 23:14:38.698547",
+ "modified": "2026-01-03 14:39:21.430117",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Purchase Order",

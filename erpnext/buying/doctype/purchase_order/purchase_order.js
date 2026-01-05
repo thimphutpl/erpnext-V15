@@ -74,6 +74,20 @@ frappe.ui.form.on("Purchase Order", {
 	},
 
 	refresh: function (frm) {
+		if(cur_frm.doc.supplier && cur_frm.doc.docstatus == 1){
+			frappe.db.get_value("Supplier", frm.doc.supplier, "country", (r)=>{
+				if(r.country != "Bhutan" && frm.doc.supplier && frm.doc.docstatus == 1){
+					if(!cur_frm.doc.tax_payment_jv){
+						cur_frm.add_custom_button(
+							__("Tax Payment Journal"),
+							make_tax_payment,
+							__("Create")
+						);
+					}
+				}
+			})
+
+		}
 		if (frm.doc.is_old_subcontracting_flow) {
 			frm.trigger("get_materials_from_supplier");
 
@@ -855,6 +869,13 @@ cur_frm.fields_dict["items"].grid.get_field("project").get_query = function (doc
 		filters: [["Project", "status", "not in", "Completed, Cancelled"]],
 	};
 };
+
+var make_tax_payment = function() {
+	frappe.model.open_mapped_doc({
+		method: "erpnext.buying.doctype.purchase_order.purchase_order.make_tax_payment",
+		frm: cur_frm,
+	});
+}
 
 // cur_frm.fields_dict["items"].grid.get_field("item_code").on("change", function(frm, cdt, cdn) {
 //     frappe.model.set_value(cdt, cdn, "expense_account", "Text");

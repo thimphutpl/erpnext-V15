@@ -64,6 +64,7 @@
   "select_print_heading",
   "addtional_info",
   "payment_order",
+  "tax_payment_jv",
   "column_break3",
   "is_opening",
   "stock_entry",
@@ -655,6 +656,13 @@
    "fieldname": "journal_no",
    "fieldtype": "Data",
    "label": "Journal No."
+  },
+  {
+   "default": "0",
+   "fieldname": "tax_payment_jv",
+   "fieldtype": "Check",
+   "label": "Tax Payment JV",
+   "read_only": 1
   }
  ],
  "icon": "fa fa-file-text",

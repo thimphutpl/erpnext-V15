@@ -1005,11 +1005,12 @@ class JournalEntry(AccountsController):
 					)
 
 				if d.reference_type == "Purchase Order" and flt(d.credit) > 0:
-					frappe.throw(
-						_("Row {0}: Credit entry can not be linked with a {1}").format(
-							d.idx, d.reference_type
+					if self.tax_payment_jv == 0:
+						frappe.throw(
+							_("Row {0}: Credit entry can not be linked with a {1}").format(
+								d.idx, d.reference_type
+							)
 						)
-					)
 
 				# set totals
 				if d.reference_name not in self.reference_totals:
@@ -1065,11 +1066,12 @@ class JournalEntry(AccountsController):
 				if d.reference_type in ("Sales Order", "Purchase Order"):
 					# set totals
 					if against_voucher != d.party:
-						frappe.throw(
-							_("Row {0}: {1} {2} does not match with {3}").format(
-								d.idx, d.party_type, d.party, d.reference_type
+						if self.tax_payment_jv == 0:
+							frappe.throw(
+								_("Row {0}: {1} {2} does not match with {3}").format(
+									d.idx, d.party_type, d.party, d.reference_type
+								)
 							)
-						)
 
 		self.validate_orders()
 		self.validate_invoices()

@@ -27,6 +27,11 @@
   "is_consolidated",
   "is_return",
   "return_against",
+  "is_allotment",
+  "is_export",
+  "is_rural_sale",
+  "is_credit",
+  "is_kidu_sale",
   "update_outstanding_for_self",
   "update_billed_amount_in_sales_order",
   "update_billed_amount_in_delivery_note",
@@ -97,6 +102,8 @@
   "column_break_51",
   "additional_discount_percentage",
   "discount_amount",
+  "additional_cost",
+  "challan_cost",
   "sec_tax_breakup",
   "other_charges_calculation",
   "pricing_rule_details",
@@ -2200,6 +2207,53 @@
    "fieldtype": "Data",
    "hidden": 1,
    "label": "Account Number"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_allotment",
+   "fieldtype": "Check",
+   "label": "Is Allotment",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_export",
+   "fieldtype": "Check",
+   "label": "Is Export",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_rural_sale",
+   "fieldtype": "Check",
+   "label": "Is Rural Sale",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_credit",
+   "fieldtype": "Check",
+   "label": "Is Credit",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_kidu_sale",
+   "fieldtype": "Check",
+   "label": "Is Kidu Sale",
+   "read_only": 1
+  },
+  {
+   "fieldname": "additional_cost",
+   "fieldtype": "Data",
+   "label": "Additional Cost",
+   "read_only": 1
+  },
+  {
+   "fieldname": "challan_cost",
+   "fieldtype": "Data",
+   "label": "Challan Cost",
+   "read_only": 1
   }
  ],
  "icon": "fa fa-file-text",
@@ -2212,7 +2266,7 @@
    "link_fieldname": "consolidated_invoice"
   }
  ],
- "modified": "2025-09-17 08:51:52.523280",
+ "modified": "2025-11-04 15:03:52.778606",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Sales Invoice",

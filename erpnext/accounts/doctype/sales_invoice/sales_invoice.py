@@ -64,6 +64,7 @@ class SalesInvoice(SellingController):
 
 		account_for_change_amount: DF.Link | None
 		account_number: DF.Data | None
+		additional_cost: DF.Data | None
 		additional_discount_account: DF.Link | None
 		additional_discount_percentage: DF.Float
 		address_display: DF.SmallText | None
@@ -88,6 +89,7 @@ class SalesInvoice(SellingController):
 		branch: DF.Link
 		campaign: DF.Link | None
 		cash_bank_account: DF.Link | None
+		challan_cost: DF.Data | None
 		change_amount: DF.Currency
 		commission_rate: DF.Float
 		company: DF.Link
@@ -120,14 +122,19 @@ class SalesInvoice(SellingController):
 		in_words: DF.SmallText | None
 		incoterm: DF.Link | None
 		inter_company_invoice_reference: DF.Link | None
+		is_allotment: DF.Check
 		is_cash_or_non_trade_discount: DF.Check
 		is_consolidated: DF.Check
+		is_credit: DF.Check
 		is_debit_note: DF.Check
 		is_discounted: DF.Check
+		is_export: DF.Check
 		is_internal_customer: DF.Check
+		is_kidu_sale: DF.Check
 		is_opening: DF.Literal["No", "Yes"]
 		is_pos: DF.Check
 		is_return: DF.Check
+		is_rural_sale: DF.Check
 		items: DF.Table[SalesInvoiceItem]
 		language: DF.Data | None
 		letter_head: DF.Link | None
