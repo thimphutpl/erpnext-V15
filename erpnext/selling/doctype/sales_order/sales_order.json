@@ -266,7 +266,7 @@
   },
   {
    "bold": 1,
-   "fetch_from": "customer.customer_name",
+   "fetch_from": "customer.customer_id",
    "fieldname": "customer_name",
    "fieldtype": "Data",
    "hide_days": 1,
