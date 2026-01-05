@@ -76,6 +76,7 @@ class SerialNo(StockController):
 		balance_amount: DF.Currency
 		batch_no: DF.Link | None
 		brand: DF.Link | None
+		btc_code: DF.Data | None
 		company: DF.Link
 		customer: DF.Link | None
 		customer_name: DF.Data | None
@@ -87,6 +88,8 @@ class SerialNo(StockController):
 		employee: DF.Link | None
 		engine_cc: DF.Data | None
 		engine_no: DF.Data | None
+		engine_number: DF.Data | None
+		free_services_count: DF.Float
 		fuel_type: DF.Data | None
 		gvw_tonnage: DF.Data | None
 		item_code: DF.Link
@@ -94,6 +97,7 @@ class SerialNo(StockController):
 		item_name: DF.Data | None
 		item_subgroup: DF.Data | None
 		item_type: DF.Data | None
+		km_reading: DF.Data | None
 		location: DF.Link | None
 		maintenance_status: DF.Literal["", "Under Warranty", "Out of Warranty", "Under AMC", "Out of AMC"]
 		make: DF.Data | None
@@ -142,6 +146,11 @@ class SerialNo(StockController):
 		self.set_status()
 
 		self.balance_amount = self.allotted_amount - self.used_amount
+		# count = frappe.db.count(
+		# 	"Service Sales Jobcard",
+		# 	{"chassis_no": self.name, "jocard_type": "Free Services"}
+		# )
+		# self.free_services_count = count
 
 	def set_status(self):
 		if self.delivery_document_type:
@@ -706,8 +715,7 @@ def clean_serial_no_string(serial_no: str) -> str:
 
 
 def update_args_for_serial_no(serial_no_doc, serial_no, args, is_new=False):
-	# frappe.throw(str(args))
-	for field in ["item_code", "work_order", "company", "batch_no", "supplier", "location", "tvo_no", "engine_no", "valuation_rate"]:
+	for field in ["item_code", "work_order", "company", "batch_no", "supplier", "location", "tvo_no", "engine_no", "valuation_rate", "make", "transmission_type_manualautomatic", "model", "engine_cc", "model_year", "fuel_type", "seating_capacity", "vehicle_color", "gvw_tonnage"]:
 		if args.get(field):
 			serial_no_doc.set(field, args.get(field))
 

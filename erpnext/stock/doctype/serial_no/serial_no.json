@@ -16,13 +16,16 @@
   "tvo_no",
   "engine_no",
   "valuation_rate",
+  "km_reading",
+  "tvo_number",
+  "engine_number",
+  "btc_code",
   "column_break1",
   "item_name",
   "description",
   "item_group",
   "item_subgroup",
   "brand",
-  "tvo_number",
   "item_type",
   "sales_order",
   "vehicle_specifications_section",
@@ -70,6 +73,7 @@
   "column_break7",
   "maintenance_status",
   "warranty_period",
+  "free_services_count",
   "more_info",
   "serial_no_details",
   "company",
@@ -379,6 +383,7 @@
   {
    "fieldname": "warranty_expiry_date",
    "fieldtype": "Date",
+   "hidden": 1,
    "label": "Warranty Expiry Date",
    "oldfieldname": "warranty_expiry_date",
    "oldfieldtype": "Date",
@@ -387,6 +392,7 @@
   {
    "fieldname": "amc_expiry_date",
    "fieldtype": "Date",
+   "hidden": 1,
    "label": "AMC Expiry Date",
    "oldfieldname": "amc_expiry_date",
    "oldfieldtype": "Date",
@@ -445,16 +451,19 @@
    "read_only": 1
   },
   {
+   "default": "0",
    "fieldname": "allotted_amount",
    "fieldtype": "Currency",
    "label": "Allotted Amount "
   },
   {
+   "default": "0",
    "fieldname": "used_amount",
    "fieldtype": "Currency",
    "label": "Used Amount"
   },
   {
+   "default": "0",
    "fieldname": "balance_amount",
    "fieldtype": "Currency",
    "label": "Balance Amount"
@@ -551,12 +560,36 @@
    "fieldname": "tvo_number",
    "fieldtype": "Data",
    "label": "TVO Number"
+  },
+  {
+   "fieldname": "km_reading",
+   "fieldtype": "Data",
+   "label": "KM Reading",
+   "read_only": 1
+  },
+  {
+   "fieldname": "engine_number",
+   "fieldtype": "Data",
+   "label": "Engine Number"
+  },
+  {
+   "fetch_from": "item_code.hsn_code",
+   "fieldname": "btc_code",
+   "fieldtype": "Data",
+   "label": "BTC Code",
+   "read_only": 1
+  },
+  {
+   "fieldname": "free_services_count",
+   "fieldtype": "Float",
+   "label": "Free Services Count",
+   "read_only": 1
   }
  ],
  "icon": "fa fa-barcode",
  "idx": 1,
  "links": [],
- "modified": "2025-12-01 10:10:31.517002",
+ "modified": "2025-12-29 10:05:12.729513",
  "modified_by": "kalden.dorji@thimphutechpark.bt",
  "module": "Stock",
  "name": "Serial No",

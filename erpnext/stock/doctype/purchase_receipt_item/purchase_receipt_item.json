@@ -14,6 +14,7 @@
   "supplier_part_no",
   "column_break_2",
   "item_group",
+  "item_sub_group",
   "part_no",
   "part_name",
   "section_break_13",
@@ -21,6 +22,17 @@
   "column_break_13",
   "tvo_no",
   "engine_no",
+  "vehicle_specifications_section",
+  "make",
+  "model",
+  "model_year",
+  "seating_capactiy",
+  "gvw_tonnage",
+  "column_break_ydpz",
+  "transmission_type_manualautomatic",
+  "engine_cc",
+  "fuel_type",
+  "vehicle_color",
   "section_break_4",
   "description",
   "image_column",
@@ -57,6 +69,7 @@
   "sec_break1",
   "rate",
   "amount",
+  "gst_amount",
   "col_break4",
   "base_rate",
   "base_amount",
@@ -206,6 +219,7 @@
    "default": "0",
    "fieldname": "received_qty",
    "fieldtype": "Float",
+   "hidden": 1,
    "label": "Received Quantity",
    "oldfieldname": "received_qty",
    "oldfieldtype": "Currency",
@@ -230,6 +244,7 @@
    "columns": 1,
    "fieldname": "rejected_qty",
    "fieldtype": "Float",
+   "hidden": 1,
    "in_list_view": 1,
    "label": "Rejected Quantity",
    "oldfieldname": "rejected_qty",
@@ -1053,7 +1068,6 @@
    "read_only": 1
   },
   {
-   "fetch_from": "item_code.part_name",
    "fieldname": "part_name",
    "fieldtype": "Data",
    "label": "Part Name",
@@ -1066,12 +1080,81 @@
   {
    "fieldname": "column_break_13",
    "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval: doc.item_sub_group == \"Vehicle\"",
+   "fieldname": "vehicle_specifications_section",
+   "fieldtype": "Section Break",
+   "label": "Vehicle Specifications"
+  },
+  {
+   "fieldname": "make",
+   "fieldtype": "Data",
+   "label": "Make"
+  },
+  {
+   "fieldname": "model",
+   "fieldtype": "Data",
+   "label": "Model"
+  },
+  {
+   "fieldname": "model_year",
+   "fieldtype": "Data",
+   "label": "Model Year"
+  },
+  {
+   "fieldname": "seating_capactiy",
+   "fieldtype": "Float",
+   "label": "Seating Capactiy"
+  },
+  {
+   "fieldname": "gvw_tonnage",
+   "fieldtype": "Float",
+   "label": "GVW (Tonnage)"
+  },
+  {
+   "fieldname": "column_break_ydpz",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "transmission_type_manualautomatic",
+   "fieldtype": "Select",
+   "label": "Transmission Type (Manual/Automatic)",
+   "options": "\nManual\nAutomatic"
+  },
+  {
+   "fieldname": "engine_cc",
+   "fieldtype": "Float",
+   "label": "Engine (CC)"
+  },
+  {
+   "fieldname": "fuel_type",
+   "fieldtype": "Select",
+   "label": "Fuel Type",
+   "options": "\nPetrol\nDiesel\nEV"
+  },
+  {
+   "fieldname": "vehicle_color",
+   "fieldtype": "Data",
+   "label": "Vehicle Color"
+  },
+  {
+   "fetch_from": "item_code.item_sub_group",
+   "fieldname": "item_sub_group",
+   "fieldtype": "Data",
+   "label": "Item Sub Group"
+  },
+  {
+   "fieldname": "gst_amount",
+   "fieldtype": "Float",
+   "label": "GST Amount",
+   "read_only": 1
   }
  ],
  "idx": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-11-26 09:56:23.593619",
+ "modified": "2025-12-30 11:45:00.667193",
  "modified_by": "kalden.dorji@thimphutechpark.bt",
  "module": "Stock",
  "name": "Purchase Receipt Item",

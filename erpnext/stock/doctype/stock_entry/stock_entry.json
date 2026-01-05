@@ -358,6 +358,7 @@
   {
    "fieldname": "get_stock_and_rate",
    "fieldtype": "Button",
+   "hidden": 1,
    "label": "Update Rate and Availability",
    "oldfieldtype": "Button",
    "options": "get_stock_and_rate",
@@ -649,7 +650,7 @@
   {
    "fieldname": "title",
    "fieldtype": "Data",
-   "label": "Stock Entry Title",
+   "label": "Stock Entry Reference",
    "reqd": 1
   },
   {
@@ -682,7 +683,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-24 23:24:18.554969",
+ "modified": "2025-12-28 15:10:19.707594",
  "modified_by": "kalden.dorji@thimphutechpark.bt",
  "module": "Stock",
  "name": "Stock Entry",

@@ -37,9 +37,13 @@ class PurchaseReceiptItem(Document):
 		description: DF.TextEditor
 		discount_amount: DF.Currency
 		discount_percentage: DF.Percent
+		engine_cc: DF.Float
 		engine_no: DF.Data | None
 		expense_account: DF.Link | None
 		from_warehouse: DF.Link | None
+		fuel_type: DF.Literal["", "Petrol", "Diesel", "EV"]
+		gst_amount: DF.Float
+		gvw_tonnage: DF.Float
 		image: DF.Attach | None
 		include_exploded_items: DF.Check
 		is_fixed_asset: DF.Check
@@ -47,16 +51,20 @@ class PurchaseReceiptItem(Document):
 		item_code: DF.Link
 		item_group: DF.Link | None
 		item_name: DF.Data
+		item_sub_group: DF.Data | None
 		item_tax_amount: DF.Currency
 		item_tax_rate: DF.Code | None
 		item_tax_template: DF.Link | None
 		landed_cost_voucher_amount: DF.Currency
+		make: DF.Data | None
 		manufacturer: DF.Link | None
 		manufacturer_part_no: DF.Data | None
 		margin_rate_or_amount: DF.Float
 		margin_type: DF.Literal["", "Percentage", "Amount"]
 		material_request: DF.Link | None
 		material_request_item: DF.Data | None
+		model: DF.Data | None
+		model_year: DF.Data | None
 		net_amount: DF.Currency
 		net_rate: DF.Currency
 		page_break: DF.Check
@@ -90,15 +98,18 @@ class PurchaseReceiptItem(Document):
 		rm_supp_cost: DF.Currency
 		sample_quantity: DF.Int
 		schedule_date: DF.Date | None
+		seating_capactiy: DF.Float
 		serial_no: DF.SmallText | None
 		stock_qty: DF.Float
 		stock_uom: DF.Link
 		stock_uom_rate: DF.Currency
 		supplier_part_no: DF.Data | None
 		total_weight: DF.Float
+		transmission_type_manualautomatic: DF.Literal["", "Manual", "Automatic"]
 		tvo_no: DF.Data | None
 		uom: DF.Link
 		valuation_rate: DF.Currency
+		vehicle_color: DF.Data | None
 		warehouse: DF.Link | None
 		weight_per_unit: DF.Float
 		weight_uom: DF.Link | None

@@ -569,7 +569,7 @@ def get_item_tax_info(company, tax_category, item_codes, item_rates=None, item_t
 
 	return out
 
-# @frappe.whitelist()
+@frappe.whitelist()
 def get_item_tax_template(args, item=None, out=None):
 	# frappe.throw(str(item))
 	"""
@@ -579,10 +579,10 @@ def get_item_tax_template(args, item=None, out=None):
 	}
 	"""
 	item_tax_template = None
-	if item.taxes:
+	if item and item.taxes:
 		item_tax_template = _get_item_tax_template(args, item.taxes, out)
 
-	if not item_tax_template:
+	if item and not item_tax_template:
 		item_group = item.item_group
 		while item_group and not item_tax_template:
 			item_group_doc = frappe.get_cached_doc("Item Group", item_group)

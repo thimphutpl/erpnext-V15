@@ -123,6 +123,9 @@ frappe.ui.form.on("Delivery Note", {
 			}
 		}
 	},
+	onload: function (frm) {
+		frm.set_value("disable_rounded_total", 1);
+	}
 });
 
 frappe.ui.form.on("Delivery Note Item", {
@@ -133,6 +136,53 @@ frappe.ui.form.on("Delivery Note Item", {
 	cost_center: function (frm, dt, dn) {
 		var d = locals[dt][dn];
 		frm.update_in_all_rows("items", "cost_center", d.cost_center);
+	},
+	get_chassis_no: function(frm, cdt, cdn) {
+		let row = locals[cdt][cdn];
+		// let already_selected = (row.serial_no || "").split("\n").filter(Boolean);
+		if (frm.doc.docstatus == 0) {
+			let msd = new frappe.ui.form.MultiSelectDialog({
+				doctype: "Serial No", // the doctype to fetch
+				target: frm,
+				setters: {
+					status: "Active"  // filter: only Active serials
+				},
+				add_filters_group: 1,
+				primary_action_label: "Select",
+				get_query() {
+					return {
+						filters: {
+							status: "Active",
+							// name: ["not in", already_selected]
+						}
+					};
+				},
+				action(selections) {
+					if (selections.length !== 1) {
+						frappe.msgprint(__("Please select exactly one Serial No"));
+						return;
+					}
+	
+					// overwrite value
+					let serial_no = selections[0];
+					frappe.db.get_value(
+						"Serial No",
+						serial_no,
+						["name", "tvo_number", "engine_number"],
+						(r) => {
+							if (r) {
+								row.serial_no = r.name;
+								row.tvo_no = r.tvo_number;
+								row.engine_no = r.engine_number;
+	
+								frm.refresh_field("items");
+								msd.dialog.hide();
+							}
+						}
+					);
+				}
+			});
+		}
 	},
 });
 

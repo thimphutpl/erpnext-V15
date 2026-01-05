@@ -858,6 +858,37 @@ frappe.ui.form.on('Stock Entry Detail', {
 	// 		}
 	// 	});
 	// }
+	get_chassis_no: function(frm, cdt, cdn) {
+		let row = locals[cdt][cdn];
+		let already_selected = (row.serial_no || "").split("\n").filter(Boolean);
+		if (frm.doc.docstatus == 0) {
+			let msd = new frappe.ui.form.MultiSelectDialog({
+				doctype: "Serial No", // the doctype to fetch
+				target: frm,
+				setters: {
+					status: "Active"  // filter: only Active serials
+				},
+				add_filters_group: 1,
+				primary_action_label: "Select",
+				get_query() {
+					return {
+						filters: {
+							status: "Active",
+							name: ["not in", already_selected]
+						}
+					};
+				},
+				action(selections) {
+					// selections is an array of selected Serial No names
+					// row.serial_no = selections.join(", "); 
+					let current = row.serial_no ? row.serial_no.split("\n") : [];
+                	row.serial_no = current.concat(selections).join("\n");
+					frm.refresh_field("serial_no");
+					msd.dialog.hide();
+				}
+			});
+		}
+	},
 });
 
 var validate_sample_quantity = function (frm, cdt, cdn) {
