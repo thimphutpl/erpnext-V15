@@ -9,6 +9,7 @@
  "field_order": [
   "stock_entry_details_tab",
   "naming_series",
+  "stock_entry_series",
   "branch",
   "cost_center",
   "stock_entry_type",
@@ -65,6 +66,10 @@
   "column_break_22",
   "total_incoming_value",
   "value_difference",
+  "transporter_info_section",
+  "transporter_name",
+  "vehicle_no",
+  "vehicle_dispatch_date",
   "additional_costs_section",
   "additional_costs",
   "total_additional_costs",
@@ -101,7 +106,6 @@
    "no_copy": 1,
    "oldfieldname": "naming_series",
    "oldfieldtype": "Select",
-   "options": "MAT-STE-.YYYY.-",
    "print_hide": 1,
    "reqd": 1,
    "set_only_once": 1
@@ -747,6 +751,33 @@
    "fieldname": "issued_by",
    "fieldtype": "Data",
    "label": "Issued By"
+  },
+  {
+   "fieldname": "transporter_info_section",
+   "fieldtype": "Section Break",
+   "label": "Transporter Info"
+  },
+  {
+   "fieldname": "transporter_name",
+   "fieldtype": "Data",
+   "label": "Transporter Name"
+  },
+  {
+   "fieldname": "vehicle_no",
+   "fieldtype": "Data",
+   "label": "Vehicle No"
+  },
+  {
+   "fieldname": "vehicle_dispatch_date",
+   "fieldtype": "Data",
+   "label": "Vehicle dispatch date"
+  },
+  {
+   "fetch_from": "naming_series.item_group_name",
+   "fieldname": "stock_entry_series",
+   "fieldtype": "Link",
+   "label": "Stock Entry Series",
+   "options": "Item Group"
   }
  ],
  "icon": "fa fa-file-text",
@@ -754,7 +785,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-09-15 12:07:55.503720",
+ "modified": "2026-01-06 14:33:24.171918",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Stock Entry",
