@@ -14,7 +14,10 @@ class HRAccountsSettings(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		bank_account: DF.Link | None
 		bonus_account: DF.Link
+		credit_account: DF.Link | None
+		debit_account: DF.Link | None
 		employee_advance_salary: DF.Link
 		employee_advance_travel: DF.Link
 		employee_contribution_pf: DF.Link

@@ -168,7 +168,7 @@ frappe.ui.form.on("Payment Entry", {
 		frm.set_query("reference_doctype", "references", function () {
 			let doctypes = ["Journal Entry"];
 			if (frm.doc.party_type == "Customer") {
-				doctypes = ["Sales Order", "Sales Invoice", "Journal Entry", "Dunning"];
+				doctypes = ["Sales Order", "Sales Invoice", "Journal Entry", "Dunning", "Hall Booking"];
 			} else if (frm.doc.party_type == "Supplier") {
 				doctypes = ["Purchase Order", "Purchase Invoice", "Journal Entry"];
 			}
@@ -202,6 +202,7 @@ frappe.ui.form.on("Payment Entry", {
 				"Purchase Invoice",
 				"Purchase Order",
 				"Dunning",
+				"Hall Booking",
 			];
 
 			if (in_list(party_type_doctypes, child.reference_doctype)) {
@@ -1235,12 +1236,12 @@ frappe.ui.form.on("Payment Entry", {
 
 			if (
 				frm.doc.party_type == "Customer" &&
-				!["Sales Order", "Sales Invoice", "Journal Entry", "Dunning"].includes(row.reference_doctype)
+				!["Sales Order", "Sales Invoice", "Journal Entry", "Dunning", "Hall Booking"].includes(row.reference_doctype)
 			) {
 				frappe.model.set_value(row.doctype, row.name, "reference_doctype", null);
 				frappe.msgprint(
 					__(
-						"Row #{0}: Reference Document Type must be one of Sales Order, Sales Invoice, Journal Entry or Dunning",
+						"Row #{0}: Reference Document Type must be one of Sales Order, Sales Invoice, Journal Entry or Dunning or Hall Booking",
 						[row.idx]
 					)
 				);
