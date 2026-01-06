@@ -110,7 +110,7 @@ class PurchaseReceipt(BuyingController):
 		per_returned: DF.Percent
 		pi_no_and_date: DF.Data | None
 		plc_conversion_rate: DF.Float
-		posting_date: DF.Datetime
+		posting_date: DF.Date
 		posting_time: DF.Time
 		price_list_currency: DF.Link | None
 		pricing_rules: DF.Table[PricingRuleDetail]
