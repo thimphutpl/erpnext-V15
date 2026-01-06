@@ -61,6 +61,12 @@ SUPPORTED = {
 				"amount",
 				"description",
 			},
+			"taxes": {
+				"account_head",				
+				"cost_center",
+				"party_type",
+				"party",
+			},
 		},
 	},
 
