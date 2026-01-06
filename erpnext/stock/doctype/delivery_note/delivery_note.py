@@ -32,7 +32,6 @@ class DeliveryNote(SellingController):
 		from erpnext.stock.doctype.packed_item.packed_item import PackedItem
 		from frappe.types import DF
 
-		additional_cost: DF.Currency
 		additional_cost_or_discount_description: DF.Text | None
 		additional_discount_percentage: DF.Float
 		address_display: DF.SmallText | None
@@ -71,6 +70,7 @@ class DeliveryNote(SellingController):
 		delivery_note_footer_text: DF.SmallText | None
 		disable_rounded_total: DF.Check
 		discount_amount: DF.Currency
+		discount_or_cost_amount: DF.Currency
 		dispatch_address: DF.SmallText | None
 		dispatch_address_name: DF.Link | None
 		driver_cid: DF.Data | None
@@ -300,6 +300,16 @@ class DeliveryNote(SellingController):
 
 		self.validate_against_stock_reservation_entries()
 		self.reset_default_field_value("set_warehouse", "items", "warehouse")
+		if self.get('taxes'):
+			tax =  0
+			for i in self.get('taxes'):
+				# frappe.throw(i.base_tax_amount)
+				tax += flt(i.base_tax_amount)
+			self.total_taxes_and_charges = tax
+		if self.get('taxes'):
+			self.net_total = flt(self.total) + (flt(self.total)*0.05)- flt(self.discount_or_cost_amount)
+		else:
+			self.net_total = flt(self.total) - flt(self.discount_or_cost_amount)
 
 	#TTPL Code
 	def update_shipping_address(self):
@@ -500,6 +510,16 @@ class DeliveryNote(SellingController):
 					d.projected_qty = flt(bin_qty.projected_qty)
 
 	def on_submit(self):
+		if self.get('taxes'):
+			tax =  0
+			for i in self.get('taxes'):
+				# frappe.throw(i.base_tax_amount)
+				tax += flt(i.base_tax_amount)
+			self.total_taxes_and_charges = tax
+		if self.get('taxes'):
+			self.net_total = flt(self.total) + (flt(self.total)*0.05)- flt(self.discount_or_cost_amount)
+		else:
+			self.net_total = flt(self.total) - flt(self.discount_or_cost_amount)
 		self.validate_packed_qty()
 		self.update_pick_list_status()
 

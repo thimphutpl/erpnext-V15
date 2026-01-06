@@ -94,11 +94,12 @@
   "total_advance",
   "outstanding_amount",
   "disable_rounded_total",
+  "loading_cost",
   "section_break_49",
   "apply_discount_on",
   "base_discount_amount",
   "is_cash_or_non_trade_discount",
-  "additional_discount_account",
+  "discount_or_cost_amount",
   "column_break_51",
   "additional_discount_percentage",
   "discount_amount",
@@ -1996,13 +1997,6 @@
   },
   {
    "allow_on_submit": 1,
-   "fieldname": "additional_discount_account",
-   "fieldtype": "Link",
-   "label": "Discount Account",
-   "options": "Account"
-  },
-  {
-   "allow_on_submit": 1,
    "fieldname": "dispatch_address_name",
    "fieldtype": "Link",
    "label": "Dispatch Address Name",
@@ -2254,6 +2248,18 @@
    "fieldtype": "Data",
    "label": "Challan Cost",
    "read_only": 1
+  },
+  {
+   "fieldname": "loading_cost",
+   "fieldtype": "Data",
+   "label": "Loading Cost"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "discount_or_cost_amount",
+   "fieldtype": "Link",
+   "label": "Discount Account",
+   "options": "Account"
   }
  ],
  "icon": "fa fa-file-text",
@@ -2266,7 +2272,7 @@
    "link_fieldname": "consolidated_invoice"
   }
  ],
- "modified": "2025-11-04 15:03:52.778606",
+ "modified": "2026-01-06 19:08:43.065583",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Sales Invoice",

@@ -133,6 +133,7 @@ class SalesOrder(SellingController):
 		letter_head: DF.Link | None
 		loading_cost: DF.Data | None
 		loading_rate: DF.Currency
+		location: DF.Link | None
 		loyalty_amount: DF.Currency
 		loyalty_points: DF.Int
 		named_place: DF.Data | None
@@ -166,7 +167,7 @@ class SalesOrder(SellingController):
 		selling_price_list: DF.Link
 		set_warehouse: DF.Link | None
 		shipping_address: DF.SmallText | None
-		shipping_address_name: DF.Link | None
+		shipping_address_name: DF.Data | None
 		shipping_rule: DF.Link | None
 		site: DF.Link | None
 		skip_delivery_note: DF.Check
@@ -213,6 +214,7 @@ class SalesOrder(SellingController):
 		self.flags.allow_zero_qty = self.has_unit_price_items
 
 	def validate(self):
+		self.disable_rounded_total = 1
 		super().validate()
 		self.validate_delivery_date()
 		self.validate_proj_cust()
@@ -251,6 +253,26 @@ class SalesOrder(SellingController):
 			#Check for validation
 			self.validate_lot_list()
 		self.calculate_transportation()
+		# if self.get('taxes'):
+		# 	self.net_total = flt(self.total) + (flt(self.total)*0.05)- flt(self.discount_or_cost_amount)
+		# else:
+		# 	self.net_total = flt(self.total) - flt(self.discount_or_cost_amount)
+		if self.get('taxes'):
+			tax =  0
+			for i in self.get('taxes'):
+				# frappe.throw(i.base_tax_amount)
+				tax += flt(i.base_tax_amount)
+			self.total_taxes_and_charges = tax
+
+		# self.net_total = flt(self.total) + (flt(self.total)*0.05)- flt(self.discount_or_cost_amount)
+		
+		# frappe.throw(str(flt(self.total) + (flt(self.total)*0.05)))
+		self.set_cost_center_in_child()
+	
+	def set_cost_center_in_child(self):
+		if self.cost_center:
+			for i in self.items:
+				i.cost_center = self.cost_center
 
 	def validate_lot_list(self):
 		for item in self.items:
@@ -511,6 +533,12 @@ class SalesOrder(SellingController):
 
 		if self.get("reserve_stock"):
 			self.create_stock_reservation_entries()
+		# self.net_total = flt(self.total) + (flt(self.total)*0.05)
+		# if self.get('taxes'):
+		# 	self.net_total = flt(self.total) + (flt(self.total)*0.05)- flt(self.discount_or_cost_amount)
+		# else:
+		# 	self.net_total = flt(self.total) - flt(self.discount_or_cost_amount)
+		
 
 
 	def on_cancel(self):

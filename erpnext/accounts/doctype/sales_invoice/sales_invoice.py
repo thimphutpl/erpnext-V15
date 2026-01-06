@@ -65,7 +65,6 @@ class SalesInvoice(SellingController):
 		account_for_change_amount: DF.Link | None
 		account_number: DF.Data | None
 		additional_cost: DF.Data | None
-		additional_discount_account: DF.Link | None
 		additional_discount_percentage: DF.Float
 		address_display: DF.SmallText | None
 		advances: DF.Table[SalesInvoiceAdvance]
@@ -111,6 +110,7 @@ class SalesInvoice(SellingController):
 		debit_to: DF.Link
 		disable_rounded_total: DF.Check
 		discount_amount: DF.Currency
+		discount_or_cost_amount: DF.Link | None
 		dispatch_address: DF.SmallText | None
 		dispatch_address_name: DF.Link | None
 		due_date: DF.Date | None
@@ -138,6 +138,7 @@ class SalesInvoice(SellingController):
 		items: DF.Table[SalesInvoiceItem]
 		language: DF.Data | None
 		letter_head: DF.Link | None
+		loading_cost: DF.Data | None
 		loyalty_amount: DF.Currency
 		loyalty_points: DF.Int
 		loyalty_program: DF.Link | None
@@ -335,6 +336,17 @@ class SalesInvoice(SellingController):
 
 		self.allow_write_off_only_on_pos()
 		self.reset_default_field_value("set_warehouse", "items", "warehouse")
+		if self.get('taxes'):
+			tax =  0
+			for i in self.get('taxes'):
+				# frappe.throw(i.base_tax_amount)
+				tax += flt(i.base_tax_amount)
+			self.total_taxes_and_charges = tax
+
+		if self.get('taxes'):
+			self.net_total = flt(self.total) + (flt(self.total)*0.05)- flt(self.discount_or_cost_amount)
+		else:
+			self.net_total = flt(self.total) - flt(self.discount_or_cost_amount)
 
 	def validate_accounts(self):
 		self.validate_write_off_account()
@@ -419,6 +431,7 @@ class SalesInvoice(SellingController):
 		self.add_remarks()
 
 	def on_submit(self):
+		# frappe.throw('gugug')
 		self.validate_pos_paid_amount()
 
 		if not self.auto_repeat:
@@ -450,6 +463,7 @@ class SalesInvoice(SellingController):
 			self.update_stock_ledger()
 
 		# this sequence because outstanding may get -ve
+		
 		self.make_gl_entries()
 
 		if self.update_stock == 1:
@@ -1202,24 +1216,32 @@ class SalesInvoice(SellingController):
 		gl_entries = []
 
 		self.make_customer_gl_entry(gl_entries)
+		# frappe.throw(str(gl_entries))
 
 		self.make_tax_gl_entries(gl_entries)
+		
 		self.make_internal_transfer_gl_entries(gl_entries)
-
 		self.make_item_gl_entries(gl_entries)
-		self.make_precision_loss_gl_entry(gl_entries)
+
+		
+		gl_entries = merge_similar_entries(gl_entries)
+		
+		# self.make_precision_loss_gl_entry(gl_entries)
+		# frappe.throw(frappe.as_json(gl_entries))
+		
 		self.make_discount_gl_entries(gl_entries)
 
 		gl_entries = make_regional_gl_entries(gl_entries, self)
 
 		# merge gl entries before adding pos entries
-		gl_entries = merge_similar_entries(gl_entries)
-
+		
+		
 		self.make_loyalty_point_redemption_gle(gl_entries)
 		self.make_pos_gl_entries(gl_entries)
 
 		self.make_write_off_gl_entry(gl_entries)
 		self.make_gle_for_rounding_adjustment(gl_entries)
+		
 
 		return gl_entries
 
@@ -1229,6 +1251,7 @@ class SalesInvoice(SellingController):
 		grand_total = (
 			self.rounded_total if (self.rounding_adjustment and self.rounded_total) else self.grand_total
 		)
+		# frappe.throw(str(self.grand_total))
 		base_grand_total = flt(
 			self.base_rounded_total
 			if (self.base_rounding_adjustment and self.base_rounded_total)
@@ -1387,7 +1410,7 @@ class SalesInvoice(SellingController):
 					)
 
 					amount, base_amount = self.get_amount_and_base_amount(item, enable_discount_accounting)
-
+ 
 					account_currency = get_account_currency(income_account)
 					gl_entries.append(
 						self.get_gl_dict(
@@ -1407,6 +1430,33 @@ class SalesInvoice(SellingController):
 							item=item,
 						)
 					)
+
+		total_deduct = flt(self.discount_or_cost_amount)+flt(self.loading_cost)
+		# frappe.throw(frappe.as_json(gl_entries))
+		if total_deduct > 0:
+			income_account = (
+						item.income_account
+						if (not item.enable_deferred_revenue or self.is_return)
+						else item.deferred_revenue_account
+					)
+
+			gl_entries.append(
+				self.get_gl_dict(
+					{
+						"account": income_account,
+						"against": self.customer,
+						"debit": flt(total_deduct, item.precision("base_net_amount")),
+						"debit_in_account_currency": (
+							flt(total_deduct, item.precision("base_net_amount"))
+							
+						),
+						"cost_center": item.cost_center,
+						"project": item.project or self.project,
+					},
+					account_currency,
+					item=item,
+				)
+			)
 
 		# expense account gl entries
 		if cint(self.update_stock) and erpnext.is_perpetual_inventory_enabled(self.company):

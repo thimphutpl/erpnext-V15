@@ -56,6 +56,7 @@
   "get_outstanding_invoices",
   "get_outstanding_orders",
   "references",
+  "consolidated_invoice_id",
   "section_break_34",
   "total_allocated_amount",
   "base_total_allocated_amount",
@@ -816,6 +817,12 @@
    "fieldtype": "Link",
    "label": "Business Activity",
    "options": "Business Activity"
+  },
+  {
+   "fieldname": "consolidated_invoice_id",
+   "fieldtype": "Data",
+   "label": "Consolidated Invoice ID",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
@@ -829,8 +836,8 @@
    "table_fieldname": "payment_entries"
   }
  ],
- "modified": "2025-09-17 15:31:42.709484",
- "modified_by": "kalden.dorji@thimphutechpark.bt",
+ "modified": "2025-11-04 11:00:43.758823",
+ "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Payment Entry",
  "naming_rule": "By \"Naming Series\" field",

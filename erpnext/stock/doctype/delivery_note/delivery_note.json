@@ -119,7 +119,7 @@
   "column_break_51",
   "additional_discount_percentage",
   "discount_amount",
-  "additional_cost",
+  "discount_or_cost_amount",
   "challan_cost",
   "sec_tax_breakup",
   "other_charges_calculation",
@@ -770,13 +770,6 @@
    "fieldname": "additional_discount_percentage",
    "fieldtype": "Float",
    "label": "Additional Discount Percentage",
-   "print_hide": 1
-  },
-  {
-   "fieldname": "discount_amount",
-   "fieldtype": "Currency",
-   "label": "Additional Discount Amount",
-   "options": "currency",
    "print_hide": 1
   },
   {
@@ -1486,12 +1479,6 @@
    "read_only": 1
   },
   {
-   "fieldname": "additional_cost",
-   "fieldtype": "Currency",
-   "label": "Additional Cost",
-   "precision": "2"
-  },
-  {
    "fieldname": "challan_cost",
    "fieldtype": "Currency",
    "label": "Challan Cost"
@@ -1601,13 +1588,26 @@
    "fieldtype": "Link",
    "label": "Vehicle No",
    "options": "Vehicle"
+  },
+  {
+   "fieldname": "discount_or_cost_amount",
+   "fieldtype": "Currency",
+   "label": "Discount or Cost Amount",
+   "precision": "2"
+  },
+  {
+   "fieldname": "discount_amount",
+   "fieldtype": "Currency",
+   "label": "Additional Discount Amount",
+   "options": "currency",
+   "print_hide": 1
   }
  ],
  "icon": "fa fa-truck",
  "idx": 146,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-01-06 12:46:25.152947",
+ "modified": "2026-01-06 19:22:55.690805",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Delivery Note",

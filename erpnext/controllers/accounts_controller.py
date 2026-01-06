@@ -1773,10 +1773,16 @@ class AccountsController(TransactionBase):
 		return tax_map
 
 	def get_amount_and_base_amount(self, item, enable_discount_accounting):
+
+		
+		# frappe.throw(str(total_deduct))
+		amount = (item.net_amount)
+		base_amount = (item.net_amount)
+
+		
 		# amount = item.net_amount
-		#comment by tshering wangchuk
-		amount = item.net_amount
-		base_amount = item.net_amount
+		# base_amount = item.net_amount
+
 
 		if (
 			enable_discount_accounting
@@ -1792,8 +1798,11 @@ class AccountsController(TransactionBase):
 		return amount, base_amount
 
 	def get_tax_amounts(self, tax, enable_discount_accounting):
-		amount = tax.tax_amount_after_discount_amount
-		base_amount = tax.base_tax_amount_after_discount_amount
+		# frappe.throw(frappe.as_json(tax))
+		# amount = tax.tax_amount_after_discount_amount
+		amount = tax.base_tax_amount
+		# base_amount = tax.base_tax_amount_after_discount_amount
+		base_amount = tax.base_tax_amount
 
 		if (
 			enable_discount_accounting
@@ -3050,6 +3059,7 @@ def get_advance_payment_entries(
 	payment_entry = frappe.qb.DocType("Payment Entry")
 
 	if order_list or against_all_orders:
+		#frappe.throw("hiii")
 		q = get_common_query(
 			party_type,
 			party,
@@ -3174,6 +3184,7 @@ def get_common_query(
 
 	q = q.orderby(payment_entry.posting_date)
 	q = q.limit(limit) if limit else q
+	
 
 	return q
 
