@@ -27,6 +27,7 @@
   "skip_delivery_note",
   "has_unit_price_items",
   "column_break1",
+  "location",
   "branch",
   "company",
   "amended_from",
@@ -266,7 +267,7 @@
   },
   {
    "bold": 1,
-   "fetch_from": "customer.customer_id",
+   "fetch_from": "customer.customer_name",
    "fieldname": "customer_name",
    "fieldtype": "Data",
    "hide_days": 1,
@@ -1878,7 +1879,8 @@
    "fieldname": "site",
    "fieldtype": "Link",
    "label": "Site",
-   "options": "Site"
+   "options": "Site",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_hojo",
@@ -1888,7 +1890,8 @@
    "fieldname": "customer_order",
    "fieldtype": "Link",
    "label": "Customer Order",
-   "options": "Customer Order"
+   "options": "Customer Order",
+   "read_only": 1
   },
   {
    "fieldname": "discount_or_cost_amount",
@@ -1928,13 +1931,19 @@
   {
    "fieldname": "column_break_qoqy",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "location",
+   "fieldtype": "Link",
+   "label": "Location",
+   "options": "Branch"
   }
  ],
  "icon": "fa fa-file-text",
  "idx": 105,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-01-05 21:47:28.400032",
+ "modified": "2026-01-06 12:39:46.637450",
  "modified_by": "Administrator",
  "module": "Selling",
  "name": "Sales Order",
