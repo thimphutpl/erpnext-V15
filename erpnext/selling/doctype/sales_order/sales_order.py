@@ -112,7 +112,7 @@ class SalesOrder(SellingController):
 		discount_or_cost_amount: DF.Currency
 		dispatch_address: DF.SmallText | None
 		dispatch_address_name: DF.Link | None
-		footer: DF.TextEditor | None
+		footer_text: DF.TextEditor | None
 		from_date: DF.Date | None
 		grand_total: DF.Currency
 		group_same_items: DF.Check
@@ -132,6 +132,7 @@ class SalesOrder(SellingController):
 		language: DF.Data | None
 		letter_head: DF.Link | None
 		loading_cost: DF.Data | None
+		loading_rate: DF.Currency
 		loyalty_amount: DF.Currency
 		loyalty_points: DF.Int
 		named_place: DF.Data | None
@@ -191,6 +192,7 @@ class SalesOrder(SellingController):
 		transaction_date: DF.Date
 		transportation_charges: DF.Currency
 		transportation_rate: DF.Data | None
+		vehicle_nos: DF.Data | None
 	# end: auto-generated types
 
 	def __init__(self, *args, **kwargs):

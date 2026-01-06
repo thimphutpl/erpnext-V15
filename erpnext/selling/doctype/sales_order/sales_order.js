@@ -544,6 +544,59 @@ frappe.ui.form.on("Sales Order", {
 		};
 		frappe.set_route("query-report", "Reserved Stock");
 	},
+	"discount_or_cost_amount": function(frm) {
+		cur_frm.set_value("discount_amount", flt(frm.doc.discount_or_cost_amount) - flt(frm.doc.transportation_charges) - flt(frm.doc.additional_cost) - flt(frm.doc.loading_cost)-flt(frm.doc.challan_cost))
+		cur_frm.refresh_field("discount_amount")
+	},
+	"is_credit": function(frm){
+		frm.toggle_reqd("supply_order_ref",frm.doc.is_credit==1);
+	},
+	"transportation_charges": function(frm) {
+		cur_frm.set_value("discount_amount", flt(frm.doc.discount_or_cost_amount) - flt(frm.doc.transportation_charges) - flt(frm.doc.additional_cost) - flt(frm.doc.loading_cost)-flt(frm.doc.challan_cost))
+		cur_frm.refresh_field("discount_amount")
+	},
+
+	"additional_cost": function(frm) {
+		cur_frm.set_value("discount_amount", flt(frm.doc.discount_or_cost_amount) - flt(frm.doc.transportation_charges) - flt(frm.doc.additional_cost) - flt(frm.doc.loading_cost)-flt(frm.doc.challan_cost))
+		cur_frm.refresh_field("discount_amount")
+        },
+
+	"challan_cost": function(frm) {
+		cur_frm.set_value("discount_amount", flt(frm.doc.discount_or_cost_amount) - flt(frm.doc.transportation_charges) - flt(frm.doc.additional_cost) - flt(frm.doc.loading_cost)-flt(frm.doc.challan_cost))
+		cur_frm.refresh_field("discount_amount")
+	},
+
+	"loading_rate": function(frm) {
+		var total_qty = 0;
+		for (var i in cur_frm.doc.items) {
+			var item = cur_frm.doc.items[i];
+		        total_qty += item.qty;		
+			}
+		cur_frm.set_value("loading_cost", flt(total_qty) * flt(frm.doc.loading_rate));
+	},
+
+	"loading_cost": function(frm) {
+		cur_frm.set_value("discount_amount", flt(frm.doc.discount_or_cost_amount) - flt(frm.doc.transportation_charges) - flt(frm.doc.additional_cost) - flt(frm.doc.loading_cost)-flt(frm.doc.challan_cost))
+		cur_frm.refresh_field("discount_amount")
+	},
+
+	"transportation_rate": function(frm) {
+		cur_frm.set_value("transportation_charges", flt(frm.doc.transportation_rate) * flt(frm.doc.total_distance) * flt(frm.doc.total_quantity))
+		cur_frm.trigger("transportation_charges")
+		cur_frm.refresh_field("transportation_charges")
+	},
+
+	"total_distance": function(frm) {
+		cur_frm.set_value("transportation_charges", flt(frm.doc.transportation_rate) * flt(frm.doc.total_distance) * flt(frm.doc.total_quantity))
+		cur_frm.trigger("transportation_charges")
+		cur_frm.refresh_field("transportation_charges")
+	},
+
+	"total_quantity": function(frm) {
+		cur_frm.set_value("transportation_charges", flt(frm.doc.transportation_rate) * flt(frm.doc.total_distance) * flt(frm.doc.total_quantity))
+		cur_frm.trigger("transportation_charges")
+		cur_frm.refresh_field("transportation_charges")
+	},
 });
 
 // frappe.ui.form.on("Sales Order Item", {
@@ -1319,7 +1372,7 @@ erpnext.selling.SalesOrderController = class SalesOrderController extends erpnex
 			return false;
 		});
 
-		if ((this.frm.doc.is_credit === 0 || this.frm.doc.is_export === 0) && !all_submitted) {
+		if ((this.frm.doc.is_credit === 0 && this.frm.doc.is_export === 0) && !all_submitted) {
 			frappe.msgprint(__("Cannot make Delivery Note without making Payment"));
 			return false; 
 		}

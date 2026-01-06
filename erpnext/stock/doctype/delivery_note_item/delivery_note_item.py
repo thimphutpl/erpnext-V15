@@ -30,7 +30,7 @@ class DeliveryNoteItem(Document):
 		batch_no: DF.Link | None
 		billed_amt: DF.Currency
 		brand: DF.Link | None
-		business_activity: DF.Link
+		business_activity: DF.Link | None
 		company_total_stock: DF.Float
 		conversion_factor: DF.Float
 		cost_center: DF.Link | None
@@ -51,6 +51,7 @@ class DeliveryNoteItem(Document):
 		item_name: DF.Data
 		item_tax_rate: DF.SmallText | None
 		item_tax_template: DF.Link | None
+		lot_number: DF.Link | None
 		margin_rate_or_amount: DF.Float
 		margin_type: DF.Literal["", "Percentage", "Amount"]
 		material_request: DF.Link | None
