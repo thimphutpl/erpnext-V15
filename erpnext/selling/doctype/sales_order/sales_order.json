@@ -405,7 +405,8 @@
    "hide_seconds": 1,
    "label": "Customer Address",
    "options": "Address",
-   "print_hide": 1
+   "print_hide": 1,
+   "read_only": 1
   },
   {
    "allow_on_submit": 1,
@@ -413,8 +414,7 @@
    "fieldtype": "Small Text",
    "hide_days": 1,
    "hide_seconds": 1,
-   "label": "Address",
-   "read_only": 1
+   "label": "Customer Address"
   },
   {
    "fieldname": "contact_person",
@@ -1942,7 +1942,7 @@
  "idx": 105,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-01-06 14:49:00.146088",
+ "modified": "2026-01-06 14:55:39.681448",
  "modified_by": "Administrator",
  "module": "Selling",
  "name": "Sales Order",
