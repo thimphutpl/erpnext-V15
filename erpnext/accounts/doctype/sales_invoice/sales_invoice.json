@@ -2257,9 +2257,9 @@
   {
    "allow_on_submit": 1,
    "fieldname": "discount_or_cost_amount",
-   "fieldtype": "Link",
+   "fieldtype": "Data",
    "label": "Discount Account",
-   "options": "Account"
+   "options": " "
   }
  ],
  "icon": "fa fa-file-text",

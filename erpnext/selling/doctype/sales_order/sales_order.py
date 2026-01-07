@@ -214,10 +214,11 @@ class SalesOrder(SellingController):
 		self.flags.allow_zero_qty = self.has_unit_price_items
 
 	def validate(self):
+		
 		self.disable_rounded_total = 1
 		super().validate()
 		self.validate_delivery_date()
-		self.net_total= self.total 
+		# self.net_total= self.total 
 		self.validate_proj_cust()
 		self.validate_po()
 		self.validate_uom_is_integer("stock_uom", "stock_qty")
@@ -269,6 +270,17 @@ class SalesOrder(SellingController):
 		
 		# frappe.throw(str(flt(self.total) + (flt(self.total)*0.05)))
 		self.set_cost_center_in_child()
+		# self.net_total= self.total - flt(self.discount_or_cost_amount)
+		if flt(self.discount_or_cost_amount) >0:
+			self.net_total= self.total - flt(self.discount_or_cost_amount)
+		if flt(self.loading_cost)>0:
+			self.net_total = self.total + flt(self.loading_cost)
+		if flt(self.loading_cost)>0 and flt(self.discount_or_cost_amount) >0:
+			self.net_total = self.total + flt(self.loading_cost)-flt(self.discount_or_cost_amount)
+		if not self.get('taxes'):
+			self.grand_total = self.net_total
+		self.base_grand_total = self.grand_total
+
 	
 	def set_cost_center_in_child(self):
 		if self.cost_center:

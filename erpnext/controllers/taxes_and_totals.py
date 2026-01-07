@@ -507,7 +507,7 @@ class calculate_taxes_and_totals:
 				# 	tax.total = flt(self.doc.net_total + tax_amount, tax.precision("total"))
 				# else:
 				
-				total_amount_after_deduction = flt(flt(self.doc.net_total)-flt(self.doc.discount_or_cost_amount)-flt(self.doc.loading_cost), tax.precision("total"))
+				total_amount_after_deduction = flt(flt(self.doc.net_total)-flt(self.doc.discount_or_cost_amount)+flt(self.doc.loading_cost), tax.precision("total"))
 
 				
 				taxes = flt(total_amount_after_deduction)*(flt(tax.rate)/100)
@@ -531,7 +531,7 @@ class calculate_taxes_and_totals:
 				# 	tax.total = flt(self.doc.get("taxes")[row_idx - 1].total + tax_amount, tax.precision("total"))
 				# else:
 				# tax.total = flt(self.doc.get("taxes")[row_idx - 1].total+tax_amount-flt(self.doc.discount_or_cost_amount)-flt(self.doc.loading_cost), tax.precision("total"))
-				total_amount_after_deduction = flt(flt(self.doc.net_total)-flt(self.doc.discount_or_cost_amount)-flt(self.doc.loading_cost), tax.precision("total"))
+				total_amount_after_deduction = flt(flt(self.doc.net_total)-flt(self.doc.discount_or_cost_amount)+flt(self.doc.loading_cost), tax.precision("total"))
 				taxes = flt(total_amount_after_deduction)*(flt(tax.rate)/100)
 				tax.tax_amount = taxes
 				tax.total = flt(flt(total_amount_after_deduction)+flt(taxes), tax.precision("total"))

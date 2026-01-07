@@ -343,10 +343,18 @@ class SalesInvoice(SellingController):
 				tax += flt(i.base_tax_amount)
 			self.total_taxes_and_charges = tax
 
+
 		if self.get('taxes'):
-			self.net_total = flt(self.total) + (flt(self.total)*0.05)- flt(self.discount_or_cost_amount)
+			tot = 0
+			
+			tot = flt(self.total) - flt(self.discount_or_cost_amount)+flt(self.loading_cost)
+
+			self.net_total = flt(tot) + (flt(tot)*0.05)
+			self.base_net_total = self.net_total
 		else:
-			self.net_total = flt(self.total) - flt(self.discount_or_cost_amount)
+			self.net_total = flt(self.total) - flt(self.discount_or_cost_amount)+flt(self.loading_cost)
+		self.grand_total = flt(self.net_total)
+		self.base_grand_total = self.grand_total
 
 	def validate_accounts(self):
 		self.validate_write_off_account()
@@ -464,6 +472,7 @@ class SalesInvoice(SellingController):
 
 		# this sequence because outstanding may get -ve
 		
+		
 		self.make_gl_entries()
 
 		if self.update_stock == 1:
@@ -495,6 +504,7 @@ class SalesInvoice(SellingController):
 			self.apply_loyalty_points()
 
 		self.process_common_party_accounting()
+		
 
 	def validate_pos_return(self):
 		if self.is_consolidated:
@@ -1216,20 +1226,22 @@ class SalesInvoice(SellingController):
 		gl_entries = []
 
 		self.make_customer_gl_entry(gl_entries)
-		# frappe.throw(str(gl_entries))
+		
 
 		self.make_tax_gl_entries(gl_entries)
 		
+		
 		self.make_internal_transfer_gl_entries(gl_entries)
 		self.make_item_gl_entries(gl_entries)
+		
 
 		
 		gl_entries = merge_similar_entries(gl_entries)
 		
 		# self.make_precision_loss_gl_entry(gl_entries)
-		# frappe.throw(frappe.as_json(gl_entries))
 		
-		self.make_discount_gl_entries(gl_entries)
+		
+		# self.make_discount_gl_entries(gl_entries)
 
 		gl_entries = make_regional_gl_entries(gl_entries, self)
 
@@ -1241,6 +1253,7 @@ class SalesInvoice(SellingController):
 
 		self.make_write_off_gl_entry(gl_entries)
 		self.make_gle_for_rounding_adjustment(gl_entries)
+		# frappe.throw(frappe.as_json(gl_entries))
 		
 
 		return gl_entries
@@ -1286,6 +1299,32 @@ class SalesInvoice(SellingController):
 					item=self,
 				)
 			)
+
+			# if flt(self.discount_or_cost_amount) > 0:
+
+			# 	gl_entries.append(
+			# 		self.get_gl_dict(
+			# 			{
+			# 				"account": self.debit_to,
+			# 				"party_type": "Customer",
+			# 				"party": self.customer,
+			# 				"against": self.customer,
+			# 				"credit": flt(flt(self.discount_or_cost_amount)),
+			# 				"credit_in_account_currency": (
+			# 					flt(flt(self.discount_or_cost_amount))
+								
+			# 				),
+			# 				"cost_center": self.cost_center,
+			# 				"project": self.project,
+			# 			},
+			# 			self.party_account_currency,
+			# 			item=self,
+				
+						
+			# 		)
+			# 	)
+
+			
 
 	def make_tax_gl_entries(self, gl_entries):
 		enable_discount_accounting = cint(
@@ -1433,7 +1472,7 @@ class SalesInvoice(SellingController):
 
 		total_deduct = flt(self.discount_or_cost_amount)+flt(self.loading_cost)
 		# frappe.throw(frappe.as_json(gl_entries))
-		if total_deduct > 0:
+		if flt(self.discount_or_cost_amount) > 0:
 			income_account = (
 						item.income_account
 						if (not item.enable_deferred_revenue or self.is_return)
@@ -1445,9 +1484,31 @@ class SalesInvoice(SellingController):
 					{
 						"account": income_account,
 						"against": self.customer,
-						"debit": flt(total_deduct, item.precision("base_net_amount")),
+						"debit": flt(flt(self.discount_or_cost_amount), item.precision("base_net_amount")),
 						"debit_in_account_currency": (
-							flt(total_deduct, item.precision("base_net_amount"))
+							flt(flt(self.discount_or_cost_amount), item.precision("base_net_amount"))
+							
+						),
+						"cost_center": item.cost_center,
+						"project": item.project or self.project,
+					},
+					account_currency,
+					item=item,
+				)
+			)
+		if flt(self.loading_cost) > 0:
+			loading_acc = frappe.db.get_value("Company",self.company,"hire_charge")
+			if not loading_acc:
+				frappe.throw("Set Hire Charge Account in Company")
+
+			gl_entries.append(
+				self.get_gl_dict(
+					{
+						"account": loading_acc,
+						"against": self.customer,
+						"credit": flt(self.loading_cost, item.precision("base_net_amount")),
+						"credit_in_account_currency": (
+							flt(self.loading_cost, item.precision("base_net_amount"))
 							
 						),
 						"cost_center": item.cost_center,
