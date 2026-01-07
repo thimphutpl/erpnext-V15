@@ -217,6 +217,7 @@ class SalesOrder(SellingController):
 		self.disable_rounded_total = 1
 		super().validate()
 		self.validate_delivery_date()
+		self.net_total= self.total 
 		self.validate_proj_cust()
 		self.validate_po()
 		self.validate_uom_is_integer("stock_uom", "stock_qty")

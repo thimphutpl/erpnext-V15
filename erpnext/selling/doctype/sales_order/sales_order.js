@@ -48,6 +48,15 @@ frappe.ui.form.on("Sales Order", {
 	},
 
 	refresh: function (frm) {
+		frm.set_query('location', function(doc) {
+            
+            return {
+                filters: {
+                    "branch":doc.branch 
+                    
+                }
+            };
+        });
 		if (frm.doc.docstatus === 1) {
 			if (
 				frm.doc.status !== "Closed" &&
