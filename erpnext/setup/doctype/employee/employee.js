@@ -29,6 +29,28 @@ frappe.ui.form.on("Employee", {
 		// 		},
 		// 	};
 		// });
+		frm.set_query("dzongkhag", function (frm) {
+			return {
+				filters: {
+					is_dzongkhag: 1,
+				},
+			};
+		});
+		frm.set_query("gewog", function (frm) {
+			return {
+				filters: {
+					is_gewog: 1,
+
+				},
+			};
+		});
+		frm.set_query("village", function (frm) {
+			return {
+				filters: {
+					is_village: 1,
+				},
+			};
+		});
 	},
 	prefered_contact_email: function (frm) {
 		frm.events.update_contact(frm);

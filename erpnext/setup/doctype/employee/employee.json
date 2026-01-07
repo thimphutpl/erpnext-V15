@@ -1092,7 +1092,7 @@
    "fieldname": "gewog",
    "fieldtype": "Link",
    "label": "Gewog",
-   "options": "Gewog"
+   "options": "Dzongkhag"
   },
   {
    "fieldname": "house_number",
@@ -1113,7 +1113,7 @@
    "fieldname": "village",
    "fieldtype": "Link",
    "label": "Village",
-   "options": "Village"
+   "options": "Dzongkhag"
   },
   {
    "fieldname": "thram_number",
@@ -1229,7 +1229,7 @@
  "image_field": "image",
  "is_tree": 1,
  "links": [],
- "modified": "2025-09-12 12:08:46.374796",
+ "modified": "2026-01-07 12:03:45.553105",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee",
