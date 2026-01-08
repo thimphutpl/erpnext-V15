@@ -908,6 +908,7 @@
   {
    "fieldname": "sb_cost_details",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Cost Details"
   },
   {
@@ -1028,7 +1029,7 @@
  "is_submittable": 1,
  "links": [],
  "max_attachments": 4,
- "modified": "2025-08-27 09:50:32.719324",
+ "modified": "2026-01-08 09:58:52.463760",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Project",
