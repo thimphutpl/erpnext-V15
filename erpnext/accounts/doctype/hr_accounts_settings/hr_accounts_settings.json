@@ -19,6 +19,7 @@
   "section_break_8",
   "travel_incountry_account",
   "travel_outcountry_account",
+  "travel_refundable_account",
   "column_break_12",
   "meeting_and_seminars_in_account",
   "meeting_and_seminars_out_account",
@@ -36,7 +37,8 @@
   "payable_account_section",
   "leave_encashment_payable",
   "column_break_jgtd",
-  "travel_claim_payable"
+  "travel_claim_payable",
+  "ltc_payable"
  ],
  "fields": [
   {
@@ -233,12 +235,24 @@
    "fieldtype": "Link",
    "label": "Muster Roll Payable Account",
    "options": "Account"
+  },
+  {
+   "fieldname": "travel_refundable_account",
+   "fieldtype": "Link",
+   "label": "Travel Refundable Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "ltc_payable",
+   "fieldtype": "Link",
+   "label": "LTC Payable",
+   "options": "Account"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-12-06 14:33:43.316947",
+ "modified": "2026-01-07 22:07:49.982000",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "HR Accounts Settings",

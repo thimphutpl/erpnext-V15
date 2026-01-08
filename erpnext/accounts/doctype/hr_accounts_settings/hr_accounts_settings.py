@@ -21,6 +21,7 @@ class HRAccountsSettings(Document):
 		leave_encashment_account: DF.Link
 		leave_encashment_payable: DF.Link | None
 		ltc_account: DF.Link
+		ltc_payable: DF.Link | None
 		meeting_and_seminars_in_account: DF.Link
 		meeting_and_seminars_out_account: DF.Link
 		muster_roll_payable_account: DF.Link | None
@@ -35,6 +36,7 @@ class HRAccountsSettings(Document):
 		travel_claim_payable: DF.Link | None
 		travel_incountry_account: DF.Link
 		travel_outcountry_account: DF.Link
+		travel_refundable_account: DF.Link | None
 	# end: auto-generated types
 	pass
 
