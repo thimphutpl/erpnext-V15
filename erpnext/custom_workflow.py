@@ -24,6 +24,10 @@ class CustomWorkflow:
 			self.employee		= frappe.db.get_value("Employee", self.doc.employee, self.field_list)
 			self.reports_to 	= frappe.db.get_value("Employee", {"name":frappe.db.get_value("Employee", self.doc.employee, "reports_to")}, self.field_list)
 			if not self.reports_to:
+				ceo=frappe.db.get_single_value("HR Settings","ceo")
+				if self.doc.employee==ceo:
+					return
+
 				frappe.throw("Reports To not set for Employee {}".format(self.doc.employee if self.doc.employee else frappe.db.get_value("Employee", {"user_id",self.doc.owner}, "name")))
 
 			self.hr_manager = frappe.db.get_value("Employee", frappe.db.get_single_value("HR Settings", "hr_manager"), self.field_list)
@@ -437,6 +441,9 @@ class CustomWorkflow:
 		elif self.new_state.lower() == ("Waiting For Approval".lower()):
 			self.set_approver("Supervisor")
 		elif self.new_state.lower() == ("Approved".lower()):
+			ceo=frappe.db.get_single_value("HR Settings","ceo")
+			if self.doc.employee==ceo:
+				return
 			if frappe.session.user != self.doc.leave_approver:
 				frappe.throw(f"Only {self.doc.leave_approver} can Approved this Leave Application.")
 		elif self.new_state.lower() == ("Rejected".lower()):
@@ -467,7 +474,8 @@ class CustomWorkflow:
 			if frappe.session.user != self.doc.approver:
 				frappe.throw(f"Only {self.doc.approver} can Reject this Request.")
 		else:
-			frappe.throw(_("Invalid Workflow State {}").format(self.doc.workflow_state))
+			return
+			#frappe.throw(_("Invalid Workflow State {}").format(self.doc.workflow_state))
 
 	def travel_authorization(self):
 		state = self.new_state.lower()
@@ -483,8 +491,11 @@ class CustomWorkflow:
 				frappe.throw(
 					f"Only {self.doc.owner} have permission to move to Waiting For Approval"
 				)
-			self.set_approver("Supervisor")
+			#self.set_approver("Supervisor")
 		elif state == "approved":
+			ceo=frappe.db.get_single_value("HR Settings","ceo")
+			if self.doc.employee==ceo:
+				return
 			if user != self.doc.reports_to:
 				frappe.throw(
 					f"Only {self.doc.reports_to}  have permission to approve"
