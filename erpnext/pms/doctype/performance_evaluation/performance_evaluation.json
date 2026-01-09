@@ -239,8 +239,7 @@
    "default": "Today",
    "fieldname": "evaluation_date",
    "fieldtype": "Date",
-   "label": "Posting Date",
-   "read_only": 1
+   "label": "Posting Date"
   },
   {
    "fieldname": "review",
@@ -401,7 +400,7 @@
  ],
  "is_submittable": 1,
  "links": [],
- "modified": "2025-02-07 18:43:43.143276",
+ "modified": "2026-01-08 16:59:30.231123",
  "modified_by": "Administrator",
  "module": "PMS",
  "name": "Performance Evaluation",

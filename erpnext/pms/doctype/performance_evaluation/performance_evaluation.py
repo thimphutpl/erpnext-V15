@@ -59,6 +59,7 @@ class PerformanceEvaluation(Document):
 	def validate(self): 
 		# self.check_duplicate_entry()
 		# self.validate_calendar()
+		self.update_report_to()
 		self.calculate_target_score()
 		self.calculate_competency_score()
 		self.calculate_final_score()
@@ -140,7 +141,13 @@ class PerformanceEvaluation(Document):
 
 		# self.competency_supervisor_rating = supervisor_rating
 		self.competency_score_percent = sup_percent
-
+	def update_report_to(self):
+		lattest_approver=frappe.get_value("Employee",self.employee,"reports_to")
+		user_id,emp_name,deg=frappe.get_value("Employee",lattest_approver,["user_id","employee_name","designation"])
+		#frappe.throw(str(user_id))
+		self.approver=user_id
+		self.approver_name=emp_name
+		self.approver_designation=deg
 	def calculate_final_score(self):
 		self.target_total_weightage, self.competency_total_weightage = frappe.db.get_value("EAS Group", {"name":self.eas_group}, ["weightage_for_target", "weightage_for_competency"])
 
@@ -225,7 +232,7 @@ def get_permission_query_conditions(user):
 	# restrict user from accessing this doctype
 	if not user: user = frappe.session.user
 	user_roles = frappe.get_roles(user)
-
+	#frappe.throw(str(user))
 	if user == "Administrator":
 		return
 	if "HR User" in user_roles or "HR Manager" in user_roles:
@@ -239,6 +246,6 @@ def get_permission_query_conditions(user):
 				where `tabEmployee`.name = `tabPerformance Evaluation`.employee
 				and `tabEmployee`.user_id = '{user}')
 		or
-		(`tabPerformance Evaluation`.approver = '{user}' and `tabPerformance Evaluation`.eval_workflow_state not in ('Draft', 'Rejected', 'Cancelled'))
+		(`tabPerformance Evaluation`.approver = '{user}' and `tabPerformance Evaluation`.workflow_state not in ('Draft', 'Rejected', 'Cancelled'))
 		)""".format(user=user)
 

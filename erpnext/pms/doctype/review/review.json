@@ -194,8 +194,7 @@
    "default": "Today",
    "fieldname": "review_date",
    "fieldtype": "Date",
-   "label": "Posting Date",
-   "read_only": 1
+   "label": "Posting Date"
   },
   {
    "fieldname": "target",
@@ -296,7 +295,7 @@
  ],
  "is_submittable": 1,
  "links": [],
- "modified": "2025-02-02 23:38:10.287747",
+ "modified": "2026-01-08 16:54:11.396049",
  "modified_by": "Administrator",
  "module": "PMS",
  "name": "Review",

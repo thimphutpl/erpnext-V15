@@ -48,6 +48,8 @@ class Review(Document):
 	# end: auto-generated types
 	def validate(self):
 		#self.check_duplicate_entry()
+
+		self.update_report_to()
 		validate_workflow_states(self)
 		if self.workflow_state != "Approved":
 			notify_workflow_states(self)
@@ -81,7 +83,13 @@ class Review(Document):
 
 	# 	if not self.reference and frappe.db.exists("Review", {'employee': self.employee, 'eas_calendar': self.pms_calendar, 'docstatus': 1}):
 	# 			frappe.throw(_('You have already set the Review for EAS Calendar <b>{}</b>'.format(self.pms_calendar)))
-
+	def update_report_to(self):
+		lattest_approver=frappe.get_value("Employee",self.employee,"reports_to")
+		user_id,emp_name,deg=frappe.get_value("Employee",lattest_approver,["user_id","employee_name","designation"])
+		#frappe.throw(str(user_id))
+		self.approver=user_id
+		self.approver_name=emp_name
+		self.approver_designation=deg
 	def check_target(self):
 		if not frappe.db.get_value("EAS Group", self.eas_group, "required_to_set_target"):
 			frappe.throw(title='Error', msg="You are not required to set Target")
