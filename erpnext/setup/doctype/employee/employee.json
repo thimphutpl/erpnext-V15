@@ -145,7 +145,11 @@
   "employee_family_details_section",
   "employee_family_details",
   "employee_benefits_nominees_section",
+  "column_break_wgch",
   "nominees",
+  "training_development",
+  "employee_disciplinary_record",
+  "pms_record",
   "profile_tab",
   "pms_records_section",
   "employee_pms",
@@ -1222,6 +1226,30 @@
    "label": "Business Activity",
    "options": "Business Activity",
    "reqd": 1
+  },
+  {
+   "fieldname": "training_development",
+   "fieldtype": "Table",
+   "label": "Training and Development",
+   "options": "Training and Development"
+  },
+  {
+   "fieldname": "employee_disciplinary_record",
+   "fieldtype": "Table",
+   "label": "Employee Disciplinary Record",
+   "options": "Employee Disciplinary Summary"
+  },
+  {
+   "fieldname": "column_break_wgch",
+   "fieldtype": "Column Break",
+   "options": "Retirement Benefit Nominees"
+  },
+  {
+   "allow_bulk_edit": 1,
+   "fieldname": "pms_record",
+   "fieldtype": "Table",
+   "label": "PMS Record",
+   "options": "Employee PMS Rating"
   }
  ],
  "icon": "fa fa-user",
@@ -1229,8 +1257,8 @@
  "image_field": "image",
  "is_tree": 1,
  "links": [],
- "modified": "2026-01-07 12:03:45.553105",
- "modified_by": "Administrator",
+ "modified": "2026-01-09 15:30:55.481178",
+ "modified_by": "sonam.zangmo@thimphutechpark.bt",
  "module": "Setup",
  "name": "Employee",
  "naming_rule": "By \"Naming Series\" field",
