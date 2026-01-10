@@ -24,7 +24,7 @@ def append_totals_row(data):
 	actual_amount = sum(flt(d.get("actual_amount")) for d in data)
 
 	data.append({
-		"defect_liability_amount": "<b>Total</b>",
+		"types_of_contract": "<b>Total</b>",
 		"initial_amount": total_initial,
 		"discount": total_discount,
 		"additional": total_additional,
@@ -78,15 +78,17 @@ def get_data(filters):
 	conditions = []
 	values = {}
 
-	# JS filter: contract
-	if filters.get("contract"):
-		conditions.append("name = %(contract)s")
-		values["contract"] = filters["contract"]
+	filter_map = {
+		"contract": "name",
+		"reference_number": "reference_number",
+		"focal_person": "focal_person",
+		"supplier": "supplier",
+	}
 
-	# JS filter: status
-	if filters.get("status"):
-		conditions.append("status = %(status)s")
-		values["status"] = filters["status"]
+	for key, field in filter_map.items():
+		if filters.get(key):
+			conditions.append(f"{field} = %({key})s")
+			values[key] = filters[key]
 
 	where_clause = ""
 	if conditions:

@@ -46,7 +46,7 @@
   {
    "fetch_from": "contract.contract_name",
    "fieldname": "contract_name",
-   "fieldtype": "Data",
+   "fieldtype": "Small Text",
    "label": "Contract Name",
    "read_only": 1
   },
@@ -175,7 +175,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-12-24 14:55:27.364451",
+ "modified": "2026-01-08 21:52:13.651558",
  "modified_by": "Administrator",
  "module": "CMS",
  "name": "Bank Gurantee",

@@ -3,19 +3,37 @@
 
 
 frappe.query_reports["Contract Detail Report"] = {
-  filters: [
-    {
-      fieldname: "contract",
-      label: __("Contract"),
-      fieldtype: "Link",
-      options: "Contract Details"
-    },
-    
-    {
-      fieldname: "status",
-      label: __("Status"),
-      fieldtype: "Select",
-      options: "\nActive\nClosed\nTerminated"
-    }
-  ]
+  "filters": [
+		{	
+			"fieldname": "contract",
+			"label": ("Contract"),
+			"fieldtype": "Link",
+			"options": "Contract Details",
+			"reqd":0,
+			"width": "100"
+		},
+		{
+			"fieldname":"reference_number",
+			"label": ("Reference Number"),
+			"fieldtype": "Data",
+			"width": "80",
+		},
+		{
+			"fieldname":"focal_person",
+			"label": ("Focal Person"),
+			"fieldtype": "Link",
+			"options": "Employee",
+			"width": "120",
+		},
+
+		{	
+			"fieldname": "supplier",
+			"label": ("Supplier"),
+			"fieldtype": "Link",
+			"options": "Supplier",
+			"width": "100",
+			
+		}
+
+	]
 };

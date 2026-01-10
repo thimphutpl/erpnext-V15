@@ -19,12 +19,14 @@ class ContractDetails(Document):
 		actual_amount: DF.Data | None
 		actual_completion_date: DF.Date | None
 		additional: DF.Data | None
+		completion_date: DF.SmallText | None
 		contract_name: DF.SmallText
 		currency: DF.Link
 		defect_liability_amount: DF.Literal["", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
 		delay_days: DF.Data | None
 		discount: DF.Data | None
-		end_date: DF.Date
+		end_date: DF.Date | None
+		exchange_rate: DF.Data | None
 		final_amount: DF.Data
 		focal_person: DF.Link
 		focal_person_name: DF.Data | None

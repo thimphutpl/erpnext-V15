@@ -22,6 +22,7 @@
   "column_break_wzat",
   "reference_number",
   "end_date",
+  "completion_date",
   "types_of_contract",
   "revised_expiry_date",
   "column_break_xoon",
@@ -29,6 +30,7 @@
   "delay_days",
   "defect_liability_amount",
   "currency",
+  "exchange_rate",
   "column_break_mokv",
   "initial_amount",
   "discount",
@@ -98,8 +100,7 @@
   {
    "fieldname": "end_date",
    "fieldtype": "Date",
-   "label": "Contract End Date",
-   "reqd": 1
+   "label": "Contract End Date"
   },
   {
    "fieldname": "initial_amount",
@@ -226,11 +227,21 @@
    "fieldname": "table_fwbc",
    "fieldtype": "Table",
    "options": "Contract Revised Detail"
+  },
+  {
+   "fieldname": "completion_date",
+   "fieldtype": "Small Text",
+   "label": "Contract Completion Date"
+  },
+  {
+   "fieldname": "exchange_rate",
+   "fieldtype": "Data",
+   "label": "Exchange Rate"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-12-30 10:12:08.027162",
+ "modified": "2026-01-08 19:45:01.872736",
  "modified_by": "Administrator",
  "module": "CMS",
  "name": "Contract Details",

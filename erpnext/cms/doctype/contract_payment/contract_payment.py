@@ -18,7 +18,7 @@ class ContractPayment(Document):
 		bill_amount_in_currency: DF.Data | None
 		branch: DF.Link | None
 		contract: DF.Link
-		contract_name: DF.Data | None
+		contract_name: DF.SmallText | None
 		cost_center: DF.Link | None
 		currency: DF.Link
 		exchange_rate: DF.Data

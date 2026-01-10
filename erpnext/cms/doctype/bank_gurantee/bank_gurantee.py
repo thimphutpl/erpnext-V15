@@ -22,7 +22,7 @@ class BankGurantee(Document):
 		bg_type: DF.Literal["", "Advance Bank Guarantee", "Performance Bank Guarantee", "Performance Security", "Retention Bank Guarantee"]
 		contract: DF.Link
 		contract_final_price: DF.Data | None
-		contract_name: DF.Data | None
+		contract_name: DF.SmallText | None
 		focal_person: DF.Link | None
 		focal_person_name: DF.Data | None
 		reference_number: DF.Data | None
