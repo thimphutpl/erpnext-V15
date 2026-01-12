@@ -7,6 +7,10 @@ from frappe import _
 from frappe.model.naming import make_autoname
 from frappe.utils import nowdate
 
+
+from frappe.model.naming import getseries #added by kinzang.N
+from frappe.utils import getdate #added by kinzang.N
+
 class eNote(Document):
 	# begin: auto-generated types
 	# This code is auto-generated. Do not modify anything in this block.
@@ -54,11 +58,30 @@ class eNote(Document):
 		workflow_state: DF.Link | None
 	# end: auto-generated types
 	
-	def on_submit(self):
-		self.enote_format = make_autoname(str(self.enote_series)+"/.YYYY./.#####")
-		frappe.db.set_value("eNote", self.name, "enote_format", self.enote_format)
-		self.send_notification()
-		#notify_workflow_states(self)
+	# def on_submit(self):
+	# 	self.enote_format = make_autoname(str(self.enote_series)+"/.YYYY./.#####")
+	# 	frappe.db.set_value("eNote", self.name, "enote_format", self.enote_format)
+	# 	self.send_notification()
+	# 	#notify_workflow_states(self)
+	# #added by kinzang.N ....
+	def before_insert(self):
+		if not self.note_date:
+			frappe.throw("Note Date is required")
+		if not self.enote_series:
+			frappe.throw("Please enter eNote Series")
+		dt = getdate(self.note_date)
+		year = dt.year
+		month = f"{dt.month:02d}"   # 01–12
+		# 🔑 ONE shared counter per YEAR (month NOT included)
+		series_key = f"ENOTE/{year}/"
+		seq = getseries(series_key, 4)   # 0001, 0002, ...
+		self.enote_format = f"{self.enote_series}/{year}/{month}/{seq}"
+		#till here
+
+
+
+
+
   
 	def validate(self):	
 
