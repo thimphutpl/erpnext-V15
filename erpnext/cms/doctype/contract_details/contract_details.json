@@ -241,7 +241,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-01-08 19:45:01.872736",
+ "modified": "2026-01-12 10:02:12.008880",
  "modified_by": "Administrator",
  "module": "CMS",
  "name": "Contract Details",
@@ -282,6 +282,15 @@
    "role": "Contract Manager",
    "share": 1,
    "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Accounts User",
+   "share": 1
   }
  ],
  "sort_field": "modified",
