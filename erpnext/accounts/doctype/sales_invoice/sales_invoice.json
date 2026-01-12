@@ -95,6 +95,14 @@
   "outstanding_amount",
   "disable_rounded_total",
   "loading_cost",
+  "transportation_charges_section",
+  "rate_template",
+  "transportation_rate",
+  "net_transportation_charges",
+  "column_break_acmi",
+  "total_distance",
+  "total_quantity",
+  "transportation_charges",
   "section_break_49",
   "apply_discount_on",
   "base_discount_amount",
@@ -2249,6 +2257,51 @@
    "label": "Challan Cost",
    "read_only": 1
   },
+  {
+    "fieldname": "transportation_charges_section",
+    "fieldtype": "Section Break",
+    "label": "Transportation Charges"
+   },
+   {
+    "fieldname": "rate_template",
+    "fieldtype": "Link",
+    "label": "Rate Template",
+    "options": "Transportation Rate",
+    "read_only": 1
+
+   },
+   {
+    "fieldname": "column_break_acmi",
+    "fieldtype": "Column Break"
+   },
+   {
+    "fieldname": "total_distance",
+    "fieldtype": "Data",
+    "label": "Total Distance",
+    "read_only": 1
+
+   },
+   {
+    "fetch_from": "rate_template.rate",
+    "fieldname": "transportation_rate",
+    "fieldtype": "Data",
+    "label": "Transportation Rate",
+    "read_only": 1
+
+   },
+   {
+    "fieldname": "net_transportation_charges",
+    "fieldtype": "Data",
+    "label": "Net Transportation Charges",
+    "read_only": 1
+   },
+   
+   
+  {
+    "fieldname": "transportation_charges",
+    "fieldtype": "Currency",
+    "label": "Transportation Charges"
+   },
   {
    "fieldname": "loading_cost",
    "fieldtype": "Data",
