@@ -11,6 +11,31 @@ from frappe.model.mapper import get_mapped_doc
 from frappe.utils import flt
 
 class ConsolidatedInvoice(Document):
+	# begin: auto-generated types
+	# This code is auto-generated. Do not modify anything in this block.
+
+	from typing import TYPE_CHECKING
+
+	if TYPE_CHECKING:
+		from erpnext.selling.doctype.consolidated_invoice_item.consolidated_invoice_item import ConsolidatedInvoiceItem
+		from frappe.types import DF
+
+		amended_from: DF.Link | None
+		branch: DF.Link
+		ci_footer: DF.TextEditor | None
+		ci_header: DF.TextEditor | None
+		company: DF.Link
+		cost_center: DF.Link
+		customer: DF.Link
+		debit_to: DF.Link
+		from_date: DF.Date
+		items: DF.Table[ConsolidatedInvoiceItem]
+		payment_entry: DF.Data | None
+		posting_date: DF.Date
+		quantity: DF.Data
+		to_date: DF.Date
+		total_amount: DF.Currency
+	# end: auto-generated types
 	def on_update(self):
 		self.set_total_amount()
 		self.check_duplicate_entries()
@@ -22,7 +47,8 @@ class ConsolidatedInvoice(Document):
 				pe = frappe.get_doc("Payment Entry",a)
 				if pe.docstatus != 2:
 					frappe.throw("""Payment Entry <b><a href="#Form/Payment%20Entry/{0}">{0}</a></b> linked with this Consolidated Invoice which is not cancelled.""".format(a))
-
+					
+	@frappe.whitelist()
 	def check_partial_pe(self):
 		total_amount = 0
 		show_button = 0
@@ -56,7 +82,6 @@ def get_invoices(name, from_date, to_date, customer, cost_center):
 	invoices = frappe.db.sql("""select si.name, sii.sales_order, si.posting_date as posting_date, si.due_date, 
 				sum(sii.qty) as qty, sum(sii.qty) as qty, sum(sii.base_amount) as cost_of_goods,
 				max(dn.transportation_charges) transportation_charges,
-				max(dn.loading_cost) loading_cost,
 				max(dn.challan_cost) challan_cost,
 				sum(sii.base_net_amount) amount, sii.delivery_note 
 			from `tabSales Invoice` si
