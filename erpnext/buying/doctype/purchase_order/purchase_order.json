@@ -591,7 +591,6 @@
   {
    "fieldname": "taxes_section",
    "fieldtype": "Section Break",
-   "hidden": 1,
    "hide_border": 1,
    "label": "Taxes and Charges",
    "oldfieldtype": "Section Break",
@@ -613,7 +612,6 @@
   {
    "fieldname": "section_break_52",
    "fieldtype": "Section Break",
-   "hidden": 1,
    "hide_border": 1
   },
   {
@@ -1339,7 +1337,7 @@
  "idx": 105,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-12-07 10:28:45.565779",
+ "modified": "2026-01-04 11:49:30.353529",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Purchase Order",

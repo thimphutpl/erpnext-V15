@@ -3,12 +3,10 @@
 
 
 import json
-
 import frappe
-from frappe import _, msgprint
 from frappe.desk.notifications import clear_doctype_notifications
 from frappe.model.mapper import get_mapped_doc
-from frappe.utils import cint, cstr, flt, get_link_to_form
+from frappe.utils import cint, cstr, flt, get_link_to_form,getdate
 from frappe.model.naming import make_autoname
 from erpnext.custom_autoname import get_auto_name
 from erpnext.accounts.doctype.sales_invoice.sales_invoice import (
@@ -32,7 +30,6 @@ from erpnext.stock.utils import get_bin
 from erpnext.subcontracting.doctype.subcontracting_bom.subcontracting_bom import (
 	get_subcontracting_boms_for_finished_goods,
 )
-from erpnext.budget.doctype.budget.budget import validate_expense_against_budget
 
 form_grid_templates = {"items": "templates/form_grid/item_grid.html"}
 
@@ -64,7 +61,6 @@ class PurchaseOrder(BuyingController):
 		base_net_total: DF.Currency
 		base_rounded_total: DF.Currency
 		base_rounding_adjustment: DF.Currency
-		base_tax_withholding_net_total: DF.Currency
 		base_taxes_and_charges_added: DF.Currency
 		base_taxes_and_charges_deducted: DF.Currency
 		base_total: DF.Currency
@@ -72,7 +68,9 @@ class PurchaseOrder(BuyingController):
 		billing_address: DF.Link | None
 		billing_address_display: DF.SmallText | None
 		branch: DF.Link
+		business_activity: DF.Link | None
 		buying_price_list: DF.Link | None
+		c2_status: DF.Link | None
 		company: DF.Link
 		contact_display: DF.SmallText | None
 		contact_email: DF.SmallText | None
@@ -87,16 +85,13 @@ class PurchaseOrder(BuyingController):
 		customer_contact_mobile: DF.SmallText | None
 		customer_contact_person: DF.Link | None
 		customer_name: DF.Data | None
-		description: DF.TextEditor | None
+		deliver_to: DF.Link | None
 		disable_rounded_total: DF.Check
-		discount: DF.Currency
 		discount_amount: DF.Currency
-		footer: DF.TextEditor | None
-		freight_and_insurance_charges: DF.Currency
+		enote_id: DF.Link | None
 		from_date: DF.Date | None
 		grand_total: DF.Currency
 		group_same_items: DF.Check
-		header: DF.TextEditor | None
 		ignore_pricing_rule: DF.Check
 		in_words: DF.Data | None
 		inter_company_order_reference: DF.Link | None
@@ -106,20 +101,22 @@ class PurchaseOrder(BuyingController):
 		items: DF.Table[PurchaseOrderItem]
 		language: DF.Data | None
 		letter_head: DF.Link | None
-		material_request: DF.Link | None
-		material_request_date: DF.Date | None
-		method_of_procurement: DF.Literal["", "Open Bidding", "Limited Bidding", "Limited Enquiry", "Work Order/Direct Contacting", "Spot Purchase"]
-		naming_series: DF.Literal["", "Consumables", "Fixed Asset", "Sales Product", "Spare Parts", "Services Miscellaneous", "Services Works", "Labour Contract"]
+		naming_series: DF.Literal["", "Consumables", "Fixed Asset", "Sales Product", "Spare Parts", "Services Miscellaneous", "Services Works", "Labour Contract", "PUR-ORD-.YYYY.-"]
 		net_total: DF.Currency
 		order_confirmation_date: DF.Date | None
 		order_confirmation_no: DF.Data | None
-		other_charges: DF.Currency
+		order_tracking: DF.Check
+		order_tracking_id: DF.Data | None
+		order_type: DF.Literal["", "Confirm Order", "Stock Order"]
+		other_charges_calculation: DF.LongText | None
 		party_account_currency: DF.Link | None
 		payment_schedule: DF.Table[PaymentSchedule]
 		payment_terms_template: DF.Link | None
 		per_billed: DF.Percent
 		per_received: DF.Percent
 		plc_conversion_rate: DF.Float
+		po_footer_text: DF.TextEditor | None
+		po_header: DF.TextEditor | None
 		price_list_currency: DF.Link | None
 		pricing_rules: DF.Table[PricingRuleDetail]
 		project: DF.Link | None
@@ -127,22 +124,22 @@ class PurchaseOrder(BuyingController):
 		represents_company: DF.Link | None
 		rounded_total: DF.Currency
 		rounding_adjustment: DF.Currency
-		schedule_date: DF.Date | None
+		schedule_date: DF.Date
 		select_print_heading: DF.Link | None
-		set_from_warehouse: DF.Link | None
 		set_reserve_warehouse: DF.Link | None
-		set_warehouse: DF.Data | None
+		set_warehouse: DF.Link | None
 		shipping_address: DF.Link | None
 		shipping_address_display: DF.SmallText | None
+		shipping_rule: DF.Link | None
 		status: DF.Literal["", "Draft", "On Hold", "To Receive and Bill", "To Bill", "To Receive", "Completed", "Cancelled", "Closed", "Delivered"]
 		supplied_items: DF.Table[PurchaseOrderItemSupplied]
 		supplier: DF.Link
 		supplier_address: DF.Link | None
 		supplier_name: DF.Data | None
 		supplier_warehouse: DF.Link | None
-		tax: DF.Currency
+		tax_category: DF.Link | None
+		tax_payment_jv: DF.Link | None
 		tax_withholding_category: DF.Link | None
-		tax_withholding_net_total: DF.Currency
 		taxes: DF.Table[PurchaseTaxesandCharges]
 		taxes_and_charges: DF.Link | None
 		taxes_and_charges_added: DF.Currency
@@ -152,7 +149,6 @@ class PurchaseOrder(BuyingController):
 		title: DF.Data
 		to_date: DF.Date | None
 		total: DF.Currency
-		total_add_ded: DF.Currency
 		total_net_weight: DF.Float
 		total_qty: DF.Float
 		total_taxes_and_charges: DF.Currency
@@ -213,20 +209,11 @@ class PurchaseOrder(BuyingController):
 		validate_inter_company_party(
 			self.doctype, self.supplier, self.company, self.inter_company_order_reference
 		)
+		# self.reset_default_field_value("set_warehouse", "items", "warehouse")
+		
+		if self.transaction_date and getdate(self.transaction_date) < getdate():
+			frappe.throw("Transaction Date cannot be back Date.")
 
-			# self.reset_default_field_value("set_warehouse", "items", "warehouse")
-
-	# def warehouse_from_branch(doc):
-	# 	if not doc.branch:
-	# 		return
-
-	# 	warehouse = frappe.db.get_value("Warehouse Branch", {"branch": doc.branch}, "parent")
-	# 	if warehouse:
-	# 		doc.set_warehouse = warehouse
-	# 		for item in doc.items:
-	# 			item.warehouse = warehouse
-	# 	else:
-	# 		frappe.throw(f"No warehouse found for branch {doc.branch}")
 	def warehouse_from_branch(doc):
 		branchname=doc.branch
 		query = """
@@ -240,18 +227,6 @@ class PurchaseOrder(BuyingController):
 			doc.set_warehouse = warehouse[0].get("parent")
 		else:
 			frappe.throw(f"No warehouse found for branch {branchname}")
-		# branchname=doc.branch
-		# query = """
-		# SELECT parent 
-		# FROM `tabWarehouse Branch` 
-		# WHERE branch=%s
-		# """
-
-		# warehouse = frappe.db.sql(query, (branchname,), as_dict=True)
-		# if warehouse:
-		# 	doc.set_warehouse = warehouse[0].get("parent")
-		# else:
-		# 	frappe.throw(f"No warehouse found for branch {branchname}")
 
 
 
@@ -427,6 +402,7 @@ class PurchaseOrder(BuyingController):
 		for d in self.get("items"):
 			if d.item_code:
 				last_purchase_details = get_last_purchase_details(d.item_code, self.name)
+				frappe.throw(str(last_purchase_details))
 				if last_purchase_details:
 					d.base_price_list_rate = last_purchase_details["base_price_list_rate"] * (
 						flt(d.conversion_factor) or 1.0
@@ -514,26 +490,6 @@ class PurchaseOrder(BuyingController):
 		self.update_blanket_order()
 
 		update_linked_doc(self.doctype, self.name, self.inter_company_order_reference)
-		for item in self.items:
-			#frappe.throw(str(item.cost_center))
-			# child_cc = self.cost_center
-			# parent_cc = frappe.db.get_value("Cost Center", child_cc, "parent_cost_center")
-			args = {
-				"account": item.expense_account,
-				"posting_date": self.transaction_date,
-				"amount": item.base_amount,
-				"cost_center":item.cost_center,
-				"company": self.company,
-				"voucher_type": self.doctype,
-				"doctype": self.doctype,
-				"reference_no": self.name,
-				"reference_type": self.doctype,
-				"item_code":item.item_code
-				
-				
-			}
-			
-			validate_expense_against_budget(args)
 
 		# self.auto_create_subcontracting_order()
 
@@ -708,6 +664,93 @@ class PurchaseOrder(BuyingController):
 	# 		if sco:
 	# 			update_sco_status(sco, "Closed" if self.status == "Closed" else None)
 
+	@frappe.whitelist()
+	def get_gst_template(self):
+		if frappe.db.get_value("Supplier", self.supplier, "country") != "Bhutan" or self.supplier == None:
+			gst_template = frappe.db.get_value("Company", self.company, "international_supplier_input_gst_template")
+		else:
+			gst_template = frappe.db.get_value("Company", self.company, "domestic_supplier_input_gst_template")
+		return gst_template
+
+	# @frappe.whitelist()
+	# def make_tax_entry(self):
+	# 	# Prevent duplicate JE
+	# 	# if self.journal_entry and frappe.db.exists(
+	# 	# 	"Journal Entry",
+	# 	# 	{"name": self.journal_entry, "docstatus": ("!=", 2)}
+	# 	# ):
+	# 	# 	frappe.msgprint(
+	# 	# 		_("Journal Entry Already Exists {0}").format(
+	# 	# 			frappe.get_desk_link("Journal Entry", self.journal_entry)
+	# 	# 		)
+	# 	# 	)
+	# 	# 	return
+
+	# 	# Get Bank Account
+	# 	bank_account = frappe.db.get_value(
+	# 		"Branch", self.branch, "expense_bank_account"
+	# 	)
+	# 	if not bank_account:
+	# 		frappe.throw(
+	# 			_("Expense Bank Account not set for Branch {0}").format(
+	# 				frappe.bold(self.branch)
+	# 			)
+	# 		)
+
+	# 	total_debit = 0
+
+	# 	# Create Journal Entry
+	# 	je = frappe.new_doc("Journal Entry")
+	# 	je.flags.ignore_permissions = 1
+	# 	je.update({
+	# 		"voucher_type": "Journal Entry",
+	# 		"posting_date": self.transaction_date,
+	# 		"naming_series": "Journal Entry",
+	# 		# "user_remark": "Tax adjustment for Purchase Order " + self.name,
+	# 		"branch": self.branch,
+	# 		"reference_type": "Purchase Order",
+	# 		"reference_name": self.name,
+	# 	})
+
+	# 	# Debit rows from Purchase Taxes and Charges
+	# 	for tax in self.taxes:
+	# 		if not tax.tax_amount:
+	# 			continue
+
+	# 		je.append("accounts", {
+	# 			"account": tax.account_head,
+	# 			"debit_in_account_currency": abs(tax.tax_amount),
+	# 			"cost_center": tax.cost_center or self.cost_center,
+	# 			"party_type": "Supplier",
+	# 			"party": self.supplier,
+	# 			"reference_type": "Purchase Order",
+	# 			"reference_name": self.name,
+	# 		})
+
+	# 		total_debit += abs(tax.tax_amount)
+
+	# 	# Credit Bank Account (single row)
+	# 	if total_debit:
+	# 		je.append("accounts", {
+	# 			"account": bank_account,
+	# 			"credit_in_account_currency": total_debit,
+	# 			"cost_center": self.cost_center,
+	# 			# "reference_type": "Purchase Order",
+	# 			# "reference_name": self.name,
+	# 		})
+
+	# 	# Save & Submit
+	# 	je.insert()
+
+	# 	# Save reference back to PO
+	# 	# self.db_set("journal_entry", je.name)
+
+	# 	frappe.msgprint(
+	# 		_("{0} posted successfully").format(
+	# 			frappe.get_desk_link("Journal Entry", je.name)
+	# 		)
+	# 	)	
+		
 
 @frappe.request_cache
 def item_last_purchase_rate(name, conversion_rate, item_code, conversion_factor=1.0):
@@ -889,7 +932,6 @@ def get_mapped_purchase_invoice(source_name, target_doc=None, ignore_permissions
 
 	return doc
 
-
 def get_list_context(context=None):
 	from erpnext.controllers.website_list_for_contact import get_list_context
 
@@ -993,6 +1035,97 @@ def get_mapped_subcontracting_order(source_name, target_doc=None):
 
 	return target_doc
 
+
+@frappe.whitelist()
+def make_tax_payment(source_name, target_doc=None, args=None):
+	
+	# if args is None:
+	# 	args = {}
+	# if isinstance(args, str):
+	# 	args = json.loads(args)
+
+	# from erpnext.accounts.party import get_payment_terms_template
+
+	# doc = frappe.get_doc("Purchase Receipt", source_name)
+	# returned_qty_map = get_returned_qty_map(source_name)
+	# invoiced_qty_map = get_invoiced_qty_map(source_name)
+
+	def set_missing_values(source, target):
+		# if len(target.get("items")) == 0:
+		
+		# 	frappe.throw(_("All items have already been Invoiced/Returned"))
+
+		# doc = frappe.get_doc(target)
+		# doc.payment_terms_template = get_payment_terms_template(source.supplier, "Supplier", source.company)
+		# doc.run_method("onload")
+		# doc.run_method("set_missing_values")
+		gst_input_account = None
+		for tax in source.taxes:
+			#frappe.msgprint(str(tax))
+			if tax.is_gst == 1:
+				gst_input_account = tax.account_head
+		bank_account = frappe.db.get_value("Company", source.company, "default_bank_account")
+		gst_amount = total_charges = 0
+		post_gst_jv = 0
+		party_type = "Supplier"
+		party = source.supplier
+		
+		target.tax_payment_jv = 1
+		target.purchase_invoice = source.name
+		target.voucher_type = 'Bank Entry'
+		target.naming_series = 'Bank Payment Voucher'
+		for tax in source.taxes:
+			if tax.is_gst == 0 and tax.is_custom_charges == 1:
+				custom_row = target.append("accounts")
+				custom_row.account = tax.account_head
+				custom_row.debit = flt(tax.base_tax_amount_after_discount_amount,2)
+				custom_row.debit_in_account_currency = flt(tax.base_tax_amount_after_discount_amount,2)
+				custom_row.cost_center = cost_center
+				custom_row.reference_type = "Purchase Order"
+				custom_row.reference_name = source.name
+				total_charges += tax.base_tax_amount_after_discount_amount
+			else:
+				#frappe.throw(str(tax.party_type))
+				gst_amount += tax.base_tax_amount_after_discount_amount
+				cost_center = tax.cost_center if tax.cost_center else cost_center
+				party_type = tax.party_type if tax.party_type else party_type
+				party = tax.party if tax.party else party
+				total_charges += tax.base_tax_amount_after_discount_amount
+		gst_row = target.append("accounts")
+		gst_row.account = gst_input_account
+		#frappe.throw("pl "+str(party_type))
+		gst_row.party_type = party_type
+		gst_row.debit = flt(gst_amount,2)
+		gst_row.debit_in_account_currency = flt(gst_amount,2)
+		gst_row.cost_center = cost_center
+		gst_row.reference_type = "Purchase Order"
+		gst_row.reference_name = source.name
+		bank_row = target.append("accounts")
+		bank_row.account = bank_account
+		bank_row.credit = flt(total_charges,2)
+		bank_row.credit_in_account_currency = flt(total_charges,2)
+		bank_row.cost_center = cost_center
+		bank_row.reference_type = "Purchase Order"
+		bank_row.reference_name = source.name
+
+
+
+	doclist = get_mapped_doc(
+		"Purchase Order",
+		source_name,
+		{
+			"Purchase Order": {
+				"doctype": "Journal Entry",
+				"validation": {
+					"docstatus": ["=", 1],
+				},
+			},
+		},
+		target_doc,
+		set_missing_values,
+	)
+
+	return doclist
 
 @frappe.whitelist()
 def is_subcontracting_order_created(po_name) -> bool:

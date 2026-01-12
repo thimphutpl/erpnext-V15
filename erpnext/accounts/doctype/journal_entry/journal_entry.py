@@ -52,68 +52,48 @@ class JournalEntry(AccountsController):
 		from frappe.types import DF
 
 		accounts: DF.Table[JournalEntryAccount]
-		advance_payment: DF.Check
 		amended_from: DF.Link | None
 		apply_tds: DF.Check
-		approver: DF.Link | None
 		auto_repeat: DF.Link | None
-		bank_account_number: DF.Data | None
-		bank_app_ref_no: DF.Data | None
-		bank_branch: DF.Data | None
-		bank_name: DF.Data | None
 		bank_payment: DF.Link | None
 		bill_date: DF.Date | None
 		bill_no: DF.Data | None
-		branch: DF.Link
+		branch: DF.Link | None
 		cheque_date: DF.Date | None
 		cheque_no: DF.Data | None
 		clearance_date: DF.Date | None
 		company: DF.Link
-		declaration_reference_no: DF.Data | None
 		difference: DF.Currency
-		dispatch_number: DF.Data | None
 		due_date: DF.Date | None
-		final_payment: DF.Check
 		finance_book: DF.Link | None
 		from_template: DF.Link | None
-		ifsc_code: DF.Data | None
 		inter_company_journal_entry_reference: DF.Link | None
 		is_opening: DF.Literal["No", "Yes"]
 		is_system_generated: DF.Check
 		letter_head: DF.Link | None
 		mode_of_payment: DF.Link | None
-		money_receipt_no: DF.Data | None
-		money_receipt_prefix: DF.Data | None
-		month: DF.Literal["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
 		multi_currency: DF.Check
 		naming_series: DF.Link
 		paid_loan: DF.Data | None
 		pay_to_recd_from: DF.Data | None
 		payment_order: DF.Link | None
-		payment_status: DF.Literal["", "Payment Under Process", "Payment Successful", "Payment Failed", "Partial Payment", "Payment Cancelled"]
+		payment_status: DF.Data | None
 		posting_date: DF.Date
 		process_deferred_accounting: DF.Link | None
 		remark: DF.SmallText | None
-		remit_bank: DF.Literal["", "Bank of Bhutan Limited", "Bhutan National Bank Limited", "Bhutan Development Bank Limited", "National Pension and Provident Fund", "Royal Insurance Corporation of Bhutan Limited", "Bhutan Insurance Limited"]
-		remit_purpose: DF.Literal["", "Salary Remittance", "Financial Institution Loan", "Group Insurance Scheme", "Provident Fund", "Salary Saving Scheme"]
-		remitter_tpan_no: DF.Data | None
-		repost_required: DF.Check
 		reversal_of: DF.Link | None
-		select_cheque_lot: DF.Link | None
 		select_print_heading: DF.Link | None
 		stock_entry: DF.Link | None
-		supplier_name: DF.Link | None
+		tax_payment_jv: DF.Check
 		tax_withholding_category: DF.Link | None
 		title: DF.Data | None
 		total_amount: DF.Currency
 		total_amount_currency: DF.Link | None
-		total_amount_in_words: DF.LongText | None
+		total_amount_in_words: DF.Data | None
 		total_credit: DF.Currency
 		total_debit: DF.Currency
-		use_check_lot: DF.Check
 		user_remark: DF.SmallText | None
-		vendor_invoice_no: DF.SmallText | None
-		verifier: DF.Link | None
+		utility_bill: DF.Link | None
 		voucher_type: DF.Literal["Journal Entry", "Inter Company Journal Entry", "Bank Entry", "Cash Entry", "Credit Card Entry", "Debit Note", "Credit Note", "Contra Entry", "Excise Entry", "Write Off Entry", "Opening Entry", "Depreciation Entry", "Exchange Rate Revaluation", "Exchange Gain Or Loss", "Deferred Revenue", "Deferred Expense"]
 		write_off_amount: DF.Currency
 		write_off_based_on: DF.Literal["Accounts Receivable", "Accounts Payable"]
@@ -1002,11 +982,12 @@ class JournalEntry(AccountsController):
 					)
 
 				if d.reference_type == "Purchase Order" and flt(d.credit) > 0:
-					frappe.throw(
-						_("Row {0}: Credit entry can not be linked with a {1}").format(
-							d.idx, d.reference_type
+					if self.tax_payment_jv == 0:
+						frappe.throw(
+							_("Row {0}: Credit entry can not be linked with a {1}").format(
+								d.idx, d.reference_type
+							)
 						)
-					)
 
 				# set totals
 				if d.reference_name not in self.reference_totals:
@@ -1060,13 +1041,16 @@ class JournalEntry(AccountsController):
 
 				# check if party matches for Sales / Purchase Order
 				if d.reference_type in ("Sales Order", "Purchase Order"):
+				
 					# set totals
+					#frappe.throw(str(d.party))
 					if against_voucher != d.party:
-						frappe.throw(
-							_("Row {0}: {1} {2} does not match with {3}").format(
-								d.idx, d.party_type, d.party, d.reference_type
+						if self.tax_payment_jv == 0:
+							frappe.throw(
+								_("Row {0}: {1} {2} does not match with {3}").format(
+									d.idx, d.party_type, d.party, d.reference_type
+								)
 							)
-						)
 
 		self.validate_orders()
 		self.validate_invoices()

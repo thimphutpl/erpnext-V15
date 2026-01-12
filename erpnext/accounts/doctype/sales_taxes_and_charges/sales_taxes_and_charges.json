@@ -12,6 +12,7 @@
   "add_deduct_tax",
   "col_break_1",
   "description",
+  "is_gst",
   "included_in_print_rate",
   "included_in_paid_amount",
   "accounting_dimensions_section",
@@ -40,7 +41,7 @@
    "label": "Type",
    "oldfieldname": "charge_type",
    "oldfieldtype": "Select",
-   "options": "\nActual\nOn Net Total\nOn Previous Row Amount\nOn Previous Row Total\nOn Item Quantity",
+   "options": "\nActual\nOn Total\nOn Net Total\nOn Previous Row Amount\nOn Previous Row Total\nOn Item Quantity",
    "reqd": 1
   },
   {
@@ -221,13 +222,19 @@
    "label": "Add or Deduct",
    "options": "Add\nDeduct",
    "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_gst",
+   "fieldtype": "Check",
+   "label": "Is GST?"
   }
  ],
  "idx": 1,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-12-25 12:41:51.186970",
+ "modified": "2026-01-10 23:26:28.004138",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Sales Taxes and Charges",

@@ -67,6 +67,7 @@
   "addtional_info",
   "company",
   "payment_order",
+  "tax_payment_jv",
   "column_break3",
   "is_opening",
   "stock_entry",
@@ -599,6 +600,12 @@
    "label": "Payment Status",
    "no_copy": 1,
    "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "tax_payment_jv",
+   "fieldtype": "Check",
+   "label": "Tax Payment JV"
   }
  ],
  "icon": "fa fa-file-text",
@@ -613,7 +620,7 @@
    "table_fieldname": "payment_entries"
   }
  ],
- "modified": "2025-07-10 13:11:55.903756",
+ "modified": "2026-01-04 23:06:20.921458",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Journal Entry",
