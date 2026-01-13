@@ -61,6 +61,7 @@
   "payment_terms",
   "cost_center",
   "default_finance_book",
+  "complimentary_account",
   "fleet_accounts_section",
   "insurance_expense_account",
   "pol_expense_account",
@@ -72,6 +73,12 @@
   "offence_expense_account",
   "registration_certificate_expense_account",
   "emission_expense_account",
+  "gst_accounts_section",
+  "international_supplier_input_gst_template",
+  "domestic_supplier_input_gst_template",
+  "column_break_hfyq",
+  "output_gst_template",
+  "gst_clearing_account",
   "exchange_gain__loss_section",
   "exchange_gain_loss_account",
   "column_break_sttp",
@@ -1036,6 +1043,44 @@
    "fieldname": "cheque_required",
    "fieldtype": "Check",
    "label": " Cheque Required"
+  },
+  {
+   "fieldname": "gst_accounts_section",
+   "fieldtype": "Section Break",
+   "label": "GST Accounts"
+  },
+  {
+   "fieldname": "international_supplier_input_gst_template",
+   "fieldtype": "Link",
+   "label": "International Supplier Input GST Template",
+   "options": "Purchase Taxes and Charges Template"
+  },
+  {
+   "fieldname": "column_break_hfyq",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "domestic_supplier_input_gst_template",
+   "fieldtype": "Link",
+   "label": "Domestic Supplier Input GST Template",
+   "options": "Purchase Taxes and Charges Template"
+  },
+  {
+   "fieldname": "output_gst_template",
+   "fieldtype": "Link",
+   "label": "Output GST Template",
+   "options": "Sales Taxes and Charges Template"
+  },
+  {
+   "fieldname": "gst_clearing_account",
+   "fieldtype": "Link",
+   "label": "GST Clearing Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "complimentary_account",
+   "fieldtype": "Data",
+   "label": "Complimentary Account"
   }
  ],
  "icon": "fa fa-building",
@@ -1043,7 +1088,7 @@
  "image_field": "company_logo",
  "is_tree": 1,
  "links": [],
- "modified": "2025-12-22 11:21:55.278984",
+ "modified": "2026-01-12 18:35:20.147671",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Company",

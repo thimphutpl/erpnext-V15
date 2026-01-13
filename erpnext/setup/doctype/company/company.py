@@ -40,6 +40,7 @@ class Company(NestedSet):
 		company_description: DF.TextEditor | None
 		company_logo: DF.AttachImage | None
 		company_name: DF.Data
+		complimentary_account: DF.Data | None
 		cost_center: DF.Link | None
 		country: DF.Link
 		create_chart_of_accounts_based_on: DF.Literal["", "Standard Template", "Existing Company"]
@@ -79,6 +80,7 @@ class Company(NestedSet):
 		depreciation_expense_account: DF.Link | None
 		disposal_account: DF.Link | None
 		domain: DF.Data | None
+		domestic_supplier_input_gst_template: DF.Link | None
 		email: DF.Data | None
 		emission_expense_account: DF.Link | None
 		employer_contribution_pf_account: DF.Link | None
@@ -91,9 +93,11 @@ class Company(NestedSet):
 		expenses_included_in_valuation: DF.Link | None
 		fax: DF.Data | None
 		fitness_expense_account: DF.Link | None
+		gst_clearing_account: DF.Link | None
 		hirecharge_income_account: DF.Link | None
 		insurance_claim_expense_account: DF.Link | None
 		insurance_expense_account: DF.Link | None
+		international_supplier_input_gst_template: DF.Link | None
 		is_group: DF.Check
 		leave_encashment_expense_account: DF.Link | None
 		leave_encashment_payable_account: DF.Link | None
@@ -101,6 +105,7 @@ class Company(NestedSet):
 		monthly_sales_target: DF.Currency
 		offence_expense_account: DF.Link | None
 		old_parent: DF.Data | None
+		output_gst_template: DF.Link | None
 		parent_company: DF.Link | None
 		payment_terms: DF.Link | None
 		phone_no: DF.Data | None
