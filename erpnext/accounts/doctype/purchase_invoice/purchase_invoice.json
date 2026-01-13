@@ -123,6 +123,7 @@
   "freight_insurance_charges",
   "other_charges",
   "total_add_ded",
+  "discount_or_cost_amount",
   "column_break_46",
   "apply_discount_on",
   "discount",
@@ -1772,14 +1773,19 @@
    "label": "Apply Additional Discount On",
    "options": "\nGrand Total\nNet Total",
    "print_hide": 1
+  },
+  {
+   "fieldname": "discount_or_cost_amount",
+   "fieldtype": "Data",
+   "label": "Discount Amount"
   }
  ],
  "icon": "fa fa-file-text",
  "idx": 204,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-09-17 10:34:58.555290",
- "modified_by": "kalden.dorji@thimphutechpark.bt",
+ "modified": "2026-01-13 13:12:43.301232",
+ "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Purchase Invoice",
  "naming_rule": "Expression (old style)",

@@ -116,6 +116,7 @@ class PurchaseInvoice(BuyingController):
 		currency: DF.Link | None
 		disable_rounded_total: DF.Check
 		discount: DF.Currency
+		discount_or_cost_amount: DF.Data | None
 		dispatch: DF.Data | None
 		due_date: DF.Date | None
 		for_project: DF.Check
