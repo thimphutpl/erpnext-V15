@@ -393,7 +393,7 @@
    "fieldname": "fuel_type",
    "fieldtype": "Link",
    "label": "Fuel Type",
-   "options": "Item"
+   "options": "Fuel Type"
   },
   {
    "fieldname": "fuel_expense_account",
@@ -410,7 +410,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-12-30 11:08:19.457503",
+ "modified": "2026-01-14 15:10:26.050271",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Equipment",
