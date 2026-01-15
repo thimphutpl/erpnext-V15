@@ -8,7 +8,7 @@ from frappe import _
 import frappe
 from frappe.model.document import Document
 from frappe.model.mapper import get_mapped_doc
-from frappe.utils import flt, nowdate, getdate
+from frappe.utils import flt, nowdate, getdate, formatdate
 from erpnext.custom_workflow import validate_workflow_states, notify_workflow_states
 
 class Review(Document):
@@ -90,6 +90,7 @@ class Review(Document):
 		self.approver=user_id
 		self.approver_name=emp_name
 		self.approver_designation=deg
+
 	def check_target(self):
 		if not frappe.db.get_value("EAS Group", self.eas_group, "required_to_set_target"):
 			frappe.throw(title='Error', msg="You are not required to set Target")
@@ -97,25 +98,108 @@ class Review(Document):
 			if not self.review_target_item:
 				frappe.throw(_('You need to <b>Set The Target</b>'))
 
-			total_target_weightage = 0
-			# total weightage must be 100
-			for i, t in enumerate(self.review_target_item):
-				if getdate(t.from_date).year < getdate().year:
-					frappe.throw(
-						title=_("Error"),
-						msg=_("<b>From Date</b> cannot be less than <b>{}</b> in Target Item at Row <b>{}</b>".format(getdate().year,i+1)))
+			#total_target_weightage = 0
 
-				if getdate(t.to_date).year > getdate().year:
-					frappe.throw(
-						title=_("Error"),
-						msg=_("<b>To Date</b> cannot be greater than <b>{}</b> in Target Item at Row <b>{}</b>".format(getdate().year,i+1)))	
-					
-				if t.from_date > t.to_date:
-					frappe.throw(
-						title=_("Error"),
-						msg=_(" <b>From Date</b> cannot be greater than <b>To Date</b> in Target Item at Row <b>{}</b>".format(i+1)))
+
+
+			
+			#added by kinzang.n to validate with EAS Calendar year
+			eas_calendar = frappe.get_doc("EAS Calendar", self.eas_calendar)
+			
+			
+			if not eas_calendar.fiscal_year:
+				frappe.throw(
+					title=_("Configuration Error"),
+					msg=_("Fiscal Year is not set in EAS Calendar <b>{}</b>").format(self.eas_calendar)
+				)
 				
-				total_target_weightage += flt(t.weightage)
+				# Get Fiscal Year date rang
+			fy = frappe.get_doc("Fiscal Year", eas_calendar.fiscal_year)
+			fy_start = getdate(fy.year_start_date)
+			fy_end = getdate(fy.year_end_date)
+
+			total_target_weightage = 0
+
+			
+			for i, t in enumerate(self.review_target_item):
+				row_num = i + 1
+				if not t.from_date or not t.to_date:
+					frappe.throw(
+						_("From Date and To Date are mandatory at Row <b>{}</b>").format(row_num)
+					)
+				from_date = getdate(t.from_date)
+				to_date = getdate(t.to_date)
+				
+				# From Date must be inside EAS Calendar Fiscal Year
+				if from_date < fy_start or from_date > fy_end:
+					frappe.throw(
+						title=_("Error"),
+						msg=_(
+							"<b>From Date</b> {}, must be within EAS Calendar Fiscal Year "
+							"<b>{}</b> ({} to {}) at Row <b>{}</b>"
+						).format(
+							formatdate(from_date),
+							fy.name,
+							formatdate(fy_start),
+							formatdate(fy_end),
+							row_num
+						)	
+					)
+				
+				# To Date must be inside EAS Calendar Fiscal Year
+				if to_date < fy_start or to_date > fy_end:
+					frappe.throw(
+						title=_("Error"),
+						msg=_(
+							"<b>To Date</b> {} must be within EAS Calendar Fiscal Year "
+							"<b>{}</b> ({} to {}) at Row <b>{}</b>"
+						).format(
+							formatdate(to_date),
+							fy.name,
+							formatdate(fy_start),
+							formatdate(fy_end),
+							row_num
+						)	
+					)
+				# From Date must be <= To Date
+				if from_date > to_date:
+					frappe.throw(
+						title=_("Error"),
+						msg=_(
+							"<b>From Date</b> cannot be greater than <b>To Date</b> "
+							"at Row <b>{}</b>"
+						).format(row_num)
+					)
+
+				weight = flt(t.weightage or 0)
+				total_target_weightage +=weight
+
+			
+			#till here
+
+
+
+			#total weightage must be 100
+			#for i, t in enumerate(self.review_target_item):
+				# if getdate(t.from_date).year < getdate().year:
+				# 	frappe.throw(
+				# 		title=_("Error"),
+				# 		msg=_("<b>From Date</b> cannot be less than <b>{}</b> in Target Item at Row <b>{}</b>".format(getdate().year,i+1)))
+
+				# if getdate(t.to_date).year > getdate().year:
+				# 	frappe.throw(
+				# 		title=_("Error"),
+				# 		msg=_("<b>To Date</b> cannot be greater than <b>{}</b> in Target Item at Row <b>{}</b>".format(getdate().year,i+1)))	
+					
+				# if t.from_date > t.to_date:
+				# 	frappe.throw(
+				# 		title=_("Error"),
+				# 		msg=_(" <b>From Date</b> cannot be greater than <b>To Date</b> in Target Item at Row <b>{}</b>".format(i+1)))
+
+				
+			
+				
+			#total_target_weightage += flt(t.weightage)
 
 			if flt(total_target_weightage) != 100:
 				frappe.throw(
