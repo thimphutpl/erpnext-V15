@@ -66,8 +66,7 @@
    "default": "Today",
    "fieldname": "date",
    "fieldtype": "Date",
-   "label": "Posting Date",
-   "read_only": 1
+   "label": "Posting Date"
   },
   {
    "fieldname": "employee",
@@ -262,7 +261,7 @@
  ],
  "is_submittable": 1,
  "links": [],
- "modified": "2025-04-25 16:22:24.147253",
+ "modified": "2026-01-08 16:55:09.102031",
  "modified_by": "Administrator",
  "module": "PMS",
  "name": "Target Set Up",

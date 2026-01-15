@@ -7,7 +7,7 @@ import frappe
 import urllib.parse
 from frappe import _
 from frappe.model.document import Document
-from frappe.utils import flt, nowdate, getdate
+from frappe.utils import flt, nowdate, getdate, formatdate
 from frappe.model.mapper import get_mapped_doc
 #from nowdate import nowdate 
 from erpnext.custom_workflow import validate_workflow_states, notify_workflow_states
@@ -107,14 +107,13 @@ class TargetSetUp(Document):
 					frappe.throw(_('No active Target Setup found in EAS Calendar <b>{}</b>').format(self.eas_calendar))
 
 
-
-			
-
 	def check_duplicate_entry(self):
 		# check duplicate entry for particular employee
 		pass
 
 	def check_target(self):
+		
+
 		check = frappe.db.get_value("EAS Group", self.eas_group, "required_to_set_target")
 		eas_setting=frappe.frappe.get_doc('EAS Settings')
 		if not check:
@@ -132,28 +131,130 @@ class TargetSetUp(Document):
 					title='Error',
 					msg="Total number of target must be between <b>{}</b> and <b>{}</b> but you have set only <b>{}</b> target".format(eas_setting.min_no_of_target,eas_setting.max_no_of_target,target))
 			# total weightage must be 100
+
+
+
+			#added by kinzang.n to validate with EAS Calendar year
+			eas_calendar = frappe.get_doc("EAS Calendar", self.eas_calendar)
+			
+			
+			if not eas_calendar.fiscal_year:
+				frappe.throw(
+					title=_("Configuration Error"),
+					msg=_("Fiscal Year is not set in EAS Calendar <b>{}</b>").format(self.eas_calendar)
+				)
+				
+				# Get Fiscal Year date rang
+			fy = frappe.get_doc("Fiscal Year", eas_calendar.fiscal_year)
+			fy_start = getdate(fy.year_start_date)
+			fy_end = getdate(fy.year_end_date)
+
+			
 			for i, t in enumerate(self.target_item):
 				row_num = i + 1
-				#frappe.throw(str("hi"))
-				if getdate(t.from_date).year < getdate().year:
+				if not t.from_date or not t.to_date:
 					frappe.throw(
-						title=_("Error"),
-						msg=_("<b>From Date</b> cannot be less than <b>{}</b> in Target Item at Row <b>{}</b>".format(getdate().year,i+1)))
-
-				if getdate(t.to_date).year > getdate().year:
-					frappe.throw(
-						title=_("Error"),
-						msg=_("<b>To Date</b> cannot be greater than <b>{}</b> in Target Item at Row <b>{}</b>".format(getdate().year,i+1)))	
-					
-				if t.from_date > t.to_date:
-					frappe.throw(
-						title=_("Error"),
-						msg=_(" <b>From Date</b> cannot be greater than <b>To Date</b> in Target Item at Row <b>{}</b>".format(i+1)))
+						_("From Date and To Date are mandatory at Row <b>{}</b>").format(row_num)
+					)
+				from_date = getdate(t.from_date)
+				to_date = getdate(t.to_date)
 				
-				# if t.weightage < eas_setting.min_weightage_for_target:
+				# From Date must be inside EAS Calendar Fiscal Year
+				if from_date < fy_start or from_date > fy_end:
+					frappe.throw(
+						title=_("Error"),
+						msg=_(
+							"<b>From Date</b> {}, must be within EAS Calendar Fiscal Year "
+							"<b>{}</b> ({} to {}) at Row <b>{}</b>"
+						).format(
+							formatdate(from_date),
+							fy.name,
+							formatdate(fy_start),
+							formatdate(fy_end),
+							row_num
+						)	
+					)
+				
+				# To Date must be inside EAS Calendar Fiscal Year
+				if to_date < fy_start or to_date > fy_end:
+					frappe.throw(
+						title=_("Error"),
+						msg=_(
+							"<b>To Date</b> {} must be within EAS Calendar Fiscal Year "
+							"<b>{}</b> ({} to {}) at Row <b>{}</b>"
+						).format(
+							formatdate(to_date),
+							fy.name,
+							formatdate(fy_start),
+							formatdate(fy_end),
+							row_num
+						)	
+					)
+				# From Date must be <= To Date
+				if from_date > to_date:
+					frappe.throw(
+						title=_("Error"),
+						msg=_(
+							"<b>From Date</b> cannot be greater than <b>To Date</b> "
+							"at Row <b>{}</b>"
+						).format(row_num)
+					)
+
+			
+			#till here
+	
+
+
+			# posting_year = getdate(self.date).year #added by kinzang to get yeear of posting date
+
+			# for i, t in enumerate(self.target_item):
+			# 	row_num = i + 1
+
+
+			# 	# added by kinzang to validate the from date and to date with posting date
+			# 	#frappe.throw(str("hi"))
+			# 	if getdate(t.from_date).year != posting_year:
+			# 		frappe.throw(
+			# 			title=_("Error"),
+			# 			msg=_("<b>From Date</b> cannot be less than <b>{}</b> in Target Item at Row <b>{}</b>".format(posting_year, i+1)))
+
+			# 	if getdate(t.to_date).year != posting_year:
+			# 		frappe.throw(
+			# 			title=_("Error"),
+			# 			msg=_("<b>To Date</b> cannot be greater than <b>{}</b> in Target Item at Row <b>{}</b>".format(posting_year ,i+1)))	
+					
+			# 	if getdate(t.from_date) > getdate(t.to_date):
+			# 		frappe.throw(
+			# 			title=_("Error"),
+			# 			msg=_(" <b>From Date</b> cannot be greater than <b>To Date</b> in Target Item at Row <b>{}</b>".format(i+1))
+			# 		)	
+
+					# till here
+
+
+
+			#their orginal code
+				#frappe.throw(str("hi"))
+				# if getdate(t.from_date).year < getdate().year:
 				# 	frappe.throw(
 				# 		title=_("Error"),
-				# 		msg=_(" min watage should grater <b>{}</b>".format(eas_setting.min_weightage_for_target,row_num)))
+				# 		msg=_("<b>From Date</b> cannot be less than <b>{}</b> in Target Item at Row <b>{}</b>".format(getdate().year,i+1)))
+
+				# if getdate(t.to_date).year > getdate().year:
+				# 	frappe.throw(
+				# 		title=_("Error"),
+				# 		msg=_("<b>To Date</b> cannot be greater than <b>{}</b> in Target Item at Row <b>{}</b>".format(getdate().year,i+1)))	
+					
+				# if t.from_date > t.to_date:
+				# 	frappe.throw(
+				# 		title=_("Error"),
+				# 		msg=_(" <b>From Date</b> cannot be greater than <b>To Date</b> in Target Item at Row <b>{}</b>".format(i+1)))
+
+				
+				if t.weightage < eas_setting.min_weightage_for_target:
+					frappe.throw(
+						title=_("Error"),
+						msg=_(" min watage should grater <b>{}</b>".format(eas_setting.min_weightage_for_target,row_num)))
 				if flt(t.weightage) > flt(eas_setting.max_weightage_for_target) or flt(t.weightage) < flt(eas_setting.min_weightage_for_target):
 					frappe.throw(
 						title=_('Error'),
@@ -183,6 +284,10 @@ class TargetSetUp(Document):
  
 @frappe.whitelist()
 def create_review(source_name, target_doc=None):
+	
+	
+	
+	#frappe.throw(str(lattest_approver))
 	if frappe.db.exists('Review', {'target':source_name, 'docstatus':('=',1)}):
 		frappe.throw(
 			title='Error',
