@@ -335,7 +335,7 @@ class SalesInvoice(SellingController):
 	def set_missing_cost_center(self):
 		for child in self.get("taxes"):
 			if self.cost_center and not child.cost_center:
-				frappe.msgprint("hi")
+				
 				child.cost_center = self.cost_center
 				
             #child.account_head = doc.parent_cost_center
