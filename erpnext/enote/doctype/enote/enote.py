@@ -46,8 +46,9 @@ class eNote(Document):
 	def validate(self):	
 
 		action = frappe.request.form.get('action')
-		if action and action not in ("Save","Apply") and self.reviewer_required:
+		if action and action in ("Review") and self.reviewer_required:
 			status = 1
+			
 			for i in self.reviewers: 
 				if i.status != "Reviewed": 
 					status = 0
@@ -62,7 +63,8 @@ class eNote(Document):
 		# if we allow from here, workflow state is still stays in pending which is wrong.  
 		# again while reloading the doc, after saving remarks has impact as well. it should run
 		# only in below action.
-		if frappe.request.form.get('action') in ("Forward","Apply","Reject"):
+		if frappe.request.form.get('action') in ("Forward","Apply","Reject","Review"):
+			#frappe.throw("hhh")
 			self.send_notification()
 			# notify_workflow_states(self)   
 
@@ -84,12 +86,57 @@ class eNote(Document):
 		#Allow only the permitted user to make changes
 		self.permitted_user = frappe.session.user if not self.permitted_user else self.permitted_user
 
-		if self.get_db_value("workflow_state") != "Waiting For Reviewer":
-			if self.permitted_user != frappe.session.user:
-				frappe.throw(" Only <b>{}</b> is allowed to make changes and perform actions to this Note".format(self.permitted_user))
-		
+		if self.get_db_value("workflow_state") == "Waiting for Reviewer":
+			if action in ("Review"):
+				
+				if not self.forward_to:
+						frappe.throw("<b>Forward To</b> value is missing. Please select a user to Forward")
+					#check if forward_to field is valid
+				if self.forward_to == frappe.session.user:
+					frappe.throw(_("You are not allowed to <b>Forward To</b> yourself. Change the <b>Forward To</b> Field value."))
+				#Save the action in remark child table
+				self.upsert_remark(action)
+
+				message = "eNote Document Successfully Forwarded to {}".format(self.forward_to)
+				#Update the permitted User with next forwarded user 
+				self.permitted_user = self.forward_to
+				return
+						
 		message = None
-		if action in ("Forward","Apply"):
+		#frappe.throw(str(action))
+		if action in ("Apply"):
+			#frappe.throw("hii")
+			if self.reviewer_required:
+		
+				# if not self.forward_to:
+				# 	frappe.throw("<b>Forward To</b> value is missing. Please select a user to Forward")
+				# #check if forward_to field is valid
+				# if self.forward_to == frappe.session.user:
+				# 	frappe.throw(_("You are not allowed to <b>Forward To</b> yourself. Change the <b>Forward To</b> Field value."))
+
+				#Save the action in remark child table
+
+				self.upsert_remark(action)
+				for rev in self.get("reviewers"):
+					message = "eNote Document Successfully Forwarded to {}".format(rev.user_id)
+				#Update the permitted User with next forwarded user 
+				self.permitted_user = self.forward_to
+			else:
+				if not self.forward_to:
+					frappe.throw("<b>Forward To</b> value is missing. Please select a user to Forward")
+				#check if forward_to field is valid
+				if self.forward_to == frappe.session.user:
+					frappe.throw(_("You are not allowed to <b>Forward To</b> yourself. Change the <b>Forward To</b> Field value."))
+				#Save the action in remark child table
+				self.upsert_remark(action)
+
+				message = "eNote Document Successfully Forwarded to {}".format(self.forward_to)
+				#Update the permitted User with next forwarded user 
+				self.permitted_user = self.forward_to
+
+		else:
+			pass
+		if action in ("Forward"):
 			if not self.forward_to:
 				frappe.throw("<b>Forward To</b> value is missing. Please select a user to Forward")
 			#check if forward_to field is valid
@@ -101,6 +148,21 @@ class eNote(Document):
 			message = "eNote Document Successfully Forwarded to {}".format(self.forward_to)
 			#Update the permitted User with next forwarded user 
 			self.permitted_user = self.forward_to
+
+		# if action in ("Review"):
+			
+		# 	if not self.forward_to:
+		# 		frappe.throw("<b>Forward To</b> value is missing. Please select a user to Forward")
+		# 	#check if forward_to field is valid
+		# 	if self.forward_to == frappe.session.user:
+		# 		frappe.throw(_("You are not allowed to <b>Forward To</b> yourself. Change the <b>Forward To</b> Field value."))
+		# 	#Save the action in remark child table
+		# 	self.upsert_remark(action)
+
+		# 	message = "eNote Document Successfully Forwarded to {}".format(self.forward_to)
+		# 	#Update the permitted User with next forwarded user 
+		# 	self.permitted_user = self.forward_to
+
 		
 		if action in ("Approve","Reject"):
 			if action == "Reject":
@@ -138,18 +200,24 @@ class eNote(Document):
 
 	def send_notification(self):
 		action = frappe.request.form.get('action')  
-		if self.workflow_state == "Draft" or action == "Save":
-			return
-		elif self.workflow_state in ("Approved", "Rejected", "Cancelled"):
+		if action in ("Apply") and self.reviewer_required:
+			self.notify_reviewer()
+		if action in ("Review") and self.reviewer_required:
+			self.notify_approval()
+		if self.workflow_state in ("Approved", "Rejected", "Cancelled"):
 			self.notify_employee()
 
-		elif self.workflow_state == "Pending for Approval" and frappe.session.user != self.forward_to:
+		elif self.workflow_state == "Pending" and frappe.session.user != self.forward_to:
 			self.notify_approval()
 
-		elif self.workflow_state == "Waiting For Reviewer":
-			self.notify_reviewer()
+		# elif self.workflow_state == "Waiting For Reviewer":
+		# 	#frappe.throw("nn")
+		# 	self.notify_reviewer()
+
+		
 
 	def notify_reviewer(self):
+		
 		self.doc = self
 		parent_doc = frappe.get_doc(self.doc.doctype, self.doc.name)
 		args = parent_doc.as_dict()
@@ -163,9 +231,13 @@ class eNote(Document):
 
 		email_template = frappe.get_doc("Email Template", template)
 		message = frappe.render_template(email_template.response, args)
-		recipients = self.doc.owner
+		
+		
 		subject = email_template.subject
-		self.send_mail(recipients,message, subject)
+		for rev in self.get("reviewers"):
+			recipients = rev.user_id
+			#frappe.throw(str(rev.user_id))
+			self.send_mail(recipients,message, subject)
 
 	def notify_employee(self):
 		self.doc = self
@@ -327,11 +399,12 @@ class eNote(Document):
 						status = 0
 						break
 			if status == 1:
+				return
 				# doc = frappe.get_doc('eNote', self.name) 
 				# doc.workflow_state = "Pending"
 				# doc.save()
 				# frappe.db.commit()
-				frappe.db.set_value("eNote", {'name': self.name}, "workflow_state", "Pending for Approval")
+				#frappe.db.set_value("eNote", {'name': self.name}, "workflow_state", "Pending")
 
    
 	def send_mail(self, recipients, message, subject):
@@ -341,9 +414,10 @@ class eNote(Document):
 					recipients=recipients,
 					subject=_(subject),
 					message= _(message),
-					attachments=attachments,
+					#attachments=attachments,
 				)
 		except:
+			frappe.throw("hii")
 			pass	
 
 def get_permission_query_conditions(user):
