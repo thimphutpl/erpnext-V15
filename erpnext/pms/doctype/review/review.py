@@ -55,8 +55,12 @@ class Review(Document):
 			notify_workflow_states(self)
 		self.check_target()
 		
-		#self.validate_calendar()
+		self.validate_calendar()
 		self.validate_row_deletion()
+
+	def before_submit(self):
+		self.validate_calendar()
+	
 
 	def on_submit(self):
 		pass
@@ -67,11 +71,69 @@ class Review(Document):
 			if row.get('delete_flag'):
 				frappe.throw("Deletion of rows is not allowed.")
 	
-	def validate_calendar(self): 
-		# check whether pms is active for review
-		if not frappe.db.exists("EAS Calendar",{"name": self.eas_calendar, "docstatus": 1,
-					"review_start_date":("<=",nowdate()),"review_end_date":(">=",nowdate())}):
-			frappe.throw(_('Review for EAS Calendar <b>{}</b> is not open please check your posting date').format(self.eas_calendar))
+	# def validate_calendar(self): 
+	# 	# check whether pms is active for review
+	# 	if not frappe.db.exists("EAS Calendar",{"name": self.eas_calendar, "docstatus": 1,
+	# 				"review_start_date":("<=",nowdate()),"review_end_date":(">=",nowdate())}):
+	# 		frappe.throw(_('Review for EAS Calendar <b>{}</b> is not open please check your posting date').format(self.eas_calendar))
+	
+
+	# kinzang.n Added. To validate the date range from eas calendar review start date and end date. Employee can create review with eas calendar date range.
+	
+	def validate_calendar(self):
+		if self.amended_from:
+			doc = frappe.get_doc("Review", self.amended_from)
+			if self.eas_calendar != doc.eas_calendar:
+				frappe.throw(_("EAS Calendar does not match with the cancelled Review"))
+			return
+		
+		# if self.workflow_state not in ["Draft", "Rejected"]:
+		# 	return
+
+		if self.docstatus == 2:
+			return
+		
+		if not self.review_date:
+			frappe.throw(_("Please select Review Date"))
+
+		review_date = getdate(self.review_date)	
+		eas_calendar = frappe.get_doc("EAS Calendar", self.eas_calendar)
+		
+		active_found = False
+		allowed_ranges = []
+		
+		for item in eas_calendar.get("items", []):
+			if item.eas_group != self.eas_group:
+				continue
+			if not item.review_start_date or not item.review_end_date:
+				continue
+			start_date = getdate(item.review_start_date)
+			end_date = getdate(item.review_end_date)
+			
+			allowed_ranges.append(f"{formatdate(start_date)} to {formatdate(end_date)}")
+			
+			if start_date <= review_date <= end_date:
+				active_found = True
+				break
+			
+		if not allowed_ranges:
+			frappe.throw(_(
+				"No Review date range is defined for EAS Group <b>{}</b> in EAS Calendar <b>{}</b>."
+			).format(self.eas_group, self.eas_calendar))
+				
+		if not active_found:
+			frappe.throw(_(
+				"EAS Review for <b>{group}</b> can only be created/Approve within the allowed date range(s) "
+				"in EAS Calendar <b>{calendar}</b>: <b>{ranges}</b>"
+			).format(
+				group=self.eas_group,
+				calendar=self.eas_calendar,
+				ranges=", ".join(allowed_ranges)
+			))
+
+ 		# till  here added bt kinzang.n
+
+
 
 	# def check_duplicate_entry(self):
 	# 	# check duplicate entry for particular employee
@@ -197,8 +259,6 @@ class Review(Document):
 				# 		msg=_(" <b>From Date</b> cannot be greater than <b>To Date</b> in Target Item at Row <b>{}</b>".format(i+1)))
 
 				
-			
-				
 			#total_target_weightage += flt(t.weightage)
 
 			if flt(total_target_weightage) != 100:
@@ -207,6 +267,9 @@ class Review(Document):
 					msg=_('Sum of Weightage for Target must be 100 but your total weightage is <b>{}</b>'.format(total_target_weightage)))
 
 			self.total_weightage = total_target_weightage
+
+
+	
  
 @frappe.whitelist()
 def create_evaluation(source_name, target_doc=None):

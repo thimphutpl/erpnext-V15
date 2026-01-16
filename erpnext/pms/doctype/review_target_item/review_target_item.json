@@ -25,7 +25,7 @@
    "fieldname": "appraisees_remarks",
    "fieldtype": "Small Text",
    "in_list_view": 1,
-   "label": "Appraisee's Remarks"
+   "label": "Appraisee's Comment"
   },
   {
    "columns": 1,
@@ -53,7 +53,7 @@
   {
    "fieldname": "give_your_review_section",
    "fieldtype": "Section Break",
-   "label": "Give Your Review"
+   "label": "Give Your Review Remarks/Comment(Not Rating)"
   },
   {
    "fieldname": "column_break_10",
@@ -71,12 +71,14 @@
   {
    "fieldname": "from_date",
    "fieldtype": "Date",
-   "label": "From Date"
+   "label": "From Date",
+   "read_only": 1
   },
   {
    "fieldname": "to_date",
    "fieldtype": "Date",
-   "label": "To Date"
+   "label": "To Date",
+   "read_only": 1
   },
   {
    "columns": 2,
@@ -90,12 +92,12 @@
    "fieldname": "appraisers_remarks",
    "fieldtype": "Small Text",
    "in_list_view": 1,
-   "label": "Appraiser's Remarks"
+   "label": "Appraiser's Comment"
   }
  ],
  "istable": 1,
  "links": [],
- "modified": "2026-01-15 12:27:03.593123",
+ "modified": "2026-01-16 21:00:55.308350",
  "modified_by": "Administrator",
  "module": "PMS",
  "name": "Review Target Item",

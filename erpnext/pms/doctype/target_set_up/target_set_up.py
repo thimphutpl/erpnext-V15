@@ -48,10 +48,14 @@ class TargetSetUp(Document):
 		self.check_duplicate_entry() 
 		validate_workflow_states(self) 
 		self.validate_calendar()
+
+	def before_submit(self):
+		self.validate_calendar()
+
 			
 	def on_submit(self):
 		return
-		self.validate_calendar()
+		#self.validate_calendar()
 
 	def on_update_after_submit(self):
 		self.check_target()
@@ -75,36 +79,96 @@ class TargetSetUp(Document):
 			r.to_date = t.to_date
 
 		eval_doc.save(ignore_permissions = True)
-		
+
+
+	# kinzang.n Added. To validate the date range from eas calendar target start date and end date. Employee can create target set up with eas calendar date range.
 	def validate_calendar(self):
+		"""
+		Validate that Target Set Up can only be created within the allowed date range
+		for the employee's EAS Group in the selected EAS Calendar.
+		"""
 		
-		if frappe.db.exists("Target Set Up", {"employee": self.employee, "docstatus":2, "eas_calendar": self.eas_calendar}):
-			doc = frappe.get_doc('Target Set Up', self.amended_from)
+		# Check if this is an amended/cancelled Target
+		if self.amended_from:
+			doc = frappe.get_doc("Target Set Up", self.amended_from)
+			if self.eas_calendar != doc.eas_calendar:
+				frappe.throw(_("EAS Calendar does not match with the cancelled Target"))
+			return
+		#Only validate for Draft / Rejected
+		# if self.workflow_state not in ["Draft", "Rejected"]:
+		# 	return
+
+		if self.docstatus == 2:
+			return
+		
+		current_date = getdate()
+		
+		#Get the selected EAS Calendar
+		
+		eas_calendar = frappe.get_doc("EAS Calendar", self.eas_calendar)
+		
+		#Loop through items to find matching EAS Group
+		active_found = False
+		allowed_ranges = []
+		
+		for item in eas_calendar.get("items", []):
+			if item.eas_group != self.eas_group:
+				continue
 			
-			if self.eas_calendar == doc.eas_calendar:
-				#
-				return
-			else:
-				frappe.throw(_("EAS Calendar doesnot match with the cancelled Target"))
+			start_date = getdate(item.target_start_date)
+			end_date = getdate(item.target_end_date)
+			
+			allowed_ranges.append(f"{formatdate(start_date)} to {formatdate(end_date)}")
+			
+			if start_date <= current_date <= end_date:
+				active_found = True
+				break
+			
+		#Throw error if current date is not within allowed range
+		if not active_found:
+			frappe.throw(_(
+				"Target Set Up for <b>{group}</b> can only be created/approve within the allowed date range(s) in EAS Calendar <b>{calendar}</b>: <b>{ranges}</b>"
+			).format(
+				group=self.eas_group,
+				calendar=self.eas_calendar,
+				ranges=", ".join(allowed_ranges)
+			))
+	
+ # till  here added bt kinzang.n
+
+
+
 
 		
-		if self.eas_group in ['Group I', 'Group II'] and self.workflow_state in ['Draft', 'Rejected']:
-			current_date = getdate()
-			eas_calendar = frappe.get_doc("EAS Calendar", self.eas_calendar)
-			active_found = False
+	# def validate_calendar(self):
+		
+	# 	if frappe.db.exists("Target Set Up", {"employee": self.employee, "docstatus":2, "eas_calendar": self.eas_calendar}):
+	# 		doc = frappe.get_doc('Target Set Up', self.amended_from)
+			
+	# 		if self.eas_calendar == doc.eas_calendar:
+	# 			#
+	# 			return
+	# 		else:
+	# 			frappe.throw(_("EAS Calendar doesnot match with the cancelled Target"))
 
-			for child in eas_calendar.get("items", []):
-				if child.eas_group != self.eas_group:
-					continue 
-				if self.eas_group == 'Group II' and current_date >= child.target_start_date:
-					active_found = True
-					break
-				if self.eas_group == 'Group I' and (child.target_start_date <= current_date <= child.target_end_date):
-					active_found = True
-					break
+		
+	# 	if self.eas_group in ['Group I', 'Group II'] and self.workflow_state in ['Draft', 'Rejected']:
+	# 		current_date = getdate()
+	# 		eas_calendar = frappe.get_doc("EAS Calendar", self.eas_calendar)
+	# 		active_found = False
 
-				if not active_found:
-					frappe.throw(_('No active Target Setup found in EAS Calendar <b>{}</b>').format(self.eas_calendar))
+	# 		for child in eas_calendar.get("items", []):
+	# 			if child.eas_group != self.eas_group:
+	# 				continue 
+	# 			if self.eas_group == 'Group II' and current_date >= child.target_start_date:
+	# 				active_found = True
+	# 				break
+	# 			if self.eas_group == 'Group I' and (child.target_start_date <= current_date <= child.target_end_date):
+	# 				active_found = True
+	# 				break
+
+	# 			if not active_found:
+	# 				frappe.throw(_('No active Target Setup found in EAS Calendar <b>{}</b>').format(self.eas_calendar))
 
 
 	def check_duplicate_entry(self):
