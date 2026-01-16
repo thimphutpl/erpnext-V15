@@ -2076,6 +2076,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "section_break_42",
    "fieldtype": "Section Break",
    "hide_border": 1,
@@ -2206,7 +2207,7 @@
    "link_fieldname": "consolidated_invoice"
   }
  ],
- "modified": "2025-12-22 15:34:53.941923",
+ "modified": "2025-12-31 09:59:03.980492",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Sales Invoice",
