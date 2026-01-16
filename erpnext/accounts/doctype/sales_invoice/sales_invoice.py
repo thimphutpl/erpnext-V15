@@ -251,6 +251,7 @@ class SalesInvoice(SellingController):
 			self.so_dn_required()
 
 		self.set_tax_withholding()
+		self.set_missing_cost_center()
 
 		self.validate_proj_cust()
 		self.validate_pos_return()
@@ -285,6 +286,9 @@ class SalesInvoice(SellingController):
 		if is_deferred_invoice:
 			validate_service_stop_date(self)
 
+		if self.posting_date and getdate(self.posting_date) < getdate():
+			frappe.throw("Transaction Date cannot be back Date.")
+			
 		if not self.is_opening:
 			self.is_opening = "No"
 
@@ -327,6 +331,14 @@ class SalesInvoice(SellingController):
 
 		self.allow_write_off_only_on_pos()
 		self.reset_default_field_value("set_warehouse", "items", "warehouse")
+
+	def set_missing_cost_center(self):
+		for child in self.get("taxes"):
+			if self.cost_center and not child.cost_center:
+				frappe.msgprint("hi")
+				child.cost_center = self.cost_center
+				
+            #child.account_head = doc.parent_cost_center
 
 	def validate_accounts(self):
 		self.validate_write_off_account()
@@ -404,16 +416,20 @@ class SalesInvoice(SellingController):
 		self.calculate_taxes_and_totals()
 
 	def before_save(self):
+		
 		self.set_account_for_mode_of_payment()
 		self.set_paid_amount()
 
 	def before_submit(self):
+		#frappe.throw(str(self.outstanding_amount))
 		self.add_remarks()
 
 	def on_submit(self):
+		
 		self.validate_pos_paid_amount()
 
 		if not self.auto_repeat:
+			
 			frappe.get_doc("Authorization Control").validate_approving_authority(
 				self.doctype, self.company, self.base_grand_total, self
 			)
@@ -440,8 +456,8 @@ class SalesInvoice(SellingController):
 				self.make_bundle_for_sales_purchase_return(table_name)
 				self.make_bundle_using_old_serial_batch_fields(table_name)
 			self.update_stock_ledger()
-
-		# this sequence because outstanding may get -ve
+		#this sequence because outstanding may get -ve
+		
 		self.make_gl_entries()
 
 		if self.update_stock == 1:
@@ -1147,11 +1163,15 @@ class SalesInvoice(SellingController):
 				throw(_("Delivery Note {0} is not submitted").format(d.delivery_note))
 
 	def make_gl_entries(self, gl_entries=None, from_repost=False):
+		
 		from erpnext.accounts.general_ledger import make_gl_entries, make_reverse_gl_entries
 
 		auto_accounting_for_stock = erpnext.is_perpetual_inventory_enabled(self.company)
+		#frappe.throw(str(auto_accounting_for_stock))
 		if not gl_entries:
+			#frappe.throw("pl")
 			gl_entries = self.get_gl_entries()
+			#frappe.throw(str(gl_entries))
 
 		if gl_entries:
 			# if POS and amount is written off, updating outstanding amt after posting all gl entries
@@ -1160,15 +1180,16 @@ class SalesInvoice(SellingController):
 				if (cint(self.is_pos) or self.write_off_account or cint(self.redeem_loyalty_points))
 				else "Yes"
 			)
-
+			#frappe.throw(str(update_outstanding))
 			if self.docstatus == 1:
+				#frappe.throw("xxx")
 				make_gl_entries(
 					gl_entries,
 					update_outstanding=update_outstanding,
 					merge_entries=False,
 					from_repost=from_repost,
 				)
-
+				#frappe.throw("xxx88")
 				self.make_exchange_gain_loss_journal()
 			elif self.docstatus == 2:
 				cancel_exchange_gain_loss_journal(frappe._dict(doctype=self.doctype, name=self.name))
@@ -1212,7 +1233,7 @@ class SalesInvoice(SellingController):
 
 		self.make_write_off_gl_entry(gl_entries)
 		self.make_gle_for_rounding_adjustment(gl_entries)
-
+		# frappe.throw(str(gl_entries))
 		return gl_entries
 
 	def make_customer_gl_entry(self, gl_entries):
@@ -1266,6 +1287,7 @@ class SalesInvoice(SellingController):
 
 			if flt(tax.base_tax_amount_after_discount_amount):
 				account_currency = get_account_currency(tax.account_head)
+				# if tax.is_gst == 1:
 				gl_entries.append(
 					self.get_gl_dict(
 						{
@@ -1283,7 +1305,6 @@ class SalesInvoice(SellingController):
 						item=tax,
 					)
 				)
-
 	def make_internal_transfer_gl_entries(self, gl_entries):
 		if self.is_internal_transfer() and flt(self.base_total_taxes_and_charges):
 			account_currency = get_account_currency(self.unrealized_profit_loss_account)
@@ -1615,11 +1636,7 @@ class SalesInvoice(SellingController):
 			and self.base_rounding_adjustment
 			and not self.is_internal_transfer()
 		):
-			(
-				round_off_account,
-				round_off_cost_center,
-				round_off_for_opening,
-			) = get_round_off_account_and_cost_center(
+			round_off_account, round_off_cost_center, round_off_for_opening = get_round_off_account_and_cost_center(
 				self.company, "Sales Invoice", self.name, self.use_company_roundoff_cost_center
 			)
 
