@@ -271,7 +271,9 @@ class DeliveryNote(SellingController):
 
 		make_packing_list(self)
 		self.update_current_stock()
-
+		
+		if self.posting_date and getdate(self.posting_date) < getdate():
+			frappe.throw("Transaction Date cannot be back Date.")
 		if not self.installation_status:
 			self.installation_status = "Not Installed"
 
@@ -1013,7 +1015,8 @@ def make_sales_invoice(source_name, target_doc=None, args=None):
 		{
 			"Delivery Note": {
 				"doctype": "Sales Invoice",
-				"field_map": {"is_return": "is_return"},
+				"field_map": {"is_return": "is_return"			
+				},
 				"validation": {"docstatus": ["=", 1]},
 			},
 			"Delivery Note Item": {
@@ -1024,6 +1027,7 @@ def make_sales_invoice(source_name, target_doc=None, args=None):
 					"so_detail": "so_detail",
 					"against_sales_order": "sales_order",
 					"cost_center": "cost_center",
+					
 				},
 				"postprocess": update_item,
 				"filter": lambda d: get_pending_qty(d) <= 0
@@ -1425,7 +1429,7 @@ def check_vehicle_simple(vehicle_no, posting_date, docname=None):
 	
 	if conflict:
 		return {
-			"conflict": True,
+			"conflict": True, 
 			"vehicle_no": conflict[0].vehicle_no,
 			"from_date": frappe.utils.format_date(conflict[0].from_date),
 			"to_date": frappe.utils.format_date(conflict[0].to_date),

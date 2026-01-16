@@ -210,6 +210,7 @@ class SalesOrder(SellingController):
 
 	def validate(self):
 		super().validate()
+		self.set_disable_round_total()
 		self.validate_delivery_date()
 		self.validate_proj_cust()
 		self.validate_po()
@@ -247,6 +248,9 @@ class SalesOrder(SellingController):
 			#Check for validation
 			self.validate_lot_list()
 		self.calculate_transportation()
+
+	def set_disable_round_total(self):
+		self.disable_rounded_total=1
 
 	def validate_lot_list(self):
 		for item in self.items:
@@ -1040,6 +1044,7 @@ def make_delivery_note(source_name, target_doc=None, kwargs=None):
 	mapper = {
 		"Sales Order": {"doctype": "Delivery Note", "field_map": {
 				"customer_order": "customer_order",
+				"branch":"branch",
 			},"validation": {"docstatus": ["=", 1]}},
 		"Sales Taxes and Charges": {"doctype": "Sales Taxes and Charges", "reset_value": True},
 		"Sales Team": {"doctype": "Sales Team", "add_if_empty": True},
@@ -1250,6 +1255,7 @@ def make_sales_invoice(source_name, target_doc=None, ignore_permissions=False):
 				"field_map": {
 					"party_account_currency": "party_account_currency",
 					"payment_terms_template": "payment_terms_template",
+					"branch":"branch",
 				},
 				"field_no_map": ["payment_terms_template"],
 				"validation": {"docstatus": ["=", 1]},

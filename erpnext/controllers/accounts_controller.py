@@ -1264,9 +1264,14 @@ class AccountsController(TransactionBase):
 				d.exchange_gain_loss = difference
 
 	def make_precision_loss_gl_entry(self, gl_entries):
-		round_off_account, round_off_cost_center = get_round_off_account_and_cost_center(
-			self.company, "Purchase Invoice", self.name, self.use_company_roundoff_cost_center
-		)
+		try:
+			round_off_account, round_off_cost_center, _ = get_round_off_account_and_cost_center(
+				self.company, "Purchase Invoice", self.name, self.use_company_roundoff_cost_center
+			)
+		except ValueError:
+			round_off_account, round_off_cost_center = get_round_off_account_and_cost_center(
+				self.company, "Purchase Invoice", self.name
+			)
 
 		precision_loss = self.get("base_net_total") - flt(
 			self.get("net_total") * self.conversion_rate, self.precision("net_total")
@@ -2584,7 +2589,10 @@ def validate_taxes_and_charges(tax):
 			)
 
 	if tax.charge_type == "Actual":
-		tax.rate = None
+		# if tax.add_deduct_tax=="Deduct":
+		# 	tax.tax_amount *=-1
+		#frappe.throw("hii")
+		tax.rate = 0
 
 
 def validate_account_head(idx, account, company, context=""):

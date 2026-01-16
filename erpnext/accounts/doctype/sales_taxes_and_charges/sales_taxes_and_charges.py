@@ -16,7 +16,7 @@ class SalesTaxesandCharges(Document):
 
 		account_currency: DF.Link | None
 		account_head: DF.Link
-		add_deduct_tax: DF.Literal["Add", "Deduct"]
+		add_deduct_tax: DF.Literal["Add", "Deduct", "None"]
 		base_tax_amount: DF.Currency
 		base_tax_amount_after_discount_amount: DF.Currency
 		base_total: DF.Currency

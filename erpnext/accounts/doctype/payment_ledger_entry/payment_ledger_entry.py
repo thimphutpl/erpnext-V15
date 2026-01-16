@@ -174,6 +174,7 @@ class PaymentLedgerEntry(Document):
 			and self.flags.update_outstanding == "Yes"
 			and not frappe.flags.is_reverse_depr_entry
 		):
+			# if "GST" not in self.account:
 			update_voucher_outstanding(
 				self.against_voucher_type, self.against_voucher_no, self.account, self.party_type, self.party
 			)

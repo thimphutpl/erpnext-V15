@@ -220,7 +220,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Add or Deduct",
-   "options": "Add\nDeduct",
+   "options": "Add\nDeduct\nNone",
    "reqd": 1
   },
   {
@@ -234,7 +234,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-01-10 23:26:28.004138",
+ "modified": "2026-01-14 14:36:05.667163",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Sales Taxes and Charges",

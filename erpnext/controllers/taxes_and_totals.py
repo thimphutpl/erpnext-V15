@@ -403,9 +403,12 @@ class calculate_taxes_and_totals:
 				# Adjust divisional loss to the last item
 				if tax.charge_type == "Actual":
 					
-					actual_tax_dict[tax.idx] -= current_tax_amount
-					if n == len(self._items) - 1:
-						current_tax_amount += actual_tax_dict[tax.idx]
+					# actual_tax_dict[tax.idx] -= current_tax_amount
+					# if n == len(self._items) - 1:
+					# 	current_tax_amount += actual_tax_dict[tax.idx]
+					tax.tax_amount = current_tax_amount
+					if tax.add_deduct_tax == "Deduct":
+						tax.tax_amount *= -1
 
 				# accumulate tax amount into tax.tax_amount
 				if tax.charge_type != "Actual" and not (
@@ -495,7 +498,7 @@ class calculate_taxes_and_totals:
 					else:
 						tax.total = flt(self.doc.net_total, tax.precision("total"))
 			else:	
-				if (tax.is_gst == 0 or tax.included_in_print_rate == 0) and tax.add_deduct_tax != "None":
+				if (tax.included_in_print_rate == 0) and tax.add_deduct_tax != "None":
 					tax.total = flt(self.doc.net_total + tax_amount, tax.precision("total"))
 				else:
 					tax.total = flt(self.doc.net_total, tax.precision("total"))
@@ -509,7 +512,7 @@ class calculate_taxes_and_totals:
 					else:
 						tax.total = flt(self.doc.get("taxes")[row_idx - 1].total, tax.precision("total"))
 			else:
-				if tax.is_gst == 0 or tax.included_in_print_rate == 0 and tax.add_deduct_tax != "None":
+				if tax.included_in_print_rate == 0 and tax.add_deduct_tax != "None":
 					tax.total = flt(self.doc.get("taxes")[row_idx - 1].total + tax_amount, tax.precision("total"))
 				else:
 					tax.total = flt(self.doc.get("taxes")[row_idx - 1].total, tax.precision("total"))
@@ -521,7 +524,7 @@ class calculate_taxes_and_totals:
 		if tax.charge_type == "Actual":
 			# distribute the tax amount proportionally to each item row
 			actual = flt(tax.tax_amount, tax.precision("tax_amount"))
-
+			
 			if tax.get("is_tax_withholding_account") and item.meta.get_field("apply_tds"):
 				if not item.get("apply_tds") or not self.doc.tax_withholding_net_total:
 					current_tax_amount = 0.0
@@ -533,10 +536,13 @@ class calculate_taxes_and_totals:
 				)
 
 			if tax.add_deduct_tax=='Deduct':
-				#frappe.throw("hii")
-				current_tax_amount = item.amount * -1
-				return current_tax_amount
-				#frappe.throw(str(current_tax_amount))
+				#frappe.throw("jhhj")
+				current_tax_amount *= -1
+			# 	#frappe.throw(str(item.amount))
+			# 	current_tax_amount = item.amount * -1
+				#frappe.msgprint(str(current_tax_amount))
+				#return current_tax_amount
+				
 
 
 		elif tax.charge_type == "On Net Total":
@@ -565,6 +571,7 @@ class calculate_taxes_and_totals:
 		if not (self.doc.get("is_consolidated") or tax.get("dont_recompute_tax")):
 			self.set_item_wise_tax(item, tax, tax_rate, current_tax_amount)
 		#frappe.msgprint(str(current_tax_amount))
+
 		return current_tax_amount
 
 	def set_item_wise_tax(self, item, tax, tax_rate, current_tax_amount):
@@ -929,7 +936,6 @@ class calculate_taxes_and_totals:
 		if self.doc.doctype in ["Sales Invoice", "Purchase Invoice"]:
 			grand_total = self.doc.rounded_total or self.doc.grand_total
 			base_grand_total = self.doc.base_rounded_total or self.doc.base_grand_total
-
 			if self.doc.party_account_currency == self.doc.currency:
 				total_amount_to_pay = flt(
 					grand_total - self.doc.total_advance - flt(self.doc.write_off_amount),
@@ -964,7 +970,6 @@ class calculate_taxes_and_totals:
 				total_amount_to_pay - flt(paid_amount) + flt(change_amount),
 				self.doc.precision("outstanding_amount"),
 			)
-
 			if (
 				self.doc.doctype == "Sales Invoice"
 				and self.doc.get("is_pos")
@@ -1010,7 +1015,7 @@ class calculate_taxes_and_totals:
 		self.doc.base_change_amount = 0.0
 		grand_total = self.doc.rounded_total or self.doc.grand_total
 		base_grand_total = self.doc.base_rounded_total or self.doc.base_grand_total
-
+		
 		if (
 			self.doc.doctype == "Sales Invoice"
 			and self.doc.paid_amount > grand_total
