@@ -32,6 +32,7 @@
   "amended_from",
   "is_rural_sale",
   "is_credit",
+  "is_cash",
   "bg_no",
   "bg_date",
   "is_kidu_sale",
@@ -120,6 +121,7 @@
   "terms_section_break",
   "tc_name",
   "terms",
+  "allow_back_date",
   "header_and_footer_section",
   "header",
   "footer",
@@ -132,6 +134,7 @@
   "contact_info",
   "billing_address_column",
   "customer_address",
+  "billing_address",
   "address_display",
   "customer_group",
   "territory",
@@ -332,6 +335,7 @@
    "no_copy": 1,
    "oldfieldname": "transaction_date",
    "oldfieldtype": "Date",
+   "read_only_depends_on": "eval:doc.allow_back_date==0",
    "reqd": 1,
    "search_index": 1,
    "width": "160px"
@@ -1547,7 +1551,7 @@
    "read_only": 1
   },
   {
-   "default": "0",
+   "default": "1",
    "depends_on": "grand_total",
    "fieldname": "disable_rounded_total",
    "fieldtype": "Check",
@@ -1819,7 +1823,8 @@
   {
    "fieldname": "total_distance",
    "fieldtype": "Data",
-   "label": "Total Distance"
+   "label": "Total Distance",
+   "precision": "1"
   },
   {
    "fetch_from": "rate_template.rate",
@@ -1835,8 +1840,9 @@
   },
   {
    "fieldname": "total_quantity",
-   "fieldtype": "Data",
-   "label": "Total Quantity"
+   "fieldtype": "Float",
+   "label": "Total Quantity",
+   "precision": "1"
   },
   {
    "collapsible": 1,
@@ -1857,7 +1863,8 @@
   {
    "fieldname": "transportation_charges",
    "fieldtype": "Currency",
-   "label": "Transportation Charges"
+   "label": "Transportation Charges",
+   "precision": "1"
   },
   {
    "fieldname": "discount_or_cost_amount",
@@ -1882,13 +1889,36 @@
    "options": "Item Group",
    "reqd": 1,
    "set_only_once": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "allow_back_date",
+   "fieldtype": "Check",
+   "label": "Allow Back Date",
+   "permlevel": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "billing_address",
+   "fieldtype": "Data",
+   "hide_days": 1,
+   "hide_seconds": 1,
+   "label": "Billing Address",
+   "options": "Address",
+   "print_hide": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_cash",
+   "fieldtype": "Check",
+   "label": "Is Cash"
   }
  ],
  "icon": "fa fa-file-text",
  "idx": 105,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-12-15 21:32:28.997506",
+ "modified": "2026-01-16 14:47:27.116605",
  "modified_by": "Administrator",
  "module": "Selling",
  "name": "Sales Order",
@@ -1954,6 +1984,7 @@
    "permlevel": 1,
    "read": 1,
    "role": "Sales Manager",
+   "select": 1,
    "write": 1
   }
  ],
