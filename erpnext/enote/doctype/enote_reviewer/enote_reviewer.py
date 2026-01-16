@@ -14,8 +14,14 @@ class eNoteReviewer(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		designation: DF.Data | None
+		employee: DF.Link | None
+		employee_name: DF.Data | None
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
+		signature: DF.AttachImage | None
+		status: DF.Data | None
+		user_id: DF.Data | None
 	# end: auto-generated types
 	pass
