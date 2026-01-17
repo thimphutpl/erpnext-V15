@@ -85,8 +85,10 @@ class eNote(Document):
 		action = frappe.request.form.get('action')   
 		#Allow only the permitted user to make changes
 		self.permitted_user = frappe.session.user if not self.permitted_user else self.permitted_user
-
+		
 		if self.get_db_value("workflow_state") == "Waiting for Reviewer":
+			if action is None:
+				return
 			if action in ("Review"):
 				
 				if not self.forward_to:
@@ -103,7 +105,8 @@ class eNote(Document):
 				return
 						
 		message = None
-		#frappe.throw(str(action))
+		if action is None:
+			return
 		if action in ("Apply"):
 			#frappe.throw("hii")
 			if self.reviewer_required:
@@ -149,19 +152,7 @@ class eNote(Document):
 			#Update the permitted User with next forwarded user 
 			self.permitted_user = self.forward_to
 
-		# if action in ("Review"):
-			
-		# 	if not self.forward_to:
-		# 		frappe.throw("<b>Forward To</b> value is missing. Please select a user to Forward")
-		# 	#check if forward_to field is valid
-		# 	if self.forward_to == frappe.session.user:
-		# 		frappe.throw(_("You are not allowed to <b>Forward To</b> yourself. Change the <b>Forward To</b> Field value."))
-		# 	#Save the action in remark child table
-		# 	self.upsert_remark(action)
-
-		# 	message = "eNote Document Successfully Forwarded to {}".format(self.forward_to)
-		# 	#Update the permitted User with next forwarded user 
-		# 	self.permitted_user = self.forward_to
+		
 
 		
 		if action in ("Approve","Reject"):
@@ -202,13 +193,17 @@ class eNote(Document):
 		action = frappe.request.form.get('action')  
 		if action in ("Apply") and self.reviewer_required:
 			self.notify_reviewer()
+			return
 		if action in ("Review") and self.reviewer_required:
 			self.notify_approval()
+			return
 		if self.workflow_state in ("Approved", "Rejected", "Cancelled"):
 			self.notify_employee()
+			return
 
 		elif self.workflow_state == "Pending" and frappe.session.user != self.forward_to:
 			self.notify_approval()
+			return
 
 		# elif self.workflow_state == "Waiting For Reviewer":
 		# 	#frappe.throw("nn")
@@ -445,12 +440,3 @@ def get_permission_query_conditions(user):
 			where e.user_id = '{user}' and '{user}' = nc.user_id and nc.parent = `tabeNote`.name)
    		)
 		""".format(user=user)
-# `tabeNote`.permitted_user = '{user}' or
-# or
-# 		exists(select 1
-# 			from `tabEmployee` e, `tabeNote Reviewer` nr
-# 			where e.user_id = '{user}' and '{user}' = nr.user_id and nr.parent = `tabeNote`.name)
-   
-   
-   
-   
