@@ -46,6 +46,7 @@ class POLAdvance(Document):
 	def validate(self):
 		self.set_status()
 		self.validate_advance_amount()
+		self.clear_supplier_fields_if_outsourced()
 
 	def before_save(self):
 		self.validate_previous_advance()
@@ -61,6 +62,11 @@ class POLAdvance(Document):
 
 	def on_cancel(self):
 		self.ignore_linked_doctypes = ("GL Entry", "Payment Ledger Entry")
+
+	def clear_supplier_fields_if_outsourced(self):
+		if self.outsourced:
+			self.supplier_branch = None
+			self.supplier_cost_center = None	
 
 	def validate_previous_advance(self):
 		if self.docstatus != 0:

@@ -43,7 +43,11 @@
   "items",
   "post_je",
   "reference",
-  "company"
+  "company",
+  "approver_section",
+  "insurance_approver",
+  "insurance_approver_name",
+  "insurance_approver_designation"
  ],
  "fields": [
   {
@@ -251,6 +255,7 @@
   {
    "fieldname": "post_je",
    "fieldtype": "Button",
+   "hidden": 1,
    "label": "Post Bluebook Fitness & Emission JE"
   },
   {
@@ -268,11 +273,35 @@
    "fieldtype": "Data",
    "label": "Registration Number",
    "read_only": 1
+  },
+  {
+   "fieldname": "approver_section",
+   "fieldtype": "Section Break",
+   "hidden": 1,
+   "label": "Approver"
+  },
+  {
+   "fieldname": "insurance_approver",
+   "fieldtype": "Link",
+   "label": "Insurance Approver",
+   "options": "User"
+  },
+  {
+   "fieldname": "insurance_approver_name",
+   "fieldtype": "Data",
+   "label": "Insurance Approver Name"
+  },
+  {
+   "fieldname": "insurance_approver_designation",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Insurance Approver Designation",
+   "options": "Designation"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-12-30 10:51:45.141881",
+ "modified": "2026-01-08 14:55:31.914630",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Insurance and Registration",

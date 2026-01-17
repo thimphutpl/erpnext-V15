@@ -35,17 +35,17 @@ frappe.ui.form.on('Insurance and Registration', {
 		);
 	},
 
-	post_je: function (frm) { 
-		frappe.call({
-			method: "post_je",
-			doc: frm.doc,
-			callback: function (r) {
-				if (r.message) {
-					frm.refresh_field("insurance_item")
-				}
-			}
-		})
-	}
+	// post_je: function (frm) { 
+	// 	frappe.call({
+	// 		method: "post_je",
+	// 		doc: frm.doc,
+	// 		callback: function (r) {
+	// 			if (r.message) {
+	// 				frm.refresh_field("insurance_item")
+	// 			}
+	// 		}
+	// 	})
+	// }
 });
 frappe.ui.form.on("Insurance Details", {
 	"post_bank_entry": function (frm, cdt, cdn) {

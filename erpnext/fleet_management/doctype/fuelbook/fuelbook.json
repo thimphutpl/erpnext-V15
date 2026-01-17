@@ -2,7 +2,7 @@
  "actions": [],
  "allow_import": 1,
  "allow_rename": 1,
- "autoname": "field:account_number",
+ "autoname": "field:fuelbook_number",
  "creation": "2022-10-19 13:36:01.182478",
  "doctype": "DocType",
  "editable_grid": 1,
@@ -10,13 +10,13 @@
  "field_order": [
   "branch",
   "fuelbook_number",
+  "account_number",
   "type",
   "equipment",
   "column_break_3",
   "supplier",
   "security_deposit",
   "pol_expense_limit",
-  "account_number",
   "disabled"
  ],
  "fields": [
@@ -63,7 +63,6 @@
   {
    "fieldname": "fuelbook_number",
    "fieldtype": "Data",
-   "hidden": 1,
    "label": "Fuelbook Number",
    "unique": 1
   },
@@ -77,6 +76,7 @@
   {
    "fieldname": "account_number",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Fuel Book Number",
    "unique": 1
   },
@@ -88,7 +88,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-12-29 15:36:07.977029",
+ "modified": "2026-01-07 14:37:01.593996",
  "modified_by": "kalden.dorji@thimphutechpark.bt",
  "module": "Fleet Management",
  "name": "Fuelbook",

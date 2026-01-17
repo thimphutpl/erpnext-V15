@@ -1,0 +1,32 @@
+{
+ "attach_print": 0,
+ "channel": "Email",
+ "creation": "2026-01-08 12:32:20.041581",
+ "date_changed": "posting_date",
+ "days_in_advance": 7,
+ "docstatus": 0,
+ "doctype": "Notification",
+ "document_type": "Insurance and Registration",
+ "enabled": 1,
+ "event": "Save",
+ "idx": 0,
+ "is_standard": 1,
+ "message": "<h3>Notification for Insurance Due</h3>\n\n<p>Transaction {{ doc.name }} has due after a week which is on {{doc.due_date}}.</p>\n\n<p><!-- show last comment -->\n{% if comments %}\nLast comment: {{ comments[-1].comment }} by {{ comments[-1].by }}\n{% endif %}</p>\n\n<h4>Details</h4>\n\n<ul>\n<li>Vehicle Number: {{ doc.registration_number }}\n<li>Policy Number: {{ doc.policy_number }}\n<li>Insured Date: {{ doc.insured_date }}\n<li>Due Date: {{ doc.due_date }}\n<li>Validity: {{ doc.validity }}\n<li>Total Amount: {{ doc.total_amount }}\n</ul>\n",
+ "message_type": "Markdown",
+ "modified": "2026-01-08 14:20:21.485286",
+ "modified_by": "Administrator",
+ "module": "Fleet Management",
+ "name": "Insurance and Registration",
+ "owner": "Administrator",
+ "recipients": [
+  {
+   "receiver_by_document_field": "insurance_approver",
+   "receiver_by_role": "Asset Manager"
+  }
+ ],
+ "send_system_notification": 1,
+ "send_to_all_assignees": 0,
+ "sender": "Sonamdoji384",
+ "sender_email": "sonamdoji384@gmail.com",
+ "subject": "Notification for Insurance and Registration for {{doc.name}}"
+}

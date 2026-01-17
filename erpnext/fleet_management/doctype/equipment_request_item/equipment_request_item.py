@@ -16,7 +16,7 @@ class EquipmentRequestItem(Document):
 
 		approved: DF.Check
 		approved_qty: DF.Data | None
-		equipment_id: DF.Data
+		equipment_id: DF.Link
 		from_date: DF.Date
 		parent: DF.Data
 		parentfield: DF.Data

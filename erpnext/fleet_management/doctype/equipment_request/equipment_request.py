@@ -6,7 +6,7 @@ import frappe
 from frappe.model.document import Document
 from frappe.model.mapper import get_mapped_doc
 from erpnext.custom_utils import get_branch_cc, get_cc_customer, sendmail
-from frappe.utils import flt
+from frappe.utils import flt, date_diff
 
 
 class EquipmentRequest(Document):
@@ -43,6 +43,16 @@ class EquipmentRequest(Document):
 		self.calculate_percent()
 		a = frappe.session.user
 		# self.check_rejection_msg()
+
+		if self.from_date and self.to_date:
+			self.one_day = 1 if date_diff(self.to_date, self.from_date) <= 1 else 0
+
+		if self.from_date and self.to_date:
+			self.driver_not_required = 1 if date_diff(self.to_date, self.from_date) > 1 else 0	
+
+		# if self.from_date and self.to_date:
+		# 	if date_diff(self.to_date, self.from_date) > 1
+	
 	def calculate_percent(self):
 		total_item = len(self.items)
 		per_item = flt(flt(100) / flt(total_item), 2)

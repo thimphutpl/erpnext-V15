@@ -22,7 +22,12 @@ frappe.ui.form.on("POL Advance", {
             }
         });
     },
-
+    outsourced(frm) {
+        if (frm.doc.outsourced) {
+            frm.set_value('supplier_branch', null);
+            frm.set_value('supplier_cost_center', null);
+        }
+    },
 	refresh(frm) {
         refresh_html(frm);
         if(!frm.doc.outsourced){
