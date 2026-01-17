@@ -136,7 +136,7 @@ def get_journal_entries(filters):
 		select "Journal Entry" as payment_document, jv.posting_date,
 			jv.name as payment_entry, jvd.debit_in_account_currency as debit,
 			jvd.credit_in_account_currency as credit, jvd.against_account,
-			jv.cheque_no as reference_no, jv.cheque_date as ref_date, jv.clearance_date, jvd.account_currency
+			jv.journal_no as reference_no, jv.bill_date as ref_date, jv.clearance_date, jvd.account_currency
 		from
 			`tabJournal Entry Account` jvd, `tabJournal Entry` jv
 		where jvd.parent = jv.name and jv.docstatus=1
