@@ -277,7 +277,7 @@ class SalesOrder(SellingController):
 						# 	item.lot_balance_volume = balance
 	def calculate_transportation(self):
 	
-		self.transportation_charges = round(flt(self.total_quantity) * flt(self.total_distance) * flt(self.transportation_rate), 1)
+		self.transportation_charges = round(flt(self.total_qty) * flt(self.total_distance) * flt(self.transportation_rate), 1)
 		# self.discount_amount = flt(self.discount_or_cost_amount) - flt(self.transportation_charges) - flt(self.loading_cost) - flt(self.additional_cost) - flt(self.challan_cost)
 
 	def update_lot_onsubmit(self):
