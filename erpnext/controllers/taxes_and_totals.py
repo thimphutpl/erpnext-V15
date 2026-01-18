@@ -407,8 +407,10 @@ class calculate_taxes_and_totals:
 					# if n == len(self._items) - 1:
 					# 	current_tax_amount += actual_tax_dict[tax.idx]
 					tax.tax_amount = current_tax_amount
+					
 					if tax.add_deduct_tax == "Deduct":
 						tax.tax_amount *= -1
+						#frappe.throw(str(tax.tax_amount))
 
 				# accumulate tax amount into tax.tax_amount
 				if tax.charge_type != "Actual" and not (
@@ -528,15 +530,23 @@ class calculate_taxes_and_totals:
 			if tax.get("is_tax_withholding_account") and item.meta.get_field("apply_tds"):
 				if not item.get("apply_tds") or not self.doc.tax_withholding_net_total:
 					current_tax_amount = 0.0
+					
 				else:
+					
 					current_tax_amount = item.net_amount * actual / self.doc.tax_withholding_net_total
 			else:
+				
+				# current_tax_amount = (
+				# 	item.net_amount * actual / self.doc.net_total if self.doc.net_total else 0.0
+				# )
 				current_tax_amount = (
-					item.net_amount * actual / self.doc.net_total if self.doc.net_total else 0.0
+					item.amount * actual / self.doc.total if self.doc.total else 0.0
 				)
+				#current_tax_amount=actual
+				#frappe.msgprint(str(self.doc.net_total))
 
 			if tax.add_deduct_tax=='Deduct':
-				#frappe.throw("jhhj")
+				
 				current_tax_amount *= -1
 			# 	#frappe.throw(str(item.amount))
 			# 	current_tax_amount = item.amount * -1

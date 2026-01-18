@@ -286,8 +286,8 @@ class SalesInvoice(SellingController):
 		if is_deferred_invoice:
 			validate_service_stop_date(self)
 
-		if self.posting_date and getdate(self.posting_date) < getdate():
-			frappe.throw("Transaction Date cannot be back Date.")
+		# if self.posting_date and getdate(self.posting_date) < getdate():
+		# 	frappe.throw("Transaction Date cannot be back Date.")
 			
 		if not self.is_opening:
 			self.is_opening = "No"

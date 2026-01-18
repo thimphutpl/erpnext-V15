@@ -65,6 +65,7 @@ class SalesOrder(SellingController):
 		address_display: DF.SmallText | None
 		advance_paid: DF.Currency
 		allotment_date: DF.Date | None
+		allow_back_date: DF.Check
 		amended_from: DF.Link | None
 		amount_eligible_for_commission: DF.Currency
 		apply_discount_on: DF.Literal["", "Grand Total", "Net Total"]
@@ -79,6 +80,7 @@ class SalesOrder(SellingController):
 		base_total_taxes_and_charges: DF.Currency
 		bg_date: DF.Date | None
 		bg_no: DF.Data | None
+		billing_address: DF.Data | None
 		billing_status: DF.Literal["Not Billed", "Fully Billed", "Partly Billed", "Closed"]
 		branch: DF.Link
 		campaign: DF.Link | None
@@ -122,6 +124,7 @@ class SalesOrder(SellingController):
 		incoterm: DF.Link | None
 		inter_company_order_reference: DF.Link | None
 		is_allotment: DF.Check
+		is_cash: DF.Check
 		is_credit: DF.Check
 		is_export: DF.Check
 		is_internal_customer: DF.Check
@@ -184,7 +187,7 @@ class SalesOrder(SellingController):
 		total_distance: DF.Data | None
 		total_net_weight: DF.Float
 		total_qty: DF.Float
-		total_quantity: DF.Data | None
+		total_quantity: DF.Float
 		total_taxes_and_charges: DF.Currency
 		transaction_date: DF.Date
 		transportation_charges: DF.Currency

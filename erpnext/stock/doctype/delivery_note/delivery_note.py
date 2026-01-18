@@ -272,8 +272,8 @@ class DeliveryNote(SellingController):
 		make_packing_list(self)
 		self.update_current_stock()
 		
-		if self.posting_date and getdate(self.posting_date) < getdate():
-			frappe.throw("Transaction Date cannot be back Date.")
+		# if self.posting_date and getdate(self.posting_date) < getdate():
+		# 	frappe.throw("Transaction Date cannot be back Date.")
 		if not self.installation_status:
 			self.installation_status = "Not Installed"
 
