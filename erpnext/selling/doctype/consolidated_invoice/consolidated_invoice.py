@@ -80,10 +80,10 @@ def get_invoices(name, from_date, to_date, customer, cost_center):
 		frappe.throw(_("<b>From Date</b> should be less than or equal to <b>To Date</b>"))
 
 	invoices = frappe.db.sql("""select si.name, sii.sales_order, si.posting_date as posting_date, si.due_date, 
-				sum(sii.qty) as qty, sum(sii.qty) as qty, sum(sii.base_amount) as cost_of_goods,
+				sum(sii.qty) as qty, sum(sii.qty) as qty, sum(sii.base_net_amount) as cost_of_goods,
 				max(dn.transportation_charges) transportation_charges,
-				max(dn.challan_cost) challan_cost,
-				sum(sii.base_net_amount) amount, sii.delivery_note 
+				max(dn.challan_cost) challan_cost, si.total_taxes_and_charges as gst_amount,
+				si.grand_total amount, sii.delivery_note, si.loading_cost, si.discount_or_cost_amount as discount_amount
 			from `tabSales Invoice` si
 			inner join `tabSales Invoice Item` sii on sii.parent = si.name
 			left join `tabDelivery Note` dn on dn.name = sii.delivery_note

@@ -152,11 +152,13 @@ function get_invoices(frm) {
 						row.qty = invoice['qty']
 						row.accepted_qty = invoice['accepted_qty']
 						row.transportation_cost = invoice['transportation_charges']
-						// row.loading_cost = invoice['loading_cost']
+						row.loading_cost = invoice['loading_cost']
 						row.challan_cost = invoice['challan_cost']
 						row.date = invoice['posting_date']
 						row.due_date = invoice['due_date']
 						row.delivery_note = invoice['delivery_note']
+						row.gst_amount = invoice['gst_amount']
+						row.discount_amount = invoice['discount_amount']
 						refresh_field("items");
 
 						total_amount += invoice['amount']

@@ -14,8 +14,22 @@ class ConsolidatedInvoiceItem(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		accepted_qty: DF.Float
+		amount: DF.Currency
+		challan_cost: DF.Currency
+		cost_of_goods: DF.Currency
+		date: DF.Date
+		delivery_note: DF.Link
+		discount_amount: DF.Currency
+		due_date: DF.Date
+		gst_amount: DF.Currency
+		invoice_no: DF.Link
+		loading_cost: DF.Currency
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
+		qty: DF.Float
+		sales_order: DF.Link
+		transportation_cost: DF.Currency
 	# end: auto-generated types
 	pass
