@@ -13,7 +13,7 @@ from __future__ import unicode_literals
 import frappe
 from frappe import _
 from frappe.utils import nowdate, cint, flt
-# from erpnext.hr.doctype.approver_settings.approver_settings import get_final_approver
+from hrms.hr.doctype.approver_settings.approver_settings import get_final_approver
 from hrms.hr.hr_custom_functions import get_officiating_employee
 from frappe.utils.nestedset import get_ancestors_of
 
@@ -67,6 +67,9 @@ class CustomWorkflow:
 			# 		{"parent": "Administration Section - SMCL", "parentfield": "expense_approvers", "idx": 1},
 			# 		"approver",
 			# 	)},self.field_list)
+
+		if self.doc.doctype == "Leave Application":
+			self.final_approver    = frappe.db.get_value("Employee", {"user_id": get_final_approver(self.doc.branch)}, ["user_id","employee_name","designation","name"])
 		if self.doc.doctype == "Asset Movement":
 			department = frappe.db.get_value("Employee",self.doc.from_employee, "department")
 			if not department:
@@ -448,6 +451,14 @@ class CustomWorkflow:
 			vars(self.doc)[self.doc_approver[0]] = officiating[0] if officiating else self.branch_approver[0]
 			vars(self.doc)[self.doc_approver[1]] = officiating[1] if officiating else self.branch_approver[1]
 			vars(self.doc)[self.doc_approver[2]] = officiating[2] if officiating else self.branch_approver[2]
+		elif approver_type == "Final Approver":
+			# frappe.throw(str(self.final_approver[3]))
+			officiating = get_officiating_employee(self.final_approver[3])
+			if officiating:
+				officiating = frappe.db.get_value("Employee", officiating[0].officiate, self.field_list)
+			vars(self.doc)[self.doc_approver[0]] = officiating[0] if officiating else self.final_approver[0]
+			vars(self.doc)[self.doc_approver[1]] = officiating[1] if officiating else self.final_approver[1]
+			vars(self.doc)[self.doc_approver[2]] = officiating[2] if officiating else self.final_approver[2]
 		else:
 			frappe.throw(_("Invalid approver type for Workflow"))
 
@@ -843,37 +854,51 @@ class CustomWorkflow:
 				frappe.throw("Only Accounts User can reject this Asset.")
 
 	def leave_application(self):
-		''' Leave Application Workflow
-			1. Casual Leave, Earned Leave & Paternity Leave: 
-				* Employee -> Supervisor
-			2. Medical Leave:
-				* Employee -> Department Head (if the leave is within 5 days)
-				* Employee -> CEO (more than 5 days)
-			3. Bereavement & Maternity:
-				* Employee -> Department Head
-			4. Extraordinary Leave:
-				* Employee -> CEO 
-		'''
-		if self.new_state.lower() in ("Draft".lower()):
-			if frappe.session.user != self.doc.owner:
-				frappe.throw("Only {} can apply this leave".format(self.doc.owner))
+	   # frappe.throw("Hihihihihihihih")
+		hr_user = frappe.db.get_single_value("HR Settings", "hr_approver")
+		hr_approver = frappe.db.get_value("Employee", hr_user, ["user_id","employee_name","designation","name"])
+		
+		if self.new_state.lower() in ("Waiting Supervisor Approval".lower()):
+			if self.doc.leave_type in ["Casual Leave", "Earned Leave"]:
+				self.set_approver("Supervisor")
+			else:
+				if self.employee[0] == hr_approver[0]:
+					self.set_approver("Supervisor")
+				else:
+					self.set_approver("HR")
+			# frappe.throw(str(self.employee))
+			if frappe.session.user == self.employee[0]:
+				frappe.throw("Leave Application submitter {0} cannot be the supervisor ".format(self.doc.leave_approver))
 
-		elif self.new_state.lower() == ("Waiting Supervisor Approval".lower()):
-			
-			pass
-			
-		# 	self.set_approver("Supervisor")
+		elif self.new_state.lower() in ("Waiting Approval".lower()):
+			if  self.doc.leave_approver != frappe.session.user:
+				frappe.throw("Only {0} can submit the leave application".format(self.doc.leave_approver))
 
-		elif self.new_state.lower() == ("Approved".lower()):
+			if self.doc.leave_type in ["Casual Leave", "Earned Leave"]:
+				if self.final_approver[0] != self.employee[0]:
+					self.set_approver("Final Approver")
+			else:
+				if self.employee[0] == hr_approver[0]:
+					self.set_approver("Supervisor")
+				else:  
+					self.set_approver("HR")
+
+		elif self.new_state.lower() in ("Approved".lower()):
 			if self.doc.leave_approver != frappe.session.user:
-				frappe.throw("Only {} can Approve this Leave Application".format(self.doc.leave_approver))
-
-		elif self.new_state.lower() == ("Rejected".lower()):
+				frappe.throw("Only {0} can submit the leave application".format(self.doc.leave_approver))
+			self.doc.status= "Approved"
+				   
+		elif self.new_state.lower() in ("Rejected".lower(),"Rejected By Supervisor".lower()):
 			if self.doc.leave_approver != frappe.session.user:
-				frappe.throw("Only {} can Reject this Leave Application".format(self.doc.supervisor))
-		else:
-			pass
-			#frappe.throw(_("Invalid Workflow State {}").format(self.doc.workflow_state))
+				frappe.throw("Only {0} can reject the leave application".format(self.doc.leave_approver))
+			self.set_approver("Supervisor")
+			# if self.doc.workflow_state == "Rejected".lower():
+			self.doc.status = "Rejected"
+
+		elif self.new_state.lower() == "Cancelled".lower():
+			if frappe.session.user not in (self.doc.leave_approver,"Administrator"):
+				frappe.throw(_("Only leave approver <b>{0}</b> ( {1} ) can cancel this document.").format(self.doc.leave_approver_name, doc.leave_approver), title="Operation not permitted")
+
 
 
 	def leave_encashment(self):
