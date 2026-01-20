@@ -792,6 +792,24 @@ def get_blanket_orders(doctype, txt, searchfield, start, page_len, filters):
 
 @frappe.whitelist()
 @frappe.validate_and_sanitize_search_inputs
+def filter_lots(doctype, txt, searchfield, start, page_len, filters):
+	if not filters.get("branch") and not filters.get("item"):
+		frappe.throw("Select Branch and Item First")
+	from erpnext.controllers.queries import get_match_cond
+	return frappe.db.sql("""select lot_no, lld.item_sub_group, branch, lld.item_name from `tabLot List` ll, `tabLot List Details` lld
+							where ll.name = lld.parent
+							and branch = '{0}' 
+							and ll.docstatus = 1 
+							and lld.item = '{1}' 
+							and (sales_order is NULL or sales_order = "")
+							and (production is NULL or production = "")
+					""".format(filters.get("branch"), filters.get("item"), key=frappe.db.escape(searchfield),
+						match_condition=get_match_cond(doctype)), {
+					'txt': "%%%s%%" % frappe.db.escape(txt)
+			})
+
+@frappe.whitelist()
+@frappe.validate_and_sanitize_search_inputs
 def get_income_account(doctype, txt, searchfield, start, page_len, filters):
 	from erpnext.controllers.queries import get_match_cond
 
