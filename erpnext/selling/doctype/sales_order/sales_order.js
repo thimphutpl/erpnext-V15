@@ -240,7 +240,7 @@ frappe.ui.form.on("Sales Order", {
 					fieldtype: "Link",
 					label: __("Set Warehouse"),
 					options: "Warehouse",
-					default: frm.doc.set_warehouse,
+					// default: frm.doc.set_warehouse,
 					get_query: () => {
 						return {
 							filters: [["Warehouse", "is_group", "!=", 1]],
@@ -560,10 +560,12 @@ frappe.ui.form.on("Sales Order", {
 	"is_credit": function(frm){
 		frm.toggle_reqd("supply_order_ref",frm.doc.is_credit==1);
 	},
-	// "transportation_charges": function(frm) {
-	// 	cur_frm.set_value("discount_amount", flt(frm.doc.discount_or_cost_amount) - flt(frm.doc.transportation_charges) - flt(frm.doc.additional_cost) - flt(frm.doc.loading_cost)-flt(frm.doc.challan_cost))
-	// 	cur_frm.refresh_field("discount_amount")
-	// },
+	"transportation_charges": function(frm) {
+		// cur_frm.set_value("discount_amount", flt(frm.doc.discount_or_cost_amount) - flt(frm.doc.transportation_charges) - flt(frm.doc.additional_cost) - flt(frm.doc.loading_cost)-flt(frm.doc.challan_cost))
+		// cur_frm.refresh_field("discount_amount")
+		cur_frm.set_value("net_total", flt(frm.doc.net_total) + flt(frm.doc.transportation_charges))
+		cur_frm.refresh_field("net_total")
+	},
 
 	// "additional_cost": function(frm) {
 	// 	cur_frm.set_value("discount_amount", flt(frm.doc.discount_or_cost_amount) - flt(frm.doc.transportation_charges) - flt(frm.doc.additional_cost) - flt(frm.doc.loading_cost)-flt(frm.doc.challan_cost))
