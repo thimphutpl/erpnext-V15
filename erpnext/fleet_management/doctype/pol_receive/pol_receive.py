@@ -79,11 +79,18 @@ class POLReceive(StockController):
 		
 	#Cancel
 	def on_cancel(self):
+		from erpnext.accounts.utils import unlink_ref_doc_from_payment_entries
+
+		unlink_ref_doc_from_payment_entries(self)
+		self.ignore_linked_doctypes = ("GL Entry", "Stock Ledger Entry", "Payment Ledger Entry")
 		self.update_pol_advance(cancel=True)
-		self.ignore_linked_doctypes = (
-			"GL Entry",
-			"Payment Ledger Entry",
-		)
+		gl_entries = self.get_gl_entries()
+		make_gl_entries(gl_entries, cancel=True)
+
+		# self.ignore_linked_doctypes = (
+		# 	"GL Entry",
+		# 	"Payment Ledger Entry",
+		# )
 
 
 	def before_save(self):
@@ -139,7 +146,7 @@ class POLReceive(StockController):
 
 
 	# Ver 2.0.190509, Following method created by SHIV on 2019/05/24
-	def get_gl_entries(self, warehouse_account):
+	def get_gl_entries(self):
 		gl_entries = []
 
 
