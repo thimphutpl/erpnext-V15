@@ -24,6 +24,7 @@ class CostCenter(NestedSet):
 		cost_center_name: DF.Data
 		cost_center_number: DF.Data | None
 		disabled: DF.Check
+		is_company: DF.Check
 		is_group: DF.Check
 		lft: DF.Int
 		old_parent: DF.Link | None

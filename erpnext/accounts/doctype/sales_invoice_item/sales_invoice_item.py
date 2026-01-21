@@ -20,6 +20,8 @@ class SalesInvoiceItem(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		abnormal_loss_amt: DF.Currency
+		accepted_qty: DF.Float
 		actual_batch_qty: DF.Float
 		actual_qty: DF.Float
 		allow_zero_valuation_rate: DF.Check
@@ -48,6 +50,8 @@ class SalesInvoiceItem(Document):
 		discount_percentage: DF.Percent
 		dn_detail: DF.Data | None
 		enable_deferred_revenue: DF.Check
+		excess_amt: DF.Currency
+		excess_qty: DF.Float
 		expense_account: DF.Link | None
 		finance_book: DF.Link | None
 		grant_commission: DF.Check
@@ -62,11 +66,13 @@ class SalesInvoiceItem(Document):
 		item_name: DF.Data
 		item_tax_rate: DF.SmallText | None
 		item_tax_template: DF.Link | None
+		justification: DF.Text | None
 		lot_number: DF.Link | None
 		margin_rate_or_amount: DF.Float
 		margin_type: DF.Literal["", "Percentage", "Amount"]
 		net_amount: DF.Currency
 		net_rate: DF.Currency
+		normal_loss_amt: DF.Currency
 		page_break: DF.Check
 		parent: DF.Data
 		parentfield: DF.Data
@@ -80,6 +86,7 @@ class SalesInvoiceItem(Document):
 		quality_inspection: DF.Link | None
 		rate: DF.Currency
 		rate_with_margin: DF.Currency
+		remarks: DF.Text | None
 		sales_invoice_item: DF.Data | None
 		sales_order: DF.Link | None
 		serial_and_batch_bundle: DF.Link | None

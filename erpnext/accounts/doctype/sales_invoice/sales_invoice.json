@@ -21,6 +21,7 @@
   "posting_time",
   "set_posting_time",
   "due_date",
+  "location",
   "column_break_14",
   "is_pos",
   "pos_profile",
@@ -101,7 +102,6 @@
   "net_transportation_charges",
   "column_break_acmi",
   "total_distance",
-  "total_quantity",
   "transportation_charges",
   "section_break_49",
   "apply_discount_on",
@@ -126,6 +126,9 @@
   "total_billing_hours",
   "column_break_106",
   "total_billing_amount",
+  "additional_fields_from_old_nrdcl_section",
+  "sales_invoice_date",
+  "write_off_description",
   "payments_tab",
   "payments_section",
   "cash_bank_account",
@@ -2258,50 +2261,45 @@
    "read_only": 1
   },
   {
-    "fieldname": "transportation_charges_section",
-    "fieldtype": "Section Break",
-    "label": "Transportation Charges"
-   },
-   {
-    "fieldname": "rate_template",
-    "fieldtype": "Link",
-    "label": "Rate Template",
-    "options": "Transportation Rate",
-    "read_only": 1
-
-   },
-   {
-    "fieldname": "column_break_acmi",
-    "fieldtype": "Column Break"
-   },
-   {
-    "fieldname": "total_distance",
-    "fieldtype": "Data",
-    "label": "Total Distance",
-    "read_only": 1
-
-   },
-   {
-    "fetch_from": "rate_template.rate",
-    "fieldname": "transportation_rate",
-    "fieldtype": "Data",
-    "label": "Transportation Rate",
-    "read_only": 1
-
-   },
-   {
-    "fieldname": "net_transportation_charges",
-    "fieldtype": "Data",
-    "label": "Net Transportation Charges",
-    "read_only": 1
-   },
-   
-   
+   "fieldname": "transportation_charges_section",
+   "fieldtype": "Section Break",
+   "label": "Transportation Charges"
+  },
   {
-    "fieldname": "transportation_charges",
-    "fieldtype": "Currency",
-    "label": "Transportation Charges"
-   },
+   "fieldname": "rate_template",
+   "fieldtype": "Link",
+   "label": "Rate Template",
+   "options": "Transportation Rate",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_acmi",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_distance",
+   "fieldtype": "Data",
+   "label": "Total Distance",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "rate_template.rate",
+   "fieldname": "transportation_rate",
+   "fieldtype": "Data",
+   "label": "Transportation Rate",
+   "read_only": 1
+  },
+  {
+   "fieldname": "net_transportation_charges",
+   "fieldtype": "Data",
+   "label": "Net Transportation Charges",
+   "read_only": 1
+  },
+  {
+   "fieldname": "transportation_charges",
+   "fieldtype": "Currency",
+   "label": "Transportation Charges"
+  },
   {
    "fieldname": "loading_cost",
    "fieldtype": "Data",
@@ -2313,6 +2311,28 @@
    "fieldtype": "Data",
    "label": "Discount Account",
    "options": " "
+  },
+  {
+   "fieldname": "location",
+   "fieldtype": "Link",
+   "label": "Location",
+   "options": "Location"
+  },
+  {
+   "fieldname": "additional_fields_from_old_nrdcl_section",
+   "fieldtype": "Section Break",
+   "hidden": 1,
+   "label": "Additional Fields from Old NRDCL"
+  },
+  {
+   "fieldname": "sales_invoice_date",
+   "fieldtype": "Date",
+   "label": "Sales Invoice Date"
+  },
+  {
+   "fieldname": "write_off_description",
+   "fieldtype": "Text",
+   "label": "Write Off Description"
   }
  ],
  "icon": "fa fa-file-text",
@@ -2325,7 +2345,7 @@
    "link_fieldname": "consolidated_invoice"
   }
  ],
- "modified": "2026-01-06 19:08:43.065583",
+ "modified": "2026-01-20 17:00:33.468589",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Sales Invoice",

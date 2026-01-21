@@ -21,13 +21,55 @@ def execute(filters=None):
 # Following code added by SHIV on 2018/12/11
 # For better performance
 def get_data(filters, show_party_name):
-	party_name_field = "customer_name" if filters.get("party_type")=="Customer" else "supplier_name" if filters.get("party_type")=="Supplier" else "employee_name"
-	if not filters.get("inter_company"):
-		parties = frappe.get_all(filters.get("party_type"), fields = ["name", party_name_field], order_by="name")
-	elif filters.get("party_type") == "Employee":
-		parties = frappe.get_all(filters.get("party_type"), fields = ["name", party_name_field], order_by="name")
+	party_map = {
+		"Customer": "customer_name",
+		"Supplier": "supplier_name",
+		"Employee": "employee_name",
+	}
+	parties = []
+
+	if not filters.get("party_type"):
+		# 🔹 ALL parties
+		for party_type, name_field in party_map.items():
+			parties.extend(
+				frappe.get_all(
+					party_type,
+					fields=[
+						"name",
+						f"{name_field} as party_name",
+						frappe.db.escape(party_type) + " as party_type"
+					],
+					order_by="name"
+				)
+			)
+
 	else:
-		parties = frappe.get_all(filters.get("party_type"), fields = ["name", party_name_field], filters = {"inter_company": 1}, order_by="name")
+		# 🔹 Single party type
+		party_type = filters.get("party_type")
+		party_name_field = party_map[party_type]
+
+		if not filters.get("inter_company") or party_type == "Employee":
+			parties = frappe.get_all(
+				party_type,
+				fields=["name", f"{party_name_field} as party_name"],
+				order_by="name"
+			)
+		else:
+			parties = frappe.get_all(
+				party_type,
+				fields=["name", f"{party_name_field} as party_name"],
+				filters={"inter_company": 1},
+				order_by="name"
+			)
+
+
+	# party_name_field = "customer_name" if filters.get("party_type")=="Customer" else "supplier_name" if filters.get("party_type")=="Supplier" else "employee_name"
+	# if not filters.get("inter_company"):
+	# 	parties = frappe.get_all(filters.get("party_type"), fields = ["name", party_name_field], order_by="name")
+	# elif filters.get("party_type") == "Employee":
+	# 	parties = frappe.get_all(filters.get("party_type"), fields = ["name", party_name_field], order_by="name")
+	# else:
+	# 	parties = frappe.get_all(filters.get("party_type"), fields = ["name", party_name_field], filters = {"inter_company": 1}, order_by="name")
 	
 	company_currency = frappe.db.get_value("Company", filters.company, "default_currency")
 
@@ -121,7 +163,7 @@ def get_balances(filters):
 					sum(case when ifnull(is_opening, 'No') = 'No' and posting_date between '{from_date}' and '{to_date}' then ifnull(credit,0) else 0 end) as credit
 	from `tabGL Entry` as ge
 	where company='{company}' 
-	and ifnull(party_type, '') = '{party_type}' and ifnull(party, '') != ''
+	and ifnull(ge.party_type, '') = '{party_type}' and ge.party_type is not null and ifnull(ge.party, '') != ''
 	and posting_date <= '{to_date}'
 	{cond}
 	and ge.account not in ('Normal Loss - SMCL','Abnormal Loss - SMCL', 'TDS - 2%% - CDCL', 'TDS - 3%% - CDCL', 'TDS - 5%% - CDCL', 'TDS - 10%% - CDCL')
@@ -157,7 +199,7 @@ def get_opening_balances(filters):
 		select party, cost_center, sum(debit) as opening_debit, sum(credit) as opening_credit 
 		from `tabGL Entry` as ge
 		where company=%(company)s 
-		and ifnull(party_type, '') = %(party_type)s and ifnull(party, '') != ''
+		and ifnull(party_type, '') = %(party_type)s and party is not null and ifnull(party, '') != ''
 		and (posting_date < %(from_date)s or ifnull(is_opening, 'No') = 'Yes')
 		and account LIKE %(account)s
 		and cost_center LIKE %(cost_center)s
@@ -194,7 +236,7 @@ def get_balances_within_period(filters):
 		select party, cost_center, sum(debit) as debit, sum(credit) as credit 
 		from `tabGL Entry` as ge
 		where company=%(company)s 
-		and ifnull(party_type, '') = %(party_type)s and ifnull(party, '') != ''
+		and ifnull(party_type, '') = %(party_type)s and party_type is not null and ifnull(party, '') != ''
 		and posting_date >= %(from_date)s and posting_date <= %(to_date)s 
 		and ifnull(is_opening, 'No') = 'No'
 		and account LIKE %(account)s
@@ -233,10 +275,10 @@ def get_columns(filters, show_party_name):
 	columns = [
 		{
 			"fieldname": "party",
-			"label": _(filters.party_type),
+			"label": _(filters.party_type) if filters.get("party_type") else _("Party Name"),
 			"fieldtype": "Link",
-			"options": filters.party_type,
-			"width": 200
+			"options": filters.party_type if filters.get("party_type") else "",
+			"width": 200,
 		},
 		{
 			"fieldname": "opening_debit",
@@ -309,7 +351,7 @@ def get_columns(filters, show_party_name):
 
 def is_party_name_visible(filters):
 	if filters.get("party_type") == "Employee":
-		return True;
+		return True
 
 	show_party_name = False
 	if filters.get("party_type") == "Customer":

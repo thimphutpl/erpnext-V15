@@ -110,7 +110,7 @@ class SalesInvoice(SellingController):
 		debit_to: DF.Link
 		disable_rounded_total: DF.Check
 		discount_amount: DF.Currency
-		discount_or_cost_amount: DF.Link | None
+		discount_or_cost_amount: DF.Data | None
 		dispatch_address: DF.SmallText | None
 		dispatch_address_name: DF.Link | None
 		due_date: DF.Date | None
@@ -139,6 +139,7 @@ class SalesInvoice(SellingController):
 		language: DF.Data | None
 		letter_head: DF.Link | None
 		loading_cost: DF.Data | None
+		location: DF.Link | None
 		loyalty_amount: DF.Currency
 		loyalty_points: DF.Int
 		loyalty_program: DF.Link | None
@@ -147,6 +148,7 @@ class SalesInvoice(SellingController):
 		named_place: DF.Data | None
 		naming_series: DF.Literal["ACC-SINV-.YYYY.-", "ACC-SINV-RET-.YYYY.-"]
 		net_total: DF.Currency
+		net_transportation_charges: DF.Data | None
 		only_include_allocated_payments: DF.Check
 		other_charges_calculation: DF.TextEditor | None
 		outstanding_amount: DF.Currency
@@ -165,12 +167,14 @@ class SalesInvoice(SellingController):
 		price_list_currency: DF.Link
 		pricing_rules: DF.Table[PricingRuleDetail]
 		project: DF.Link | None
+		rate_template: DF.Link | None
 		redeem_loyalty_points: DF.Check
 		remarks: DF.SmallText | None
 		represents_company: DF.Link | None
 		return_against: DF.Link | None
 		rounded_total: DF.Currency
 		rounding_adjustment: DF.Currency
+		sales_invoice_date: DF.Date | None
 		sales_partner: DF.Link | None
 		sales_team: DF.Table[SalesTeam]
 		scan_barcode: DF.Data | None
@@ -200,9 +204,12 @@ class SalesInvoice(SellingController):
 		total_billing_amount: DF.Currency
 		total_billing_hours: DF.Float
 		total_commission: DF.Currency
+		total_distance: DF.Data | None
 		total_net_weight: DF.Float
 		total_qty: DF.Float
 		total_taxes_and_charges: DF.Currency
+		transportation_charges: DF.Currency
+		transportation_rate: DF.Data | None
 		unrealized_profit_loss_account: DF.Link | None
 		update_billed_amount_in_delivery_note: DF.Check
 		update_billed_amount_in_sales_order: DF.Check
@@ -212,6 +219,7 @@ class SalesInvoice(SellingController):
 		write_off_account: DF.Link | None
 		write_off_amount: DF.Currency
 		write_off_cost_center: DF.Link | None
+		write_off_description: DF.Text | None
 		write_off_outstanding_amount_automatically: DF.Check
 	# end: auto-generated types
 
@@ -347,12 +355,12 @@ class SalesInvoice(SellingController):
 		if self.get('taxes'):
 			tot = 0
 			
-			tot = flt(self.total) - flt(self.discount_or_cost_amount)+flt(self.loading_cost)
+			tot = flt(self.total) - flt(self.discount_or_cost_amount)+flt(self.loading_cost)+flt(self.transportation_charges)
 
 			self.net_total = flt(tot) + (flt(tot)*0.05)
 			self.base_net_total = self.net_total
 		else:
-			self.net_total = flt(self.total) - flt(self.discount_or_cost_amount)+flt(self.loading_cost)
+			self.net_total = flt(self.total) - flt(self.discount_or_cost_amount)+flt(self.loading_cost)+flt(self.transportation_charges)
 		self.grand_total = flt(self.net_total)
 		self.base_grand_total = self.grand_total
 
@@ -1470,7 +1478,7 @@ class SalesInvoice(SellingController):
 						)
 					)
 
-		total_deduct = flt(self.discount_or_cost_amount)+flt(self.loading_cost)
+		total_deduct = flt(self.discount_or_cost_amount)+flt(self.loading_cost)+flt(self.transportation_charges)
 		# frappe.throw(frappe.as_json(gl_entries))
 		if flt(self.discount_or_cost_amount) > 0:
 			income_account = (

@@ -115,7 +115,15 @@
   "dimension_col_break",
   "project",
   "section_break_54",
-  "page_break"
+  "page_break",
+  "additional_fields_from_old_nrdcl_section",
+  "accepted_qty",
+  "normal_loss_amt",
+  "remarks",
+  "abnormal_loss_amt",
+  "justification",
+  "excess_amt",
+  "excess_qty"
  ],
  "fields": [
   {
@@ -953,12 +961,53 @@
    "label": "Lot Number",
    "options": "Lot List",
    "read_only": 1
+  },
+  {
+   "fieldname": "additional_fields_from_old_nrdcl_section",
+   "fieldtype": "Section Break",
+   "hidden": 1,
+   "label": "Additional fields from old NRDCL"
+  },
+  {
+   "fieldname": "accepted_qty",
+   "fieldtype": "Float",
+   "label": "Accepted Qty"
+  },
+  {
+   "fieldname": "normal_loss_amt",
+   "fieldtype": "Currency",
+   "label": "Normal Loss Amt"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Text",
+   "label": "Remarks"
+  },
+  {
+   "fieldname": "abnormal_loss_amt",
+   "fieldtype": "Currency",
+   "label": "Abnormal Loss Amt"
+  },
+  {
+   "fieldname": "justification",
+   "fieldtype": "Text",
+   "label": "Justification"
+  },
+  {
+   "fieldname": "excess_amt",
+   "fieldtype": "Currency",
+   "label": "Excess Amt"
+  },
+  {
+   "fieldname": "excess_qty",
+   "fieldtype": "Float",
+   "label": "Excess Qty"
   }
  ],
  "idx": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-11-04 13:00:40.200910",
+ "modified": "2026-01-20 17:06:23.764772",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Sales Invoice Item",

@@ -365,7 +365,7 @@ def check_account_frozen(posting_date):
 				and not frozen_accounts_modifier in frappe.get_roles():
 			frappe.throw(_("You are not authorized to add or update entries before {0}").format(formatdate(acc_frozen_upto)))
 
-       
+	   
 def sendmail(recipent, subject, message, sender=None):
 	try:
 		frappe.sendmail(recipients=recipent, sender=None, subject=subject, message=message)
@@ -383,10 +383,10 @@ def get_production_groups(group):
 	if not group:
 		frappe.throw("Invalid Production Group")
 	groups = []
-	for a in frappe.db.sql("select item_code from `tabProduction Group Item` where parent = %s", group, as_dict=1):
-		groups.append(str(a.item_code))
+	for a in frappe.db.sql("select item_sub_group from `tabProduction Group Item` where parent = %s", group, as_dict=1):
+		groups.append(str(a.item_sub_group))
 	return groups
-                   
+				   
 # Following code added by SHIV on 2021/05/13
 def has_record_permission(doc, user):
 	if not user: user = frappe.session.user
@@ -399,14 +399,79 @@ def has_record_permission(doc, user):
 		return True
 	elif frappe.db.sql("""select count(*)
    				from `tabEmployee` e, `tabAssign Branch` ab, `tabBranch Item` bi
-       			where e.user_id = '{user}'
-          		and ab.employee = e.name
-            	and bi.parent = ab.name
-             	and bi.branch = "{branch}"
-            """.format(user=user, branch=doc.branch))[0][0]:
+	   			where e.user_id = '{user}'
+		  		and ab.employee = e.name
+				and bi.parent = ab.name
+			 	and bi.branch = "{branch}"
+			""".format(user=user, branch=doc.branch))[0][0]:
 		return True
 	else:
 		return False 
+
+
+def add_crm_role_to_crm_users():
+	# Get all users with Account Type = "CRM"
+	users = frappe.get_all("User", filters={"account_type": "CRM"}, fields=["name"])
+
+	for user in users:
+		# Check if the user already has the role
+		if not frappe.db.exists("Has Role", {"parent": user.name, "role": "CRM User"}):
+			# Assign the CRM User role
+			frappe.get_doc({
+				"doctype": "Has Role",
+				"parent": user.name,
+				"parenttype": "User",
+				"parentfield": "roles",
+				"role": "CRM User"
+			}).insert(ignore_permissions=True)
+			print(f"Role added to {user.name}")
+		else:
+			print(f"Role already exists for {user.name}")
+
+	frappe.db.commit()
+	print("Done assigning CRM User role to all CRM users.")
+
+import frappe
+
+def add_crm_role_and_keys_and_password():
+	users = frappe.get_all(
+		"User",
+		filters={"account_type": "CRM"},
+		fields=["name", "api_key"]
+	)
+
+	for user in users:
+		user_doc = frappe.get_doc("User", user.name)
+
+		# 1️⃣ Add CRM User role if missing
+		if not frappe.db.exists(
+			"Has Role",
+			{"parent": user.name, "role": "CRM User"}
+		):
+			user_doc.append("roles", {
+				"role": "CRM User"
+			})
+
+		# 2️⃣ Generate API Key if missing
+		if not user_doc.api_key:
+			user_doc.api_key = frappe.generate_hash(length=15)
+
+		# 3️⃣ Generate API Secret if missing (SAFE way)
+		if not frappe.db.get_value("User", user.name, "api_secret"):
+			user_doc.api_secret = frappe.generate_hash(length=32)
+
+		# 4️⃣ Set password
+		user_doc.new_password = "2026"
+
+		# Optional but recommended
+		user_doc.must_change_password = 1
+
+		user_doc.save(ignore_permissions=True)
+
+		print(f"Updated user: {user.name}")
+
+	frappe.db.commit()
+	print("✅ CRM users updated successfully.")
 
 
 #filtering child doctypes of doctype
@@ -420,3 +485,39 @@ def filter_child_doctypes(doctype, txt, searchfield, start, page_len, filters):
 	return frappe.db.sql("""
 	SELECT distinct options FROM `tabDocField` WHERE fieldtype = 'Table' AND parent = '{}';
 	""".format(filters.get("parent")[0]))
+
+def leave_approver():
+    leaves = frappe.db.sql("""
+        SELECT name, employee
+        FROM `tabLeave Application`
+        WHERE workflow_state = 'Waiting Approval'
+    """, as_dict=True)
+
+    for leave in leaves:
+        cost_center = frappe.db.get_value(
+            "Employee", leave.employee, "cost_center"
+        )
+
+        if not cost_center:
+            continue
+
+        approver = frappe.db.get_value(
+            "Approver Settings",
+            {"cost_center": cost_center},
+            ["user_id", "employee_name"],
+            as_dict=True
+        )
+
+        if not approver:
+            continue
+
+        frappe.db.set_value(
+            "Leave Application",
+            leave.name,
+            {
+                "leave_approver": approver.user_id,
+                "leave_approver_name": approver.employee_name
+            }
+        )
+
+        print(f"Updated approver for {leave.name}")
