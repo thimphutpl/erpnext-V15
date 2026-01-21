@@ -18,6 +18,7 @@ class ProductionPlanItem(Document):
 		description: DF.TextEditor | None
 		include_exploded_items: DF.Check
 		item_code: DF.Link
+		item_name: DF.Data | None
 		item_reference: DF.Data | None
 		material_request: DF.Link | None
 		material_request_item: DF.Data | None
