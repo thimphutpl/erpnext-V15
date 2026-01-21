@@ -28,6 +28,8 @@
   "end_date",
   "column_break_zidh",
   "review_date",
+  "section_break_5ujp",
+  "target_details",
   "part_a_section",
   "get_target",
   "review_target_item",
@@ -291,11 +293,23 @@
   {
    "fieldname": "column_break_zidh",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_5ujp",
+   "fieldtype": "Section Break",
+   "label": "Original Target Task Details"
+  },
+  {
+   "fieldname": "target_details",
+   "fieldtype": "Table",
+   "label": "Target Details",
+   "options": "Original Target Details",
+   "read_only": 1
   }
  ],
  "is_submittable": 1,
  "links": [],
- "modified": "2026-01-08 16:54:11.396049",
+ "modified": "2026-01-21 14:32:32.562811",
  "modified_by": "Administrator",
  "module": "PMS",
  "name": "Review",

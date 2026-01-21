@@ -12,6 +12,8 @@ from frappe.utils import flt, nowdate, getdate, formatdate
 from erpnext.custom_workflow import validate_workflow_states, notify_workflow_states
 
 class Review(Document):
+	
+
 	# begin: auto-generated types
 	# This code is auto-generated. Do not modify anything in this block.
 
@@ -19,6 +21,7 @@ class Review(Document):
 
 	if TYPE_CHECKING:
 		from erpnext.pms.doctype.additional_achievements.additional_achievements import AdditionalAchievements
+		from erpnext.pms.doctype.original_target_details.original_target_details import OriginalTargetDetails
 		from erpnext.pms.doctype.review_target_item.review_target_item import ReviewTargetItem
 		from frappe.types import DF
 
@@ -44,22 +47,56 @@ class Review(Document):
 		section: DF.Link | None
 		start_date: DF.ReadOnly | None
 		target: DF.Link | None
+		target_details: DF.Table[OriginalTargetDetails]
 		unit: DF.Link | None
 	# end: auto-generated types
 	def validate(self):
 		#self.check_duplicate_entry()
 
 		self.update_report_to()
-		validate_workflow_states(self)
+		self.validate_approval_rights() 
+		#validate_workflow_states(self)
 		if self.workflow_state != "Approved":
 			notify_workflow_states(self)
 		self.check_target()
+		self.validate_from_to_permission()
 		
 		self.validate_calendar()
 		self.validate_row_deletion()
+		#self.pull_original_targets_from_target_setup()
+		if frappe.session.user != self.approver:
+			
+			old_rows = frappe.get_all(
+				"Review Target Item",
+				filters={"parent": self.name},
+				fields=["name", "appraisers_remarks"]
+			)
+			old_map = {r.name: r for r in old_rows}
+			
+			for row in self.review_target_item:
+				
+				# New row (employee should not enter appraisers_remarks)
+				if row.name.startswith("new-") or getattr(row, "__islocal", False):
+					if row.appraisers_remarks:
+						frappe.throw(_("Only the Approver can fill Appraiser's Remarks."))
+						continue
+					
+					old = old_map.get(row.name)
+					
+					if old:
+						# If employee changed the remarks
+						if old.appraisers_remarks != row.appraisers_remarks:
+							frappe.throw(_("Only the Approver can edit Appraiser's Remarks."))
+
+
 
 	def before_submit(self):
 		self.validate_calendar()
+
+	#def before_save(self):	
+		#self.pull_original_targets_from_target_setup()
+	
+	# 	self.validate_from_to_permission()
 	
 
 	def on_submit(self):
@@ -71,6 +108,65 @@ class Review(Document):
 			if row.get('delete_flag'):
 				frappe.throw("Deletion of rows is not allowed.")
 	
+	
+	
+	#added by kinzang.n
+	def validate_from_to_permission(self):
+		
+		# Approver can edit everything
+		if self.approver == frappe.session.user:
+			return
+		# If document is new (not saved), no validation needed
+
+		# if self.get("__islocal"):
+		# 	return
+		if not self.name:
+			return
+		old_rows = frappe.get_all(
+			"Review Target Item",
+			filters={"parent": self.name},
+			fields=["name", "from_date", "to_date", "idx"]
+		)
+		old_map = {r.name: r for r in old_rows}
+		
+		for row in self.review_target_item:
+			# Skip NEW rows
+			if row.name.startswith("new-") or getattr(row, "__islocal", False):
+				continue
+			old = old_map.get(row.name)
+			
+			# If not found, skip
+			if not old:
+				continue
+
+
+			# Compare normalized dates
+			old_from = getdate(old.from_date)
+			old_to   = getdate(old.to_date)
+			
+			new_from = getdate(row.from_date)
+			new_to   = getdate(row.to_date)
+			
+			if old_from != new_from or old_to != new_to:
+				
+				frappe.throw(_(
+					"Row {0}: You are not allowed to edit From Date or To Date. Only Approver can edit."
+				).format(row.idx))
+			
+			# if old.from_date != row.from_date or old.to_date != row.to_date:
+				
+			# 	# # LOG the difference
+			# 	# frappe.logger("review").info(
+			# 	# 	f"CHANGE DETECTED | Row IDX={row.idx} | NAME={row.name} | "
+			# 	# 	f"OLD={old.from_date} to {old.to_date} | NEW={row.from_date} to {row.to_date}"
+			# 	# )
+			# 	frappe.throw(_(
+			# 		"Row {0}: You are not allowed to edit From Date or To Date. Only Approver can edit."
+			# 	).format(row.idx))
+
+
+	
+
 	# def validate_calendar(self): 
 	# 	# check whether pms is active for review
 	# 	if not frappe.db.exists("EAS Calendar",{"name": self.eas_calendar, "docstatus": 1,
@@ -269,8 +365,32 @@ class Review(Document):
 			self.total_weightage = total_target_weightage
 
 
-	
- 
+	def validate_approval_rights(self):
+		# Only check when approving
+		if self.workflow_state != "Approved":
+			return
+		current_user = frappe.session.user
+		
+		# Employee user id
+		employee_user = frappe.db.get_value(
+			"Employee", self.employee, "user_id"
+		)
+		
+		# Employee cannot approve own review 
+		if employee_user == current_user:
+			frappe.throw(_("You cannot approve your own Review"))
+			
+		#Only assigned approver can approve
+		if self.approver != current_user:
+			frappe.throw(_("Only the assigned Approver can approve this Review"))
+		
+
+
+
+
+
+
+
 @frappe.whitelist()
 def create_evaluation(source_name, target_doc=None):
 
@@ -284,9 +404,42 @@ def create_evaluation(source_name, target_doc=None):
 		"Review Target Item":{
 			"doctype": "Evaluate Target Item",
 		},
+		
 
 	}, target_doc)
 	return doclist
+
+
+
+
+# @frappe.whitelist()
+# def pull_original_targets_from_target_setup(doc):
+#     doc = frappe._dict(doc)
+
+#     if not doc.get("target"):
+#         return []
+
+#     rows = frappe.get_all(
+#         "Performance Target Evaluation",
+#         filters={"parent": doc.target},
+#         fields=[
+#             "performance_target",
+#             "weightage",
+#             "main_activities",
+#             "description",
+#             "from_date",
+#             "to_date"
+#         ]
+#     )
+
+#     return rows
+
+
+
+
+
+
+
 
 def get_permission_query_conditions(user):
 	if not user: user = frappe.session.user

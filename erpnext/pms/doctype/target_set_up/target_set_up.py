@@ -349,8 +349,6 @@ class TargetSetUp(Document):
 @frappe.whitelist()
 def create_review(source_name, target_doc=None):
 	
-	
-	
 	#frappe.throw(str(lattest_approver))
 	if frappe.db.exists('Review', {'target':source_name, 'docstatus':('=',1)}):
 		frappe.throw(
@@ -367,12 +365,28 @@ def create_review(source_name, target_doc=None):
 		"Performance Target Evaluation": {
 				"doctype":"Review Target Item"
 			},
+		
 		"Competency Item":{
 			"doctype":"Review Competency Item"
 		}
 	}, target_doc)
-
+	
+	#added by Kinzang.N
+	# Copy data from Review Target Item to Original Target Details
+	# 
+	for row in doclist.get("review_target_item"):
+		doclist.append("target_details", {
+            "performance_target": row.performance_target,
+            "weightage": row.weightage,
+            "main_activities": row.main_activities,
+            "description": row.description,
+            "from_date": row.from_date,
+            "to_date": row.to_date
+        })
 	return doclist
+
+#till here
+
 
 @frappe.whitelist()
 def create_evaluation(source_name, target_doc=None):

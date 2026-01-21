@@ -1,0 +1,88 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-01-21 10:18:24.133449",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "target_accomplishment_section",
+  "performance_target",
+  "main_activities",
+  "column_break_9",
+  "weightage",
+  "description",
+  "column_break_4",
+  "from_date",
+  "to_date"
+ ],
+ "fields": [
+  {
+   "fieldname": "target_accomplishment_section",
+   "fieldtype": "Section Break",
+   "label": "Target & Accomplishment"
+  },
+  {
+   "fieldname": "performance_target",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Target",
+   "reqd": 1
+  },
+  {
+   "fieldname": "main_activities",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Main Activities",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_9",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "weightage",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Weightage(%)",
+   "reqd": 1
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Description(Optional)",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "from_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "From Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "to_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "To Date",
+   "reqd": 1
+  }
+ ],
+ "istable": 1,
+ "links": [],
+ "modified": "2026-01-21 10:18:24.133449",
+ "modified_by": "Administrator",
+ "module": "PMS",
+ "name": "Original Target Details",
+ "owner": "Administrator",
+ "permissions": [],
+ "quick_entry": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}
