@@ -9,8 +9,8 @@ from frappe import _
 from erpnext.accounts.utils import get_child_cost_centers
 
 def execute(filters=None):
-        columns, data = get_columns(filters), get_data(filters)
-        return columns, data
+	columns, data = get_columns(filters), get_data(filters)
+	return columns, data
 
 def get_columns(filters=None):
 	if filters.aggregate:
@@ -19,8 +19,8 @@ def get_columns(filters=None):
 				_("Branch") + ":Link/Sales Order:150",
 				_("Transaction Type") + ":Data:150", 
 				# _("Location") + ":Link/Location:120",
-				_("Customer") + ":Link/Customer:150",
-				_("Customer Name") + ":Data:200",
+				# _("Customer") + ":Link/Customer:150",
+				# _("Customer Name") + ":Data:200",
 				_("Sub Item Group") + ":Data:150",
 				_("Sales Qty") + ":Float:120",
 				_("Delivered Qty") + ":Float:120",
@@ -44,15 +44,15 @@ def get_columns(filters=None):
 		elif filters.report_by == "Sales Invoice":
 			columns = [
 				_("Branch") + ":Link/Sales Order:150",
-				# _("Transaction Type") + ":Data:150", 
-				# # _("Location") + ":Data/120",
-				# # _("Customer") + ":Link/Customer:150",
-				# # _("Customer Group") + ":Data:200",
-				# _("Sub Item Group") + ":Data:150",
-				# _("Delivered Qty") + ":Float:120",
-				# # _("UOM") + ":Data:90", 
-				# _("Amount") + ":Currency:120",
-				# _("Net Total")+":Currency:120",
+				_("Transaction Type") + ":Data:150", 
+				# _("Location") + ":Data/120",
+				# _("Customer") + ":Link/Customer:150",
+				# _("Customer Group") + ":Data:200",
+				_("Sub Item Group") + ":Data:150",
+				_("Delivered Qty") + ":Float:120",
+				# _("UOM") + ":Data:90", 
+				_("Amount") + ":Currency:120",
+				_("Net Total")+":Currency:120",
 			]
 			
 	elif filters.summary:
@@ -93,7 +93,7 @@ def get_columns(filters=None):
 				_("Amount") + ":Currency:100",
 				# _("Discount") + ":Currency:120",
 				# _("Additional Cost") + ":Currency:120",
-				_("Net Total")+":Currency:120"
+				_("Net Total")+":Currency:120",
 				# _("Vehicle") + ":Link/Vehicle:120", 
 				# _("Driver") + ":Data:120", 
 				# _("Contact No") + ":Data:120",
@@ -107,25 +107,25 @@ def get_columns(filters=None):
 				_("Sales Invoice") + ":Link/Sales Invoice:100", 
 				_("Delivery Note") + ":Link/Delivery Note:100", 
 				_("Sales Order") + ":Link/Sales Order:100", 
-				# _("Region") + ":Data:150",
-				# _("Branch") + ":Link/Branch:120",
-				# _("Transaction Type") + ":Data:150", 
-				# _("Customer") + ":Link/Customer:150", 
-				# _("Customer Number") + ":Data:100", 
-				# _("Customer Group") + ":Data:200", 
-				# _("Sub Group") + ":Data:100", 
-				# _("Qty Delivered") + ":Float:90",
-				# # _("UOM") + ":Data:90",
-				# _("Amount") + ":Currency:100",
-				# # _("Discount") + ":Currency:120",
-				# # _("Additional Cost") + ":Currency:120",
-				# _("Net Total")+":Currency:120"
-				# # _("Vehicle") + ":Link/Vehicle:120", 
-				# # _("Driver") + ":Data:120", 
-				# # _("Contact No") + ":Data:120",
-				# # _("Transporation Rate") + ":Float:100", 
-				# # _("Distance") + ":Float:100", 
-				# # _("Transportation Charges") + ":Currency:100",
+				_("Region") + ":Data:150",
+				_("Branch") + ":Link/Branch:120",
+				_("Transaction Type") + ":Data:150", 
+				_("Customer") + ":Link/Customer:150", 
+				_("Customer Number") + ":Data:100", 
+				_("Customer Group") + ":Data:200", 
+				_("Sub Group") + ":Data:100", 
+				_("Qty Delivered") + ":Float:90",
+				# _("UOM") + ":Data:90",
+				_("Amount") + ":Currency:100",
+				_("Discount") + ":Currency:120",
+				_("Additional Cost") + ":Currency:120",
+				_("Net Total")+":Currency:120"
+				# _("Vehicle") + ":Link/Vehicle:120", 
+				# _("Driver") + ":Data:120", 
+				# _("Contact No") + ":Data:120",
+				# _("Transporation Rate") + ":Float:100", 
+				# _("Distance") + ":Float:100", 
+				# _("Transportation Charges") + ":Currency:100",
 			]
 	else:
 		if filters.report_by == "Sales Order":
@@ -162,7 +162,7 @@ def get_columns(filters=None):
 				_("Sales Order") + ":Link/Sales Order:100", 
 				_("Region") + ":Data:150",
 				_("Branch") + ":Link/Branch:120", 
-				# _("Location") + ":Link/Location:120",
+				_("Location") + ":Link/Location:120",
 				_("Transaction Type") + ":Data:150", 
 				_("Customer") + ":Link/Customer:150", 
 				_("Customer Group") + ":Data:200",
@@ -170,7 +170,7 @@ def get_columns(filters=None):
 				_("Timber Class") + ":Link/Timber Class:100", 
 				_("Timber Species") + ":Link/Timber Species:100", 
 				_("Timber Type") + ":Data:100", 
-				# _("Lot No.") + ":Link/Lot List:100",
+				_("Lot No.") + ":Link/Lot List:100",
 				_("Item Name") + ":Data:150", 
 				_("Sub Group") + ":Data:100",
 				_("Qty Delivered") + ":Float:90", 
@@ -204,10 +204,11 @@ def get_columns(filters=None):
 				_("Timber Class") + ":Link/Timber Class:100", 
 				_("Timber Species") + ":Link/Timber Species:100", 
 				_("Timber Type") + ":Data:100", 
-				# _("Lot No.") + ":Link/Lot List:100",
+				_("Lot No.") + ":Link/Lot List:100",
 				_("Item Name") + ":Data:150", 
 				_("Sub Group") + ":Data:100",
-				_("Qty Delivered") + ":Float:90", 
+				_("Actual Qty") + ":Float:90", 
+				# _("Qty Delivered") + ":Float:90", 
 				# _("UOM") + ":Data:90", 
 				_("Rate") + ":Float:90", 
 				_("Amount") + ":Currency:100",
@@ -215,12 +216,12 @@ def get_columns(filters=None):
 				_("Additional Cost") + ":Currency:120",
 				_("Net Total")+":Currency:120",
 				_("Challan Cost")+":Currency:120",
-				_("Transporation Rate") + ":Float:100",
-				_("Distance") + ":Float:100", 
-				_("Transportation Charges") + ":Currency:100",	
-				_("Vehicle") + ":Link/Vehicle:120",
-				_("Driver") + ":Data:120", 
-				_("Contact No") + ":Data:120"
+				# _("Transporation Rate") + ":Float:100",
+				# _("Distance") + ":Float:100", 
+				# _("Transportation Charges") + ":Currency:100",	
+				# _("Vehicle") + ":Link/Vehicle:120",
+				# _("Driver") + ":Data:120", 
+				# _("Contact No") + ":Data:120"
 			]
 
 	return columns
@@ -239,8 +240,7 @@ def get_data(filters=None):
 					WHEN is_rural_sale=1 THEN "Is Rural Sale"
 					WHEN is_kidu_sale=1 THEN "Is Kidu Sale"
 					ELSE "None"
-				END as transaction_type,
-				so.customer, so.customer_group, i.item_sub_group, sum(soi.qty) as qty, 
+				END as transaction_type, i.item_sub_group, sum(soi.qty) as qty, 
 				sum(soi.delivered_qty), soi.rate, sum(soi.amount)
 			"""
 			group_by = "group by so.branch, i.item_sub_group"
@@ -259,7 +259,7 @@ def get_data(filters=None):
 				END as transaction_type,
 				so.customer, (select mobile_no from `tabCustomer` where name=so.customer) as customer_number, so.customer_group, 
 				i.item_sub_group, sum(soi.qty) as qty, sum(soi.delivered_qty), sum(soi.amount),
-				sum(soi.amount) - so.discount_or_cost_amount + so.additional_cost - so.challan_cost
+				so.net_total
 			"""
 			group_by = " group by so.name"
 			order_by = "order by so.transaction_date"
@@ -278,9 +278,9 @@ def get_data(filters=None):
 				ts.species, ts.timber_type, soi.lot_number, soi.item_name, i.item_sub_group,
 				sum(soi.qty) as qty, sum(soi.delivered_qty), sum(soi.rate), sum(soi.amount),
 				so.discount_or_cost_amount, so.additional_cost,
-				sum(soi.amount) - so.discount_or_cost_amount + so.additional_cost - so.challan_cost, so.challan_cost
+				so.net_total, so.challan_cost
 			"""
-			group_by = "group by soi.item_code, so.name"
+			group_by = "group by soi.lot_number, so.name"
 			order_by = "order by so.transaction_date"
 
 		
@@ -291,15 +291,21 @@ def get_data(filters=None):
 			inner join `tabSales Order Item` soi on so.name = soi.parent 
 			inner join `tabItem` i on soi.item_code = i.name
 			left join `tabTimber Species` ts on i.species = ts.species
-			where so.docstatus = 1 and i.item_group = "Timber Products"
+			where so.docstatus = 1 and i.item_group = "Timber Products" 
 			{1} {2} {3} ) as data where 1 = 1 {4}
 			""".format(cols, cond, group_by, order_by, outer_cond)
 
 	elif filters.report_by == "Delivery Note":
 		if filters.aggregate:
 			cols = """
-				dn.branch, i.item_sub_group, sum(dni.qty) as qty, sum(dni.amount),
-				sum(dni.amount) - dn.discount_amount + dn.additional_cost - dn.challan_cost
+				dn.branch, CASE
+					WHEN dn.is_credit=1 THEN "Is Credit Sale"
+					WHEN dn.is_rural_sale=1 THEN "Is Rural Sale"
+					WHEN dn.is_kidu_sale=1 THEN "Is Kidu Sale"
+					ELSE "None"
+					END as transaction_type,
+					i.item_sub_group, sum(dni.qty) as qty, sum(dni.amount),
+					dn.net_total
 			"""
 			group_by = "group by dn.branch, i.item_sub_group"
 			order_by = ""
@@ -308,9 +314,14 @@ def get_data(filters=None):
 			cols = """
 					dn.posting_date, dn.name, dni.against_sales_order,
 					(select cc.parent_cost_center from `tabCost Center` cc where cc.name = (select b.cost_center from `tabBranch` b where b.name = dn.branch)) as region,
-					dn.branch, dn.customer, (select mobile_no from `tabCustomer` where name=dn.customer) as customer_number, dn.customer_group,
+					dn.branch, CASE
+					WHEN dn.is_credit=1 THEN "Is Credit Sale"
+					WHEN dn.is_rural_sale=1 THEN "Is Rural Sale"
+					WHEN dn.is_kidu_sale=1 THEN "Is Kidu Sale"
+					ELSE "None"
+					END as transaction_type, dn.customer, (select mobile_no from `tabCustomer` where name=dn.customer) as customer_number, dn.customer_group,
 					i.item_sub_group, sum(dni.qty) as qty, sum(dni.amount), 
-					sum(dni.amount) - dn.discount_amount + dn.additional_cost - dn.challan_cost
+					dn.net_total, dn.vehicle_no, dn.driver_name, dn.driver_contact_no
 				"""
 			group_by = " group by dn.name"
 			order_by = "order by dn.posting_date"
@@ -319,14 +330,19 @@ def get_data(filters=None):
 			cols = """
 					dn.posting_date, dn.name, dni.against_sales_order, 
 					(select cc.parent_cost_center from `tabCost Center` cc where cc.name = (select b.cost_center from `tabBranch` b where b.name = dn.branch)) as region,
-					dn.branch, dn.location, dn.customer, dn.customer_group, dni.item_code, ts.timber_class,
-					ts.species,ts.timber_type, dni.item_name, i.item_sub_group, 
+					dn.branch, dn.location, 
+					CASE
+					WHEN dn.is_credit=1 THEN "Is Credit Sale"
+					WHEN dn.is_rural_sale=1 THEN "Is Rural Sale"
+					WHEN dn.is_kidu_sale=1 THEN "Is Kidu Sale"
+					ELSE "None"
+					END as transaction_type, dn.customer, dn.customer_group, dni.item_code, ts.timber_class,
+					ts.species, ts.timber_type, dni.lot_number, dni.item_name, i.item_sub_group, 
 					sum(dni.qty) as qty, sum(dni.rate), sum(dni.amount), dn.discount_amount, dn.additional_cost, 
-					sum(dni.amount) - dn.discount_amount + dn.additional_cost - dn.challan_cost, dn.challan_cost,
-					dn.transportation_rate, dn.total_distance, dn.transportation_charges,
-					dn.vehicle, dn.drivers_name, dn.contact_no
+					dn.net_total, dn.challan_cost,
+					dn.transportation_rate, dn.total_distance, dn.transportation_charges, dn.vehicle_no, dn.driver_name, dn.driver_contact_no
 				"""
-			group_by = "group by dni.item_code, dn.name"
+			group_by = "group by dni.lot_number, dn.name"
 			order_by = "order by dn.posting_date"
 		
 		query = """
@@ -342,65 +358,64 @@ def get_data(filters=None):
 	elif filters.report_by == "Sales Invoice":
 		if filters.aggregate:
 			cols = """
-				so.branch, 
+				si.branch, 
 				CASE
 					WHEN is_credit=1 THEN "Is Credit Sale"
 					WHEN is_rural_sale=1 THEN "Is Rural Sale"
 					WHEN is_kidu_sale=1 THEN "Is Kidu Sale"
 					ELSE "None"
-				END as transaction_type,
-				so.customer, so.customer_group, i.item_sub_group, sum(soi.qty) as qty, 
-				sum(soi.delivered_qty), soi.rate, sum(soi.amount)
+				END as transaction_type, i.item_sub_group, sum(sii.qty) as qty, 
+				sum(sii.delivered_qty), sii.rate, sum(sii.amount)
 			"""
-			group_by = "group by so.branch, i.item_sub_group"
+			group_by = "group by si.branch, i.item_sub_group"
 			order_by = ""
 		
 		elif filters.summary:
 			cols = """
-				so.transaction_date,
-				so.name, (select cc.parent_cost_center from `tabCost Center` cc where cc.name = (select b.cost_center from `tabBranch` b where b.name = so.branch)) as region,
-				so.branch,
+				si.posting_date,
+				si.name, sii.delivery_note, sii.sales_order, (select cc.parent_cost_center from `tabCost Center` cc where cc.name = (select b.cost_center from `tabBranch` b where b.name = si.branch)) as region,
+				si.branch,
 				CASE
 					WHEN is_credit=1 THEN "Is Credit Sale"
 					WHEN is_rural_sale=1 THEN "Is Rural Sale"
 					WHEN is_kidu_sale=1 THEN "Is Kidu Sale"
 					ELSE "None"
 				END as transaction_type,
-				so.customer, (select mobile_no from `tabCustomer` where name=so.customer) as customer_number, so.customer_group, 
-				i.item_sub_group, sum(soi.qty) as qty, sum(soi.delivered_qty), sum(soi.amount),
-				sum(soi.amount) - so.discount_or_cost_amount + so.additional_cost - so.challan_cost
+				si.customer, (select mobile_no from `tabCustomer` where name=si.customer) as customer_number, si.customer_group, 
+				i.item_sub_group, sum(sii.qty) as qty, sum(sii.amount), si.discount_amount, si.additional_cost,
+				si.net_total
 			"""
-			group_by = " group by so.name"
-			order_by = "order by so.transaction_date"
+			group_by = " group by si.name"
+			order_by = "order by si.posting_date"
 
 		else:
 			cols = """
-				so.transaction_date, so.name, (select cc.parent_cost_center from `tabCost Center` cc where cc.name = (select b.cost_center from `tabBranch` b where b.name = so.branch)) as region,
-				so.branch,
+				si.posting_date, si.name, sii.delivery_note, sii.sales_order, (select cc.parent_cost_center from `tabCost Center` cc where cc.name = (select b.cost_center from `tabBranch` b where b.name = si.branch)) as region,
+				si.branch,
 				CASE
 					WHEN is_credit=1 THEN "Is Credit Sale"
 					WHEN is_rural_sale=1 THEN "Is Rural Sale"
 					WHEN is_kidu_sale=1 THEN "Is Kidu Sale"
 					ELSE "None"
 				END as transaction_type, 
-				so.customer, so.customer_group, soi.item_code, ts.timber_class,
-				ts.species, ts.timber_type, soi.lot_number, soi.item_name, i.item_sub_group,
-				sum(soi.qty) as qty, sum(soi.delivered_qty), sum(soi.rate), sum(soi.amount),
-				so.discount_or_cost_amount, so.additional_cost,
-				sum(soi.amount) - so.discount_or_cost_amount + so.additional_cost - so.challan_cost, so.challan_cost
+				si.customer, si.customer_group, sii.item_code, ts.timber_class,
+				ts.species, ts.timber_type, sii.lot_number, sii.item_name, i.item_sub_group,
+				sum(sii.qty) as qty, sum(sii.rate), sum(sii.amount),
+				si.discount_amount, si.additional_cost,
+				si.net_total, si.challan_cost
 			"""
-			group_by = "group by soi.item_code, so.name"
-			order_by = "order by so.transaction_date"
+			group_by = "group by sii.lot_number, si.name"
+			order_by = "order by si.posting_date"
 
 		
 		query = """
 			select * from (
 			select {0}
-			from `tabSales Order` so 
-			inner join `tabSales Order Item` soi on so.name = soi.parent 
-			inner join `tabItem` i on soi.item_code = i.name
+			from `tabSales Invoice` si 
+			inner join `tabSales Invoice Item` sii on si.name = sii.parent 
+			inner join `tabItem` i on sii.item_code = i.name
 			left join `tabTimber Species` ts on i.species = ts.species
-			where so.docstatus = 1 and i.item_group = "Timber Products"
+			where si.docstatus = 1 and i.item_group = "Timber Products"
 			{1} {2} {3} ) as data where 1 = 1 {4}
 			""".format(cols, cond, group_by, order_by, outer_cond)
 
@@ -422,7 +437,7 @@ def get_conditions(filters=None):
 		elif filters.report_by == "Delivery Note":
 			cond += " and dn.posting_date between '" + str(filters.from_date) + "' and '" + str(filters.to_date) + "'"
 		elif filters.report_by == "Sales Invoice":
-			cond += " and dn.posting_date between '" + str(filters.from_date) + "' and '" + str(filters.to_date) + "'"
+			cond += " and si.posting_date between '" + str(filters.from_date) + "' and '" + str(filters.to_date) + "'"
 
 	if filters.cost_center:
 		all_ccs = get_child_cost_centers(filters.cost_center)
@@ -431,7 +446,7 @@ def get_conditions(filters=None):
 		elif filters.report_by == "Delivery Note":
 			cond += " and dn.branch in (select name from `tabBranch` b where b.cost_center in {0} )".format(tuple(all_ccs))
 		elif filters.report_by == "Sales Invoice":
-			cond += " and dn.branch in (select name from `tabBranch` b where b.cost_center in {0} )".format(tuple(all_ccs))
+			cond += " and si.branch in (select name from `tabBranch` b where b.cost_center in {0} )".format(tuple(all_ccs))
 
 	if filters.branch:
 		branch = str(filters.branch)
@@ -441,7 +456,7 @@ def get_conditions(filters=None):
 		elif filters.report_by == "Delivery Note":
 			cond += " and dn.branch = '"+branch+"'"	
 		elif filters.report_by == "Sales Invoice":
-			cond += " and dn.branch = '"+branch+"'"	
+			cond += " and si.branch = '"+branch+"'"	
 
 	if filters.timber_species:
 		if filters.report_by == "Sales Order":
@@ -452,7 +467,7 @@ def get_conditions(filters=None):
 			and i.item_code = dni.item_code)""".format(filters.timber_species)
 		elif filters.report_by == "Sales Invoice":
 			cond += """ and '{0}' in (select ts.species from `tabItem` i, `tabTimber Species` ts where ts.species = i.species  
-			and i.item_code = dni.item_code)""".format(filters.timber_species)
+			and i.item_code = sii.item_code)""".format(filters.timber_species)
 
 	if filters.timber_class:
 		if filters.report_by == "Sales Order":
@@ -463,7 +478,7 @@ def get_conditions(filters=None):
 			and i.item_code = dni.item_code)""".format(filters.timber_class)
 		elif filters.report_by == "Sales Invoice":
 			cond += """ and '{0}' in (select ts.timber_class from `tabItem` i, `tabTimber Species` ts where ts.species = i.species 
-			and i.item_code = dni.item_code)""".format(filters.timber_class)
+			and i.item_code = sii.item_code)""".format(filters.timber_class)
 
 	if filters.timber_type != 'All':
 		if filters.report_by == "Sales Order":
@@ -474,7 +489,7 @@ def get_conditions(filters=None):
 			and i.item_code = dni.item_code)""".format(filters.timber_type)
 		elif filters.report_by == "Sales Invoice":
 			cond += """ and '{0}' in (select ts.timber_type from `tabItem` i, `tabTimber Species` ts where ts.species = i.species 
-			and i.item_code = dni.item_code)""".format(filters.timber_type)
+			and i.item_code = sii.item_code)""".format(filters.timber_type)
 				
 	# if filters.item_group:
 	# 	cond += " and i.item_group = '" + str(filters.item_group) + "'"
@@ -501,13 +516,13 @@ def get_conditions(filters=None):
 				cond += " and dni.item_sub_group in ('Log','Pole','Hakaries','Sawn','Field Sawn','Block','Block (Special Size)')"
 		elif filters.report_by == "Sales Invoice":
 			if filters.item_group == "Timber By-Product":
-				cond += " and dni.item_sub_group in ('Firewood, Bhutan Furniture','BBPL firewood','Firewood(BBPL)','Firewood (Bhutan Ply)','Firewood','Post','Bakals','Woodchips','Briquette','Off-cuts/Sawn timber waste','Off-Cuts','Saw Dust')"
+				cond += " and sii.item_sub_group in ('Firewood, Bhutan Furniture','BBPL firewood','Firewood(BBPL)','Firewood (Bhutan Ply)','Firewood','Post','Bakals','Woodchips','Briquette','Off-cuts/Sawn timber waste','Off-Cuts','Saw Dust')"
 			elif filters.item_group == "Timber Finished Product":
-				cond += " and dni.item_sub_group in ('Joinery Products','Glulaminated Product')"
+				cond += " and sii.item_sub_group in ('Joinery Products','Glulaminated Product')"
 			elif filters.item_group == "Nursery and Plantation":
-				cond += " and dni.item_sub_group in ('Tree Seedlings','Flower Seedlings')"
+				cond += " and sii.item_sub_group in ('Tree Seedlings','Flower Seedlings')"
 			else:
-				cond += " and dni.item_sub_group in ('Log','Pole','Hakaries','Sawn','Field Sawn','Block','Block (Special Size)')"
+				cond += " and sii.item_sub_group in ('Log','Pole','Hakaries','Sawn','Field Sawn','Block','Block (Special Size)')"
 
 	if filters.item_sub_group:
 		if filters.report_by == "Sales Order":
@@ -515,7 +530,7 @@ def get_conditions(filters=None):
 		elif filters.report_by == "Delivery Note":
 			cond += " and dni.item_sub_group = '" + str(filters.item_sub_group) + "'"
 		elif filters.report_by == "Sales Invoice":
-			cond += " and dni.item_sub_group = '" + str(filters.item_sub_group) + "'"
+			cond += " and sii.item_sub_group = '" + str(filters.item_sub_group) + "'"
 
 	if filters.item:
 		if filters.report_by == "Sales Order":
@@ -523,7 +538,7 @@ def get_conditions(filters=None):
 		elif filters.report_by == "Delivery Note":
 			cond += " and dni.item_code = '" + str(filters.item) + "'"
 		elif filters.report_by == "Sales Invoice":
-			cond += " and dni.item_code = '" + str(filters.item) + "'"
+			cond += " and sii.item_code = '" + str(filters.item) + "'"
 
 	if filters.customer:
 		if filters.report_by == "Sales Order":
@@ -531,7 +546,7 @@ def get_conditions(filters=None):
 		elif filters.report_by == "Delivery Note":
 			cond += " and dn.customer = '"+str(filters.customer)+"'"
 		elif filters.report_by == "Sales Invoice":
-			cond += " and dn.customer = '"+str(filters.customer)+"'"
+			cond += " and si.customer = '"+str(filters.customer)+"'"
 
 	if filters.customer_group:
 		if filters.report_by == "Sales Order":
@@ -539,7 +554,7 @@ def get_conditions(filters=None):
 		elif filters.report_by == "Delivery Note":
 			cond += " and dn.customer_group = '"+str(filters.customer_group)+"'"
 		elif filters.report_by == "Sales Invoice":
-			cond += " and dn.customer_group = '"+str(filters.customer_group)+"'"
+			cond += " and si.customer_group = '"+str(filters.customer_group)+"'"
 
 	if filters.warehouse:
 		if filters.report_by == "Sales Order":
@@ -547,7 +562,7 @@ def get_conditions(filters=None):
 		elif filters.report_by == "Delivery Note":
 			cond += " and dni.warehouse = '" + str(filters.warehouse) + "'"
 		elif filters.report_by == "Sales Invoice":
-			cond += " and dni.warehouse = '" + str(filters.warehouse) + "'"
+			cond += " and sii.warehouse = '" + str(filters.warehouse) + "'"
 		
 	if filters.location and filters.report_by == "Delivery Note":
 		cond += " and dni.location = '" + str(filters.location) + "'"
