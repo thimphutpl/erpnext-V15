@@ -31,6 +31,7 @@
     <thead>
         <tr>
             <th>Invoice Date</th>
+            <th>Cost Center</th>
             <th>Cheque Number</th>
             <th>Cheque Date</th>
             <th>Receipt Number</th>
@@ -45,6 +46,7 @@
             {% if d.posting_date%}
                 <tr>
                     <td style = "text-align: center; align-content: center;">{{frappe.format(d.posting_date,{fieldtype: "Date"})}}</td>
+                    <td style="text-align: center;">{{ frappe.format(d.cost_center, {fieldtype:"Link", options:"Cost Center"}) }}</td>
                     <td style = "text-align: center; align-content: center;">{{frappe.format(d.cheque_no,{fieldtype:"Data"})}}</td>
                     <td style = "text-align: center; align-content: center;">{{frappe.format(d.cheque_date,{fieldtype:"Date"})}}</td>
                     <td style = "text-align: center; align-content: center;">{{frappe.format(d.tds_receipt_number,{fieldtype:"Data"})}}</td>

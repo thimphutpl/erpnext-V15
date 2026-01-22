@@ -10,6 +10,35 @@ def execute(filters=None):
 	data = get_data(filters)
 	return columns, data
 
+def get_cost_center_for_row(d):
+    # Purchase Invoice: cost center is usually on Purchase Invoice Item
+    if d.invoice_type == "Purchase Invoice":
+        return frappe.db.get_value("Purchase Invoice Item", {"parent": d.invoice_no}, "cost_center")
+
+    # Journal Entry: commonly on the debit line
+    if d.invoice_type == "Journal Entry":
+        return frappe.db.get_value("Journal Entry Account", {"parent": d.invoice_no, "debit": (">", 0)}, "cost_center")
+
+    # Payment Entry: try Payment Entry Account debit line; fallback to Payment Entry cost_center (if exists)
+    if d.invoice_type == "Payment Entry":
+        cc = frappe.db.get_value("Payment Entry Account", {"parent": d.invoice_no, "debit": (">", 0)}, "cost_center")
+        if not cc:
+            cc = frappe.db.get_value("Payment Entry", d.invoice_no, "cost_center")
+        return cc
+
+    # Custom doctypes (adjust if your fieldname differs)
+    if d.invoice_type == "Transporter Invoice":
+        return frappe.db.get_value("Transporter Invoice", d.invoice_no, "cost_center")
+
+    if d.invoice_type == "EME Invoice":
+        return frappe.db.get_value("EME Invoice", d.invoice_no, "cost_center")
+
+    if d.invoice_type == "Mechanical Payment":
+        return frappe.db.get_value("Mechanical Payment", d.invoice_no, "cost_center")
+
+    return None
+
+
 def get_data(filters):
 	data = []
 	conditions = get_condition(filters)
@@ -54,6 +83,8 @@ def get_data(filters):
 				d.update({
 					"tds_rate": frappe.db.get_value("Mechanical Payment",{"tds_amount":(">",0),"name":d.invoice_no},"tax_withholding_rate")
 				})
+		d.update({"cost_center": get_cost_center_for_row(d)})
+
 			
 		data.append(d)
 	return data
@@ -122,7 +153,15 @@ def get_columns():
 			"label":("Receipt Date"),
 			"fieldtype":"Date",
 			"width":120,
+		},
+		{
+			"fieldname": "cost_center",
+			"label": _("Cost Center"),
+			"fieldtype": "Link",
+			"options": "Cost Center",
+			"width": 180
 		}
+
 	]
 def calculate_total(data):
 	total_amount = total_tds_amount = 0
