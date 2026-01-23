@@ -25,6 +25,9 @@
   "asset_repair",
   "col2",
   "company",
+  "manufacture_date",
+  "expiry_date",
+  "stock_entry_purpose",
   "posting_date",
   "posting_time",
   "received_by",
@@ -747,6 +750,31 @@
    "fieldname": "issued_by",
    "fieldtype": "Data",
    "label": "Issued By"
+  },
+  {
+   "fieldname": "manufacture_date",
+   "fieldtype": "Date",
+   "label": "Manufacture Date",
+   "no_copy": 1,
+   "oldfieldname": "posting_date",
+   "oldfieldtype": "Date"
+  },
+  {
+   "fieldname": "expiry_date",
+   "fieldtype": "Date",
+   "label": "Expiry Date",
+   "no_copy": 1,
+   "oldfieldname": "posting_date",
+   "oldfieldtype": "Date"
+  },
+  {
+   "fieldname": "stock_entry_purpose",
+   "fieldtype": "Select",
+   "label": "Stock Entry Purpose",
+   "no_copy": 1,
+   "oldfieldname": "posting_date",
+   "oldfieldtype": "Date",
+   "options": "\nLap Test\nSample Compliment\nDefective Replacement"
   }
  ],
  "icon": "fa fa-file-text",
@@ -754,7 +782,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-09-15 12:07:55.503720",
+ "modified": "2026-01-23 14:49:16.460136",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Stock Entry",
@@ -820,7 +848,6 @@
    "write": 1
   }
  ],
- "row_format": "Dynamic",
  "search_fields": "posting_date, from_warehouse, to_warehouse, purpose, remarks",
  "show_name_in_global_search": 1,
  "sort_field": "modified",
