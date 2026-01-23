@@ -65,11 +65,11 @@
   "section_break_41",
   "taxes",
   "transporter_info",
-  "transporter",
-  "driver",
-  "lr_no",
   "vehicle_no",
+  "lr_no",
+  "transporter",
   "col_break34",
+  "driver",
   "transporter_name",
   "driver_name",
   "lr_date",
@@ -895,23 +895,24 @@
   },
   {
    "fieldname": "transporter",
-   "fieldtype": "Link",
+   "fieldtype": "Data",
+   "hidden": 1,
    "label": "Transporter",
-   "options": "Supplier",
    "print_hide": 1,
    "print_width": "150px",
    "width": "150px"
   },
   {
+   "fetch_from": "vehicle_no.drivers_name",
    "fieldname": "driver",
-   "fieldtype": "Link",
+   "fieldtype": "Data",
    "label": "Driver",
-   "options": "Driver",
    "print_hide": 1
   },
   {
    "fieldname": "lr_no",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Transport Receipt No",
    "oldfieldname": "lr_no",
    "oldfieldtype": "Data",
@@ -921,8 +922,9 @@
   },
   {
    "fieldname": "vehicle_no",
-   "fieldtype": "Data",
+   "fieldtype": "Link",
    "label": "Vehicle No",
+   "options": "Vehicle",
    "print_hide": 1
   },
   {
@@ -935,6 +937,7 @@
    "fetch_from": "transporter.supplier_name",
    "fieldname": "transporter_name",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Transporter Name",
    "print_hide": 1,
    "read_only": 1
@@ -943,6 +946,7 @@
    "fetch_from": "driver.full_name",
    "fieldname": "driver_name",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Driver Name",
    "print_hide": 1
   },
@@ -950,6 +954,7 @@
    "default": "Today",
    "fieldname": "lr_date",
    "fieldtype": "Date",
+   "hidden": 1,
    "label": "Transport Receipt Date",
    "oldfieldname": "lr_date",
    "oldfieldtype": "Date",
@@ -1419,16 +1424,19 @@
   {
    "fieldname": "transportation_rate",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Transportation rate"
   },
   {
    "fieldname": "total_quantity",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Total Quantity"
   },
   {
    "fieldname": "transportation_charges",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Transportation Charges"
   }
  ],
@@ -1436,7 +1444,7 @@
  "idx": 146,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-01-13 15:27:36.841246",
+ "modified": "2026-01-23 14:17:10.191107",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Delivery Note",
