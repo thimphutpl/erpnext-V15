@@ -360,9 +360,13 @@ class Analytics:
 
 			if self.filters.tree_type == "Item":
 				self.entity_periodic_data[d.entity]["stock_uom"] = d.stock_uom
+# In the Analytics class, update the get_period method:
 
 	def get_period(self, posting_date):
-		if self.filters.range == "Weekly":
+		if self.filters.range == "Daily":
+			# Format: DD MMM YYYY (e.g., 15 Jan 2024)
+			period = posting_date.strftime("%d %b %Y")
+		elif self.filters.range == "Weekly":
 			period = _("Week {0} {1}").format(str(posting_date.isocalendar()[1]), str(posting_date.year))
 		elif self.filters.range == "Monthly":
 			period = _(str(self.months[posting_date.month - 1])) + " " + str(posting_date.year)
@@ -375,14 +379,25 @@ class Analytics:
 			period = str(year[0])
 		return period
 
+	# Update the get_period_date_ranges method:
+
 	def get_period_date_ranges(self):
 		from dateutil.relativedelta import MO, relativedelta
 
 		from_date, to_date = getdate(self.filters.from_date), getdate(self.filters.to_date)
 
-		increment = {"Monthly": 1, "Quarterly": 3, "Half-Yearly": 6, "Yearly": 12}.get(self.filters.range, 1)
+		increment = {
+			"Daily": 0,
+			"Monthly": 1,
+			"Quarterly": 3,
+			"Half-Yearly": 6,
+			"Yearly": 12
+		}.get(self.filters.range, 1)
 
-		if self.filters.range in ["Monthly", "Quarterly"]:
+		if self.filters.range == "Daily":
+			# For daily, each period is a single day
+			pass
+		elif self.filters.range in ["Monthly", "Quarterly"]:
 			from_date = from_date.replace(day=1)
 		elif self.filters.range == "Yearly":
 			from_date = get_fiscal_year(from_date)[1]
@@ -390,21 +405,29 @@ class Analytics:
 			from_date = from_date + relativedelta(from_date, weekday=MO(-1))
 
 		self.periodic_daterange = []
-		for _dummy in range(1, 53):
-			if self.filters.range == "Weekly":
-				period_end_date = add_days(from_date, 6)
-			else:
-				period_end_date = add_to_date(from_date, months=increment, days=-1)
+		
+		if self.filters.range == "Daily":
+			# Create daily periods
+			current_date = from_date
+			while current_date <= to_date:
+				self.periodic_daterange.append(current_date)
+				current_date = add_days(current_date, 1)
+		else:
+			for _dummy in range(1, 53):
+				if self.filters.range == "Weekly":
+					period_end_date = add_days(from_date, 6)
+				else:
+					period_end_date = add_to_date(from_date, months=increment, days=-1)
 
-			if period_end_date > to_date:
-				period_end_date = to_date
+				if period_end_date > to_date:
+					period_end_date = to_date
 
-			self.periodic_daterange.append(period_end_date)
+				self.periodic_daterange.append(period_end_date)
 
-			from_date = add_days(period_end_date, 1)
-			if period_end_date == to_date:
-				break
-
+				from_date = add_days(period_end_date, 1)
+				if period_end_date == to_date:
+					break
+					
 	def get_groups(self):
 		if self.filters.tree_type == "Territory":
 			parent = "parent_territory"

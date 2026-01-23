@@ -60,11 +60,13 @@ frappe.query_reports["Sales Analytics"] = {
 			default: frappe.defaults.get_user_default("Company"),
 			reqd: 1,
 		},
+		// In the frappe.query_reports["Sales Analytics"] object
 		{
 			fieldname: "range",
 			label: __("Range"),
 			fieldtype: "Select",
 			options: [
+				{ value: "Daily", label: __("Daily") }, // Add this line
 				{ value: "Weekly", label: __("Weekly") },
 				{ value: "Monthly", label: __("Monthly") },
 				{ value: "Quarterly", label: __("Quarterly") },

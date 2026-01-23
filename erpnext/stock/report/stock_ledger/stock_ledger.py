@@ -27,6 +27,12 @@ def execute(filters=None):
 	items = get_items(filters)
 	sl_entries = get_stock_ledger_entries(filters, items)
 	item_details = get_item_details(items, sl_entries, include_uom)
+	
+	# Get stock entry details including custom fields
+	stock_entry_details = {}
+	if any(sle.get('voucher_type') == 'Stock Entry' for sle in sl_entries):
+		stock_entry_details = get_stock_entry_details(sl_entries)
+	
 	if filters.get("batch_no"):
 		opening_row = get_opening_balance_from_batch(filters, columns, sl_entries)
 	else:
@@ -60,6 +66,19 @@ def execute(filters=None):
 		item_detail = item_details[sle.item_code]
 
 		sle.update(item_detail)
+		
+		# Add stock entry details (expiry_date, manufacture_date from Stock Entry)
+		# Set to None for non-stock entry vouchers
+		sle.update({
+			"expiry_date": None,
+			"manufacture_date": None,
+			"stock_entry_purpose": None
+		})
+		
+		# Override with actual values if it's a Stock Entry
+		if sle.voucher_type == 'Stock Entry' and sle.voucher_no and stock_entry_details.get(sle.voucher_no):
+			sle.update(stock_entry_details[sle.voucher_no])
+		
 		if bundle_info := bundle_details.get(sle.serial_and_batch_bundle):
 			data.extend(get_segregated_bundle_entries(sle, bundle_info, batch_balance_dict, filters))
 			continue
@@ -100,6 +119,32 @@ def execute(filters=None):
 
 	update_included_uom_in_report(columns, data, include_uom, conversion_factors)
 	return columns, data
+
+
+def get_stock_entry_details(sl_entries):
+    """Get expiry_date and manufacture_date from Stock Entry doctype"""
+    stock_entries = list(set([sle.voucher_no for sle in sl_entries 
+                             if sle.voucher_type == 'Stock Entry' and sle.voucher_no]))
+    if not stock_entries:
+        return {}
+    
+    # Get fields from Stock Entry doctype (your custom fields)
+    entries = frappe.get_all(
+        "Stock Entry",  # ← FROM STOCK ENTRY DOCTYPE
+        filters={"name": ["in", stock_entries]},
+        fields=["name", "expiry_date", "manufacture_date","stock_entry_purpose"],  # ← STOCK ENTRY CUSTOM FIELDS
+
+    )
+    
+    result = {}
+    for entry in entries:
+        result[entry.name] = {
+            "expiry_date": entry.expiry_date,          # From Stock Entry.expiry_date
+            "manufacture_date": entry.manufacture_date,  # From Stock Entry.manufacture_date
+			"stock_entry_purpose":entry.stock_entry_purpose
+        }
+    
+    return result
 
 
 def get_segregated_bundle_entries(sle, bundle_details, batch_balance_dict, filters):
@@ -217,6 +262,30 @@ def get_columns(filters):
 			"options": "UOM",
 			"width": 90,
 		},
+		{
+			"label": _("Warehouse"),
+			"fieldname": "warehouse",
+			"fieldtype": "Link",
+			"options": "Warehouse",
+			"width": 150,
+		},
+		{
+				"label": _("Item Group"),
+				"fieldname": "item_group",
+				"fieldtype": "Link",
+				"options": "Item Group",
+				"width": 100,
+			},
+			{
+				"label": _("Brand"),
+				"fieldname": "brand",
+				"fieldtype": "Link",
+				"options": "Brand",
+				"width": 100,
+			},
+
+			{"label": _("Description"), "fieldname": "description", "width": 200},
+		
 	]
 
 	for dimension in get_inventory_dimensions():
@@ -239,43 +308,7 @@ def get_columns(filters):
 				"width": 80,
 				"convertible": "qty",
 			},
-			{
-				"label": _("Out Qty"),
-				"fieldname": "out_qty",
-				"fieldtype": "Float",
-				"width": 80,
-				"convertible": "qty",
-			},
-			{
-				"label": _("Balance Qty"),
-				"fieldname": "qty_after_transaction",
-				"fieldtype": "Float",
-				"width": 100,
-				"convertible": "qty",
-			},
-			{
-				"label": _("Warehouse"),
-				"fieldname": "warehouse",
-				"fieldtype": "Link",
-				"options": "Warehouse",
-				"width": 150,
-			},
-			{
-				"label": _("Item Group"),
-				"fieldname": "item_group",
-				"fieldtype": "Link",
-				"options": "Item Group",
-				"width": 100,
-			},
-			{
-				"label": _("Brand"),
-				"fieldname": "brand",
-				"fieldtype": "Link",
-				"options": "Brand",
-				"width": 100,
-			},
-			{"label": _("Description"), "fieldname": "description", "width": 200},
-			{
+				{
 				"label": _("Incoming Rate"),
 				"fieldname": "incoming_rate",
 				"fieldtype": "Currency",
@@ -284,14 +317,11 @@ def get_columns(filters):
 				"convertible": "rate",
 			},
 			{
-				"label": _("Avg Rate (Balance Stock)"),
-				"fieldname": "valuation_rate",
-				"fieldtype": filters.valuation_field_type,
-				"width": 180,
-				"options": "Company:company:default_currency"
-				if filters.valuation_field_type == "Currency"
-				else None,
-				"convertible": "rate",
+				"label": _("Out Qty"),
+				"fieldname": "out_qty",
+				"fieldtype": "Float",
+				"width": 80,
+				"convertible": "qty",
 			},
 			{
 				"label": _("Valuation Rate"),
@@ -304,18 +334,58 @@ def get_columns(filters):
 				"convertible": "rate",
 			},
 			{
+				"label": _("Value Change"),
+				"fieldname": "stock_value_difference",
+				"fieldtype": "Currency",
+				"width": 110,
+				"options": "Company:company:default_currency",
+			},
+			{
+				"label": _("Balance Qty"),
+				"fieldname": "qty_after_transaction",
+				"fieldtype": "Float",
+				"width": 100,
+				"convertible": "qty",
+			},
+		
+			
+			{
+				"label": _("Avg Rate (Balance Stock)"),
+				"fieldname": "valuation_rate",
+				"fieldtype": filters.valuation_field_type,
+				"width": 180,
+				"options": "Company:company:default_currency"
+				if filters.valuation_field_type == "Currency"
+				else None,
+				"convertible": "rate",
+			},
+		
+			{
 				"label": _("Balance Value"),
 				"fieldname": "stock_value",
 				"fieldtype": "Currency",
 				"width": 110,
 				"options": "Company:company:default_currency",
 			},
+	
+			# These fields now come from Stock Entry doctype
 			{
-				"label": _("Value Change"),
-				"fieldname": "stock_value_difference",
-				"fieldtype": "Currency",
+				"label": _("Manufacture Date"),
+				"fieldname": "manufacture_date",
+				"fieldtype": "Date",
 				"width": 110,
-				"options": "Company:company:default_currency",
+			},
+			{
+				"label": _("Expiry Date"),
+				"fieldname": "expiry_date",
+				"fieldtype": "Date",
+				"width": 110,
+			},
+			{
+				"label": _("Stock Entry Purpose"),
+				"fieldname": "stock_entry_purpose",
+				"fieldtype": "Data",
+				"width": 110,
 			},
 			{"label": _("Voucher Type"), "fieldname": "voucher_type", "width": 110},
 			{
