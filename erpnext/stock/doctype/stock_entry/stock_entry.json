@@ -25,6 +25,7 @@
   "asset_repair",
   "col2",
   "company",
+  "batch_number",
   "manufacture_date",
   "expiry_date",
   "stock_entry_purpose",
@@ -775,6 +776,18 @@
    "oldfieldname": "posting_date",
    "oldfieldtype": "Date",
    "options": "\nLap Test\nSample Compliment\nDefective Replacement"
+  },
+  {
+   "fieldname": "batch_number",
+   "fieldtype": "Data",
+   "label": "Batch Number",
+   "no_copy": 1,
+   "oldfieldname": "naming_series",
+   "oldfieldtype": "Select",
+   "options": "Branch",
+   "print_hide": 1,
+   "reqd": 1,
+   "set_only_once": 1
   }
  ],
  "icon": "fa fa-file-text",
@@ -782,7 +795,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-01-23 14:49:16.460136",
+ "modified": "2026-01-23 14:54:51.055872",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Stock Entry",
