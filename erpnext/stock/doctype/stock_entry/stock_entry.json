@@ -1,724 +1,831 @@
-# Copyright (c) 2015, Frappe Technologies Pvt. Ltd. and Contributors
-# License: GNU General Public License v3. See license.txt
-
-
-import copy
-from collections import defaultdict
-
-import frappe
-from frappe import _
-from frappe.query_builder.functions import CombineDatetime, Sum
-from frappe.utils import cint, flt
-
-from erpnext.stock.doctype.inventory_dimension.inventory_dimension import get_inventory_dimensions
-from erpnext.stock.doctype.serial_no.serial_no import get_serial_nos
-from erpnext.stock.doctype.stock_reconciliation.stock_reconciliation import get_stock_balance_for
-from erpnext.stock.doctype.warehouse.warehouse import apply_warehouse_filter
-from erpnext.stock.utils import (
-	is_reposting_item_valuation_in_progress,
-	update_included_uom_in_report,
-)
-
-
-def execute(filters=None):
-	is_reposting_item_valuation_in_progress()
-	include_uom = filters.get("include_uom")
-	columns = get_columns(filters)
-	items = get_items(filters)
-	sl_entries = get_stock_ledger_entries(filters, items)
-	item_details = get_item_details(items, sl_entries, include_uom)
-	
-	# Get stock entry details from parent Stock Entry
-	stock_entry_details = {}
-	if any(sle.get('voucher_type') == 'Stock Entry' for sle in sl_entries):
-		stock_entry_details = get_stock_entry_details(sl_entries)
-	
-	if filters.get("batch_no"):
-		opening_row = get_opening_balance_from_batch(filters, columns, sl_entries)
-	else:
-		opening_row = get_opening_balance(filters, columns, sl_entries)
-
-	precision = cint(frappe.db.get_single_value("System Settings", "float_precision"))
-	bundle_details = {}
-
-	if filters.get("segregate_serial_batch_bundle"):
-		bundle_details = get_serial_batch_bundle_details(sl_entries, filters)
-
-	data = []
-	conversion_factors = []
-	if opening_row:
-		data.append(opening_row)
-		conversion_factors.append(0)
-
-	actual_qty = stock_value = 0
-	if opening_row:
-		actual_qty = opening_row.get("qty_after_transaction")
-		stock_value = opening_row.get("stock_value")
-
-	available_serial_nos = {}
-	inventory_dimension_filters_applied = check_inventory_dimension_filters_applied(filters)
-
-	batch_balance_dict = frappe._dict({})
-	if actual_qty and filters.get("batch_no"):
-		batch_balance_dict[filters.batch_no] = [actual_qty, stock_value]
-
-	for sle in sl_entries:
-		item_detail = item_details[sle.item_code]
-
-		sle.update(item_detail)
-		
-		# Add stock entry details for ALL entries
-		# Set to None for non-stock entry vouchers
-		sle.update({
-			"stock_entry_purpose": None,
-			"manufacture_date": None,
-			"expiry_date": None
-		})
-		
-		# Override with actual values if it's a Stock Entry
-		if sle.voucher_type == 'Stock Entry' and sle.voucher_no and stock_entry_details.get(sle.voucher_no):
-			sle.update(stock_entry_details[sle.voucher_no])
-		
-		if bundle_info := bundle_details.get(sle.serial_and_batch_bundle):
-			data.extend(get_segregated_bundle_entries(sle, bundle_info, batch_balance_dict, filters))
-			continue
-
-		if filters.get("batch_no") or inventory_dimension_filters_applied:
-			actual_qty += flt(sle.actual_qty, precision)
-			stock_value += sle.stock_value_difference
-			if sle.batch_no:
-				if not batch_balance_dict.get(sle.batch_no):
-					batch_balance_dict[sle.batch_no] = [0, 0]
-
-				batch_balance_dict[sle.batch_no][0] += sle.actual_qty
-
-			if filters.get("segregate_serial_batch_bundle"):
-				actual_qty = batch_balance_dict[sle.batch_no][0]
-
-			if sle.voucher_type == "Stock Reconciliation" and not sle.actual_qty:
-				actual_qty = sle.qty_after_transaction
-				stock_value = sle.stock_value
-
-			sle.update({"qty_after_transaction": actual_qty, "stock_value": stock_value})
-
-		sle.update({"in_qty": max(sle.actual_qty, 0), "out_qty": min(sle.actual_qty, 0)})
-
-		if sle.serial_no:
-			update_available_serial_nos(available_serial_nos, sle)
-
-		if sle.actual_qty:
-			sle["in_out_rate"] = flt(sle.stock_value_difference / sle.actual_qty, precision)
-
-		elif sle.voucher_type == "Stock Reconciliation":
-			sle["in_out_rate"] = sle.valuation_rate
-
-		data.append(sle)
-
-		if include_uom:
-			conversion_factors.append(item_detail.conversion_factor)
-
-	update_included_uom_in_report(columns, data, include_uom, conversion_factors)
-	return columns, data
-
-
-def get_stock_entry_details(sl_entries):
-    """Get stock entry details from parent Stock Entry doctype"""
-    stock_entries = list(set([sle.voucher_no for sle in sl_entries 
-                             if sle.voucher_type == 'Stock Entry' and sle.voucher_no]))
-    if not stock_entries:
-        return {}
-    
-    # Get fields from Stock Entry parent doctype
-    entries = frappe.get_all(
-        "Stock Entry",
-        filters={"name": ["in", stock_entries]},
-        fields=["name", "stock_entry_purpose", "manufacture_date", "expiry_date"],
-    )
-    
-    result = {}
-    for entry in entries:
-        result[entry.name] = {
-            "stock_entry_purpose": entry.stock_entry_purpose,
-            "manufacture_date": entry.manufacture_date,
-            "expiry_date": entry.expiry_date
-        }
-    
-    return result
-
-
-def get_segregated_bundle_entries(sle, bundle_details, batch_balance_dict, filters):
-	segregated_entries = []
-	qty_before_transaction = sle.qty_after_transaction - sle.actual_qty
-	stock_value_before_transaction = sle.stock_value - sle.stock_value_difference
-
-	for row in bundle_details:
-		new_sle = copy.deepcopy(sle)
-		new_sle.update(row)
-		new_sle.update(
-			{
-				"in_out_rate": flt(new_sle.stock_value_difference / row.qty) if row.qty else 0,
-				"in_qty": row.qty if row.qty > 0 else 0,
-				"out_qty": row.qty if row.qty < 0 else 0,
-				"qty_after_transaction": qty_before_transaction + row.qty,
-				"stock_value": stock_value_before_transaction + new_sle.stock_value_difference,
-				"incoming_rate": row.incoming_rate if row.qty > 0 else 0,
-			}
-		)
-
-		if filters.get("batch_no") and row.batch_no:
-			if not batch_balance_dict.get(row.batch_no):
-				batch_balance_dict[row.batch_no] = [0, 0]
-
-			batch_balance_dict[row.batch_no][0] += row.qty
-			batch_balance_dict[row.batch_no][1] += row.stock_value_difference
-
-			new_sle.update(
-				{
-					"qty_after_transaction": batch_balance_dict[row.batch_no][0],
-					"stock_value": batch_balance_dict[row.batch_no][1],
-				}
-			)
-
-		qty_before_transaction += row.qty
-		stock_value_before_transaction += new_sle.stock_value_difference
-
-		new_sle.valuation_rate = (
-			stock_value_before_transaction / qty_before_transaction if qty_before_transaction else 0
-		)
-
-		segregated_entries.append(new_sle)
-
-	return segregated_entries
-
-
-def get_serial_batch_bundle_details(sl_entries, filters=None):
-	bundle_details = []
-	for sle in sl_entries:
-		if sle.serial_and_batch_bundle:
-			bundle_details.append(sle.serial_and_batch_bundle)
-
-	if not bundle_details:
-		return frappe._dict({})
-
-	query_filers = {"parent": ("in", bundle_details)}
-	if filters.get("batch_no"):
-		query_filers["batch_no"] = filters.batch_no
-
-	_bundle_details = frappe._dict({})
-	batch_entries = frappe.get_all(
-		"Serial and Batch Entry",
-		filters=query_filers,
-		fields=["parent", "qty", "incoming_rate", "stock_value_difference", "batch_no", "serial_no"],
-		order_by="parent, idx",
-	)
-	for entry in batch_entries:
-		_bundle_details.setdefault(entry.parent, []).append(entry)
-
-	return _bundle_details
-
-
-def update_available_serial_nos(available_serial_nos, sle):
-	serial_nos = get_serial_nos(sle.serial_no)
-	key = (sle.item_code, sle.warehouse)
-	if key not in available_serial_nos:
-		stock_balance = get_stock_balance_for(
-			sle.item_code, sle.warehouse, sle.posting_date, sle.posting_time
-		)
-		serials = get_serial_nos(stock_balance["serial_nos"]) if stock_balance["serial_nos"] else []
-		available_serial_nos.setdefault(key, serials)
-
-	existing_serial_no = available_serial_nos[key]
-	for sn in serial_nos:
-		if sle.actual_qty > 0:
-			if sn in existing_serial_no:
-				existing_serial_no.remove(sn)
-			else:
-				existing_serial_no.append(sn)
-		else:
-			if sn in existing_serial_no:
-				existing_serial_no.remove(sn)
-			else:
-				existing_serial_no.append(sn)
-
-	sle.balance_serial_no = "\n".join(existing_serial_no)
-
-
-def get_columns(filters):
-	columns = [
-		{"label": _("Date"), "fieldname": "date", "fieldtype": "Datetime", "width": 150},
-		{
-			"label": _("Item"),
-			"fieldname": "item_code",
-			"fieldtype": "Link",
-			"options": "Item",
-			"width": 100,
-		},
-		{"label": _("Item Name"), "fieldname": "item_name", "width": 100},
-		{
-			"label": _("Stock UOM"),
-			"fieldname": "stock_uom",
-			"fieldtype": "Link",
-			"options": "UOM",
-			"width": 90,
-		},
-	]
-
-	for dimension in get_inventory_dimensions():
-		columns.append(
-			{
-				"label": _(dimension.doctype),
-				"fieldname": dimension.fieldname,
-				"fieldtype": "Link",
-				"options": dimension.doctype,
-				"width": 110,
-			}
-		)
-
-	columns.extend(
-		[
-			{
-				"label": _("In Qty"),
-				"fieldname": "in_qty",
-				"fieldtype": "Float",
-				"width": 80,
-				"convertible": "qty",
-			},
-			{
-				"label": _("Out Qty"),
-				"fieldname": "out_qty",
-				"fieldtype": "Float",
-				"width": 80,
-				"convertible": "qty",
-			},
-			{
-				"label": _("Balance Qty"),
-				"fieldname": "qty_after_transaction",
-				"fieldtype": "Float",
-				"width": 100,
-				"convertible": "qty",
-			},
-			{
-				"label": _("Warehouse"),
-				"fieldname": "warehouse",
-				"fieldtype": "Link",
-				"options": "Warehouse",
-				"width": 150,
-			},
-			{
-				"label": _("Item Group"),
-				"fieldname": "item_group",
-				"fieldtype": "Link",
-				"options": "Item Group",
-				"width": 100,
-			},
-			{
-				"label": _("Brand"),
-				"fieldname": "brand",
-				"fieldtype": "Link",
-				"options": "Brand",
-				"width": 100,
-			},
-			{"label": _("Description"), "fieldname": "description", "width": 200},
-			{
-				"label": _("Incoming Rate"),
-				"fieldname": "incoming_rate",
-				"fieldtype": "Currency",
-				"width": 110,
-				"options": "Company:company:default_currency",
-				"convertible": "rate",
-			},
-			{
-				"label": _("Avg Rate (Balance Stock)"),
-				"fieldname": "valuation_rate",
-				"fieldtype": filters.valuation_field_type,
-				"width": 180,
-				"options": "Company:company:default_currency"
-				if filters.valuation_field_type == "Currency"
-				else None,
-				"convertible": "rate",
-			},
-			{
-				"label": _("Valuation Rate"),
-				"fieldname": "in_out_rate",
-				"fieldtype": filters.valuation_field_type,
-				"width": 140,
-				"options": "Company:company:default_currency"
-				if filters.valuation_field_type == "Currency"
-				else None,
-				"convertible": "rate",
-			},
-			{
-				"label": _("Balance Value"),
-				"fieldname": "stock_value",
-				"fieldtype": "Currency",
-				"width": 110,
-				"options": "Company:company:default_currency",
-			},
-			{
-				"label": _("Value Change"),
-				"fieldname": "stock_value_difference",
-				"fieldtype": "Currency",
-				"width": 110,
-				"options": "Company:company:default_currency",
-			},
-			# New columns from Stock Entry parent doctype
-			{
-				"label": _("Manufacture Date"),
-				"fieldname": "manufacture_date",
-				"fieldtype": "Date",
-				"width": 110,
-			},
-			{
-				"label": _("Expiry Date"),
-				"fieldname": "expiry_date",
-				"fieldtype": "Date",
-				"width": 110,
-			},
-			{
-				"label": _("Stock Entry Purpose"),
-				"fieldname": "stock_entry_purpose",
-				"fieldtype": "Data",
-				"width": 150,
-			},
-			# End of new columns
-			{"label": _("Voucher Type"), "fieldname": "voucher_type", "width": 110},
-			{
-				"label": _("Voucher #"),
-				"fieldname": "voucher_no",
-				"fieldtype": "Dynamic Link",
-				"options": "voucher_type",
-				"width": 100,
-			},
-			{
-				"label": _("Batch"),
-				"fieldname": "batch_no",
-				"fieldtype": "Link",
-				"options": "Batch",
-				"width": 100,
-			},
-			{
-				"label": _("Serial No"),
-				"fieldname": "serial_no",
-				"fieldtype": "Link",
-				"options": "Serial No",
-				"width": 100,
-			},
-			{
-				"label": _("Serial and Batch Bundle"),
-				"fieldname": "serial_and_batch_bundle",
-				"fieldtype": "Link",
-				"options": "Serial and Batch Bundle",
-				"width": 100,
-			},
-			{
-				"label": _("Project"),
-				"fieldname": "project",
-				"fieldtype": "Link",
-				"options": "Project",
-				"width": 100,
-			},
-			{
-				"label": _("Company"),
-				"fieldname": "company",
-				"fieldtype": "Link",
-				"options": "Company",
-				"width": 110,
-			},
-		]
-	)
-
-	return columns
-
-
-def get_stock_ledger_entries(filters, items):
-	sle = frappe.qb.DocType("Stock Ledger Entry")
-	query = (
-		frappe.qb.from_(sle)
-		.select(
-			sle.item_code,
-			sle.posting_datetime.as_("date"),
-			sle.warehouse,
-			sle.posting_date,
-			sle.posting_time,
-			sle.actual_qty,
-			sle.incoming_rate,
-			sle.valuation_rate,
-			sle.company,
-			sle.voucher_type,
-			sle.qty_after_transaction,
-			sle.stock_value_difference,
-			sle.serial_and_batch_bundle,
-			sle.voucher_no,
-			sle.stock_value,
-			sle.batch_no,
-			sle.serial_no,
-			sle.project,
-		)
-		.where(
-			(sle.docstatus < 2)
-			& (sle.is_cancelled == 0)
-			& (sle.posting_date[filters.from_date : filters.to_date])
-		)
-		.orderby(CombineDatetime(sle.posting_date, sle.posting_time))
-		.orderby(sle.creation)
-	)
-
-	inventory_dimension_fields = get_inventory_dimension_fields()
-	if inventory_dimension_fields:
-		for fieldname in inventory_dimension_fields:
-			query = query.select(fieldname)
-			if fieldname in filters and filters.get(fieldname):
-				query = query.where(sle[fieldname].isin(filters.get(fieldname)))
-
-	if items:
-		query = query.where(sle.item_code.isin(items))
-
-	for field in ["voucher_no", "project", "company"]:
-		if filters.get(field) and field not in inventory_dimension_fields:
-			query = query.where(sle[field] == filters.get(field))
-
-	if filters.get("batch_no"):
-		bundles = get_serial_and_batch_bundles(filters)
-
-		if bundles:
-			query = query.where(
-				(sle.serial_and_batch_bundle.isin(bundles)) | (sle.batch_no == filters.batch_no)
-			)
-		else:
-			query = query.where(sle.batch_no == filters.batch_no)
-
-	query = apply_warehouse_filter(query, sle, filters)
-
-	return query.run(as_dict=True)
-
-
-def get_serial_and_batch_bundles(filters):
-	SBB = frappe.qb.DocType("Serial and Batch Bundle")
-	SBE = frappe.qb.DocType("Serial and Batch Entry")
-
-	query = (
-		frappe.qb.from_(SBE)
-		.inner_join(SBB)
-		.on(SBE.parent == SBB.name)
-		.select(SBE.parent)
-		.where(
-			(SBB.docstatus == 1)
-			& (SBB.has_batch_no == 1)
-			& (SBB.voucher_no.notnull())
-			& (SBE.batch_no == filters.batch_no)
-		)
-	)
-
-	return query.run(pluck=SBE.parent)
-
-
-def get_inventory_dimension_fields():
-	return [dimension.fieldname for dimension in get_inventory_dimensions()]
-
-
-def get_items(filters):
-	item = frappe.qb.DocType("Item")
-	query = frappe.qb.from_(item).select(item.name)
-	conditions = []
-
-	if item_code := filters.get("item_code"):
-		conditions.append(item.name == item_code)
-	else:
-		if brand := filters.get("brand"):
-			conditions.append(item.brand == brand)
-		if item_group := filters.get("item_group"):
-			if condition := get_item_group_condition(item_group, item):
-				conditions.append(condition)
-
-	items = []
-	if conditions:
-		for condition in conditions:
-			query = query.where(condition)
-		items = [r[0] for r in query.run()]
-
-	return items
-
-
-def get_item_details(items, sl_entries, include_uom):
-	item_details = {}
-	if not items:
-		items = list(set(d.item_code for d in sl_entries))
-
-	if not items:
-		return item_details
-
-	item = frappe.qb.DocType("Item")
-	query = (
-		frappe.qb.from_(item)
-		.select(item.name, item.item_name, item.description, item.item_group, item.brand, item.stock_uom)
-		.where(item.name.isin(items))
-	)
-
-	if include_uom:
-		ucd = frappe.qb.DocType("UOM Conversion Detail")
-		query = (
-			query.left_join(ucd)
-			.on((ucd.parent == item.name) & (ucd.uom == include_uom))
-			.select(ucd.conversion_factor)
-		)
-
-	res = query.run(as_dict=True)
-
-	for item in res:
-		item_details.setdefault(item.name, item)
-
-	return item_details
-
-
-def get_sle_conditions(filters):
-	conditions = []
-	if filters.get("warehouse"):
-		warehouse_condition = get_warehouse_condition(filters.get("warehouse"))
-		if warehouse_condition:
-			conditions.append(warehouse_condition)
-	if filters.get("voucher_no"):
-		conditions.append("voucher_no=%(voucher_no)s")
-	if filters.get("batch_no"):
-		conditions.append("batch_no=%(batch_no)s")
-	if filters.get("project"):
-		conditions.append("project=%(project)s")
-
-	for dimension in get_inventory_dimensions():
-		if filters.get(dimension.fieldname):
-			conditions.append(f"{dimension.fieldname} in %({dimension.fieldname})s")
-
-	return "and {}".format(" and ".join(conditions)) if conditions else ""
-
-
-def get_opening_balance_from_batch(filters, columns, sl_entries):
-	query_filters = {
-		"batch_no": filters.batch_no,
-		"docstatus": 1,
-		"is_cancelled": 0,
-		"posting_date": ("<", filters.from_date),
-		"company": filters.company,
-	}
-
-	for fields in ["item_code", "warehouse"]:
-		if filters.get(fields):
-			query_filters[fields] = filters.get(fields)
-
-	opening_data = frappe.get_all(
-		"Stock Ledger Entry",
-		fields=["sum(actual_qty) as qty_after_transaction", "sum(stock_value_difference) as stock_value"],
-		filters=query_filters,
-	)[0]
-
-	for field in ["qty_after_transaction", "stock_value", "valuation_rate"]:
-		if opening_data.get(field) is None:
-			opening_data[field] = 0.0
-
-	table = frappe.qb.DocType("Stock Ledger Entry")
-	sabb_table = frappe.qb.DocType("Serial and Batch Entry")
-	query = (
-		frappe.qb.from_(table)
-		.inner_join(sabb_table)
-		.on(table.serial_and_batch_bundle == sabb_table.parent)
-		.select(
-			Sum(sabb_table.qty).as_("qty"),
-			Sum(sabb_table.stock_value_difference).as_("stock_value"),
-		)
-		.where(
-			(sabb_table.batch_no == filters.batch_no)
-			& (sabb_table.docstatus == 1)
-			& (table.posting_date < filters.from_date)
-			& (table.is_cancelled == 0)
-		)
-	)
-
-	for field in ["item_code", "warehouse", "company"]:
-		if filters.get(field):
-			query = query.where(table[field] == filters.get(field))
-
-	bundle_data = query.run(as_dict=True)
-
-	if bundle_data:
-		opening_data.qty_after_transaction += flt(bundle_data[0].qty)
-		opening_data.stock_value += flt(bundle_data[0].stock_value)
-		if opening_data.qty_after_transaction:
-			opening_data.valuation_rate = flt(opening_data.stock_value) / flt(
-				opening_data.qty_after_transaction
-			)
-
-	return {
-		"item_code": _("'Opening'"),
-		"qty_after_transaction": opening_data.qty_after_transaction,
-		"valuation_rate": opening_data.valuation_rate,
-		"stock_value": opening_data.stock_value,
-	}
-
-
-def get_opening_balance(filters, columns, sl_entries):
-	if not (filters.item_code and filters.warehouse and filters.from_date):
-		return
-
-	from erpnext.stock.stock_ledger import get_previous_sle
-
-	last_entry = get_previous_sle(
-		{
-			"item_code": filters.item_code,
-			"warehouse_condition": get_warehouse_condition(filters.warehouse),
-			"posting_date": filters.from_date,
-			"posting_time": "00:00:00",
-		}
-	)
-
-	# check if any SLEs are actually Opening Stock Reconciliation
-	for sle in list(sl_entries):
-		if (
-			sle.get("voucher_type") == "Stock Reconciliation"
-			and sle.posting_date == filters.from_date
-			and frappe.db.get_value("Stock Reconciliation", sle.voucher_no, "purpose") == "Opening Stock"
-		):
-			last_entry = sle
-			sl_entries.remove(sle)
-
-	row = {
-		"item_code": _("'Opening'"),
-		"qty_after_transaction": last_entry.get("qty_after_transaction", 0),
-		"valuation_rate": last_entry.get("valuation_rate", 0),
-		"stock_value": last_entry.get("stock_value", 0),
-	}
-
-	return row
-
-
-def get_warehouse_condition(warehouse):
-	warehouse_details = frappe.db.get_value("Warehouse", warehouse, ["lft", "rgt"], as_dict=1)
-	if warehouse_details:
-		return f" exists (select name from `tabWarehouse` wh \
-			where wh.lft >= {warehouse_details.lft} and wh.rgt <= {warehouse_details.rgt} and warehouse = wh.name)"
-
-	return ""
-
-
-def get_item_group_condition(item_group, item_table=None):
-	item_group_details = frappe.db.get_value("Item Group", item_group, ["lft", "rgt"], as_dict=1)
-	if item_group_details:
-		if item_table:
-			ig = frappe.qb.DocType("Item Group")
-			return item_table.item_group.isin(
-				frappe.qb.from_(ig)
-				.select(ig.name)
-				.where(
-					(ig.lft >= item_group_details.lft)
-					& (ig.rgt <= item_group_details.rgt)
-					& (item_table.item_group == ig.name)
-				)
-			)
-		else:
-			return f"item.item_group in (select ig.name from `tabItem Group` ig \
-				where ig.lft >= {item_group_details.lft} and ig.rgt <= {item_group_details.rgt} and item.item_group = ig.name)"
-
-
-def check_inventory_dimension_filters_applied(filters) -> bool:
-	for dimension in get_inventory_dimensions():
-		if dimension.fieldname in filters and filters.get(dimension.fieldname):
-			return True
-
-	return False
+{
+ "actions": [],
+ "allow_import": 1,
+ "autoname": "naming_series:",
+ "creation": "2013-04-09 11:43:55",
+ "doctype": "DocType",
+ "document_type": "Document",
+ "engine": "InnoDB",
+ "field_order": [
+  "stock_entry_details_tab",
+  "naming_series",
+  "branch",
+  "cost_center",
+  "stock_entry_type",
+  "outgoing_stock_entry",
+  "purpose",
+  "add_to_transit",
+  "work_order",
+  "purchase_order",
+  "subcontracting_order",
+  "delivery_note_no",
+  "sales_invoice_no",
+  "pick_list",
+  "purchase_receipt_no",
+  "asset_repair",
+  "col2",
+  "company",
+  "posting_date",
+  "posting_time",
+  "received_by",
+  "issued_by",
+  "status",
+  "column_break_eaoa",
+  "set_posting_time",
+  "inspection_required",
+  "apply_putaway_rule",
+  "in_transit",
+  "bom_info_section",
+  "from_bom",
+  "use_multi_level_bom",
+  "bom_no",
+  "cb1",
+  "fg_completed_qty",
+  "get_items",
+  "section_break_7qsm",
+  "process_loss_percentage",
+  "column_break_e92r",
+  "process_loss_qty",
+  "section_break_jwgn",
+  "from_warehouse",
+  "source_warehouse_address",
+  "source_address_display",
+  "cb0",
+  "to_warehouse",
+  "target_warehouse_address",
+  "target_address_display",
+  "sb0",
+  "column_break_aivi",
+  "scan_barcode",
+  "items_section",
+  "items",
+  "get_stock_and_rate",
+  "section_break_19",
+  "total_outgoing_value",
+  "column_break_22",
+  "total_incoming_value",
+  "value_difference",
+  "additional_costs_section",
+  "additional_costs",
+  "total_additional_costs",
+  "supplier_info_tab",
+  "contact_section",
+  "supplier",
+  "supplier_name",
+  "supplier_address",
+  "address_display",
+  "accounting_dimensions_section",
+  "project",
+  "other_info_tab",
+  "printing_settings",
+  "select_print_heading",
+  "print_settings_col_break",
+  "letter_head",
+  "more_info",
+  "is_opening",
+  "remarks",
+  "col5",
+  "per_transferred",
+  "total_amount",
+  "job_card",
+  "amended_from",
+  "credit_note",
+  "is_return",
+  "tab_connections"
+ ],
+ "fields": [
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Series",
+   "no_copy": 1,
+   "oldfieldname": "naming_series",
+   "oldfieldtype": "Select",
+   "options": "MAT-STE-.YYYY.-",
+   "print_hide": 1,
+   "reqd": 1,
+   "set_only_once": 1
+  },
+  {
+   "fieldname": "stock_entry_type",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Stock Entry Type",
+   "options": "Stock Entry Type",
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "depends_on": "eval:doc.purpose == 'Material Transfer'",
+   "fieldname": "outgoing_stock_entry",
+   "fieldtype": "Link",
+   "label": "Stock Entry (Outward GIT)",
+   "options": "Stock Entry",
+   "read_only": 1
+  },
+  {
+   "bold": 1,
+   "fetch_from": "stock_entry_type.purpose",
+   "fieldname": "purpose",
+   "fieldtype": "Select",
+   "hidden": 1,
+   "in_list_view": 1,
+   "label": "Purpose",
+   "oldfieldname": "purpose",
+   "oldfieldtype": "Select",
+   "options": "Material Issue\nMaterial Receipt\nMaterial Transfer\nCSR\nMaterial Transfer for Manufacture\nManufacture",
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "oldfieldname": "company",
+   "oldfieldtype": "Link",
+   "options": "Company",
+   "print_hide": 1,
+   "remember_last_selected_value": 1,
+   "reqd": 1
+  },
+  {
+   "depends_on": "eval:in_list([\"Material Transfer for Manufacture\", \"Manufacture\", \"Material Consumption for Manufacture\", \"Disassemble\"], doc.purpose)",
+   "fieldname": "work_order",
+   "fieldtype": "Link",
+   "label": "Work Order",
+   "oldfieldname": "production_order",
+   "oldfieldtype": "Link",
+   "options": "Work Order",
+   "print_hide": 1,
+   "search_index": 1
+  },
+  {
+   "depends_on": "eval: erpnext.stock.is_subcontracting_or_return_transfer(doc)",
+   "fieldname": "purchase_order",
+   "fieldtype": "Link",
+   "label": "Purchase Order",
+   "options": "Purchase Order"
+  },
+  {
+   "depends_on": "eval: erpnext.stock.is_subcontracting_or_return_transfer(doc)",
+   "fieldname": "subcontracting_order",
+   "fieldtype": "Link",
+   "label": "Subcontracting Order",
+   "options": "Subcontracting Order"
+  },
+  {
+   "depends_on": "eval:doc.purpose==\"Sales Return\"",
+   "fieldname": "delivery_note_no",
+   "fieldtype": "Link",
+   "label": "Delivery Note No",
+   "no_copy": 1,
+   "oldfieldname": "delivery_note_no",
+   "oldfieldtype": "Link",
+   "options": "Delivery Note",
+   "print_hide": 1,
+   "search_index": 1
+  },
+  {
+   "depends_on": "eval:doc.purpose==\"Sales Return\"",
+   "fieldname": "sales_invoice_no",
+   "fieldtype": "Link",
+   "label": "Sales Invoice No",
+   "no_copy": 1,
+   "options": "Sales Invoice",
+   "print_hide": 1
+  },
+  {
+   "depends_on": "eval:doc.purpose==\"Purchase Return\"",
+   "fieldname": "purchase_receipt_no",
+   "fieldtype": "Link",
+   "label": "Purchase Receipt No",
+   "no_copy": 1,
+   "oldfieldname": "purchase_receipt_no",
+   "oldfieldtype": "Link",
+   "options": "Purchase Receipt",
+   "print_hide": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "col2",
+   "fieldtype": "Column Break",
+   "oldfieldtype": "Column Break",
+   "print_width": "50%",
+   "width": "50%"
+  },
+  {
+   "default": "Today",
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "label": "Posting Date",
+   "no_copy": 1,
+   "oldfieldname": "posting_date",
+   "oldfieldtype": "Date",
+   "search_index": 1
+  },
+  {
+   "fieldname": "posting_time",
+   "fieldtype": "Time",
+   "label": "Posting Time",
+   "no_copy": 1,
+   "oldfieldname": "posting_time",
+   "oldfieldtype": "Time",
+   "print_hide": 1
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:doc.docstatus==0",
+   "fieldname": "set_posting_time",
+   "fieldtype": "Check",
+   "label": "Edit Posting Date and Time",
+   "print_hide": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "inspection_required",
+   "fieldtype": "Check",
+   "label": "Inspection Required"
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:in_list([\"Material Issue\", \"Material Transfer\", \"Manufacture\", \"Repack\", \"Send to Subcontractor\", \"Material Transfer for Manufacture\", \"Material Consumption for Manufacture\", \"Disassemble\"], doc.purpose)",
+   "fieldname": "from_bom",
+   "fieldtype": "Check",
+   "label": "From BOM",
+   "print_hide": 1
+  },
+  {
+   "depends_on": "from_bom",
+   "fieldname": "bom_no",
+   "fieldtype": "Link",
+   "label": "BOM No",
+   "options": "BOM"
+  },
+  {
+   "depends_on": "from_bom",
+   "description": "As per Stock UOM",
+   "fieldname": "fg_completed_qty",
+   "fieldtype": "Float",
+   "label": "Finished Good Quantity ",
+   "oldfieldname": "fg_completed_qty",
+   "oldfieldtype": "Currency",
+   "print_hide": 1
+  },
+  {
+   "fieldname": "cb1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "1",
+   "depends_on": "from_bom",
+   "description": "Including items for sub assemblies",
+   "fieldname": "use_multi_level_bom",
+   "fieldtype": "Check",
+   "label": "Use Multi-Level BOM",
+   "print_hide": 1
+  },
+  {
+   "depends_on": "from_bom",
+   "fieldname": "get_items",
+   "fieldtype": "Button",
+   "label": "Get Items",
+   "oldfieldtype": "Button",
+   "print_hide": 1
+  },
+  {
+   "description": "Sets 'Source Warehouse' in each row of the items table.",
+   "fieldname": "from_warehouse",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Source Warehouse",
+   "no_copy": 1,
+   "oldfieldname": "from_warehouse",
+   "oldfieldtype": "Link",
+   "options": "Warehouse",
+   "print_hide": 1
+  },
+  {
+   "depends_on": "from_warehouse",
+   "fieldname": "source_warehouse_address",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Source Warehouse Address Link",
+   "options": "Address"
+  },
+  {
+   "fieldname": "source_address_display",
+   "fieldtype": "Small Text",
+   "label": "Source Warehouse Address",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cb0",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "Sets 'Target Warehouse' in each row of the items table.",
+   "fieldname": "to_warehouse",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Target Warehouse",
+   "no_copy": 1,
+   "oldfieldname": "to_warehouse",
+   "oldfieldtype": "Link",
+   "options": "Warehouse",
+   "print_hide": 1
+  },
+  {
+   "depends_on": "to_warehouse",
+   "fieldname": "target_warehouse_address",
+   "fieldtype": "Link",
+   "label": "Target Warehouse Address Link",
+   "options": "Address"
+  },
+  {
+   "fieldname": "target_address_display",
+   "fieldtype": "Small Text",
+   "label": "Target Warehouse Address",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sb0",
+   "fieldtype": "Section Break",
+   "hidden": 1,
+   "options": "Simple"
+  },
+  {
+   "fieldname": "scan_barcode",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Scan Barcode",
+   "options": "Barcode"
+  },
+  {
+   "allow_bulk_edit": 1,
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "label": "Items",
+   "oldfieldname": "mtn_details",
+   "oldfieldtype": "Table",
+   "options": "Stock Entry Detail",
+   "reqd": 1
+  },
+  {
+   "fieldname": "get_stock_and_rate",
+   "fieldtype": "Button",
+   "hidden": 1,
+   "label": "Update Rate and Availability",
+   "oldfieldtype": "Button",
+   "options": "get_stock_and_rate",
+   "print_hide": 1
+  },
+  {
+   "fieldname": "section_break_19",
+   "fieldtype": "Section Break",
+   "print_hide": 1
+  },
+  {
+   "fieldname": "total_incoming_value",
+   "fieldtype": "Currency",
+   "label": "Total Incoming Value (Receipt)",
+   "options": "Company:company:default_currency",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_22",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_outgoing_value",
+   "fieldtype": "Currency",
+   "label": "Total Outgoing Value (Consumption)",
+   "options": "Company:company:default_currency",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "value_difference",
+   "fieldtype": "Currency",
+   "label": "Total Value Difference (Incoming - Outgoing)",
+   "options": "Company:company:default_currency",
+   "print_hide_if_no_value": 1,
+   "read_only": 1
+  },
+  {
+   "collapsible": 1,
+   "collapsible_depends_on": "total_additional_costs",
+   "fieldname": "additional_costs_section",
+   "fieldtype": "Tab Break",
+   "label": "Additional Costs"
+  },
+  {
+   "fieldname": "additional_costs",
+   "fieldtype": "Table",
+   "label": "Additional Costs",
+   "options": "Landed Cost Taxes and Charges"
+  },
+  {
+   "fieldname": "total_additional_costs",
+   "fieldtype": "Currency",
+   "label": "Total Additional Costs",
+   "options": "Company:company:default_currency",
+   "print_hide_if_no_value": 1,
+   "read_only": 1
+  },
+  {
+   "collapsible": 1,
+   "depends_on": "eval: erpnext.stock.is_subcontracting_or_return_transfer(doc)",
+   "fieldname": "contact_section",
+   "fieldtype": "Section Break",
+   "label": "Supplier Details"
+  },
+  {
+   "depends_on": "eval: erpnext.stock.is_subcontracting_or_return_transfer(doc)",
+   "fieldname": "supplier",
+   "fieldtype": "Link",
+   "label": "Supplier",
+   "no_copy": 1,
+   "oldfieldname": "supplier",
+   "oldfieldtype": "Link",
+   "options": "Supplier",
+   "print_hide": 1
+  },
+  {
+   "bold": 1,
+   "depends_on": "eval: erpnext.stock.is_subcontracting_or_return_transfer(doc)",
+   "fieldname": "supplier_name",
+   "fieldtype": "Data",
+   "label": "Supplier Name",
+   "no_copy": 1,
+   "oldfieldname": "supplier_name",
+   "oldfieldtype": "Data",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval: erpnext.stock.is_subcontracting_or_return_transfer(doc)",
+   "fieldname": "supplier_address",
+   "fieldtype": "Link",
+   "label": "Supplier Address",
+   "no_copy": 1,
+   "oldfieldname": "supplier_address",
+   "oldfieldtype": "Small Text",
+   "options": "Address"
+  },
+  {
+   "fieldname": "address_display",
+   "fieldtype": "Small Text",
+   "label": "Address"
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "printing_settings",
+   "fieldtype": "Section Break",
+   "label": "Printing Settings"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "select_print_heading",
+   "fieldtype": "Link",
+   "label": "Print Heading",
+   "oldfieldname": "select_print_heading",
+   "oldfieldtype": "Link",
+   "options": "Print Heading"
+  },
+  {
+   "fieldname": "letter_head",
+   "fieldtype": "Link",
+   "label": "Letter Head",
+   "options": "Letter Head"
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "more_info",
+   "fieldtype": "Section Break",
+   "label": "More Information",
+   "oldfieldtype": "Section Break"
+  },
+  {
+   "fieldname": "is_opening",
+   "fieldtype": "Select",
+   "label": "Is Opening",
+   "options": "No\nYes"
+  },
+  {
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "label": "Project",
+   "oldfieldtype": "Link",
+   "options": "Project"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Text",
+   "label": "Remarks",
+   "no_copy": 1,
+   "oldfieldname": "remarks",
+   "oldfieldtype": "Text",
+   "print_hide": 1
+  },
+  {
+   "fieldname": "col5",
+   "fieldtype": "Column Break",
+   "print_width": "50%",
+   "width": "50%"
+  },
+  {
+   "fieldname": "per_transferred",
+   "fieldtype": "Percent",
+   "in_list_view": 1,
+   "label": "Per Transferred",
+   "no_copy": 1,
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "depends_on": "total_amount",
+   "fieldname": "total_amount",
+   "fieldtype": "Currency",
+   "label": "Total Amount",
+   "options": "Company:company:default_currency",
+   "print_hide_if_no_value": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "job_card",
+   "fieldtype": "Link",
+   "label": "Job Card",
+   "options": "Job Card",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "ignore_user_permissions": 1,
+   "label": "Amended From",
+   "no_copy": 1,
+   "oldfieldname": "amended_from",
+   "oldfieldtype": "Link",
+   "options": "Stock Entry",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "credit_note",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Credit Note",
+   "options": "Journal Entry"
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "accounting_dimensions_section",
+   "fieldtype": "Tab Break",
+   "label": "Accounting Dimensions"
+  },
+  {
+   "fieldname": "pick_list",
+   "fieldtype": "Link",
+   "label": "Pick List",
+   "options": "Pick List",
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "print_settings_col_break",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "depends_on": "eval: doc.purpose=='Material Transfer' && !doc.outgoing_stock_entry",
+   "fetch_from": "stock_entry_type.add_to_transit",
+   "fetch_if_empty": 1,
+   "fieldname": "add_to_transit",
+   "fieldtype": "Check",
+   "label": "Add to Transit",
+   "no_copy": 1
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:in_list([\"Material Transfer\", \"Material Receipt\"], doc.purpose)",
+   "fieldname": "apply_putaway_rule",
+   "fieldtype": "Check",
+   "label": "Apply Putaway Rule"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_return",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "in_list_view": 1,
+   "label": "Is Return",
+   "no_copy": 1,
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "bom_info_section",
+   "fieldtype": "Section Break",
+   "hidden": 1,
+   "label": "BOM Info"
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "section_break_jwgn",
+   "fieldtype": "Section Break",
+   "label": "Default Warehouse"
+  },
+  {
+   "fieldname": "other_info_tab",
+   "fieldtype": "Tab Break",
+   "label": "Other Info"
+  },
+  {
+   "fieldname": "supplier_info_tab",
+   "fieldtype": "Tab Break",
+   "label": "Supplier Info"
+  },
+  {
+   "fieldname": "stock_entry_details_tab",
+   "fieldtype": "Tab Break",
+   "label": "Details",
+   "oldfieldtype": "Section Break"
+  },
+  {
+   "collapsible": 1,
+   "depends_on": "eval: doc.fg_completed_qty > 0 && in_list([\"Manufacture\", \"Repack\"], doc.purpose)",
+   "fieldname": "section_break_7qsm",
+   "fieldtype": "Section Break",
+   "label": "Process Loss"
+  },
+  {
+   "depends_on": "eval: doc.fg_completed_qty > 0 && in_list([\"Manufacture\", \"Repack\"], doc.purpose)",
+   "fieldname": "process_loss_qty",
+   "fieldtype": "Float",
+   "label": "Process Loss Qty"
+  },
+  {
+   "fieldname": "column_break_e92r",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.from_bom && doc.fg_completed_qty",
+   "fieldname": "process_loss_percentage",
+   "fieldtype": "Percent",
+   "label": "% Process Loss"
+  },
+  {
+   "fieldname": "items_section",
+   "fieldtype": "Section Break",
+   "label": "Items"
+  },
+  {
+   "fieldname": "column_break_eaoa",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.asset_repair",
+   "fieldname": "asset_repair",
+   "fieldtype": "Link",
+   "label": "Asset Repair",
+   "options": "Asset Repair",
+   "read_only": 1
+  },
+  {
+   "fieldname": "tab_connections",
+   "fieldtype": "Tab Break",
+   "label": "Connections",
+   "show_dashboard": 1
+  },
+  {
+   "fieldname": "column_break_aivi",
+   "fieldtype": "Column Break",
+   "hidden": 1
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "label": "Branch",
+   "no_copy": 1,
+   "oldfieldname": "naming_series",
+   "oldfieldtype": "Select",
+   "options": "Branch",
+   "print_hide": 1,
+   "reqd": 1,
+   "set_only_once": 1
+  },
+  {
+   "fieldname": "cost_center",
+   "fieldtype": "Link",
+   "label": "Cost Center",
+   "options": "Cost Center",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "in_transit",
+   "fieldtype": "Check",
+   "label": "In transit"
+  },
+  {
+   "fieldname": "received_by",
+   "fieldtype": "Data",
+   "label": "Received By"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Data",
+   "label": "Status"
+  },
+  {
+   "fieldname": "issued_by",
+   "fieldtype": "Data",
+   "label": "Issued By"
+  }
+ ],
+ "icon": "fa fa-file-text",
+ "idx": 1,
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2025-09-15 12:07:55.503720",
+ "modified_by": "Administrator",
+ "module": "Stock",
+ "name": "Stock Entry",
+ "naming_rule": "By \"Naming Series\" field",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "amend": 1,
+   "cancel": 1,
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Stock User",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "amend": 1,
+   "cancel": 1,
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Manufacturing User",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "amend": 1,
+   "cancel": 1,
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Manufacturing Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "amend": 1,
+   "cancel": 1,
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "import": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Stock Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "search_fields": "posting_date, from_warehouse, to_warehouse, purpose, remarks",
+ "show_name_in_global_search": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "stock_entry_type",
+ "track_changes": 1
+}
