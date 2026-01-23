@@ -1383,7 +1383,7 @@ erpnext.selling.SalesOrderController = class SalesOrderController extends erpnex
 			return false;
 		});
 
-		if ((this.frm.doc.is_credit === 0 && this.frm.doc.is_export === 0) && !all_submitted) {
+		if (!(this.frm.doc.is_credit && this.frm.doc.is_export) && !all_submitted) {
 			frappe.msgprint(__("Cannot make Delivery Note without making Payment"));
 			return false; 
 		}
