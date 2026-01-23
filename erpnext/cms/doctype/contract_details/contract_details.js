@@ -1,9 +1,13 @@
-// Copyright (c) 2025, Frappe Technologies Pvt. Ltd. and contributors
-// For license information, please see license.txt
+// // Copyright (c) 2025, Frappe Technologies Pvt. Ltd. and contributors
+// // For license information, please see license.txt
+
 
 frappe.ui.form.on("Contract Details", {
     refresh(frm) {
         toggle_lock(frm);
+        // optional: keep amounts consistent on load
+        update_offer_amount_from_contract_currency(frm);
+        calculate_final_amount(frm);
     },
     status(frm) {
         toggle_lock(frm);
@@ -15,9 +19,25 @@ frappe.ui.form.on("Contract Details", {
         validate_dates(frm);
         update_delay_days(frm);
     },
+
+    // NEW: foreign currency amount changes
+    contract_currency_amount(frm) {
+        update_offer_amount_from_contract_currency(frm);
+        calculate_final_amount(frm);
+    },
+
+    // NEW: rate changes
+    exchange_rate(frm) {
+        update_offer_amount_from_contract_currency(frm);
+        calculate_final_amount(frm);
+    },
+
+    // if you still allow manual initial_amount edits, keep this
+    // (if you want it ALWAYS auto, make initial_amount read-only in Customize Form)
     initial_amount(frm) {
         calculate_final_amount(frm);
     },
+
     discount(frm) {
         calculate_final_amount(frm);
     },
@@ -32,8 +52,7 @@ frappe.ui.form.on("Contract Details", {
     },
     actual_completion_date(frm) {
         update_delay_days(frm);
-    }  
-    
+    }
 });
 
 function toggle_lock(frm) {
@@ -43,7 +62,7 @@ function toggle_lock(frm) {
     if (f.df.fieldtype === "Section Break" || f.df.fieldtype === "Column Break") return;
 
     const fn = f.df.fieldname;
-    if (!fn) return
+    if (!fn) return;
     if (fn === "status") {
       frm.set_df_property(fn, "read_only", 0);
     } else {
@@ -65,7 +84,6 @@ function validate_dates(frm) {
     }
 }
 
-
 function update_delay_days(frm) {
   const actual = frm.doc.actual_completion_date;
   const deadline = frm.doc.revised_expiry_date || frm.doc.end_date;
@@ -83,24 +101,27 @@ function update_delay_days(frm) {
   frm.toggle_display("delay_days", delay_days > 0);
 }
 
+// ✅ NEW: set Offer Amount (BTN) = contract_currency_amount * exchange_rate
+function update_offer_amount_from_contract_currency(frm) {
+    const ccy_amt = flt(frm.doc.contract_currency_amount); // foreign currency
+    const rate = flt(frm.doc.exchange_rate);               // to BTN
 
-function calculate_final_amount(frm) {
-    const initial = flt(frm.doc.initial_amount);
-    const discount = flt(frm.doc.discount);
-    const negotiation = flt(frm.doc.negotiation_amount);
-    const additional = flt(frm.doc.additional);
+    // If either missing, keep initial_amount as-is (or set 0 - your choice)
+    if (!ccy_amt || !rate || rate <= 0) {
+        // frm.set_value("initial_amount", 0); // uncomment if you prefer forcing 0
+        return;
+    }
 
-    const final_amount =
-        initial
-        - discount
-        - negotiation
-        + additional;
-
-    frm.set_value("final_amount", final_amount);
+    const btn_offer = ccy_amt * rate;
+    frm.set_value("initial_amount", btn_offer);
 }
 
+function calculate_final_amount(frm) {
+    const initial = flt(frm.doc.initial_amount); // now BTN
+    const discount = flt(frm.doc.discount);      // BTN
+    const negotiation = flt(frm.doc.negotiation_amount); // BTN
+    const additional = flt(frm.doc.additional);  // BTN
 
-
-
-
-
+    const final_amount = initial - discount - negotiation + additional;
+    frm.set_value("final_amount", final_amount);
+}

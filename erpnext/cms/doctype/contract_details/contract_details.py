@@ -20,6 +20,7 @@ class ContractDetails(Document):
 		actual_completion_date: DF.Date | None
 		additional: DF.Data | None
 		completion_date: DF.SmallText | None
+		contract_currency_amount: DF.Data | None
 		contract_name: DF.SmallText
 		currency: DF.Link
 		defect_liability_amount: DF.Literal["", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]

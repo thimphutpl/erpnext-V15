@@ -29,6 +29,7 @@
   "actual_completion_date",
   "delay_days",
   "defect_liability_amount",
+  "contract_currency_amount",
   "currency",
   "exchange_rate",
   "column_break_mokv",
@@ -237,11 +238,16 @@
    "fieldname": "exchange_rate",
    "fieldtype": "Data",
    "label": "Exchange Rate"
+  },
+  {
+   "fieldname": "contract_currency_amount",
+   "fieldtype": "Data",
+   "label": "Contract Currency Amount"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-01-12 10:02:12.008880",
+ "modified": "2026-01-23 11:02:29.966089",
  "modified_by": "Administrator",
  "module": "CMS",
  "name": "Contract Details",
