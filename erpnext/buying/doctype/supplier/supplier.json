@@ -24,6 +24,9 @@
   "is_dhi_company",
   "location_and_contact_details_section",
   "location",
+  "dzongkhag",
+  "gewog",
+  "village",
   "cb_sb_lcd",
   "telephone_and_fax",
   "email_address",
@@ -590,7 +593,7 @@
   },
   {
    "fieldname": "location",
-   "fieldtype": "Data",
+   "fieldtype": "Small Text",
    "label": "Location"
   },
   {
@@ -654,6 +657,23 @@
    "fieldname": "is_dhi_company",
    "fieldtype": "Check",
    "label": "Is DHI Company?"
+  },
+  {
+   "fieldname": "gewog",
+   "fieldtype": "Link",
+   "label": "Gewog",
+   "options": "Gewog"
+  },
+  {
+   "fieldname": "village",
+   "fieldtype": "Data",
+   "label": "Village"
+  },
+  {
+   "fieldname": "dzongkhag",
+   "fieldtype": "Link",
+   "label": "Dzongkhag",
+   "options": "Dzongkhag"
   }
  ],
  "icon": "fa fa-user",
@@ -666,8 +686,8 @@
    "link_fieldname": "party"
   }
  ],
- "modified": "2025-08-28 11:21:54.204644",
- "modified_by": "kalden.dorji@thimphutechpark.bt",
+ "modified": "2026-01-24 10:58:06.083343",
+ "modified_by": "Administrator",
  "module": "Buying",
  "name": "Supplier",
  "naming_rule": "By \"Naming Series\" field",
@@ -732,7 +752,6 @@
    "write": 1
   }
  ],
- "row_format": "Dynamic",
  "search_fields": "supplier_group",
  "show_name_in_global_search": 1,
  "sort_field": "modified",
