@@ -460,6 +460,7 @@ scheduler_events = {
 		"erpnext.accounts.utils.auto_create_exchange_rate_revaluation_daily",
 		"erpnext.accounts.utils.run_ledger_health_checks",
 		"erpnext.assets.doctype.asset_maintenance_log.asset_maintenance_log.update_asset_maintenance_log_status",
+		"hrms.hr.doctype.employee_attendance.employee_attendance.daily_absent_scheduler"
 	],
 	"weekly": [
 		"erpnext.accounts.utils.auto_create_exchange_rate_revaluation_weekly",
