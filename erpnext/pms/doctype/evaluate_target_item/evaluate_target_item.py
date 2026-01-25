@@ -25,6 +25,8 @@ class EvaluateTargetItem(Document):
 		parentfield: DF.Data
 		parenttype: DF.Data
 		performance_target: DF.Data | None
+		reviewer_rating: DF.Float
+		reviewer_remarks: DF.SmallText | None
 		self_rating: DF.Float
 		supervisor_rating: DF.Float
 		supervisor_remarks: DF.SmallText | None

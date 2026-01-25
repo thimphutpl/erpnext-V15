@@ -27,6 +27,7 @@ class TargetSetUp(Document):
 		approver_designation: DF.Data | None
 		approver_name: DF.Data | None
 		branch: DF.Link | None
+		close_target: DF.Check
 		company: DF.Link | None
 		date: DF.Date | None
 		designation: DF.Link | None
@@ -173,7 +174,48 @@ class TargetSetUp(Document):
 
 	def check_duplicate_entry(self):
 		# check duplicate entry for particular employee
-		pass
+		# ignore cancelled documents
+		#added by kinzang.n
+		if self.docstatus == 2:
+			return
+		
+		existing = frappe.get_all(
+			"Target Set Up",
+			filters={
+				"employee": self.employee,
+				"eas_calendar": self.eas_calendar,
+				"docstatus": ("!=", 2),
+				"name": ("!=", self.name)
+			},
+			fields=["name", "workflow_state", "close_target"]
+		)
+		
+		if existing:
+			for row in existing:
+				# Block if Draft or Approved and NOT closed
+				wf_state = row.workflow_state or "Draft"
+				
+				# Block for Draft always
+				if wf_state == "Draft":
+					frappe.throw(_(
+						"Cannot create another Target Set Up for this EAS Calendar. "
+						"Existing Target Set Up <b>{0}</b> is in Draft state."
+					).format(row.name))
+					
+				# Rejected: Must amend
+				if wf_state == "Rejected":
+					frappe.throw(_(
+						"Target Set Up <b>{0}</b> is Rejected. Please amend the rejected document instead of creating a new one."
+					).format(row.name))	
+					
+				# Block for Approved only if not closed
+				if wf_state == "Approved" and not row.close_target:
+					frappe.throw(_(
+						"Cannot create another Target Set Up for this EAS Calendar. "
+						"Existing Target Set Up <b>{0}</b> is Approved but not closed."
+					).format(row.name))
+
+		#pass
 
 	def check_target(self):
 		
@@ -349,11 +391,56 @@ class TargetSetUp(Document):
 @frappe.whitelist()
 def create_review(source_name, target_doc=None):
 	
-	#frappe.throw(str(lattest_approver))
-	if frappe.db.exists('Review', {'target':source_name, 'docstatus':('=',1)}):
+	
+	# if frappe.db.exists('Review', {'target':source_name, 'docstatus':('=',1)}):
+	# 	frappe.throw(
+	# 		title='Error',
+	# 		msg="You have already created Review for this Target")
+
+	# ----------------------------------------
+    #  Check Draft Review. added by Kinzang.N
+    # ----------------------------------------
+	draft_review = frappe.db.get_value(
+		"Review",
+		{
+			"target": source_name,
+			"docstatus": 0
+		},
+		"name"
+	)
+	
+	if draft_review:
 		frappe.throw(
-			title='Error',
-			msg="You have already created Review for this Target")
+			title=_("Review Already Exists"),
+			msg=_(
+				"A Draft/Waiting Supervisor Approval, Review (<b>{0}</b>) already exists for this Target. "
+				"Please complete or delete it before creating a new one."
+			).format(draft_review)
+		)
+	
+	# ----------------------------------------
+	#  Check Approved Review added by kinzang.n
+	# ----------------------------------------
+	approved_review = frappe.db.get_value(
+		"Review",
+		{
+			"target": source_name,
+			"docstatus": 1
+		},
+		"name"
+	)
+	
+	if approved_review:
+		frappe.throw(
+			title=_("Review Already Approved"),
+			msg=_(
+				"This Target has already been reviewed "
+				"(Approved Review No: <b>{0}</b>)."
+				).format(approved_review)
+		)
+
+    #till here
+
 		
 	doclist = get_mapped_doc("Target Set Up", source_name, {
 		"Target Set Up": {
@@ -419,15 +506,49 @@ def manual_approval_for_hr(name, employee, eas_calendar):
 	frappe.db.sql("update `tabTarget Set Up` set workflow_state = 'Approved', docstatus = 1 where employee = '{0}' and eas_calendar = '{1}' and name = '{2}' and workflow_state = 'Waiting Approval'".format(employee, eas_calendar, name))
 	frappe.msgprint("Document has been Approved")
 
+
 def get_permission_query_conditions(user):
 	# restrict user from accessing this doctype    
 	if not user: user = frappe.session.user     
+
 	user_roles = frappe.get_roles(user)
+
+	# ------------------------------------------------
+	# Administrator → see all
+	# ------------------------------------------------
 
 	if user == "Administrator":      
 		return
-	if "HR Master" in user_roles or "HR Manager" in user_roles:       
-		return
+	#added by Kinzang.n to restrict seeing
+	if "GM" in user_roles or "HR Manager" in user_roles or "CEO" in user_roles or "EAS Readonly User" in user_roles:
+		assign_branch = frappe.db.get_value(
+			"Assign Branch",
+			{"user": user},
+			"name"
+		)
+
+		if assign_branch:
+			branches = frappe.get_all(
+				"Branch Item",
+				filters={"parent": assign_branch},
+				fields=["branch"]
+			)
+
+			branch_list = [b.branch for b in branches]
+
+			if branch_list:
+				branch_condition = "', '".join(branch_list)
+				return (
+					"`tabTarget Set Up`.branch IN ('{0}')"
+					.format(branch_condition)
+				)
+
+		# HR user without assigned branch → see nothing
+		return "`tabTarget Set Up`.name = ''"
+       
+		
+	
+
 	return """(
 		`tabTarget Set Up`.owner = '{user}'
 		or

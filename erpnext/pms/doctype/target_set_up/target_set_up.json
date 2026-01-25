@@ -36,9 +36,11 @@
   "approver_name",
   "column_break_43",
   "approver_designation",
+  "close_target_set_up_section",
+  "close_target",
   "other_details_section",
   "reason",
-  "column_break_36",
+  "column_break_k07m",
   "amended_from"
  ],
  "fields": [
@@ -186,10 +188,6 @@
    "read_only": 1
   },
   {
-   "fieldname": "column_break_36",
-   "fieldtype": "Column Break"
-  },
-  {
    "fetch_from": "employee.division",
    "fieldname": "division",
    "fieldtype": "Link",
@@ -257,11 +255,28 @@
    "options": "EAS Group",
    "read_only": 1,
    "reqd": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "default": "0",
+   "fieldname": "close_target",
+   "fieldtype": "Check",
+   "label": "Close Target",
+   "permlevel": 1
+  },
+  {
+   "fieldname": "column_break_k07m",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "close_target_set_up_section",
+   "fieldtype": "Section Break",
+   "label": "Close Target Set UP "
   }
  ],
  "is_submittable": 1,
  "links": [],
- "modified": "2026-01-08 16:55:09.102031",
+ "modified": "2026-01-23 14:16:14.210030",
  "modified_by": "Administrator",
  "module": "PMS",
  "name": "Target Set Up",

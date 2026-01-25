@@ -7,43 +7,43 @@ frappe.ui.form.on('Performance Evaluation', {
 
 	onload: function (frm) {
 		let grid = frm.fields_dict['evaluate_target_item'].grid;
-        grid.cannot_add_rows = true;
+		grid.cannot_add_rows = true;
 
 		let com = frm.fields_dict['evaluate_competency_item'].grid;
-        com.cannot_add_rows = true;
+		com.cannot_add_rows = true;
 	},
-	
+
 	refresh: (frm) => {
 		if (frm.doc.docstatus === 1) {
-			cur_frm.add_custom_button('Appeal', function() {
+			cur_frm.add_custom_button('Appeal', function () {
 				frappe.model.open_mapped_doc({
-					method: "erpnext.pms.doctype.performance_evaluation.performance_evaluation.pms_appeal",	
+					method: "erpnext.pms.doctype.performance_evaluation.performance_evaluation.pms_appeal",
 					frm: cur_frm
 				});
 			});
 		}
 	},
-	employee: function(frm) {
-        // This function is triggered whenever the 'employee' field changes
-        if (frm.doc.employee) {
-            // Check if the employee is 'CDCL0005002'
-            if (frm.doc.eas_group === 'Group II') {
-                console.log("Condition met: Enabling row addition"); // Debugging
-                // Enable adding rows to the 'evaluate_target_item' grid
-                frm.fields_dict['evaluate_target_item'].grid.cannot_add_rows = false;
-            } else {
-                console.log("Condition not met: Disabling row addition"); // Debugging
-                // Disable adding rows if the condition is not met
-                frm.fields_dict['evaluate_target_item'].grid.cannot_add_rows = true;
-            }
+	employee: function (frm) {
+		// This function is triggered whenever the 'employee' field changes
+		if (frm.doc.employee) {
+			// Check if the employee is 'CDCL0005002'
+			if (frm.doc.eas_group === 'Group II') {
+				console.log("Condition met: Enabling row addition"); // Debugging
+				// Enable adding rows to the 'evaluate_target_item' grid
+				frm.fields_dict['evaluate_target_item'].grid.cannot_add_rows = false;
+			} else {
+				console.log("Condition not met: Disabling row addition"); // Debugging
+				// Disable adding rows if the condition is not met
+				frm.fields_dict['evaluate_target_item'].grid.cannot_add_rows = true;
+			}
 
-            // Refresh the grid to reflect the changes
-            frm.refresh_field('evaluate_target_item');
-        }
-    },
+			// Refresh the grid to reflect the changes
+			frm.refresh_field('evaluate_target_item');
+		}
+	},
 
-	get_competency: function(frm) {
-		if(frm.doc.docstatus != 1){
+	get_competency: function (frm) {
+		if (frm.doc.docstatus != 1) {
 			get_competency(frm)
 		}
 	},
@@ -52,7 +52,7 @@ frappe.ui.form.on('Performance Evaluation', {
 frappe.ui.form.on('Evaluate Competency', {
 	form_render: (frm, cdt, cdn) => {
 		var row = locals[cdt][cdn]
-		if(row.parentfield=="evaluate_competency_item" && frappe.session.user!=frm.doc.approver){
+		if (row.parentfield == "evaluate_competency_item" && frappe.session.user != frm.doc.approver) {
 			frm.fields_dict['evaluate_competency_item'].grid.grid_rows_by_docname[cdn].toggle_editable('achievement', false);
 
 		}
@@ -93,9 +93,193 @@ frappe.ui.form.on('Evaluate Target Item', {
 		// 		frm.refresh_field("evaluate_target_item");
 		// 	}
 		// })
-		
+
 	},
 })
+
+//added by Kinzang.n to make readonly field: supervisor_rating
+frappe.ui.form.on('Performance Evaluation', {
+	refresh(frm) {
+		apply_rating_permissions(frm);
+	},
+
+	employee(frm) {
+		apply_rating_permissions(frm);
+	}
+});
+
+function apply_rating_permissions(frm) {
+	if (!frm.doc.employee) return;
+
+	const user = frappe.session.user;
+
+	frappe.db.get_value('Employee', frm.doc.employee, 'user_id')
+		.then(r => {
+			const employee_user = r.message.user_id;
+
+			// Employee (self)
+			if (user === employee_user) {
+				set_readonly(frm, {
+					supervisor: true,
+					reviewer: true,
+					employee: false
+				});
+			}
+
+			// Supervisor
+			else if (user === frm.doc.approver) {
+				set_readonly(frm, {
+					supervisor: false,
+					reviewer: true,
+					employee: true
+				});
+			}
+
+			// Reviewer
+			else if (user === frm.doc.reviewer) {
+				set_readonly(frm, {
+					supervisor: true,
+					reviewer: false,
+					employee: true
+				});
+			}
+
+			// Others (HR etc.)
+			else {
+				set_readonly(frm, {
+					supervisor: false,
+					reviewer: false
+				});
+			}
+		});
+}
+
+function set_readonly(frm, options) {
+
+	// ----- Target Table -----
+	frm.fields_dict.evaluate_target_item.grid.update_docfield_property(
+		'self_rating', 'read_only', options.employee ? 1 : 0
+	);
+	frm.fields_dict.evaluate_target_item.grid.update_docfield_property(
+		'employee_remarks', 'read_only', options.employee ? 1 : 0
+	);
+	frm.fields_dict.evaluate_target_item.grid.update_docfield_property(
+		'supervisor_rating', 'read_only', options.supervisor ? 1 : 0
+	);
+	frm.fields_dict.evaluate_target_item.grid.update_docfield_property(
+		'supervisor_remarks', 'read_only', options.supervisor ? 1 : 0
+	);
+	frm.fields_dict.evaluate_target_item.grid.update_docfield_property(
+		'reviewer_rating', 'read_only', options.reviewer ? 1 : 0
+	);
+	frm.fields_dict.evaluate_target_item.grid.update_docfield_property(
+		'reviewer_remarks', 'read_only', options.reviewer ? 1 : 0
+	);
+
+	// ----- Competency Table -----
+	frm.fields_dict.evaluate_competency_item.grid.update_docfield_property(
+		'self_rating', 'read_only', options.employee ? 1 : 0
+	);
+	frm.fields_dict.evaluate_competency_item.grid.update_docfield_property(
+		'supervisor_rating', 'read_only', options.supervisor ? 1 : 0
+	);
+	frm.fields_dict.evaluate_competency_item.grid.update_docfield_property(
+		'supervisor_remarks', 'read_only', options.supervisor ? 1 : 0
+	);
+	frm.fields_dict.evaluate_competency_item.grid.update_docfield_property(
+		'reviewer_rating', 'read_only', options.reviewer ? 1 : 0
+	);
+	frm.fields_dict.evaluate_competency_item.grid.update_docfield_property(
+		'reviewer_remarks', 'read_only', options.reviewer ? 1 : 0
+	);
+}
+
+
+
+
+function hide_reviewer_rating_for_employee(frm) {
+
+	if (!frm.doc.employee) return;
+
+	// Get logged-in user's employee
+	frappe.db.get_value('Employee', frm.doc.employee, 'user_id')
+		.then(r => {
+			if (r.message && r.message.user_id === frappe.session.user) {
+
+				// Target table
+				frm.fields_dict.evaluate_target_item.grid.update_docfield_property(
+					'reviewer_rating',
+					'read_only', 1
+
+				);
+
+				// Competency table
+				frm.fields_dict.evaluate_competency_item.grid.update_docfield_property(
+					'reviewer_rating',
+					'read_only', 1
+
+				);
+			}
+		});
+}
+
+function hide_remarks_for_employee(frm) {
+
+	if (!frm.doc.employee) return;
+
+	// Get logged-in user's employee
+	frappe.db.get_value('Employee', frm.doc.employee, 'user_id')
+		.then(r => {
+			if (r.message && r.message.user_id === frappe.session.user) {
+
+				// Target table
+				frm.fields_dict.evaluate_target_item.grid.update_docfield_property(
+					'remakrs',
+					'read_only', 1
+
+				);
+
+				// Competency table
+				frm.fields_dict.evaluate_competency_item.grid.update_docfield_property(
+					'remarks',
+					'read_only', 1
+
+				);
+			}
+		});
+}
+
+function hide_reviewer_remarks_for_employee(frm) {
+
+	if (!frm.doc.employee) return;
+
+	// Get logged-in user's employee
+	frappe.db.get_value('Employee', frm.doc.employee, 'user_id')
+		.then(r => {
+			if (r.message && r.message.user_id === frappe.session.user) {
+
+				// Target table
+				frm.fields_dict.evaluate_target_item.grid.update_docfield_property(
+					'reviewer_remarks',
+					'read_only', 1
+
+				);
+
+				// Competency table
+				frm.fields_dict.evaluate_competency_item.grid.update_docfield_property(
+					'reviewer_remarks',
+					'read_only', 1
+
+				);
+			}
+		});
+}
+
+//till here by kinzang.n
+
+
+
+
 
 var apply_filter = (frm) => {
 	cur_frm.set_query('eas_calendar', function () {

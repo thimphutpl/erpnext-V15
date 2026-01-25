@@ -22,9 +22,11 @@ class EvaluateCompetencyItem(Document):
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
-		remarks: DF.SmallText | None
+		reviewer_rating: DF.Float
+		reviewer_remarks: DF.SmallText | None
 		self_rating: DF.Float
 		supervisor_rating: DF.Float
+		supervisor_remarks: DF.SmallText | None
 		weightage: DF.Data | None
 	# end: auto-generated types
 	pass

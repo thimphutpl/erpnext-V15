@@ -35,6 +35,7 @@
   "get_competency",
   "evaluate_competency_item",
   "self_rating_section",
+  "column_break_qolw",
   "target_self_rating",
   "target_self_rating_percent",
   "column_break_bcsk",
@@ -46,16 +47,26 @@
   "column_break_32",
   "competency_score_percent",
   "competency_total_weightage",
-  "column_break_46",
+  "reviewer_score_calculation_section",
+  "target_score",
+  "reviewer_weightage",
+  "column_break_uw5p",
+  "competency_score_reviewer",
+  "competency_weightage",
+  "final_eas_rating_calculation_section",
   "final_score_percent",
+  "column_break_nyov",
   "overall_rating",
   "approver_detail_section",
   "approver",
+  "reviewer",
   "column_break_40",
   "approver_name",
+  "reviewer_name",
   "column_break_70",
   "approver_designation",
-  "additional_information_section",
+  "reviewer_designation",
+  "section_break_jkd5",
   "company",
   "column_break_73",
   "eval_workflow_state",
@@ -144,7 +155,7 @@
   {
    "fieldname": "final_score_calculation_section",
    "fieldtype": "Section Break",
-   "label": "Final Score Calculation"
+   "label": "Supervisor Score Calculation"
   },
   {
    "fieldname": "pms_calendar_section",
@@ -255,13 +266,13 @@
   {
    "fieldname": "target_total_weightage",
    "fieldtype": "Percent",
-   "label": "Target Total Weightage (%)",
+   "label": "Target Score Weightage(%)",
    "read_only": 1
   },
   {
    "fieldname": "competency_total_weightage",
    "fieldtype": "Percent",
-   "label": "Competency Total Weightage (%)",
+   "label": "Competency Score Weightage (%)",
    "read_only": 1
   },
   {
@@ -285,10 +296,6 @@
    "label": "Section",
    "options": "Department",
    "read_only": 1
-  },
-  {
-   "fieldname": "column_break_46",
-   "fieldtype": "Column Break"
   },
   {
    "allow_on_submit": 1,
@@ -324,7 +331,8 @@
    "fieldname": "company",
    "fieldtype": "Link",
    "label": "Company",
-   "options": "Company"
+   "options": "Company",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_jedr",
@@ -348,11 +356,6 @@
    "reqd": 1
   },
   {
-   "fieldname": "additional_information_section",
-   "fieldtype": "Section Break",
-   "label": "Additional Information"
-  },
-  {
    "fieldname": "target_score_percent",
    "fieldtype": "Percent",
    "label": "Target Score (%)",
@@ -370,15 +373,17 @@
    "label": "Self Rating"
   },
   {
+   "depends_on": "eval:doc.eas_group == \"Group I\"\n",
    "fieldname": "target_self_rating",
    "fieldtype": "Float",
    "label": "Target Self Rating",
    "read_only": 1
   },
   {
+   "depends_on": "eval:doc.eas_group == \"Group I\"\n",
    "fieldname": "target_self_rating_percent",
    "fieldtype": "Percent",
-   "label": "Target Self Rating Percent",
+   "label": "Total Target  Weightage",
    "read_only": 1
   },
   {
@@ -386,21 +391,93 @@
    "fieldtype": "Column Break"
   },
   {
+   "depends_on": "eval:doc.eas_group == \"Group I\"\n",
    "fieldname": "competency_self_rating",
    "fieldtype": "Float",
    "label": "Competency Self Rating",
    "read_only": 1
   },
   {
+   "depends_on": "eval:doc.eas_group == \"Group I\"\n",
    "fieldname": "competency_self_rating_percent",
    "fieldtype": "Percent",
-   "label": "Competency Self Rating Percent",
+   "label": "Total Competency Weightage",
    "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.eas_group == \"Group I\"\n",
+   "fieldname": "column_break_qolw",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_jkd5",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "reviewer",
+   "fieldtype": "Link",
+   "label": "Reviewer",
+   "options": "User"
+  },
+  {
+   "fetch_from": "reviewer.full_name",
+   "fieldname": "reviewer_name",
+   "fieldtype": "Data",
+   "label": "Reviewer Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "reviewer_designation",
+   "fieldtype": "Data",
+   "label": "Reviewer Designation",
+   "read_only": 1
+  },
+  {
+   "fieldname": "reviewer_score_calculation_section",
+   "fieldtype": "Section Break",
+   "label": "Reviewer Score Calculation"
+  },
+  {
+   "fieldname": "target_score",
+   "fieldtype": "Percent",
+   "label": "Target Score(%)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "reviewer_weightage",
+   "fieldtype": "Percent",
+   "label": "Target Score Weightage(%)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_uw5p",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "competency_score_reviewer",
+   "fieldtype": "Percent",
+   "label": "Competency Score(%)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "competency_weightage",
+   "fieldtype": "Percent",
+   "label": "Competency Score Weightage(%)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "final_eas_rating_calculation_section",
+   "fieldtype": "Section Break",
+   "label": "Final EAS Rating Calculation"
+  },
+  {
+   "fieldname": "column_break_nyov",
+   "fieldtype": "Column Break"
   }
  ],
  "is_submittable": 1,
  "links": [],
- "modified": "2026-01-08 16:59:30.231123",
+ "modified": "2026-01-22 17:08:34.188605",
  "modified_by": "Administrator",
  "module": "PMS",
  "name": "Performance Evaluation",
