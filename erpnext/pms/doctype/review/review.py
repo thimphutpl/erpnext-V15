@@ -394,6 +394,49 @@ class Review(Document):
 @frappe.whitelist()
 def create_evaluation(source_name, target_doc=None):
 
+
+	# ----------------------------------------
+    #  Check Draft Performance Evaluation
+    # ----------------------------------------
+	draft_evaluation = frappe.db.get_value(
+		"Performance Evaluation",
+		{
+			"review": source_name,
+			"docstatus": 0
+		},
+		"name"
+	)
+	
+	if draft_evaluation:
+		frappe.throw(
+			title=_("Performance Evaluation Already Exists"),
+			msg=_(
+				"A Draft/Waiting For Approval, Performance Evaluation (<b>{0}</b>) already exists for this Review. "
+				"Please complete or Delete it before creating a new one."
+			).format(draft_evaluation)
+		)
+		
+	# ----------------------------------------
+	# Check Approved Performance Evaluation
+	# ----------------------------------------
+	approved_evaluation = frappe.db.get_value(
+		"Performance Evaluation",
+		{
+			"review": source_name,
+			"docstatus": 1
+		},
+		"name"
+	)
+	
+	if approved_evaluation:
+		frappe.throw(
+			title=_("Performance Evaluation Already Approved"),
+			msg=_(
+				"This Review has already been Evaluated "
+				"(Approved Performance Evaluation No: <b>{0}</b>)."
+			).format(approved_evaluation)
+		)
+
 	doclist = get_mapped_doc("Review", source_name, {
 		"Review": {
 			"doctype": "Performance Evaluation",
@@ -438,17 +481,41 @@ def create_evaluation(source_name, target_doc=None):
 
 
 
-
-
-
 def get_permission_query_conditions(user):
 	if not user: user = frappe.session.user
 	user_roles = frappe.get_roles(user)
 
 	if user == "Administrator":
 		return
-	if "HR User" in user_roles or "HR Manager" in user_roles:
-		return
+	
+	#added by Kinzang.n to restrict seeing
+	if "GM" in user_roles or "HR Manager" in user_roles or "CEO" in user_roles or "EAS Readonly User" in user_roles:
+		assign_branch = frappe.db.get_value(
+			"Assign Branch",
+			{"user": user},
+			"name"
+		)
+
+		if assign_branch:
+			branches = frappe.get_all(
+				"Branch Item",
+				filters={"parent": assign_branch},
+				fields=["branch"]
+			)
+
+			branch_list = [b.branch for b in branches]
+
+			if branch_list:
+				branch_condition = "', '".join(branch_list)
+				return (
+					"`tabReview`.branch IN ('{0}')"
+					.format(branch_condition)
+				)
+
+		# HR user without assigned branch → see nothing
+		return "`tabReview`.name = ''"
+       
+		
 
 	return """(
 		`tabReview`.owner = '{user}'
