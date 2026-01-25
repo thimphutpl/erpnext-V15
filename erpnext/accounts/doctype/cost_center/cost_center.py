@@ -27,6 +27,7 @@ class CostCenter(NestedSet):
 		is_company: DF.Check
 		is_group: DF.Check
 		lft: DF.Int
+		list_in_other_contribution: DF.Check
 		old_parent: DF.Link | None
 		parent_cost_center: DF.Link
 		rgt: DF.Int

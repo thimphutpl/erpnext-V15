@@ -19,6 +19,7 @@
   "is_company",
   "disabled",
   "branch_created",
+  "list_in_other_contribution",
   "lft",
   "rgt",
   "old_parent"
@@ -141,13 +142,19 @@
    "fieldname": "is_company",
    "fieldtype": "Check",
    "label": "Is company"
+  },
+  {
+   "default": "0",
+   "fieldname": "list_in_other_contribution",
+   "fieldtype": "Check",
+   "label": "List in Other Contribution?"
   }
  ],
  "icon": "fa fa-money",
  "idx": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2026-01-20 23:31:21.730191",
+ "modified": "2026-01-24 21:44:34.229773",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Cost Center",
