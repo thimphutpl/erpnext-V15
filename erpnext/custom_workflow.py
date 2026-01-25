@@ -68,7 +68,7 @@ class CustomWorkflow:
 			# 		"approver",
 			# 	)},self.field_list)
 
-		if self.doc.doctype == "Leave Application":
+		if self.doc.doctype in ("Leave Application","Travel Authorization","Travel Claim"):
 			self.final_approver    = frappe.db.get_value("Employee", {"user_id": get_final_approver(self.doc.branch)}, ["user_id","employee_name","designation","name"])
 		if self.doc.doctype == "Asset Movement":
 			department = frappe.db.get_value("Employee",self.doc.from_employee, "department")
@@ -1003,64 +1003,118 @@ class CustomWorkflow:
 			self.doc.document_status = "Cancelled"
 
 	def travel_authorization(self):
+	
+		hr_user = frappe.db.get_single_value("HR Settings", "hr_approver")
+		hr_approver = frappe.db.get_value("Employee", hr_user, ["user_id","employee_name","designation","name"])
+
+		if self.new_state.lower() in ("Waiting Supervisor Approval".lower()):
+			if self.doc.travel_type == "Training":
+				self.set_approver("HR")
+			else:
+				self.set_approver("Supervisor")
+		# frappe.throw(self.employee[0])
+		if self.doc.approver == self.employee[0]:
+			frappe.throw("Travel Authorization submitter {0} cannot be the supervisor ".format(doc.supervisor))
+			
+		elif self.new_state.lower() in ("Approved".lower()):	
+			if self.doc.travel_type == "Training":
+				if self.doc.approver != hr_approver[0]:
+					frappe.throw("Only {0} can submit the Travel Authorization".format(hr_approver[1]))
+			elif self.doc.approver != frappe.session.user:
+				frappe.throw("Only {0} can Approve the Travel Authorization".format(self.doc.approver))
+				# elif doc.supervisor = doc.supervisor and employee[0] != final_approver[0]:
+				# 	frappe.throw("Only {0} can approve your Travel Authorization".format(frappe.bold(final_approver[0])))
+			self.doc.status= "Approved"
+
+		elif self.new_state.lower() in ("Verified By Supervisor".lower()):
+			if self.doc.approver != frappe.session.user:
+				frappe.throw("Only {0} can submit the Travel Authorization".format(self.doc.approver))
+			self.set_approver("Final Approver")
+		
+		# elif self.new_state.lower() in ("Verified By Supervisor".lower(),'Rejected'.lower())
+		#     if workflow_state == "Rejected".lower():
+		#         doc.status = "Rejected"
+			
 		#frappe.throw(str(self.new_state))
 		
-		if self.new_state.lower() in ("Waiting Supervisor Approval".lower()):
+		# if self.new_state.lower() in ("Waiting Supervisor Approval".lower()):
 			
-			if self.doc.owner != frappe.session.user and self.new_state.lower() != self.old_state.lower():
-				frappe.throw("Only <b>{}</b> can Apply this request".format(self.doc.owner))
-			#self.set_approver("Supervisor")
-		elif self.new_state.lower() in ("Verified By Supervisor".lower()):
+		# 	if self.doc.owner != frappe.session.user and self.new_state.lower() != self.old_state.lower():
+		# 		frappe.throw("Only <b>{}</b> can Apply this request".format(self.doc.owner))
+		# 	#self.set_approver("Supervisor")
+		# elif self.new_state.lower() in ("Verified By Supervisor".lower()):
 			
-			if self.doc.verifier != frappe.session.user:
-				frappe.throw("Only <b>{}</b> can Apply this request".format(self.doc.verifier_name))
+		# 	if self.doc.verifier != frappe.session.user:
+		# 		frappe.throw("Only <b>{}</b> can Apply this request".format(self.doc.verifier_name))
 			
-		elif self.new_state.lower() == "Approved".lower():
+		# elif self.new_state.lower() == "Approved".lower():
 
-			if self.doc.approver != frappe.session.user:
-				frappe.throw("Only <b>{}</b> can Approve this request".format(self.doc.approver_name))
+		# 	if self.doc.approver != frappe.session.user:
+		# 		frappe.throw("Only <b>{}</b> can Approve this request".format(self.doc.approver_name))
 
-		elif self.new_state.lower() in ("Rejected".lower()):
-			if self.doc.approver != frappe.session.user:
-				frappe.throw("Only the <b>{}</b> can Reject this request".format(self.doc.approver_name))
+		# elif self.new_state.lower() in ("Rejected".lower()):
+		# 	if self.doc.approver != frappe.session.user:
+		# 		frappe.throw("Only the <b>{}</b> can Reject this request".format(self.doc.approver_name))
 
-		elif self.new_state.lower() == "Cancelled".lower():
-			if self.doc.approver != frappe.session.user:
-				frappe.throw("Only <b>{}</b> can Cancel this request".format(self.doc.approver_name))
+		# elif self.new_state.lower() == "Cancelled".lower():
+		# 	if self.doc.approver != frappe.session.user:
+		# 		frappe.throw("Only <b>{}</b> can Cancel this request".format(self.doc.approver_name))
 	
 	def travel_claim(self):
 		# frappe.throw(str(self.new_state.lower()))
-		if self.new_state.lower() == self.old_state.lower():
-			return
+		
 		if self.new_state.lower() in ("Waiting Supervisor Approval".lower()):
-			if self.doc.owner != frappe.session.user and self.new_state.lower() != self.old_state.lower():
-				frappe.throw("Only <b>{}</b> can Apply this request".format(self.doc.owner))
 			self.set_approver("Supervisor")
-
-		if self.new_state.lower() in ("Waiting Hr Approval".lower()):
+		if self.new_state.lower() in ("Verified By Supervisor".lower()):
 			if self.doc.approver != frappe.session.user:
-				frappe.throw("Only <b>{}</b> can Forward this request".format(self.doc.approver))
-			# self.set_approver("HR")
+				frappe.throw("Only {0} can submit the Travel Claim".format(self.doc.approver))
+			self.set_approver("Final Approver")
+		elif self.new_state.lower() in ['Rejected'.lower(), 'Rejected By Supervisor'.lower()]:
+			if self.new_state.lower() == "Rejected".lower():
+				self.doc.status = "Rejected"
 			
-		elif self.new_state.lower() == "Approved".lower():
-			user_roles = frappe.get_roles(frappe.session.user)
-			if "HR Manager" in user_roles:
-				return
-			else:
-				frappe.throw("Only <b>{}</b> can Approve this request".format("HR Manager"))
-			# if self.doc.approver != frappe.session.user:
-			# 	frappe.throw("Only <b>{}</b> can Approve this request".format(self.doc.approver_name))
-
-		elif self.new_state.lower() in ("Rejected".lower()):
-			user_roles = frappe.get_roles(frappe.session.user)
-			if "HR Manager" in user_roles:
-				return
-			else:
-				frappe.throw("Only <b>{}</b> can Approve this request".format("HR Manager"))
-
-		elif self.new_state.lower() == "Cancelled".lower():
+		elif self.new_state.lower() in ("Claimed".lower()):
 			if self.doc.approver != frappe.session.user:
-				frappe.throw("Only <b>{}</b> can Cancel this request".format(self.doc.approver_name))
+				frappe.throw("Only {0} can submit the Travel Claim".format(self.doc.approver))
+			if self.final_approver[0] != self.doc.approver and self.employee[0] != self.final_approver[0]:
+				frappe.throw("Only {0} can approve your Travel Claim".format(frappe.bold(self.final_approver[0])))
+			else:
+				if frappe.session.user != self.doc.approver:
+					frappe.throw("Only {0} can approve your Travel Claim".format(frappe.bold(self.doc.approver)))
+			self.doc.status = "Claimed"
+			# if self.doc.docstatus == 0 and self.doc.workflow_state == "Claimed":
+			#     self.doc.workflow_state = "Verified By Supervisor"
+		# if self.new_state.lower() == self.old_state.lower():
+		# 	return
+		# if self.new_state.lower() in ("Waiting Supervisor Approval".lower()):
+		# 	if self.doc.owner != frappe.session.user and self.new_state.lower() != self.old_state.lower():
+		# 		frappe.throw("Only <b>{}</b> can Apply this request".format(self.doc.owner))
+		# 	self.set_approver("Supervisor")
+
+		# if self.new_state.lower() in ("Waiting Hr Approval".lower()):
+		# 	if self.doc.approver != frappe.session.user:
+		# 		frappe.throw("Only <b>{}</b> can Forward this request".format(self.doc.approver))
+		# 	# self.set_approver("HR")
+			
+		# elif self.new_state.lower() == "Approved".lower():
+		# 	user_roles = frappe.get_roles(frappe.session.user)
+		# 	if "HR Manager" in user_roles:
+		# 		return
+		# 	else:
+		# 		frappe.throw("Only <b>{}</b> can Approve this request".format("HR Manager"))
+		# 	# if self.doc.approver != frappe.session.user:
+		# 	# 	frappe.throw("Only <b>{}</b> can Approve this request".format(self.doc.approver_name))
+
+		# elif self.new_state.lower() in ("Rejected".lower()):
+		# 	user_roles = frappe.get_roles(frappe.session.user)
+		# 	if "HR Manager" in user_roles:
+		# 		return
+		# 	else:
+		# 		frappe.throw("Only <b>{}</b> can Approve this request".format("HR Manager"))
+
+		# elif self.new_state.lower() == "Cancelled".lower():
+		# 	if self.doc.approver != frappe.session.user:
+		# 		frappe.throw("Only <b>{}</b> can Cancel this request".format(self.doc.approver_name))
 
 			
 	def employee_advance(self):
