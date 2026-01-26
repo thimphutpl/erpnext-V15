@@ -116,7 +116,6 @@
   "net_transportation_charges",
   "column_break_acmi",
   "total_distance",
-  "total_quantity",
   "transportation_charges",
   "terms_section_break",
   "tc_name",
@@ -892,6 +891,7 @@
    "collapsible": 1,
    "fieldname": "section_break_48",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "hide_days": 1,
    "hide_seconds": 1,
    "label": "Additional Discount"
@@ -1794,6 +1794,7 @@
   {
    "fieldname": "additional_charges_section",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Additional Charges "
   },
   {
@@ -1809,11 +1810,13 @@
   {
    "fieldname": "transportation_charges_section",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Transportation Charges"
   },
   {
    "fieldname": "rate_template",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Rate Template",
    "options": "Transportation Rate"
   },
@@ -1839,7 +1842,6 @@
    "label": "Net Transportation Charges",
    "read_only": 1
   },
-  
   {
    "collapsible": 1,
    "fieldname": "header_and_footer_section",
@@ -1914,7 +1916,7 @@
  "idx": 105,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-01-18 11:18:58.984981",
+ "modified": "2026-01-23 13:42:00.632843",
  "modified_by": "Administrator",
  "module": "Selling",
  "name": "Sales Order",
