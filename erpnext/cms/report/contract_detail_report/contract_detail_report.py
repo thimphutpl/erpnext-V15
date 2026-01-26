@@ -22,6 +22,8 @@ def append_totals_row(data):
 	total_final = sum(flt(d.get("final_amount")) for d in data)
 	negotiation_amount = sum(flt(d.get("negotiation_amount")) for d in data)
 	actual_amount = sum(flt(d.get("actual_amount")) for d in data)
+	contract_currency_amount = sum(flt(d.get("contract_currency_amount")) for d in data)
+
 
 	data.append({
 		"types_of_contract": "<b>Total</b>",
@@ -31,6 +33,8 @@ def append_totals_row(data):
 		"final_amount": total_final,
 		"negotiation_amount": negotiation_amount,
 		"actual_amount": actual_amount,
+		"contract_currency_amount": contract_currency_amount,
+
 	})
 
 
@@ -39,7 +43,6 @@ def get_columns():
 		{"label": "Contract", "fieldname": "name", "fieldtype": "Link", "options": "Contract Details", "width": 160},
 
 		{"label": "Supplier", "fieldname": "supplier", "fieldtype": "Link", "options": "Supplier", "width": 180},
-		{"label": "Supplier Name", "fieldname": "supplier_name", "fieldtype": "Data", "width": 200},
 		{"label": "Supplier Type", "fieldname": "supplier_type", "fieldtype": "Data", "width": 140},
 
 
@@ -48,6 +51,9 @@ def get_columns():
 		{"label": "Types of Contract", "fieldname": "types_of_contract", "fieldtype": "Data", "width": 150},
 
 		{"label": "Currency", "fieldname": "currency", "fieldtype": "Link", "options": "Currency", "width": 90},
+		{"label": "Contract Currency Amount", "fieldname": "contract_currency_amount", "fieldtype": "Currency", "width": 140},
+		{"label": "Exchange Rate", "fieldname": "exchange_rate", "fieldtype": "Currency", "width": 140},
+
 
 		{"label": "Offer Amount", "fieldname": "initial_amount", "fieldtype": "Currency", "width": 140},
 		{"label": "Discount", "fieldname": "discount", "fieldtype": "Currency", "width": 120},
