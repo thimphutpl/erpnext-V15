@@ -119,7 +119,7 @@ def get_data(filters):
 			defect_liability_amount,
 			currency,
 			contract_currency_amount,
-			exchnage_rate,
+			exchange_rate,
 			initial_amount,
 			final_amount,
 			discount,
