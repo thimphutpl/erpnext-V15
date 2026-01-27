@@ -550,7 +550,7 @@ def get_records(employee_type, fiscal_year, fiscal_month, from_date, to_date, co
 		}))
 		# if employee_type == "Muster Roll Employee":
 		# 	update_mr_rates(employee_type, e.name, cost_center, from_date, to_date)
-		if employee_type in ('Operator', 'Open Air Prisoner', 'DFG AND GFG'):
+		if employee_type in ('Operator'):
 		
 			frappe.db.sql("""
 						update `tabAttendance Others`

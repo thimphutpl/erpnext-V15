@@ -156,6 +156,7 @@ class Asset(AccountsController):
 								"Asset Depreciation Schedules created:<br>{0}<br><br>Please check, edit if needed, and submit the Asset."
 							).format(asset_depr_schedules_links)
 						)
+		self.recompute_finance_book_numbers()				
 		self.set_total_booked_depreciations()
 		self.total_asset_cost = self.gross_purchase_amount
 		self.status = self.get_status()
@@ -513,6 +514,70 @@ class Asset(AccountsController):
 					if je.journal_entry:
 						total_number_of_booked_depreciations += 1
 			fb_row.db_set("total_number_of_booked_depreciations", total_number_of_booked_depreciations)
+	def recompute_finance_book_numbers(self):
+		"""
+		Recompute for each Asset Finance Book row:
+		- total_number_of_booked_depreciations
+		- value_after_depreciation
+
+		Rule:
+		value_after_depreciation = gross_purchase_amount - (opening_accumulated_depreciation + posted_depr_amount)
+		posted_depr_amount comes from submitted Depreciation Entry JEs linked to ACTIVE schedule.
+		"""
+		import frappe
+		from frappe.utils import cint, flt
+
+		opening_cnt = cint(self.opening_number_of_booked_depreciations or 0)
+		opening_acc = flt(self.opening_accumulated_depreciation or 0)
+		gross = flt(self.gross_purchase_amount or 0)
+
+		for fb in self.get("finance_books") or []:
+			fb_name = fb.finance_book
+
+			# 1) Count submitted depreciation entries from ACTIVE schedule for this finance book
+			submitted_count = frappe.db.sql(
+				"""
+				SELECT COUNT(*)
+				FROM `tabAsset Depreciation Schedule` ads
+				JOIN `tabDepreciation Schedule` ds ON ds.parent = ads.name
+				JOIN `tabJournal Entry` je ON je.name = ds.journal_entry
+				WHERE ads.asset = %s
+				AND ads.status = 'Active'
+				AND ads.docstatus < 2
+				AND ds.journal_entry IS NOT NULL
+				AND je.docstatus = 1
+				AND je.voucher_type = 'Depreciation Entry'
+				AND (ads.finance_book = %s OR (%s IS NULL AND ads.finance_book IS NULL))
+				""",
+				(self.name, fb_name, fb_name),
+			)[0][0]
+
+			# 2) Sum posted depreciation amount (from schedule rows linked to submitted JEs)
+			posted_depr_amount = frappe.db.sql(
+				"""
+				SELECT IFNULL(SUM(ds.depreciation_amount), 0)
+				FROM `tabAsset Depreciation Schedule` ads
+				JOIN `tabDepreciation Schedule` ds ON ds.parent = ads.name
+				JOIN `tabJournal Entry` je ON je.name = ds.journal_entry
+				WHERE ads.asset = %s
+				AND ads.status = 'Active'
+				AND ads.docstatus < 2
+				AND ds.journal_entry IS NOT NULL
+				AND je.docstatus = 1
+				AND je.voucher_type = 'Depreciation Entry'
+				AND (ads.finance_book = %s OR (%s IS NULL AND ads.finance_book IS NULL))
+				""",
+				(self.name, fb_name, fb_name),
+			)[0][0]
+
+			accumulated = opening_acc + flt(posted_depr_amount)
+			value_after = gross - accumulated
+
+			# set on document (safe during validate/save)
+			fb.total_number_of_booked_depreciations = opening_cnt + cint(submitted_count)
+			fb.value_after_depreciation = value_after
+
+		
 
 	def validate_expected_value_after_useful_life(self):
 		for row in self.get("finance_books"):
@@ -1373,6 +1438,7 @@ def add_reference_in_jv_on_split(entry_name, new_asset_name, old_asset_name, dep
 	journal_entry.docstatus = 1
 	journal_entry.make_gl_entries()
 
+	
 @frappe.whitelist()
 def get_permission_query_conditions(user):
 	if not user: user = frappe.session.user
