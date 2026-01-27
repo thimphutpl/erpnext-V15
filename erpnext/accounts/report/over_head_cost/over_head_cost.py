@@ -10,7 +10,7 @@ def execute(filters=None):
 
 def get_data(filters=None):
 	data = []
-	query = "select sum(gl.debit) as debit, sum(gl.credit) as credit from `tabGL Entry` gl inner join `tabAccount` ac on ac.name=gl.account where gl.is_cancelled = 0 and ac.root_type ='Expense' and gl.project in('','Null')"
+	query = "select sum(gl.debit) as debit, sum(gl.credit) as credit from `tabGL Entry` gl inner join `tabAccount` ac on ac.name=gl.account where gl.is_cancelled = 0 and ac.root_type ='Expense' and (gl.project IS NULL OR gl.project = '')"
 	
 	if filters.from_date and filters.to_date:
 		query += " and gl.posting_date between \'" + str(filters.from_date) + "\' and \'" + str(filters.to_date) + "\'"
@@ -33,6 +33,9 @@ def get_data(filters=None):
 		else:
 			query += f" and gl.cost_center = '{filters.cost_center}'"
 			cond = f" and gl.cost_center = '{filters.cost_center}'"
+	if filters.account:
+		query += f" and gl.account = '{filters.account}'"
+		cond += f" and gl.account = '{filters.account}'"
 	over_head_data = frappe.db.sql(query, as_dict=True)
 	overall_expense = frappe.db.sql(""" select sum(gl.debit) as expense, sum(gl.credit) as income 
 		from `tabGL Entry` gl

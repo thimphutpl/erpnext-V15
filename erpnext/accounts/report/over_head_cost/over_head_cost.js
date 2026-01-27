@@ -23,6 +23,20 @@ frappe.query_reports["Over Head Cost"] = {
 			"fieldtype": "Date",
 			"width": "80",
 			"reqd":1
+		},
+		{	
+			"fieldname": "account",
+			"label": ("Account"),
+			"fieldtype": "Link",
+			"options": "Account",
+			"width": "100",
+			"get_query": function() {
+                return {
+                    filters: {
+                        root_type: "Expense"
+                    }
+                };
+            }
 		}
 	]
 };
