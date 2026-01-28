@@ -3237,24 +3237,34 @@ def make_material_return(source_name, target_doc=None):
 		if not source.items:
 			frappe.throw(_("No items found in the original Stock Entry."))
 		source.to_warehouse = target.from_warehouse
-		for source_item in source.items:
-			for target_item in target.items:
-				if target_item.item_code == source_item.item_code:
-					# Calculate returned quantity
-					returned_qty = sum(
-						d.qty for d in frappe.get_all(
-							"Stock Entry Detail",
-							filters={"item_ref": source_item.name, "docstatus": 1},
-							fields=["qty"]
-						)
-					) or 0
+	
+		# for source_item in source.items:
+		for target_item in target.items:
 
-					# Set fields in the target document
-					target_item.item_ref = source_item.name
-					target_item.balance_qty = source_item.qty - returned_qty
-					target_item.qty = target_item.balance_qty
-					target_item.t_warehouse = source_item.s_warehouse
+			if not target_item.item_ref:
+				continue
 
+			source_item = frappe.get_doc(
+				"Stock Entry Detail",
+				target_item.item_ref
+			)
+			# 🔴 CHANGED: calculate already returned qty correctly
+			returned_qty = frappe.db.sql(
+				"""
+				SELECT SUM(qty)
+				FROM `tabStock Entry Detail`
+				WHERE item_ref = %s
+				AND docstatus = 1
+				""",
+				(source_item.name)
+			)[0][0] or 0
+
+			balance_qty = source_item.qty - returned_qty
+
+			# 🔴 CHANGED: set values per-row (no overwrite)
+			target_item.balance_qty = balance_qty
+			target_item.qty = max(source_item.qty, 1)
+			target_item.t_warehouse = source_item.s_warehouse
 		target.stock_entry_type = "Material Return"
 	doc = get_mapped_doc(
 		"Stock Entry",
@@ -3263,7 +3273,7 @@ def make_material_return(source_name, target_doc=None):
 			"Stock Entry": {"doctype": "Stock Entry", "validation": {"docstatus": ["=", 1]}},
 			"Stock Entry Detail": {
 				"doctype": "Stock Entry Detail",
-				"field_map": {"stock_qty": "stock_qty", "batch_no": "batch_no"},
+				"field_map": {"name": "item_ref", "batch_no": "batch_no"},
 			},
 		},
 		target_doc,
