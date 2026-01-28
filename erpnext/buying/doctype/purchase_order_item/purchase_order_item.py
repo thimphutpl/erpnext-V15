@@ -42,6 +42,8 @@ class PurchaseOrderItem(Document):
 		fg_item: DF.Link | None
 		fg_item_qty: DF.Float
 		from_warehouse: DF.Link | None
+		gst_amount: DF.Data | None
+		gst_qty: DF.Currency
 		include_exploded_items: DF.Check
 		is_fixed_asset: DF.Check
 		is_free_item: DF.Check
@@ -72,6 +74,7 @@ class PurchaseOrderItem(Document):
 		project: DF.Link | None
 		qty: DF.Float
 		rate: DF.Currency
+		rate_including_gst: DF.Currency
 		rate_with_margin: DF.Currency
 		received_qty: DF.Float
 		returned_qty: DF.Float

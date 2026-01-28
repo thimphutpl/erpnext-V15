@@ -338,7 +338,6 @@ class calculate_taxes_and_totals:
 		self.doc.total_qty = (
 			self.doc.total
 		) = self.doc.base_total = self.doc.net_total = self.doc.base_net_total = 0.0
-
 		for item in self._items:
 			self.doc.total += item.amount
 			self.doc.total_qty += item.qty
@@ -376,6 +375,7 @@ class calculate_taxes_and_totals:
 		for n, item in enumerate(self._items):
 			item_tax_map = self._load_item_tax_rate(item.item_tax_rate)
 			for i, tax in enumerate(self.doc.get("taxes")):
+		
 				# tax_amount represents the amount of tax for the current step
 				current_tax_amount = self.get_current_tax_amount(item, tax, item_tax_map)
 				if frappe.flags.round_row_wise_tax:
@@ -450,18 +450,54 @@ class calculate_taxes_and_totals:
 				tax_amount *= -1.0 if (tax.add_deduct_tax == "Deduct") else 1.0
 		return tax_amount
 
+	# def set_cumulative_total(self, row_idx, tax):
+	# 	tax_amount = tax.tax_amount_after_discount_amount
+	# 	tax_amount = self.get_tax_amount_if_for_valuation_or_deduction(tax_amount, tax)
+
+	# 	if row_idx == 0:
+	# 		tax.total = flt(self.doc.net_total + tax_amount, tax.precision("total"))
+	# 	else:
+	# 		tax.total = flt(self.doc.get("taxes")[row_idx - 1].total + tax_amount, tax.precision("total"))
 	def set_cumulative_total(self, row_idx, tax):
 		tax_amount = tax.tax_amount_after_discount_amount
 		tax_amount = self.get_tax_amount_if_for_valuation_or_deduction(tax_amount, tax)
 
 		if row_idx == 0:
-			tax.total = flt(self.doc.net_total + tax_amount, tax.precision("total"))
+			if self.doc.doctype in ("Purchase Order", "Purchase Invoice"):
+				if frappe.db.get_value("Supplier", self.doc.supplier, "country") == "Bhutan" and tax.add_deduct_tax != "None":
+					if tax.included_in_print_rate == 0 and tax.add_deduct_tax != "None":
+						tax.total = flt(self.doc.net_total + tax_amount, tax.precision("total"))
+					else:
+						tax.total = flt(self.doc.net_total, tax.precision("total"))
+				else:
+					if tax.is_gst == 0 and tax.add_deduct_tax != "None":
+						tax.total = flt(self.doc.net_total + tax_amount, tax.precision("total"))
+					else:
+						tax.total = flt(self.doc.net_total, tax.precision("total"))
+			else:	
+				if (tax.is_gst == 0 or tax.included_in_print_rate == 0) and tax.add_deduct_tax != "None":
+					tax.total = flt(self.doc.net_total + tax_amount, tax.precision("total"))
+				else:
+					tax.total = flt(self.doc.net_total, tax.precision("total"))
 		else:
-			tax.total = flt(self.doc.get("taxes")[row_idx - 1].total + tax_amount, tax.precision("total"))
+			if self.doc.doctype in ("Purchase Order", "Purchase Invoice"):
+				if frappe.db.get_value("Supplier", self.doc.supplier, "country") == "Bhutan" and tax.add_deduct_tax != "None":
+					tax.total = flt(self.doc.get("taxes")[row_idx - 1].total + tax_amount, tax.precision("total"))
+				else:
+					if tax.is_gst == 0 and tax.add_deduct_tax != "None":
+						tax.total = flt(self.doc.get("taxes")[row_idx - 1].total + tax_amount, tax.precision("total"))
+					else:
+						tax.total = flt(self.doc.get("taxes")[row_idx - 1].total, tax.precision("total"))
+			else:
+				if tax.is_gst == 0 or tax.included_in_print_rate == 0 and tax.add_deduct_tax != "None":
+					tax.total = flt(self.doc.get("taxes")[row_idx - 1].total + tax_amount, tax.precision("total"))
+				else:
+					tax.total = flt(self.doc.get("taxes")[row_idx - 1].total, tax.precision("total"))
 
 	def get_current_tax_amount(self, item, tax, item_tax_map):
 		tax_rate = self._get_tax_rate(tax, item_tax_map)
 		current_tax_amount = 0.0
+	
 
 		if tax.charge_type == "Actual":
 			# distribute the tax amount proportionally to each item row
@@ -489,7 +525,11 @@ class calculate_taxes_and_totals:
 			].grand_total_for_current_item
 		elif tax.charge_type == "On Item Quantity":
 			current_tax_amount = tax_rate * item.qty
-
+		if tax.is_gst == 1:
+			if self.doc.doctype in ("Purchase Order", "Sales Invoice", "Purchase Invoice","Purchase Receipt"):
+				item.gst_amount = current_tax_amount
+				item.gst_qty = flt(current_tax_amount / item.qty)
+				item.rate_including_gst = flt(item.rate) + item.gst_qty
 		if not (self.doc.get("is_consolidated") or tax.get("dont_recompute_tax")):
 			self.set_item_wise_tax(item, tax, tax_rate, current_tax_amount)
 
@@ -570,7 +610,8 @@ class calculate_taxes_and_totals:
 		else:
 			self.doc.total_taxes_and_charges = 0.0
 
-		self._set_in_company_currency(self.doc, ["total_taxes_and_charges", "rounding_adjustment"])
+		self._set_in_company_currency(self.doc, ["total_taxes_and_charges", "rounding_adjustment", "grand_total"])
+		#if grand_total is zero
 
 		if self.doc.doctype in [
 			"Quotation",
@@ -588,20 +629,40 @@ class calculate_taxes_and_totals:
 			self.doc.taxes_and_charges_added = self.doc.taxes_and_charges_deducted = 0.0
 			for tax in self.doc.get("taxes"):
 				if tax.category in ["Valuation and Total", "Total"]:
-					if tax.add_deduct_tax == "Add":
-						self.doc.taxes_and_charges_added += flt(tax.tax_amount_after_discount_amount)
-					else:
-						self.doc.taxes_and_charges_deducted += flt(tax.tax_amount_after_discount_amount)
+			# 		if tax.add_deduct_tax == "Add":
+			# 			self.doc.taxes_and_charges_added += flt(tax.tax_amount_after_discount_amount)
+			# 		else:
+			# 			self.doc.taxes_and_charges_deducted += flt(tax.tax_amount_after_discount_amount)
 
-			self.doc.round_floats_in(self.doc, ["taxes_and_charges_added", "taxes_and_charges_deducted"])
+			# self.doc.round_floats_in(self.doc, ["taxes_and_charges_added", "taxes_and_charges_deducted"])
 
-			self.doc.base_grand_total = (
-				flt(self.doc.grand_total * self.doc.conversion_rate)
-				if (self.doc.taxes_and_charges_added or self.doc.taxes_and_charges_deducted)
-				else self.doc.base_net_total
-			)
+			# self.doc.base_grand_total = (
+			# 	flt(self.doc.grand_total * self.doc.conversion_rate)
+			# 	if (self.doc.taxes_and_charges_added or self.doc.taxes_and_charges_deducted)
+			# 	else self.doc.base_net_total
+			# )
 
-			self._set_in_company_currency(self.doc, ["taxes_and_charges_added", "taxes_and_charges_deducted"])
+			# self._set_in_company_currency(self.doc, ["taxes_and_charges_added", "taxes_and_charges_deducted"])
+					if self.doc.doctype == "Purchase Order":
+						if frappe.db.get_value("Supplier", self.doc.supplier, "country") == "Bhutan":
+							if tax.add_deduct_tax == "Add":
+								self.doc.taxes_and_charges_added += flt(tax.tax_amount_after_discount_amount)
+							else:
+								if tax.add_deduct_tax != "None":
+									self.doc.taxes_and_charges_deducted += flt(tax.tax_amount_after_discount_amount)
+						else:
+							if tax.is_gst == 0:
+								if tax.add_deduct_tax == "Add":
+									self.doc.taxes_and_charges_added += flt(tax.tax_amount_after_discount_amount)
+								else:
+									if tax.add_deduct_tax != "None":
+										self.doc.taxes_and_charges_deducted += flt(tax.tax_amount_after_discount_amount)
+					elif self.doc.doctype != "Sales Invoice" and tax.add_deduct_tax != "None":
+						if tax.is_gst == 0:
+							if tax.add_deduct_tax == "Add":
+								self.doc.taxes_and_charges_added += flt(tax.tax_amount_after_discount_amount)
+							else:
+								self.doc.taxes_and_charges_deducted += flt(tax.tax_amount_after_discount_amount)
 
 		self.doc.round_floats_in(self.doc, ["grand_total", "base_grand_total"])
 

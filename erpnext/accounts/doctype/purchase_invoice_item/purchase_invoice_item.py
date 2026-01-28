@@ -37,6 +37,8 @@ class PurchaseInvoiceItem(Document):
 		enable_deferred_expense: DF.Check
 		expense_account: DF.Link
 		from_warehouse: DF.Link | None
+		gst_amount: DF.Currency
+		gst_qty: DF.Float
 		image: DF.Attach | None
 		include_exploded_items: DF.Check
 		is_fixed_asset: DF.Check
@@ -72,6 +74,7 @@ class PurchaseInvoiceItem(Document):
 		qty: DF.Float
 		quality_inspection: DF.Link | None
 		rate: DF.Currency
+		rate_including_gst: DF.Float
 		rate_with_margin: DF.Currency
 		received_qty: DF.Float
 		rejected_qty: DF.Float

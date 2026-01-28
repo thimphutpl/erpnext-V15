@@ -16,28 +16,29 @@ class PurchaseTaxesandCharges(Document):
 
 		account_currency: DF.Link | None
 		account_head: DF.Link
-		add_deduct_tax: DF.Literal["Add", "Deduct"]
+		add_deduct_tax: DF.Literal["Add", "Deduct", "None"]
+		all: DF.Check
 		base_tax_amount: DF.Currency
 		base_tax_amount_after_discount_amount: DF.Currency
 		base_total: DF.Currency
-		category: DF.Literal["Valuation and Total", "Valuation", "Total"]
-		charge_type: DF.Literal[
-			"",
-			"Actual",
-			"On Net Total",
-			"On Previous Row Amount",
-			"On Previous Row Total",
-			"On Item Quantity",
-		]
+		category: DF.Literal["Valuation and Total", "Valuation", "Total", "None"]
+		charge_type: DF.Literal["", "Actual", "On Net Total", "On Previous Row Amount", "On Previous Row Total", "On Item Quantity"]
 		cost_center: DF.Link | None
 		description: DF.SmallText
+		domestic_vendor: DF.Check
+		ignored_gst_in_inovice: DF.Check
 		included_in_paid_amount: DF.Check
 		included_in_print_rate: DF.Check
+		indian_vendor: DF.Check
+		international_vendor: DF.Check
+		is_gst: DF.Check
 		is_tax_withholding_account: DF.Check
 		item_wise_tax_detail: DF.Code | None
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
+		party: DF.Data | None
+		party_type: DF.Literal["", "Supplier"]
 		rate: DF.Float
 		row_id: DF.Data | None
 		tax_amount: DF.Currency

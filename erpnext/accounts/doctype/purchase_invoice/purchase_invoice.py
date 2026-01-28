@@ -3,7 +3,7 @@
 
 
 import frappe
-from frappe import _, qb, throw
+from frappe import _, msgprint, qb, throw
 from frappe.model.mapper import get_mapped_doc
 from frappe.query_builder.functions import Sum
 from frappe.utils import cint, cstr, flt, formatdate, get_link_to_form, getdate, nowdate
@@ -252,6 +252,32 @@ class PurchaseInvoice(BuyingController):
 	def before_save(self):
 		if not self.on_hold:
 			self.release_date = ""
+		self.validate_taxes_and_charges()
+		self.calculate_gst_for_items()
+	
+	def validate_taxes_and_charges(self):
+		if not self.taxes_and_charges:
+			msgprint(_("You are creating a Purchase Order without including GST."), 
+					 title=_("Warning"), indicator="orange")
+	def calculate_gst_for_items(self):
+		gst_rate = 0.0
+
+		# Find GST rate from taxes table
+		for t in self.taxes:
+			if t.account_head:
+				gst_rate = t.rate or 0
+				break
+
+		# Update each item
+		for item in self.items:
+			if not item.qty or not item.amount:
+				# gst = 0.0
+				item.gst_qty = 0.0
+				item.rate_including_gst = item.rate or 0.0
+				continue
+			# item.gst = (item.amount * gst_rate) / 100
+			item.gst_qty = (item.gst_amount / item.qty) if item.qty else 0.0
+			item.rate_including_gst = (item.rate or 0.0) + item.gst_qty		
 
 	def invoice_is_blocked(self):
 		return self.on_hold and (not self.release_date or self.release_date > getdate(nowdate()))
@@ -1015,6 +1041,7 @@ class PurchaseInvoice(BuyingController):
 		self.make_payment_gl_entries(gl_entries)
 		self.make_write_off_gl_entry(gl_entries)
 		self.make_gle_for_rounding_adjustment(gl_entries)
+		# frappe.throw(str(gl_entries))
 		return gl_entries
 
 	# make advance gl entry customisation for advance incorporation by paying advance in different accounts
@@ -1053,7 +1080,7 @@ class PurchaseInvoice(BuyingController):
 		)
 		base_grand_total = flt(
 			self.base_rounded_total
-			if (self.base_rounding_adjustment and self.base_rounded_total)
+			if (self.base_rounding_adjustment and self.base_rounded_total > 0)
 			else self.base_grand_total,
 			self.precision("base_grand_total"),
 		) - flt(self.total_advance)
@@ -1062,7 +1089,6 @@ class PurchaseInvoice(BuyingController):
 			against_voucher = self.name
 			if self.is_return and self.return_against and not self.update_outstanding_for_self:
 				against_voucher = self.return_against
-
 			# Did not use base_grand_total to book rounding loss gle
 			gl_entries.append(
 				self.get_gl_dict(
@@ -1479,42 +1505,45 @@ class PurchaseInvoice(BuyingController):
 		valuation_tax = {}
 
 		for tax in self.get("taxes"):
-			amount, base_amount = self.get_tax_amounts(tax, None)
-			if tax.category in ("Total", "Valuation and Total") and flt(base_amount):
-				account_currency = get_account_currency(tax.account_head)
+			if tax.is_gst == 1:
+				continue
+			else:
+				amount, base_amount = self.get_tax_amounts(tax, None)
+				if tax.category in ("Total", "Valuation and Total") and flt(base_amount):
+					account_currency = get_account_currency(tax.account_head)
 
-				dr_or_cr = "debit" if tax.add_deduct_tax == "Add" else "credit"
+					dr_or_cr = "debit" if tax.add_deduct_tax == "Add" else "credit"
 
-				gl_entries.append(
-					self.get_gl_dict(
-						{
-							"account": tax.account_head,
-							"against": self.supplier,
-							dr_or_cr: base_amount,
-							dr_or_cr + "_in_account_currency": base_amount
-							if account_currency == self.company_currency
-							else amount,
-							"cost_center": tax.cost_center,
-						},
-						account_currency,
-						item=tax,
-					)
-				)
-			# accumulate valuation tax
-			if (
-				self.is_opening == "No"
-				and tax.category in ("Valuation", "Valuation and Total")
-				and flt(base_amount)
-				and not self.is_internal_transfer()
-			):
-				if self.auto_accounting_for_stock and not tax.cost_center:
-					frappe.throw(
-						_("Cost Center is required in row {0} in Taxes table for type {1}").format(
-							tax.idx, _(tax.category)
+					gl_entries.append(
+						self.get_gl_dict(
+							{
+								"account": tax.account_head,
+								"against": self.supplier,
+								dr_or_cr: base_amount,
+								dr_or_cr + "_in_account_currency": base_amount
+								if account_currency == self.company_currency
+								else amount,
+								"cost_center": tax.cost_center,
+							},
+							account_currency,
+							item=tax,
 						)
 					)
-				valuation_tax.setdefault(tax.name, 0)
-				valuation_tax[tax.name] += (tax.add_deduct_tax == "Add" and 1 or -1) * flt(base_amount)
+				# accumulate valuation tax
+				if (
+					self.is_opening == "No"
+					and tax.category in ("Valuation", "Valuation and Total")
+					and flt(base_amount)
+					and not self.is_internal_transfer()
+				):
+					if self.auto_accounting_for_stock and not tax.cost_center:
+						frappe.throw(
+							_("Cost Center is required in row {0} in Taxes table for type {1}").format(
+								tax.idx, _(tax.category)
+							)
+						)
+					valuation_tax.setdefault(tax.name, 0)
+					valuation_tax[tax.name] += (tax.add_deduct_tax == "Add" and 1 or -1) * flt(base_amount)
 
 		if self.is_opening == "No" and self.negative_expense_to_be_booked and valuation_tax:
 			# credit valuation tax amount in "Expenses Included In Valuation"
@@ -1550,6 +1579,7 @@ class PurchaseInvoice(BuyingController):
 
 		if self.auto_accounting_for_stock and self.update_stock and valuation_tax:
 			for tax in self.get("taxes"):
+				
 				if valuation_tax.get(tax.name):
 					gl_entries.append(
 						self.get_gl_dict(
@@ -1562,9 +1592,10 @@ class PurchaseInvoice(BuyingController):
 							},
 							item=tax,
 						)
-					)
+					)			
 
 	def make_internal_transfer_gl_entries(self, gl_entries):
+	
 		if self.is_internal_transfer() and flt(self.base_total_taxes_and_charges):
 			account_currency = get_account_currency(self.unrealized_profit_loss_account)
 			gl_entries.append(

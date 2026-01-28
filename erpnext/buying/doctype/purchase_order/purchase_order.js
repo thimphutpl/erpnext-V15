@@ -66,7 +66,24 @@ frappe.ui.form.on("Purchase Order", {
 	},
 
 
+
+
 	refresh: function (frm) {
+
+		if (cur_frm.doc.supplier && cur_frm.doc.docstatus == 1) {
+			frappe.db.get_value("Supplier", frm.doc.supplier, "country", (r) => {
+				if (r.country == "Bhutan" && frm.doc.supplier && frm.doc.docstatus == 1) {
+					if (!cur_frm.doc.tax_payment_jv) {
+						cur_frm.add_custom_button(
+							__("Tax Payment Journal"),
+							make_tax_payment,
+							__("Create")
+						);
+					}
+				}
+			})
+
+		}
 		if (frm.doc.is_old_subcontracting_flow) {
 			frm.trigger("get_materials_from_supplier");
 
@@ -154,11 +171,8 @@ frappe.ui.form.on("Purchase Order", {
 		if (frm.is_new()) {
 			frm.set_value("advance_paid", 0);
 		}
+		set_taxes_and_charges_query(frm);
 	},
-
-
-
-
 	branch: function (frm) {
 		if (frm.is_new()) {
 			frappe.call({
@@ -272,6 +286,11 @@ frappe.ui.form.on("Purchase Order", {
 	tax: function (frm) {
 		calculate_discount(frm)
 	},
+	supplier: function (frm) {
+		set_taxes_and_charges_query(frm);
+	}
+
+
 });
 
 function calculate_discount(frm) {
@@ -280,20 +299,6 @@ function calculate_discount(frm) {
 	cur_frm.refresh_field("discount_amount")
 	cur_frm.refresh_field("total_add_ded")
 }
-
-// frappe.ui.form.on("Purchase Order Item", {
-// 	schedule_date: function (frm, cdt, cdn) {
-// 		var row = locals[cdt][cdn];
-// 		if (row.schedule_date) {
-// 			if (!frm.doc.schedule_date) {
-// 				erpnext.utils.copy_value_in_all_rows(frm.doc, cdt, cdn, "items", "schedule_date");
-// 			} else {
-// 				set_schedule_date(frm);
-// 			}
-// 		}
-// 	},
-
-
 //auto pick cost center and warehouse in child table according to branch. by. Kinzang.N
 frappe.ui.form.on("Purchase Order Item", {
 	items_add: function (frm, cdt, cdn) {
@@ -318,6 +323,7 @@ frappe.ui.form.on("Purchase Order Item", {
 
 
 	item_code: function (frm, cdt, cdn) {
+
 		let row = locals[cdt][cdn];
 		if (!row.item_code) return;
 
@@ -384,7 +390,9 @@ frappe.ui.form.on("Purchase Order Item", {
 		if (frm.doc.is_subcontracted && !frm.doc.is_old_subcontracting_flow) {
 			//var row = locals[cdt][cdn];
 
+
 			if (row.item_code && !row.fg_item) {
+				alert("inside fg item");
 				var result = frm.events.get_subcontracting_boms_for_service_item(row.item_code);
 
 				if (result.message && Object.keys(result.message).length) {
@@ -471,8 +479,48 @@ frappe.ui.form.on("Purchase Order Item", {
 				}
 			}
 		}
+
 	},
 });
+
+function set_taxes_and_charges_query(frm) {
+	if (!frm.fields_dict.taxes_and_charges) return;
+	if (!frm.doc.supplier) return;
+
+	frappe.db.get_doc("Supplier", frm.doc.supplier).then(supplier => {
+		let filters = {
+			company: frm.doc.company,
+			docstatus: ["!=", 2]
+		};
+
+		let filter_list = [];
+
+		if (supplier.supplier_type === "Domestic Vendor") {
+			filter_list.push(["domestic_vendor", "=", 1]);
+		}
+		if (supplier.supplier_type === "Indian Vendor") {
+			filter_list.push(["indian_vendor", "=", 1]);
+		}
+		if (supplier.supplier_type === "International Vendor") {
+			filter_list.push(["international_vendor", "=", 1]);
+		}
+
+		// Only add `or` if multiple checkboxes exist
+		if (filter_list.length === 1) {
+			// Single condition: just merge it
+			filters[filter_list[0][0]] = filter_list[0][2];
+		} else if (filter_list.length > 1) {
+			filters["or"] = filter_list;
+		}
+
+		frm.set_query("taxes_and_charges", function () {
+			return { filters };
+		});
+	});
+}
+
+
+
 
 erpnext.buying.PurchaseOrderController = class PurchaseOrderController extends (
 	erpnext.buying.BuyingController
@@ -967,6 +1015,14 @@ cur_frm.fields_dict["items"].grid.get_field("project").get_query = function (doc
 		filters: [["Project", "status", "not in", "Completed, Cancelled"]],
 	};
 };
+
+var make_tax_payment = function () {
+	frappe.model.open_mapped_doc({
+		method: "erpnext.buying.doctype.purchase_order.purchase_order.make_tax_payment",
+		frm: cur_frm,
+	});
+}
+
 
 if (cur_frm.doc.is_old_subcontracting_flow) {
 	cur_frm.fields_dict["items"].grid.get_field("bom").get_query = function (doc, cdt, cdn) {

@@ -65,17 +65,22 @@
   "rate",
   "amount",
   "item_tax_template",
-  "col_break4",
+  "column_break_25",
   "base_rate",
   "base_amount",
   "pricing_rules",
   "stock_uom_rate",
   "is_free_item",
   "apply_tds",
+  "gst_details_section",
+  "gst_amount",
+  "column_break_ocej",
+  "gst_qty",
+  "rate_including_gst",
   "section_break_22",
   "net_rate",
   "net_amount",
-  "column_break_25",
+  "col_break4",
   "base_net_rate",
   "base_net_amount",
   "valuation_rate",
@@ -973,12 +978,38 @@
    "hidden": 1,
    "label": "Sub Ledger",
    "options": "Account"
+  },
+  {
+   "fieldname": "gst_amount",
+   "fieldtype": "Currency",
+   "label": "GST Amount"
+  },
+  {
+   "fieldname": "gst_qty",
+   "fieldtype": "Float",
+   "label": "GST/Qty",
+   "read_only": 1
+  },
+  {
+   "fieldname": "rate_including_gst",
+   "fieldtype": "Float",
+   "label": "Rate Including GST",
+   "read_only": 1
+  },
+  {
+   "fieldname": "gst_details_section",
+   "fieldtype": "Section Break",
+   "label": "GST Details "
+  },
+  {
+   "fieldname": "column_break_ocej",
+   "fieldtype": "Column Break"
   }
  ],
  "idx": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-10-05 11:32:56.689563",
+ "modified": "2026-01-27 18:23:30.159017",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Purchase Invoice Item",

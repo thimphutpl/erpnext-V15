@@ -723,7 +723,6 @@
   {
    "fieldname": "taxes_section",
    "fieldtype": "Section Break",
-   "hidden": 1,
    "hide_border": 1,
    "label": "Taxes and Charges",
    "oldfieldtype": "Section Break",
@@ -736,7 +735,6 @@
   {
    "fieldname": "section_break_51",
    "fieldtype": "Section Break",
-   "hidden": 1,
    "hide_border": 1
   },
   {
@@ -1746,6 +1744,7 @@
   {
    "fieldname": "tax_category",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Tax Category",
    "options": "Tax Category",
    "print_hide": 1
@@ -1778,7 +1777,7 @@
  "idx": 204,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-10-05 11:32:28.919281",
+ "modified": "2026-01-23 19:06:48.982909",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Purchase Invoice",

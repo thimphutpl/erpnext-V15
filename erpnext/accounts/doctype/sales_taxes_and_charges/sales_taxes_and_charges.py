@@ -26,6 +26,7 @@ class SalesTaxesandCharges(Document):
 		dont_recompute_tax: DF.Check
 		included_in_paid_amount: DF.Check
 		included_in_print_rate: DF.Check
+		is_gst: DF.Check
 		item_wise_tax_detail: DF.Code | None
 		parent: DF.Data
 		parentfield: DF.Data

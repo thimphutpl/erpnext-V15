@@ -3,7 +3,7 @@
 
 
 import frappe
-from frappe import _, throw
+from frappe import _, msgprint, throw
 from frappe.desk.notifications import clear_doctype_notifications
 from frappe.model.mapper import get_mapped_doc
 from frappe.query_builder.functions import CombineDatetime
@@ -264,6 +264,12 @@ class PurchaseReceipt(BuyingController):
 	def validate_uom_is_integer(self):
 		super().validate_uom_is_integer("uom", ["qty", "received_qty"], "Purchase Receipt Item")
 		super().validate_uom_is_integer("stock_uom", "stock_qty", "Purchase Receipt Item")
+	def before_save(self):
+		self.validate_taxes_and_charges()	
+	def validate_taxes_and_charges(self):
+		if not self.taxes_and_charges:
+			msgprint(_("You are creating a Purchase Receipt without including GST."), 
+						title=_("Warning"), indicator="orange")	
 
 	def validate_cwip_accounts(self):
 		for item in self.get("items"):
@@ -472,6 +478,7 @@ class PurchaseReceipt(BuyingController):
 			get_purchase_document_details,
 		)
 
+
 		provisional_accounting_for_non_stock_items = cint(
 			frappe.db.get_value("Company", self.company, "enable_provisional_accounting_for_non_stock_items")
 		)
@@ -483,6 +490,7 @@ class PurchaseReceipt(BuyingController):
 
 		def make_item_asset_inward_gl_entry(item, stock_value_diff, stock_asset_account_name):
 			account_currency = get_account_currency(stock_asset_account_name)
+			
 
 			if not stock_asset_account_name:
 				validate_account("Asset or warehouse account")
@@ -712,10 +720,12 @@ class PurchaseReceipt(BuyingController):
 						if is_cwip_accounting_enabled(d.asset_category)
 						else "credit_account"
 					)
+			
 
 					stock_asset_account_name = get_asset_account(
 						account_type, asset_category=d.asset_category, company=self.company
 					)
+					# frappe.throw(str(stock_asset_account_name))
 
 					stock_value_diff = (
 						flt(d.base_net_amount) + flt(d.item_tax_amount) + flt(d.landed_cost_voucher_amount)
@@ -973,6 +983,82 @@ class PurchaseReceipt(BuyingController):
 			.where(sle_table.voucher_type == "Purchase Receipt")
 		).run()
 
+@frappe.whitelist()
+def make_tax_payment(source_name, target_doc=None, args=None):
+
+
+	def set_missing_values(source, target):
+		# if len(target.get("items")) == 0:
+		# 	frappe.throw(_("All items have already been Invoiced/Returned"))
+
+		# doc = frappe.get_doc(target)
+		# doc.payment_terms_template = get_payment_terms_template(source.supplier, "Supplier", source.company)
+		# doc.run_method("onload")
+		# doc.run_method("set_missing_values")
+		gst_input_account = None
+		cost_center = source.cost_center
+		for tax in source.taxes:
+			if tax.is_gst == 1:
+				gst_input_account = tax.account_head
+		bank_account = frappe.db.get_value("Company", source.company, "default_bank_account")
+		gst_amount = total_charges = 0
+		post_gst_jv = 0
+		party_type = "Supplier"
+		party = source.supplier
+		target.tax_payment_jv = 1
+		target.purchase_invoice = source.name
+		target.voucher_type = 'Bank Entry'
+		target.naming_series = 'Bank Payment Voucher'
+		for tax in source.taxes:
+			if tax.is_gst == 0 and tax.is_custom_charges == 1:
+				custom_row = target.append("accounts")
+				custom_row.account = tax.account_head
+				custom_row.debit = flt(tax.base_tax_amount_after_discount_amount,2)
+				custom_row.debit_in_account_currency = flt(tax.base_tax_amount_after_discount_amount,2)
+				custom_row.cost_center = cost_center
+				custom_row.reference_type = "Purchase Receipt"
+				custom_row.reference_name = source.name
+				total_charges += tax.base_tax_amount_after_discount_amount
+			else:
+				gst_amount += tax.base_tax_amount_after_discount_amount
+				cost_center = tax.cost_center if tax.cost_center else cost_center
+				party_type = tax.party_type if tax.party_type else party_type
+				party = tax.party if tax.party else party
+				total_charges += tax.base_tax_amount_after_discount_amount
+		gst_row = target.append("accounts")
+		gst_row.account = gst_input_account
+		gst_row.party_type = party_type
+		gst_row.debit = flt(gst_amount,2)
+		gst_row.debit_in_account_currency = flt(gst_amount,2)
+		gst_row.cost_center = cost_center
+		gst_row.reference_type = "Purchase Receipt"
+		gst_row.reference_name = source.name
+		bank_row = target.append("accounts")
+		bank_row.account = bank_account
+		bank_row.credit = flt(total_charges,2)
+		bank_row.credit_in_account_currency = flt(total_charges,2)
+		bank_row.cost_center = cost_center
+		bank_row.reference_type = "Purchase Receipt"
+		bank_row.reference_name = source.name
+
+
+
+	doclist = get_mapped_doc(
+		"Purchase Receipt",
+		source_name,
+		{
+			"Purchase Receipt": {
+				"doctype": "Journal Entry",
+				"validation": {
+					"docstatus": ["=", 1],
+				},
+			},
+		},
+		target_doc,
+		set_missing_values,
+	)
+
+	return doclist
 def get_stock_value_difference(voucher_no, voucher_detail_no, warehouse):
 	return frappe.db.get_value(
 		"Stock Ledger Entry",

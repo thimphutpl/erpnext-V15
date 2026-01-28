@@ -219,10 +219,10 @@ class PurchaseOrder(BuyingController):
 	def warehouse_from_branch(doc):
 		branchname=doc.branch
 		query = """
-        SELECT parent 
-        FROM `tabWarehouse Branch` 
-        WHERE branch=%s
-        """
+		SELECT parent 
+		FROM `tabWarehouse Branch` 
+		WHERE branch=%s
+		"""
 
 		warehouse = frappe.db.sql(query, (branchname,), as_dict=True)
 		if warehouse:
@@ -469,7 +469,49 @@ class PurchaseOrder(BuyingController):
 		self.update_blanket_order()
 		self.notify_update()
 		clear_doctype_notifications(self)
+	def before_save(self):
+		self.validate_taxes_and_charges()
+		self.calculate_gst_for_items()
+	def validate_taxes_and_charges(self):
+		if not self.taxes_and_charges:
+			msgprint(_("You are creating a Purchase Order without including GST."), 
+					 title=_("Warning"), indicator="orange")
+	def calculate_gst_for_items(self):
+		gst_rate = 0.0
+		supplier_type = None
+		if self.supplier:
+			supplier_doc = frappe.get_doc("Supplier", self.supplier)
+			supplier_type = supplier_doc.supplier_type 
 
+		# Find GST rate from taxes table
+		for t in self.taxes:
+			
+			if t.account_head:
+				gst_rate = t.rate or 0
+				break
+
+		# Update each item
+		for item in self.items:
+			if not item.qty or not item.amount:
+				item.gst = 0.0
+				item.gst_qty = 0.0
+				item.rate_including_gst = item.rate or 0.0
+				continue
+			if supplier_type == "Indian Vendor" or "International Vendor":
+				base = item.base_amount or 0.0
+				item.gst = (base * gst_rate) / 100
+				item.rate_including_gst = (item.rate or 0.0) + item.gst_qty
+				item.gst_qty = (item.gst / item.qty) if item.qty else 0.0
+			else:
+				base = item.amount or 0.0
+				item.gst = (base * gst_rate) / 100
+				item.rate_including_gst = (item.rate or 0.0) + item.gst_qty
+				item.gst_qty = (item.gst / item.qty) if item.qty else 0.0
+
+			# item.gst = (item.amount * gst_rate) / 100
+			
+			
+			
 	def on_submit(self):
 		super().on_submit()
 
@@ -1003,6 +1045,93 @@ def get_mapped_subcontracting_order(source_name, target_doc=None):
 
 	return target_doc
 
+@frappe.whitelist()
+def make_tax_payment(source_name, target_doc=None, args=None):
+	# if args is None:
+	# 	args = {}
+	# if isinstance(args, str):
+	# 	args = json.loads(args)
+
+	# from erpnext.accounts.party import get_payment_terms_template
+
+	# doc = frappe.get_doc("Purchase Receipt", source_name)
+	# returned_qty_map = get_returned_qty_map(source_name)
+	# invoiced_qty_map = get_invoiced_qty_map(source_name)
+
+	def set_missing_values(source, target):
+		# if len(target.get("items")) == 0:
+		# 	frappe.throw(_("All items have already been Invoiced/Returned"))
+
+		# doc = frappe.get_doc(target)
+		# doc.payment_terms_template = get_payment_terms_template(source.supplier, "Supplier", source.company)
+		# doc.run_method("onload")
+		# doc.run_method("set_missing_values")
+		gst_input_account = None
+		cost_center = source.cost_center
+		for tax in source.taxes:
+			if tax.is_gst == 1:
+				gst_input_account = tax.account_head
+		bank_account = frappe.db.get_value("Company", source.company, "default_bank_account")
+		gst_amount = total_charges = 0
+		post_gst_jv = 0
+		party_type = "Supplier"
+		party = source.supplier
+		target.tax_payment_jv = 1
+		target.purchase_invoice = source.name
+		target.voucher_type = 'Bank Entry'
+		target.naming_series = 'Bank Payment Voucher'
+		for tax in source.taxes:
+			if tax.is_gst == 0 and tax.is_custom_charges == 1:
+				custom_row = target.append("accounts")
+				custom_row.account = tax.account_head
+				custom_row.debit = flt(tax.base_tax_amount_after_discount_amount,2)
+				custom_row.debit_in_account_currency = flt(tax.base_tax_amount_after_discount_amount,2)
+				custom_row.cost_center = cost_center
+				custom_row.reference_type = "Purchase Order"
+				custom_row.reference_name = source.name
+				total_charges += tax.base_tax_amount_after_discount_amount
+			else:
+				gst_amount += tax.base_tax_amount_after_discount_amount
+				cost_center = tax.cost_center if tax.cost_center else cost_center
+				party_type = tax.party_type if tax.party_type else party_type
+				party = tax.party if tax.party else party
+				total_charges += tax.base_tax_amount_after_discount_amount
+		gst_row = target.append("accounts")
+		gst_row.account = gst_input_account
+		gst_row.party_type = party_type
+		gst_row.debit = flt(gst_amount,2)
+		gst_row.debit_in_account_currency = flt(gst_amount,2)
+		gst_row.cost_center = cost_center
+		gst_row.reference_type = "Purchase Order"
+		gst_row.reference_name = source.name
+		bank_row = target.append("accounts")
+		bank_row.account = bank_account
+		bank_row.credit = flt(total_charges,2)
+		bank_row.credit_in_account_currency = flt(total_charges,2)
+		bank_row.cost_center = cost_center
+		bank_row.reference_type = "Purchase Order"
+		bank_row.reference_name = source.name
+
+
+
+	doclist = get_mapped_doc(
+		"Purchase Order",
+		source_name,
+		{
+			"Purchase Order": {
+				"doctype": "Journal Entry",
+				"validation": {
+					"docstatus": ["=", 1],
+				},
+			},
+		},
+		target_doc,
+		set_missing_values,
+	)
+
+	return doclist
+
+
 
 @frappe.whitelist()
 def is_subcontracting_order_created(po_name) -> bool:
@@ -1051,36 +1180,36 @@ def is_subcontracting_order_created(po_name) -> bool:
 
 @frappe.whitelist()
 def create_purchase_order(source_name, target_doc=None):
-    from frappe.model.mapper import get_mapped_doc
+	from frappe.model.mapper import get_mapped_doc
 
-    def set_missing_values(source, target):
-        # Assuming the first supplier from the child table is mapped to the supplier field
-        if source.suppliers:  
-            target.supplier = source.suppliers[0].supplier  # Maps the first supplier in the list
-        target.run_method("set_missing_values")
-        target.run_method("calculate_taxes_and_totals")
+	def set_missing_values(source, target):
+		# Assuming the first supplier from the child table is mapped to the supplier field
+		if source.suppliers:  
+			target.supplier = source.suppliers[0].supplier  # Maps the first supplier in the list
+		target.run_method("set_missing_values")
+		target.run_method("calculate_taxes_and_totals")
 
-    doc = get_mapped_doc(
-        "Request for Quotation",  # Source Doctype
-        source_name,
-        {
-            "Request for Quotation": {  
-                "doctype": "Purchase Order", 
-                "field_map": {
-                    "field_in_source": "field_in_target",  
-                },
-            },
-            "Request for Quotation Item": {  
-                "doctype": "Purchase Order Item",
-                "field_map": {
-                    "child_field_in_source": "child_field_in_target",
-                },
-            },
-        },
-        target_doc,
-        set_missing_values,
-    )
-    return doc
+	doc = get_mapped_doc(
+		"Request for Quotation",  # Source Doctype
+		source_name,
+		{
+			"Request for Quotation": {  
+				"doctype": "Purchase Order", 
+				"field_map": {
+					"field_in_source": "field_in_target",  
+				},
+			},
+			"Request for Quotation Item": {  
+				"doctype": "Purchase Order Item",
+				"field_map": {
+					"child_field_in_source": "child_field_in_target",
+				},
+			},
+		},
+		target_doc,
+		set_missing_values,
+	)
+	return doc
 
 def get_permission_query_conditions(user):
 	if not user: user = frappe.session.user
@@ -1107,10 +1236,10 @@ def get_permission_query_conditions(user):
 
 @frappe.whitelist()
 def get_item_uom(item_code):
-    """Return the first UOM from UOM Conversion Detail for the given item"""
-    if not item_code:
-        return
+	"""Return the first UOM from UOM Conversion Detail for the given item"""
+	if not item_code:
+		return
 
-    uom = frappe.db.get_value("UOM Conversion Detail", {"parent": item_code}, "uom")
+	uom = frappe.db.get_value("UOM Conversion Detail", {"parent": item_code}, "uom")
 
-    return uom
+	return uom

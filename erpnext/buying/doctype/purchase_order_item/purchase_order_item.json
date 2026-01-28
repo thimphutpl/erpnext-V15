@@ -65,6 +65,11 @@
   "stock_uom_rate",
   "is_free_item",
   "apply_tds",
+  "gst_details_section",
+  "gst_amount",
+  "column_break_0oiw",
+  "gst_qty",
+  "rate_including_gst",
   "section_break_29",
   "net_rate",
   "net_amount",
@@ -900,13 +905,40 @@
   {
    "fieldname": "column_break_kwjd",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "rate_including_gst",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Rate Including GST"
+  },
+  {
+   "fieldname": "gst_qty",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "GST/Qty"
+  },
+  {
+   "fieldname": "gst_amount",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "GST Amount"
+  },
+  {
+   "fieldname": "gst_details_section",
+   "fieldtype": "Section Break",
+   "label": "GST Details"
+  },
+  {
+   "fieldname": "column_break_0oiw",
+   "fieldtype": "Column Break"
   }
  ],
  "idx": 1,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-11-03 11:49:32.098047",
+ "modified": "2026-01-28 15:54:24.988058",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Purchase Order Item",
