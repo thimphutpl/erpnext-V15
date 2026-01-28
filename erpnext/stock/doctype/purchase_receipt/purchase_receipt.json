@@ -605,7 +605,7 @@
    "fieldname": "taxes_charges_section",
    "fieldtype": "Section Break",
    "hide_border": 1,
-   "label": "Taxes and Charges",
+   "label": "GST (5%) Taxes and Charges",
    "oldfieldtype": "Section Break"
   },
   {
@@ -1364,7 +1364,7 @@
  "idx": 261,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-01-22 11:54:01.492767",
+ "modified": "2026-01-28 17:31:12.817598",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Purchase Receipt",
