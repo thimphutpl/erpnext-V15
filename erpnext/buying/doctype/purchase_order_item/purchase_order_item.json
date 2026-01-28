@@ -909,14 +909,14 @@
   {
    "fieldname": "rate_including_gst",
    "fieldtype": "Currency",
-   "in_list_view": 1,
-   "label": "Rate Including GST"
+   "label": "Rate Including GST",
+   "read_only": 1
   },
   {
    "fieldname": "gst_qty",
    "fieldtype": "Currency",
-   "in_list_view": 1,
-   "label": "GST/Qty"
+   "label": "GST/Qty",
+   "read_only": 1
   },
   {
    "fieldname": "gst_amount",
@@ -938,7 +938,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-01-28 16:34:08.000756",
+ "modified": "2026-01-28 16:51:42.198948",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Purchase Order Item",
