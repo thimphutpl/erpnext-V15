@@ -493,18 +493,18 @@ class PurchaseOrder(BuyingController):
 		# Update each item
 		for item in self.items:
 			if not item.qty or not item.amount:
-				item.gst = 0.0
+				item.gst_amount = 0.0
 				item.gst_qty = 0.0
 				item.rate_including_gst = item.rate or 0.0
 				continue
 			if supplier_type == "Indian Vendor" or "International Vendor":
 				base = item.base_amount or 0.0
-				item.gst = (base * gst_rate) / 100
+				item.gst_amount = (base * gst_rate) / 100
 				item.rate_including_gst = (item.rate or 0.0) + item.gst_qty
 				item.gst_qty = (item.gst / item.qty) if item.qty else 0.0
 			else:
 				base = item.amount or 0.0
-				item.gst = (base * gst_rate) / 100
+				item.gst_amount = (base * gst_rate) / 100
 				item.rate_including_gst = (item.rate or 0.0) + item.gst_qty
 				item.gst_qty = (item.gst / item.qty) if item.qty else 0.0
 
