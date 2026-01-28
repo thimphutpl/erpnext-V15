@@ -921,8 +921,8 @@
   {
    "fieldname": "gst_amount",
    "fieldtype": "Data",
-   "hidden": 1,
-   "label": "GST Amount"
+   "label": "GST Amount",
+   "read_only": 1
   },
   {
    "fieldname": "gst_details_section",
@@ -938,7 +938,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-01-28 15:54:24.988058",
+ "modified": "2026-01-28 16:34:08.000756",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Purchase Order Item",
