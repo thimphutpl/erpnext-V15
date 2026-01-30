@@ -23,6 +23,9 @@ frappe.ui.form.on('Mechanical Payment', {
         calculate_totals(frm);
         frm.toggle_reqd("tds_account", frm.doc.tds_amount);
     },
+    "apply_gst": function(frm) {
+        calculate_totals(frm);
+    },
 
     get_series: function(frm) {
         frappe.call({
@@ -91,8 +94,15 @@ frappe.ui.form.on('Mechanical Payment', {
 });
 
 function calculate_totals(frm) {
-    if (frm.doc.receivable_amount) {
-        frm.set_value("net_amount", flt(frm.doc.receivable_amount) - flt(frm.doc.tds_amount));
+    if (frm.doc.receivable_amount){
+        if (frm.doc.apply_gst){
+            frm.set_value("net_amount", flt(frm.doc.receivable_amount) - flt(frm.doc.tds_amount) + (flt(frm.doc.receivable_amount)*0.05));
+            frm.set_value("gst_amount",flt(frm.doc.receivable_amount)*0.05)
+        }else{
+            frm.set_value("net_amount", flt(frm.doc.receivable_amount) - flt(frm.doc.tds_amount));
+            frm.set_value("gst_amount",0)
+        }
+        frm.refresh_field("gst_amount")
         frm.refresh_field("net_amount");
     }
 }
@@ -156,14 +166,3 @@ frappe.ui.form.on('Mechanical Payment', {
 
 });
 
-// frm.fields_dict['items'].grid.get_field('reference_name').get_query = function(frm, cdt, cdn) {
-//     var d = locals[cdt][cdn];
-//     return {
-//         filters: {
-//             "docstatus": 1,
-//             "branch": frm.branch,
-//             "customer": frm.customer,
-//             "outstanding_amount": [">", 0]
-//         }
-//     };
-// };

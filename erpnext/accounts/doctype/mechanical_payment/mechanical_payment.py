@@ -16,6 +16,7 @@ from erpnext.custom_utils import generate_receipt_no, check_future_date, get_bra
 class MechanicalPayment(AccountsController):
 	def validate(self):
 		check_future_date(self.posting_date)
+		self.calculate_gst_amount()
 		self.set_status()
 		self.validate_allocated_amount()
 		total = 0
@@ -41,14 +42,20 @@ class MechanicalPayment(AccountsController):
 	def before_submit(self):
 		self.remove_unallocated_items()
 
+	def calculate_gst_amount(self):
+		if self.apply_gst:
+			if not self.receivable_amount:
+				frappe.throw("Payable Amount is required")
+			self.gst_amount = flt(self.receivable_amount)*0.05
+			self.net_amount = self.receivable_amount + self.gst_amount - self.tds_amount - self.deduction_amount
 	def set_missing_values(self):
 		self.cost_center = get_branch_cc(self.branch)
 		sub_net = 0
 		sub_net = self.deduction_amount + self.tds_amount
 		if sub_net > 0:
-			self.net_amount = self.receivable_amount - sub_net
+			self.net_amount = self.receivable_amount - sub_net + self.gst_amount
 		else:
-			self.net_amount = self.receivable_amount
+			self.net_amount = self.receivable_amount + self.gst_amount
 
 		if self.net_amount < 0:
 			frappe.throw("Net Amount cannot be less than Zero")
@@ -167,7 +174,9 @@ class MechanicalPayment(AccountsController):
 		payable_account = frappe.db.get_value("Company", "GYALSUNG INFRA","default_payable_account")
 		if not payable_account:
 			frappe.throw("Setup Default Payable Account in Company")
-
+		gst_account = frappe.db.get_value("Company", "GYALSUNG INFRA","gst_expense_account")
+		if not gst_account:
+			frappe.throw("Set GST Expense Account In Company")
 		gl_entries = []
 		if flt(self.net_amount) > 0:
 			gl_entries.append(
@@ -196,7 +205,20 @@ class MechanicalPayment(AccountsController):
 								  "remarks": self.remarks
 								  })
 			)
-
+		if self.apply_gst:
+			gl_entries.append(
+				self.get_gl_dict({"account": gst_account,
+					"debit": flt(self.gst_amount),
+					"debit_in_account_currency": flt(self.gst_amount),
+					"cost_center": self.cost_center,
+					"party_check": 1,
+					"party_type": "Supplier",
+					"party": self.customer,
+					"reference_type": self.doctype,
+					"reference_name": self.name,
+					"remarks": self.remarks
+					})
+			)
 		for a in self.items:
 			against_voucher, against_voucher_type = None, None
 			doc = frappe.get_doc(a.reference_type, a.reference_name)
@@ -265,13 +287,10 @@ class MechanicalPayment(AccountsController):
 
 	@frappe.whitelist()
 	def get_tax_rate(self):
-		# if not self.branch or not self.customer or not self.payment_for:
-		# 	frappe.throw("Branch, Customer and Payment For is Mandatory")
-		# frappe.throw(str(self.tax_withholding_category))
 		transactions = frappe.db.sql("select tax_withholding_rate from `tabTax Withholding Rate` where parent='{}' and '{}' between from_date and to_date;".format(self.tax_withholding_category, self.posting_date), as_dict=1)
 		if not transactions:
 			frappe.throw("please set tax withholding rate for Category {} in Tax Withholding Category".format(self.tax_withholding_category))
 		
 		self.tax_withholding_rate = transactions[0]['tax_withholding_rate']
-
-		self.tds_amount = (flt(self.net_amount) * flt(self.tax_withholding_rate))/100
+		self.tds_account = frappe.db.get_value("Tax Withholding Account",{"parent":self.tax_withholding_category},"account")
+		self.tds_amount = (flt(self.receivable_amount) * flt(self.tax_withholding_rate))/100

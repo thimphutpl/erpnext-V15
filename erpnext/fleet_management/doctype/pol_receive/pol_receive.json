@@ -73,6 +73,9 @@
   "outstanding_amount",
   "column_break_12",
   "memo_number",
+  "apply_gst",
+  "total_fuel_amount",
+  "gst_amount",
   "remarks",
   "section_break_8",
   "consumed",
@@ -548,12 +551,30 @@
    "fieldname": "tanker_capacity",
    "fieldtype": "Float",
    "label": "Tanker Capacity(Fuel Tanker/Skid Tank/Barrel)"
+  },
+  {
+   "default": "0",
+   "fieldname": "apply_gst",
+   "fieldtype": "Check",
+   "label": "Apply GST 5% on Total Fuel Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "gst_amount",
+   "fieldtype": "Currency",
+   "label": "GST Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_fuel_amount",
+   "fieldtype": "Currency",
+   "label": "Total Fuel Amount"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-03-30 12:25:44.564528",
+ "modified": "2026-01-29 16:10:34.354972",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Receive",

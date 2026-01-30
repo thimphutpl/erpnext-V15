@@ -93,6 +93,10 @@ class Company(NestedSet):
 		gain_disposal_account: DF.Link | None
 		gce: DF.Link | None
 		gfg_soelra: DF.Link | None
+		gst_asset_account: DF.Link | None
+		gst_expense_account: DF.Link | None
+		gst_income_account: DF.Link | None
+		gst_liability_account: DF.Link | None
 		hire_charge: DF.Link | None
 		hsd: DF.Link | None
 		imprest_advance_account: DF.Link | None

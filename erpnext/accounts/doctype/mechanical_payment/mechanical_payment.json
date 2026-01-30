@@ -24,6 +24,10 @@
   "cheque_no",
   "cheque_date",
   "clearance_date",
+  "gst_5_on_total_amount_section",
+  "apply_gst",
+  "column_break_azmj",
+  "gst_amount",
   "section_break_14",
   "tax_withholding_category",
   "tds_amount",
@@ -409,12 +413,35 @@
    "label": "Verifier",
    "options": "User",
    "read_only": 1
+  },
+  {
+   "fieldname": "gst_5_on_total_amount_section",
+   "fieldtype": "Section Break",
+   "label": "GST 5% On Total Amount"
+  },
+  {
+   "default": "0",
+   "fieldname": "apply_gst",
+   "fieldtype": "Check",
+   "label": "Apply GST"
+  },
+  {
+   "fieldname": "column_break_azmj",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "apply_gst",
+   "fieldname": "gst_amount",
+   "fieldtype": "Currency",
+   "label": "GST Amount",
+   "options": "0",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-06-06 09:54:50.734823",
+ "modified": "2026-01-30 11:03:22.808783",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Mechanical Payment",

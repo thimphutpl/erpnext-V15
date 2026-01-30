@@ -146,7 +146,13 @@
   "pol_settings_section",
   "pol_advance_account",
   "column_break_jfxu",
-  "repair_and_service_account"
+  "repair_and_service_account",
+  "gst_settings_tab",
+  "gst_income_account",
+  "gst_expense_account",
+  "column_break_fbgr",
+  "gst_asset_account",
+  "gst_liability_account"
  ],
  "fields": [
   {
@@ -1040,6 +1046,39 @@
    "fieldtype": "Link",
    "label": "Default Adjust Account",
    "options": "Account"
+  },
+  {
+   "fieldname": "gst_income_account",
+   "fieldtype": "Link",
+   "label": "GST Income Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "gst_expense_account",
+   "fieldtype": "Link",
+   "label": "GST Expense Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "column_break_fbgr",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "gst_asset_account",
+   "fieldtype": "Link",
+   "label": "GST Asset Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "gst_liability_account",
+   "fieldtype": "Link",
+   "label": "GST Liability Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "gst_settings_tab",
+   "fieldtype": "Tab Break",
+   "label": "GST Settings"
   }
  ],
  "icon": "fa fa-building",
@@ -1047,7 +1086,7 @@
  "image_field": "company_logo",
  "is_tree": 1,
  "links": [],
- "modified": "2025-08-22 12:47:24.610552",
+ "modified": "2026-01-29 15:54:50.465151",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Company",
