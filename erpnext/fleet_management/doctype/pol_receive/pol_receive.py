@@ -324,7 +324,7 @@ class POLReceive(StockController):
 		gst_account = frappe.db.get_value("Company", self.company, "gst_expense_account")
 		if not creditor_account:
 			frappe.throw("Set Default Payable Account in Company")
-		if not gst_account:
+		if not gst_account and self.apply_gst:
 			frappe.throw("Set GST Expense Account in Company")
 		expense_account = self.get_expense_account()
 
