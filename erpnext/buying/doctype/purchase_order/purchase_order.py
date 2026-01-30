@@ -215,6 +215,11 @@ class PurchaseOrder(BuyingController):
 			self.doctype, self.supplier, self.company, self.inter_company_order_reference
 		)
 		self.reset_default_field_value("set_warehouse", "items", "warehouse")
+		# t_a_c = 0
+		# for t in self.taxes:
+		# 	t_a_c += t.tax_amount_after_discount_amount
+		# self.grand_total += t_a_c
+		# self.base_grand_total = self.grand_total * self.conversion_rate
 
 	def warehouse_from_branch(doc):
 		branchname=doc.branch
@@ -471,46 +476,10 @@ class PurchaseOrder(BuyingController):
 		clear_doctype_notifications(self)
 	def before_save(self):
 		self.validate_taxes_and_charges()
-		self.calculate_gst_for_items()
 	def validate_taxes_and_charges(self):
 		if not self.taxes_and_charges:
 			msgprint(_("You are creating a Purchase Order without including GST."), 
 					 title=_("Warning"), indicator="orange")
-	def calculate_gst_for_items(self):
-		gst_rate = 0.0
-		supplier_type = None
-		if self.supplier:
-			supplier_doc = frappe.get_doc("Supplier", self.supplier)
-			supplier_type = supplier_doc.supplier_type 
-
-		# Find GST rate from taxes table
-		for t in self.taxes:
-			
-			if t.account_head:
-				gst_rate = t.rate or 0
-				break
-
-		# Update each item
-		for item in self.items:
-			if not item.qty or not item.amount:
-				item.gst_amount = 0.0
-				item.gst_qty = 0.0
-				item.rate_including_gst = item.rate or 0.0
-				continue
-			if supplier_type == "Indian Vendor" or "International Vendor":
-				base = item.base_amount or 0.0
-				item.gst_amount = (base * gst_rate) / 100
-				item.rate_including_gst = (item.rate or 0.0) + item.gst_qty
-				item.gst_qty = (item.gst / item.qty) if item.qty else 0.0
-			else:
-				base = item.amount or 0.0
-				item.gst_amount = (base * gst_rate) / 100
-				item.rate_including_gst = (item.rate or 0.0) + item.gst_qty
-				item.gst_qty = (item.gst / item.qty) if item.qty else 0.0
-
-			# item.gst = (item.amount * gst_rate) / 100
-			
-			
 			
 	def on_submit(self):
 		super().on_submit()
@@ -815,7 +784,52 @@ def make_purchase_receipt(source_name, target_doc=None):
 		target.base_amount = (
 			(flt(obj.qty) - flt(obj.received_qty)) * flt(obj.rate) * flt(source_parent.conversion_rate)
 		)
+	# def set_missing_values(source, target):
+	# 	# target.discount = source.discount
+	# 	# target.freight_and_insurance_charges = source.freight_and_insurance_charges
+	# 	# target.other_charges = source.other_charges
+	# 	# target.total_add_ded = source.total_add_ded
+	# 	# target.base_grand_total = source.base_grand_total
+	# 	target.run_method("set_missing_values")
+	# 	target.run_method("calculate_taxes_and_totals")
+	def set_missing_values(source, target):
+		target.run_method("set_missing_values")
 
+		# -----------------------------
+		# Check if this is full receipt
+		# -----------------------------
+		full_receipt = all(flt(i.received_qty) == 0 for i in source.items)
+
+
+		if full_receipt:
+			# Copy PO totals exactly
+			target.discount_amount = source.discount_amount
+			target.base_discount_amount = source.base_discount_amount
+			target.freight_and_insurance_charges = source.freight_and_insurance_charges
+			target.other_charges = source.other_charges
+			target.total_add_ded = source.total_add_ded
+
+			# Copy taxes exactly
+			for i, tax in enumerate(target.taxes):
+				tax.tax_amount = source.taxes[i].tax_amount
+				tax.base_tax_amount = source.taxes[i].base_tax_amount
+		else:
+			# Partial receipt → proportional calculation
+			po_item_total = sum(flt(i.base_amount) for i in source.items)
+			pr_item_total = sum(flt(i.base_amount) for i in target.items)
+			ratio = pr_item_total / po_item_total if po_item_total else 0
+
+			target.discount_amount = flt(source.discount_amount) * ratio
+			target.base_discount_amount = flt(source.base_discount_amount) * ratio
+
+			for i, tax in enumerate(target.taxes):
+				tax.tax_amount = flt(source.taxes[i].tax_amount) * ratio
+				tax.base_tax_amount = flt(source.taxes[i].base_tax_amount) * ratio
+
+		# Recalculate totals cleanly
+		target.discount_amount_applied = 0
+		target.run_method("calculate_taxes_and_totals")
+	
 	doc = get_mapped_doc(
 		"Purchase Order",
 		source_name,
@@ -877,7 +891,6 @@ def get_mapped_purchase_invoice(source_name, target_doc=None, ignore_permissions
 	def postprocess(source, target):
 		target.flags.ignore_permissions = ignore_permissions
 		set_missing_values(source, target)
-		# Get the advance paid Journal Entries in Purchase Invoice Advance
 		if target.get("allocate_advances_automatically"):
 			target.set_advances()
 
@@ -1045,91 +1058,91 @@ def get_mapped_subcontracting_order(source_name, target_doc=None):
 
 	return target_doc
 
-@frappe.whitelist()
-def make_tax_payment(source_name, target_doc=None, args=None):
-	# if args is None:
-	# 	args = {}
-	# if isinstance(args, str):
-	# 	args = json.loads(args)
+# @frappe.whitelist()
+# def make_tax_payment(source_name, target_doc=None, args=None):
+# 	# if args is None:
+# 	# 	args = {}
+# 	# if isinstance(args, str):
+# 	# 	args = json.loads(args)
 
-	# from erpnext.accounts.party import get_payment_terms_template
+# 	# from erpnext.accounts.party import get_payment_terms_template
 
-	# doc = frappe.get_doc("Purchase Receipt", source_name)
-	# returned_qty_map = get_returned_qty_map(source_name)
-	# invoiced_qty_map = get_invoiced_qty_map(source_name)
+# 	# doc = frappe.get_doc("Purchase Receipt", source_name)
+# 	# returned_qty_map = get_returned_qty_map(source_name)
+# 	# invoiced_qty_map = get_invoiced_qty_map(source_name)
 
-	def set_missing_values(source, target):
-		# if len(target.get("items")) == 0:
-		# 	frappe.throw(_("All items have already been Invoiced/Returned"))
+# 	def set_missing_values(source, target):
+# 		# if len(target.get("items")) == 0:
+# 		# 	frappe.throw(_("All items have already been Invoiced/Returned"))
 
-		# doc = frappe.get_doc(target)
-		# doc.payment_terms_template = get_payment_terms_template(source.supplier, "Supplier", source.company)
-		# doc.run_method("onload")
-		# doc.run_method("set_missing_values")
-		gst_input_account = None
-		cost_center = source.cost_center
-		for tax in source.taxes:
-			if tax.is_gst == 1:
-				gst_input_account = tax.account_head
-		bank_account = frappe.db.get_value("Company", source.company, "default_bank_account")
-		gst_amount = total_charges = 0
-		post_gst_jv = 0
-		party_type = "Supplier"
-		party = source.supplier
-		target.tax_payment_jv = 1
-		target.purchase_invoice = source.name
-		target.voucher_type = 'Bank Entry'
-		target.naming_series = 'Bank Payment Voucher'
-		for tax in source.taxes:
-			if tax.is_gst == 0 and tax.is_custom_charges == 1:
-				custom_row = target.append("accounts")
-				custom_row.account = tax.account_head
-				custom_row.debit = flt(tax.base_tax_amount_after_discount_amount,2)
-				custom_row.debit_in_account_currency = flt(tax.base_tax_amount_after_discount_amount,2)
-				custom_row.cost_center = cost_center
-				custom_row.reference_type = "Purchase Order"
-				custom_row.reference_name = source.name
-				total_charges += tax.base_tax_amount_after_discount_amount
-			else:
-				gst_amount += tax.base_tax_amount_after_discount_amount
-				cost_center = tax.cost_center if tax.cost_center else cost_center
-				party_type = tax.party_type if tax.party_type else party_type
-				party = tax.party if tax.party else party
-				total_charges += tax.base_tax_amount_after_discount_amount
-		gst_row = target.append("accounts")
-		gst_row.account = gst_input_account
-		gst_row.party_type = party_type
-		gst_row.debit = flt(gst_amount,2)
-		gst_row.debit_in_account_currency = flt(gst_amount,2)
-		gst_row.cost_center = cost_center
-		gst_row.reference_type = "Purchase Order"
-		gst_row.reference_name = source.name
-		bank_row = target.append("accounts")
-		bank_row.account = bank_account
-		bank_row.credit = flt(total_charges,2)
-		bank_row.credit_in_account_currency = flt(total_charges,2)
-		bank_row.cost_center = cost_center
-		bank_row.reference_type = "Purchase Order"
-		bank_row.reference_name = source.name
+# 		# doc = frappe.get_doc(target)
+# 		# doc.payment_terms_template = get_payment_terms_template(source.supplier, "Supplier", source.company)
+# 		# doc.run_method("onload")
+# 		# doc.run_method("set_missing_values")
+# 		gst_input_account = None
+# 		cost_center = source.cost_center
+# 		for tax in source.taxes:
+# 			if tax.is_gst == 1:
+# 				gst_input_account = tax.account_head
+# 		bank_account = frappe.db.get_value("Company", source.company, "default_bank_account")
+# 		gst_amount = total_charges = 0
+# 		post_gst_jv = 0
+# 		party_type = "Supplier"
+# 		party = source.supplier
+# 		target.tax_payment_jv = 1
+# 		target.purchase_invoice = source.name
+# 		target.voucher_type = 'Bank Entry'
+# 		target.naming_series = 'Bank Payment Voucher'
+# 		for tax in source.taxes:
+# 			if tax.is_gst == 0 and tax.is_custom_charges == 1:
+# 				custom_row = target.append("accounts")
+# 				custom_row.account = tax.account_head
+# 				custom_row.debit = flt(tax.base_tax_amount_after_discount_amount,2)
+# 				custom_row.debit_in_account_currency = flt(tax.base_tax_amount_after_discount_amount,2)
+# 				custom_row.cost_center = cost_center
+# 				custom_row.reference_type = "Purchase Order"
+# 				custom_row.reference_name = source.name
+# 				total_charges += tax.base_tax_amount_after_discount_amount
+# 			else:
+# 				gst_amount += tax.base_tax_amount_after_discount_amount
+# 				cost_center = tax.cost_center if tax.cost_center else cost_center
+# 				party_type = tax.party_type if tax.party_type else party_type
+# 				party = tax.party if tax.party else party
+# 				total_charges += tax.base_tax_amount_after_discount_amount
+# 		gst_row = target.append("accounts")
+# 		gst_row.account = gst_input_account
+# 		gst_row.party_type = party_type
+# 		gst_row.debit = flt(gst_amount,2)
+# 		gst_row.debit_in_account_currency = flt(gst_amount,2)
+# 		gst_row.cost_center = cost_center
+# 		gst_row.reference_type = "Purchase Order"
+# 		gst_row.reference_name = source.name
+# 		bank_row = target.append("accounts")
+# 		bank_row.account = bank_account
+# 		bank_row.credit = flt(total_charges,2)
+# 		bank_row.credit_in_account_currency = flt(total_charges,2)
+# 		bank_row.cost_center = cost_center
+# 		bank_row.reference_type = "Purchase Order"
+# 		bank_row.reference_name = source.name
 
 
 
-	doclist = get_mapped_doc(
-		"Purchase Order",
-		source_name,
-		{
-			"Purchase Order": {
-				"doctype": "Journal Entry",
-				"validation": {
-					"docstatus": ["=", 1],
-				},
-			},
-		},
-		target_doc,
-		set_missing_values,
-	)
+# 	doclist = get_mapped_doc(
+# 		"Purchase Order",
+# 		source_name,
+# 		{
+# 			"Purchase Order": {
+# 				"doctype": "Journal Entry",
+# 				"validation": {
+# 					"docstatus": ["=", 1],
+# 				},
+# 			},
+# 		},
+# 		target_doc,
+# 		set_missing_values,
+# 	)
 
-	return doclist
+# 	return doclist
 
 
 

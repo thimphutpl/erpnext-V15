@@ -65,25 +65,7 @@ frappe.ui.form.on("Purchase Order", {
 		erpnext.accounts.dimensions.update_dimension(frm, frm.doctype);
 	},
 
-
-
-
 	refresh: function (frm) {
-
-		if (cur_frm.doc.supplier && cur_frm.doc.docstatus == 1) {
-			frappe.db.get_value("Supplier", frm.doc.supplier, "country", (r) => {
-				if (r.country == "Bhutan" && frm.doc.supplier && frm.doc.docstatus == 1) {
-					if (!cur_frm.doc.tax_payment_jv) {
-						cur_frm.add_custom_button(
-							__("Tax Payment Journal"),
-							make_tax_payment,
-							__("Create")
-						);
-					}
-				}
-			})
-
-		}
 		if (frm.doc.is_old_subcontracting_flow) {
 			frm.trigger("get_materials_from_supplier");
 
@@ -171,7 +153,6 @@ frappe.ui.form.on("Purchase Order", {
 		if (frm.is_new()) {
 			frm.set_value("advance_paid", 0);
 		}
-		set_taxes_and_charges_query(frm);
 	},
 	branch: function (frm) {
 		if (frm.is_new()) {
@@ -287,7 +268,16 @@ frappe.ui.form.on("Purchase Order", {
 		calculate_discount(frm)
 	},
 	supplier: function (frm) {
-		set_taxes_and_charges_query(frm);
+		check_and_set_tax_template(frm);
+	},
+
+	// When taxes_and_charges is manually changed
+	taxes_and_charges: function (frm) {
+		if (!frm.doc.taxes_and_charges || !frm.doc.taxes_and_charges == "") {
+			frm.set_value("taxes", []);
+			frm.refresh_field("taxes")
+		}
+		check_and_set_tax_template(frm);
 	}
 
 
@@ -483,41 +473,44 @@ frappe.ui.form.on("Purchase Order Item", {
 	},
 });
 
-function set_taxes_and_charges_query(frm) {
-	if (!frm.fields_dict.taxes_and_charges) return;
+function check_and_set_tax_template(frm) {
 	if (!frm.doc.supplier) return;
 
 	frappe.db.get_doc("Supplier", frm.doc.supplier).then(supplier => {
-		let filters = {
-			company: frm.doc.company,
-			docstatus: ["!=", 2]
-		};
 
-		let filter_list = [];
+		// Non-Bhutan suppliers → must use International template
+		if (supplier.country !== "Bhutan") {
 
-		if (supplier.supplier_type === "Domestic Vendor") {
-			filter_list.push(["domestic_vendor", "=", 1]);
-		}
-		if (supplier.supplier_type === "Indian Vendor") {
-			filter_list.push(["indian_vendor", "=", 1]);
-		}
-		if (supplier.supplier_type === "International Vendor") {
-			filter_list.push(["international_vendor", "=", 1]);
-		}
+			const intl_template = "GST 5% (International) - CDCL";
 
-		// Only add `or` if multiple checkboxes exist
-		if (filter_list.length === 1) {
-			// Single condition: just merge it
-			filters[filter_list[0][0]] = filter_list[0][2];
-		} else if (filter_list.length > 1) {
-			filters["or"] = filter_list;
-		}
+			// Filter Taxes and Charges to only show International template
+			frm.set_query("taxes_and_charges", function () {
+				return {
+					filters: {
+						company: frm.doc.company,
+						docstatus: ["!=", 2],
+						title: ["=", intl_template]
+					}
+				};
+			});
 
-		frm.set_query("taxes_and_charges", function () {
-			return { filters };
-		});
+
+
+		} else {
+			// For Bhutan suppliers → you can implement domestic logic here if needed
+			frm.set_query("taxes_and_charges", function () {
+				return {
+					filters: {
+						company: frm.doc.company,
+						docstatus: ["!=", 2],
+						title: ["=", "GST 5% (Domestic) - CDCL"]
+					}
+				};
+			});
+		}
 	});
 }
+
 
 
 
@@ -1016,12 +1009,12 @@ cur_frm.fields_dict["items"].grid.get_field("project").get_query = function (doc
 	};
 };
 
-var make_tax_payment = function () {
-	frappe.model.open_mapped_doc({
-		method: "erpnext.buying.doctype.purchase_order.purchase_order.make_tax_payment",
-		frm: cur_frm,
-	});
-}
+// var make_tax_payment = function () {
+// 	frappe.model.open_mapped_doc({
+// 		method: "erpnext.buying.doctype.purchase_order.purchase_order.make_tax_payment",
+// 		frm: cur_frm,
+// 	});
+// }
 
 
 if (cur_frm.doc.is_old_subcontracting_flow) {
