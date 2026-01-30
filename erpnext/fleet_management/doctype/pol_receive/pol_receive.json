@@ -556,16 +556,17 @@
    "default": "0",
    "fieldname": "apply_gst",
    "fieldtype": "Check",
-   "label": "Apply GST 5% on Total Fuel Amount",
-   "read_only": 1
+   "label": "Apply GST 5% on Total Fuel Amount"
   },
   {
+   "depends_on": "apply_gst",
    "fieldname": "gst_amount",
    "fieldtype": "Currency",
    "label": "GST Amount",
    "read_only": 1
   },
   {
+   "depends_on": "apply_gst",
    "fieldname": "total_fuel_amount",
    "fieldtype": "Currency",
    "label": "Total Fuel Amount"
@@ -574,7 +575,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-01-29 16:10:34.354972",
+ "modified": "2026-01-30 15:06:48.493979",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Receive",

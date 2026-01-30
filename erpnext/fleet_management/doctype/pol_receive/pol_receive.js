@@ -129,6 +129,9 @@ frappe.ui.form.on('POL Receive', {
 		frm.refresh_fields("items")
 		calculate_total(frm)
 	},
+	apply_gst: function(frm){
+		calculate_total(frm)
+	},
 	get_pol_advance:function(frm){
 		populate_child_table(frm)
 	},
@@ -247,21 +250,35 @@ var populate_child_table=(frm)=>{
 	}
 }
 function calculate_total(frm) {
-	if(frm.doc.qty && frm.doc.rate) {
-		frm.set_value("apply_gst", 1)
-		frm.set_value("total_fuel_amount",frm.doc.qty * frm.doc.rate)
-		frm.set_value("gst_amount",(frm.doc.qty * frm.doc.rate)*0.05)
-		frm.set_value("total_amount", (frm.doc.qty * frm.doc.rate)+((frm.doc.qty * frm.doc.rate)*0.05))
-		frm.set_value("outstanding_amount", (frm.doc.qty * frm.doc.rate)+((frm.doc.qty * frm.doc.rate)*0.05))
+	if (frm.doc.apply_gst){
+		if(frm.doc.qty && frm.doc.rate) {
+			frm.set_value("total_fuel_amount",frm.doc.qty * frm.doc.rate)
+			frm.set_value("gst_amount",(frm.doc.qty * frm.doc.rate)*0.05)
+			frm.set_value("total_amount", (frm.doc.qty * frm.doc.rate)+((frm.doc.qty * frm.doc.rate)*0.05))
+			frm.set_value("outstanding_amount", (frm.doc.qty * frm.doc.rate)+((frm.doc.qty * frm.doc.rate)*0.05))
+		}
+		if(frm.doc.qty && frm.doc.rate && frm.doc.discount_amount) {
+			frm.set_value("total_fuel_amount",(frm.doc.qty * frm.doc.rate) - frm.doc.discount_amount)
+			frm.set_value("gst_amount",((frm.doc.qty * frm.doc.rate) - frm.doc.discount_amount)*0.05)
+			frm.set_value("total_amount", ((frm.doc.qty * frm.doc.rate) - frm.doc.discount_amount)+((frm.doc.qty * frm.doc.rate)*0.05))
+			frm.set_value("outstanding_amount", ((frm.doc.qty * frm.doc.rate) - frm.doc.discount_amount)+(((frm.doc.qty * frm.doc.rate) - frm.doc.discount_amount)*0.05))
+		}
+	}else{
+		if(frm.doc.qty && frm.doc.rate) {
+			frm.set_value("total_fuel_amount",frm.doc.qty * frm.doc.rate)
+			frm.set_value("gst_amount",0)
+			frm.set_value("total_amount",frm.doc.qty * frm.doc.rate)
+			frm.set_value("outstanding_amount",frm.doc.qty * frm.doc.rate)
+		}
+	
+		if(frm.doc.qty && frm.doc.rate && frm.doc.discount_amount) {
+			frm.set_value("total_fuel_amount",(frm.doc.qty * frm.doc.rate) - frm.doc.discount_amount)
+			frm.set_value("gst_amount",0)
+			frm.set_value("total_amount", (frm.doc.qty * frm.doc.rate) - frm.doc.discount_amount)
+			frm.set_value("outstanding_amount", (frm.doc.qty * frm.doc.rate) - frm.doc.discount_amount)
+		}
 	}
-
-	if(frm.doc.qty && frm.doc.rate && frm.doc.discount_amount) {
-		frm.set_value("apply_gst", 1)
-		frm.set_value("total_fuel_amount",(frm.doc.qty * frm.doc.rate) - frm.doc.discount_amount)
-		frm.set_value("gst_amount",((frm.doc.qty * frm.doc.rate) - frm.doc.discount_amount)*0.05)
-		frm.set_value("total_amount", ((frm.doc.qty * frm.doc.rate) - frm.doc.discount_amount)+((frm.doc.qty * frm.doc.rate)*0.05))
-		frm.set_value("outstanding_amount", ((frm.doc.qty * frm.doc.rate) - frm.doc.discount_amount)+(((frm.doc.qty * frm.doc.rate) - frm.doc.discount_amount)*0.05))
-	}
+	
 }	
 
 var set_equipment_filter=function(frm){

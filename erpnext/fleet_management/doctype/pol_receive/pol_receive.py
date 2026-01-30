@@ -167,11 +167,11 @@ class POLReceive(StockController):
 	def calculate_amount(self):
 		if not self.qty or not self.rate:
 			frappe.throw("Qty and rate are required")
-		self.apply_gst =1
 		self.total_fuel_amount = flt(self.qty)* flt(self.rate)
-		self.gst_amount = self.total_fuel_amount * 0.05
-		self.total_amount = self.total_fuel_amount + self.gst_amount
-		self.outstanding_amount = self.total_amount
+		if self.apply_gst:
+			self.gst_amount = self.total_fuel_amount * 0.05
+			self.total_amount = self.total_fuel_amount + self.gst_amount
+			self.outstanding_amount = self.total_amount
 
 	# Fetch equipment_type from Equipment
 	def validate_dc(self):
@@ -340,15 +340,16 @@ class POLReceive(StockController):
 					 "cost_center": cost_center,
 			})
 		)
-		gl_entries.append(
-			self.get_gl_dict({"account": gst_account,
-					 "debit": flt(self.gst_amount),
-					 "debit_in_account_currency": flt(self.gst_amount),
-					 "party_type": "Supplier",
-					 "party": self.supplier,
-					 "cost_center": cost_center,
-			})
-		)
+		if self.apply_gst:
+			gl_entries.append(
+				self.get_gl_dict({"account": gst_account,
+						"debit": flt(self.gst_amount),
+						"debit_in_account_currency": flt(self.gst_amount),
+						"party_type": "Supplier",
+						"party": self.supplier,
+						"cost_center": cost_center,
+				})
+			)
 
 		gl_entries.append(
 			self.get_gl_dict({"account": creditor_account,
