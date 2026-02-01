@@ -111,6 +111,7 @@
   "references_section",
   "material_request",
   "purchase_order",
+  "journal_no",
   "column_break_rndc",
   "material_request_date",
   "purchase_order_date",
@@ -1358,13 +1359,19 @@
    "fieldname": "challan_date",
    "fieldtype": "Date",
    "label": "Challan Date"
+  },
+  {
+   "fieldname": "journal_no",
+   "fieldtype": "Link",
+   "label": "Journal No",
+   "options": "Journal Entry"
   }
  ],
  "icon": "fa fa-truck",
  "idx": 261,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-01-28 17:31:12.817598",
+ "modified": "2026-01-31 16:19:51.300461",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Purchase Receipt",

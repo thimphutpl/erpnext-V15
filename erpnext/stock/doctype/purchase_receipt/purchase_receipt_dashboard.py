@@ -5,6 +5,7 @@ def get_data():
 	return {
 		"fieldname": "purchase_receipt_no",
 		"non_standard_fieldnames": {
+			"Journal Entry": "reference_name",
 			"Purchase Invoice": "purchase_receipt",
 			"Asset": "purchase_receipt",
 			"Landed Cost Voucher": "receipt_document",
@@ -16,12 +17,12 @@ def get_data():
 			"Material Request": ["items", "material_request"],
 			"Purchase Order": ["items", "purchase_order"],
 			"Project": ["items", "project"],
-			"Quality Inspection": ["items", "quality_inspection"],
+			"Quality Inspection": ["items", "quality_inspection"]
 		},
 		"transactions": [
 			{
 				"label": _("Related"),
-				"items": ["Purchase Invoice", "Landed Cost Voucher", "Asset", "Stock Reservation Entry"],
+				"items": ["Purchase Invoice", "Landed Cost Voucher", "Asset", "Stock Reservation Entry","Journal Entry"],
 			},
 			{
 				"label": _("Reference"),
@@ -29,5 +30,6 @@ def get_data():
 			},
 			{"label": _("Returns"), "items": ["Purchase Receipt"]},
 			{"label": _("Subscription"), "items": ["Auto Repeat"]},
+			
 		],
 	}

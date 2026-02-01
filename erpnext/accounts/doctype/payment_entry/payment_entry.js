@@ -90,7 +90,7 @@ frappe.ui.form.on("Payment Entry", {
 			frm.events.validate_company(frm);
 
 			var account_types = ["Receive", "Internal Transfer"].includes(frm.doc.payment_type)
-				? ["Bank", "Cash", "Tax","Receivable"]
+				? ["Bank", "Cash", "Tax", "Receivable"]
 				: [frappe.boot.party_account_types[frm.doc.party_type]];
 			return {
 				filters: {
@@ -174,9 +174,9 @@ frappe.ui.form.on("Payment Entry", {
 			};
 		});
 
-		frm.set_query("party_type", "deductions", function(){
+		frm.set_query("party_type", "deductions", function () {
 			return {
-				filters: {"name": ["in", ["Customer", "Supplier","Employee"]]}
+				filters: { "name": ["in", ["Customer", "Supplier", "Employee"]] }
 			}
 		});
 	},
@@ -240,8 +240,8 @@ frappe.ui.form.on("Payment Entry", {
 		frm.toggle_display(
 			"target_exchange_rate",
 			frm.doc.received_amount &&
-				frm.doc.paid_to_account_currency != company_currency &&
-				frm.doc.paid_from_account_currency != frm.doc.paid_to_account_currency
+			frm.doc.paid_to_account_currency != company_currency &&
+			frm.doc.paid_from_account_currency != frm.doc.paid_to_account_currency
 		);
 
 		frm.toggle_display("base_paid_amount", frm.doc.paid_from_account_currency != company_currency);
@@ -261,24 +261,24 @@ frappe.ui.form.on("Payment Entry", {
 		frm.toggle_display(
 			"base_received_amount",
 			frm.doc.paid_to_account_currency != company_currency &&
-				frm.doc.paid_from_account_currency != frm.doc.paid_to_account_currency &&
-				frm.doc.base_paid_amount != frm.doc.base_received_amount
+			frm.doc.paid_from_account_currency != frm.doc.paid_to_account_currency &&
+			frm.doc.base_paid_amount != frm.doc.base_received_amount
 		);
 
 		frm.toggle_display(
 			"received_amount",
 			frm.doc.payment_type == "Internal Transfer" ||
-				frm.doc.paid_from_account_currency != frm.doc.paid_to_account_currency
+			frm.doc.paid_from_account_currency != frm.doc.paid_to_account_currency
 		);
 
 		frm.toggle_display(
 			["base_total_allocated_amount"],
 			frm.doc.paid_amount &&
-				frm.doc.received_amount &&
-				frm.doc.base_total_allocated_amount &&
-				((frm.doc.payment_type == "Receive" &&
-					frm.doc.paid_from_account_currency != company_currency) ||
-					(frm.doc.payment_type == "Pay" && frm.doc.paid_to_account_currency != company_currency))
+			frm.doc.received_amount &&
+			frm.doc.base_total_allocated_amount &&
+			((frm.doc.payment_type == "Receive" &&
+				frm.doc.paid_from_account_currency != company_currency) ||
+				(frm.doc.payment_type == "Pay" && frm.doc.paid_to_account_currency != company_currency))
 		);
 
 		var party_amount = frm.doc.payment_type == "Receive" ? frm.doc.paid_amount : frm.doc.received_amount;
@@ -588,7 +588,7 @@ frappe.ui.form.on("Payment Entry", {
 
 								if (
 									frm.doc.payment_type == "Receive" &&
-									currency_field == "paid_to_account_currency" && 
+									currency_field == "paid_to_account_currency" &&
 									frm.doc.mode_of_payment == "Cheque"
 								) {
 									frm.toggle_reqd(
@@ -599,7 +599,7 @@ frappe.ui.form.on("Payment Entry", {
 										frm.events.paid_amount(frm);
 								} else if (
 									frm.doc.payment_type == "Pay" &&
-									currency_field == "paid_from_account_currency" && 
+									currency_field == "paid_from_account_currency" &&
 									frm.doc.mode_of_payment == "Cheque"
 								) {
 									frm.toggle_reqd(
@@ -612,7 +612,7 @@ frappe.ui.form.on("Payment Entry", {
 
 									if (
 										frm.doc.paid_from_account_currency ==
-											frm.doc.paid_to_account_currency &&
+										frm.doc.paid_to_account_currency &&
 										frm.doc.paid_amount != frm.doc.received_amount
 									) {
 										if (
@@ -1158,7 +1158,7 @@ frappe.ui.form.on("Payment Entry", {
 				frm.doc.payment_type == "Receive" &&
 				frm.doc.base_total_allocated_amount < frm.doc.base_received_amount + total_deductions &&
 				frm.doc.total_allocated_amount <
-					frm.doc.paid_amount + total_deductions / frm.doc.source_exchange_rate
+				frm.doc.paid_amount + total_deductions / frm.doc.source_exchange_rate
 			) {
 				unallocated_amount =
 					(frm.doc.base_received_amount +
@@ -1170,7 +1170,7 @@ frappe.ui.form.on("Payment Entry", {
 				frm.doc.payment_type == "Pay" &&
 				frm.doc.base_total_allocated_amount < frm.doc.base_paid_amount - total_deductions &&
 				frm.doc.total_allocated_amount <
-					frm.doc.received_amount + total_deductions / frm.doc.target_exchange_rate
+				frm.doc.received_amount + total_deductions / frm.doc.target_exchange_rate
 			) {
 				unallocated_amount =
 					(frm.doc.base_paid_amount +
@@ -1185,8 +1185,8 @@ frappe.ui.form.on("Payment Entry", {
 
 	set_difference_amount: function (frm) {
 		var difference_amount = 0;
-		if(frm.doc.party) {
-			var party_amount = frm.doc.payment_type=="Receive" ?
+		if (frm.doc.party) {
+			var party_amount = frm.doc.payment_type == "Receive" ?
 				frm.doc.paid_amount : frm.doc.received_amount;
 		}
 
@@ -1205,10 +1205,10 @@ frappe.ui.form.on("Payment Entry", {
 		// }
 
 		// Ver 1.0 Begins added by SSK on 15/08/2016, following code is added
-		if(frm.doc.payment_type == "Receive"){
+		if (frm.doc.payment_type == "Receive") {
 			difference_amount = frm.doc.total_allocated_amount - party_amount;
 		}
-		else{
+		else {
 			difference_amount = party_amount - frm.doc.total_allocated_amount;
 		}
 		// Ver 1.0 Ends
@@ -1459,7 +1459,7 @@ frappe.ui.form.on("Payment Entry", {
 			console.log(frm.doc.base_paid_amount)
 			var ded = frm.doc.references || [];
 			// var total_amount = 0.0;
-			
+
 			// for(var i=0; i<ded.length; i++){
 			// 	if (ded[i].total_amount){
 			// 		total_amount += parseFloat(ded[i].total_amount);
@@ -1822,11 +1822,11 @@ frappe.ui.form.on("Payment Entry", {
 });
 
 /* ePayment Begins */
-var create_custom_buttons = function(frm){
+var create_custom_buttons = function (frm) {
 	var status = ["Failed", "Upload Failed", "Cancelled", "Payment Failed", "Payment Cancelled"];
 
-	if(frm.doc.docstatus == 1 && frm.doc.payment_type == "Pay" && (frm.doc.party_type == 'Supplier' || frm.doc.party_type == 'Employee') ){
-		if(!frm.doc.bank_payment || status.includes(frm.doc.payment_status) ){
+	if (frm.doc.docstatus == 1 && frm.doc.payment_type == "Pay" && (frm.doc.party_type == 'Supplier' || frm.doc.party_type == 'Employee')) {
+		if (!frm.doc.bank_payment || status.includes(frm.doc.payment_status)) {
 			frm.page.set_primary_action(__('Process Payment'), () => {
 				frappe.model.open_mapped_doc({
 					method: "erpnext.accounts.doctype.payment_entry.payment_entry.make_bank_payment",

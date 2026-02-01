@@ -1605,7 +1605,10 @@ class PaymentEntry(AccountsController):
 
 	def get_current_tax_amount(self, tax):
 		tax_rate = tax.rate
-
+		total=0
+		for reference in self.references:
+			total= reference.total_amount
+		
 		# To set row_id by default as previous row.
 		if tax.charge_type in ["On Previous Row Amount", "On Previous Row Total"]:
 			if tax.idx == 1:
@@ -1621,7 +1624,8 @@ class PaymentEntry(AccountsController):
 		if tax.charge_type == "Actual":
 			current_tax_amount = flt(tax.tax_amount, self.precision("tax_amount", tax))
 		elif tax.charge_type == "On Paid Amount":
-			current_tax_amount = (tax_rate / 100.0) * self.paid_amount_after_tax
+			# current_tax_amount = (tax_rate / 100.0) * self.paid_amount_after_tax
+			current_tax_amount = (tax_rate / 100.0) * total
 		elif tax.charge_type == "On Previous Row Amount":
 			current_tax_amount = (tax_rate / 100.0) * self.get("taxes")[cint(tax.row_id) - 1].tax_amount
 

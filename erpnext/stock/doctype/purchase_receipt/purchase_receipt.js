@@ -70,6 +70,19 @@ frappe.ui.form.on("Purchase Receipt", {
 		erpnext.queries.setup_queries(frm, "Warehouse", function () {
 			return erpnext.queries.warehouse(frm.doc);
 		});
+		check_and_set_tax_template(frm);
+	},
+	supplier: function (frm) {
+		check_and_set_tax_template(frm);
+	},
+
+	// When taxes_and_charges is manually changed
+	taxes_and_charges: function (frm) {
+		if (!frm.doc.taxes_and_charges || !frm.doc.taxes_and_charges == "") {
+			frm.set_value("taxes", []);
+			frm.refresh_field("taxes")
+		}
+		check_and_set_tax_template(frm);
 	},
 
 	refresh: function (frm) {
@@ -78,9 +91,10 @@ frappe.ui.form.on("Purchase Receipt", {
 		}
 		if (cur_frm.doc.supplier && cur_frm.doc.docstatus == 1) {
 			frappe.db.get_value("Supplier", frm.doc.supplier, "country", (r) => {
-				if (r.country == "Bhutan" && frm.doc.supplier && frm.doc.docstatus == 1) {
+				if (r.country != "Bhutan" && frm.doc.supplier && frm.doc.docstatus == 1) {
 					if (!cur_frm.doc.tax_payment_jv) {
 						cur_frm.add_custom_button(
+
 							__("Tax Payment Journal"),
 							make_tax_payment,
 							__("Create")
@@ -216,15 +230,61 @@ var make_tax_payment = function () {
 	frappe.model.open_mapped_doc({
 		method: "erpnext.stock.doctype.purchase_receipt.purchase_receipt.make_tax_payment",
 		frm: cur_frm,
+
+
+
 	});
+
 }
+
 
 function calculate_discount(frm) {
 	cur_frm.set_value("total_add_ded", frm.doc.freight_and_insurance_charges + frm.doc.other_charges + frm.doc.tax - frm.doc.discount)
 	cur_frm.set_value("discount_amount", -frm.doc.freight_and_insurance_charges - frm.doc.other_charges - frm.doc.tax + frm.doc.discount)
 	cur_frm.refresh_field("discount_amount")
 	cur_frm.refresh_field("total_add_ded")
+	cur_frm.refresh_field("net_total");
 }
+
+
+function check_and_set_tax_template(frm) {
+	if (!frm.doc.supplier) return;
+
+	frappe.db.get_doc("Supplier", frm.doc.supplier).then(supplier => {
+
+		// Non-Bhutan suppliers → must use International template
+		if (supplier.country !== "Bhutan") {
+
+			const intl_template = "GST 5% (International) - CDCL";
+
+			// Filter Taxes and Charges to only show International template
+			frm.set_query("taxes_and_charges", function () {
+				return {
+					filters: {
+						company: frm.doc.company,
+						docstatus: ["!=", 2],
+						title: ["=", intl_template]
+					}
+				};
+			});
+
+
+
+		} else {
+			// For Bhutan suppliers → you can implement domestic logic here if needed
+			frm.set_query("taxes_and_charges", function () {
+				return {
+					filters: {
+						company: frm.doc.company,
+						docstatus: ["!=", 2],
+						title: ["=", "GST 5% (Domestic) - CDCL"]
+					}
+				};
+			});
+		}
+	});
+}
+
 
 erpnext.stock.PurchaseReceiptController = class PurchaseReceiptController extends (
 	erpnext.buying.BuyingController

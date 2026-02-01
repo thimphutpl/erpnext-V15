@@ -221,6 +221,7 @@ class PurchaseOrder(BuyingController):
 		# self.grand_total += t_a_c
 		# self.base_grand_total = self.grand_total * self.conversion_rate
 
+		
 	def warehouse_from_branch(doc):
 		branchname=doc.branch
 		query = """
@@ -774,9 +775,8 @@ def set_missing_values(source, target):
 	target.run_method("set_missing_values")
 	target.run_method("calculate_taxes_and_totals")
 
-
 @frappe.whitelist()
-def make_purchase_receipt(source_name, target_doc=None):
+def make_purchase_receipt(source_name, target_doc=None, ignore_permissions=False):
 	def update_item(obj, target, source_parent):
 		target.qty = flt(obj.qty) - flt(obj.received_qty)
 		target.stock_qty = (flt(obj.qty) - flt(obj.received_qty)) * flt(obj.conversion_factor)
@@ -784,88 +784,66 @@ def make_purchase_receipt(source_name, target_doc=None):
 		target.base_amount = (
 			(flt(obj.qty) - flt(obj.received_qty)) * flt(obj.rate) * flt(source_parent.conversion_rate)
 		)
+	def update_other_charges(source, target, sp):	
+		target.discount = flt(target.discount) + flt(source.discount)
+		target.tax = flt(target.tax) + flt(source.tax)
+		target.other_charges = flt(target.other_charges) + flt(source.other_charges)
+		target.freight_and_insurance_charges = flt(target.freight_and_insurance_charges) + flt(source.freight_and_insurance_charges)
+		target.total_add_ded = flt(target.freight_and_insurance_charges) - flt(target.discount) + flt(target.tax) + flt(target.other_charges)
+		target.discount_amount = -1 * flt(target.total_add_ded)
+	
 	# def set_missing_values(source, target):
-	# 	# target.discount = source.discount
-	# 	# target.freight_and_insurance_charges = source.freight_and_insurance_charges
-	# 	# target.other_charges = source.other_charges
-	# 	# target.total_add_ded = source.total_add_ded
-	# 	# target.base_grand_total = source.base_grand_total
-	# 	target.run_method("set_missing_values")
-	# 	target.run_method("calculate_taxes_and_totals")
-	def set_missing_values(source, target):
-		target.run_method("set_missing_values")
-
-		# -----------------------------
-		# Check if this is full receipt
-		# -----------------------------
-		full_receipt = all(flt(i.received_qty) == 0 for i in source.items)
-
-
-		if full_receipt:
-			# Copy PO totals exactly
-			target.discount_amount = source.discount_amount
-			target.base_discount_amount = source.base_discount_amount
-			target.freight_and_insurance_charges = source.freight_and_insurance_charges
-			target.other_charges = source.other_charges
-			target.total_add_ded = source.total_add_ded
-
-			# Copy taxes exactly
-			for i, tax in enumerate(target.taxes):
-				tax.tax_amount = source.taxes[i].tax_amount
-				tax.base_tax_amount = source.taxes[i].base_tax_amount
-		else:
-			# Partial receipt → proportional calculation
-			po_item_total = sum(flt(i.base_amount) for i in source.items)
-			pr_item_total = sum(flt(i.base_amount) for i in target.items)
-			ratio = pr_item_total / po_item_total if po_item_total else 0
-
-			target.discount_amount = flt(source.discount_amount) * ratio
-			target.base_discount_amount = flt(source.base_discount_amount) * ratio
-
-			for i, tax in enumerate(target.taxes):
-				tax.tax_amount = flt(source.taxes[i].tax_amount) * ratio
-				tax.base_tax_amount = flt(source.taxes[i].base_tax_amount) * ratio
-
-		# Recalculate totals cleanly
-		target.discount_amount_applied = 0
-		target.run_method("calculate_taxes_and_totals")
+	# 	target.freight_and_insurance_charges = source.freight_and_insurance_charges
+	# 	target.discount = source.discount
+	# 	target.other_charges = source.other_charges
+	# 	target.total_add_ded = source.total_add_ded
+		
+	
+	
+	
+	
+	fields = {
+		"Purchase Order": {
+			"doctype": "Purchase Receipt",
+			"field_map": {
+				"supplier_warehouse": "supplier_warehouse",
+				"material_request_date": "material_request_date",
+				"purchase_order_date": "transaction_date",
+				"material_request": "material_request",
+				
+			},
+			"validation": {
+				"docstatus": ["=", 1],
+			},
+			"postprocess": update_other_charges,
+		},
+		"Purchase Order Item": {
+			"doctype": "Purchase Receipt Item",
+			"field_map": {
+				"name": "purchase_order_item",
+				"parent": "purchase_order",
+				"bom": "bom",
+				"material_request": "material_request",
+				"material_request_item": "material_request_item",
+				"sales_order": "sales_order",
+				"sales_order_item": "sales_order_item",
+				"wip_composite_asset": "wip_composite_asset",
+				
+			},
+			"postprocess": update_item,
+			"condition": lambda doc: abs(doc.received_qty) < abs(doc.qty)
+			and doc.delivered_by_supplier != 1,
+		},
+		"Purchase Taxes and Charges": {"doctype": "Purchase Taxes and Charges", "add_if_empty": True},
+	}
 	
 	doc = get_mapped_doc(
 		"Purchase Order",
 		source_name,
-		{
-			"Purchase Order": {
-				"doctype": "Purchase Receipt",
-				"field_map": {
-					"supplier_warehouse": "supplier_warehouse",
-					"material_request_date": "material_request_date",
-					"purchase_order_date": "transaction_date",
-					"material_request": "material_request",
-				},
-				"validation": {
-					"docstatus": ["=", 1],
-				},
-			},
-			"Purchase Order Item": {
-				"doctype": "Purchase Receipt Item",
-				"field_map": {
-					"name": "purchase_order_item",
-					"parent": "purchase_order",
-					"bom": "bom",
-					"material_request": "material_request",
-					"material_request_item": "material_request_item",
-					"sales_order": "sales_order",
-					"sales_order_item": "sales_order_item",
-					"wip_composite_asset": "wip_composite_asset",
-				},
-				"postprocess": update_item,
-				"condition": lambda doc: abs(doc.received_qty) < abs(doc.qty)
-				and doc.delivered_by_supplier != 1,
-			},
-			"Purchase Taxes and Charges": {"doctype": "Purchase Taxes and Charges", "add_if_empty": True},
-		},
+		fields,
 		target_doc,
 		set_missing_values,
+		ignore_permissions=ignore_permissions,
 	)
 
 	return doc
