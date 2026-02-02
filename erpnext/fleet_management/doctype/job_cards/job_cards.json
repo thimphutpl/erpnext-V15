@@ -50,10 +50,14 @@
   "section_break_2",
   "get_items",
   "items",
+  "section_break_rekd",
+  "included_gst",
   "section_break_15",
   "goods_amount",
   "column_break_the",
   "services_amount",
+  "column_break_gjyv",
+  "total_gst_amount",
   "column_break_199",
   "total_amount",
   "column_break_34",
@@ -234,7 +238,7 @@
    "fieldname": "repair_type",
    "fieldtype": "Select",
    "label": "Job Type",
-   "options": "Minor Repair\nMajor Repair"
+   "options": "Minor Repair\nMajor Repair\nCleaning"
   },
   {
    "fieldname": "section_break_5",
@@ -478,12 +482,32 @@
    "fieldname": "mechanical_payment",
    "fieldtype": "Read Only",
    "label": "Mechanical Payment"
+  },
+  {
+   "fieldname": "section_break_rekd",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "included_gst",
+   "fieldtype": "Check",
+   "label": "Included GST",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_gjyv",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_gst_amount",
+   "fieldtype": "Currency",
+   "label": "Total GST Amount"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-03-17 16:20:59.932494",
+ "modified": "2026-02-01 10:29:33.250153",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Job Cards",

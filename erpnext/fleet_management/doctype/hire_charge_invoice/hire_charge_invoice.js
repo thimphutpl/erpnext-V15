@@ -2,6 +2,25 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on('Hire Charge Invoice', {
+	taxes_and_charges: function (frm) {
+		if (frm.doc.taxes_and_charges) {
+			get_gst_account_from_template(frm);
+		}
+		calculate_gst_amount(frm);
+	},
+	total_invoice_amount: function (frm) {
+		calculate_gst_amount(frm);
+	},
+	apply_gst: function (frm) {
+		// Only calculate if checkbox is checked
+		if (frm.doc.apply_gst) {
+			calculate_gst_amount(frm);
+		} else {
+			// Reset GST if unchecked
+			frm.set_value('gst_amount', 0);
+			frm.set_value('total_gst_amount', 0);
+		}
+	},
 	refresh: function (frm) {
 		if (frm.doc.docstatus === 1) {
 			frm.add_custom_button(__('Accounting Ledger'), function () {
@@ -48,34 +67,34 @@ frappe.ui.form.on('Hire Charge Invoice', {
 	// 		frm.set_value("posting_date", get_today());
 	// 	}
 	// },
-onload: function (frm) {
-    // Set today's date if empty
-    if (!frm.doc.posting_date) {
-        frm.set_value('posting_date', frappe.datetime.get_today());
-    }
+	onload: function (frm) {
+		// Set today's date if empty
+		if (!frm.doc.posting_date) {
+			frm.set_value('posting_date', frappe.datetime.get_today());
+		}
 
-    // Make sure field is editable
-    frm.set_df_property('posting_date', 'read_only', 0);
+		// Make sure field is editable
+		frm.set_df_property('posting_date', 'read_only', 0);
 
-    // Apply datepicker restriction after field is ready
-    frappe.after_ajax(() => {
-        if (frm.fields_dict.posting_date && frm.fields_dict.posting_date.df.fieldtype === "Date") {
-            // Convert today's date to JS Date object
-            let today = frappe.datetime.str_to_obj(frappe.datetime.get_today());
-            
-            // Update datepicker maxDate
-            frm.fields_dict.posting_date.datepicker.update({
-                maxDate: today
-            });
-        }
-    });
-},
+		// Apply datepicker restriction after field is ready
+		frappe.after_ajax(() => {
+			if (frm.fields_dict.posting_date && frm.fields_dict.posting_date.df.fieldtype === "Date") {
+				// Convert today's date to JS Date object
+				let today = frappe.datetime.str_to_obj(frappe.datetime.get_today());
 
-validate: function (frm) {
-    if (frm.doc.posting_date > frappe.datetime.get_today()) {
-        frappe.throw(__('Future dates are not allowed.'));
-    }
-},
+				// Update datepicker maxDate
+				frm.fields_dict.posting_date.datepicker.update({
+					maxDate: today
+				});
+			}
+		});
+	},
+
+	validate: function (frm) {
+		if (frm.doc.posting_date > frappe.datetime.get_today()) {
+			frappe.throw(__('Future dates are not allowed.'));
+		}
+	},
 
 
 	"get_vehicle_logbooks": function (frm) {
@@ -293,3 +312,31 @@ cur_frm.cscript.receive_payment = function () {
 	});
 }
 
+function calculate_gst_amount(frm) {
+	let total_invoice_amount = frm.doc.total_invoice_amount || 0;
+
+	let gst_rate = frm.doc.tax_rate || 0; // from taxes template
+	let gst_amount = total_invoice_amount * gst_rate / 100;
+	let total_gst_amount = total_invoice_amount + gst_amount;
+
+	frm.set_value('gst_amount', gst_amount);
+	frm.set_value('total_gst_amount', total_gst_amount);
+}
+
+
+// Get GST account & rate from taxes template
+function get_gst_account_from_template(frm) {
+	if (!frm.doc.taxes_and_charges) return;
+
+	frappe.call({
+		method: "erpnext.fleet_management.doctype.hire_charge_invoice.hire_charge_invoice.get_taxes_for_template",
+		args: { template_name: frm.doc.taxes_and_charges },
+		callback: function (r) {
+			if (r.message && r.message.length) {
+				const tax = r.message[0];
+				frm.set_value('account_head', tax.account_head);
+				frm.set_value('tax_rate', flt(tax.rate));
+			}
+		}
+	});
+}

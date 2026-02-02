@@ -17,6 +17,14 @@
   "quantity",
   "column_break_wjzi",
   "imprest",
+  "gst_details_section",
+  "taxes_and_charges",
+  "account_head",
+  "tax_rate",
+  "column_break_lfqv",
+  "gst_amount",
+  "total_gst_amount",
+  "apply_gst",
   "section_break_crsb",
   "stock_entry",
   "column_break_ekpc",
@@ -106,12 +114,59 @@
    "fieldtype": "Link",
    "label": "Checked By",
    "options": "Employee"
+  },
+  {
+   "fieldname": "gst_details_section",
+   "fieldtype": "Section Break",
+   "label": "GST Details"
+  },
+  {
+   "fieldname": "tax_rate",
+   "fieldtype": "Float",
+   "label": "Tax Rate",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_lfqv",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "gst_amount",
+   "fieldtype": "Float",
+   "label": "GST Amount",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_gst_amount",
+   "fieldtype": "Float",
+   "label": "Total GST Amount",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "apply_gst",
+   "fieldtype": "Check",
+   "label": "Apply GST"
+  },
+  {
+   "fieldname": "taxes_and_charges",
+   "fieldtype": "Link",
+   "label": "Purchase Taxes and Charges Template",
+   "options": "Sales Taxes and Charges Template"
+  },
+  {
+   "fieldname": "account_head",
+   "fieldtype": "Data",
+   "label": "Account Head",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-01-20 11:49:33.055020",
+ "modified": "2026-01-26 15:17:59.676159",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Job Cards Item",

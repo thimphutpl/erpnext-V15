@@ -89,21 +89,7 @@ frappe.ui.form.on("Purchase Receipt", {
 		if (frm.doc.company) {
 			frm.trigger("toggle_display_account_head");
 		}
-		if (cur_frm.doc.supplier && cur_frm.doc.docstatus == 1) {
-			frappe.db.get_value("Supplier", frm.doc.supplier, "country", (r) => {
-				if (r.country != "Bhutan" && frm.doc.supplier && frm.doc.docstatus == 1) {
-					if (!cur_frm.doc.tax_payment_jv) {
-						cur_frm.add_custom_button(
 
-							__("Tax Payment Journal"),
-							make_tax_payment,
-							__("Create")
-						);
-					}
-				}
-			})
-
-		};
 
 		if (frm.doc.docstatus === 1 && frm.doc.is_return === 1 && frm.doc.per_billed !== 100) {
 			frm.add_custom_button(
@@ -226,17 +212,6 @@ frappe.ui.form.on("Purchase Receipt", {
 	},
 
 });
-var make_tax_payment = function () {
-	frappe.model.open_mapped_doc({
-		method: "erpnext.stock.doctype.purchase_receipt.purchase_receipt.make_tax_payment",
-		frm: cur_frm,
-
-
-
-	});
-
-}
-
 
 function calculate_discount(frm) {
 	cur_frm.set_value("total_add_ded", frm.doc.freight_and_insurance_charges + frm.doc.other_charges + frm.doc.tax - frm.doc.discount)

@@ -14,8 +14,11 @@ class JobCardsItem(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		account_head: DF.Data | None
 		amount: DF.Currency
+		apply_gst: DF.Check
 		checked_by: DF.Link | None
+		gst_amount: DF.Float
 		imprest: DF.Check
 		job: DF.DynamicLink
 		job_name: DF.Data | None
@@ -24,6 +27,9 @@ class JobCardsItem(Document):
 		parenttype: DF.Data
 		quantity: DF.Float
 		stock_entry: DF.Link | None
+		tax_rate: DF.Float
+		taxes_and_charges: DF.Link | None
+		total_gst_amount: DF.Float
 		which: DF.Literal["", "Service", "Item"]
 	# end: auto-generated types
 	pass

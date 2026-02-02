@@ -37,6 +37,7 @@ class FabricationAndBaileyBridge(AccountsController):
 		equipmment: DF.Link | None
 		finish_date: DF.Date | None
 		goods_amount: DF.Currency
+		included_gst: DF.Check
 		items: DF.Table[JobCardsItem]
 		job_in_time: DF.Time | None
 		job_out_time: DF.Time | None
@@ -53,6 +54,7 @@ class FabricationAndBaileyBridge(AccountsController):
 		status: DF.Literal["", "Payment Received", "Pending Payment"]
 		table_jqvd: DF.Table[MechanicAssigned]
 		total_amount: DF.Currency
+		total_gst_amount: DF.Currency
 	# end: auto-generated types
 	# pass
 
@@ -61,18 +63,25 @@ class FabricationAndBaileyBridge(AccountsController):
 		
 		#Amount Segregation
 		cc_amount = {}
-		self.services_amount = self.goods_amount = 0;
+		self.services_amount = self.goods_amount = self.total_gst_amount = 0
+		
 		for a in self.items:
+			self.total_gst_amount += flt(a.gst_amount)
 			if a.which in cc_amount:
 				cc_amount[a.which] = flt(cc_amount[a.which]) + flt(a.amount)
 			else:
-				cc_amount[a.which] = flt(a.amount);
+				cc_amount[a.which] = flt(a.amount)
 		if "Service" in cc_amount:
 			self.services_amount = cc_amount['Service']
 		if 'Item' in cc_amount:
 			self.goods_amount = cc_amount['Item']
+		for item in self.items:
+			if item.apply_gst:
+				self.included_gst=1
+			else:
+				self.included_gst=0		
 		self.total_amount = flt(self.services_amount) + flt(self.goods_amount)
-		self.outstanding_amount = self.total_amount
+		self.outstanding_amount = self.total_amount + flt(self.total_gst_amount)
 
 	def validate_owned_by(self):
 		if self.owned_by == "CDCL" and self.cost_center == self.customer_cost_center:
@@ -286,6 +295,14 @@ class FabricationAndBaileyBridge(AccountsController):
 			frappe.throw("Setup Default Services Account in Maintenance Setting")
 		if not receivable_account:
 			frappe.throw("Setup Default Receivable Account in Maintenance Setting")
+		services_gst = goods_gst = gst_amount= 0
+		for item in self.items:
+			account =  item.account_head
+			gst_amount += item.gst_amount
+			if item.which == "Service":
+				services_gst += item.gst_amount
+			else:
+				goods_gst += item.gst_amount	
 		
 		gl_entries.append(
 				self.get_gl_dict({
@@ -293,13 +310,43 @@ class FabricationAndBaileyBridge(AccountsController):
 						"party_type": "Customer",
 						"party": self.customer,
 						"against": receivable_account,
-						"debit": self.total_amount,
-						"debit_in_account_currency": self.total_amount,
+						"debit": self.total_amount+gst_amount,
+						"debit_in_account_currency": self.total_amount+gst_amount,
 						"against_voucher": self.name,
 						"against_voucher_type": self.doctype,
 						"cost_center": self.cost_center
 				}, self.currency)
 		)
+		if self.included_gst:
+			if account and flt(gst_amount) > 0:
+				gl_entries.append(
+					self.get_gl_dict({
+						"account": account,
+						"party_type": "Customer",
+						"party": self.customer,
+						"against": receivable_account,
+						"credit": flt(gst_amount),
+						"credit_in_account_currency": flt(gst_amount),
+						"against_voucher": self.name,
+						"against_voucher_type": self.doctype,
+						"cost_center": self.cost_center
+					}, self.currency)
+				)
+		# gl_entries.append(
+		# 		self.get_gl_dict({
+		# 				"account":  goods_account,
+		# 				"party_type": "Customer",
+		# 				"party": self.customer,
+		# 				"against": receivable_account,
+		# 				"credit":self.total_amount,
+		# 				"credit_in_account_currency": self.total_amount,
+		# 				"against_voucher": self.name,
+		# 				"against_voucher_type": self.doctype,
+		# 				"cost_center": self.cost_center
+		# 		}, self.currency)
+		# )
+		
+		
 
 		if self.goods_amount:
 			gl_entries.append(
@@ -445,3 +492,11 @@ def make_payment_entry(source_name, target_doc=None):
 			},
 		}, target_doc)
 	return doc
+@frappe.whitelist()
+def get_taxes_for_template(template_name):
+    taxes = frappe.get_all(
+        "Sales Taxes and Charges",
+        filters={"parent": template_name},
+        fields=["charge_type", "account_head", "rate", "description"]
+    )
+    return taxes

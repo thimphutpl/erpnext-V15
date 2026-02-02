@@ -24,9 +24,11 @@ class HireChargeInvoice(AccountsController):
 		from erpnext.fleet_management.doctype.hire_invoice_details.hire_invoice_details import HireInvoiceDetails
 		from frappe.types import DF
 
+		account_head: DF.Data | None
 		advance_amount: DF.Currency
 		advances: DF.Table[HireInvoiceAdvance]
 		amended_from: DF.Link | None
+		apply_gst: DF.Check
 		balance_advance_amount: DF.Currency
 		balance_amount: DF.Currency
 		branch: DF.Link
@@ -35,9 +37,12 @@ class HireChargeInvoice(AccountsController):
 		cost_center: DF.Link
 		currency: DF.Link
 		customer: DF.Link
+		customer_type: DF.Data | None
 		discount_amount: DF.Currency
 		discount_reason: DF.Text | None
 		ehf_name: DF.Link
+		gst_amount: DF.Float
+		included_gst: DF.Check
 		invoice_jv: DF.Data | None
 		items: DF.Table[HireInvoiceDetails]
 		outstanding_amount: DF.Currency
@@ -45,6 +50,9 @@ class HireChargeInvoice(AccountsController):
 		payment_jv: DF.Data | None
 		posting_date: DF.Date
 		status: DF.Literal["", "Payment Received", "Pending Payment"]
+		tax_rate: DF.Float
+		taxes_and_charges: DF.Link | None
+		total_gst_amount: DF.Data | None
 		total_invoice_amount: DF.Currency
 		workflow_state: DF.Link | None
 	# end: auto-generated types
@@ -57,6 +65,10 @@ class HireChargeInvoice(AccountsController):
 			frappe.throw("Balance amount cannot be negative")
 		self.outstanding_amount = self.balance_amount
 		self.set_advance_data()
+		if self.apply_gst:
+			self.included_gst=1
+		else:
+			self.included_gst=0	
 
 	def set_advance_data(self):
 		advance_amount = 0
@@ -325,13 +337,25 @@ class HireChargeInvoice(AccountsController):
 		gl_entries.append(
 			self.get_gl_dict({
 								"account": hire_account,
-				"               against_voucher_type": "Equipment Hiring Form",
+								"against_voucher_type": "Equipment Hiring Form",
 								"against": self.ehf_name,
 								"credit": self.total_invoice_amount,
 								"credit_in_account_currency": self.total_invoice_amount,
 								"cost_center": self.cost_center
 						}, self.currency)
 		)
+
+		gl_entries.append(
+				self.get_gl_dict({
+						"account": self.account_head,
+						"against": self.customer,
+						"party_type": "Customer",
+						"party": self.customer,
+						"credit": self.gst_amount,
+						"credit_in_account_currency": self.gst_amount,
+						"cost_center": self.cost_center
+				}, self.currency)
+			)
 
 		if self.advance_amount:
 			gl_entries.append(
@@ -365,8 +389,8 @@ class HireChargeInvoice(AccountsController):
 						"party": self.customer,
 						"against_voucher": self.name,
 						"against_voucher_type": self.doctype,
-						"debit": self.balance_amount,
-						"debit_in_account_currency": self.balance_amount,
+						"debit": self.balance_amount+self.gst_amount,
+						"debit_in_account_currency": self.balance_amount+self.gst_amount,
 						"cost_center": self.cost_center
 				}, self.currency)
 			)
@@ -383,7 +407,7 @@ class HireChargeInvoice(AccountsController):
 		je.title = "Advance Refund for Hire Charge Form  (" + self.ehf_name + ")"
 		je.voucher_type = 'Bank Entry'
 		je.naming_series = 'Bank Payment Voucher'
-		je.remark = 'Payment against : ' + self.ehf_name;
+		je.remark = 'Payment against : ' + self.ehf_name
 		je.posting_date = self.posting_date
 		je.branch = self.branch
 
@@ -481,3 +505,12 @@ def make_payment_entry(source_name, target_doc=None):
 			},
 		}, target_doc)
 	return doc
+@frappe.whitelist()
+def get_taxes_for_template(template_name):
+    taxes = frappe.get_all(
+        "Sales Taxes and Charges",
+        filters={"parent": template_name},
+        fields=["charge_type", "account_head", "rate", "description"]
+    )
+    return taxes
+

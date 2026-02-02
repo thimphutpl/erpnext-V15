@@ -181,7 +181,7 @@ class calculate_taxes_and_totals:
 						item.discount_amount = item.price_list_rate * (item.discount_percentage / 100.0)
 
 					elif item.discount_amount and item.pricing_rules:
-						item.rate = item.price_list_rate - item.discount_amount
+						item.rate = item.price_list_rate - item.discount_amount		
 				item.gst_amount = 0 if taxes_len == 0 else item.gst_amount
 				if item.doctype in [
 					"Quotation Item",
@@ -489,7 +489,7 @@ class calculate_taxes_and_totals:
 		tax_amount = tax.base_tax_amount_after_discount_amount
 		tax_amount = self.get_tax_amount_if_for_valuation_or_deduction(tax_amount, tax)
 		if row_idx == 0:
-			if self.doc.doctype in ("Purchase Order", "Purchase Invoice"):
+			if self.doc.doctype in ("Purchase Order", "Purchase Invoice","Purchase Receipt"):
 				
 				if frappe.db.get_value("Supplier", self.doc.supplier, "country") == "Bhutan" and tax.add_deduct_tax != "None":
 					if tax.included_in_print_rate == 0 and tax.add_deduct_tax != "None":

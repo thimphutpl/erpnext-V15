@@ -108,11 +108,53 @@ frappe.ui.form.on("Fabrication And Bailey Bridge", {
 			df.read_only = 1
 			row.grid_form.fields_dict.quantity.refresh()
 		}
-	}
+	},
+	owned_by(frm) {
+		toggle_gst_section(frm);
+
+	},
 });
 
 //Job Card Item  Details
 frappe.ui.form.on("Job Cards Item", {
+	apply_gst: function (frm, cdt, cdn) {
+		calculate_child_gst(frm, cdt, cdn);
+	},
+	amount: function (frm, cdt, cdn) {
+		calculate_child_gst(frm, cdt, cdn);
+	},
+	tax_rate: function (frm, cdt, cdn) {
+		calculate_child_gst(frm, cdt, cdn);
+	},
+	taxes_and_charges: function (frm, cdt, cdn) {
+		let row = locals[cdt][cdn];
+
+		// Ensure a template is selected
+		if (!row.taxes_and_charges) return;
+
+		// Call ERPNext utility to get taxes for template
+		frappe.call({
+			method: "erpnext.fleet_management.doctype.job_cards.job_cards.get_taxes_for_template",
+			args: {
+				template_name: row.taxes_and_charges
+			},
+			callback: function (r) {
+				if (r.message && r.message.length > 0) {
+					// Take first tax from template (or loop if multiple)
+					let tax = r.message[0];
+
+					// Set values in the same child row
+					frappe.model.set_value(cdt, cdn, "account_head", tax.account_head);
+					frappe.model.set_value(cdt, cdn, "tax_rate", tax.rate);
+
+					// Optional: auto apply GST if your checkbox exists
+					if (row.apply_gst) {
+						calculate_child_gst(frm, cdt, cdn);
+					}
+				}
+			}
+		});
+	},
 	"start_time": function (frm, cdt, cdn) {
 		calculate_datetime(frm, cdt, cdn)
 	},
@@ -150,6 +192,19 @@ function calculate_datetime(frm, cdt, cdn) {
 	}
 	cur_frm.refresh_field("total_time")
 }
+function calculate_child_gst(frm, cdt, cdn) {
+	let row = locals[cdt][cdn];
+	let rate = row.tax_rate || 0;
+	let amount = row.amount || 0;
+	if (row.apply_gst) {
+		gst_amount = row.apply_gst ? (amount * rate / 100) : 0;
+		total_gst_amount = row.amount + gst_amount
+	}
+	frappe.model.set_value(cdt, cdn, "gst_amount", gst_amount);
+	frappe.model.set_value(cdt, cdn, "total_gst_amount", total_gst_amount)
+
+}
+
 
 //Job Card Mechanic Details
 frappe.ui.form.on("Mechanic Assigned", {
@@ -199,7 +254,20 @@ frappe.ui.form.on("Mechanic Assigned", {
 		}
 	}
 })
+function toggle_gst_section(frm) {
+	const hide = frm.doc.owned_by != "Others";
+	const grid = frm.fields_dict.items?.grid;
+	if (!grid) return;
 
+	// 🔑 THIS is the correct API
+	grid.update_docfield_property(
+		"gst_details_section",
+		"hidden",
+		hide ? 1 : 0
+	);
+
+	frm.refresh_field("items");
+}
 function calculate_time(frm, cdt, cdn) {
 	var item = locals[cdt][cdn]
 	if (item.start_time && item.end_time && item.end_time >= item.start_time) {

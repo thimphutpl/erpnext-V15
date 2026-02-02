@@ -48,10 +48,14 @@
   "job_and_cost_details_section",
   "get_items",
   "items",
+  "section_break_xhnh",
+  "included_gst",
   "section_break_xasc",
   "goods_amount",
   "column_break_ckof",
   "services_amount",
+  "column_break_yicj",
+  "total_gst_amount",
   "column_break_sfpz",
   "total_amount",
   "column_break_lovp",
@@ -402,12 +406,33 @@
   {
    "fieldname": "column_break_wxzl",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_xhnh",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "included_gst",
+   "fieldtype": "Check",
+   "label": "Included GST",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_yicj",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_gst_amount",
+   "fieldtype": "Currency",
+   "label": "Total GST Amount",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-04-10 16:40:19.814731",
+ "modified": "2026-02-01 10:55:32.935764",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Fabrication And Bailey Bridge",

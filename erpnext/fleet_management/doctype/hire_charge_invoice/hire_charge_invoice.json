@@ -22,6 +22,8 @@
   "customer",
   "column_break_6",
   "posting_date",
+  "column_break_wdbs",
+  "customer_type",
   "section_break_12",
   "total_invoice_amount",
   "advance_amount",
@@ -36,6 +38,16 @@
   "get_vehicle_logbooks",
   "section_break_18",
   "items",
+  "section_break_wgoq",
+  "included_gst",
+  "gst_details_section",
+  "taxes_and_charges",
+  "account_head",
+  "tax_rate",
+  "column_break_fdav",
+  "gst_amount",
+  "total_gst_amount",
+  "apply_gst",
   "section_break_20",
   "get_advances",
   "advances",
@@ -321,12 +333,76 @@
    "label": "Status",
    "options": "\nPayment Received\nPending Payment",
    "read_only": 1
+  },
+  {
+   "fieldname": "gst_details_section",
+   "fieldtype": "Section Break",
+   "label": "GST Details"
+  },
+  {
+   "fieldname": "taxes_and_charges",
+   "fieldtype": "Link",
+   "label": "Purchase Taxes and Charges Template",
+   "options": "Sales Taxes and Charges Template"
+  },
+  {
+   "fieldname": "account_head",
+   "fieldtype": "Data",
+   "label": "Account Head"
+  },
+  {
+   "fieldname": "tax_rate",
+   "fieldtype": "Float",
+   "label": "Tax Rate"
+  },
+  {
+   "fieldname": "column_break_fdav",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "gst_amount",
+   "fieldtype": "Float",
+   "label": "GST Amount",
+   "precision": "2"
+  },
+  {
+   "fieldname": "total_gst_amount",
+   "fieldtype": "Data",
+   "label": "Total GST Amount"
+  },
+  {
+   "default": "0",
+   "fieldname": "apply_gst",
+   "fieldtype": "Check",
+   "label": "Apply GST"
+  },
+  {
+   "fieldname": "section_break_wgoq",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "included_gst",
+   "fieldtype": "Check",
+   "label": "Included GST",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_wdbs",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "ehf_name.private",
+   "fieldname": "customer_type",
+   "fieldtype": "Data",
+   "label": "Customer Type",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-02-05 16:02:15.789421",
+ "modified": "2026-02-01 20:01:22.849557",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Hire Charge Invoice",

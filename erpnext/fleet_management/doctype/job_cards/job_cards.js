@@ -2,29 +2,7 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on('Job Cards', {
-	// setup: function(frm){
-	// frm.get_field('assigned_to').grid.editable_fields = [
-	// 	{fieldname: 'mechanic', columns: 3},
-	// 	{fieldname: 'start_time', columns: 3},
-	// 	{fieldname: 'end_time', columns: 3},
-	// 	{fieldname: 'total_time', columns: 1},
-	// ];		
-	// frm.set_query("job", "items", function(frm,cdt,cdn) {
-	// 	var row = locals[cdt][cdn];
-	// 	// var is_service_item = (row.type == 'Service')? 1:0;
-	// 	if (row.which == undefined || row.which == '') return
-	// 	var filters
-	// 	if (row.which == 'Service') {
-	// 		filters = [["is_services_item", "=", 1], ["disabled", "=", 0]]
-	// 	} else {
-	// 		filters = [["is_services_item", "=", 0], ["is_fixed_asset", "=", 0], ["disabled", "=", 0]]
-	// 	}
 
-	// 	return {
-	// 		filters: filters
-	// 	}
-	// });
-	// },
 
 
 	validate: function (frm) {
@@ -118,6 +96,44 @@ frappe.ui.form.on('Job Cards', {
 
 //Job Card Item  Details
 frappe.ui.form.on("Job Cards Item", {
+	apply_gst: function (frm, cdt, cdn) {
+		calculate_child_gst(frm, cdt, cdn);
+	},
+	amount: function (frm, cdt, cdn) {
+		calculate_child_gst(frm, cdt, cdn);
+	},
+	tax_rate: function (frm, cdt, cdn) {
+		calculate_child_gst(frm, cdt, cdn);
+	},
+	taxes_and_charges: function (frm, cdt, cdn) {
+		let row = locals[cdt][cdn];
+
+		// Ensure a template is selected
+		if (!row.taxes_and_charges) return;
+
+		// Call ERPNext utility to get taxes for template
+		frappe.call({
+			method: "erpnext.fleet_management.doctype.job_cards.job_cards.get_taxes_for_template",
+			args: {
+				template_name: row.taxes_and_charges
+			},
+			callback: function (r) {
+				if (r.message && r.message.length > 0) {
+					// Take first tax from template (or loop if multiple)
+					let tax = r.message[0];
+
+					// Set values in the same child row
+					frappe.model.set_value(cdt, cdn, "account_head", tax.account_head);
+					frappe.model.set_value(cdt, cdn, "tax_rate", tax.rate);
+
+					// Optional: auto apply GST if your checkbox exists
+					if (row.apply_gst) {
+						calculate_child_gst(frm, cdt, cdn);
+					}
+				}
+			}
+		});
+	},
 	"which": function (frm, cdt, cdn) {
 		var item = locals[cdt][cdn];
 		frappe.model.set_value(cdt, cdn, "job_name", '')
@@ -155,6 +171,7 @@ frappe.ui.form.on("Job Cards Item", {
 					cur_frm.refresh_field("job_name")
 					cur_frm.refresh_field("amount")
 				}
+
 			})
 		}
 	}
@@ -225,36 +242,37 @@ function calculate_time(frm, cdt, cdn) {
 	cur_frm.refresh_field("total_time")
 }
 
-// cur_frm.fields_dict['assigned_to'].grid.get_field('mechanic').get_query = function(frm, cdt, cdn) {
-// 	var d = locals[cdt][cdn];
-//         if(d.employee_type == "Employee") {
-//                 return {
-//                         filters: [
-//                         ['Employee', 'is_job_card_employee', '=', 1],
-//                         ['Employee', 'branch', '=', frm.branch],
-//                         ['Employee', 'status', '=', 'Active']
-//                         ]
-//                 }
-//         }
-// 	else if(d.employee_type == "GEP Employee") {
-//                 return {
-//                         filters: [
-//                         ['GEP Employee', 'list_in_job_card', '=', 1],
-//                         ['GEP Employee', 'branch', '=', frm.branch],
-//                         ['GEP Employee', 'status', '=', 'Active']
-//                         ]
-//                 }
-// 	}
-//         else {
-//                 return {
-//                         filters: [
-//                         ['Muster Roll Employee', 'list_in_job_card', '=', 1],
-//                         ['Muster Roll Employee', 'branch', '=', frm.branch],
-//                         ['Muster Roll Employee', 'status', '=', 'Active']
-//                         ]
-//                 }
-//         }
+// function calculate_child_gst(frm, cdt, cdn) {
+// 	let row = locals[cdt][cdn];
+// 	let rate = row.tax_rate || 0;
+// 	let amount = row.amount || 0;
+
+// 	let gst_amount = row.apply_gst ? (amount * rate / 100) : 0;
+// 	let total_gst_amount = row.amount + gst_amount
+// 	// if (row.apply_gst) {
+// 	// 	gst_amount = amount * rate / 100;
+// 	// 	total_gst_amount = amount + gst_amount;
+// 	// }
+
+// 	frappe.model.set_value(cdt, cdn, "gst_amount", gst_amount);
+// 	frappe.model.set_value(cdt, cdn, "total_gst_amount", total_gst_amount)
+
 // }
+
+function calculate_child_gst(frm, cdt, cdn) {
+	let row = locals[cdt][cdn];
+	let rate = row.tax_rate || 0;
+	let amount = row.amount || 0;
+	if (row.apply_gst) {
+		gst_amount = row.apply_gst ? (amount * rate / 100) : 0;
+		total_gst_amount = row.amount + gst_amount
+	}
+	frappe.model.set_value(cdt, cdn, "gst_amount", gst_amount);
+	frappe.model.set_value(cdt, cdn, "total_gst_amount", total_gst_amount)
+
+}
+
+
 
 function get_entries_from_min(form) {
 	frappe.call({
