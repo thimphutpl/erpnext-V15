@@ -7,7 +7,7 @@ from frappe import _
 from frappe.model.document import Document
 from frappe.model.meta import get_field_precision
 from frappe.model.naming import set_name_from_naming_options
-from frappe.utils import flt, fmt_money
+from frappe.utils import flt, fmt_money, getdate
 
 import erpnext
 from erpnext.accounts.doctype.accounting_dimension.accounting_dimension import (
@@ -133,7 +133,9 @@ class GLEntry(Document):
 				freeze_date = frappe.db.get_value("Project", self.project,"freeze_till")
 				if not freeze_date:
 					frappe.throw("freeze Date is required for Project {}".format(self.project))
-				if freeze_date < self.posting_date:
+				freeze_date = getdate(freeze_date) if freeze_date else None
+				posting_date = getdate(self.posting_date)
+				if freeze_date < posting_date:
 					frappe.throw("Account for Project {project} is frozen till {date}".format(project=self.project, date=freeze_date))
 
 	def check_mandatory(self):
