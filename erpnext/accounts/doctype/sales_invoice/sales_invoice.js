@@ -655,6 +655,7 @@ cur_frm.set_query("debit_to", function (doc) {
 });
 
 cur_frm.set_query("asset", "items", function (doc, cdt, cdn) {
+	alert("hi")
 	var d = locals[cdt][cdn];
 	return {
 		filters: [
@@ -1134,7 +1135,7 @@ var select_loyalty_program = function (frm, loyalty_programs) {
 				fieldname: "loyalty_program",
 				value: dialog.get_value("loyalty_program"),
 			},
-			callback: function (r) {},
+			callback: function (r) { },
 		});
 	});
 

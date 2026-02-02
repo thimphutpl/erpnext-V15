@@ -15,11 +15,13 @@
   "tax_id",
   "company",
   "company_tax_id",
+  "employee",
   "column_break1",
   "posting_date",
   "posting_time",
   "set_posting_time",
   "due_date",
+  "bulk_asset_disposal",
   "column_break_14",
   "is_pos",
   "pos_profile",
@@ -264,6 +266,7 @@
    "oldfieldtype": "Link",
    "options": "Customer",
    "print_hide": 1,
+   "read_only": 1,
    "search_index": 1
   },
   {
@@ -881,7 +884,6 @@
   {
    "fieldname": "taxes_section",
    "fieldtype": "Section Break",
-   "hidden": 1,
    "hide_border": 1,
    "hide_days": 1,
    "hide_seconds": 1,
@@ -920,6 +922,7 @@
   {
    "fieldname": "tax_category",
    "fieldtype": "Link",
+   "hidden": 1,
    "hide_days": 1,
    "hide_seconds": 1,
    "label": "Tax Category",
@@ -929,7 +932,6 @@
   {
    "fieldname": "section_break_40",
    "fieldtype": "Section Break",
-   "hidden": 1,
    "hide_border": 1,
    "hide_days": 1,
    "hide_seconds": 1
@@ -2154,6 +2156,7 @@
    "depends_on": "incoterm",
    "fieldname": "named_place",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Named Place"
   },
   {
@@ -2193,6 +2196,21 @@
    "fieldtype": "Link",
    "label": "Branch",
    "options": "Branch"
+  },
+  {
+   "fieldname": "bulk_asset_disposal",
+   "fieldtype": "Link",
+   "label": "Bulk Asset Disposal",
+   "options": "Bulk Asset Disposal",
+   "read_only": 1
+  },
+  {
+   "fieldname": "employee",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Employee",
+   "options": "Employee",
+   "read_only": 1
   }
  ],
  "icon": "fa fa-file-text",
@@ -2205,7 +2223,7 @@
    "link_fieldname": "consolidated_invoice"
   }
  ],
- "modified": "2024-12-30 16:56:28.998736",
+ "modified": "2026-01-22 22:05:25.533535",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Sales Invoice",
