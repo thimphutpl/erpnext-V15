@@ -4,6 +4,28 @@
 // cur_frm.add_fetch("branch", "revenue_bank_account", "income_account")
 
 frappe.ui.form.on('Mechanical Payment', {
+    taxes_and_charges: function (frm) {
+        if (frm.doc.taxes_and_charges) {
+            get_gst_account_from_template(frm);
+        }
+        calculate_gst_amount(frm);
+    },
+    receivable_amount: function (frm) {
+        calculate_gst_amount(frm);
+    },
+    apply_gst: function (frm) {
+        // Only calculate if checkbox is checked
+        if (frm.doc.apply_gst) {
+            calculate_gst_amount(frm);
+        } else {
+            // Reset GST if unchecked
+            frm.set_value('gst_amount', 0);
+            frm.set_value('total_gst_amount', 0);
+        }
+    },
+
+
+
     refresh: function (frm) {
         if (frm.doc.docstatus === 1) {
             frm.add_custom_button(__('Accounting Ledger'), function () {
@@ -17,7 +39,11 @@ frappe.ui.form.on('Mechanical Payment', {
                 frappe.set_route("query-report", "General Ledger");
             }, __("View"));
         }
+        frm.set_df_property('gst_details_section', 'hidden', 1);
+        frm.set_df_property('get_transactions_with_gst', 'hidden', 0);
+        frm.set_df_property('get_transactions_without_gst', 'hidden', 0);
     },
+
 
     "tds_amount": function (frm) {
         calculate_totals(frm);
@@ -34,9 +60,11 @@ frappe.ui.form.on('Mechanical Payment', {
         });
     },
 
-    get_transactions: function (frm) {
+    get_transactions_with_gst: function (frm) {
+        frm.set_df_property('gst_details_section', 'hidden', 1);
+        frm.refresh_fields();
         frappe.call({
-            method: "get_transactions",
+            method: "get_transactions_with_gst",
             doc: frm.doc,
             callback: function (r) {
                 frm.refresh_field("items");
@@ -46,6 +74,21 @@ frappe.ui.form.on('Mechanical Payment', {
             freeze_message: "Fetching Transactions... Please Wait"
         });
     },
+    get_transactions_without_gst: function (frm) {
+        frm.set_df_property('gst_details_section', 'hidden', 0);
+        frm.refresh_fields();
+        frappe.call({
+            method: "get_transactions_without_gst",
+            doc: frm.doc,
+            callback: function (r) {
+                frm.refresh_field("items");
+                frm.refresh_fields();
+            },
+            freeze: true,
+            freeze_message: "Fetching Transactions... Please Wait"
+        });
+    },
+
 
     "receivable_amount": function (frm) {
         if (frm.doc.receivable_amount > frm.doc.actual_amount) {
@@ -77,12 +120,47 @@ frappe.ui.form.on('Mechanical Payment', {
     }
 });
 
+function calculate_gst_amount(frm) {
+    let receivable_amount = frm.doc.receivable_amount || 0;
+    if (receivable_amount <= 0) {
+        frm.set_value('gst_amount', 0);
+        frm.set_value('total_gst_amount', 0);
+        return;
+    }
+
+    let gst_rate = frm.doc.tax_rate || 0; // from taxes template
+    let gst_amount = receivable_amount * gst_rate / 100;
+    let total_gst_amount = receivable_amount + gst_amount;
+
+    frm.set_value('gst_amount', gst_amount);
+    frm.set_value('total_gst_amount', total_gst_amount);
+}
+
+
 function calculate_totals(frm) {
     if (frm.doc.receivable_amount) {
         frm.set_value("net_amount", flt(frm.doc.receivable_amount) - flt(frm.doc.tds_amount));
         frm.refresh_field("net_amount");
     }
 }
+
+function get_gst_account_from_template(frm) {
+    if (!frm.doc.taxes_and_charges) return;
+
+    frappe.call({
+        method: "erpnext.projects.doctype.project_invoice.project_invoice.get_taxes_for_template",
+        args: { template_name: frm.doc.taxes_and_charges },
+        callback: function (r) {
+            if (r.message && r.message.length) {
+                const tax = r.message[0];
+                frm.set_value('account_head', tax.account_head);
+                frm.set_value('tax_rate', flt(tax.rate));
+            }
+        }
+    });
+}
+
+
 
 frappe.ui.form.on("Mechanical Payment Item", {
     "reference_name": function (frm, cdt, cdn) {
@@ -124,20 +202,3 @@ frappe.ui.form.on("Mechanical Payment Item", {
     }
 });
 
-frappe.ui.form.on('Mechanical Payment', {
-    refresh: function (frm) {
-        // Add custom logic if required
-    }
-});
-
-// frm.fields_dict['items'].grid.get_field('reference_name').get_query = function(frm, cdt, cdn) {
-//     var d = locals[cdt][cdn];
-//     return {
-//         filters: {
-//             "docstatus": 1,
-//             "branch": frm.branch,
-//             "customer": frm.customer,
-//             "outstanding_amount": [">", 0]
-//         }
-//     };
-// };

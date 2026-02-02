@@ -198,6 +198,20 @@ class MechanicalPayment(AccountsController):
                                   "remarks": self.remarks
                                   })
             )
+            if self.account_head and flt(self.gst_amount) > 0:
+                gl_entries.append(
+                    self.get_gl_dict({"account": self.account_head,
+                                    "debit": flt(self.gst_amount),
+                                    "debit_in_account_currency": flt(self.gst_amount),
+                                    "cost_center": self.cost_center,
+                                    "party_check": 1,
+                                    "party_type": "Customer",
+                                    "party": self.customer,
+                                    "reference_type": self.doctype,
+                                    "reference_name": self.name,
+                                    "remarks": self.remarks
+                        })
+                )
 
         if self.tds_amount:
             gl_entries.append(
@@ -226,8 +240,8 @@ class MechanicalPayment(AccountsController):
 
             gl_entries.append(
                 self.get_gl_dict({"account": receivable_account,
-                                  "credit": flt(a.allocated_amount),
-                                  "credit_in_account_currency": flt(a.allocated_amount),
+                                  "credit": flt(a.allocated_amount)+flt(self.gst_amount),
+                                  "credit_in_account_currency": flt(a.allocated_amount)+flt(self.gst_amount),
                                   "cost_center": self.cost_center,
                                   "party_check": 1,
                                   "party_type": "Customer",
@@ -259,23 +273,54 @@ class MechanicalPayment(AccountsController):
         make_gl_entries(gl_entries, cancel=(self.docstatus == 2), update_outstanding="No", merge_entries=False)
         
     @frappe.whitelist()
-    def get_transactions(self):
+    def get_transactions_with_gst(self):
         if not self.branch or not self.customer or not self.payment_for:
             frappe.throw("Branch, Customer and Payment For is Mandatory")
-        transactions = frappe.db.sql("select name, outstanding_amount, customer from `tab{0}` where customer = '{1}' and branch = '{2}' and outstanding_amount > 0 and docstatus = 1 order by creation".format(self.payment_for, self.customer, self.branch), as_dict=1)
-        # frappe.throw(str(transactions))
+        transactions = frappe.db.sql("select name,included_gst,gst_amount, outstanding_amount, customer from `tab{0}` where customer = '{1}' and branch = '{2}' and outstanding_amount > 0 and docstatus = 1 order by creation".format(self.payment_for, self.customer, self.branch), as_dict=1)
         self.set('items', [])
 
         total = 0
         for d in transactions:
-            d.reference_type = self.payment_for
-            d.reference_name = d.name
-            d.allocated_amount = d.outstanding_amount
-            d.customer = d.customer
-            row = self.append('items', {})
-            row.update(d)
-            total += flt(d.outstanding_amount)
-        self.receivable_amount = total
-        self.actual_amount = total
+            if d.included_gst==1:
+                d.reference_type = self.payment_for
+                d.reference_name = d.name
+                d.allocated_amount = d.outstanding_amount
+                d.customer = d.customer
+                d.gst_amount = d.gst_amount
+                row = self.append('items', {})
+                row.update(d)
+                total += flt(d.outstanding_amount)
+            self.receivable_amount = total
+            self.actual_amount = total
+    @frappe.whitelist()
+    def get_transactions_without_gst(self):
+        if not self.branch or not self.customer or not self.payment_for:
+            frappe.throw("Branch, Customer and Payment For is Mandatory")
+        transactions = frappe.db.sql("select name,included_gst, outstanding_amount, customer from `tab{0}` where customer = '{1}' and branch = '{2}' and outstanding_amount > 0 and docstatus = 1 order by creation".format(self.payment_for, self.customer, self.branch), as_dict=1)
+        self.set('items', [])
+
+        total = 0
+        for d in transactions:
+            if d.included_gst == 0:
+                d.reference_type = self.payment_for
+                d.reference_name = d.name
+                d.allocated_amount = d.outstanding_amount
+                d.customer = d.customer
+                row = self.append('items', {})
+                row.update(d)
+                total += flt(d.outstanding_amount)
+            self.receivable_amount = total
+            self.actual_amount = total
+
+@frappe.whitelist()
+def get_taxes_for_template(template_name):
+    taxes = frappe.get_all(
+        "Sales Taxes and Charges",
+        filters={"parent": template_name},
+        fields=["charge_type", "account_head", "rate", "description"]
+    )
+    return taxes
+
+
 
 

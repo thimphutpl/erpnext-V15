@@ -16,6 +16,7 @@ class MechanicalPaymentItem(Document):
 
 		allocated_amount: DF.Currency
 		customer: DF.Data | None
+		gst_amount: DF.Currency
 		outstanding_amount: DF.Currency
 		parent: DF.Data
 		parentfield: DF.Data

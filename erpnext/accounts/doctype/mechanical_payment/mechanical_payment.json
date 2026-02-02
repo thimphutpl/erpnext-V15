@@ -24,12 +24,25 @@
   "cheque_no",
   "cheque_date",
   "clearance_date",
+  "gst_details_section",
+  "taxes_and_charges",
+  "account_head",
+  "tax_rate",
+  "column_break_nzuv",
+  "gst_amount",
+  "total_gst_amount",
+  "apply_gst",
   "section_break_14",
   "tds_amount",
   "column_break_16",
   "tds_account",
+  "section_break_elrg",
+  "column_break_xwuq",
+  "get_transactions_with_gst",
+  "column_break_oajo",
+  "get_transactions_without_gst",
+  "column_break_fktp",
   "section_break_19",
-  "get_transactions",
   "items",
   "sb_321",
   "deducts",
@@ -187,11 +200,6 @@
    "fieldtype": "Section Break"
   },
   {
-   "fieldname": "get_transactions",
-   "fieldtype": "Button",
-   "label": "Get Transactions"
-  },
-  {
    "fieldname": "items",
    "fieldtype": "Table",
    "options": "Mechanical Payment Item",
@@ -267,12 +275,85 @@
    "in_list_view": 1,
    "label": "Status",
    "options": "Draft\nSubmitted\nCancelled"
+  },
+  {
+   "fieldname": "section_break_elrg",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_xwuq",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "get_transactions_with_gst",
+   "fieldtype": "Button",
+   "label": "Get Transactions With GST"
+  },
+  {
+   "fieldname": "get_transactions_without_gst",
+   "fieldtype": "Button",
+   "label": "Get Transactions Without GST"
+  },
+  {
+   "fieldname": "column_break_oajo",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_fktp",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "gst_details_section",
+   "fieldtype": "Section Break",
+   "label": "GST Details"
+  },
+  {
+   "fieldname": "taxes_and_charges",
+   "fieldtype": "Link",
+   "label": "Purchase Taxes and Charges Template",
+   "options": "Sales Taxes and Charges Template"
+  },
+  {
+   "fieldname": "account_head",
+   "fieldtype": "Data",
+   "label": "Account Head",
+   "read_only": 1
+  },
+  {
+   "fieldname": "tax_rate",
+   "fieldtype": "Data",
+   "label": "Tax Rate",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_nzuv",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "gst_amount",
+   "fieldtype": "Float",
+   "label": "GST Amount",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_gst_amount",
+   "fieldtype": "Float",
+   "label": "Total GST Amount",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "apply_gst",
+   "fieldtype": "Check",
+   "label": "Apply GST"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-12-23 00:42:42.803340",
+ "modified": "2026-01-27 10:51:56.070880",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Mechanical Payment",
