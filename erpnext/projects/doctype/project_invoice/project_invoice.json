@@ -46,6 +46,14 @@
   "status",
   "reference_doctype",
   "reference_name",
+  "section_break_kbka",
+  "taxes_and_charges",
+  "account_head",
+  "tax_rate",
+  "column_break_gtia",
+  "gst_amount",
+  "total_gst_amount",
+  "apply_gst",
   "sb_notes",
   "notes"
  ],
@@ -329,12 +337,61 @@
    "label": "Subcontract",
    "options": "Subcontract",
    "read_only": 1
+  },
+  {
+   "bold": 1,
+   "fieldname": "total_gst_amount",
+   "fieldtype": "Currency",
+   "label": "Total GST Amount",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_kbka",
+   "fieldtype": "Section Break",
+   "label": "GST Details"
+  },
+  {
+   "fieldname": "taxes_and_charges",
+   "fieldtype": "Link",
+   "label": "Purchase Taxes and Charges Template",
+   "options": "Sales Taxes and Charges Template",
+   "print_hide": 1
+  },
+  {
+   "fieldname": "gst_amount",
+   "fieldtype": "Float",
+   "label": "GST Amount",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "apply_gst",
+   "fieldtype": "Check",
+   "label": "Apply GST"
+  },
+  {
+   "fieldname": "column_break_gtia",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "tax_rate",
+   "fieldtype": "Float",
+   "label": "Tax Rate",
+   "read_only": 1
+  },
+  {
+   "fieldname": "account_head",
+   "fieldtype": "Data",
+   "label": "Account Head",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-28 13:14:06.073571",
+ "modified": "2026-01-26 17:02:01.156261",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Project Invoice",

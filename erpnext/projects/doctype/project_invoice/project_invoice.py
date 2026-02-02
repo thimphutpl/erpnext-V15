@@ -19,8 +19,10 @@ class ProjectInvoice(AccountsController):
 		from erpnext.projects.doctype.project_invoice_mb.project_invoice_mb import ProjectInvoiceMB
 		from frappe.types import DF
 
+		account_head: DF.Data | None
 		advance_recovery: DF.Currency
 		amended_from: DF.Link | None
+		apply_gst: DF.Check
 		boq: DF.Link | None
 		boq_type: DF.Data | None
 		branch: DF.Link | None
@@ -31,6 +33,7 @@ class ProjectInvoice(AccountsController):
 		currency: DF.Link | None
 		customer: DF.Data | None
 		gross_invoice_amount: DF.Currency
+		gst_amount: DF.Float
 		invoice_date: DF.Date
 		invoice_title: DF.Data | None
 		invoice_type: DF.Literal["Direct Invoice", "MB Based Invoice"]
@@ -46,8 +49,11 @@ class ProjectInvoice(AccountsController):
 		reference_name: DF.DynamicLink | None
 		status: DF.Literal["Draft", "Unpaid", "Paid", "Cancelled"]
 		subcontract: DF.Link | None
+		tax_rate: DF.Float
+		taxes_and_charges: DF.Link | None
 		tds_amount: DF.Currency
 		total_balance_amount: DF.Currency
+		total_gst_amount: DF.Currency
 		total_paid_amount: DF.Currency
 		total_received_amount: DF.Currency
 	# end: auto-generated types
@@ -74,6 +80,12 @@ class ProjectInvoice(AccountsController):
 		self.update_boq()
 		self.update_mb_entries()
 		self.project_invoice_item_entry()
+	# def before_save(self):
+	# 	self.calculate_gst_for_items()
+				
+	# def calculate_gst_for_items(self):
+	# 	gst_rate = 0.05
+	# 	self.total_gst_amount = flt(self.total_balance_amount) * gst_rate	
 
 	def on_update_after_submit(self):
 		self.project_invoice_item_entry()
@@ -180,6 +192,7 @@ class ProjectInvoice(AccountsController):
 		name_list.setdefault('mb_list',mb_list)
 
 		return name_list
+
 
 	# load project_invoice_boq for Running Account Bill print
 	def load_invoice_boq(self):
@@ -411,11 +424,15 @@ class ProjectInvoice(AccountsController):
 		self.net_invoice_amount      = flt(self.gross_invoice_amount)+flt(self.price_adjustment_amount)-flt(self.advance_recovery)-flt(self.tds_amount)
 		self.total_balance_amount    = flt(self.net_invoice_amount)-flt(self.total_received_amount)-flt(self.total_paid_amount)
 		
+
+		
 		if flt(self.gross_invoice_amount) == 0:
 			frappe.throw(_("Gross Invoice Amount should be greater than zero"), title="Invalid Data")
 
+
 	def make_gl_entries(self):
 		if self.net_invoice_amount:
+			total_amount = flt(self.net_invoice_amount) + flt(self.total_gst_amount)
 			from erpnext.accounts.general_ledger import make_gl_entries
 			gl_entries = []
 			self.posting_date = self.invoice_date
@@ -444,7 +461,7 @@ class ProjectInvoice(AccountsController):
 						"party": self.party,
 						"against": inv_gl,
 						"credit" if self.party_type == "Supplier" else "debit": self.net_invoice_amount,
-						"credit_in_account_currency" if self.party_type == "Supplier" else "debit_in_account_currency": self.net_invoice_amount,
+						"credit_in_account_currency" if self.party_type == "Supplier" else "debit_in_account_currency": total_amount,
 						"against_voucher": self.name,
 						"against_voucher_type": self.doctype,
 						"project": self.project,
@@ -456,8 +473,19 @@ class ProjectInvoice(AccountsController):
 				self.get_gl_dict({
 						"account":  inv_gl,
 						"against": self.party,
-						"debit" if self.party_type == "Supplier" else "credit": self.net_invoice_amount,
-						"debit_in_account_currency" if self.party_type == "Supplier" else "credit_in_account_currency": self.net_invoice_amount,
+						"debit" if self.party_type == "Supplier" else "credit": self.total_gst_amount,
+						"debit_in_account_currency" if self.party_type == "Supplier" else "credit_in_account_currency": self.total_gst_amount,
+						"project": self.project,
+						"cost_center": self.cost_center
+				}, self.currency)
+			)
+
+			gl_entries.append(
+				self.get_gl_dict({
+						"account":  self.account_head,
+						"against": self.party,
+						"credit" if self.party_type == "Supplier" else "debit": self.gst_amount,
+						"credit_in_account_currency" if self.party_type == "Supplier" else "debit_in_account_currency": self.gst_amount,
 						"project": self.project,
 						"cost_center": self.cost_center
 				}, self.currency)
@@ -640,26 +668,36 @@ def get_mb_list(project, party_type, party):
 			and party = '{party}'
 			and total_balance_amount > 0
 			""".format(project=project, party_type=party_type, party=party), as_dict=True)
-	# result = frappe.db.sql("""
-	# 		select name as entry_name,
-	# 			entry_date,
-	# 			total_balance_amount as entry_amount,
-	# 			total_entry_amount as act_entry_amount,
-	# 			total_invoice_amount as act_invoice_amount,
-	# 			total_received_amount as act_received_amount,
-	# 			total_balance_amount as act_balance_amount,
-	# 			boq, boq_type, subcontract
-	# 		from `tabMB Entry`
-	# 		where project = '{project}'
-	# 		and docstatus = 1
-	# 		and party_type = '{party_type}'
-	# 		and party = '{party}'
-	# 		and total_balance_amount > 0
-	# 		""".format(project=project, party_type=party_type, party=party), as_dict=True)
-
-	# self.set('project_invoice_mb', [])
-	# for d in result:
-	# 	row = self.append('project_invoice_mb', {})
-	# 	row.update(d)
-	
 	return result
+
+def get_permission_query_conditions(user):
+	if not user: user = frappe.session.user
+	user_roles = frappe.get_roles(user)
+
+	if user == "Administrator" or "System Manager" in user_roles: 
+		return
+
+	return """(
+		`tabProject Invoice`.owner = '{user}'
+		or
+		exists(select 1
+			from `tabEmployee` as e
+			where e.branch = `tabProject Invoice`.branch
+			and e.user_id = '{user}')
+		or
+		exists(select 1
+			from `tabEmployee` e, `tabAssign Branch` ab, `tabBranch Item` bi
+			where e.user_id = '{user}'
+			and ab.employee = e.name
+			and bi.parent = ab.name
+			and bi.branch = `tabProject Invoice`.branch)
+	)""".format(user=user)
+@frappe.whitelist()
+def get_taxes_for_template(template_name):
+    taxes = frappe.get_all(
+        "Sales Taxes and Charges",
+        filters={"parent": template_name},
+        fields=["charge_type", "account_head", "rate", "description"]
+    )
+    return taxes
+

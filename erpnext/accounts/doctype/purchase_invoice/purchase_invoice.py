@@ -253,31 +253,28 @@ class PurchaseInvoice(BuyingController):
 		if not self.on_hold:
 			self.release_date = ""
 		self.validate_taxes_and_charges()
-		self.calculate_gst_for_items()
+		# self.calculate_gst_for_items()
 	
 	def validate_taxes_and_charges(self):
 		if not self.taxes_and_charges:
 			msgprint(_("You are creating a Purchase Order without including GST."), 
 					 title=_("Warning"), indicator="orange")
-	def calculate_gst_for_items(self):
-		gst_rate = 0.0
+	# def calculate_gst_for_items(self):
+	# 	if self.gst_amount < 0:
+	# 		for t in self.taxes:
+	# 			if t.account_head:
+	# 				break
 
-		# Find GST rate from taxes table
-		for t in self.taxes:
-			if t.account_head:
-				gst_rate = t.rate or 0
-				break
-
-		# Update each item
-		for item in self.items:
-			if not item.qty or not item.amount:
-				# gst = 0.0
-				item.gst_qty = 0.0
-				item.rate_including_gst = item.rate or 0.0
-				continue
-			# item.gst = (item.amount * gst_rate) / 100
-			item.gst_qty = (item.gst_amount / item.qty) if item.qty else 0.0
-			item.rate_including_gst = (item.rate or 0.0) + item.gst_qty		
+	# 		# Update each item
+	# 		for item in self.items:
+	# 			if not item.qty or not item.net_amount:
+	# 				# gst = 0.0
+	# 				item.gst_qty = 0.0
+	# 				item.rate_including_gst = item.net_rate or 0.0
+	# 				continue
+	# 			# item.gst = (item.amount * gst_rate) / 100
+	# 			item.gst_qty = (item.gst_amount / item.qty) if item.qty else 0.0
+	# 			item.rate_including_gst = (item.net_rate or 0.0) + item.gst_qty		
 
 	def invoice_is_blocked(self):
 		return self.on_hold and (not self.release_date or self.release_date > getdate(nowdate()))
@@ -325,6 +322,11 @@ class PurchaseInvoice(BuyingController):
 		self.reset_default_field_value("rejected_warehouse", "items", "rejected_warehouse")
 		self.reset_default_field_value("set_from_warehouse", "items", "from_warehouse")
 		self.set_percentage_received()
+		if self.discount > 0 or self.tax > 0 or self.other_charges > 0 or self.freight_and_insurance_charges > 0 or self.tax > 0:
+			for item in self.items:
+				item.gst_qty = (item.gst_amount / item.qty) if item.qty else 0.0
+				if item.gst_amount > 0:
+					item.rate_including_gst = (item.net_rate or 0.0) + item.gst_qty
 			
 	def set_percentage_received(self):
 		total_billed_qty = 0.0
@@ -1084,6 +1086,9 @@ class PurchaseInvoice(BuyingController):
 			else self.base_grand_total,
 			self.precision("base_grand_total"),
 		) - flt(self.total_advance)
+		gst_amount=0.0
+		for item in self.items:
+			gst_amount+=flt(item.gst_amount)
 
 		if grand_total and not self.is_internal_transfer():
 			against_voucher = self.name
@@ -1098,8 +1103,8 @@ class PurchaseInvoice(BuyingController):
 						"party": self.supplier,
 						"due_date": self.due_date,
 						"against": self.against_expense_account,
-						"credit": base_grand_total,
-						"credit_in_account_currency": base_grand_total
+						"credit": base_grand_total+gst_amount,
+						"credit_in_account_currency": base_grand_total+gst_amount
 						if self.party_account_currency == self.company_currency
 						else grand_total,
 						"against_voucher": against_voucher,
@@ -1196,7 +1201,7 @@ class PurchaseInvoice(BuyingController):
 									"cost_center": item.cost_center,
 									"project": item.project or self.project,
 									"remarks": self.get("remarks") or _("Accounting Entry for Stock"),
-									"debit": -1 * flt(credit_amount, item.precision("base_net_amount")),
+									"debit": -1 * flt(credit_amount, item.precision("base_net_amount"))+(),
 									# "business_activity": self.business_activity,
 								},
 								warehouse_account[item.from_warehouse]["account_currency"],
@@ -1505,45 +1510,45 @@ class PurchaseInvoice(BuyingController):
 		valuation_tax = {}
 
 		for tax in self.get("taxes"):
-			if tax.is_gst == 1:
-				continue
-			else:
-				amount, base_amount = self.get_tax_amounts(tax, None)
-				if tax.category in ("Total", "Valuation and Total") and flt(base_amount):
-					account_currency = get_account_currency(tax.account_head)
+			# if tax.is_gst == 1:
+			# 	continue
+			# else:
+			amount, base_amount = self.get_tax_amounts(tax, None)
+			if tax.category in ("Total", "Valuation and Total") and flt(base_amount):
+				account_currency = get_account_currency(tax.account_head)
 
-					dr_or_cr = "debit" if tax.add_deduct_tax == "Add" else "credit"
+				dr_or_cr = "debit" if tax.add_deduct_tax == "Add" else "credit"
 
-					gl_entries.append(
-						self.get_gl_dict(
-							{
-								"account": tax.account_head,
-								"against": self.supplier,
-								dr_or_cr: base_amount,
-								dr_or_cr + "_in_account_currency": base_amount
-								if account_currency == self.company_currency
-								else amount,
-								"cost_center": tax.cost_center,
-							},
-							account_currency,
-							item=tax,
+				gl_entries.append(
+					self.get_gl_dict(
+						{
+							"account": tax.account_head,
+							"against": self.supplier,
+							dr_or_cr: base_amount,
+							dr_or_cr + "_in_account_currency": base_amount
+							if account_currency == self.company_currency
+							else amount,
+							"cost_center": tax.cost_center,
+						},
+						account_currency,
+						item=tax,
+					)
+				)
+			# accumulate valuation tax
+			if (
+				self.is_opening == "No"
+				and tax.category in ("Valuation", "Valuation and Total")
+				and flt(base_amount)
+				and not self.is_internal_transfer()
+			):
+				if self.auto_accounting_for_stock and not tax.cost_center:
+					frappe.throw(
+						_("Cost Center is required in row {0} in Taxes table for type {1}").format(
+							tax.idx, _(tax.category)
 						)
 					)
-				# accumulate valuation tax
-				if (
-					self.is_opening == "No"
-					and tax.category in ("Valuation", "Valuation and Total")
-					and flt(base_amount)
-					and not self.is_internal_transfer()
-				):
-					if self.auto_accounting_for_stock and not tax.cost_center:
-						frappe.throw(
-							_("Cost Center is required in row {0} in Taxes table for type {1}").format(
-								tax.idx, _(tax.category)
-							)
-						)
-					valuation_tax.setdefault(tax.name, 0)
-					valuation_tax[tax.name] += (tax.add_deduct_tax == "Add" and 1 or -1) * flt(base_amount)
+				valuation_tax.setdefault(tax.name, 0)
+				valuation_tax[tax.name] += (tax.add_deduct_tax == "Add" and 1 or -1) * flt(base_amount)
 
 		if self.is_opening == "No" and self.negative_expense_to_be_booked and valuation_tax:
 			# credit valuation tax amount in "Expenses Included In Valuation"
@@ -1723,6 +1728,7 @@ class PurchaseInvoice(BuyingController):
 					item=self,
 				)
 			)
+			# frappe.throw(str(gl_entries))
 
 	def on_cancel(self):
 		check_if_return_invoice_linked_with_payment_entry(self)
