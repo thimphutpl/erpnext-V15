@@ -151,6 +151,7 @@
    "default": "0",
    "fieldname": "reviewer_required",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "Reviewer Required"
   },
   {
@@ -178,7 +179,7 @@
  "icon": "fa fa-file-text",
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-21 16:36:00.965777",
+ "modified": "2026-02-02 15:00:00.623695",
  "modified_by": "Administrator",
  "module": "eNote",
  "name": "eNote",
@@ -198,6 +199,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "ASC",
  "states": [],
