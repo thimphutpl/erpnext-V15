@@ -38,6 +38,8 @@ class PurchaseReceiptItem(Document):
 		discount_percentage: DF.Percent
 		expense_account: DF.Link
 		from_warehouse: DF.Link | None
+		gst_amount: DF.Float
+		gst_qty: DF.Float
 		has_item_scanned: DF.Check
 		image: DF.Attach | None
 		include_exploded_items: DF.Check
@@ -77,6 +79,7 @@ class PurchaseReceiptItem(Document):
 		quality_inspection: DF.Link | None
 		rate: DF.Currency
 		rate_difference_with_purchase_invoice: DF.Currency
+		rate_including_gst: DF.Float
 		rate_with_margin: DF.Currency
 		received_qty: DF.Float
 		received_stock_qty: DF.Float
