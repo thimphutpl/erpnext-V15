@@ -15,6 +15,7 @@
   "col_break_100",
   "receive_payment",
   "section_break_1",
+  "column_break_okjh",
   "branch",
   "column_break_7",
   "cost_center",
@@ -502,12 +503,16 @@
    "fieldname": "total_gst_amount",
    "fieldtype": "Currency",
    "label": "Total GST Amount"
+  },
+  {
+   "fieldname": "column_break_okjh",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-02-01 10:29:33.250153",
+ "modified": "2026-02-03 16:44:50.359999",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Job Cards",

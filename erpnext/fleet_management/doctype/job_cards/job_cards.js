@@ -46,8 +46,12 @@ frappe.ui.form.on('Job Cards', {
 			cur_frm.toggle_display("receive_payment", 0)
 		}
 
-		cur_frm.toggle_display("owned_by", 0)
+		// cur_frm.toggle_display("owned_by", 0)
+		toggle_gst_section(frm);
 
+	},
+	onload: function (frm) {
+		toggle_gst_section(frm);
 	},
 	"receive_payment": function (frm) {
 		if (frm.doc.paid == 0) {
@@ -74,7 +78,11 @@ frappe.ui.form.on('Job Cards', {
 				frm.refresh_field("items");
 				frm.refresh_fields();
 			}
+
 		});
+
+
+
 	},
 	"items_on_form_rendered": function (frm, grid_row, cdt, cdn) {
 		var row = cur_frm.open_grid_row();
@@ -87,7 +95,8 @@ frappe.ui.form.on('Job Cards', {
 			df.read_only = 1
 			row.grid_form.fields_dict.quantity.refresh()
 		}
-	}
+	},
+
 });
 
 //Job Card Item  Details
@@ -174,6 +183,21 @@ function calculate_datetime(frm, cdt, cdn) {
 		frappe.model.set_value(cdt, cdn, "total_time", frappe.datetime.get_hour_diff(item.end_time, item.start_time))
 	}
 	cur_frm.refresh_field("total_time")
+}
+
+function toggle_gst_section(frm) {
+	const hide = frm.doc.owned_by != "Others";
+	const grid = frm.fields_dict.items?.grid;
+	if (!grid) return;
+
+	// 🔑 THIS is the correct API
+	grid.update_docfield_property(
+		"gst_details_section",
+		"hidden",
+		hide ? 1 : 0
+	);
+
+	frm.refresh_field("items");
 }
 
 //Job Card Mechanic Details
