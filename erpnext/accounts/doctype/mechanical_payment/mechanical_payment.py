@@ -269,7 +269,6 @@ class MechanicalPayment(AccountsController):
                                       "remarks": self.remarks
                                       })
                 )
-
         make_gl_entries(gl_entries, cancel=(self.docstatus == 2), update_outstanding="No", merge_entries=False)
         
     @frappe.whitelist()
