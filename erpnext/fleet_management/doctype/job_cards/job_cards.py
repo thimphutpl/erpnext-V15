@@ -188,7 +188,7 @@ class JobCards(AccountsController):
 
 				row.gst_amount = gst_amount
 				row.total_gst_amount = total_gst_amount
-				self.total_gst_amount = gst_amount
+				self.total_gst_amount += gst_amount
 				self.included_gst = 1
 			else:
 				self.included_gst = 0
