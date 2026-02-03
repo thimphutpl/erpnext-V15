@@ -70,12 +70,6 @@ class JobCards(AccountsController):
 		check_future_date(self.posting_date)
 		self.validate_owned_by()
 		self.validate_job_datetime()
-		for item in self.items:
-			if item.apply_gst:
-				self.included_gst=1
-			else:
-				self.included_gst=0	
-
 		if self.finish_date:
 			check_future_date(self.finish_date)
 			if get_datetime(self.finish_date + " " + self.job_out_time) < get_datetime(self.posting_date + " " + self.job_in_time):
@@ -118,6 +112,7 @@ class JobCards(AccountsController):
 
 		br_date_time = str(self.break_down_report_date + " " + str(br_time))
 		jc_date_time =  str(self.posting_date + " " + self.job_in_time)
+		
 
 
 		if get_datetime(br_date_time) > get_datetime(jc_date_time):
@@ -144,6 +139,8 @@ class JobCards(AccountsController):
 		if self.owned_by == "Others":
 			self.make_gl_entries()
 		self.update_breakdownreport()
+	def before_save(self):
+		self.calculate_child_gst()	
 
 	# def before_cancel(self):     
 	# 	check_uncancelled_linked_doc(self.doctype, self.name)
@@ -174,6 +171,28 @@ class JobCards(AccountsController):
 			bdr.db_set("job_cards", None)
 		if self.owned_by == "Others":
 			self.make_gl_entries()	
+	def calculate_child_gst(self):
+		self.included_gst = 0
+		self.total_gst_amount = 0.0 
+		for row in self.items:
+			row.gst_amount = 0.0
+			row.total_gst_amount = 0.0
+			row.included_gst = 0
+
+			if row.taxes_and_charges:
+				gst_rate = row.tax_rate or 0
+				base_amount = row.amount or 0
+
+				gst_amount = (base_amount * gst_rate) / 100
+				total_gst_amount = base_amount + gst_amount
+
+				row.gst_amount = gst_amount
+				row.total_gst_amount = total_gst_amount
+				self.total_gst_amount = gst_amount
+				self.included_gst = 1
+			else:
+				self.included_gst = 0
+		
 
 	def get_default_settings(self):
 		goods_account = frappe.db.get_single_value("Maintenance Accounts Settings", "default_goods_account")
@@ -401,21 +420,6 @@ class JobCards(AccountsController):
 						"cost_center": self.cost_center
 					}, self.currency)
 				)
-	
-		# gl_entries.append(
-		# 		self.get_gl_dict({
-		# 				"account":  goods_account,
-		# 				"party_type": "Customer",
-		# 				"party": self.customer,
-		# 				"against": receivable_account,
-		# 				"credit":self.total_amount,
-		# 				"credit_in_account_currency": self.total_amount,
-		# 				"against_voucher": self.name,
-		# 				"against_voucher_type": self.doctype,
-		# 				"cost_center": self.cost_center
-		# 		}, self.currency)
-		# )
-
 		if self.goods_amount:
 			gl_entries.append(
 				self.get_gl_dict({
@@ -436,7 +440,7 @@ class JobCards(AccountsController):
 						"cost_center": self.cost_center
 				}, self.currency)
 			)
-        
+		
 		
 		make_gl_entries(gl_entries, cancel=(self.docstatus == 2),update_outstanding="No", merge_entries=False)
 
@@ -581,9 +585,9 @@ def get_permission_query_conditions(user):
 	)""".format(user=user)
 @frappe.whitelist()
 def get_taxes_for_template(template_name):
-    taxes = frappe.get_all(
-        "Sales Taxes and Charges",
-        filters={"parent": template_name},
-        fields=["charge_type", "account_head", "rate", "description"]
-    )
-    return taxes
+	taxes = frappe.get_all(
+		"Sales Taxes and Charges",
+		filters={"parent": template_name},
+		fields=["charge_type", "account_head", "rate", "description"]
+	)
+	return taxes

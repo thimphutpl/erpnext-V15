@@ -16,7 +16,6 @@ class JobCardsItem(Document):
 
 		account_head: DF.Data | None
 		amount: DF.Currency
-		apply_gst: DF.Check
 		checked_by: DF.Link | None
 		gst_amount: DF.Float
 		imprest: DF.Check
