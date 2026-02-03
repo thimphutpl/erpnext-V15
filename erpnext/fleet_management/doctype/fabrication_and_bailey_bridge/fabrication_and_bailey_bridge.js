@@ -117,40 +117,35 @@ frappe.ui.form.on("Fabrication And Bailey Bridge", {
 
 //Job Card Item  Details
 frappe.ui.form.on("Job Cards Item", {
-	apply_gst: function (frm, cdt, cdn) {
-		calculate_child_gst(frm, cdt, cdn);
-	},
-	amount: function (frm, cdt, cdn) {
-		calculate_child_gst(frm, cdt, cdn);
-	},
-	tax_rate: function (frm, cdt, cdn) {
-		calculate_child_gst(frm, cdt, cdn);
-	},
 	taxes_and_charges: function (frm, cdt, cdn) {
 		let row = locals[cdt][cdn];
 
-		// Ensure a template is selected
-		if (!row.taxes_and_charges) return;
+		// If template cleared → reset row fields
+		if (!row.taxes_and_charges) {
+			frappe.model.set_value(cdt, cdn, "account_head", "");
+			frappe.model.set_value(cdt, cdn, "tax_rate", 0);
+			frappe.model.set_value(cdt, cdn, "gst_amount", 0);
+			frappe.model.set_value(cdt, cdn, "total_gst_amount", 0);
+			return;
+		}
 
-		// Call ERPNext utility to get taxes for template
+		// Fetch taxes for selected template
 		frappe.call({
-			method: "erpnext.fleet_management.doctype.job_cards.job_cards.get_taxes_for_template",
+			method: "erpnext.fleet_management.doctype.fabrication_and_bailey_bridge.fabrication_and_bailey_bridge.get_taxes_for_template",
 			args: {
 				template_name: row.taxes_and_charges
 			},
 			callback: function (r) {
-				if (r.message && r.message.length > 0) {
-					// Take first tax from template (or loop if multiple)
-					let tax = r.message[0];
+				if (r.message && r.message.length) {
+					let tax = r.message[0]; // first tax line
 
-					// Set values in the same child row
 					frappe.model.set_value(cdt, cdn, "account_head", tax.account_head);
-					frappe.model.set_value(cdt, cdn, "tax_rate", tax.rate);
+					frappe.model.set_value(cdt, cdn, "tax_rate", flt(tax.rate));
 
-					// Optional: auto apply GST if your checkbox exists
-					if (row.apply_gst) {
-						calculate_child_gst(frm, cdt, cdn);
-					}
+				} else {
+					// No tax lines → clear
+					frappe.model.set_value(cdt, cdn, "account_head", "");
+					frappe.model.set_value(cdt, cdn, "tax_rate", 0);
 				}
 			}
 		});
@@ -192,20 +187,6 @@ function calculate_datetime(frm, cdt, cdn) {
 	}
 	cur_frm.refresh_field("total_time")
 }
-function calculate_child_gst(frm, cdt, cdn) {
-	let row = locals[cdt][cdn];
-	let rate = row.tax_rate || 0;
-	let amount = row.amount || 0;
-	if (row.apply_gst) {
-		gst_amount = row.apply_gst ? (amount * rate / 100) : 0;
-		total_gst_amount = row.amount + gst_amount
-	}
-	frappe.model.set_value(cdt, cdn, "gst_amount", gst_amount);
-	frappe.model.set_value(cdt, cdn, "total_gst_amount", total_gst_amount)
-
-}
-
-
 //Job Card Mechanic Details
 frappe.ui.form.on("Mechanic Assigned", {
 	"start_time": function (frm, cdt, cdn) {

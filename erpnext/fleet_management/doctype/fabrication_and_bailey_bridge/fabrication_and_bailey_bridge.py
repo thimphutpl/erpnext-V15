@@ -74,12 +74,7 @@ class FabricationAndBaileyBridge(AccountsController):
 		if "Service" in cc_amount:
 			self.services_amount = cc_amount['Service']
 		if 'Item' in cc_amount:
-			self.goods_amount = cc_amount['Item']
-		for item in self.items:
-			if item.apply_gst:
-				self.included_gst=1
-			else:
-				self.included_gst=0		
+			self.goods_amount = cc_amount['Item']	
 		self.total_amount = flt(self.services_amount) + flt(self.goods_amount)
 		self.outstanding_amount = self.total_amount + flt(self.total_gst_amount)
 
@@ -120,6 +115,8 @@ class FabricationAndBaileyBridge(AccountsController):
 				frappe.throw("You need to cancel the journal entry related to this fabrication and bailey bridge first!")
 			
 		self.db_set('jv', None)
+	def before_save(self):
+		self.calculate_child_gst()		
 
 	def on_cancel(self):
 		self.ignore_linked_doctypes = (
@@ -130,6 +127,28 @@ class FabricationAndBaileyBridge(AccountsController):
 
 		if self.owned_by == "Others":
 			self.make_gl_entries()
+	def calculate_child_gst(self):
+		self.included_gst = 0
+		self.total_gst_amount = 0.0 
+		for row in self.items:
+			row.gst_amount = 0.0
+			row.total_gst_amount = 0.0
+			row.included_gst = 0
+
+			if row.taxes_and_charges:
+				gst_rate = row.tax_rate or 0
+				base_amount = row.amount or 0
+
+				gst_amount = (base_amount * gst_rate) / 100
+				total_gst_amount = base_amount + gst_amount
+				
+
+				row.gst_amount = gst_amount
+				row.total_gst_amount = total_gst_amount
+				self.total_gst_amount +=  gst_amount
+				self.included_gst = 1
+			else:
+				self.included_gst = 0		
 
 
 	def get_default_settings(self):
@@ -494,9 +513,9 @@ def make_payment_entry(source_name, target_doc=None):
 	return doc
 @frappe.whitelist()
 def get_taxes_for_template(template_name):
-    taxes = frappe.get_all(
-        "Sales Taxes and Charges",
-        filters={"parent": template_name},
-        fields=["charge_type", "account_head", "rate", "description"]
-    )
-    return taxes
+	taxes = frappe.get_all(
+		"Sales Taxes and Charges",
+		filters={"parent": template_name},
+		fields=["charge_type", "account_head", "rate", "description"]
+	)
+	return taxes
