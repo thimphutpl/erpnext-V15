@@ -135,8 +135,8 @@ class GLEntry(Document):
 					frappe.throw("freeze Date is required for Project {}".format(self.project))
 				freeze_date = getdate(freeze_date) if freeze_date else None
 				posting_date = getdate(self.posting_date)
-				if freeze_date >= posting_date:
-					frappe.throw("Account for Project {project} is frozen till {date}".format(project=self.project, date=freeze_date))
+				# if freeze_date >= posting_date:
+				frappe.throw("Account for Project {project} is frozen till {date}".format(project=self.project, date=freeze_date))
 
 	def check_mandatory(self):
 		mandatory = ["account", "voucher_type", "voucher_no", "company"]
