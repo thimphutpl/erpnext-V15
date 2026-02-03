@@ -83,8 +83,7 @@
    "fieldname": "posting_date",
    "fieldtype": "Date",
    "in_list_view": 1,
-   "label": "Posting Date",
-   "read_only": 1
+   "label": "Posting Date"
   },
   {
    "default": "Today",
@@ -285,7 +284,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-06-14 10:16:37.729407",
+ "modified": "2026-02-03 11:50:19.637466",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Issue",
