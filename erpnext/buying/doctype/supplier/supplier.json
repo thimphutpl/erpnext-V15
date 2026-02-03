@@ -15,6 +15,7 @@
   "supplier_tpn_no",
   "country",
   "attention_person",
+  "gst_registration_no",
   "column_break0",
   "supplier_group",
   "supplier_type",
@@ -667,6 +668,11 @@
    "fieldname": "email_address",
    "fieldtype": "Data",
    "label": "Email Address"
+  },
+  {
+   "fieldname": "gst_registration_no",
+   "fieldtype": "Data",
+   "label": "GST Registration No"
   }
  ],
  "icon": "fa fa-user",
@@ -679,7 +685,7 @@
    "link_fieldname": "party"
   }
  ],
- "modified": "2025-03-18 11:58:04.463199",
+ "modified": "2026-02-03 10:01:09.486396",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Supplier",
