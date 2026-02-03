@@ -1072,7 +1072,7 @@ class CustomWorkflow:
 		if self.new_state.lower() in ("Waiting CEO Approval".lower()):
 			if self.doc.owner != frappe.session.user:
 				frappe.throw("Only {} can Apply this document".format(self.doc.owner))
-			self.set_approver("HR")
+			self.set_approver("CEO")
    
 		if self.new_state.lower() in ("Verified".lower()):
 			if self.doc.owner != frappe.session.user:
