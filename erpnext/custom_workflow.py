@@ -116,7 +116,7 @@ class CustomWorkflow:
 			# 	)))
 		if self.doc.doctype == "Employee Advance":
 			# if self.doc.advance_type != "Imprest Advance":
-			self.hr_approver	= frappe.db.get_value("Employee", frappe.db.get_single_value("HR Settings", "hr_approver"), self.field_list)
+			self.hr_approver	= frappe.db.get_value("Employee", frappe.db.get_single_value("HR Settings", "ceo"), self.field_list)
 			self.ac_approver	= frappe.db.get_value("Employee", frappe.db.get_single_value("HR Settings", "accounts_finance"), self.field_list)
 			# self.hr_approver = frappe.db.get_value("Employee", frappe.db.get_value("Employee", "employee_advance"), self.field_list)
 			# self.reports_to	= frappe.db.get_value("Employee", frappe.db.get_value("Employee", {'user_id':self.doc.owner}, "reports_to"), self.field_list)
