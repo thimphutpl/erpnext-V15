@@ -22,7 +22,6 @@ class ProjectInvoice(AccountsController):
 		account_head: DF.Data | None
 		advance_recovery: DF.Currency
 		amended_from: DF.Link | None
-		apply_gst: DF.Check
 		boq: DF.Link | None
 		boq_type: DF.Data | None
 		branch: DF.Link | None
@@ -34,6 +33,7 @@ class ProjectInvoice(AccountsController):
 		customer: DF.Data | None
 		gross_invoice_amount: DF.Currency
 		gst_amount: DF.Float
+		included_gst: DF.Check
 		invoice_date: DF.Date
 		invoice_title: DF.Data | None
 		invoice_type: DF.Literal["Direct Invoice", "MB Based Invoice"]
@@ -82,11 +82,32 @@ class ProjectInvoice(AccountsController):
 		self.project_invoice_item_entry()
 	# def before_save(self):
 	# 	self.calculate_gst_for_items()
+	def before_save(self):
+		self.calculate_gst_amount()
+		# if self.apply_gst:
+		# 	self.included_gst=1
+		# else:
+		# 	self.included_gst=0	
+
 				
 	# def calculate_gst_for_items(self):
 	# 	gst_rate = 0.05
 	# 	self.total_gst_amount = flt(self.total_balance_amount) * gst_rate	
-
+  
+	def calculate_gst_amount(self):
+		self.gst_amount = 0.0
+		self.total_gst_amount = 0.0
+		self.included_gst = 0 
+		if self.taxes_and_charges:
+			gst_rate = self.tax_rate
+			gst_amount = (self.net_invoice_amount * gst_rate) / 100
+			total_gst_amount = self.net_invoice_amount + gst_amount
+			self.gst_amount = gst_amount
+			self.total_gst_amount = total_gst_amount
+			self.included_gst=1
+		else:
+			self.included_gst=0
+	
 	def on_update_after_submit(self):
 		self.project_invoice_item_entry()
 
@@ -694,10 +715,11 @@ def get_permission_query_conditions(user):
 	)""".format(user=user)
 @frappe.whitelist()
 def get_taxes_for_template(template_name):
-    taxes = frappe.get_all(
-        "Sales Taxes and Charges",
-        filters={"parent": template_name},
-        fields=["charge_type", "account_head", "rate", "description"]
-    )
-    return taxes
+	taxes = frappe.get_all(
+		"Sales Taxes and Charges",
+		filters={"parent": template_name},
+		fields=["charge_type", "account_head", "rate", "description"]
+	)
+	return taxes
+
 
