@@ -26,6 +26,14 @@
   "is_hsd_item",
   "tanker_capacity",
   "total_quantity",
+  "gst_details_section",
+  "taxes_and_charges",
+  "account_head",
+  "tax_rate",
+  "column_break_fxwi",
+  "gst_amount",
+  "rate_including_gst",
+  "total_gst_amount",
   "section_break_3",
   "items",
   "section_break_5",
@@ -193,12 +201,62 @@
    "label": "Edit Posting Date and Time",
    "permlevel": 1,
    "print_hide": 1
+  },
+  {
+   "fieldname": "gst_details_section",
+   "fieldtype": "Section Break",
+   "hidden": 1,
+   "label": "GST Details"
+  },
+  {
+   "fieldname": "taxes_and_charges",
+   "fieldtype": "Link",
+   "label": "Purchase Taxes and Charges Template",
+   "options": "Sales Taxes and Charges Template",
+   "read_only": 1
+  },
+  {
+   "fieldname": "account_head",
+   "fieldtype": "Data",
+   "label": "Account Head",
+   "read_only": 1
+  },
+  {
+   "fieldname": "tax_rate",
+   "fieldtype": "Float",
+   "label": "Tax Rate",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_fxwi",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "rate_including_gst",
+   "fieldtype": "Float",
+   "label": "Rate Including GST",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_gst_amount",
+   "fieldtype": "Float",
+   "label": "Total GST Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "gst_amount",
+   "fieldtype": "Float",
+   "label": "GTS Amount",
+   "precision": "2",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-03-21 17:12:21.721814",
+ "modified": "2026-02-04 15:54:00.478417",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Issue",
