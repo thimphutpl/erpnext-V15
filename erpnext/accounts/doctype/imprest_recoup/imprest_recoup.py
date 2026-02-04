@@ -19,6 +19,7 @@ class ImprestRecoup(Document):
 		from erpnext.accounts.doctype.imprest_recoup_item.imprest_recoup_item import ImprestRecoupItem
 		from frappe.types import DF
 
+		account_head: DF.Data | None
 		amended_from: DF.Link | None
 		approver: DF.Link | None
 		approver_designation: DF.Link | None
@@ -29,6 +30,7 @@ class ImprestRecoup(Document):
 		cost_center: DF.Link
 		final_je: DF.Data | None
 		final_settlement: DF.Literal["", "Yes", "No"]
+		gst_amount: DF.Float
 		imprest_advance_list: DF.Table[ImprestAdvanceItem]
 		imprest_type: DF.Link
 		items: DF.Table[ImprestRecoupItem]
@@ -39,8 +41,11 @@ class ImprestRecoup(Document):
 		posting_date: DF.Date
 		project: DF.Link | None
 		remarks: DF.SmallText | None
+		tax_rate: DF.Float
+		taxes_and_charges: DF.Link | None
 		title: DF.Data
 		total_amount: DF.Currency
+		total_gst_amount: DF.Float
 	# end: auto-generated types
 
 	def validate(self):
@@ -66,12 +71,13 @@ class ImprestRecoup(Document):
 	def calculate_amount_final(self):
 		tot_bal_amt = sum(d.balance_amount for d in self.imprest_advance_list)
 		self.opening_balance = tot_bal_amt + self.total_amount
-		self.balance_amount = tot_bal_amt
+		self.balance_amount = tot_bal_amt - flt(self.gst_amount)
 		
 		if self.docstatus != 1 and tot_bal_amt <= 0 and self.workflow_state == "Draft":
 			frappe.throw("Expense amount cannot be more than balance amount.")
 
 	def before_save(self):
+		self.calculate_gst_amount()
 		fy = str(self.posting_date)[0:4]
 		# frappe.throw(f"{fy}")
 		for item in self.get('items'):
@@ -101,6 +107,17 @@ class ImprestRecoup(Document):
 				self.db_set("journal_entry", None)
 
 		self.check_imprest_advance_status_and_cancel()
+	def calculate_gst_amount(self):
+		self.gst_amount = 0.0
+		self.total_gst_amount = 0.0
+		if self.taxes_and_charges:
+			gst_rate = self.tax_rate
+			gst_amount = (self.total_amount * gst_rate) / 100
+			total_gst_amount = self.total_amount + gst_amount
+			self.gst_amount = gst_amount
+			self.total_gst_amount = total_gst_amount
+	
+		
 		
 	def on_cancel(self):
 		self.update_advance(1)
@@ -202,7 +219,13 @@ class ImprestRecoup(Document):
 						AND a.imprest_type = '{imprest_type}'
 						AND a.party = '{party}'
 						AND a.project = '{project}'
-						AND CASE WHEN a.is_opening = 0 THEN EXISTS (SELECT 1 FROM `tabJournal Entry` WHERE name = a.journal_entry AND docstatus = 1) ELSE a.is_opening END
+						AND 
+						(a.is_opening = 0 OR EXISTS (
+							SELECT 1 
+							FROM `tabJournal Entry` 
+							WHERE name = a.journal_entry AND docstatus = 1
+						))
+
 					ORDER BY a.posting_date
 				""".format(branch=self.branch, date=self.posting_date, imprest_type=self.imprest_type, party=self.party, project=self.project)
 			else:
@@ -216,7 +239,11 @@ class ImprestRecoup(Document):
 						AND a.balance_amount > 0
 						AND a.imprest_type = '{imprest_type}'
 						AND a.party = '{party}'
-						AND CASE WHEN a.is_opening = 0 THEN EXISTS (SELECT 1 FROM `tabJournal Entry` WHERE name = a.journal_entry AND docstatus = 1) ELSE a.is_opening END
+						AND (a.is_opening = 0 OR EXISTS (
+					SELECT 1 FROM `tabJournal Entry` 
+					WHERE name = a.journal_entry AND docstatus = 1
+				))
+
 					ORDER BY a.posting_date
 				""".format(branch=self.branch, date=self.posting_date, imprest_type=self.imprest_type, party=self.party)
 
@@ -317,10 +344,18 @@ class ImprestRecoup(Document):
 					"project": self.project,
 
 				})
+			if self.account_head:
+				je.append("accounts", {
+					"account": self.account_head,
+					"debit_in_account_currency": flt(self.gst_amount),
+					"cost_center": self.cost_center,
+					"project": self.project,
+				})
+	
 			
 			je.append("accounts", {
 				"account": credit_account,
-				"credit_in_account_currency": self.total_amount,
+				"credit_in_account_currency": self.total_amount + self.gst_amount,
 				"cost_center": self.cost_center,
 				"project": self.project,
 				"reference_type": "Imprest Recoup",
@@ -328,7 +363,7 @@ class ImprestRecoup(Document):
 				"party_type": party_type,
 				"party": party,
 			})
-
+		
 			je.insert()
 
 			# Set a reference to the claim journal entry
@@ -356,7 +391,15 @@ class ImprestRecoup(Document):
 			ima.insert()
 			ima.submit()
 			frappe.msgprint("Imprest Advance created. {}".format(frappe.get_desk_link("Imprest Advance", ima.name)))
-
+@frappe.whitelist()
+def get_taxes_for_template(template_name):
+	taxes = frappe.get_all(
+		"Purchase Taxes and Charges",
+		filters={"parent": template_name},
+		
+		fields=["charge_type", "account_head", "rate", "description"]
+	)
+	return taxes
 @frappe.whitelist()
 def get_imprest_recoup_account(recoup_type, company):
 	account = frappe.db.get_value(
@@ -373,29 +416,29 @@ def get_imprest_recoup_account(recoup_type, company):
 
 @frappe.whitelist()
 def get_approvers(doctype, txt, searchfield, start, page_len, filters):
-    """
-    Returns the expense approver for the selected employee
-    """
-    if not filters.get("party"):  # Changed from 'employee' to 'party' to match JS
-        frappe.throw(_("Please select an employee first"))
+	"""
+	Returns the expense approver for the selected employee
+	"""
+	if not filters.get("party"):  # Changed from 'employee' to 'party' to match JS
+		frappe.throw(_("Please select an employee first"))
 
-    employee = filters.get("party")  # Changed from 'employee' to 'party'
-    
-    # Get expense approver from Employee
-    expense_approver = frappe.db.get_value("Employee", employee, "expense_approver")
-    
-    if not expense_approver:
-        return []
-    
-    # Return user details if active
-    return frappe.get_all("User",
-        filters={
-            "name": expense_approver,
-            "enabled": 1
-        },
-        fields=["name as value", "full_name as description"],
-        as_list=1
-    )
+	employee = filters.get("party")  # Changed from 'employee' to 'party'
+	
+	# Get expense approver from Employee
+	expense_approver = frappe.db.get_value("Employee", employee, "expense_approver")
+	
+	if not expense_approver:
+		return []
+	
+	# Return user details if active
+	return frappe.get_all("User",
+		filters={
+			"name": expense_approver,
+			"enabled": 1
+		},
+		fields=["name as value", "full_name as description"],
+		as_list=1
+	)
 
 
 def get_permission_query_conditions(user):
