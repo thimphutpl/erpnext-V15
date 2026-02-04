@@ -47,7 +47,6 @@
   "column_break_fdav",
   "gst_amount",
   "total_gst_amount",
-  "apply_gst",
   "section_break_20",
   "get_advances",
   "advances",
@@ -348,12 +347,14 @@
   {
    "fieldname": "account_head",
    "fieldtype": "Data",
-   "label": "Account Head"
+   "label": "Account Head",
+   "read_only": 1
   },
   {
    "fieldname": "tax_rate",
    "fieldtype": "Float",
-   "label": "Tax Rate"
+   "label": "Tax Rate",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_fdav",
@@ -363,18 +364,14 @@
    "fieldname": "gst_amount",
    "fieldtype": "Float",
    "label": "GST Amount",
-   "precision": "2"
+   "precision": "2",
+   "read_only": 1
   },
   {
    "fieldname": "total_gst_amount",
    "fieldtype": "Data",
-   "label": "Total GST Amount"
-  },
-  {
-   "default": "0",
-   "fieldname": "apply_gst",
-   "fieldtype": "Check",
-   "label": "Apply GST"
+   "label": "Total GST Amount",
+   "read_only": 1
   },
   {
    "fieldname": "section_break_wgoq",
@@ -402,7 +399,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-02-01 20:01:22.849557",
+ "modified": "2026-02-03 14:35:56.309665",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Hire Charge Invoice",

@@ -28,7 +28,6 @@ class HireChargeInvoice(AccountsController):
 		advance_amount: DF.Currency
 		advances: DF.Table[HireInvoiceAdvance]
 		amended_from: DF.Link | None
-		apply_gst: DF.Check
 		balance_advance_amount: DF.Currency
 		balance_amount: DF.Currency
 		branch: DF.Link
@@ -65,11 +64,6 @@ class HireChargeInvoice(AccountsController):
 			frappe.throw("Balance amount cannot be negative")
 		self.outstanding_amount = self.balance_amount
 		self.set_advance_data()
-		if self.apply_gst:
-			self.included_gst=1
-		else:
-			self.included_gst=0	
-
 	def set_advance_data(self):
 		advance_amount = 0
 		balance_amount = 0
@@ -136,6 +130,22 @@ class HireChargeInvoice(AccountsController):
 		self.check_close(1)
 		self.db_set("invoice_jv", "")
 		self.db_set("payment_jv", "")
+	def before_save(self):
+		self.calculate_gst_amount()	
+	def calculate_gst_amount(self):
+		self.gst_amount = 0.0
+		self.total_gst_amount = 0.0
+		self.included_gst = 0 
+		if self.taxes_and_charges:
+			gst_rate = self.tax_rate
+			gst_amount = (self.total_invoice_amount * gst_rate) / 100
+			total_gst_amount = self.total_invoice_amount + gst_amount
+			self.gst_amount = gst_amount
+			self.total_gst_amount = total_gst_amount
+			self.included_gst=1
+		else:
+			self.included_gst=0
+		
 
 	def check_advances(self, cancel=None):
 		hire_name = self.ehf_name
@@ -513,4 +523,3 @@ def get_taxes_for_template(template_name):
         fields=["charge_type", "account_head", "rate", "description"]
     )
     return taxes
-

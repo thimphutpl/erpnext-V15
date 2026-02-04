@@ -3,24 +3,32 @@
 
 frappe.ui.form.on('Hire Charge Invoice', {
 	taxes_and_charges: function (frm) {
-		if (frm.doc.taxes_and_charges) {
-			get_gst_account_from_template(frm);
-		}
-		calculate_gst_amount(frm);
-	},
-	total_invoice_amount: function (frm) {
-		calculate_gst_amount(frm);
-	},
-	apply_gst: function (frm) {
-		// Only calculate if checkbox is checked
-		if (frm.doc.apply_gst) {
-			calculate_gst_amount(frm);
-		} else {
-			// Reset GST if unchecked
+		if (!frm.doc.taxes_and_charges) {
+			frm.set_value('account_head', '');
+			frm.set_value('tax_rate', 0);
 			frm.set_value('gst_amount', 0);
 			frm.set_value('total_gst_amount', 0);
+			return;
 		}
+
+		// Fetch tax lines for the selected template
+		frappe.call({
+			method: "erpnext.fleet_management.doctype.hire_charge_invoice.hire_charge_invoice.get_taxes_for_template",
+			args: { template_name: frm.doc.taxes_and_charges },
+			callback: function (res) {
+				if (res.message && res.message.length) {
+					const tax = res.message[0]; // take the first tax line
+					frm.set_value('account_head', tax.account_head);
+					frm.set_value('tax_rate', flt(tax.rate));
+				} else {
+					// Clear if no tax found for template
+					frm.set_value('account_head', '');
+					frm.set_value('tax_rate', 0);
+				}
+			}
+		});
 	},
+
 	refresh: function (frm) {
 		if (frm.doc.docstatus === 1) {
 			frm.add_custom_button(__('Accounting Ledger'), function () {
@@ -60,8 +68,8 @@ frappe.ui.form.on('Hire Charge Invoice', {
 		else {
 			cur_frm.toggle_display("receive_payment", 0)
 		}
+		toggle_gst_section(frm);
 	},
-
 	// onload: function (frm) {
 	// 	if (!frm.doc.posting_date) {
 	// 		frm.set_value("posting_date", get_today());
@@ -88,6 +96,7 @@ frappe.ui.form.on('Hire Charge Invoice', {
 				});
 			}
 		});
+		toggle_gst_section(frm);
 	},
 
 	validate: function (frm) {
@@ -140,6 +149,16 @@ function calculate_balance(frm) {
 		frm.refresh_field("outstanding_amount")
 	}
 }
+
+function toggle_gst_section(frm) {
+	if (!frm.doc.customer_type) return;
+
+	const show = ["Private", "Others"].includes(frm.doc.customer_type);
+
+	frm.toggle_display("gst_details_section", show);
+	frm.refresh_field("gst_details_section");
+}
+
 
 cur_frm.add_fetch("ehf_name", "customer", "customer")
 cur_frm.add_fetch("ehf_name", "private", "owned_by")
@@ -196,6 +215,7 @@ function get_vehicle_logs(form) {
 		freeze: true,
 		freeze_message: "Loading Logbook Data...... Please Wait",
 		callback: function (r) {
+
 			if (r.message) {
 				var total_invoice_amount = 0;
 				cur_frm.clear_table("items");
@@ -312,31 +332,3 @@ cur_frm.cscript.receive_payment = function () {
 	});
 }
 
-function calculate_gst_amount(frm) {
-	let total_invoice_amount = frm.doc.total_invoice_amount || 0;
-
-	let gst_rate = frm.doc.tax_rate || 0; // from taxes template
-	let gst_amount = total_invoice_amount * gst_rate / 100;
-	let total_gst_amount = total_invoice_amount + gst_amount;
-
-	frm.set_value('gst_amount', gst_amount);
-	frm.set_value('total_gst_amount', total_gst_amount);
-}
-
-
-// Get GST account & rate from taxes template
-function get_gst_account_from_template(frm) {
-	if (!frm.doc.taxes_and_charges) return;
-
-	frappe.call({
-		method: "erpnext.fleet_management.doctype.hire_charge_invoice.hire_charge_invoice.get_taxes_for_template",
-		args: { template_name: frm.doc.taxes_and_charges },
-		callback: function (r) {
-			if (r.message && r.message.length) {
-				const tax = r.message[0];
-				frm.set_value('account_head', tax.account_head);
-				frm.set_value('tax_rate', flt(tax.rate));
-			}
-		}
-	});
-}
