@@ -15,6 +15,7 @@ class HSDPaymentItem(Document):
 		from frappe.types import DF
 
 		allocated_amount: DF.Currency
+		amount_without_gst: DF.Float
 		balance_amount: DF.Currency
 		item_name: DF.Data
 		memo_number: DF.Data | None

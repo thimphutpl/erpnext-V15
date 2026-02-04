@@ -9,6 +9,7 @@
   "pol",
   "pol_item_code",
   "item_name",
+  "amount_without_gst",
   "column_break_3",
   "payable_amount",
   "allocated_amount",
@@ -72,12 +73,20 @@
    "in_list_view": 1,
    "label": "Cash Memo Number",
    "read_only": 1
+  },
+  {
+   "fieldname": "amount_without_gst",
+   "fieldtype": "Float",
+   "hidden": 1,
+   "label": "Amount Without GST",
+   "precision": "2",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-11-24 21:21:39.639340",
+ "modified": "2026-01-27 22:25:03.744628",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "HSD Payment Item",
