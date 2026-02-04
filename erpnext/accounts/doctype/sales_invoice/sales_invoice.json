@@ -266,7 +266,6 @@
    "oldfieldtype": "Link",
    "options": "Customer",
    "print_hide": 1,
-   "read_only": 1,
    "search_index": 1
   },
   {
@@ -2223,7 +2222,7 @@
    "link_fieldname": "consolidated_invoice"
   }
  ],
- "modified": "2026-01-22 22:05:25.533535",
+ "modified": "2026-02-04 10:17:19.839773",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Sales Invoice",
