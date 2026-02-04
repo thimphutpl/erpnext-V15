@@ -83,6 +83,15 @@
   "column_break_12",
   "memo_number",
   "remarks",
+  "section_break_yiwu",
+  "taxes_and_charges",
+  "account_head",
+  "tax_rate",
+  "included_gst",
+  "column_break_jxtn",
+  "gst_amount",
+  "rate_including_gst",
+  "total_gst_amount",
   "section_break_8",
   "consumed",
   "column_break_tmap",
@@ -620,12 +629,66 @@
    "label": "Edit Posting Date and Time",
    "permlevel": 1,
    "print_hide": 1
+  },
+  {
+   "fieldname": "section_break_yiwu",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "taxes_and_charges",
+   "fieldtype": "Link",
+   "label": "Purchase Taxes and Charges Template",
+   "options": "Purchase Taxes and Charges Template"
+  },
+  {
+   "fieldname": "account_head",
+   "fieldtype": "Data",
+   "label": "Account Head",
+   "read_only": 1
+  },
+  {
+   "fieldname": "tax_rate",
+   "fieldtype": "Float",
+   "label": "Tax Rate",
+   "precision": "1",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_jxtn",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "gst_amount",
+   "fieldtype": "Float",
+   "label": "GST Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_gst_amount",
+   "fieldtype": "Float",
+   "label": "Total GST Amount",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "rate_including_gst",
+   "fieldtype": "Float",
+   "label": "Rate Including GST",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "included_gst",
+   "fieldtype": "Check",
+   "label": "Included GST",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-03-19 23:17:27.346057",
+ "modified": "2026-02-03 13:55:25.576740",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Receive",
@@ -660,6 +723,7 @@
    "write": 1
   },
   {
+   "cancel": 1,
    "create": 1,
    "delete": 1,
    "email": 1,
@@ -670,9 +734,7 @@
    "role": "Fleet Manager",
    "share": 1,
    "submit": 1,
-   "write": 1,
-   "cancel": 1
-
+   "write": 1
   }
  ],
  "sort_field": "modified",

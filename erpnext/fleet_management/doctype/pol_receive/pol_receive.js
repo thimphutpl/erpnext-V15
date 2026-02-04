@@ -12,20 +12,102 @@ cur_frm.add_fetch("equipment", "registration_number", "tanker_number")
 
 frappe.ui.form.on('POL Receive', {
 
-	onload: function(frm) {
-		if(!frm.doc.posting_date) {
+	supplier: function (frm) {
+		if (!frm.doc.supplier) {
+			// Reset taxes if supplier is cleared
+			frm.set_value('taxes_and_charges', '');
+			frm.set_value('account_head', '');
+			frm.set_value('tax_rate', 0);
+			frm.set_value('gst_amount', 0);
+			frm.set_value('total_gst_amount', 0);
+			frm.set_value('rate_including_gst', 0);
+			frm.set_value('included_gst', 0);
+			return;
+		}
+
+		frappe.db.get_doc("Supplier", frm.doc.supplier).then(supplier => {
+			let template_name = (supplier.country !== "Bhutan")
+				? "GST 5% (International) - CDCL"
+				: "GST 5% (Domestic) - CDCL";
+
+			// Filter taxes_and_charges dropdown
+			frm.set_query("taxes_and_charges", function () {
+				return {
+					filters: {
+						company: frm.doc.company,
+						docstatus: ["!=", 2],
+						title: template_name
+					}
+				};
+			});
+
+			// Clear previously selected template if it doesn't match new supplier
+			if (frm.doc.taxes_and_charges !== template_name) {
+				frm.set_value('taxes_and_charges', '');
+				frm.set_value('account_head', '');
+				frm.set_value('tax_rate', 0);
+				frm.set_value('gst_amount', 0);
+				frm.set_value('total_gst_amount', 0);
+				frm.set_value('rate_including_gst', 0);
+				frm.set_value('included_gst', 0);
+			}
+		});
+	},
+
+	// Step 2: User selects taxes_and_charges
+	taxes_and_charges: function (frm) {
+		if (!frm.doc.taxes_and_charges || !frm.doc.supplier) {
+			frm.set_value('account_head', '');
+			frm.set_value('tax_rate', 0);
+			frm.set_value('gst_amount', 0);
+			frm.set_value('total_gst_amount', 0);
+			frm.set_value('rate_including_gst', 0);
+			frm.set_value('included_gst', 0);
+			return;
+		}
+
+		frappe.db.get_doc("Supplier", frm.doc.supplier).then(supplier => {
+			let template_name = (supplier.country !== "Bhutan")
+				? "GST 5% (International) - CDCL"
+				: "GST 5% (Domestic) - CDCL";
+
+			// Only auto-fill if the user selected the correct template
+			if (frm.doc.taxes_and_charges !== template_name) {
+				frm.set_value('account_head', '');
+				frm.set_value('tax_rate', 0);
+				frm.set_value('included_gst', 0);
+				return;
+			}
+
+			// Fetch tax lines from backend
+			frappe.call({
+				method: "erpnext.fleet_management.doctype.pol_receive.pol_receive.get_taxes_for_template",
+				args: { template_name: template_name },
+				callback: function (res) {
+					if (res.message && res.message.length) {
+						const tax = res.message[0];
+						frm.set_value('account_head', tax.account_head);
+						frm.set_value('tax_rate', flt(tax.rate));
+						frm.set_value('included_gst', 1);
+					}
+				}
+			});
+		});
+	},
+	onload: function (frm) {
+		if (!frm.doc.posting_date) {
 			frm.set_value('posting_date', frappe.datetime.now_date());
 			// frm.set_value("posting_date", get_today());
 		}
 		frm.set_query("tanker", function () {
 			// frappe.throw("mmmmmm")
-            return {
-                query: "erpnext.fleet_management.doctype.pol_receive.pol_receive.get_tanker_data",
-                filters: { branch: frm.doc.branch }
-            };
-        });
+			return {
+				query: "erpnext.fleet_management.doctype.pol_receive.pol_receive.get_tanker_data",
+				filters: { branch: frm.doc.branch }
+			};
+		});
 	},
-	
+
 	setup: function (frm) {
 		frm.set_query("fuelbook", function (doc) {
 			var filterArgs
@@ -34,7 +116,7 @@ frappe.ui.form.on('POL Receive', {
 			if (doc.book_type == "Own")
 				filterArgs = [["equipment", "=", doc.equipment]]
 			else if (doc.book_type == "Common") {
-				filterArgs = [["branch", "=", doc.branch],["type", "=", doc.book_type]]
+				filterArgs = [["branch", "=", doc.branch], ["type", "=", doc.book_type]]
 			}
 
 			return {
@@ -43,20 +125,11 @@ frappe.ui.form.on('POL Receive', {
 		})
 	},
 
-	refresh: function(frm) {
-		// if (!frm.doc.posting_date) {
-        //     frm.set_value("posting_date", frappe.datetime.get_today());
-        // }
+	refresh: function (frm) {
 
-        // frm.set_query("tanker", function() {
-        //     return {
-        //         query: "erpnext.fleet_management.doctype.pol_receive.pol_receive.get_tanker_data",
-        //         filters: { branch: frm.doc.branch }
-        //     };
-        // });
 
-		if(frm.doc.jv) {
-			cur_frm.add_custom_button(__('Bank Entries'), function() {
+		if (frm.doc.jv) {
+			cur_frm.add_custom_button(__('Bank Entries'), function () {
 				frappe.route_options = {
 					"Journal Entry Account.reference_type": me.frm.doc.doctype,
 					"Journal Entry Account.reference_name": me.frm.doc.name,
@@ -64,32 +137,11 @@ frappe.ui.form.on('POL Receive', {
 				frappe.set_route("List", "Journal Entry");
 			}, __("View"));
 		}
-		// if(frm.doc.docstatus == 1) {
-		// 	cur_frm.add_custom_button(__("Stock Ledger"), function() {
-		// 		frappe.route_options = {
-		// 			voucher_no: frm.doc.name,
-		// 			from_date: frm.doc.posting_date,
-		// 			to_date: frm.doc.posting_date,
-		// 			company: frm.doc.company
-		// 		};
-		// 		frappe.set_route("query-report", "Stock Ledger Report");
-		// 	}, __("View"));
 
-		// 	cur_frm.add_custom_button(__('Accounting Ledger'), function() {
-		// 		frappe.route_options = {
-		// 			voucher_no: frm.doc.name,
-		// 			from_date: frm.doc.posting_date,
-		// 			to_date: frm.doc.posting_date,
-		// 			company: frm.doc.company,
-		// 			group_by_voucher: false
-		// 		};
-		// 		frappe.set_route("query-report", "General Ledger");
-		// 	}, __("View"));
-		// }
 
 		if (frm.doc.docstatus == 1) {
 
-			cur_frm.add_custom_button(__("Stock Ledger"), function() {
+			cur_frm.add_custom_button(__("Stock Ledger"), function () {
 				frappe.route_options = {
 					voucher_no: frm.doc.name,
 					from_date: frm.doc.posting_date,
@@ -98,8 +150,8 @@ frappe.ui.form.on('POL Receive', {
 				};
 				frappe.set_route("query-report", "Stock Ledger Report");
 			}, __("View"));
-		
-			cur_frm.add_custom_button(__('Accounting Ledger'), function() {
+
+			cur_frm.add_custom_button(__('Accounting Ledger'), function () {
 				frappe.route_options = {
 					voucher_no: frm.doc.name,
 					from_date: frm.doc.posting_date,
@@ -109,92 +161,92 @@ frappe.ui.form.on('POL Receive', {
 				};
 				frappe.set_route("query-report", "General Ledger");
 			}, __("View"));
-		
+
 		}
-		
-		
+
+
 	},
 	// tanker: function(frm) {
-    //     update_balances(frm);
-    // },
-	book_type:function(frm) {
+	//     update_balances(frm);
+	// },
+	book_type: function (frm) {
 		update_balances(frm);
 		if (frm.doc.book_type === 'Common') {
-            frm.set_df_property('direct_consumption', 'hidden', 1);
-            frm.set_df_property('direct_consumption', 'read_only', 1);
-            frm.set_value('direct_consumption', 0);
-        } else if (frm.doc.book_type === 'Own') {
-            frm.set_df_property('direct_consumption', 'hidden', 0);
-            frm.set_df_property('direct_consumption', 'read_only', 0);
-            frm.set_value('direct_consumption', 1);
-        } else {
-            frm.set_df_property('direct_consumption', 'hidden', 0);
-            frm.set_df_property('direct_consumption', 'read_only', 0);
-        }
+			frm.set_df_property('direct_consumption', 'hidden', 1);
+			frm.set_df_property('direct_consumption', 'read_only', 1);
+			frm.set_value('direct_consumption', 0);
+		} else if (frm.doc.book_type === 'Own') {
+			frm.set_df_property('direct_consumption', 'hidden', 0);
+			frm.set_df_property('direct_consumption', 'read_only', 0);
+			frm.set_value('direct_consumption', 1);
+		} else {
+			frm.set_df_property('direct_consumption', 'hidden', 0);
+			frm.set_df_property('direct_consumption', 'read_only', 0);
+		}
 
 		// Check if book_type is 'Common'
-        if (frm.doc.book_type === 'Common') {
-            frm.set_query('equipment', function() {
-                return {
-                    filters: {
-                        equipment_type: ['in', ['Fuel Tanker', 'Barrel', 'Skid Tank', 'Trailer', 'Pick Up Truck', 'Excavator']],
-						branch: frm.doc.branch
-                    }
-                };
-            });
-        } else {
-            // Clear filter for equipment if book_type is not 'Common'
-            frm.set_query('equipment', function() {
-                return {
+		if (frm.doc.book_type === 'Common') {
+			frm.set_query('equipment', function () {
+				return {
 					filters: {
-                        equipment_type: ['not in', ['Fuel Tanker', 'Barrel', 'Skid Tank']],
+						equipment_type: ['in', ['Fuel Tanker', 'Barrel', 'Skid Tank', 'Trailer', 'Pick Up Truck', 'Excavator']],
 						branch: frm.doc.branch
-                    }
+					}
 				};
-            });
-        }
+			});
+		} else {
+			// Clear filter for equipment if book_type is not 'Common'
+			frm.set_query('equipment', function () {
+				return {
+					filters: {
+						equipment_type: ['not in', ['Fuel Tanker', 'Barrel', 'Skid Tank']],
+						branch: frm.doc.branch
+					}
+				};
+			});
+		}
 	},
 	// direct_consumption: function(frm) {
-    //     if (frm.doc.book_type === 'Common') {
-    //         frm.set_value('direct_consumption', 0);
-    //     }
-    // },
+	//     if (frm.doc.book_type === 'Common') {
+	//         frm.set_value('direct_consumption', 0);
+	//     }
+	// },
 
-	qty: function(frm) {
+	qty: function (frm) {
 		calculate_total(frm)
 		frm.events.reset_items()
 		frm.refresh_fields("items")
 	},
-	direct_consumption:function(frm){
+	direct_consumption: function (frm) {
 		set_equipment_filter(frm)
 	},
-	rate: function(frm) {
+	rate: function (frm) {
 		frm.events.reset_items()
 		frm.refresh_fields("items")
 		calculate_total(frm)
 	},
-	is_opening: function(frm) {
-        calculate_total(frm);
-    },
-	discount_amount: function(frm) {
-        calculate_total(frm);
-    },
-	get_pol_advance:function(frm){
+	is_opening: function (frm) {
+		calculate_total(frm);
+	},
+	discount_amount: function (frm) {
+		calculate_total(frm);
+	},
+	get_pol_advance: function (frm) {
 		populate_child_table(frm)
 	},
-	branch:function(frm){
-		frm.set_query("equipment",function(){
+	branch: function (frm) {
+		frm.set_query("equipment", function () {
 			return {
-				filters:{
-					"branch":frm.doc.branch,
+				filters: {
+					"branch": frm.doc.branch,
 					// "enabled":1
 					"is_disabled": 0,
 				}
 			}
 		})
 	},
-	equipment:function(frm){
-		
+	equipment: function (frm) {
+
 		// frm.set_query("fuelbook",function(){
 		// 	return {
 		// 		filters:{
@@ -219,14 +271,14 @@ frappe.ui.form.on('POL Receive', {
 					callback: function (response) {
 						if (response.message) {
 							let data = response.message;
-	
+
 							// Process and display the fetched data
 							// frappe.msgprint({
 							// 	title: __('Fetched Equipment Data'),
 							// 	message: `<pre>${JSON.stringify(data, null, 4)}</pre>`,
 							// 	indicator: 'green'
 							// });
-	
+
 							// Set tank_balance field with the fetched data
 							if (data.length > 0) {
 								frm.set_value('tank_balance', data[0].balance || 0);
@@ -244,12 +296,12 @@ frappe.ui.form.on('POL Receive', {
 
 		const tankerTypes = ['Fuel Tanker', 'Barrel', 'Skid Tank'];
 
-        if (tankerTypes.includes(frm.doc.equipment)) {
-            frm.set_df_property('tanker_balance', 'hidden', 1);
-        } else {
-            frm.set_df_property('tanker_balance', 'hidden', 0);
-        }
-		frm.set_query('equipment_model', function(doc) {
+		if (tankerTypes.includes(frm.doc.equipment)) {
+			frm.set_df_property('tanker_balance', 'hidden', 1);
+		} else {
+			frm.set_df_property('tanker_balance', 'hidden', 0);
+		}
+		frm.set_query('equipment_model', function (doc) {
 			return {
 				filters: {
 					"disabled": 0,
@@ -260,73 +312,73 @@ frappe.ui.form.on('POL Receive', {
 		});
 	},
 
-	
-	use_common_fuelbook:function(frm){
-		frm.set_query("fuelbook",function(){
+
+	use_common_fuelbook: function (frm) {
+		frm.set_query("fuelbook", function () {
 			return {
-				filters:{
-					"type":"Common",
-					"branch":frm.doc.branch
+				filters: {
+					"type": "Common",
+					"branch": frm.doc.branch
 				}
 			}
 		})
-		if(frm.doc.use_common_fuelbook){
-			frm.set_query("equipment",function(){
+		if (frm.doc.use_common_fuelbook) {
+			frm.set_query("equipment", function () {
 				return {
-					filters:{
-						"branch":frm.doc.branch,
+					filters: {
+						"branch": frm.doc.branch,
 						// "enabled":1,
-						"hired_equipment":1
+						"hired_equipment": 1
 					}
 				}
 			})
 		}
-		else{
-			frm.set_query("equipment",function(){
+		else {
+			frm.set_query("equipment", function () {
 				return {
-					filters:{
-						"branch":frm.doc.branch,
+					filters: {
+						"branch": frm.doc.branch,
 						// "enabled":1
 					}
 				}
 			})
 		}
 	},
-	reset_items:function(frm){
+	reset_items: function (frm) {
 		cur_frm.clear_table("items");
 	},
-	validate: function(frm) {
-        if (frm.doc.is_opening === "Yes" && frm.doc.account_type === "Profit and Loss") {
-            frappe.throw(__('Profit and Loss type account {0} not allowed in Opening Entry', [frm.doc.account]));
-        }
-    }
+	validate: function (frm) {
+		if (frm.doc.is_opening === "Yes" && frm.doc.account_type === "Profit and Loss") {
+			frappe.throw(__('Profit and Loss type account {0} not allowed in Opening Entry', [frm.doc.account]));
+		}
+	}
 });
 
-frappe.ui.form.on("POL Receive", "refresh", function(frm) {
-	cur_frm.set_query("pol_type", function() {
-	return {
-		"filters": {
-		"disabled": 0,
-		"is_pol_item": 1
-		}
-	};
+frappe.ui.form.on("POL Receive", "refresh", function (frm) {
+	cur_frm.set_query("pol_type", function () {
+		return {
+			"filters": {
+				"disabled": 0,
+				"is_pol_item": 1
+			}
+		};
 	});
-});	
+});
 
-cur_frm.set_query("pol_type", function() {
+cur_frm.set_query("pol_type", function () {
 	return {
 		"filters": {
-		"disabled": 0,
-		"is_pol_item":1
+			"disabled": 0,
+			"is_pol_item": 1
 		}
 	};
 });
-var populate_child_table=(frm)=>{
+var populate_child_table = (frm) => {
 	if (frm.doc.fuelbook && frm.doc.total_amount) {
 		frappe.call({
 			method: 'populate_child_table',
 			doc: frm.doc,
-			callback:  () =>{
+			callback: () => {
 				cur_frm.refresh_fields()
 				frm.dirty()
 			}
@@ -335,46 +387,95 @@ var populate_child_table=(frm)=>{
 }
 
 function calculate_total(frm) {
-    if (frm.doc.is_opening === "Yes") {
-        if (frm.doc.qty && frm.doc.rate) {
+	if (frm.doc.is_opening === "Yes") {
+		if (frm.doc.qty && frm.doc.rate) {
 			frm.set_value("total_amount", frm.doc.qty * frm.doc.rate);
-            frm.set_value("paid_amount", frm.doc.qty * frm.doc.rate);
-            frm.set_value("outstanding_amount", 0);
-        }
+			frm.set_value("paid_amount", frm.doc.qty * frm.doc.rate);
+			frm.set_value("outstanding_amount", 0);
+		}
 
-    } else {
-        if (frm.doc.qty && frm.doc.rate) {
-            frm.set_value("total_amount", frm.doc.qty * frm.doc.rate);
-            frm.set_value("outstanding_amount", frm.doc.qty * frm.doc.rate);
+	} else {
+		if (frm.doc.qty && frm.doc.rate) {
+			frm.set_value("total_amount", frm.doc.qty * frm.doc.rate);
+			frm.set_value("outstanding_amount", frm.doc.qty * frm.doc.rate);
 			frm.set_value("paid_amount", 0);
-        }
+		}
 
-        if (frm.doc.qty && frm.doc.rate && frm.doc.discount_amount) {
-            frm.set_value("total_amount", (frm.doc.qty * frm.doc.rate) - frm.doc.discount_amount);
-            frm.set_value("outstanding_amount", (frm.doc.qty * frm.doc.rate) - frm.doc.discount_amount);
-        }
-    }
+		if (frm.doc.qty && frm.doc.rate && frm.doc.discount_amount) {
+			frm.set_value("total_amount", (frm.doc.qty * frm.doc.rate) - frm.doc.discount_amount);
+			frm.set_value("outstanding_amount", (frm.doc.qty * frm.doc.rate) - frm.doc.discount_amount);
+		}
+	}
 	if (frm.doc.tanker_quantity && frm.doc.rate) {
 		frm.set_value("total_amount", frm.doc.tanker_quantity * frm.doc.rate);
 		frm.set_value("outstanding_amount", frm.doc.tanker_quantity * frm.doc.rate);
 	}
-	else{
-		if (frm.doc.tanker_quantity && frm.doc.rate && frm.doc.book_type=='Common') {
+	else {
+		if (frm.doc.tanker_quantity && frm.doc.rate && frm.doc.book_type == 'Common') {
 			frm.set_value("total_amount", frm.doc.tanker_quantity * frm.doc.rate);
 			frm.set_value("paid_amount", frm.doc.tanker_quantity * frm.doc.rate);
 			frm.set_value("outstanding_amount", 0);
 		}
 	}
 }
+function calculate_gst_amount(frm) {
+	let total_amount = frm.doc.total_amount;
+	let gst_rate = frm.doc.tax_rate;
+	let gst_amount = total_amount * gst_rate / 100;
+	let rate_including_gst = (gst_amount / frm.doc.qty) + frm.doc.rate
+	let total_gst_amount = total_amount + gst_amount;
+
+	frm.set_value('gst_amount', gst_amount);
+	frm.set_value('total_gst_amount', total_gst_amount);
+	frm.set_value('rate_including_gst', rate_including_gst)
+}
 
 
-var set_equipment_filter=function(frm){
-	if ( cint(frm.doc.direct_consumption) == 0){
-		frm.set_query("equipment", function() {
+function get_gst_account_from_template(frm) {
+	if (!frm.doc.supplier) return;
+
+	frappe.db.get_doc("Supplier", frm.doc.supplier).then(supplier => {
+		let template_name;
+
+		// Step 1: choose template based on country
+		if (supplier.country !== "Bhutan") {
+			template_name = "GST 5% (International) - CDCL";
+		} else {
+			template_name = "GST 5% (Domestic) - CDCL";
+		}
+
+		if (frm.doc.taxes_and_charges !== template_name) {
+			frm.set_value('account_head', '');
+			frm.set_value('tax_rate', 0);
+			frm.set_value('included_gst', 0);
+			return;
+		}
+
+
+		// Step 3: fetch tax lines from backend
+		frappe.call({
+			method: "erpnext.fleet_management.doctype.pol_receive.pol_receive.get_taxes_for_template",
+			args: {
+				template_name: template_name
+			},
+			callback: function (res) {
+				if (res.message && res.message.length) {
+					const tax = res.message[0];
+					frm.set_value("account_head", tax.account_head);
+					frm.set_value("tax_rate", flt(tax.rate));
+				}
+			}
+		});
+	});
+}
+
+var set_equipment_filter = function (frm) {
+	if (cint(frm.doc.direct_consumption) == 0) {
+		frm.set_query("equipment", function () {
 			return {
 				query: "erpnext.fleet_management.fleet_utils.get_container_filtered",
-				filters:{
-					"branch":frm.doc.branch
+				filters: {
+					"branch": frm.doc.branch
 				}
 			};
 		});
@@ -383,25 +484,25 @@ var set_equipment_filter=function(frm){
 
 // Tanker Balance
 function update_balances(frm) {
-    if (frm.doc.book_type && (frm.doc.tanker || frm.doc.equipment)) {
-        frappe.call({
-            method: "erpnext.fleet_management.doctype.pol_receive.pol_receive.get_balance_details",
-            args: {
-                book_type: frm.doc.book_type,
-                tanker: frm.doc.tanker,
-                equipment: frm.doc.equipment,
-                posting_date: frm.doc.posting_date,
-                pol_type: frm.doc.pol_type
-            },
-            callback: function(response) {
-                if (response.message) {
-                    frm.set_value('tanker_balance', response.message.tanker_balance);
-                    frm.set_value('tank_balance', response.message.tank_balance);
-                }
-            }
-        });
-    } else {
-        frm.set_value('tanker_balance', 0);
-        frm.set_value('tank_balance', 0);
-    }
+	if (frm.doc.book_type && (frm.doc.tanker || frm.doc.equipment)) {
+		frappe.call({
+			method: "erpnext.fleet_management.doctype.pol_receive.pol_receive.get_balance_details",
+			args: {
+				book_type: frm.doc.book_type,
+				tanker: frm.doc.tanker,
+				equipment: frm.doc.equipment,
+				posting_date: frm.doc.posting_date,
+				pol_type: frm.doc.pol_type
+			},
+			callback: function (response) {
+				if (response.message) {
+					frm.set_value('tanker_balance', response.message.tanker_balance);
+					frm.set_value('tank_balance', response.message.tank_balance);
+				}
+			}
+		});
+	} else {
+		frm.set_value('tanker_balance', 0);
+		frm.set_value('tank_balance', 0);
+	}
 }
