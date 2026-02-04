@@ -1607,7 +1607,7 @@ class PaymentEntry(AccountsController):
 		tax_rate = tax.rate
 		total=0
 		for reference in self.references:
-			total= reference.total_amount
+			total += reference.total_amount
 		
 		# To set row_id by default as previous row.
 		if tax.charge_type in ["On Previous Row Amount", "On Previous Row Total"]:
