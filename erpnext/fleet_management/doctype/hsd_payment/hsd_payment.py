@@ -48,6 +48,7 @@ class HSDPayment(Document):
 		remarks: DF.SmallText | None
 		status: DF.Literal["Draft", "Submitted", "Cancelled"]
 		supplier: DF.Link
+		tax_break_html: DF.TextEditor | None
 	# end: auto-generated types
 	def validate(self):
 		check_future_date(self.posting_date)
@@ -56,11 +57,11 @@ class HSDPayment(Document):
 		self.clearance_date = None
 
 	def set_status(self):
-                self.status = {
-                        "0": "Draft",
-                        "1": "Submitted",
-                        "2": "Cancelled"
-                }[str(self.docstatus or 0)]
+				self.status = {
+						"0": "Draft",
+						"1": "Submitted",
+						"2": "Cancelled"
+				}[str(self.docstatus or 0)]
 
 	def validate_allocated_amount(self):
 		# Code added by phuntsho on nov 3 2020
@@ -111,7 +112,7 @@ class HSDPayment(Document):
 
 	def on_cancel(self):
 		if self.clearance_date:
-                        frappe.throw("Already done bank reconciliation.")
+						frappe.throw("Already done bank reconciliation.")
 		self.ignore_linked_doctypes = (
 			"GL Entry",
 			"Payment Ledger Entry",
@@ -138,8 +139,11 @@ class HSDPayment(Document):
 					doc.db_set("paid_amount", flt(doc.paid_amount) - flt(a.allocated_amount))
 					doc.db_set("outstanding_amount", flt(doc.outstanding_amount) + flt(a.allocated_amount))	
 				else:
+					
 					paid_amount = round(flt(doc.paid_amount) + flt(a.allocated_amount), 2)
-					if flt(paid_amount) > flt(doc.total_amount,2):
+					# frappe.throw("Paid Amount: " + str(paid_amount) + ", Total Amount: " + str(flt(doc.total_amount, 2)))
+
+					if flt(paid_amount) > flt(doc.total_gst_amount,2):
 						frappe.throw("Paid Amount cannot be greater than the Total Amount for Receive POl <b>"+str(a.pol)+"</b>")
 					doc.db_set("paid_amount", paid_amount)
 					doc.db_set("outstanding_amount", a.balance_amount)	
@@ -147,6 +151,13 @@ class HSDPayment(Document):
 
 	def update_general_ledger(self):
 		gl_entries = []
+		gst_amount=total_amount=0.0
+		account_head=None
+		for a in self.items:
+			doc = frappe.get_doc("POL Receive", a.pol)
+			gst_amount = doc.gst_amount
+			account_head = doc.account_head
+			total_amount = doc.total_amount
 		
 		creditor_account = frappe.db.get_value("Company", self.company, "default_payable_account")
 		if not creditor_account:
@@ -158,19 +169,18 @@ class HSDPayment(Document):
 					 "credit": flt(self.amount),
 					 "credit_in_account_currency": flt(self.amount),
 					 "cost_center": self.cost_center,
-					"party_type": "Supplier",
-                                         "party": self.supplier,
+						"party_type": "Supplier",
+						"party": self.supplier,
 					})
 			)
 		else:
 			gl_entries.append(
-                                prepare_gl(self, {"account": self.bank_account,
-                                         "credit": flt(self.amount),
-                                         "credit_in_account_currency": flt(self.amount),
-                                         "cost_center": self.cost_center,
-                                        })
-                        )
-
+				prepare_gl(self, {"account": self.bank_account,
+							"credit": flt(self.amount),
+							"credit_in_account_currency": flt(self.amount),
+							"cost_center": self.cost_center,
+						})
+						)
 		gl_entries.append(
 			prepare_gl(self, {"account": creditor_account,
 					 "debit": flt(self.amount),
@@ -185,45 +195,70 @@ class HSDPayment(Document):
 		make_gl_entries(gl_entries, cancel=(self.docstatus == 2), update_outstanding="No", merge_entries=False)
   
 	@frappe.whitelist()
-	def get_invoices(self):
+	def get_invoices_with_gst(self):
 		if not self.fuelbook:
 			frappe.throw("Select a Fuelbook to Proceed")
-		query = "select name as pol, pol_type as pol_item_code, outstanding_amount as payable_amount, item_name, memo_number from `tabPOL Receive` where docstatus = 1 and outstanding_amount > 0 and fuelbook = %s order by posting_date, posting_time"
+		query = "select name as pol, pol_type as pol_item_code,included_gst,outstanding_amount as amount_without_gst,total_gst_amount as payable_amount, item_name, memo_number from `tabPOL Receive` where docstatus = 1 and outstanding_amount > 0 and fuelbook = %s order by posting_date, posting_time"
 		entries = frappe.db.sql(query, self.fuelbook, as_dict=True)
 		self.set('items', [])
 
 		total_amount = 0
 		for d in entries:
-			total_amount+=flt(d.payable_amount)
-			d.allocated_amount = d.payable_amount
-			d.balance_amount = 0
-			row = self.append('items', {})
-			row.update(d)
+			if d.included_gst==1:
+				total_amount+=flt(d.payable_amount)
+				d.amount_without_gst=flt(d.amount_without_gst)
+				d.allocated_amount = d.payable_amount
+				d.balance_amount = 0
+				row = self.append('items', {})
+				row.update(d)
+		self.amount = total_amount
+		
+		self.actual_amount = total_amount
+	@frappe.whitelist()
+	def get_invoices_without_gst(self):
+		if not self.fuelbook:
+			frappe.throw("Select a Fuelbook to Proceed")
+		query = "select name as pol, pol_type as pol_item_code,included_gst,outstanding_amount as amount_without_gst,total_gst_amount as payable_amount, item_name, memo_number from `tabPOL Receive` where docstatus = 1 and outstanding_amount > 0 and fuelbook = %s order by posting_date, posting_time"
+		entries = frappe.db.sql(query, self.fuelbook, as_dict=True)
+		self.set('items', [])
+
+
+		total_amount = 0
+		for d in entries:
+			if d.included_gst==0:
+				total_amount+=flt(d.payable_amount)
+				d.amount_without_gst=flt(d.amount_without_gst)
+				d.allocated_amount = d.payable_amount
+				d.balance_amount = 0
+				row = self.append('items', {})
+				row.update(d)
 		self.amount = total_amount
 		self.actual_amount = total_amount
+  
+  	
   
   
   
 	# ePayment Begins
 @frappe.whitelist()
 def make_bank_payment(source_name, target_doc=None):
-    def set_missing_values(obj, target, source_parent):
-        target.payment_type = None
-        target.transaction_type = "HSD Payment"
-        target.posting_date = get_datetime()
-        target.from_date = None
-        target.payment_type ="One-One Payment"
-        target.to_date = None
+	def set_missing_values(obj, target, source_parent):
+		target.payment_type = None
+		target.transaction_type = "HSD Payment"
+		target.posting_date = get_datetime()
+		target.from_date = None
+		target.payment_type ="One-One Payment"
+		target.to_date = None
 
-    doc = get_mapped_doc("HSD Payment", source_name, {
-            "HSD Payment": {
-                "doctype": "Bank Payment",
-                "field_map": {
-                    "name": "transaction_no",
-                    "bank_account": "paid_from"
-                },
-                "postprocess": set_missing_values,
-            },
-    }, target_doc, ignore_permissions=True)
-    return doc
+	doc = get_mapped_doc("HSD Payment", source_name, {
+			"HSD Payment": {
+				"doctype": "Bank Payment",
+				"field_map": {
+					"name": "transaction_no",
+					"bank_account": "paid_from"
+				},
+				"postprocess": set_missing_values,
+			},
+	}, target_doc, ignore_permissions=True)
+	return doc
 # ePayment Ends

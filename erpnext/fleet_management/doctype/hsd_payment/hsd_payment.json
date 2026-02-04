@@ -14,8 +14,11 @@
   "fuelbook",
   "column_break_vhsv",
   "supplier",
+  "section_break_nllk",
   "column_break_vovm",
-  "get_pol_invoices",
+  "get_pol_invoices_with_gst",
+  "column_break_qupj",
+  "get_pol_invoices_without_gst",
   "section_break_xfou",
   "final_settlement",
   "bank_account",
@@ -37,7 +40,9 @@
   "cheque__no",
   "column_break_ucvw",
   "cheque_date",
-  "company"
+  "company",
+  "tax_break_section",
+  "tax_break_html"
  ],
  "fields": [
   {
@@ -83,11 +88,6 @@
    "options": "Supplier",
    "read_only": 1,
    "reqd": 1
-  },
-  {
-   "fieldname": "get_pol_invoices",
-   "fieldtype": "Button",
-   "label": "Get POL Invoices"
   },
   {
    "default": "0",
@@ -241,12 +241,42 @@
   {
    "fieldname": "section_break_uvdy",
    "fieldtype": "Section Break"
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "tax_break_section",
+   "fieldtype": "Section Break",
+   "label": "Tax Break "
+  },
+  {
+   "fieldname": "tax_break_html",
+   "fieldtype": "Text Editor",
+   "label": "Taxes and Charges Calculation",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_nllk",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "get_pol_invoices_with_gst",
+   "fieldtype": "Button",
+   "label": "Get POL Invoices With GST"
+  },
+  {
+   "fieldname": "column_break_qupj",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "get_pol_invoices_without_gst",
+   "fieldtype": "Button",
+   "label": "Get POL Invoices Without GST"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-07-10 14:31:32.548660",
+ "modified": "2026-02-02 17:05:12.916644",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "HSD Payment",
