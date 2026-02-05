@@ -27,7 +27,12 @@
   "column_break_ggez",
   "approver_name",
   "column_break_gcak",
-  "approver_designation"
+  "approver_designation",
+  "leave_approver_section",
+  "shift_request_approver",
+  "leave_approvers",
+  "expense_approver",
+  "employee_advance_approver"
  ],
  "fields": [
   {
@@ -162,13 +167,42 @@
    "fieldname": "department_rating",
    "fieldtype": "Percent",
    "label": "Department Rating"
+  },
+  {
+   "fieldname": "shift_request_approver",
+   "fieldtype": "Table",
+   "label": "Shift Request Approver",
+   "options": "Department Approver"
+  },
+  {
+   "fieldname": "leave_approver_section",
+   "fieldtype": "Section Break",
+   "label": "Leave Approver"
+  },
+  {
+   "fieldname": "expense_approver",
+   "fieldtype": "Table",
+   "label": "Expense Approver",
+   "options": "Department Approver"
+  },
+  {
+   "fieldname": "leave_approvers",
+   "fieldtype": "Table",
+   "label": "Leave Approver",
+   "options": "Department Approver"
+  },
+  {
+   "fieldname": "employee_advance_approver",
+   "fieldtype": "Table",
+   "label": "Employee Advance Approver",
+   "options": "Department Approver"
   }
  ],
  "icon": "fa fa-sitemap",
  "idx": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2024-12-05 12:20:05.498470",
+ "modified": "2026-02-05 19:36:02.795331",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Department",
@@ -217,6 +251,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "show_name_in_global_search": 1,
  "sort_field": "modified",
  "sort_order": "ASC",
