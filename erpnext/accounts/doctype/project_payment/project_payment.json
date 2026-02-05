@@ -34,8 +34,11 @@
   "column_break_17",
   "paid_amount",
   "total_amount",
-  "section_break_20",
+  "section_break_oobq",
   "get_invoices",
+  "column_break_hhdc",
+  "get_invoices_without_gst",
+  "section_break_20",
   "references",
   "section_break_30",
   "get_advances",
@@ -72,7 +75,6 @@
    "no_copy": 1,
    "options": "Project Payment",
    "print_hide": 1,
-   "read_only": 1,
    "search_index": 1
   },
   {
@@ -244,7 +246,7 @@
   {
    "fieldname": "get_invoices",
    "fieldtype": "Button",
-   "label": "Get Invoices"
+   "label": "Get Invoices With GST"
   },
   {
    "fieldname": "references",
@@ -375,13 +377,27 @@
    "fieldtype": "Currency",
    "hidden": 1,
    "label": "TDS Taxable Amount"
+  },
+  {
+   "fieldname": "section_break_oobq",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_hhdc",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "get_invoices_without_gst",
+   "fieldtype": "Button",
+   "label": "Get Invoices Without GST"
   }
  ],
  "in_create": 1,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-12-06 10:55:02.872655",
+ "modified": "2026-02-04 18:00:58.278886",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Project Payment",

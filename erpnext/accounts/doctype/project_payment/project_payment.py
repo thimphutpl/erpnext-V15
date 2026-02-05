@@ -234,6 +234,8 @@ class ProjectPayment(AccountsController):
 					else:
 							inv_doc.total_received_amount = flt(inv_doc.total_received_amount) + flt(allocated_amount)
 					balance_amount                = flt(inv_doc.total_balance_amount) - flt(allocated_amount)
+					inv.total_gst_amount = flt(inv_doc.total_gst_amount)
+					
 					inv_doc.total_balance_amount  = flt(balance_amount)
 					inv_doc.status                = "Unpaid" if flt(balance_amount) > 0 else "Paid"
 					inv_doc.save(ignore_permissions = True)
@@ -276,6 +278,7 @@ class ProjectPayment(AccountsController):
 				doc.save(ignore_permissions = True)
 
 	def validate_invoice_balance(self):
+		
 		for inv in self.references:
 			if flt(inv.allocated_amount) > 0:
 				total_balance_amount = frappe.db.get_value("Project Invoice", inv.reference_name, "total_balance_amount")
@@ -299,6 +302,7 @@ class ProjectPayment(AccountsController):
 			frappe.throw(_("Please select a valid TDS Account."),title="Missing Data")
 
 	def validate_allocated_amounts(self):
+		
 		tot_adv_amount = 0.0
 		tot_inv_amount = 0.0
 
@@ -327,7 +331,7 @@ class ProjectPayment(AccountsController):
 			self.append("references",{
 					"reference_doctype": "Project Invoice",
 					"reference_name": invoice.name,
-					"total_amount": invoice.total_balance_amount
+					"total_amount": invoice.total_balance_amount,
 			})
 
 	def load_advances(self):
@@ -592,8 +596,7 @@ class ProjectPayment(AccountsController):
 						row.project_payment            = self.name
 						row.retention_money            = ded.amount
 						row.save(ignore_permissions=True)
-# ++++++++++++++++++++ Ver 2.0 BEGINS ++++++++++++++++++++        
-# Following method is created by SHIV on 05/09/2017
+
 @frappe.whitelist()
 def make_project_payment(source_name, target_doc=None):
 	def update_master(source_doc, target_doc, source_partent):
@@ -602,7 +605,7 @@ def make_project_payment(source_name, target_doc=None):
 			
 	def update_reference(source_doc, target_doc, source_parent):
 		pass
-			
+		
 	doclist = get_mapped_doc("Project Invoice", source_name, {
 		"Project Invoice": {
 				"doctype": "Project Payment",
@@ -612,6 +615,7 @@ def make_project_payment(source_name, target_doc=None):
 					"customer": "customer",
 					"name": "reference_name",
 					"party": "pay_to_recd_from"
+					
 				},
 				"postprocess": update_master
 		},
@@ -620,17 +624,32 @@ def make_project_payment(source_name, target_doc=None):
 
 # Following code added by SHIV on 2019/06/19
 @frappe.whitelist()
-def get_invoice_list(project, party_type, party):
+def get_invoice_list(project, party_type, party,included_gst):
 	result = frappe.db.sql("""
 			select *
 			from `tabProject Invoice`
 			where project = '{project}'
 			and party_type = '{party_type}'
 			and party = '{party}'
+			and included_gst='{included_gst}'
 			and docstatus = 1
 			and total_balance_amount > 0
-			""".format(project=project, party_type=party_type, party=party), as_dict=True)
+			""".format(project=project, party_type=party_type, party=party,included_gst=included_gst), as_dict=True)
+	return result
 
+
+@frappe.whitelist()
+def get_invoice_list_without_gst(project, party_type, party,included_gst):
+	result = frappe.db.sql("""
+			select *
+			from `tabProject Invoice`
+			where project = '{project}'
+			and party_type = '{party_type}'
+			and party = '{party}'
+			and included_gst = '{included_gst}'
+			and docstatus = 1
+			and total_balance_amount > 0
+			""".format(project=project, party_type=party_type, party=party,included_gst=included_gst), as_dict=True)
 	return result
 
 # Following code added by SHIV on 2019/06/19
@@ -647,3 +666,27 @@ def get_advance_list(project, party_type, party):
 			""".format(project=project, party_type=party_type, party=party), as_dict=True)
 
 	return result
+
+
+def get_permission_query_conditions(user):
+	if not user: user = frappe.session.user
+	user_roles = frappe.get_roles(user)
+
+	if user == "Administrator" or "System Manager" in user_roles: 
+		return
+
+	return """(
+		`tabProject Payment`.owner = '{user}'
+		or
+		exists(select 1
+			from `tabEmployee` as e
+			where e.branch = `tabProject Payment`.branch
+			and e.user_id = '{user}')
+		or
+		exists(select 1
+			from `tabEmployee` e, `tabAssign Branch` ab, `tabBranch Item` bi
+			where e.user_id = '{user}'
+			and ab.employee = e.name
+			and bi.parent = ab.name
+			and bi.branch = `tabProject Payment`.branch)
+	)""".format(user=user)
