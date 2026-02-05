@@ -1904,7 +1904,10 @@ def update_finacial_progress(project, estimated_budget):
 
 		else:
 			financial_progress = (flt(actual_expenses[0][0])/flt(estimated_budget))*100
-			frappe.db.sql(""" update `tabProject` set actual_expenses={0}, financial_progress={1} where name='{2}'""".format(actual_expenses[0][0], financial_progress, project))
+			if str(actual_expenses[0][0])=="None":
+				frappe.db.sql(""" update `tabProject` set actual_expenses=0, financial_progress={0} where name='{1}'""".format(financial_progress, project))
+			else:
+				frappe.db.sql(""" update `tabProject` set actual_expenses={0}, financial_progress={1} where name='{2}'""".format(actual_expenses[0][0], financial_progress, project))
 		
 		datas = frappe.db.sql(""" Select SUM(estimated_budget) AS estimated_budget, SUM(actual_expenses) AS actual_expenses from `tabProject` where docstatus!=2 and project_definition='{defination}' """.format(defination=project_defination))
 		if datas:

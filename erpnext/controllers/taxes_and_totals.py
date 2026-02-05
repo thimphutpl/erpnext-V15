@@ -348,8 +348,8 @@ class calculate_taxes_and_totals:
 			# if self.doc.doctype != "Purchase Invoice":
 			self.doc.net_total += item.net_amount
 			self.doc.base_net_total += item.base_net_amount
-		# if self.doc.doctype == "Purchase Invoice":
-		# 	self.doc.net_total = self.doc.total + self.doc.discount_amount
+		# if self.doc.doctype == "Purchase Order":
+		# 	self.doc.net_total = self.doc.total + self.doc.discount + self.doc.other_charges + self.doc.freight_insurance_charges
 		self.doc.round_floats_in(self.doc, ["total", "base_total", "net_total", "base_net_total"])
 
 	def calculate_shipping_charges(self):
@@ -376,7 +376,6 @@ class calculate_taxes_and_totals:
 				if tax.charge_type == "Actual"
 			]
 		)
-
 		for n, item in enumerate(self._items):
 			item_tax_map = self._load_item_tax_rate(item.item_tax_rate)
 			for i, tax in enumerate(self.doc.get("taxes")):
@@ -486,11 +485,14 @@ class calculate_taxes_and_totals:
 			# current_tax_amount = (tax_rate / 100.0) * item.net_amount
 			self.discount_amount = self.doc.total_add_ded
 			if self.doc.discount_amount > 0 or self.doc.discount_amount < 0:
-				current_tax_amount = (tax_rate / 100.0) * (item.net_amount+(item.net_amount/(self.doc.net_total)))
+				
+				if self.doc.doctype =="Purchase Order" or tax.is_gst ==1:
+					current_tax_amount = (tax_rate / 100.0) * item.net_amount
+				else:
+					current_tax_amount = (tax_rate / 100.0) * (item.net_amount+(item.net_amount/(self.doc.net_total)))
+				# frappe.throw(str(current_tax_amount))
 			else:
 				current_tax_amount = (tax_rate / 100.0) * item.net_amount
-			if frappe.session.user == "Administrator":
-				frappe.msgprint(str(current_tax_amount))
 		elif tax.charge_type == "On Previous Row Amount":
 			current_tax_amount = (tax_rate / 100.0) * self.doc.get("taxes")[
 				cint(tax.row_id) - 1

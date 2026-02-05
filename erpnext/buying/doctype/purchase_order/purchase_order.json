@@ -587,8 +587,6 @@
   {
    "fieldname": "taxes_section",
    "fieldtype": "Section Break",
-   "hidden": 1,
-   "hide_border": 1,
    "label": "Taxes and Charges",
    "oldfieldtype": "Section Break",
    "options": "fa fa-money"
@@ -596,7 +594,6 @@
   {
    "fieldname": "taxes_and_charges",
    "fieldtype": "Link",
-   "hidden": 1,
    "label": "Purchase Taxes and Charges Template",
    "oldfieldname": "purchase_other_charges",
    "oldfieldtype": "Link",
@@ -609,8 +606,7 @@
   },
   {
    "fieldname": "section_break_52",
-   "fieldtype": "Section Break",
-   "hidden": 1
+   "fieldtype": "Section Break"
   },
   {
    "allow_bulk_edit": 1,
@@ -1359,7 +1355,7 @@
  "idx": 105,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-09-08 11:40:29.446756",
+ "modified": "2026-01-30 16:25:35.642069",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Purchase Order",

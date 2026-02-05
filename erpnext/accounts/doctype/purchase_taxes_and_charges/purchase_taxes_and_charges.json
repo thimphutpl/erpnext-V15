@@ -13,6 +13,7 @@
   "row_id",
   "included_in_print_rate",
   "included_in_paid_amount",
+  "is_gst",
   "col_break1",
   "account_head",
   "description",
@@ -249,12 +250,18 @@
    "fieldtype": "Dynamic Link",
    "label": "Party",
    "options": "party_type"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_gst",
+   "fieldtype": "Check",
+   "label": "IS GST"
   }
  ],
  "idx": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-05-12 12:36:45.865140",
+ "modified": "2026-02-04 15:10:18.880805",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Purchase Taxes and Charges",

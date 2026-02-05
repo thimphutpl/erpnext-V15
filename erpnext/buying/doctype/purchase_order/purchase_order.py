@@ -230,8 +230,8 @@ class PurchaseOrder(BuyingController):
 			self.doctype, self.supplier, self.company, self.inter_company_order_reference
 		)
 		if self.total_add_ded:
-			self.net_total = self.total + self.total_add_ded
-			self.grand_total =self.net_total
+			self.net_total = self.total + self.total_add_ded 
+			self.grand_total =self.net_total + self.total_taxes_and_charges
 			self.in_words = money_in_words(self.grand_total, self.currency)
 		self.reset_default_field_value("set_warehouse", "items", "warehouse")
 
