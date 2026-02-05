@@ -26,6 +26,7 @@
   "column_break1",
   "date_of_joining",
   "promotion_due_date",
+  "increment_cycle",
   "date_of_joining_hms",
   "image",
   "status",
@@ -57,7 +58,7 @@
   "notice_number_of_days",
   "date_of_retirement",
   "section_break_rflw",
-  "increment_cycle",
+  "column_break_ancc",
   "column_break_gfej",
   "promotion_cycle",
   "employment_status",
@@ -998,6 +999,10 @@
    "fieldtype": "Link",
    "label": "Business Activity",
    "options": "Business Activity"
+  },
+  {
+   "fieldname": "column_break_ancc",
+   "fieldtype": "Column Break"
   }
  ],
  "icon": "fa fa-user",
@@ -1005,7 +1010,7 @@
  "image_field": "image",
  "is_tree": 1,
  "links": [],
- "modified": "2025-07-24 10:22:51.212681",
+ "modified": "2026-02-05 10:20:09.258147",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee",
