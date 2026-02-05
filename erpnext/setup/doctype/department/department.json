@@ -31,7 +31,7 @@
   "leave_approver_section",
   "shift_request_approver",
   "leave_approvers",
-  "expense_approver",
+  "expense_approvers",
   "employee_advance_approver"
  ],
  "fields": [
@@ -180,12 +180,6 @@
    "label": "Leave Approver"
   },
   {
-   "fieldname": "expense_approver",
-   "fieldtype": "Table",
-   "label": "Expense Approver",
-   "options": "Department Approver"
-  },
-  {
    "fieldname": "leave_approvers",
    "fieldtype": "Table",
    "label": "Leave Approver",
@@ -196,13 +190,19 @@
    "fieldtype": "Table",
    "label": "Employee Advance Approver",
    "options": "Department Approver"
+  },
+  {
+   "fieldname": "expense_approvers",
+   "fieldtype": "Table",
+   "label": "Expense Approver",
+   "options": "Department Approver"
   }
  ],
  "icon": "fa fa-sitemap",
  "idx": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2026-02-05 19:36:02.795331",
+ "modified": "2026-02-05 21:38:14.926264",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Department",
