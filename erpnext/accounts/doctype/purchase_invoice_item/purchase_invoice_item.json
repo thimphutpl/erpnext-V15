@@ -43,6 +43,7 @@
   "rate",
   "amount",
   "item_tax_template",
+  "gst_amount",
   "col_break4",
   "base_rate",
   "base_amount",
@@ -970,12 +971,19 @@
    "no_copy": 1,
    "options": "Company:company:default_currency",
    "print_hide": 1
+  },
+  {
+   "fieldname": "gst_amount",
+   "fieldtype": "Currency",
+   "label": "GST Amount",
+   "precision": "2",
+   "read_only": 1
   }
  ],
  "idx": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-10-28 15:06:19.246141",
+ "modified": "2026-02-05 22:01:30.519369",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Purchase Invoice Item",

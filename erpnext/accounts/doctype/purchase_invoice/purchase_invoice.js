@@ -40,6 +40,7 @@ erpnext.accounts.PurchaseInvoice = class PurchaseInvoice extends erpnext.buying.
 		});
 	}
 
+
 	onload() {
 		super.onload();
 
@@ -68,7 +69,9 @@ erpnext.accounts.PurchaseInvoice = class PurchaseInvoice extends erpnext.buying.
 		if (this.frm.doc.supplier && this.frm.doc.__islocal) {
 			this.frm.trigger("supplier");
 		}
+
 	}
+
 
 	refresh(doc) {
 		const me = this;
@@ -629,6 +632,13 @@ frappe.ui.form.on("Purchase Invoice", {
 
 	refresh: function (frm) {
 		frm.events.add_custom_buttons(frm);
+	},
+	taxes_and_charges: function (frm) {
+		if (!frm.doc.taxes_and_charges || !frm.doc.taxes_and_charges == "") {
+			frm.set_value("taxes", []);
+			frm.refresh_field("taxes")
+		}
+
 	},
 
 	mode_of_payment: function (frm) {

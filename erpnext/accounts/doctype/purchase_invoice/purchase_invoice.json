@@ -110,9 +110,14 @@
   "section_break_44",
   "apply_discount_on",
   "base_discount_amount",
+  "freight_and_insurance_charges",
+  "discount",
   "column_break_46",
   "additional_discount_percentage",
   "discount_amount",
+  "tax",
+  "other_charges",
+  "total_add_ded",
   "tax_withheld_vouchers_section",
   "tax_withheld_vouchers",
   "sec_tax_breakup",
@@ -852,6 +857,7 @@
    "default": "Grand Total",
    "fieldname": "apply_discount_on",
    "fieldtype": "Select",
+   "hidden": 1,
    "label": "Apply Additional Discount On",
    "options": "\nGrand Total\nNet Total",
    "print_hide": 1
@@ -859,6 +865,7 @@
   {
    "fieldname": "base_discount_amount",
    "fieldtype": "Currency",
+   "hidden": 1,
    "label": "Additional Discount Amount (Company Currency)",
    "options": "Company:company:default_currency",
    "print_hide": 1,
@@ -871,12 +878,14 @@
   {
    "fieldname": "additional_discount_percentage",
    "fieldtype": "Float",
+   "hidden": 1,
    "label": "Additional Discount Percentage",
    "print_hide": 1
   },
   {
    "fieldname": "discount_amount",
    "fieldtype": "Currency",
+   "hidden": 1,
    "label": "Additional Discount Amount",
    "options": "currency",
    "print_hide": 1
@@ -960,6 +969,7 @@
    "label": "Rounded Total",
    "no_copy": 1,
    "options": "currency",
+   "precision": "2",
    "print_hide": 1,
    "read_only": 1
   },
@@ -996,7 +1006,7 @@
    "read_only": 1
   },
   {
-   "default": "0",
+   "default": "1",
    "depends_on": "grand_total",
    "fieldname": "disable_rounded_total",
    "fieldtype": "Check",
@@ -1647,13 +1657,38 @@
    "label": "Branch",
    "options": "Branch",
    "reqd": 1
+  },
+  {
+   "fieldname": "freight_and_insurance_charges",
+   "fieldtype": "Currency",
+   "label": "Freight and Insurance Charges"
+  },
+  {
+   "fieldname": "discount",
+   "fieldtype": "Currency",
+   "label": "Discount"
+  },
+  {
+   "fieldname": "tax",
+   "fieldtype": "Currency",
+   "label": "Tax"
+  },
+  {
+   "fieldname": "other_charges",
+   "fieldtype": "Currency",
+   "label": "Other Charges"
+  },
+  {
+   "fieldname": "total_add_ded",
+   "fieldtype": "Currency",
+   "label": "Net Charges & Discount"
   }
  ],
  "icon": "fa fa-file-text",
  "idx": 204,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-12-07 15:09:50.376836",
+ "modified": "2026-02-06 10:24:11.396946",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Purchase Invoice",

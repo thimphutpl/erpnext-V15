@@ -1,7 +1,5 @@
 # Copyright (c) 2015, Frappe Technologies Pvt. Ltd. and Contributors
 # License: GNU General Public License v3. See license.txt
-
-
 import frappe
 from frappe import _, qb, throw
 from frappe.model.mapper import get_mapped_doc
@@ -111,8 +109,10 @@ class PurchaseInvoice(BuyingController):
 		credit_to: DF.Link
 		currency: DF.Link | None
 		disable_rounded_total: DF.Check
+		discount: DF.Currency
 		discount_amount: DF.Currency
 		due_date: DF.Date | None
+		freight_and_insurance_charges: DF.Currency
 		from_date: DF.Date | None
 		grand_total: DF.Currency
 		group_same_items: DF.Check
@@ -137,6 +137,7 @@ class PurchaseInvoice(BuyingController):
 		net_total: DF.Currency
 		on_hold: DF.Check
 		only_include_allocated_payments: DF.Check
+		other_charges: DF.Currency
 		other_charges_calculation: DF.TextEditor | None
 		outstanding_amount: DF.Currency
 		paid_amount: DF.Currency
@@ -174,6 +175,7 @@ class PurchaseInvoice(BuyingController):
 		supplier_group: DF.Link | None
 		supplier_name: DF.Data | None
 		supplier_warehouse: DF.Link | None
+		tax: DF.Currency
 		tax_category: DF.Link | None
 		tax_id: DF.ReadOnly | None
 		tax_withheld_vouchers: DF.Table[TaxWithheldVouchers]
@@ -188,6 +190,7 @@ class PurchaseInvoice(BuyingController):
 		title: DF.Data | None
 		to_date: DF.Date | None
 		total: DF.Currency
+		total_add_ded: DF.Currency
 		total_advance: DF.Currency
 		total_net_weight: DF.Float
 		total_qty: DF.Float
@@ -252,7 +255,8 @@ class PurchaseInvoice(BuyingController):
 		# validate cash purchase
 		if self.is_paid == 1:
 			self.validate_cash()
-
+		if self.posting_date and getdate(self.posting_date) < getdate():
+			frappe.throw("Transaction Date cannot be back Date.")
 		# validate service stop date to lie in between start and end date
 		validate_service_stop_date(self)
 
@@ -278,7 +282,7 @@ class PurchaseInvoice(BuyingController):
 		self.reset_default_field_value("rejected_warehouse", "items", "rejected_warehouse")
 		self.reset_default_field_value("set_from_warehouse", "items", "from_warehouse")
 		self.set_percentage_received()
-
+		
 	def set_percentage_received(self):
 		total_billed_qty = 0.0
 		total_received_qty = 0.0
@@ -1023,7 +1027,9 @@ class PurchaseInvoice(BuyingController):
 		against_voucher = self.name
 		if self.is_return and self.return_against and not self.update_outstanding_for_self:
 			against_voucher = self.return_against
-
+		gst_amount=0.0
+		for item in self.items:
+			gst_amount+=flt(item.gst_amount)
 		# Did not use base_grand_total to book rounding loss gle
 		gl = {
 			"account": self.credit_to,
@@ -1031,8 +1037,8 @@ class PurchaseInvoice(BuyingController):
 			"party": self.supplier,
 			"due_date": self.due_date,
 			"against": against_account or self.against_expense_account,
-			"credit": base_grand_total,
-			"credit_in_account_currency": base_grand_total
+			"credit": base_grand_total+gst_amount,
+			"credit_in_account_currency": base_grand_total+gst_amount
 			if self.party_account_currency == self.company_currency
 			else grand_total,
 			"against_voucher": against_voucher,
@@ -1461,6 +1467,7 @@ class PurchaseInvoice(BuyingController):
 						item=tax,
 					)
 				)
+				
 			# accumulate valuation tax
 			if (
 				self.is_opening == "No"
