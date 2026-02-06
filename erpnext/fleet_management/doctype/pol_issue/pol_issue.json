@@ -205,13 +205,14 @@
   {
    "fieldname": "gst_details_section",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "GST Details"
   },
   {
    "fieldname": "taxes_and_charges",
    "fieldtype": "Link",
    "label": "Purchase Taxes and Charges Template",
-   "options": "Sales Taxes and Charges Template",
+   "options": "Purchase Taxes and Charges Template",
    "read_only": 1
   },
   {
@@ -255,7 +256,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-02-06 12:27:17.013917",
+ "modified": "2026-02-06 12:35:17.747918",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Issue",
