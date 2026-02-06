@@ -1656,6 +1656,24 @@ class AccountsController(TransactionBase):
 
 		return amount, base_amount
 
+	# def get_tax_amounts(self, tax, enable_discount_accounting):
+	# 	amount = tax.tax_amount
+	# 	# amount = tax.tax_amount_after_discount_amount
+	# 	base_amount = tax.base_tax_amount
+	# 	# base_amount = tax.base_tax_amount_after_discount_amount
+
+	# 	if (
+	# 		enable_discount_accounting
+	# 		and self.get("discount_amount")
+	# 		and self.get("additional_discount_account")
+	# 		and self.get("apply_discount_on") == "Grand Total"
+	# 	):
+	# 		amount = tax.tax_amount
+	# 		base_amount = tax.base_tax_amount
+	# 		# if tax.add_deduct_tax == "Deduct" and amount > 0:
+	# 		# 	amount *= -1
+	# 		# 	base_amount *= -1
+	# 	return amount, base_amount
 	def get_tax_amounts(self, tax, enable_discount_accounting):
 		amount = tax.tax_amount_after_discount_amount
 		base_amount = tax.base_tax_amount_after_discount_amount
@@ -1669,7 +1687,7 @@ class AccountsController(TransactionBase):
 			amount = tax.tax_amount
 			base_amount = tax.base_tax_amount
 
-		return amount, base_amount
+		return amount, base_amount	
 
 	def make_discount_gl_entries(self, gl_entries):
 		if self.doctype == "Purchase Invoice":
