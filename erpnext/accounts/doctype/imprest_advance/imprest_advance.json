@@ -222,8 +222,7 @@
    "default": "1",
    "fieldname": "first_advance",
    "fieldtype": "Check",
-   "label": "First Advance",
-   "read_only": 1
+   "label": "First Advance"
   },
   {
    "fieldname": "amount",
@@ -236,7 +235,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-03-30 23:02:35.042979",
+ "modified": "2026-01-20 12:25:32.620310",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Imprest Advance",

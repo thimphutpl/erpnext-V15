@@ -51,6 +51,7 @@ class ImprestRecoup(Document):
 	def validate(self):
 		validate_workflow_states(self)
 		self.calculate_amount()
+		self.calculate_gst_amount()
 		self.populate_imprest_advance()
 		self.set_recoup_account(validate=True)
 		if self.workflow_state != "Recouped":
@@ -69,15 +70,22 @@ class ImprestRecoup(Document):
 		self.total_amount = total_payable_amt
 	
 	def calculate_amount_final(self):
+		
 		tot_bal_amt = sum(d.balance_amount for d in self.imprest_advance_list)
 		self.opening_balance = tot_bal_amt + self.total_amount
-		self.balance_amount = tot_bal_amt - flt(self.gst_amount)
-		
-		if self.docstatus != 1 and tot_bal_amt <= 0 and self.workflow_state == "Draft":
+		self.balance_amount = tot_bal_amt
+		total = sum(item.amount for item in self.items)
+		limit = self.get_imprest_limit()
+		if total > limit:
 			frappe.throw("Expense amount cannot be more than balance amount.")
-
+	def get_imprest_limit(self):
+		branch_doc = frappe.get_doc("Branch", self.branch)
+		for item in branch_doc.items:
+			if item.imprest_type == self.imprest_type:
+				return flt(item.imprest_limit)
 	def before_save(self):
-		self.calculate_gst_amount()
+		
+
 		fy = str(self.posting_date)[0:4]
 		# frappe.throw(f"{fy}")
 		for item in self.get('items'):
@@ -87,6 +95,7 @@ class ImprestRecoup(Document):
 				""".format(fy, item.cost_center, item.account))[0][0]
 			if results == 0:
 				frappe.throw(f"Budget missing or not allocated for Account <b>{item.account}</b> for Cost Center <b>{item.cost_center}</b> for Year <b>{fy}</b>")
+
 
 	def on_submit(self):
 		notify_workflow_states(self)
@@ -107,14 +116,19 @@ class ImprestRecoup(Document):
 				self.db_set("journal_entry", None)
 
 		self.check_imprest_advance_status_and_cancel()
+
 	def calculate_gst_amount(self):
 		self.gst_amount = 0.0
 		self.total_gst_amount = 0.0
+		amount = 0.0
+		for item in self.items:
+			amount+=item.amount
 		if self.taxes_and_charges:
 			gst_rate = self.tax_rate
-			gst_amount = (self.total_amount * gst_rate) / 100
-			total_gst_amount = self.total_amount + gst_amount
+			gst_amount = (amount* gst_rate) / 100
+			total_gst_amount = amount + gst_amount
 			self.gst_amount = gst_amount
+			self.total_amount = amount + gst_amount
 			self.total_gst_amount = total_gst_amount
 	
 		
@@ -355,7 +369,7 @@ class ImprestRecoup(Document):
 			
 			je.append("accounts", {
 				"account": credit_account,
-				"credit_in_account_currency": self.total_amount + self.gst_amount,
+				"credit_in_account_currency": self.total_amount,
 				"cost_center": self.cost_center,
 				"project": self.project,
 				"reference_type": "Imprest Recoup",
