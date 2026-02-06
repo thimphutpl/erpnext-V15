@@ -43,6 +43,7 @@ class PurchaseOrderItem(Document):
 		fg_item: DF.Link | None
 		fg_item_qty: DF.Float
 		from_warehouse: DF.Link | None
+		gst_amount: DF.Currency
 		include_exploded_items: DF.Check
 		is_fixed_asset: DF.Check
 		is_free_item: DF.Check

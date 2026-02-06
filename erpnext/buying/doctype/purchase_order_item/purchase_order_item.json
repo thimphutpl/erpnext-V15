@@ -61,6 +61,7 @@
   "rate",
   "amount",
   "item_tax_template",
+  "gst_amount",
   "column_break_kwjd",
   "base_rate",
   "base_amount",
@@ -918,13 +919,20 @@
    "fieldname": "specification",
    "fieldtype": "Small Text",
    "label": "Specification"
+  },
+  {
+   "fieldname": "gst_amount",
+   "fieldtype": "Currency",
+   "label": "GST Amount",
+   "precision": "2",
+   "read_only": 1
   }
  ],
  "idx": 1,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-12-01 10:36:08.341102",
+ "modified": "2026-02-05 20:32:12.489404",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Purchase Order Item",

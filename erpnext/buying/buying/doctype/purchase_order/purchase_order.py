@@ -8,7 +8,7 @@ import frappe
 from frappe import _, msgprint
 from frappe.desk.notifications import clear_doctype_notifications
 from frappe.model.mapper import get_mapped_doc
-from frappe.utils import cint, cstr, flt, get_link_to_form
+from frappe.utils import cint, cstr, flt, get_link_to_form,getdate
 from frappe.model.naming import make_autoname
 from erpnext.custom_autoname import get_auto_name
 from erpnext.accounts.doctype.sales_invoice.sales_invoice import (
@@ -213,7 +213,9 @@ class PurchaseOrder(BuyingController):
 			self.doctype, self.supplier, self.company, self.inter_company_order_reference
 		)
 		# self.reset_default_field_value("set_warehouse", "items", "warehouse")
-
+		 self.transaction_date and getdate(self.transaction_date) < getdate():
+			frappe.throw("Transaction Date cannot be back Date.")
+			
 	def warehouse_from_branch(doc):
 		branchname=doc.branch
 		query = """
@@ -473,26 +475,6 @@ class PurchaseOrder(BuyingController):
 		super().on_submit()
 		if self.is_against_so():
 			self.update_status_updater()
-		# for item in self.items:
-		# 	# child_cc = self.cost_center
-	   	# 	# parent_cc = frappe.db.get_value("Cost Center", child_cc, "parent_cost_center")
-			
-		# 	args = {
-		# 			"account": item.expense_account,
-		# 			"posting_date": self.transaction_date,
-		# 			"amount": item.base_amount,
-		# 			"cost_center":item.cost_center,
-		# 			"company": self.company,
-		# 			"voucher_type": self.doctype,
-		# 			"doctype": self.doctype,
-		# 			"reference_no": self.name,
-		# 			"reference_type": self.doctype,
-					
-					
-		# 	}
-		# 	validate_expense_against_budget(args)
-	
-
 		self.update_prevdoc_status()
 		# if not self.is_subcontracted or self.is_old_subcontracting_flow:
 		# 	self.update_requested_qty()
