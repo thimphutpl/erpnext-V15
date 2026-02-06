@@ -73,10 +73,10 @@ frappe.ui.form.on("Purchase Order", {
 	},
 
 	refresh: function (frm) {
-		if(cur_frm.doc.supplier && cur_frm.doc.docstatus == 1){
-			frappe.db.get_value("Supplier", frm.doc.supplier, "country", (r)=>{
-				if(r.country != "Bhutan" && frm.doc.supplier && frm.doc.docstatus == 1){
-					if(!cur_frm.doc.tax_payment_jv){
+		if (cur_frm.doc.supplier && cur_frm.doc.docstatus == 1) {
+			frappe.db.get_value("Supplier", frm.doc.supplier, "country", (r) => {
+				if (r.country != "Bhutan" && frm.doc.supplier && frm.doc.docstatus == 1) {
+					if (!cur_frm.doc.tax_payment_jv) {
 						cur_frm.add_custom_button(
 							__("Tax Payment Journal"),
 							make_tax_payment,
@@ -98,14 +98,21 @@ frappe.ui.form.on("Purchase Order", {
 				}
 			});
 		}
-		
+
 	},
-	supplier: function(frm){
+	taxes_and_charges: function (frm) {
+		if (!frm.doc.taxes_and_charges || !frm.doc.taxes_and_charges == "") {
+			frm.set_value("taxes", []);
+			frm.refresh_field("taxes")
+		}
+
+	},
+	supplier: function (frm) {
 		frappe.call({
-			method:"get_gst_template",
+			method: "get_gst_template",
 			doc: frm.doc,
-			callback: function(r){
-				if(r.message){
+			callback: function (r) {
+				if (r.message) {
 					frm.set_value("taxes_and_charges", r.message);
 					frm.refresh_field("taxes_and_charges");
 				}
@@ -147,8 +154,8 @@ frappe.ui.form.on("Purchase Order", {
 				__("Create")
 			);
 		}
-		
-		
+
+
 	},
 
 	onload: function (frm) {
@@ -167,10 +174,10 @@ frappe.ui.form.on("Purchase Order", {
 			frm.set_value("advance_paid", 0);
 		}
 		frappe.call({
-			method:"get_gst_template",
+			method: "get_gst_template",
 			doc: frm.doc,
-			callback: function(r){
-				if(r.message){
+			callback: function (r) {
+				if (r.message) {
 					frm.set_value("taxes_and_charges", r.message);
 					frm.refresh_field("taxes_and_charges");
 				}
@@ -203,10 +210,10 @@ frappe.ui.form.on("Purchase Order", {
 			},
 		});
 	},
-	
-	cost_center:function(frm){
-		if (frm.doc.cost_center){
-			frm.doc.items.map(v=>{
+
+	cost_center: function (frm) {
+		if (frm.doc.cost_center) {
+			frm.doc.items.map(v => {
 				v.cost_center = frm.doc.cost_center
 			})
 		}
@@ -218,12 +225,12 @@ frappe.ui.form.on("Purchase Order", {
 				fieldname: "warehouse",
 				filters: { name: frm.doc.cost_center },
 			},
-			callback: function(r, rt) {
-				if(r.message.warehouse) {
-					frm.doc.items.map(v=>{
+			callback: function (r, rt) {
+				if (r.message.warehouse) {
+					frm.doc.items.map(v => {
 						v.warehouse = r.message.warehouse
 					})
-				}else{
+				} else {
 					frappe.throw(__('Warehouse not define in this Cost Center'))
 				}
 			}
@@ -232,26 +239,26 @@ frappe.ui.form.on("Purchase Order", {
 
 	/* jai added */
 	schedule_date: function (frm) {
-		if (frm.doc.schedule_date){
-			frm.doc.items.map(v=>{
+		if (frm.doc.schedule_date) {
+			frm.doc.items.map(v => {
 				v.schedule_date = frm.doc.schedule_date
 			})
 		}
 	},
 
-	freight_and_insurance_charges: function(frm) {
+	freight_and_insurance_charges: function (frm) {
 		calculate_discount(frm)
 	},
 
-	discount: function(frm) {
+	discount: function (frm) {
 		calculate_discount(frm)
 	},
 
-	other_charges: function(frm) {
+	other_charges: function (frm) {
 		calculate_discount(frm)
 	},
 
-	tax: function(frm) {
+	tax: function (frm) {
 		calculate_discount(frm)
 	},
 });
@@ -292,7 +299,7 @@ frappe.ui.form.on("Purchase Order Item", {
 	// item_code: async function (frm, cdt, cdn) {
 
 	// 	if (frm.doc.is_subcontracted && !frm.doc.is_old_subcontracting_flow) {
-			
+
 	// 		var row = locals[cdt][cdn];
 
 	// 		if (row.item_code && !row.fg_item) {
@@ -341,12 +348,12 @@ frappe.ui.form.on("Purchase Order Item", {
 	// 			}
 	// 		}
 	// 	}
-		
+
 	// },
 
 	fg_item: async function (frm, cdt, cdn) {
-		
-		
+
+
 		if (frm.doc.is_subcontracted && !frm.doc.is_old_subcontracting_flow) {
 			var row = locals[cdt][cdn];
 
@@ -368,7 +375,7 @@ frappe.ui.form.on("Purchase Order Item", {
 	},
 
 	qty: async function (frm, cdt, cdn) {
-		
+
 		if (frm.doc.is_subcontracted && !frm.doc.is_old_subcontracting_flow) {
 			var row = locals[cdt][cdn];
 
@@ -407,8 +414,8 @@ erpnext.buying.PurchaseOrderController = class PurchaseOrderController extends (
 		};
 		// debugger
 		super.setup();
-		
-		
+
+
 	}
 
 	refresh(doc, cdt, cdn) {
@@ -571,7 +578,7 @@ erpnext.buying.PurchaseOrderController = class PurchaseOrderController extends (
 					// 				method:"make_tax_entry",
 					// 				doc : me.frm.doc,
 					// 				callback: function (r) {
-										
+
 					// 				},
 					// 			});
 					// 		},
@@ -760,12 +767,12 @@ erpnext.buying.PurchaseOrderController = class PurchaseOrderController extends (
 
 									frappe.msgprint(
 										"Assigning " +
-											d.mr_name +
-											" to " +
-											d.item_code +
-											" (row " +
-											me.frm.doc.items[i].idx +
-											")"
+										d.mr_name +
+										" to " +
+										d.item_code +
+										" (row " +
+										me.frm.doc.items[i].idx +
+										")"
 									);
 									if (qty > 0) {
 										frappe.msgprint("Splitting " + qty + " units of " + d.item_code);
@@ -908,7 +915,7 @@ cur_frm.fields_dict["items"].grid.get_field("project").get_query = function (doc
 // cur_frm.fields_dict["items"].grid.get_field("item_code").on("change", function(frm, cdt, cdn) {
 //     frappe.model.set_value(cdt, cdn, "expense_account", "Text");
 // });
-var make_tax_payment = function() {
+var make_tax_payment = function () {
 	frappe.model.open_mapped_doc({
 		method: "erpnext.buying.doctype.purchase_order.purchase_order.make_tax_payment",
 		frm: cur_frm,
@@ -932,25 +939,25 @@ if (cur_frm.doc.is_old_subcontracting_flow) {
 // function fetch_item_code_gl(frm,cdt,cdn){
 // 	var row = locals[cdt][cdn];
 // 	frappe.model.set_value(cdt, cdn, 'expense_account', "20010301 - Settlement - Essential Service Provider - DK");
-    
-    // 2. Then refresh just that field
-    // var grid = frm.fields_dict['items'].grid;
-    // grid.refresh();
 
-	// frm.call({
-	// 	method: "erpnext.buying.doctype.purchase_order.purchase_order.fetch_item_gl",
-	// 	freeze: true,
-	// 	freeze_message: __("Creating Stock Entry"),
-	// 	args: {
-	// 		cdn : cdn
-	// 	},
-	// 	callback: function (r) {
-	// 		if (r && r.message) {
-	// 			const doc = frappe.model.sync(r.message);
-	// 			frappe.set_route("Form", doc[0].doctype, doc[0].name);
-	// 		}
-	// 	},
-	// });
+// 2. Then refresh just that field
+// var grid = frm.fields_dict['items'].grid;
+// grid.refresh();
+
+// frm.call({
+// 	method: "erpnext.buying.doctype.purchase_order.purchase_order.fetch_item_gl",
+// 	freeze: true,
+// 	freeze_message: __("Creating Stock Entry"),
+// 	args: {
+// 		cdn : cdn
+// 	},
+// 	callback: function (r) {
+// 		if (r && r.message) {
+// 			const doc = frappe.model.sync(r.message);
+// 			frappe.set_route("Form", doc[0].doctype, doc[0].name);
+// 		}
+// 	},
+// });
 // }
 
 function set_schedule_date(frm) {
