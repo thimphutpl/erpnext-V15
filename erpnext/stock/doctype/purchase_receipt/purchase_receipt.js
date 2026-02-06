@@ -70,6 +70,7 @@ frappe.ui.form.on("Purchase Receipt", {
 			frm.page.set_inner_btn_group_as_primary(__("Create"));
 		}
 
+
 		if (frm.doc.docstatus === 1 && frm.doc.is_internal_supplier && !frm.doc.inter_company_reference) {
 			frm.add_custom_button(
 				__("Delivery Note"),
@@ -110,6 +111,13 @@ frappe.ui.form.on("Purchase Receipt", {
 		// }
 
 		frm.events.add_custom_buttons(frm);
+	},
+	taxes_and_charges: function (frm) {
+		if (!frm.doc.taxes_and_charges || !frm.doc.taxes_and_charges == "") {
+			frm.set_value("taxes", []);
+			frm.refresh_field("taxes")
+		}
+
 	},
 
 	make_lcv(frm) {

@@ -64,7 +64,9 @@ class PurchaseReceipt(BuyingController):
 		cost_center: DF.Link | None
 		currency: DF.Link
 		disable_rounded_total: DF.Check
+		discount: DF.Currency
 		discount_amount: DF.Currency
+		freight_and_insurance_charges: DF.Currency
 		grand_total: DF.Currency
 		group_same_items: DF.Check
 		ignore_pricing_rule: DF.Check
@@ -84,6 +86,7 @@ class PurchaseReceipt(BuyingController):
 		named_place: DF.Data | None
 		naming_series: DF.Literal["MAT-PRE-.YYYY.-", "MAT-PR-RET-.YYYY.-"]
 		net_total: DF.Currency
+		other_charges: DF.Currency
 		other_charges_calculation: DF.TextEditor | None
 		per_billed: DF.Percent
 		per_returned: DF.Percent
@@ -115,6 +118,7 @@ class PurchaseReceipt(BuyingController):
 		supplier_delivery_note: DF.Data | None
 		supplier_name: DF.Data | None
 		supplier_warehouse: DF.Link | None
+		tax: DF.Currency
 		tax_category: DF.Link | None
 		tax_withholding_net_total: DF.Currency
 		taxes: DF.Table[PurchaseTaxesandCharges]
@@ -125,6 +129,7 @@ class PurchaseReceipt(BuyingController):
 		terms: DF.TextEditor | None
 		title: DF.Data | None
 		total: DF.Currency
+		total_add_ded: DF.Currency
 		total_net_weight: DF.Float
 		total_qty: DF.Float
 		total_taxes_and_charges: DF.Currency
@@ -238,6 +243,9 @@ class PurchaseReceipt(BuyingController):
 		self.validate_provisional_expense_account()
 
 		self.check_on_hold_or_closed_status()
+
+		if self.posting_date and getdate(self.posting_date) < getdate():
+			frappe.throw("Transaction Date cannot be back Date.")
 
 		if getdate(self.posting_date) > getdate(nowdate()):
 			throw(_("Posting Date cannot be future date"))

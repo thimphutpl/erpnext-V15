@@ -93,9 +93,14 @@
   "section_break_42",
   "apply_discount_on",
   "base_discount_amount",
+  "freight_and_insurance_charges",
+  "discount",
   "column_break_44",
   "additional_discount_percentage",
   "discount_amount",
+  "tax",
+  "other_charges",
+  "total_add_ded",
   "sec_tax_breakup",
   "other_charges_calculation",
   "pricing_rule_details",
@@ -603,7 +608,6 @@
   {
    "fieldname": "taxes_charges_section",
    "fieldtype": "Section Break",
-   "hidden": 1,
    "hide_border": 1,
    "label": "Taxes and Charges",
    "oldfieldtype": "Section Break"
@@ -628,7 +632,6 @@
   {
    "fieldname": "taxes_section",
    "fieldtype": "Section Break",
-   "hidden": 1,
    "hide_border": 1
   },
   {
@@ -743,6 +746,7 @@
    "default": "Grand Total",
    "fieldname": "apply_discount_on",
    "fieldtype": "Select",
+   "hidden": 1,
    "label": "Apply Additional Discount On",
    "options": "\nGrand Total\nNet Total",
    "print_hide": 1
@@ -762,12 +766,14 @@
   {
    "fieldname": "additional_discount_percentage",
    "fieldtype": "Float",
+   "hidden": 1,
    "label": "Additional Discount Percentage",
    "print_hide": 1
   },
   {
    "fieldname": "discount_amount",
    "fieldtype": "Currency",
+   "hidden": 1,
    "label": "Additional Discount Amount",
    "options": "currency",
    "print_hide": 1
@@ -862,7 +868,7 @@
    "read_only": 1
   },
   {
-   "default": "0",
+   "default": "1",
    "fieldname": "disable_rounded_total",
    "fieldtype": "Check",
    "label": "Disable Rounded Total"
@@ -1277,13 +1283,42 @@
    "label": "Branch",
    "options": "Branch",
    "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "freight_and_insurance_charges",
+   "fieldtype": "Currency",
+   "label": "Freight and Insurance Charges"
+  },
+  {
+   "fieldname": "discount",
+   "fieldtype": "Currency",
+   "label": "Discount"
+  },
+  {
+   "default": "0",
+   "fieldname": "tax",
+   "fieldtype": "Currency",
+   "label": "Tax"
+  },
+  {
+   "default": "0",
+   "fieldname": "other_charges",
+   "fieldtype": "Currency",
+   "label": "Other Charges"
+  },
+  {
+   "fieldname": "total_add_ded",
+   "fieldtype": "Currency",
+   "label": "Net Charges & Discount",
+   "read_only": 1
   }
  ],
  "icon": "fa fa-truck",
  "idx": 261,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-12-07 10:41:58.589378",
+ "modified": "2026-02-06 10:21:59.825935",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Purchase Receipt",
