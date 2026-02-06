@@ -672,23 +672,23 @@ class calculate_taxes_and_totals:
 			for tax in self.doc.get("taxes"):
 				if tax.category in ["Valuation and Total", "Total"]:
 					if tax.add_deduct_tax == "Add":
-						self.doc.taxes_and_charges_added += flt(tax.tax_amount_after_discount_amount)
-					else:
-						self.doc.taxes_and_charges_deducted += flt(tax.tax_amount_after_discount_amount)
-					if self.doc.doctype in ["Purchase Order","Purchase Receipt"]:
-						if frappe.db.get_value("Supplier", self.doc.supplier, "country") == "Bhutan":
-							if tax.add_deduct_tax == "Add":
-								self.doc.taxes_and_charges_added += flt(tax.tax_amount_after_discount_amount)
-							else:
-								if tax.add_deduct_tax != "None":
-									self.doc.taxes_and_charges_deducted += flt(tax.tax_amount_after_discount_amount)
-						else:
-							if tax.is_gst == 0:
+					# 	self.doc.taxes_and_charges_added += flt(tax.tax_amount_after_discount_amount)
+					# else:
+					# 	self.doc.taxes_and_charges_deducted += flt(tax.tax_amount_after_discount_amount)
+						if self.doc.doctype in ["Purchase Order","Purchase Receipt"]:
+							if frappe.db.get_value("Supplier", self.doc.supplier, "country") == "Bhutan":
 								if tax.add_deduct_tax == "Add":
 									self.doc.taxes_and_charges_added += flt(tax.tax_amount_after_discount_amount)
 								else:
 									if tax.add_deduct_tax != "None":
 										self.doc.taxes_and_charges_deducted += flt(tax.tax_amount_after_discount_amount)
+							else:
+								if tax.is_gst == 0:
+									if tax.add_deduct_tax == "Add":
+										self.doc.taxes_and_charges_added += flt(tax.tax_amount_after_discount_amount)
+									else:
+										if tax.add_deduct_tax != "None":
+											self.doc.taxes_and_charges_deducted += flt(tax.tax_amount_after_discount_amount)
 					elif self.doc.doctype != "Sales Invoice" and tax.add_deduct_tax != "None":
 						if tax.is_gst == 0:
 							if tax.add_deduct_tax == "Add":
