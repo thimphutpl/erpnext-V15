@@ -400,13 +400,10 @@ class POLReceive(StockController):
 
 		return gl_entries
 	def calculate_gst_amount(self):
-		base_amount = self.qty * self.rate
 		self.gst_amount = 0.0
 		self.total_gst_amount = 0.0
 		self.rate_including_gst = 0.0
 		self.included_gst = 0 
-
-		
 		if self.taxes_and_charges:
 			gst_rate = self.tax_rate
 			gst_amount = (self.total_amount * gst_rate) / 100
@@ -416,12 +413,8 @@ class POLReceive(StockController):
 			self.total_gst_amount = total_gst_amount
 			self.rate_including_gst = rate_including_gst
 			self.included_gst=1
-			self.total_amount= total_gst_amount
-			self.outstanding_amount = total_gst_amount
 		else:
 			self.included_gst=0
-			self.total_amount= base_amount
-			self.outstanding_amount = base_amount
 	
 	
 
