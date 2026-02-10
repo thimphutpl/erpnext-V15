@@ -109,6 +109,7 @@ class Item(Document):
 		is_pol_item: DF.Check
 		is_purchase_item: DF.Check
 		is_sales_item: DF.Check
+		is_service_item: DF.Check
 		is_stock_item: DF.Check
 		is_sub_contracted_item: DF.Check
 		item_code: DF.Data | None
@@ -229,10 +230,12 @@ class Item(Document):
 			self.old_item_group = frappe.db.get_value(self.doctype, self.name, "item_group")
 
 	def before_save(self):
-		if self.is_stock_item or self.is_fixed_asset:
+		if self.is_stock_item or self.is_fixed_asset or self.is_service_item:
 			return
-		if (not self.is_stock_item or not self.is_fixed_asset) and "Service" not in self.item_group:
-			frappe.throw("Before save Check if the Item is to Maintain Stock or Is Fixed Asset")
+		# if (not self.is_stock_item or not self.is_fixed_asset) and "Service" not in self.item_group:
+		# 	frappe.throw("Before save Check if the Item is to Maintain Stock or Is Fixed Asset")
+		if not self.is_stock_item or not self.is_fixed_asset:
+			frappe.throw("Before save Check if the Item is to Maintain Stock or Is Fixed Asset")	
 
 	def validate_duplicate(self):
 		data = frappe.db.sql('''
