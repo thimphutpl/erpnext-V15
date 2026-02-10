@@ -395,6 +395,7 @@ function calculate_total(frm) {
 		}
 
 	} else {
+		alert("hi")
 		if (frm.doc.qty && frm.doc.rate) {
 			frm.set_value("total_amount", frm.doc.qty * frm.doc.rate);
 			frm.set_value("outstanding_amount", frm.doc.qty * frm.doc.rate);
@@ -418,18 +419,6 @@ function calculate_total(frm) {
 		}
 	}
 }
-function calculate_gst_amount(frm) {
-	let total_amount = frm.doc.total_amount;
-	let gst_rate = frm.doc.tax_rate;
-	let gst_amount = total_amount * gst_rate / 100;
-	let rate_including_gst = (gst_amount / frm.doc.qty) + frm.doc.rate
-	let total_gst_amount = total_amount + gst_amount;
-
-	frm.set_value('gst_amount', gst_amount);
-	frm.set_value('total_gst_amount', total_gst_amount);
-	frm.set_value('rate_including_gst', rate_including_gst)
-}
-
 
 function get_gst_account_from_template(frm) {
 	if (!frm.doc.supplier) return;
