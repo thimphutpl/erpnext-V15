@@ -214,121 +214,135 @@ def get_gl_entries(filters, accounting_dimensions):
 		return gl_entries
 
 def get_conditions(filters):
-    conditions = []
+	conditions = []
 
-    if filters.get("account"):
-        filters.account = get_accounts_with_children(filters.account)
-        if filters.account:
-            conditions.append("account in %(account)s")
+	if filters.get("account"):
+		filters.account = get_accounts_with_children(filters.account)
+		if filters.account:
+			conditions.append("account in %(account)s")
 
-    # Modified Cost Center Logic
-    if filters.get("cost_center"):
-        filters.cost_center = get_cost_centers_with_children(filters.cost_center)
-        if filters.get("show_overhead_cost"):
-            # Show entries for selected cost centers WITHOUT projects
-            conditions.append("cost_center in %(cost_center)s AND project IS NULL")
-        else:
-            # Original logic (all entries for cost centers)
-            conditions.append("cost_center in %(cost_center)s")
+	# Modified Cost Center Logic
+	if filters.get("cost_center"):
+		filters.cost_center = get_cost_centers_with_children(filters.cost_center)
+		if filters.get("show_overhead_cost"):
+			# Show entries for selected cost centers WITHOUT projects
+			conditions.append("cost_center in %(cost_center)s AND project IS NULL")
+		else:
+			# Original logic (all entries for cost centers)
+			conditions.append("cost_center in %(cost_center)s")
 
-    if filters.get("voucher_no"):
-        conditions.append("voucher_no=%(voucher_no)s")
+	if filters.get("voucher_no"):
+		conditions.append("voucher_no=%(voucher_no)s")
 
-    if filters.get("against_voucher_no"):
-        conditions.append("against_voucher=%(against_voucher_no)s")
+	if filters.get("against_voucher_no"):
+		conditions.append("against_voucher=%(against_voucher_no)s")
 
-    if filters.get("ignore_err"):
-        err_journals = frappe.db.get_all(
-            "Journal Entry",
-            filters={
-                "company": filters.get("company"),
-                "docstatus": 1,
-                "voucher_type": ("in", ["Exchange Rate Revaluation", "Exchange Gain Or Loss"]),
-            },
-            as_list=True,
-        )
-        if err_journals:
-            filters.update({"voucher_no_not_in": [x[0] for x in err_journals]})
+	if filters.get("ignore_err"):
+		err_journals = frappe.db.get_all(
+			"Journal Entry",
+			filters={
+				"company": filters.get("company"),
+				"docstatus": 1,
+				"voucher_type": ("in", ["Exchange Rate Revaluation", "Exchange Gain Or Loss"]),
+			},
+			as_list=True,
+		)
+		if err_journals:
+			filters.update({"voucher_no_not_in": [x[0] for x in err_journals]})
 
-    if filters.get("voucher_no_not_in"):
-        conditions.append("voucher_no not in %(voucher_no_not_in)s")
+	if filters.get("voucher_no_not_in"):
+		conditions.append("voucher_no not in %(voucher_no_not_in)s")
 
-    if filters.get("group_by") == "Group by Party" and not filters.get("party_type"):
-        conditions.append("party_type in ('Customer', 'Supplier')")
+	if filters.get("group_by") == "Group by Party" and not filters.get("party_type"):
+		conditions.append("party_type in ('Customer', 'Supplier')")
 
-    if filters.get("party_type"):
-        conditions.append("party_type=%(party_type)s")
+	if filters.get("party_type"):
+		conditions.append("party_type=%(party_type)s")
 
-    if filters.get("party"):
-        conditions.append("party in %(party)s")
+	if filters.get("party"):
+		conditions.append("party in %(party)s")
 
-    if not (
-        filters.get("account")
-        or filters.get("party")
-        or filters.get("group_by") in ["Group by Account", "Group by Party"]
-    ):
-        conditions.append("(posting_date >=%(from_date)s or is_opening = 'Yes')")
+	if not (
+		filters.get("account")
+		or filters.get("party")
+		or filters.get("group_by") in ["Group by Account", "Group by Party"]
+	):
+		conditions.append("(posting_date >=%(from_date)s or is_opening = 'Yes')")
 
-    conditions.append("(posting_date <=%(to_date)s or is_opening = 'Yes')")
-    
-    # Fixed Project Definition Filter (parameterized query)
-    if not filters.get("show_overhead_cost") and filters.get("project_definition"):
-        project_definitions = get_dimension_with_children("Project Definition", filters.project_definition)
-        filters.project_definition = tuple(project_definitions)
-        conditions.append("project_definition IN %(project_definition)s")
+	conditions.append("(posting_date <=%(to_date)s or is_opening = 'Yes')")
+	
+	# Fixed Project Definition Filter (parameterized query)	
+	if not filters.get("show_overhead_cost") and filters.get("project_definition"):
+		project_defs = filters.get("project_definition")
 
-    # Modified Project Filter
-    if not filters.get("show_overhead_cost") and filters.get("project"):
-        conditions.append("project in %(project)s")
+		# normalize to list
+		if isinstance(project_defs, str):
+			project_defs = [project_defs]
 
-    if not filters.get("show_overhead_cost") and filters.get("task"):
-        conditions.append("task in %(task)s")
+		projects = frappe.get_all(
+			"Project",
+			filters={"project_definition": ("in", project_defs)},
+			pluck="name",
+		)
 
-    # Rest of the code remains the same
-    if filters.get("include_default_book_entries"):
-        if filters.get("finance_book"):
-            if filters.get("company_fb") and cstr(filters.get("finance_book")) != cstr(
-                filters.get("company_fb")
-            ):
-                frappe.throw(
-                    _("To use a different finance book, please uncheck 'Include Default FB Entries'")
-                )
-            else:
-                conditions.append("(finance_book in (%(finance_book)s, '') OR finance_book IS NULL)")
-        else:
-            conditions.append("(finance_book in (%(company_fb)s, '') OR finance_book IS NULL)")
-    else:
-        if filters.get("finance_book"):
-            conditions.append("(finance_book in (%(finance_book)s, '') OR finance_book IS NULL)")
-        else:
-            conditions.append("(finance_book in ('') OR finance_book IS NULL)")
+		if not projects:
+			conditions.append("1=0")
+		else:
+			filters.project = tuple(projects)
+			conditions.append("project IN %(project)s")
+		filters.pop("project_definition", None)
 
-    if not filters.get("show_cancelled_entries"):
-        conditions.append("is_cancelled = 0")
+	# Modified Project Filter
+	if not filters.get("show_overhead_cost") and filters.get("project"):
+		conditions.append("project in %(project)s")
 
-    from frappe.desk.reportview import build_match_conditions
+	if not filters.get("show_overhead_cost") and filters.get("task"):
+		conditions.append("task in %(task)s")
 
-    match_conditions = build_match_conditions("GL Entry")
+	# Rest of the code remains the same
+	if filters.get("include_default_book_entries"):
+		if filters.get("finance_book"):
+			if filters.get("company_fb") and cstr(filters.get("finance_book")) != cstr(
+				filters.get("company_fb")
+			):
+				frappe.throw(
+					_("To use a different finance book, please uncheck 'Include Default FB Entries'")
+				)
+			else:
+				conditions.append("(finance_book in (%(finance_book)s, '') OR finance_book IS NULL)")
+		else:
+			conditions.append("(finance_book in (%(company_fb)s, '') OR finance_book IS NULL)")
+	else:
+		if filters.get("finance_book"):
+			conditions.append("(finance_book in (%(finance_book)s, '') OR finance_book IS NULL)")
+		else:
+			conditions.append("(finance_book in ('') OR finance_book IS NULL)")
 
-    if match_conditions:
-        conditions.append(match_conditions)
+	if not filters.get("show_cancelled_entries"):
+		conditions.append("is_cancelled = 0")
 
-    accounting_dimensions = get_accounting_dimensions(as_list=False)
+	from frappe.desk.reportview import build_match_conditions
 
-    if accounting_dimensions:
-        for dimension in accounting_dimensions:
-            if not dimension.disabled and dimension.document_type != "Finance Book":
-                if filters.get(dimension.fieldname):
-                    if frappe.get_cached_value("DocType", dimension.document_type, "is_tree"):
-                        filters[dimension.fieldname] = get_dimension_with_children(
-                            dimension.document_type, filters.get(dimension.fieldname)
-                        )
-                        conditions.append(f"{dimension.fieldname} in %({dimension.fieldname})s")
-                    else:
-                        conditions.append(f"{dimension.fieldname} in %({dimension.fieldname})s")
+	match_conditions = build_match_conditions("GL Entry")
 
-    return "and {}".format(" and ".join(conditions)) if conditions else ""
+	if match_conditions:
+		conditions.append(match_conditions)
 
+	accounting_dimensions = get_accounting_dimensions(as_list=False)
+
+	if accounting_dimensions:
+		for dimension in accounting_dimensions:
+			if not dimension.disabled and dimension.document_type != "Finance Book":
+				if filters.get(dimension.fieldname):
+					if frappe.get_cached_value("DocType", dimension.document_type, "is_tree"):
+						filters[dimension.fieldname] = get_dimension_with_children(
+							dimension.document_type, filters.get(dimension.fieldname)
+						)
+						conditions.append(f"{dimension.fieldname} in %({dimension.fieldname})s")
+					else:
+						conditions.append(f"{dimension.fieldname} in %({dimension.fieldname})s")
+
+	return "and {}".format(" and ".join(conditions)) if conditions else ""
 
 def get_accounts_with_children(accounts):
 	if not isinstance(accounts, list):
