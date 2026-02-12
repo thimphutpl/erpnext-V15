@@ -35,7 +35,6 @@ class DirectPayment(AccountsController):
 		cost_center: DF.Link
 		credit_account: DF.Link | None
 		debit_account: DF.Link | None
-		gst_amounts: DF.Currency
 		invoice_date: DF.Date | None
 		invoice_no: DF.Data | None
 		is_advance: DF.Check
@@ -46,7 +45,7 @@ class DirectPayment(AccountsController):
 		pay_to_recd_from: DF.Data | None
 		payment_type: DF.Literal["", "Receive", "Payment"]
 		posting_date: DF.Date
-		remarks: DF.SmallText
+		remarks: DF.SmallText | None
 		select_cheque_lot: DF.Link | None
 		taxable_amount: DF.Currency
 		tds_account: DF.Link | None

@@ -226,8 +226,7 @@
    "fieldname": "remarks",
    "fieldtype": "Small Text",
    "in_list_view": 1,
-   "label": "Remarks/Narration",
-   "reqd": 1
+   "label": "Remarks/Narration"
   },
   {
    "fieldname": "column_break_39",
@@ -313,7 +312,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-02-09 22:01:36.180199",
+ "modified": "2026-02-10 20:04:27.064941",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Direct Payment",
