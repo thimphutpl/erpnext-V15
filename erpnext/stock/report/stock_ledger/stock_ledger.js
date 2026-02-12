@@ -44,14 +44,14 @@ frappe.query_reports["Stock Ledger"] = {
 			// 	};
 			// },
 			get_query: () => {
-                let items = frappe.query_report.get_filter_value('item_group');
-                if (items) {
-                    return {
-                        filters: {
-                            item_group: items
-                        }
-                    };
-                }
+				let items = frappe.query_report.get_filter_value('item_group');
+				if (items) {
+					return {
+						filters: {
+							item_group: items
+						}
+					};
+				}
 			}
 		},
 		{
@@ -98,6 +98,19 @@ frappe.query_reports["Stock Ledger"] = {
 			options: "Project",
 		},
 		{
+			fieldname: "task",
+			label: __("Task"),
+			fieldtype: "Link",
+			options: "Task",
+			get_query: function () {
+				return {
+					filters: {
+						project: frappe.query_report.get_filter_value("project")
+					}
+				}
+			}
+		},
+		{
 			fieldname: "include_uom",
 			label: __("Include UOM"),
 			fieldtype: "Link",
@@ -128,6 +141,25 @@ frappe.query_reports["Stock Ledger"] = {
 
 		return value;
 	},
+
+	onload: function (report) {
+		// Add a Clear button at the top of the filters
+		report.page.add_inner_button(__('Clear Filters'), function () {
+			// Reset Project and Task filters
+			frappe.query_report.set_filter_value("project", "");
+			frappe.query_report.set_filter_value("task", "");
+			frappe.query_reports.set_filter_value("from_date", "");
+			frappe.query_reports.set_filter_value("to_date", "");
+			frappe.query_reports.set_filter_value("item_group", "");
+			frappe.query_reports.set_filter_value("item_code", "");
+			frappe.query_reports.set_filter_value("warehouse", "");
+			frappe.query_reports.set_filter_value("batch_no", "");
+			frappe.query_reports.set_filter_value("branch", "");
+			frappe.query_reports.set_filter_value("voucher_no", "");
+			frappe.query_reports.set_filter_value("include_uom", "");
+		});
+	},
+
 };
 
 erpnext.utils.add_inventory_dimensions("Stock Ledger", 10);

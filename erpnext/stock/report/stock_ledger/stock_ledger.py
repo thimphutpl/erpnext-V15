@@ -354,6 +354,13 @@ def get_columns(filters):
 				"width": 100,
 			},
 			{
+				"label": _("Task"),
+				"fieldname": "task",
+				"fieldtype": "Link",
+				"options": "Task",
+				"width": 100,
+			},
+			{
 				"label": _("Company"),
 				"fieldname": "company",
 				"fieldtype": "Link",
@@ -389,6 +396,7 @@ def get_stock_ledger_entries(filters, items):
 			sle.batch_no,
 			sle.serial_no,
 			sle.project,
+			sle.task
 		)
 		.where(
 			(sle.docstatus < 2)
@@ -409,7 +417,7 @@ def get_stock_ledger_entries(filters, items):
 	if items:
 		query = query.where(sle.item_code.isin(items))
 
-	for field in ["voucher_no", "project", "company"]:
+	for field in ["voucher_no", "project", "company","task"]:
 		if filters.get(field) and field not in inventory_dimension_fields:
 			query = query.where(sle[field] == filters.get(field))
 
@@ -518,6 +526,8 @@ def get_sle_conditions(filters):
 		conditions.append("batch_no=%(batch_no)s")
 	if filters.get("project"):
 		conditions.append("project=%(project)s")
+	if filters.get("task"):
+		conditions.append("task = %(task)s")
 
 	for dimension in get_inventory_dimensions():
 		if filters.get(dimension.fieldname):
