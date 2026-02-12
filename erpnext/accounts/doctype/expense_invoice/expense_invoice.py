@@ -1,7 +1,5 @@
-# -*- coding: utf-8 -*-
-# Copyright (c) 2021, Frappe Technologies Pvt. Ltd. and contributors
+# Copyright (c) 2026, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
-
 from __future__ import unicode_literals
 import frappe
 from frappe import _
@@ -9,7 +7,7 @@ from frappe.model.document import Document
 from frappe.utils import flt, cint, getdate, get_datetime, get_url, nowdate, now_datetime, money_in_words
 from erpnext.custom_utils import check_future_date
 
-class UtilityBills(Document):
+class ExpenseInvoice(Document):
 	# begin: auto-generated types
 	# This code is auto-generated. Do not modify anything in this block.
 
@@ -27,19 +25,16 @@ class UtilityBills(Document):
 		employee: DF.Link
 		is_rental: DF.Check
 		item: DF.Table[UtilityBillItem]
-		month: DF.Literal["", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]
 		net_payable_amount: DF.Currency
 		party: DF.Data | None
 		posting_date: DF.Date
 		remark: DF.SmallText | None
-		rental_type: DF.Literal["All", "Office", "Outlet"]
 		tds_account: DF.Link | None
 		tds_percent: DF.Literal["", "2", "3", "5", "10"]
 		title: DF.Data
 		total_bill_amount: DF.Currency
 		total_tds_amount: DF.Currency
 		workflow_state: DF.Link | None
-		year: DF.Link | None
 	# end: auto-generated types
 	def validate(self):
 		check_future_date(self.posting_date)
@@ -48,8 +43,8 @@ class UtilityBills(Document):
 	def on_submit(self):
 		self.validate_rental()
 		self.make_direct_payment()
+	   
 
-	
 	def calculate_amt(self):
 		total_inv_amount = total_tds_amount = total_net_amount = 0.00
 		party=None
@@ -66,13 +61,12 @@ class UtilityBills(Document):
 			total_inv_amount += flt(a.invoice_amount)
 			total_tds_amount += flt(a.tds_amount)
 			total_net_amount += flt(a.net_amount)
-			party = a.party
+			party=a.party
 
-        
 		self.total_bill_amount  = total_inv_amount
 		self.total_tds_amount   = total_tds_amount
 		self.net_payable_amount = total_net_amount
-		self.party=party
+		self.party= party
 	
 	def validate_rental(self):
 		if self.is_rental:
@@ -88,8 +82,9 @@ class UtilityBills(Document):
 					  """.format(a.party, self.year, self.month, self.name), as_dict=True):
 					if a.util_payment:
 						frappe.throw("Rental payment done for party {} in Utility Bill No. {}".format(a.party, a.util_payment))
-
+	@frappe.whitelist()
 	def make_direct_payment(self):
+		
 		doc = frappe.new_doc("Direct Payment")
 		doc.branch = self.branch
 		doc.cost_center = self.cost_center
@@ -113,7 +108,6 @@ class UtilityBills(Document):
 				"net_amount": a.net_amount,
 			})
 		doc.save()
-		# if self.is_rental:
 		self.db_set("direct_payment", doc.name)
 		frappe.msgprint(_('Successfully posted to accounts'))
 		frappe.db.commit()
@@ -128,7 +122,7 @@ def get_permission_query_conditions(user):
 	return """(
 		exists(select 1
 			from `tabEmployee` as e
-			where e.branch = `tabUtility Bills`.branch
+			where e.branch = `tabExpense Invoice`.branch
 			and e.user_id = '{user}')
 		or
 		exists(select 1
@@ -136,5 +130,5 @@ def get_permission_query_conditions(user):
 			where e.user_id = '{user}'
 			and ab.employee = e.name
 			and bi.parent = ab.name
-			and bi.branch = `tabUtility Bills`.branch)
+			and bi.branch = `tabExpense Invoice`.branch)
 	)""".format(user=user)
