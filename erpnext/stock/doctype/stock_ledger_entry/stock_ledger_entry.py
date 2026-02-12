@@ -62,6 +62,7 @@ class StockLedgerEntry(Document):
 		stock_uom: DF.Link | None
 		stock_value: DF.Currency
 		stock_value_difference: DF.Currency
+		task: DF.Link | None
 		to_rename: DF.Check
 		valuation_rate: DF.Currency
 		voucher_detail_no: DF.Data | None
