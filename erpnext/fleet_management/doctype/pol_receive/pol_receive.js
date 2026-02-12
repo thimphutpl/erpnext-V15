@@ -395,7 +395,6 @@ function calculate_total(frm) {
 		}
 
 	} else {
-		alert("hi")
 		if (frm.doc.qty && frm.doc.rate) {
 			frm.set_value("total_amount", frm.doc.qty * frm.doc.rate);
 			frm.set_value("outstanding_amount", frm.doc.qty * frm.doc.rate);
