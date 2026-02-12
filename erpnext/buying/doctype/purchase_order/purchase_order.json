@@ -1347,7 +1347,7 @@
    "fieldname": "n_series",
    "fieldtype": "Select",
    "label": "Naming Series",
-   "options": "\nConsumables\nFixed Asset\nSales Product\nSpare Parts\nServices Miscellaneous\nServices Works\nConstruction Materials",
+   "options": "\nNone\nConsumables\nFixed Asset\nSales Product\nSpare Parts\nServices Miscellaneous\nServices Works\nConstruction Materials",
    "reqd": 1,
    "set_only_once": 1
   },
@@ -1360,7 +1360,7 @@
  "idx": 105,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-12-04 10:14:16.680814",
+ "modified": "2026-02-11 15:22:08.747182",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Purchase Order",

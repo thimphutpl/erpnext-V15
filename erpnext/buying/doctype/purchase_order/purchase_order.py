@@ -111,7 +111,7 @@ class PurchaseOrder(BuyingController):
 		material_request: DF.Link | None
 		material_request_date: DF.Link | None
 		material_requst: DF.Link | None
-		n_series: DF.Literal["", "Consumables", "Fixed Asset", "Sales Product", "Spare Parts", "Services Miscellaneous", "Services Works", "Construction Materials"]
+		n_series: DF.Literal["", "None", "Consumables", "Fixed Asset", "Sales Product", "Spare Parts", "Services Miscellaneous", "Services Works", "Construction Materials"]
 		naming_series: DF.Literal["PUR-ORD-.YYYY.-"]
 		net_total: DF.Currency
 		order_confirmation_date: DF.Date | None
@@ -1044,6 +1044,36 @@ def make_subcontracting_order(source_name, target_doc=None, save=False, submit=F
 			)
 
 	return target_doc
+@frappe.whitelist()
+def get_tasks_by_project(doctype, txt, searchfield, start, page_len, filters):
+    """
+    Returns Task list for a given Project (for Link field query).
+    Arguments passed automatically by Frappe:
+        doctype, txt, searchfield, start, page_len, filters
+    """
+    # Convert filters from JSON string to dict if needed
+    if isinstance(filters, str):
+        filters = json.loads(filters)
+
+    project = filters.get("project") if filters else None
+
+    if not project:
+        return []
+
+    # Get tasks linked to the selected project
+    tasks = frappe.get_all(
+        "Task",
+        filters={
+            "project": project,
+            "status": ["not in", ["Completed", "Cancelled"]]
+        },
+        fields=["name", "subject"],
+        limit_start=start,
+        limit_page_length=page_len
+    )
+
+    # Return the format expected by Link field queries
+    return [(t["name"], t["subject"]) for t in tasks]
 
 
 def get_mapped_subcontracting_order(source_name, target_doc=None):

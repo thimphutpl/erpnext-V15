@@ -51,7 +51,7 @@ frappe.ui.form.on("Purchase Order", {
 				filters: { company: doc.company },
 			};
 		});
-		if(frm.doc.__islocal){
+		if (frm.doc.__islocal) {
 			frm.set_value("disable_rounded_total", 1);
 			frm.refresh_field("disable_rounded_total");
 		}
@@ -153,10 +153,10 @@ frappe.ui.form.on("Purchase Order", {
 			},
 		});
 	},
-	
-	cost_center:function(frm){
-		if (frm.doc.cost_center){
-			frm.doc.items.map(v=>{
+
+	cost_center: function (frm) {
+		if (frm.doc.cost_center) {
+			frm.doc.items.map(v => {
 				v.cost_center = frm.doc.cost_center
 			})
 		}
@@ -168,68 +168,68 @@ frappe.ui.form.on("Purchase Order", {
 				fieldname: "warehouse",
 				filters: { name: frm.doc.cost_center },
 			},
-			callback: function(r, rt) {
-				if(r.message.warehouse) {
-					frm.doc.items.map(v=>{
+			callback: function (r, rt) {
+				if (r.message.warehouse) {
+					frm.doc.items.map(v => {
 						v.warehouse = r.message.warehouse
 					})
-				}else{
+				} else {
 					frappe.throw(__('Warehouse not define in this Cost Center'))
 				}
 			}
 		});
 	},
 
-	freight_insurance_charges: function(frm) {
+	freight_insurance_charges: function (frm) {
 		calculate_discount(frm)
 	},
 
-	discount: function(frm) {
+	discount: function (frm) {
 		calculate_discount(frm)
 	},
 
-	other_charges: function(frm) {
+	other_charges: function (frm) {
 		calculate_discount(frm)
 	},
 
-	tax: function(frm) {
+	tax: function (frm) {
 		calculate_discount(frm)
 	},
 });
 
 function calculate_discount(frm) {
 	console.log(frm.doc.freight_insurance_charges + frm.doc.other_charges - frm.doc.discount);
-	frm.set_value("total_add_ded", flt(frm.doc.freight_insurance_charges + frm.doc.other_charges + frm.doc.tax - frm.doc.discount)??0);
-	frm.set_value("discount_amount", flt(-frm.doc.freight_insurance_charges - frm.doc.other_charges - frm.doc.tax + frm.doc.discount)??0);
+	frm.set_value("total_add_ded", flt(frm.doc.freight_insurance_charges + frm.doc.other_charges + frm.doc.tax - frm.doc.discount) ?? 0);
+	frm.set_value("discount_amount", flt(-frm.doc.freight_insurance_charges - frm.doc.other_charges - frm.doc.tax + frm.doc.discount) ?? 0);
 	frm.refresh_field("discount_amount");
 	frm.refresh_field("total_add_ded");
 }
 
 frappe.ui.form.on("Purchase Order Item", {
-	refresh: function(frm, cdt, cdn){
+	refresh: function (frm, cdt, cdn) {
 		var i = locals[cdt][cdn];
 		frappe.call({
-			method:'frappe.client.get_value',
-			args:{
-				'doctype':'Item',
-				fieldname:"is_fixed_asset",
+			method: 'frappe.client.get_value',
+			args: {
+				'doctype': 'Item',
+				fieldname: "is_fixed_asset",
 				filters: {
 					"name": i.name
 				}
 			},
-			callback:(r)=>{
-				if(r.message.is_fixed_asset){
+			callback: (r) => {
+				if (r.message.is_fixed_asset) {
 					frm.toggle_display(['brand', 'model'], r.message.is_fixed_asset);
 				}
-				else{
-					frm.toggle_display(['brand', 'model'], 0);	
+				else {
+					frm.toggle_display(['brand', 'model'], 0);
 				}
 			}
 		})
 		frm.refresh_fields();
 	},
-	items_add: function(frm, cdt, cdn){
-		if (frm.doc.cost_center){
+	items_add: function (frm, cdt, cdn) {
+		if (frm.doc.cost_center) {
 			frappe.model.set_value(cdt, cdn, "cost_center", frm.doc.cost_center)
 		}
 
@@ -240,10 +240,10 @@ frappe.ui.form.on("Purchase Order Item", {
 				fieldname: "warehouse",
 				filters: { name: frm.doc.cost_center },
 			},
-			callback: function(r, rt) {
-				if(r.message.warehouse) {
+			callback: function (r, rt) {
+				if (r.message.warehouse) {
 					frappe.model.set_value("warehouse", r.message.warehouse)
-				}else{
+				} else {
 					frappe.throw(__('Warehouse not define in this Cost Center'))
 				}
 			}
@@ -264,22 +264,22 @@ frappe.ui.form.on("Purchase Order Item", {
 	item_code: async function (frm, cdt, cdn) {
 		var i = locals[cdt][cdn];
 		frappe.call({
-			method:'frappe.client.get_value',
-			args:{
-				'doctype':'Item',
-				fieldname:"is_fixed_asset",
+			method: 'frappe.client.get_value',
+			args: {
+				'doctype': 'Item',
+				fieldname: "is_fixed_asset",
 				filters: {
 					"name": i.name
 				}
 			},
-			callback:(r)=>{
-				if(r.message.is_fixed_asset){
+			callback: (r) => {
+				if (r.message.is_fixed_asset) {
 					console.log("here")
 					frm.toggle_display(['brand', 'model'], r.message.is_fixed_asset);
 				}
-				else{
+				else {
 					frm.toggle_display(['brand', 'model'], 0);
-					
+
 				}
 			}
 		})
@@ -330,7 +330,7 @@ frappe.ui.form.on("Purchase Order Item", {
 			}
 		}
 	},
-	cost_center:function(frm, cdt, cdn){
+	cost_center: function (frm, cdt, cdn) {
 		frappe.call({
 			method: "frappe.client.get_value",
 			args: {
@@ -338,10 +338,10 @@ frappe.ui.form.on("Purchase Order Item", {
 				fieldname: "warehouse",
 				filters: { name: frm.doc.cost_center },
 			},
-			callback: function(r, rt) {
-				if(r.message.warehouse) {
+			callback: function (r, rt) {
+				if (r.message.warehouse) {
 					frappe.model.set_value("warehouse", r.message.warehouse)
-				}else{
+				} else {
 					frappe.throw(__('Warehouse not define in this Cost Center'))
 				}
 			}
@@ -567,7 +567,7 @@ erpnext.buying.PurchaseOrderController = class PurchaseOrderController extends (
 		} else if (doc.docstatus === 0) {
 			cur_frm.cscript.add_from_mappers();
 		}
-	}d
+	} d
 
 	get_items_from_open_material_requests() {
 		erpnext.utils.map_current_doc({
@@ -743,12 +743,12 @@ erpnext.buying.PurchaseOrderController = class PurchaseOrderController extends (
 
 									frappe.msgprint(
 										"Assigning " +
-											d.mr_name +
-											" to " +
-											d.item_code +
-											" (row " +
-											me.frm.doc.items[i].idx +
-											")"
+										d.mr_name +
+										" to " +
+										d.item_code +
+										" (row " +
+										me.frm.doc.items[i].idx +
+										")"
 									);
 									if (qty > 0) {
 										frappe.msgprint("Splitting " + qty + " units of " + d.item_code);
@@ -875,6 +875,18 @@ cur_frm.fields_dict["items"].grid.get_field("project").get_query = function (doc
 		filters: [["Project", "status", "not in", "Completed, Cancelled"]],
 	};
 };
+// Filter Task Link field based on Project in the same row
+cur_frm.fields_dict["items"].grid.get_field("task").get_query = function (doc, cdt, cdn) {
+	var child = locals[cdt][cdn];
+
+	return {
+		query: "erpnext.buying.doctype.purchase_order.purchase_order.get_tasks_by_project",
+		filters: {
+			project: child.project
+		}
+	};
+};
+
 
 if (cur_frm.doc.is_old_subcontracting_flow) {
 	cur_frm.fields_dict["items"].grid.get_field("bom").get_query = function (doc, cdt, cdn) {
