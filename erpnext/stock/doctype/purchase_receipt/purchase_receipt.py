@@ -2,6 +2,7 @@
 # License: GNU General Public License v3. See license.txt
 
 
+import json
 import frappe
 from frappe import _, throw
 from frappe.desk.notifications import clear_doctype_notifications
@@ -86,7 +87,7 @@ class PurchaseReceipt(BuyingController):
 		lr_no: DF.Data | None
 		material_request: DF.Link | None
 		material_request_date: DF.Date | None
-		n_series: DF.Literal["", "Consumables", "Fixed Asset", "Sales Product", "Spare Parts", "Services Miscellaneous", "Services Works", "Construction Materials"]
+		n_series: DF.Literal["", "None", "Consumables", "Fixed Asset", "Sales Product", "Spare Parts", "Services Miscellaneous", "Services Works", "Construction Materials"]
 		named_place: DF.Data | None
 		naming_series: DF.Literal["MAT-PRE-.YYYY.-"]
 		net_total: DF.Currency
@@ -1294,7 +1295,36 @@ def get_item_wise_returned_qty(pr_doc):
 		)
 	)
 
+@frappe.whitelist()
+def get_tasks_by_project(doctype, txt, searchfield, start, page_len, filters):
+    """
+    Returns Task list for a given Project (for Link field query).
+    Arguments passed automatically by Frappe:
+        doctype, txt, searchfield, start, page_len, filters
+    """
+    # Convert filters from JSON string to dict if needed
+    if isinstance(filters, str):
+        filters = json.loads(filters)
 
+    project = filters.get("project") if filters else None
+
+    if not project:
+        return []
+
+    # Get tasks linked to the selected project
+    tasks = frappe.get_all(
+        "Task",
+        filters={
+            "project": project,
+            "status": ["not in", ["Completed", "Cancelled"]]
+        },
+        fields=["name", "subject"],
+        limit_start=start,
+        limit_page_length=page_len
+    )
+
+    # Return the format expected by Link field queries
+    return [(t["name"], t["subject"]) for t in tasks]
 @frappe.whitelist()
 def make_purchase_invoice(source_name, target_doc=None, args=None):
 	from erpnext.accounts.party import get_payment_terms_template
@@ -1322,16 +1352,16 @@ def make_purchase_invoice(source_name, target_doc=None, args=None):
 				delivery_date = dd.schedule_date
 		if len(delivery_dates) != len(set(delivery_dates)):
 			frappe.throw("Multiple delivery dates in Items Table. Same delivery date required to calculate LD days")
-		if delivery_date:
-			if source.actual_receipt_date > delivery_date:
-				ld_days = date_diff(source.actual_receipt_date, delivery_date)
-				target.ld_days = ld_days
-				target.ld_days = flt(ld_days)
-				if flt(ld_days) < 100:
-					target.write_off_amount = flt((flt(ld_days)/100)*0.1 * flt(source.grand_total),2)
-				else:
-					target.write_off_amount = flt((0.1) * flt(source.grand_total),2)
-				target.write_off_account = frappe.db.get_value("Company", source.company, "write_off_account")
+		# if delivery_date:
+		# 	if source.actual_receipt_date > delivery_date:
+		# 		ld_days = date_diff(source.actual_receipt_date, delivery_date)
+		# 		target.ld_days = ld_days
+		# 		target.ld_days = flt(ld_days)
+		# 		if flt(ld_days) < 100:
+		# 			target.write_off_amount = flt((flt(ld_days)/100)*0.1 * flt(source.grand_total),2)
+		# 		else:
+		# 			target.write_off_amount = flt((0.1) * flt(source.grand_total),2)
+		# 		target.write_off_account = frappe.db.get_value("Company", source.company, "write_off_account")
 		doc.run_method("calculate_taxes_and_totals")
 		doc.set_payment_schedule()
 

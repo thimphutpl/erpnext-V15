@@ -1138,8 +1138,7 @@
    "fieldname": "task",
    "fieldtype": "Link",
    "label": "Task",
-   "options": "Task",
-   "read_only": 1
+   "options": "Task"
   },
   {
    "fieldname": "model",
@@ -1150,7 +1149,7 @@
  "idx": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-05-29 10:46:37.081200",
+ "modified": "2026-02-11 22:38:43.707905",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Purchase Receipt Item",
