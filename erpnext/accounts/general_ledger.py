@@ -393,11 +393,17 @@ def make_entry(args, adv_adj, update_outstanding, from_repost=False):
 				validate_expense_against_budget(args)
 				cc_doc = frappe.get_doc("Cost Center", args.cost_center)
 				budget_cost_center = cc_doc.budget_cost_center if cc_doc.use_budget_from_parent else args.cost_center
+				budget_type = frappe.db.get_value(
+						"Account",
+						args.account,
+						["budget_type"]
+						)
 				if not args.is_cancelled:
 					#Commit Budget
 					bud_obj = frappe.get_doc({
 						"doctype": "Committed Budget",
 						"account": args.account,
+						"budget_type":budget_type,
 						"cost_center": budget_cost_center,
 						"committed_cost_center": args.cost_center,
 						"project": args.project,

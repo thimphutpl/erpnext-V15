@@ -48,39 +48,39 @@ frappe.query_reports["Budget Consumption Report"] = {
 			"label": __("Parent Cost Center"),
 			"fieldtype": "Link",
 			"options": "Cost Center",
-			"reqd":1,
-			"get_query": function() {
-				var company = frappe.query_report.get_filter_value('company');
-				return {'filters': [
-					['Cost Center', 'disabled', '!=', '1'],
-					['Cost Center', 'is_group', '=', '1'],
-					['Cost Center', 'company', '=', company]
-				]
-			}},
+			"reqd":0,
+			// "get_query": function() {
+			// 	var company = frappe.query_report.get_filter_value('company');
+			// 	return {'filters': [
+			// 		['Cost Center', 'disabled', '!=', '1'],
+			// 		['Cost Center', 'is_group', '=', '1'],
+			// 		['Cost Center', 'company', '=', company]
+			// 	]
+			// }},
 		},
 		{
 			"fieldname": "branch_cost_center",
 			"label": __("Cost Center"),
 			"fieldtype": "Link",
 			"options": "Cost Center",
-			"get_query": function() {
-				var cost_center = frappe.query_report.get_filter_value('cost_center');
-				return {'filters': [['Cost Center', 'disabled', '!=', '1'],['Cost Center', 'parent_cost_center', '=', cost_center]]}
-			},
+			// "get_query": function() {
+			// 	var cost_center = frappe.query_report.get_filter_value('cost_center');
+			// 	return {'filters': [['Cost Center', 'disabled', '!=', '1'],['Cost Center', 'parent_cost_center', '=', cost_center]]}
+			// },
 		},
-		{
-			"fieldname": "business_activity",
-			"label": __("Business Activity"),
-			"fieldtype": "Link",
-			"options": "Business Activity",
-			"reqd":1,
-			"get_query": function() {
-				var company = frappe.query_report.get_filter_value('company');
-				return {'filters': [
-					['Business Activity', 'company', '=', company]
-				]
-			}},
-		},
+		// {
+		// 	"fieldname": "business_activity",
+		// 	"label": __("Business Activity"),
+		// 	"fieldtype": "Link",
+		// 	"options": "Business Activity",
+		// 	"reqd":1,
+		// 	"get_query": function() {
+		// 		var company = frappe.query_report.get_filter_value('company');
+		// 		return {'filters': [
+		// 			['Business Activity', 'company', '=', company]
+		// 		]
+		// 	}},
+		// },
 		{
 			"fieldname": "group_by_account",
 			"label": __("Group By Account"),
@@ -94,8 +94,8 @@ frappe.query_reports["Budget Consumption Report"] = {
 			frappe.route_options = {
 				"company": filters.company,
 				"cost_center": filters.cost_center,
-				"branch_cost_center": filters.branch_cost_center,
-				"business_activity": filters.business_activity,
+				"branch_cost_center": filters.branch_cost_center
+				// "business_activity": filters.business_activity,
 			};
 			frappe.set_route('query-report', 'Detailed Budget Consumption Report');
 		});

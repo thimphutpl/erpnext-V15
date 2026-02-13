@@ -7,6 +7,7 @@
  "engine": "InnoDB",
  "field_order": [
   "account",
+  "budget_type",
   "cost_center",
   "project",
   "reference_type",
@@ -111,13 +112,20 @@
    "fieldtype": "Link",
    "label": "Consumed Budget Cost Center",
    "options": "Cost Center"
+  },
+  {
+   "fetch_from": "account.budget_type",
+   "fieldname": "budget_type",
+   "fieldtype": "Link",
+   "label": "Budget Type",
+   "options": "Budget Type"
   }
  ],
  "in_create": 1,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-05-27 16:02:33.160144",
+ "modified": "2026-02-04 22:34:44.816925",
  "modified_by": "Administrator",
  "module": "Budget",
  "name": "Consumed Budget",

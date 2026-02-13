@@ -21,6 +21,42 @@ class DuplicateBudgetError(frappe.ValidationError):
 
 
 class Budget(Document):
+	# begin: auto-generated types
+	# This code is auto-generated. Do not modify anything in this block.
+
+	from typing import TYPE_CHECKING
+
+	if TYPE_CHECKING:
+		from erpnext.budget.doctype.budget_account.budget_account import BudgetAccount
+		from frappe.types import DF
+
+		accounts: DF.Table[BudgetAccount]
+		action_if_accumulated_monthly_budget_exceeded: DF.Literal["", "Stop", "Warn", "Ignore"]
+		action_if_accumulated_monthly_budget_exceeded_on_mr: DF.Literal["", "Stop", "Warn", "Ignore"]
+		action_if_accumulated_monthly_budget_exceeded_on_po: DF.Literal["", "Stop", "Warn", "Ignore"]
+		action_if_annual_budget_exceeded: DF.Literal["", "Stop", "Warn", "Ignore"]
+		action_if_annual_budget_exceeded_on_mr: DF.Literal["", "Stop", "Warn", "Ignore"]
+		action_if_annual_budget_exceeded_on_po: DF.Literal["", "Stop", "Warn", "Ignore"]
+		actual_total: DF.Currency
+		amended_from: DF.Link | None
+		applicable_on_booking_actual_expenses: DF.Check
+		applicable_on_material_request: DF.Check
+		applicable_on_purchase_order: DF.Check
+		budget_against: DF.Literal["", "Cost Center", "Project"]
+		budget_type: DF.Link | None
+		business_activity: DF.Link | None
+		capex_total: DF.Currency
+		company: DF.Link
+		cost_center: DF.Link | None
+		deviation: DF.Percent
+		fiscal_year: DF.Link
+		initial_total: DF.Currency
+		monthly_distribution: DF.Link | None
+		opex_type: DF.Currency
+		project: DF.Link | None
+		project_name: DF.Data | None
+		supp_total: DF.Currency
+	# end: auto-generated types
 	""" def autoname(self):
 		self.name = make_autoname(
 			#self.get(frappe.scrub(self.budget_against)) + "/" + self.fiscal_year + "/.###"
@@ -135,40 +171,97 @@ class Budget(Document):
 			self.supp_total = total_supplementary
 
 	@frappe.whitelist()
+	# def get_accounts(self):
+	# 	condition = " and a.budget_type = '{}'".format(self.budget_type) if self.budget_type else ""
+	# 	entries = frappe.db.sql("""select parent_account, a.name as account, a.budget_type
+	# 						from tabAccount a
+	# 						where a.is_group = 0
+	# 						and (a.freeze_account is null or a.freeze_account != 'Yes')
+	# 						and (a.centralized_budget = 0 or (a.centralized_budget =1 and a.cost_center='{cost_center}'))
+	# 					  	and a.company = %(company)s
+	# 						and NOT EXISTS( select 1
+	# 							from `tabBudget` b 
+	# 							inner join `tabBudget Account` i
+	# 							on b.name = i.parent
+	# 							where  b.docstatus != 2
+	# 							and i.account = a.name
+	# 							and b.cost_center = '{cost_center}'
+	# 							and b.fiscal_year = '{fiscal_year}'
+	# 							and b.name != '{name}'
+	# 						)
+	# 						and EXISTS(select 1 
+	# 											from `tabBudget Settings Account Types` s
+	# 											where s.parent = 'Budget Settings'
+	# 											and s.account_type = a.account_type)
+	# 						{condition}
+	# 					""".format(fiscal_year =self.fiscal_year, cost_center=self.cost_center,  name=self.name, condition = condition),(company=self.company) as_dict=True)
+	# 	self.set('accounts', [])
+	# 	p_account = ""
+	# 	for d in entries:
+	# 		d.initial_budget = 0
+	# 		if d.parent_account == p_account:
+	# 			d.parent_account = ""
+	# 		else:
+	# 			p_account = d.parent_account
+	# 		row = self.append('accounts', {})
+	# 		row.update(d)
 	def get_accounts(self):
-		condition = " and a.budget_type = '{}'".format(self.budget_type) if self.budget_type else ""
-		entries = frappe.db.sql("""select parent_account, a.name as account, a.budget_type
-							from tabAccount a
-							where a.is_group = 0
-							and (a.freeze_account is null or a.freeze_account != 'Yes')
-							and (a.centralized_budget = 0 or (a.centralized_budget =1 and a.cost_center='{cost_center}'))
-						  	and a.company = '{company}'
-							and NOT EXISTS( select 1
-								from `tabBudget` b 
-								inner join `tabBudget Account` i
-								on b.name = i.parent
-								where  b.docstatus != 2
-								and i.account = a.name
-								and b.cost_center = '{cost_center}'
-								and b.fiscal_year = '{fiscal_year}'
-								and b.name != '{name}'
-							)
-							and EXISTS(select 1 
-												from `tabBudget Settings Account Types` s
-												where s.parent = 'Budget Settings'
-												and s.account_type = a.account_type)
-							{condition}
-						""".format(fiscal_year =self.fiscal_year, cost_center=self.cost_center, company=self.company, name=self.name, condition = condition), as_dict=True)
+		# Prepare the budget_type condition
+		condition = ""
+		if self.budget_type:
+			condition = " AND a.budget_type = %(budget_type)s"
+
+		# Fetch accounts using parameterized query safely
+		entries = frappe.db.sql("""
+			SELECT 
+				parent_account,
+				a.name AS account,
+				a.budget_type
+			FROM tabAccount a
+			WHERE a.is_group = 0
+			AND (a.freeze_account IS NULL OR a.freeze_account != 'Yes')
+			AND (a.is_centralized_budget = 0 OR (a.is_centralized_budget = 1 AND a.cost_center = %(cost_center)s))
+			AND a.company = %(company)s
+			AND NOT EXISTS (
+				SELECT 1
+				FROM `tabBudget` b
+				INNER JOIN `tabBudget Account` i ON b.name = i.parent
+				WHERE b.docstatus != 2
+					AND i.account = a.name
+					AND b.cost_center = %(cost_center)s
+					AND b.fiscal_year = %(fiscal_year)s
+					AND b.name != %(name)s
+			)
+			AND EXISTS (
+				SELECT 1
+				FROM `tabBudget Settings Account Types` s
+				WHERE s.parent = 'Budget Settings'
+					AND s.account_type = a.account_type
+			)
+			{condition}
+		""".format(condition=condition), {
+			"company": self.company,
+			"cost_center": self.cost_center,
+			"fiscal_year": self.fiscal_year,
+			"name": self.name,
+			"budget_type": self.budget_type
+		}, as_dict=True)
+
+		# Clear existing accounts table
 		self.set('accounts', [])
+
+		# Add fetched accounts, avoiding repeated parent_account display
 		p_account = ""
 		for d in entries:
-			d.initial_budget = 0
-			if d.parent_account == p_account:
-				d.parent_account = ""
+			d['initial_budget'] = 0
+			if d['parent_account'] == p_account:
+				d['parent_account'] = ""
 			else:
-				p_account = d.parent_account
+				p_account = d['parent_account']
+
 			row = self.append('accounts', {})
 			row.update(d)
+
 
 def committed_consumed_budget(reference=None, reference_no=None):
 	if reference and reference_no:
@@ -222,8 +315,8 @@ def validate_expense_against_budget(args):
 			#Check Budget Cost for child cost centers
 			cc_doc = frappe.get_doc("Cost Center", args.cost_center)
 			budget_cost_center = cc_doc.budget_cost_center if cc_doc.use_budget_from_parent else args.cost_center
-			
-			condition = " and b.business_activity = '{}'".format(args.business_activity) #added by Jai 23 April, 2023
+			condition = " and 1 = 1"
+			# condition = " and b.business_activity = '{}'".format(args.business_activity) #added by Jai 23 April, 2023
 			if args.project:
 				condition += " and b.project = '{}'".format(args.project)
 			else:
@@ -239,6 +332,8 @@ def validate_expense_against_budget(args):
 			args.is_tree = False
 			args.committed_cost_center = args.cost_center
 			args.cost_center = budget_cost_center
+
+			# frappe.throw(str(args.fiscal_year))
 			
 			budget_records = frappe.db.sql(
 				"""
@@ -272,6 +367,7 @@ def validate_expense_against_budget(args):
 	commit_budget(args)
 
 def validate_budget_records(args, budget_records):
+	# frappe.throw(str(budget_records))
 	for budget in budget_records:
 		amount = get_amount(args, budget)
 		yearly_action, monthly_action = get_actions(args, budget)
@@ -325,31 +421,116 @@ def compare_expense_with_budget(args, budget_amount, action_for, action, budget_
 		if frappe.db.get_single_value("Budget Settings","allow_budget_deviation"):
 			deviation_percent = frappe.db.get_single_value("Budget Settings","deviation")
 			if deviation_percent > 0:
-				budget_amount = budget_amount  + (deviation_percent*budget_amount)/100	
-	if total_expense_amount > budget_amount:
-		diff = total_expense_amount - budget_amount
-		currency = frappe.get_cached_value("Company", args.company, "default_currency")
-
-		msg = _("{0} Budget for Account {1} against {2} {3} and Business Activity {6} is {4}. It will exceed by {5}").format(
-			_(action_for),
-			frappe.bold(args.account),
-			args.budget_against_field,
-			frappe.bold(budget_against),
-			frappe.bold(fmt_money(budget_amount, currency=currency)),
-			frappe.bold(fmt_money(diff, currency=currency)),
-			frappe.bold(args.business_activity),
+				budget_amount = budget_amount  + (deviation_percent*budget_amount)/100
+	
+	budget_check_on = frappe.get_value(
+			"Company",
+			{"name": args.company},
+			"budget_check_on"
 		)
+	
+	if budget_check_on == 'Budget Type Wise':
+		
+		budget_type, company = frappe.db.get_value(
+        "Account",
+        args.account,
+        ["budget_type", "company"]
+   		 )
 
-		if (
-			frappe.flags.exception_approver_role
-			and frappe.flags.exception_approver_role in frappe.get_roles(frappe.session.user)
-		):
-			action = "Warn"
+	
+		# total_capex_or_opex = frappe.db.sql('''
+		# 	SELECT sum(ba.budget_amount),
+		# 	ba.budget_type FROM `tabBudget` b, 
+		# 	`tabBudget Account` ba WHERE b.name = ba.parent   
+		# 	AND b.fiscal_year = %s and b.company='{}'   
+		# 	AND b.docstatus = 1 and ba.budget_type='{}' 
+		# 	group by ba.budget_type;
+		# ''',(args.company).format(args.fiscal_year,budget_type))
+		total_capex_or_opex = frappe.db.sql("""
+			SELECT SUM(ba.budget_amount) AS consumed,
+				ba.budget_type
+			FROM `tabBudget` b
+			INNER JOIN `tabBudget Account` ba ON b.name = ba.parent
+			WHERE b.fiscal_year = %s
+			AND b.company = %s
+			AND b.docstatus = 1
+			AND ba.budget_type = %s
+			GROUP BY ba.budget_type
+		""", (args.fiscal_year, args.company, budget_type))
+		
+		
 
-		if action == "Stop":
-			frappe.throw(msg, BudgetError)
+		from_date , to_date = frappe.db.get_value("Fiscal Year",args.fiscal_year,['year_start_date','year_end_date'])
+		
+		# frappe.throw('''
+		# select amount from `tabConsumed Budget` 
+		# where company='{}' and budget_type='{}' and
+		# reference_date between '{}' and '{}'
+		# '''.format(args.company,budget_type,from_date,to_date))
+
+		# commited_amount = frappe.db.sql('''
+		# select sum(amount) from `tabConsumed Budget` 
+		# where company='{}' and budget_type='{}' and
+		# reference_date between '{}' and '{}'
+		# '''.format(args.company,budget_type,from_date,to_date))
+		committed_amount = frappe.db.sql(
+			"""
+			SELECT SUM(amount)
+			FROM `tabConsumed Budget`
+			WHERE company = %s
+			AND budget_type = %s
+			AND reference_date BETWEEN %s AND %s
+			""",
+			(args.company, budget_type, from_date, to_date)
+		)
+		if committed_amount[0][0]:
+			commit_amount = committed_amount[0][0]
 		else:
-			frappe.msgprint(msg, indicator="orange")
+			commit_amount = 0
+
+		
+
+
+
+		# budget = flt(total_capex_or_opex[0][0]) - commited_amount[0][0]
+		# frappe.throw(str(total_expense_amount))
+		total_expense_amount= 0
+		total_expense_amount = actual_expense + commit_amount
+		budget = flt(total_capex_or_opex[0][0])
+		# frappe.throw(frappe.as_json(budget))
+		# frappe.throw(str(total_expense_amount))
+
+		
+		if total_expense_amount > budget:
+			frappe.throw("Budget is {} and total_expense_amount adding to {}".format(budget,total_expense_amount))
+
+		# frappe.throw(frappe.as_json(total_capex_or_opex[0][0]))
+		
+	else:
+		if total_expense_amount > budget_amount:
+			diff = total_expense_amount - budget_amount
+			currency = frappe.get_cached_value("Company", args.company, "default_currency")
+
+			msg = _("{0} Budget for Account {1} against {2} {3} and Business Activity {6} is {4}. It will exceed by {5}").format(
+				_(action_for),
+				frappe.bold(args.account),
+				args.budget_against_field,
+				frappe.bold(budget_against),
+				frappe.bold(fmt_money(budget_amount, currency=currency)),
+				frappe.bold(fmt_money(diff, currency=currency)),
+				frappe.bold(args.business_activity),
+			)
+
+			if (
+				frappe.flags.exception_approver_role
+				and frappe.flags.exception_approver_role in frappe.get_roles(frappe.session.user)
+			):
+				action = "Warn"
+
+			if action == "Stop":
+				frappe.throw(msg, BudgetError)
+			else:
+				frappe.msgprint(msg, indicator="orange")
 
 def commit_budget(args):
 	if frappe.db.get_single_value("Budget Settings", "budget_commit_on") == args.doctype and args.amount > 0:

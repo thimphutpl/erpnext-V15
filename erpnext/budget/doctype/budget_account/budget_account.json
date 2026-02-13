@@ -8,6 +8,7 @@
   "parent_account",
   "account",
   "budget_type",
+  "remarks",
   "column_break_4",
   "budget_check",
   "initial_budget",
@@ -51,7 +52,8 @@
    "fieldtype": "Link",
    "label": "Budget Type",
    "options": "Budget Type",
-   "read_only": 1
+   "read_only": 1,
+   "reqd": 1
   },
   {
    "fieldname": "initial_budget",
@@ -104,11 +106,16 @@
    "fieldtype": "Select",
    "label": "Budget Check",
    "options": "Stop\nIgnore"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Small Text",
+   "label": "Remarks"
   }
  ],
  "istable": 1,
  "links": [],
- "modified": "2023-01-31 12:27:14.481757",
+ "modified": "2026-02-10 17:24:15.467692",
  "modified_by": "Administrator",
  "module": "Budget",
  "name": "Budget Account",
