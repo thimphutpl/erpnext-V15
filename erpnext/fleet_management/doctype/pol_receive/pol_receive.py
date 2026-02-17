@@ -66,8 +66,9 @@ class POLReceive(StockController):
 
 	def validate(self):
 		check_future_date(self.posting_date)
+		self.validate_advance()
 		self.set_allocated_amount()
-
+		self.validate_equipment_and_branch()
 
 	def on_submit(self):
 		self.update_pol_advance()
@@ -97,9 +98,9 @@ class POLReceive(StockController):
 		# )
 
 
-	def before_save(self):
-		if not self.advances:
-			frappe.throw("Advanced for POL is needed for the equipment", self.equipment)   
+	# def before_save(self):
+	# 	if not self.advances:
+	# 		frappe.throw("Advanced for POL is needed for the equipment", self.equipment)   
 
 
 	def update_pol_advance(self, cancel=False):
@@ -125,6 +126,22 @@ class POLReceive(StockController):
 				doc.od_balance = flt(doc.od_balance) + flt(od)
 				doc.save(ignore_permissions = True)
 
+	def validate_equipment_and_branch(self):
+		equipment_doc = frappe.get_doc("Equipment", self.equipment)
+		if self.branch != equipment_doc.branch:
+			frappe.throw("Equipment's branch and Branch do not match")   
+
+	def validate_advance(self):
+		if not self.get('advances'):
+			frappe.throw("POL Advance not found for select branch and equipment")
+		
+		valid_advances = [
+			d for d in self.advances
+			if flt(d.balance_amount) > 0
+		]
+
+		if not valid_advances:
+			frappe.throw("Balance amount must be greater than zero")
 
 	def set_allocated_amount(self):
 		total_allocated = 0.0
@@ -142,10 +159,10 @@ class POLReceive(StockController):
 					total_allocated += flt(d.allocated_amount)
 					allocated_amount = flt(allocated_amount) - flt(d.balance_amount)
 			# frappe.throw(balance)
-			if self.total_amount > balance:
+			if flt(self.total_amount, 2) > balance:
 				frappe.throw("Total amount is more than balance amount")
 		self.total_allocated_amount = flt(total_allocated)
-		if flt(self.total_amount) > flt(self.total_allocated_amount):
+		if flt(self.total_amount, 2) > flt(self.total_allocated_amount):
 			self.od_amount = flt(self.total_amount) - flt(self.total_allocated_amount)
 
 
@@ -255,7 +272,7 @@ class POLReceive(StockController):
 		
 	@frappe.whitelist()
 	def get_pol_advance(self):
-		# self.set("advances", [])
+		self.set("advances", [])
 		
 		Advance = frappe.qb.DocType("POL Advance")
 		if not self.for_machineries:
