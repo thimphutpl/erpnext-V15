@@ -203,9 +203,9 @@ erpnext.accounts.SalesInvoiceController = class SalesInvoiceController extends (
 		doc.items.forEach((row) => {
 			if (row.delivery_note) frappe.model.clear_doc("Delivery Note", row.delivery_note);
 		});
-		 setTimeout(function() {
-        location.reload(); // Full page reload
-    }, 1000)
+		setTimeout(function () {
+			location.reload(); // Full page reload
+		}, 1000)
 	}
 
 	set_default_print_format() {
@@ -766,7 +766,7 @@ frappe.ui.form.on("Sales Invoice", {
 				},
 			};
 		};
-		 
+
 
 		// set get_query for loyalty redemption cost center
 		frm.fields_dict["loyalty_redemption_cost_center"].get_query = function () {
@@ -997,7 +997,7 @@ frappe.ui.form.on("Sales Invoice", {
 	},
 
 	refresh: function (frm) {
-		
+
 		if (frm.doc.docstatus === 0 && !frm.doc.is_return) {
 			frm.add_custom_button(__("Fetch Timesheet"), function () {
 				let d = new frappe.ui.Dialog({
@@ -1053,7 +1053,7 @@ frappe.ui.form.on("Sales Invoice", {
 			frm: frm,
 		});
 	},
-	
+
 
 	create_dunning: function (frm) {
 		frappe.model.open_mapped_doc({
@@ -1108,7 +1108,7 @@ var select_loyalty_program = function (frm, loyalty_programs) {
 				fieldname: "loyalty_program",
 				value: dialog.get_value("loyalty_program"),
 			},
-			callback: function (r) {},
+			callback: function (r) { },
 		});
 	});
 

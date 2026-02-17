@@ -46,12 +46,12 @@ class SalesInvoiceItem(Document):
 		discount_account: DF.Link | None
 		discount_amount: DF.Currency
 		discount_percentage: DF.Percent
-		distributed_discount_amount: DF.Currency
 		dn_detail: DF.Data | None
 		enable_deferred_revenue: DF.Check
 		expense_account: DF.Link | None
 		finance_book: DF.Link | None
 		grant_commission: DF.Check
+		gst_amount: DF.Currency
 		has_item_scanned: DF.Check
 		image: DF.Attach | None
 		income_account: DF.Link

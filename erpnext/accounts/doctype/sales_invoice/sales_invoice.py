@@ -1,7 +1,5 @@
 # Copyright (c) 2015, Frappe Technologies Pvt. Ltd. and Contributors
 # License: GNU General Public License v3. See license.txt
-
-
 import frappe
 from frappe import _, msgprint, throw
 from frappe.contacts.doctype.address.address import get_address_display
@@ -81,6 +79,8 @@ class SalesInvoice(SellingController):
 		base_paid_amount: DF.Currency
 		base_rounded_total: DF.Currency
 		base_rounding_adjustment: DF.Currency
+		base_taxes_and_charges_added: DF.Float
+		base_taxes_and_charges_deducted: DF.Float
 		base_total: DF.Currency
 		base_total_taxes_and_charges: DF.Currency
 		base_write_off_amount: DF.Currency
@@ -180,6 +180,8 @@ class SalesInvoice(SellingController):
 		tax_id: DF.Data | None
 		taxes: DF.Table[SalesTaxesandCharges]
 		taxes_and_charges: DF.Link | None
+		taxes_and_charges_added: DF.Float
+		taxes_and_charges_deducted: DF.Float
 		tc_name: DF.Link | None
 		terms: DF.TextEditor | None
 		territory: DF.Link | None
@@ -338,7 +340,7 @@ class SalesInvoice(SellingController):
 				
 				child.cost_center = self.cost_center
 				
-            #child.account_head = doc.parent_cost_center
+			#child.account_head = doc.parent_cost_center
 
 	def validate_accounts(self):
 		self.validate_write_off_account()
@@ -1220,7 +1222,7 @@ class SalesInvoice(SellingController):
 		self.make_internal_transfer_gl_entries(gl_entries)
 
 		self.make_item_gl_entries(gl_entries)
-		self.make_precision_loss_gl_entry(gl_entries)
+		# self.make_precision_loss_gl_entry(gl_entries)
 		self.make_discount_gl_entries(gl_entries)
 
 		gl_entries = make_regional_gl_entries(gl_entries, self)
@@ -1233,7 +1235,7 @@ class SalesInvoice(SellingController):
 
 		self.make_write_off_gl_entry(gl_entries)
 		self.make_gle_for_rounding_adjustment(gl_entries)
-		# frappe.throw(str(gl_entries))
+		# frappe.throw(frappe.as_json(gl_entries))
 		return gl_entries
 
 	def make_customer_gl_entry(self, gl_entries):
@@ -1248,7 +1250,7 @@ class SalesInvoice(SellingController):
 			else self.base_grand_total,
 			self.precision("base_grand_total"),
 		)
-
+		# frappe.throw(str(base_grand_total))
 		if grand_total and not self.is_internal_transfer():
 			against_voucher = self.name
 			if self.is_return and self.return_against and not self.update_outstanding_for_self:
@@ -1284,17 +1286,35 @@ class SalesInvoice(SellingController):
 
 		for tax in self.get("taxes"):
 			amount, base_amount = self.get_tax_amounts(tax, enable_discount_accounting)
-
-			if flt(tax.base_tax_amount_after_discount_amount):
+	   
+			if flt(tax.tax_amount):
 				account_currency = get_account_currency(tax.account_head)
-				# if tax.is_gst == 1:
-				gl_entries.append(
+				if tax.is_gst == 1:
+					gl_entries.append(
+						self.get_gl_dict(
+							{
+								"account": tax.account_head,
+								"against": self.customer,
+								"credit": flt(base_amount, tax.precision("tax_amount_after_discount_amount")),
+								"credit_in_account_currency": (
+									flt(base_amount, tax.precision("base_tax_amount_after_discount_amount"))
+									if account_currency == self.company_currency
+									else flt(amount, tax.precision("tax_amount_after_discount_amount"))
+								),
+								"cost_center": tax.cost_center,
+							},
+							account_currency,
+							item=tax,
+						)
+					)
+				else:
+					gl_entries.append(
 					self.get_gl_dict(
 						{
 							"account": tax.account_head,
 							"against": self.customer,
-							"credit": flt(base_amount, tax.precision("tax_amount_after_discount_amount")),
-							"credit_in_account_currency": (
+							"debit": flt(base_amount, tax.precision("tax_amount_after_discount_amount")),
+							"debit_in_account_currency": (
 								flt(base_amount, tax.precision("base_tax_amount_after_discount_amount"))
 								if account_currency == self.company_currency
 								else flt(amount, tax.precision("tax_amount_after_discount_amount"))
@@ -1305,6 +1325,7 @@ class SalesInvoice(SellingController):
 						item=tax,
 					)
 				)
+				
 	def make_internal_transfer_gl_entries(self, gl_entries):
 		if self.is_internal_transfer() and flt(self.base_total_taxes_and_charges):
 			account_currency = get_account_currency(self.unrealized_profit_loss_account)
@@ -1327,7 +1348,8 @@ class SalesInvoice(SellingController):
 		enable_discount_accounting = cint(
 			frappe.db.get_single_value("Selling Settings", "enable_discount_accounting")
 		)
-
+		total_amount = 0
+		total_base_amount = 0
 		for item in self.get("items"):
 			if flt(item.base_net_amount, item.precision("base_net_amount")):
 				# Do not book income for transfer within same company
@@ -1400,7 +1422,8 @@ class SalesInvoice(SellingController):
 					)
 
 					amount, base_amount = self.get_amount_and_base_amount(item, enable_discount_accounting)
-
+					# frappe.throw(f"Item: {item.item_code}, amount: {amount}, base_amount: {base_amount}, discount: {item.discount_amount}")
+					taxes = 0
 					account_currency = get_account_currency(income_account)
 					gl_entries.append(
 						self.get_gl_dict(
@@ -1420,6 +1443,7 @@ class SalesInvoice(SellingController):
 							item=item,
 						)
 					)
+		# frappe.throw(frappe.as_json(gl_entries))
 
 		# expense account gl entries
 		if cint(self.update_stock) and erpnext.is_perpetual_inventory_enabled(self.company):

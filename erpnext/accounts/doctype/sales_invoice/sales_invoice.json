@@ -72,8 +72,12 @@
   "taxes",
   "section_break_43",
   "base_total_taxes_and_charges",
+  "taxes_and_charges_added",
+  "taxes_and_charges_deducted",
   "column_break_47",
   "total_taxes_and_charges",
+  "base_taxes_and_charges_added",
+  "base_taxes_and_charges_deducted",
   "totals",
   "base_grand_total",
   "base_rounding_adjustment",
@@ -1077,6 +1081,7 @@
    "collapsible": 1,
    "fieldname": "section_break_49",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "hide_days": 1,
    "hide_seconds": 1,
    "label": "Additional Discount"
@@ -1983,8 +1988,7 @@
    "depends_on": "grand_total",
    "fieldname": "disable_rounded_total",
    "fieldtype": "Check",
-   "label": "Disable Rounded Total",
-   "read_only": 1
+   "label": "Disable Rounded Total"
   },
   {
    "allow_on_submit": 1,
@@ -2196,6 +2200,34 @@
    "print_hide": 1,
    "reqd": 1,
    "set_only_once": 1
+  },
+  {
+   "fieldname": "taxes_and_charges_added",
+   "fieldtype": "Float",
+   "label": "Taxes and Charges Added",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "taxes_and_charges_deducted",
+   "fieldtype": "Float",
+   "label": "Taxes and Charges Deducted",
+   "precision": "1",
+   "read_only": 1
+  },
+  {
+   "fieldname": "base_taxes_and_charges_added",
+   "fieldtype": "Float",
+   "label": "Taxes and Charges Added(Company Currency)",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "base_taxes_and_charges_deducted",
+   "fieldtype": "Float",
+   "label": "Taxes and Charges Deducted(Company Currency)",
+   "precision": "2",
+   "read_only": 1
   }
  ],
  "icon": "fa fa-file-text",
@@ -2208,7 +2240,7 @@
    "link_fieldname": "consolidated_invoice"
   }
  ],
- "modified": "2026-01-26 12:18:09.774456",
+ "modified": "2026-02-17 09:09:51.585471",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Sales Invoice",

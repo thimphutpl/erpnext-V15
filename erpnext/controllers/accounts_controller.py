@@ -1290,7 +1290,7 @@ class AccountsController(TransactionBase):
 						"cost_center": round_off_cost_center
 						if self.use_company_roundoff_cost_center
 						else self.cost_center or round_off_cost_center,
-						"remarks": _("Net total calculation precision loss"),
+						"remarks": "Net total calculation precision loss",
 					}
 				)
 			)
