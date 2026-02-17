@@ -41,8 +41,12 @@
   "column_break_33",
   "mileage",
   "section_break_10",
+  "apply_gst",
+  "gst_account",
+  "gst_amount",
   "total_amount",
   "column_break_npwy",
+  "total_amount_before_gst",
   "total_allocated_amount",
   "od_amount",
   "section_break_8",
@@ -321,20 +325,50 @@
   },
   {
    "fieldname": "jv",
-   "fieldtype": "Data",
-   "label": "Journal Entry"
+   "fieldtype": "Link",
+   "label": "Journal Entry",
+   "options": "Journal Entry"
   },
   {
    "fieldname": "posting_time",
    "fieldtype": "Time",
    "label": "Posting Time"
+  },
+  {
+   "default": "0",
+   "fieldname": "apply_gst",
+   "fieldtype": "Check",
+   "label": "Apply GST"
+  },
+  {
+   "default": "0",
+   "depends_on": "eval: doc.apply_gst == 1",
+   "fieldname": "gst_amount",
+   "fieldtype": "Currency",
+   "label": "GST Amount",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "total_amount_before_gst",
+   "fieldtype": "Currency",
+   "label": "Total Amount (Before GST)",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval: doc.apply_gst == 1",
+   "fieldname": "gst_account",
+   "fieldtype": "Link",
+   "label": "GST Account",
+   "options": "Account",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-08-14 12:16:13.398070",
- "modified_by": "kalden.dorji@thimphutechpark.bt",
+ "modified": "2026-02-16 10:12:38.232152",
+ "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Receive",
  "naming_rule": "Expression",

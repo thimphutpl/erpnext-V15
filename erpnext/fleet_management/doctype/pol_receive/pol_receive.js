@@ -3,15 +3,19 @@
 
 frappe.ui.form.on('POL Receive', {	
 	setup(frm){
-        frm.set_query("equipment", function(){
-            return {
-                filters: {
-                    'company': frm.doc.company,
-                    'branch': frm.doc.branch,
-                    'disabled': 0,
-                }
-            }
-        });
+		frm.set_query("equipment", function(){
+			if (!frm.doc.branch) {
+				return { filters: { name: ["=", "__no_value__"] } };
+			}
+		
+			return {
+				filters: {
+					company: frm.doc.company,
+					branch: frm.doc.branch,
+					disabled: 0
+				}
+			};
+		});
 
         frm.set_query("fuelbook", function(){
             return {
@@ -69,7 +73,27 @@ frappe.ui.form.on('POL Receive', {
             frm.set_value('km_difference', flt(frm.doc.current_km) - flt(frm.doc.previous_km));
 			frm.set_value('mileage', flt(frm.doc.km_difference) / flt(frm.doc.total_qty));
         }
-    }
+    },
+	apply_gst: function(frm){
+		if(frm.doc.apply_gst == 1){
+			frm.set_value("gst_account", "5% GST Inward - NRDCL");
+			frm.refresh_fields("gst_account");
+			if (frm.doc.total_amount_before_gst > 0) {
+				frm.set_value("gst_amount", frm.doc.total_amount_before_gst * 0.05);
+				frm.set_value("total_amount", frm.doc.total_amount_before_gst + frm.doc.total_amount_before_gst * 0.05);
+				frm.refresh_fields("gst_amount");
+				frm.refresh_fields("total_amount");
+			}
+
+		}else{
+			frm.set_value("gst_account", "");
+			frm.refresh_fields("gst_account");
+			frm.set_value("gst_amount", "");
+			frm.refresh_fields("gst_amount");
+			frm.set_value("total_amount", frm.doc.total_amount_before_gst);
+			frm.refresh_fields("total_amount");
+		}
+	},
 });
 
 frappe.ui.form.on('POL Receive Item', {
@@ -112,6 +136,7 @@ var calculate_total_amount = function(frm){
 		}
 		
 		cur_frm.set_value("total_amount", (total_amount));
+		cur_frm.set_value("total_amount_before_gst", (total_amount));
 		cur_frm.set_value("total_qty", (total_qty));
 	}
 }

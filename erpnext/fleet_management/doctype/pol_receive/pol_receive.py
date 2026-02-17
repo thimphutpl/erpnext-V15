@@ -23,18 +23,16 @@ class POLReceive(StockController):
 	# begin: auto-generated types
 	# This code is auto-generated. Do not modify anything in this block.
 
-
 	from typing import TYPE_CHECKING
-
 
 	if TYPE_CHECKING:
 		from erpnext.fleet_management.doctype.pol_receive_advance.pol_receive_advance import POLReceiveAdvance
 		from erpnext.fleet_management.doctype.pol_receive_item.pol_receive_item import POLReceiveItem
 		from frappe.types import DF
 
-
 		advances: DF.Table[POLReceiveAdvance]
 		amended_from: DF.Link | None
+		apply_gst: DF.Check
 		branch: DF.Link
 		company: DF.Link
 		cost_center: DF.Link | None
@@ -43,8 +41,10 @@ class POLReceive(StockController):
 		equipment_category: DF.Link | None
 		equipment_name: DF.Data | None
 		for_machineries: DF.Check
-		fuel_type: DF.Link
-		fuelbook: DF.Link | None
+		fuel_type: DF.Link | None
+		fuelbook: DF.Link
+		gst_account: DF.Link | None
+		gst_amount: DF.Currency
 		item_name: DF.Data | None
 		items: DF.Table[POLReceiveItem]
 		jv: DF.Data | None
@@ -58,6 +58,7 @@ class POLReceive(StockController):
 		supplier: DF.Link
 		total_allocated_amount: DF.Currency
 		total_amount: DF.Currency
+		total_amount_before_gst: DF.Currency
 		total_qty: DF.Float
 		uom: DF.Link | None
 	# end: auto-generated types
@@ -70,7 +71,10 @@ class POLReceive(StockController):
 
 	def on_submit(self):
 		self.update_pol_advance()
-		self.make_gl_entries()
+		# self.make_gl_entries()
+		
+		gl_entries = self.get_gl_entries()
+		make_gl_entries(gl_entries)
 		# if not self.is_opening:
 		#   self.post_journal_entry()
 		#   self.update_pol_advance()
@@ -146,7 +150,7 @@ class POLReceive(StockController):
 
 
 	# Ver 2.0.190509, Following method created by SHIV on 2019/05/24
-	def get_gl_entries(self):
+	def get_gl_entries(self, warehouse_account=None):
 		gl_entries = []
 
 
@@ -158,6 +162,8 @@ class POLReceive(StockController):
 
 		# expense_account = self.get_expense_account()
 		expense_account = frappe.db.get_value("Equipment Category", self.equipment_category, "pol_advance_account")
+		if not expense_account:
+			frappe.throw("Set POL Expense Account in Equipment Category")
 
 
 		# if self.hiring_cost_center:
@@ -171,17 +177,33 @@ class POLReceive(StockController):
 
 
 		gl_entries.append(
-			prepare_gl(self, {"account": expense_account,
-				"debit": flt(self.total_amount),
-				"debit_in_account_currency": flt(self.total_amount),
+			prepare_gl(self, {
+				"account": expense_account,
+				"debit": flt(self.total_amount_before_gst) if self.apply_gst else flt(self.total_amount),
+				"debit_in_account_currency":  flt(self.total_amount_before_gst) if self.apply_gst else flt(self.total_amount),
 				"cost_center": self.cost_center,
+				"against_voucher": self.name,
+				"against_voucher_type": self.doctype,
 				# "business_activity": ba
 				})
 		)
+		if self.apply_gst:
+			gl_entries.append(
+				prepare_gl(self, {
+					"account": self.gst_account,
+					"debit": flt(self.gst_amount),
+					"debit_in_account_currency": flt(self.gst_amount),
+					"cost_center": self.cost_center,
+					"against_voucher": self.name,
+					"against_voucher_type": self.doctype,
+					# "business_activity": ba
+					})
+			)
 
 
 		gl_entries.append(
-			prepare_gl(self, {"account": creditor_account,
+			prepare_gl(self, {
+				"account": creditor_account,
 				"credit": flt(self.total_amount),
 				"credit_in_account_currency": flt(self.total_amount),
 				"cost_center": self.cost_center,
@@ -193,9 +215,7 @@ class POLReceive(StockController):
 				})
 		)
 
-
 		return gl_entries              
-
 
 	@frappe.whitelist()
 	def get_previous_km_reading(self):
