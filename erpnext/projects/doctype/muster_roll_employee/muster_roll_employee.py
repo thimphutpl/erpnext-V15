@@ -178,3 +178,26 @@ class MusterRollEmployee(Document):
 			"from_date": from_date,
 			"to_date": to_date
 		})
+
+def get_permission_query_conditions(user):
+	if not user: user = frappe.session.user
+	user_roles = frappe.get_roles(user)
+
+	if user == "Administrator" or "System Manager" in user_roles or "Auditor" in user_roles: 
+		return
+
+	return """(
+		`tabMuster Roll Employee`.owner = '{user}'
+		or
+		exists(select 1
+			from `tabEmployee` as e
+			where e.branch = `tabMuster Roll Employee`.branch
+			and e.user_id = '{user}')
+		or
+		exists(select 1
+			from `tabEmployee` e, `tabAssign Branch` ab, `tabBranch Item` bi
+			where e.user_id = '{user}'
+			and ab.employee = e.name
+			and bi.parent = ab.name
+			and bi.branch = `tabMuster Roll Employee`.branch)
+	)""".format(user=user)

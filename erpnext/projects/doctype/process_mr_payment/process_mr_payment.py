@@ -211,6 +211,12 @@ class ProcessMRPayment(Document):
 		je.remark = 'Payment against : ' + self.name
 		je.posting_date = self.posting_date
 		je.branch = self.branch
+		je.employee_name = self.employee_name
+		je.employee_id = self.employee_id 
+		je.cost_center = self.cost_center
+		je.designation = self.designation
+		je.cost_center= get_branch_cc(self.branch, self.cost_center)
+
 		
 		if self.ot_amount:	
 			je.append("accounts", {
@@ -435,4 +441,27 @@ def check_if_holiday_overtime_entry(branch, date, fiscal_year = None, fiscal_mon
 	for holiday_date in holiday_dates:
 		if datetime.strptime(str(date),"%Y-%m-%d") == datetime.strptime(str(holiday_date.holiday_date),"%Y-%m-%d"):
 			is_holiday = 1
-	return is_holiday
+	return is_holiday 
+
+def get_permission_query_conditions(user):
+	if not user: user = frappe.session.user
+	user_roles = frappe.get_roles(user)
+
+	if user == "Administrator" or "System Manager" in user_roles or "Auditor" in user_roles: 
+		return
+
+	return """(
+		`tabProcess MR Payment`.owner = '{user}'
+		or
+		exists(select 1
+			from `tabEmployee` as e
+			where e.branch = `tabProcess MR Payment`.branch
+			and e.user_id = '{user}')
+		or
+		exists(select 1
+			from `tabEmployee` e, `tabAssign Branch` ab, `tabBranch Item` bi
+			where e.user_id = '{user}'
+			and ab.employee = e.name
+			and bi.parent = ab.name
+			and bi.branch = `tabProcess MR Payment`.branch)
+	)""".format(user=user)	
