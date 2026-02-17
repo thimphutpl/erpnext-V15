@@ -891,7 +891,7 @@ def get_permission_query_conditions(user):
 	user_roles = frappe.get_roles(user)
 	# if "Administrator" in user_roles or "System Manager" in user_roles or "Purchase User" in user_roles or "CEO" in user_roles: 
 	#     return
-	if any(role in user_roles for role in {"Administrator", "System Manager", "CEO"}):
+	if any(role in user_roles for role in {"Administrator", "System Manager", "CEO","Auditor"}):
 		return
 
 	# ceo_or_general_manager = 1 if 'GM' in user_roles or 'CEO' in user_roles or 'Projects GM' in user_roles else 0
