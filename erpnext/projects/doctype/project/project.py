@@ -1581,7 +1581,7 @@ def get_permission_query_conditions(user):
 	if not user:
 		user = frappe.session.user
 	user_roles = frappe.get_roles(user)
-	if "Administrator" in user_roles or "HR Manager" in user_roles:
+	if "Administrator" in user_roles or "HR Manager" or "Auditor" in user_roles:
 		return
 
 	# Limited access by branch
