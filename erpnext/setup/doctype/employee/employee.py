@@ -593,7 +593,7 @@ def get_permission_query_conditions(user):
 	#frappe.throw("hiii")
 	if not user: user = frappe.session.user
 	user_roles = frappe.get_roles(user)
-	if "HR User" in user_roles or "HR Manager" in user_roles or "Accounts User" in user_roles or "CEO" in user_roles:
+	if "HR User" in user_roles or "HR Manager" in user_roles or "Accounts User" in user_roles or "CEO" in user_roles or "Auditor" in user_roles:
 		return
 	if "Management" in user_roles:
 		return """(
@@ -624,7 +624,7 @@ def has_record_permission(doc, user):
 	if not user: user = frappe.session.user
 	user_roles = frappe.get_roles(user)
 
-	if "HR User" in user_roles or "HR Manager" in user_roles:
+	if "HR User" in user_roles or "HR Manager" in user_roles or "Auditor" in user_roles:
 		return True
 	else:			
 		if frappe.db.exists("Employee", {"name":doc.name, "user_id": user}):
