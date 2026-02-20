@@ -173,16 +173,16 @@ frappe.ui.form.on("Purchase Order", {
 		if (frm.is_new()) {
 			frm.set_value("advance_paid", 0);
 		}
-		frappe.call({
-			method: "get_gst_template",
-			doc: frm.doc,
-			callback: function (r) {
-				if (r.message) {
-					frm.set_value("taxes_and_charges", r.message);
-					frm.refresh_field("taxes_and_charges");
-				}
-			}
-		})
+		// frappe.call({
+		// 	method: "get_gst_template",
+		// 	doc: frm.doc,
+		// 	callback: function (r) {
+		// 		if (r.message) {
+		// 			frm.set_value("taxes_and_charges", r.message);
+		// 			frm.refresh_field("taxes_and_charges");
+		// 		}
+		// 	}
+		// })
 	},
 
 	apply_tds: function (frm) {
