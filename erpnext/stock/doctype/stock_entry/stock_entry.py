@@ -3318,7 +3318,7 @@ def has_warehouse_permission(warehouse):
 	user = frappe.session.user
 	user_roles = frappe.get_roles(user)
 
-	if user == "Administrator" or "System Manager" in user_roles:
+	if user == "Administrator" or "System Manager" or "Auditor" in user_roles :
 		return 1
 	res = frappe.db.sql("""
 			select 1
