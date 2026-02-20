@@ -63,6 +63,7 @@ class SalesInvoice(SellingController):
 		account_for_change_amount: DF.Link | None
 		additional_discount_account: DF.Link | None
 		additional_discount_percentage: DF.Float
+		address: DF.Data | None
 		address_display: DF.SmallText | None
 		advances: DF.Table[SalesInvoiceAdvance]
 		against_income_account: DF.SmallText | None
@@ -202,6 +203,7 @@ class SalesInvoice(SellingController):
 		update_outstanding_for_self: DF.Check
 		update_stock: DF.Check
 		use_company_roundoff_cost_center: DF.Check
+		vehicle_no: DF.Link | None
 		write_off_account: DF.Link | None
 		write_off_amount: DF.Currency
 		write_off_cost_center: DF.Link | None

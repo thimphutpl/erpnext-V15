@@ -33,6 +33,7 @@ class DeliveryNote(SellingController):
 		from frappe.types import DF
 
 		additional_discount_percentage: DF.Float
+		address: DF.Data | None
 		address_display: DF.SmallText | None
 		amended_from: DF.Link | None
 		amount_eligible_for_commission: DF.Currency
@@ -68,7 +69,7 @@ class DeliveryNote(SellingController):
 		discount_amount: DF.Currency
 		dispatch_address: DF.SmallText | None
 		dispatch_address_name: DF.Link | None
-		driver: DF.Link | None
+		driver: DF.Data | None
 		driver_name: DF.Data | None
 		excise_page: DF.Data | None
 		grand_total: DF.Currency
@@ -138,9 +139,9 @@ class DeliveryNote(SellingController):
 		total_taxes_and_charges: DF.Currency
 		transportation_charges: DF.Data | None
 		transportation_rate: DF.Data | None
-		transporter: DF.Link | None
+		transporter: DF.Data | None
 		transporter_name: DF.Data | None
-		vehicle_no: DF.Data | None
+		vehicle_no: DF.Link | None
 	# end: auto-generated types
 
 	def __init__(self, *args, **kwargs):

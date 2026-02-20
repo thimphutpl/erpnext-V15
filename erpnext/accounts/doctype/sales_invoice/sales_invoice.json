@@ -20,6 +20,7 @@
   "posting_time",
   "set_posting_time",
   "due_date",
+  "vehicle_no",
   "column_break_14",
   "is_pos",
   "pos_profile",
@@ -150,6 +151,7 @@
   "address_and_contact",
   "customer_address",
   "address_display",
+  "address",
   "col_break4",
   "contact_person",
   "contact_display",
@@ -2228,6 +2230,17 @@
    "label": "Taxes and Charges Deducted(Company Currency)",
    "precision": "2",
    "read_only": 1
+  },
+  {
+   "fieldname": "vehicle_no",
+   "fieldtype": "Link",
+   "label": "Vehicle No",
+   "options": "Vehicle"
+  },
+  {
+   "fieldname": "address",
+   "fieldtype": "Data",
+   "label": "Address"
   }
  ],
  "icon": "fa fa-file-text",
@@ -2240,7 +2253,7 @@
    "link_fieldname": "consolidated_invoice"
   }
  ],
- "modified": "2026-02-17 09:09:51.585471",
+ "modified": "2026-02-20 13:31:41.927443",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Sales Invoice",

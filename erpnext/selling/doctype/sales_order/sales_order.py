@@ -62,6 +62,7 @@ class SalesOrder(SellingController):
 
 		additional_cost: DF.Data | None
 		additional_discount_percentage: DF.Float
+		address: DF.Data | None
 		address_display: DF.SmallText | None
 		advance_paid: DF.Currency
 		allotment_date: DF.Date | None
@@ -187,7 +188,6 @@ class SalesOrder(SellingController):
 		total_distance: DF.Data | None
 		total_net_weight: DF.Float
 		total_qty: DF.Float
-		#total_quantity: DF.Float
 		total_taxes_and_charges: DF.Currency
 		transaction_date: DF.Date
 		transportation_charges: DF.Currency

@@ -106,6 +106,7 @@
   "pricing_rules",
   "address_and_contact_tab",
   "contact_info",
+  "address",
   "customer_address",
   "address_display",
   "col_break21",
@@ -1439,13 +1440,18 @@
    "fieldtype": "Data",
    "hidden": 1,
    "label": "Transportation Charges"
+  },
+  {
+   "fieldname": "address",
+   "fieldtype": "Data",
+   "label": "Address"
   }
  ],
  "icon": "fa fa-truck",
  "idx": 146,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-01-26 12:19:30.987261",
+ "modified": "2026-02-20 13:29:51.623946",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Delivery Note",

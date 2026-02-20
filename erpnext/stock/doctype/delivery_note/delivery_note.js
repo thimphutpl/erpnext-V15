@@ -31,21 +31,21 @@ frappe.ui.form.on("Delivery Note", {
 		// });
 		// erpnext.queries.setup_warehouse_query(frm);
 
-		frm.set_query("transporter", function () {
-			return {
-				filters: {
-					is_transporter: 1,
-				},
-			};
-		});
+		// frm.set_query("transporter", function () {
+		// 	return {
+		// 		filters: {
+		// 			is_transporter: 1,
+		// 		},
+		// 	};
+		// });
 
-		frm.set_query("driver", function (doc) {
-			return {
-				filters: {
-					transporter: doc.transporter,
-				},
-			};
-		});
+		// frm.set_query("driver", function (doc) {
+		// 	return {
+		// 		filters: {
+		// 			transporter: doc.transporter,
+		// 		},
+		// 	};
+		// });
 
 		frm.set_query("expense_account", "items", function (doc, cdt, cdn) {
 			if (erpnext.is_perpetual_inventory_enabled(doc.company)) {
