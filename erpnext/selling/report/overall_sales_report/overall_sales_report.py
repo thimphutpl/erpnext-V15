@@ -216,11 +216,11 @@ def get_sales_invoice_data(filters, cond, outer_cond):
             (SELECT SUM(st.tax_amount_after_discount_amount)
                 FROM `tabSales Taxes and Charges` st
             WHERE st.parent = si.name 
-                AND st.charge_type = 'On Total') AS cash_discount_amount,
+                AND st.charge_type = 'On Total' AND st.is_gst = 0) AS cash_discount_amount,
             (SELECT SUM(st.tax_amount_after_discount_amount)
                 FROM `tabSales Taxes and Charges` st
             WHERE st.parent = si.name 
-                AND st.charge_type = 'Actual') AS transportation_charges,
+                AND st.charge_type = 'Actual' AND st.is_gst = 0) AS transportation_charges,
             SUM(sii.amount) AS amount,
             si.net_total AS net_total,
             si.grand_total AS grand_total
