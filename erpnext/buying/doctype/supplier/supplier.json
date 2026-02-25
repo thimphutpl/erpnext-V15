@@ -13,6 +13,7 @@
   "naming_series",
   "supplier_name",
   "country",
+  "supplier_tpn_no",
   "column_break0",
   "supplier_group",
   "supplier_type",
@@ -473,6 +474,11 @@
   {
    "fieldname": "column_break_mglr",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "supplier_tpn_no",
+   "fieldtype": "Data",
+   "label": "Supplier TPN"
   }
  ],
  "icon": "fa fa-user",
@@ -485,7 +491,7 @@
    "link_fieldname": "party"
   }
  ],
- "modified": "2024-05-08 18:02:57.342931",
+ "modified": "2025-11-13 20:26:12.061622",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Supplier",

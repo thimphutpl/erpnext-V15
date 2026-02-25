@@ -886,6 +886,7 @@ class PurchaseInvoice(BuyingController):
 							"posting_date": self.posting_date,
 							"company": self.company,
 							"amount": flt(amount,2),
+							"fiscal_year": str(self.posting_date).split("-")[0],
 							# "business_activity": self.business_activity,
 						})
 					if not commited_budget_id:					

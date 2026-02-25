@@ -9,6 +9,7 @@
  "field_order": [
   "budget_against",
   "cost_center",
+  "supplementary_type",
   "project",
   "posting_date",
   "column_break_3",
@@ -142,12 +143,20 @@
    "fieldtype": "Data",
    "label": "Approver Name",
    "read_only": 1
+  },
+  {
+   "fieldname": "supplementary_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Supplementary Type",
+   "options": "\nNew Supplementary Budget\nAdditional Supplementary Budget"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-13 00:01:39.420793",
+ "modified": "2025-09-11 14:33:35.895484",
  "modified_by": "Administrator",
  "module": "Budget",
  "name": "Supplementary Budget",

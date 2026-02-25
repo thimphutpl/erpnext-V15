@@ -44,6 +44,44 @@ frappe.ui.form.on("Employee", {
 				}
 			};
 		});
+		frm.set_query("grade", function () {
+			return {
+				"filters": {
+					"company": frm.doc.company,
+				}
+			}
+		});
+		frm.set_query("branch", function () {
+			return {
+				"filters": {
+					"company": frm.doc.company,
+					"disabled": 0,
+				}
+			}
+		});
+		frm.set_query("cost_center", function () {
+			return {
+				"filters": {
+					"company": frm.doc.company,
+					"disabled": 0,
+					"is_group": 0,
+				}
+			}
+		});
+		frm.set_query("employee_group", function () {
+			return {
+				"filters": {
+					"company": frm.doc.company,
+				}
+			}
+		});
+		frm.set_query("designation", function () {
+			return {
+				"filters": {
+					"company": frm.doc.company,
+				}
+			}
+		})
 		frm.set_query("section", function () {
 			return {
 				"filters": {

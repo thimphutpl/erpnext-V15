@@ -15,9 +15,12 @@
   "party",
   "accounting_dimensions_section",
   "cost_center",
+  "budget_activity",
+  "budget_sub_activity",
   "dimension_col_break",
   "project",
   "business_activity",
+  "source_of_fund",
   "currency_section",
   "account_currency",
   "column_break_10",
@@ -56,6 +59,7 @@
    "columns": 2,
    "fieldname": "account",
    "fieldtype": "Link",
+   "ignore_user_permissions": 1,
    "in_global_search": 1,
    "in_list_view": 1,
    "label": "Account",
@@ -196,7 +200,7 @@
    "fieldtype": "Select",
    "label": "Reference Type",
    "no_copy": 1,
-   "options": "\nBonus\nPBVA\nSales Invoice\nSWS Application\nPurchase Invoice\nJournal Entry\nSales Order\nPurchase Order\nExpense Claim\nAsset\nLoan\nPayroll Entry\nEmployee Advance\nExchange Rate Revaluation\nInvoice Discounting\nFees\nFull and Final Statement\nPayment Entry\nAbstract Bill\nImprest Advance\nImprest Recoup\nPOL Advance\nProcess MR Payment\nTravel Claim\nTravel Authorization\nFund Requisition\nLeave Encashment\nBulk Leave Encashment\nLeave Travel Concession\nEquipment Hiring Form\nJob Cards\nEmployee Benefits\nHire Charge Invoice\nHire Invoice\nFabrication And Bailey Bridge\nTransporter Invoice\nBulk Travel Authorization",
+   "options": "\nBonus\nPBVA\nSales Invoice\nSWS Application\nPurchase Invoice\nJournal Entry\nSales Order\nPurchase Order\nExpense Claim\nAsset\nLoan\nPayroll Entry\nEmployee Advance\nExchange Rate Revaluation\nInvoice Discounting\nFees\nFull and Final Statement\nPayment Entry\nAbstract Bill\nImprest Advance\nImprest Recoup\nPOL Advance\nProcess MR Payment\nTravel Claim\nTravel Authorization\nFund Requisition\nLeave Encashment\nBulk Leave Encashment\nLeave Travel Concession\nEquipment Hiring Form\nJob Cards\nEmployee Benefits\nHire Charge Invoice\nHire Invoice\nFabrication And Bailey Bridge\nTransporter Invoice\nBulk Travel Claim\nBudget Release",
    "search_index": 1
   },
   {
@@ -287,6 +291,7 @@
    "label": "Bill Date"
   },
   {
+   "description": "If Income or Expense",
    "fieldname": "business_activity",
    "fieldtype": "Link",
    "hidden": 1,
@@ -365,12 +370,36 @@
    "fieldtype": "Currency",
    "label": "Tax Amount in Company Currency",
    "read_only": 1
+  },
+  {
+   "description": "If Income or Expense",
+   "fieldname": "budget_activity",
+   "fieldtype": "Link",
+   "label": "Budget Activity",
+   "mandatory_depends_on": "eval:parent.capital_release==0 && doc.credit == 0;",
+   "options": "Budget Activity"
+  },
+  {
+   "description": "If Income or Expense",
+   "fieldname": "budget_sub_activity",
+   "fieldtype": "Link",
+   "label": "Budget Sub Activity",
+   "mandatory_depends_on": "eval:parent.capital_release==0 && doc.credit == 0;",
+   "options": "Budget Sub Activity"
+  },
+  {
+   "description": "If Income or Expense",
+   "fieldname": "source_of_fund",
+   "fieldtype": "Link",
+   "label": "Source of Fund",
+   "mandatory_depends_on": "eval:parent.capital_release==0 && doc.credit == 0;",
+   "options": "Source of Fund"
   }
  ],
  "idx": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-06-24 10:17:56.128932",
+ "modified": "2025-11-25 10:49:43.826347",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Journal Entry Account",

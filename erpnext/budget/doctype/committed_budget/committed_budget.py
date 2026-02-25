@@ -16,6 +16,8 @@ class CommittedBudget(Document):
 		account: DF.Link
 		amended_from: DF.Link | None
 		amount: DF.Currency
+		budget_activity: DF.Link | None
+		budget_sub_activity: DF.Link | None
 		closed: DF.Check
 		committed_cost_center: DF.Link | None
 		company: DF.Link | None
@@ -26,6 +28,8 @@ class CommittedBudget(Document):
 		reference_id: DF.Data | None
 		reference_no: DF.Data
 		reference_type: DF.Data
+		source_of_fund: DF.Link | None
 		unconsumed_amount: DF.Currency
 	# end: auto-generated types
+
 	pass

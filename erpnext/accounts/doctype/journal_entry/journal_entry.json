@@ -24,6 +24,7 @@
   "posting_date",
   "apply_tds",
   "tax_withholding_category",
+  "capital_release",
   "2_add_edit_gl_entries",
   "accounts",
   "tds_table",
@@ -104,7 +105,7 @@
    "label": "Entry Type",
    "oldfieldname": "voucher_type",
    "oldfieldtype": "Select",
-   "options": "Journal Entry\nInter Company Journal Entry\nBank Entry\nCash Entry\nCredit Card Entry\nDebit Note\nCredit Note\nContra Entry\nExcise Entry\nWrite Off Entry\nOpening Entry\nDepreciation Entry\nExchange Rate Revaluation\nExchange Gain Or Loss\nDeferred Revenue\nDeferred Expense\nHire Invoice",
+   "options": "Journal Entry\nDisbursement Voucher\nJournal Voucher\nOther Voucher\nReversal Voucher\nInter Company Journal Entry\nBank Entry\nCash Entry\nCredit Card Entry\nDebit Note\nCredit Note\nContra Entry\nExcise Entry\nWrite Off Entry\nOpening Entry\nDepreciation Entry\nExchange Rate Revaluation\nExchange Gain Or Loss\nDeferred Revenue\nDeferred Expense\nHire Invoice",
    "reqd": 1,
    "search_index": 1
   },
@@ -576,8 +577,7 @@
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Branch",
-   "options": "Branch",
-   "reqd": 1
+   "options": "Branch"
   },
   {
    "allow_on_submit": 1,
@@ -654,6 +654,12 @@
    "fieldname": "journal_no",
    "fieldtype": "Data",
    "label": "Journal No."
+  },
+  {
+   "default": "0",
+   "fieldname": "capital_release",
+   "fieldtype": "Check",
+   "label": "Capital Release"
   }
  ],
  "icon": "fa fa-file-text",
@@ -668,7 +674,7 @@
    "table_fieldname": "payment_entries"
   }
  ],
- "modified": "2025-06-24 10:34:48.712068",
+ "modified": "2025-10-30 23:44:43.666471",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Journal Entry",

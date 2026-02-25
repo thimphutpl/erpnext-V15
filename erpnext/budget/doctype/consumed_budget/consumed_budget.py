@@ -16,6 +16,8 @@ class ConsumedBudget(Document):
 		account: DF.Link
 		amended_from: DF.Link | None
 		amount: DF.Currency
+		budget_activity: DF.Link | None
+		budget_sub_activity: DF.Link | None
 		com_ref: DF.Link | None
 		company: DF.Link | None
 		consumed_cost_center: DF.Link | None
@@ -26,5 +28,7 @@ class ConsumedBudget(Document):
 		reference_id: DF.Data | None
 		reference_no: DF.Data
 		reference_type: DF.Data
+		source_of_fund: DF.Link | None
 	# end: auto-generated types
+
 	pass

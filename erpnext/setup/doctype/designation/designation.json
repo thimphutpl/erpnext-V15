@@ -9,6 +9,7 @@
  "engine": "InnoDB",
  "field_order": [
   "designation_name",
+  "company",
   "description"
  ],
  "fields": [
@@ -26,12 +27,19 @@
    "fieldname": "description",
    "fieldtype": "Text",
    "label": "Description"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company",
+   "reqd": 1
   }
  ],
  "icon": "fa fa-bookmark",
  "idx": 1,
  "links": [],
- "modified": "2024-03-27 13:06:51.361961",
+ "modified": "2025-11-20 16:33:39.876125",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Designation",

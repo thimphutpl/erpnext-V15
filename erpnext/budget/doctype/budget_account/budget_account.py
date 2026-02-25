@@ -15,6 +15,7 @@ class BudgetAccount(Document):
 
 		account: DF.Link
 		account_number: DF.Data | None
+		approved_budget: DF.Currency
 		april: DF.Currency
 		august: DF.Currency
 		br_april: DF.Data | None
@@ -41,11 +42,14 @@ class BudgetAccount(Document):
 		bs_november: DF.Data | None
 		bs_october: DF.Data | None
 		bs_september: DF.Data | None
+		budget_activity: DF.Link
 		budget_amount: DF.Currency
 		budget_check: DF.Literal["", "Stop", "Ignore"]
 		budget_received: DF.Currency
 		budget_sent: DF.Currency
+		budget_sub_activity: DF.Link
 		budget_type: DF.Link | None
+		cost_center: DF.Link
 		december: DF.Currency
 		february: DF.Currency
 		initial_budget: DF.Currency
@@ -73,6 +77,9 @@ class BudgetAccount(Document):
 		sb_october: DF.Data | None
 		sb_september: DF.Data | None
 		september: DF.Currency
+		source_of_fund: DF.Link
 		supplementary_budget: DF.Currency
+		withdrawal_budget: DF.Data | None
 	# end: auto-generated types
+
 	pass

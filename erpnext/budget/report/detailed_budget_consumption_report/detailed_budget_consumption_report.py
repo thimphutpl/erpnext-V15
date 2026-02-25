@@ -71,6 +71,9 @@ def get_data(query, filters):
                     "account_number": d.account_number,
                     "budget_type": d.budget_type,
                     "cost_center": a.cost_center,
+                    "budget_activity": d.budget_activity,
+                    "budget_sub_activity": d.budget_sub_activity,
+                    "source_of_fund": d.source_of_fund,
                     "initial": flt(d.initial_budget),
                     "supplementary": supplement,
                     "adjustment": adjustment,
@@ -139,14 +142,14 @@ def construct_query(filters=None):
     if filters.budget_against == "Cost Center":
         query = """
             select 
-                b.cost_center, ba.account, (select a.account_number from `tabAccount` a where a.name = ba.account) as account_number, ba.budget_type,
+                b.cost_center, ba.account, (select a.account_number from `tabAccount` a where a.name = ba.account) as account_number, ba.budget_type, ba.budget_activity, ba.budget_sub_activity, ba.source_of_fund,
                 ba.initial_budget as initial_budget, 
                 ba.budget_received as added, 
                 ba.budget_sent as deducted, 
                 ba.supplementary_budget as supplement
             from `tabBudget` b, `tabBudget Account` ba 
             where b.docstatus = 1 and b.name = ba.parent
-            and ba.initial_budget != 0 and b.fiscal_year = """ + str(filters.fiscal_year)
+            and ba.initial_budget != 0 and b.fiscal_year = """ + frappe.db.escape(str(filters.fiscal_year))
         
         if filters.cost_center:
             lft, rgt = frappe.db.get_value("Cost Center", filters.cost_center, ["lft", "rgt"])
@@ -233,23 +236,31 @@ def get_columns(filters):
                 "width": 190
             },
             {
-                "fieldname": "account_number",
-                "label": "Account Number",
-                "fieldtype": "Data",
-                "width": 110
-            },
-            {
-                "fieldname": "budget_type",
-                "label": "Budget Type",
-                "fieldtype": "Link",
-                "options": "Budget Type",
-                "width": 120,
-            },
-            {
                 "fieldname": "cost_center",
                 "label": "Cost Center",
                 "fieldtype": "Link",
                 "options": "Cost Center",
+                "width": 140
+            },
+            {
+                "fieldname": "budget_activity",
+                "label": "Budget Activity",
+                "fieldtype": "Link",
+                "options": "Budget Activity",
+                "width": 140
+            },
+            {
+                "fieldname": "budget_sub_activity",
+                "label": "Budget Sub Activity",
+                "fieldtype": "Link",
+                "options": "Budget Sub Activity",
+                "width": 140
+            },
+            {
+                "fieldname": "source_of_fund",
+                "label": "Source of Fund",
+                "fieldtype": "Link",
+                "options": "Source of Fund",
                 "width": 140
             },
             {
@@ -306,13 +317,6 @@ def get_columns(filters):
                 "fieldtype": "Dynamic Link",
                 "options": "reference_type",
                 "width": 120
-            },
-            {
-                "fieldname": "item_code",
-                "label": "Item Code",
-                "fieldtype": "Link",
-                "options": "Item",
-                "width": 80
             }
         ]
     else:

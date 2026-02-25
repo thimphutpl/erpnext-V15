@@ -30,7 +30,7 @@ frappe.ui.form.on('TDS Remittance', {
 	tax_withholding_category: function(frm){
 		cur_frm.clear_table("items");
 		cur_frm.refresh_field("items");
-	}
+	},
 });
 
 frappe.ui.form.on('TDS Remittance Item', {

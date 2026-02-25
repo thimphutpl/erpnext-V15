@@ -8,6 +8,9 @@
  "field_order": [
   "account",
   "cost_center",
+  "budget_activity",
+  "budget_sub_activity",
+  "source_of_fund",
   "project",
   "reference_type",
   "reference_no",
@@ -110,13 +113,34 @@
    "fieldtype": "Link",
    "label": "Committed Cost Center",
    "options": "Cost Center"
+  },
+  {
+   "fieldname": "budget_activity",
+   "fieldtype": "Link",
+   "label": "Budget Activity",
+   "options": "Budget Activity",
+   "read_only": 1
+  },
+  {
+   "fieldname": "budget_sub_activity",
+   "fieldtype": "Link",
+   "label": "Budget Sub Activity",
+   "options": "Budget Sub Activity",
+   "read_only": 1
+  },
+  {
+   "fieldname": "source_of_fund",
+   "fieldtype": "Link",
+   "label": "Source of Fund",
+   "options": "Source of Fund",
+   "read_only": 1
   }
  ],
  "in_create": 1,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-09-02 17:25:37.763717",
+ "modified": "2025-07-18 14:39:34.612736",
  "modified_by": "Administrator",
  "module": "Budget",
  "name": "Committed Budget",

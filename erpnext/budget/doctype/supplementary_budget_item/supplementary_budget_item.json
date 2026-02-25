@@ -8,6 +8,8 @@
  "field_order": [
   "account",
   "account_number",
+  "budget_activity",
+  "budget_sub_activity",
   "column_break_3",
   "amount",
   "month",
@@ -52,12 +54,24 @@
    "fieldtype": "Link",
    "label": "Month",
    "options": "Month"
+  },
+  {
+   "fieldname": "budget_activity",
+   "fieldtype": "Link",
+   "label": "Budget Activity",
+   "options": "Budget Activity"
+  },
+  {
+   "fieldname": "budget_sub_activity",
+   "fieldtype": "Link",
+   "label": "Budget Sub Activity",
+   "options": "Budget Sub Activity"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-12-02 11:53:48.000893",
+ "modified": "2025-08-12 17:18:54.722294",
  "modified_by": "Administrator",
  "module": "Budget",
  "name": "Supplementary Budget Item",

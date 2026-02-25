@@ -14,6 +14,7 @@ class Designation(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		company: DF.Link
 		description: DF.Text | None
 		designation_name: DF.Data
 	# end: auto-generated types

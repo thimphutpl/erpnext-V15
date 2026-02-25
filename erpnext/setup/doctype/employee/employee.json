@@ -3,7 +3,7 @@
  "allow_events_in_timeline": 1,
  "allow_import": 1,
  "allow_rename": 1,
- "autoname": "naming_series:",
+ "autoname": "field:old_id",
  "creation": "2022-02-21 11:54:09.632218",
  "doctype": "DocType",
  "document_type": "Setup",
@@ -12,6 +12,7 @@
  "field_order": [
   "basic_details_tab",
   "basic_information",
+  "old_id",
   "salutation",
   "employee_name",
   "employee",
@@ -27,7 +28,6 @@
   "date_of_joining",
   "image",
   "status",
-  "old_id",
   "erpnext_user",
   "user_id",
   "create_user",
@@ -37,7 +37,6 @@
   "employee_group",
   "professional_category",
   "reports_to",
-  "custom_report_name",
   "column_break_wrmk",
   "employee_status",
   "probation_end_date",
@@ -48,7 +47,6 @@
   "company",
   "department",
   "employment_type",
-  "employee_number",
   "column_break_25",
   "designation",
   "division",
@@ -270,14 +268,6 @@
    "search_index": 1
   },
   {
-   "fieldname": "employee_number",
-   "fieldtype": "Data",
-   "in_global_search": 1,
-   "label": "Employee Number",
-   "oldfieldname": "employee_number",
-   "oldfieldtype": "Data"
-  },
-  {
    "fieldname": "gender",
    "fieldtype": "Link",
    "label": "Gender",
@@ -364,6 +354,8 @@
   {
    "fieldname": "scheduled_confirmation_date",
    "fieldtype": "Date",
+   "hidden": 1,
+   "in_preview": 1,
    "label": "Offer Date",
    "oldfieldname": "scheduled_confirmation_date",
    "oldfieldtype": "Date"
@@ -371,6 +363,7 @@
   {
    "fieldname": "final_confirmation_date",
    "fieldtype": "Date",
+   "hidden": 1,
    "label": "Confirmation Date",
    "oldfieldname": "final_confirmation_date",
    "oldfieldtype": "Date"
@@ -389,6 +382,7 @@
   {
    "fieldname": "notice_number_of_days",
    "fieldtype": "Int",
+   "hidden": 1,
    "label": "Notice (days)",
    "oldfieldname": "notice_number_of_days",
    "oldfieldtype": "Int"
@@ -423,6 +417,7 @@
   {
    "fieldname": "reports_to",
    "fieldtype": "Link",
+   "hidden": 1,
    "ignore_user_permissions": 1,
    "label": "Reports to",
    "oldfieldname": "reports_to",
@@ -466,10 +461,11 @@
   {
    "depends_on": "eval:doc.salary_mode == 'Bank'",
    "fieldname": "bank_name",
-   "fieldtype": "Data",
+   "fieldtype": "Link",
    "label": "Bank Name",
    "oldfieldname": "bank_name",
-   "oldfieldtype": "Link"
+   "oldfieldtype": "Link",
+   "options": "Financial Institution"
   },
   {
    "depends_on": "eval:doc.salary_mode == 'Bank'",
@@ -642,6 +638,7 @@
    "collapsible": 1,
    "fieldname": "history_in_company",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "History In Company",
    "options": "Simple"
   },
@@ -684,6 +681,7 @@
   {
    "fieldname": "leave_encashed",
    "fieldtype": "Select",
+   "hidden": 1,
    "label": "Leave Encashed?",
    "oldfieldname": "leave_encashed",
    "oldfieldtype": "Select",
@@ -693,6 +691,7 @@
    "depends_on": "eval:doc.leave_encashed ==\"Yes\"",
    "fieldname": "encashment_date",
    "fieldtype": "Date",
+   "hidden": 1,
    "label": "Encashment Date",
    "oldfieldname": "encashment_date",
    "oldfieldtype": "Date"
@@ -707,6 +706,7 @@
   {
    "fieldname": "held_on",
    "fieldtype": "Date",
+   "hidden": 1,
    "label": "Exit Interview Held On",
    "oldfieldname": "held_on",
    "oldfieldtype": "Date"
@@ -714,6 +714,7 @@
   {
    "fieldname": "new_workplace",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "New Workplace",
    "oldfieldname": "new_workplace",
    "oldfieldtype": "Data"
@@ -749,6 +750,7 @@
   {
    "fieldname": "attendance_device_id",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Attendance Device ID (Biometric/RF tag ID)",
    "no_copy": 1,
    "unique": 1
@@ -797,6 +799,7 @@
    "collapsible": 1,
    "fieldname": "address_section",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Address"
   },
   {
@@ -875,7 +878,10 @@
    "fieldname": "old_id",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Old ID"
+   "label": "Old/New ID",
+   "reqd": 1,
+   "set_only_once": 1,
+   "unique": 1
   },
   {
    "fieldname": "grade",
@@ -891,6 +897,7 @@
   {
    "fieldname": "employee_type",
    "fieldtype": "Link",
+   "hidden": 1,
    "ignore_user_permissions": 1,
    "label": "Employment Type",
    "options": "Employment Type"
@@ -921,6 +928,7 @@
   {
    "fieldname": "professional_category",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Professional Category",
    "options": "Professional Category"
   },
@@ -928,7 +936,7 @@
    "fieldname": "increment_cycle",
    "fieldtype": "Select",
    "label": "Increment Cycle",
-   "options": "\nJanuary\nFebruary\nMarch\nApril\nMay\nJune\nJuly\nAugust\nSeptember\nOctober\nNovember\nDecember"
+   "options": "\nJanuary\nJuly"
   },
   {
    "fieldname": "promotion_cycle",
@@ -973,6 +981,7 @@
   {
    "fieldname": "job_applicant",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Job Applicant",
    "options": "Job Applicant"
   },
@@ -984,6 +993,7 @@
   {
    "fieldname": "contract_summary_section",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Contract Summary"
   },
   {
@@ -1000,6 +1010,7 @@
    "fetch_if_empty": 1,
    "fieldname": "payroll_cost_center",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Payroll Cost Center",
    "options": "Cost Center"
   },
@@ -1118,23 +1129,17 @@
    "options": "Employee Family Details"
   },
   {
-   "fetch_from": "reports_to.employee_name",
-   "fieldname": "custom_report_name",
-   "fieldtype": "Data",
-   "label": "Report Name",
-   "translatable": 1
-  },
-  {
    "fieldname": "employment_type",
    "fieldtype": "Link",
-   "hidden": 1,
    "ignore_user_permissions": 1,
    "label": "Employment Type",
-   "options": "Employment Type"
+   "options": "Employment Type",
+   "read_only": 1
   },
   {
    "fieldname": "default_shift",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Default Shift",
    "options": "Shift Type"
   },
@@ -1152,6 +1157,7 @@
   {
    "fieldname": "leave_approver",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Leave Approver",
    "options": "User"
   },
@@ -1162,6 +1168,7 @@
   {
    "fieldname": "shift_request_approver",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Shift Request Approver",
    "options": "User"
   },
@@ -1175,11 +1182,11 @@
  "image_field": "image",
  "is_tree": 1,
  "links": [],
- "modified": "2025-06-26 10:33:21.900408",
+ "modified": "2025-11-27 09:17:01.503821",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee",
- "naming_rule": "By \"Naming Series\" field",
+ "naming_rule": "By fieldname",
  "nsm_parent_field": "reports_to",
  "owner": "Administrator",
  "permissions": [],

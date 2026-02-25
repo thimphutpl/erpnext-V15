@@ -16,6 +16,8 @@ class SupplementaryBudgetItem(Document):
 		account: DF.Link | None
 		account_number: DF.Data | None
 		amount: DF.Currency
+		budget_activity: DF.Link | None
+		budget_sub_activity: DF.Link | None
 		budget_type: DF.Link | None
 		month: DF.Link | None
 		name: DF.Int | None
@@ -23,4 +25,5 @@ class SupplementaryBudgetItem(Document):
 		parentfield: DF.Data
 		parenttype: DF.Data
 	# end: auto-generated types
+
 	pass

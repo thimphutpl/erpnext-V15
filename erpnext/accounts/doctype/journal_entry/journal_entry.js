@@ -903,8 +903,8 @@ $.extend(erpnext.journal_entry, {
 
 	account_query: function (frm) {
 		var filters = {
-			company: frm.doc.company,
-			is_group: 0,
+			// company: frm.doc.company,
+			// is_group: 0,
 		};
 		if (!frm.doc.multi_currency) {
 			$.extend(filters, {

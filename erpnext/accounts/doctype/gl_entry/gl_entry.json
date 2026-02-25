@@ -12,6 +12,9 @@
   "party_type",
   "party",
   "cost_center",
+  "budget_activity",
+  "budget_sub_activity",
+  "source_of_fund",
   "debit",
   "credit",
   "account_currency",
@@ -292,13 +295,33 @@
    "fieldtype": "Link",
    "label": "Business Activity",
    "options": "Business Activity"
+  },
+  {
+   "fieldname": "budget_activity",
+   "fieldtype": "Link",
+   "label": "Budget Activity",
+   "options": "Budget Activity",
+   "read_only": 1
+  },
+  {
+   "fieldname": "budget_sub_activity",
+   "fieldtype": "Link",
+   "label": "Budget Sub Activity",
+   "options": "Budget Sub Activity"
+  },
+  {
+   "fieldname": "source_of_fund",
+   "fieldtype": "Link",
+   "label": "Source of Fund",
+   "options": "Source of Fund",
+   "read_only": 1
   }
  ],
  "icon": "fa fa-list",
  "idx": 1,
  "in_create": 1,
  "links": [],
- "modified": "2024-08-19 10:27:48.073064",
+ "modified": "2025-07-18 14:59:55.539822",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "GL Entry",

@@ -15,6 +15,7 @@ class HRAccountsSettings(Document):
 		from frappe.types import DF
 
 		bonus_account: DF.Link
+		company: DF.Link
 		employee_advance_salary: DF.Link
 		employee_advance_travel: DF.Link
 		employee_contribution_pf: DF.Link
@@ -36,6 +37,7 @@ class HRAccountsSettings(Document):
 		travel_incountry_account: DF.Link
 		travel_outcountry_account: DF.Link
 	# end: auto-generated types
+
 	pass
 
 def get_bank_account(branch=None):

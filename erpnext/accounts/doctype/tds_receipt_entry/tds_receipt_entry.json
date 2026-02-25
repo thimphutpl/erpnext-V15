@@ -22,7 +22,8 @@
   "cheque_no",
   "cheque_date",
   "tds_receipt_update",
-  "tds_remittance"
+  "tds_remittance",
+  "region"
  ],
  "fields": [
   {
@@ -129,11 +130,16 @@
    "label": "TDS Remittance",
    "options": "TDS Remittance",
    "read_only": 1
+  },
+  {
+   "fieldname": "region",
+   "fieldtype": "Data",
+   "label": "Region"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-26 14:11:06.256006",
+ "modified": "2025-07-21 11:46:56.096649",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "TDS Receipt Entry",

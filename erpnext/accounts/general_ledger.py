@@ -389,6 +389,7 @@ def make_entry(args, adv_adj, update_outstanding, from_repost=False):
 		transactions = [d.transaction for d in frappe.get_all("Budget Transaction", fields='transaction')]
 		if args.voucher_type in transactions and args.against_voucher_type != 'Asset':
 			account_types = [d.account_type for d in frappe.get_all("Budget Settings Account Types", fields='account_type')]
+			# frappe.throw(str(account_types))
 			if frappe.db.get_value("Account", args.account, "account_type") in account_types:
 				validate_expense_against_budget(args)
 				cc_doc = frappe.get_doc("Cost Center", args.cost_center)
@@ -401,6 +402,9 @@ def make_entry(args, adv_adj, update_outstanding, from_repost=False):
 						"cost_center": budget_cost_center,
 						"committed_cost_center": args.cost_center,
 						"project": args.project,
+						"budget_activity": args.budget_activity,
+						"budget_sub_activity": args.budget_sub_activity,
+						"source_of_fund": args.source_of_fund,
 						"reference_type": args.voucher_type,
 						"reference_no": args.voucher_no,
 						"reference_date": args.posting_date,
@@ -419,6 +423,9 @@ def make_entry(args, adv_adj, update_outstanding, from_repost=False):
 						"cost_center": budget_cost_center,
 						"consumed_cost_center": args.cost_center,
 						"project": args.project,
+						"budget_activity": args.budget_activity,
+						"budget_sub_activity": args.budget_sub_activity,
+						"source_of_fund": args.source_of_fund,
 						"reference_type": args.voucher_type,
 						"reference_no": args.voucher_no,
 						"reference_date": args.posting_date,
@@ -429,6 +436,7 @@ def make_entry(args, adv_adj, update_outstanding, from_repost=False):
 					})
 					con_obj.flags.ignore_permissions=1
 					con_obj.submit()
+	# frappe.throw("here")
 
 
 def validate_cwip_accounts(gl_map):

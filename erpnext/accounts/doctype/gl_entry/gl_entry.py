@@ -34,6 +34,8 @@ class GLEntry(Document):
 		against: DF.Text | None
 		against_voucher: DF.DynamicLink | None
 		against_voucher_type: DF.Link | None
+		budget_activity: DF.Link | None
+		budget_sub_activity: DF.Link | None
 		business_activity: DF.Link | None
 		company: DF.Link | None
 		cost_center: DF.Link | None
@@ -54,6 +56,7 @@ class GLEntry(Document):
 		posting_date: DF.Date | None
 		project: DF.Link | None
 		remarks: DF.Text | None
+		source_of_fund: DF.Link | None
 		to_rename: DF.Check
 		transaction_currency: DF.Link | None
 		transaction_date: DF.Date | None
@@ -88,7 +91,7 @@ class GLEntry(Document):
 	def on_update(self):
 		adv_adj = self.flags.adv_adj
 		if not self.flags.from_repost and self.voucher_type != "Period Closing Voucher":
-			self.validate_account_details(adv_adj)
+			# self.validate_account_details(adv_adj)
 			self.validate_dimensions_for_pl_and_bs()
 			validate_balance_type(self.account, adv_adj)
 			validate_frozen_account(self.account, adv_adj)
@@ -219,34 +222,34 @@ class GLEntry(Document):
 				)
 			)
 
-	def validate_account_details(self, adv_adj):
-		"""Account must be ledger, active and not freezed"""
+	# def validate_account_details(self, adv_adj):
+	# 	"""Account must be ledger, active and not freezed"""
 
-		ret = frappe.db.sql(
-			"""select is_group, docstatus, company
-			from tabAccount where name=%s""",
-			self.account,
-			as_dict=1,
-		)[0]
+	# 	ret = frappe.db.sql(
+	# 		"""select is_group, docstatus, company
+	# 		from tabAccount where name=%s""",
+	# 		self.account,
+	# 		as_dict=1,
+	# 	)[0]
 
-		if ret.is_group == 1:
-			frappe.throw(
-				_(
-					"""{0} {1}: Account {2} is a Group Account and group accounts cannot be used in transactions"""
-				).format(self.voucher_type, self.voucher_no, self.account)
-			)
+	# 	if ret.is_group == 1:
+	# 		frappe.throw(
+	# 			_(
+	# 				"""{0} {1}: Account {2} is a Group Account and group accounts cannot be used in transactions"""
+	# 			).format(self.voucher_type, self.voucher_no, self.account)
+	# 		)
 
-		if ret.docstatus == 2:
-			frappe.throw(
-				_("{0} {1}: Account {2} is inactive").format(self.voucher_type, self.voucher_no, self.account)
-			)
+	# 	if ret.docstatus == 2:
+	# 		frappe.throw(
+	# 			_("{0} {1}: Account {2} is inactive").format(self.voucher_type, self.voucher_no, self.account)
+	# 		)
 
-		if ret.company != self.company:
-			frappe.throw(
-				_("{0} {1}: Account {2} does not belong to Company {3}").format(
-					self.voucher_type, self.voucher_no, self.account, self.company
-				)
-			)
+	# 	if ret.company != self.company:
+	# 		frappe.throw(
+	# 			_("{0} {1}: Account {2} does not belong to Company {3}").format(
+	# 				self.voucher_type, self.voucher_no, self.account, self.company
+	# 			)
+	# 		)
 
 	def validate_cost_center(self):
 		if not self.cost_center:

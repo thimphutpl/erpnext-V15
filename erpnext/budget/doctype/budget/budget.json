@@ -9,6 +9,7 @@
   "company",
   "budget_against",
   "cost_center",
+  "branch",
   "project",
   "project_name",
   "column_break_3",
@@ -17,11 +18,27 @@
   "monthly_distribution",
   "amended_from",
   "budget_type",
+  "posting_date",
+  "sb_bulk_data",
+  "column_break_ilct",
+  "budget_activities",
+  "cb_bulk_data_01",
+  "budget_sub_activities",
+  "column_break_hpvr",
+  "cost_centers",
+  "budget_accounts",
+  "column_break_njsb",
+  "source_of_funds",
   "section_break_21",
   "get_accounts",
+  "filtered_budget_data",
+  "get_budget_heads",
   "accounts",
+  "budget_details",
   "section_break_13",
-  "initial_total",
+  "initial_budget",
+  "approved_budget",
+  "withdrawal_budget",
   "column_break_14",
   "supp_total",
   "actual_total",
@@ -36,7 +53,8 @@
   "section_break_16",
   "applicable_on_booking_actual_expenses",
   "action_if_annual_budget_exceeded",
-  "action_if_accumulated_monthly_budget_exceeded"
+  "action_if_accumulated_monthly_budget_exceeded",
+  "tb_budget_details"
  ],
  "fields": [
   {
@@ -63,7 +81,8 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Cost Center",
-   "options": "Cost Center"
+   "options": "Cost Center",
+   "reqd": 1
   },
   {
    "depends_on": "eval:doc.budget_against == 'Project'",
@@ -201,16 +220,10 @@
    "reqd": 1
   },
   {
-   "bold": 1,
    "fieldname": "get_accounts",
    "fieldtype": "Button",
+   "hidden": 1,
    "label": "Get Budget Heads"
-  },
-  {
-   "fieldname": "initial_total",
-   "fieldtype": "Currency",
-   "label": "Total(Initial)",
-   "read_only": 1
   },
   {
    "fieldname": "column_break_14",
@@ -219,6 +232,7 @@
   {
    "fieldname": "supp_total",
    "fieldtype": "Currency",
+   "hidden": 1,
    "label": "Total(Supplementary)",
    "read_only": 1
   },
@@ -252,12 +266,120 @@
    "fieldtype": "Data",
    "hidden": 1,
    "label": "Budget Type"
+  },
+  {
+   "depends_on": "eval:doc.budget_against == 'Cost Center'",
+   "fetch_from": "cost_center.cost_center_name",
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "in_global_search": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Branch",
+   "options": "Branch"
+  },
+  {
+   "fieldname": "cost_centers",
+   "fieldtype": "Table MultiSelect",
+   "hidden": 1,
+   "label": "Cost Centers",
+   "options": "Budget Cost Center"
+  },
+  {
+   "fieldname": "budget_sub_activities",
+   "fieldtype": "Table MultiSelect",
+   "label": "Budget Sub Activities",
+   "options": "Budget Sub Activities"
+  },
+  {
+   "fieldname": "sb_bulk_data",
+   "fieldtype": "Section Break",
+   "label": "Bulk Data Insertion Filters"
+  },
+  {
+   "fieldname": "cb_bulk_data_01",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "source_of_funds",
+   "fieldtype": "Table MultiSelect",
+   "label": "Source of Funds",
+   "options": "Source of Funds"
+  },
+  {
+   "bold": 1,
+   "description": "Fill Budget Accounts Table based on the filters set above.",
+   "fieldname": "get_budget_heads",
+   "fieldtype": "Button",
+   "label": "Get Budget Heads"
+  },
+  {
+   "fieldname": "budget_accounts",
+   "fieldtype": "Table MultiSelect",
+   "label": "Budget Accounts",
+   "options": "Budget Accounts"
+  },
+  {
+   "fieldname": "budget_activities",
+   "fieldtype": "Table MultiSelect",
+   "label": "Budget Activities",
+   "options": "Budget Activities"
+  },
+  {
+   "fieldname": "budget_details",
+   "fieldtype": "HTML",
+   "label": "Budget Details"
+  },
+  {
+   "fieldname": "filtered_budget_data",
+   "fieldtype": "HTML",
+   "label": "Filtered Budget Data"
+  },
+  {
+   "fieldname": "column_break_ilct",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_njsb",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "tb_budget_details",
+   "fieldtype": "Tab Break",
+   "label": "Budget Details"
+  },
+  {
+   "fieldname": "initial_budget",
+   "fieldtype": "Currency",
+   "label": "Proposed Budget",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_hpvr",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "withdrawal_budget",
+   "fieldtype": "Currency",
+   "label": "Withdraw Budget"
+  },
+  {
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Posting Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "approved_budget",
+   "fieldtype": "Currency",
+   "label": "Approved Budget(Initial)"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-29 11:16:36.683920",
+ "modified": "2025-10-08 14:32:40.949093",
  "modified_by": "Administrator",
  "module": "Budget",
  "name": "Budget",

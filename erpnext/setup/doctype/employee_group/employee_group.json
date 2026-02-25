@@ -9,6 +9,8 @@
  "field_order": [
   "employee_group_name",
   "retirement_age",
+  "column_break_avwq",
+  "company",
   "section_break_00",
   "employee_list",
   "payroll_settings_section",
@@ -118,6 +120,7 @@
   {
    "fieldname": "leave_encashment_settings_section",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "LEAVE ENCASHMENT SETTINGS"
   },
   {
@@ -133,6 +136,7 @@
   {
    "fieldname": "leave_credits_section",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "LEAVE CREDITS"
   },
   {
@@ -210,10 +214,21 @@
    "fieldname": "retirement_age",
    "fieldtype": "Int",
    "label": "Retirement Age"
+  },
+  {
+   "fieldname": "column_break_avwq",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company",
+   "reqd": 1
   }
  ],
  "links": [],
- "modified": "2025-06-17 12:40:56.829074",
+ "modified": "2025-11-20 16:30:16.436778",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee Group",

@@ -46,8 +46,8 @@ class ImprestAdvance(Document):
 		if cint(self.first_advance) == 1:
 			self.check_for_duplicate_entry()
 			validate_workflow_states(self)
-			if self.workflow_state != "Approved":
-				notify_workflow_states(self)
+			# if self.workflow_state != "Approved":
+			# 	notify_workflow_states(self)
 
 	def check_for_duplicate_entry(self):
 		import datetime
@@ -120,8 +120,8 @@ class ImprestAdvance(Document):
 				self.db_set("journal_entry", None)
 
 	def on_submit(self):
-		if cint(self.first_advance) == 1:
-			notify_workflow_states(self)
+		# if cint(self.first_advance) == 1:
+		# 	notify_workflow_states(self)
 		if not self.is_opening:
 			self.db_set('balance_amount', flt(self.amount))
 			self.post_journal_entry()
@@ -131,8 +131,8 @@ class ImprestAdvance(Document):
 			frappe.throw("Imprest Recoup <b>{}</b> needs to to cancelled first.".format(self.imprest_recoup))
 		
 		self.ignore_linked_doctypes = ("GL Entry", "Payment Ledger Entry")
-		if cint(self.first_advance) == 1:
-			notify_workflow_states(self)
+		# if cint(self.first_advance) == 1:
+		# 	notify_workflow_states(self)
 
 	def post_journal_entry(self):
 		if not self.amount:

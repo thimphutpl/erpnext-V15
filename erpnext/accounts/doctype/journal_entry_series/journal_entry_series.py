@@ -16,8 +16,9 @@ class JournalEntrySeries(Document):
 
 		description: DF.Data | None
 		enabled: DF.Check
-		entry_type: DF.Literal["Journal Entry", "Inter Company Journal Entry", "Bank Entry", "Cash Entry", "Credit Card Entry", "Debit Note", "Credit Note", "Contra Entry", "Excise Entry", "Write Off Entry", "Opening Entry", "Depreciation Entry", "Exchange Rate Revaluation", "Exchange Gain Or Loss", "Deferred Revenue", "Deferred Expense"]
+		entry_type: DF.Literal["Disbursement Voucher", "Journal Voucher", "Other Voucher", "Reversal Voucher", "Journal Entry", "Inter Company Journal Entry", "Bank Entry", "Cash Entry", "Credit Card Entry", "Debit Note", "Credit Note", "Contra Entry", "Excise Entry", "Write Off Entry", "Opening Entry", "Depreciation Entry", "Exchange Rate Revaluation", "Exchange Gain Or Loss", "Deferred Revenue", "Deferred Expense"]
 		journal_entry_series: DF.Data
 		prefix: DF.Data
 	# end: auto-generated types
+
 	pass

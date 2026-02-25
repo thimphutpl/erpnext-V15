@@ -16,8 +16,6 @@
   "country",
   "is_group",
   "default_holiday_list",
-  "cheque_required",
-  "calendar_year_based",
   "cb0",
   "default_letter_head",
   "tax_id",
@@ -50,29 +48,52 @@
   "default_bank_account",
   "default_cash_account",
   "default_receivable_account",
-  "round_off_account",
-  "round_off_cost_center",
+  "default_payable_account",
   "write_off_account",
-  "exchange_gain_loss_account",
-  "unrealized_exchange_gain_loss_account",
   "unrealized_profit_loss_account",
+  "csr_account",
   "column_break0",
   "allow_account_creation_against_child_company",
-  "default_payable_account",
   "default_expense_account",
   "default_income_account",
-  "default_deferred_revenue_account",
-  "default_deferred_expense_account",
   "default_discount_account",
   "payment_terms",
   "cost_center",
   "default_finance_book",
+  "fleet_accounts_section",
+  "insurance_expense_account",
+  "pol_expense_account",
+  "registration_expense_account",
+  "fitness_expense_account",
+  "insurance_claim_expense_account",
+  "column_break_myop",
+  "hirecharge_income_account",
+  "offence_expense_account",
+  "registration_certificate_expense_account",
+  "emission_expense_account",
+  "exchange_gain__loss_section",
+  "exchange_gain_loss_account",
+  "column_break_sttp",
+  "unrealized_exchange_gain_loss_account",
+  "round_off_section",
+  "round_off_account",
+  "round_off_cost_center",
+  "column_break_jqfo",
+  "round_off_for_opening",
+  "deferred_accounting_section",
+  "default_deferred_revenue_account",
+  "column_break_dcdl",
+  "default_deferred_expense_account",
   "advance_payments_section",
   "book_advance_payments_in_separate_party_account",
   "reconcile_on_advance_payment_date",
   "column_break_fwcf",
   "default_advance_received_account",
   "default_advance_paid_account",
+  "buying_section",
+  "discount_account",
+  "column_break_vlyw",
+  "advance_account",
   "exchange_rate_revaluation_settings_section",
   "auto_exchange_rate_revaluation",
   "auto_err_frequency",
@@ -83,15 +104,12 @@
   "accumulated_depreciation_account",
   "depreciation_expense_account",
   "series_for_depreciation_entry",
+  "expenses_included_in_asset_valuation",
   "column_break_40",
   "disposal_account",
   "depreciation_cost_center",
   "capital_work_in_progress_account",
   "asset_received_but_not_billed",
-  "additional_hr_payroll_account_section",
-  "employer_contribution_to_pf",
-  "column_break_olng",
-  "imprest_advance_account",
   "buying_and_selling_tab",
   "sales_settings",
   "default_buying_terms",
@@ -103,19 +121,78 @@
   "default_warehouse_for_sales_return",
   "credit_limit",
   "transactions_annual_history",
+  "hr_payroll_tab",
+  "hr_payroll_settings_section",
+  "hr_payroll_settings_column",
+  "default_expense_claim_payable_account",
+  "default_employee_advance_account",
+  "default_salary_tax_account",
+  "leave_encashment_expense_account",
+  "leave_encashment_payable_account",
+  "column_break_fbah",
+  "default_payroll_payable_account",
+  "employer_contribution_pf_account",
+  "salary_structure_section",
+  "deduct_sal_tax_on_percent",
+  "salary_tax_percent",
+  "travel_section",
+  "domestic_travel_expense",
+  "international_travel_expense",
+  "column_break_wezs",
+  "travel_advance_account",
   "stock_tab",
   "auto_accounting_for_stock_settings",
   "enable_perpetual_inventory",
   "enable_provisional_accounting_for_non_stock_items",
   "default_inventory_account",
   "stock_adjustment_account",
+  "default_in_transit_warehouse",
   "column_break_32",
   "stock_received_but_not_billed",
   "default_provisional_account",
-  "default_in_transit_warehouse",
+  "expenses_included_in_valuation",
   "manufacturing_section",
   "default_operating_cost_account",
-  "dashboard_tab"
+  "fleet_tab",
+  "pol_advance_account",
+  "dashboard_tab",
+  "reconciliation_takes_effect_on",
+  "budget_tab",
+  "default_mof_account",
+  "column_break_aovw",
+  "budget_receive_account",
+  "hr_accounts_settings_tab",
+  "salary_payable_account",
+  "salary_tax_account",
+  "overtime_allowance_account",
+  "employee_contribution_pf",
+  "muster_roll_payable_account",
+  "column_break_yogf",
+  "leave_encashment_account",
+  "pbva_account",
+  "bonus_account",
+  "ltc_account",
+  "section_break_qlky",
+  "travel_incountry_account",
+  "travel_outcountry_account",
+  "column_break_fvcq",
+  "meeting_and_seminars_in_account",
+  "meeting_and_seminars_out_account",
+  "column_break_wjub",
+  "training_incountry_account",
+  "training_outcountry_account",
+  "section_break_14",
+  "employee_advance_travel",
+  "column_break_16",
+  "employee_advance_salary",
+  "sws_accounts_settings_section",
+  "sws_credit_account",
+  "column_break_qnkc",
+  "sws_debit_account",
+  "payable_account_section",
+  "leave_encashment_payable",
+  "column_break_jgtd",
+  "travel_claim_payable"
  ],
  "fields": [
   {
@@ -290,7 +367,7 @@
   {
    "fieldname": "default_settings",
    "fieldtype": "Section Break",
-   "label": "Accounts Settings",
+   "label": "Default Accounts",
    "oldfieldtype": "Section Break"
   },
   {
@@ -477,6 +554,14 @@
    "options": "Account"
   },
   {
+   "fieldname": "expenses_included_in_valuation",
+   "fieldtype": "Link",
+   "ignore_user_permissions": 1,
+   "label": "Expenses Included In Valuation",
+   "no_copy": 1,
+   "options": "Account"
+  },
+  {
    "fieldname": "accumulated_depreciation_account",
    "fieldtype": "Link",
    "label": "Accumulated Depreciation Account",
@@ -492,8 +577,15 @@
   },
   {
    "fieldname": "series_for_depreciation_entry",
-   "fieldtype": "Data",
-   "label": "Series for Asset Depreciation Entry (Journal Entry)"
+   "fieldtype": "Link",
+   "label": "Series for Asset Depreciation Entry (Journal Entry)",
+   "options": "Journal Entry Series"
+  },
+  {
+   "fieldname": "expenses_included_in_asset_valuation",
+   "fieldtype": "Link",
+   "label": "Expenses Included In Asset Valuation",
+   "options": "Account"
   },
   {
    "fieldname": "column_break_40",
@@ -744,7 +836,7 @@
    "fieldname": "auto_err_frequency",
    "fieldtype": "Select",
    "label": "Frequency",
-   "options": "Daily\nWeekly"
+   "options": "Daily\nWeekly\nMonthly"
   },
   {
    "default": "0",
@@ -765,7 +857,7 @@
   {
    "fieldname": "stock_tab",
    "fieldtype": "Tab Break",
-   "label": "Stock and Manufacturing"
+   "label": "Stock"
   },
   {
    "fieldname": "dashboard_tab",
@@ -793,37 +885,493 @@
    "options": "Account"
   },
   {
-   "default": "0",
-   "fieldname": "cheque_required",
-   "fieldtype": "Check",
-   "label": "Cheque Required"
-  },
-  {
-   "fieldname": "additional_hr_payroll_account_section",
-   "fieldtype": "Section Break",
-   "label": "Additional HR Payroll Account"
-  },
-  {
-   "fieldname": "employer_contribution_to_pf",
+   "fieldname": "round_off_for_opening",
    "fieldtype": "Link",
-   "label": "Employer Contribution to PF",
+   "label": "Round Off for Opening",
    "options": "Account"
   },
   {
-   "fieldname": "column_break_olng",
+   "fieldname": "exchange_gain__loss_section",
+   "fieldtype": "Section Break",
+   "label": "Exchange Gain / Loss"
+  },
+  {
+   "fieldname": "round_off_section",
+   "fieldtype": "Section Break",
+   "label": "Round Off"
+  },
+  {
+   "fieldname": "deferred_accounting_section",
+   "fieldtype": "Section Break",
+   "label": "Deferred Accounting"
+  },
+  {
+   "fieldname": "column_break_sttp",
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "imprest_advance_account",
+   "fieldname": "column_break_jqfo",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_dcdl",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "Oldest Of Invoice Or Advance",
+   "fieldname": "reconciliation_takes_effect_on",
+   "fieldtype": "Select",
+   "label": "Reconciliation Takes Effect On",
+   "options": "Advance Payment Date\nOldest Of Invoice Or Advance\nReconciliation Date"
+  },
+  {
+   "fieldname": "hr_payroll_tab",
+   "fieldtype": "Tab Break",
+   "label": "HR & Payroll"
+  },
+  {
+   "fieldname": "hr_payroll_settings_column",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "default_expense_claim_payable_account",
    "fieldtype": "Link",
-   "label": "Imprest Advance Account",
+   "label": "Default Expense Claim Payable Account",
    "options": "Account"
   },
   {
+   "fieldname": "default_employee_advance_account",
+   "fieldtype": "Link",
+   "label": "Default Employee Advance Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "column_break_fbah",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "default_payroll_payable_account",
+   "fieldtype": "Link",
+   "label": "Default Payroll Payable Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "employer_contribution_pf_account",
+   "fieldtype": "Link",
+   "label": "Employer Contribution PF Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "csr_account",
+   "fieldtype": "Link",
+   "label": "CSR Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "hr_payroll_settings_section",
+   "fieldtype": "Section Break",
+   "label": "HR & Payroll Settings"
+  },
+  {
+   "fieldname": "travel_advance_account",
+   "fieldtype": "Link",
+   "label": "Default Travel Advance Account",
+   "options": "Account"
+  },
+  {
+   "depends_on": "eval:!doc.__islocal",
+   "fieldname": "pol_expense_account",
+   "fieldtype": "Link",
+   "label": "POL Expense Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "default_salary_tax_account",
+   "fieldtype": "Link",
+   "label": "Default Salary Tax Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "leave_encashment_expense_account",
+   "fieldtype": "Link",
+   "label": "Leave Encashment Expense Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "leave_encashment_payable_account",
+   "fieldtype": "Link",
+   "label": "Leave Encashment Payable Account",
+   "options": "Account"
+  },
+  {
+   "depends_on": "eval:!doc.__islocal",
+   "fieldname": "hirecharge_income_account",
+   "fieldtype": "Link",
+   "label": "Hirecharge Income Account",
+   "options": "Account"
+  },
+  {
+   "depends_on": "eval:!doc.__islocal",
+   "fieldname": "insurance_expense_account",
+   "fieldtype": "Link",
+   "label": "Insurance Expense Account",
+   "options": "Account"
+  },
+  {
+   "depends_on": "eval:!doc.__islocal",
+   "fieldname": "registration_expense_account",
+   "fieldtype": "Link",
+   "label": "Registration Expense Account",
+   "options": "Account"
+  },
+  {
+   "depends_on": "eval:!doc.__islocal",
+   "fieldname": "offence_expense_account",
+   "fieldtype": "Link",
+   "label": "Offence Expense Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "fleet_accounts_section",
+   "fieldtype": "Section Break",
+   "label": "Fleet Accounts"
+  },
+  {
+   "fieldname": "column_break_myop",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:!doc.__islocal",
+   "fieldname": "registration_certificate_expense_account",
+   "fieldtype": "Link",
+   "label": "Registration Certificate Expense Account",
+   "options": "Account"
+  },
+  {
+   "depends_on": "eval:!doc.__islocal",
+   "fieldname": "fitness_expense_account",
+   "fieldtype": "Link",
+   "label": "Fitness Expense Account",
+   "options": "Account"
+  },
+  {
+   "depends_on": "eval:!doc.__islocal",
+   "fieldname": "emission_expense_account",
+   "fieldtype": "Link",
+   "label": "Emission Expense Account",
+   "options": "Account"
+  },
+  {
+   "depends_on": "eval:!doc.__islocal",
+   "fieldname": "insurance_claim_expense_account",
+   "fieldtype": "Link",
+   "label": "Insurance Claim Expense Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "fleet_tab",
+   "fieldtype": "Tab Break",
+   "label": "Fleet"
+  },
+  {
+   "fieldname": "pol_advance_account",
+   "fieldtype": "Link",
+   "label": "POL Advance Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "buying_section",
+   "fieldtype": "Section Break",
+   "label": "Buying"
+  },
+  {
+   "fieldname": "discount_account",
+   "fieldtype": "Link",
+   "label": "Discount Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "column_break_vlyw",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "advance_account",
+   "fieldtype": "Link",
+   "label": "Advance Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "travel_section",
+   "fieldtype": "Section Break",
+   "label": "Travel "
+  },
+  {
+   "fieldname": "domestic_travel_expense",
+   "fieldtype": "Link",
+   "label": "Domestic Travel Expense ",
+   "options": "Account"
+  },
+  {
+   "fieldname": "column_break_wezs",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "international_travel_expense",
+   "fieldtype": "Link",
+   "label": "International Travel Expense ",
+   "options": "Account"
+  },
+  {
+   "fieldname": "salary_structure_section",
+   "fieldtype": "Section Break",
+   "label": "Salary Structure"
+  },
+  {
    "default": "0",
-   "fieldname": "calendar_year_based",
+   "fieldname": "deduct_sal_tax_on_percent",
    "fieldtype": "Check",
-   "label": " Calendar Year Based"
+   "label": "Deduct Salary Tax Based on Percent"
+  },
+  {
+   "depends_on": "eval: doc.deduct_sal_tax_on_percent==1",
+   "fieldname": "salary_tax_percent",
+   "fieldtype": "Percent",
+   "label": "Salary Tax Percent",
+   "mandatory_depends_on": "eval: doc.deduct_sal_tax_on_percent==1"
+  },
+  {
+   "fieldname": "budget_tab",
+   "fieldtype": "Tab Break",
+   "label": "Budget"
+  },
+  {
+   "fieldname": "budget_receive_account",
+   "fieldtype": "Link",
+   "label": "Default Budget Receive Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "default_mof_account",
+   "fieldtype": "Link",
+   "label": "Default MOF Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "column_break_aovw",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "hr_accounts_settings_tab",
+   "fieldtype": "Tab Break",
+   "label": "HR Accounts Settings"
+  },
+  {
+   "fieldname": "salary_payable_account",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Salary Payable Account",
+   "options": "Account",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_yogf",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "leave_encashment_account",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Leave Encashment Account",
+   "options": "Account",
+   "reqd": 1
+  },
+  {
+   "fieldname": "salary_tax_account",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Salary Tax Account",
+   "options": "Account",
+   "reqd": 1
+  },
+  {
+   "fieldname": "pbva_account",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "PBVA Account",
+   "options": "Account",
+   "reqd": 1
+  },
+  {
+   "fieldname": "overtime_allowance_account",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Overtime Allowance Account",
+   "options": "Account",
+   "reqd": 1
+  },
+  {
+   "fieldname": "bonus_account",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Bonus Account",
+   "options": "Account",
+   "reqd": 1
+  },
+  {
+   "fieldname": "muster_roll_payable_account",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Muster Roll Payable Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "ltc_account",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "LTC Account",
+   "options": "Account",
+   "reqd": 1
+  },
+  {
+   "fieldname": "employee_contribution_pf",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Employer Contribution To PF",
+   "options": "Account",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_qlky",
+   "fieldtype": "Section Break",
+   "label": "Travel/Training Accounts Settings"
+  },
+  {
+   "fieldname": "travel_incountry_account",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Tavel In-Country Account",
+   "options": "Account",
+   "reqd": 1
+  },
+  {
+   "fieldname": "travel_outcountry_account",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Tavel Out-Country Account",
+   "options": "Account",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_fvcq",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "meeting_and_seminars_in_account",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Meeting &Seminars Account (In-Country)",
+   "options": "Account",
+   "reqd": 1
+  },
+  {
+   "fieldname": "meeting_and_seminars_out_account",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Meeting & Seminars Account (Out-Country)",
+   "options": "Account",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_wjub",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "training_incountry_account",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Training In-Country Account",
+   "options": "Account",
+   "reqd": 1
+  },
+  {
+   "fieldname": "training_outcountry_account",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Training Out-Country Account",
+   "options": "Account",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_14",
+   "fieldtype": "Section Break",
+   "label": "Advance Accounts Settings"
+  },
+  {
+   "fieldname": "employee_advance_travel",
+   "fieldtype": "Link",
+   "label": "Advance To Employee (Travel) Account",
+   "options": "Account",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_16",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "employee_advance_salary",
+   "fieldtype": "Link",
+   "label": "Advance To Employee (Salary) Account",
+   "options": "Account",
+   "reqd": 1
+  },
+  {
+   "fieldname": "sws_accounts_settings_section",
+   "fieldtype": "Section Break",
+   "label": "SWS Accounts Settings"
+  },
+  {
+   "fieldname": "sws_credit_account",
+   "fieldtype": "Link",
+   "label": "SWS Credit Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "column_break_qnkc",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "sws_debit_account",
+   "fieldtype": "Link",
+   "label": "SWS Debit Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "payable_account_section",
+   "fieldtype": "Section Break",
+   "label": "Payable Accounts Settings"
+  },
+  {
+   "fieldname": "leave_encashment_payable",
+   "fieldtype": "Link",
+   "label": "Leave Encashment Payable",
+   "options": "Account"
+  },
+  {
+   "fieldname": "column_break_jgtd",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "travel_claim_payable",
+   "fieldtype": "Link",
+   "label": "Travel Claim Payable",
+   "options": "Account"
+  },
+  {
+   "fieldname": "muster_roll_payable_account",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Muster Roll Payable Account",
+   "options": "Account"
   }
  ],
  "icon": "fa fa-building",
@@ -831,7 +1379,7 @@
  "image_field": "company_logo",
  "is_tree": 1,
  "links": [],
- "modified": "2025-07-15 09:56:37.245349",
+ "modified": "2025-12-03 12:37:55.375523",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Company",
@@ -894,7 +1442,7 @@
   }
  ],
  "show_name_in_global_search": 1,
- "sort_field": "creation",
+ "sort_field": "modified",
  "sort_order": "ASC",
  "states": [],
  "track_changes": 1

@@ -1,11 +1,11 @@
-# Copyright (c) 2015, Frappe Technologies Pvt. Ltd. and contributors
-# For license information, please see license.txt
 import frappe
 import datetime
 from frappe import _
 from frappe.model.document import Document
 from frappe.model.naming import make_autoname
 from frappe.utils import add_months, flt, fmt_money, get_last_day, getdate, get_first_day
+from frappe.model.mapper import get_mapped_doc
+import json
 
 from erpnext.accounts.doctype.accounting_dimension.accounting_dimension import (
 	get_accounting_dimensions,
@@ -21,13 +21,16 @@ class DuplicateBudgetError(frappe.ValidationError):
 
 
 class Budget(Document):
-	# begin: auto-generated types
-	# This code is auto-generated. Do not modify anything in this block.
-
+	
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
 		from erpnext.budget.doctype.budget_account.budget_account import BudgetAccount
+		from erpnext.budget.doctype.budget_accounts.budget_accounts import BudgetAccounts
+		from erpnext.budget.doctype.budget_activities.budget_activities import BudgetActivities
+		from erpnext.budget.doctype.budget_cost_center.budget_cost_center import BudgetCostCenter
+		from erpnext.budget.doctype.budget_sub_activities.budget_sub_activities import BudgetSubActivities
+		from erpnext.budget.doctype.source_of_funds.source_of_funds import SourceofFunds
 		from frappe.types import DF
 
 		accounts: DF.Table[BudgetAccount]
@@ -42,21 +45,28 @@ class Budget(Document):
 		applicable_on_booking_actual_expenses: DF.Check
 		applicable_on_material_request: DF.Check
 		applicable_on_purchase_order: DF.Check
+		branch: DF.Link | None
+		budget_accounts: DF.TableMultiSelect[BudgetAccounts]
+		budget_activities: DF.TableMultiSelect[BudgetActivities]
 		budget_against: DF.Literal["", "Cost Center", "Project"]
+		budget_sub_activities: DF.TableMultiSelect[BudgetSubActivities]
 		budget_type: DF.Data | None
 		company: DF.Link
-		cost_center: DF.Link | None
+		cost_center: DF.Link
+		cost_centers: DF.TableMultiSelect[BudgetCostCenter]
 		deviation: DF.Percent
 		fiscal_year: DF.Link
+		initial_budget: DF.Currency
 		initial_total: DF.Currency
 		monthly_distribution: DF.Link | None
 		project: DF.Link | None
 		project_name: DF.Data | None
+		source_of_funds: DF.TableMultiSelect[SourceofFunds]
 		supp_total: DF.Currency
-	# end: auto-generated types
+		withdraw_budget: DF.Currency
+
 	def autoname(self):
 		self.name = make_autoname(
-			#self.get(frappe.scrub(self.budget_against)) + "/" + self.fiscal_year + "/.###"
 			"BUD" + "/" + self.fiscal_year + "/.###"
 		)
 
@@ -67,9 +77,12 @@ class Budget(Document):
 		self.validate_accounts()
 		self.set_null_value()
 		self.validate_applicable_for()
-		self.set_initial_budget()
 		self.calculate_budget()
 		self.calculate_totals()
+		self.budget_activities = []
+		self.budget_sub_activities = []
+		self.source_of_funds = []
+		self.budget_accounts = []
 
 	def validate_duplicate(self):
 		budget_against_field = frappe.scrub(self.budget_against)
@@ -81,7 +94,7 @@ class Budget(Document):
 			select
 				b.name, ba.account from `tabBudget` b, `tabBudget Account` ba
 			where
-				ba.parent = b.name and b.docstatus < 2 and b.company = %s and %s=%s and
+				ba.parent = b.name and b.docstatus < 2 and b.company = %s and ba.%s=%s and
 				b.fiscal_year=%s and b.name != %s and ba.account in (%s) """
 			% ("%s", budget_against_field, "%s", "%s", "%s", ",".join(["%s"] * len(accounts))),
 			(self.company, budget_against, self.fiscal_year, self.name) + tuple(accounts),
@@ -93,6 +106,75 @@ class Budget(Document):
 						"Another Budget record '{0}' already exists against {1} '{2}' and account '{3}' for fiscal year {4}"
 					).format(d.name, self.budget_against, budget_against, d.account, self.fiscal_year),raise_exception=True
 				)
+
+	@frappe.whitelist()
+	def get_consolidated_data(self):
+		per_activity = {}
+
+		for account in self.accounts:
+			activity = account.budget_sub_activity
+			if not activity or str(activity).strip() == "":
+				continue
+
+			source = getattr(account, 'source_of_fund', 'Unknown')
+			budget = account.initial_budget or 0 
+
+			if activity not in per_activity:
+				per_activity[activity] = {
+					"total_budget_per_activity": 0,
+					"sources": {}
+				}
+
+			per_activity[activity]["total_budget_per_activity"] += budget
+
+			if source not in per_activity[activity]["sources"]:
+				per_activity[activity]["sources"][source] = budget
+			else:
+				per_activity[activity]["sources"][source] += budget
+
+		r_data = []
+		for activity, values in per_activity.items():
+			sources_str = ", ".join(
+				[f"{src}: {amt}" for src, amt in values["sources"].items()]
+			)
+
+			r_data.append({
+				"budget_sub_activity": activity,
+				"initial_budget": values["total_budget_per_activity"],
+				"source_of_fund_summary": sources_str
+			})
+
+		return r_data
+
+	@frappe.whitelist()
+	def get_filtered_budget_data(self):
+		r_data = []
+		total = 0
+		cond = ""
+		if self.cost_center:
+			cond += "and ba.cost_center = '{}'".format(self.cost_center)
+		if len(self.budget_activities) > 0:
+			cond += "and ba.budget_activity in ({})".format(", ".join("'"+ba.budget_activity+"'" for ba in self.budget_activities))
+		if len(self.budget_sub_activities) > 0:
+			cond += "and ba.budget_sub_activity in ({})".format(", ".join("'"+bsa.budget_sub_activity+"'" for bsa in self.budget_sub_activities))
+		if len(self.source_of_funds) > 0:
+			cond += "and ba.source_of_fund in ({})".format(", ".join("'"+sf.source_of_fund+"'" for sf in self.source_of_funds))
+		if len(self.budget_accounts) > 0:
+			cond += "and ba.account in ({})".format(", ".join("'"+bac.account+"'" for bac in self.budget_accounts))
+		data = frappe.db.sql("""
+				select ba.cost_center, ba.budget_activity,
+					   ba.budget_sub_activity, ba.source_of_fund, ba.account, ba.initial_budget
+					   from `tabBudget Account` ba where ba.parent = '{}'
+					   {}
+			""".format(self.name, cond), as_dict = 1)
+		for d in data:
+			r_data.append({"cost_center": d.cost_center, "budget_activity": d.budget_activity, "budget_sub_activity": d.budget_sub_activity, "account": d.account, "initial_budget": d.initial_budget})
+			total += flt(d.initial_budget)
+		if total > 0:
+			r_data.append({"cost_center": "Total", "budget_activity": "", "budget_sub_activity": "", "account": "", "initial_budget":total})
+			
+		return r_data
+		
 
 	def validate_accounts(self):
 		account_list = []
@@ -115,10 +197,10 @@ class Budget(Document):
 					)
 				'''
 
-				if d.account in account_list:
-					frappe.msgprint(_("Account {0} has been entered multiple times").format(d.account), raise_exception=True)
-				else:
-					account_list.append(d.account)
+				# if d.account+" - "+d.cost_center+" - "+d.budget_activity+" - "+d.budget_sub_activity in account_list:
+				# 	frappe.msgprint(_("Account {0} has been entered for object code {1}, activity code {2} and sub activity code {3} multiple times").format(d.account, d.cost_center, d.budget_activity, d.budget_sub_activity), raise_exception=True)
+				# else:
+				# 	account_list.append(d.account+" - "+d.cost_center+" - "+d.budget_activity+" - "+d.budget_sub_activity)
 
 	def set_null_value(self):
 		if self.budget_against == "Cost Center":
@@ -147,42 +229,49 @@ class Budget(Document):
 	def calculate_budget(self):
 		if self.accounts:
 			for acc in self.accounts:
-				acc.budget_amount = flt(acc.initial_budget) + flt(acc.supplementary_budget) + flt(acc.budget_received) - flt(acc.budget_sent)
+				acc.budget_amount = flt(acc.approved_budget) + flt(acc.supplementary_budget) + flt(acc.budget_received) - flt(acc.budget_sent)
 				acc.db_set("budget_amount", acc.budget_amount)
 
+	# def calculate_totals(self): 
+	# 	total_initial = 0
+	# 	proposal_budget = 0
+	# 	approved_budget =0
+	# 	total_actual = 0
+	# 	total_supplementary = 0
+	# 	if self.accounts:
+	# 		for item in self.accounts:
+	# 			total_initial += flt(item.initial_budget)
+	# 			approved_budget += flt(item.approved_budget)
+	# 			proposal_budget += flt(item.initial_budget)
+	# 			total_actual += flt(item.budget_amount)
+	# 			total_supplementary += flt(item.supplementary_budget)
+
+	# 		self.initial_total = total_initial
+	# 		self.initial_budget = proposal_budget
+	# 		self.actual_total = total_actual
+	# 		self.supp_total = total_supplementary
 	def calculate_totals(self): 
 		total_initial = 0
+		proposal_budget = 0
+		approved_budget = 0
 		total_actual = 0
 		total_supplementary = 0
+
 		if self.accounts:
 			for item in self.accounts:
 				total_initial += flt(item.initial_budget)
+				approved_budget += flt(item.approved_budget)
+				proposal_budget += flt(item.initial_budget)
 				total_actual += flt(item.budget_amount)
 				total_supplementary += flt(item.supplementary_budget)
 
 			self.initial_total = total_initial
+			self.initial_budget = proposal_budget
 			self.actual_total = total_actual
 			self.supp_total = total_supplementary
-	
-	@frappe.whitelist()
-	def set_initial_budget(self):
-		for d in self.accounts:
-			initial_budget = flt(d.january) + flt(d.february) + flt(d.march) + flt(d.april)+ flt(d.may) +flt(d.june) +flt(d.july) +flt(d.august) + flt(d.september) +flt(d.october) +flt(d.november) +flt(d.december)
-			d.db_set("initial_budget", initial_budget)
-			d.db_set("budget_amount", flt(initial_budget) + flt(d.supplementary_budget) + flt(d.budget_received) - flt(d.budget_sent))
+			self.approved_budget = approved_budget 
 
 	@frappe.whitelist()
-	# 	#Populate Budget Accounts with Expense and Fixed Asset Accounts
-	# def get_accounts(self):
-	# 	query = "select name as account, account_code from tabAccount where account_type in (\'Expense Account\',\'Fixed Asset\') and is_group = 0 and company = \'" + str(self.company) + "\' and (freeze_account is null or freeze_account != 'Yes') order by account_code ASC"
-	# 	entries = frappe.db.sql(query, as_dict=True)
-	# 	self.set('accounts', [])
-
-	# 	for d in entries:
-	# 		d.initial_budget = 0
-	# 		row = self.append('accounts', {})
-	# 		row.update(d)
-
 	def get_accounts(self):
 		condition = " and a.budget_type = '{}'".format(self.budget_type) if self.budget_type else ""
 		entries = frappe.db.sql("""select parent_account, a.name as account, a.budget_type, account_number
@@ -216,6 +305,52 @@ class Budget(Document):
 				p_account = d.parent_account
 			row = self.append('accounts', {})
 			row.update(d)
+	@frappe.whitelist()
+	def get_budget_heads(self):
+		if self.cost_center:
+			self.accounts = [acc for acc in self.accounts if acc.account and acc.budget_sub_activity and acc.source_of_fund]
+
+			for b in self.budget_activities:
+				for c in self.budget_sub_activities:
+					for d in self.source_of_funds:
+						for e in self.budget_accounts:
+							exists = frappe.db.sql("""
+								SELECT ba.name 
+								FROM `tabBudget Account` ba, `tabBudget` b 
+								WHERE ba.parent = b.name
+								AND b.fiscal_year = %s
+								AND b.docstatus < 2
+								AND ba.account = %s
+								AND ba.budget_activity = %s
+								AND ba.budget_sub_activity = %s
+								AND ba.source_of_fund = %s
+								AND ba.cost_center = %s
+							""", (
+								self.fiscal_year,
+								e.account,
+								b.budget_activity,
+								c.budget_sub_activity,
+								d.source_of_fund,
+								self.cost_center
+							))
+
+							if not exists:
+								row = self.append("accounts", {})
+								row.cost_center = self.cost_center
+								row.budget_activity = b.budget_activity
+								row.budget_sub_activity = c.budget_sub_activity
+								row.source_of_fund = d.source_of_fund
+								row.account = e.account
+								row.initial_budget = 0
+			self.budget_activities = []
+			self.budget_sub_activities = []
+			self.source_of_funds = []
+			self.budget_accounts = []
+			self.accounts = [
+				acc for acc in self.accounts
+				if acc.account and acc.budget_sub_activity and acc.source_of_fund
+			]
+
 	
 def delete_committed_consumed_budget(reference=None, reference_no=None):
 	if reference and reference_no:
@@ -239,7 +374,7 @@ def validate_expense_against_budget(args, throw_error=True):
 		frappe.flags.exception_approver_role = frappe.get_cached_value(
 			"Company", args.get("company"), "exception_budget_approver_role"
 		)
-
+		
 	if not args.account:
 		args.account = args.get("expense_account")
 
@@ -285,16 +420,16 @@ def validate_expense_against_budget(args, throw_error=True):
 					cc_doc = frappe.get_doc("Cost Center", args.cost_center)
 					budget_cost_center = cc_doc.budget_cost_center if cc_doc.use_budget_from_parent else args.cost_center
 				condition = " and b.cost_center='{}'".format(budget_cost_center)
-				
+			# condition += f""" and ba.budget_activity="{args.budget_activity}" and ba.budget_sub_activity="{args.budget_sub_activity}" and ba.source_of_fund="{args.source_of_fund}" """
 			args.is_tree = False
 			if not args.project:
 				args.committed_cost_center = args.cost_center
 				args.cost_center = budget_cost_center
-			
+   
 			budget_records = frappe.db.sql(
 				"""
 				select
-					b.{budget_against_field} as budget_against, ba.budget_amount, b.monthly_distribution,
+					b.{budget_against_field} as budget_against, b.actual_total, b.actual_total budget_amount, b.monthly_distribution,
 					ifnull(b.applicable_on_material_request, 0) as for_material_request,
 					ifnull(applicable_on_purchase_order, 0) as for_purchase_order,
 					ifnull(applicable_on_booking_actual_expenses,0) as for_actual_expenses,
@@ -302,27 +437,37 @@ def validate_expense_against_budget(args, throw_error=True):
 					b.action_if_annual_budget_exceeded_on_mr, b.action_if_accumulated_monthly_budget_exceeded_on_mr,
 					b.action_if_annual_budget_exceeded_on_po, b.action_if_accumulated_monthly_budget_exceeded_on_po
 				from
-					`tabBudget` b, `tabBudget Account` ba
+					`tabBudget Release` b
 				where
-					b.name=ba.parent and b.fiscal_year={fiscal_year}
-					and ba.account="{account}" and b.docstatus=1
+					b.fiscal_year="{fiscal_year}"
+					and b.docstatus=1
 					{condition}
 			""".format(
 					condition=condition, budget_against_field=budget_against,
 				fiscal_year=args.fiscal_year, account=args.account),
-				as_dict=True,
+				as_dict=True
 			)  # nosec
+   
 			# frappe.throw(str(budget_records))
+
 			if budget_records:
 				validate_budget_records(args, error, budget_records, throw_error)
 			elif throw_error:
-				frappe.msgprint(_("Budget allocation not available for <b>%s </b> in %s <b>%s</b>" % (
-								args.account, budget_against, frappe.db.escape(args.get(budget_against))
+				# frappe.msgprint(_("Budget Release not available for <b>%s </b> in %s <b>%s</b> for Budget Sub Activity <b>%s</b> under Budget Activity <b>%s</b> for fiscal year and month <b>%s</b>, <b>%s</b>" % (
+				# 				args.account, budget_against, frappe.db.escape(args.get(budget_against)),args.budget_sub_activity, args.budget_activity, args.fiscal_year, str(args.posting_date).split("-")[1]
+				# 			)), raise_exception=True
+				# 		)
+				frappe.msgprint(_("Budget Release not available for <b>%s </b> in %s <b>%s</b> for fiscal year and month <b>%s</b>, <b>%s</b>" % (
+								args.account, budget_against, frappe.db.escape(args.get(budget_against)), args.fiscal_year, str(args.posting_date).split("-")[1]
 							)), raise_exception=True
 						)
 			else:
-				error.append("Budget allocation not available for <b>%s </b> in %s <b>%s</b>" % (
-								args.account, budget_against, frappe.db.escape(args.get(budget_against))
+				# error.append("Budget Release not available for <b>%s </b> in %s <b>%s</b> for Budget Sub Activity <b>%s</b> under Budget Activity <b>%s</b> for fiscal year and month <b>%s</b>, <b>%s</b>" % (
+				# 				args.account, budget_against, frappe.db.escape(args.get(budget_against)), args.budget_sub_activity, args.budget_activity, args.fiscal_year, str(args.posting_date).split("-")[1]
+				# 			))
+				# return error[0]
+				error.append("Budget Release not available for <b>%s </b> in %s <b>%s</b> for fiscal year and month <b>%s</b>, <b>%s</b>" % (
+								args.account, budget_against, frappe.db.escape(args.get(budget_against)), args.fiscal_year, str(args.posting_date).split("-")[1]
 							))
 				return error[0]
 			if len(error)>0:
@@ -354,33 +499,39 @@ def validate_budget_records(args, error, budget_records, throw_error):
 					args, error, flt(budget.budget_amount), _("Annual"), yearly_action, budget.budget_against, amount, throw_error
 				)
 
+
+#work under this method for budget release changes Kinley
 def compare_expense_with_budget(args, error, budget_amount, action_for, action, budget_against, amount=0, throw_error=None):
+	# frappe.throw(str(args))
 	actual_expense = amount or args.amount
 	if args.project:
 		condition = " and cb.project = '{}'".format(budget_against)
 	else:
-		condition = " and cb.cost_center = {}".format(frappe.db.escape(budget_against))
+		condition = " and cb.company = {}".format(frappe.db.escape(budget_against))
 	args.fiscal_year = args.fiscal_year if args.fiscal_year else str(args.posting_date)[0:4]
+	# frappe.throw(str(args.posting_date))
 	start_date = get_first_day(args.posting_date)
 	end_date = get_last_day(args.posting_date)
 	committed = frappe.db.sql("""select SUM(cb.amount) as total 
 								from `tabCommitted Budget` cb 
-								where cb.account={account} 
+								where 1 = 1
 								{condition} 
 								and cb.reference_date between '{start_date}' and '{end_date}'""".format(condition=condition, 
-							account=frappe.db.escape(args.account), cost_center=args.cost_center, start_date=start_date, 
+							account=frappe.db.escape(args.account), company=args.company, start_date=start_date, 
 							end_date=end_date), as_dict=True)
+
 	consumed = frappe.db.sql("""select SUM(cb.amount) as total 
 								from `tabConsumed Budget` cb 
-								where cb.account={account}
+								where 1 = 1
 								{condition} 
 								and cb.reference_date between '{start_date}' and '{end_date}'""".format(condition=condition, 
-							account=frappe.db.escape(args.account), cost_center=args.cost_center, start_date=start_date, 
+							account=frappe.db.escape(args.account), company=args.company, start_date=start_date, 
 							end_date=end_date), as_dict=True)
 	if consumed and committed:
 		if flt(consumed[0].total) > flt(committed[0].total):
 			committed = consumed
 		total_expense_amount = flt(committed[0].total) + flt(actual_expense)
+
 		if frappe.db.get_single_value("Budget Settings","allow_budget_deviation"):
 			deviation_percent = frappe.db.get_single_value("Budget Settings","deviation")
 			if deviation_percent > 0:
@@ -390,14 +541,14 @@ def compare_expense_with_budget(args, error, budget_amount, action_for, action, 
 		available_budget = flt(budget_amount)
 		total_expense_amount = flt(actual_expense)
 
-	if total_expense_amount > budget_amount:
-		diff = total_expense_amount - budget_amount
+	if flt(total_expense_amount) > flt(budget_amount):
+		# frappe.throw(str(budget_amount))
+		diff = flt(total_expense_amount) - flt(budget_amount)
 		currency = frappe.get_cached_value("Company", args.company, "default_currency")
 		message = ''
 		if args.doctype in ("Purchase Order", "Purchase Invoice"):
 			message = f" until #Row. {args.idx} with Item Code #{args.item_code}."
-
-		msg = _("{0} Budget for Account {1} against {2} {3} is {4} and available budget is {5} Including (Supplementary Budget,Budget Received,Budget Sent). It exceed by {6}{7}").format(
+		msg = _("Monthly Budget for Account {1} against {2} {3} for fiscal year {8} and month {9} is {4} and available budget is {5} Including (Supplementary Budget,Budget Received,Budget Sent). It exceed by {6}{7}").format(
 			_(action_for),
 			frappe.bold(args.account),
 			args.budget_against_field,
@@ -406,6 +557,9 @@ def compare_expense_with_budget(args, error, budget_amount, action_for, action, 
 			frappe.bold(fmt_money(available_budget, currency=currency)),
 			frappe.bold(fmt_money(diff, currency=currency)),
 			message,
+			frappe.bold(args.fiscal_year),
+			frappe.bold(str(args.posting_date).split("-")[1]),
+
 		)
 
 		if (
@@ -531,6 +685,41 @@ def get_other_condition(args, budget, for_doc):
 	return condition
 
 
+@frappe.whitelist()
+def make_budget_release(source_name, target_doc=None):
+	month = json.loads(frappe.form_dict.get("args"))
+	month = month.get("month")
+	accounts = frappe.get_all(
+		"Budget Account",
+		filters={"parent": source_name},
+		fields=["initial_budget"]
+	)
+
+	for acc in accounts:
+		if not acc.initial_budget or float(acc.initial_budget) <= 0:
+			frappe.throw(_("Approved Budget is missing. Cannot create Budget Release."))
+	def set_missing_values(source, target):
+		target.month = month
+	doc = get_mapped_doc(
+		"Budget",
+		source_name,
+		{
+			"Budget": {
+				"doctype": "Budget Release",
+				"validation": {
+					"docstatus": ["=", 1],
+				},
+			},
+			"Budget Account": {
+				"doctype": "Budget Release Account",
+			},
+		},
+		target_doc,
+		set_missing_values,
+	)
+
+	return doc
+
 def get_actual_expense(args):
 	if not args.budget_against_doctype:
 		args.budget_against_doctype = frappe.unscrub(args.budget_against_field)
@@ -578,16 +767,16 @@ def get_actual_expense(args):
 	return amount
 
 from datetime import datetime
-def get_accumulated_monthly_budget(cost_center, budget_account, transaction_date, amount, fiscal_year):
-	# mydate = datetime.strptime(transaction_date, '%Y-%m-%d')
+
+def get_accumulated_monthly_budget(company, budget_account, transaction_date, amount, fiscal_year):
 	mydate = datetime.fromisoformat(str(transaction_date))
 	month = mydate.month
 	if frappe.db.get_value("Account", budget_account, "ignore_budget_check"):
 		return
 	budget_against = frappe.db.get_single_value("Budget Settings","budget_against")
 	cond = ""
-	if budget_against == "Cost Center":
-		cond += ''' and b.budget_against = "{}" and b.cost_center = "{}" '''.format(budget_against, cost_center)
+	if budget_against == "Company":
+		cond += ''' and b.budget_against = "{}" and b.company = "{}" '''.format(budget_against, company)
 	else:
 		cond += ''' and b.budget_against = "{}" '''.format(budget_against)
 	budget_amount = frappe.db.sql('''select b.action_if_annual_budget_exceeded as annual_action, ba.budget_check,\
@@ -644,30 +833,152 @@ def get_accumulated_monthly_budget(cost_center, budget_account, transaction_date
 				where month = "{month}"
 				and fiscal_year = "{fiscal_year}"
 				and account="{account}"
-				and cost_center="{cost_center}"
-			""".format(from_date=month_first_date, to_date=month_last_date,account = budget_account, month = month_name, cost_center=cost_center, fiscal_year=fiscal_year))[0][0],2)
+				and company="{company}"
+			""".format(from_date=month_first_date, to_date=month_last_date,account = budget_account, month = month_name, company=company, fiscal_year=fiscal_year))[0][0],2)
 		monthly_received = frappe.db.sql("""
 				select sum(amount)
 				from `tabReappropriation Details`
 				where fiscal_year = "{fiscal_year}"
 				and to_account="{account}"
-				and to_cost_center="{cost_center}"
+				and to_company="{company}"
 				and to_month = "{month}"
-			""".format(from_date=month_first_date, to_date=month_last_date, month = month_name, account = budget_account, cost_center=cost_center, fiscal_year=fiscal_year))[0][0]
+			""".format(from_date=month_first_date, to_date=month_last_date, month = month_name, account = budget_account, company=company, fiscal_year=fiscal_year))[0][0]
 		monthly_sent = frappe.db.sql("""
 				select sum(amount)
 				from `tabReappropriation Details`
 				where fiscal_year = "{fiscal_year}"
 				and from_account="{account}"
-				and from_cost_center="{cost_center}"
+				and from_company="{company}"
 				and from_month = "{month}"
-			""".format(from_date=month_first_date, to_date=month_last_date,month = month_name, account = budget_account, cost_center=cost_center, fiscal_year=fiscal_year))[0][0]
+			""".format(from_date=month_first_date, to_date=month_last_date,month = month_name, account = budget_account, company=company, fiscal_year=fiscal_year))[0][0]
 		adjustment = flt(supplement,2) + flt(monthly_received,2) - flt(monthly_sent,2)
 	if adjustment:
 		sum =flt(adjustment) + flt(monthly_amount)
 		return sum
 	else:
 		return monthly_amount
+
+def validate_budget_records(args, error, budget_records, throw_error):
+	for budget in budget_records:
+		amount = get_amount(args, budget)
+		yearly_action, monthly_action = get_actions(args, budget)
+		monthly_budget_check = frappe.db.get_single_value("Budget Settings","monthly_budget_check")
+		if monthly_budget_check:
+			budget_account = args.expense_account
+			if not budget_account:
+				budget_account = args.account
+			transaction_date = args.posting_date
+			budget_amount = get_accumulated_monthly_budget(
+				args.company, budget_account, transaction_date, args.amount, args.fiscal_year
+			)
+			args["month_end_date"] = get_last_day(args.posting_date)
+			compare_expense_with_budget(
+				args, error, budget_amount, _("Accumulated Monthly"), monthly_action, budget.budget_against, amount, throw_error
+			)
+		else:
+			budget_amount = budget.budget_amount
+			if yearly_action in ("Stop", "Warn"):
+				compare_expense_with_budget(
+					args, error, flt(budget.budget_amount), _("Annual"), yearly_action, budget.budget_against, amount, throw_error
+				)
+def validate_expense_against_budget(args, throw_error=True):
+    args = frappe._dict(args)
+    if args.is_cancelled:
+        delete_committed_consumed_budget(args.voucher_type, args.voucher_no)
+        return
+    error = []
+    if args.get("company") and not args.fiscal_year:
+        args.fiscal_year = get_fiscal_year(args.get("posting_date"), company=args.get("company"))[0]
+        frappe.flags.exception_approver_role = frappe.get_cached_value(
+            "Company", args.get("company"), "exception_budget_approver_role"
+        )
+        
+    if not args.account:
+        args.account = args.get("expense_account")
+
+    if not args.get("account") and args.item_code:
+        args.account = get_item_details(args)
+    if not args.company:
+        frappe.throw("Company is missing for budget check")
+
+    if not args.account:
+        frappe.msgprint("Budget Head/Account is missing. Please provide account to check budget", raise_exception=True)
+
+    account_dtl = frappe.get_doc("Account", args.account)
+    account_type = account_dtl.account_type
+    if not account_type:
+        frappe.throw("Account Type missing for Budget account <b>{}</b>".format(args.account))
+
+    if account_dtl.ignore_budget_check:
+        return
+
+    budget_cost_center = None
+
+    """ avoid budget check at MR """
+    for budget_against in ["company", "cost_center"] + get_accounting_dimensions():
+        if (
+            args.get(budget_against)
+            and args.account
+            and frappe.db.get_value("Account", args.account, "account_type") in ["Expense Account","Fixed Asset"]
+        ):
+            doctype = frappe.unscrub(budget_against)
+            args.budget_against_field = budget_against
+            args.budget_against_doctype = doctype
+            
+            if budget_against == "company":
+                condition = " and b.company = '{}'".format(args.company)
+            else:
+                if args.project:
+                    condition = " and b.project = '{}'".format(args.project)
+                    budget_cost_center = args.cost_center
+                else:
+                    bud_acc_dtl = frappe.get_doc("Account", args.account)
+                    if bud_acc_dtl.is_centralized_budget:
+                        budget_cost_center = bud_acc_dtl.cost_center
+                    else:
+                        cc_doc = frappe.get_doc("Cost Center", args.cost_center)
+                        budget_cost_center = cc_doc.budget_cost_center if cc_doc.use_budget_from_parent else args.cost_center
+
+                condition = " and b.cost_center='{}'".format(budget_cost_center)
+            
+            args.is_tree = False
+            if not args.project:
+                args.committed_cost_center = args.cost_center
+                args.cost_center = budget_cost_center
+            
+            budget_records = frappe.db.sql(
+                """
+                select
+                    b.{budget_against_field} as budget_against, b.actual_total, b.actual_total budget_amount, b.monthly_distribution,
+                    ifnull(b.applicable_on_material_request, 0) as for_material_request,
+                    ifnull(applicable_on_purchase_order, 0) as for_purchase_order,
+                    ifnull(applicable_on_booking_actual_expenses,0) as for_actual_expenses,
+                    b.action_if_annual_budget_exceeded, b.action_if_accumulated_monthly_budget_exceeded,
+                    b.action_if_annual_budget_exceeded_on_mr, b.action_if_accumulated_monthly_budget_exceeded_on_mr,
+                    b.action_if_annual_budget_exceeded_on_po, b.action_if_accumulated_monthly_budget_exceeded_on_po
+                from
+                    `tabBudget Release` b
+                where
+                    b.fiscal_year="{fiscal_year}"
+                    and b.docstatus=1
+                    {condition}
+            """.format(
+                    condition=condition, budget_against_field=budget_against,
+                fiscal_year=args.fiscal_year, account=args.account),
+                as_dict=True
+            )
+
+            if budget_records:
+                validate_budget_records(args, error, budget_records, throw_error)
+            else:
+                error.append("Budget Release not available for <b>%s </b> in %s <b>%s</b> for fiscal year and month <b>%s</b>, <b>%s</b>" % (
+                                args.account, budget_against, frappe.db.escape(args.get(budget_against)), args.fiscal_year, str(args.posting_date).split("-")[1]
+                            ))
+                return error[0]
+            if len(error) > 0:
+                return error[0]
+                
+    commit_budget(args)
 
 
 def get_item_details(args):

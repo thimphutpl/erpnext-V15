@@ -6,6 +6,7 @@
  "engine": "InnoDB",
  "field_order": [
   "section_break_1",
+  "company",
   "salary_payable_account",
   "salary_tax_account",
   "overtime_account",
@@ -233,12 +234,19 @@
    "fieldtype": "Link",
    "label": "Muster Roll Payable Account",
    "options": "Account"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-12-06 14:33:43.316947",
+ "modified": "2025-12-03 11:10:37.956800",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "HR Accounts Settings",
