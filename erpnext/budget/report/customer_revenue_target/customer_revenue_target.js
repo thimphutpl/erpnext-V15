@@ -2,7 +2,7 @@
 // For license information, please see license.txt
 
 frappe.query_reports["Customer Revenue Target"] = {
-"filters": [
+	"filters": [
 		{
 			"fieldname": "fiscal_year",
 			"label": __("Fiscal Year"),
@@ -26,9 +26,17 @@ frappe.query_reports["Customer Revenue Target"] = {
 			"fieldname": "month",
 			"label": __("Month"),
 			"fieldtype": "Select",
-			"options": ["All","January","February","March","April","May","June","July","August","September","October","November","December"],
+			"options": ["All", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
 			"default": "All",
 			"reqd": 1
+		},
+		{
+			"fieldname": "company",
+			"label": __("Company"),
+			"fieldtype": "Link",
+			"options": "Company",
+			"reqd": 1,
+			"default": frappe.defaults.get_user_default("Company")
 		}
 	]
 };

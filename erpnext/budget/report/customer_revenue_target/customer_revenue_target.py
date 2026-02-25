@@ -1,259 +1,369 @@
-# Copyright (c) 2026, Frappe Technologies Pvt. Ltd. and contributors
-# For license information, please see license.txt
-
+# from frappe.utils import flt, formatdate
 # import frappe
+# from frappe import _
+# import calendar
+# from erpnext.controllers.trends import get_period_date_ranges, get_period_month_ranges
 
-# Copyright (c) 2023, Frappe Technologies Pvt. Ltd. and contributors
-# For license information, please see license.txt
+# def execute(filters=None):
+#     columns = get_columns(filters)
+#     data = get_data(filters)
+#     chart = get_chart_data(filters, data)
+#     return columns, data, None, chart
+
+# # -----------------------------
+# # Columns
+# # -----------------------------
+# def get_columns(filters):
+#     columns = [
+#         {"fieldname": "cost_center", "label": "Cost Center", "fieldtype": "Link", "options": "Cost Center", "width": 180},
+#         {"fieldname": "customer", "label": "Customer", "fieldtype": "Link", "options": "Customer", "width": 180},
+#         {"fieldname": "customer_type", "label": "Customer Type", "fieldtype": "Data", "width": 130},
+#     ]
+
+#     if filters.get("details") and filters.get("month") == "All":
+#         for month in get_period_month_ranges("Monthly", filters["fiscal_year"]):
+#             short = str(month[0])[0:3]
+#             for suffix in ["Target", "Achieved", "Balance", "Percent"]:
+#                 columns.append({
+#                     "label": f"{short} {suffix}",
+#                     "fieldtype": "Float",
+#                     "width": 120
+#                 })
+#     elif filters.get("details") and filters.get("month") != "All":
+#         short = filters.get("month")[0:3]
+#         for suffix in ["Target", "Achieved", "Balance", "Percent"]:
+#             columns.append({
+#                 "label": f"{short} {suffix}",
+#                 "fieldtype": "Float",
+#                 "width": 120
+#             })
+#     else:
+#         columns += [
+#             {"label": "Total Target", "fieldtype": "Currency", "width": 160},
+#             {"label": "Total Achieved", "fieldtype": "Currency", "width": 160},
+#             {"label": "Total Balance", "fieldtype": "Currency", "width": 160},
+#             {"label": "Total Achieved Percent %", "fieldtype": "Percent", "width": 160},
+#         ]
+#     return columns
+
+# # -----------------------------
+# # Data
+# # -----------------------------
+# def get_data(filters):
+#     data = []
+
+#     # Get default receivable account
+#     default_receivable_account = frappe.get_value("Company", filters.get("company"), "default_receivable_account")
+#     fiscal_year = filters.get("fiscal_year")
+#     cost_center = filters.get("cost_center")
+
+#     # Get fiscal year dates
+#     fy = frappe.get_doc("Fiscal Year", fiscal_year)
+#     year_start = fy.year_start_date
+#     year_end = fy.year_end_date
+
+#     # -----------------------------
+#     # Fetch Target Records
+#     # -----------------------------
+#     conditions = "WHERE rt.docstatus = 1 AND rt.fiscal_year = %s"
+#     values = [fiscal_year]
+
+#     if cost_center:
+#         conditions += " AND rt.cost_center = %s"
+#         values.append(cost_center)
+
+#     target_query = f"""
+#         SELECT 
+#             rt.cost_center,
+#             rta.customer,
+#             rta.customer_type,
+#             rta.*
+#         FROM `tabCustomer Revenue Target` rt
+#         INNER JOIN `tabRevenue Target Customer` rta
+#             ON rta.parent = rt.name
+#         {conditions}
+#     """
+
+#     records = frappe.db.sql(target_query, tuple(values), as_dict=True)
+#     if not records:
+#         return data
+
+#     # -----------------------------
+#     # Fetch GL Entries (Single Query)
+#     # -----------------------------
+#     gl_query = """
+#         SELECT
+#             party,
+#             account,
+#             MONTH(posting_date) as month,
+#             SUM(debit - credit) as amount
+#         FROM `tabGL Entry`
+#         WHERE docstatus = 1
+#           AND posting_date BETWEEN %s AND %s
+#           AND party_type = 'Customer'
+#     """
+#     params = [year_start, year_end]
+#     if default_receivable_account:
+#         gl_query += " AND account = %s"
+#         params.append(default_receivable_account)
+
+#     gl_query += " GROUP BY cost_center, party, MONTH(posting_date)"
+#     gl_entries = frappe.db.sql(gl_query, tuple(params), as_dict=True)
+
+#     # Create lookup dictionary for fast access
+#     gl_map = {(g.party, g.month): abs(g.amount or 0) for g in gl_entries}
+
+#     # -----------------------------
+#     # Build Report Rows
+#     # -----------------------------
+#     for d in records:
+#         row = [d.cost_center,d.customer, d.customer_type]
+
+#         # Monthly Details (All)
+#         if filters.get("details") and filters.get("month") == "All":
+#             for month in range(1, 13):
+#                 achieved = gl_map.get((d.customer, month), 0)
+#                 month_name = calendar.month_name[month].lower()
+#                 target = flt(d.get(month_name))
+#                 balance = target - achieved
+#                 percent = (achieved / target * 100) if target else 0
+#                 row += [target, achieved, balance, percent]
+
+#         # Single Month
+#         elif filters.get("details") and filters.get("month") != "All":
+#             month_name = filters.get("month")
+#             month_number = list(calendar.month_name).index(month_name)
+#             achieved = gl_map.get((d.customer, month_number), 0)
+#             target = flt(d.get(month_name.lower()))
+#             balance = target - achieved
+#             percent = (achieved / target * 100) if target else 0
+#             row += [target, achieved, balance, percent]
+
+#         # Yearly Summary
+#         else:
+#             total_achieved = sum(
+#                 gl_map.get(( d.customer, month), 0) for month in range(1, 13)
+#             )
+#             target = flt(d.target_amount)
+#             balance = target - total_achieved
+#             percent = (total_achieved / target * 100) if target else 0
+#             row += [target, total_achieved, balance, percent]
+
+#         data.append(row)
+
+#     return data
+
+# # -----------------------------
+# # Chart
+# # -----------------------------
+# def get_chart_data(filters, data):
+#     if not data:
+#         return None
+
+#     total_target = 0
+#     total_achieved = 0
+#     total_balance = 0
+
+#     for d in data:
+#         values = d[3:]
+#         if len(values) >= 4:
+#             total_target += values[0]
+#             total_achieved += values[1]
+#             total_balance += values[2]
+
+#     return {
+#         "data": {
+#             "labels": [filters.get("fiscal_year")],
+#             "datasets": [
+#                 {"name": _("Target"), "chartType": "bar", "values": [total_target]},
+#                 {"name": _("Achieved"), "chartType": "bar", "values": [total_achieved]},
+#                 {"name": _("Balance"), "chartType": "bar", "values": [total_balance]},
+#             ],
+#         },
+#         "type": "bar",
+#     }
 
 from frappe.utils import flt, formatdate
 import frappe
 from frappe import _
 import calendar
-
 from erpnext.controllers.trends import get_period_date_ranges, get_period_month_ranges
+from collections import defaultdict
 
 def execute(filters=None):
-	columns, data = [], []
-	columns = get_columns(filters)
-	queries = construct_query(filters)
-	data = get_data(queries,filters)
-	
-	chart = get_chart_data(filters, columns, data)
-	
-	return columns, data, None, chart
+    columns = get_columns(filters)
+    data = get_data(filters)
+    chart = get_chart_data(filters, data)
+    return columns, data, None, chart
 
+# -----------------------------
+# Columns
+# -----------------------------
 def get_columns(filters):
-	columns = [
-		{
-			"fieldname": "cost_center",
-			"label": "Cost Center",
-			"fieldtype": "Link",
-			"options": "Cost Center",
-			"width": 200
-		},
-		{
-			"fieldname": "customer",
-			"label": "Customer",
-			"fieldtype": "Link",
-			"options": "Customer",
-			"width": 200
-		},
-		{
-			"fieldname": "customer_type",
-			"label": "Customer Type",
-			"fieldtype": "Data",
-			"width": 120
-		}
-	]
+    columns = [
+        {"fieldname": "customer", "label": "Customer", "fieldtype": "Link", "options": "Customer", "width": 180},
+        {"fieldname": "customer_type", "label": "Customer Type", "fieldtype": "Data", "width": 130},
+    ]
 
-	if filters.get('details') and filters.get('month') == 'All':
-		for month in get_period_month_ranges("Monthly", filters["fiscal_year"]):
-			for label in [
-				_("%s") + " Target",
-				_("%s") + " Achieved",
-				_("%s") + " Balance",
-				_("%s") + " Achieved Percent",
-			]:
-				label = label % str(month[0])[0:3]
-				# frappe.throw(str(frappe.scrub(label)))
-				columns.append(
-					{"label": label, "fieldtype": "Float", "fieldname": frappe.scrub(label), "width": 150}
-				)
+    if filters.get("details") and filters.get("month") == "All":
+        for month in get_period_month_ranges("Monthly", filters["fiscal_year"]):
+            short = str(month[0])[0:3]
+            for suffix in ["Target", "Achieved",  "Percent"]:
+                columns.append({
+                    "label": f"{short} {suffix}",
+                    "fieldtype": "Float",
+                    "width": 120
+                })
+    elif filters.get("details") and filters.get("month") != "All":
+        short = filters.get("month")[0:3]
+        for suffix in ["Target", "Achieved",  "Percent"]:
+            columns.append({
+                "label": f"{short} {suffix}",
+                "fieldtype": "Float",
+                "width": 120
+            })
+    else:
+        columns += [
+            {"label": "Total Target", "fieldtype": "Currency", "width": 160},
+            {"label": "Total Achieved", "fieldtype": "Currency", "width": 160},
+            # {"label": "Total Balance", "fieldtype": "Currency", "width": 160},
+            {"label": "Total Achieved Percent %", "fieldtype": "Percent", "width": 160},
+        ]
+    return columns
 
-	if filters.get('details') and filters.get('month') != 'All':
-		for label in [
-			_("%s") + " Target",
-			_("%s") + " Achieved",
-			_("%s") + " Balance",
-			_("%s") + " Achieved Percent",
-		]:
-			label = label % str(filters.get('month'))[0:3]
-			# frappe.throw(str(frappe.scrub(label)))
-			columns.append(
-				{"label": label, "fieldtype": "Float", "fieldname": frappe.scrub(label), "width": 150}
-			)
-	else:
-		columns += [{
-				"fieldname": "target_amount",
-				"label": "Target Total",
-				"fieldtype": "Currency",
-				"width": 160
-			},
-			{
-				"fieldname": "achieved_amount",
-				"label": "Total Achieved",
-				"fieldtype": "Currency",
-				"width": 160
-			},
-			{
-				"fieldname": "balance_amount",
-				"label": "Total Balance",
-				"fieldtype": "Currency",
-				"width": 160
-			},
-			{
-				"fieldname": "achieved_percent",
-				"label": "Total Achieved Percent",
-				"fieldtype": "Percent",
-				"width": 160
-			}]
+# -----------------------------
+# Data
+# -----------------------------
+def get_data(filters):
+    data = []
 
-	return columns
+    # Default receivable account
+    default_receivable_account = frappe.get_value("Company", filters.get("company"), "default_receivable_account")
+    fiscal_year = filters.get("fiscal_year")
 
-def construct_query(filters=None):
-	conditions, filters = get_conditions(filters)
-	month_lower = filters.get("month").lower()
+    # Fiscal year dates
+    fy = frappe.get_doc("Fiscal Year", fiscal_year)
+    year_start = fy.year_start_date
+    year_end = fy.year_end_date
 
-	query = ("""
-			select 
-				rta.*
-			from `tabRevenue Target Customer` rt, `tabRevenue Target Customer` rta 
-			where rta.parent = rt.name and rt.docstatus = 1 
-			{conditions}
-			""".format(month=month_lower, conditions=conditions))
-	return query
-	""" rta.cost_center as cost_center, rta.customer as customer, 
-		  		rta.customer_type as customer_type,
-		  		rta.{month} as monthly_amt """
-	
-def get_data(query, filters):
-	data = []
-	datas = frappe.db.sql(query, as_dict=True)
+    # -----------------------------
+    # Fetch Target Records
+    # -----------------------------
+    conditions = "WHERE rt.docstatus = 1 AND rt.fiscal_year = %s"
+    values = [fiscal_year]
 
-	# frappe.throw(f"{filters.get('details')} and here: {filters.get('month')}")
-	if filters.get('details') and filters.get('month') != 'All':
-		# frappe.throw(f"hello")
-		month_name = filters.get("month")
-		year = filters.get("fiscal_year")
-		month_number = list(calendar.month_name).index(month_name.capitalize())
-		_, end_day = calendar.monthrange(int(year), month_number)
+    target_query = f"""
+        SELECT 
+            rta.customer,
+            rta.customer_type,
+            rta.*
+        FROM `tabCustomer Revenue Target` rt
+        INNER JOIN `tabRevenue Target Customer` rta
+            ON rta.parent = rt.name
+        {conditions}
+    """
+    records = frappe.db.sql(target_query, tuple(values), as_dict=True)
+    if not records:
+        return data
 
-		start_date = f"{year}-{month_number:02d}-01"
-		end_date = f"{year}-{month_number:02d}-{end_day}"
-	# elif filters.get('details'):
-	# 	year = filters.get("fiscal_year")
-	# 	start_date = f"{year}-01-01"
-	# 	end_date = f"{year}-12-31"
-	else:
-		year = filters.get("fiscal_year")
-		start_date = f"{year}-01-01"
-		end_date = f"{year}-12-31"
+    # -----------------------------
+    # Fetch GL Entries
+    # -----------------------------
+    gl_query = """
+        SELECT
+            party,
+            account,
+            MONTH(posting_date) as month,
+            SUM(debit - credit) as amount
+        FROM `tabGL Entry`
+        WHERE docstatus = 1
+          AND posting_date BETWEEN %s AND %s
+          AND party_type = 'Customer'
+    """
+    params = [year_start, year_end]
+    if default_receivable_account:
+        gl_query += " AND account = %s"
+        params.append(default_receivable_account)
 
-	for d in datas:
-		row = [d.cost_center, d.customer, d.customer_type]
+    gl_query += " GROUP BY party, MONTH(posting_date)"
+    gl_entries = frappe.db.sql(gl_query, tuple(params), as_dict=True)
 
-		if filters.get('details') and filters.get('month') == 'All':
-			# for month get_period_month_ranges("Monthly", filters["fiscal_year"]):
-			for from_date, to_date in get_period_date_ranges('Monthly', filters.get("fiscal_year")):
-				# frappe.throw(str(formatdate(from_date, format_string="MMMM")))
-				month_name = str(formatdate(from_date, format_string="MMMM").lower())
-				achieved_month = frappe.db.sql("""
-					select
-						ifnull(sum(gl.debit) - sum(gl.credit), 0) as achieved_amount
-						from `tabGL Entry` as gl
-						where gl.docstatus = 1
-						and gl.posting_date between '{from_date}' and '{to_date}'
-						and gl.cost_center = '{cost_center}'
-						and gl.account ='{account}'
-				""".format(from_date=from_date, to_date=to_date, cost_center=d.cost_center, account=d.account),as_dict=True)
-				achieved_month_amt = achieved_month[0]['achieved_amount']
+    # -----------------------------
+    # Sum all GL entries per customer per month
+    # -----------------------------
+    gl_map = defaultdict(float)
+    for g in gl_entries:
+        gl_map[(g.party, g.month)] += flt(g.amount or 0)
 
-				achieved_percent_month, balance_amount_month = 0, 0
-				balance_amount_month = flt(d[month_name]) - flt(abs(achieved_month_amt))
-				if d[month_name] != 0:
-					achieved_percent_month = (flt(achieved_month_amt) / flt(d[month_name])) * 100
+    # -----------------------------
+    # Build Report Rows
+    # -----------------------------
+    for d in records:
+        row = [d.customer, d.customer_type]
 
-				row += [flt(d[month_name]), abs(achieved_month_amt), flt(balance_amount_month), abs(achieved_percent_month)]
-			
-		achieved = frappe.db.sql("""
-			select
-				ifnull(sum(gl.debit) - sum(gl.credit), 0) as achieved_amount
-				from `tabGL Entry` as gl
-				where gl.docstatus = 1
-				and gl.posting_date between '{from_date}' and '{to_date}'
-				and gl.cost_center = '{cost_center}'
-				and gl.account ='{account}'
-			""".format(from_date=start_date, to_date=end_date, cost_center=d.cost_center, account=d.account),as_dict=True)
-	
-		achieved_amount = achieved[0]['achieved_amount']
+        # Monthly Details (All)
+        if filters.get("details") and filters.get("month") == "All":
+            for month in range(1, 13):
+                achieved = gl_map.get((d.customer, month), 0)
+                month_name = calendar.month_name[month].lower()
+                target = flt(d.get(month_name))
+                # balance = target - achieved
+                percent = (achieved / target * 100) if target else 0
+                row += [target, achieved, percent]
+                # row += [target, achieved, balance, percent]
 
-		achieved_percent,target_amount = 0,0
-		if filters.get('details') and filters.get('month') != 'All':
-			month_val = filters.get('month').lower()
-			balance_amount = flt(d[month_val]) - flt(abs(achieved_amount))
-			target_amount = flt(d[month_val])
-			if d[month_val] != 0:
-				achieved_percent = (flt(achieved_amount) / flt(d[month_val])) * 100
-		else:
-			balance_amount = flt(d.target_amount) - flt(abs(achieved_amount))
-			if d.target_amount != 0:
-				achieved_percent = (flt(achieved_amount) / flt(d.target_amount)) * 100
-			target_amount = flt(d.target_amount)
-		
-		# row = {
-		# 	"cost_center": d.cost_center,
-		# 	"account": d.account,
-		# 	"account_number": d.account_number,
-		# 	"target_amount": target_amount,
-		# 	"achieved_amount": abs(achieved_amount),
-		# 	"balance_amount": balance_amount,
-		# 	"achieved_percent": abs(achieved_percent)
-		# }
-		row += [target_amount, abs(achieved_amount), balance_amount, abs(achieved_percent)]
-		# frappe.throw("<pre>{}</pre>".format(frappe.as_json(row)))
-		data.append(row)
-	return data
+        # Single Month
+        elif filters.get("details") and filters.get("month") != "All":
+            month_name = filters.get("month")
+            month_number = list(calendar.month_name).index(month_name)
+            achieved = gl_map.get((d.customer, month_number), 0)
+            target = flt(d.get(month_name.lower()))
+            # balance = target - achieved
+            percent = (achieved / target * 100) if target else 0
+            # row += [target, achieved, balance, percent]
+            row += [target, achieved, percent]
 
-def get_conditions(filters):
-	# if not filters.get("details") and filters.get("month") != "All":
-	# 	frappe.throw(f"set month filter to <b>All</b>")
-	conditions = ""
-	# if filters.get("month") != 'All':
-	# 	conditions += """ and rta.{month} as monthly_amt""".format(month=filters.get("month").lower())
-	if filters.get("cost_center"):
-		conditions += """ and rta.cost_center ='{cost_center}'""".format(cost_center=filters.get("cost_center"))
-	
-	return conditions, filters
+        # Yearly Summary
+        else:
+            total_achieved = sum(
+                gl_map.get((d.customer, month), 0) for month in range(1, 13)
+            )
+            target = flt(d.target_amount)
+            # balance = target - total_achieved
+            percent = (total_achieved / target * 100) if target else 0
+            # row += [target, total_achieved, balance, percent]
+            row += [target, total_achieved, percent]
 
-def get_chart_data(filters, columns, data):
-	if not data:
-		return None
+        data.append(row)
 
-	labels = []
+    return data
 
-	if filters.get('details') and filters.get('month') == 'All':
-		for month in get_period_month_ranges("Monthly", filters["fiscal_year"]):
-			labels.append(str(month[0])[0:3])
+# -----------------------------
+# Chart
+# -----------------------------
+def get_chart_data(filters, data):
+    if not data:
+        return None
 
-	if filters.get('details') and filters.get('month') != 'All':
-		labels.append(str(filters.get('month'))[0:3])
-	else:
-		labels.append(filters.get("fiscal_year"))
+    total_target = 0
+    total_achieved = 0
+    # total_balance = 0
 
-	no_of_columns = len(labels)
+    for d in data:
+        values = d[2:]  # start after customer & type
+        if len(values) >= 4:
+            total_target += values[0]
+            total_achieved += values[1]
+            # total_balance += values[2]
 
-	target_values, achieved_values, balance_value, achieve_percent = [0] * no_of_columns, [0] * no_of_columns, [0] * no_of_columns, [0] * no_of_columns
-	for d in data:
-		values = d[3:]
-		index = 0
-
-		for i in range(no_of_columns):
-			target_values[i] += values[index]
-			achieved_values[i] += values[index + 1]
-			balance_value[i] += values[index + 2]
-			achieve_percent[i] += values[index + 3]
-			index += 4
-
-	return {
-		"data": {
-			"labels": labels,
-			"datasets": [
-				{"name": _("Target"), "chartType": "bar", "values": target_values},
-				{"name": _("Achieved"), "chartType": "bar", "values": achieved_values},
-				{"name": _("Balace"), "chartType": "bar", "values": balance_value},
-				{"name": _("Percent Achieved"), "chartType": "bar", "values": achieve_percent},
-			],
-		},
-		"type": "bar",
-	}
+    return {
+        "data": {
+            "labels": [filters.get("fiscal_year")],
+            "datasets": [
+                {"name": _("Target"), "chartType": "bar", "values": [total_target]},
+                {"name": _("Achieved"), "chartType": "bar", "values": [total_achieved]},
+                # {"name": _("Balance"), "chartType": "bar", "values": [total_balance]},
+            ],
+        },
+        "type": "bar",
+    }
