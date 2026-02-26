@@ -34,6 +34,7 @@
   "received_by",
   "issued_by",
   "status",
+  "vehicle_number",
   "column_break_eaoa",
   "set_posting_time",
   "inspection_required",
@@ -786,8 +787,13 @@
    "oldfieldtype": "Select",
    "options": "Branch",
    "print_hide": 1,
-   "reqd": 1,
    "set_only_once": 1
+  },
+  {
+   "fieldname": "vehicle_number",
+   "fieldtype": "Link",
+   "label": "Vehicle Number",
+   "options": "Vehicle"
   }
  ],
  "icon": "fa fa-file-text",
@@ -795,7 +801,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-01-23 14:54:51.055872",
+ "modified": "2026-02-23 17:38:05.304046",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Stock Entry",
