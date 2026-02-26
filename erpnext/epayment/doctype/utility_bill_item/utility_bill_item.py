@@ -19,6 +19,8 @@ class UtilityBillItem(Document):
 		create_direct_payment: DF.Check
 		debit_account: DF.Link
 		fetch_status_code: DF.Data | None
+		gst_amount: DF.Currency
+		included_gst: DF.Check
 		invoice_amount: DF.Currency
 		invoice_date: DF.Date | None
 		invoice_no: DF.Data | None

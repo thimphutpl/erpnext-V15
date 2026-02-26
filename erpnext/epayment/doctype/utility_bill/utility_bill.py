@@ -37,12 +37,14 @@ class UtilityBill(Document):
 		tds_account: DF.Link | None
 		tds_percent: DF.Literal["", "2", "3", "5", "10"]
 		total_bill_amount: DF.Currency
+		total_gst_amount: DF.Currency
 		total_tds_amount: DF.Currency
 		utility_services: DF.Link
 		workflow_state: DF.Link | None
 	# end: auto-generated types
 	def validate(self):
 		check_future_date(self.posting_date)
+		self.calculate_gst_amount()
 		self.calculate_tds_net()
 		self.get_bank_available_balance()
 		self.remove_bill_without_os()
@@ -106,7 +108,16 @@ class UtilityBill(Document):
 		
 		if self.tds_percent and not self.net_payable_amount:
 			frappe.throw("Net Payable amount should be greater than zero")
-	
+	def calculate_gst_amount(self):
+		total_gst = 0.00
+		gst_rate = 5  # percent
+
+		for a in self.item:
+			# GST included in invoice_amount
+			a.gst_amount = ((a.invoice_amount or 0) * gst_rate) / (100 + gst_rate)
+			total_gst += a.gst_amount
+
+		self.total_gst_amount = total_gst
 	def utility_payment(self):
 		for d in self.item:
 			if d.outstanding_amount > 0 and not d.payment_status_code:
@@ -276,26 +287,54 @@ class UtilityBill(Document):
 		doc.cheque_no = self.name
 		doc.cheque_date = self.posting_date
 		doc.payment_status = "Payment Successful"
+		account_head = frappe.db.get_value("Company", self.company, "gst_account")
 		if self.item:
 			count_child = 0
 			for a in self.item:
-				if a.invoice_amount > 0 and a.payment_status == "Success":
-					doc.append("accounts", {
-								"account": a.debit_account,
-								"debit_in_account_currency": a.net_amount,
-								"reference_type": "",
-								"reference_no": self.name,
+				if a.included_gst and a.gst_amount > 0:
+					if a.invoice_amount > 0 and a.payment_status == "Success":
+						doc.append("accounts", {
+									"account": a.debit_account,
+									"debit_in_account_currency": a.net_amount,
+									"reference_type": "",
+									"reference_no": self.name,
+									"cost_center": self.cost_center,
+									"party_type": "Supplier",
+									"party": a.party
+							},)
+						doc.append("accounts", {
+							"account":account_head,
+							"debit_in_account_currency":self.total_gst_amount,
+							"cost_center": self.cost_center,
+							"reference_type": ""
+						})	
+						doc.append("accounts", {
+							"account": self.expense_account,
+							"credit_in_account_currency": a.net_amount + self.total_gst_amount,
+							"cost_center": self.cost_center,
+							"reference_type": ""
+						})
+						
+						count_child +=1
+					else:
+						if a.invoice_amount > 0 and a.payment_status == "Success":
+							doc.append("accounts", {
+										"account": a.debit_account,
+										"debit_in_account_currency": a.net_amount,
+										"reference_type": "",
+										"reference_no": self.name,
+										"cost_center": self.cost_center,
+										"party_type": "Supplier",
+										"party": a.party
+								},)
+							doc.append("accounts", {
+								"account": self.expense_account,
+								"credit_in_account_currency": a.net_amount,
 								"cost_center": self.cost_center,
-								"party_type": "Supplier",
-								"party": a.party
-						},)
-					doc.append("accounts", {
-						"account": self.expense_account,
-						"credit_in_account_currency": a.net_amount,
-						"cost_center": self.cost_center,
-						"reference_type": ""
-					})
-					count_child +=1
+								"reference_type": ""
+							})
+							count_child +=1
+
 			if count_child > 0:
 				doc.save()
 			if doc.name:

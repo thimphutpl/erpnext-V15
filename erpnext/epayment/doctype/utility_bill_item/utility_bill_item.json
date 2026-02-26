@@ -20,6 +20,8 @@
   "tds_amount",
   "net_amount",
   "create_direct_payment",
+  "included_gst",
+  "gst_amount",
   "section_break_15",
   "outstanding_amount",
   "response_msg",
@@ -48,7 +50,6 @@
    "fieldtype": "Link",
    "label": "Utility Service Type",
    "options": "Utility Service Type",
-   "read_only": 1,
    "reqd": 1
   },
   {
@@ -221,11 +222,28 @@
    "label": "API Respond",
    "no_copy": 1,
    "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "included_gst",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Included GST"
+  },
+  {
+   "depends_on": "eval:doc.included_gst==1",
+   "fieldname": "gst_amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "GST Amount",
+   "mandatory_depends_on": "eval:doc.included_gst==1",
+   "precision": "2",
+   "read_only": 1
   }
  ],
  "istable": 1,
  "links": [],
- "modified": "2025-01-11 12:11:01.752950",
+ "modified": "2026-02-20 19:26:10.927230",
  "modified_by": "Administrator",
  "module": "ePayment",
  "name": "Utility Bill Item",
