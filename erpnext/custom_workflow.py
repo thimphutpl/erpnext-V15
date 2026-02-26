@@ -1218,7 +1218,7 @@ class NotifyCustomWorkflow:
 			
 			if self.doc.doctype == "Material Request" and self.doc.owner != "Administrator":
 				self.notify_employee()
-			elif self.doc.doctype in ("Employee Benefits","Employee Separation","Vehicle Request"):
+			elif self.doc.doctype in ("Employee Benefits","Employee Separation","Vehicle Request","Leave Encashment") and self.old_state != self.new_state:
 				self.notify_hr_users()
 				self.notify_employee()
 			else:
