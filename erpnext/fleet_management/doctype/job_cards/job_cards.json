@@ -53,6 +53,9 @@
   "get_items",
   "items",
   "section_break_15",
+  "gst_applicable",
+  "gst_amount",
+  "column_break_dare",
   "goods_amount",
   "column_break_the",
   "services_amount",
@@ -486,12 +489,29 @@
    "label": "Status",
    "options": "\nPayment Received\nPending Payment",
    "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "gst_applicable",
+   "fieldtype": "Check",
+   "label": "GST Applicable"
+  },
+  {
+   "fieldname": "column_break_dare",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "gst_amount",
+   "fieldtype": "Currency",
+   "label": "GST Amount",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-09-18 11:05:16.948596",
+ "modified": "2026-02-26 10:54:15.874114",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Job Cards",

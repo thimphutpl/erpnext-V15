@@ -47,6 +47,8 @@ class JobCards(AccountsController):
 		equipment_type: DF.Link | None
 		finish_date: DF.Date | None
 		goods_amount: DF.Currency
+		gst_amount: DF.Currency
+		gst_applicable: DF.Check
 		items: DF.Table[JobCardsItem]
 		job_in_time: DF.Time | None
 		job_name: DF.Data | None
@@ -84,7 +86,7 @@ class JobCards(AccountsController):
 		
 		#Amount Segregation
 		cc_amount = {}
-		self.services_amount = self.goods_amount = 0;
+		self.services_amount = self.goods_amount = 0
 		for a in self.items:
 			if a.stock_entry:
 				continue
@@ -92,13 +94,16 @@ class JobCards(AccountsController):
 				if a.which in cc_amount:
 					cc_amount[a.which] = flt(cc_amount[a.which]) + flt(a.amount)
 				else:
-					cc_amount[a.which] = flt(a.amount);
+					cc_amount[a.which] = flt(a.amount)
 		
 		if "Service" in cc_amount:
 			self.services_amount = cc_amount['Service']
 		if 'Item' in cc_amount:
 			self.goods_amount = cc_amount['Item']
 		self.total_amount = flt(self.services_amount) + flt(self.goods_amount)
+		if self.gst_applicable:
+			self.gst_amount = self.total_amount * 0.05
+			self.total_amount += self.gst_amount
 		self.outstanding_amount = self.total_amount
 
 	def validate_owned_by(self):
@@ -192,10 +197,30 @@ class JobCards(AccountsController):
 	def make_gl_entries(self):
 		gl_entries = []
 		self.make_expense_gl_entry(gl_entries)
+		if self.gst_applicable:
+			self.make_gst_gl_entry(gl_entries)
 		self.make_advance_gl_entry(gl_entries)
 		gl_entries = merge_similar_entries(gl_entries)
 		make_gl_entries(gl_entries,update_outstanding="No",cancel=self.docstatus == 2)
 	
+	def make_gst_gl_entry(self, gl_entries):
+		if flt(self.total_amount) > 0:
+			# gst_account = frappe.db.get_value("Equipment Category", self.equipment_category,'r_m_expense_account')
+			# if not gst_account:
+			# 	frappe.throw("GST Inward account not found ")
+			gl_entries.append(
+					self.get_gl_dict({
+						# "account": gst_account,
+						"account": "5% GST Inward - NRDCL",
+						"debit": self.gst_amount,
+						"debit_in_account_currency": self.gst_amount,
+						"against_voucher": self.name,
+						"against_voucher_type": self.doctype,
+						"cost_center": self.cost_center,
+						"voucher_type":self.doctype,
+						"voucher_no":self.name
+					}, self.currency))
+
 	def make_expense_gl_entry(self, gl_entries):
 		if flt(self.total_amount) > 0:
 			expense_account = frappe.db.get_value("Equipment Category", self.equipment_category,'r_m_expense_account')
@@ -204,8 +229,8 @@ class JobCards(AccountsController):
 			gl_entries.append(
 					self.get_gl_dict({
 						"account": expense_account,
-						"debit": self.total_amount,
-						"debit_in_account_currency": self.total_amount,
+						"debit": self.total_amount - self.gst_amount if self.gst_applicable else self.total_amount,
+						"debit_in_account_currency": self.total_amount - self.gst_amount if self.gst_applicable else self.total_amount,
 						"against_voucher": self.name,
 						"against_voucher_type": self.doctype,
 						"cost_center": self.cost_center,
