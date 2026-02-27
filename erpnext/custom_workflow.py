@@ -19,8 +19,7 @@ class CustomWorkflow:
 		self.doc_approver	= self.field_map[self.doc.doctype]
 		self.field_list		= ["user_id", "employee_name", "designation", "name"]
 
-		### =============== *** =============== *** === NYUTHYUE === *** =============== *** =============== ###
-		if self.doc.doctype in ("Travel Authorization", "Travel Advance", "Travel Adjustment", "Travel Claim", "Employee Advance", "Leave Encashment"):
+		if self.doc.doctype in ("Travel Authorization", "Travel Advance", "Travel Adjustment", "Travel Claim", "Employee Advance", "Leave Encashment","Overtime Application"):
 			self.employee		= frappe.db.get_value("Employee", self.doc.employee, self.field_list)
 			self.reports_to 	= frappe.db.get_value("Employee", {"name":frappe.db.get_value("Employee", self.doc.employee, "reports_to")}, self.field_list)
 			if not self.reports_to:
@@ -141,14 +140,10 @@ class CustomWorkflow:
 				return
 			frappe.throw("{0} is not added as the employee".format(frappe.session.user))
 	def apply_workflow(self):
-			# frappe.throw('hi')
-			
 		if (self.doc.doctype not in self.field_map) or not frappe.db.exists("Workflow", {"document_type": self.doc.doctype, "is_active": 1}):
 			return
-
 		if self.doc.doctype == "Leave Application":
 			self.leave_application()	
-	
 		elif self.doc.doctype == "Travel Request":
 			self.travel_request()
 		elif self.doc.doctype == "Leave Encashment":			
@@ -520,13 +515,24 @@ class CustomWorkflow:
 			self.set_approver("Supervisor")
 		elif self.new_state.lower() == ("Waiting for Finance Verification".lower()):
 			if "Accounts Manager" not in frappe.get_roles(frappe.session.user):
-				frappe.throw("Only users with Accounts Manager role can forward this Request.")	
-		elif self.new_state.lower()==("Waiting for CEO Approval".lower()):
+				frappe.throw("Only users with Accounts Manager role can forward this Request.")				
+		elif self.new_state.lower() == ("Approved".lower()):
 			if "Accounts Manager" not in frappe.get_roles(frappe.session.user):
-				frappe.throw("Only users with Accounts Manager role can forward this Request.")					
-		elif self.new_state.lower() == ("Approved by CEO".lower()):
-			if "CEO" not in frappe.get_roles(frappe.session.user):
-				frappe.throw("Only users with CEO role can forward this Request.")	
+				frappe.throw("Only users with Accounts Manager role can forward this Request.")	
+		elif self.new_state.lower()==("Rejected".lower()):
+			if "Accounts Manager" not in frappe.get_roles(frappe.session.user):
+				frappe.throw("Only users with Accounts Manager role can forward this Request.")
+		elif self.new_state.lower()==("Rejected".lower()):
+			if "Accounts Manager" not in frappe.get_roles(frappe.session.user):
+				frappe.throw("Only users with Accounts Manager role can forward this Request.")		
+		elif self.new_state.lower()==("Rejected".lower()):
+			if frappe.session.user != self.doc.approver:
+				frappe.throw("Only users with approver role can forward this Request.")	
+		elif self.new_state.lower()==("Cancelled".lower()):
+			if "Accounts Manager" not in frappe.get_roles(frappe.session.user):
+				frappe.throw("Only users with Accounts Manager role can forward this Request.")			
+						
+        
 		else:
 			frappe.throw(_("Invalid Workflow State {}").format(self.doc.workflow_state))
 
@@ -592,16 +598,17 @@ class CustomWorkflow:
 			if frappe.session.user != self.doc.owner:
 				frappe.throw("Only {} can apply this leave".format(self.doc.owner))
 
-		elif self.new_state.lower() == ("Waiting Approval".lower()):
-			self.set_approver("Supervisor")
+		elif self.new_state.lower() == ("Waiting For Approval".lower()):
+			if "HR Manager" not in frappe.get_roles(frappe.session.user):
+				frappe.throw("Only users with HR Manager role can forward this Request.")	
 			
 		elif self.new_state.lower() == ("Approved".lower()):
-			if frappe.session.user != self.doc.ot_approver:
-				frappe.throw(f"Only {self.doc.ot_approver} can Approve this Overtime Application.")			
+			if "HR Manager" not in frappe.get_roles(frappe.session.user):
+				frappe.throw("Only users with HR Manager role can forward this Request.")	
 
 		elif self.new_state.lower() == ("Rejected".lower()):
-			if frappe.session.user != self.doc.ot_approver:
-				frappe.throw(f"Only {self.doc.ot_approver} can Reject this Overtime Application.")
+			if "HR Manager" not in frappe.get_roles(frappe.session.user):
+				frappe.throw("Only users with HR Manager role can forward this Request.")	
 		else:
 			frappe.throw(_("Invalid Workflow State {}").format(self.doc.workflow_state))
 
@@ -761,6 +768,11 @@ class NotifyCustomWorkflow:
 			template = frappe.db.get_single_value('Asset Settings', 'asset_status_notification_template')
 			if not template:
 				frappe.msgprint(_("Please set default template for Asset Status Notification in Asset Settings."))
+				return
+		elif self.doc.doctype == "Overtime Application":
+			template = frappe.db.get_single_value('HR Settings', 'overtime_status_notification_template')
+			if not template:
+				frappe.msgprint(_("Please set default template for Overtime Status Notification in HR Settings."))
 				return
 		else:
 			template = ""
@@ -1054,8 +1066,8 @@ class NotifyCustomWorkflow:
 				"Waiting for Finance Verification": "Accounts Manager",
 				"Waiting for CEO Approval":"CEO",
 				"Waiting for Finance Verification": "Accounts User",
-				"Waiting for verification":"HR User"
-				# "Waiting Recommendation": ["", "HR Manager"],
+				"Waiting for verification":"HR User",
+				"Waiting for Approval": ["", "HR Manager"],
 				# "Waiting Approval": "Approver"
 			}
 
@@ -1106,6 +1118,9 @@ class NotifyCustomWorkflow:
 				template_name = frappe.db.get_single_value("HR Settings", "employee_separation_approval_notification_template")
 			elif self.doc.doctype == "Employee Benefits":
 				template_name = frappe.db.get_single_value("HR Settings", "employee_benefits_approval_notification_template")
+			elif self.doc.doctype == "Overtime Application":
+				template_name = frappe.db.get_single_value("HR Settings", "overtime_approval_notification_template")
+				# added by karma
 			else:
 				frappe.msgprint(_("No email template configured for this document type"))
 				return
@@ -1161,10 +1176,7 @@ class NotifyCustomWorkflow:
 			if wf_state == "Waiting for Finance Verification":
 				self.notify_user_role(wf_state)
 				return
-			elif wf_state =="Waiting for CEO Approval":
-				self.notify_user_role(wf_state)
-				return
-			elif wf_state == "Approved by CEO":
+			elif wf_state == "Approved":
 				self.notify_employee()
 				return	
 		if self.doc.doctype == "Leave Encashment":
@@ -1189,11 +1201,18 @@ class NotifyCustomWorkflow:
 				return	
 			elif wf_state == "Approved by CEO":
 				self.notify_employee()
-				return				
-				
-
-
-		
+				return	
+		if self.doc.doctype == "Overtime Application":
+			wf_state = self.new_state
+			if wf_state == "Waiting For Approval":
+				self.notify_user_role(wf_state)
+				return	
+			elif wf_state == "Approved":
+				self.notify_employee()
+				return
+			elif wf_state == "Rejected":
+				self.notify_employee()
+				return
 		if (self.doc.doctype not in self.field_map) or not frappe.db.exists("Workflow", {"document_type": self.doc.doctype, "is_active": 1}):
 			return
 		if self.new_state == "Draft":
