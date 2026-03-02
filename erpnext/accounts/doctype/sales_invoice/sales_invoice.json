@@ -26,6 +26,7 @@
   "pos_profile",
   "is_consolidated",
   "is_return",
+  "is_cash",
   "return_against",
   "update_outstanding_for_self",
   "update_billed_amount_in_sales_order",
@@ -2241,6 +2242,16 @@
    "fieldname": "address",
    "fieldtype": "Data",
    "label": "Address"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_cash",
+   "fieldtype": "Check",
+   "hide_days": 1,
+   "hide_seconds": 1,
+   "label": "Is Cash",
+   "no_copy": 1,
+   "print_hide": 1
   }
  ],
  "icon": "fa fa-file-text",
@@ -2253,7 +2264,7 @@
    "link_fieldname": "consolidated_invoice"
   }
  ],
- "modified": "2026-02-20 13:31:41.927443",
+ "modified": "2026-03-02 12:50:47.305273",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Sales Invoice",
