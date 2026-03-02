@@ -175,7 +175,9 @@ def get_sales_order_data(filters, cond, outer_cond):
             so.transaction_date, so.name,
             (SELECT cc.parent_cost_center FROM `tabCost Center` cc WHERE cc.name = 
                 (SELECT b.cost_center FROM `tabBranch` b WHERE b.name = so.branch)) AS region,
-            so.branch, so.customer, so.customer_group, so.shipping_address_name,
+            so.branch, so.customer, 
+            (SELECT customer_group FROM `tabCustomer` WHERE name = so.customer) AS customer_group,
+            so.shipping_address_name,
             soi.item_code, soi.item_name, i.item_sub_group,
             soi.qty AS actual_qty, soi.delivered_qty, soi.rate, soi.amount, soi.amount AS net_total
         """
