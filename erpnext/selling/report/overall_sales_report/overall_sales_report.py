@@ -234,7 +234,7 @@ def get_sales_invoice_data(filters, cond, outer_cond):
             si.posting_date, si.name, sii.sales_order, sii.delivery_note,
             (SELECT cc.parent_cost_center FROM `tabCost Center` cc WHERE cc.name = 
                 (SELECT b.cost_center FROM `tabBranch` b WHERE b.name = si.branch)) AS region,
-            si.branch, si.customer, si.customer_group, si.shipping_address_name,
+            si.branch, si.customer,(SELECT customer_group FROM `tabCustomer` WHERE name = si.customer) AS customer_group,si.shipping_address_name,
             sii.item_code, sii.item_name, i.item_sub_group,
             sii.qty AS delivered_qty, sii.rate, sii.amount, sii.net_amount
         """
