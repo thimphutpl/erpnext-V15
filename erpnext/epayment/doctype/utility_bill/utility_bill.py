@@ -108,14 +108,26 @@ class UtilityBill(Document):
 		
 		if self.tds_percent and not self.net_payable_amount:
 			frappe.throw("Net Payable amount should be greater than zero")
-	def calculate_gst_amount(self):
-		total_gst = 0.00
-		gst_rate = 5  # percent
+	# def calculate_gst_amount(self):
+	# 	total_gst = 0.00
+	# 	gst_rate = 5  # percent
 
-		for a in self.item:
-			# GST included in invoice_amount
-			a.gst_amount = ((a.invoice_amount or 0) * gst_rate) / (100 + gst_rate)
-			total_gst += a.gst_amount
+	# 	for a in self.item:
+	# 		if a.payment_status == "Success":
+	# 		# GST included in invoice_amount
+	# 			a.gst_amount = ((a.invoice_amount or 0) * gst_rate) / (100 + gst_rate)
+	# 			total_gst += a.gst_amount
+
+	# 	self.total_gst_amount = total_gst
+	def calculate_gst_amount(self):
+		gst_rate = 5.0
+		total_gst = 0.0
+
+		for row in self.items:
+			if row.payment_status == "Success":
+				invoice_amount = row.invoice_amount or 0
+				row.gst_amount = (invoice_amount * gst_rate) / (100 + gst_rate)
+				total_gst += row.gst_amount
 
 		self.total_gst_amount = total_gst
 	def utility_payment(self):
