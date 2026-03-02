@@ -1048,6 +1048,7 @@ def make_delivery_note(source_name, target_doc=None, kwargs=None):
 		"Sales Order": {"doctype": "Delivery Note", "field_map": {
 				"customer_order": "customer_order",
 				"branch":"branch",
+				"is_cash":"is_cash"
 			},"validation": {"docstatus": ["=", 1]}},
 		"Sales Taxes and Charges": {"doctype": "Sales Taxes and Charges", "reset_value": True},
 		"Sales Team": {"doctype": "Sales Team", "add_if_empty": True},

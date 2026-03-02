@@ -22,6 +22,7 @@
   "company",
   "amended_from",
   "is_return",
+  "is_cash",
   "issue_credit_note",
   "return_against",
   "accounting_dimensions_section",
@@ -1445,13 +1446,23 @@
    "fieldname": "address",
    "fieldtype": "Data",
    "label": "Address"
+  },
+  {
+   "default": "0",
+   "fetch_from": "created_from.is_cash",
+   "fieldname": "is_cash",
+   "fieldtype": "Check",
+   "label": "Is Cash",
+   "no_copy": 1,
+   "print_hide": 1,
+   "read_only": 1
   }
  ],
  "icon": "fa fa-truck",
  "idx": 146,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-02-20 13:29:51.623946",
+ "modified": "2026-03-02 12:13:36.055679",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Delivery Note",
