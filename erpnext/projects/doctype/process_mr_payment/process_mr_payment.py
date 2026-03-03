@@ -215,7 +215,7 @@ class ProcessMRPayment(Document):
 		# je.employee_id = self.employee_id 
 		# je.cost_center = self.cost_center
 		# je.designation = self.designation
-		je.cost_center= get_branch_cc(self.branch, self.cost_center)
+		# je.cost_center= get_branch_cc(self.branch, self.cost_center)
 
 		
 		if self.ot_amount:	
