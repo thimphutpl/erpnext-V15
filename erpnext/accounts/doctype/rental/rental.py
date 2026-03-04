@@ -45,7 +45,8 @@ class Rental(Document):
 			self.gst_amount = (self.total_amount or 0) * self.tax_rate / 100
 			self.total_gst_amount = (self.total_amount or 0) + self.gst_amount
 	def on_submit(self):
-		self.update_general_ledger()		
+		self.update_general_ledger()
+		self.post_journal_entry()	
 
 	def get_taxes_for_template(self, template_name):
 		"""Get tax details from a Sales Taxes and Charges Template"""
@@ -87,11 +88,48 @@ class Rental(Document):
 				
 				})
 			)
-			
-
-			
-		
-
 		if gl_entries:
 			from erpnext.accounts.general_ledger import make_gl_entries
 			make_gl_entries(gl_entries, cancel=(self.docstatus == 2), merge_entries=False)
+	def post_journal_entry(self):
+
+		rental_account = frappe.db.get_value("Company", self.company, "rental_account")
+		default_receivable_account = frappe.db.get_value("Branch", self.branch, "revenue_bank_account")
+		je = frappe.new_doc("Journal Entry")
+		je.flags.ignore_permissions = 1 
+		je.title = "Rental (" + self.name + ")"
+		je.voucher_type = 'Journal Entry'
+		je.naming_series = 'Journal Entry'
+		je.remark = 'Payment against : ' + self.name
+		je.posting_date = self.posting_date
+		je.branch = self.branch
+		if self.gst_amount > 0:
+			je.append("accounts", {
+				"account": rental_account,
+				"reference_type": "Rental",
+				"reference_name": self.name,
+				"cost_center": self.cost_center,
+				"credit_in_account_currency": flt(self.total_amount),
+				"credit": flt(self.total_amount),
+			})
+			je.append("accounts", {
+				"account": self.account_head,
+				"reference_type": "Rental",
+				"reference_name": self.name,
+				"cost_center": self.cost_center,
+				"credit_in_account_currency": flt(self.gst_amount),
+				"credit": flt(self.gst_amount),
+			})
+			je.append("accounts", {
+				"account": default_receivable_account,
+				"reference_type": "Rental",
+				"reference_name": self.name,
+				"cost_center": self.cost_center,
+				"debit_in_account_currency": flt(self.total_gst_amount),
+				"debit": flt(self.total_gst_amount),
+			})
+		je.save()
+		frappe.db.commit()		
+
+				
+			
