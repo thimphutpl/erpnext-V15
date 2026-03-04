@@ -98,6 +98,7 @@ class Company(NestedSet):
 		pol_advance_account: DF.Link | None
 		reconcile_on_advance_payment_date: DF.Check
 		registration_details: DF.Code | None
+		rental_account: DF.Link | None
 		repair_and_service_account: DF.Link | None
 		rgt: DF.Int
 		round_off_account: DF.Link | None

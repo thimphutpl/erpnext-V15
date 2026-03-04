@@ -68,6 +68,7 @@
   "payment_terms",
   "cost_center",
   "default_finance_book",
+  "rental_account",
   "advance_payments_section",
   "book_advance_payments_in_separate_party_account",
   "reconcile_on_advance_payment_date",
@@ -893,6 +894,12 @@
    "fieldtype": "Link",
    "label": "GST Account",
    "options": "Account"
+  },
+  {
+   "fieldname": "rental_account",
+   "fieldtype": "Link",
+   "label": "Rental Account ",
+   "options": "Account"
   }
  ],
  "icon": "fa fa-building",
@@ -900,7 +907,7 @@
  "image_field": "company_logo",
  "is_tree": 1,
  "links": [],
- "modified": "2026-02-20 19:14:50.731113",
+ "modified": "2026-03-04 17:58:39.589629",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Company",
