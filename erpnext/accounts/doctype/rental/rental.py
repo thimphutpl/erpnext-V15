@@ -30,7 +30,7 @@ class Rental(Document):
 	# end: auto-generated types
 	pass
 	def before_save(self):
-		template_name = "GST 5% Outward - CDCL"
+		template_name = "GST 5% Received - CDCL"
 		
 		# Get taxes for the template
 		taxes = self.get_taxes_for_template(template_name)	
