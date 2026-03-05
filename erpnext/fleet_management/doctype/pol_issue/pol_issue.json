@@ -30,6 +30,7 @@
   "transfer_amount",
   "column_break_10",
   "issue_from",
+  "fuel_book",
   "tanker",
   "tank_balance",
   "rate",
@@ -213,7 +214,7 @@
    "fieldname": "issue_from",
    "fieldtype": "Select",
    "label": "Issue From",
-   "options": "Tanker\nBarrel"
+   "options": "Tanker\nBarrel\nFuelbook"
   },
   {
    "fieldname": "rate",
@@ -279,12 +280,18 @@
    "fieldtype": "Currency",
    "label": "Transfer Amount",
    "read_only": 1
+  },
+  {
+   "fieldname": "fuel_book",
+   "fieldtype": "Link",
+   "label": "Fuel Book",
+   "options": "Fuelbook"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-02-03 11:50:19.637466",
+ "modified": "2026-02-27 12:00:51.379266",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Issue",

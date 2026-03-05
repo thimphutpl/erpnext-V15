@@ -17,7 +17,6 @@ class POLAdvanceItem(Document):
 		advance_amount: DF.Currency
 		advance_balance: DF.Currency
 		allocated_amount: DF.Currency
-		amount: DF.Currency
 		balance: DF.Currency
 		has_od: DF.Check
 		parent: DF.Data

@@ -38,6 +38,7 @@ class Equipment(Document):
 		gewog: DF.Link | None
 		hired_equipment: DF.Check
 		hsd_type: DF.Link | None
+		initial_km_reading: DF.Float
 		is_disabled: DF.Check
 		kph: DF.Float
 		lph: DF.Float

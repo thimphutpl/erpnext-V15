@@ -83,7 +83,6 @@
    "reqd": 1
   },
   {
-   "fetch_from": "fuel_book.supplier",
    "fieldname": "party",
    "fieldtype": "Link",
    "ignore_user_permissions": 1,
@@ -255,7 +254,7 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Equipment",
-   "mandatory_depends_on": "eval:!doc.use_common_fuelbook",
+   "mandatory_depends_on": "// eval:!doc.use_common_fuelbook",
    "options": "Equipment"
   },
   {
@@ -339,14 +338,14 @@
    "fieldname": "book_type",
    "fieldtype": "Select",
    "label": "Fuel Book Type",
-   "options": "\nOwn\nCommon",
+   "options": "\nOwn\nCommon\nGeneral Pol",
    "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-06-10 14:38:44.564849",
+ "modified": "2026-02-13 18:15:34.144270",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Advance",

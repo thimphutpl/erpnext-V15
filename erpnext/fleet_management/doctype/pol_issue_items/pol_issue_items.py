@@ -26,6 +26,7 @@ class POLIssueItems(Document):
 		hiring_cost_center: DF.Data | None
 		hiring_warehouse: DF.Data | None
 		item_code: DF.Link | None
+		memo_number: DF.Data | None
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data

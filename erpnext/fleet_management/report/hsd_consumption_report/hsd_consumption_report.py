@@ -69,8 +69,8 @@ def construct_query(filters):
 	if not filters.include_disabled:
 		query += " and e.is_disabled = 0"
 
-	if filters.not_cdcl:
-				query += " and e.not_cdcl = 0"
+	# if filters.not_cdcl:
+	# 			query += " and e.not_cdcl = 0"
 
 	'''if filters.category:
 		query += " and e.equipment_category = \'" + str(filters.category) + "\'"'''	

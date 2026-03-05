@@ -625,35 +625,6 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Settings and Tools",
-   "link_count": 2,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Hire Charge Parameter",
-   "link_count": 0,
-   "link_to": "Hire Charge Parameter",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "HSD Adjustment",
-   "link_count": 0,
-   "link_to": "HSD Adjustment",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
    "label": "Fleet Report",
    "link_count": 4,
    "link_type": "DocType",
@@ -738,10 +709,49 @@
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Settings and Tools",
+   "link_count": 3,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Hire Charge Parameter",
+   "link_count": 0,
+   "link_to": "Hire Charge Parameter",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "HSD Adjustment",
+   "link_count": 0,
+   "link_to": "HSD Adjustment",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Mechanical Settings",
+   "link_count": 0,
+   "link_to": "Mechanical Settings",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2025-06-14 10:37:22.221909",
- "modified_by": "sonam.zangmo@thimphutechpark.bt",
+ "modified": "2026-02-11 09:47:29.416173",
+ "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Fleet Management",
  "number_cards": [],
@@ -751,7 +761,7 @@
  "quick_lists": [],
  "restrict_to_domain": "",
  "roles": [],
- "sequence_id": 19.0,
+ "sequence_id": 24.0,
  "shortcuts": [
   {
    "color": "Green",

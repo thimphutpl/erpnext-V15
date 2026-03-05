@@ -26,10 +26,10 @@ class BreakDownReport(Document):
 		date: DF.Date
 		defect: DF.TextEditor
 		equipment: DF.Link | None
-		equipment_category: DF.Link | None
-		equipment_model: DF.Link
+		equipment_category: DF.Data | None
+		equipment_model: DF.Data | None
 		equipment_number: DF.Data | None
-		equipment_type: DF.Link | None
+		equipment_type: DF.Data | None
 		fleet_comment: DF.SmallText | None
 		job_cards: DF.Link | None
 		owned_by: DF.Literal["", "Own", "Others"]

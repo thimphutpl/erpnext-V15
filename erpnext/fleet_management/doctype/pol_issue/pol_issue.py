@@ -38,8 +38,9 @@ class POLIssue(StockController):
 		company: DF.Link
 		cost_center: DF.Link | None
 		currency: DF.Link | None
+		fuel_book: DF.Link | None
 		is_hsd_item: DF.Check
-		issue_from: DF.Literal["Tanker", "Barrel"]
+		issue_from: DF.Literal["Tanker", "Barrel", "Fuelbook"]
 		item_name: DF.ReadOnly | None
 		items: DF.Table[POLIssueItems]
 		pol_type: DF.Link
@@ -104,10 +105,10 @@ class POLIssue(StockController):
 		""" ++++++++++ Ver 2.0.190509 Begins ++++++++++ """
 		# Ver 2.0.190509, following method added by SHIV on 2019/05/21
 		self.check_and_set_rate()
-		self.set_tatal_amount()
+		# self.set_tatal_amount()
 
 	def validate_branch(self):
-		if self.purpose == "Issue" and self.is_hsd_item and not self.tanker and self.issue_from !="Barrel":
+		if self.purpose == "Issue" and self.is_hsd_item and not self.tanker and self.issue_from not in ["Barrel","Fuelbook"]:
 			frappe.throw("For HSD Issues, Tanker is Mandatory")
 
 		if not self.is_hsd_item:
@@ -132,16 +133,15 @@ class POLIssue(StockController):
 				frappe.throw("Quantity for <b>"+str(a.registration_number)+"</b> should be greater than 0")
 			total_quantity = flt(total_quantity) + flt(a.qty)
 		self.total_quantity = total_quantity
-
+	def before_save(self):
+		self.set_total_amount()
 	def on_submit(self):
 		self.update_posting_date_and_time()
 		if self.purpose=="Issue" and not self.items:
 			frappe.throw("Should have a POL Issue Details to Submit")
 		self.validate_data()
 		self.check_and_set_rate()
-		self.set_tatal_amount()
 		self.make_gl_entries()
-		""" ++++++++++ Ver 2.0.190509 Ends ++++++++++++ """
 		self.make_pol_entry()
 
 	def on_cancel(self):
@@ -166,6 +166,8 @@ class POLIssue(StockController):
 			cond = "and equipment='{tanker}'".format(tanker=self.tanker)
 		if self.issue_from =="Barrel":
 			cond = "and is_barrel =1"
+		elif self.issue_from =="Fuelbook":
+			cond ="and is_fuel_book= 1"	
 		b_qty = b_rate = 0
 		balance_qty = frappe.db.sql("""select qty, rate
 			from `tabPOL Entry` 
@@ -186,7 +188,10 @@ class POLIssue(StockController):
 		else:
 			self.tank_balance =b_qty
 			self.rate = b_rate
-
+	def set_total_amount(self):
+		total_amount=0.0
+		total_amount = flt(self.rate)*flt(self.total_quantity)
+		self.total_amount = total_amount
 	def make_gl_entries(self):
 		gl_entries = []
 		self.make_expense_gl_entry(gl_entries)
@@ -262,9 +267,13 @@ class POLIssue(StockController):
 
 
 	def make_pol_entry(self, cancel=False):
-		if self.issue_from=="Barrel":
+		if self.issue_from =="Barrel":
 			book_type ="Barrel"
 			cond ="and is_barrel = 1"
+		elif self.issue_from =="Fuelbook":
+			book_type="General Pol"
+			cond ="AND is_fuel_book = 1 AND fuelbook='{fuelbook}'".format(fuelbook=self.fuel_book)
+		
 		else:
 			book_type ="Common"
 			cond ="and equipment='{tanker}'".format(tanker=self.tanker)
@@ -301,13 +310,16 @@ class POLIssue(StockController):
 
 		con = frappe.new_doc("POL Entry")
 		con.flags.ignore_permissions = 1
-		if self.issue_from !="Barrel":	
-			con.equipment = self.tanker
-		else:
+		if self.issue_from == "Barrel":
 			con.is_barrel = 1
+		elif self.issue_from == "Fuelbook":
+			con.is_fuel_book = 1
+		else:
+			con.equipment = self.tanker
 		con.book_type = book_type
 		con.item = self.pol_type
 		con.branch = self.branch
+		con.fuelbook = self.fuel_book
 		con.posting_date = nowdate()
 		con.posting_time = nowtime()
 		con.qty = b_qty
@@ -412,12 +424,12 @@ class POLIssue(StockController):
 			if self.transfer_type in ("Barrel to Barrel","Tanker to Barrel") and self.items:
 				frappe.throw("Receiver Equipment is not required when transfer type is "+str(self.transfer_type)+ "remove items details")
 			self.transfer_amount = self.transfer_qty * self.rate
-	def set_tatal_amount(self):
-		if self.rate and self.total_quantity:
-			self.total_amount = self.rate * self.total_quantity
-		self.transfer_amount = self.transfer_qty * self.rate
-		if self.transfer_qty > self.tank_balance:
-			frappe.throw("Transfer balance cannot be greater than tanker/barrel balance")
+	# def set_tatal_amount(self):
+	# 	if self.rate and self.total_quantity:
+	# 		self.total_amount = self.rate * self.total_quantity
+	# 	self.transfer_amount = self.transfer_qty * self.rate
+	# 	if self.transfer_qty > self.tank_balance:
+	# 		frappe.throw("Transfer balance cannot be greater than tanker/barrel balance")
 	
 # Equipment Balance
 @frappe.whitelist()

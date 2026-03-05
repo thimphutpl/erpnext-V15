@@ -15,7 +15,7 @@ class POLEntry(Document):
 
 		amended_from: DF.Link | None
 		amount: DF.Currency
-		book_type: DF.Literal["Own", "Common", "Barrel"]
+		book_type: DF.Literal["Own", "Common", "Barrel", "General Pol"]
 		branch: DF.Link
 		cost_center: DF.Link | None
 		current_km: DF.Float
@@ -24,6 +24,7 @@ class POLEntry(Document):
 		equipment_type: DF.Link | None
 		fuelbook: DF.Link | None
 		is_barrel: DF.Check
+		is_fuel_book: DF.Check
 		is_opening: DF.Check
 		item: DF.Link | None
 		item_name: DF.Data | None

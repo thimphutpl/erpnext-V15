@@ -2,89 +2,110 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on('POL Advance', {
-	onload: (frm)=>{
-		set_party_type(frm);
-		frm.set_query("party", function() {
-			return {
-				"filters": {
-					"is_pol_supplier": 1
-				}
-			};
-		});
+	refresh: (frm) => {
+		enable_disable(frm);
+		open_ledger(frm);
+		// set_party_type(frm);
+		// frm.set_query("party", function () {
+		// 	return {
+		// 		"filters": {
+		// 			"is_pol_supplier": 1
+		// 		}
+		// 	};
+		// });
 
-		frm.set_query("select_cheque_lot", function(){
-			return 	{
-				"filters":[
+		frm.set_query("select_cheque_lot", function () {
+			return {
+				"filters": [
 					["status", "!=", "Used"],
 					["docstatus", "=", "1"],
 				]
 			}
 		});
+		// if (!frm.is_new()) {
+		// 	frm.add_custom_button(__("POL Receive"), function () {
+		// 		if (!frm.doc.name) {
+		// 			frappe.msgprint("Please save the POL Advance first");
+		// 			return;
+		// 		}
+
+		// 		frappe.call({
+		// 			method: "erpnext.fleet_management.doctype.pol_advance.pol_advance.make_pol_receive_from_advance",
+		// 			args: { source_name: frm.doc.name },
+		// 			callback: function (r) {
+		// 				if (r.message) {
+		// 					frappe.route_options = r.message;
+		// 					frappe.new_doc("POL Receive");
+		// 				}
+		// 			}
+		// 		});
+		// 	}, __("Create"));
+		// }
 
 	},
-	equipment:function(frm){
+	equipment: function (frm) {
 		frm.events.set_fuelbook_filter(frm)
 		frm.events.set_fuelbook_from_equipment(frm)
 		// frm.events.set_advance_amount(frm)
 	},
-	use_common_fuelbook:function(frm){
+	use_common_fuelbook: function (frm) {
 		frm.events.set_fuelbook_filter(frm)
 	},
-	set_fuelbook_filter:function(frm){
-		if (frm.doc.use_common_fuelbook){
-			frm.set_query("fuel_book",function(){
+	set_fuelbook_filter: function (frm) {
+		if (frm.doc.use_common_fuelbook) {
+			frm.set_query("fuel_book", function () {
 				return {
-					filters:{
-						"type":"Common"
+					filters: {
+						"type": "Common"
 					}
 				}
 			})
-		}else{
-			frm.set_query("fuel_book",function(){
+		} else {
+			frm.set_query("fuel_book", function () {
 				return {
-					filters:{
-						"equipment":frm.doc.equipment
+					filters: {
+						"equipment": frm.doc.equipment
 					}
 				}
 			})
 		}
 	},
-	set_fuelbook_from_equipment: function(frm){
+	set_fuelbook_from_equipment: function (frm) {
 		frappe.call({
 			method: "get_fuelbook",
 			doc: frm.doc,
-			callback: function(r){
-				if(r.message){
+			callback: function (r) {
+				if (r.message) {
 					frm.set_value("fuel_book", r.message);
 					frm.refresh_field("fuel_book");
 				}
 			}
 		})
 	},
-	fuel_book: function(frm){
+	fuel_book: function (frm) {
 		set_advance_limit(frm)
 		set_advance_amount(frm)
 	},
-	set_advance_limit: function(frm){
-		if (frm.doc.equipment || frm.doc.fuel_book){
+	set_advance_limit: function (frm) {
+		if (frm.doc.equipment || frm.doc.fuel_book) {
 			frappe.call({
 				method: "set_advance_limit",
 				doc: frm.doc,
 
-				callback: function(r) {
+				callback: function (r) {
 					frm.refresh_field("advance_limit");
 					frm.dirty()
 				}
 			});
 		}
 	},
-	set_advance_amount: function(frm){
-		if (frm.doc.equipment || frm.doc.fuel_book){
+	set_advance_amount: function (frm) {
+		if (frm.doc.equipment || frm.doc.fuel_book) {
 			frappe.call({
 				method: "set_auto_advance_amount",
 				doc: frm.doc,
 
-				callback: function(r) {
+				callback: function (r) {
 					frm.set_value("amount", r.message);
 					frm.refresh_field("amount");
 					// frm.dirty()
@@ -92,17 +113,17 @@ frappe.ui.form.on('POL Advance', {
 			});
 		}
 	},
-	refresh: function(frm){
-		enable_disable(frm);
-		open_ledger(frm);
-	},
-	party_type: (frm)=>{
-		set_party_type(frm);
-	},
-	amount:(frm)=>{
+	// refresh: function (frm) {
+	// 	enable_disable(frm);
+	// 	open_ledger(frm);
+	// },
+	// party: (frm) => {
+	// 	set_party_type(frm);
+	// },
+	amount: (frm) => {
 		calculate_balance(frm);
 	},
-	use_cheque_lot: function(frm){
+	use_cheque_lot: function (frm) {
 		enable_disable(frm);
 	},
 
@@ -122,72 +143,97 @@ frappe.ui.form.on('POL Advance', {
 			});
 		}
 	},
-	cheque_no: function(frm){
+	cheque_no: function (frm) {
 		enable_disable(frm);
 	},
-	cheque_date: function(frm){
+	cheque_date: function (frm) {
 		enable_disable(frm);
+	},
+	fuel_book: function (frm) {
+		// Set advance limit & amount
+		set_advance_limit(frm);
+		set_advance_amount(frm);
+
+		// Auto-fill supplier based on fuel_book
+		if (frm.doc.fuel_book) {
+			frappe.call({
+				method: "erpnext.fleet_management.doctype.pol_advance.pol_advance.get_supplier_from_fuelbook",
+				args: { fuel_book: frm.doc.fuel_book },
+				callback: function (r) {
+					if (r.message) {
+						// Optional: filter party dropdown to these suppliers
+						frm.set_query("party", function () {
+							return {
+								filters: {
+									"name": ["in", r.message]
+								}
+							};
+						});
+					}
+				}
+			});
+		}
 	}
 });
 function enable_disable(frm) {
-	if(frm.doc.use_cheque_lot){
-		frm.toggle_reqd(['cheque_no','cheque_date'], frm.doc.use_cheque_lot);
+	if (frm.doc.use_cheque_lot) {
+		frm.toggle_reqd(['cheque_no', 'cheque_date'], frm.doc.use_cheque_lot);
 	} else {
 		frm.toggle_reqd(['cheque_date'], frm.doc.cheque_no);
 		frm.toggle_reqd(['cheque_no'], frm.doc.cheque_date);
 	}
 }
 
-var calculate_balance=(frm)=>{
-	if (frm.doc.amount > 0 ){
-		cur_frm.set_value("balance_amount",frm.doc.amount)
-		cur_frm.set_value("adjusted_amount",0)
+var calculate_balance = (frm) => {
+	if (frm.doc.amount > 0) {
+		cur_frm.set_value("balance_amount", frm.doc.amount)
+		cur_frm.set_value("adjusted_amount", 0)
 	}
 }
-var open_ledger = (frm)=>{
-	if (frm.doc.docstatus === 1  && frm.doc.is_opening == 0) {
+var open_ledger = (frm) => {
+	if (frm.doc.docstatus === 1 && frm.doc.is_opening == 0) {
 		frm.add_custom_button(
-		  __("Journal Entry"),
-		  function () {
-			frappe.route_options = {
-			  name: frm.doc.journal_entry,
-			  from_date: frm.doc.entry_date,
-			  to_date: frm.doc.entry_date,
-			  company: frm.doc.company,
-			};
-			frappe.set_route("List", "Journal Entry");
-		  },
-		  __("View")
+			__("Journal Entry"),
+			function () {
+				frappe.route_options = {
+					name: frm.doc.journal_entry,
+					from_date: frm.doc.entry_date,
+					to_date: frm.doc.entry_date,
+					company: frm.doc.company,
+				};
+				frappe.set_route("List", "Journal Entry");
+			},
+			__("View")
 		);
 	}
- }
-var set_party_type = (frm)=>{
-	cur_frm.set_query('paty_type', (frm)=> {
-		return {
-			'filters': {
-				'name': 'Supplier'
-			}
-		};
-	});
 }
-var set_advance_limit = function(frm){
-	if (frm.doc.equipment || frm.doc.fuel_book){
+// var set_party_type = (frm) => {
+// 	cur_frm.set_query('paty_type', (frm) => {
+// 		return {
+// 			'filters': {
+// 				'name': 'Supplier'
+// 			}
+// 		};
+// 	});
+// }
+var set_advance_limit = function (frm) {
+	if (frm.doc.equipment || frm.doc.fuel_book) {
 		frappe.call({
 			method: "set_advance_limit",
 			doc: frm.doc,
-			callback: function(r) {
+			callback: function (r) {
 				frm.refresh_field("advance_limit");
 				frm.dirty()
 			}
 		});
 	}
 }
- var set_advance_amount = function(frm){
-	if (frm.doc.equipment || frm.doc.fuel_book){
+var set_advance_amount = function (frm) {
+	if (frm.doc.equipment || frm.doc.fuel_book) {
 		frappe.call({
 			method: "set_auto_advance_amount",
 			doc: frm.doc,
-			callback: function(r) {
+			callback: function (r) {
 				frm.set_value("amount", r.message);
 				frm.refresh_field("amount");
 				// frm.dirty()

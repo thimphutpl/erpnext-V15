@@ -11,14 +11,14 @@ frappe.query_reports["Equipment Hire Report"] = {
 			"options": "Branch",
 		},
 		{
-			"fieldname":"from_date",
+			"fieldname": "from_date",
 			"label": ("From Date"),
 			"fieldtype": "Date",
 			"width": "80",
 			default: frappe.datetime.month_start(),
 		},
 		{
-			"fieldname":"to_date",
+			"fieldname": "to_date",
 			"label": ("To Date"),
 			"fieldtype": "Date",
 			"width": "80",
@@ -31,12 +31,12 @@ frappe.query_reports["Equipment Hire Report"] = {
 			"width": "80",
 			"options": "Customer"
 		},
-		{
-			"fieldname": "not_cdcl",
-			"label": ("Include Only Gyalsung Equipments"),
-			"fieldtype": "Check",
-			"default": 1
-		},
+		// {
+		// 	"fieldname": "not_cdcl",
+		// 	"label": ("Include Only Gyalsung Equipments"),
+		// 	"fieldtype": "Check",
+		// 	"default": 1
+		// },
 		{
 			"fieldname": "include_disabled",
 			"label": ("Include Disbaled Equipments"),

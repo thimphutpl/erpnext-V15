@@ -3,12 +3,12 @@
 
 frappe.ui.form.on('Equipment Hiring Form', {
 	refresh: function (frm) {
-		if(frm.doc.private == "Private") {
+		if (frm.doc.private == "Private") {
 			cur_frm.set_df_property("advance_amount", "reqd", 1)
 		}
 
 		if (frm.doc.advance_journal && frappe.model.can_read("Journal Entry")) {
-			cur_frm.add_custom_button(__('Bank Entries'), function() {
+			cur_frm.add_custom_button(__('Bank Entries'), function () {
 				frappe.route_options = {
 					"Journal Entry Account.reference_type": frm.doc.doctype,
 					"Journal Entry Account.reference_name": frm.doc.name,
@@ -16,25 +16,25 @@ frappe.ui.form.on('Equipment Hiring Form', {
 				frappe.set_route("List", "Journal Entry");
 			}, __("View"));
 		}
-		cur_frm.add_custom_button(__('Logbooks'), function() {
+		cur_frm.add_custom_button(__('Logbooks'), function () {
 			frappe.route_options = {
 				"Vehicle Logbook.ehf_name": frm.doc.name,
 			};
 			frappe.set_route("List", "Vehicle Logbook");
 		}, __("View"));
-		cur_frm.add_custom_button(__('Invoices'), function() {
+		cur_frm.add_custom_button(__('Invoices'), function () {
 			frappe.route_options = {
 				"Hire Charge Invoice.ehf_name": frm.doc.name,
 			};
 			frappe.set_route("List", "Hire Charge Invoice");
 		}, __("View"));
 		// frm.set_query("equipment", function(frm) {
-			
+
 		// 	return {
 		// 		filters: [
 		// 			["hired_equipment", "=", 1],
-					
-					
+
+
 		// 		]
 		// 	}
 		// });
@@ -46,7 +46,7 @@ frappe.ui.form.on('Equipment Hiring Form', {
 		// 		};
 		// 		frappe.set_route("List", "Vehicle Logbook");
 		// 	}, __("View"));
-	
+
 		// 	cur_frm.add_custom_button(__('Invoices'), function () {
 		// 		frappe.route_options = {
 		// 			"Hire Charge Invoice.ehf_name": frm.doc.name,
@@ -61,14 +61,14 @@ frappe.ui.form.on('Equipment Hiring Form', {
 			}, __("Status"));
 		}
 
-		
+
 		// frm.add_custom_button("Create Vehicle Logbook", function() {
 		// 	frappe.model.open_mapped_doc({
 		// 		method: "erpnext.fleet_management.doctype.equipment_hiring_form.equipment_hiring_form.make_vehicle_logbook",
 		// 		frm: frm
 		// 	});
 		// });
-		
+
 	},
 
 	onload: function (frm) {
@@ -76,30 +76,30 @@ frappe.ui.form.on('Equipment Hiring Form', {
 			frm.set_value("request_date", get_today());
 		}
 
-		if(frm.doc.__islocal) {
-                        frappe.call({
-                                method: "erpnext.custom_utils.get_user_info",
-                                args: {"user": frappe.session.user},
-                                callback(r) {
-                                        cur_frm.set_value("cost_center", r.message.cost_center);
-                                        cur_frm.set_value("branch", r.message.branch);
-                                }
-                        });
-                }
+		if (frm.doc.__islocal) {
+			frappe.call({
+				method: "erpnext.custom_utils.get_user_info",
+				args: { "user": frappe.session.user },
+				callback(r) {
+					cur_frm.set_value("cost_center", r.message.cost_center);
+					cur_frm.set_value("branch", r.message.branch);
+				}
+			});
+		}
 	},
-	"total_hiring_amount": function(frm) {
-		if(frm.doc.docstatus != 1 && frm.doc.private == "Private") {
+	"total_hiring_amount": function (frm) {
+		if (frm.doc.docstatus != 1 && frm.doc.private == "Private") {
 			/*frm.set_value("advance_required", frm.doc.total_hiring_amount);
 			if(frm.doc.prev_advance_balance > 0){
 				frm.set_value("advance_amount", frm.doc.advance_required - frm.doc.prev_advance_balance);
 			}else{
 				frm.set_value("advance_amount", frm.doc.advance_required);				
 			}*/
-			
+
 		}
-		
+
 	},
-	"private": function(frm) {
+	"private": function (frm) {
 		cur_frm.toggle_reqd("customer_cost_center", frm.doc.private == 'Own Company')
 		cur_frm.toggle_reqd("customer_branch", frm.doc.private == 'Own Company')
 		cur_frm.toggle_reqd("advance_amount", frm.doc.private == 'Private')
@@ -145,7 +145,7 @@ frappe.ui.form.on("Hiring Request Details", {
 	"tender_hire_rate": function (frm, cdt, cdn) {
 
 	}
-	
+
 })
 
 function calculate_datetime(frm, cdt, cdn) {
@@ -197,7 +197,7 @@ frappe.ui.form.on("Hiring Approval Details", {
 	},
 	"grand_total": function (frm, cdt, cdn) {
 		calculate_total(frm);
-		
+
 	},
 	"rate_type": function (frm, cdt, cdn) {
 		get_rates(frm, cdt, cdn)
@@ -306,19 +306,19 @@ function calculate_total(frm) {
 	var total = 0;
 	frm.doc.approved_items.forEach(function (d) {
 		// frappe.throw("qqqqqqqqq")
-		if (frm.doc.lumpsum_rate){
+		if (frm.doc.lumpsum_rate) {
 			// frappe.throw("1234")
 			total = d.grand_total
-		}else{
+		} else {
 			// frappe.throw("jjjjj")
 			total += d.grand_total
 		}
-		
+
 	})
 	frm.set_value("total_hiring_amount", total)
 	frm.refresh_field("total_hiring_amount")
-	
-	frm.set_value("advance_amount", frm.doc.total_hiring_amount);	
+
+	frm.set_value("advance_amount", frm.doc.total_hiring_amount);
 	frm.refresh_field("advance_amount");
 }
 
@@ -329,7 +329,7 @@ function calculate_amount(frm, cdt, cdn) {
 		if (item.rate_type == "Cft - Broadleaf" || item.rate_type == "Cft - Conifer") {
 			grand_amount = item.rate * item.cft_qty
 		}
-		else if (item.lumpsum_rate){
+		else if (item.lumpsum_rate) {
 			grand_amount = lumpsum_rate
 		}
 		else {
@@ -357,45 +357,45 @@ function calculate_amount(frm, cdt, cdn) {
 }
 
 //Filter equipments based on branch
-frappe.ui.form.on("Equipment Hiring Form", "refresh", function(frm) {
-	frm.fields_dict['approved_items'].grid.get_field('equipment').get_query = function(doc, cdt, cdn) {
+frappe.ui.form.on("Equipment Hiring Form", "refresh", function (frm) {
+	frm.fields_dict['approved_items'].grid.get_field('equipment').get_query = function (doc, cdt, cdn) {
 		doc = locals[cdt][cdn]
 		return {
 			"query": "erpnext.fleet_management.doctype.equipment_hiring_form.equipment_hiring_form.equipment_query",
-			filters: {'branch': frm.doc.branch, 'equipment_type': doc.equipment_type, "from_date": doc.from_date, "to_date": doc.to_date}
+			filters: { 'branch': frm.doc.branch, 'equipment_type': doc.equipment_type, "from_date": doc.from_date, "to_date": doc.to_date }
 		}
 	}
-	cur_frm.set_query("tc_name", function() {
+	cur_frm.set_query("tc_name", function () {
 		return {
-		    "filters": {
-			"disabled": 0,
-			"reference": "Equipment Hiring Form"
-		    }
+			"filters": {
+				"disabled": 0,
+				"reference": "Equipment Hiring Form"
+			}
 		};
 	});
-	cur_frm.set_query("customer", function() {
-		if(frm.doc.private == "Own Company") {
+	cur_frm.set_query("customer", function () {
+		if (frm.doc.private == "Own Company") {
 			return {
-			    "filters": {
-				"disabled": 0,
-				"customer_group": "Internal"
-			    }
+				"filters": {
+					"disabled": 0,
+					"customer_group": "Internal"
+				}
 			};
 		}
-		else if(frm.doc.private == "Private") {
+		else if (frm.doc.private == "Private") {
 			return {
-			    "filters": {
-				"disabled": 0,
-				"customer_group": "Domestic"
-			    }
+				"filters": {
+					"disabled": 0,
+					"customer_group": "Domestic"
+				}
 			};
 		}
 		else {
 			return {
-			    "filters": {
-				"disabled": 0,
-				"customer_group": ["not in", "Internal, Domestic"]
-			    }
+				"filters": {
+					"disabled": 0,
+					"customer_group": ["not in", "Internal, Domestic"]
+				}
 			};
 		}
 	});
@@ -430,16 +430,16 @@ frappe.ui.form.on("Hiring Approval Detail", "refresh", function (frm) {
 	});
 })
 
-cur_frm.fields_dict['approved_items'].grid.get_field('tender_hire_rate').get_query = function(frm, cdt, cdn) {
+cur_frm.fields_dict['approved_items'].grid.get_field('tender_hire_rate').get_query = function (frm, cdt, cdn) {
 	var d = locals[cdt][cdn];
 	return {
 		filters: [
-		['Tender Hire Rate', 'docstatus', '=', 1],
-		['Tender Hire Rate', 'branch', '=', frm.branch],
-		['Tender Hire Rate', 'customer', '=', frm.customer],
-		['Tender Hire Rate', 'from_date', '<=', frappe.datetime.get_today()],
-		['Tender Hire Rate', 'to_date', '>=', frappe.datetime.get_today()],
-		['Tender Hire Rate', 'equipment_type', '=', d.equipment_type]
+			['Tender Hire Rate', 'docstatus', '=', 1],
+			['Tender Hire Rate', 'branch', '=', frm.branch],
+			['Tender Hire Rate', 'customer', '=', frm.customer],
+			['Tender Hire Rate', 'from_date', '<=', frappe.datetime.get_today()],
+			['Tender Hire Rate', 'to_date', '>=', frappe.datetime.get_today()],
+			['Tender Hire Rate', 'equipment_type', '=', d.equipment_type]
 		]
 	}
 }

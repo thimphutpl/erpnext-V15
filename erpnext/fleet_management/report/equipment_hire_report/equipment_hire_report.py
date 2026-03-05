@@ -40,24 +40,11 @@ def get_columns():
 def get_data(filters):
 	query ="""select hid.equipment, (select equipment_type FROM tabEquipment e WHERE e.name = hid.equipment), hid.registration_number, hci.ehf_name, hci.customer, (select c.customer_group FROM tabCustomer AS c WHERE hci.customer = c.name),
         CASE hid.rate_type
-        WHEN 'With Fuel' THEN (select sum(hid.total_work_hours))
-        END,
-        CASE hid.rate_type
-        WHEN 'With Fuel' THEN (select hid.work_rate)
-        END,
-        CASE hid.rate_type
         WHEN 'With Fuel' THEN (select sum(hid.amount_work))
-        END,
-        CASE hid.rate_type
-        WHEN 'Without Fuel' THEN (select sum(hid.total_work_hours))
-        END,
-        CASE hid.rate_type
-        WHEN 'Without Fuel' THEN (select hid.work_rate)
         END,
         CASE hid.rate_type
         WHEN 'Without Fuel' THEN (select sum(hid.amount_work))
         END,
-        sum(hid.total_idle_hours), hid.idle_rate, sum(hid.amount_idle),
         CASE hci.owned_by
         WHEN 'CDCL' THEN (select sum(hid.total_amount))
         END,
@@ -77,8 +64,8 @@ def get_data(filters):
 
 		#OR vl.to_date between \'" + str(filters.from_date) + "\' and \'"+ str(filters.to_date) + "\'"'''
 
-	if filters.get("not_cdcl"):
-		query += " and e.not_cdcl = 0"
+	# if filters.get("not_cdcl"):
+	# 	query += " and e.not_cdcl = 0"
 
 	if filters.get("include_disabled"):
 		query += " "

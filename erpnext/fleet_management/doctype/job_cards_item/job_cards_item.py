@@ -15,7 +15,9 @@ class JobCardsItem(Document):
 		from frappe.types import DF
 
 		amount: DF.Currency
+		bill_number: DF.Data | None
 		checked_by: DF.Link | None
+		date: DF.Date | None
 		imprest: DF.Check
 		job: DF.DynamicLink
 		job_name: DF.Data | None

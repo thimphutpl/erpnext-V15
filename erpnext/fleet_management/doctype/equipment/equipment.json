@@ -49,6 +49,8 @@
   "operators",
   "model_items",
   "details",
+  "section_break_hkhu",
+  "initial_km_reading",
   "section_break_wyxu",
   "current_operator",
   "column_break_icpt",
@@ -372,11 +374,20 @@
    "fieldname": "tankers_capacity",
    "fieldtype": "Float",
    "label": "Tanker Capacity"
+  },
+  {
+   "fieldname": "section_break_hkhu",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "initial_km_reading",
+   "fieldtype": "Float",
+   "label": "Initial KM Reading"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-06-10 10:19:45.639829",
+ "modified": "2026-02-27 12:30:48.080515",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Equipment",

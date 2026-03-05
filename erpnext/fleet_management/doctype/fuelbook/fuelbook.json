@@ -32,7 +32,7 @@
    "fieldname": "type",
    "fieldtype": "Select",
    "label": "Type",
-   "options": "Own\nCommon",
+   "options": "Own\nCommon\nGeneral Pol",
    "reqd": 1
   },
   {
@@ -89,7 +89,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-06-13 10:24:50.261249",
+ "modified": "2026-02-13 18:21:22.560505",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Fuelbook",

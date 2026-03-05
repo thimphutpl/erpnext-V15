@@ -21,6 +21,6 @@ class Fuelbook(Document):
 		fuelbook_number: DF.Data
 		security_deposit: DF.Currency
 		supplier: DF.Link
-		type: DF.Literal["Own", "Common"]
+		type: DF.Literal["Own", "Common", "General Pol"]
 	# end: auto-generated types
 	pass
