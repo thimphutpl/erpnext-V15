@@ -43,6 +43,12 @@
   "section_break_jpd0",
   "auto_reconcile_payments",
   "stale_days",
+  "tax_deducted_at_source_tds_accounts_section",
+  "tds_2_account",
+  "tds_3_account",
+  "column_break_xbjs",
+  "tds_5_account",
+  "tds_10_account",
   "invoicing_settings_tab",
   "accounts_transactions_settings_section",
   "over_billing_allowance",
@@ -531,6 +537,40 @@
    "label": "Verifier",
    "options": "User",
    "read_only": 1
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "tax_deducted_at_source_tds_accounts_section",
+   "fieldtype": "Section Break",
+   "label": "Tax Deducted At Source (TDS) Accounts"
+  },
+  {
+   "fieldname": "tds_2_account",
+   "fieldtype": "Link",
+   "label": "TDS Account (2%)",
+   "options": "Account"
+  },
+  {
+   "fieldname": "tds_3_account",
+   "fieldtype": "Link",
+   "label": "TDS Account (3%)",
+   "options": "Account"
+  },
+  {
+   "fieldname": "column_break_xbjs",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "tds_5_account",
+   "fieldtype": "Link",
+   "label": "TDS Account (5%)",
+   "options": "Account"
+  },
+  {
+   "fieldname": "tds_10_account",
+   "fieldtype": "Link",
+   "label": "TDS Account (10%)",
+   "options": "Account"
   }
  ],
  "icon": "icon-cog",
@@ -538,7 +578,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-01-14 18:50:43.742673",
+ "modified": "2026-02-09 21:54:51.201687",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Accounts Settings",
