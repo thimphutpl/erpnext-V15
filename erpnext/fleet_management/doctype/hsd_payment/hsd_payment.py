@@ -142,7 +142,7 @@ class HSDPayment(Document):
 					
 					paid_amount = round(flt(doc.paid_amount) + flt(a.allocated_amount), 2)
 					# frappe.throw("Paid Amount: " + str(paid_amount) + ", Total Amount: " + str(flt(doc.total_amount, 2)))
-					max_amount = flt(doc.total_gst_amount) if doc.get("total_gst_amount") else flt(doc.total_amount)
+					max_amount = round(flt(doc.total_gst_amount,2) if doc.get("total_gst_amount") else flt(doc.total_amount,2))
 					if flt(paid_amount) > flt(max_amount):
 						frappe.throw("Paid Amount cannot be greater than the Total Amount for Receive POl <b>"+str(a.pol)+"</b>")
 					doc.db_set("paid_amount", paid_amount)
