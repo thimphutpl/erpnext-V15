@@ -1226,18 +1226,22 @@ class CustomWorkflow:
 		''' Material Request Workflow
 			1. Employee -> MR Manager
 		'''
-		# if self.new_state.lower() in ("Draft".lower()):
-		# 	if self.doc.owner != frappe.session.user:
-		# 		frappe.throw("Only the document owner can Apply this material request")
+		roles = frappe.get_roles(frappe.session.user)
+		if self.new_state.lower() in ("Draft".lower()):
+			if self.doc.owner != frappe.session.user:
+				frappe.throw("Only the document owner can Apply this material request")
 
-		# elif self.new_state.lower() in ("Waiting Supervisor Approval".lower()):
+		# elif self.new_state.lower() in ("Waiting For Verification".lower()):
 		# 	if self.doc.owner != frappe.session.user and self.new_state.lower()!= self.old_state.lower():
 		# 		frappe.throw("Only the document owner can Apply this material request")
 		# 	self.set_approver("Supervisor")
 			
 		if self.new_state.lower() in ("Waiting Approval".lower()):
-			if self.doc.owner != frappe.session.user and self.new_state.lower()!= self.old_state.lower():
-				frappe.throw("Only the document owner can Apply this material request")
+			# if self.doc.owner != frappe.session.user and self.new_state.lower()!= self.old_state.lower():
+			# 	frappe.throw("Only the document owner can Apply this material request")
+
+			if "MR Verifier" not in roles:
+				frappe.throw("Only the document MR Verifier can apply this Material Request")
 			self.set_approver("Branch Approver")
 
 		# elif self.new_state.lower() in ("Waiting GM Approval".lower()):
