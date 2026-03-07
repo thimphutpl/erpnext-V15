@@ -25,6 +25,9 @@ class MechanicalPayment(AccountsController):
 
 		self.validate_allocated()
 		self.set_missing_values()
+		if self.tax_withholding_category:
+			self.validate_tds_amount()
+		self.calculate_net_amount()	
 		self.clearance_date = None
 		if self.workflow_state=="Waiting Approval":
 			self.verifier=frappe.session.user
@@ -275,3 +278,15 @@ class MechanicalPayment(AccountsController):
 		self.tax_withholding_rate = transactions[0]['tax_withholding_rate']
 
 		self.tds_amount = (flt(self.net_amount) * flt(self.tax_withholding_rate))/100
+	def validate_tds_amount(self):
+		"""
+		Fetch tax_withholding_rate based on tax_withholding_category and posting_date,
+		and calculate tds_amount as receivable_amount * rate / 100
+		"""
+		if not self.tax_withholding_category:
+			frappe.throw("Please select Tax Withholding Category")
+		self.tds_amount = flt(self.receivable_amount) * flt(self.tax_withholding_rate) / 100
+	def calculate_net_amount(self):
+		tds=self.tds_amount
+		receivable_amount=self.receivable_amount
+		self.net_amount = receivable_amount-tds		
