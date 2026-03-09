@@ -123,7 +123,7 @@ class UtilityBill(Document):
 		gst_rate = 5.0
 		total_gst = 0.0
 
-		for row in self.items:
+		for row in self.item:
 			if row.payment_status == "Success":
 				invoice_amount = row.invoice_amount or 0
 				row.gst_amount = (invoice_amount * gst_rate) / (100 + gst_rate)
