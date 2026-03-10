@@ -1306,8 +1306,7 @@
    "fieldname": "employee_advance_salary",
    "fieldtype": "Link",
    "label": "Advance To Employee (Salary) Account",
-   "options": "Account",
-   "reqd": 1
+   "options": "Account"
   },
   {
    "fieldname": "sws_accounts_settings_section",
@@ -1364,7 +1363,7 @@
  "image_field": "company_logo",
  "is_tree": 1,
  "links": [],
- "modified": "2026-03-10 12:09:42.569469",
+ "modified": "2026-03-10 12:15:42.787817",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Company",
