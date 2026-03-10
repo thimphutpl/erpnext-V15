@@ -45,7 +45,7 @@ class ImprestAdvance(Document):
 			self.check_imprest_amount()
 		if cint(self.first_advance) == 1:
 			self.check_for_duplicate_entry()
-			validate_workflow_states(self)
+			# validate_workflow_states(self)
 			# if self.workflow_state != "Approved":
 			# 	notify_workflow_states(self)
 

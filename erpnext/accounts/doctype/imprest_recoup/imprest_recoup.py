@@ -44,12 +44,12 @@ class ImprestRecoup(Document):
 	# end: auto-generated types
 
 	def validate(self):
-		validate_workflow_states(self)
+		# validate_workflow_states(self)
 		self.calculate_amount()
 		self.populate_imprest_advance()
 		self.set_recoup_account(validate=True)
-		if self.workflow_state != "Recouped":
-			notify_workflow_states(self)
+		# if self.workflow_state != "Recouped":
+		# 	notify_workflow_states(self)
 		self.calculate_amount_final()
 	
 	def set_recoup_account(self, validate=False):
@@ -83,7 +83,7 @@ class ImprestRecoup(Document):
 				frappe.throw(f"Budget missing or not allocated for Account <b>{item.account}</b> for Cost Center <b>{item.cost_center}</b> for Year <b>{fy}</b>")
 
 	def on_submit(self):
-		notify_workflow_states(self)
+		# notify_workflow_states(self)
 		self.update_advance()
 		self.post_journal_entry()
 		if self.final_settlement == "No":

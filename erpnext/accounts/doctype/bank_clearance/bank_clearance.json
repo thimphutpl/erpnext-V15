@@ -72,6 +72,7 @@
    "default": "0",
    "fieldname": "include_pos_transactions",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "Include POS Transactions"
   },
   {
@@ -91,7 +92,7 @@
  "idx": 1,
  "issingle": 1,
  "links": [],
- "modified": "2022-11-28 17:24:13.008692",
+ "modified": "2026-03-09 21:52:10.617337",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Bank Clearance",
