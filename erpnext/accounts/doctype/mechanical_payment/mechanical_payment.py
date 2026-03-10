@@ -25,9 +25,9 @@ class MechanicalPayment(AccountsController):
 
 		self.validate_allocated()
 		self.set_missing_values()
-		if self.tax_withholding_category:
-			self.validate_tds_amount()
-		self.calculate_net_amount()	
+		# if self.tax_withholding_category:
+		# 	self.validate_tds_amount()
+		# self.calculate_net_amount()	
 		self.clearance_date = None
 		if self.workflow_state=="Waiting Approval":
 			self.verifier=frappe.session.user
@@ -268,16 +268,13 @@ class MechanicalPayment(AccountsController):
 
 	@frappe.whitelist()
 	def get_tax_rate(self):
-		# if not self.branch or not self.customer or not self.payment_for:
-		# 	frappe.throw("Branch, Customer and Payment For is Mandatory")
-		# frappe.throw(str(self.tax_withholding_category))
 		transactions = frappe.db.sql("select tax_withholding_rate from `tabTax Withholding Rate` where parent='{}' and '{}' between from_date and to_date;".format(self.tax_withholding_category, self.posting_date), as_dict=1)
 		if not transactions:
 			frappe.throw("please set tax withholding rate for Category {} in Tax Withholding Category".format(self.tax_withholding_category))
 		
 		self.tax_withholding_rate = transactions[0]['tax_withholding_rate']
-
-		self.tds_amount = (flt(self.net_amount) * flt(self.tax_withholding_rate))/100
+		self.tds_account = frappe.db.get_value("Tax Withholding Account",{"parent":self.tax_withholding_category},"account")
+		self.tds_amount = (flt(self.receivable_amount) * flt(self.tax_withholding_rate))/100
 	def validate_tds_amount(self):
 		"""
 		Fetch tax_withholding_rate based on tax_withholding_category and posting_date,
