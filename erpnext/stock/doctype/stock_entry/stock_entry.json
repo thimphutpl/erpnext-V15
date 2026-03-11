@@ -711,7 +711,8 @@
   },
   {
    "fieldname": "text_editor_yfea",
-   "fieldtype": "Text Editor"
+   "fieldtype": "Text Editor",
+   "label": "Reason"
   },
   {
    "fieldname": "column_break_uuwo",
@@ -814,7 +815,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-03-25 09:43:58.025942",
+ "modified": "2026-03-11 15:51:17.365419",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Stock Entry",

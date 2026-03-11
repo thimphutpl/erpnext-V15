@@ -130,7 +130,7 @@ class StockEntry(StockController):
 		purchase_receipt_no: DF.Link | None
 		purpose: DF.Literal["Material Issue", "Material Return", "Material Receipt", "Material Transfer", "Material Transfer for Manufacture", "Material Consumption for Manufacture", "Manufacture", "Repack", "Send to Subcontractor"]
 		received_by: DF.Data | None
-		reference_name: DF.DynamicLink | None
+		reference_name: DF.Data | None
 		reference_type: DF.Link | None
 		remarks: DF.SmallText | None
 		sales_invoice_no: DF.Link | None
