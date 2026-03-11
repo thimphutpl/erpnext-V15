@@ -894,8 +894,7 @@ def get_permission_query_conditions(user):
 
 	if any(role in user_roles for role in {"Administrator", "System Manager", "CEO","Auditor"}):
 		return
-	if "MR Verifier" in user_roles:
-		return "`tabMaterial Request`.workflow_state = 'Waiting for Verification'"
+
 
 	# ceo_or_general_manager = 1 if 'GM' in user_roles or 'CEO' in user_roles or 'Projects GM' in user_roles else 0
 	# ceo_or_general_manager = 1 if any(role in user_roles for role in {"GM", "CEO", "Projects GM"}) else 0

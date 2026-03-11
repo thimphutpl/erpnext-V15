@@ -1231,10 +1231,10 @@ class CustomWorkflow:
 			if self.doc.owner != frappe.session.user:
 				frappe.throw("Only the document owner can Apply this material request")
 
-		# elif self.new_state.lower() in ("Waiting For Verification".lower()):
-		# 	if self.doc.owner != frappe.session.user and self.new_state.lower()!= self.old_state.lower():
-		# 		frappe.throw("Only the document owner can Apply this material request")
-		# 	self.set_approver("Supervisor")
+		elif self.new_state.lower() in ("Waiting For Verification".lower()):
+			if "MR User" not in roles:
+				frappe.throw("Only the document MR Verifier can apply this Material Request")
+
 			
 		if self.new_state.lower() in ("Waiting Approval".lower()):
 			# if self.doc.owner != frappe.session.user and self.new_state.lower()!= self.old_state.lower():
