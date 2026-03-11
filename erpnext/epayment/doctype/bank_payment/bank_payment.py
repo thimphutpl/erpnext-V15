@@ -1882,7 +1882,10 @@ def get_permission_query_conditions(user):
 		return
 	if "Customer" in user_roles:
 		# Only show POs for branches assigned to this Customer
-		return """exists(
+		return """
+		`tabBank Payment`.owner = '{user}'
+         or
+		exists(
 			select 1
 			from `tabAssign Branch` ab
 			join `tabBranch Item` bi on bi.parent = ab.name
@@ -1890,13 +1893,12 @@ def get_permission_query_conditions(user):
 			and bi.branch = `tabBank Payment`.branch
 		)""".format(user=user)	
 	
-	return """(
-		`tabBank Payment`.owner = '{user}'
-		or
-		exists(select 1
-			from `tabCustomer` as c, `tabCustomer Bank Accounts` cba
-			where c.name = cba.parent and
-			cba.bank_account = `tabBank Payment`.paid_from
-			and c.user_id = '{user}')
-)""".format(user=user)		
-
+# 	return """(
+# 		`tabBank Payment`.owner = '{user}'
+# 		or
+# 		exists(select 1
+# 			from `tabCustomer` as c, `tabCustomer Bank Accounts` cba
+# 			where c.name = cba.parent and
+# 			cba.bank_account = `tabBank Payment`.paid_from
+# 			and c.user_id = '{user}')
+# )""".format(user=user)		
