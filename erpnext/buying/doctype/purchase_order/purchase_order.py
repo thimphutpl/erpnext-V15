@@ -1208,6 +1208,17 @@ def get_permission_query_conditions(user):
 
 	if user == "Administrator" or "System Manager" in user_roles or "Purchase Master" in user_roles or "Auditor" in user_roles: 
 		return
+	   # Check if user is a Customer (not an Employee)
+	if "Customer" in user_roles:
+		# Only show POs for branches assigned to this Customer
+		return """exists(
+			select 1
+			from `tabAssign Branch` ab
+			join `tabBranch Item` bi on bi.parent = ab.name
+			where ab.user = '{user}'
+			and bi.branch = `tabPurchase Order`.branch
+		)""".format(user=user)
+	
 
 	return """(
 		`tabPurchase Order`.owner = '{user}'
