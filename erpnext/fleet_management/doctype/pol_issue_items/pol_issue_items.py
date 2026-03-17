@@ -32,6 +32,7 @@ class POLIssueItems(Document):
 		parenttype: DF.Data
 		qty: DF.Float
 		serial_and_batch_bundle: DF.Data | None
+		site: DF.Data | None
 		tank_capacity: DF.Float
 		warehouse: DF.Link | None
 	# end: auto-generated types
