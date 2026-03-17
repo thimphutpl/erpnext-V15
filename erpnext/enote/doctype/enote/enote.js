@@ -13,31 +13,71 @@ frappe.ui.form.on('eNote', {
 			};
 		});
 
+		frm.set_query("department", function () {
+			return {
+				filters: {
+					company: frm.doc.company,
+				},
+			};
+		});
+		frm.set_query("branch", function () {
+			return {
+				filters: {
+					company: frm.doc.company,
+				},
+			};
+		});
+
+		
+
 		if(frm.doc.workflow_state == "Approved"){
 			frm.set_df_property("forward_to","hidden", 1);
 			frm.set_df_property("copied", "hidden", 0);
 			frm.set_df_property("enote_format","hidden", 0);
-			if(frm.doc.category == "Asset Requisition"){
-				frappe.call({
-					method:"check_material_request",
-					doc:frm.doc,
-					callback: function(r){
-						if(r.message){
-							if(r.message == 1){
-								frm.add_custom_button(__("Material Request"), () => {
-									frm.trigger("make_material_request");
-								});
-							}
-						}
-					}
-				})
+			
+		} else{
+			frm.set_df_property("copied", "hidden", 1);
+			frm.set_df_property("enote_format","hidden", 1);
+		}
 
+		if (frm.doc.workflow_state == "Waiting For Reviewer" && frm.doc.reviewer_required) {
+			let is_reviewer = false;
+			(frm.doc.reviewers || []).forEach(reviewer => {
+				if (reviewer.user_id === frappe.session.user) {
+					is_reviewer = true;
+				}
+			});
+			
+			if (is_reviewer) {
+				frm.add_custom_button(__('Review'), function() {
+					let remark = "";
+					$.each(frm.doc.remark || [], function(i, item) {
+						if (item.user === frappe.session.user) {
+							remark = item.remark;
+						}
+					});
+					
+					let d = new frappe.ui.Dialog({
+						title: 'Write Your Review Remarks',
+						fields: [
+							{
+								label: __(""),
+								fieldtype: "Text Editor",
+								fieldname: "content",
+								default: remark,
+							}
+						],
+						size: 'medium',
+						primary_action_label: 'Submit Review',
+						primary_action(values) {
+							save_remark(frm, values['content'], 1);
+							d.hide();
+						},
+					});
+					d.show();
+				}, __("Actions"));
 			}
-		} 
-		// else{
-		// 	frm.set_df_property("copied", "hidden", 1);
-		// 	frm.set_df_property("enote_format","hidden", 1);
-		// }
+		}
 
 		if (frm.doc.__islocal) {
 			frm.events.set_editable(frm, true);
@@ -152,15 +192,6 @@ frappe.ui.form.on("eNote Reviewer", {
 	},
 });
 
-var make_material_request = function (frm) {
-	frappe.model.open_mapped_doc({
-		method: "erpnext.enote.doctype.enote.enote.make_material_request",
-		frm: frm,
-		args: {}, // No default_supplier passed
-		run_link_triggers: true,
-	});
-}
-
 var save_remark = function(frm, remark, reviewers){
 	frappe.call({
 		method: "save_remark",
@@ -176,3 +207,4 @@ var save_remark = function(frm, remark, reviewers){
         freeze_message: "Saving Remarks.... Please Wait",
 	})
 }
+

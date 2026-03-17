@@ -41,11 +41,11 @@ class eNote(Document):
 		self.enote_format = make_autoname(str(self.enote_series)+".YYYY./.#####")
 		frappe.db.set_value("eNote", self.name, "enote_format", self.enote_format)
 		self.send_notification()
+		# self.check_review()
+		
 		# notify_workflow_states(self)
   
-	def validate(self):
-		self.enote_format = make_autoname(str(self.enote_series)+".YYYY./.#####")
-		frappe.db.set_value("eNote", self.name, "enote_format", self.enote_format)
+	def validate(self):	
 		action = frappe.request.form.get('action')
 		if action and action not in ("Save","Apply") and self.reviewer_required:
 			status = 1
@@ -58,16 +58,11 @@ class eNote(Document):
 			
 		self.save_forward_to()
 		self.workflow_action()
-		# if we allow on action approve, it going double email to doc owner. 
-		# one form here and another from on_submit().
-		# if we allow from here, workflow state is still stays in pending which is wrong.  
-		# again while reloading the doc, after saving remarks has impact as well. it should run
-		# only in below action.
 		if frappe.request.form.get('action') in ("Forward","Apply","Reject"):
 			self.send_notification()
 			# notify_workflow_states(self)   
 
-
+	
 	def save_forward_to(self):
 		if not self.forward_to:
 			if frappe.db.exists("Employee", {"user_id":frappe.session.user}):
@@ -85,7 +80,7 @@ class eNote(Document):
 		#Allow only the permitted user to make changes
 		self.permitted_user = frappe.session.user if not self.permitted_user else self.permitted_user
 
-		if self.get_db_value("workflow_state") != "Waiting for Reviewer":
+		if self.get_db_value("workflow_state") != "Waiting For Reviewer":
 			if self.permitted_user != frappe.session.user:
 				frappe.throw(" Only <b>{}</b> is allowed to make changes and perform actions to this Note".format(self.permitted_user))
 		
@@ -147,14 +142,8 @@ class eNote(Document):
 		elif self.workflow_state == "Pending" and frappe.session.user != self.forward_to:
 			self.notify_approval()
 
-		elif self.workflow_state == "Waiting for Reviewer":
+		elif self.workflow_state == "Waiting For Reviewer":
 			self.notify_reviewer()
-
-	@frappe.whitelist()
-	def check_material_request(self):
-		pass
-		# exists = 0:
-		# 	if 
 
 	def notify_reviewer(self):
 		self.doc = self
@@ -167,10 +156,19 @@ class eNote(Document):
 		if not template:
 			frappe.msgprint(_("Please set default template for eNote Reviewer Notification in HR Settings."))
 			return
+		reviewer = frappe.db.sql('''
+			select user_id from `tabeNote Reviewer` where parent='{}'
+		'''.format(self.doc.name))
+		reviewers = []
+		if reviewer:
+			for i in reviewer:
+				reviewers.append(i[0])
+	
 
+		
 		email_template = frappe.get_doc("Email Template", template)
 		message = frappe.render_template(email_template.response, args)
-		recipients = self.doc.owner
+		recipients = reviewers
 		subject = email_template.subject
 		self.send_mail(recipients,message, subject)
 
@@ -353,61 +351,29 @@ class eNote(Document):
 		except:
 			pass	
 
-@frappe.whitelist()
-def make_material_request(source_name, target_doc=None):
-	def update_item(obj, target, source_parent):
-		# target.warehouse = source_parent.wip_warehouse
-		pass
-
-	def set_missing_values(source, target):
-		target.material_request_type = "Material Purchase"
-		target.enote_id = source.name
-
-	doclist = get_mapped_doc(
-		"eNote",
-		source_name,
-		{
-			"eNote": {
-				"doctype": "Material Request",
-				"field_map": {
-					"name": "enote_id",
-				},
-			},
-			# "Job Card Item": {
-			# 	"doctype": "Material Request Item",
-			# 	"field_map": {"required_qty": "qty", "uom": "stock_uom", "name": "job_card_item"},
-			# 	"postprocess": update_item,
-			# },
-		},
-		target_doc,
-		set_missing_values,
-	)
-
-	return doclist
-
 def get_permission_query_conditions(user):
-    if not user: user = frappe.session.user
-    user_roles = frappe.get_roles(user)
+	if not user: user = frappe.session.user
+	user_roles = frappe.get_roles(user)
 
 	# reviewers  = frappe.db.sql("SELECT user_id FROM `tabeNote Reviewer")
 
-    if user == "Administrator":
-        return
-    if "HR User" in user_roles or "HR Manager" in user_roles:
-        return
-    return """(
-        `tabeNote`.owner = '{user}' or
+	if user == "Administrator":
+		return
+	# if "HR User" in user_roles or "HR Manager" in user_roles:
+	#     return
+	return """(
+		`tabeNote`.owner = '{user}' or
 		IF (
-				(`tabeNote`.reviewer_required = '1' and `tabeNote`.workflow_state != 'Waiting for Reviewer') or `tabeNote`.reviewer_required = '0',  
+				(`tabeNote`.reviewer_required = '1' and `tabeNote`.workflow_state != 'Waiting For Reviewer') or `tabeNote`.reviewer_required = '0',  
 				`tabeNote`.permitted_user = '{user}',
 				exists(select 1
 					from `tabEmployee` e, `tabeNote Reviewer` nr
 					where e.user_id = '{user}' and '{user}' = nr.user_id and nr.parent = `tabeNote`.name)
 			)
 		or
-        exists(select 1
+		exists(select 1
 			from `tabEmployee` e, `tabNote Copy` nc
-			where e.user_id = '{user}' and '{user}' = nc.user_id and nc.parent = `tabeNote`.name)
+			where e.user_id = '{user}' and '{user}' = nc.employee and nc.parent = `tabeNote`.name)
    		)
 		""".format(user=user)
 # `tabeNote`.permitted_user = '{user}' or

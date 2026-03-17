@@ -91,6 +91,7 @@ class PurchaseOrder(BuyingController):
 		disable_rounded_total: DF.Check
 		discount_amount: DF.Currency
 		enote_id: DF.Link | None
+		expiry_date: DF.Date | None
 		from_date: DF.Date | None
 		grand_total: DF.Currency
 		group_same_items: DF.Check
@@ -103,6 +104,8 @@ class PurchaseOrder(BuyingController):
 		items: DF.Table[PurchaseOrderItem]
 		language: DF.Data | None
 		letter_head: DF.Link | None
+		letter_of_credit_number: DF.Data | None
+		location_tracking: DF.Data | None
 		naming_series: DF.Literal["", "Consumables", "Fixed Asset", "Sales Product", "Spare Parts", "Services Miscellaneous", "Services Works", "Labour Contract", "PUR-ORD-.YYYY.-"]
 		net_total: DF.Currency
 		order_confirmation_date: DF.Date | None
@@ -133,6 +136,7 @@ class PurchaseOrder(BuyingController):
 		shipping_address: DF.Link | None
 		shipping_address_display: DF.SmallText | None
 		shipping_rule: DF.Link | None
+		start_date: DF.Date | None
 		status: DF.Literal["", "Draft", "On Hold", "To Receive and Bill", "To Bill", "To Receive", "Completed", "Cancelled", "Closed", "Delivered"]
 		supplied_items: DF.Table[PurchaseOrderItemSupplied]
 		supplier: DF.Link
@@ -1062,6 +1066,7 @@ def make_tax_payment(source_name, target_doc=None, args=None):
 				gst_input_account = tax.account_head
 		bank_account = frappe.db.get_value("Company", source.company, "default_bank_account")
 		gst_amount = total_charges = 0
+	
 		post_gst_jv = 0
 		party_type = "Supplier"
 		party = source.supplier
