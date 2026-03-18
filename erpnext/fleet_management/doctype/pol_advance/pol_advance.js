@@ -5,12 +5,11 @@ frappe.ui.form.on("POL Advance", {
     setup(frm){
         frm.set_query("equipment", function(){
             return {
+                query: "erpnext.fleet_management.doctype.pol_advance.pol_advance.get_equipment_by_parent_cost_center",
                 filters: {
-                    'company': frm.doc.company,
-                    'branch': frm.doc.branch,
-                    'disabled': 0,
+                    cost_center: frm.doc.cost_center
                 }
-            }
+            };
         });
 
         frm.set_query("fuelbook", function(){
@@ -25,20 +24,20 @@ frappe.ui.form.on("POL Advance", {
 
 	refresh(frm) {
         refresh_html(frm);
-        // if (frm.doc.docstatus == 1) {
+        if (frm.doc.docstatus == 1 && frm.doc.status == "Cancelled") {
 		
-		// 	cur_frm.add_custom_button(__('Accounting Ledger'), function() {
-		// 		frappe.route_options = {
-		// 			voucher_no: frm.doc.name,
-		// 			from_date: frm.doc.posting_date,
-		// 			to_date: frm.doc.posting_date,
-		// 			company: frm.doc.company,
-		// 			group_by_voucher: false
-		// 		};
-		// 		frappe.set_route("query-report", "General Ledger");
-		// 	}, __("View"));
+			cur_frm.add_custom_button(__('Update Journal Entry'), function() {
+				// frappe.route_options = {
+				// 	voucher_no: frm.doc.name,
+				// 	from_date: frm.doc.posting_date,
+				// 	to_date: frm.doc.posting_date,
+				// 	company: frm.doc.company,
+				// 	group_by_voucher: false
+				// };
+				// frappe.set_route("query-report", "General Ledger");
+			}, __("Update"));
 		
-		// }
+		}
 	},
 
     advance_amount: (frm) => {

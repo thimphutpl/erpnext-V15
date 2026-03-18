@@ -54,6 +54,14 @@ class POLAdvance(Document):
 		else:
 			self.status = "Paid"
 
+	def before_cancel(self):
+		if self.is_opening:
+			return
+		if frappe.db.exists("Journal Entry",self.journal_entry):
+			doc = frappe.get_doc("Journal Entry", self.journal_entry)
+			if doc.docstatus != 2:
+				frappe.throw("Journal Entry exists for this transaction {}".format(frappe.get_desk_link("Journal Entry",self.journal_entry)))
+				
 	def on_cancel(self):
 		self.ignore_linked_doctypes = ("GL Entry", "Payment Ledger Entry")
 
@@ -176,4 +184,49 @@ class POLAdvance(Document):
 		self.db_set("journal_entry", je.name)
 		self.db_set("journal_entry_status", "Forwarded to accounts for processing payment on {0}".format(now_datetime().strftime('%Y-%m-%d %H:%M:%S')))
 		frappe.msgprint(_('{} posted to accounts').format(frappe.get_desk_link(je.doctype,je.name)))
+		
+@frappe.whitelist()
+def get_equipment_by_parent_cost_center(doctype, txt, searchfield, start, page_len, filters):
+	
+	filters = frappe.parse_json(filters)
+	cost_center = filters.get("cost_center")
 
+	if not cost_center:
+		return []
+
+	# Get parent cost center
+	parent = frappe.db.get_value("Cost Center", cost_center, "parent_cost_center")
+	# if not parent:
+	#     parent = cost_center
+
+	# Get tree boundaries
+	# lft, rgt = frappe.db.get_value("Cost Center", parent, ["lft", "rgt"])
+
+	cost_centers = frappe.get_all(
+		"Cost Center",
+		filters={"parent_cost_center": parent},
+		pluck="name"
+	)
+
+	branches = frappe.get_all(
+		"Branch",
+		filters={
+			"cost_center": ["in", cost_centers]
+		},
+		pluck="name"
+	)
+
+	# Return format REQUIRED for link field
+	return frappe.db.sql("""
+		SELECT name
+		FROM `tabEquipment`
+		WHERE branch IN %(branches)s
+		AND disabled = 0
+		AND name LIKE %(txt)s
+		LIMIT %(start)s, %(page_len)s
+	""", {
+		"branches": tuple(branches),
+		"txt": f"%{txt}%",
+		"start": start,
+		"page_len": page_len
+	})
