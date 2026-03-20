@@ -184,7 +184,7 @@
    "fieldtype": "Float",
    "in_list_view": 1,
    "label": "Quantity",
-   "precision": "2",
+   "precision": "4",
    "reqd": 1
   },
   {
@@ -203,7 +203,7 @@
    "fieldname": "rate",
    "fieldtype": "Currency",
    "label": "Rate Per Unit",
-   "precision": "4",
+   "precision": "9",
    "reqd": 1
   },
   {
@@ -577,7 +577,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-03-18 14:34:15.179500",
+ "modified": "2026-03-20 09:05:09.916189",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Receive",
