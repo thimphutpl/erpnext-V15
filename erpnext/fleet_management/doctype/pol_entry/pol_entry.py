@@ -26,6 +26,7 @@ class POLEntry(Document):
 		is_barrel: DF.Check
 		is_fuel_book: DF.Check
 		is_opening: DF.Check
+		issue_qty: DF.Float
 		item: DF.Link | None
 		item_name: DF.Data | None
 		km_difference: DF.Float

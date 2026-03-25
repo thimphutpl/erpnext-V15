@@ -250,7 +250,7 @@ class POLIssue(StockController):
 		if self.purpose=="Issue":
 			credit_amount = self.total_amount
 		if flt(credit_amount) > 0:
-			advance_account = frappe.db.get_value("Company",self.company,"fuel_stock_account")
+			advance_account = frappe.db.get_value("Company",self.company,"pol_advance_account")
 			if not advance_account:
 				frappe.throw("Please set Fuel Stock Account in  Company "+str(self.company))
 			gl_entries.append(
@@ -286,18 +286,20 @@ class POLIssue(StockController):
 			limit 1
 			""".format(branch=self.branch, item=self.pol_type, cond=cond), as_dict=True)
 		
-		b_qty = b_rate= total_amount = 0
+		b_qty = total_amount = issue_qty = 0
 		for raw in balance_qty:
 			if not cancel:
 				if raw.qty != self.tank_balance:
 					frappe.throw("POL Received or Issue has been made after this transaction please make few changes and save this doc")
 				if self.purpose=="Issue":
 					b_qty = flt(raw.qty) - flt(self.total_quantity)
+					issue_qty=flt(raw.qty)
 					total_amount = raw.amount - self.total_amount
 				if self.purpose=="Transfer":
 					b_qty = flt(raw.qty) - flt(self.transfer_qty)
+					issue_qty=flt(raw.qty)
 					total_amount = raw.amount - self.transfer_amount
-				b_rate = flt(total_amount) / flt(b_qty)
+				# b_rate = flt(total_amount) / flt(b_qty)
 			else:
 				if self.purpose=="Issue":
 					b_qty = flt(raw.qty) + flt(self.total_quantity)
@@ -306,7 +308,15 @@ class POLIssue(StockController):
 					b_qty = flt(raw.qty) + flt(self.transfer_qty)
 					total_amount = flt(raw.amount) + flt(self.transfer_amount)
 				
-				b_rate = flt(total_amount) / flt(b_qty)
+				# b_rate = flt(total_amount) / flt(b_qty)
+
+			# if flt(b_qty) <= 0:
+			# 	b_qty = 0
+			# 	total_amount = 0
+			# else:
+				total_amount = flt(issue_qty) * flt(self.rate)	
+
+
 
 		con = frappe.new_doc("POL Entry")
 		con.flags.ignore_permissions = 1
@@ -323,7 +333,8 @@ class POLIssue(StockController):
 		con.posting_date = nowdate()
 		con.posting_time = nowtime()
 		con.qty = b_qty
-		con.rate = b_rate
+		con.issue_qty = issue_qty
+		con.rate = self.rate
 		con.amount = total_amount
 		con.reference_type = "POL Issue"
 		con.reference_name = self.name
