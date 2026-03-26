@@ -48,6 +48,10 @@ frappe.ui.form.on("Sales Order", {
 	},
 
 	refresh: function (frm) {
+		let msg = __(
+			"Warning: Kindly verify that the selected Unit of Measure (UOM) is correct."
+		);
+		frm.dashboard.add_comment(msg, "red", true);
 		if (frm.doc.docstatus === 1) {
 			if (
 				frm.doc.status !== "Closed" &&
@@ -563,68 +567,68 @@ frappe.ui.form.on("Sales Order", {
 // 	},
 // });
 
-cur_frm.fields_dict['items'].grid.get_field('price_template').get_query = function(frm, cdt, cdn) {
+cur_frm.fields_dict['items'].grid.get_field('price_template').get_query = function (frm, cdt, cdn) {
 	var d = locals[cdt][cdn];
-	if(d.sales_uom){
+	if (d.sales_uom) {
 		uom = d.sales_uom
-	}else{
+	} else {
 		uom = ''
 	}
 	return {
-			query: "erpnext.controllers.queries.price_template_list",
-			filters: {'item_code': d.item_code, 'transaction_date': frm.transaction_date, 'branch': frm.branch, 'location': frm.location, 'selling_uom': uom}
+		query: "erpnext.controllers.queries.price_template_list",
+		filters: { 'item_code': d.item_code, 'transaction_date': frm.transaction_date, 'branch': frm.branch, 'location': frm.location, 'selling_uom': uom }
 	}
 }
 
 //auto list the price_templates based on branch, transaction_date, item_code, customer written by Thukten on 12 Dec, 2021
-cur_frm.fields_dict['items'].grid.get_field('customer_price_list').get_query = function(frm, cdt, cdn) {
-var d = locals[cdt][cdn];
-return {
+cur_frm.fields_dict['items'].grid.get_field('customer_price_list').get_query = function (frm, cdt, cdn) {
+	var d = locals[cdt][cdn];
+	return {
 		query: "erpnext.controllers.queries.customer_price_template_list",
-		filters: {'item_code': d.item_code, 'transaction_date': frm.transaction_date, 'branch': frm.branch, 'location': frm.location, 'customer': frm.customer}
-}
+		filters: { 'item_code': d.item_code, 'transaction_date': frm.transaction_date, 'branch': frm.branch, 'location': frm.location, 'customer': frm.customer }
+	}
 }
 
 
 frappe.ui.form.on("Sales Order Item", {
-	qty: function(frm, cdt, cdn) {
+	qty: function (frm, cdt, cdn) {
 		var item = locals[cdt][cdn]
-		if(frm.doc.naming_series  && !frm.doc.is_kidu_sale) { 
+		if (frm.doc.naming_series && !frm.doc.is_kidu_sale) {
 			// if(item.lot_number){
 			// 	get_balance(frm, cdt, cdn);
 			// } 
-			if(item.conversion_req){
+			if (item.conversion_req) {
 				frappe.model.set_value(cdt, cdn, "stock_qty", '')
 				cur_frm.refresh_field("stock_qty")
 			}
 		}
 
-		if(item.item_code && item.stock_uom){
-			if(item.stock_uom != item.sales_uom && (typeof item.sales_uom != "undefined" && item.sales_uom != '')){
+		if (item.item_code && item.stock_uom) {
+			if (item.stock_uom != item.sales_uom && (typeof item.sales_uom != "undefined" && item.sales_uom != '')) {
 				frappe.model.set_value(cdt, cdn, "stock_qty", item.conversion_factor * item.qty)
 				cur_frm.refresh_field("stock_qty")
 			}
-			else{
+			else {
 				frappe.model.set_value(cdt, cdn, "stock_qty", item.qty)
 				cur_frm.refresh_field("stock_qty")
 			}
 		}
-	},	
+	},
 
-	sales_uom: function(frm, cdt, cdn) {
-		frappe.model.set_value(cdt, cdn, "price_template", "") 
+	sales_uom: function (frm, cdt, cdn) {
+		frappe.model.set_value(cdt, cdn, "price_template", "")
 
 		var item = locals[cdt][cdn];
-		
-		if(item.item_code && item.sales_uom) {
+
+		if (item.item_code && item.sales_uom) {
 			frappe.call({
 				method: "erpnext.stock.get_item_details.get_conversion_factor",
 				args: {
 					item_code: item.item_code,
 					uom: item.sales_uom
 				},
-				callback: function(r) {
-					if(r.message.conversion_factor){
+				callback: function (r) {
+					if (r.message.conversion_factor) {
 						frappe.model.set_value(cdt, cdn, "conversion_factor", r.message.conversion_factor)
 						frappe.model.set_value(cdt, cdn, "stock_qty", r.message.conversion_factor * item.qty)
 						cur_frm.refresh_field("conversion_factor")
@@ -635,80 +639,80 @@ frappe.ui.form.on("Sales Order Item", {
 		}
 	},
 
-	conversion_req: function(frm, cdt, cdn) {
-		frappe.model.set_value(cdt, cdn, "sales_uom", "") 
+	conversion_req: function (frm, cdt, cdn) {
+		frappe.model.set_value(cdt, cdn, "sales_uom", "")
 		frappe.model.set_value(cdt, cdn, "price_template", "")
-		
+
 		var row = locals[cdt][cdn]
-		frm.fields_dict.items.grid.toggle_reqd("sales_uom", row.conversion_req?1:0)
+		frm.fields_dict.items.grid.toggle_reqd("sales_uom", row.conversion_req ? 1 : 0)
 		frm.refresh_field('sales_uom')
 
-		if(frm.doc.naming_series){
+		if (frm.doc.naming_series) {
 			frm.fields_dict.items.grid.toggle_reqd("stock_qty", 1)
 			frm.fields_dict.items.grid.toggle_enable("stock_qty", 1)
 			frm.refresh_field('stock_qty')
 		}
 
 	},
-	
-	form_render: (frm,cdt,cdn)=>{
+
+	form_render: (frm, cdt, cdn) => {
 		var row = locals[cdt][cdn]
-		frm.fields_dict.items.grid.toggle_reqd("sales_uom", row.conversion_req?1:0)
+		frm.fields_dict.items.grid.toggle_reqd("sales_uom", row.conversion_req ? 1 : 0)
 		frm.refresh_field('sales_uom')
-		if(frm.doc.naming_series ){
+		if (frm.doc.naming_series) {
 			frm.fields_dict.items.grid.toggle_reqd("stock_qty", 1)
 			frm.refresh_field('stock_qty')
 		}
 	},
-	
-	stock_qty: function(frm, cdt, cdn) {
-		if(frm.doc.naming_series){
+
+	stock_qty: function (frm, cdt, cdn) {
+		if (frm.doc.naming_series) {
 			var row = locals[cdt][cdn]
-			if(row.qty != 0){
+			if (row.qty != 0) {
 				frappe.model.set_value(cdt, cdn, "conversion_factor", row.stock_qty / row.qty)
 				cur_frm.refresh_field("conversion_factor")
 			}
 		}
 	},
 
-	price_template: function(frm, cdt, cdn) {
+	price_template: function (frm, cdt, cdn) {
 		d = locals[cdt][cdn]
-		if(cur_frm.doc.location){
+		if (cur_frm.doc.location) {
 			loc = cur_frm.doc.location;
-		}else{
+		} else {
 			loc = ''
 		}
 
-		if(d.sales_uom){
+		if (d.sales_uom) {
 			uom = d.sales_uom
-		}else{
+		} else {
 			uom = ''
 		}
 
 		frappe.call({
 			method: "erpnext.production.doctype.selling_price.selling_price.get_selling_rate",
 			args: {
-					"price_list": d.price_template,
-					"branch": cur_frm.doc.branch,
-					"item_code": d.item_code,
-					"transaction_date": cur_frm.doc.transaction_date,
-					"selling_uom": uom,
-					"location": loc
-				},
-			callback: function(r) {
-					frappe.model.set_value(cdt, cdn, "price_list_rate", r.message)
-					frappe.model.set_value(cdt, cdn, "rate", r.message)
-					cur_frm.refresh_field("price_list_rate")
-					cur_frm.refresh_field("rate")
+				"price_list": d.price_template,
+				"branch": cur_frm.doc.branch,
+				"item_code": d.item_code,
+				"transaction_date": cur_frm.doc.transaction_date,
+				"selling_uom": uom,
+				"location": loc
+			},
+			callback: function (r) {
+				frappe.model.set_value(cdt, cdn, "price_list_rate", r.message)
+				frappe.model.set_value(cdt, cdn, "rate", r.message)
+				cur_frm.refresh_field("price_list_rate")
+				cur_frm.refresh_field("rate")
 			}
 		})
-    },
+	},
 
-	customer_price_list: function(frm, cdt, cdn) {
+	customer_price_list: function (frm, cdt, cdn) {
 		d = locals[cdt][cdn]
-		if(cur_frm.doc.location){
+		if (cur_frm.doc.location) {
 			loc = cur_frm.doc.location;
-		}else{
+		} else {
 			loc = "NA";
 		}
 		frappe.call({
@@ -721,7 +725,7 @@ frappe.ui.form.on("Sales Order Item", {
 				"location": loc,
 				"customer": cur_frm.doc.customer
 			},
-			callback: function(r) {
+			callback: function (r) {
 				frappe.model.set_value(cdt, cdn, "price_list_rate", r.message);
 				frappe.model.set_value(cdt, cdn, "rate", r.message);
 				cur_frm.refresh_field("price_list_rate");
@@ -730,24 +734,24 @@ frappe.ui.form.on("Sales Order Item", {
 		})
 	},
 
-	item_code: function(frm, cdt, cdn) {
-		frappe.model.set_value(cdt, cdn, "price_template", "") 
+	item_code: function (frm, cdt, cdn) {
+		frappe.model.set_value(cdt, cdn, "price_template", "")
 	},
 
-	lot_number: function(frm, cdt, cdn) {
+	lot_number: function (frm, cdt, cdn) {
 		var d = locals[cdt][cdn];
-		if(d.item_code && d.lot_number) { get_balance(frm, cdt, cdn); }
+		if (d.item_code && d.lot_number) { get_balance(frm, cdt, cdn); }
 	},
 
-	sp_type: function(frm, cdt, cdn) {
+	sp_type: function (frm, cdt, cdn) {
 		var d = locals[cdt][cdn];
-		if(d.sp_type == "General Rate"){
+		if (d.sp_type == "General Rate") {
 
-		}else{
+		} else {
 
 		}
 	}
-	
+
 });
 
 erpnext.selling.SalesOrderController = class SalesOrderController extends erpnext.selling.SellingController {
@@ -992,7 +996,7 @@ erpnext.selling.SalesOrderController = class SalesOrderController extends erpnex
 				__("Get Items From")
 			);
 		}
-		
+
 		if (this.frm.doc.docstatus === 0 && frappe.model.can_read("Product Requisition")) {
 			let company = this.frm.doc.company;
 			this.frm.add_custom_button(
@@ -1046,7 +1050,7 @@ erpnext.selling.SalesOrderController = class SalesOrderController extends erpnex
 						],
 						get_query_filters: {
 							query: "erpnext.production.doctype.lot_list.lot_list.get_lot_list",
-							filters: {branch:cur_frm.doc.branch}
+							filters: { branch: cur_frm.doc.branch }
 						}
 					});
 				},
@@ -1290,10 +1294,10 @@ erpnext.selling.SalesOrderController = class SalesOrderController extends erpnex
 							frappe.msgprint(
 								__("Material Request {0} submitted.", [
 									'<a href="/app/material-request/' +
-										r.message.name +
-										'">' +
-										r.message.name +
-										"</a>",
+									r.message.name +
+									'">' +
+									r.message.name +
+									"</a>",
 								])
 							);
 						}
@@ -1341,8 +1345,8 @@ erpnext.selling.SalesOrderController = class SalesOrderController extends erpnex
 						</div>
 					</div>
 					${delivery_dates
-						.map(
-							(date) => `
+					.map(
+						(date) => `
 						<div class="list-item">
 							<div class="list-item__content list-item__content--flex-2">
 								<label>
@@ -1352,8 +1356,8 @@ erpnext.selling.SalesOrderController = class SalesOrderController extends erpnex
 							</div>
 						</div>
 					`
-						)
-						.join("")}
+					)
+					.join("")}
 				</div>
 			`);
 
@@ -1642,7 +1646,7 @@ erpnext.selling.SalesOrderController = class SalesOrderController extends erpnex
 };
 
 
-function get_balance(frm, cdt, cdn){
+function get_balance(frm, cdt, cdn) {
 	var d = locals[cdt][cdn];
 	frappe.call({
 		method: "erpnext.selling.doctype.sales_order.sales_order.get_lot_detail",
@@ -1652,21 +1656,20 @@ function get_balance(frm, cdt, cdn){
 			"lot_number": d.lot_number,
 			"total_pieces": d.total_pieces
 		},
-		callback: function(r) {
-			if(r.message){
-			var balance = r.message[0]['total_volume'];
-			var lot_check = r.message[0]['lot_check'];
-				if(lot_check)
-				{
-					if(balance < 0){
+		callback: function (r) {
+			if (r.message) {
+				var balance = r.message[0]['total_volume'];
+				var lot_check = r.message[0]['lot_check'];
+				if (lot_check) {
+					if (balance < 0) {
 						frappe.msgprint("No available volume under the selected Lot");
 					}
-					else{
+					else {
 						frappe.model.set_value(cdt, cdn, "qty", balance);
 					}
 				}
 			}
-			else{
+			else {
 				frappe.msgprint("Invalid Lot Number. Please verify the lot number with Material and Branch");
 			}
 		}
@@ -1675,17 +1678,17 @@ function get_balance(frm, cdt, cdn){
 
 
 
-var custom_map_current_doc = function(opts) {
-	if(opts.get_query_filters) {
-		opts.get_query = function() {
+var custom_map_current_doc = function (opts) {
+	if (opts.get_query_filters) {
+		opts.get_query = function () {
 			//return {filters: opts.get_query_filters};
 			return opts.get_query_filters;
 		}
 	}
-	var _map = function() {
+	var _map = function () {
 		// remove first item row if empty
-		if($.isArray(cur_frm.doc.items) && cur_frm.doc.items.length > 0) {
-			if(!cur_frm.doc.items[0].item_code) {
+		if ($.isArray(cur_frm.doc.items) && cur_frm.doc.items.length > 0) {
+			if (!cur_frm.doc.items[0].item_code) {
 				cur_frm.doc.items = cur_frm.doc.items.splice(1);
 			}
 		}
@@ -1699,15 +1702,15 @@ var custom_map_current_doc = function(opts) {
 				"source_name": opts.source_name,
 				"target_doc": cur_frm.doc
 			},
-			callback: function(r) {
-				if(!r.exc) {
+			callback: function (r) {
+				if (!r.exc) {
 					var doc = frappe.model.sync(r.message);
 					cur_frm.refresh();
 				}
 			}
 		});
 	}
-	if(opts.source_doctype) {
+	if (opts.source_doctype) {
 		var d = new frappe.ui.Dialog({
 			title: __("Get From ") + __(opts.source_doctype),
 			fields: [
@@ -1717,20 +1720,20 @@ var custom_map_current_doc = function(opts) {
 					fieldname: opts.source_doctype,
 					options: opts.source_doctype,
 					get_query: opts.get_query,
-					reqd:1
+					reqd: 1
 				},
 			]
 		});
-		d.set_primary_action(__('Get Items'), function() {
+		d.set_primary_action(__('Get Items'), function () {
 			var values = d.get_values();
-			if(!values)
+			if (!values)
 				return;
 			opts.source_name = values[opts.source_doctype];
 			d.hide();
 			_map();
 		})
 		d.show();
-	} else if(opts.source_name) {
+	} else if (opts.source_name) {
 		_map();
 	}
 }

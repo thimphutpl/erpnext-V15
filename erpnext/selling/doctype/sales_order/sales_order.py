@@ -486,7 +486,11 @@ class SalesOrder(SellingController):
 		for d in self.get("items"):
 			if d.delivered_by_supplier and not d.supplier:
 				frappe.throw(_("Row #{0}: Set Supplier for item {1}").format(d.idx, d.item_code))
-
+	def before_save(self):
+		frappe.msgprint(
+			"Warning: Kindly verify that the selected Unit of Measure (UOM) is correct.",
+			indicator="red"
+		)
 	def on_submit(self):
 		self.check_credit_limit()
 		self.update_reserved_qty()
@@ -1181,13 +1185,13 @@ def make_delivery_note(source_name, target_doc=None, kwargs=None):
 
 @frappe.whitelist()
 def get_payment_entries_for_sales_order(sales_order):
-    return frappe.db.sql("""
-        SELECT pe.docstatus
-        FROM `tabPayment Entry Reference` per
-        INNER JOIN `tabPayment Entry` pe ON pe.name = per.parent
-        WHERE per.reference_doctype = 'Sales Order'
-          AND per.reference_name = %s
-    """, sales_order, as_dict=True)
+	return frappe.db.sql("""
+		SELECT pe.docstatus
+		FROM `tabPayment Entry Reference` per
+		INNER JOIN `tabPayment Entry` pe ON pe.name = per.parent
+		WHERE per.reference_doctype = 'Sales Order'
+		  AND per.reference_name = %s
+	""", sales_order, as_dict=True)
 
 @frappe.whitelist()
 def make_sales_invoice(source_name, target_doc=None, ignore_permissions=False):
