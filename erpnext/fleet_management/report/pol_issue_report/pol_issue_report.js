@@ -4,7 +4,7 @@
 frappe.query_reports["POL Issue Report"] = {
 	"filters": [
 		{
-			"fieldname":"branch",
+			"fieldname": "branch",
 			"label": ("Branch"),
 			"fieldtype": "Link",
 			"options": "Branch",
@@ -12,26 +12,32 @@ frappe.query_reports["POL Issue Report"] = {
 			"reqd": 1
 		},
 		{
-			"fieldname":"from_date",
+			"fieldname": "from_date",
 			"label": ("From Date"),
 			"fieldtype": "Date",
 			"width": "80",
 			"reqd": 1
 		},
 		{
-			"fieldname":"to_date",
+			"fieldname": "to_date",
 			"label": ("To Date"),
 			"fieldtype": "Date",
 			"width": "80",
 			"reqd": 1
 		},
-		
 		{
-			"fieldname": "not_cdcl",
-			"label": ("Include Only Gyalsung Equipments"),
+			"fieldname": "is_equipment",
+			"label": __("Is Equipment"),
 			"fieldtype": "Check",
-			"default": 1
+			"default": 0
 		},
+		{
+			"fieldname": "is_fuel_book",
+			"label": __("Is Fuel Book"),
+			"fieldtype": "Check",
+			"default": 0
+		},
+
 		{
 			"fieldname": "include_disabled",
 			"label": ("Include Disbaled Equipments"),
