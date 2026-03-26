@@ -1,6 +1,7 @@
 {
  "actions": [],
  "allow_import": 1,
+ "allow_rename": 1,
  "autoname": "PRD.####",
  "creation": "2021-09-20 14:51:26.517920",
  "doctype": "DocType",
@@ -44,8 +45,7 @@
   "ongoing_project_sites_section",
   "project_sites",
   "section_break_19",
-  "total_overall_project_cost",
-  "amended_from"
+  "total_overall_project_cost"
  ],
  "fields": [
   {
@@ -125,24 +125,6 @@
    "fieldtype": "Currency",
    "in_list_view": 1,
    "label": "Total Overall Project Cost"
-  },
-  {
-   "fieldname": "amended_from",
-   "fieldtype": "Link",
-   "label": "Amended From",
-   "no_copy": 1,
-   "options": "Project Definition",
-   "print_hide": 1,
-   "read_only": 1
-  },
-  {
-   "fieldname": "amended_from",
-   "fieldtype": "Link",
-   "label": "Amended From",
-   "no_copy": 1,
-   "options": "Project Definition",
-   "print_hide": 1,
-   "read_only": 1
   },
   {
    "fieldname": "project_name",
@@ -306,7 +288,7 @@
  "is_submittable": 1,
  "links": [],
  "max_attachments": 4,
- "modified": "2025-11-21 09:56:06.219169",
+ "modified": "2026-03-26 11:35:00.103567",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Project Definition",

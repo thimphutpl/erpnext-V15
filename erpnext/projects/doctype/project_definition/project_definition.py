@@ -22,7 +22,6 @@ class ProjectDefinition(Document):
 		from frappe.types import DF
 
 		a_expenses: DF.Data | None
-		amended_from: DF.Link | None
 		budget_profile: DF.Literal["", "Annually", "Overall"]
 		company: DF.Link | None
 		cost_center: DF.Link | None
@@ -67,6 +66,8 @@ class ProjectDefinition(Document):
 			frappe.throw("Please select project profile as Internal.", title = "Invalid Selection")
 	def update_same_cost_center_mandays(self):
 		mandays = frappe.db.sql("""select sum(project_man_days) from `tabProject Definition` where cost_center = '{}' and docstatus = 1""".format(self.cost_center), as_dict=1)[0]['sum(project_man_days)']
+		if not mandays:
+			mandays=1
 		frappe.db.sql("""update `tabProject Definition` set cost_center_mandays = {} where name = '{}'""".format(mandays, self.name))
 		# self.cost_center_mandays = mandays
 	#added by Kinley 16/01/2025
