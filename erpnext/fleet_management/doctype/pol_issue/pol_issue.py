@@ -403,6 +403,7 @@ class POLIssue(StockController):
 			con.qty = b_qty
 			con.rate = b_rate
 			con.amount = total_amount
+			con.type="Issue"
 			con.reference_type = "POL Issue"
 			con.reference_name = self.name
 			con.is_opening = 0

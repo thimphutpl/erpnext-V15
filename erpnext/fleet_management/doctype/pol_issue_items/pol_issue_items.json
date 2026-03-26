@@ -10,6 +10,7 @@
   "column_break_3",
   "qty",
   "equipment_number",
+  "date",
   "column_break_11",
   "equipment_branch",
   "memo_number",
@@ -186,12 +187,18 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Site"
+  },
+  {
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Date"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-03-17 11:38:34.905266",
+ "modified": "2026-03-26 18:49:11.330082",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Issue Items",

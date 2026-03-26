@@ -1,3 +1,410 @@
+# # Copyright (c) 2024, Frappe Technologies Pvt. Ltd. and contributors
+# # For license information, please see license.txt
+
+# import frappe
+# from frappe.model.document import Document
+# from frappe.utils import flt, cint
+# from erpnext.accounts.general_ledger import make_gl_entries
+# from frappe import _
+# from erpnext.controllers.accounts_controller import AccountsController
+# from erpnext.accounts.doctype.journal_entry.journal_entry import get_tds_account
+# from erpnext.accounts.utils import get_account_currency, get_balance_on, get_outstanding_invoices,check_clearance_date
+# from frappe.model.mapper import get_mapped_doc
+
+# class TDSRemittance(AccountsController):
+# 	# begin: auto-generated types
+# 	# This code is auto-generated. Do not modify anything in this block.
+
+# 	from typing import TYPE_CHECKING
+
+# 	if TYPE_CHECKING:
+# 		from erpnext.accounts.doctype.tds_remittance_item.tds_remittance_item import TDSRemittanceItem
+# 		from frappe.types import DF
+
+# 		amended_from: DF.Link | None
+# 		based_on_region: DF.Check
+# 		branch: DF.Link
+# 		cheque_date: DF.Date | None
+# 		cheque_lot: DF.Link | None
+# 		cheque_no: DF.Data | None
+# 		clearance_date: DF.Date | None
+# 		company: DF.Link
+# 		cost_center: DF.Link | None
+# 		credit_account: DF.Link
+# 		default_region_cost_center: DF.Link | None
+# 		from_date: DF.Date
+# 		items: DF.Table[TDSRemittanceItem]
+# 		mode_of_payment: DF.Link
+# 		pay_to_recd_from: DF.Data | None
+# 		posting_date: DF.Date
+# 		project: DF.Link | None
+# 		project_definition: DF.Link | None
+# 		purpose: DF.Literal["", "Other Invoice"]
+# 		reference_date: DF.Data | None
+# 		reference_number: DF.Data | None
+# 		region: DF.Data | None
+# 		remarks: DF.SmallText | None
+# 		tax_withholding_category: DF.Link
+# 		to_date: DF.Date
+# 		total_amount: DF.Currency
+# 		total_tds: DF.Currency
+# 		use_cheque_lot: DF.Check
+# 	# end: auto-generated types
+	
+# 	def validate(self):
+# 		self.calculate_total()
+
+# 	def on_submit(self):
+# 		self.make_gl_entries()
+
+# 	def on_cancel(self):
+# 		check_clearance_date(self.doctype, self.name)
+# 		self.ignore_linked_doctypes = ("GL Entry", "Stock Ledger Entry", "Payment Ledger Entry")
+# 		self.make_gl_entries()
+# 	# def get_condition(self):
+# 	# 	if self.branch:
+# 	# 		return ' AND t.branch ="{}" '.format(self.branch)
+# 	# 	return ''
+# 	def get_condition(self):
+# 		conditions = []
+# 		if self.branch:
+# 			conditions.append('t.branch = "{}"'.format(self.branch))
+# 		if self.project_definition:
+# 			conditions.append('p.project_definition = "{}"'.format(self.project_definition))
+		
+# 		return " AND " + " AND ".join(conditions) if conditions else ''
+
+# 	@frappe.whitelist()
+# 	def get_details(self):
+# 		total_tds_amount = total_bill_amount = 0
+
+# 		if self.purpose != 'Other Invoice':
+# 			return total_tds_amount, total_bill_amount
+# 		cond = self.get_condition()
+
+# 		entries = get_tds_invoices(self.tax_withholding_category, self.from_date, self.to_date, \
+# 			self.name, filter_existing=True, cond= cond)
+# 		if not entries:
+# 			frappe.msgprint(_("No Records Found"))
+
+# 		self.set('items', [])
+# 		for d in entries:
+# 			if d.invoice_type=="Mechanical Payment":
+# 				if not d.party_type or not d.party:
+# 					frappe.throw("Party is missing in Mechanical Payment '{mp}'".format(mp=d.invoice_no))
+# 				if d.party_type =="Supplier":
+# 					supplier_tpn= frappe.db.get_value("Supplier",d.party,"supplier_tpn_no")
+# 					if not supplier_tpn:
+# 						frappe.throw("TPN Number required in Supplier '{sp}'".format(sp=d.party))
+# 					d.tpn= supplier_tpn
+
+# 			d.bill_amount 		= flt(d.bill_amount,2)
+# 			d.tds_amount 		= flt(d.tds_amount,2)
+# 			total_tds_amount 	+= flt(d.tds_amount)
+# 			total_bill_amount 	+= flt(d.bill_amount)
+# 			row 				= self.append('items', {})
+# 			row.update(d)
+# 		return total_tds_amount, total_bill_amount
+
+# 	def calculate_total(self):
+# 		self.total_tds = self.total_amount = 0
+# 		for d in self.items:
+# 			self.total_tds 		+= flt(d.tds_amount)
+# 			self.total_amount 	+= flt(d.bill_amount)
+
+# 	def make_gl_entries(self):
+# 		gl_entries   = []
+# 		tds_account  = get_tds_account(self.tax_withholding_category)
+
+# 		if flt(self.total_tds) > 0:
+# 			for item in self.items:
+# 				gl_entries.append(
+# 					self.get_gl_dict({
+# 						"account": str(item.tax_account),
+# 						"debit": item.tds_amount,
+# 						"debit_in_account_currency": item.tds_amount,
+# 						"voucher_type": self.doctype,
+# 						"voucher_no": self.name,
+# 						"cost_center": item.cost_center,
+# 						"against_voucher_type":	item.invoice_type,
+# 						"against_voucher": item.invoice_no
+# 					},
+# 					account_currency= "BTN"))
+			
+# 			gl_entries.append(
+# 				self.get_gl_dict({
+# 					"account": str(self.credit_account),
+# 					"credit": self.total_tds,
+# 					"credit_in_account_currency": self.total_tds,
+# 					"voucher_type": self.doctype,					
+# 					"voucher_no": self.name,
+# 					"cost_center": self.cost_center,
+# 					"against_voucher_type":	self.doctype,
+# 					"against_voucher": self.name,
+# 				},
+# 				account_currency="BTN"))
+# 			make_gl_entries(gl_entries, cancel=(self.docstatus == 2),update_outstanding="No", merge_entries=False)
+# 		else:
+# 			frappe.throw("Total TDS Amount is Zero.")
+
+
+# def get_tds_invoices(tax_withholding_category, from_date, to_date, name, filter_existing = False, cond='', party_type = None):
+# 	accounts_cond = accounts_cond_ti = accounts_cond_eme = existing_cond = party_cond = "" 
+# 	entries = pi_entries = pe_entries = je_entries = []
+
+# 	if not tax_withholding_category:
+# 		frappe.msgprint(_("<b>Tax Withholding Category</b> is mandatory"))
+# 		return entries
+
+# 	def _get_existing_cond():
+# 		return """and not exists (select 1 from `tabTDS Remittance Item` i
+# 			inner join `tabTDS Remittance` r
+# 			on i.parent = r.name
+# 			where r.name != "{name}"
+# 			and i.invoice_no = t.name
+# 			and r.docstatus != 2)
+# 			and not exists(select 1
+# 				from `tabTDS Receipt Entry`	re
+# 				where re.invoice_no = t.name)""".format(name=name)
+
+# 	accounts = [i.account for i in frappe.db.get_all("Tax Withholding Account", \
+# 		{"parent": tax_withholding_category}, "account")]
+
+# 	if not len(accounts):
+# 		return entries
+# 	elif len(accounts) == 1:
+# 		accounts_cond = 'and t1.account_head = "{}"'.format(accounts[0])
+# 		accounts_cond_ti = 'and t1.account = "{}"'.format(accounts[0])
+# 		accounts_cond_eme = 'and t.tds_account = "{}"'.format(accounts[0])
+# 	else:
+# 		accounts_cond = 'and t1.account_head in ({})'.format('"' + '","'.join(accounts) + '"')
+# 		accounts_cond_ti = 'and t1.account in ({})'.format('"' + '","'.join(accounts) + '"')
+# 		accounts_cond_eme = 'and t.tds_account in ({})'.format('"' + '","'.join(accounts) + '"')
+
+# 	if filter_existing:
+# 		existing_cond = _get_existing_cond()
+	
+# 	# Purchase Invoice
+# 	if not party_type or party_type == "Supplier":
+# 		pi_entries = frappe.db.sql("""
+# 			select 
+# 				t.posting_date, 'Purchase Invoice' as invoice_type, 
+# 				t.name as invoice_no, 'Supplier' as party_type, 
+# 				t.supplier as party, 
+# 				(select supplier_tpn_no from `tabSupplier` where name = t.supplier) as tpn, 
+# 				t.cost_center,
+# 				t1.base_total + t1.base_tax_amount as bill_amount,
+# 				(case when t1.base_tax_amount_after_discount_amount > 0 then t1.base_tax_amount_after_discount_amount else t1.tax_amount_after_discount_amount end) as tds_amount,
+# 				t1.account_head as tax_account, 
+# 				tre.tds_remittance, 
+# 				tre.tds_receipt_update, 
+# 				t.bill_no, 
+# 				t.bill_date,
+# 				(case when tre.tds_receipt_update is not null then 'Paid' else 'Unpaid' end) as remittance_status,
+# 				p.project_definition  -- Fetch Project Definition from tabProject
+# 			from `tabPurchase Invoice` t 
+# 				inner join `tabPurchase Taxes and Charges` t1 on t.name = t1.parent
+# 				left join `tabSupplier` s on s.name = t.supplier
+# 				left join `tabTDS Receipt Entry` tre on tre.invoice_no = t.name 
+# 				left join `tabProject` p on t.project = p.name  -- Join with Project table
+# 			where t.posting_date between '{from_date}' and '{to_date}'
+# 			{accounts_cond}
+# 			and t.docstatus = 1 
+# 			{existing_cond}
+# 			{cond}
+# 		""".format(accounts_cond=accounts_cond, cond=cond, existing_cond=existing_cond,
+# 				from_date=from_date, to_date=to_date), as_dict=True)
+# 	# replace (case when t1.base_tax_amount > 0 then t1.base_tax_amount else t1.tax_amount end) as tds_amount in  PI if tax amount is workng
+# 	#Mechanical Payment
+# 	if party_type:
+# 		party_cond = "and t.party_type = '{}'".format(party_type)
+
+# 	me_entries = frappe.db.sql("""
+# 		select 
+# 			t.posting_date, t.name as invoice_no, 'Mechanical Payment' as invoice_type,
+# 			'Supplier' as party_type, t.customer as party,  
+# 			t.cost_center, t.tds_amount,
+# 			t.receivable_amount as bill_amount,
+# 			t.tds_account as tax_account,
+# 			tre.tds_remittance, tre.tds_receipt_update,
+# 			(case when tre.tds_receipt_update is not null then 'Paid' else 'Unpaid' end) as remittance_status
+# 		from `tabMechanical Payment` as t
+# 			left join `tabTDS Receipt Entry` tre on tre.invoice_no = t.name 
+# 		where t.posting_date between '{from_date}' and '{to_date}'
+# 		and t.docstatus = 1
+# 		and t.tax_withholding_category = '{tax_withholding_category}'
+# 		{existing_cond}
+# 		{cond}
+# 	""".format(
+# 		cond=cond, existing_cond=existing_cond,
+# 		from_date=from_date, to_date=to_date , tax_withholding_category=tax_withholding_category
+# 	), as_dict=True)
+# 	# Payment Entry
+# 	if party_type:
+# 		party_cond = "and t.party_type = '{}'".format(party_type)
+
+# 	pe_entries = frappe.db.sql("""
+# 		select 
+# 			t.posting_date, t.name as invoice_no, 'Payment Entry' as invoice_type,
+# 			t.party_type, t.party, 
+# 			(case when t.party_type = 'Customer' then c.tax_id 
+# 				when t.party_type = 'Supplier' then s.supplier_tpn_no 
+# 				else null end) as tpn, 
+# 			t.cost_center,
+# 			case when t1.base_total > 0 then (t1.base_tax_amount + t1.base_total) 
+# 				else (t1.tax_amount + t1.total) end as bill_amount, 
+# 			case when t1.base_tax_amount > 0 then t1.base_tax_amount 
+# 				else t1.tax_amount end as tds_amount,
+# 			t1.account_head as tax_account, 
+# 			tre.tds_remittance, tre.tds_receipt_update,
+# 			(case when tre.tds_receipt_update is not null then 'Paid' else 'Unpaid' end) as remittance_status,
+# 			p.project_definition  -- Fetch Project Definition from tabProject
+# 		from `tabPayment Entry` as t
+# 			inner join `tabAdvance Taxes and Charges` t1 on t.name = t1.parent
+# 			left join `tabCustomer` c on t.party_type = 'Customer' and c.name = t.party
+# 			left join `tabSupplier` s on t.party_type = 'Supplier' and s.name = t.party
+# 			left join `tabTDS Receipt Entry` tre on tre.invoice_no = t.name 
+# 			left join `tabProject` p on t.project = p.name  -- Join with Project table
+# 		where t.posting_date between '{from_date}' and '{to_date}'
+# 		{accounts_cond}
+# 		and t.docstatus = 1
+# 		{existing_cond}
+# 		{party_cond}
+# 		{cond}
+# 	""".format(
+# 		accounts_cond=accounts_cond, cond=cond, existing_cond=existing_cond,
+# 		party_cond=party_cond, from_date=from_date, to_date=to_date
+# 	), as_dict=True)
+
+# 	# Journal Entry
+# 	if len(accounts) == 1:
+# 		accounts_cond = """and (t1.account = "{0}" or 
+# 			(t1.tax_account = "{0}" and ifnull(t1.apply_tds,0) = 1))""".format(accounts[0])
+# 	else:
+# 		accounts_cond = """and (t1.account in ({0}) or 
+# 			t1.tax_accout in ({0}) and ifnull(t1.apply_tds,0) = 1))""".format('"' + '","'.join(accounts) + '"')
+	
+# 	if party_type:
+# 		party_cond = "and t1.party_type = '{}'".format(party_type)
+
+# 	je_entries = frappe.db.sql("""
+#     SELECT 
+#         t.posting_date, 
+#         t.name AS invoice_no, 
+#         'Journal Entry' AS invoice_type,
+#         t1.party_type, 
+#         t1.party, 
+#         (CASE 
+#             WHEN t1.party_type = 'Customer' THEN c.tax_id 
+#             WHEN t1.party_type = 'Supplier' THEN s.supplier_tpn_no 
+#             ELSE NULL 
+#         END) AS tpn, 
+#         t1.cost_center,
+#         (CASE 
+#             WHEN t1.tax_amount > 0 AND t1.debit > 0 AND IFNULL(t1.apply_tds) = 1 THEN t1.taxable_amount 
+#             ELSE 0 
+#         END) AS bill_amount, 
+#         (CASE 
+#             WHEN t1.tax_amount > 0 AND t1.debit > 0 AND IFNULL(t1.apply_tds) = 1 THEN t1.tax_amount
+#             WHEN t1.tax_amount = 0 AND t1.credit > 0 THEN t1.credit
+#             ELSE 0 
+#         END) AS tds_amount,
+#         (CASE 
+#             WHEN t1.tax_amount > 0 AND t1.debit > 0 AND IFNULL(t1.apply_tds) = 1 THEN t1.tax_account
+#             ELSE t1.account 
+#         END) AS tax_account, 
+#         tre.tds_remittance, 
+#         tre.tds_receipt_update, 
+#         t.bill_no, 
+#         t.bill_date,
+#         (CASE 
+#             WHEN tre.tds_receipt_update IS NOT NULL THEN 'Paid' 
+#             ELSE 'Unpaid' 
+#         END) AS remittance_status,
+#         p.project_definition
+#     FROM 
+#         `tabJournal Entry` AS t
+#     INNER JOIN 
+#         `tabJournal Entry Account` t1 ON t.name = t1.parent
+#     LEFT JOIN 
+#         `tabCustomer` c ON t1.party_type = 'Customer' AND c.name = t1.party
+#     LEFT JOIN 
+#         `tabSupplier` s ON t1.party_type = 'Supplier' AND s.name = t1.party
+#     LEFT JOIN 
+#         `tabTDS Receipt Entry` tre ON tre.invoice_no = t.name
+#     LEFT JOIN 
+#         `tabProject` p ON t1.project = p.name  -- Join the Project table to get project_definition
+#     WHERE 
+#         t.posting_date BETWEEN '{from_date}' AND '{to_date}'
+#         {accounts_cond}
+#         AND t.docstatus = 1 
+#         AND t.apply_tds = 1 
+#         {existing_cond}
+#         {party_cond}
+#         {cond}
+# 		""".format(
+# 			accounts_cond=accounts_cond, 
+# 			cond=cond, 
+# 			existing_cond=existing_cond,
+# 			party_cond=party_cond, 
+# 			from_date=from_date, 
+# 			to_date=to_date
+# 		), as_dict=True)
+	
+# 	entries = pi_entries + pe_entries + je_entries + me_entries
+# 	entries = sorted(entries, key=lambda d: (d['posting_date'], d['invoice_no']))
+# 	return entries
+
+# @frappe.whitelist()
+# def create_tds_receipt_update(source_name, target_doc=None):
+# 	doclist = get_mapped_doc("TDS Remittance", source_name, {
+# 		"TDS Remittance": {
+# 			"doctype": "TDS Receipt Update",
+# 			"field_map":{
+# 				"total_amount":"total_bill_amount",
+# 				"total_tds":"total_tax_amount"
+# 			}
+# 		},
+# 		"TDS Remittance Item":{
+# 			"doctype":"TDS Remittance Item"
+# 		}
+# 	}, target_doc)
+
+# 	return doclist
+
+# @frappe.whitelist()
+# def get_tds_receipt_update(tds_remittance):
+# 	res = frappe.db.sql("""select parent as tds_receipt_update
+# 			from `tabTDS Remittance Item`
+# 			where parenttype = 'TDS Receipt Update'
+# 			and tds_remittance = "{tds_remittance}"
+# 			and docstatus != 2
+# 			limit 1
+# 		""".format(tds_remittance=tds_remittance), as_dict=True)
+# 	return res[0] if res else None
+
+# def get_permission_query_conditions(user):
+# 	if not user: user = frappe.session.user
+# 	user_roles = frappe.get_roles(user)
+
+# 	if user == "Administrator" or "System Manager" in user_roles or "Accounts User" in user_roles: 
+# 		return
+
+# 	return """(
+# 		exists(select 1
+# 			from `tabEmployee` as e
+# 			where e.branch = `tabTDS Remittance`.branch
+# 			and e.user_id = '{user}')
+# 		or
+# 		exists(select 1
+# 			from `tabEmployee` e, `tabAssign Branch` ab, `tabBranch Item` bi
+# 			where e.user_id = '{user}'
+# 			and ab.employee = e.name
+# 			and bi.parent = ab.name
+# 			and bi.branch = `tabTDS Remittance`.branch)
+# 	)""".format(user=user)
+
+
 # Copyright (c) 2024, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
@@ -82,28 +489,74 @@ class TDSRemittance(AccountsController):
 			return total_tds_amount, total_bill_amount
 		cond = self.get_condition()
 
+		# Get entries from get_tds_invoices function
 		entries = get_tds_invoices(self.tax_withholding_category, self.from_date, self.to_date, \
-			self.name, filter_existing=True, cond= cond)
+			self.name, filter_existing=True, cond=cond)
+		
+		# Get Direct Payment entries with TDS
+		direct_payment_entries = frappe.db.sql("""
+			SELECT 
+				d.posting_date, 
+				d.tds_account,
+				di.party as party, 
+				d.name as invoice_no,
+				di.taxable_amount as bill_amount, 
+				di.tds_amount as tds_amount,
+				di.party_type,
+				'Direct Payment' as invoice_type
+			FROM `tabDirect Payment` as d
+			LEFT JOIN `tabDirect Payment Item` as di on di.parent = d.name
+			WHERE d.docstatus = 1
+			AND di.tds_amount > 0 
+			AND d.posting_date BETWEEN %s AND %s  
+			AND not exists (
+				select 1 from `tabTDS Remittance Item` i
+				inner join `tabTDS Remittance` t
+				on i.parent = t.name
+				where i.invoice_no = d.name
+				and t.docstatus = 1
+			)
+		""", (self.from_date, self.to_date), as_dict=True)
+		
+		# Combine both lists
+		if direct_payment_entries:
+			entries.extend(direct_payment_entries)
+		
 		if not entries:
 			frappe.msgprint(_("No Records Found"))
+			return total_tds_amount, total_bill_amount
 
 		self.set('items', [])
 		for d in entries:
-			if d.invoice_type=="Mechanical Payment":
-				if not d.party_type or not d.party:
+			# Handle Mechanical Payment
+			if d.get('invoice_type') == "Mechanical Payment":
+				if not d.get('party_type') or not d.get('party'):
 					frappe.throw("Party is missing in Mechanical Payment '{mp}'".format(mp=d.invoice_no))
-				if d.party_type =="Supplier":
-					supplier_tpn= frappe.db.get_value("Supplier",d.party,"supplier_tpn_no")
+				if d.get('party_type') == "Supplier":
+					supplier_tpn = frappe.db.get_value("Supplier", d.get('party'), "supplier_tpn_no")
 					if not supplier_tpn:
-						frappe.throw("TPN Number required in Supplier '{sp}'".format(sp=d.party))
-					d.tpn= supplier_tpn
+						frappe.throw("TPN Number required in Supplier '{sp}'".format(sp=d.get('party')))
+					d['tpn'] = supplier_tpn
+			
+			# Handle Direct Payment
+			if d.get('invoice_type') == "Direct Payment":
+				if not d.get('party_type') or not d.get('party'):
+					frappe.throw("Party is missing in Direct Payment '{dp}'".format(dp=d.invoice_no))
+				if d.get('party_type') == "Supplier":
+					supplier_tpn = frappe.db.get_value("Supplier", d.get('party'), "supplier_tpn_no")
+					if not supplier_tpn:
+						frappe.throw("TPN Number required in Supplier '{sp}'".format(sp=d.get('party')))
+					d['tpn'] = supplier_tpn
+					d['tax_account'] = d.get('tds_account')
 
-			d.bill_amount 		= flt(d.bill_amount,2)
-			d.tds_amount 		= flt(d.tds_amount,2)
-			total_tds_amount 	+= flt(d.tds_amount)
-			total_bill_amount 	+= flt(d.bill_amount)
-			row 				= self.append('items', {})
+			d['bill_amount'] = flt(d.get('bill_amount', 0), 2)
+			d['tds_amount'] = flt(d.get('tds_amount', 0), 2)
+			total_tds_amount += flt(d.get('tds_amount', 0))
+			total_bill_amount += flt(d.get('bill_amount', 0))
+			
+			row = self.append('items', {})
 			row.update(d)
+		
 		return total_tds_amount, total_bill_amount
 
 	def calculate_total(self):
