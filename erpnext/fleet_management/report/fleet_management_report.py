@@ -24,44 +24,132 @@ def get_pol_till(purpose, equipment, posting_date, pol_type=None, own_cc=None, p
 ##
 # Both recieved and issued pols can be queried with this
 ##
+# def get_pol_between(purpose, equipment, from_date, to_date, own_cc=None):
+# 	if not equipment or not from_date or not to_date:
+# 		frappe.throw("Equipment and From/To Date are Mandatory")
+# 	total = 0
+# 	query = "select rate,sum(amount) as amount,SUM(issue_qty) AS eq_issue_qty, sum(qty) as total from `tabPOL Entry` where docstatus = 1 and type = \'"+str(purpose)+"\' and equipment = \'" + str(equipment) + "\' and posting_date between \'" + str(from_date) + "\' and \'" + str(to_date) + "\'"
+# 	if own_cc:
+# 		query += " and own_cost_center = 1"
+		
+# 	quantity = frappe.db.sql(query, as_dict=True)
+# 	if quantity and quantity[0]:
+# 		return {
+# 			"rate": quantity[0].rate or 0,
+# 			"amount": quantity[0].amount or 0,
+# 			"eq_issue_qty": quantity[0].eq_issue_qty or 0,
+# 			"balance": quantity[0].total or 0
+		
+# 		}
+# 	else:
+# 		return {
+# 			"rate":0,
+# 			"amount":0,
+# 			"eq_issue_qty": 0,
+# 			"balance": 0
+			
+# 		}
+
 def get_pol_between(purpose, equipment, from_date, to_date, own_cc=None):
 	if not equipment or not from_date or not to_date:
 		frappe.throw("Equipment and From/To Date are Mandatory")
-	total = 0
-	query = "select rate,sum(amount) as amount,SUM(issue_qty) AS eq_issue_qty, sum(qty) as total from `tabPOL Entry` where docstatus = 1 and type = \'"+str(purpose)+"\' and equipment = \'" + str(equipment) + "\' and posting_date between \'" + str(from_date) + "\' and \'" + str(to_date) + "\'"
+	
+	query = """
+		SELECT rate, amount, issue_qty, qty
+		FROM `tabPOL Entry`
+		WHERE docstatus = 1
+			AND type = %s
+			AND equipment = %s
+			AND posting_date BETWEEN %s AND %s
+	"""
+	
+	values = [purpose, equipment, from_date, to_date]
+	
 	if own_cc:
-		query += " and own_cost_center = 1"
+		query += " AND own_cost_center = 1"
+	
+	results = frappe.db.sql(query, tuple(values), as_dict=True)
+	
+	if results:
+		rates = [r.rate for r in results]
+		amounts = [r.amount for r in results]
+		issue_qties = [r.issue_qty for r in results]
+		qtys = [r.qty for r in results]
 		
-	quantity = frappe.db.sql(query, as_dict=True)
-	if quantity and quantity[0]:
 		return {
-			"rate": quantity[0].rate or 0,
-			"amount": quantity[0].amount or 0,
-			"eq_issue_qty": quantity[0].eq_issue_qty or 0,
-			"balance": quantity[0].total or 0
-		
+			"rates": rates,
+			"amounts": amounts,
+			"issue_qties": issue_qties,
+			"qtys": qtys,
+			"records": results
 		}
 	else:
 		return {
-			"rate":0,
-			"amount":0,
-			"eq_issue_qty": 0,
-			"balance": 0
-			
+			"rates": [],
+			"amounts": [],
+			"issue_qties": [],
+			"qtys": [],
+			"records": []
 		}
 	# if quantity:
 	# 	total = quantity[0].total
 	# return total
+# def get_pol_between_fuelbook(purpose, book_type, fuelbook, from_date, to_date, own_cc=None):
+# 	if not fuelbook or not from_date or not to_date:
+# 		frappe.throw("Fuelbook and From/To Date are Mandatory")
+# 	query = """
+# 		SELECT rate,
+# 		SUM(amount) as amount,	
+# 		SUM(issue_qty) AS issue_qty, 
+# 		SUM(qty) AS total
+	
+
+# 		FROM `tabPOL Entry`
+# 		WHERE docstatus = 1
+# 			AND type = %s
+# 			AND book_type = %s
+# 			AND fuelbook = %s
+# 			AND posting_date BETWEEN %s AND %s
+# 	"""
+	
+# 	values = [purpose, book_type, fuelbook, from_date, to_date]
+
+# 	# if pol_type:
+# 	# 	query += " AND pol_type = %s"
+# 	# 	values.append(pol_type)
+
+# 	if own_cc:
+# 		query += " AND own_cost_center = 1"
+
+# 	quantity = frappe.db.sql(query, tuple(values), as_dict=True)
+
+	
+# 	# Return both values as a dictionary
+# 	if quantity and quantity[0]:
+# 		return {
+# 			"rate":quantity[0].rate or 0,
+# 			"issue_qty": quantity[0].issue_qty or 0,
+# 			"amount":quantity[0].amount or 0,
+# 			"fuel_qty": quantity[0].total or 0
+			
+			
+# 		}
+# 	else:
+# 		return {
+# 				"rate":0,
+# 				"amount":0,
+# 			"issue_qty": 0,
+		
+# 			"fuel_qty": 0,
+			
+# 		}
+
 def get_pol_between_fuelbook(purpose, book_type, fuelbook, from_date, to_date, own_cc=None):
 	if not fuelbook or not from_date or not to_date:
 		frappe.throw("Fuelbook and From/To Date are Mandatory")
-	query = """
-		SELECT rate,
-		SUM(amount) as amount,	
-		SUM(issue_qty) AS issue_qty, 
-		SUM(qty) AS total
 	
-
+	query = """
+		SELECT rate, amount, issue_qty, qty
 		FROM `tabPOL Entry`
 		WHERE docstatus = 1
 			AND type = %s
@@ -72,34 +160,31 @@ def get_pol_between_fuelbook(purpose, book_type, fuelbook, from_date, to_date, o
 	
 	values = [purpose, book_type, fuelbook, from_date, to_date]
 
-	# if pol_type:
-	# 	query += " AND pol_type = %s"
-	# 	values.append(pol_type)
-
 	if own_cc:
 		query += " AND own_cost_center = 1"
 
-	quantity = frappe.db.sql(query, tuple(values), as_dict=True)
-
+	results = frappe.db.sql(query, tuple(values), as_dict=True)
 	
-	# Return both values as a dictionary
-	if quantity and quantity[0]:
+	if results:
+		rates = [r.rate for r in results]
+		amounts = [r.amount for r in results]
+		issue_qties = [r.issue_qty for r in results]
+		qtys = [r.qty for r in results]
+		
 		return {
-			"rate":quantity[0].rate or 0,
-			"issue_qty": quantity[0].issue_qty or 0,
-			"amount":quantity[0].amount or 0,
-			"fuel_qty": quantity[0].total or 0
-			
-			
+			"rates": rates,
+			"amounts": amounts,
+			"issue_qties": issue_qties,
+			"qtys": qtys,
+			"records": results
 		}
 	else:
 		return {
-				"rate":0,
-				"amount":0,
-			"issue_qty": 0,
-		
-			"fuel_qty": 0,
-			
+			"rates": [],
+			"amounts": [],
+			"issue_qties": [],
+			"qtys": [],
+			"records": []
 		}
 ##
 # Get consumed POl as per yardstick

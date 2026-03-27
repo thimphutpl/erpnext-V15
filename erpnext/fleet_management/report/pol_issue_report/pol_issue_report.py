@@ -144,73 +144,128 @@ def get_data(filters):
 		query = "SELECT name FROM `tabFuelbook` WHERE 1 AND type='General Pol'"
 
 		for fb in frappe.db.sql(query, as_dict=True):
-			for item in items:
-				own_cc = 1 if filters.get("own_cc") else 0
-
-				fuel_qty = get_pol_between_fuelbook(
-					"Issue",
-					"General Pol",
-					fb.name,
-					filters.from_date,
-					filters.to_date,
-					own_cc
-				)
-
-				# If balance is None, make it 0
-				if fuel_qty is None:
-					fuel_qty = 0
-
-				# Append all Fuelbooks, even if balance is 0
-				data.append([
-					fb.name,
-					item.item_code,
-					item.item_name,
-					item.stock_uom,
-
-					fuel_qty["rate"],
-					fuel_qty["amount"],
-					fuel_qty["issue_qty"],  # Total Issue Quantity
-					fuel_qty["fuel_qty"]
-				
-			 
-				])
+			own_cc = 1 if filters.get("own_cc") else 0
+			
+			pol_data = get_pol_between_fuelbook(
+				"Issue",
+				"General Pol",
+				fb.name,
+				filters.from_date,
+				filters.to_date,
+				own_cc
+			)
+			
+			# If there are POL entries
+			if pol_data and pol_data.get("records"):
+				# Loop through each individual POL entry
+				for entry in pol_data["records"]:
+					for item in items:
+						data.append([
+							fb.name,
+							item.item_code,
+							item.item_name,
+							item.stock_uom,
+							entry.get("rate", 0),
+							entry.get("amount", 0),
+							entry.get("issue_qty", 0),
+							entry.get("qty", 0)  # fuel_qty
+						])
+			else:
+				# No POL entries, add row with zeros
+				for item in items:
+					data.append([
+						fb.name,
+						item.item_code,
+						item.item_name,
+						item.stock_uom,
+						0,  # rate
+						0,  # amount
+						0,  # issue_qty
+						0   # fuel_qty
+					])
 
 	# ---------------------------
 	# ✅ Equipment
 	# ---------------------------
 	else:
+		# query = "SELECT name, registration_number FROM `tabEquipment` WHERE 1"
+
+		# if filters.get("branch"):
+		# 	query += " AND branch = '" + str(filters.branch) + "'"
+
+		# for eq in frappe.db.sql(query, as_dict=True):
+		# 	for item in items:
+		# 		own_cc = 1 if filters.get("own_cc") else 0
+
+		# 		balance = get_pol_between(
+		# 			"Issue",
+		# 			eq.name,
+		# 			filters.from_date,
+		# 			filters.to_date,
+		# 			own_cc
+		# 		)
+
+		# 		if balance is None:
+		# 			balance = 0
+
+		# 		# Optionally, only append if balance > 0 for equipment
+			
+		# 		data.append([
+		# 			eq.name,
+		# 			eq.registration_number,
+		# 			item.item_code,
+		# 			item.item_name,
+		# 			item.stock_uom,
+		# 			balance["rate"],
+		# 			balance["amount"],
+		# 			balance["eq_issue_qty"],  # Total Issue Quantity
+		# 			balance["balance"] 
+		# 		])
 		query = "SELECT name, registration_number FROM `tabEquipment` WHERE 1"
 
 		if filters.get("branch"):
 			query += " AND branch = '" + str(filters.branch) + "'"
 
 		for eq in frappe.db.sql(query, as_dict=True):
-			for item in items:
-				own_cc = 1 if filters.get("own_cc") else 0
-
-				balance = get_pol_between(
-					"Issue",
-					eq.name,
-					filters.from_date,
-					filters.to_date,
-					own_cc
-				)
-
-				if balance is None:
-					balance = 0
-
-				# Optionally, only append if balance > 0 for equipment
+			own_cc = 1 if filters.get("own_cc") else 0
 			
-				data.append([
-					eq.name,
-					eq.registration_number,
-					item.item_code,
-					item.item_name,
-					item.stock_uom,
-					balance["rate"],
-					balance["amount"],
-					balance["eq_issue_qty"],  # Total Issue Quantity
-					balance["balance"] 
-				])
+			pol_data = get_pol_between(
+				"Issue",
+				eq.name,
+				filters.from_date,
+				filters.to_date,
+				own_cc
+			)
+			
+			# If there are POL entries
+			if pol_data and pol_data.get("records"):
+				# Loop through each individual POL entry
+				for entry in pol_data["records"]:
+					for item in items:
+						data.append([
+							eq.name,
+							eq.registration_number,
+							item.item_code,
+							item.item_name,
+							item.stock_uom,
+							entry.get("rate", 0),
+							entry.get("amount", 0),
+							entry.get("issue_qty", 0),
+							entry.get("qty", 0)  # balance/qty
+						])
+			else:
+				# No POL entries, add row with zeros
+				for item in items:
+					data.append([
+						eq.name,
+						eq.registration_number,
+						item.item_code,
+						item.item_name,
+						item.stock_uom,
+						0,  # rate
+						0,  # amount
+						0,  # eq_issue_qty
+						0   # balance
+					])
 
 	return data
