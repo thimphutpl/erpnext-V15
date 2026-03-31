@@ -1,6 +1,6 @@
 {
  "actions": [],
- "autoname": "autoincrement",
+ "autoname": "hash",
  "creation": "2023-09-18 13:32:46.585238",
  "doctype": "DocType",
  "editable_grid": 1,
@@ -65,7 +65,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Action",
-   "options": "\nApply\nForward\nApprove\nReject\nReview",
+   "options": "\nApply\nForward\nApprove\nReject",
    "read_only": 1
   },
   {
@@ -123,13 +123,14 @@
  ],
  "istable": 1,
  "links": [],
- "modified": "2024-08-06 11:58:03.182794",
+ "modified": "2026-03-31 12:31:35.619257",
  "modified_by": "Administrator",
  "module": "eNote",
  "name": "Note Remark",
- "naming_rule": "Autoincrement",
+ "naming_rule": "Random",
  "owner": "Administrator",
  "permissions": [],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []
