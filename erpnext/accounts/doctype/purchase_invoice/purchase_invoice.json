@@ -121,6 +121,7 @@
   "discount",
   "apply_discount_on",
   "base_discount_amount",
+  "charges_without_gst",
   "column_break_46",
   "tax",
   "other_charges",
@@ -236,7 +237,7 @@
    "no_copy": 1,
    "oldfieldname": "naming_series",
    "oldfieldtype": "Select",
-   "options": "\nConsumables\nFixed Asset\nSales Product\nSpare Parts\nServices Miscellaneous\nServices Works\nLabour Contract\nHiring Charge\nACC-PINV-.YYYY.-\nACC-PINV-RET-.YYYY.-",
+   "options": "\nNone\nConsumables\nFixed Asset\nSales Product\nSpare Parts\nServices Miscellaneous\nServices Works\nLabour Contract\nHiring Charge\nACC-PINV-.YYYY.-\nACC-PINV-RET-.YYYY.-",
    "print_hide": 1,
    "reqd": 1,
    "set_only_once": 1
@@ -1771,13 +1772,18 @@
    "fieldtype": "Currency",
    "label": "Net Charges & Discount",
    "read_only": 1
+  },
+  {
+   "fieldname": "charges_without_gst",
+   "fieldtype": "Currency",
+   "label": "Other Charges Without GST"
   }
  ],
  "icon": "fa fa-file-text",
  "idx": 204,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-01-23 19:06:48.982909",
+ "modified": "2026-04-02 11:42:02.166381",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Purchase Invoice",

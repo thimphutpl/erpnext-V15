@@ -105,6 +105,7 @@ class PurchaseInvoice(BuyingController):
 		business_activity: DF.Link | None
 		buying_price_list: DF.Link | None
 		cash_bank_account: DF.Link | None
+		charges_without_gst: DF.Currency
 		clearance_date: DF.Date | None
 		company: DF.Link | None
 		contact_display: DF.SmallText | None
@@ -1087,8 +1088,11 @@ class PurchaseInvoice(BuyingController):
 			self.precision("base_grand_total"),
 		) - flt(self.total_advance)
 		gst_amount=0.0
+		total_other_charges = 0.0
 		for item in self.items:
 			gst_amount+=flt(item.gst_amount)
+		if self.charges_without_gst:
+			total_other_charges = flt(self.charges_without_gst)
 
 		if grand_total and not self.is_internal_transfer():
 			against_voucher = self.name
@@ -1103,8 +1107,8 @@ class PurchaseInvoice(BuyingController):
 						"party": self.supplier,
 						"due_date": self.due_date,
 						"against": self.against_expense_account,
-						"credit": base_grand_total+gst_amount,
-						"credit_in_account_currency": base_grand_total+gst_amount
+						"credit": base_grand_total+gst_amount+total_other_charges,
+						"credit_in_account_currency": base_grand_total+gst_amount+total_other_charges
 						if self.party_account_currency == self.company_currency
 						else grand_total,
 						"against_voucher": against_voucher,
@@ -1180,7 +1184,7 @@ class PurchaseInvoice(BuyingController):
 									"cost_center": item.cost_center,
 									"project": item.project or self.project,
 									"remarks": self.get("remarks") or _("Accounting Entry for Stock"),
-									"debit": warehouse_debit_amount,
+									"debit": warehouse_debit_amount
 									# "business_activity": self.business_activity,
 								},
 								warehouse_account[item.warehouse]["account_currency"],
@@ -1295,6 +1299,10 @@ class PurchaseInvoice(BuyingController):
 						else item.deferred_expense_account
 					)
 
+					charges_without_gst = 0.0
+					if self.charges_without_gst:
+						charges_without_gst=self.charges_without_gst
+
 					dummy, amount = self.get_amount_and_base_amount(item, None)
 
 					if provisional_accounting_for_non_stock_items:
@@ -1306,7 +1314,7 @@ class PurchaseInvoice(BuyingController):
 								{
 									"account": expense_account,
 									"against": self.supplier,
-									"debit": amount,
+									"debit": amount+charges_without_gst,
 									"cost_center": item.cost_center,
 									"project": item.project or self.project,
 								},
@@ -1514,6 +1522,7 @@ class PurchaseInvoice(BuyingController):
 			# 	continue
 			# else:
 			amount, base_amount = self.get_tax_amounts(tax, None)
+		
 			if tax.category in ("Total", "Valuation and Total") and flt(base_amount):
 				account_currency = get_account_currency(tax.account_head)
 
@@ -1660,6 +1669,7 @@ class PurchaseInvoice(BuyingController):
 					item=self,
 				)
 			)
+	
 
 	def make_write_off_gl_entry(self, gl_entries):
 		# writeoff account includes petty difference in the invoice amount
