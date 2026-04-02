@@ -15,6 +15,8 @@
   "rental_details",
   "amended_from",
   "total_amount",
+  "section_break_hcdu",
+  "journal_no",
   "section_break_zbhr",
   "taxes_and_charges",
   "account_head",
@@ -122,12 +124,21 @@
    "fieldname": "company",
    "fieldtype": "Data",
    "label": "Company"
+  },
+  {
+   "fieldname": "section_break_hcdu",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "journal_no",
+   "fieldtype": "Data",
+   "label": "Journal No"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-02-02 10:22:19.033568",
+ "modified": "2026-04-02 18:34:19.414617",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Rental",

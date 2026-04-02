@@ -12,7 +12,7 @@ class Rental(Document):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
-		from frappe.model.document import Document
+		from erpnext.accounts.doctype.rental_details.rental_details import RentalDetails
 		from frappe.types import DF
 
 		account_head: DF.Data | None
@@ -21,8 +21,9 @@ class Rental(Document):
 		company: DF.Data | None
 		cost_center: DF.Link | None
 		gst_amount: DF.Currency
+		journal_no: DF.Data | None
 		posting_date: DF.Date
-		rental_details: DF.Table[Document]
+		rental_details: DF.Table[RentalDetails]
 		tax_rate: DF.Float
 		taxes_and_charges: DF.Data | None
 		total_amount: DF.Float
@@ -60,6 +61,10 @@ class Rental(Document):
 
 		rental_account = frappe.db.get_value("Company", self.company, "rental_account")
 		default_receivable_account = frappe.db.get_value("Branch", self.branch, "revenue_bank_account")
+		if not rental_account:
+			frappe.throw("Please set Rental Account in Company")
+		if not default_receivable_account:
+			frappe.throw("Please set Revenue Bank Account")
 		if rental_account:
 			gl_entries.append(
 				prepare_gl(self, {
