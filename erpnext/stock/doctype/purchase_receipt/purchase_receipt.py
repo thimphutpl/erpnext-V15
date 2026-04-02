@@ -401,8 +401,8 @@ class PurchaseReceipt(BuyingController):
 		self.make_bundle_for_sales_purchase_return()
 		self.make_bundle_using_old_serial_batch_fields()
 		supplier_type = frappe.db.get_value("Supplier",self.supplier,"Country")
-		if supplier_type != "Bhutan":
-			self.make_tax_payment()
+		# if supplier_type != "Bhutan":
+		# 	self.make_tax_payment()
 		self.update_stock_ledger()
 		self.make_gl_entries()
 		self.repost_future_sle_and_gle()
