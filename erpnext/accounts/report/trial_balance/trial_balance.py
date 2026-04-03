@@ -31,6 +31,8 @@ value_fields = (
 
 def execute(filters=None):
 	validate_filters(filters)
+	if filters.get("multi_year"):
+		set_dynamic_pl_start_date(filters)
 	data = get_data(filters)
 	columns = get_columns()
 	return columns, data
@@ -61,23 +63,52 @@ def validate_filters(filters):
 	if filters.from_date > filters.to_date:
 		frappe.throw(_("From Date cannot be greater than To Date"))
 
-	if (filters.from_date < filters.year_start_date) or (filters.from_date > filters.year_end_date):
-		frappe.msgprint(
-			_("From Date should be within the Fiscal Year. Assuming From Date = {0}").format(
-				formatdate(filters.year_start_date)
+	if not filters.get("multi_year"):
+		if (filters.from_date < filters.year_start_date) or (filters.from_date > filters.year_end_date):
+			frappe.msgprint(
+				_("From Date should be within the Fiscal Year. Assuming From Date = {0}").format(
+					formatdate(filters.year_start_date)
+				)
 			)
+			filters.from_date = filters.year_start_date
+
+		if (filters.to_date < filters.year_start_date) or (filters.to_date > filters.year_end_date):
+			frappe.msgprint(
+				_("To Date should be within the Fiscal Year. Assuming To Date = {0}").format(
+					formatdate(filters.year_end_date)
+				)
+			)
+			filters.to_date = filters.year_end_date
+	else:
+		if (filters.from_date < filters.year_start_date) or (filters.to_date > filters.year_end_date):
+			frappe.msgprint(
+				_("Custom Date Range is enabled, so selected dates outside Fiscal Year {0} will be used.").format(
+					filters.fiscal_year
+				),
+				alert=True,
+			)
+
+def set_dynamic_pl_start_date(filters):
+	if filters.get("from_date"):
+		fy_name = frappe.db.get_value(
+			"Fiscal Year",
+			{
+				"year_start_date": ("<=", filters.from_date),
+				"year_end_date": (">=", filters.from_date),
+			},
+			"name",
 		)
 
-		filters.from_date = filters.year_start_date
-
-	if (filters.to_date < filters.year_start_date) or (filters.to_date > filters.year_end_date):
-		frappe.msgprint(
-			_("To Date should be within the Fiscal Year. Assuming To Date = {0}").format(
-				formatdate(filters.year_end_date)
+		if fy_name:
+			fy = frappe.get_cached_value(
+				"Fiscal Year", fy_name, ["year_start_date", "year_end_date"], as_dict=True
 			)
-		)
-		filters.to_date = filters.year_end_date
-
+			if fy:
+				filters.pl_year_start_date = getdate(fy.year_start_date)
+			else:
+				filters.pl_year_start_date = filters.from_date
+		else:
+			filters.pl_year_start_date = filters.from_date
 
 def get_data(filters):
 	accounts = frappe.db.sql(
@@ -243,7 +274,13 @@ def get_opening_balance(
 		and report_type == "Profit and Loss"
 		and doctype == "GL Entry"
 	):
-		opening_balance = opening_balance.where(closing_balance.posting_date >= filters.year_start_date)
+		if filters.get("multi_year"):
+			pl_start_date = filters.get("pl_year_start_date") or filters.from_date
+		else:
+			pl_start_date = filters.year_start_date
+
+		opening_balance = opening_balance.where(closing_balance.posting_date >= pl_start_date)
+		# opening_balance = opening_balance.where(closing_balance.posting_date >= filters.year_start_date)
 
 	if not flt(filters.with_period_closing_entry_for_opening):
 		if doctype == "Account Closing Balance":

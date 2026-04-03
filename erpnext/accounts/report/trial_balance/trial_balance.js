@@ -117,6 +117,12 @@ frappe.query_reports["Trial Balance"] = {
 			fieldtype: "Check",
 			default: 1,
 		},
+		{
+			fieldname: "multi_year",
+			label: "Custom Date Range (Ignore Fiscal Year)",
+			fieldtype: "Check",
+			default: 0
+		},
 	],
 	formatter: erpnext.financial_statements.formatter,
 	tree: true,
