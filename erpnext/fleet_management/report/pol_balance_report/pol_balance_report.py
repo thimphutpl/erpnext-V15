@@ -36,8 +36,8 @@ def get_data(filters=None):
 					issued = get_pol_consumed_till(eq.name, filters.to_date,)
 					transfered = get_pol_transfer("Transfer", eq.name, item.item_code)
 			else:
-				received = get_pol_till("Stock", eq.name, filters.to_date, item.item_code)
-				issued = get_pol_till("Issue", eq.name, filters.to_date, item.item_code)
+				received = get_pol_till("Stock", eq.name,filters.branch, filters.to_date, item.item_code)
+				issued = get_pol_till("Issue", eq.name, filters.branch, filters.to_date, item.item_code)
 
 			if received or issued or transfered:
 				row = [eq.name, eq.registration_number, eq.equipment_type, eq.branch, item.item_code, item.item_name, item.stock_uom, received, issued, transfered, (flt(received) - flt(transfered) -flt(issued)) ]

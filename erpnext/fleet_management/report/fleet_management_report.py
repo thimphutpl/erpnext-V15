@@ -6,13 +6,13 @@ from frappe.utils import flt, cint,add_days, cstr, flt, getdate, nowdate, rounde
 ##
 # Both recieved and issued pols can be queried with this
 ##
-def get_pol_till(purpose, equipment, posting_date, pol_type=None, own_cc=None, posting_time="23:59:59"):
+def get_pol_till(purpose, equipment,branch,posting_date, pol_type=None, own_cc=None, posting_time="23:59:59"):
 	if not equipment or not posting_date:
 		frappe.throw(str(posting_date))
 		frappe.throw("Equipment and Till Date are Mandatory")
 	total = 0
 	posting_datetime = str(get_datetime(str(posting_date) + ' ' + str(posting_time)))
-	query = "select sum(qty) as total from `tabPOL Entry` where docstatus = 1 and type = \'"+str(purpose)+"\' and equipment = \'" + str(equipment) + "\' and cast(concat(posting_date, ' ' , posting_time) as datetime) <= \'" + str(posting_datetime) + "\'"
+	query = "select sum(qty) as total from `tabPOL Entry` where docstatus = 1 and type = \'"+str(purpose)+"\' and equipment = \'" + str(equipment) + "\' and branch = \'" + str(branch) + "\' and cast(concat(posting_date, ' ' , posting_time) as datetime) <= \'" + str(posting_datetime) + "\'"
 	if pol_type:
 		query += " and pol_type = \'" + str(pol_type) + "\'"
 	if own_cc:
