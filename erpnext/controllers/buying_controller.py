@@ -717,6 +717,32 @@ class BuyingController(SubcontractingController):
 			self.update_fixed_asset(field, delete_asset=True)
 
 	def validate_budget(self):
+		for item in self.get("items"):
+			cost_center = item.cost_center
+			if not cost_center:
+				continue
+
+			# Get parent cost center
+			parent_cost_center = frappe.db.get_value("Cost Center", cost_center, "parent_cost_center")
+	
+
+			# 1️⃣ Check for Draft Budget
+			draft_budget = frappe.get_value(
+				"Budget",
+				filters={
+					"company": self.company,
+					"cost_center": parent_cost_center,
+					"docstatus": 0  # Draft
+				},
+				fieldname="name"
+			)
+			if draft_budget:
+				frappe.throw(
+					_("Budget {0} for Cost Center {1} is in Draft, please submit Budget").format(
+						draft_budget, parent_cost_center
+					)
+				)
+
 		if self.docstatus == 1:
 			for data in self.get("items"):
 				args = data.as_dict()
