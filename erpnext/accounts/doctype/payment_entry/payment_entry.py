@@ -322,7 +322,10 @@ class PaymentEntry(AccountsController):
 		update_payment_requests_as_per_pe_references(self.references, cancel=cancel)
 
 	def update_outstanding_amounts(self):
-		self.set_missing_ref_details(force=True)
+		
+		for d in self.get("references"):
+			d.outstanding_amount=self.unallocated_amount
+		#self.set_missing_ref_details(force=True)
 
 	def validate_duplicate_entry(self):
 		reference_names = set()
@@ -338,6 +341,7 @@ class PaymentEntry(AccountsController):
 			reference_names.add(key)
 
 	def set_bank_account_data(self):
+		
 		if self.bank_account:
 			bank_data = get_bank_account_details(self.bank_account)
 
@@ -561,49 +565,53 @@ class PaymentEntry(AccountsController):
 			else self.paid_to_account_currency
 		)
 
-	def set_missing_ref_details(
-		self,
-		force: bool = False,
-		update_ref_details_only_for: list | None = None,
-		reference_exchange_details: dict | None = None,
-	) -> None:
-		for d in self.get("references"):
-			if d.allocated_amount:
-				if (
-					update_ref_details_only_for
-					and (d.reference_doctype, d.reference_name) not in update_ref_details_only_for
-				):
-					continue
+	# def set_missing_ref_details1(
+	# 	self,
+	# 	force: bool = False,
+	# 	update_ref_details_only_for: list | None = None,
+	# 	reference_exchange_details: dict | None = None,
+	# ) -> None:
+	# 	frappe.throw("hiii")
+		
+	# 	for d in self.get("references"):
+			
+	# 		if d.allocated_amount:
+	# 			#frappe.throw("hiii")
+	# 			if (
+	# 				update_ref_details_only_for
+	# 				and (d.reference_doctype, d.reference_name) not in update_ref_details_only_for
+	# 			):
+	# 				continue
 
-				ref_details = get_reference_details(
-					d.reference_doctype,
-					d.reference_name,
-					self.party_account_currency,
-					self.party_type,
-					self.party,
-				)
+	# 			ref_details = get_reference_details(
+	# 				d.reference_doctype,
+	# 				d.reference_name,
+	# 				self.party_account_currency,
+	# 				self.party_type,
+	# 				self.party,
+	# 			)
 
-				# Only update exchange rate when the reference is Journal Entry
-				if (
-					reference_exchange_details
-					and d.reference_doctype == reference_exchange_details.reference_doctype
-					and d.reference_name == reference_exchange_details.reference_name
-				):
-					ref_details.update({"exchange_rate": reference_exchange_details.exchange_rate})
+	# 			# Only update exchange rate when the reference is Journal Entry
+	# 			if (
+	# 				reference_exchange_details
+	# 				and d.reference_doctype == reference_exchange_details.reference_doctype
+	# 				and d.reference_name == reference_exchange_details.reference_name
+	# 			):
+	# 				ref_details.update({"exchange_rate": reference_exchange_details.exchange_rate})
 
-				for field, value in ref_details.items():
-					if d.exchange_gain_loss:
-						# for cases where gain/loss is booked into invoice
-						# exchange_gain_loss is calculated from invoice & populated
-						# and row.exchange_rate is already set to payment entry's exchange rate
-						# refer -> `update_reference_in_payment_entry()` in utils.py
-						continue
+	# 			for field, value in ref_details.items():
+	# 				if d.exchange_gain_loss:
+	# 					# for cases where gain/loss is booked into invoice
+	# 					# exchange_gain_loss is calculated from invoice & populated
+	# 					# and row.exchange_rate is already set to payment entry's exchange rate
+	# 					# refer -> `update_reference_in_payment_entry()` in utils.py
+	# 					continue
 
-					if field == "exchange_rate" or not d.get(field) or force:
-						if self.get("_action") in ("submit", "cancel"):
-							d.db_set(field, value)
-						else:
-							d.set(field, value)
+	# 				if field == "exchange_rate" or not d.get(field) or force:
+	# 					if self.get("_action") in ("submit", "cancel"):
+	# 						d.db_set(field, value)
+	# 					else:
+	# 						d.set(field, value)
 
 	def validate_payment_type(self):
 		if self.payment_type not in ("Receive", "Pay", "Internal Transfer"):
@@ -669,18 +677,36 @@ class PaymentEntry(AccountsController):
 				)
 
 			elif d.reference_name:
+				
 				if not frappe.db.exists(d.reference_doctype, d.reference_name):
 					frappe.throw(_("{0} {1} does not exist").format(d.reference_doctype, d.reference_name))
 				else:
+					
 					ref_doc = frappe.get_doc(d.reference_doctype, d.reference_name)
-
+					
 					if d.reference_doctype != "Journal Entry" and  d.reference_doctype not in ["Repair And Service Invoice"]:
 						if self.party != ref_doc.get(scrub(self.party_type)):
-							frappe.throw(
-								_("{0} {1} is not associated with {2} {3}").format(
-									_(d.reference_doctype), d.reference_name, _(self.party_type), self.party
-								)
-							)
+							pass
+							# child_table_field = "taxes"  
+
+							# if ref_doc.get(child_table_field):
+								
+							# 	for row in ref_doc.get(child_table_field):
+							# 		frappe.msgprint(str(row.party))
+									
+
+								# party_matches = any(
+								# 	row.get(scrub(self.party_type)) == self.party 
+								# 	for row in ref_doc.get(child_table_field)
+								# )
+								# #frappe.throw(str(party_matches))
+								# if not party_matches:
+								# 	#frappe.throw(f"Party {self.party} not found in child table {child_table_field}")
+								# 	frappe.throw(
+								# 		_("{0} {1} is not associated with {2} {3}").format(
+								# 			_(d.reference_doctype), d.reference_name, _(self.party_type), self.party
+								# 		)
+								# 	)
 					else:
 						self.validate_journal_entry()
 
@@ -791,41 +817,46 @@ class PaymentEntry(AccountsController):
 	def update_payment_schedule(self, cancel=0):
 		invoice_payment_amount_map = {}
 		invoice_paid_amount_map = {}
-
+		
 		for ref in self.get("references"):
-			if ref.payment_term and ref.reference_name:
-				key = (ref.payment_term, ref.reference_name, ref.reference_doctype)
-				invoice_payment_amount_map.setdefault(key, 0.0)
-				invoice_payment_amount_map[key] += ref.allocated_amount
+			#frappe.throw(str(ref.outstanding_amount))
+			frappe.db.sql(f""" update `tabPurchase Invoice` set outstanding_amount=%s where name=%s""",(ref.outstanding_amount,ref.reference_name))
 
-				if not invoice_paid_amount_map.get(key):
-					payment_schedule = frappe.get_all(
-						"Payment Schedule",
-						filters={"parent": ref.reference_name},
-						fields=[
-							"paid_amount",
-							"payment_amount",
-							"payment_term",
-							"discount",
-							"outstanding",
-							"discount_type",
-						],
-					)
-					for term in payment_schedule:
-						invoice_key = (term.payment_term, ref.reference_name, ref.reference_doctype)
-						invoice_paid_amount_map.setdefault(invoice_key, {})
-						invoice_paid_amount_map[invoice_key]["outstanding"] = term.outstanding
-						if not (term.discount_type and term.discount):
-							continue
+			# if ref.payment_term and ref.reference_name:
+			
+			# 	key = (ref.payment_term, ref.reference_name, ref.reference_doctype)
+			# 	invoice_payment_amount_map.setdefault(key, 0.0)
+			# 	invoice_payment_amount_map[key] += ref.allocated_amount
 
-						if term.discount_type == "Percentage":
-							invoice_paid_amount_map[invoice_key]["discounted_amt"] = ref.total_amount * (
-								term.discount / 100
-							)
-						else:
-							invoice_paid_amount_map[invoice_key]["discounted_amt"] = term.discount
+			# 	if not invoice_paid_amount_map.get(key):
+			# 		payment_schedule = frappe.get_all(
+			# 			"Payment Schedule",
+			# 			filters={"parent": ref.reference_name},
+			# 			fields=[
+			# 				"paid_amount",
+			# 				"payment_amount",
+			# 				"payment_term",
+			# 				"discount",
+			# 				"outstanding",
+			# 				"discount_type",
+			# 			],
+			# 		)
+			# 		for term in payment_schedule:
+			# 			invoice_key = (term.payment_term, ref.reference_name, ref.reference_doctype)
+			# 			invoice_paid_amount_map.setdefault(invoice_key, {})
+			# 			invoice_paid_amount_map[invoice_key]["outstanding"] = term.outstanding
+			# 			if not (term.discount_type and term.discount):
+			# 				continue
+
+			# 			if term.discount_type == "Percentage":
+			# 				invoice_paid_amount_map[invoice_key]["discounted_amt"] = ref.total_amount * (
+			# 					term.discount / 100
+			# 				)
+			# 			else:
+			# 				invoice_paid_amount_map[invoice_key]["discounted_amt"] = term.discount
 
 		for idx, (key, allocated_amount) in enumerate(invoice_payment_amount_map.items(), 1):
+			
 			if not invoice_paid_amount_map.get(key):
 				frappe.throw(_("Payment term {0} not used in {1}").format(key[0], key[1]))
 
@@ -1341,12 +1372,15 @@ class PaymentEntry(AccountsController):
 		return gl_entries
 
 	def make_gl_entries(self, cancel=0, adv_adj=0):
+		
 		gl_entries = self.build_gl_map()
+		
 		gl_entries = process_gl_map(gl_entries)
 		make_gl_entries(gl_entries, cancel=cancel, adv_adj=adv_adj)
 		if cancel:
 			cancel_exchange_gain_loss_journal(frappe._dict(doctype=self.doctype, name=self.name))
 		else:
+			#frappe.throw("xxx")
 			self.make_exchange_gain_loss_journal()
 
 		self.make_advance_gl_entries(cancel=cancel)
@@ -2905,7 +2939,9 @@ def get_payment_entry(
 	ignore_permissions=False,
 	created_from_payment_request=False,
 ):
+	
 	doc = frappe.get_doc(dt, dn)
+	#frappe.throw(frappe.as_json(doc))
 	over_billing_allowance = frappe.db.get_single_value("Accounts Settings", "over_billing_allowance")
 	if dt in ("Sales Order", "Purchase Order") and flt(doc.per_billed, 2) >= (100.0 + over_billing_allowance):
 		frappe.throw(_("Can only make payment against unbilled {0}").format(_(dt)))
@@ -2955,6 +2991,7 @@ def get_payment_entry(
 	pe.payment_type = payment_type
 	pe.company = doc.company
 	pe.cost_center = doc.get("cost_center")
+	pe.branch = doc.get("branch")
 	pe.posting_date = nowdate()
 	pe.reference_date = reference_date
 	pe.mode_of_payment = doc.get("mode_of_payment")
@@ -3312,6 +3349,7 @@ def set_payment_type(dt, doc):
 
 
 def set_grand_total_and_outstanding_amount(party_amount, dt, party_account_currency, doc):
+	# frappe.throw(str(doc.outstanding_amount))
 	grand_total = outstanding_amount = 0
 	if party_amount:
 		grand_total = outstanding_amount = party_amount
