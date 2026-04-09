@@ -35,10 +35,39 @@ frappe.ui.form.on('POL Issue', {
 
     },
 
+    // tanker: function (frm) {
+    //     if (frm.doc.tanker) {
+    //         frappe.call({
+    //             method: "erpnext.fleet_management.doctype.pol_issue.pol_issue.get_equipment_data", // Update with the correct path
+    //             args: {
+    //                 tanker: frm.doc.tanker,
+    //                 branch: frm.doc.branch,
+    //                 pol_type: frm.doc.pol_type,
+    //             },
+    //             callback: function (response) {
+    //                 if (response.message) {
+    //                     // let data = response.message;
+    //                     // frappe.msgprint({
+    //                     //     title: __('Fetched Equipment Data'),
+    //                     //     message: `<pre>${JSON.stringify(data, null, 4)}</pre>`,
+    //                     //     indicator: 'green'
+    //                     // });
+    //                     frm.set_value('tank_balance', response.message[0]);
+    //                     // frm.set_value('rate', response.message[1]);
+    //                 } else {
+    //                     frappe.msgprint(__('No data found for the selected Tanker'));
+    //                 }
+    //             }
+    //         });
+    //     } else {
+    //         frm.set_value('tank_balance', '');
+    //     }
+    //     refresh_fields();
+    // },
     tanker: function (frm) {
         if (frm.doc.tanker) {
             frappe.call({
-                method: "erpnext.fleet_management.doctype.pol_issue.pol_issue.get_equipment_data", // Update with the correct path
+                method: "erpnext.fleet_management.doctype.pol_issue.pol_issue.get_equipment_data",
                 args: {
                     tanker: frm.doc.tanker,
                     branch: frm.doc.branch,
@@ -46,14 +75,7 @@ frappe.ui.form.on('POL Issue', {
                 },
                 callback: function (response) {
                     if (response.message) {
-                        // let data = response.message;
-                        // frappe.msgprint({
-                        //     title: __('Fetched Equipment Data'),
-                        //     message: `<pre>${JSON.stringify(data, null, 4)}</pre>`,
-                        //     indicator: 'green'
-                        // });
-                        frm.set_value('tank_balance', response.message[0]);
-                        frm.set_value('rate', response.message[1]);
+                        frm.set_value('tank_balance', response.message);
                     } else {
                         frappe.msgprint(__('No data found for the selected Tanker'));
                     }
@@ -62,7 +84,6 @@ frappe.ui.form.on('POL Issue', {
         } else {
             frm.set_value('tank_balance', '');
         }
-        refresh_fields();
     },
     issue_from: function (frm) {
         if (frm.doc.issue_from === "Fuelbook") {

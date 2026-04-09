@@ -23,11 +23,11 @@
   "direct_consumption",
   "section_break_6",
   "pol_type",
-  "equipment",
   "own_fb",
   "equipment_type",
   "project",
   "section_break_15",
+  "equipment",
   "equipment_number",
   "equipment_category",
   "tank_capacity",
@@ -206,7 +206,9 @@
   {
    "fieldname": "rate",
    "fieldtype": "Currency",
-   "label": "Rate Per Unit"
+   "hidden": 1,
+   "label": "Rate Per Unit",
+   "precision": "2"
   },
   {
    "fieldname": "section_break_10",
@@ -599,7 +601,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-03-04 09:37:21.366794",
+ "modified": "2026-04-08 18:26:22.715299",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Receive",

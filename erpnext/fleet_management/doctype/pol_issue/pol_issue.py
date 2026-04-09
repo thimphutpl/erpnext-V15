@@ -168,7 +168,7 @@ class POLIssue(StockController):
 			cond = "and is_barrel =1"
 		elif self.issue_from =="Fuelbook":
 			cond ="and is_fuel_book= 1"	
-		b_qty = b_rate = 0
+		b_qty = 0
 		balance_qty = frappe.db.sql("""select qty, rate
 			from `tabPOL Entry` 
 			where branch='{branch}'
@@ -180,14 +180,13 @@ class POLIssue(StockController):
 		if balance_qty:
 			for x in balance_qty:
 				b_qty = x.qty + b_qty
-				b_rate =x.rate + b_rate
+
 		if b_qty <= 0:
 			frappe.throw("Tanker/Barrel has no fuel balance")
 		if self.total_quantity and self.total_quantity > b_qty:
 			frappe.throw("Total qty cannot be greater than tanker balance "+str(b_qty))
 		else:
 			self.tank_balance =b_qty
-			self.rate = b_rate
 	def set_total_amount(self):
 		total_amount=0.0
 		total_amount = flt(self.rate)*flt(self.total_quantity)
@@ -372,21 +371,21 @@ class POLIssue(StockController):
 				limit 1
 				""".format(branch=branch, item=self.pol_type, cond=cond), as_dict=True)
 			
-			b_qty = b_rate = total_amount = 0
+			b_qty = total_amount = 0
 			if balance_qty:
 				for raw in balance_qty:
 					if not cancel:
 						b_qty = flt(raw.qty) + flt(self.transfer_qty)
 						total_amount = flt(raw.amount) + flt(self.transfer_amount)
-						b_rate = flt(total_amount) / flt(b_qty)
+						# b_rate = flt(total_amount) / flt(b_qty)
 					else:
 						b_qty = flt(raw.qty) - flt(self.transfer_qty)
 						total_amount = flt(raw.amount) - flt(self.transfer_amount)
-						if total_amount!=0 and b_qty!=0:
-							b_rate = flt(total_amount) / flt(b_qty)
+						# if total_amount!=0 and b_qty!=0:
+						# 	b_rate = flt(total_amount) / flt(b_qty)
 			else:
 				b_qty = self.transfer_qty
-				b_rate = self.rate
+				# b_rate = self.rate
 				total_amount = self.transfer_amount
 
 			con = frappe.new_doc("POL Entry")
@@ -401,7 +400,7 @@ class POLIssue(StockController):
 			con.posting_date = nowdate()
 			con.posting_time = nowtime()
 			con.qty = b_qty
-			con.rate = b_rate
+			# con.rate = b_rate
 			con.amount = total_amount
 			con.type="Issue"
 			con.reference_type = "POL Issue"
@@ -446,11 +445,11 @@ class POLIssue(StockController):
 # Equipment Balance
 @frappe.whitelist()
 def get_equipment_data(tanker, branch, pol_type):
-	b_qty = b_rate = 0
+	b_qty = 0
 	if not pol_type:
 		frappe.throw("POL Items is required")
 	
-	balance_qty = frappe.db.sql("""select qty, rate
+	balance_qty = frappe.db.sql("""select qty
 		from `tabPOL Entry` 
 		where branch='{branch}'
 		and item ='{item}'
@@ -461,10 +460,9 @@ def get_equipment_data(tanker, branch, pol_type):
 	if balance_qty:
 		for x in balance_qty:
 			b_qty = b_qty+ x.qty
-			b_rate = b_rate + x.rate
 
 	if  b_qty > 0:
-		return b_qty, b_rate
+		return b_qty
 	else:
 		frappe.throw("Tanker Balance is Zero for this Tanker")
 

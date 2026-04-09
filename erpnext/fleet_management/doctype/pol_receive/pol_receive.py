@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 import frappe
 from frappe.model.document import Document
 from frappe import _, qb, throw
-from frappe.utils import flt, cint, cstr, fmt_money, formatdate, nowtime, getdate
+from frappe.utils import data, flt, cint, cstr, fmt_money, formatdate, nowtime, getdate
 from erpnext.custom_utils import check_future_date
 from erpnext.controllers.stock_controller import StockController
 from erpnext.fleet_management.fleet_utils import get_pol_till, get_pol_till, get_previous_km

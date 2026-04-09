@@ -285,6 +285,9 @@ frappe.ui.form.on("POL Receive Item", {
 	qty: function (frm, cdt, cdn) {
 		calculate_all(frm);
 	},
+	rate: function (frm, cdt, cdn) {
+		calculate_all(frm);
+	},
 	items_remove: function (frm) {
 		calculate_all(frm);
 	}
@@ -296,7 +299,7 @@ function calculate_all(frm) {
 
 	frm.doc.items.forEach(function (row) {
 		if (row.qty) {
-			row.amount = row.qty * frm.doc.rate;
+			row.amount = row.qty * row.rate;
 			total_qty += row.qty;
 			total_amount += row.amount;
 		}

@@ -309,7 +309,7 @@
    "oldfieldname": "import_rate",
    "oldfieldtype": "Currency",
    "options": "currency",
-   "precision": "4"
+   "precision": "7"
   },
   {
    "columns": 2,
@@ -320,6 +320,7 @@
    "oldfieldname": "import_amount",
    "oldfieldtype": "Currency",
    "options": "currency",
+   "precision": "7",
    "read_only": 1
   },
   {
@@ -918,7 +919,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-02-11 21:51:48.772166",
+ "modified": "2026-04-09 10:44:42.286910",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Purchase Order Item",
