@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_import": 1,
- "autoname": "naming_series:",
+ "autoname": "CSI.YYYY.MM.##",
  "creation": "2013-05-21 16:16:39",
  "doctype": "DocType",
  "document_type": "Document",
@@ -654,6 +654,7 @@
    "fieldname": "total_qty",
    "fieldtype": "Float",
    "label": "Total Quantity",
+   "precision": "9",
    "read_only": 1
   },
   {
@@ -683,6 +684,7 @@
    "fieldtype": "Currency",
    "label": "Total",
    "options": "currency",
+   "precision": "9",
    "read_only": 1
   },
   {
@@ -692,6 +694,7 @@
    "oldfieldname": "net_total_import",
    "oldfieldtype": "Currency",
    "options": "currency",
+   "precision": "9",
    "print_hide": 1,
    "read_only": 1
   },
@@ -1769,11 +1772,11 @@
  "idx": 204,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-12-18 10:01:51.390095",
+ "modified": "2026-04-10 10:52:26.979331",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Purchase Invoice",
- "naming_rule": "By \"Naming Series\" field",
+ "naming_rule": "Expression (old style)",
  "owner": "Administrator",
  "permissions": [
   {

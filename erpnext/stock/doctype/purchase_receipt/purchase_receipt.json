@@ -551,6 +551,7 @@
    "fieldname": "total_qty",
    "fieldtype": "Float",
    "label": "Total Quantity",
+   "precision": "9",
    "read_only": 1
   },
   {
@@ -583,6 +584,7 @@
    "fieldtype": "Currency",
    "label": "Total",
    "options": "currency",
+   "precision": "9",
    "read_only": 1
   },
   {
@@ -592,6 +594,7 @@
    "oldfieldname": "net_total_import",
    "oldfieldtype": "Currency",
    "options": "currency",
+   "precision": "9",
    "print_hide": 1,
    "read_only": 1
   },
@@ -1362,7 +1365,7 @@
  "idx": 261,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-02-11 15:28:19.089705",
+ "modified": "2026-04-10 10:51:06.709997",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Purchase Receipt",

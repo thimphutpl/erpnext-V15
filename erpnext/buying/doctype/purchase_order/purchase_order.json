@@ -529,6 +529,7 @@
    "fieldname": "total_qty",
    "fieldtype": "Float",
    "label": "Total Quantity",
+   "precision": "9",
    "read_only": 1
   },
   {
@@ -559,6 +560,7 @@
    "fieldtype": "Currency",
    "label": "Total",
    "options": "currency",
+   "precision": "9",
    "read_only": 1
   },
   {
@@ -568,6 +570,7 @@
    "oldfieldname": "net_total_import",
    "oldfieldtype": "Currency",
    "options": "currency",
+   "precision": "9",
    "print_hide": 1,
    "read_only": 1
   },
@@ -813,8 +816,7 @@
    "default": "1",
    "fieldname": "disable_rounded_total",
    "fieldtype": "Check",
-   "label": "Disable Rounded Total",
-   "read_only": 1
+   "label": "Disable Rounded Total"
   },
   {
    "fieldname": "in_words",
@@ -1360,7 +1362,7 @@
  "idx": 105,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-02-11 15:22:08.747182",
+ "modified": "2026-04-10 10:46:53.125387",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Purchase Order",
