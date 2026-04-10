@@ -41,6 +41,8 @@
   "price_list_rate",
   "col_break3",
   "base_price_list_rate",
+  "item_narration_section",
+  "item_narration",
   "discount_and_margin_section",
   "margin_type",
   "margin_rate_or_amount",
@@ -1144,12 +1146,22 @@
    "fieldname": "model",
    "fieldtype": "Data",
    "label": "Model"
+  },
+  {
+   "fieldname": "item_narration_section",
+   "fieldtype": "Section Break",
+   "label": "Item Narration"
+  },
+  {
+   "fieldname": "item_narration",
+   "fieldtype": "Small Text",
+   "label": "Item Narration"
   }
  ],
  "idx": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-04-10 10:51:46.029441",
+ "modified": "2026-04-10 17:52:05.099387",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Purchase Receipt Item",

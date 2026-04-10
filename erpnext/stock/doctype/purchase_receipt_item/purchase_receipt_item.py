@@ -44,6 +44,7 @@ class PurchaseReceiptItem(Document):
 		item_code: DF.Link
 		item_group: DF.Link | None
 		item_name: DF.Data
+		item_narration: DF.SmallText | None
 		item_tax_amount: DF.Currency
 		item_tax_rate: DF.Code | None
 		item_tax_template: DF.Link | None
