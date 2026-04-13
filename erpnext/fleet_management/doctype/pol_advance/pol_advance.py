@@ -351,14 +351,47 @@ class POLAdvance(AccountsController):
 		if not self.is_opening:
 			self.post_journal_entry()
 
+	# def before_cancel(self):
+	# 	if self.is_opening:
+	# 		return
+	# 	if frappe.db.exists("Journal Entry",self.journal_entry):
+	# 		doc = frappe.get_doc("Journal Entry", self.journal_entry)
+	# 		if doc.docstatus == 1:
+	# 		# Action: Cancel the Journal Entry
+	# 			doc.cancel()
+	# 			if hasattr(doc, 'workflow_state'):
+	# 				doc.workflow_state = "Cancelled"  # or "Rejected" based on your workflow
+	# 				doc.save()
+	# 			frappe.db.commit()
+	# 			frappe.msgprint(f"Journal Entry {frappe.get_desk_link('Journal Entry', self.journal_entry)} has been cancelled automatically")
+	# 		elif doc.docstatus != 2:
+	# 			frappe.throw("Journal Entry exists for this transaction {}".format(frappe.get_desk_link("Journal Entry",self.journal_entry)))
+				
 	def before_cancel(self):
 		if self.is_opening:
 			return
-		if frappe.db.exists("Journal Entry",self.journal_entry):
+		if frappe.db.exists("Journal Entry", self.journal_entry):
 			doc = frappe.get_doc("Journal Entry", self.journal_entry)
-			if doc.docstatus != 2:
-				frappe.throw("Journal Entry exists for this transaction {}".format(frappe.get_desk_link("Journal Entry",self.journal_entry)))
+			
+			# Handle already cancelled Journal Entry
+			if doc.docstatus == 2:
+				# Already cancelled, just update workflow_state if needed
+				if doc.workflow_state != "Cancelled":
+					doc.db_set('workflow_state', 'Cancelled', update_modified=False)
+				return
 				
+			# Handle submitted Journal Entry (docstatus == 1)
+			if doc.docstatus == 1:
+				# Action: Cancel the Journal Entry
+				doc.cancel()
+				
+				# Update workflow_state after cancellation
+				doc.db_set('workflow_state', 'Cancelled', update_modified=False)
+				
+				frappe.db.commit()
+				frappe.msgprint(f"Journal Entry {frappe.get_desk_link('Journal Entry', self.journal_entry)} has been cancelled automatically")
+			elif doc.docstatus != 2:
+				frappe.throw("Journal Entry exists for this transaction {}".format(frappe.get_desk_link("Journal Entry", self.journal_entry)))
 	def on_cancel(self):
 		self.ignore_linked_doctypes = ("GL Entry", "Stock Ledger Entry", "Payment Ledger Entry")
 
@@ -383,7 +416,7 @@ class POLAdvance(AccountsController):
 				if flt(self.advance_limit) <= 0:
 					self.advance_limit = frappe.db.get_value("Fuelbook", general_book, "expense_limit")
 			
-        # For other equipment types, equipment must exist
+		# For other equipment types, equipment must exist
 			else:
 				if not self.equipment:
 					frappe.throw("Equipment or Fuel book is missing")
@@ -470,7 +503,7 @@ class POLAdvance(AccountsController):
 			"voucher_type": "Bank Entry",
 			"naming_series": "Bank Payment Voucher",
 			"title": f"POL Advance - {ref_name}",
-    		"user_remark": f"Note: POL Advance - {ref_name}",
+			"user_remark": f"Note: POL Advance - {ref_name}",
 			"posting_date": self.posting_date,
 			"company": self.company,
 			"total_amount_in_words": money_in_words(self.amount),
@@ -558,13 +591,13 @@ class POLAdvance(AccountsController):
 # 	return doc.as_dict()
 @frappe.whitelist()
 def get_supplier_from_fuelbook(fuel_book):
-    """Return a list of suppliers linked to a fuel_book"""
-    fb = frappe.get_doc("Fuelbook", fuel_book)
-    if getattr(fb, "supplier", None):
-        return [fb.supplier]
-    if getattr(fb, "suppliers", None):
-        return [d.supplier for d in fb.suppliers]
-    return []
+	"""Return a list of suppliers linked to a fuel_book"""
+	fb = frappe.get_doc("Fuelbook", fuel_book)
+	if getattr(fb, "supplier", None):
+		return [fb.supplier]
+	if getattr(fb, "suppliers", None):
+		return [d.supplier for d in fb.suppliers]
+	return []
 
 def get_permission_query_conditions(user):
 	if not user: user = frappe.session.user
