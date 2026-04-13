@@ -184,6 +184,9 @@ class MechanicalPayment(AccountsController):
             frappe.throw("Setup Default Receivable Account in Maintenance Setting")
 
         gl_entries = []
+        gst_amount=0
+        for item in self.items:
+            gst_amount +=item.gst_amount
         if flt(self.net_amount) > 0:
             gl_entries.append(
                 self.get_gl_dict({"account": self.income_account,
@@ -212,6 +215,7 @@ class MechanicalPayment(AccountsController):
                                     "remarks": self.remarks
                         })
                 )
+                
 
         if self.tds_amount:
             gl_entries.append(
@@ -240,8 +244,8 @@ class MechanicalPayment(AccountsController):
 
             gl_entries.append(
                 self.get_gl_dict({"account": receivable_account,
-                                  "credit": flt(a.allocated_amount)+flt(self.gst_amount),
-                                  "credit_in_account_currency": flt(a.allocated_amount)+flt(self.gst_amount),
+                                  "credit": flt(a.allocated_amount)+flt(a.gst_amount)+flt(self.gst_amount),
+                                  "credit_in_account_currency": flt(a.allocated_amount)+flt(a.gst_amount)+flt(self.gst_amount),
                                   "cost_center": self.cost_center,
                                   "party_check": 1,
                                   "party_type": "Customer",
@@ -279,6 +283,7 @@ class MechanicalPayment(AccountsController):
         self.set('items', [])
 
         total = 0
+        gst_amount=0
         for d in transactions:
             if d.included_gst==1:
                 d.reference_type = self.payment_for
@@ -286,10 +291,13 @@ class MechanicalPayment(AccountsController):
                 d.allocated_amount = d.outstanding_amount
                 d.customer = d.customer
                 d.gst_amount = d.gst_amount
+                gst_amount +=d.gst_amount
                 row = self.append('items', {})
                 row.update(d)
                 total += flt(d.outstanding_amount)
-            self.receivable_amount = total
+            self.receivable_amount = total+gst_amount
+            self.net_amount = total+gst_amount
+
             self.actual_amount = total
     @frappe.whitelist()
     def get_transactions_without_gst(self):
