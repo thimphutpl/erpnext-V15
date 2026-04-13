@@ -105,6 +105,17 @@ class POLReceive(StockController):
 				)
 			)
 
+		"""Check supply_memo uniqueness before saving"""
+		supply_memos = []
+		
+		for row in self.items:  # Replace 'items' with your child table fieldname
+			if row.supply_memo:
+				if row.supply_memo in supply_memos:
+					frappe.throw(_("Duplicate Supply Memo '{0}' found at row {1}").format(
+						row.supply_memo, row.idx
+					))
+				supply_memos.append(row.supply_memo)
+
 	def validate(self):
 		check_future_date(self.posting_date)
 		self.validate_dc()
