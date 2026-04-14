@@ -26,6 +26,7 @@ class MechanicalPayment(AccountsController):
         self.validate_allocated()
         self.set_missing_values()
         self.clearance_date = None
+        self.validate_gst()
 
     def set_status(self):
         self.status = {
@@ -36,6 +37,18 @@ class MechanicalPayment(AccountsController):
 
     def before_submit(self):
         self.remove_unallocated_items()
+    def validate_gst(self):
+        """Calculate net amount and receivable amount including GST"""
+        
+        # Use sum() with list comprehension (faster and cleaner)
+        gst_amount = sum(item.gst_amount for item in self.items)
+        total = sum(item.outstanding_amount for item in self.items)
+        
+        # Calculate final amounts
+        net_total = total + gst_amount
+        
+        self.net_amount = net_total
+        self.receivable_amount = net_total
 
     def set_missing_values(self):
         self.cost_center = get_branch_cc(self.branch)
@@ -186,7 +199,8 @@ class MechanicalPayment(AccountsController):
         gl_entries = []
         gst_amount=0
         for item in self.items:
-            gst_amount +=item.gst_amount
+            gst_amount+=item.gst_amount
+      
         if flt(self.net_amount) > 0:
             gl_entries.append(
                 self.get_gl_dict({"account": self.income_account,
@@ -257,6 +271,7 @@ class MechanicalPayment(AccountsController):
                                   "remarks": self.remarks
                                   })
             )
+            # frappe.throw(str(gl_entries))
 
         if self.deducts:
             for a in self.deducts:
@@ -283,7 +298,7 @@ class MechanicalPayment(AccountsController):
         self.set('items', [])
 
         total = 0
-        gst_amount=0
+      
         for d in transactions:
             if d.included_gst==1:
                 d.reference_type = self.payment_for
@@ -291,12 +306,12 @@ class MechanicalPayment(AccountsController):
                 d.allocated_amount = d.outstanding_amount
                 d.customer = d.customer
                 d.gst_amount = d.gst_amount
-                gst_amount +=d.gst_amount
+        
                 row = self.append('items', {})
                 row.update(d)
                 total += flt(d.outstanding_amount)
-            self.receivable_amount = total+gst_amount
-            self.net_amount = total+gst_amount
+            self.receivable_amount = total
+            self.net_amount = total
 
             self.actual_amount = total
     @frappe.whitelist()
