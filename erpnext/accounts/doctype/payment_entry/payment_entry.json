@@ -394,8 +394,7 @@
    "fieldname": "total_allocated_amount",
    "fieldtype": "Currency",
    "label": "Total Allocated Amount",
-   "print_hide": 1,
-   "read_only": 1
+   "print_hide": 1
   },
   {
    "fieldname": "base_total_allocated_amount",
@@ -885,7 +884,7 @@
    "table_fieldname": "payment_entries"
   }
  ],
- "modified": "2025-03-10 13:09:07.407402",
+ "modified": "2026-03-20 12:11:50.059345",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Payment Entry",

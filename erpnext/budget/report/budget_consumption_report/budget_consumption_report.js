@@ -44,7 +44,8 @@ frappe.query_reports["Budget Consumption Report"] = {
 			"fieldname":"budget_against",
 			"label": __("Budget Against"),
 			"fieldtype": "Select",
-			"options": ["", __("Cost Center"), __("Project")],
+			// "options": ["", __("Cost Center"), __("Project")],
+			"options": ["", __("Cost Center")],
 			on_change: function(query_report){
 				var budget_against = frappe.query_report.get_filter_value('budget_against');
 				if(budget_against == "Project"){

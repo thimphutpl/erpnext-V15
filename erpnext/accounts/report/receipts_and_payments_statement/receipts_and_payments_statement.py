@@ -30,35 +30,58 @@ def get_data(filters):
 	accounts, accounts_by_name, parent_children_map= filter_accounts(accounts)
 	min_lft, max_rgt = frappe.db.sql("""select min(lft), max(rgt) from 	`tabAccount` where company=%s""", (filters.company))[0]
 
-	frappe.throw(str(accounts))
+	# frappe.throw(str(accounts))
 	gl_entries = get_gl_entries(filters)
 	return gl_entries
 
 def get_conditions(filters):
 	conditions = []
 
-	if filters.get("cost_center"):
-		# filters.cost_center = get_cost_centers_with_children(filters.cost_center)
-		conditions.append("cost_center in %(cost_center)s")
+	# if filters.get("cost_center"):
+	# 	# filters.cost_center = get_cost_centers_with_children(filters.cost_center)
+	# 	conditions.append("cost_center in %(cost_center)s")
 
-	return "and {}".format(" and ".join(conditions)) if conditions else ""
+	# return "and {}".format(" and ".join(conditions)) if conditions else ""
+
+	if filters.get("cost_center"):
+		conditions.append("cost_center = %(cost_center)s")
+
+	return " AND " + " AND ".join(conditions) if conditions else ""
+
+# def get_gl_entries(filters):
+# 	gl_entries = frappe.db.sql(
+# 		"""
+# 		select
+# 			name as gl_entry, posting_date, account, party_type, party,
+# 			voucher_type, voucher_subtype, voucher_no,
+# 			cost_center, project,
+# 			against_voucher_type, against_voucher, account_currency,
+# 			against, is_opening, creation, credit, debit
+# 		from `tabGL Entry`
+# 		where is_cancelled = 0 {get_conditions(filters)}
+# 	""",
+# 		filters,
+# 		as_dict=1,
+# 	)
+# 	return gl_entries
 
 def get_gl_entries(filters):
-	gl_entries = frappe.db.sql(
-		f"""
+	conditions = get_conditions(filters)
+
+	query = """
 		select
 			name as gl_entry, posting_date, account, party_type, party,
 			voucher_type, voucher_subtype, voucher_no,
 			cost_center, project,
 			against_voucher_type, against_voucher, account_currency,
-			against, is_opening, creation
+			against, is_opening, creation, credit, debit
 		from `tabGL Entry`
-		where is_cancelled = 0 {get_conditions(filters)}
-	""",
-		filters,
-		as_dict=1,
-	)
-	return gl_entries
+		where is_cancelled = 0 {conditions}
+	""".format(conditions=conditions)
+
+	return frappe.db.sql(query, filters, as_dict=1)
+
+
 
 def get_columns():
 	columns = [
@@ -68,6 +91,8 @@ def get_columns():
 		{"label": _("Voucher Type"), "fieldname": "voucher_type", "width": 120},
 		{"label": _("Voucher No"), "fieldname": "voucher_no", "fieldtype": "Dynamic Link", "options": "voucher_type", "width": 180},
 		{"label": _("Against Account"), "fieldname": "against", "width": 150},
+		{"label": _("Debit Amount"), "fieldname": "debit", "width": 150},
+		{"label": _("Credit Amount"), "fieldname": "credit", "width": 150},
 		{"label": _("Party Type"), "fieldname": "party_type", "width": 100},
 		{"label": _("Party"), "fieldname": "party", "width": 150},
 	]

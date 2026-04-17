@@ -302,7 +302,7 @@
  "idx": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2025-07-22 02:59:55.773468",
+ "modified": "2026-03-20 15:13:58.680209",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Account",
@@ -343,13 +343,15 @@
    "write": 1
   },
   {
+   "create": 1,
    "email": 1,
    "export": 1,
    "print": 1,
    "read": 1,
    "report": 1,
    "role": "Accounts Manager",
-   "share": 1
+   "share": 1,
+   "write": 1
   },
   {
    "email": 1,

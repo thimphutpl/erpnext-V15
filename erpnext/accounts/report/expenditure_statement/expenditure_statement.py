@@ -22,33 +22,110 @@ def get_data(filters):
 
 def get_conditions(filters):
 	conditions = []
+	
+	# Add date range filters if provided
+	if filters.get("from_date"):
+		conditions.append("gl.posting_date >= %(from_date)s")
+	
+	if filters.get("to_date"):
+		conditions.append("gl.posting_date <= %(to_date)s")
+	
+	# Add voucher type filter if provided
+	if filters.get("voucher_type"):
+		conditions.append("gl.voucher_type = %(voucher_type)s")
+	
+	# Add voucher no filter if provided
+	if filters.get("voucher_no"):
+		conditions.append("gl.voucher_no = %(voucher_no)s")
+	
+	# Add account filter if provided
+	if filters.get("account"):
+		conditions.append("gl.account = %(account)s")
 
-	# if filters.get("cost_center"):
-	# 	filters.cost_center = get_cost_centers_with_children(filters.cost_center)
-	# 	conditions.append("cost_center in %(cost_center)s")
+	# Add account filter if provided
+	if filters.get("broad_head"):
+		conditions.append("jea.broad_head = %(broad_head)s")	
 
-	return "and {}".format(" and ".join(conditions)) if conditions else ""
+	# Add company filter if provided
+	if filters.get("company"):
+		conditions.append("gl.company = %(company)s")
+
+	# Add cost center filter if provided
+	if filters.get("cost_center"):
+		conditions.append("gl.cost_center = %(cost_center)s")		
+
+	return " AND {}".format(" AND ".join(conditions)) if conditions else ""
 
 def get_gl_entries(filters):
+	conditions = get_conditions(filters)
+	
 	gl_entries = frappe.db.sql(
 		f"""
-		select
-			name as gl_entry, posting_date, account, party_type, party,
-			voucher_type, voucher_subtype, voucher_no,
-			cost_center, project,
-			against_voucher_type, against_voucher, account_currency,
-			against, is_opening, creation
-		from `tabGL Entry`
-		where is_cancelled = 0 {get_conditions(filters)}
+		SELECT
+			gl.name as gl_entry, 
+			gl.posting_date, 
+			gl.account, 
+			jea.broad_head,
+			gl.party_type, 
+			gl.party,
+			gl.voucher_type, 
+			gl.voucher_subtype, 
+			gl.voucher_no,
+			gl.cost_center, 
+			gl.project,
+			gl.against_voucher_type, 
+			gl.against_voucher, 
+			gl.account_currency,
+			gl.against, 
+			gl.is_opening, 
+			gl.creation, 
+			gl.credit, 
+			gl.debit,
+			gl.company,
+			jea.budget_activity,
+			jea.budget_sub_activity
+		FROM `tabGL Entry` gl
+		INNER JOIN `tabJournal Entry Account` jea 
+			ON jea.parent = gl.voucher_no 
+			AND jea.account = gl.account
+		INNER JOIN `tabAccount` acc 
+			ON acc.name = gl.account
+		WHERE gl.is_cancelled = 0 
+			AND gl.voucher_type = 'Journal Entry'
+			AND acc.account_type = 'Expense Account'
+			{conditions}
+		ORDER BY gl.posting_date DESC, gl.creation DESC
 	""",
 		filters,
 		as_dict=1,
 	)
+	
 	return gl_entries
 
 def get_columns(filters):
 	columns = [
 		{"label": _("Posting Date"), "fieldname": "posting_date", "fieldtype": "Date", "width": 120},
+		{
+			"label": _("Budget Activity"),
+			"fieldname": "budget_activity",
+			"fieldtype": "Link",
+			"options": "Budget Activity",
+			"width": 180,
+		},
+		{
+			"label": _("Budget Sub Activity"),
+			"fieldname": "budget_sub_activity",
+			"fieldtype": "Link",
+			"options": "Budget Sub Activity",
+			"width": 180,
+		},
+		{
+			"label": _("Broad Head"),
+			"fieldname": "broad_head",
+			"fieldtype": "Link",
+			"options": "Account",
+			"width": 180,
+		},
 		{
 			"label": _("Account"),
 			"fieldname": "account",
@@ -56,7 +133,8 @@ def get_columns(filters):
 			"options": "Account",
 			"width": 180,
 		},
-		{"label": _("Cost Center"), "fieldname": "cost_center", "width": 180},
+		# {"label": _("Account Type"), "fieldname": "account_type", "fieldtype": "Data", "width": 120},
+		{"label": _("Cost Center"), "fieldname": "cost_center", "fieldtype": "Link", "options": "Cost Center", "width": 180},
 		{"label": _("Voucher Type"), "fieldname": "voucher_type", "width": 120},
 		{
 			"label": _("Voucher No"),
@@ -65,9 +143,12 @@ def get_columns(filters):
 			"options": "voucher_type",
 			"width": 180,
 		},
+		{"label": _("Credit Amount"), "fieldname": "credit", "fieldtype": "Currency", "width": 120},
+		{"label": _("Debit Amount"), "fieldname": "debit", "fieldtype": "Currency", "width": 120},
 		{"label": _("Against Account"), "fieldname": "against", "width": 150},
 		{"label": _("Party Type"), "fieldname": "party_type", "width": 100},
 		{"label": _("Party"), "fieldname": "party", "width": 150},
+		{"label": _("Company"), "fieldname": "company", "width": 150},
 	]
 
 	return columns

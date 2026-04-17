@@ -55,6 +55,25 @@
   "branch",
   "cost_center",
   "unit",
+  "salary_information",
+  "ctc",
+  "salary_currency",
+  "salary_mode",
+  "salary_cb",
+  "payroll_cost_center",
+  "column_break_xjso",
+  "bank_details_section",
+  "bank_name",
+  "bank_branch",
+  "bank_account_type",
+  "bank_ac_no",
+  "column_break_heye",
+  "tpn_number",
+  "iban",
+  "pf_number",
+  "pf_tiers",
+  "gis_number",
+  "gis_policy_number",
   "connections_tab",
   "employment_details",
   "job_applicant",
@@ -99,25 +118,6 @@
   "leave_approver",
   "column_break_45",
   "shift_request_approver",
-  "salary_information",
-  "ctc",
-  "salary_currency",
-  "salary_mode",
-  "salary_cb",
-  "payroll_cost_center",
-  "column_break_xjso",
-  "bank_details_section",
-  "bank_name",
-  "bank_branch",
-  "bank_account_type",
-  "bank_ac_no",
-  "column_break_heye",
-  "tpn_number",
-  "iban",
-  "pf_number",
-  "pf_tiers",
-  "gis_number",
-  "gis_policy_number",
   "personal_details",
   "marital_status",
   "family_background",
@@ -397,6 +397,7 @@
   {
    "fieldname": "department",
    "fieldtype": "Link",
+   "hidden": 1,
    "in_standard_filter": 1,
    "label": "Department",
    "oldfieldname": "department",
@@ -427,7 +428,7 @@
   {
    "fieldname": "branch",
    "fieldtype": "Link",
-   "label": "Branch",
+   "label": "Location/Branch",
    "oldfieldname": "branch",
    "oldfieldtype": "Link",
    "options": "Branch"
@@ -759,6 +760,7 @@
    "collapsible": 1,
    "fieldname": "attendance_and_leave_details",
    "fieldtype": "Tab Break",
+   "hidden": 1,
    "label": "Attendance & Leaves"
   },
   {
@@ -886,7 +888,7 @@
   {
    "fieldname": "grade",
    "fieldtype": "Link",
-   "label": "Grade",
+   "label": "Rank/Grade",
    "options": "Employee Grade"
   },
   {
@@ -975,6 +977,7 @@
   {
    "fieldname": "unit",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Unit",
    "options": "Department"
   },
@@ -1182,7 +1185,7 @@
  "image_field": "image",
  "is_tree": 1,
  "links": [],
- "modified": "2025-11-27 09:17:01.503821",
+ "modified": "2026-04-16 23:46:16.915693",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee",
@@ -1195,5 +1198,6 @@
  "sort_field": "creation",
  "sort_order": "DESC",
  "states": [],
- "title_field": "employee_name"
+ "title_field": "employee_name",
+ "track_changes": 1
 }

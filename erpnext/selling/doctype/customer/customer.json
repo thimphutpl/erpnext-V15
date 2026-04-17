@@ -13,6 +13,7 @@
   "basic_info",
   "naming_series",
   "salutation",
+  "customer_cid",
   "customer_name",
   "customer_type",
   "customer_group",
@@ -84,7 +85,13 @@
   "is_frozen",
   "disabled",
   "portal_users_tab",
-  "portal_users"
+  "portal_users",
+  "bank_information_tab",
+  "bank_name",
+  "bank_account_type",
+  "account_number",
+  "column_break_fkve",
+  "bank_branch"
  ],
  "fields": [
   {
@@ -570,6 +577,43 @@
   {
    "fieldname": "column_break_nwor",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "customer_cid",
+   "fieldtype": "Data",
+   "label": "Customer CID/License No"
+  },
+  {
+   "fieldname": "bank_information_tab",
+   "fieldtype": "Tab Break",
+   "label": "Bank Information"
+  },
+  {
+   "fieldname": "bank_name",
+   "fieldtype": "Link",
+   "label": "Bank Name",
+   "options": "Financial Institution"
+  },
+  {
+   "fieldname": "bank_account_type",
+   "fieldtype": "Link",
+   "label": "Bank Account Type",
+   "options": "Bank Account Type"
+  },
+  {
+   "fieldname": "column_break_fkve",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "bank_branch",
+   "fieldtype": "Link",
+   "label": "Bank Branch",
+   "options": "Financial Institution Branch"
+  },
+  {
+   "fieldname": "account_number",
+   "fieldtype": "Data",
+   "label": "Account Number"
   }
  ],
  "icon": "fa fa-user",
@@ -583,7 +627,7 @@
    "link_fieldname": "party"
   }
  ],
- "modified": "2024-05-08 18:03:20.716169",
+ "modified": "2026-04-09 11:05:09.921389",
  "modified_by": "Administrator",
  "module": "Selling",
  "name": "Customer",

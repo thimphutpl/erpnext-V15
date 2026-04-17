@@ -522,12 +522,12 @@
    "depends_on": "eval:doc.approved_budget > 0",
    "fieldname": "at_hock",
    "fieldtype": "Check",
-   "label": "At Hock"
+   "label": "Ad Hoc"
   }
  ],
  "istable": 1,
  "links": [],
- "modified": "2025-10-16 13:07:27.529748",
+ "modified": "2026-03-18 16:11:39.662261",
  "modified_by": "Administrator",
  "module": "Budget",
  "name": "Budget Release Account",

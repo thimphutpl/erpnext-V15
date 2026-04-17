@@ -406,29 +406,16 @@ frappe.ui.form.on('Budget', {
 			};
 		});
 		
-		frm.set_query("cost_center", function() {
-			return {
-				filters: {
-					company: frm.doc.company,
-					is_group: 0
-				}
-			};
-		});
-		frm.set_query("branch", function() {
-			return {
-				filters: {
-					company: frm.doc.company,
-				}
-			};
-		});
-		frm.set_query("budget_accounts", function() {
-			return {
-				filters: {
-					company: frm.doc.company,
-					is_group: 0
-				}
-			};
-		});
+		
+		
+		// frm.set_query("budget_accounts", function() {
+		// 	return {
+		// 		filters: {
+		// 			company: frm.doc.company,
+		// 			is_group: 0
+		// 		}
+		// 	};
+		// });
 
 		frm.set_query("monthly_distribution", function() {
 			return {
@@ -455,6 +442,26 @@ frappe.ui.form.on('Budget', {
 				}
 			}
 		})
+	},
+	setup: function(frm) {
+		const createFilter = (options = {}) => {
+			return () => {
+				if (!frm.doc.company) {
+					alert("Please select Company first");
+				}
+				return {
+					filters: {
+						company: frm.doc.company,
+						disabled: 0,
+						...options
+					}
+				};
+			};
+		};
+		
+		frm.set_query("cost_center", createFilter({ is_group: 0 }));
+		frm.set_query("budget_accounts",createFilter({is_group:0}))
+		frm.set_query("branch", createFilter({}));
 	},
 
 	budget_against: function(frm) {

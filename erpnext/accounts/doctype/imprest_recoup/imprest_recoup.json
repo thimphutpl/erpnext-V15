@@ -21,6 +21,10 @@
   "column_break_001",
   "party",
   "final_settlement",
+  "section_break_desm",
+  "budget_activity",
+  "column_break_tedh",
+  "budget_sub_activity",
   "section_break_001",
   "get_imprest_advance",
   "imprest_advance_list",
@@ -265,12 +269,32 @@
    "hidden": 1,
    "label": "Project",
    "options": "Project"
+  },
+  {
+   "fieldname": "section_break_desm",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "budget_activity",
+   "fieldtype": "Link",
+   "label": "Budget Activity",
+   "options": "Budget Activity"
+  },
+  {
+   "fieldname": "column_break_tedh",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "budget_sub_activity",
+   "fieldtype": "Link",
+   "label": "Budget Sub Activity",
+   "options": "Budget Sub Activity"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-03-24 18:01:03.584263",
+ "modified": "2026-04-09 08:55:24.654143",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Imprest Recoup",

@@ -158,8 +158,8 @@ def get_result(filters, account_details):
 
 def get_gl_entries(filters, accounting_dimensions):
 	currency_map = get_currency(filters)
-	select_fields = """, debit, credit, debit_in_account_currency,
-		credit_in_account_currency """
+	select_fields = """, gle.debit, gle.credit, gle.debit_in_account_currency,
+		gle.credit_in_account_currency """
 
 	if filters.get("show_remarks"):
 		if remarks_length := frappe.db.get_single_value("Accounts Settings", "general_ledger_remarks_length"):
@@ -195,12 +195,15 @@ def get_gl_entries(filters, accounting_dimensions):
 	gl_entries = frappe.db.sql(
 		f"""
 		select
-			name as gl_entry, posting_date, account, party_type, party,
-			voucher_type, voucher_subtype, voucher_no, {dimension_fields}
-			cost_center, project, {transaction_currency_fields}
-			against_voucher_type, against_voucher, account_currency,
-			against, is_opening, creation {select_fields}
-		from `tabGL Entry`
+			gle.name as gl_entry, gle.posting_date, gle.account, gle.party_type, gle.party,
+			gle.voucher_type, gle.voucher_subtype, gle.voucher_no, {dimension_fields}
+			gle.cost_center, gle.project, {transaction_currency_fields}
+			gle.against_voucher_type, gle.against_voucher, gle.account_currency,
+			gle.against, gle.is_opening, jea.broad_head, gle.creation {select_fields}
+		from `tabGL Entry` gle
+			LEFT JOIN `tabJournal Entry Account` jea
+		ON jea.parent = gle.voucher_no
+		AND jea.account = gle.account
 		where company=%(company)s {get_conditions(filters)}
 		{order_by_statement}
 	""",
@@ -221,6 +224,9 @@ def get_conditions(filters):
 		filters.account = get_accounts_with_children(filters.account)
 		if filters.account:
 			conditions.append("account in %(account)s")
+
+	if filters.get("broad_head"):
+		conditions.append("jea.broad_head = %(broad_head)s")
 
 	if filters.get("cost_center"):
 		filters.cost_center = get_cost_centers_with_children(filters.cost_center)
@@ -586,6 +592,13 @@ def get_columns(filters):
 			"hidden": 1,
 		},
 		{"label": _("Posting Date"), "fieldname": "posting_date", "fieldtype": "Date", "width": 100},
+		{
+			"label": _("Broad Head"),
+			"fieldname": "broad_head",
+			"fieldtype": "Link",
+			"options": "Account",
+			"width": 180,
+		},
 		{
 			"label": _("Account"),
 			"fieldname": "account",

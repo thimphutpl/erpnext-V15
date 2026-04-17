@@ -151,7 +151,6 @@ def get_data(filters):
             ba.name as budget_account_name
         FROM `tabBudget` b
         INNER JOIN `tabBudget Account` ba ON b.name = ba.parent
-        WHERE b.docstatus = 1
         {conditions}
         ORDER BY b.fiscal_year, ba.account_number, ba.account
     """.format(conditions=conditions)

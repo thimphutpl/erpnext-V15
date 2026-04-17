@@ -441,11 +441,11 @@ class BudgetRelease(Document):
 		""", (self.name, cost_center), as_dict=True)
 
 		if not last_release:
-			self.current_balance = flt(approved_budget)
+			self.current_balance = flt(approved_budget) + flt(item.supplementary_budget) + flt(item.budget_received) - flt(item.budget_sent)
 			self.budget_balance = flt(approved_budget) - flt(released_budget)
 		else:
 			last_budget_balance = flt(last_release[0].get("budget_balance") or 0.0)
-			self.current_balance = last_budget_balance
+			self.current_balance = last_budget_balance + flt(item.supplementary_budget) + flt(item.budget_received) - flt(item.budget_sent)
 			self.budget_balance = last_budget_balance - flt(released_budget)
 
 		self.approved_budget = approved_budget
@@ -568,11 +568,12 @@ class BudgetRelease(Document):
 				item.source_of_fund
 			), as_dict=True)
 			if not last_release:
-				item.current_balance = flt(item.approved_budget)
+				item.current_balance = flt(item.approved_budget) + flt(item.supplementary_budget) + flt(item.budget_received) - flt(item.budget_sent)
 			else:
 				last_budget_balance = flt(last_release[0].get("budget_balance") or 0.0)
-				item.current_balance = last_budget_balance
+				item.current_balance = last_budget_balance + flt(item.supplementary_budget) + flt(item.budget_received) - flt(item.budget_sent)
 			item.budget_balance = flt(item.current_balance) - flt(item.released_budget)
+			
 			if flt(item.released_budget) > flt(item.current_balance):
 				excess = flt(item.released_budget) - flt(item.current_balance)
 				frappe.throw(_(

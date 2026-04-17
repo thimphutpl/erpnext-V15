@@ -245,6 +245,7 @@ def get_tds_invoices(tax_withholding_category, from_date, to_date, name, filter_
 			left join `tabTDS Receipt Entry` tre on tre.invoice_no = t.name 
 		where t.posting_date between '{from_date}' and '{to_date}'
 		{accounts_cond}
+		and t.owner = t1.owner 
 		and t.docstatus = 1 and t.apply_tds = 1 
 		and t1.cost_center = '{cost_center}'
 		{existing_cond}

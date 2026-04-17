@@ -73,11 +73,11 @@ def get_data(filters):
     }
 
     if filters.to_cc:
-        query += " and t2.to_cost_center = %(to_cc)s"
+        query += " and t1.to_cost_center = %(to_cc)s"
         query_params["to_cc"] = filters.to_cc
 
     if filters.from_cc:
-        query += " and t2.from_cost_center = %(from_cc)s"
+        query += " and t1.from_cost_center = %(from_cc)s"
         query_params["from_cc"] = filters.from_cc
 
     if filters.to_acc:

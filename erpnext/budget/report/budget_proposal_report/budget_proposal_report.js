@@ -43,7 +43,8 @@ frappe.query_reports["Budget Proposal Report"] = {
 			"fieldname":"budget_against",
 			"label": __("Budget Against"),
 			"fieldtype": "Select",
-			"options": ["", __("Cost Center"), __("Project")],
+			// "options": ["", __("Cost Center"), __("Project")],
+			"options": ["", __("Cost Center")],
 			on_change: function(query_report){
 				var budget_against = frappe.query_report.get_filter_value('budget_against');
 				if(budget_against == "Project"){
@@ -71,14 +72,13 @@ frappe.query_reports["Budget Proposal Report"] = {
 			"options": "Cost Center",
 			"get_query": function() {return {'filters': [['Cost Center', 'disabled', '!=', '1']]}}
 		},
-		{
-			"fieldname": "budget_type",
-			"label": __("Budget Type"),
-			"fieldtype": "Link",
-			"options": "Budget Type",
-			"ignore_user_permissions":1
-		},
-		
+		// {
+		// 	"fieldname": "budget_type",
+		// 	"label": __("Budget Type"),
+		// 	"fieldtype": "Link",
+		// 	"options": "Budget Type",
+		// 	"ignore_user_permissions":1
+		// },
 		{
 			"fieldname": "month",
 			"label": __("Month"),

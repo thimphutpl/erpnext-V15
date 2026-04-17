@@ -44,13 +44,13 @@ frappe.ui.form.on("Employee", {
 				}
 			};
 		});
-		frm.set_query("grade", function () {
-			return {
-				"filters": {
-					"company": frm.doc.company,
-				}
-			}
-		});
+		// frm.set_query("grade", function () {
+		// 	return {
+		// 		"filters": {
+		// 			"company": frm.doc.company,
+		// 		}
+		// 	}
+		// });
 		frm.set_query("branch", function () {
 			return {
 				"filters": {

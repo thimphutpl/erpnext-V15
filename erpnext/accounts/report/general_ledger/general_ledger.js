@@ -34,6 +34,19 @@ frappe.query_reports["General Ledger"] = {
 			width: "60px",
 		},
 		{
+			fieldname: "broad_head",
+			label: __("Broad Head"),
+			fieldtype: "Link",
+			options: "Account",
+			get_query: function () {
+				return {
+					filters: {
+						is_group: 1
+					}
+				};
+			}
+		},
+		{
 			fieldname: "account",
 			label: __("Account"),
 			fieldtype: "MultiSelectList",

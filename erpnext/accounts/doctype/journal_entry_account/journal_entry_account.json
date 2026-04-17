@@ -7,6 +7,7 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "broad_head",
   "account",
   "account_type",
   "col_break1",
@@ -144,7 +145,7 @@
   },
   {
    "bold": 1,
-   "columns": 2,
+   "columns": 1,
    "fieldname": "debit_in_account_currency",
    "fieldtype": "Currency",
    "in_list_view": 1,
@@ -170,7 +171,7 @@
   },
   {
    "bold": 1,
-   "columns": 2,
+   "columns": 1,
    "fieldname": "credit_in_account_currency",
    "fieldtype": "Currency",
    "in_list_view": 1,
@@ -200,7 +201,7 @@
    "fieldtype": "Select",
    "label": "Reference Type",
    "no_copy": 1,
-   "options": "\nBonus\nPBVA\nSales Invoice\nSWS Application\nPurchase Invoice\nJournal Entry\nSales Order\nPurchase Order\nExpense Claim\nAsset\nLoan\nPayroll Entry\nEmployee Advance\nExchange Rate Revaluation\nInvoice Discounting\nFees\nFull and Final Statement\nPayment Entry\nAbstract Bill\nImprest Advance\nImprest Recoup\nPOL Advance\nProcess MR Payment\nTravel Claim\nTravel Authorization\nFund Requisition\nLeave Encashment\nBulk Leave Encashment\nLeave Travel Concession\nEquipment Hiring Form\nJob Cards\nEmployee Benefits\nHire Charge Invoice\nHire Invoice\nFabrication And Bailey Bridge\nTransporter Invoice\nBulk Travel Claim\nBudget Release",
+   "options": "\nBonus\nPBVA\nSales Invoice\nSWS Application\nPurchase Invoice\nJournal Entry\nSales Order\nPurchase Order\nExpense Claim\nAsset\nLoan\nPayroll Entry\nEmployee Advance\nExchange Rate Revaluation\nInvoice Discounting\nFees\nFull and Final Statement\nPayment Entry\nAbstract Bill\nImprest Advance\nImprest Recoup\nPOL Advance\nProcess MR Payment\nTravel Claim\nTravel Authorization\nFund Requisition\nLeave Encashment\nBulk Leave Encashment\nLeave Travel Concession\nEquipment Hiring Form\nJob Cards\nEmployee Benefits\nHire Charge Invoice\nHire Invoice\nFabrication And Bailey Bridge\nTransporter Invoice\nBulk Travel Claim\nBudget Release\nAdvance",
    "search_index": 1
   },
   {
@@ -394,12 +395,19 @@
    "label": "Source of Fund",
    "mandatory_depends_on": "eval:parent.capital_release==0 && doc.credit == 0;",
    "options": "Source of Fund"
+  },
+  {
+   "fieldname": "broad_head",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Broad Head",
+   "options": "Account"
   }
  ],
  "idx": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-11-25 10:49:43.826347",
+ "modified": "2026-04-14 13:19:56.903474",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Journal Entry Account",

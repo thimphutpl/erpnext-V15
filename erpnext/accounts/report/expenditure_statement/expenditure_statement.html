@@ -1,0 +1,280 @@
+<h3 class="text-center">Royal Government of Bhutan</h3>
+<h4 class="text-center">
+    Expenditure Statement for the Period: {%= filters.from_date %} to {%= filters.to_date %}
+</h4>
+<hr>
+
+<table class="table table-bordered">
+    <thead style="font-weight: bold; color: black;">
+        <tr>
+            <th rowspan="2">Posting Date</th>
+            <th rowspan="2">Voucher No</th>
+            <th rowspan="2">AC<br>(Budget Activity)</th>
+            <th rowspan="2">FIC<br>(Budget Sub Activity)</th>
+            <th rowspan="2">OBC<br>(Account)</th>
+            <th rowspan="2">Cost Center</th>
+            <th colspan="2" style="text-align: center">Amount (Nu.)</th>
+            <th rowspan="2">Against Account</th>
+            <th rowspan="2">Party Type</th>
+            <th rowspan="2">Party</th>
+            <th rowspan="2">Company</th>
+        </tr>
+        <tr>
+            <th>Debit</th>
+            <th>Credit</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% 
+            var total_debit = 0;
+            var total_credit = 0;
+        %}
+
+        {% for (var j=0; j<data.length; j++) { %}
+            {% var row = data[j]; %}
+            {% 
+                var debit = row.debit || 0;
+                var credit = row.credit || 0;
+                total_debit += debit;
+                total_credit += credit;
+            %}
+            <tr>
+                <td class="text-center">{%= frappe.datetime.str_to_user(row.posting_date) %}</td>
+                <td class="text-center">{%= row.voucher_no %}</td>
+                <td>{%= row.budget_activity || "" %}</td>
+                <td>{%= row.budget_sub_activity || "" %}</td>
+                <td>{%= row.account || "" %}</td>
+                <td>{%= row.cost_center || "" %}</td>
+                <td class="text-right">{%= format_currency(debit, row.account_currency) %}</td>
+                <td class="text-right">{%= format_currency(credit, row.account_currency) %}</td>
+                <td>{%= row.against || "" %}</td>
+                <td>{%= row.party_type || "" %}</td>
+                <td>{%= row.party || "" %}</td>
+                <td>{%= row.company || "" %}</td>
+            </tr>
+        {% } %}
+        
+        {% if (data.length === 0) { %}
+            <tr>
+                <td colspan="12" class="text-center">No data found for the selected filters</td>
+            </tr>
+        {% } %}
+    </tbody>
+    <tfoot>
+        <tr style="font-weight: bold; background-color: #f0f0f0;">
+            <td colspan="6" class="text-right"><strong>TOTAL</strong></td>
+            <td class="text-right"><strong>{%= format_currency(total_debit) %}</strong></td>
+            <td class="text-right"><strong>{%= format_currency(total_credit) %}</strong></td>
+            <td colspan="4"></td>
+        </tr>
+    </tfoot>
+</table>
+
+<hr>
+<div class="text-center" style="font-size: 10px; color: #666;">
+    Generated on: {%= frappe.datetime.str_to_user(frappe.datetime.nowdate()) %}
+</div>
+
+<style>
+    .text-center {
+        text-align: center;
+    }
+    .text-right {
+        text-align: right;
+    }
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 11px;
+    }
+    .table th, .table td {
+        border: 1px solid #ddd;
+        padding: 6px;
+        vertical-align: top;
+    }
+    .table th {
+        background-color: #f5f5f5;
+        font-weight: bold;
+    }
+    hr {
+        margin: 15px 0;
+        border: 0;
+        border-top: 1px solid #ccc;
+    }
+</style>
+
+
+<!-- <h3 class="text-center">EXPENDITURE STATEMENT</h3>
+<h4 class="text-center">
+    For A/C. No. {%= filters.account_no || "303.01/52 - LC" %} <br>
+    Program Code : {%= filters.program_code || "52 - TENSUNG SERVICES" %}
+</h4>
+<h5 class="text-center">
+    For the Month of {%= filters.month || "FEBRUARY" %} - {%= filters.year || "2026" %}
+</h5>
+<hr>
+
+<table class="table table-bordered">
+    <thead style="font-weight: bold; color: black; background-color: #f0f0f0;">
+        <tr>
+            <th rowspan="2" style="vertical-align: middle;">Codes</th>
+            <th rowspan="2" style="vertical-align: middle;">SP</th>
+            <th rowspan="2" style="vertical-align: middle;">AC</th>
+            <th rowspan="2" style="vertical-align: middle;">FIC</th>
+            <th rowspan="2" style="vertical-align: middle;">OBC</th>
+            <th rowspan="2" style="vertical-align: middle;">Name</th>
+            <th colspan="3" style="text-align: center;">Monthly</th>
+            <th rowspan="2" style="vertical-align: middle;">Current Budget Amount (Nu.)</th>
+            <th rowspan="2" style="vertical-align: middle;">Annual Progressive Expenditure (Nu.)</th>
+            <th colspan="3" style="text-align: center;">Current Month (Nu.)</th>
+        </tr>
+        <tr>
+            <th>Amount</th>
+            <th>Personal Advance</th>
+            <th>Suspense</th>
+            <th>Amount</th>
+            <th>Personal Advance</th>
+            <th>Suspense</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% 
+            var last_codes = "";
+            var last_sp = "";
+            var last_ac = "";
+            var last_fic = "";
+            var last_obc = "";
+            
+            var total_monthly_amount = 0;
+            var total_monthly_personal_advance = 0;
+            var total_monthly_suspense = 0;
+            var total_current_budget = 0;
+            var total_annual_expenditure = 0;
+            var total_current_amount = 0;
+            var total_current_personal_advance = 0;
+            var total_current_suspense = 0;
+        %}
+
+        {% for (var j=0; j<data.length; j++) { %}
+            {% var row = data[j]; %}
+            
+            {% 
+                var codes = row.codes || "";
+                var sp = row.sp || "";
+                var ac = row.budget_activity || row.ac || "";
+                var fic = row.budget_sub_activity || row.fic || "";
+                var obc = row.account || row.obc || "";
+                var name = row.name || "";
+                var indent = row.indent || 0;
+                
+                var monthly_amount = row.monthly_amount || 0;
+                var monthly_personal_advance = row.monthly_personal_advance || 0;
+                var monthly_suspense = row.monthly_suspense || 0;
+                var current_budget = row.current_budget || 0;
+                var annual_expenditure = row.annual_expenditure || 0;
+                var current_amount = row.current_amount || 0;
+                var current_personal_advance = row.current_personal_advance || 0;
+                var current_suspense = row.current_suspense || 0;
+                var is_bold = row.bold || false;
+                
+                total_monthly_amount += monthly_amount;
+                total_monthly_personal_advance += monthly_personal_advance;
+                total_monthly_suspense += monthly_suspense;
+                total_current_budget += current_budget;
+                total_annual_expenditure += annual_expenditure;
+                total_current_amount += current_amount;
+                total_current_personal_advance += current_personal_advance;
+                total_current_suspense += current_suspense;
+            %}
+            
+            <tr {% if (is_bold) { %}style="font-weight:bold; background-color:#f9f9f9;"{% } %}>
+                <td>{%= codes %}</td>
+                <td>{%= sp %}</td>
+                <td>{%= ac %}</td>
+                <td>{%= fic %}</td>
+                <td>{%= obc %}</td>
+                <td style="{% if (indent == 1) { %}padding-left:20px;{% } else if (indent == 2) { %}padding-left:35px;{% } %}">
+                    {%= name %}
+                </td>
+                <td class="text-right">{%= format_currency(monthly_amount) %}</td>
+                <td class="text-right">{%= format_currency(monthly_personal_advance) %}</td>
+                <td class="text-right">{%= format_currency(monthly_suspense) %} </td>
+                <td class="text-right">{%= format_currency(current_budget) %} </td>
+                <td class="text-right">{%= format_currency(annual_expenditure) %} </td>
+                <td class="text-right">{%= format_currency(current_amount) %} </td>
+                <td class="text-right">{%= format_currency(current_personal_advance) %} </td>
+                <td class="text-right">{%= format_currency(current_suspense) %} </td>
+            </tr>
+        {% } %}
+        
+        {% if (data.length === 0) { %}
+            <tr>
+                <td colspan="13" class="text-center">No data found for the selected filters</td>
+            </tr>
+        {% } %}
+    </tbody>
+    <tfoot>
+        <tr style="font-weight: bold; background-color: #e8e8e8;">
+            <td colspan="5" class="text-right"><strong>TOTAL</strong></td>
+            <td><strong>Grand Total</strong></td>
+            <td class="text-right"><strong>{%= format_currency(total_monthly_amount) %}</strong></td>
+            <td class="text-right"><strong>{%= format_currency(total_monthly_personal_advance) %}</strong></td>
+            <td class="text-right"><strong>{%= format_currency(total_monthly_suspense) %}</strong></td>
+            <td class="text-right"><strong>{%= format_currency(total_current_budget) %}</strong></td>
+            <td class="text-right"><strong>{%= format_currency(total_annual_expenditure) %}</strong></td>
+            <td class="text-right"><strong>{%= format_currency(total_current_amount) %}</strong></td>
+            <td class="text-right"><strong>{%= format_currency(total_current_personal_advance) %}</strong></td>
+            <td class="text-right"><strong>{%= format_currency(total_current_suspense) %}</strong></td>
+        </tr>
+    </tfoot>
+</table>
+
+<hr>
+<div class="footer">
+    <div class="text-left" style="float: left;">BAS Version 3.0.11</div>
+    <div class="text-right">Page 1 of 1</div>
+    <div style="clear: both;"></div>
+</div>
+
+<style>
+    .text-center {
+        text-align: center;
+        font-family: "Times New Roman", serif;
+    }
+    .text-right {
+        text-align: right;
+    }
+    .text-left {
+        text-align: left;
+    }
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 11px;
+        font-family: "Times New Roman", serif;
+    }
+    .table th, .table td {
+        border: 1px solid #000;
+        padding: 6px 4px;
+        vertical-align: top;
+    }
+    .table th {
+        background-color: #f0f0f0;
+        font-weight: bold;
+        text-align: center;
+    }
+    hr {
+        margin: 15px 0;
+        border: 0;
+        border-top: 1px solid #000;
+    }
+    .footer {
+        margin-top: 20px;
+        font-size: 10px;
+        font-family: "Times New Roman", serif;
+    }
+    h3, h4, h5 {
+        margin: 5px 0;
+        font-family: "Times New Roman", serif;
+    }
+</style> -->

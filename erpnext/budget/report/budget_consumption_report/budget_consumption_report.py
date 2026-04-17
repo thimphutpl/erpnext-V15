@@ -485,6 +485,7 @@ def construct_query(from_date, to_date, filters=None):
         query = """select b.cost_center, ba.account, b.project, ba.budget_activity, ba.budget_sub_activity, ba.source_of_fund,
             (select a.account_number from `tabAccount` a where a.name = ba.account) as account_number, 
             ba.budget_type,
+            SUM(ba.approved_budget) as approved_budget,
             SUM(ba.budget_amount) as budget_amount,
             sum(ba.{month_name}) as monthly_budget,
             SUM(ba.initial_budget) as initial_budget, 
@@ -502,6 +503,7 @@ def construct_query(from_date, to_date, filters=None):
         query = """select b.cost_center, ba.account, b.project, ba.budget_activity, ba.budget_sub_activity, ba.source_of_fund,
             (select a.account_number from `tabAccount` a where a.name = ba.account) as account_number, 
             ba.budget_type,
+            SUM(ba.approved_budget) as approved_budget,
             SUM(ba.budget_amount) as budget_amount, 
             SUM(bra.budget_amount) as budget_release_amount, 
             (ba.initial_budget) as initial_budget, 
@@ -610,6 +612,12 @@ def get_columns(filters):
             "fieldtype": "Currency",
             "width": 120
         },
+        # {
+        #     "fieldname": "approved_budget",
+        #     "label": "Approved Budget",
+        #     "fieldtype": "Currency",
+        #     "width": 120
+        # },
         {
             "fieldname": "initial_release",
             "label": "Initial Released",

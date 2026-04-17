@@ -14,6 +14,9 @@
             <th>Title</th>
             <th>Proposed Budget</th>
             <th>Approved Budget</th>
+            <th>Supplementary Budget</th>
+            <th>Budget Reappropations</th>
+            <th>Revision Budget</th>  
         </tr>
     </thead>
     <tbody>
@@ -27,6 +30,9 @@
             var financing_total_approved = 0;
             var subactivity_total_proposed = 0;
             var subactivity_total_approved = 0;
+            var supplementary_total_approved = 0;
+            var budget_reappropations_total_approved = 0;
+            var revision_budget =0;
         %}
 
         {% for (var j=0; j<data.length; j++) { %}
@@ -103,11 +109,17 @@
                     var acc_title = row.account.replace(acc_code, "").trim();
                     var proposed_budget = row.account_initial_budget || 0;
                     var approved_budget = row.approved_budget || 0;
+                    var s_total_approved = row.supplementary_budget || 0;
+                    var b_reappropations_total_approved = row.budget_received || 0;
+                    var r_budget = row.budget_amount || 0;
 
                     financing_total_proposed += proposed_budget;
                     financing_total_approved += approved_budget;
                     subactivity_total_proposed += proposed_budget;
                     subactivity_total_approved += approved_budget;
+                    supplementary_total_approved += supplementary_total_approved;
+                    budget_reappropations_total_approved += budget_reappropations_total_approved;
+                    revision_budget += revision_budget;
                 %}
                 <tr>
                     <td></td><td></td><td></td><td></td>
@@ -115,6 +127,10 @@
                     <td style="padding-left:80px;">{%= acc_title %}</td>
                     <td>{%= proposed_budget %}</td>
                     <td>{%= approved_budget %}</td>
+                    <td>{%= s_total_approved %}</td>
+                    <td>{%= b_reappropations_total_approved%} </td>
+                    <td>{%= r_budget%} </td>
+
                 </tr>
             {% } %}
 

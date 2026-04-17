@@ -16,8 +16,67 @@
   {
    "hidden": 0,
    "is_query_report": 0,
+   "label": "Transactions",
+   "link_count": 5,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Budget Proposal List",
+   "link_count": 0,
+   "link_to": "Budget",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Budget Release List",
+   "link_count": 0,
+   "link_to": "Budget Release",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Budget Reappropiation",
+   "link_count": 0,
+   "link_to": "Budget Reappropiation",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Supplementary Budget",
+   "link_count": 0,
+   "link_to": "Supplementary Budget",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Withdrawal Budget",
+   "link_count": 0,
+   "link_to": "Withdrawal Budget",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
    "label": "Masters and Settings",
-   "link_count": 3,
+   "link_count": 4,
    "link_type": "DocType",
    "onboard": 0,
    "type": "Card Break"
@@ -55,11 +114,31 @@
   {
    "hidden": 0,
    "is_query_report": 0,
+   "label": "Source of Fund",
+   "link_count": 0,
+   "link_to": "Source of Fund",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
    "label": "Reports",
-   "link_count": 7,
+   "link_count": 8,
    "link_type": "DocType",
    "onboard": 0,
    "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Budget Proposal Report",
+   "link_count": 0,
+   "link_to": "Budget Proposal Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
   },
   {
    "hidden": 0,
@@ -123,75 +202,16 @@
   },
   {
    "hidden": 0,
-   "is_query_report": 1,
-   "label": "Budget Proposal Report",
+   "is_query_report": 0,
+   "label": "Budget Release Report",
    "link_count": 0,
-   "link_to": "Budget Proposal Report",
+   "link_to": "Budget Release Report",
    "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Transactions",
-   "link_count": 5,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Budget Proposal List",
-   "link_count": 0,
-   "link_to": "Budget",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Budget Release List",
-   "link_count": 0,
-   "link_to": "Budget Release",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Budget Reappropiation",
-   "link_count": 0,
-   "link_to": "Budget Reappropiation",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Supplementary Budget",
-   "link_count": 0,
-   "link_to": "Supplementary Budget",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Withdrawal Budget",
-   "link_count": 0,
-   "link_to": "Withdrawal Budget",
-   "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
   }
  ],
- "modified": "2025-09-12 00:06:22.983099",
+ "modified": "2026-03-18 15:26:35.849062",
  "modified_by": "Administrator",
  "module": "Budget",
  "name": "Budgets",

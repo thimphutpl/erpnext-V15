@@ -764,6 +764,7 @@
   {
    "fieldname": "fixed_asset_defaults",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Fixed Asset Defaults"
   },
   {
@@ -852,11 +853,13 @@
   {
    "fieldname": "buying_and_selling_tab",
    "fieldtype": "Tab Break",
+   "hidden": 1,
    "label": "Buying and Selling"
   },
   {
    "fieldname": "stock_tab",
    "fieldtype": "Tab Break",
+   "hidden": 1,
    "label": "Stock"
   },
   {
@@ -1034,6 +1037,7 @@
   {
    "fieldname": "fleet_accounts_section",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Fleet Accounts"
   },
   {
@@ -1071,6 +1075,7 @@
   {
    "fieldname": "fleet_tab",
    "fieldtype": "Tab Break",
+   "hidden": 1,
    "label": "Fleet"
   },
   {
@@ -1363,7 +1368,7 @@
  "image_field": "company_logo",
  "is_tree": 1,
  "links": [],
- "modified": "2026-03-10 12:15:42.787817",
+ "modified": "2026-04-14 08:18:18.965013",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Company",
