@@ -43,6 +43,7 @@ class MechanicalPayment(AccountsController):
         # Use sum() with list comprehension (faster and cleaner)
         gst_amount = sum(item.gst_amount for item in self.items)
         total = sum(item.outstanding_amount for item in self.items)
+    
         
         # Calculate final amounts
         net_total = total + gst_amount
@@ -215,63 +216,66 @@ class MechanicalPayment(AccountsController):
                                   "remarks": self.remarks
                                   })
             )
-            if self.account_head and flt(self.gst_amount) > 0:
-                gl_entries.append(
-                    self.get_gl_dict({"account": self.account_head,
-                                    "debit": flt(self.gst_amount),
-                                    "debit_in_account_currency": flt(self.gst_amount),
-                                    "cost_center": self.cost_center,
-                                    "party_check": 1,
-                                    "party_type": "Customer",
-                                    "party": self.customer,
-                                    "reference_type": self.doctype,
-                                    "reference_name": self.name,
-                                    "remarks": self.remarks
-                        })
-                )
+        if self.account_head and flt(self.gst_amount) > 0:
+            gl_entries.append(
+                self.get_gl_dict({"account": self.account_head,
+                                "debit": flt(self.gst_amount),
+                                "debit_in_account_currency": flt(self.gst_amount),
+                                "cost_center": self.cost_center,
+                                "party_check": 1,
+                                "party_type": "Customer",
+                                "party": self.customer,
+                                "reference_type": self.doctype,
+                                "reference_name": self.name,
+                                "remarks": self.remarks
+                    })
+            )
+        
                 
 
         if self.tds_amount:
             gl_entries.append(
                 self.get_gl_dict({"account": self.tds_account,
-                                  "debit": flt(self.tds_amount),
-                                  "debit_in_account_currency": flt(self.tds_amount),
-                                  "cost_center": self.cost_center,
-                                  "party_check": 1,
-                                  "party_type": "Customer",
-                                  "party": self.customer,
-                                  "reference_type": self.doctype,
-                                  "reference_name": self.name,
-                                  "remarks": self.remarks
-                                  })
+                                "debit": flt(self.tds_amount),
+                                "debit_in_account_currency": flt(self.tds_amount),
+                                "cost_center": self.cost_center,
+                                "party_check": 1,
+                                "party_type": "Customer",
+                                "party": self.customer,
+                                "reference_type": self.doctype,
+                                "reference_name": self.name,
+                                "remarks": self.remarks
+                                })
             )
+           
 
-        for a in self.items:
-            against_voucher, against_voucher_type = None, None
-            doc = frappe.get_doc(a.reference_type, a.reference_name)
-            if a.reference_type == "Job Cards":
-                if doc.jv:
-                    against_voucher_type = "Journal Entry"
-                    against_voucher = doc.jv
-            if doc.customer != a.customer:
-                frappe.throw(" {} customer selected but the customer must be {} as per {} {}. ".format(a.customer, doc.customer, a.reference_type, a.reference_name))
 
+        if self.items: 
+            for a in self.items:
+                against_voucher, against_voucher_type = None, None
+                doc = frappe.get_doc(a.reference_type, a.reference_name)
+                if a.reference_type == "Job Cards":
+                    if doc.jv:
+                        against_voucher_type = "Journal Entry"
+                        against_voucher = doc.jv
+                if doc.customer != a.customer:
+                    frappe.throw(" {} customer selected but the customer must be {} as per {} {}. ".format(a.customer, doc.customer, a.reference_type, a.reference_name))   
             gl_entries.append(
                 self.get_gl_dict({"account": receivable_account,
-                                  "credit": flt(a.allocated_amount)+flt(a.gst_amount)+flt(self.gst_amount),
-                                  "credit_in_account_currency": flt(a.allocated_amount)+flt(a.gst_amount)+flt(self.gst_amount),
-                                  "cost_center": self.cost_center,
-                                  "party_check": 1,
-                                  "party_type": "Customer",
-                                  "party": a.customer if a.customer else self.customer,
-                                  "reference_type": self.doctype,
-                                  "reference_name": self.name,
-                                  "against_voucher_type": against_voucher_type if against_voucher_type else a.reference_type,
-                                  "against_voucher": against_voucher if against_voucher else a.reference_name,
-                                  "remarks": self.remarks
-                                  })
+                                    "credit": flt(self.receivable_amount)+flt(self.gst_amount)+flt(self.tds_amount),
+                                    "credit_in_account_currency": flt(self.receivable_amount)+flt(self.gst_amount)+flt(self.tds_amount),
+                                    "cost_center": self.cost_center,
+                                    "party_check": 1,
+                                    "party_type": "Customer",
+                                    "party": a.customer if a.customer else self.customer,
+                                    "reference_type": self.doctype,
+                                    "reference_name": self.name,
+                                    "against_voucher_type": against_voucher_type if against_voucher_type else a.reference_type,
+                                    "against_voucher": against_voucher if against_voucher else a.reference_name,
+                                    "remarks": self.remarks
+                                    })
             )
-            # frappe.throw(str(gl_entries))
+    
 
         if self.deducts:
             for a in self.deducts:
@@ -290,30 +294,121 @@ class MechanicalPayment(AccountsController):
                 )
         make_gl_entries(gl_entries, cancel=(self.docstatus == 2), update_outstanding="No", merge_entries=False)
         
+    # @frappe.whitelist()
+    # def get_transactions_with_gst(self):
+    #     # frappe.throw(str(self.payment_for))
+    #     if not self.branch or not self.customer or not self.payment_for:
+    #         frappe.throw("Branch, Customer and Payment For is Mandatory")
+
+
+    #     transactions = frappe.db.sql("select name,included_gst,gst_amount, outstanding_amount, customer from `tab{0}` where customer = '{1}' and branch = '{2}' and outstanding_amount > 0 and docstatus = 1 order by creation".format(self.payment_for, self.customer, self.branch), as_dict=1)
+     
+    #     self.set('items', [])
+
+    #     total = 0
+      
+    #     for d in transactions:
+    #         if d.included_gst==1:
+    #             d.reference_type = self.payment_for
+    #             d.reference_name = d.name
+    #             d.allocated_amount = d.outstanding_amount
+    #             d.customer = d.customer
+    #             d.gst_amount = d.gst_amount
+        
+    #             row = self.append('items', {})
+    #             row.update(d)
+    #             total += flt(d.outstanding_amount)
+    #         self.receivable_amount = total
+    #         self.net_amount = total
+    #         self.actual_amount = total
+
     @frappe.whitelist()
     def get_transactions_with_gst(self):
+
         if not self.branch or not self.customer or not self.payment_for:
             frappe.throw("Branch, Customer and Payment For is Mandatory")
-        transactions = frappe.db.sql("select name,included_gst,gst_amount, outstanding_amount, customer from `tab{0}` where customer = '{1}' and branch = '{2}' and outstanding_amount > 0 and docstatus = 1 order by creation".format(self.payment_for, self.customer, self.branch), as_dict=1)
+
+        # =========================
+        # CHILD GST DOCTYPES
+        # =========================
+        child_map = {
+            "Job Card": "Job Card Item",
+            "Fabrication And Bailey Bridge": "Fabrication And Bailey Bridge Item"
+        }
+
+        use_child_gst = self.payment_for in child_map
+
+        # =========================
+        # SAFE SQL (NO GST HERE TO AVOID ERRORS)
+        # =========================
+        transactions = frappe.db.sql("""
+            SELECT name, included_gst, outstanding_amount, customer
+            FROM `tab{0}`
+            WHERE customer = %s
+            AND branch = %s
+            AND outstanding_amount > 0
+            AND docstatus = 1
+            ORDER BY creation
+        """.format(self.payment_for), (self.customer, self.branch), as_dict=1)
+
         self.set('items', [])
-
         total = 0
-      
-        for d in transactions:
-            if d.included_gst==1:
-                d.reference_type = self.payment_for
-                d.reference_name = d.name
-                d.allocated_amount = d.outstanding_amount
-                d.customer = d.customer
-                d.gst_amount = d.gst_amount
-        
-                row = self.append('items', {})
-                row.update(d)
-                total += flt(d.outstanding_amount)
-            self.receivable_amount = total
-            self.net_amount = total
 
-            self.actual_amount = total
+        # =========================
+        # PROCESS TRANSACTIONS
+        # =========================
+        for d in transactions:
+
+            if d.included_gst != 1:
+                continue
+
+            gst_amount = 0
+
+            # =========================
+            # CHILD GST LOGIC
+            # =========================
+            if use_child_gst:
+
+                child_doctype = child_map.get(self.payment_for)
+
+                children = frappe.get_all(
+                    child_doctype,
+                    filters={"parent": d.name},
+                    fields=["gst_amount"]
+                )
+
+                gst_amount = sum([c.gst_amount or 0 for c in children])
+
+            # =========================
+            # PARENT GST LOGIC
+            # =========================
+            elif self.payment_for == "Hire Charge Invoice":
+
+                gst_amount = frappe.db.get_value(
+                    self.payment_for,
+                    d.name,
+                    "gst_amount"
+                ) or 0
+
+            # =========================
+            # BUILD ROW
+            # =========================
+            row = self.append('items', {})
+            row.reference_type = self.payment_for
+            row.reference_name = d.name
+            row.allocated_amount = d.outstanding_amount
+            row.customer = d.customer
+            row.gst_amount = gst_amount
+            row.outstanding_amount = d.outstanding_amount
+
+            total += flt(d.outstanding_amount)
+
+        # =========================
+        # TOTALS
+        # =========================
+        self.receivable_amount = total
+        self.net_amount = total
+        self.actual_amount = total
     @frappe.whitelist()
     def get_transactions_without_gst(self):
         if not self.branch or not self.customer or not self.payment_for:
