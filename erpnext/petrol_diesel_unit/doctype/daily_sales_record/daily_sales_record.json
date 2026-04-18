@@ -36,6 +36,8 @@
   "total_quantity_sold",
   "column_break_vgzo",
   "total_amount",
+  "remarks_section",
+  "remarks",
   "section_break_fqzg",
   "amended_from"
  ],
@@ -230,14 +232,24 @@
    "fieldname": "bill_sales",
    "fieldtype": "Table",
    "options": "Bill Sales Items"
+  },
+  {
+   "fieldname": "remarks_section",
+   "fieldtype": "Section Break",
+   "label": "Remarks"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Long Text",
+   "label": "remarks"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-12-27 17:06:46.344529",
- "modified_by": "Administrator",
+ "modified": "2026-01-11 15:25:29.407243",
+ "modified_by": "kalden.dorji@thimphutechpark.bt",
  "module": "Petrol Diesel Unit",
  "name": "Daily Sales Record",
  "naming_rule": "Expression",

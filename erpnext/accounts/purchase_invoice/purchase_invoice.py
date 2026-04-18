@@ -516,6 +516,7 @@ class PurchaseInvoice(BuyingController):
 			update_serial_nos_after_submit(self, "items")
 
 		# this sequence because outstanding may get -negative
+		frappe.throw('hi')
 		self.make_gl_entries()
 
 		if self.update_stock == 1:
@@ -549,13 +550,14 @@ class PurchaseInvoice(BuyingController):
 																  company=self.company)
 			budget_cost_center = budget_account = ""
 			bud_acc_dtl = frappe.get_doc("Account", expense)
+			
 			if bud_acc_dtl.centralized_budget:
 				budget_cost_center = bud_acc_dtl.cost_center
 			else:
 				#check Budget Cost for child cost centers
 				cc_doc = frappe.get_doc("Cost Center", cost_center)
 				budget_cost_center = cc_doc.budget_cost_center if cc_doc.use_budget_from_parent else cost_center
-			if expense:
+			if expense and frappe.db.get_value("Account", expense, "ignore_budget_check") == 0:
 				if bud_acc_dtl.account_type in ("Fixed Asset", "Expense Account"):
 					reference_date = commited_budget_id = None
 					amount = item.base_net_amount if flt(item.base_net_amount,2) else flt(item.base_amount,2)
@@ -686,6 +688,7 @@ class PurchaseInvoice(BuyingController):
 		self.make_payment_gl_entries(gl_entries)
 		self.make_write_off_gl_entry(gl_entries)
 		self.make_gle_for_rounding_adjustment(gl_entries)
+		frappe.throw(str(gl_entries))
 		return gl_entries
 
 	# make advance gl entry customisation for advance incorporation by paying advance in different accounts
@@ -872,6 +875,7 @@ class PurchaseInvoice(BuyingController):
 									item=item,
 								)
 							)
+							
 
 					# Amount added through landed-cost-voucher
 					if landed_cost_entries:
@@ -957,58 +961,91 @@ class PurchaseInvoice(BuyingController):
 								)
 
 					if not self.is_internal_transfer():
-						gl_entries.append(
-							self.get_gl_dict(
-								{
-									"account": expense_account,
-									"against": self.supplier,
-									"debit": amount,
-									"cost_center": item.cost_center,
-									"project": item.project or self.project,
-								},
-								account_currency,
-								item=item,
+						if item.item_group != "Sales Product" and frappe.db.get_value("Item Sub Group", frappe.db.get_value("Item", a.item_code, "item_sub_group"), "is_vehicle")  == 0:
+							gl_entries.append(
+								self.get_gl_dict(
+									{
+										"account": expense_account,
+										"against": self.supplier,
+										"debit": amount,
+										"cost_center": item.cost_center,
+										"project": item.project or self.project,
+									},
+									account_currency,
+									item=item,
+								)
 							)
-						)
 
-						# check if the exchange rate has changed
-						if item.get("purchase_receipt"):
-							if (
-								exchange_rate_map[item.purchase_receipt]
-								and self.conversion_rate != exchange_rate_map[item.purchase_receipt]
-								and item.net_rate == net_rate_map[item.pr_detail]
-							):
+							# check if the exchange rate has changed
+							if item.get("purchase_receipt"):
+								if (
+									exchange_rate_map[item.purchase_receipt]
+									and self.conversion_rate != exchange_rate_map[item.purchase_receipt]
+									and item.net_rate == net_rate_map[item.pr_detail]
+								):
 
-								discrepancy_caused_by_exchange_rate_difference = (item.qty * item.net_rate) * (
-									exchange_rate_map[item.purchase_receipt] - self.conversion_rate
-								)
-
-								gl_entries.append(
-									self.get_gl_dict(
-										{
-											"account": expense_account,
-											"against": self.supplier,
-											"debit": discrepancy_caused_by_exchange_rate_difference,
-											"cost_center": item.cost_center,
-											"project": item.project or self.project,
-										},
-										account_currency,
-										item=item,
+									discrepancy_caused_by_exchange_rate_difference = (item.qty * item.net_rate) * (
+										exchange_rate_map[item.purchase_receipt] - self.conversion_rate
 									)
-								)
-								gl_entries.append(
-									self.get_gl_dict(
-										{
-											"account": self.get_company_default("exchange_gain_loss_account"),
-											"against": self.supplier,
-											"credit": discrepancy_caused_by_exchange_rate_difference,
-											"cost_center": item.cost_center,
-											"project": item.project or self.project,
-										},
-										account_currency,
-										item=item,
+
+									gl_entries.append(
+										self.get_gl_dict(
+											{
+												"account": expense_account,
+												"against": self.supplier,
+												"debit": discrepancy_caused_by_exchange_rate_difference,
+												"cost_center": item.cost_center,
+												"project": item.project or self.project,
+											},
+											account_currency,
+											item=item,
+										)
 									)
+									gl_entries.append(
+										self.get_gl_dict(
+											{
+												"account": self.get_company_default("exchange_gain_loss_account"),
+												"against": self.supplier,
+												"credit": discrepancy_caused_by_exchange_rate_difference,
+												"cost_center": item.cost_center,
+												"project": item.project or self.project,
+											},
+											account_currency,
+											item=item,
+										)
+									)
+						else:
+							dca_account = frappe.db.get_value("Item Default", {"parent": item.item_code}, "dca_account")
+							if not dca_account:
+								frappe.throw("Default DCA Account not set for Item {}".format(item.item_code))
+							gl_entries.append(
+								self.get_gl_dict(
+									{
+										"account": item.expense_account,
+										"against": self.supplier,
+										"debit": warehouse_debit_amount,
+										"remarks": self.get("remarks") or _("Accounting Entry for Expense"),
+										"cost_center": item.cost_center,
+										"project": item.project or self.project,
+									},
+									account_currency,
+									item=item,
 								)
+							)
+							gl_entries.append(
+								self.get_gl_dict(
+									{
+										"account": dca_account,
+										"against": self.supplier,
+										"credit": warehouse_debit_amount,
+										"remarks": self.get("remarks") or _("Accounting Entry for DCA"),
+										"cost_center": item.cost_center,
+										"project": item.project or self.project,
+									},
+									account_currency,
+									item=item,
+								)
+							)
 
 					# If asset is bought through this document and not linked to PR
 					if self.update_stock and item.landed_cost_voucher_amount:
@@ -1059,6 +1096,7 @@ class PurchaseInvoice(BuyingController):
 				and self.is_opening == "No"
 				and item.item_code in stock_items
 				and item.item_tax_amount
+				and item.item_group != "Sales Product"
 			):
 				# Post reverse entry for Stock-Received-But-Not-Billed if it is booked in Purchase Receipt
 				if item.purchase_receipt and valuation_tax_accounts:
@@ -1274,6 +1312,8 @@ class PurchaseInvoice(BuyingController):
 
 	def make_tax_gl_entries(self, gl_entries):
 		# tax table gl entries
+		frappe.throw(str(gl_entries))
+
 		valuation_tax = {}
 		enable_discount_accounting = cint(
 			frappe.db.get_single_value("Buying Settings", "enable_discount_accounting")
@@ -1364,6 +1404,7 @@ class PurchaseInvoice(BuyingController):
 							item=tax,
 						)
 					)
+
 
 	@property
 	def enable_discount_accounting(self):
@@ -1882,6 +1923,9 @@ def make_purchase_receipt(source_name, target_doc=None):
 		{
 			"Purchase Invoice": {
 				"doctype": "Purchase Receipt",
+				"field_map": {
+					"supplier_invoice": "bill_no",
+				},
 				"validation": {
 					"docstatus": ["=", 1],
 				},

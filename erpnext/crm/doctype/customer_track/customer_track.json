@@ -38,10 +38,10 @@
   {
    "fieldname": "customer_id",
    "fieldtype": "Link",
+   "hidden": 1,
    "in_list_view": 1,
    "label": "Customer ID",
-   "options": "Customer",
-   "reqd": 1
+   "options": "Customer"
   },
   {
    "fetch_from": "customer_id.customer_type",
@@ -164,8 +164,8 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-12-23 11:04:46.286254",
- "modified_by": "kalden.dorji@thimphutechpark.bt",
+ "modified": "2026-04-10 18:09:01.158080",
+ "modified_by": "tdsengor1999@gmail.com",
  "module": "CRM",
  "name": "Customer Track",
  "naming_rule": "Expression",

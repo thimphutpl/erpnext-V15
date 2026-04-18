@@ -20,7 +20,7 @@ def get_data():
 			{"label": _("Payment"), "items": ["Payment Entry", "Journal Entry", "Payment Request"]},
 			{
 				"label": _("Reference"),
-				"items": ["Material Request", "Supplier Quotation", "Project", "Auto Repeat"],
+				"items": ["Material Request", "Supplier Quotation", "Project", "Auto Repeat", "Allotment Item"],
 			},
 			{
 				"label": _("Sub-contracting"),

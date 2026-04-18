@@ -72,6 +72,7 @@ class SalesInvoice(SellingController):
 		from erpnext.accounts.doctype.sales_invoice_payment.sales_invoice_payment import SalesInvoicePayment
 		from erpnext.accounts.doctype.sales_invoice_timesheet.sales_invoice_timesheet import SalesInvoiceTimesheet
 		from erpnext.accounts.doctype.sales_taxes_and_charges.sales_taxes_and_charges import SalesTaxesandCharges
+		from erpnext.selling.doctype.purchase_tax_details_in_sales_invoice.purchase_tax_details_in_sales_invoice import PurchaseTaxDetailsInSalesInvoice
 		from erpnext.selling.doctype.sales_team.sales_team import SalesTeam
 		from erpnext.stock.doctype.packed_item.packed_item import PackedItem
 		from frappe.types import DF
@@ -181,6 +182,7 @@ class SalesInvoice(SellingController):
 		price_list_currency: DF.Link
 		pricing_rules: DF.Table[PricingRuleDetail]
 		project: DF.Link | None
+		purchase_tax_details_in_sales_invoice: DF.Table[PurchaseTaxDetailsInSalesInvoice]
 		quoted_rate: DF.Data | None
 		redeem_loyalty_points: DF.Check
 		reference_date_for_payment: DF.Date
@@ -318,8 +320,8 @@ class SalesInvoice(SellingController):
 		if not self.is_opening:
 			self.is_opening = "No"
 
-		if self._action != "submit" and self.update_stock and not self.is_return:
-			set_batch_nos(self, "warehouse", True)
+		# if self._action != "submit" and self.update_stock and not self.is_return:
+		# 	set_batch_nos(self, "warehouse", True)
 
 		# if self.redeem_loyalty_points:
 		# 	lp = frappe.get_doc("Loyalty Program", self.loyalty_program)
@@ -881,7 +883,7 @@ class SalesInvoice(SellingController):
 				},
 				"Sales Order Item": {
 					"ref_dn_field": "so_detail",
-					"compare_fields": [["item_code", "="], ["uom", "="], ["conversion_factor", "="]],
+					"compare_fields": [["item_code", "="], ["conversion_factor", "="]],
 					"is_child_table": True,
 					"allow_duplicate_prev_row_id": True,
 				},
@@ -1177,6 +1179,8 @@ class SalesInvoice(SellingController):
 		self.make_item_gl_entries(gl_entries)
 		self.make_discount_gl_entries(gl_entries)
 		self.make_advance_gl_entry(gl_entries)
+		if self.purchase_tax_details_in_sales_invoice:
+			self.make_purchase_tax_gl_entry(gl_entries)
 		# merge gl entries before adding pos entries
 		gl_entries = merge_similar_entries(gl_entries)
 
@@ -1187,14 +1191,17 @@ class SalesInvoice(SellingController):
 		self.make_gle_for_rounding_adjustment(gl_entries)
 
 		return gl_entries
+
 	def make_advance_gl_entry(self, gl_entries):
-		for a in self.get("advances"):
+		advance_account = frappe.db.get_value("Company", self.company, "advance_account")
+
+		for a in self.advances:
 			if flt(a.allocated_amount) and a.advance_amount:
-				advance_account_currency = get_account_currency(a.advance_amount)
+				advance_account_currency = get_account_currency(advance_account)
 			allocated_amount = round(flt(a.allocated_amount), 2)
 			gl_entries.append(
 				self.get_gl_dict({
-					"account": a.advance_amount,
+					"account": advance_account,
 					"party_type": "Customer",
 					"party": self.customer,
 					"debit": a.allocated_amount,
@@ -1203,6 +1210,21 @@ class SalesInvoice(SellingController):
 					"against_voucher_type": self.doctype,
 					"cost_center": self.cost_center,
 				}, advance_account_currency))
+
+	def make_purchase_tax_gl_entry(self, gl_entries):
+		for a in self.purchase_tax_details_in_sales_invoice:
+			gl_entries.append(
+				self.get_gl_dict({
+					"account": a.account_head,
+					"party_type": "Customer",
+					"party": self.customer,
+					"debit": a.amount,
+					"debit_in_account_currency": a.amount,
+					"against_voucher": self.name,
+					"against_voucher_type": self.doctype,
+					"cost_center": self.cost_center,
+				})
+			)
 			
 	def make_customer_gl_entry(self, gl_entries):
 		# deductions = 0
@@ -1270,7 +1292,35 @@ class SalesInvoice(SellingController):
 						self.party_account_currency,
 						item=self,
 					)
-				)	
+				)
+
+			if self.discount_amount > 0:
+				discount_allowed_account = frappe.db.get_value("Company", self.company, "discount_allowed")
+				if not discount_allowed_account:
+					frappe.throw("Please set discount account in company")
+				gl_entries.append(
+					self.get_gl_dict(
+						{
+							"account": discount_allowed_account,
+							"party_type": "Customer",
+							"party": self.customer,
+							"due_date": self.due_date,
+							"against": self.against_income_account,
+							"debit": self.discount_amount,
+							"debit_in_account_currency": self.discount_amount
+							if self.party_account_currency == self.company_currency
+							else self.discount_amount,
+							"against_voucher": self.return_against
+							if cint(self.is_return) and self.return_against
+							else self.name,
+							"against_voucher_type": self.doctype,
+							"project": self.project,
+							"cost_center": self.cost_center,
+						},
+						self.party_account_currency,
+						item=self,
+					)
+				)
 
 	def make_supplier_gl_entry(self, gl_entries):
 		grand_total = (
@@ -1361,7 +1411,7 @@ class SalesInvoice(SellingController):
 		enable_discount_accounting = cint(
 			frappe.db.get_single_value("Selling Settings", "enable_discount_accounting")
 		)
-
+		individual_discount_amount = flt(self.discount_amount / len(self.get("items")))
 		for item in self.get("items"):
 			if item.deferred_revenue_amount:
 				deductions += flt(item.deferred_revenue_amount)
@@ -1468,9 +1518,9 @@ class SalesInvoice(SellingController):
 								{
 									"account": income_account,
 									"against": self.customer,
-									"credit": flt(base_amount - deductions, item.precision("base_net_amount")),
+									"credit": flt(base_amount - deductions + individual_discount_amount, item.precision("base_net_amount")),
 									"credit_in_account_currency": (
-										flt(base_amount - deductions, item.precision("base_net_amount"))
+										flt(base_amount - deductions + individual_discount_amount, item.precision("base_net_amount"))
 										if account_currency == self.company_currency
 										else flt(amount, item.precision("net_amount"))
 									),
@@ -2943,7 +2993,7 @@ def check_if_return_invoice_linked_with_payment_entry(self):
 			message = _("Please cancel and amend the Payment Entry")
 			message += " " + ", ".join(payment_entries_link) + " "
 			message += _("to unallocate the amount of this Return Invoice before cancelling it.")
-			frappe.throw(message)
+			# frappe.throw(message)
 
 def get_permission_query_conditions(user):
 	if not user: user = frappe.session.user

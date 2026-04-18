@@ -66,9 +66,13 @@ class Customer(TransactionBase):
 		default_sales_partner: DF.Link | None
 		disabled: DF.Check
 		dn_required: DF.Check
+		dob: DF.Date | None
+		dzongkhag: DF.Data | None
 		email_id: DF.Data | None
 		fax_no: DF.Data | None
 		gender: DF.Link | None
+		gewog: DF.Data | None
+		home_no: DF.Data | None
 		image: DF.AttachImage | None
 		industry: DF.Link | None
 		inter_company: DF.Check
@@ -83,6 +87,7 @@ class Customer(TransactionBase):
 		naming_series: DF.Literal["CUS"]
 		opportunity_name: DF.Link | None
 		payment_terms: DF.Link | None
+		presenting_residing_at: DF.Data | None
 		primary_address: DF.SmallText | None
 		represents_company: DF.Link | None
 		sales_team: DF.Table[SalesTeam]
@@ -93,6 +98,7 @@ class Customer(TransactionBase):
 		tax_withholding_category: DF.Link | None
 		territory: DF.Link | None
 		tpn_no: DF.Data | None
+		village: DF.Data | None
 		website: DF.Data | None
 	# end: auto-generated types
 	def get_feed(self):
@@ -119,20 +125,20 @@ class Customer(TransactionBase):
 	def get_customer_name(self):
 		# if self.customer_group == "Individual":
 			
-		if frappe.db.get_value("Customer", self.customer_name) and not frappe.flags.in_import:
+		if frappe.db.get_value("Customer", self.cid_no if self.customer_group == "Individual" else self.tpn_no) and not frappe.flags.in_import:
 			count = frappe.db.sql(
 				"""select ifnull(MAX(CAST(SUBSTRING_INDEX(name, ' ', -1) AS UNSIGNED)), 0) from tabCustomer
 				 where name like %s""",
-				"%{0} - %".format(self.customer_name),
+				"%{0} - %".format(self.cid_no if self.customer_group == "Individual" else self.tpn_no),
 				as_list=1,
 			)[0][0]
 			count = cint(count) + 1
 
-			new_customer_name = "{0} - {1}".format(self.customer_name, cstr(count))
+			new_customer_name = "{0} - {1}".format(self.cid_no if self.customer_group == "Individual" else self.tpn_no, cstr(count))
 
 			msgprint(
 				_("Changed customer name to '{}' as '{}' already exists.").format(
-					new_customer_name, self.customer_name
+					new_customer_name, self.cid_no if self.customer_group == "Individual" else self.tpn_no
 				),
 				title=_("Note"),
 				indicator="yellow",
@@ -140,7 +146,7 @@ class Customer(TransactionBase):
 
 			return new_customer_name
 
-		return self.customer_name
+		return self.cid_no if self.customer_group == "Individual" else self.tpn_no
 
 	def after_insert(self):
 		"""If customer created from Lead, update customer id in quotations, opportunities"""
@@ -170,14 +176,15 @@ class Customer(TransactionBase):
 
 	def check_for_duplicate_entry(self):
 		if self.customer_group == "Individual":
-			if len(self.cid_no) == 11:
-				if frappe.db.exists("Customer", {"cid_no": self.cid_no}):
-					frappe.throw("Customer already exists with the following CID No <b>{}</b>".format(self.cid_no))
-			else:
-				frappe.throw("CID No should be 11 digits")
-		else:
-			if frappe.db.exists("Customer", {"tpn_no": self.tpn_no}):
-				frappe.throw("Customer already exists with the following TPN No <b>{}</b>".format(self.tpn_no))
+			if self.cid_no:
+				if len(self.cid_no) <= 11:
+					if frappe.db.exists("Customer", {"cid_no": self.cid_no, "name": ["!=", self.name]}):
+						frappe.throw("Customer already exists with the following CID No <b>{}</b>".format(self.cid_no))
+				else:
+					frappe.throw("CID No should be 11 or less than digits")
+		# else:
+		# 	if frappe.db.exists("Customer", {"tpn_no": self.tpn_no}):
+		# 		frappe.throw("Customer already exists with the following TPN No <b>{}</b>".format(self.tpn_no))
 
 	@frappe.whitelist()
 	def get_customer_group_details(self):

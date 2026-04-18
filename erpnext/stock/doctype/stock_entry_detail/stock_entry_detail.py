@@ -25,6 +25,7 @@ class StockEntryDetail(Document):
 		basic_rate: DF.Currency
 		batch_no: DF.Link | None
 		bom_no: DF.Link | None
+		business_activity: DF.Link | None
 		conversion_factor: DF.Float
 		cost_center: DF.Link
 		description: DF.TextEditor | None

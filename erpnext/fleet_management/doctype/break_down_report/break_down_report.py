@@ -27,7 +27,7 @@ class BreakDownReport(Document):
 		defect: DF.TextEditor
 		equipment: DF.Link | None
 		equipment_category: DF.Link | None
-		equipment_model: DF.Link
+		equipment_model: DF.Link | None
 		equipment_number: DF.Data | None
 		equipment_type: DF.Link | None
 		fleet_comment: DF.SmallText | None

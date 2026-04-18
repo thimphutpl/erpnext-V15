@@ -31,6 +31,7 @@ class PurchaseReceiptItem(Document):
 		billed_amt: DF.Currency
 		bom: DF.Link | None
 		brand: DF.Link | None
+		business_activity: DF.Link
 		conversion_factor: DF.Float
 		cost_center: DF.Link | None
 		delivery_note_item: DF.Data | None
@@ -67,6 +68,7 @@ class PurchaseReceiptItem(Document):
 		model_year: DF.Data | None
 		net_amount: DF.Currency
 		net_rate: DF.Currency
+		order_type: DF.Literal["", "Confirm Order", "Stock Order"]
 		page_break: DF.Check
 		parent: DF.Data
 		parentfield: DF.Data
@@ -84,7 +86,7 @@ class PurchaseReceiptItem(Document):
 		purchase_order_item: DF.Data | None
 		purchase_receipt_item: DF.Data | None
 		putaway_rule: DF.Link | None
-		qty: DF.Float
+		qty: DF.Int
 		quality_inspection: DF.Link | None
 		rate: DF.Currency
 		rate_with_margin: DF.Currency
@@ -99,7 +101,7 @@ class PurchaseReceiptItem(Document):
 		sample_quantity: DF.Int
 		schedule_date: DF.Date | None
 		seating_capactiy: DF.Float
-		serial_no: DF.SmallText | None
+		serial_no: DF.Data | None
 		stock_qty: DF.Float
 		stock_uom: DF.Link
 		stock_uom_rate: DF.Currency

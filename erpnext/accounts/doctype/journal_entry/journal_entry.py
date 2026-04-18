@@ -78,7 +78,7 @@ class JournalEntry(AccountsController):
 		money_receipt_no: DF.Data | None
 		money_receipt_prefix: DF.Data | None
 		multi_currency: DF.Check
-		naming_series: DF.Link
+		naming_series: DF.Link | None
 		paid_loan: DF.Data | None
 		pay_to_recd_from: DF.Data | None
 		payment_order: DF.Link | None
@@ -250,14 +250,14 @@ class JournalEntry(AccountsController):
 		# 			if a.reference_type == "EMI Sales" and self.emi_sales_installment == 1:
 		# 				self.adjust_outstanding_amount_for_emi_sales(a.reference_name, a.debit)
 
-	def on_update_after_submit(self):
-		if hasattr(self, "repost_required"):
-			self.needs_repost = self.check_if_fields_updated(
-				fields_to_check=[], child_tables={"accounts": []}
-			)
-			if self.needs_repost:
-				self.validate_for_repost()
-				self.db_set("repost_required", self.needs_repost)
+	# def on_update_after_submit(self):
+	# 	if hasattr(self, "repost_required"):
+	# 		self.needs_repost = self.check_if_fields_updated(
+	# 			fields_to_check=[], child_tables={"accounts": []}
+	# 		)
+	# 		if self.needs_repost:
+	# 			self.validate_for_repost()
+	# 			self.db_set("repost_required", self.needs_repost)
 
 	def on_cancel(self):
 		# References for this Journal are removed on the `on_cancel` event in accounts_controller
@@ -1229,7 +1229,7 @@ class JournalEntry(AccountsController):
 								"cost_center": d.cost_center,
 								"project": d.project,
 								"finance_book": self.finance_book,
-								# "business_activity": d.business_activity,
+								"business_activity": d.business_activity,
 							},
 							item=d,
 						)

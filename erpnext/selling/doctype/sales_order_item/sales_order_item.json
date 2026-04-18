@@ -130,6 +130,7 @@
   "purchase_order_item",
   "accounting_dimensions_section",
   "cost_center",
+  "business_activity",
   "column_break_ihdh",
   "project"
  ],
@@ -1121,13 +1122,22 @@
    "fieldname": "item_sub_group",
    "fieldtype": "Data",
    "label": "Item Sub Group"
+  },
+  {
+   "fetch_from": "item_code.business_activity",
+   "fetch_if_empty": 1,
+   "fieldname": "business_activity",
+   "fieldtype": "Link",
+   "label": "Business Activity",
+   "options": "Business Activity",
+   "reqd": 1
   }
  ],
  "idx": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-12-29 15:13:16.528830",
- "modified_by": "kalden.dorji@thimphutechpark.bt",
+ "modified": "2026-04-17 09:34:28.531797",
+ "modified_by": "Administrator",
  "module": "Selling",
  "name": "Sales Order Item",
  "naming_rule": "Random",

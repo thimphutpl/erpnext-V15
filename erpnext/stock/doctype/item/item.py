@@ -82,7 +82,7 @@ class Item(Document):
 		barcodes: DF.Table[ItemBarcode]
 		batch_number_series: DF.Data | None
 		brand: DF.Link | None
-		business_activity: DF.Link | None
+		business_activity: DF.Link
 		country_of_origin: DF.Link | None
 		create_new_batch: DF.Check
 		customer: DF.Link | None
@@ -111,6 +111,7 @@ class Item(Document):
 		has_variants: DF.Check
 		hsn_code: DF.Data | None
 		image: DF.AttachImage | None
+		include_in_allotment: DF.Check
 		include_item_in_manufacturing: DF.Check
 		inspection_required_before_delivery: DF.Check
 		inspection_required_before_purchase: DF.Check
@@ -129,7 +130,7 @@ class Item(Document):
 		item_group: DF.Link
 		item_name: DF.Data
 		item_old_code: DF.Data | None
-		item_sub_group: DF.Link | None
+		item_sub_group: DF.Link
 		item_type: DF.Link | None
 		items: DF.Table[BinandShelfManagement]
 		last_purchase_rate: DF.Float
@@ -138,6 +139,7 @@ class Item(Document):
 		max_discount: DF.Float
 		min_order_qty: DF.Float
 		model: DF.Data | None
+		model_no: DF.Link | None
 		model_year: DF.Data | None
 		naming_series: DF.Literal["STO-ITEM-.YYYY.-"]
 		no_of_months: DF.Int
@@ -145,8 +147,7 @@ class Item(Document):
 		opening_stock: DF.Float
 		over_billing_allowance: DF.Float
 		over_delivery_receipt_allowance: DF.Float
-		part_name: DF.Data | None
-		parts_no: DF.Link | None
+		parts_no: DF.Link
 		published_in_website: DF.Check
 		purchase_uom: DF.Link | None
 		quality_inspection_template: DF.Link | None
@@ -160,12 +161,13 @@ class Item(Document):
 		shelf_life_in_days: DF.Int
 		standard_rate: DF.Currency
 		stock_uom: DF.Link
+		substitute_part_no: DF.Data | None
 		supplier_items: DF.Table[ItemSupplier]
 		taxes: DF.Table[ItemTax]
 		total_projected_qty: DF.Float
 		transmission_type_manualautomatic: DF.Literal["", "Manual", "Automatic"]
 		uoms: DF.Table[UOMConversionDetail]
-		valuation_method: DF.Literal["", "FIFO", "Moving Average", "LIFO", "SPECIFIC"]
+		valuation_method: DF.Literal["", "Moving Average", "SPECIFIC"]
 		valuation_rate: DF.Currency
 		variant_based_on: DF.Literal["Item Attribute", "Manufacturer"]
 		variant_of: DF.Link | None
@@ -365,7 +367,7 @@ class Item(Document):
 
 		if not self.is_fixed_asset:
 			asset = frappe.db.get_all("Asset", filters={"item_code": self.name, "docstatus": 1}, limit=1)
-			if asset:
+			if asset and self.item_group != "Sales Product":
 				frappe.throw(
 					_('"Is Fixed Asset" cannot be unchecked, as Asset record exists against the item')
 				)

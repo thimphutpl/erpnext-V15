@@ -1,0 +1,58 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-04-17 11:20:48.764055",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "column_break_wasf",
+  "engine_no",
+  "item_name",
+  "purchase_date",
+  "km_reading"
+ ],
+ "fields": [
+  {
+   "fieldname": "column_break_wasf",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "engine_no",
+   "fieldtype": "Data",
+   "label": "Chassis No"
+  },
+  {
+   "fieldname": "item_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Item Name"
+  },
+  {
+   "fieldname": "purchase_date",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Creation Date"
+  },
+  {
+   "fieldname": "km_reading",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Odometer reading (KM)"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-04-17 11:39:37.347100",
+ "modified_by": "Administrator",
+ "module": "Fleet Management",
+ "name": "Job Card History",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

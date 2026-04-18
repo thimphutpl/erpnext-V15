@@ -488,6 +488,20 @@ frappe.ui.form.on('EMI Sales', {
 	},
 	sales_order_type:(frm)=>{
 		frappe.call({
+			method:'get_customer_details',
+			doc:cur_frm.doc,
+			callback:(r)=>{
+				frm.set_value("interest_percentage", r.message)
+				frm.refresh_field('customer_name')
+				frm.refresh_field('customer_group')
+				// frm.refresh_field('location_segregation')
+				frm.refresh_field('purchase_limit_on_total_amount')
+				frm.set_df_property('one_time_customer_name', 'reqd', frm.doc.customer_group == "One Time Customer")
+				frm.set_df_property('contact', 'reqd', frm.doc.customer_group == "One Time Customer")
+				frm.set_df_property('cid_passort_work_permit_no', 'reqd', frm.doc.customer_group == "One Time Customer")
+			}
+		})
+		frappe.call({
 			method:'get_payment_type',
 			doc:frm.doc,
 			callback:(r)=>{
@@ -784,7 +798,7 @@ var make_asset_issue_entry = function(frm){
 		new_doc.emi_sales = cur_frm.doc.name;
 		new_doc.asset_rate = asset_rate
 		new_doc.purchase_amount = asset_rate
-		new_doc.purchase_date = cur_frm.doc.posting_date
+		new_doc.entry_date = cur_frm.doc.posting_date
 		new_doc.issued_date = cur_frm.doc.posting_date
 		new_doc.available_for_use_date = cur_frm.doc.posting_date
 		new_doc.company = cur_frm.doc.company
@@ -1577,25 +1591,27 @@ var calculate_amount=(frm,cdt,cdn)=>{
 }
 var calculate_down_payment = (frm, cdt, cdn)=>{
 	var row = locals[cdt][cdn];
-	frappe.call({
-		method: "calculate_down_payment",
-		doc: frm.doc,
-		args: {"rate": row.rate},
-		callback: function(r){
-			if(r.message){
-				frm.set_value("down_payment_amount", r.message);
-				if(r.message > 0){
-					frm.set_value("down_payment", 1)
+	if(row.rate){
+		frappe.call({
+			method: "calculate_down_payment",
+			doc: frm.doc,
+			args: {"rate": row.rate},
+			callback: function(r){
+				if(r.message){
+					frm.set_value("down_payment_amount", r.message);
+					if(r.message > 0){
+						frm.set_value("down_payment", 1)
+					}
+					else{
+						frm.set_value("down_payment", 0)
+					}
+					frm.refresh_field("down_payment");
+					frm.refresh_field("down_payment_amount");
+	
 				}
-				else{
-					frm.set_value("down_payment", 0)
-				}
-				frm.refresh_field("down_payment");
-				frm.refresh_field("down_payment_amount");
-
 			}
-		}
-	})
+		})
+	}
 }
 var calculate_commission = (frm, cdt, cdn)=>{
 	var row = locals[cdt][cdn]

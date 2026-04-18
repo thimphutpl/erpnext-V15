@@ -30,6 +30,7 @@ class SalesOrderItem(Document):
 		blanket_order_rate: DF.Currency
 		bom_no: DF.Link | None
 		brand: DF.Link | None
+		business_activity: DF.Link
 		color: DF.Data | None
 		company_total_stock: DF.Float
 		conversion_factor: DF.Float

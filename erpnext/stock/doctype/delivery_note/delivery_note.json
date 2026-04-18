@@ -71,6 +71,8 @@
   "set_target_warehouse",
   "items_section",
   "items",
+  "purchase_taxes_details_section",
+  "purchase_tax_details",
   "pricing_rule_details",
   "pricing_rules",
   "packing_list",
@@ -717,7 +719,7 @@
    "label": "Additional Discount"
   },
   {
-   "default": "Grand Total",
+   "default": "Net Total",
    "fieldname": "apply_discount_on",
    "fieldtype": "Select",
    "label": "Apply Additional Discount On",
@@ -1419,13 +1421,23 @@
    "fieldtype": "Date",
    "in_list_view": 1,
    "label": "Declaration Date"
+  },
+  {
+   "fieldname": "purchase_taxes_details_section",
+   "fieldtype": "Section Break",
+   "label": "Purchase Tax Details"
+  },
+  {
+   "fieldname": "purchase_tax_details",
+   "fieldtype": "Table",
+   "options": "Purchase Tax Details"
   }
  ],
  "icon": "fa fa-truck",
  "idx": 146,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-12-04 11:43:17.799326",
+ "modified": "2026-04-15 16:51:41.417421",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Delivery Note",

@@ -74,6 +74,8 @@
   "more_info",
   "is_opening",
   "remarks",
+  "vehicle_no",
+  "transporter_name",
   "col5",
   "per_transferred",
   "total_amount",
@@ -81,7 +83,9 @@
   "amended_from",
   "credit_note",
   "is_return",
-  "status"
+  "status",
+  "job_card_details_section",
+  "job_cards"
  ],
  "fields": [
   {
@@ -288,6 +292,7 @@
   {
    "fieldname": "from_warehouse",
    "fieldtype": "Link",
+   "hidden": 1,
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Source Warehouse",
@@ -320,6 +325,7 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Receiving Warehouse",
+   "mandatory_depends_on": "eval.doc.stock_entry_type != \"Material Issue\"",
    "no_copy": 1,
    "oldfieldname": "to_warehouse",
    "oldfieldtype": "Link",
@@ -677,14 +683,37 @@
    "fieldtype": "Data",
    "label": "Receiving Warehouse Name",
    "read_only": 1
+  },
+  {
+   "fieldname": "vehicle_no",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Vehicle No"
+  },
+  {
+   "fieldname": "transporter_name",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Transporter Name"
+  },
+  {
+   "fieldname": "job_card_details_section",
+   "fieldtype": "Section Break",
+   "label": "Job Card Details"
+  },
+  {
+   "fieldname": "job_cards",
+   "fieldtype": "Link",
+   "label": "Job Cards",
+   "options": "Job Cards"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-12-28 15:10:19.707594",
- "modified_by": "kalden.dorji@thimphutechpark.bt",
+ "modified": "2026-04-17 09:51:09.223559",
+ "modified_by": "Administrator",
  "module": "Stock",
  "name": "Stock Entry",
  "owner": "Administrator",

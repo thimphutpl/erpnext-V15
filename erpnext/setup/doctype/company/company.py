@@ -84,6 +84,7 @@ class Company(NestedSet):
 		depreciation_cost_center: DF.Link | None
 		depreciation_expense_account: DF.Link | None
 		discount_account: DF.Link | None
+		discount_allowed: DF.Link | None
 		disposal_account: DF.Link | None
 		domain: DF.Data | None
 		domestic_supplier_input_gst_template: DF.Link | None
@@ -103,6 +104,7 @@ class Company(NestedSet):
 		gainloss_account: DF.Link | None
 		gst_clearing_account: DF.Link | None
 		hirecharge_income_account: DF.Link | None
+		input_gst_account: DF.Link | None
 		insurance_claim_expense_account: DF.Link | None
 		insurance_expense_account: DF.Link | None
 		internal_customer_account: DF.Link | None

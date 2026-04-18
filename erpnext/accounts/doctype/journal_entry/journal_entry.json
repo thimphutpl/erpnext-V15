@@ -106,12 +106,12 @@
   {
    "fieldname": "naming_series",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Series",
    "oldfieldname": "naming_series",
    "oldfieldtype": "Select",
    "options": "Journal Entry Series",
    "print_hide": 1,
-   "reqd": 1,
    "set_only_once": 1
   },
   {
@@ -157,6 +157,7 @@
    "options": "fa fa-table"
   },
   {
+   "allow_bulk_edit": 1,
    "fieldname": "accounts",
    "fieldtype": "Table",
    "label": "Accounting Entries",
@@ -695,8 +696,8 @@
    "table_fieldname": "payment_entries"
   }
  ],
- "modified": "2025-12-31 13:50:38.567126",
- "modified_by": "Administrator",
+ "modified": "2026-04-17 11:55:35.092221",
+ "modified_by": "mon.chhetri@thimphutechpark.bt",
  "module": "Accounts",
  "name": "Journal Entry",
  "naming_rule": "By \"Naming Series\" field",

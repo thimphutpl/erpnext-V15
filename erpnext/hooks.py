@@ -435,6 +435,9 @@ scheduler_events = {
 		"45 0 * * *": [
 			"erpnext.stock.reorder_item.reorder_item",
 		],
+		"* * * * *": [
+			"frappe.email.queue.flush",
+		]
 	},
 	"hourly": [
 		#"erpnext.erpnext_integrations.doctype.plaid_settings.plaid_settings.automatic_synchronization",

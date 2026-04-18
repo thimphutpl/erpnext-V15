@@ -7,6 +7,7 @@
  "engine": "InnoDB",
  "field_order": [
   "customer_details_section",
+  "confirmation_date",
   "customer_id",
   "salutation",
   "customer_name",
@@ -18,12 +19,22 @@
   "id_card_no",
   "column_break_mblg",
   "responsible_branch",
+  "dispatch_no",
   "customer_report",
+  "dob",
+  "presently_residing_at",
+  "permanent_address_section",
+  "village",
+  "gewog",
+  "dzongkhag",
   "order_confirmation_details_section",
   "table_yefo",
   "order_information",
   "section_break_t3hk",
-  "amended_from"
+  "amended_from",
+  "column_break_zekx",
+  "purchase_order",
+  "allotment_item"
  ],
  "fields": [
   {
@@ -32,29 +43,47 @@
    "label": "Customer Details"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "customer_id",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Customer ID",
    "options": "Customer"
   },
   {
+   "allow_on_submit": 1,
+   "fetch_from": "customer_id.salutation",
+   "fetch_if_empty": 1,
    "fieldname": "salutation",
    "fieldtype": "Data",
+   "ignore_user_permissions": 1,
    "label": "Salutation"
   },
   {
+   "allow_on_submit": 1,
+   "fetch_from": "customer_id.customer_name",
    "fieldname": "customer_name",
    "fieldtype": "Data",
+   "hidden": 1,
+   "ignore_user_permissions": 1,
    "label": "Customer Name"
   },
   {
+   "allow_on_submit": 1,
+   "fetch_from": "customer_id.mobile_no",
+   "fetch_if_empty": 1,
    "fieldname": "phone_number",
    "fieldtype": "Data",
+   "ignore_user_permissions": 1,
    "label": "Phone Number"
   },
   {
+   "allow_on_submit": 1,
+   "fetch_from": "customer_id.email_id",
+   "fetch_if_empty": 1,
    "fieldname": "email_id",
    "fieldtype": "Data",
+   "ignore_user_permissions": 1,
    "label": "Email ID"
   },
   {
@@ -89,7 +118,8 @@
   {
    "fieldname": "table_yefo",
    "fieldtype": "Table",
-   "options": "Order Confirmation Details"
+   "options": "Order Confirmation Details",
+   "reqd": 1
   },
   {
    "fieldname": "order_information",
@@ -118,18 +148,107 @@
    "read_only": 1
   },
   {
+   "allow_on_submit": 1,
    "fetch_from": "customer_id.cid_no",
    "fieldname": "id_card_no",
    "fieldtype": "Data",
    "label": "ID Card No."
+  },
+  {
+   "fieldname": "column_break_zekx",
+   "fieldtype": "Column Break"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "purchase_order",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "ignore_user_permissions": 1,
+   "label": "Purchase Order",
+   "options": "Purchase Order",
+   "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "allotment_item",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "ignore_user_permissions": 1,
+   "label": "Allotment Item",
+   "options": "Allotment Item",
+   "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "confirmation_date",
+   "fieldtype": "Date",
+   "ignore_user_permissions": 1,
+   "label": "Confirmation Date",
+   "reqd": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fetch_from": "customer_id.dob",
+   "fetch_if_empty": 1,
+   "fieldname": "dob",
+   "fieldtype": "Date",
+   "ignore_user_permissions": 1,
+   "label": "Date of Birth"
+  },
+  {
+   "allow_on_submit": 1,
+   "fetch_from": "customer_id.presenting_residing_at",
+   "fetch_if_empty": 1,
+   "fieldname": "presently_residing_at",
+   "fieldtype": "Data",
+   "ignore_user_permissions": 1,
+   "label": "Presently Residing At"
+  },
+  {
+   "fieldname": "permanent_address_section",
+   "fieldtype": "Section Break",
+   "label": "Permanent Address"
+  },
+  {
+   "allow_on_submit": 1,
+   "fetch_from": "customer_id.village",
+   "fetch_if_empty": 1,
+   "fieldname": "village",
+   "fieldtype": "Data",
+   "ignore_user_permissions": 1,
+   "label": "Village"
+  },
+  {
+   "allow_on_submit": 1,
+   "fetch_from": "customer_id.gewog",
+   "fetch_if_empty": 1,
+   "fieldname": "gewog",
+   "fieldtype": "Data",
+   "ignore_user_permissions": 1,
+   "label": "Gewog"
+  },
+  {
+   "allow_on_submit": 1,
+   "fetch_from": "customer_id.dzongkhag",
+   "fetch_if_empty": 1,
+   "fieldname": "dzongkhag",
+   "fieldtype": "Data",
+   "ignore_user_permissions": 1,
+   "label": "Dzongkhag"
+  },
+  {
+   "fieldname": "dispatch_no",
+   "fieldtype": "Data",
+   "label": "Dispatch No.",
+   "reqd": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-12-25 10:30:25.823255",
- "modified_by": "kalden.dorji@thimphutechpark.bt",
+ "modified": "2026-04-15 13:59:44.104991",
+ "modified_by": "Administrator",
  "module": "CRM",
  "name": "C2 Status",
  "naming_rule": "Expression",

@@ -71,6 +71,8 @@ class StockController(AccountsController):
 			if self.docstatus == 1:
 				if not gl_entries:
 					gl_entries = self.get_gl_entries(warehouse_account)
+					# frappe.throw(str(frappe.as_json(gl_entries)))
+
 					# frappe.throw(str(gl_entries))
 				make_gl_entries(gl_entries, from_repost=from_repost)
 		elif self.doctype in ["Purchase Receipt", "Purchase Invoice"] and self.docstatus == 1:
@@ -141,7 +143,7 @@ class StockController(AccountsController):
 		precision = self.get_debit_field_precision()
 		for item_row in voucher_details:
 			sle_list = sle_map.get(item_row.name)
-			price_costing = self.get_price_costing(item_row.so_detail, item_row.item_code)
+			# price_costing = self.get_price_costing(item_row.so_detail, item_row.item_code)
 			if sle_list:
 				for sle in sle_list:
 					if warehouse_account.get(sle.warehouse):
@@ -155,33 +157,65 @@ class StockController(AccountsController):
 							expense_account = warehouse_account[warehouse]["account"]
 						else:
 							expense_account = item_row.expense_account
-
-						gl_list.append(
-							self.get_gl_dict(
-								{
-									"account": warehouse_account[sle.warehouse]["account"],
-									"against": expense_account,
-									"cost_center": item_row.cost_center,
-									"debit": price_costing[0]["landed_cost"] if self.doctype == "Delivery Note" and price_costing else flt(sle.stock_value_difference, precision),
-									"is_opening": item_row.get("is_opening") or self.get("is_opening") or "No",
-								},
-								warehouse_account[sle.warehouse]["account_currency"],
-								item=item_row,
+						if self.doctype == 'Delivery Note':
+							expense_account=frappe.get_value("Company",self.company,'default_expense_account')
+							if not expense_account:
+								frappe.throw("set default expense account in Company")
+							gl_list.append(
+								self.get_gl_dict(
+									{
+										"account": warehouse_account[sle.warehouse]["account"],
+										"against": expense_account,
+										"cost_center": item_row.cost_center,
+										"credit": flt(sle.stock_value_difference, precision),
+										# "debit": price_costing[0]["landed_cost"] if self.doctype == "Delivery Note" and price_costing else flt(sle.stock_value_difference, precision),
+										"is_opening": item_row.get("is_opening") or self.get("is_opening") or "No",
+									},
+									warehouse_account[sle.warehouse]["account_currency"],
+									item=item_row,
+								)
 							)
-						)
-						gl_list.append(
-							self.get_gl_dict(
-								{
-									"account": expense_account,
-									"against": warehouse_account[sle.warehouse]["account"],
-									"cost_center": item_row.cost_center,
-									"remarks": self.get("remarks") or _("Accounting Entry for Stock"),
-									"debit": -1 * (price_costing[0]["landed_cost"] if self.doctype == "Delivery Note" and price_costing else flt(sle.stock_value_difference, precision)),
-									"is_opening": item_row.get("is_opening") or self.get("is_opening") or "No",
-								},
-								item=item_row,
+							gl_list.append(
+								self.get_gl_dict(
+									{
+										"account": expense_account,
+										"against": warehouse_account[sle.warehouse]["account"],
+										"cost_center": item_row.cost_center,
+										"remarks": self.get("remarks") or _("Accounting Entry for Stock"),
+										"debit": flt(sle.stock_value_difference, precision),
+										# "debit": -1 * (price_costing[0]["landed_cost"] if self.doctype == "Delivery Note" and price_costing else flt(sle.stock_value_difference, precision)),
+										"is_opening": item_row.get("is_opening") or self.get("is_opening") or "No",
+									},
+									item=item_row,
+								)
 							)
-						)
+						else:
+							gl_list.append(
+								self.get_gl_dict(
+									{
+										"account": warehouse_account[sle.warehouse]["account"],
+										"against": warehouse_account[sle.warehouse]["account"] if self.doctype == "Stock Entry" else expense_account,
+										"cost_center": item_row.cost_center,
+										"debit": flt(sle.stock_value_difference, precision),
+										"is_opening": item_row.get("is_opening") or self.get("is_opening") or "No",
+									},
+									warehouse_account[sle.warehouse]["account_currency"],
+									item=item_row,
+								)
+							)
+							gl_list.append(
+								self.get_gl_dict(
+									{
+										"account": warehouse_account[sle.warehouse]["account"] if self.doctype == "Stock Entry" else expense_account,
+										"against": warehouse_account[sle.warehouse]["account"],
+										"cost_center": item_row.cost_center,
+										"remarks": self.get("remarks") or _("Accounting Entry for Stock"),
+										"debit": -1 * flt(sle.stock_value_difference, precision),
+										"is_opening": item_row.get("is_opening") or self.get("is_opening") or "No",
+									},
+									item=item_row,
+								)
+							)
 					elif sle.warehouse not in warehouse_with_no_account:
 						warehouse_with_no_account.append(sle.warehouse)
 		if warehouse_with_no_account:
@@ -192,6 +226,8 @@ class StockController(AccountsController):
 							"Warehouse {0} is not linked to any account, please mention the account in the warehouse record or set default inventory account in company {1}."
 						).format(wh, self.company)
 					)
+		# frappe.throw(str(frappe.as_json(gl_list)))
+
 		return process_gl_map(gl_list, precision=precision)
 
 	def get_price_costing(self, so_detail, item_code):

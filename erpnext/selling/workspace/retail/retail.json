@@ -2,12 +2,14 @@
  "charts": [],
  "content": "[{\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Your Shortcuts</b></span>\",\"col\":12}},{\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Point Of Sale\",\"col\":3}},{\"type\":\"spacer\",\"data\":{\"col\":12}},{\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Reports & Masters</b></span>\",\"col\":12}},{\"type\":\"card\",\"data\":{\"card_name\":\"Settings & Configurations\",\"col\":4}},{\"type\":\"card\",\"data\":{\"card_name\":\"Loyalty Program\",\"col\":4}},{\"type\":\"card\",\"data\":{\"card_name\":\"Opening & Closing\",\"col\":4}}]",
  "creation": "2020-03-02 17:18:32.505616",
+ "custom_blocks": [],
  "docstatus": 0,
  "doctype": "Workspace",
  "for_user": "",
  "hide_custom": 0,
  "icon": "retail",
  "idx": 0,
+ "is_hidden": 1,
  "label": "Retail",
  "links": [
   {
@@ -101,10 +103,11 @@
    "type": "Link"
   }
  ],
- "modified": "2022-10-31 10:42:36.180618",
- "modified_by": "Administrator",
+ "modified": "2026-04-03 11:35:58.424698",
+ "modified_by": "tshering.lham@thimphutechpark.bt",
  "module": "Selling",
  "name": "Retail",
+ "number_cards": [],
  "owner": "Administrator",
  "parent_page": "",
  "public": 1,

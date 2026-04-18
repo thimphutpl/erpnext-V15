@@ -29,7 +29,7 @@ class PurchaseInvoiceItem(Document):
 		batch_no: DF.Link | None
 		bom: DF.Link | None
 		brand: DF.Data | None
-		business_activity: DF.Link | None
+		business_activity: DF.Link
 		conversion_factor: DF.Float
 		cost_center: DF.Link | None
 		deferred_expense_account: DF.Link | None
@@ -61,6 +61,7 @@ class PurchaseInvoiceItem(Document):
 		model: DF.Data | None
 		net_amount: DF.Currency
 		net_rate: DF.Currency
+		order_type: DF.Literal["", "Confirm Order", "Stock Order"]
 		page_break: DF.Check
 		parent: DF.Data
 		parentfield: DF.Data

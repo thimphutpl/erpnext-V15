@@ -100,18 +100,18 @@ frappe.ui.form.on("Purchase Order", {
 		}
 		
 	},
-	supplier: function(frm){
-		frappe.call({
-			method:"get_gst_template",
-			doc: frm.doc,
-			callback: function(r){
-				if(r.message){
-					frm.set_value("taxes_and_charges", r.message);
-					frm.refresh_field("taxes_and_charges");
-				}
-			}
-		})
-	},
+	// supplier: function(frm){
+	// 	frappe.call({
+	// 		method:"get_gst_template",
+	// 		doc: frm.doc,
+	// 		callback: function(r){
+	// 			if(r.message){
+	// 				frm.set_value("taxes_and_charges", r.message);
+	// 				frm.refresh_field("taxes_and_charges");
+	// 			}
+	// 		}
+	// 	})
+	// },
 	get_materials_from_supplier: function (frm) {
 		let po_details = [];
 
@@ -166,16 +166,16 @@ frappe.ui.form.on("Purchase Order", {
 		if (frm.is_new()) {
 			frm.set_value("advance_paid", 0);
 		}
-		frappe.call({
-			method:"get_gst_template",
-			doc: frm.doc,
-			callback: function(r){
-				if(r.message){
-					frm.set_value("taxes_and_charges", r.message);
-					frm.refresh_field("taxes_and_charges");
-				}
-			}
-		})
+		// frappe.call({
+		// 	method:"get_gst_template",
+		// 	doc: frm.doc,
+		// 	callback: function(r){
+		// 		if(r.message){
+		// 			frm.set_value("taxes_and_charges", r.message);
+		// 			frm.refresh_field("taxes_and_charges");
+		// 		}
+		// 	}
+		// })
 	},
 
 	apply_tds: function (frm) {
@@ -520,12 +520,12 @@ erpnext.buying.PurchaseOrderController = class PurchaseOrderController extends (
 							}
 						}
 					}
-					if (flt(doc.per_billed, 2) < 100)
-						cur_frm.add_custom_button(
-							__("Purchase Invoice"),
-							this.make_purchase_invoice,
-							__("Create")
-						);
+					// if (flt(doc.per_billed, 2) < 100)
+					// 	cur_frm.add_custom_button(
+					// 		__("Purchase Invoice"),
+					// 		this.make_purchase_invoice,
+					// 		__("Create")
+					// 	);
 
 					if (flt(doc.per_billed, 2) < 100 && doc.status != "Delivered") {
 						this.frm.add_custom_button(
@@ -535,15 +535,15 @@ erpnext.buying.PurchaseOrderController = class PurchaseOrderController extends (
 						);
 					}
 
-					if (flt(doc.per_billed, 2) < 100) {
-						this.frm.add_custom_button(
-							__("Payment Request"),
-							function () {
-								me.make_payment_request();
-							},
-							__("Create")
-						);
-					}
+					// if (flt(doc.per_billed, 2) < 100) {
+					// 	this.frm.add_custom_button(
+					// 		__("Payment Request"),
+					// 		function () {
+					// 			me.make_payment_request();
+					// 		},
+					// 		__("Create")
+					// 	);
+					// }
 
 					if (doc.docstatus === 1 && !doc.inter_company_order_reference) {
 						let me = this;

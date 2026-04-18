@@ -95,6 +95,7 @@ class StockEntry(StockController):
 		item_group: DF.Link | None
 		items: DF.Table[StockEntryDetail]
 		job_card: DF.Link | None
+		job_cards: DF.Link | None
 		letter_head: DF.Link | None
 		outgoing_stock_entry: DF.Link | None
 		per_transferred: DF.Percent
@@ -127,8 +128,10 @@ class StockEntry(StockController):
 		total_amount: DF.Currency
 		total_incoming_value: DF.Currency
 		total_outgoing_value: DF.Currency
+		transporter_name: DF.Data | None
 		use_multi_level_bom: DF.Check
 		value_difference: DF.Currency
+		vehicle_no: DF.Data | None
 		work_order: DF.Link | None
 	# end: auto-generated types
 	def autoname(self):
@@ -2866,6 +2869,7 @@ def get_permission_query_conditions(user):
 			)
 		))
 	)""".format(user=user)
+	
 @frappe.whitelist()
 def has_warehouse_permission(warehouse):
 	user = frappe.session.user

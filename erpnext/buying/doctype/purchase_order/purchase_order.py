@@ -53,6 +53,7 @@ class PurchaseOrder(BuyingController):
 		additional_discount_percentage: DF.Float
 		address_display: DF.SmallText | None
 		advance_paid: DF.Currency
+		allotment_item: DF.Link | None
 		amended_from: DF.Link | None
 		apply_discount_on: DF.Literal["", "Grand Total", "Net Total"]
 		apply_tds: DF.Check
@@ -132,12 +133,12 @@ class PurchaseOrder(BuyingController):
 		schedule_date: DF.Date
 		select_print_heading: DF.Link | None
 		set_reserve_warehouse: DF.Link | None
-		set_warehouse: DF.Link | None
+		set_warehouse: DF.Link
 		shipping_address: DF.Link | None
 		shipping_address_display: DF.SmallText | None
 		shipping_rule: DF.Link | None
 		start_date: DF.Date | None
-		status: DF.Literal["", "Draft", "On Hold", "To Receive and Bill", "To Bill", "To Receive", "Completed", "Cancelled", "Closed", "Delivered"]
+		status: DF.Literal["", "Draft", "On Hold", "To Receive and Bill", "To Bill", "To Receive", "Completed", "Cancelled", "Closed", "Delivered", "In Transit"]
 		supplied_items: DF.Table[PurchaseOrderItemSupplied]
 		supplier: DF.Link
 		supplier_address: DF.Link | None
@@ -152,7 +153,7 @@ class PurchaseOrder(BuyingController):
 		taxes_and_charges_deducted: DF.Currency
 		tc_name: DF.Link | None
 		terms: DF.TextEditor | None
-		title: DF.Data
+		title: DF.Data | None
 		to_date: DF.Date | None
 		total: DF.Currency
 		total_net_weight: DF.Float
@@ -216,6 +217,12 @@ class PurchaseOrder(BuyingController):
 			self.doctype, self.supplier, self.company, self.inter_company_order_reference
 		)
 		# self.reset_default_field_value("set_warehouse", "items", "warehouse")
+
+		# self.set_custom_status()   # your logic
+
+	# def set_custom_status(self):
+	# 	if self.in_transit and self.docstatus == 0:
+	# 		self.transit_status = "In Transit"		
 
 	def warehouse_from_branch(doc):
 		branchname=doc.branch
@@ -821,6 +828,7 @@ def make_purchase_receipt(source_name, target_doc=None):
 					"material_request_date": "material_request_date",
 					"purchase_order_date": "transaction_date",
 					"material_request": "material_request",
+					# "title": "title"
 				},
 				"validation": {
 					"docstatus": ["=", 1],
@@ -837,6 +845,8 @@ def make_purchase_receipt(source_name, target_doc=None):
 					"sales_order": "sales_order",
 					"sales_order_item": "sales_order_item",
 					"wip_composite_asset": "wip_composite_asset",
+					"tvo_number": "tvo_no",
+					"business_activity": "business_activity",
 				},
 				"postprocess": update_item,
 				"condition": lambda doc: abs(doc.received_qty) < abs(doc.qty)

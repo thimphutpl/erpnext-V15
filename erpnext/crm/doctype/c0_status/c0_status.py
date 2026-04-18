@@ -20,13 +20,18 @@ class C0Status(Document):
 		customer_name: DF.Data | None
 		customer_report: DF.LongText | None
 		customer_track_id: DF.Link | None
+		dob: DF.Date | None
+		dzongkhag: DF.Data | None
 		email_id: DF.Data | None
+		gewog: DF.Data | None
 		id_card_no: DF.Data | None
 		inquiry: DF.LongText | None
 		phone_number: DF.Data | None
+		presently_residing_at: DF.Data | None
 		response: DF.LongText | None
-		responsible_branch: DF.Link | None
+		responsible_branch: DF.Link
 		salutation: DF.Data | None
+		village: DF.Data | None
 	# end: auto-generated types
 
 	def validate(self):

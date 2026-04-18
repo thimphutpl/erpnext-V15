@@ -359,7 +359,7 @@ def get_party_account(party_type, party=None, company=None,is_advance=False):
 	if not party and party_type in ["Customer", "Supplier"]:
 		if is_advance:
 			default_account_name = (
-				"advance_received_from_customer" if party_type == "Customer" else "advance_paid_to_supplier"
+				"advance_account" if party_type == "Customer" else "advance_paid_to_supplier"
 			)
 		else:
 			default_account_name = (
@@ -395,7 +395,7 @@ def get_party_account(party_type, party=None, company=None,is_advance=False):
 			default_account_name = "employee_payable_account"
 		elif is_advance:
 			default_account_name = (
-				"advance_received_from_customer" if party_type == "Customer" else "advance_paid_to_supplier"
+				"advance_account" if party_type == "Customer" else "advance_paid_to_supplier"
 			)
 		else:
 			default_account_name = (

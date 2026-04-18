@@ -2,12 +2,14 @@
  "charts": [],
  "content": "[{\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Quick Access</b></span>\",\"col\":12}},{\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Transporter Rate\",\"col\":3}},{\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Trip Log\",\"col\":3}},{\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Transporter Invoice\",\"col\":3}},{\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Equipment Hiring Form\",\"col\":3}},{\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Logbook\",\"col\":3}},{\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"EME Invoice\",\"col\":3}},{\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Transporter Invoice Entry\",\"col\":3}},{\"type\":\"spacer\",\"data\":{\"col\":12}},{\"type\":\"card\",\"data\":{\"card_name\":\"Master Data\",\"col\":4}},{\"type\":\"card\",\"data\":{\"card_name\":\"Transporter Transaction\",\"col\":4}},{\"type\":\"card\",\"data\":{\"card_name\":\"Transporter Report\",\"col\":4}},{\"type\":\"card\",\"data\":{\"card_name\":\"EME Transaction\",\"col\":4}},{\"type\":\"card\",\"data\":{\"card_name\":\"EME Reports\",\"col\":4}}]",
  "creation": "2022-10-31 10:42:15.407050",
+ "custom_blocks": [],
  "docstatus": 0,
  "doctype": "Workspace",
  "for_user": "",
  "hide_custom": 0,
  "icon": "healthcare",
  "idx": 0,
+ "is_hidden": 1,
  "label": "EME And Transport Hiring",
  "links": [
   {
@@ -281,10 +283,11 @@
    "type": "Link"
   }
  ],
- "modified": "2023-04-03 10:21:49.837812",
- "modified_by": "Administrator",
+ "modified": "2026-04-03 11:37:21.635136",
+ "modified_by": "tshering.lham@thimphutechpark.bt",
  "module": "Production",
  "name": "EME And Transport Hiring",
+ "number_cards": [],
  "owner": "Administrator",
  "parent_page": "",
  "public": 1,

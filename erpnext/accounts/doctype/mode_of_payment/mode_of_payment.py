@@ -19,6 +19,7 @@ class ModeofPayment(Document):
 
 		accounts: DF.Table[ModeofPaymentAccount]
 		credit_allowed: DF.Check
+		is_lc: DF.Check
 		mode_of_payment: DF.Data
 		type: DF.Literal["Cash", "Bank", "General"]
 	# end: auto-generated types

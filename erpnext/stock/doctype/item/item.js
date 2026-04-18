@@ -247,6 +247,17 @@ frappe.ui.form.on("Item", {
 		if(frm.doc.item_group == 'Fixed Asset'){
 			frm.set_value('is_fixed_asset',1)
 			frm.trigger('is_fixed_asset')
+			frm.fields_dict["item_defaults"].grid.update_docfield_property(
+				"expense_account",
+				"reqd",
+				0
+			);
+		}else{
+			frm.fields_dict["item_defaults"].grid.update_docfield_property(
+				"expense_account",
+				"reqd",
+				1
+			);
 		}
 		if (frm.doc.item_group == "Service"){
 			frm.set_value("is_stock_item", 0);
@@ -270,11 +281,24 @@ frappe.ui.form.on("Item", {
 		}else{
 			frm.toggle_reqd("parts_no", 0);
 		}
+		frm.refresh_field("item_defaults");
 	},
 	is_fixed_asset: function (frm) {
 		if(frm.doc.is_fixed_asset == 1){
 			frm.set_value("is_stock_item", 0);
 			frm.refresh_field("is_stock_item");
+		}
+	},
+	valuation_method: function (frm) {
+		if (frm.doc.valuation_method == "SPECIFIC") {
+			frm.set_value("has_serial_no", 1);
+			frm.refresh_field("is_stock_item");
+			frm.refresh_field("serial_no_series");
+
+		}else{
+			frm.set_value("has_serial_no", 0);
+			frm.refresh_field("is_stock_item");
+			frm.refresh_field("serial_no_series");
 		}
 	},
 	// is_fixed_asset: function (frm) {

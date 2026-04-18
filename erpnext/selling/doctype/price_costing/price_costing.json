@@ -3,7 +3,9 @@
  "allow_rename": 1,
  "autoname": "format:CP{YY}{MM}{####}",
  "creation": "2025-12-04 10:58:15.235491",
+ "default_view": "List",
  "doctype": "DocType",
+ "document_type": "Setup",
  "engine": "InnoDB",
  "field_order": [
   "section_break_gzki",
@@ -17,12 +19,26 @@
   "excise_duty",
   "clearing_and_forwarding_charges",
   "transportation_charges",
+  "commission",
+  "stock_holding_cost",
+  "pdi_expenses",
+  "transit_insurance",
+  "marine_insurance",
+  "declaration_and_processing_fee",
+  "other_collection_and_charges",
   "column_break_geir",
-  "frieght",
+  "freight",
   "custom_duty",
   "service_charges",
   "bank_charges",
   "labour_charges",
+  "marketing_expenses",
+  "finance__and_overhead_charges",
+  "selling_charges",
+  "custom_commision",
+  "overhead_and_other_cost",
+  "margin_and_handling_charges",
+  "cost_of_fuel_tank",
   "section_break_xfeo",
   "items",
   "section_break_wp7h",
@@ -69,7 +85,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Purchase Type",
-   "options": "\nAir Order\nSea Order\nFull Container",
+   "options": "\nAir Order\nSea Order\nFull Container\nBy Road",
    "reqd": 1
   },
   {
@@ -109,13 +125,7 @@
   {
    "fieldname": "excise_duty",
    "fieldtype": "Currency",
-   "label": "Excise Duty",
-   "reqd": 1
-  },
-  {
-   "fieldname": "frieght",
-   "fieldtype": "Currency",
-   "label": "Frieght",
+   "label": "Excise Tax",
    "reqd": 1
   },
   {
@@ -166,14 +176,117 @@
    "label": "Total Source Rate",
    "precision": "2",
    "read_only": 1
+  },
+  {
+   "fieldname": "freight",
+   "fieldtype": "Currency",
+   "label": "Freight",
+   "reqd": 1
+  },
+  {
+   "fieldname": "commission",
+   "fieldtype": "Currency",
+   "label": "Commission",
+   "precision": "2",
+   "reqd": 1
+  },
+  {
+   "fieldname": "stock_holding_cost",
+   "fieldtype": "Currency",
+   "label": "Stock Holding Cost",
+   "precision": "2",
+   "reqd": 1
+  },
+  {
+   "fieldname": "pdi_expenses",
+   "fieldtype": "Currency",
+   "label": "PDI Expenses",
+   "precision": "2",
+   "reqd": 1
+  },
+  {
+   "fieldname": "transit_insurance",
+   "fieldtype": "Currency",
+   "label": "Transit Insurance",
+   "precision": "2",
+   "reqd": 1
+  },
+  {
+   "fieldname": "marine_insurance",
+   "fieldtype": "Currency",
+   "label": "Marine Insurance",
+   "precision": "2",
+   "reqd": 1
+  },
+  {
+   "fieldname": "declaration_and_processing_fee",
+   "fieldtype": "Currency",
+   "label": "Declaration and Processing Fee",
+   "precision": "2",
+   "reqd": 1
+  },
+  {
+   "fieldname": "other_collection_and_charges",
+   "fieldtype": "Currency",
+   "label": "Other Collection and Charges",
+   "precision": "2",
+   "reqd": 1
+  },
+  {
+   "fieldname": "marketing_expenses",
+   "fieldtype": "Currency",
+   "label": "Marketing Expenses",
+   "precision": "2",
+   "reqd": 1
+  },
+  {
+   "fieldname": "finance__and_overhead_charges",
+   "fieldtype": "Currency",
+   "label": "Finance  and Overhead Charges",
+   "precision": "2",
+   "reqd": 1
+  },
+  {
+   "fieldname": "selling_charges",
+   "fieldtype": "Currency",
+   "label": "Selling Charges",
+   "precision": "2",
+   "reqd": 1
+  },
+  {
+   "fieldname": "custom_commision",
+   "fieldtype": "Currency",
+   "label": "Custom Commision",
+   "precision": "2",
+   "reqd": 1
+  },
+  {
+   "fieldname": "overhead_and_other_cost",
+   "fieldtype": "Currency",
+   "label": "Overhead and Other Cost",
+   "precision": "2",
+   "reqd": 1
+  },
+  {
+   "fieldname": "margin_and_handling_charges",
+   "fieldtype": "Currency",
+   "label": "Margin and Handling Charges",
+   "precision": "2",
+   "reqd": 1
+  },
+  {
+   "fieldname": "cost_of_fuel_tank",
+   "fieldtype": "Currency",
+   "label": "Cost of Fuel Tank",
+   "precision": "2",
+   "reqd": 1
   }
  ],
  "grid_page_length": 50,
- "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-12-26 11:03:21.252926",
- "modified_by": "Administrator",
+ "modified": "2026-04-16 17:03:35.643865",
+ "modified_by": "tdsengor1999@gmail.com",
  "module": "Selling",
  "name": "Price Costing",
  "naming_rule": "Expression",
@@ -194,6 +307,9 @@
   }
  ],
  "row_format": "Dynamic",
+ "search_fields": "price_costing_name, purchase_type, posting_date",
+ "show_name_in_global_search": 1,
+ "show_preview_popup": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []

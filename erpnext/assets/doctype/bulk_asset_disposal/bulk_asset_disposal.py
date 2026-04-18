@@ -261,7 +261,7 @@ def sale_asset(branch, name, scrap_date, posting_date,employee=None, customer=No
 	si.company = frappe.defaults.get_user_default("company")
 	si.customer = employee if employee else customer
 	si.customer_type = "Employee" if employee else "Customer"
-	# si.employee = employee
+	si.order_type = "Sales"
 	si.set_posting_time = 1
 	si.posting_date = posting_date
 	company = frappe.defaults.get_user_default("company")

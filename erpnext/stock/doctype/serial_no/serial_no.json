@@ -38,7 +38,7 @@
   "transmission_type_manualautomatic",
   "engine_cc",
   "fuel_type",
-  "vehicle_color",
+  "color_code",
   "purchase_details",
   "purchase_document_type",
   "purchase_document_no",
@@ -551,11 +551,6 @@
    "read_only": 1
   },
   {
-   "fieldname": "vehicle_color",
-   "fieldtype": "Data",
-   "label": "Vehicle Color"
-  },
-  {
    "depends_on": "eval: doc.brand == \"Toyota\"",
    "fieldname": "tvo_number",
    "fieldtype": "Data",
@@ -570,6 +565,7 @@
   {
    "fieldname": "engine_number",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Engine Number"
   },
   {
@@ -584,13 +580,18 @@
    "fieldtype": "Float",
    "label": "Free Services Count",
    "read_only": 1
+  },
+  {
+   "fieldname": "color_code",
+   "fieldtype": "Data",
+   "label": "Vehicle Color"
   }
  ],
  "icon": "fa fa-barcode",
  "idx": 1,
  "links": [],
- "modified": "2025-12-29 10:05:12.729513",
- "modified_by": "kalden.dorji@thimphutechpark.bt",
+ "modified": "2026-04-17 10:38:40.704267",
+ "modified_by": "Administrator",
  "module": "Stock",
  "name": "Serial No",
  "naming_rule": "By fieldname",

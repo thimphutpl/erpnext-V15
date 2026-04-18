@@ -241,27 +241,27 @@ erpnext.stock.PurchaseReceiptController = class PurchaseReceiptController extend
 			//removed for temporary
 			this.show_general_ledger();
 
-			this.frm.add_custom_button(
-				__("Asset"),
-				function () {
-					frappe.route_options = {
-						purchase_receipt: me.frm.doc.name,
-					};
-					frappe.set_route("List", "Asset");
-				},
-				__("View")
-			);
+			// this.frm.add_custom_button(
+			// 	__("Asset"),
+			// 	function () {
+			// 		frappe.route_options = {
+			// 			purchase_receipt: me.frm.doc.name,
+			// 		};
+			// 		frappe.set_route("List", "Asset");
+			// 	},
+			// 	__("View")
+			// );
 
-			this.frm.add_custom_button(
-				__("Asset Movement"),
-				function () {
-					frappe.route_options = {
-						reference_name: me.frm.doc.name,
-					};
-					frappe.set_route("List", "Asset Movement");
-				},
-				__("View")
-			);
+			// this.frm.add_custom_button(
+			// 	__("Asset Movement"),
+			// 	function () {
+			// 		frappe.route_options = {
+			// 			reference_name: me.frm.doc.name,
+			// 		};
+			// 		frappe.set_route("List", "Asset Movement");
+			// 	},
+			// 	__("View")
+			// );
 		}
 
 		if (!this.frm.doc.is_return && this.frm.doc.status != "Closed") {
@@ -302,11 +302,11 @@ erpnext.stock.PurchaseReceiptController = class PurchaseReceiptController extend
 
 				cur_frm.add_custom_button(__("Purchase Return"), this.make_purchase_return, __("Create"));
 
-				cur_frm.add_custom_button(
-					__("Make Stock Entry"),
-					cur_frm.cscript["Make Stock Entry"],
-					__("Create")
-				);
+				// cur_frm.add_custom_button(
+				// 	__("Make Stock Entry"),
+				// 	cur_frm.cscript["Make Stock Entry"],
+				// 	__("Create")
+				// );
 
 				if (flt(this.frm.doc.per_billed) < 100) {
 					cur_frm.add_custom_button(
@@ -315,11 +315,11 @@ erpnext.stock.PurchaseReceiptController = class PurchaseReceiptController extend
 						__("Create")
 					);
 				}
-				cur_frm.add_custom_button(
-					__("Retention Stock Entry"),
-					this.make_retention_stock_entry,
-					__("Create")
-				);
+				// cur_frm.add_custom_button(
+				// 	__("Retention Stock Entry"),
+				// 	this.make_retention_stock_entry,
+				// 	__("Create")
+				// );
 
 				cur_frm.add_custom_button(__('Asset Issue Entry'), this.make_asset_issue_entry, __('Create'));
 				cur_frm.page.set_inner_btn_group_as_primary(__("Create"));

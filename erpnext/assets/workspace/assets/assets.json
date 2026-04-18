@@ -137,7 +137,7 @@
    "hidden": 0,
    "is_query_report": 0,
    "label": "Transaction",
-   "link_count": 5,
+   "link_count": 4,
    "link_type": "DocType",
    "onboard": 0,
    "type": "Card Break"
@@ -181,19 +181,9 @@
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Asset Life Extension",
-   "link_count": 0,
-   "link_to": "Asset Life Extension",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
   }
  ],
- "modified": "2025-12-29 12:00:46.584722",
+ "modified": "2026-04-03 14:47:41.807171",
  "modified_by": "sonam.bomjan@thimphutechpark.bt",
  "module": "Assets",
  "name": "Assets",

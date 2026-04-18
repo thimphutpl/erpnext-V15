@@ -13,19 +13,22 @@
  "field_order": [
   "details",
   "naming_series",
-  "item_old_code",
   "item_code",
+  "item_old_code",
   "item_name",
   "item_group",
+  "parts_no",
   "abb",
   "item_sub_group",
   "stock_uom",
   "hsn_code",
-  "parts_no",
+  "model_no",
+  "substitute_part_no",
   "item_type",
   "business_activity",
   "country_of_origin",
   "column_break0",
+  "include_in_allotment",
   "brand",
   "disabled",
   "is_service_item",
@@ -194,6 +197,7 @@
   {
    "fieldname": "item_group",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Item Group",
    "options": "Item Group",
    "reqd": 1
@@ -202,6 +206,7 @@
    "fieldname": "stock_uom",
    "fieldtype": "Link",
    "ignore_user_permissions": 1,
+   "in_list_view": 1,
    "label": "Default Unit of Measure",
    "oldfieldname": "stock_uom",
    "oldfieldtype": "Link",
@@ -368,6 +373,7 @@
    "fieldname": "valuation_method",
    "fieldtype": "Select",
    "label": "Valuation Method",
+   "mandatory_depends_on": "eval: !doc.is_fixed_asset",
    "options": "\nMoving Average\nSPECIFIC"
   },
   {
@@ -943,8 +949,10 @@
   {
    "fieldname": "item_sub_group",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Item Sub Group",
-   "options": "Item Sub Group"
+   "options": "Item Sub Group",
+   "reqd": 1
   },
   {
    "default": "0",
@@ -956,7 +964,6 @@
   {
    "fieldname": "item_old_code",
    "fieldtype": "Data",
-   "hidden": 1,
    "label": "Item Old Code",
    "unique": 1
   },
@@ -978,13 +985,15 @@
   {
    "fieldname": "hsn_code",
    "fieldtype": "Data",
-   "label": "BTC / HSC Code"
+   "label": "BTC / HSN Code"
   },
   {
    "fieldname": "parts_no",
    "fieldtype": "Link",
-   "label": "Part No / Model No",
-   "options": "Part No"
+   "label": "Part No.",
+   "options": "Part No",
+   "reqd": 1,
+   "unique": 1
   },
   {
    "fieldname": "item_type",
@@ -1003,9 +1012,9 @@
   {
    "fieldname": "business_activity",
    "fieldtype": "Link",
-   "hidden": 1,
    "label": "Business Activity",
-   "options": "Business Activity"
+   "options": "Business Activity",
+   "reqd": 1
   },
   {
    "fieldname": "bin_and_shelf_management_section",
@@ -1022,7 +1031,6 @@
    "depends_on": "eval: doc.item_sub_group == \"Vehicle\";",
    "fieldname": "vehicle_details_section",
    "fieldtype": "Section Break",
-   "hidden": 1,
    "label": "Vehicle Details"
   },
   {
@@ -1084,6 +1092,24 @@
   {
    "fieldname": "column_break_djmc",
    "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "include_in_allotment",
+   "fieldtype": "Check",
+   "label": "Include In Allotment"
+  },
+  {
+   "fieldname": "model_no",
+   "fieldtype": "Link",
+   "label": "Model No",
+   "options": "Part No"
+  },
+  {
+   "fieldname": "substitute_part_no",
+   "fieldtype": "Data",
+   "label": "Substitute Part No.",
+   "options": "substitute part"
   }
  ],
  "icon": "fa fa-tag",
@@ -1091,8 +1117,8 @@
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-12-29 09:52:44.225358",
- "modified_by": "kalden.dorji@thimphutechpark.bt",
+ "modified": "2026-04-17 15:51:37.028206",
+ "modified_by": "Administrator",
  "module": "Stock",
  "name": "Item",
  "naming_rule": "Expression",
@@ -1162,7 +1188,7 @@
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],
- "title_field": "item_code",
+ "title_field": "item_name",
  "track_changes": 1,
  "track_views": 1
 }

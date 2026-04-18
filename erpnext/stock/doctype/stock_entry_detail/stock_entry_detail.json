@@ -82,6 +82,7 @@
   "cost_center",
   "project",
   "dimension_col_break",
+  "business_activity",
   "more_info",
   "actual_qty",
   "transferred_qty",
@@ -198,6 +199,7 @@
   },
   {
    "bold": 1,
+   "default": "0",
    "fieldname": "qty",
    "fieldtype": "Float",
    "in_list_view": 1,
@@ -318,7 +320,7 @@
   {
    "fieldname": "serial_no",
    "fieldtype": "Small Text",
-   "label": "Serial No",
+   "label": "Chassis No",
    "no_copy": 1,
    "oldfieldname": "serial_no",
    "oldfieldtype": "Text"
@@ -757,27 +759,33 @@
   {
    "fieldname": "tvo_no",
    "fieldtype": "Data",
-   "hidden": 1,
    "label": "Tvo No."
   },
   {
    "fieldname": "engine_no",
    "fieldtype": "Data",
-   "hidden": 1,
    "label": "Engine No."
   },
   {
    "fieldname": "get_chassis_no",
    "fieldtype": "Button",
    "label": "Get Chassis No"
+  },
+  {
+   "fetch_from": "item_code.business_activity",
+   "fetch_if_empty": 1,
+   "fieldname": "business_activity",
+   "fieldtype": "Link",
+   "label": "Business Activity",
+   "options": "Business Activity"
   }
  ],
  "idx": 1,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-12-26 14:57:15.867332",
- "modified_by": "kalden.dorji@thimphutechpark.bt",
+ "modified": "2026-04-17 10:57:48.555427",
+ "modified_by": "tshering.lham@thimphutechpark.bt",
  "module": "Stock",
  "name": "Stock Entry Detail",
  "naming_rule": "Random",

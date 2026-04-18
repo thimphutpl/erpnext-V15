@@ -146,8 +146,9 @@
   "more_info",
   "ref_sq",
   "enote_id",
-  "c2_status",
   "tax_payment_jv",
+  "c2_status",
+  "allotment_item",
   "column_break_74",
   "party_account_currency",
   "is_internal_supplier",
@@ -169,11 +170,11 @@
    "allow_on_submit": 1,
    "fieldname": "title",
    "fieldtype": "Data",
+   "hidden": 1,
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Order Reference ",
-   "print_hide": 1,
-   "reqd": 1
+   "print_hide": 1
   },
   {
    "bold": 1,
@@ -283,6 +284,7 @@
    "bold": 1,
    "fieldname": "customer_name",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Customer Name",
    "print_hide": 1,
    "read_only": 1
@@ -450,11 +452,13 @@
   {
    "description": "Sets 'Warehouse' in each row of the Items table.",
    "fetch_from": "branch.warehouse",
+   "fetch_if_empty": 1,
    "fieldname": "set_warehouse",
    "fieldtype": "Link",
    "label": "Set Target Warehouse",
    "options": "Warehouse",
-   "print_hide": 1
+   "print_hide": 1,
+   "reqd": 1
   },
   {
    "default": "0",
@@ -678,6 +682,7 @@
    "depends_on": "taxes_and_charges_added",
    "fieldname": "taxes_and_charges_added",
    "fieldtype": "Currency",
+   "hidden": 1,
    "label": "Taxes and Charges Added",
    "oldfieldname": "other_charges_added_import",
    "oldfieldtype": "Currency",
@@ -689,6 +694,7 @@
    "depends_on": "taxes_and_charges_deducted",
    "fieldname": "taxes_and_charges_deducted",
    "fieldtype": "Currency",
+   "hidden": 1,
    "label": "Taxes and Charges Deducted",
    "oldfieldname": "other_charges_deducted_import",
    "oldfieldtype": "Currency",
@@ -913,7 +919,7 @@
    "no_copy": 1,
    "oldfieldname": "status",
    "oldfieldtype": "Select",
-   "options": "\nDraft\nOn Hold\nTo Receive and Bill\nTo Bill\nTo Receive\nCompleted\nCancelled\nClosed\nDelivered",
+   "options": "\nDraft\nOn Hold\nTo Receive and Bill\nTo Bill\nTo Receive\nCompleted\nCancelled\nClosed\nDelivered\nIn Transit",
    "print_hide": 1,
    "read_only": 1,
    "search_index": 1
@@ -1180,13 +1186,13 @@
   {
    "fieldname": "business_activity",
    "fieldtype": "Link",
-   "hidden": 1,
    "label": "Business Activity",
    "options": "Business Activity"
   },
   {
    "fieldname": "order_header_and_footer_section",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Purchase Order Header and Footer"
   },
   {
@@ -1223,8 +1229,8 @@
   {
    "fieldname": "order_tracking_id",
    "fieldtype": "Data",
-   "label": "Order Tracking ID",
-   "read_only": 1
+   "hidden": 1,
+   "label": "Order Tracking ID"
   },
   {
    "fieldname": "naming_series",
@@ -1244,9 +1250,9 @@
   {
    "fieldname": "order_type",
    "fieldtype": "Select",
+   "hidden": 1,
    "label": "Order Type",
-   "options": "\nConfirm Order\nStock Order",
-   "reqd": 1
+   "options": "\nConfirm Order\nStock Order"
   },
   {
    "fieldname": "c2_status",
@@ -1290,14 +1296,21 @@
    "fieldtype": "Date",
    "in_list_view": 1,
    "label": "Expiry Date"
+  },
+  {
+   "fieldname": "allotment_item",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Allotment Item",
+   "options": "Allotment Item"
   }
  ],
  "icon": "fa fa-file-text",
  "idx": 105,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-03-16 14:18:08.566738",
- "modified_by": "Administrator",
+ "modified": "2026-04-18 16:01:13.379149",
+ "modified_by": "mon.chhetri@thimphutechpark.bt",
  "module": "Buying",
  "name": "Purchase Order",
  "naming_rule": "Expression (old style)",

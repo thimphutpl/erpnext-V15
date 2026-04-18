@@ -797,7 +797,8 @@ class Asset(AccountsController):
 				"debit_in_account_currency": self.gross_purchase_amount,
 				"reference_type": "Asset",
 				"reference_name": self.name,
-				"cost_center": self.cost_center
+				"cost_center": self.cost_center,
+				"business_activity": frappe.db.get_value("Item", self.item_code, "business_activity"),
 				})
 
 			#credit account update
@@ -806,7 +807,8 @@ class Asset(AccountsController):
 				"credit_in_account_currency": self.gross_purchase_amount,
 				"reference_type": "Asset",
 				"reference_name": self.name,
-				"cost_center": self.cost_center
+				"cost_center": self.cost_center,
+				"business_activity": frappe.db.get_value("Item", self.item_code, "business_activity"),
 				})
 			je.submit()
 		if self.is_existing_asset and flt(self.opening_accumulated_depreciation) > 0:

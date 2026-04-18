@@ -17,10 +17,17 @@ class OrderConfirmationDetails(Document):
 		advance__remarks: DF.SmallText | None
 		advances_paid: DF.Currency
 		amount: DF.Currency
+		bst: DF.Currency
+		c1_detail: DF.Link | None
+		c1_status: DF.Link | None
+		cd: DF.Currency
 		discount_amount: DF.Currency
 		engine_cc: DF.Float
+		et: DF.Currency
 		fuel_type: DF.Literal["", "Petrol", "Diesel", "EV"]
 		gross_price: DF.Currency
+		gst: DF.Currency
+		gt: DF.Currency
 		gvw_tonnage: DF.Float
 		item_code: DF.Link
 		item_details: DF.LongText | None
@@ -34,9 +41,12 @@ class OrderConfirmationDetails(Document):
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
-		quantity: DF.Data | None
+		price_costing: DF.Link | None
+		quantity: DF.Data
+		rate: DF.Currency
 		seating_capacity: DF.Float
 		transmission_type: DF.Literal["", "Manual", "Automatic"]
+		tvo_numbervin_numbervi_number: DF.Data | None
 		vehicle_color: DF.Data | None
 	# end: auto-generated types
 	pass

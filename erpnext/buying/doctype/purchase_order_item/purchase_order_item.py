@@ -31,9 +31,10 @@ class PurchaseOrderItem(Document):
 		bom: DF.Link | None
 		brand: DF.Link | None
 		business_activity: DF.Link | None
+		c2_status: DF.Link | None
 		company_total_stock: DF.Float
 		conversion_factor: DF.Float
-		cost_center: DF.Link
+		cost_center: DF.Link | None
 		delivered_by_supplier: DF.Check
 		description: DF.TextEditor | None
 		discount_amount: DF.Currency
@@ -62,6 +63,7 @@ class PurchaseOrderItem(Document):
 		material_request_item: DF.Data | None
 		net_amount: DF.Currency
 		net_rate: DF.Currency
+		order_type: DF.Literal["", "Confirm Order", "Stock Order"]
 		page_break: DF.Check
 		parent: DF.Data
 		parentfield: DF.Data
@@ -74,6 +76,7 @@ class PurchaseOrderItem(Document):
 		production_plan_item: DF.Data | None
 		production_plan_sub_assembly_item: DF.Data | None
 		project: DF.Link | None
+		purchase_type: DF.Literal["", "Air Order", "Sea Order", "Full Container", "By Road"]
 		qty: DF.Float
 		rate: DF.Currency
 		rate_with_margin: DF.Currency
@@ -84,13 +87,14 @@ class PurchaseOrderItem(Document):
 		sales_order_packed_item: DF.Data | None
 		schedule_date: DF.Date | None
 		stock_qty: DF.Float
-		stock_uom: DF.Link
+		stock_uom: DF.Link | None
 		stock_uom_rate: DF.Currency
 		supplier_quotation: DF.Link | None
 		supplier_quotation_item: DF.Link | None
 		total_weight: DF.Float
-		uom: DF.Link
-		warehouse: DF.Link
+		tvo_number: DF.Data | None
+		uom: DF.Link | None
+		warehouse: DF.Link | None
 		weight_per_unit: DF.Float
 		weight_uom: DF.Link | None
 		wip_composite_asset: DF.Link | None

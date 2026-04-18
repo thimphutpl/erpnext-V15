@@ -131,15 +131,16 @@ erpnext.accounts.PurchaseInvoice = class PurchaseInvoice extends erpnext.buying.
 					},
 					__("Create")
 				);
-			} else if (!doc.on_hold) {
-				this.frm.add_custom_button(
-					__("Block Invoice"),
-					function () {
-						me.block_invoice();
-					},
-					__("Create")
-				);
-			}
+			} 
+			// else if (!doc.on_hold) {
+			// 	this.frm.add_custom_button(
+			// 		__("Block Invoice"),
+			// 		function () {
+			// 			me.block_invoice();
+			// 		},
+			// 		__("Create")
+			// 	);
+			// }
 		}
 
 		if (doc.docstatus == 1 && doc.outstanding_amount != 0 && !doc.on_hold) {
@@ -147,11 +148,11 @@ erpnext.accounts.PurchaseInvoice = class PurchaseInvoice extends erpnext.buying.
 			cur_frm.page.set_inner_btn_group_as_primary(__("Create"));
 		}
 
-		if (!doc.is_return && doc.docstatus == 1) {
-			if (doc.outstanding_amount >= 0 || Math.abs(flt(doc.outstanding_amount)) < flt(doc.grand_total)) {
-				cur_frm.add_custom_button(__("Return / Debit Note"), this.make_debit_note, __("Create"));
-			}
-		}
+		// if (!doc.is_return && doc.docstatus == 1) {
+		// 	if (doc.outstanding_amount >= 0 || Math.abs(flt(doc.outstanding_amount)) < flt(doc.grand_total)) {
+		// 		cur_frm.add_custom_button(__("Return / Debit Note"), this.make_debit_note, __("Create"));
+		// 	}
+		// }
 
 		if (doc.outstanding_amount > 0 && !cint(doc.is_return) && !doc.on_hold) {
 			cur_frm.add_custom_button(
@@ -658,7 +659,7 @@ frappe.ui.form.on("Purchase Invoice Item", {
 			args:{
 				rate: d.rate,
 				qty: d.qty,
-				company:frm.doc.company
+				company: frm.doc.company,
 			},
 			callback: function(r){
 				console.log(r.message)
@@ -750,15 +751,15 @@ frappe.ui.form.on("Purchase Invoice", {
 	},
 
 	add_custom_buttons: function (frm) {
-		if (frm.doc.docstatus == 1 && frm.doc.per_received < 100) {
-			frm.add_custom_button(
-				__("Purchase Receipt"),
-				() => {
-					frm.events.make_purchase_receipt(frm);
-				},
-				__("Create")
-			);
-		}
+		// if (frm.doc.docstatus == 1 && frm.doc.per_received < 100) {
+		// 	frm.add_custom_button(
+		// 		__("Purchase Receipt"),
+		// 		() => {
+		// 			frm.events.make_purchase_receipt(frm);
+		// 		},
+		// 		__("Create")
+		// 	);
+		// }
 
 		if (frm.doc.docstatus == 1 && frm.doc.per_received > 0) {
 			frm.add_custom_button(

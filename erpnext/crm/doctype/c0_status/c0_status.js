@@ -18,4 +18,14 @@ frappe.ui.form.on("C0 Status", {
 			frm: cur_frm
 		})
 	},
+	customer_id: function(frm) {
+        if (frm.doc.customer_id) {
+            frappe.db.get_value("Customer", frm.doc.customer_id, "mobile_no")
+                .then(r => {
+                    if (r.message) {
+                        frm.set_value("phone_number", r.message.mobile_no);
+                    }
+                });
+        }
+    }
 });

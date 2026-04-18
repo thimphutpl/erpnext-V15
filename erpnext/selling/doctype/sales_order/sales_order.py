@@ -52,6 +52,7 @@ class SalesOrder(SellingController):
 		additional_discount_percentage: DF.Float
 		address: DF.SmallText | None
 		advance_paid: DF.Currency
+		allotment_item: DF.Link | None
 		amended_from: DF.Link | None
 		amount_eligible_for_commission: DF.Currency
 		apply_discount_on: DF.Literal["", "Grand Total", "Net Total"]
@@ -161,7 +162,7 @@ class SalesOrder(SellingController):
 		technician_name: DF.Data | None
 		terms: DF.TextEditor | None
 		territory: DF.Link | None
-		title: DF.Data
+		title: DF.Data | None
 		to_date: DF.Date | None
 		total: DF.Currency
 		total_commission: DF.Currency
@@ -832,6 +833,8 @@ def make_delivery_note(source_name, target_doc=None, skip_item_mapping=False):
 				"rate": "rate",
 				"name": "so_detail",
 				"parent": "against_sales_order",
+				"business_activity": "business_activity",
+
 			},
 			"postprocess": update_item,
 			"condition": condition,

@@ -14,6 +14,7 @@
   "sub_ledger",
   "brand",
   "model",
+  "order_type",
   "description_section",
   "description",
   "col_break7",
@@ -970,11 +971,12 @@
   },
   {
    "fetch_from": "item_code.business_activity",
+   "fetch_if_empty": 1,
    "fieldname": "business_activity",
    "fieldtype": "Link",
-   "hidden": 1,
    "label": "Business Activity",
-   "options": "Business Activity"
+   "options": "Business Activity",
+   "reqd": 1
   },
   {
    "fieldname": "sub_ledger",
@@ -1018,13 +1020,20 @@
    "fieldtype": "Float",
    "label": "GST Amount",
    "read_only": 1
+  },
+  {
+   "fieldname": "order_type",
+   "fieldtype": "Select",
+   "label": "Order Type",
+   "options": "\nConfirm Order\nStock Order",
+   "read_only": 1
   }
  ],
  "idx": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-12-30 11:49:50.425745",
- "modified_by": "kalden.dorji@thimphutechpark.bt",
+ "modified": "2026-04-17 09:52:22.643584",
+ "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Purchase Invoice Item",
  "naming_rule": "Random",

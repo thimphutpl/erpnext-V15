@@ -137,54 +137,162 @@ frappe.ui.form.on("Delivery Note Item", {
 		var d = locals[dt][dn];
 		frm.update_in_all_rows("items", "cost_center", d.cost_center);
 	},
+	// get_chassis_no: function(frm, cdt, cdn) {
+	// 	let row = locals[cdt][cdn];
+	// 	// let already_selected = (row.serial_no || "").split("\n").filter(Boolean);
+	// 	if (frm.doc.docstatus == 0) {
+	// 		let msd = new frappe.ui.form.MultiSelectDialog({
+	// 			doctype: "Serial No", // the doctype to fetch
+	// 			target: frm,
+	// 			setters: {
+	// 				status: "Active"  // filter: only Active serials
+	// 			},
+	// 			add_filters_group: 1,
+	// 			primary_action_label: "Select",
+	// 			get_query() {
+	// 				return {
+	// 					filters: {
+	// 						status: "Active",
+	// 						warehouse: row.warehouse,
+	// 						// name: ["not in", already_selected]
+	// 					}
+	// 				};
+	// 			},
+	// 			action(selections) {
+	// 				if (selections.length !== 1) {
+	// 					frappe.msgprint(__("Please select exactly one Serial No"));
+	// 					return;
+	// 				}
+	
+	// 				// overwrite value
+	// 				let serial_no = selections[0];
+	// 				frappe.db.get_value(
+	// 					"Serial No",
+	// 					serial_no,
+	// 					["name", "tvo_number", "engine_no"],
+	// 					(r) => {
+	// 						if (r) {
+	// 							row.serial_no = r.name;
+	// 							row.tvo_no = r.tvo_number;
+	// 							row.engine_no = r.engine_no;
+	
+	// 							frm.refresh_field("items");
+	// 							msd.dialog.hide();
+	// 						}
+	// 					}
+	// 				);
+	// 			}
+	// 		});
+	// 	}
+	// },
+
 	get_chassis_no: function(frm, cdt, cdn) {
 		let row = locals[cdt][cdn];
-		// let already_selected = (row.serial_no || "").split("\n").filter(Boolean);
+		let already_selected = (row.serial_no || "").split("\n").filter(Boolean);
+		if (!row.item_code){
+			frappe.throw(__("Please select an Item First"));
+		}
+	
 		if (frm.doc.docstatus == 0) {
+	
 			let msd = new frappe.ui.form.MultiSelectDialog({
-				doctype: "Serial No", // the doctype to fetch
+				doctype: "Serial No",
 				target: frm,
 				setters: {
-					status: "Active"  // filter: only Active serials
+					status: "Active"
 				},
 				add_filters_group: 1,
-				primary_action_label: "Select",
+	
 				get_query() {
 					return {
 						filters: {
 							status: "Active",
-							// name: ["not in", already_selected]
+							name: ["not in", already_selected],
+							item_code: row.item_code
 						}
 					};
 				},
+	
+				primary_action_label: "Select",
+	
 				action(selections) {
-					if (selections.length !== 1) {
-						frappe.msgprint(__("Please select exactly one Serial No"));
+					if (selections.length === 0) return;
+
+					if (selections.length > 1) {
+						frappe.msgprint(__("Select only one Serial No"));
 						return;
 					}
-	
-					// overwrite value
-					let serial_no = selections[0];
-					frappe.db.get_value(
-						"Serial No",
-						serial_no,
-						["name", "tvo_number", "engine_number"],
-						(r) => {
-							if (r) {
-								row.serial_no = r.name;
-								row.tvo_no = r.tvo_number;
-								row.engine_no = r.engine_number;
-	
-								frm.refresh_field("items");
-								msd.dialog.hide();
-							}
+
+					let selected = selections[0];
+					// ✅ Fetch full data (engine_no, tvo_no)
+					// frappe.db.get_list("Serial No", {
+					// 	filters: { name: selected },
+					// 	fields: ["name", "engine_no", "tvo_number", "purchase_document_type", "purchase_document_no"]
+					// })
+					frappe.db.get_value("Serial No", selected, ["engine_no", "tvo_number", "purchase_document_type", "purchase_document_no"])
+					.then(r => {
+						row.serial_no = selected;
+						row.engine_no = r.message.engine_no || "";
+						row.tvo_no = r.message.tvo_number || "";
+						frm.refresh_field("items");
+						// frappe.throw(str(r.purchase_document_type))
+
+						// fetch_taxes(frm, r.purchase_document_type, r.purchase_document_no);
+						if (!r.message.purchase_document_type || !r.message.purchase_document_no) {
+							msd.dialog.hide();
+							return;
 						}
-					);
+						// let total = 0;
+						frappe.db.get_doc(r.message.purchase_document_type, r.message.purchase_document_no).then(doc => {
+
+							// Clear existing rows
+							frm.clear_table("purchase_tax_details");
+
+							(doc.taxes || []).filter(tax => !tax.is_gst).forEach(tax => {
+
+								let row = frm.add_child("purchase_tax_details");
+
+								row.account_head = tax.account_head;
+								row.amount = tax.tax_amount_after_discount_amount;
+								row.description = tax.description;
+								// total += row.amount
+
+							});
+
+							frm.refresh_field("purchase_tax_details");
+						});
+						// frm.set_value("total", flt(frm.doc.total) + total);
+						msd.dialog.hide();
+					});
 				}
 			});
 		}
-	},
+	}
 });
+
+// function fetch_taxes(frm, doctype, docname) {
+// 	frappe.throw(str(docname))
+// 	alert(doctype, docname)
+//     if (!doctype || !docname) return;
+
+//     frappe.db.get_doc(doctype, docname).then(doc => {
+
+//         // Clear existing rows
+//         frm.clear_table("purchase_tax_details");
+
+//         (doc.taxes || []).filter(tax => !tax.is_gst).forEach(tax => {
+
+//             let row = frm.add_child("purchase_tax_details");
+
+//             row.account_head = tax.account_head;
+//             row.amount = tax.tax_amount_after_discount_amount;
+//             row.description = tax.description;
+
+//         });
+
+//         frm.refresh_field("purchase_tax_details");
+//     });
+// }
 
 erpnext.stock.DeliveryNoteController = class DeliveryNoteController extends (
 	erpnext.selling.SellingController
@@ -239,29 +347,29 @@ erpnext.stock.DeliveryNoteController = class DeliveryNoteController extends (
 		}
 
 		if (!doc.is_return && doc.status != "Closed") {
-			if (doc.docstatus == 1 && frappe.model.can_create("Shipment")) {
-				this.frm.add_custom_button(
-					__("Shipment"),
-					function () {
-						me.make_shipment();
-					},
-					__("Create")
-				);
-			}
+			// if (doc.docstatus == 1 && frappe.model.can_create("Shipment")) {
+			// 	this.frm.add_custom_button(
+			// 		__("Shipment"),
+			// 		function () {
+			// 			me.make_shipment();
+			// 		},
+			// 		__("Create")
+			// 	);
+			// }
 
-			if (
-				flt(doc.per_installed, 2) < 100 &&
-				doc.docstatus == 1 &&
-				frappe.model.can_create("Installation Note")
-			) {
-				this.frm.add_custom_button(
-					__("Installation Note"),
-					function () {
-						me.make_installation_note();
-					},
-					__("Create")
-				);
-			}
+			// if (
+			// 	flt(doc.per_installed, 2) < 100 &&
+			// 	doc.docstatus == 1 &&
+			// 	frappe.model.can_create("Installation Note")
+			// ) {
+			// 	this.frm.add_custom_button(
+			// 		__("Installation Note"),
+			// 		function () {
+			// 			me.make_installation_note();
+			// 		},
+			// 		__("Create")
+			// 	);
+			// }
 
 			if (doc.docstatus == 1 && this.frm.has_perm("create")) {
 				this.frm.add_custom_button(
@@ -273,15 +381,15 @@ erpnext.stock.DeliveryNoteController = class DeliveryNoteController extends (
 				);
 			}
 
-			if (doc.docstatus == 1 && frappe.model.can_create("Delivery Trip")) {
-				this.frm.add_custom_button(
-					__("Delivery Trip"),
-					function () {
-						me.make_delivery_trip();
-					},
-					__("Create")
-				);
-			}
+			// if (doc.docstatus == 1 && frappe.model.can_create("Delivery Trip")) {
+			// 	this.frm.add_custom_button(
+			// 		__("Delivery Trip"),
+			// 		function () {
+			// 			me.make_delivery_trip();
+			// 		},
+			// 		__("Create")
+			// 	);
+			// }
 
 			if (
 				doc.docstatus == 0 &&

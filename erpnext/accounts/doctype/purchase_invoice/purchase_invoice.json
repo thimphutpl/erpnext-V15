@@ -790,7 +790,7 @@
    "label": "Additional Discount"
   },
   {
-   "default": "Grand Total",
+   "default": "Net Total",
    "fieldname": "apply_discount_on",
    "fieldtype": "Select",
    "label": "Apply Additional Discount On",
@@ -1457,6 +1457,7 @@
   {
    "fieldname": "dv_no",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "DRC No."
   },
   {
@@ -1525,8 +1526,8 @@
  "idx": 204,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-12-26 11:03:25.554095",
- "modified_by": "kalden.dorji@thimphutechpark.bt",
+ "modified": "2026-04-18 09:52:25.352600",
+ "modified_by": "tshering.lham@thimphutechpark.bt",
  "module": "Accounts",
  "name": "Purchase Invoice",
  "naming_rule": "Expression (old style)",

@@ -369,16 +369,6 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Customer Track",
-   "link_count": 0,
-   "link_to": "Customer Track",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
    "label": "C0 Status",
    "link_count": 0,
    "link_to": "C0 Status",
@@ -405,10 +395,20 @@
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Allotment Item",
+   "link_count": 0,
+   "link_to": "Allotment Item",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2025-12-23 11:04:28.669600",
- "modified_by": "kalden.dorji@thimphutechpark.bt",
+ "modified": "2026-04-13 11:46:28.609350",
+ "modified_by": "Administrator",
  "module": "CRM",
  "name": "CRM",
  "number_cards": [],

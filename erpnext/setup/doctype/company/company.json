@@ -64,6 +64,7 @@
   "sb_gst_account",
   "international_supplier_input_gst_template",
   "domestic_supplier_input_gst_template",
+  "input_gst_account",
   "column_break_wvaj",
   "output_gst_template",
   "gst_clearing_account",
@@ -107,6 +108,7 @@
   "default_revenue_bank_account",
   "column_break_eyiz",
   "default_income_interest_account",
+  "discount_allowed",
   "service_sales_jobcard_section",
   "revenue_account",
   "internal_expense_account",
@@ -1244,6 +1246,18 @@
    "fieldtype": "Link",
    "label": "GST Clearing Account",
    "options": "Account"
+  },
+  {
+   "fieldname": "input_gst_account",
+   "fieldtype": "Link",
+   "label": "Input GST Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "discount_allowed",
+   "fieldtype": "Link",
+   "label": "Discount Allowed",
+   "options": "Account"
   }
  ],
  "icon": "fa fa-building",
@@ -1251,7 +1265,7 @@
  "image_field": "company_logo",
  "is_tree": 1,
  "links": [],
- "modified": "2025-12-31 12:02:27.281005",
+ "modified": "2026-04-16 17:39:26.557389",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Company",

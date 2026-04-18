@@ -283,8 +283,8 @@
  "idx": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2025-12-23 11:15:23.183923",
- "modified_by": "Administrator",
+ "modified": "2026-04-18 12:37:26.777589",
+ "modified_by": "tdsengor1999@gmail.com",
  "module": "Accounts",
  "name": "Account",
  "nsm_parent_field": "parent_account",
@@ -344,5 +344,6 @@
  "sort_field": "modified",
  "sort_order": "ASC",
  "states": [],
+ "title_field": "account_number",
  "track_changes": 1
 }

@@ -1,0 +1,184 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-03-25 11:54:25.964654",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_w4il",
+  "select",
+  "customer_id",
+  "salutation",
+  "customer_name",
+  "phone_number",
+  "email_id",
+  "primary_address",
+  "customer_details",
+  "responsible_branch",
+  "customer_report",
+  "column_break_mblg",
+  "c2_status",
+  "item_code",
+  "item_name",
+  "price_costing",
+  "rate",
+  "qty",
+  "purchase_order",
+  "sales_order",
+  "tvo_numbervc_numbervi_number"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_w4il",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "customer_id",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Customer ID",
+   "options": "Customer"
+  },
+  {
+   "fieldname": "salutation",
+   "fieldtype": "Data",
+   "label": "Salutation",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "customer_id.customer_name",
+   "fieldname": "customer_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Customer Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "phone_number",
+   "fieldtype": "Data",
+   "label": "Phone Number",
+   "read_only": 1
+  },
+  {
+   "fieldname": "email_id",
+   "fieldtype": "Data",
+   "label": "Email ID",
+   "read_only": 1
+  },
+  {
+   "fieldname": "primary_address",
+   "fieldtype": "Data",
+   "label": "Primary Address",
+   "read_only": 1
+  },
+  {
+   "fieldname": "customer_details",
+   "fieldtype": "Small Text",
+   "label": "Customer Details",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_mblg",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "responsible_branch",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Responsible Branch",
+   "read_only": 1
+  },
+  {
+   "fieldname": "customer_report",
+   "fieldtype": "Long Text",
+   "label": "Customer Report",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "select",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Select"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "c2_status",
+   "fieldtype": "Link",
+   "ignore_user_permissions": 1,
+   "label": "C2 Status",
+   "options": "C2 Status",
+   "read_only": 1
+  },
+  {
+   "fieldname": "item_code",
+   "fieldtype": "Link",
+   "label": "Item Code",
+   "options": "Item"
+  },
+  {
+   "fetch_from": "item_code.item_name",
+   "fieldname": "item_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Item Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "rate",
+   "fieldtype": "Currency",
+   "label": "Rate"
+  },
+  {
+   "default": "1",
+   "fieldname": "qty",
+   "fieldtype": "Int",
+   "label": "qty"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "purchase_order",
+   "fieldtype": "Link",
+   "ignore_user_permissions": 1,
+   "label": "Purchase Order",
+   "options": "Purchase Order",
+   "read_only": 1
+  },
+  {
+   "fieldname": "price_costing",
+   "fieldtype": "Link",
+   "label": "Price Costing",
+   "options": "Price Costing",
+   "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "sales_order",
+   "fieldtype": "Link",
+   "ignore_user_permissions": 1,
+   "label": "Sales Order",
+   "options": "Sales Order",
+   "read_only": 1
+  },
+  {
+   "fieldname": "tvo_numbervc_numbervi_number",
+   "fieldtype": "Data",
+   "label": "TVO Number/VC Number/VI Number"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-04-08 16:41:34.936888",
+ "modified_by": "tshering.lham@thimphutechpark.bt",
+ "module": "CRM",
+ "name": "Allotment Item Item",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

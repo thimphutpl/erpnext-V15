@@ -105,7 +105,10 @@ class BudgetReappropiation(Document):
 		args.project = self.from_project if self.budget_against == "Project" else None
 		args.fiscal_year = self.fiscal_year
 		args.company = self.company
+		row = 1
 		for a in self.get('items'):
+			if not a.from_month:
+				frappe.throw("Please set From Month in row {}".format(str(row)))
 			for month_id in range(1, 13):
 				month = datetime.date(2023, month_id, 1).strftime("%B")
 				if a.from_month == month:
@@ -115,6 +118,7 @@ class BudgetReappropiation(Document):
 			args.account = a.from_account
 			args.amount = a.amount
 			args.posting_date = first_day
+			row += 1
 		# frappe.throw("<pre>{}</pre>".format(frappe.as_json(args)))
 		validate_expense_against_budget(args)
 

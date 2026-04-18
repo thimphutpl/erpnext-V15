@@ -86,6 +86,7 @@
    "depends_on": "eval:doc.which",
    "fieldname": "imprest",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "Bought Using Imprest?"
   },
   {
@@ -120,7 +121,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-11-24 16:26:17.139502",
+ "modified": "2026-04-18 15:40:16.941860",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Job Cards Item",

@@ -20,15 +20,21 @@
   "column_break_zsdv",
   "responsible_branch",
   "customer_report",
+  "dob",
+  "presently_residing_at",
+  "permanent_address_section",
+  "village",
+  "gewog",
+  "dzongkhag",
   "customer_quotations_section",
   "items",
   "grand_total",
   "c1_status_report",
   "print_details_section",
-  "header",
-  "footer",
   "terms_and_cond_tempate",
   "terms_and_conditions",
+  "header",
+  "footer",
   "section_break_atog",
   "amended_from"
  ],
@@ -53,6 +59,7 @@
   {
    "fieldname": "customer_name",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Customer Name"
   },
   {
@@ -69,12 +76,14 @@
    "fetch_from": "customer_id.primary_address",
    "fieldname": "primary_address",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Primary Address"
   },
   {
    "fetch_from": "customer_id.customer_details",
    "fieldname": "customer_details",
    "fieldtype": "Small Text",
+   "hidden": 1,
    "label": "Customer Details"
   },
   {
@@ -83,8 +92,9 @@
   },
   {
    "fieldname": "responsible_branch",
-   "fieldtype": "Data",
-   "label": "Responsible Branch"
+   "fieldtype": "Link",
+   "label": "Responsible Branch",
+   "options": "Branch"
   },
   {
    "fieldname": "customer_report",
@@ -126,7 +136,8 @@
    "fieldname": "items",
    "fieldtype": "Table",
    "label": "Item",
-   "options": "Customer Quotation Details"
+   "options": "Customer Quotation Details",
+   "reqd": 1
   },
   {
    "fetch_from": "customer_id.cid_no",
@@ -140,15 +151,17 @@
    "label": "Print Details"
   },
   {
-   "default": "Dear Sir,\nWe are pleased to submit the quotation for",
+   "allow_on_submit": 1,
    "fieldname": "header",
    "fieldtype": "Small Text",
+   "hidden": 1,
    "label": "Header"
   },
   {
    "default": "We look forward for receiving your order\n\n\n.\nYours sincerely,",
    "fieldname": "footer",
    "fieldtype": "Small Text",
+   "hidden": 1,
    "label": "Footer"
   },
   {
@@ -159,6 +172,7 @@
   },
   {
    "fetch_from": "terms_and_cond_tempate.terms",
+   "fetch_if_empty": 1,
    "fieldname": "terms_and_conditions",
    "fieldtype": "Text Editor"
   },
@@ -173,14 +187,44 @@
    "in_list_view": 1,
    "label": "Posting Date",
    "reqd": 1
+  },
+  {
+   "fieldname": "dob",
+   "fieldtype": "Date",
+   "label": "Date of Birth"
+  },
+  {
+   "fieldname": "presently_residing_at",
+   "fieldtype": "Data",
+   "label": "Presently Residing At"
+  },
+  {
+   "fieldname": "permanent_address_section",
+   "fieldtype": "Section Break",
+   "label": "Permanent Address"
+  },
+  {
+   "fieldname": "village",
+   "fieldtype": "Data",
+   "label": "Village"
+  },
+  {
+   "fieldname": "gewog",
+   "fieldtype": "Data",
+   "label": "Gewog"
+  },
+  {
+   "fieldname": "dzongkhag",
+   "fieldtype": "Data",
+   "label": "Dzongkhag"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-12-28 20:54:16.727630",
- "modified_by": "kalden.dorji@thimphutechpark.bt",
+ "modified": "2026-04-13 14:07:56.567248",
+ "modified_by": "Administrator",
  "module": "CRM",
  "name": "C1 Status",
  "naming_rule": "Expression",

@@ -76,6 +76,9 @@ def _execute(filters=None, additional_table_columns=None):
 		purchase_order = list(set(invoice_po_pr_map.get(inv.name, {}).get("purchase_order", [])))
 		purchase_receipt = list(set(invoice_po_pr_map.get(inv.name, {}).get("purchase_receipt", [])))
 		project = list(set(invoice_po_pr_map.get(inv.name, {}).get("project", [])))
+		order_type = list(set(invoice_po_pr_map.get(inv.name, {}).get("order_type", [])))
+		# frappe.throw(str(order_type))
+
 
 		row = {
 			"voucher_type": inv.doctype,
@@ -95,6 +98,7 @@ def _execute(filters=None, additional_table_columns=None):
 			"purchase_order": ", ".join(purchase_order),
 			"purchase_receipt": ", ".join(purchase_receipt),
 			"currency": company_currency,
+			"order_type": ", ".join(order_type),
 		}
 
 		# map expense values
@@ -227,6 +231,12 @@ def get_columns(invoice_list, additional_table_columns, include_payments=False):
 				"width": 100,
 			},
 			{"fieldname": "currency", "label": _("Currency"), "fieldtype": "Data", "width": 80},
+			{
+				"label": _("Purchase Type"),
+				"fieldname": "order_type",
+				"fieldtype": "Data",
+				"width": 120,
+			},
 		]
 	else:
 		columns += [
@@ -521,7 +531,7 @@ def get_invoice_tax_map(invoice_list, invoice_expense_map, expense_accounts, inc
 def get_invoice_po_pr_map(invoice_list):
 	pi_items = frappe.db.sql(
 		"""
-		select parent, purchase_order, purchase_receipt, po_detail, project
+		select parent, purchase_order, purchase_receipt, po_detail, project, order_type
 		from `tabPurchase Invoice Item`
 		where parent in (%s) and parenttype='Purchase Invoice'
 	"""
@@ -552,6 +562,9 @@ def get_invoice_po_pr_map(invoice_list):
 
 		if d.project:
 			invoice_po_pr_map.setdefault(d.parent, frappe._dict()).setdefault("project", []).append(d.project)
+
+		if d.order_type:
+			invoice_po_pr_map.setdefault(d.parent, frappe._dict()).setdefault("order_type", []).append(d.order_type)
 
 	return invoice_po_pr_map
 

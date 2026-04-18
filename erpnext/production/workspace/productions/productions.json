@@ -2,12 +2,14 @@
  "charts": [],
  "content": "[{\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Production\",\"col\":3}},{\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Production Settings\",\"col\":3}},{\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Coal Raising Invoice\",\"col\":3}},{\"type\":\"spacer\",\"data\":{\"col\":12}},{\"type\":\"card\",\"data\":{\"card_name\":\"Master Data\",\"col\":4}},{\"type\":\"card\",\"data\":{\"card_name\":\"Transaction\",\"col\":4}},{\"type\":\"card\",\"data\":{\"card_name\":\"Key Reports\",\"col\":4}},{\"type\":\"card\",\"data\":{\"card_name\":\"Coal Raising\",\"col\":4}},{\"type\":\"card\",\"data\":{\"card_name\":\"Coal Raising Transaction\",\"col\":4}},{\"type\":\"card\",\"data\":{\"card_name\":\"Coal Raising Report\",\"col\":4}}]",
  "creation": "2022-10-19 16:08:28.153552",
+ "custom_blocks": [],
  "docstatus": 0,
  "doctype": "Workspace",
  "for_user": "",
  "hide_custom": 0,
  "icon": "color-monthly-rank",
  "idx": 0,
+ "is_hidden": 1,
  "label": "Productions",
  "links": [
   {
@@ -309,10 +311,11 @@
    "type": "Link"
   }
  ],
- "modified": "2023-01-02 15:01:39.703942",
- "modified_by": "Administrator",
+ "modified": "2026-04-03 11:35:44.783394",
+ "modified_by": "tshering.lham@thimphutechpark.bt",
  "module": "Production",
  "name": "Productions",
+ "number_cards": [],
  "owner": "Administrator",
  "parent_page": "",
  "public": 1,

@@ -14,6 +14,7 @@ class MechanicAssigned(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		bay: DF.Literal["", "1", "2", "3", "4", "5", "6", "7", "8 (Electricals & others)", "9 (Body)", "10 (Paints)"]
 		employee_name: DF.Data | None
 		employee_type: DF.Literal["Employee", "GEP Employee", "Muster Roll Employee"]
 		end_time: DF.Datetime | None

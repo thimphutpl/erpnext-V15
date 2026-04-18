@@ -27,6 +27,7 @@ class DeliveryNote(SellingController):
 	if TYPE_CHECKING:
 		from erpnext.accounts.doctype.pricing_rule_detail.pricing_rule_detail import PricingRuleDetail
 		from erpnext.accounts.doctype.sales_taxes_and_charges.sales_taxes_and_charges import SalesTaxesandCharges
+		from erpnext.selling.doctype.purchase_tax_details.purchase_tax_details import PurchaseTaxDetails
 		from erpnext.selling.doctype.sales_team.sales_team import SalesTeam
 		from erpnext.stock.doctype.delivery_note_item.delivery_note_item import DeliveryNoteItem
 		from erpnext.stock.doctype.packed_item.packed_item import PackedItem
@@ -115,6 +116,7 @@ class DeliveryNote(SellingController):
 		pricing_rules: DF.Table[PricingRuleDetail]
 		print_without_amount: DF.Check
 		project: DF.Link | None
+		purchase_tax_details: DF.Table[PurchaseTaxDetails]
 		rate_quoted: DF.Data | None
 		represents_company: DF.Link | None
 		return_against: DF.Link | None
@@ -289,7 +291,7 @@ class DeliveryNote(SellingController):
 				},
 				"Sales Order Item": {
 					"ref_dn_field": "so_detail",
-					"compare_fields": [["item_code", "="], ["uom", "="], ["conversion_factor", "="]],
+					"compare_fields": [["item_code", "="], ["conversion_factor", "="]],
 					"is_child_table": True,
 					"allow_duplicate_prev_row_id": True,
 				},
@@ -717,12 +719,21 @@ def make_sales_invoice(source_name, target_doc=None):
 					"against_sales_order": "sales_order",
 					"serial_no": "serial_no",
 					"cost_center": "cost_center",
-					"qty":"accepted_qty"
+					"qty":"accepted_qty",
+					"business_activity": "business_activity",
 				},
 				"postprocess": update_item,
 				"filter": lambda d: get_pending_qty(d) <= 0
 				if not doc.get("is_return")
 				else get_pending_qty(d) > 0,
+			},
+			"Purchase Tax Details": {
+				"doctype": "Purchase Tax Details In Sales Invoice",
+				"field_map": {
+					"account_head": "account_head",
+					"description": "description",
+					"amount":"amount"
+				},
 			},
 			"Sales Taxes and Charges": {"doctype": "Sales Taxes and Charges", "add_if_empty": True},
 			"Sales Team": {

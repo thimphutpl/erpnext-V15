@@ -5,6 +5,7 @@
  "allow_rename": 1,
  "autoname": "format:CUSID{YY}{MM}{####}",
  "creation": "2013-06-11 14:26:44",
+ "default_view": "List",
  "description": "Buyer of Goods and Services.",
  "doctype": "DocType",
  "document_type": "Setup",
@@ -33,6 +34,13 @@
   "customer_type",
   "country",
   "represents_company",
+  "dob",
+  "presenting_residing_at",
+  "permanent_address_section",
+  "village",
+  "gewog",
+  "dzongkhag",
+  "home_no",
   "consolidation_section",
   "inter_company",
   "column_break_26",
@@ -427,6 +435,7 @@
    "default": "0",
    "fieldname": "is_frozen",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "Is Frozen"
   },
   {
@@ -625,16 +634,54 @@
    "label": "Alternative Email ID"
   },
   {
+   "allow_in_quick_entry": 1,
    "fieldname": "cid_no",
    "fieldtype": "Data",
-   "label": "CID No/TPN No",
+   "label": "CID No",
+   "mandatory_depends_on": "eval: doc.customer_group == \"Individual\"",
    "unique": 1
   },
   {
+   "allow_in_quick_entry": 1,
    "fieldname": "tpn_no",
    "fieldtype": "Data",
-   "hidden": 1,
-   "label": "TPN No"
+   "label": "TPN No",
+   "mandatory_depends_on": "eval: doc.customer_group && doc.customer_group != \"Individual\""
+  },
+  {
+   "fieldname": "dob",
+   "fieldtype": "Date",
+   "label": "Date of Birth"
+  },
+  {
+   "fieldname": "permanent_address_section",
+   "fieldtype": "Section Break",
+   "label": "Permanent Address"
+  },
+  {
+   "fieldname": "village",
+   "fieldtype": "Data",
+   "label": "Village"
+  },
+  {
+   "fieldname": "gewog",
+   "fieldtype": "Data",
+   "label": "Gewog"
+  },
+  {
+   "fieldname": "dzongkhag",
+   "fieldtype": "Data",
+   "label": "Dzongkhag"
+  },
+  {
+   "fieldname": "presenting_residing_at",
+   "fieldtype": "Data",
+   "label": "Presently Residing At"
+  },
+  {
+   "fieldname": "home_no",
+   "fieldtype": "Data",
+   "label": "Home No"
   }
  ],
  "icon": "fa fa-user",
@@ -648,8 +695,8 @@
    "link_fieldname": "party"
   }
  ],
- "modified": "2025-12-30 10:57:42.309035",
- "modified_by": "kalden.dorji@thimphutechpark.bt",
+ "modified": "2026-04-17 09:58:35.453825",
+ "modified_by": "tshering.lham@thimphutechpark.bt",
  "module": "Selling",
  "name": "Customer",
  "naming_rule": "Expression",
@@ -727,11 +774,12 @@
  ],
  "quick_entry": 1,
  "row_format": "Dynamic",
- "search_fields": "customer_group,territory, mobile_no,primary_address",
- "show_name_in_global_search": 1,
+ "search_fields": "customer_group, mobile_no, email_id",
+ "show_title_field_in_link": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],
  "title_field": "customer_name",
- "track_changes": 1
+ "track_changes": 1,
+ "translated_doctype": 1
 }

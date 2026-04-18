@@ -28,6 +28,7 @@ class Branch(Document):
 		branch_code: DF.Data | None
 		company: DF.Link
 		cost_center: DF.Link
+		default_discount_account: DF.Link | None
 		disabled: DF.Check
 		expense_bank_account: DF.Link | None
 		gis_policy_number: DF.Data | None

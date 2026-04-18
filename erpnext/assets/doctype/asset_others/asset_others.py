@@ -36,3 +36,11 @@ class AssetOthers(Document):
 	def autoname(self):
 		if self.old_asset_id:
 			self.name = self.old_asset_id
+	def validate(self):
+		self.validate_gross_purchase_amount()
+
+	def validate_gross_purchase_amount(self):
+		if self.gross_purchase_amount and self.gross_purchase_amount > 10000:
+			frappe.throw(
+				f"Asset value should not be more than 10,000."
+			)

@@ -11,6 +11,9 @@
   "mode_of_payment",
   "type",
   "credit_allowed",
+  "column_break_xaup",
+  "is_lc",
+  "section_break_srfo",
   "accounts"
  ],
  "fields": [
@@ -42,13 +45,27 @@
    "fieldtype": "Table",
    "label": "Accounts",
    "options": "Mode of Payment Account"
+  },
+  {
+   "fieldname": "column_break_xaup",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_lc",
+   "fieldtype": "Check",
+   "label": "Is LC"
+  },
+  {
+   "fieldname": "section_break_srfo",
+   "fieldtype": "Section Break"
   }
  ],
  "icon": "fa fa-credit-card",
  "idx": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-11-20 12:39:18.367159",
+ "modified": "2026-04-18 11:32:36.094027",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Mode of Payment",

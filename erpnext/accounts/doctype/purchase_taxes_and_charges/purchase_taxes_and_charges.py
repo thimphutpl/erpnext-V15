@@ -23,6 +23,7 @@ class PurchaseTaxesandCharges(Document):
 		category: DF.Literal["Valuation and Total", "Valuation", "Total", "None"]
 		charge_type: DF.Literal["", "Actual", "On Net Total", "On Previous Row Amount", "On Previous Row Total", "On Item Quantity"]
 		cost_center: DF.Link | None
+		credit_account_head: DF.Link | None
 		description: DF.SmallText
 		included_in_paid_amount: DF.Check
 		included_in_print_rate: DF.Check

@@ -488,9 +488,9 @@ def get_user_info(user=None, employee=None, cost_center=None):
 			branch      = frappe.db.get_value("DES Employee", {"name": employee}, "branch")
 
 		# MR Employee
-		if not cost_center:
-			cost_center = frappe.db.get_value("Muster Roll Employee", {"name": employee}, "cost_center")
-			branch      = frappe.db.get_value("Muster Roll Employee", {"name": employee}, "branch")
+		# if not cost_center:
+		# 	cost_center = frappe.db.get_value("Muster Roll Employee", {"name": employee}, "cost_center")
+		# 	branch      = frappe.db.get_value("Muster Roll Employee", {"name": employee}, "branch")
 		
 	elif user:
 		# Normal Employee
@@ -502,10 +502,10 @@ def get_user_info(user=None, employee=None, cost_center=None):
 			cost_center = frappe.db.get_value("DES Employee", {"user_id": user}, "cost_center")
 			branch      = frappe.db.get_value("DES Employee", {"user_id": user}, "branch")
 
-		# MR Employee
-		if not cost_center:
-			cost_center = frappe.db.get_value("Muster Roll Employee", {"user_id": user}, "cost_center")
-			branch      = frappe.db.get_value("Muster Roll Employee", {"user_id": user}, "branch")
+		# # MR Employee
+		# if not cost_center:
+		# 	cost_center = frappe.db.get_value("Muster Roll Employee", {"user_id": user}, "cost_center")
+		# 	branch      = frappe.db.get_value("Muster Roll Employee", {"user_id": user}, "branch")
 		
 	warehouse   = frappe.db.get_value("Cost Center", cost_center, "warehouse")
 	approver    = frappe.db.get_value("Approver Item", {"cost_center": cost_center}, "approver")
@@ -814,3 +814,62 @@ def filter_child_doctypes(doctype, txt, searchfield, start, page_len, filters):
 	return frappe.db.sql("""
 	SELECT distinct options FROM `tabDocField` WHERE fieldtype = 'Table' AND parent = '{}';
 	""".format(filters.get("parent")[0]))
+
+
+def leave_approver():
+	leaves = frappe.db.sql("""
+		SELECT name, employee, posting_date
+		FROM `tabLeave Application`
+		WHERE workflow_state = 'Waiting Supervisor Approval'
+		  AND posting_date <= %s
+	""", ("2026-01-20",), as_dict=True)
+
+	for leave in leaves:
+		# Employee cost center
+		cost_center = frappe.db.get_value(
+			"Employee", leave.employee, "cost_center"
+		)
+		if not cost_center:
+			continue
+
+		# Parent cost center
+		parent_cc = frappe.db.get_value(
+			"Cost Center", cost_center, "parent_cost_center"
+		)
+		if not parent_cc:
+			continue
+
+		# Approver user from settings
+		approver_user = frappe.db.get_value(
+			"Approver Settings",
+			{"cost_center": parent_cc},
+			"user_id"
+		)
+		if not approver_user:
+			continue
+
+		# Final approver employee details
+		final_approver = frappe.db.get_value(
+			"Employee",
+			{"user_id": approver_user},
+			["user_id", "employee_name", "designation"],
+			as_dict=True
+		)
+		if not final_approver:
+			continue
+
+		# Update Leave Application
+		frappe.db.set_value(
+			"Leave Application",
+			leave.name,
+			{
+				"leave_approver": final_approver.user_id,
+				"leave_approver_name": final_approver.employee_name,
+				"leave_approver_designation": final_approver.designation
+			}
+		)
+
+		print(f"{leave.name} | CC: {cost_center} → {parent_cc}")
+		# break
+
+		

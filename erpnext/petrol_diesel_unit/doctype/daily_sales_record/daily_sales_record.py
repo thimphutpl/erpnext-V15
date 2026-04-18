@@ -33,6 +33,7 @@ class DailySalesRecord(Document):
 		posting_date: DF.Date
 		quantity_sold: DF.Float
 		rate: DF.Currency
+		remarks: DF.LongText | None
 		shift: DF.Link
 		shift_from_time: DF.Data | None
 		shift_to_time: DF.Data | None

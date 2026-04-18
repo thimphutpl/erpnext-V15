@@ -138,6 +138,7 @@ class BuyingController(SubcontractingController):
 			d.name
 			for d in frappe.db.get_all("Asset", {purchase_doc_field: self.return_against, "docstatus": 1})
 		]
+		# frappe.throw(str(not_cancelled_asset))
 		if self.is_return and len(not_cancelled_asset):
 			frappe.throw(
 				_(

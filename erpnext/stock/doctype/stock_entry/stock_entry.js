@@ -352,6 +352,18 @@ frappe.ui.form.on('Stock Entry', {
 			return;
 		}
 
+		// For Material Issue, ensure normal submit button appears
+		if (frm.doc.purpose == "Material Issue") {
+			// Make sure default submit action is set
+			if (frm.doc.docstatus === 0 && !frm.page.primary_action) {
+				frm.page.set_primary_action(__('Submit'), () => {
+					frm.save('Submit');
+				});
+			}
+			return;
+		}
+
+
 		if (frm.doc.purpose == "Material Transfer" && frm.doc.from_warehouse && frm.doc.to_warehouse && frm.doc.docstatus === 0) {
 			frm.page.clear_primary_action();
 			frappe.call({
@@ -858,37 +870,107 @@ frappe.ui.form.on('Stock Entry Detail', {
 	// 		}
 	// 	});
 	// }
+	// get_chassis_no: function(frm, cdt, cdn) {
+	// 	let row = locals[cdt][cdn];
+	// 	let already_selected = (row.serial_no || "").split("\n").filter(Boolean);
+	// 	if (frm.doc.docstatus == 0) {
+	// 		let msd = new frappe.ui.form.MultiSelectDialog({
+	// 			doctype: "Serial No", // the doctype to fetch
+	// 			target: frm,
+	// 			setters: {
+	// 				status: "Active"  // filter: only Active serials
+	// 			},
+	// 			add_filters_group: 1,
+	// 			primary_action_label: "Select",
+	// 			get_query() {
+	// 				return {
+	// 					filters: {
+	// 						status: "Active",
+	// 						name: ["not in", already_selected]
+	// 					}
+	// 				};
+	// 			},
+	// 			action(selections) {
+	// 				let current = row.serial_no ? row.serial_no.split("\n") : [];
+	// 				let current_engine_no = row.engine_no ? row.engine_no.split("\n") : [];
+	// 				let current_tvo_no = row.tvo_no ? row.tvo_no.split("\n") : [];
+    //             	row.serial_no = current.concat(selections).join("\n");
+    //             	row.engine_no = current_engine_no.concat(selections).join(", ");
+    //             	row.tvo_no = current_tvo_no.concat(selections).join(", ");
+	// 				frm.refresh_field("serial_no");
+	// 				frm.refresh_field("engine_no");
+	// 				frm.refresh_field("tvo_no");
+	// 				msd.dialog.hide();
+	// 			}
+	// 		});
+	// 	}
+	// },
 	get_chassis_no: function(frm, cdt, cdn) {
 		let row = locals[cdt][cdn];
 		let already_selected = (row.serial_no || "").split("\n").filter(Boolean);
+		if (!row.item_code){
+			frappe.throw(__("Please select an Item First"));
+		}
+	
 		if (frm.doc.docstatus == 0) {
+	
 			let msd = new frappe.ui.form.MultiSelectDialog({
-				doctype: "Serial No", // the doctype to fetch
+				doctype: "Serial No",
 				target: frm,
 				setters: {
-					status: "Active"  // filter: only Active serials
+					status: "Active"
 				},
 				add_filters_group: 1,
-				primary_action_label: "Select",
+	
 				get_query() {
 					return {
 						filters: {
 							status: "Active",
-							name: ["not in", already_selected]
+							name: ["not in", already_selected],
+							item_code: row.item_code
 						}
 					};
 				},
+	
+				primary_action_label: "Select",
+	
 				action(selections) {
-					// selections is an array of selected Serial No names
-					// row.serial_no = selections.join(", "); 
-					let current = row.serial_no ? row.serial_no.split("\n") : [];
-                	row.serial_no = current.concat(selections).join("\n");
-					frm.refresh_field("serial_no");
-					msd.dialog.hide();
+	
+					// ✅ Fetch full data (engine_no, tvo_no)
+					frappe.db.get_list("Serial No", {
+						filters: { name: ["in", selections] },
+						fields: ["name", "engine_number", "tvo_number"]
+					}).then(records => {
+	
+						let serials = [];
+						let engines = [];
+						let tvos = [];
+	
+						records.forEach(r => {
+							serials.push(r.name);
+							if (r.engine_number) engines.push(r.engine_number);
+							if (r.tvo_number) tvos.push(r.tvo_number);
+						});
+	
+						// Existing values
+						let current_serial = row.serial_no ? row.serial_no.split("\n") : [];
+						let current_engine = row.engine_no ? row.engine_no.split(", ") : [];
+						let current_tvo = row.tvo_no ? row.tvo_no.split(", ") : [];
+	
+						// Set values
+						row.serial_no = current_serial.concat(serials).join("\n");
+						row.engine_no = current_engine.concat(engines).join(", ");
+						row.tvo_no = current_tvo.concat(tvos).join(", ");
+	
+						// ✅ Correct refresh for child table
+						frm.refresh_field("items");  // <-- your child table fieldname
+	
+						msd.dialog.hide();
+					});
 				}
 			});
 		}
-	},
+	}
 });
 
 var validate_sample_quantity = function (frm, cdt, cdn) {

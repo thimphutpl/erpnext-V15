@@ -14,6 +14,14 @@
   "ref_number",
   "col_break_100",
   "receive_payment",
+  "section_break_nfvq",
+  "appointment",
+  "column_break_jfyg",
+  "walk_in",
+  "column_break_frmq",
+  "job_card_no",
+  "column_break_dqkh",
+  "date",
   "section_break_1",
   "branch",
   "column_break_7",
@@ -24,6 +32,43 @@
   "customer_cost_center",
   "col_break_7",
   "customer_branch",
+  "column_break_ettm",
+  "section_break_gwoe",
+  "datetime",
+  "changes",
+  "column_break_faeh",
+  "promised_delivery",
+  "column_break_gfia",
+  "date_time",
+  "column_break_ozwl",
+  "change",
+  "customer_information_section",
+  "customer_name",
+  "customer_address",
+  "mobile_no",
+  "column_break_lfja",
+  "home_no",
+  "email_address",
+  "work_order_no",
+  "vehicle_information_section",
+  "get_chassis_no",
+  "registration_no",
+  "model_nameyear",
+  "model_code",
+  "vinchassis_no",
+  "column_break_negc",
+  "engine_no",
+  "color_code",
+  "odometer_reading_km",
+  "chassis_no",
+  "service_history_section",
+  "table_qpxt",
+  "delivery_note_history",
+  "customers_request__concerns_in_customer_word_section",
+  "customer_request",
+  "section_break_2",
+  "get_items",
+  "items",
   "section_break_11",
   "posting_date",
   "job_in_time",
@@ -32,6 +77,9 @@
   "job_out_time",
   "col_break_19",
   "repair_type",
+  "customer_status",
+  "section_break_usiq",
+  "job_types",
   "section_break_5",
   "equipment",
   "equipment_type",
@@ -49,9 +97,6 @@
   "job_name",
   "column_break_gggx",
   "locations",
-  "section_break_2",
-  "get_items",
-  "items",
   "section_break_15",
   "goods_amount",
   "column_break_the",
@@ -91,8 +136,7 @@
    "label": "Amended From",
    "no_copy": 1,
    "options": "Job Cards",
-   "print_hide": 1,
-   "read_only": 1
+   "print_hide": 1
   },
   {
    "fieldname": "owned_by",
@@ -141,7 +185,7 @@
   {
    "fieldname": "section_break_1",
    "fieldtype": "Section Break",
-   "label": "Customer Details"
+   "label": "Job Card details"
   },
   {
    "fetch_from": "branch.cost_center",
@@ -170,15 +214,15 @@
    "fieldname": "customer",
    "fieldtype": "Link",
    "in_list_view": 1,
-   "label": "Supplier",
-   "options": "Supplier",
-   "read_only": 1
+   "label": "Customer",
+   "options": "Customer"
   },
   {
    "depends_on": "eval:doc.owned_by == \"CDCL\"",
    "fieldname": "sec_break_5",
    "fieldtype": "Section Break",
-   "label": "Intra-CDCL Customer Details"
+   "hidden": 1,
+   "label": "Customer Details"
   },
   {
    "fieldname": "customer_cost_center",
@@ -233,8 +277,9 @@
   {
    "fieldname": "repair_type",
    "fieldtype": "Select",
+   "hidden": 1,
    "label": "Job Type",
-   "options": "Minor Repair\nMajor Repair\nPreventive Maintenance\nRegular Maintenance\nBreakdown"
+   "options": "General Repair"
   },
   {
    "fieldname": "section_break_5",
@@ -348,8 +393,7 @@
    "fieldname": "break_down_report",
    "fieldtype": "Link",
    "label": "Break Down Report",
-   "options": "Break Down Report",
-   "read_only": 1
+   "options": "Break Down Report"
   },
   {
    "fieldname": "column_break_15",
@@ -358,8 +402,7 @@
   {
    "fieldname": "break_down_report_date",
    "fieldtype": "Datetime",
-   "label": "Break Down Report Date",
-   "read_only": 1
+   "label": "Break Down Report Date"
   },
   {
    "fieldname": "column_break_17",
@@ -369,8 +412,7 @@
    "fieldname": "jv",
    "fieldtype": "Data",
    "label": "Journal Entry",
-   "options": "Journal Entry",
-   "read_only": 1
+   "options": "Journal Entry"
   },
   {
    "fieldname": "column_break_19",
@@ -380,8 +422,7 @@
    "fieldname": "payment_jv",
    "fieldtype": "Data",
    "label": "Payment Journal",
-   "options": "Journal Entry",
-   "read_only": 1
+   "options": "Journal Entry"
   },
   {
    "default": "0",
@@ -486,13 +527,238 @@
    "label": "Status",
    "options": "\nPayment Received\nPending Payment",
    "read_only": 1
+  },
+  {
+   "fieldname": "column_break_ettm",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_gwoe",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_faeh",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "datetime",
+   "fieldtype": "Datetime",
+   "label": "Reception Date/Time"
+  },
+  {
+   "fieldname": "changes",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Changes"
+  },
+  {
+   "fieldname": "column_break_gfia",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "promised_delivery",
+   "fieldtype": "Data",
+   "label": "Promised Delivery"
+  },
+  {
+   "fieldname": "column_break_ozwl",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "date_time",
+   "fieldtype": "Datetime",
+   "label": "Date Time"
+  },
+  {
+   "fieldname": "change",
+   "fieldtype": "Data",
+   "label": "Change"
+  },
+  {
+   "fieldname": "section_break_nfvq",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "appointment",
+   "fieldtype": "Check",
+   "label": "Appointment"
+  },
+  {
+   "fieldname": "column_break_jfyg",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "walk_in",
+   "fieldtype": "Check",
+   "label": "Walk In"
+  },
+  {
+   "fieldname": "column_break_frmq",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "job_card_no",
+   "fieldtype": "Data",
+   "label": "Job Card No"
+  },
+  {
+   "fieldname": "column_break_dqkh",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "label": "Date"
+  },
+  {
+   "fieldname": "customer_information_section",
+   "fieldtype": "Section Break",
+   "label": "Customer Information"
+  },
+  {
+   "fetch_from": "customer.customer_name",
+   "fieldname": "customer_name",
+   "fieldtype": "Data",
+   "label": "Customer Name"
+  },
+  {
+   "fetch_from": "customer.presenting_residing_at",
+   "fieldname": "customer_address",
+   "fieldtype": "Data",
+   "label": "Customer Address"
+  },
+  {
+   "fieldname": "column_break_lfja",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "customer.mobile_no",
+   "fieldname": "mobile_no",
+   "fieldtype": "Data",
+   "label": "Mobile No"
+  },
+  {
+   "fetch_from": "customer.home_no",
+   "fieldname": "home_no",
+   "fieldtype": "Data",
+   "label": "Telephone no"
+  },
+  {
+   "fetch_from": "customer.email_id",
+   "fieldname": "email_address",
+   "fieldtype": "Data",
+   "label": "Email address"
+  },
+  {
+   "fieldname": "vehicle_information_section",
+   "fieldtype": "Section Break",
+   "label": "Vehicle Information"
+  },
+  {
+   "fieldname": "registration_no",
+   "fieldtype": "Data",
+   "label": "Registration No."
+  },
+  {
+   "fieldname": "model_nameyear",
+   "fieldtype": "Data",
+   "label": "Model Name/Year"
+  },
+  {
+   "fieldname": "model_code",
+   "fieldtype": "Data",
+   "label": "Model Code"
+  },
+  {
+   "fieldname": "vinchassis_no",
+   "fieldtype": "Link",
+   "label": "VIN/Chassis No",
+   "options": "Serial No"
+  },
+  {
+   "fieldname": "column_break_negc",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "engine_no",
+   "fieldtype": "Data",
+   "label": "Engine Type"
+  },
+  {
+   "fieldname": "color_code",
+   "fieldtype": "Data",
+   "label": "Color Code"
+  },
+  {
+   "fieldname": "odometer_reading_km",
+   "fieldtype": "Data",
+   "label": "Odometer reading (KM)"
+  },
+  {
+   "fieldname": "customers_request__concerns_in_customer_word_section",
+   "fieldtype": "Section Break",
+   "label": "Customer's Request / Concerns (in Customer Word)"
+  },
+  {
+   "fieldname": "customer_request",
+   "fieldtype": "Text Editor",
+   "label": "customer request"
+  },
+  {
+   "fieldname": "customer_status",
+   "fieldtype": "Select",
+   "label": "Customer Status",
+   "options": "Paid job\nWarranty"
+  },
+  {
+   "fieldname": "service_history_section",
+   "fieldtype": "Section Break",
+   "label": "Service History"
+  },
+  {
+   "fieldname": "get_chassis_no",
+   "fieldtype": "Button",
+   "label": "Get Chassis No"
+  },
+  {
+   "fieldname": "table_qpxt",
+   "fieldtype": "Table",
+   "label": "Job Cards History",
+   "options": "Job Card History"
+  },
+  {
+   "fieldname": "delivery_note_history",
+   "fieldtype": "Table",
+   "label": "Delivery Note History",
+   "options": "Sales Invoice History"
+  },
+  {
+   "fieldname": "work_order_no",
+   "fieldtype": "Data",
+   "label": "Work Order No"
+  },
+  {
+   "fieldname": "section_break_usiq",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "job_types",
+   "fieldtype": "Table",
+   "options": "Job Cards Job Type Item"
+  },
+  {
+   "fieldname": "chassis_no",
+   "fieldtype": "Data",
+   "label": "Chassis No.(Walk In)"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-09-18 11:05:16.948596",
- "modified_by": "Administrator",
+ "modified": "2026-04-18 16:11:35.180426",
+ "modified_by": "toyotasc_sonamdhendup@stcb.bt",
  "module": "Fleet Management",
  "name": "Job Cards",
  "naming_rule": "Expression (old style)",

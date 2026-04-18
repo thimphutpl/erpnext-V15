@@ -177,7 +177,8 @@ class MechanicalPayment(AccountsController):
 
 	def make_gl_entry(self):
 		from erpnext.accounts.general_ledger import make_gl_entries
-		receivable_account = frappe.db.get_value("Company", "Natural Resources Development Corporation Limited","default_receivable_account")
+		# receivable_account = frappe.db.get_value("Company", "Natural Resources Development Corporation Limited","default_receivable_account")
+		receivable_account = frappe.db.get_value("Company", self.company,"default_receivable_account")
 		if not receivable_account:
 			frappe.throw("Setup Receivable Account in Company")
 

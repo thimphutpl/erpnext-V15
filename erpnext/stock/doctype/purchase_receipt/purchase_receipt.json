@@ -15,8 +15,10 @@
   "branch",
   "supplier",
   "supplier_name",
+  "supplier_invoice",
   "supplier_delivery_note",
   "business_activity",
+  "bos_number",
   "column_break1",
   "company",
   "posting_date",
@@ -190,6 +192,7 @@
    "default": "{supplier_name}",
    "fieldname": "title",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Order Reference ",
    "no_copy": 1,
    "print_hide": 1
@@ -284,7 +287,6 @@
    "default": "0",
    "fieldname": "is_return",
    "fieldtype": "Check",
-   "hidden": 1,
    "label": "Is Return",
    "no_copy": 1,
    "print_hide": 1,
@@ -749,7 +751,7 @@
    "label": "Additional Discount"
   },
   {
-   "default": "Grand Total",
+   "default": "Net Total",
    "fieldname": "apply_discount_on",
    "fieldtype": "Select",
    "label": "Apply Additional Discount On",
@@ -1447,14 +1449,27 @@
    "fieldtype": "Currency",
    "label": "UG Loss (Amount)",
    "precision": "2"
+  },
+  {
+   "fieldname": "bos_number",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "BoS Number",
+   "set_only_once": 1
+  },
+  {
+   "fieldname": "supplier_invoice",
+   "fieldtype": "Data",
+   "label": "Supplier Invoice No",
+   "reqd": 1
   }
  ],
  "icon": "fa fa-truck",
  "idx": 261,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-01-06 14:39:43.363404",
- "modified_by": "kalden.dorji@thimphutechpark.bt",
+ "modified": "2026-04-18 09:51:37.154957",
+ "modified_by": "tshering.lham@thimphutechpark.bt",
  "module": "Stock",
  "name": "Purchase Receipt",
  "naming_rule": "Expression (old style)",

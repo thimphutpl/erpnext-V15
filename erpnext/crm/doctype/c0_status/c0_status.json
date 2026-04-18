@@ -17,6 +17,12 @@
   "column_break_oiup",
   "responsible_branch",
   "customer_report",
+  "dob",
+  "presently_residing_at",
+  "permanent_address_section",
+  "village",
+  "gewog",
+  "dzongkhag",
   "customer_inquiry_section",
   "inquiry",
   "response",
@@ -45,6 +51,7 @@
    "fetch_from": "customer_id.customer_name",
    "fieldname": "customer_name",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Customer Name"
   },
   {
@@ -66,8 +73,10 @@
   {
    "fieldname": "responsible_branch",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Responsible Branch",
-   "options": "Branch"
+   "options": "Branch",
+   "reqd": 1
   },
   {
    "fieldname": "customer_report",
@@ -114,15 +123,51 @@
    "fetch_from": "customer_id.cid_no",
    "fieldname": "id_card_no",
    "fieldtype": "Data",
-   "label": "ID Card No."
+   "label": "ID Card No.",
+   "length": 11
+  },
+  {
+   "fetch_from": "customer_id.dob",
+   "fieldname": "dob",
+   "fieldtype": "Date",
+   "label": "Date of Birth"
+  },
+  {
+   "fetch_from": "customer_id.presenting_residing_at",
+   "fieldname": "presently_residing_at",
+   "fieldtype": "Data",
+   "label": "Presently Residing At"
+  },
+  {
+   "fieldname": "permanent_address_section",
+   "fieldtype": "Section Break",
+   "label": "Permanent Address"
+  },
+  {
+   "fetch_from": "customer_id.village",
+   "fieldname": "village",
+   "fieldtype": "Data",
+   "label": "Village"
+  },
+  {
+   "fetch_from": "customer_id.gewog",
+   "fieldname": "gewog",
+   "fieldtype": "Data",
+   "label": "Gewog"
+  },
+  {
+   "fetch_from": "customer_id.dzongkhag",
+   "fieldname": "dzongkhag",
+   "fieldtype": "Data",
+   "label": "Dzongkhag"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-12-25 10:29:22.680150",
- "modified_by": "kalden.dorji@thimphutechpark.bt",
+ "modified": "2026-04-14 10:24:52.699544",
+ "modified_by": "Administrator",
  "module": "CRM",
  "name": "C0 Status",
  "naming_rule": "Expression",

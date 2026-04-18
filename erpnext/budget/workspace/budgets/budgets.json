@@ -54,9 +54,9 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Budget",
+   "label": "Budget Type",
    "link_count": 0,
-   "link_to": "Budget",
+   "link_to": "Budget Type",
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
@@ -74,9 +74,9 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Budget Type",
+   "label": "Budget",
    "link_count": 0,
-   "link_to": "Budget Type",
+   "link_to": "Budget",
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
@@ -112,6 +112,16 @@
   },
   {
    "hidden": 0,
+   "is_query_report": 1,
+   "label": "Budget Reappropriation Report",
+   "link_count": 0,
+   "link_to": "Budget Reappropriation Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
    "is_query_report": 0,
    "label": "Supplementary Budget Report",
    "link_count": 0,
@@ -124,36 +134,26 @@
   {
    "hidden": 0,
    "is_query_report": 1,
-   "label": "Committed Budget Report",
-   "link_count": 0,
-   "link_to": "Committed Budget Report",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Budget Reappropriation Report",
-   "link_count": 0,
-   "link_to": "Budget Reappropriation Report",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
    "label": "Budget Variance",
    "link_count": 0,
    "link_to": "Budget Variance",
    "link_type": "Report",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Committed Budget Report",
+   "link_count": 0,
+   "link_to": "Committed Budget Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2025-11-27 10:31:57.731274",
- "modified_by": "sonam.norbu@thimphutechpark.bt",
+ "modified": "2026-04-14 09:51:37.833240",
+ "modified_by": "sonam.bomjan@thimphutechpark.bt",
  "module": "Budget",
  "name": "Budgets",
  "number_cards": [],

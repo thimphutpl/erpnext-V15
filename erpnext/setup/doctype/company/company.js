@@ -296,9 +296,13 @@ erpnext.company.setup_queries = function (frm) {
 					"expenses_included_in_valuation",
 					{ root_type: "Expense", account_type: "Expenses Included in Valuation" },
 				],
+				// [
+				// 	"stock_received_but_not_billed",
+				// 	{ root_type: "Liability", account_type: "Stock Received But Not Billed" },
+				// ],
 				[
 					"stock_received_but_not_billed",
-					{ root_type: "Liability", account_type: "Stock Received But Not Billed" },
+					{ account_type: "Stock Received But Not Billed" },
 				],
 				[
 					"service_received_but_not_billed",

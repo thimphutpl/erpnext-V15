@@ -77,6 +77,7 @@ class SerialNo(StockController):
 		batch_no: DF.Link | None
 		brand: DF.Link | None
 		btc_code: DF.Data | None
+		color_code: DF.Data | None
 		company: DF.Link
 		customer: DF.Link | None
 		customer_name: DF.Data | None
@@ -121,7 +122,6 @@ class SerialNo(StockController):
 		tvo_number: DF.Data | None
 		used_amount: DF.Currency
 		valuation_rate: DF.Currency
-		vehicle_color: DF.Data | None
 		warehouse: DF.Link | None
 		warranty_expiry_date: DF.Date | None
 		warranty_period: DF.Int
@@ -364,13 +364,13 @@ def validate_serial_no(sle, item_det):
 					_("Serial No {0} quantity {1} cannot be a fraction").format(sle.item_code, sle.actual_qty)
 				)
 
-			if len(serial_nos) and len(serial_nos) != abs(cint(sle.actual_qty)):
-				frappe.throw(
-					_("{0} Serial Numbers required for Item {1}. You have provided {2}.").format(
-						abs(sle.actual_qty), sle.item_code, len(serial_nos)
-					),
-					SerialNoQtyError,
-				)
+			# if len(serial_nos) and len(serial_nos) != abs(cint(sle.actual_qty)):
+			# 	frappe.throw(
+			# 		_("{0} Serial Numbers required for Item {1}. You have provided {2}.").format(
+			# 			abs(sle.actual_qty), sle.item_code, len(serial_nos)
+			# 		),
+			# 		SerialNoQtyError,
+			# 	)
 
 			if len(serial_nos) != len(set(serial_nos)):
 				frappe.throw(
@@ -698,6 +698,7 @@ def get_item_details(item_code):
 
 
 def get_serial_nos(serial_no):
+	# frappe.throw(str(serial_no))
 	if isinstance(serial_no, list):
 		return serial_no
 
@@ -781,6 +782,8 @@ def update_serial_nos_after_submit(controller, parentfield):
 				if controller.doctype in ["Stock Reconciliation", "Subcontracting Receipt"]
 				else d.stock_qty
 			)
+			engine_number = d.engine_no
+			tvo_number = d.tvo_no
 		for sle in stock_ledger_entries:
 			if sle.voucher_detail_no == d.name:
 				if (
@@ -821,7 +824,7 @@ def update_maintenance_status():
 
 
 def get_delivery_note_serial_no(item_code, qty, delivery_note):
-	frappe.throw(str(item_code))
+	# frappe.throw(str(item_code))
 	serial_nos = ""
 	dn_serial_nos = frappe.db.sql_list(
 		""" select name from `tabSerial No`

@@ -536,14 +536,11 @@ def has_upload_permission(doc, ptype="read", user=None):
     return doc.user_id == user
 
 def get_permission_query_conditions(user):
-	
 	if not user: user = frappe.session.user
 	user_roles = frappe.get_roles(user)
-	if "HR User" in user_roles or "HR Manager" in user_roles or "Accounts User" in user_roles or "CEO" in user_roles:
-		
+	if "HR User" in user_roles or "HR Manager" in user_roles or "Accounts User" in user_roles:
 		return
 	if "Management" in user_roles:
-		
 		return """(
 			name in (select e1.name
 				from `tabEmployee` as e1, `tabEmployee` as e2
@@ -561,12 +558,17 @@ def get_permission_query_conditions(user):
 				))
 		)""".format(user=user)
 	else:
-		
 		return """(
 			name in (select e1.name
 				from `tabEmployee` as e1, `tabEmployee` as e2
 				where e1.name = e2.name
 				and e1.user_id = '{user}')
+            or
+            name in (select e1.name
+				from `tabEmployee` as e1, `tabEmployee` as e2
+				where
+				e1.reports_to = e2.name
+                and e2.user_id = '{user}')
 		)""".format(user=user)
 
 def has_record_permission(doc, user):

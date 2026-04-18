@@ -20,6 +20,7 @@ frappe.ui.form.on("Asset Life Extension", {
                 frm.set_value("current_asset_value", value);
                 frm.set_value("old_remaining_dep", flt(value/(r.message.gross_purchase_amount/total_number_of_depreciations)))
                 frm.refresh_field("current_asset_value");
+                frm.refresh_field("old_remaining_dep");
               }
             });
       }

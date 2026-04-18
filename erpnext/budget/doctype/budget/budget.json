@@ -250,6 +250,7 @@
   {
    "fieldname": "budget_type",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Budget Type",
    "options": "Budget Type"
   }
@@ -257,8 +258,8 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-12-11 10:45:53.848911",
- "modified_by": "Administrator",
+ "modified": "2026-04-07 10:04:59.646492",
+ "modified_by": "tshering.lham@thimphutechpark.bt",
  "module": "Budget",
  "name": "Budget",
  "owner": "Administrator",

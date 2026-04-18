@@ -13,6 +13,7 @@
   "column_break_2",
   "posting_date",
   "payment_for",
+  "outsourced",
   "customer",
   "supplier",
   "transporter",
@@ -87,7 +88,7 @@
    "reqd": 1
   },
   {
-   "depends_on": "eval: doc.payment_for == \"Hire Charge Invoice\" ",
+   "depends_on": "eval: doc.outsourced != 1",
    "fieldname": "customer",
    "fieldtype": "Link",
    "in_list_view": 1,
@@ -98,7 +99,7 @@
    "fieldname": "payment_for",
    "fieldtype": "Select",
    "label": "Payment For",
-   "options": "\nHire Charge Invoice\nJob Cards\nTransporter",
+   "options": "\nJob Cards",
    "reqd": 1
   },
   {
@@ -141,6 +142,7 @@
    "reqd": 1
   },
   {
+   "default": "Sales - STCBL",
    "fieldname": "income_account",
    "fieldtype": "Link",
    "label": "Incoming Account",
@@ -182,7 +184,6 @@
    "fieldtype": "Column Break"
   },
   {
-   "default": "TDS - wittheld by Client - CDCL",
    "fieldname": "tds_account",
    "fieldtype": "Link",
    "label": "TDS Account",
@@ -287,7 +288,7 @@
    "read_only": 1
   },
   {
-   "depends_on": "eval: doc.payment_for == \"Job Cards\" ",
+   "depends_on": "eval: doc.outsourced == 1",
    "fieldname": "supplier",
    "fieldtype": "Link",
    "label": "Supplier",
@@ -306,13 +307,19 @@
    "fieldtype": "Link",
    "label": "Vehicle",
    "options": "Vehicle"
+  },
+  {
+   "default": "0",
+   "fieldname": "outsourced",
+   "fieldtype": "Check",
+   "label": "Outsourced"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-07-24 11:35:01.952413",
- "modified_by": "kalden.dorji@thimphutechpark.bt",
+ "modified": "2026-04-18 15:59:24.973742",
+ "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Mechanical Payment",
  "naming_rule": "Expression (old style)",

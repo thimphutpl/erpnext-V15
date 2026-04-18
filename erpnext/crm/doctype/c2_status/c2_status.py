@@ -16,20 +16,29 @@ class C2Status(Document):
 		from erpnext.crm.doctype.order_confirmation_details.order_confirmation_details import OrderConfirmationDetails
 		from frappe.types import DF
 
+		allotment_item: DF.Link | None
 		amended_from: DF.Link | None
+		confirmation_date: DF.Date
 		customer_details: DF.SmallText | None
 		customer_id: DF.Link | None
 		customer_name: DF.Data | None
 		customer_report: DF.LongText | None
 		customer_track_id: DF.Link | None
+		dispatch_no: DF.Data
+		dob: DF.Date | None
+		dzongkhag: DF.Data | None
 		email_id: DF.Data | None
+		gewog: DF.Data | None
 		id_card_no: DF.Data | None
 		order_information: DF.LongText | None
 		phone_number: DF.Data | None
+		presently_residing_at: DF.Data | None
 		primary_address: DF.Data | None
+		purchase_order: DF.Link | None
 		responsible_branch: DF.Data | None
 		salutation: DF.Data | None
 		table_yefo: DF.Table[OrderConfirmationDetails]
+		village: DF.Data | None
 	# end: auto-generated types
 
 	def validate(self):
@@ -50,12 +59,20 @@ def make_c2_status(source_name, target_doc=None):
 	def update_branch_fields(obj, target, source_parent):
 		# Keep your original date logic
 		update_date(obj, target, source_parent)
-
+		target.taxes_and_charges = "Advance Received From Customer"
 		# Safely set cost_center and warehouse from branch
 		if target.branch:
 			branch_doc = frappe.get_doc("Branch", target.branch)
 			target.cost_center = getattr(branch_doc, "cost_center", None)
 			target.set_warehouse = getattr(branch_doc, "warehouse", None)
+
+		# target.set("taxes", [])
+
+		# for row in source_parent.get("table_yefo", []):
+		# 	if row.advances_paid:
+		# 		tax = target.append("taxes", {})
+		# 		tax.tax_amount = row.advances_paid
+		# 		tax.base_tax_amount = row.advances_paid
 
 	doc = get_mapped_doc("C2 Status", source_name, {
 			"C2 Status": {
@@ -79,7 +96,8 @@ def make_c2_status(source_name, target_doc=None):
 				"doctype": "Sales Order Item",
 				"field_map": {
 					"quantity": "qty",
-					"amount":"rate"
+					"net_price":"rate",
+					"tvo_numbervin_numbervi_number":"tvo_no"
 				},
 				"field_no_map": ["discount_amount"],
 
@@ -99,6 +117,20 @@ def create_purchase_order(source_name, target_doc=None):
 	def adjust_last_date(source, target):
 		return
 
+	def set_item_values(source, target, source_parent):
+		branch_doc = frappe.get_doc("Branch", source_parent.responsible_branch)
+		item_doc = frappe.get_doc("Item", source.item_code)
+		# item_doc = frappe.get_doc("Item Default", filters = {"parent": source.item_code})
+		expense_account = frappe.db.get_value(
+			"Item Default",
+			{"parent": source.item_code},
+			"expense_account"
+		)
+		target.cost_center = branch_doc.cost_center
+		target.warehouse = branch_doc.warehouse
+		target.uom = item_doc.stock_uom
+		target.expense_account = expense_account
+
 	def update_branch_fields(obj, target, source_parent):
 		# Keep your original date logic
 		update_date(obj, target, source_parent)
@@ -114,15 +146,15 @@ def create_purchase_order(source_name, target_doc=None):
 				"doctype": "Purchase Order",
 				"field_map": {
 					"name": "c2_status",
-					"customer_id": "customer_id",
+					# "customer_id": "customer_id",
 					"company": "company",
-					"customer_name": "customer",
+					# "customer_name": "customer_name",
 					"phone_number": "contact_person",
 					"primary_address": "address",
 					"name": "c2_id",
 					"responsible_branch": "branch",
 					"cost_center": "cost_center",
-					"warehouse": "set_warehouse"
+					"warehouse": "set_warehouse",
 				},
 				"postprocess": update_branch_fields,
 				"validation": {"docstatus": ["=", 1]}
@@ -131,11 +163,52 @@ def create_purchase_order(source_name, target_doc=None):
 				"doctype": "Purchase Order Item",
 				"field_map": {
 					"quantity": "qty",
-					"amount":"rate"
+					"amount":"rate",
+					"tvo_numbervin_numbervi_number":"tvo_number"
 				},
 				"field_no_map": ["discount_amount"],
-
-				"postprocess": transfer_currency,
-			},
+				"postprocess": set_item_values,
+							},
 		}, target_doc, adjust_last_date)
 	return doc
+
+
+# @frappe.whitelist()
+# def create_allotment_item(source_name, target_doc=None):
+# 	def update_date(obj, target, source_parent):
+# 		return
+
+# 	def transfer_currency(obj, target, source_parent):
+# 		return
+		
+# 	def adjust_last_date(source, target):
+# 		return
+
+# 	doc = get_mapped_doc("C2 Status", source_name, {
+# 			"C2 Status": {
+# 				"doctype": "Allotment Item",
+# 				"field_map": {
+# 					"name": "c2_status",
+# 					"customer_id": "customer_id",
+# 					"company": "company",
+# 					"customer_name": "customer",
+# 					"phone_number": "contact_person",
+# 					"primary_address": "address",
+# 					"name": "c2_id",
+# 					"cost_center": "cost_center",
+# 					"warehouse": "set_warehouse"
+# 				},
+# 				"validation": {"docstatus": ["=", 1]}
+# 			},
+# 			"Order Confirmation Details": {
+# 				"doctype": "Allotment Item Item",
+# 				"field_map": {
+# 					"quantity": "qty",
+# 					"amount":"rate"
+# 				},
+# 				"field_no_map": ["discount_amount"],
+
+# 				"postprocess": transfer_currency,
+# 			},
+# 		}, target_doc, adjust_last_date)
+# 	return doc	

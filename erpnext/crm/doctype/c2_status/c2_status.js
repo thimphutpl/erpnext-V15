@@ -3,6 +3,13 @@
 
 frappe.ui.form.on("C2 Status", {
 	refresh(frm) {
+		// if (!frm.doc.c2_status && frm.doc.docstatus == 1)  {
+		// 	frm.add_custom_button(__("Allotment Item"), function () {
+		// 		frm.trigger("create_allotment_item");
+		// 		},
+		// 		__("Create")
+		// 	);
+		// }
         if (!frm.doc.sales_order && frm.doc.docstatus == 1)  {
 			frm.add_custom_button(__("Sales Order"), function () {
 				frm.trigger("create_sales_order");
@@ -10,13 +17,19 @@ frappe.ui.form.on("C2 Status", {
 				__("Create")
 			);
 		}
-        if (frm.doc.docstatus == 1)  {
+        if (!frm.doc.purchase_order && frm.doc.docstatus == 1)  {
 			frm.add_custom_button(__("Purchase Order"), function () {
 				frm.trigger("create_purchase_order");
 				},
 				__("Create")
 			);
 		}
+	},
+	create_allotment_item: function (frm) {
+		frappe.model.open_mapped_doc({
+			method: "erpnext.crm.doctype.c2_status.c2_status.create_allotment_item",
+			frm: cur_frm
+		})
 	},
     create_sales_order: function (frm) {
 		frappe.model.open_mapped_doc({

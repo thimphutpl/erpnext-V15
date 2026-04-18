@@ -17,6 +17,7 @@
   "included_in_paid_amount",
   "col_break1",
   "account_head",
+  "credit_account_head",
   "description",
   "is_tax_withholding_account",
   "section_break_10",
@@ -261,12 +262,18 @@
    "fieldtype": "Dynamic Link",
    "label": "Party",
    "options": "party_type"
+  },
+  {
+   "fieldname": "credit_account_head",
+   "fieldtype": "Link",
+   "label": "Credit Account Head",
+   "options": "Account"
   }
  ],
  "idx": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-12-31 13:45:55.019482",
+ "modified": "2026-04-15 11:35:05.665396",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Purchase Taxes and Charges",

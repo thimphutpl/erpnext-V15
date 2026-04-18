@@ -22,7 +22,7 @@ class CustomerTrack(Document):
 		co_status: DF.Link | None
 		country: DF.Data | None
 		customer_details: DF.SmallText | None
-		customer_id: DF.Link
+		customer_id: DF.Link | None
 		customer_name: DF.Data | None
 		customer_report: DF.LongText | None
 		customer_status: DF.Literal["", "C0", "C1", "C2", "Completed"]
@@ -34,7 +34,13 @@ class CustomerTrack(Document):
 		warranty: DF.Link | None
 	# end: auto-generated types
 	def validate(self):
-		pass
+		self.validate_cid()
+
+	def validate_cid(self):
+		if self.cid_number:
+			if len(self.cid_number) == 11:
+				frappe.throw("CID No should be 11 or less than digits")
+		
 def set_missing_values(source, target_doc):
 	# if target_doc.doctype == "Purchase Order" and getdate(target_doc.schedule_date) < getdate(
 	# 	nowdate()

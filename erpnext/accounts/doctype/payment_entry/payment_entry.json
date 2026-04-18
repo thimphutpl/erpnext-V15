@@ -17,6 +17,8 @@
   "posting_date",
   "company",
   "mode_of_payment",
+  "journal_no",
+  "remarksdescription",
   "section_break_10",
   "use_cheque_lot",
   "cheque_lot",
@@ -558,6 +560,7 @@
    "depends_on": "party",
    "fieldname": "bank_account",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Company Bank Account",
    "options": "Bank Account"
   },
@@ -749,9 +752,9 @@
   {
    "fieldname": "business_activity",
    "fieldtype": "Link",
-   "hidden": 1,
    "label": "Business Activity",
-   "options": "Business Activity"
+   "options": "Business Activity",
+   "reqd": 1
   },
   {
    "depends_on": "eval:doc.payment_type == \"Pay\"",
@@ -784,11 +787,23 @@
    "fieldtype": "Select",
    "label": "Series",
    "options": "Journal Voucher\nBank Payment Voucher\nBank Receipt Voucher"
+  },
+  {
+   "fieldname": "journal_no",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Journal No."
+  },
+  {
+   "fieldname": "remarksdescription",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Remarks/Description"
   }
  ],
  "is_submittable": 1,
  "links": [],
- "modified": "2025-12-29 12:30:21.729126",
+ "modified": "2026-04-18 12:47:22.727625",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Payment Entry",

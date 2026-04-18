@@ -55,7 +55,7 @@ class POLAdvance(Document):
 		if not self.is_opening:
 			self.update_pol_advance()
 			self.post_journal_entry()
-			self.post_advance_journal_entry()
+			# self.post_advance_journal_entry()
 			self.status = "Paid"
 		else:
 			self.status = "Paid"
@@ -66,7 +66,7 @@ class POLAdvance(Document):
 	def clear_supplier_fields_if_outsourced(self):
 		if self.outsourced:
 			self.supplier_branch = None
-			self.supplier_cost_center = None	
+			self.supplier_cost_center = None
 
 	def validate_previous_advance(self):
 		if self.docstatus != 0:
@@ -128,7 +128,9 @@ class POLAdvance(Document):
 
 	def post_journal_entry(self):
 		credit_bank_account = frappe.db.get_value("Branch", self.branch, "expense_bank_account")
-		debit_bank_account = frappe.db.get_value("Branch", self.supplier_branch, "expense_bank_account")
+		# debit_bank_account = frappe.db.get_value("Branch", self.supplier_branch, "expense_bank_account")		
+		default_bank_account = frappe.db.get_value("Company", self.company, "pol_advance_account")
+
 
 		if not credit_bank_account:
 			frappe.throw(
@@ -138,10 +140,10 @@ class POLAdvance(Document):
 				title="Missing Account"
 			)
 
-		if not debit_bank_account:
+		if not default_bank_account:
 			frappe.throw(
-				"Supplier Expense Bank Account is not set for {}. Please configure it in the Branch.".format(
-					frappe.get_desk_link("Branch", self.supplier_branch)
+				"Default Bank Account is not set for {}. Please configure it in the Company.".format(
+					frappe.get_desk_link("Company", self.company)
 				),
 				title="Missing Account"
 			)
@@ -149,7 +151,7 @@ class POLAdvance(Document):
 		# Posting Journal Entry
 		accounts = []
 		accounts.append({
-			"account": debit_bank_account,
+			"account": default_bank_account,
 			"debit": flt(self.advance_amount),
 			"debit_in_account_currency": flt(self.advance_amount),
 			"cost_center": self.supplier_cost_center,

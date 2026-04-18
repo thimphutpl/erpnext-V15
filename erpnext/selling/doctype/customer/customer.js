@@ -2,6 +2,28 @@
 // License: GNU General Public License v3. See license.txt
 
 frappe.ui.form.on("Customer", {
+	quick_entry: function(frm) {
+
+        let dialog = frm.quick_entry;
+
+        if (dialog) {
+
+            let toggle_fields = () => {
+                let cg = dialog.get_value("customer_group");
+
+                dialog.set_df_property("cid_no", "hidden", cg !== "Individual");
+                dialog.set_df_property("tpn_no", "hidden", cg === "Individual");
+                dialog.set_df_property("cid_no", "reqd", cg !== "Individual");
+                dialog.set_df_property("tpn_no", "reqd", cg === "Individual");
+            };
+
+            // initial
+            toggle_fields();
+
+            // on change
+            dialog.fields_dict.customer_group.df.onchange = toggle_fields;
+        }
+    },
 	setup: function(frm) {
 
 		frm.make_methods = {
@@ -64,6 +86,8 @@ frappe.ui.form.on("Customer", {
 				}
 			}
 		});
+		// frm.set_df_property('cid_no', 'reqd',  frm.doc.customer_group=='Individual')
+		// frm.set_df_property('tpn_no', 'reqd',  frm.doc.customer_group=='Corporate')
 	},
 	customer_primary_address: function(frm){
 		if(frm.doc.customer_primary_address){
@@ -151,6 +175,39 @@ frappe.ui.form.on("Customer", {
 		var grid = cur_frm.get_field("sales_team").grid;
 		grid.set_column_disp("allocated_amount", false);
 		grid.set_column_disp("incentives", false);
+		if (frm.doc.customer_group){
+			frm.trigger("customer_group")
+		}
+		// if (frm.is_new()) {
+
+        //     frappe.ui.form.on("Customer Quick Entry", {
+        //         onload: function(dialog) {
+
+        //             let toggle_fields = () => {
+        //                 let customer_group = dialog.get_value("customer_group");
+
+        //                 if (customer_group === "Individual") {
+        //                     dialog.set_df_property("cid_no", "hidden", 0);
+        //                     dialog.set_df_property("tpn_no", "hidden", 1);
+        //                     dialog.set_df_property("cid_no", "reqd", 0);
+        //                     dialog.set_df_property("tpn_no", "reqd", 1);
+        //                 } else {
+        //                     dialog.set_df_property("cid_no", "hidden", 1);
+        //                     dialog.set_df_property("tpn_no", "hidden", 0);
+        //                     dialog.set_df_property("cid_no", "reqd", 1);
+        //                     dialog.set_df_property("tpn_no", "reqd", 0);
+        //                 }
+        //             };
+
+        //             // Run on load
+        //             toggle_fields();
+
+        //             // Run when customer_group changes
+        //             dialog.fields_dict.customer_group.df.onchange = toggle_fields;
+        //         }
+        //     });
+
+        // }
 	},
 
 	customer_group:function(frm){

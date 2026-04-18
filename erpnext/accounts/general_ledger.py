@@ -30,12 +30,15 @@ def make_gl_entries(
 	update_outstanding="Yes",
 	from_repost=False,
 ):
+	frappe.errprint(str(gl_map))
 	if gl_map:
 		if not cancel:
 			make_acc_dimensions_offsetting_entry(gl_map)
 			validate_accounting_period(gl_map)
 			validate_disabled_accounts(gl_map)
 			gl_map = process_gl_map(gl_map, merge_entries)
+			# frappe.throw(str(frappe.as_json(gl_map)))
+
 			# frappe.throw(str(gl_map))
 			if gl_map and len(gl_map) > 1:
 				# frappe.throw("nnn")
@@ -46,6 +49,8 @@ def make_gl_entries(
 					update_outstanding=update_outstanding,
 					from_repost=from_repost,
 				)
+				# frappe.throw(str(frappe.as_json(gl_map)))
+
 				save_entries(gl_map, adv_adj, update_outstanding, from_repost)
 			# Post GL Map proccess there may no be any GL Entries
 			elif gl_map:
@@ -191,10 +196,10 @@ def process_gl_map(gl_map, merge_entries=True, precision=None):
 	if not gl_map:
 		return []
 
-	if gl_map[0].voucher_type != "Period Closing Voucher":
+	if gl_map[0].voucher_type not in ["Period Closing Voucher", "Stock Entry"]:
 		gl_map = distribute_gl_based_on_cost_center_allocation(gl_map, precision)
 
-	if merge_entries:
+	if gl_map[0].voucher_type != "Stock Entry" and merge_entries:
 		gl_map = merge_similar_entries(gl_map, precision)
 
 	gl_map = toggle_debit_credit_if_negative(gl_map)
@@ -399,6 +404,8 @@ def save_entries(gl_map, adv_adj, update_outstanding, from_repost=False):
 
 
 def make_entry(args, adv_adj, update_outstanding, from_repost=False):
+	# frappe.throw(str(frappe.as_json(args)))
+
 	gle = frappe.new_doc("GL Entry")
 	gle.update(args)
 	gle.flags.ignore_permissions = 1
@@ -417,7 +424,8 @@ def make_entry(args, adv_adj, update_outstanding, from_repost=False):
 		if args.voucher_type in transactions and args.against_voucher_type != 'Asset':
 			account_types = [d.account_type for d in frappe.get_all("Budget Settings Account Types", fields='account_type')]
 			if frappe.db.get_value("Account", args.account, "account_type") in account_types:
-				validate_expense_against_budget(args)
+				if frappe.db.get_value("Account", args.get("account"), "ignore_budget_check") == 0:
+					validate_expense_against_budget(args)
 				cc_doc = frappe.get_doc("Cost Center", args.cost_center)
 				# budget_cost_center = cc_doc.budget_cost_center if cc_doc.use_budget_from_parent else args.cost_center
 				budget_cost_center = args.cost_center
@@ -457,6 +465,7 @@ def make_entry(args, adv_adj, update_outstanding, from_repost=False):
 					})
 					con_obj.flags.ignore_permissions=1
 					con_obj.submit()
+
 
 
 def validate_cwip_accounts(gl_map):

@@ -9,6 +9,7 @@
   "employee_type",
   "mechanic",
   "employee_name",
+  "bay",
   "column_break_3",
   "start_time",
   "end_time",
@@ -56,17 +57,24 @@
    "fieldtype": "Float",
    "in_list_view": 1,
    "label": "Total Time (Hours)"
+  },
+  {
+   "fieldname": "bay",
+   "fieldtype": "Select",
+   "label": "Bay",
+   "options": "\n1\n2\n3\n4\n5\n6\n7\n8 (Electricals & others)\n9 (Body)\n10 (Paints)"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-03-11 15:36:51.020995",
- "modified_by": "Administrator",
+ "modified": "2026-04-17 12:25:47.301583",
+ "modified_by": "tshering.lham@thimphutechpark.bt",
  "module": "Fleet Management",
  "name": "Mechanic Assigned",
  "owner": "Administrator",
  "permissions": [],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []

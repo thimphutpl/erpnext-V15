@@ -252,7 +252,7 @@ class PurchaseInvoice(BuyingController):
 
 		if self._action == "submit" and self.update_stock:
 			self.make_batches("warehouse")
-
+		self.validate_tax_account()
 		self.validate_release_date()
 		self.check_conversion_rate()
 		self.validate_credit_to_acc()
@@ -388,6 +388,18 @@ class PurchaseInvoice(BuyingController):
 					["Purchase Receipt", "purchase_receipt", "pr_detail"],
 				]
 			)
+
+	def validate_tax_account(self):
+		vehicle_purchase = 0
+		for a in self.items:
+			if frappe.db.get_value("Item Sub Group", frappe.db.get_value("Item", a.item_code, "item_sub_group"), "is_vehicle")  == 1:
+				vehicle_purchase = 1
+		if vehicle_purchase == 1:
+			row = 1
+			for t in self.taxes:
+				if t.is_gst == 0 and not t.party:
+					frappe.throw("Party is not selected for {} in row {}".format(t.description, row))
+				row += 1
 
 	def validate_warehouse(self, for_validate=True):
 		if self.update_stock and for_validate:
@@ -645,7 +657,6 @@ class PurchaseInvoice(BuyingController):
 		frappe.get_doc("Authorization Control").validate_approving_authority(
 			self.doctype, self.company, self.base_grand_total
 		)
-
 		if not self.is_return:
 			self.update_against_document_in_jv()
 			self.update_billing_status_for_zero_amount_refdoc("Purchase Receipt")
@@ -670,13 +681,16 @@ class PurchaseInvoice(BuyingController):
 
 		if self.update_stock == 1:
 			self.repost_future_sle_and_gle()
-
 		self.update_project()
+
 		update_linked_doc(self.doctype, self.name, self.inter_company_invoice_reference)
+
 		self.update_advance_tax_references()
 
 		self.process_common_party_accounting()
+
 		self.consume_budget(cancel=False)
+
 		self.update_tds_receipt_entry()
 
 	def update_tds_receipt_entry(self):
@@ -689,6 +703,7 @@ class PurchaseInvoice(BuyingController):
 		if cancel:
 			frappe.db.sql("delete from `tabCommitted Budget` where reference_type='{}' and reference_no='{}'".format(self.doctype, self.name))
 			return
+		count = 1
 		for item in self.get("items"):
 			expense, cost_center = item.expense_account, item.cost_center
 			if item.po_detail:
@@ -762,11 +777,15 @@ class PurchaseInvoice(BuyingController):
 						"item_code": item.item_code,
 						"com_ref": commited_budget_id,
 					})
+
 					consume.flags.ignore_permissions=1
 					consume.submit()
+					frappe.errprint("here {}".format(count))
 					com_doc = frappe.get_doc("Committed Budget", commited_budget_id)
+				
 					if amount == com_doc.amount and not com_doc.closed:
 						frappe.db.sql("update `tabCommitted Budget` set closed = 1 where name = '{}'".format(commited_budget_id))
+			count += 1
 
 	def make_gl_entries(self, gl_entries=None, from_repost=False):
 		if not gl_entries:
@@ -845,6 +864,7 @@ class PurchaseInvoice(BuyingController):
 				self.make_payment_gl_entries(gl_entries)
 				self.make_write_off_gl_entry(gl_entries)
 				self.make_gle_for_rounding_adjustment(gl_entries)
+				# frappe.throw(str(gl_entries))
 				return gl_entries
 
 		else:
@@ -942,9 +962,42 @@ class PurchaseInvoice(BuyingController):
 			else self.base_grand_total,
 			self.precision("base_grand_total"),
 		) - flt(self.total_advance)
-		base_grand_total += self.total_taxes_and_charges
+		base_grand_total
 		if grand_total and not self.is_internal_transfer():
 			# Did not use base_grand_total to book rounding loss gle
+			tax_amount = 0
+			vehicle_purchase = 0
+			tax_account = ""
+			gst_account = None
+			tax_party_type = ""
+			tax_party = ""
+			gst_party = ""
+			gst_amount = 0
+			international_vendor = 0
+			if frappe.db.get_value("Supplier", self.supplier, "country") != "Bhutan":
+				international_vendor = 1
+			# frappe.throw("here "+str(international_vendor))
+			for item in self.get("items"):
+				if frappe.db.get_value("Item Sub Group", frappe.db.get_value("Item", a.item_code, "item_sub_group"), "is_vehicle")  == 1:
+					vehicle_purchase = 1
+			row = 1
+			for tax in self.get("taxes"):
+				# if frappe.db.get_value("Item Sub Group", frappe.db.get_value("Item", a.item_code, "item_sub_group"), "is_vehicle")  == 1:
+				if vehicle_purchase == 1 and tax.is_gst == 0:
+					tax_amount += flt(tax.base_tax_amount_after_discount_amount)
+					tax_party_type = tax.party_type
+					tax_party = tax.party
+				if tax.is_gst == 1 and international_vendor == 1:
+					if not tax.party:
+						frappe.throw("Please select party type and party for tax in row {}".format(row))
+					if tax.party == self.supplier:
+						frappe.throw("Party for tax in row {} cannot be same as Supplier".format(row))
+					# gst_account = frappe.db.get_value("Company", self.company, "input_gst_account")
+					# if not gst_account:
+					# 	frappe.throw("Input GST Account not set in Company Settings.")
+					gst_party = tax.party
+					gst_amount += flt(tax.base_tax_amount_after_discount_amount)
+				row += 1
 			gl_entries.append(
 				self.get_gl_dict(
 					{
@@ -953,10 +1006,10 @@ class PurchaseInvoice(BuyingController):
 						"party": self.supplier,
 						"due_date": self.due_date,
 						"against": self.against_expense_account,
-						"credit": base_grand_total,
-						"credit_in_account_currency": base_grand_total
+						"credit": base_grand_total - tax_amount - gst_amount - self.discount_amount if international_vendor == 1 else  base_grand_total - tax_amount - self.discount_amount,
+						"credit_in_account_currency": base_grand_total - tax_amount - gst_amount - self.discount_amount if international_vendor == 1 else  base_grand_total - tax_amount - self.discount_amount
 						if self.party_account_currency == self.company_currency
-						else grand_total,
+						else grand_total - tax_amount - gst_amount - self.discount_amount if international_vendor == 1 else  grand_total - tax_amount - self.discount_amount,
 						"against_voucher": self.return_against
 						if cint(self.is_return) and self.return_against
 						else self.name,
@@ -968,6 +1021,83 @@ class PurchaseInvoice(BuyingController):
 					item=self,
 				)
 			)
+			if tax_amount > 0:
+				gl_entries.append(
+					self.get_gl_dict(
+						{
+							"account": self.credit_to,
+							"party_type": tax_party_type,
+							"party": tax_party,
+							"due_date": self.due_date,
+							"against": self.against_expense_account,
+							"credit": tax_amount,
+							"credit_in_account_currency": tax_amount
+							if self.party_account_currency == self.company_currency
+							else tax_amount,
+							"against_voucher": self.return_against
+							if cint(self.is_return) and self.return_against
+							else self.name,
+							"against_voucher_type": self.doctype,
+							"project": self.project,
+							"cost_center": self.cost_center,
+						},
+						self.party_account_currency,
+						item=self,
+					)
+				)
+			if gst_amount > 0:
+				gl_entries.append(
+					self.get_gl_dict(
+						{
+							"account": self.credit_to,
+							"party_type": "Supplier",
+							"party": gst_party if gst_party else self.supplier,
+							"due_date": self.due_date,
+							"against": self.against_expense_account,
+							"credit": gst_amount,
+							"credit_in_account_currency": gst_amount
+							if self.party_account_currency == self.company_currency
+							else gst_amount,
+							"against_voucher": self.return_against
+							if cint(self.is_return) and self.return_against
+							else self.name,
+							"against_voucher_type": self.doctype,
+							"project": self.project,
+							"cost_center": self.cost_center,
+						},
+						self.party_account_currency,
+						item=self,
+					)
+				)
+				
+			if self.discount_amount > 0:
+				discount_account = frappe.db.get_value("Company", self.company, "discount_account")
+				if not discount_account:
+					frappe.throw("Please set discount account in company")
+				gl_entries.append(
+					self.get_gl_dict(
+						{
+							"account": discount_account,
+							"party_type": "Supplier",
+							"party": self.supplier,
+							"due_date": self.due_date,
+							"against": self.against_expense_account,
+							"credit": self.discount_amount,
+							"credit_in_account_currency": self.discount_amount
+							if self.party_account_currency == self.company_currency
+							else self.discount_amount,
+							"against_voucher": self.return_against
+							if cint(self.is_return) and self.return_against
+							else self.name,
+							"against_voucher_type": self.doctype,
+							"project": self.project,
+							"cost_center": self.cost_center,
+						},
+						self.party_account_currency,
+						item=self,
+					)
+				)
+		# frappe.throw(str(gl_entries))
 
 	def make_item_gl_entries(self, gl_entries):
 		# item gl entries
@@ -1008,6 +1138,8 @@ class PurchaseInvoice(BuyingController):
 		)
 
 		purchase_receipt_doc_map = {}
+
+		individual_discount_amount = flt(self.discount_amount / len(self.get("items")))
 
 		for item in self.get("items"):
 			if flt(item.base_net_amount):
@@ -1138,7 +1270,7 @@ class PurchaseInvoice(BuyingController):
 					if not item.is_fixed_asset:
 						dummy, amount = self.get_amount_and_base_amount(item, None)
 					else:
-						amount = flt(item.base_net_amount + item.item_tax_amount, item.precision("base_net_amount"))
+						amount = flt(item.base_net_amount + item.item_tax_amount - individual_discount_amount, item.precision("base_net_amount"))
 
 					if provisional_accounting_for_non_stock_items:
 						if item.purchase_receipt:
@@ -1171,58 +1303,80 @@ class PurchaseInvoice(BuyingController):
 								)
 
 					if not self.is_internal_transfer():
-						gl_entries.append(
-							self.get_gl_dict(
-								{
-									"account": expense_account,
-									"against": self.supplier,
-									"debit": amount,
-									"cost_center": item.cost_center,
-									"project": item.project or self.project,
-								},
-								account_currency,
-								item=item,
+						if item.item_group != "Sales Product" and  frappe.db.get_value("Item Sub Group", frappe.db.get_value("Item", a.item_code, "item_sub_group"), "is_vehicle")  == 0:
+							gl_entries.append(
+								self.get_gl_dict(
+									{
+										"account": expense_account,
+										"against": self.supplier,
+										"debit": amount,
+										"cost_center": item.cost_center,
+										"project": item.project or self.project,
+									},
+									account_currency,
+									item=item,
+								)
 							)
-						)
 
-						# check if the exchange rate has changed
-						if item.get("purchase_receipt"):
-							if (
-								exchange_rate_map[item.purchase_receipt]
-								and self.conversion_rate != exchange_rate_map[item.purchase_receipt]
-								and item.net_rate == net_rate_map[item.pr_detail]
-							):
+							# check if the exchange rate has changed
+							if item.get("purchase_receipt"):
+								if (
+									exchange_rate_map[item.purchase_receipt]
+									and self.conversion_rate != exchange_rate_map[item.purchase_receipt]
+									and item.net_rate == net_rate_map[item.pr_detail]
+								):
 
-								discrepancy_caused_by_exchange_rate_difference = (item.qty * item.net_rate) * (
-									exchange_rate_map[item.purchase_receipt] - self.conversion_rate
-								)
-
-								gl_entries.append(
-									self.get_gl_dict(
-										{
-											"account": expense_account,
-											"against": self.supplier,
-											"debit": discrepancy_caused_by_exchange_rate_difference,
-											"cost_center": item.cost_center,
-											"project": item.project or self.project,
-										},
-										account_currency,
-										item=item,
+									discrepancy_caused_by_exchange_rate_difference = (item.qty * item.net_rate) * (
+										exchange_rate_map[item.purchase_receipt] - self.conversion_rate
 									)
-								)
-								gl_entries.append(
-									self.get_gl_dict(
-										{
-											"account": self.get_company_default("exchange_gain_loss_account"),
-											"against": self.supplier,
-											"credit": discrepancy_caused_by_exchange_rate_difference,
-											"cost_center": item.cost_center,
-											"project": item.project or self.project,
-										},
-										account_currency,
-										item=item,
+
+									gl_entries.append(
+										self.get_gl_dict(
+											{
+												"account": expense_account,
+												"against": self.supplier,
+												"debit": discrepancy_caused_by_exchange_rate_difference,
+												"cost_center": item.cost_center,
+												"project": item.project or self.project,
+											},
+											account_currency,
+											item=item,
+										)
 									)
+									gl_entries.append(
+										self.get_gl_dict(
+											{
+												"account": self.get_company_default("exchange_gain_loss_account"),
+												"against": self.supplier,
+												"credit": discrepancy_caused_by_exchange_rate_difference,
+												"cost_center": item.cost_center,
+												"project": item.project or self.project,
+											},
+											account_currency,
+											item=item,
+										)
+									)
+						else:
+							dca_account = frappe.db.get_value("Item Default", {"parent": item.item_code}, "dca_account")
+							expense_account = frappe.db.get_value("Item Default", {"parent": item.item_code}, "expense_account")
+							if not dca_account:
+								frappe.throw("Default DCA Account not set for Item {}".format(item.item_code))
+							if not expense_account:
+								frappe.throw("Default Expense Account not set for Item {}".format(item.item_code))
+							gl_entries.append(
+								self.get_gl_dict(
+									{
+										"account": expense_account,
+										"against": self.supplier,
+										"debit": amount,
+										"remarks": self.get("remarks") or _("Accounting Entry for Expense"),
+										"cost_center": item.cost_center,
+										"project": item.project or self.project,
+									},
+									account_currency,
+									item=item,
 								)
+							)
 
 					# If asset is bought through this document and not linked to PR
 					if self.update_stock and item.landed_cost_voucher_amount:
@@ -1492,6 +1646,12 @@ class PurchaseInvoice(BuyingController):
 		enable_discount_accounting = cint(
 			frappe.db.get_single_value("Buying Settings", "enable_discount_accounting")
 		)
+		vehicle_purchase = 0
+		expense_account = ""
+		for a in self.get("items"):
+			if frappe.db.get_value("Item Sub Group", frappe.db.get_value("Item", a.item_code, "item_sub_group"), "is_vehicle")  == 1:
+				vehicle_purchase = 1
+				expense_account = frappe.db.get_value("Item Default", {"parent": a.item_code}, "expense_account")
 
 		for tax in self.get("taxes"):
 			amount, base_amount = self.get_tax_amounts(tax, None)
@@ -1499,22 +1659,38 @@ class PurchaseInvoice(BuyingController):
 				account_currency = get_account_currency(tax.account_head)
 
 				dr_or_cr = "debit" if tax.add_deduct_tax == "Add" else "credit"
-
-				gl_entries.append(
-					self.get_gl_dict(
-						{
-							"account": tax.account_head,
-							"against": self.supplier,
-							dr_or_cr: base_amount,
-							dr_or_cr + "_in_account_currency": base_amount
-							if account_currency == self.company_currency
-							else amount,
-							"cost_center": tax.cost_center,
-						},
-						account_currency,
-						item=tax,
+				if vehicle_purchase == 1 and tax.is_gst == 0:
+					gl_entries.append(
+						self.get_gl_dict(
+							{
+								"account": expense_account,
+								"against": self.supplier,
+								dr_or_cr: base_amount,
+								dr_or_cr + "_in_account_currency": base_amount
+								if account_currency == self.company_currency
+								else amount,
+								"cost_center": tax.cost_center,
+							},
+							account_currency,
+							item=tax,
+						)
 					)
-				)
+				else:
+					gl_entries.append(
+						self.get_gl_dict(
+							{
+								"account": tax.account_head,
+								"against": self.supplier,
+								dr_or_cr: base_amount,
+								dr_or_cr + "_in_account_currency": base_amount
+								if account_currency == self.company_currency
+								else amount,
+								"cost_center": tax.cost_center,
+							},
+							account_currency,
+							item=tax,
+						)
+					)
 			# accumulate valuation tax
 			if (
 				self.is_opening == "No"
@@ -2123,6 +2299,17 @@ def make_purchase_receipt(source_name, target_doc=None):
 
 	return doc
 
+@frappe.whitelist()
+def set_discount_value(rate, qty, company):
+	amount = flt(rate)* flt(qty)
+	account = frappe.db.get_value("Company", company, "discount_account")
+	if not account:
+		frappe.throw("Please set discount account in company")
+	if amount:
+		return amount
+	else:
+		frappe.throw("Select Item First")
+		
 def get_permission_query_conditions(user):
 	if not user: user = frappe.session.user
 	user_roles = frappe.get_roles(user)

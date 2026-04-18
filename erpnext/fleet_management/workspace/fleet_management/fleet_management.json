@@ -9,6 +9,7 @@
  "hide_custom": 0,
  "icon": "getting-started",
  "idx": 0,
+ "indicator_color": "",
  "is_hidden": 0,
  "label": "Fleet Management",
  "links": [
@@ -542,7 +543,7 @@
    "hidden": 0,
    "is_query_report": 0,
    "label": "Fleet Transaction",
-   "link_count": 3,
+   "link_count": 2,
    "link_type": "DocType",
    "onboard": 0,
    "type": "Card Break"
@@ -567,20 +568,10 @@
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Insurance and Registration",
-   "link_count": 0,
-   "link_to": "Insurance and Registration",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
   }
  ],
- "modified": "2025-12-29 15:23:42.137947",
- "modified_by": "kalden.dorji@thimphutechpark.bt",
+ "modified": "2026-04-18 09:46:51.930028",
+ "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Fleet Management",
  "number_cards": [],

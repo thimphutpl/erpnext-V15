@@ -54,6 +54,7 @@ class PurchaseReceipt(BuyingController):
 		base_total_taxes_and_charges: DF.Currency
 		billing_address: DF.Link | None
 		billing_address_display: DF.SmallText | None
+		bos_number: DF.Int
 		branch: DF.Link
 		business_activity: DF.Link | None
 		buying_price_list: DF.Link | None
@@ -140,6 +141,7 @@ class PurchaseReceipt(BuyingController):
 		supplier: DF.Link
 		supplier_address: DF.Link | None
 		supplier_delivery_note: DF.Data | None
+		supplier_invoice: DF.Data
 		supplier_name: DF.Data | None
 		supplier_warehouse: DF.Link | None
 		tax_category: DF.Link | None
@@ -911,8 +913,11 @@ class PurchaseReceipt(BuyingController):
 			"expenses_included_in_asset_valuation"
 		)
 		if not is_cwip_accounting_enabled(item.asset_category):
+			# asset_account = get_asset_category_account(
+			# 	asset_category=item.asset_category, fieldname="fixed_asset_account", company=self.company
+			# )
 			asset_account = get_asset_category_account(
-				asset_category=item.asset_category, fieldname="fixed_asset_account", company=self.company
+				asset_category=item.asset_category, fieldname="credit_account", company=self.company
 			)
 		else:
 			# This returns company's default cwip account
@@ -1124,6 +1129,7 @@ def make_purchase_invoice(source_name, target_doc=None):
 					"supplier_warehouse": "supplier_warehouse",
 					"is_return": "is_return",
 					"bill_date": "bill_date",
+					"supplier_invoice": "bill_no",
 				},
 				"validation": {
 					"docstatus": ["=", 1],
@@ -1139,6 +1145,7 @@ def make_purchase_invoice(source_name, target_doc=None):
 					"is_fixed_asset": "is_fixed_asset",
 					"asset_location": "asset_location",
 					"asset_category": "asset_category",
+					"business_activity": "business_activity",
 				},
 				"postprocess": update_item,
 				"filter": lambda d: get_pending_qty(d)[0] <= 0
@@ -1215,6 +1222,9 @@ def make_stock_entry(source_name, target_doc=None):
 		{
 			"Purchase Receipt": {
 				"doctype": "Stock Entry",
+				# "field_map": {
+				# 	"title": "title",
+				# }
 			},
 			"Purchase Receipt Item": {
 				"doctype": "Stock Entry Detail",
@@ -1222,6 +1232,8 @@ def make_stock_entry(source_name, target_doc=None):
 					"warehouse": "s_warehouse",
 					"parent": "reference_purchase_receipt",
 					"batch_no": "batch_no",
+					"serial_no": "serial_no",
+					"amount": "basic_rate",
 				},
 			},
 		},

@@ -19,6 +19,7 @@
   "branch_code",
   "accounts_settings_section",
   "expense_bank_account",
+  "default_discount_account",
   "column_break_6",
   "revenue_bank_account",
   "column_break_gvvu",
@@ -187,13 +188,19 @@
    "fieldtype": "Link",
    "label": "Revenue Account",
    "options": "Account"
+  },
+  {
+   "fieldname": "default_discount_account",
+   "fieldtype": "Link",
+   "label": "Default Discount Account",
+   "options": "Account"
   }
  ],
  "icon": "fa fa-code-fork",
  "idx": 1,
  "links": [],
- "modified": "2025-12-05 11:52:39.930860",
- "modified_by": "kalden.dorji@thimphutechpark.bt",
+ "modified": "2026-04-16 09:57:51.893295",
+ "modified_by": "Administrator",
  "module": "Setup",
  "name": "Branch",
  "naming_rule": "By fieldname",

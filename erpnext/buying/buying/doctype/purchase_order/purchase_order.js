@@ -11,7 +11,7 @@ erpnext.accounts.taxes.setup_tax_validations("Purchase Order");
 erpnext.buying.setup_buying_controller();
 
 frappe.ui.form.on("Purchase Order", {
-	
+
 	setup: function (frm) {
 		// frm.set_query("expense_account", "items", function () {
 		// 	// frappe.throw("here in method")
@@ -85,7 +85,7 @@ frappe.ui.form.on("Purchase Order", {
 				}
 			});
 		}
-		
+
 	},
 
 	get_materials_from_supplier: function (frm) {
@@ -166,10 +166,10 @@ frappe.ui.form.on("Purchase Order", {
 			},
 		});
 	},
-	
-	cost_center:function(frm){
-		if (frm.doc.cost_center){
-			frm.doc.items.map(v=>{
+
+	cost_center: function (frm) {
+		if (frm.doc.cost_center) {
+			frm.doc.items.map(v => {
 				v.cost_center = frm.doc.cost_center
 			})
 		}
@@ -181,12 +181,12 @@ frappe.ui.form.on("Purchase Order", {
 				fieldname: "warehouse",
 				filters: { name: frm.doc.cost_center },
 			},
-			callback: function(r, rt) {
-				if(r.message.warehouse) {
-					frm.doc.items.map(v=>{
+			callback: function (r, rt) {
+				if (r.message.warehouse) {
+					frm.doc.items.map(v => {
 						v.warehouse = r.message.warehouse
 					})
-				}else{
+				} else {
 					frappe.throw(__('Warehouse not define in this Cost Center'))
 				}
 			}
@@ -195,26 +195,26 @@ frappe.ui.form.on("Purchase Order", {
 
 	/* jai added */
 	schedule_date: function (frm) {
-		if (frm.doc.schedule_date){
-			frm.doc.items.map(v=>{
+		if (frm.doc.schedule_date) {
+			frm.doc.items.map(v => {
 				v.schedule_date = frm.doc.schedule_date
 			})
 		}
 	},
 
-	freight_and_insurance_charges: function(frm) {
+	freight_and_insurance_charges: function (frm) {
 		calculate_discount(frm)
 	},
 
-	discount: function(frm) {
+	discount: function (frm) {
 		calculate_discount(frm)
 	},
 
-	other_charges: function(frm) {
+	other_charges: function (frm) {
 		calculate_discount(frm)
 	},
 
-	tax: function(frm) {
+	tax: function (frm) {
 		calculate_discount(frm)
 	},
 });
@@ -253,19 +253,19 @@ frappe.ui.form.on("Purchase Order Item", {
 	},
 
 	item_code: async function (frm, cdt, cdn) {
-		
-		
-		
+
+
+
 		if (frm.doc.is_subcontracted && !frm.doc.is_old_subcontracting_flow) {
-			
+
 			var row = locals[cdt][cdn];
 
 			if (row.item_code && !row.fg_item) {
-				frappe.throw("Hi0")
+
 				var result = await frm.events.get_subcontracting_boms_for_service_item(row.item_code);
 
 				if (result.message && Object.keys(result.message).length) {
-					frappe.throw("Hi1")
+
 					var finished_goods = Object.keys(result.message);
 
 					// Set FG if only one active Subcontracting BOM is found
@@ -306,12 +306,12 @@ frappe.ui.form.on("Purchase Order Item", {
 				}
 			}
 		}
-		
+
 	},
 
 	fg_item: async function (frm, cdt, cdn) {
-		
-		
+
+
 		if (frm.doc.is_subcontracted && !frm.doc.is_old_subcontracting_flow) {
 			var row = locals[cdt][cdn];
 
@@ -333,7 +333,7 @@ frappe.ui.form.on("Purchase Order Item", {
 	},
 
 	qty: async function (frm, cdt, cdn) {
-		
+
 		if (frm.doc.is_subcontracted && !frm.doc.is_old_subcontracting_flow) {
 			var row = locals[cdt][cdn];
 
@@ -372,8 +372,8 @@ erpnext.buying.PurchaseOrderController = class PurchaseOrderController extends (
 		};
 		// debugger
 		super.setup();
-		
-		
+
+
 	}
 
 	refresh(doc, cdt, cdn) {
@@ -711,12 +711,12 @@ erpnext.buying.PurchaseOrderController = class PurchaseOrderController extends (
 
 									frappe.msgprint(
 										"Assigning " +
-											d.mr_name +
-											" to " +
-											d.item_code +
-											" (row " +
-											me.frm.doc.items[i].idx +
-											")"
+										d.mr_name +
+										" to " +
+										d.item_code +
+										" (row " +
+										me.frm.doc.items[i].idx +
+										")"
 									);
 									if (qty > 0) {
 										frappe.msgprint("Splitting " + qty + " units of " + d.item_code);
@@ -878,25 +878,25 @@ if (cur_frm.doc.is_old_subcontracting_flow) {
 // function fetch_item_code_gl(frm,cdt,cdn){
 // 	var row = locals[cdt][cdn];
 // 	frappe.model.set_value(cdt, cdn, 'expense_account', "20010301 - Settlement - Essential Service Provider - DK");
-    
-    // 2. Then refresh just that field
-    // var grid = frm.fields_dict['items'].grid;
-    // grid.refresh();
 
-	// frm.call({
-	// 	method: "erpnext.buying.doctype.purchase_order.purchase_order.fetch_item_gl",
-	// 	freeze: true,
-	// 	freeze_message: __("Creating Stock Entry"),
-	// 	args: {
-	// 		cdn : cdn
-	// 	},
-	// 	callback: function (r) {
-	// 		if (r && r.message) {
-	// 			const doc = frappe.model.sync(r.message);
-	// 			frappe.set_route("Form", doc[0].doctype, doc[0].name);
-	// 		}
-	// 	},
-	// });
+// 2. Then refresh just that field
+// var grid = frm.fields_dict['items'].grid;
+// grid.refresh();
+
+// frm.call({
+// 	method: "erpnext.buying.doctype.purchase_order.purchase_order.fetch_item_gl",
+// 	freeze: true,
+// 	freeze_message: __("Creating Stock Entry"),
+// 	args: {
+// 		cdn : cdn
+// 	},
+// 	callback: function (r) {
+// 		if (r && r.message) {
+// 			const doc = frappe.model.sync(r.message);
+// 			frappe.set_route("Form", doc[0].doctype, doc[0].name);
+// 		}
+// 	},
+// });
 // }
 
 function set_schedule_date(frm) {

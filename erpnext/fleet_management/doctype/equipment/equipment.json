@@ -382,7 +382,7 @@
    "hidden": 1
   },
   {
-   "default": "Natural Resources Development Corporation Limited",
+   "default": "State Trading Corporation of Bhutan Limited",
    "fieldname": "company",
    "fieldtype": "Link",
    "label": "Company",
@@ -410,8 +410,8 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-01-14 15:10:26.050271",
- "modified_by": "Administrator",
+ "modified": "2026-04-17 10:32:23.175748",
+ "modified_by": "tshering.lham@thimphutechpark.bt",
  "module": "Fleet Management",
  "name": "Equipment",
  "naming_rule": "Expression (old style)",

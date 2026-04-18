@@ -267,6 +267,7 @@ class EMISales(SellingController):
 		# asset.serial_number = serial_no
 		asset.asset_quantity_ = 1
 		asset.asset_rate = flt(flt(cost_sharing_quotaamount)/2,2)
+		# frappe.throw(str(asset.asset_rate))
 		asset.purchase_amount = flt(flt(cost_sharing_quotaamount)/2,2)
 		asset.available_for_use_date = self.posting_date
 		asset.business_activity = business_activity
@@ -975,6 +976,7 @@ class EMISales(SellingController):
 
 	@frappe.whitelist()
 	def calculate_down_payment(self, rate):
+
 		down_payment = 0
 		if self.sales_order_type == "Cost Sharing Installment" and rate > 0 and self.is_existing == 0:
 			if self.customer_type != "Employee":
@@ -991,7 +993,7 @@ class EMISales(SellingController):
 		for a in self.items:
 			income_account = a.income_account
 		# tds_deducted_by_customer_account = frappe.db.get_single_value('Accounts Settings','tds_deducted')
-		bank_account = frappe.db.get_value("Company", self.company, "default_bank_account")
+		bank_account = frappe.db.get_value("Company", self.company, "default_receivable_account")
 		gl_entries = []
 		club_amt_ba_wise = frappe._dict()
 		count = 1
@@ -1059,6 +1061,7 @@ class EMISales(SellingController):
 						}, account_currency, item=item))
 				else:
 					amount = flt(flt(item.rate)*flt(item.qty)-flt(self.down_payment_amount)-self.no_of_installments_paid * self.monthly_deduction,item.precision("amount"))
+					# frappe.throw(str(amount))
 					asset_received_account = frappe.db.get_value("Company", self.company, "asset_received_account")
 					gl_entries.append(
 						self.get_gl_dict({
@@ -1473,7 +1476,7 @@ class EMISales(SellingController):
 		elif self.customer_type == 'Employee':
 			self.customer_name, self.customer_group = frappe.db.get_value('Employee',self.customer,['employee_name','customer_group'])
 		interest = 0
-		count = frappe.db.get_value("select count(name) count from `tabEMI Sales` where customer = '{}' and docstatus = 1 and status != 'Paid'".format(self.customer), as_dict=1)
+		count = frappe.db.get_value("select count(name) count from `tabEMI Sales` where customer = '{}' and docstatus = 1 and status != 'Paid' and name != '{}' ".format(self.customer, self.name), as_dict=1)
 		if not count:
 			count = 0
 		else:
@@ -1638,7 +1641,7 @@ def get_sales_order(doctype, txt, searchfield, start, page_len, filters):
 	cond = ''
 	txt = txt.replace("'", "''")
 	interest = 0
-	count = frappe.db.get_value("select count(name) count from `tabEMI Sales` where customer = '{}' and docstatus = 1 and status != 'Paid'".format(self.customer), as_dict=1)
+	count = frappe.db.get_value("select count(name) count from `tabEMI Sales` where customer = '{}' and docstatus = 1 and status != 'Paid'".format(filters.get("customer")), as_dict=1)
 	if not count:
 		count = 0
 	else:

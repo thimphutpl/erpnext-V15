@@ -193,3 +193,16 @@ def update_ref_doc():
             set ref_doc ="{0}"
             where name ="{1}"
         """.format(reference[0][0],a[0]))
+
+
+def update_part_no():
+    count = 0
+    for a in frappe.db.sql(""" select name, parts_no from `tabItem` where parts_no = '1'"""):
+        count += 1
+        print(a[0])
+        print(count)
+        frappe.db.sql("""
+            UPDATE `tabItem`
+            SET parts_no = %s
+            WHERE parts_no = %s AND name = %s
+        """, (count, '1', a[0]))

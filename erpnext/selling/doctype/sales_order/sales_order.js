@@ -203,6 +203,7 @@ frappe.ui.form.on("Sales Order Item", {
 					return {
 						filters: {
 							status: "Active",
+							warehouse: row.warehouse,
 							name: ["not in", already_selected]
 						}
 					};
@@ -292,9 +293,9 @@ erpnext.selling.SalesOrderController = class SalesOrderController extends erpnex
 					// }
 
 					// Make Purchase Order
-					if (!this.frm.doc.is_internal_customer) {
-						this.frm.add_custom_button(__('Purchase Order'), () => this.make_purchase_order(), __('Create'));
-					}
+					// if (!this.frm.doc.is_internal_customer) {
+					// 	this.frm.add_custom_button(__('Purchase Order'), () => this.make_purchase_order(), __('Create'));
+					// }
 
 					// maintenance
 					if (flt(doc.per_delivered, 2) < 100 && (order_is_maintenance || order_is_a_custom_sale)) {

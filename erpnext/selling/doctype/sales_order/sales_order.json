@@ -176,7 +176,8 @@
   "sales_order_footer_text",
   "amended_from",
   "service_sales_jobcard",
-  "c2_status"
+  "c2_status",
+  "allotment_item"
  ],
  "fields": [
   {
@@ -187,14 +188,12 @@
    "options": "fa fa-user"
   },
   {
-   "allow_on_submit": 1,
    "fieldname": "title",
    "fieldtype": "Data",
    "hide_days": 1,
    "hide_seconds": 1,
    "label": "Title",
-   "no_copy": 1,
-   "reqd": 1
+   "options": "\n"
   },
   {
    "bold": 1,
@@ -529,6 +528,7 @@
   },
   {
    "fetch_from": "branch.warehouse",
+   "fetch_if_empty": 1,
    "fieldname": "set_warehouse",
    "fieldtype": "Link",
    "hide_days": 1,
@@ -690,7 +690,6 @@
   {
    "fieldname": "section_break_40",
    "fieldtype": "Section Break",
-   "hidden": 1,
    "hide_days": 1,
    "hide_seconds": 1
   },
@@ -818,7 +817,7 @@
    "options": "Coupon Code"
   },
   {
-   "default": "Grand Total",
+   "default": "Net Total",
    "fieldname": "apply_discount_on",
    "fieldtype": "Select",
    "hide_days": 1,
@@ -1729,14 +1728,23 @@
    "hidden": 1,
    "label": "C2 Status",
    "options": "C2 Status"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "allotment_item",
+   "fieldtype": "Link",
+   "ignore_user_permissions": 1,
+   "label": "Allotment Item",
+   "options": "Allotment Item",
+   "read_only": 1
   }
  ],
  "icon": "fa fa-file-text",
  "idx": 105,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-12-30 10:07:56.642030",
- "modified_by": "Administrator",
+ "modified": "2026-04-18 09:53:19.319744",
+ "modified_by": "tshering.lham@thimphutechpark.bt",
  "module": "Selling",
  "name": "Sales Order",
  "naming_rule": "Expression",

@@ -76,6 +76,8 @@
   "items_section",
   "update_stock",
   "items",
+  "purchase_taxes_details_section",
+  "purchase_tax_details_in_sales_invoice",
   "total",
   "section_break_49",
   "apply_discount_on",
@@ -202,7 +204,6 @@
   "is_opening",
   "column_break8",
   "unrealized_profit_loss_account",
-  "remarks",
   "sales_team_section_break",
   "sales_partner",
   "column_break10",
@@ -217,7 +218,9 @@
   "column_break_140",
   "auto_repeat",
   "update_auto_repeat_reference",
-  "against_income_account"
+  "against_income_account",
+  "remarks_section",
+  "remarks"
  ],
  "fields": [
   {
@@ -698,7 +701,6 @@
    "default": "0",
    "fieldname": "update_stock",
    "fieldtype": "Check",
-   "hidden": 1,
    "hide_days": 1,
    "hide_seconds": 1,
    "label": "Update Stock",
@@ -1071,7 +1073,7 @@
    "label": "Additional Discount"
   },
   {
-   "default": "Grand Total",
+   "default": "Net Total",
    "fieldname": "apply_discount_on",
    "fieldtype": "Select",
    "hide_days": 1,
@@ -2197,6 +2199,21 @@
    "fieldtype": "Link",
    "label": "Supplier ",
    "options": "Supplier"
+  },
+  {
+   "fieldname": "purchase_taxes_details_section",
+   "fieldtype": "Section Break",
+   "label": "Purchase Tax Details"
+  },
+  {
+   "fieldname": "purchase_tax_details_in_sales_invoice",
+   "fieldtype": "Table",
+   "options": "Purchase Tax Details In Sales Invoice"
+  },
+  {
+   "fieldname": "remarks_section",
+   "fieldtype": "Section Break",
+   "label": "Remarks"
   }
  ],
  "icon": "fa fa-file-text",
@@ -2209,8 +2226,8 @@
    "link_fieldname": "consolidated_invoice"
   }
  ],
- "modified": "2026-01-05 10:53:22.517802",
- "modified_by": "kalden.dorji@thimphutechpark.bt",
+ "modified": "2026-04-16 16:11:20.087841",
+ "modified_by": "tdsengor1999@gmail.com",
  "module": "Accounts",
  "name": "Sales Invoice",
  "naming_rule": "Expression (old style)",

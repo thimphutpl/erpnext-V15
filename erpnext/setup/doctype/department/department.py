@@ -16,6 +16,7 @@ class Department(NestedSet):
 
 	if TYPE_CHECKING:
 		from frappe.types import DF
+		from hrms.hr.doctype.department_approver.department_approver import DepartmentApprover
 
 		approver_designation: DF.Data | None
 		approver_hod: DF.Link | None
@@ -25,14 +26,18 @@ class Department(NestedSet):
 		department_name: DF.Data
 		department_rating: DF.Percent
 		disabled: DF.Check
+		employee_advance_approver: DF.Table[DepartmentApprover]
+		expense_approvers: DF.Table[DepartmentApprover]
 		is_division: DF.Check
 		is_group: DF.Check
 		is_section: DF.Check
 		is_unit: DF.Check
+		leave_approvers: DF.Table[DepartmentApprover]
 		lft: DF.Int
 		old_parent: DF.Data | None
 		parent_department: DF.Link | None
 		rgt: DF.Int
+		shift_request_approver: DF.Table[DepartmentApprover]
 	# end: auto-generated types
 
 	nsm_parent_field = "parent_department"

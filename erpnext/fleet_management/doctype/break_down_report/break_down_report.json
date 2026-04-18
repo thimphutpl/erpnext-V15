@@ -180,8 +180,7 @@
    "fieldname": "equipment_model",
    "fieldtype": "Link",
    "label": "Equipment Model",
-   "options": "Equipment Model",
-   "reqd": 1
+   "options": "Equipment Model"
   },
   {
    "depends_on": "eval:doc.client != 'Internal' && doc.customer",
@@ -296,7 +295,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-09-22 10:33:59.268942",
+ "modified": "2026-04-17 17:10:44.369910",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Break Down Report",

@@ -16,6 +16,7 @@ class ItemDefault(Document):
 
 		buying_cost_center: DF.Link | None
 		company: DF.Link
+		dca_account: DF.Link | None
 		default_discount_account: DF.Link | None
 		default_price_list: DF.Link | None
 		default_provisional_account: DF.Link | None
@@ -23,7 +24,9 @@ class ItemDefault(Document):
 		default_warehouse: DF.Link | None
 		deferred_expense_account: DF.Link | None
 		deferred_revenue_account: DF.Link | None
-		expense_account: DF.Link
+		discount_allowed_account: DF.Link | None
+		discount_received_account: DF.Link | None
+		expense_account: DF.Link | None
 		income_account: DF.Link | None
 		parent: DF.Data
 		parentfield: DF.Data
