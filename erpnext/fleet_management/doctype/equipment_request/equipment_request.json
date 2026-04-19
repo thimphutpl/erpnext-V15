@@ -23,6 +23,8 @@
   "driver_not_required",
   "column_break_xjxz",
   "purpose",
+  "location",
+  "remarks",
   "equipment_details_section",
   "items",
   "section_break_pawz",
@@ -180,13 +182,23 @@
    "fieldname": "driver_not_required",
    "fieldtype": "Check",
    "label": "Driver Not Required"
+  },
+  {
+   "fieldname": "location",
+   "fieldtype": "Data",
+   "label": "Location"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Small Text",
+   "label": "Remarks"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-12-29 15:54:25.485691",
- "modified_by": "kalden.dorji@thimphutechpark.bt",
+ "modified": "2026-04-19 09:27:58.020830",
+ "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Equipment Request",
  "naming_rule": "Expression (old style)",

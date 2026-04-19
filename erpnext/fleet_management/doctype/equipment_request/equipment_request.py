@@ -30,10 +30,12 @@ class EquipmentRequest(Document):
 		from_date: DF.Date
 		from_time: DF.Time | None
 		items: DF.Table[EquipmentRequestItem]
+		location: DF.Data | None
 		one_day: DF.Check
 		percent_completed: DF.Percent
 		posting_date: DF.Date
 		purpose: DF.Text
+		remarks: DF.SmallText | None
 		requesting_branch: DF.Link
 		sbranch: DF.Link | None
 		to_date: DF.Date

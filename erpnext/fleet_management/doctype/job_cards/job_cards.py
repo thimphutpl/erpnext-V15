@@ -35,6 +35,7 @@ class JobCards(AccountsController):
 		amended_from: DF.Link | None
 		appointment: DF.Check
 		branch: DF.Link
+		branch_code: DF.Link | None
 		break_down_report: DF.Link | None
 		break_down_report_date: DF.Datetime | None
 		change: DF.Data | None
@@ -49,8 +50,7 @@ class JobCards(AccountsController):
 		customer_branch: DF.ReadOnly | None
 		customer_cost_center: DF.ReadOnly | None
 		customer_name: DF.Data | None
-		customer_request: DF.TextEditor | None
-		customer_status: DF.Literal["Paid job", "Warranty"]
+		customer_status: DF.Literal["Paid job", "Warranty", "Internal"]
 		date: DF.Date | None
 		date_time: DF.Datetime | None
 		datetime: DF.Datetime | None
@@ -58,6 +58,7 @@ class JobCards(AccountsController):
 		dispatch_number: DF.Data | None
 		email_address: DF.Data | None
 		engine_no: DF.Data | None
+		engine_nowalk_in: DF.Data | None
 		equipment: DF.Link | None
 		equipment_category: DF.Link | None
 		equipment_model: DF.Link | None
@@ -68,6 +69,7 @@ class JobCards(AccountsController):
 		home_no: DF.Data | None
 		items: DF.Table[JobCardsItem]
 		job_card_no: DF.Data | None
+		job_cards_status: DF.Literal["In-Progress", "Completed", "Waiting for Spare Parts", "Cancelled"]
 		job_in_time: DF.Time | None
 		job_name: DF.Data | None
 		job_out_time: DF.Time | None
@@ -86,7 +88,6 @@ class JobCards(AccountsController):
 		payment_jv: DF.Data | None
 		posting_date: DF.Date | None
 		project: DF.ReadOnly | None
-		promised_delivery: DF.Data | None
 		ref_number: DF.Data | None
 		registration_no: DF.Data | None
 		remarks: DF.LongText | None
@@ -103,8 +104,6 @@ class JobCards(AccountsController):
 	# pass
 		
 	def validate(self):
-		# if not self.job_types:
-		# 	frappe.throw("Add at least one Job Types")
 		check_future_date(self.posting_date)
 		self.validate_owned_by()
 		self.validate_job_datetime()
@@ -341,7 +340,7 @@ def make_bank_entry(frm=None):
 				"credit_in_account_currency": flt(total_amount),
 				"credit": flt(total_amount),
 			})
-		frappe.throw(str(je))
+
 		je.insert()
 
 		job.db_set("payment_jv", je.name)
@@ -364,7 +363,8 @@ def get_min_items(name):
 					"item_code": a.item_code,
 					"item_name": a.item_name,
 					"qty": a.qty,
-					"amount": a.amount
+					"amount": a.amount,
+					"total_amount":a.amount*a.qty
 				}
 				result.append(row)
 			return result

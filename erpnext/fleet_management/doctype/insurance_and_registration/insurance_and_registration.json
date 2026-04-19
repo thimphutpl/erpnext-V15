@@ -55,7 +55,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Insurance For",
-   "options": "\nVehicle\nAsset"
+   "options": "\nVehicle\nAsset\nInventories"
   },
   {
    "fieldname": "cb_1",
@@ -301,7 +301,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-01-08 14:55:31.914630",
+ "modified": "2026-04-19 09:30:23.689037",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Insurance and Registration",

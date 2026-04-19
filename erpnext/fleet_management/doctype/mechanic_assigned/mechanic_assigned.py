@@ -18,6 +18,7 @@ class MechanicAssigned(Document):
 		employee_name: DF.Data | None
 		employee_type: DF.Literal["Employee", "GEP Employee", "Muster Roll Employee"]
 		end_time: DF.Datetime | None
+		job_type: DF.Literal["Body and Paint", "General repair", "Others", "Periodic Maintenance", "Pre-Delivery inspection"]
 		mechanic: DF.DynamicLink
 		parent: DF.Data
 		parentfield: DF.Data

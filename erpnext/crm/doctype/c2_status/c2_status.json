@@ -116,12 +116,6 @@
    "label": "Order Confirmation Details "
   },
   {
-   "fieldname": "table_yefo",
-   "fieldtype": "Table",
-   "options": "Order Confirmation Details",
-   "reqd": 1
-  },
-  {
    "fieldname": "order_information",
    "fieldtype": "Long Text",
    "label": "Order Information"
@@ -241,13 +235,19 @@
    "fieldtype": "Data",
    "label": "Dispatch No.",
    "reqd": 1
+  },
+  {
+   "fieldname": "table_yefo",
+   "fieldtype": "Table",
+   "options": "Order Confirmation Details",
+   "reqd": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-04-15 13:59:44.104991",
+ "modified": "2026-04-19 12:13:40.000951",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "C2 Status",

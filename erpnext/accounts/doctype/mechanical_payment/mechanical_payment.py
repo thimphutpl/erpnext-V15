@@ -82,6 +82,7 @@ class MechanicalPayment(AccountsController):
 	def validate_allocated(self):
 		if not self.receivable_amount > 0:
 			frappe.throw("Amount should be greater than 0")
+		self.receivable_amount = flt(self.tds_amount) + sum(flt(d.allocated_amount) for d in self.items)
 
 		total = 0
 		for d in self.items:
@@ -89,8 +90,8 @@ class MechanicalPayment(AccountsController):
 				frappe.throw("Allocated Amount should be between zero and Outstanding Amount on row {0}".format(d.idx))
 			total = flt(total) + flt(d.allocated_amount)
 
-		if total != self.receivable_amount:
-			frappe.throw("Total Allocated Amount should be equal to Receivable Amount")
+		# if total != self.receivable_amount:
+		# 	frappe.throw("Total Allocated Amount should be equal to Receivable Amount")
 		# if self.receivable_amount > self.actual_amount:
 		#     frappe.throw("Receivable Amount Cannot be greater than Total Outstanding Amount")
 
@@ -185,30 +186,32 @@ class MechanicalPayment(AccountsController):
 		gl_entries = []
 		if flt(self.net_amount) > 0:
 			gl_entries.append(
-				self.get_gl_dict({"account": self.income_account,
-								  "debit": flt(self.net_amount),
-								  "debit_in_account_currency": flt(self.net_amount),
-								  "cost_center": self.cost_center,
-								  "party_check": 1,
-								  "reference_type": self.doctype,
-								  "reference_name": self.name,
-								  "remarks": self.remarks
-								  })
+				self.get_gl_dict({"account": receivable_account,
+								"debit": flt(self.receivable_amount),
+								"debit_in_account_currency": flt(self.receivable_amount),
+								"cost_center": self.cost_center,
+								"party_check": 1,
+								"party_type": "Customer",  # Add this
+                    			"party": self.customer,     # Add this
+								"reference_type": self.doctype,
+								"reference_name": self.name,
+								"remarks": self.remarks
+								})
 			)
 
 		if self.tds_amount:
 			gl_entries.append(
 				self.get_gl_dict({"account": self.tds_account,
-								  "debit": flt(self.tds_amount),
-								  "debit_in_account_currency": flt(self.tds_amount),
-								  "cost_center": self.cost_center,
-								  "party_check": 1,
-								  "party_type": "Customer" if self.customer else "Supplier",
-								  "party": self.customer,
-								  "reference_type": self.doctype,
-								  "reference_name": self.name,
-								  "remarks": self.remarks
-								  })
+								"credit": flt(self.tds_amount),  
+								"credit_in_account_currency": flt(self.tds_amount),  
+								"cost_center": self.cost_center,
+								"party_check": 1,
+								"party_type": "Customer" if self.customer else "Supplier",
+								"party": self.customer,
+								"reference_type": self.doctype,
+								"reference_name": self.name,
+								"remarks": self.remarks
+								})
 			)
 
 		for a in self.items:
@@ -222,35 +225,35 @@ class MechanicalPayment(AccountsController):
 				frappe.throw(" {} customer selected but the customer must be {} as per {} {}. ".format(a.customer, doc.customer, a.reference_type, a.reference_name))
 
 			gl_entries.append(
-				self.get_gl_dict({"account": receivable_account,
-								  "credit": flt(a.allocated_amount),
-								  "credit_in_account_currency": flt(a.allocated_amount),
-								  "cost_center": self.cost_center,
-								  "party_check": 1,
-								  "party_type": "Customer" if self.customer else "Supplier",
-								  "party": a.customer if a.customer else self.customer,
-								  "reference_type": self.doctype,
-								  "reference_name": self.name,
-								  "against_voucher_type": against_voucher_type if against_voucher_type else a.reference_type,
-								  "against_voucher": against_voucher if against_voucher else a.reference_name,
-								  "remarks": self.remarks
-								  })
+				self.get_gl_dict({"account": self.income_account,
+								"credit": flt(self.net_amount),
+								"credit_in_account_currency": flt(self.net_amount),
+								"cost_center": self.cost_center,
+								"party_check": 1,
+								"party_type": "Customer" if self.customer else "Supplier",
+								"party": a.customer if a.customer else self.customer,
+								"reference_type": self.doctype,
+								"reference_name": self.name,
+								"against_voucher_type": against_voucher_type if against_voucher_type else a.reference_type,
+								"against_voucher": against_voucher if against_voucher else a.reference_name,
+								"remarks": self.remarks
+								})
 			)
 
 		if self.deducts:
 			for a in self.deducts:
 				gl_entries.append(
 					self.get_gl_dict({"account": a.accounts,
-									  "debit": flt(a.amount),
-									  "debit_in_account_currency": flt(a.amount),
-									  "cost_center": self.cost_center,
-									  "party_check": 1,
-									  "party_type": a.party_type,
-									  "party": a.party,
-									  "reference_type": self.doctype,
-									  "reference_name": self.name,
-									  "remarks": self.remarks
-									  })
+									"debit": flt(a.amount),
+									"debit_in_account_currency": flt(a.amount),
+									"cost_center": self.cost_center,
+									"party_check": 1,
+									"party_type": a.party_type,
+									"party": a.party,
+									"reference_type": self.doctype,
+									"reference_name": self.name,
+									"remarks": self.remarks
+									})
 				)
 
 		make_gl_entries(gl_entries, cancel=(self.docstatus == 2), update_outstanding="No", merge_entries=False)

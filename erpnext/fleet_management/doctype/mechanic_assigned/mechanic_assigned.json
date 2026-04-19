@@ -13,7 +13,8 @@
   "column_break_3",
   "start_time",
   "end_time",
-  "total_time"
+  "total_time",
+  "job_type"
  ],
  "fields": [
   {
@@ -63,12 +64,18 @@
    "fieldtype": "Select",
    "label": "Bay",
    "options": "\n1\n2\n3\n4\n5\n6\n7\n8 (Electricals & others)\n9 (Body)\n10 (Paints)"
+  },
+  {
+   "fieldname": "job_type",
+   "fieldtype": "Select",
+   "label": "Job Type",
+   "options": "Body and Paint\nGeneral repair\nOthers\nPeriodic Maintenance\nPre-Delivery inspection"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-04-17 12:25:47.301583",
+ "modified": "2026-04-18 17:45:49.941727",
  "modified_by": "tshering.lham@thimphutechpark.bt",
  "module": "Fleet Management",
  "name": "Mechanic Assigned",

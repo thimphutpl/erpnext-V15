@@ -37,7 +37,7 @@ class InsuranceandRegistration(Document):
         insurance_approver: DF.Link | None
         insurance_approver_designation: DF.Link | None
         insurance_approver_name: DF.Data | None
-        insurance_for: DF.Literal["", "Vehicle", "Asset"]
+        insurance_for: DF.Literal["", "Vehicle", "Asset", "Inventories"]
         insurance_item: DF.Table[InsuranceDetails]
         items: DF.Table[BluebookandEmission]
         posting_date: DF.Date

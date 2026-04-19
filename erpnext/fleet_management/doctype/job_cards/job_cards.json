@@ -22,8 +22,11 @@
   "job_card_no",
   "column_break_dqkh",
   "date",
+  "column_break_hmmv",
+  "job_cards_status",
   "section_break_1",
   "branch",
+  "branch_code",
   "column_break_7",
   "cost_center",
   "column_break_3",
@@ -36,11 +39,8 @@
   "section_break_gwoe",
   "datetime",
   "changes",
-  "column_break_faeh",
-  "promised_delivery",
   "column_break_gfia",
   "date_time",
-  "column_break_ozwl",
   "change",
   "customer_information_section",
   "customer_name",
@@ -61,14 +61,15 @@
   "color_code",
   "odometer_reading_km",
   "chassis_no",
+  "engine_nowalk_in",
   "service_history_section",
   "table_qpxt",
   "delivery_note_history",
-  "customers_request__concerns_in_customer_word_section",
-  "customer_request",
   "section_break_2",
   "get_items",
   "items",
+  "job_types_section",
+  "job_types",
   "section_break_11",
   "posting_date",
   "job_in_time",
@@ -78,8 +79,6 @@
   "col_break_19",
   "repair_type",
   "customer_status",
-  "section_break_usiq",
-  "job_types",
   "section_break_5",
   "equipment",
   "equipment_type",
@@ -387,7 +386,9 @@
   {
    "fieldname": "section_break_13",
    "fieldtype": "Section Break",
-   "label": "Break Down Report Details"
+   "hidden": 1,
+   "label": "Break Down Report Details",
+   "read_only": 1
   },
   {
    "fieldname": "break_down_report",
@@ -515,6 +516,7 @@
    "label": "Project"
   },
   {
+   "default": "Vehicle",
    "fetch_from": "equipment.equipment_category",
    "fieldname": "equipment_category",
    "fieldtype": "Link",
@@ -537,10 +539,6 @@
    "fieldtype": "Section Break"
   },
   {
-   "fieldname": "column_break_faeh",
-   "fieldtype": "Column Break"
-  },
-  {
    "fieldname": "datetime",
    "fieldtype": "Datetime",
    "label": "Reception Date/Time"
@@ -556,18 +554,9 @@
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "promised_delivery",
-   "fieldtype": "Data",
-   "label": "Promised Delivery"
-  },
-  {
-   "fieldname": "column_break_ozwl",
-   "fieldtype": "Column Break"
-  },
-  {
    "fieldname": "date_time",
    "fieldtype": "Datetime",
-   "label": "Date Time"
+   "label": "Promisery Date Time"
   },
   {
    "fieldname": "change",
@@ -697,20 +686,10 @@
    "label": "Odometer reading (KM)"
   },
   {
-   "fieldname": "customers_request__concerns_in_customer_word_section",
-   "fieldtype": "Section Break",
-   "label": "Customer's Request / Concerns (in Customer Word)"
-  },
-  {
-   "fieldname": "customer_request",
-   "fieldtype": "Text Editor",
-   "label": "customer request"
-  },
-  {
    "fieldname": "customer_status",
    "fieldtype": "Select",
    "label": "Customer Status",
-   "options": "Paid job\nWarranty"
+   "options": "Paid job\nWarranty\nInternal"
   },
   {
    "fieldname": "service_history_section",
@@ -740,25 +719,49 @@
    "label": "Work Order No"
   },
   {
-   "fieldname": "section_break_usiq",
-   "fieldtype": "Section Break"
+   "fieldname": "chassis_no",
+   "fieldtype": "Data",
+   "label": "Chassis No.(Walk In)"
+  },
+  {
+   "fetch_from": "branch.branch_code",
+   "fieldname": "branch_code",
+   "fieldtype": "Link",
+   "label": "Branch Code",
+   "options": "Branch"
+  },
+  {
+   "fieldname": "job_types_section",
+   "fieldtype": "Section Break",
+   "label": "Job Types"
   },
   {
    "fieldname": "job_types",
    "fieldtype": "Table",
+   "hidden": 1,
    "options": "Job Cards Job Type Item"
   },
   {
-   "fieldname": "chassis_no",
+   "fieldname": "engine_nowalk_in",
    "fieldtype": "Data",
-   "label": "Chassis No.(Walk In)"
+   "label": "Engine No(Walk in)"
+  },
+  {
+   "fieldname": "column_break_hmmv",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "job_cards_status",
+   "fieldtype": "Select",
+   "label": "Job Cards status",
+   "options": "In-Progress\nCompleted\nWaiting for Spare Parts\nCancelled"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-04-18 16:11:35.180426",
- "modified_by": "toyotasc_sonamdhendup@stcb.bt",
+ "modified": "2026-04-19 14:29:33.631773",
+ "modified_by": "tshering.lham@thimphutechpark.bt",
  "module": "Fleet Management",
  "name": "Job Cards",
  "naming_rule": "Expression (old style)",
