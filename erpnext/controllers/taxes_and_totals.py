@@ -486,20 +486,24 @@ class calculate_taxes_and_totals:
 				tax_amount *= -1.0 if (tax.add_deduct_tax == "Deduct") else 1.0
 		return tax_amount
 
+					
 	def set_cumulative_total(self, row_idx, tax):
 		tax_amount = tax.base_tax_amount_after_discount_amount
 		# tax_amount = tax.base_tax_amount_after_discount_amount if tax.base_tax_amount_after_discount_amount > 0 else tax.tax_amount_after_discount_amount
 		# tax_amount = self.get_tax_amount_if_for_valuation_or_deduction(tax_amount, tax)
 		
 		if row_idx == 0:
-			# For first tax row
-			if tax.charge_type == "On Total":
+			# For first tax ro
+			if tax.charge_type == "On Net Total":
+
 				
 				# NEW: For "On Total" charge type, calculate on self.doc.total
 				if tax.add_deduct_tax == "Deduct":
 					tax.total = flt(self.doc.net_total - tax_amount, tax.precision("total"))
+					
 					# tax.total = flt(self.doc.total - tax_amount, tax.precision("total"))
 				else:
+					
 					tax.total = flt(self.doc.total + tax_amount, tax.precision("total"))
 			elif self.doc.doctype in ("Purchase Order", "Purchase Invoice", "Purchase Receipt"):
 				# Existing logic for purchase documents
@@ -508,9 +512,11 @@ class calculate_taxes_and_totals:
 						if tax.included_in_print_rate == 0 and tax.add_deduct_tax != "None":
 							tax.total = flt(self.doc.net_total + tax_amount, tax.precision("total"))
 						else:
+							
 							tax.total = flt(self.doc.net_total, tax.precision("total"))
 					else:
 						if tax.is_gst == 0 and tax.add_deduct_tax != "None":
+						
 							tax.total = flt(self.doc.net_total + tax_amount, tax.precision("total"))
 						else:
 							tax.total = flt(self.doc.net_total, tax.precision("total"))
@@ -544,6 +550,7 @@ class calculate_taxes_and_totals:
 			
 			
 			if tax.charge_type == "On Total":
+			
 				# NEW: For "On Total" in subsequent rows
 				if tax.add_deduct_tax == "Deduct":
 					
@@ -551,19 +558,29 @@ class calculate_taxes_and_totals:
 				
 				else:
 					tax.total = flt(base_total + tax_amount, tax.precision("total"))
+				
 			elif self.doc.doctype in ("Purchase Order", "Purchase Invoice", "Purchase Receipt"):
+				
 				# Existing logic for purchase documents
 				if self.doc.get("supplier"):
-					if frappe.db.get_value("Supplier", self.doc.supplier, "country") == "Bhutan" and tax.add_deduct_tax != "None":
+					if frappe.db.get_value("Supplier", self.doc.supplier, "country") == "Bhutan" and tax.add_deduct_tax == "Add":
+					
 						tax.total = flt(base_total + tax_amount, tax.precision("total"))
 					else:
-						if tax.is_gst == 0 and tax.add_deduct_tax != "None":
+						if tax.is_gst == 0 and tax.add_deduct_tax == "Add":
+						
 							tax.total = flt(base_total + tax_amount, tax.precision("total"))
+						elif tax.is_gst==0 and tax.add_deduct_tax =="Deduct":
+							
+						
+							tax.total = flt(base_total - tax_amount, tax.precision("total"))
+
 						else:
 							tax.total = flt(base_total, tax.precision("total"))
 				else:
 					# Default for purchase documents without supplier
 					if tax.is_gst == 0 and tax.add_deduct_tax != "None":
+						frappe.throw(str("hi"))
 						tax.total = flt(base_total + tax_amount, tax.precision("total"))
 					else:
 						tax.total = flt(base_total, tax.precision("total"))
@@ -805,10 +822,14 @@ class calculate_taxes_and_totals:
 										if tax.add_deduct_tax != "None":
 											self.doc.taxes_and_charges_deducted += flt(tax.tax_amount_after_discount_amount)
 					elif self.doc.doctype != "Sales Invoice" and tax.add_deduct_tax != "None":
-					
 						if tax.is_gst == 0:
 							if tax.add_deduct_tax == "Add":
 								self.doc.taxes_and_charges_added += flt(tax.tax_amount_after_discount_amount)
+							elif tax.add_deduct_tax =="Deduct":
+								
+								# frappe.throw(str(tax.tax_amount_after_discount_amount))
+								self.doc.taxes_and_charges_deducted +=flt(tax.tax_amount_after_discount_amount)
+									# self.doc.grand_total = flt(self.doc.net_total + self.doc.taxes_and_charges_added - self.doc.taxes_and_charges_deducted)
 							else:
 								self.doc.taxes_and_charges_deducted += flt(tax.tax_amount_after_discount_amount)
 
@@ -822,7 +843,7 @@ class calculate_taxes_and_totals:
 
 			self._set_in_company_currency(self.doc, ["taxes_and_charges_added", "taxes_and_charges_deducted"])
 
-		self.doc.round_floats_in(self.doc, ["grand_total", "base_grand_total"])
+		self.doc.round_floats_in(self.doc, ["base_grand_total"])
 		self.set_rounded_total()
 
 	def calculate_total_net_weight(self):
@@ -1017,7 +1038,9 @@ class calculate_taxes_and_totals:
 		# NOTE:
 		# write_off_amount is only for POS Invoice
 		# total_advance is only for non POS Invoice
+		
 		if self.doc.doctype == "Sales Invoice":
+		
 			self.calculate_paid_amount()
 
 		if (

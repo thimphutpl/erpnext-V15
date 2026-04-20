@@ -246,7 +246,7 @@ class PurchaseInvoice(BuyingController):
 
 		self.validate_posting_time()
 
-		super().validate()
+		# super().validate()
 
 		if not self.is_return:
 			self.po_required()
@@ -938,7 +938,7 @@ class PurchaseInvoice(BuyingController):
 	# 			# )
 	# 			# self.make_exchange_gain_loss_journal()
 	# 			for entry in gl_entries:
-    #             # Determine if this entry should update outstanding
+	#             # Determine if this entry should update outstanding
 	# 				if entry.get('party_type') and entry.get('party'):
 	# 					# For party entries, check if it should update outstanding
 	# 					if entry.get('credit') > 0 or entry.get('debit') > 0:
@@ -966,128 +966,148 @@ class PurchaseInvoice(BuyingController):
 	# 		self.cancel_provisional_entries()
 
 	# 	self.update_supplier_outstanding(update_outstanding)
+	# def make_gl_entries(self, gl_entries=None, from_repost=False):
+	
+	#     if self.docstatus == 1:
+	#         if not gl_entries:
+	#             gl_entries = self.get_gl_entries()
+			
+	#         if gl_entries:
+	#             # Group entries by party for outstanding calculation
+	#             party_outstanding_map = {}
+				
+	#             # First pass: identify all parties and their amounts
+	#             for entry in gl_entries:
+	#                 if entry.get('party_type') == 'Supplier' and entry.get('party'):
+	#                     party = entry.get('party')
+	#                     if party not in party_outstanding_map:
+	#                         party_outstanding_map[party] = {
+	#                             'credit': 0,
+	#                             'debit': 0
+	#                         }
+						
+	#                     # Sum up credits and debits per party
+	#                     party_outstanding_map[party]['credit'] += entry.get('credit', 0)
+	#                     party_outstanding_map[party]['debit'] += entry.get('debit', 0)
+				
+	#             # Make GL entries normally (all at once)
+	#             make_gl_entries(
+	#                 gl_entries,
+	#                 update_outstanding="No",  # Don't update automatically
+	#                 merge_entries=False,
+	#                 from_repost=from_repost,
+	#             )
+				
+	#             # Manually update outstanding for each party
+	#             for party, amounts in party_outstanding_map.items():
+	#                 outstanding_amount = amounts['credit'] - amounts['debit']
+	#                 if outstanding_amount != 0:
+	#                     self.update_party_outstanding(party, outstanding_amount)
+				
+	#             self.make_exchange_gain_loss_journal()
+		
+		
+	#     elif self.docstatus == 2:
+	#         make_reverse_gl_entries(voucher_type=self.doctype, voucher_no=self.name)
+	#         self.cancel_provisional_entries()\
 	def make_gl_entries(self, gl_entries=None, from_repost=False):
-    
+		update_outstanding = "No" if (cint(self.is_paid) or self.write_off_account) else "Yes"
 		if self.docstatus == 1:
 			if not gl_entries:
 				gl_entries = self.get_gl_entries()
-			
+
 			if gl_entries:
-				# Group entries by party for outstanding calculation
-				party_outstanding_map = {}
-				
-				# First pass: identify all parties and their amounts
-				for entry in gl_entries:
-					if entry.get('party_type') == 'Supplier' and entry.get('party'):
-						party = entry.get('party')
-						if party not in party_outstanding_map:
-							party_outstanding_map[party] = {
-								'credit': 0,
-								'debit': 0
-							}
-						
-						# Sum up credits and debits per party
-						party_outstanding_map[party]['credit'] += entry.get('credit', 0)
-						party_outstanding_map[party]['debit'] += entry.get('debit', 0)
-				
-				# Make GL entries normally (all at once)
 				make_gl_entries(
 					gl_entries,
-					update_outstanding="No",  # Don't update automatically
+					update_outstanding=update_outstanding,
 					merge_entries=False,
 					from_repost=from_repost,
 				)
-				
-				# Manually update outstanding for each party
-				for party, amounts in party_outstanding_map.items():
-					outstanding_amount = amounts['credit'] - amounts['debit']
-					if outstanding_amount != 0:
-						self.update_party_outstanding(party, outstanding_amount)
-				
 				self.make_exchange_gain_loss_journal()
-		
 		elif self.docstatus == 2:
 			make_reverse_gl_entries(voucher_type=self.doctype, voucher_no=self.name)
 			self.cancel_provisional_entries()
 
-	def update_party_outstanding(self, party, amount, account=None):
-		"""Manually update outstanding amount for a specific party"""
-		
-		frappe.msgprint(f"Inside update_party_outstanding for {party}: Amount={amount}")
-		
-		# If account not provided, get it from party account or default
-		if not account:
-			# Get the party account from Party Account table
-			
-				# Try to get default supplier account for the company
-			account = frappe.db.get_value(
-				"Account",
-				{"account_type": "Payable", "company": self.company, "is_group": 0},
-				"name"
-			)
-		
-		if account:
-			frappe.msgprint(f"Using account: {account} for party: {party}")
-			
-			# Check if GL Entry already exists for this voucher and party
-			existing = frappe.db.get_value(
-				"GL Entry",
-				{
-					"voucher_type": self.doctype,
-					"voucher_no": self.name,
-					"party_type": "Supplier",
-					"party": party,
-					"account": account
-				},
-				"name"
-			)
-			
-			if existing:
-				# Update existing entry
-				frappe.db.sql("""
-					UPDATE `tabGL Entry` 
-					SET credit = %s, debit = %s,
-						credit_in_account_currency = %s,
-						debit_in_account_currency = %s
-					WHERE name = %s
-				""", (
-					amount if amount > 0 else 0,
-					abs(amount) if amount < 0 else 0,
-					amount if amount > 0 else 0,
-					abs(amount) if amount < 0 else 0,
-					existing
-				))
-				frappe.msgprint(f"Updated existing GL Entry: {existing}")
-			else:
-				# Create new GL Entry for outstanding
-				gl_entry = frappe.get_doc({
-					"doctype": "GL Entry",
-					"posting_date": self.posting_date,
-					"transaction_date": self.get('bill_date') or self.posting_date,
-					"account": account,
-					"party_type": "Supplier",
-					"party": party,
-					"debit": abs(amount) if amount < 0 else 0,
-					"credit": amount if amount > 0 else 0,
-					"debit_in_account_currency": abs(amount) if amount < 0 else 0,
-					"credit_in_account_currency": amount if amount > 0 else 0,
-					"against": self.name,
-					"voucher_type": self.doctype,
-					"voucher_no": self.name,
-					"company": self.company,
-				#	"fiscal_year": self.fiscal_year,
-					"remarks": f"Outstanding amount for {party}"
-				})
-				gl_entry.flags.ignore_permissions = True
-				gl_entry.flags.ignore_mandatory = True
-				gl_entry.insert()
-				frappe.msgprint(f"Created new GL Entry for {party}")
-			
-			# Commit to ensure it's saved
-			frappe.db.commit()
-		else:
-			frappe.msgprint(f"Warning: No account found for party {party}")
+		self.update_supplier_outstanding(update_outstanding)
 
+	# def update_party_outstanding(self, party, amount, account=None):
+	#     """Manually update outstanding amount for a specific party"""
+		
+	#     frappe.msgprint(f"Inside update_party_outstanding for {party}: Amount={amount}")
+		
+	#     # If account not provided, get it from party account or default
+	#     if not account:
+	#         # Get the party account from Party Account table
+			
+	#             # Try to get default supplier account for the company
+	#         account = frappe.db.get_value(
+	#             "Account",
+	#             {"account_type": "Payable", "company": self.company, "is_group": 0},
+	#             "name"
+	#         )
+		
+	#     if account:
+	#         frappe.msgprint(f"Using account: {account} for party: {party}")
+			
+	#         # Check if GL Entry already exists for this voucher and party
+	#         existing = frappe.db.get_value(
+	#             "GL Entry",
+	#             {
+	#                 "voucher_type": self.doctype,
+	#                 "voucher_no": self.name,
+	#                 "party_type": "Supplier",
+	#                 "party": party,
+	#                 "account": account
+	#             },
+	#             "name"
+	#         )
+			
+	#         if existing:
+	#             # Update existing entry
+	#             frappe.db.sql("""
+	#                 UPDATE `tabGL Entry` 
+	#                 SET credit = %s, debit = %s,
+	#                     credit_in_account_currency = %s,
+	#                     debit_in_account_currency = %s
+	#                 WHERE name = %s
+	#             """, (
+	#                 amount if amount > 0 else 0,
+	#                 abs(amount) if amount < 0 else 0,
+	#                 amount if amount > 0 else 0,
+	#                 abs(amount) if amount < 0 else 0,
+	#                 existing
+	#             ))
+	#             frappe.msgprint(f"Updated existing GL Entry: {existing}")
+	#         else:
+	#             # Create new GL Entry for outstanding
+	#             gl_entry = frappe.get_doc({
+	#                 "doctype": "GL Entry",
+	#                 "posting_date": self.posting_date,
+	#                 "transaction_date": self.get('bill_date') or self.posting_date,
+	#                 "account": account,
+	#                 "party_type": "Supplier",
+	#                 "party": party,
+	#                 "debit": abs(amount) if amount < 0 else 0,
+	#                 "credit": amount if amount > 0 else 0,
+	#                 "debit_in_account_currency": abs(amount) if amount < 0 else 0,
+	#                 "credit_in_account_currency": amount if amount > 0 else 0,
+	#                 "against": self.name,
+	#                 "voucher_type": self.doctype,
+	#                 "voucher_no": self.name,
+	#                 "company": self.company,
+	#             #	"fiscal_year": self.fiscal_year,
+	#                 "remarks": f"Outstanding amount for {party}"
+	#             })
+	#             gl_entry.flags.ignore_permissions = True
+	#             gl_entry.flags.ignore_mandatory = True
+	#             gl_entry.insert()
+	#             frappe.msgprint(f"Created new GL Entry for {party}")
+			
+	#         # Commit to ensure it's saved
+	#         frappe.db.commit()
+	#     else:
+	#         frappe.msgprint(f"Warning: No account found for party {party}")
+	 
 	def cancel_provisional_entries(self):
 		rows = set()
 		purchase_receipts = set()
@@ -1160,15 +1180,11 @@ class PurchaseInvoice(BuyingController):
 
 		self.negative_expense_to_be_booked = 0.0
 		gl_entries = []
-
-		# First, create ALL debit entries (items and taxes)
+		self.make_advance_gl_entry(gl_entries)
+		self.make_supplier_gl_entries(gl_entries)
 		self.make_item_gl_entries(gl_entries)  # Creates stock debit: ₹5,000
 		self.make_tax_gl_entries(gl_entries)   # Creates GST: ₹10 and Transport: ₹200 debits
-		
-		# THEN create credit entries (supplier payables)
-		self.make_supplier_gl_entries(gl_entries)
-		
-		# Rest of the methods
+	  
 		self.make_internal_transfer_gl_entries(gl_entries)
 		self.make_gl_entries_for_tax_withholding(gl_entries)
 
@@ -1184,20 +1200,46 @@ class PurchaseInvoice(BuyingController):
 		self.make_payment_gl_entries(gl_entries)
 		self.make_write_off_gl_entry(gl_entries)
 		self.make_gle_for_rounding_adjustment(gl_entries)
-    
+	
 		return gl_entries
+	def make_advance_gl_entry(self, gl_entries):
+		for a in self.get("advances"):
+			if flt(a.allocated_amount) and a.advance_account:
+				advance_account_currency = get_account_currency(a.advance_account)
+			allocated_amount = round(flt(a.allocated_amount), 2)
+			gl_entries.append(
+				self.get_gl_dict({
+					"account": self.credit_to,           # Sundry Creditors
+					"party_type": "Supplier",
+					"party": self.supplier,
+					"debit": allocated_amount,           # ✓ DEBIT to reduce payable
+					"debit_in_account_currency": allocated_amount,
+					"against": a.advance_account,
+					"cost_center": a.cost_center or self.cost_center,
+					"against_voucher": self.name,
+					"against_voucher_type": self.doctype,
+					"remarks": f"Advance adjusted against invoice {self.name}"
+				}, self.party_account_currency)
+			)
+			gl_entries.append(
+				self.get_gl_dict({
+					"account": a.advance_account,
+					"against": self.supplier,
+					"party_type": "Supplier",
+					"party": self.supplier,
+					"credit": allocated_amount,
+					"credit_in_account_currency": allocated_amount, 
+					"cost_center": a.cost_center,
+				},advance_account_currency)
+			)	
 	def make_supplier_gl_entries(self, gl_entries):
-    
 		if not self.credit_to:
 			frappe.throw(_("Please set Creditor Account in Purchase Invoice"))
-		
-		
 		stock_debit = 0
 		gst_debit = 0
 		transport_debit = 0
+		tds_amount=0
 		supplier = self.supplier
-		
-		
 		tax_party = None
 		gst_party = None
 		stock_party = self.supplier
@@ -1227,6 +1269,9 @@ class PurchaseInvoice(BuyingController):
 					elif tax_party != tax.party:
 						has_different_party = True
 				transport_debit += tax_amount
+			elif "TDS" in tax.get("account_head", ""):  # ← ADD THIS
+				# TDS reduces payable, so subtract it
+				tds_amount += tax_amount	
 		
 		default_cost_center = ''
 		cost_center = self.cost_center or default_cost_center
@@ -1238,13 +1283,15 @@ class PurchaseInvoice(BuyingController):
 			gst_total = gst_debit
 		
 		if stock_debit:
+			net_payable = stock_debit + gst_total - tds_amount 
+		   
 			gl_entries.append(self.get_gl_dict({
 				"account": self.credit_to,
 				"party_type": "Supplier",
 				"party": stock_party,
 				"against": "Stock Received But Not Billed",
-				"credit": stock_debit+gst_total,
-				"credit_in_account_currency": stock_debit+gst_debit,
+				"credit": net_payable,
+				"credit_in_account_currency": net_payable,
 				"cost_center": cost_center,
 				"against_voucher": self.name,
 				"against_voucher_type": self.doctype,
@@ -1252,9 +1299,7 @@ class PurchaseInvoice(BuyingController):
 			}, self.party_account_currency))
 		
 
-
 		if tax_total:
-			
 			if tax_party and tax_party != stock_party:
 				# frappe.msgprint(str(tax_party))
 				gl_entries.append(self.get_gl_dict({
@@ -1276,6 +1321,7 @@ class PurchaseInvoice(BuyingController):
 					if (entry.get("party") == stock_party and 
 						entry.get("account") == self.credit_to and
 						entry.get("against") == "Stock Received But Not Billed"):
+						
 					
 						entry["credit"] = flt(entry.get("credit", 0)) + tax_total
 						entry["credit_in_account_currency"] = flt(entry.get("credit_in_account_currency", 0)) + tax_total
@@ -1285,7 +1331,7 @@ class PurchaseInvoice(BuyingController):
 				
 				
 				if not stock_entry_found:
-					frappe.throw("hii1")
+				   
 					gl_entries.append(self.get_gl_dict({
 						"account": self.credit_to,
 						"party_type": "Supplier",
@@ -1298,7 +1344,8 @@ class PurchaseInvoice(BuyingController):
 						"against_voucher_type": self.doctype,
 						"remarks": "Total Payable to Supplier"
 					}, self.party_account_currency))
-
+			
+	   
 	# def make_supplier_gl_entries(self, gl_entries):
 		
 	# 	if not self.credit_to:
@@ -1466,7 +1513,9 @@ class PurchaseInvoice(BuyingController):
 					)
 
 					if item.from_warehouse:
+						
 						gl_entries.append(
+							
 							self.get_gl_dict(
 								{
 									"account": warehouse_account[item.warehouse]["account"],
@@ -1503,6 +1552,7 @@ class PurchaseInvoice(BuyingController):
 
 						# Do not book expense for transfer within same company transfer
 						if not self.is_internal_transfer():
+							
 							gl_entries.append(
 								self.get_gl_dict(
 									{
@@ -1575,7 +1625,7 @@ class PurchaseInvoice(BuyingController):
 								item=item,
 							)
 						)
-
+		 
 				else:
 					expense_account = (
 						item.expense_account
@@ -1682,7 +1732,7 @@ class PurchaseInvoice(BuyingController):
 
 			if item.is_fixed_asset and item.landed_cost_voucher_amount:
 				self.update_gross_purchase_amount_for_linked_assets(item)
-
+		
 	def get_provisional_accounts(self):
 		self.provisional_accounts = frappe._dict()
 		linked_purchase_receipts = set([d.purchase_receipt for d in self.items if d.purchase_receipt])
@@ -1833,6 +1883,7 @@ class PurchaseInvoice(BuyingController):
 						item=tax,
 					)
 				)
+		
 				
 			# accumulate valuation tax
 			if (
@@ -1897,7 +1948,7 @@ class PurchaseInvoice(BuyingController):
 							item=tax,
 						)
 					)
-
+		# frappe.throw(str(gl_entries))
 	def make_internal_transfer_gl_entries(self, gl_entries):
 		if self.is_internal_transfer() and flt(self.base_total_taxes_and_charges):
 			account_currency = get_account_currency(self.unrealized_profit_loss_account)

@@ -360,7 +360,7 @@ class PurchaseReceipt(BuyingController):
 
 	# on submit
 	def on_submit(self):
-		super().on_submit()
+		# super().on_submit()
 
 		# Check for Approving Authority
 		frappe.get_doc("Authorization Control").validate_approving_authority(

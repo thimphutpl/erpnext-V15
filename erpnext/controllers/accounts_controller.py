@@ -119,6 +119,7 @@ class AccountsController(TransactionBase):
 		return self.__company_currency
 
 	def onload(self):
+		#frappe.throw("aaa")
 		self.set_onload(
 			"make_payment_via_journal_entry",
 			frappe.db.get_single_value("Accounts Settings", "make_payment_via_journal_entry"),
@@ -133,6 +134,7 @@ class AccountsController(TransactionBase):
 				"Sales Invoice",
 			)
 			if self.doctype in relevant_docs:
+				
 				self.set_payment_schedule()
 
 	def remove_bundle_for_non_stock_invoices(self):
