@@ -13,90 +13,148 @@ def execute(filters=None):
 	return columns, data
 
 def get_data(filters):
-	data = []
-	to_exclude = []
 	conditions = get_conditions(filters)
+
 	return frappe.db.sql("""
-			SELECT t.item_code, i.item_name, i.asset_category, i.asset_sub_category, t.cost_center,
-			SUM(IFNULL(t.received_qty,0)) total_qty,
-			SUM(IFNULL(t.issued_qty,0)) issued_qty,
-			SUM(IFNULL(t.received_qty,0))-SUM(IFNULL(t.issued_qty,0)) balance_qty,
-			SUM(IFNULL(t.received_amount,0)) total_val,
-			SUM(IFNULL(t.issued_amount,0)) issued_val,
-			SUM(IFNULL(t.received_amount,0))-SUM(IFNULL(t.issued_amount,0)) balance_val,
-			GROUP_CONCAT(IF(IFNULL(t.received_qty, 0)-IFNULL(t.issued_qty, 0) > 0, CONCAT('<a href="desk#Form/Purchase Receipt/',t.ref_doc,'">',t.ref_doc,'(',IFNULL(t.received_qty,0)-IFNULL(t.issued_qty, 0),')','</a>'),NULL)) purchase_receipt,
+		SELECT
+			t.item_code,
+			i.item_name,
+			i.asset_category,
+			i.asset_sub_category,
+			t.cost_center,
+			t.received_qty AS total_qty,
+			t.received_amount AS total_val,
+			t.issued_qty,
+			t.issued_amount AS issued_val,
+			(t.received_qty - t.issued_qty) AS balance_qty,
+			CASE
+				WHEN t.received_qty > 0 THEN
+					(t.received_qty - t.issued_qty) * (t.received_amount / t.received_qty)
+				ELSE 0
+			END AS balance_val,
+			CASE
+				WHEN (t.received_qty - t.issued_qty) > 0 THEN
+					CONCAT(
+						'<a href="desk#Form/Purchase Receipt/', t.ref_doc, '">',
+						t.ref_doc, '(', (t.received_qty - t.issued_qty), ')</a>'
+					)
+				ELSE ''
+			END AS purchase_receipt,
 			"" AS existing_pr
-			FROM(
-			SELECT ar.item_code, ar.ref_doc, ar.cost_center, (select distinct pr.warehouse from `tabPurchase Receipt Item` pr where pr.name = ar.child_ref) as warehouse,
-				SUM(ar.qty) received_qty,
-				SUM((SELECT SUM(pri.net_amount) from `tabPurchase Receipt Item` pri join `tabPurchase Receipt` pr on pri.parent = pr.name where pri.name = ar.child_ref and pr.branch = ar.branch)) received_amount,
-				IFNULL((SELECT SUM(ai.qty)
+		FROM (
+			SELECT
+				ar.item_code,
+				ar.ref_doc,
+				ar.cost_center,
+				(
+					SELECT pri.warehouse
+					FROM `tabPurchase Receipt Item` pri
+					WHERE pri.name = ar.child_ref
+					LIMIT 1
+				) AS warehouse,
+				SUM(ar.qty) AS received_qty,
+				SUM(
+					(
+						SELECT pri.net_amount
+						FROM `tabPurchase Receipt Item` pri
+						JOIN `tabPurchase Receipt` pr
+							ON pr.name = pri.parent
+						WHERE pri.name = ar.child_ref
+						AND pr.branch = ar.branch
+						LIMIT 1
+					)
+				) AS received_amount,
+				IFNULL((
+					SELECT SUM(ai.qty)
 					FROM `tabAsset Issue Details` ai
 					WHERE ai.item_code = ar.item_code
-					AND ai.issued_date BETWEEN '{from_date}' AND '{to_date}' 
 					AND ai.purchase_receipt = ar.ref_doc
 					AND ai.docstatus = 1
-					),0) issued_qty,
-				IFNULL((SELECT SUM(ai.amount)
+					AND ai.issued_date BETWEEN '{from_date}' AND '{to_date}'
+				), 0) AS issued_qty,
+				IFNULL((
+					SELECT SUM(ai.amount)
 					FROM `tabAsset Issue Details` ai
 					WHERE ai.item_code = ar.item_code
-					AND ai.issued_date BETWEEN '{from_date}' AND '{to_date}' 
 					AND ai.purchase_receipt = ar.ref_doc
 					AND ai.docstatus = 1
-					),0) issued_amount
+					AND ai.issued_date BETWEEN '{from_date}' AND '{to_date}'
+				), 0) AS issued_amount
 			FROM `tabAsset Received Entries` ar
 			WHERE ar.received_date BETWEEN '{from_date}' AND '{to_date}'
 			AND ar.docstatus = 1
 			AND ar.is_existing_asset = 0
 			{cond}
-			GROUP BY ar.item_code, ar.ref_doc
-			) AS t, `tabItem` i
-			WHERE i.name = t.item_code
-			GROUP BY  t.item_code, i.item_name, t.cost_center, t.warehouse
-   
-			UNION
-   
-			SELECT t.item_code, i.item_name, i.asset_category, i.asset_sub_category, t.cost_center,
-			SUM(IFNULL(t.received_qty,0)) total_qty,
-			SUM(IFNULL(t.issued_qty,0)) issued_qty,
-			SUM(IFNULL(t.received_qty,0))-SUM(IFNULL(t.issued_qty,0)) balance_qty,
-			SUM(IFNULL(t.received_amount,0)) total_val,
-			SUM(IFNULL(t.issued_amount,0)) issued_val,
-			SUM(IFNULL(t.received_amount,0))-SUM(IFNULL(t.issued_amount,0)) balance_val,
+			GROUP BY ar.item_code, ar.ref_doc, ar.cost_center, ar.branch
+		) AS t
+		JOIN `tabItem` i ON i.name = t.item_code
+
+		UNION ALL
+
+		SELECT
+			t.item_code,
+			i.item_name,
+			i.asset_category,
+			i.asset_sub_category,
+			t.cost_center,
+			t.received_qty AS total_qty,
+			t.received_amount AS total_val,
+			t.issued_qty,
+			t.issued_amount AS issued_val,
+			(t.received_qty - t.issued_qty) AS balance_qty,
+			CASE
+				WHEN t.received_qty > 0 THEN
+					(t.received_qty - t.issued_qty) * (t.received_amount / t.received_qty)
+				ELSE 0
+			END AS balance_val,
 			"" AS purchase_receipt,
-			GROUP_CONCAT(IF(IFNULL(t.received_qty, 0)-IFNULL(t.issued_qty, 0) > 0, CONCAT(t.existing_pr),NULL)) AS existing_pr
-			FROM(
-			SELECT ar.item_code, ar.existing_pr_reference as existing_pr, ar.cost_center, ar.warehouse,
-				SUM(ar.qty) received_qty,
-				SUM(ar.asset_rate*ar.qty) as received_amount,
-				IFNULL((SELECT SUM(ai.qty)
+			CASE
+				WHEN (t.received_qty - t.issued_qty) > 0 THEN t.existing_pr
+				ELSE ''
+			END AS existing_pr
+		FROM (
+			SELECT
+				ar.item_code,
+				ar.ref_doc,
+				ar.existing_pr_reference AS existing_pr,
+				ar.cost_center,
+				ar.warehouse,
+				SUM(ar.qty) AS received_qty,
+				SUM(ar.asset_rate * ar.qty) AS received_amount,
+				IFNULL((
+					SELECT SUM(ai.qty)
 					FROM `tabAsset Issue Details` ai
 					WHERE ai.item_code = ar.item_code
-					AND ai.issued_date BETWEEN '{from_date}' AND '{to_date}' 
 					AND ai.branch = ar.branch
 					AND ai.docstatus = 1
-					AND ai.is_existing_asset =1
-					),0) issued_qty,
-				IFNULL((SELECT SUM(ai.amount)
-					FROM `tabAsset Issue Details` ai
-					WHERE ai.item_code = ar.item_code
+					AND ai.is_existing_asset = 1
 					AND ai.issued_date BETWEEN '{from_date}' AND '{to_date}'
+				), 0) AS issued_qty,
+				IFNULL((
+					SELECT SUM(ai.amount)
+					FROM `tabAsset Issue Details` ai
+					WHERE ai.item_code = ar.item_code
 					AND ai.branch = ar.branch
 					AND ai.docstatus = 1
-					AND ai.is_existing_asset =1
-					),0) issued_amount
+					AND ai.is_existing_asset = 1
+					AND ai.issued_date BETWEEN '{from_date}' AND '{to_date}'
+				), 0) AS issued_amount
 			FROM `tabAsset Received Entries` ar
 			WHERE ar.received_date BETWEEN '{from_date}' AND '{to_date}'
 			AND ar.docstatus = 1
 			AND ar.is_existing_asset = 1
 			{cond}
-			GROUP BY ar.item_code, ar.ref_doc
-			) AS t, `tabItem` i
-			WHERE i.name = t.item_code
-			GROUP BY  t.item_code, i.item_name, t.cost_center, t.warehouse
-   
-		""".format(from_date=filters.get("from_date"), to_date=filters.get("to_date"), cond = conditions), as_dict=True)
-	
+			GROUP BY ar.item_code, ar.ref_doc, ar.existing_pr_reference, ar.cost_center, ar.warehouse, ar.branch
+		) AS t
+		JOIN `tabItem` i ON i.name = t.item_code
+
+		ORDER BY item_code, cost_center, purchase_receipt, existing_pr
+	""".format(
+		from_date=filters.get("from_date"),
+		to_date=filters.get("to_date"),
+		cond=conditions
+	), as_dict=True)
+
 def get_conditions(filters):
 	if not filters.get("from_date"):
 		frappe.throw(_("From Date is mandatory"))
