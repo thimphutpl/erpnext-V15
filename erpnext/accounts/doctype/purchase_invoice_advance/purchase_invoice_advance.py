@@ -14,8 +14,10 @@ class PurchaseInvoiceAdvance(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		advance_account: DF.Link | None
 		advance_amount: DF.Currency
 		allocated_amount: DF.Currency
+		cost_center: DF.Link | None
 		exchange_gain_loss: DF.Currency
 		parent: DF.Data
 		parentfield: DF.Data
