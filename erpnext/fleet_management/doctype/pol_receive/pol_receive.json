@@ -565,6 +565,7 @@
    "fieldname": "gst_amount",
    "fieldtype": "Currency",
    "label": "GST Amount",
+   "precision": "4",
    "read_only": 1
   },
   {
@@ -577,7 +578,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-03-20 09:05:09.916189",
+ "modified": "2026-04-24 09:56:40.045848",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Receive",
