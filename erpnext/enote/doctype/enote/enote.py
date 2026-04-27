@@ -339,9 +339,10 @@ class eNote(Document):
 
 	@frappe.whitelist()
 	def update_status(self):
+		user=frappe.session.user
 		doc = frappe.get_doc("eNote", self.name)
-		query = "SELECT name from `tabeNote Reviewer` Where user_id == '{}'".format(frappe.session.user)
-		sql = frappe.db.sql(query)
+		query = f"SELECT name from `tabeNote Reviewer` Where user_id = %s and parent=%s"
+		sql = frappe.db.sql(query,(user,self.name),as_dict=1)
 
 		doc = frappe.db.get_doc("eNote Reviewer", sql[0].name)
 		doc.status = "Reviewed"
@@ -384,7 +385,7 @@ class eNote(Document):
 
 		if reviewers:
 			frappe.db.set_value("Note Remark", {'user': frappe.session.user}, "action", "Review")
-			frappe.db.set_value("eNote Reviewer", {'user_id': frappe.session.user}, "status", "Reviewed")
+			frappe.db.set_value("eNote Reviewer", {'user_id': frappe.session.user,"parent":self.name}, "status", "Reviewed")
 			query = """SELECT * FROM `tabeNote Reviewer` WHERE parent = '{0}'""".format(self.name)
 			data = frappe.db.sql(query, as_dict=1)
 			status = 1
@@ -412,7 +413,7 @@ class eNote(Document):
 					#attachments=attachments,
 				)
 		except:
-			frappe.throw("hii")
+			#frappe.throw("hii")
 			pass	
 
 def get_permission_query_conditions(user):

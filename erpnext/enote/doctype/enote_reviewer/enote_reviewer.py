@@ -15,7 +15,7 @@ class eNoteReviewer(Document):
 		from frappe.types import DF
 
 		designation: DF.Data | None
-		employee: DF.Link | None
+		employee: DF.Link
 		employee_name: DF.Data | None
 		parent: DF.Data
 		parentfield: DF.Data
