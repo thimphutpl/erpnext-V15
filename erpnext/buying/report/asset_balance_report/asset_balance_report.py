@@ -114,6 +114,7 @@ def get_data(filters):
 			END AS existing_pr
 		FROM (
 			SELECT
+				ar.name AS asset_received_entry,
 				ar.item_code,
 				ar.ref_doc,
 				ar.existing_pr_reference AS existing_pr,
@@ -121,30 +122,35 @@ def get_data(filters):
 				ar.warehouse,
 				SUM(ar.qty) AS received_qty,
 				SUM(ar.asset_rate * ar.qty) AS received_amount,
+
 				IFNULL((
 					SELECT SUM(ai.qty)
 					FROM `tabAsset Issue Details` ai
 					WHERE ai.item_code = ar.item_code
 					AND ai.branch = ar.branch
+					AND ai.asset_received_entries = ar.name
 					AND ai.docstatus = 1
 					AND ai.is_existing_asset = 1
 					AND ai.issued_date BETWEEN '{from_date}' AND '{to_date}'
 				), 0) AS issued_qty,
+
 				IFNULL((
 					SELECT SUM(ai.amount)
 					FROM `tabAsset Issue Details` ai
 					WHERE ai.item_code = ar.item_code
 					AND ai.branch = ar.branch
+					AND ai.asset_received_entries = ar.name
 					AND ai.docstatus = 1
 					AND ai.is_existing_asset = 1
 					AND ai.issued_date BETWEEN '{from_date}' AND '{to_date}'
 				), 0) AS issued_amount
+
 			FROM `tabAsset Received Entries` ar
 			WHERE ar.received_date BETWEEN '{from_date}' AND '{to_date}'
 			AND ar.docstatus = 1
 			AND ar.is_existing_asset = 1
 			{cond}
-			GROUP BY ar.item_code, ar.ref_doc, ar.existing_pr_reference, ar.cost_center, ar.warehouse, ar.branch
+			GROUP BY ar.name, ar.item_code, ar.ref_doc, ar.existing_pr_reference, ar.cost_center, ar.warehouse, ar.branch
 		) AS t
 		JOIN `tabItem` i ON i.name = t.item_code
 
