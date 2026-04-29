@@ -280,6 +280,7 @@
   {
    "fieldname": "section_break_50",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "TDS DEDUCTIONS"
   },
   {
@@ -397,7 +398,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-02-04 18:00:58.278886",
+ "modified": "2026-04-29 15:54:21.581174",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Project Payment",
