@@ -1192,7 +1192,6 @@ class ProjectPayment(AccountsController):
 								"project": self.project
 					}, currency.default_currency)
 				)
-			frappe.throw(str(gl_entries))	
 			make_gl_entries(gl_entries, cancel=(self.docstatus == 2),update_outstanding="No", merge_entries=False)
 						
 	def post_journal_entry(self):
