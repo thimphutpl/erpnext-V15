@@ -35,6 +35,7 @@ def get_data(query,from_date, to_date, filters):
 	budget_level = filters.budget_against
 	for d in datas:
 		if filters.monthly_budget:
+			cost_center = d.cost_center 
 			initial_budget = d.monthly_budget
 			supplement = flt(frappe.db.sql("""
 									select sum(amount)
@@ -74,6 +75,7 @@ def get_data(query,from_date, to_date, filters):
 		
 		elif filters.budget_against == "Project":
 			project = filters.project
+			cost_center = d.cost_center
 			committed = frappe.db.sql("select SUM(amount) from `tabCommitted Budget` where cost_center = %s and project = %s and reference_date BETWEEN %s and %s", (d.cost_center, d.project, filters.from_date, filters.to_date))[0][0]
 			consumed = frappe.db.sql("select SUM(amount) from `tabConsumed Budget` where cost_center = %s and project = %s and reference_date BETWEEN %s and %s", (d.cost_center, d.project, filters.from_date, filters.to_date))[0][0]
 		
