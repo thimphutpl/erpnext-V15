@@ -76,13 +76,13 @@ class ImprestRecoup(Document):
 
 	def before_save(self):
 		fy = str(self.posting_date)[0:4]
-		for item in self.get('items'):
-			results = frappe.db.sql(""" 
-				select count(b.name) cnt from tabBudget b, `tabBudget Account` a
-				where b.name = a.parent and b.fiscal_year={0} and b.cost_center = '{1}' and a.account='{2}' and b.docstatus=1
-				""".format(fy, item.cost_center, item.account))[0][0]
-			if results == 0:
-				frappe.throw(f"Budget missing or not allocated for Account <b>{item.account}</b> for Cost Center <b>{item.cost_center}</b> for Year <b>{fy}</b>")
+		# for item in self.get('items'):
+		# 	results = frappe.db.sql(""" 
+		# 		select count(b.name) cnt from tabBudget b, `tabBudget Account` a
+		# 		where b.name = a.parent and b.fiscal_year={0} and b.cost_center = '{1}' and a.account='{2}' and b.docstatus=1
+		# 		""".format(fy, item.cost_center, item.account))[0][0]
+		# 	if results == 0:
+		# 		frappe.throw(f"Budget missing or not allocated for Account <b>{item.account}</b> for Cost Center <b>{item.cost_center}</b> for Year <b>{fy}</b>")
 
 	def on_submit(self):
 		# notify_workflow_states(self)
@@ -208,6 +208,20 @@ class ImprestRecoup(Document):
 					ORDER BY a.posting_date
 				""".format(branch=self.branch, date=self.posting_date, imprest_type=self.imprest_type, party=self.party, project=self.project)
 			else:
+				# frappe.throw("""
+				# 	SELECT 
+				# 		a.name, a.amount, a.balance_amount, a.journal_entry, a.is_opening, a.project
+				# 	FROM `tabImprest Advance` a
+				# 	WHERE a.docstatus = 1 
+				# 		AND a.branch = '{branch}'
+				# 		AND a.posting_date <= '{date}'
+				# 		AND a.balance_amount > 0
+				# 		AND a.imprest_type = '{imprest_type}'
+				# 		AND a.party = '{party}'
+				# 		AND CASE WHEN a.is_opening = 0 THEN EXISTS (SELECT 1 FROM `tabJournal Entry` WHERE name = a.journal_entry AND docstatus = 1) ELSE a.is_opening END
+				# 	ORDER BY a.posting_date
+				# """.format(branch=self.branch, date=self.posting_date, imprest_type=self.imprest_type, party=self.party))
+
 				query = """
 					SELECT 
 						a.name, a.amount, a.balance_amount, a.journal_entry, a.is_opening, a.project
@@ -218,11 +232,12 @@ class ImprestRecoup(Document):
 						AND a.balance_amount > 0
 						AND a.imprest_type = '{imprest_type}'
 						AND a.party = '{party}'
-						AND CASE WHEN a.is_opening = 0 THEN EXISTS (SELECT 1 FROM `tabJournal Entry` WHERE name = a.journal_entry AND docstatus = 1) ELSE a.is_opening END
 					ORDER BY a.posting_date
 				""".format(branch=self.branch, date=self.posting_date, imprest_type=self.imprest_type, party=self.party)
-
+				
 			data = frappe.db.sql(query, as_dict=True)
+
+			# frappe.throw(frappe.as_json(data))
 
 			if not data:
 				frappe.throw("No Imprest Advance")

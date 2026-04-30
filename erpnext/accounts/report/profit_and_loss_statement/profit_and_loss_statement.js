@@ -19,6 +19,13 @@ frappe.query_reports["Profit and Loss Statement"]["filters"].push({
 });
 
 frappe.query_reports["Profit and Loss Statement"]["filters"].push({
+	fieldname: "business_activity",
+	label: __("Business Activity"),
+	fieldtype: "Link",
+	options: "Business Activity",
+});
+
+frappe.query_reports["Profit and Loss Statement"]["filters"].push({
 	fieldname: "accumulated_values",
 	label: __("Accumulated Values"),
 	fieldtype: "Check",
@@ -30,4 +37,11 @@ frappe.query_reports["Profit and Loss Statement"]["filters"].push({
 	label: __("Include Default FB Entries"),
 	fieldtype: "Check",
 	default: 1,
+});
+
+frappe.query_reports["Profit and Loss Statement"]["filters"].push({
+	fieldname: "show_zero_values",
+	label: __("Show Zero Values"),
+	fieldtype: "Check",
+	default: 0,
 });

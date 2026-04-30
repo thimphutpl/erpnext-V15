@@ -509,9 +509,10 @@ erpnext.accounts.JournalEntry = class JournalEntry extends frappe.ui.form.Contro
 				};
 			}
 
-			var out = {
-				filters: [[jvd.reference_type, "docstatus", "=", 1]],
-			};
+			// var out = {
+			// 	filters: [[jvd.reference_type, "docstatus", "=", 1]],
+			// 	// filters: [],
+			// };
 
 			if (["Sales Invoice", "Purchase Invoice"].includes(jvd.reference_type)) {
 				out.filters.push([jvd.reference_type, "outstanding_amount", "!=", 0]);
@@ -558,7 +559,8 @@ erpnext.accounts.JournalEntry = class JournalEntry extends frappe.ui.form.Contro
 				this.get_outstanding("Purchase Invoice", d.reference_name, doc.company, d);
 			} else if (d.reference_type === "Sales Invoice" && !flt(d.credit)) {
 				this.get_outstanding("Sales Invoice", d.reference_name, doc.company, d);
-			} else if (d.reference_type === "Journal Entry" && !flt(d.credit) && !flt(d.debit)) {
+			} 
+			else if (d.reference_type === "Journal Entry" && !flt(d.credit) && !flt(d.debit)) {
 				this.get_outstanding("Journal Entry", d.reference_name, doc.company, d);
 			}
 		}
@@ -1088,7 +1090,7 @@ var toggle_remarks_display = function (frm, args) {
 
 /* ePayment Begins */
 var create_custom_buttons = function(frm){
-	if(frm.doc.docstatus == 1 && (frm.doc.voucher_type == "Bank Entry" || frm.doc.voucher_type == "Contra Entry") && frm.doc.mode_of_payment == "ePayment" && frm.doc.payment_status != "Payment Successful"){
+	if(frm.doc.docstatus == 1 && (frm.doc.voucher_type == "Bank Entry" || frm.doc.voucher_type == "Contra Entry") && frm.doc.mode_of_payment == "Bank Payment" && frm.doc.payment_status != "Payment Successful"){
 		if(!frm.doc.bank_payment || frm.doc.payment_status == 'Failed' || frm.doc.payment_status == 'Payment Failed'){
 			frm.page.set_primary_action(__('Process Payment'), () => {
 				frappe.model.open_mapped_doc({

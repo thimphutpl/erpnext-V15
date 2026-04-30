@@ -34,6 +34,9 @@ class MaterialRequest(BuyingController):
 		from frappe.types import DF
 
 		amended_from: DF.Link | None
+		approver: DF.Link | None
+		approver_designation: DF.Data | None
+		approver_name: DF.Data | None
 		branch: DF.Link
 		company: DF.Link
 		cost_center: DF.Link
@@ -41,7 +44,7 @@ class MaterialRequest(BuyingController):
 		items: DF.Table[MaterialRequestItem]
 		job_card: DF.Link | None
 		letter_head: DF.Link | None
-		material_request_type: DF.Literal["", "Purchase", "Requsition"]
+		material_request_type: DF.Literal["", "Purchase", "Requisition"]
 		per_ordered: DF.Percent
 		per_received: DF.Percent
 		schedule_date: DF.Date | None
@@ -429,7 +432,13 @@ def make_purchase_order(source_name, target_doc=None, args=None):
 		{
 			"Material Request": {
 				"doctype": "Purchase Order",
-				"validation": {"docstatus": ["=", 1], "material_request_type": ["=", "Purchase"]},
+				"field_map": [
+					["branch", "branch"],
+				],
+				"validation": {
+					"docstatus": ["=", 1],
+				 	# "material_request_type": ["=", "Purchase"]
+				},
 			},
 			"Material Request Item": {
 				"doctype": "Purchase Order Item",
@@ -694,10 +703,10 @@ def make_stock_entry(source_name, target_doc=None):
 				"doctype": "Stock Entry",
 				"validation": {
 					"docstatus": ["=", 1],
-					"material_request_type": [
-						"in",
-						["Material Transfer", "Material Issue", "Customer Provided"],
-					],
+					# "material_request_type": [
+					# 	"in",
+					# 	["Material Transfer", "Material Issue", "Customer Provided"],
+					# ],
 				},
 			},
 			"Material Request Item": {

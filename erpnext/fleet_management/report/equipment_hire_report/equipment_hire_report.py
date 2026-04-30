@@ -29,7 +29,7 @@ def get_columns():
 		("Rate W/O Fuel")+":Currency:150",
 		("Amount W/O Fuel")+":Currency:150",
 		("Idle Hour")+ ":data:80",
-       		("Idle Rate")+":Currency:150",
+       	("Idle Rate")+":Currency:150",
 		("Idle Amount") + ":Currency:150",
 		("CDCL")+":Currency:150",
 		("Private")+":Currency:150",
@@ -38,26 +38,26 @@ def get_columns():
 	]
 
 def get_data(filters):
-	query ="""select hid.equipment, (select equipment_type FROM tabEquipment e WHERE e.name = hid.equipment), hid.registration_number, hci.ehf_name, hci.customer, (select c.customer_group FROM tabCustomer AS c WHERE hci.customer = c.name),
+	query ="""select hid.equipment, (select equipment_type FROM tabEquipment e WHERE e.name = hid.equipment), (select equipment_name FROM tabEquipment e WHERE e.name = hid.equipment), hci.ehf_name, hci.customer, (select c.customer_group FROM tabCustomer AS c WHERE hci.customer = c.name),
         CASE hid.rate_type
-        WHEN 'With Fuel' THEN (select sum(hid.total_work_hours))
+        WHEN 'With Fuel' THEN (select sum(hid.number_of_days))
         END,
         CASE hid.rate_type
-        WHEN 'With Fuel' THEN (select hid.work_rate)
+        WHEN 'With Fuel' THEN (select hid.hire_charge_amount)
         END,
         CASE hid.rate_type
         WHEN 'With Fuel' THEN (select sum(hid.amount_work))
         END,
         CASE hid.rate_type
-        WHEN 'Without Fuel' THEN (select sum(hid.total_work_hours))
+        WHEN 'Without Fuel' THEN (select sum(hid.number_of_days))
         END,
         CASE hid.rate_type
-        WHEN 'Without Fuel' THEN (select hid.work_rate)
+        WHEN 'Without Fuel' THEN (select hid.hire_charge_amount)
         END,
         CASE hid.rate_type
         WHEN 'Without Fuel' THEN (select sum(hid.amount_work))
         END,
-        sum(hid.total_idle_hours), hid.idle_rate, sum(hid.amount_idle),
+        sum(hid.amount_idle), hid.idle_rate, sum(hid.amount_idle),
         CASE hci.owned_by
         WHEN 'CDCL' THEN (select sum(hid.total_amount))
         END,
@@ -77,8 +77,8 @@ def get_data(filters):
 
 		#OR vl.to_date between \'" + str(filters.from_date) + "\' and \'"+ str(filters.to_date) + "\'"'''
 
-	if filters.get("not_cdcl"):
-		query += " and e.not_cdcl = 0"
+	# if filters.get("not_cdcl"):
+	# 	query += " and e.not_cdcl = 0"
 
 	if filters.get("include_disabled"):
 		query += " "

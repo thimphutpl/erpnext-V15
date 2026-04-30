@@ -1114,7 +1114,7 @@ def _make_journal_entry_for_depreciation(
 	je.naming_series = "Depreciation Entry"
 	je.posting_date = depr_schedule.schedule_date
 	je.company = asset.company
-	je.finance_book = asset_depr_schedule_doc.finance_book
+	# je.finance_book = asset_depr_schedule_doc.finance_book
 	je.remark = f"Depreciation Entry against {asset.name} worth {depr_schedule.depreciation_amount}"
 
 	credit_entry = {
@@ -1152,9 +1152,10 @@ def _make_journal_entry_for_depreciation(
 
 	je.append("accounts", credit_entry)
 	je.append("accounts", debit_entry)
+	# frappe.throw(frappe.as_json(je))
 
 	je.flags.ignore_permissions = True
-	je.flags.planned_depr_entry = True
+	# je.flags.planned_depr_entry = True
 	je.save()
 
 	depr_schedule.db_set("journal_entry", je.name)

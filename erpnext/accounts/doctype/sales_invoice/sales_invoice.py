@@ -355,14 +355,27 @@ class SalesInvoice(SellingController):
 		if self.get('taxes'):
 			tot = 0
 			
-			tot = flt(self.total) - flt(self.discount_or_cost_amount)+flt(self.loading_cost)+flt(self.transportation_charges)
+			tot = flt(self.total) - flt(self.discount_or_cost_amount)+flt(self.loading_cost)+flt(self.transportation_charges)+flt(self.additional_cost)
 
 			self.net_total = flt(tot) + (flt(tot)*0.05)
 			self.base_net_total = self.net_total
 		else:
-			self.net_total = flt(self.total) - flt(self.discount_or_cost_amount)+flt(self.loading_cost)+flt(self.transportation_charges)
+			self.net_total = flt(self.total) - flt(self.discount_or_cost_amount)+flt(self.loading_cost)+flt(self.transportation_charges)+flt(self.additional_cost)
 		self.grand_total = flt(self.net_total)
 		self.base_grand_total = self.grand_total
+		self.validate_cost_center()
+
+	def validate_cost_center(self):
+		cost_center = frappe.get_value("Branch",self.branch,'cost_center')
+		if not cost_center:
+			frappe.throw("Set the Cost Center in the Branch")
+		if cost_center:
+			for i in self.items:
+				i.cost_center = cost_center
+
+			if self.taxes:
+				for i in self.taxes:
+					i.cost_center = cost_center
 
 	def validate_accounts(self):
 		self.validate_write_off_account()
@@ -1233,14 +1246,25 @@ class SalesInvoice(SellingController):
 
 		gl_entries = []
 
-		self.make_customer_gl_entry(gl_entries)
-		
+		item = None
+		# ba = None
+		for i in self.items:
+			item = i.item_code
+		# frappe.throw(str(item))
+		self.ba = None
+		# frappe.throw(str(self.ba))
+		if item:
+			self.ba = frappe.db.get_value("Item", {"name":item}, "business_activity")
 
+		# frappe.throw(str(self.ba))
+
+
+			
+		self.make_customer_gl_entry(gl_entries)
 		self.make_tax_gl_entries(gl_entries)
-		
-		
 		self.make_internal_transfer_gl_entries(gl_entries)
 		self.make_item_gl_entries(gl_entries)
+		
 		
 
 		
@@ -1269,8 +1293,11 @@ class SalesInvoice(SellingController):
 	def make_customer_gl_entry(self, gl_entries):
 		# Checked both rounding_adjustment and rounded_total
 		# because rounded_total had value even before introduction of posting GLE based on rounded total
+		# grand_total = (
+		# 	self.rounded_total if (self.rounding_adjustment and self.rounded_total) else self.grand_total
+		# )
 		grand_total = (
-			self.rounded_total if (self.rounding_adjustment and self.rounded_total) else self.grand_total
+			 self.grand_total
 		)
 		# frappe.throw(str(self.grand_total))
 		base_grand_total = flt(
@@ -1302,6 +1329,7 @@ class SalesInvoice(SellingController):
 						"against_voucher_type": self.doctype,
 						"cost_center": self.cost_center,
 						"project": self.project,
+						"business_activity":self.ba,
 					},
 					self.party_account_currency,
 					item=self,
@@ -1356,6 +1384,7 @@ class SalesInvoice(SellingController):
 								else flt(amount, tax.precision("tax_amount_after_discount_amount"))
 							),
 							"cost_center": tax.cost_center,
+							"business_activity":self.ba,
 						},
 						account_currency,
 						item=tax,
@@ -1373,6 +1402,8 @@ class SalesInvoice(SellingController):
 						"debit": flt(self.total_taxes_and_charges),
 						"debit_in_account_currency": flt(self.base_total_taxes_and_charges),
 						"cost_center": self.cost_center,
+						"business_activity":self.ba,
+						
 					},
 					account_currency,
 					item=self,
@@ -1472,14 +1503,13 @@ class SalesInvoice(SellingController):
 								),
 								"cost_center": item.cost_center,
 								"project": item.project or self.project,
+								"business_activity":self.ba,
 							},
 							account_currency,
 							item=item,
 						)
 					)
 
-		total_deduct = flt(self.discount_or_cost_amount)+flt(self.loading_cost)+flt(self.transportation_charges)
-		# frappe.throw(frappe.as_json(gl_entries))
 		if flt(self.discount_or_cost_amount) > 0:
 			income_account = (
 						item.income_account
@@ -1499,6 +1529,7 @@ class SalesInvoice(SellingController):
 						),
 						"cost_center": item.cost_center,
 						"project": item.project or self.project,
+						"business_activity":self.ba,
 					},
 					account_currency,
 					item=item,
@@ -1521,6 +1552,58 @@ class SalesInvoice(SellingController):
 						),
 						"cost_center": item.cost_center,
 						"project": item.project or self.project,
+						"business_activity":self.ba,
+					},
+					account_currency,
+					item=item,
+				)
+			)
+		# frappe.throw(str(self.transportation_charges))
+		if flt(self.transportation_charges) > 0:
+			income_account = (
+						item.income_account
+						if (not item.enable_deferred_revenue or self.is_return)
+						else item.deferred_revenue_account
+					)
+
+			gl_entries.append(
+				self.get_gl_dict(
+					{
+						"account": income_account,
+						"against": self.customer,
+						"credit": flt(flt(self.transportation_charges), item.precision("base_net_amount")),
+						"credit_in_account_currency": (
+							flt(flt(self.transportation_charges), item.precision("base_net_amount"))
+							
+						),
+						"cost_center": item.cost_center,
+						"project": item.project or self.project,
+						"business_activity":self.ba,
+					},
+					account_currency,
+					item=item,
+				)
+			)
+		if flt(self.additional_cost) > 0:
+			income_account = (
+						item.income_account
+						if (not item.enable_deferred_revenue or self.is_return)
+						else item.deferred_revenue_account
+					)
+
+			gl_entries.append(
+				self.get_gl_dict(
+					{
+						"account": income_account,
+						"against": self.customer,
+						"credit": flt(flt(self.additional_cost), item.precision("base_net_amount")),
+						"credit_in_account_currency": (
+							flt(flt(self.additional_cost), item.precision("base_net_amount"))
+							
+						),
+						"cost_center": item.cost_center,
+						"project": item.project or self.project,
+						"business_activity":self.ba,
 					},
 					account_currency,
 					item=item,
@@ -1573,6 +1656,7 @@ class SalesInvoice(SellingController):
 						"against_voucher": self.return_against if cint(self.is_return) else self.name,
 						"against_voucher_type": self.doctype,
 						"cost_center": self.cost_center,
+						"business_activity":self.ba,
 					},
 					item=self,
 				)
@@ -1584,6 +1668,7 @@ class SalesInvoice(SellingController):
 						"cost_center": self.cost_center or self.loyalty_redemption_cost_center,
 						"against": self.customer,
 						"debit": self.loyalty_amount,
+						"business_activity":self.ba,
 						"remark": "Loyalty Points redeemed by the customer",
 					},
 					item=self,
@@ -1620,6 +1705,7 @@ class SalesInvoice(SellingController):
 								"against_voucher": against_voucher,
 								"against_voucher_type": self.doctype,
 								"cost_center": self.cost_center,
+								"business_activity":self.ba,
 							},
 							self.party_account_currency,
 							item=self,
@@ -1637,6 +1723,7 @@ class SalesInvoice(SellingController):
 								if payment_mode_account_currency == self.company_currency
 								else payment_mode.amount,
 								"cost_center": self.cost_center,
+								"business_activity":self.ba,
 							},
 							payment_mode_account_currency,
 							item=self,
@@ -1666,6 +1753,7 @@ class SalesInvoice(SellingController):
 							"against_voucher_type": self.doctype,
 							"cost_center": self.cost_center,
 							"project": self.project,
+							"business_activity":self.ba,
 						},
 						self.party_account_currency,
 						item=self,
@@ -1679,6 +1767,7 @@ class SalesInvoice(SellingController):
 							"against": self.customer,
 							"credit": self.base_change_amount,
 							"cost_center": self.cost_center,
+							"business_activity":self.ba,
 						},
 						item=self,
 					)
@@ -1713,6 +1802,7 @@ class SalesInvoice(SellingController):
 						"against_voucher_type": self.doctype,
 						"cost_center": self.cost_center,
 						"project": self.project,
+						"business_activity":self.ba,
 					},
 					self.party_account_currency,
 					item=self,
@@ -1730,6 +1820,7 @@ class SalesInvoice(SellingController):
 							else flt(self.write_off_amount, self.precision("write_off_amount"))
 						),
 						"cost_center": self.cost_center or self.write_off_cost_center or default_cost_center,
+						"business_activity":self.ba,
 					},
 					write_off_account_currency,
 					item=self,
@@ -1779,6 +1870,7 @@ class SalesInvoice(SellingController):
 						"credit": flt(
 							self.base_rounding_adjustment, self.precision("base_rounding_adjustment")
 						),
+						"business_activity":self.ba,
 						"cost_center": round_off_cost_center
 						if self.use_company_roundoff_cost_center
 						else (self.cost_center or round_off_cost_center),

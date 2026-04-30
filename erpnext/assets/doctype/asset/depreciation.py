@@ -37,16 +37,20 @@ def post_depreciation_entries(date=None):
 	# Return if automatic booking of asset depreciation is disabled
 	if not cint(
 		frappe.db.get_value("Accounts Settings", None, "book_asset_depreciation_entry_automatically")
-	):
+	):	
+		
 		return
 
 	if not date:
 		date = today()
 
+	
+
 	failed_asset_names = []
 	error_log_names = []
 
 	depreciable_asset_depr_schedules_data = get_depreciable_asset_depr_schedules_data(date)
+	
 
 	credit_and_debit_accounts_for_asset_category_and_company = {}
 	depreciation_cost_center_and_depreciation_series_for_company = (
@@ -81,6 +85,7 @@ def post_depreciation_entries(date=None):
 			)
 
 		try:
+			
 			make_depreciation_entry(
 				asset_depr_schedule_name,
 				date,
@@ -127,6 +132,7 @@ def get_depreciable_asset_depr_schedules_data(date):
 		.groupby(ads.name)
 		.orderby(a.creation, order=Order.desc)
 	)
+	# print(res)
 
 	acc_frozen_upto = get_acc_frozen_upto()
 	if acc_frozen_upto:
@@ -278,7 +284,7 @@ def _make_journal_entry_for_depreciation(
 	je.naming_series = "Depreciation Entry"
 	je.posting_date = depr_schedule.schedule_date
 	je.company = asset.company
-	je.finance_book = asset_depr_schedule_doc.finance_book
+	# je.finance_book = asset_depr_schedule_doc.finance_book
 	je.remark = f"Depreciation Entry against {asset.name} worth {depr_schedule.depreciation_amount}"
 
 	credit_entry = {

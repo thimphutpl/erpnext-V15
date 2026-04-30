@@ -125,6 +125,9 @@ class StockController(AccountsController):
 				)
 
 	def make_gl_entries(self, gl_entries=None, from_repost=False, repost_future_gle=True, via_landed_cost_voucher=False):
+		# print(gl_entries)
+		# frappe.throw(frappe.as_json(gl_entries))
+		# frappe.throw("ji")
 		if self.docstatus == 2:
 			make_reverse_gl_entries(voucher_type=self.doctype, voucher_no=self.name)
 
@@ -143,7 +146,6 @@ class StockController(AccountsController):
 			or is_asset_pr
 		):
 			warehouse_account = get_warehouse_account_map(self.company)
-			
 			if self.docstatus == 1:
 				if not gl_entries:
 					gl_entries = (
@@ -518,6 +520,7 @@ class StockController(AccountsController):
 				row.use_serial_batch_fields = 1
 
 	def get_gl_entries(self, warehouse_account=None, default_expense_account=None, default_cost_center=None):
+		# frappe.throw('hi')
 		if not warehouse_account:
 			warehouse_account = get_warehouse_account_map(self.company)
 
@@ -563,6 +566,7 @@ class StockController(AccountsController):
 							if not expense_account:
 								frappe.throw("set default expense account in Company")
 						# frappe.msgprint("hi")
+						# frappe.throw(frappe.as_json(self))
 
 						gl_list.append(
 							self.get_gl_dict(
@@ -602,6 +606,8 @@ class StockController(AccountsController):
 						)
 					elif sle.warehouse not in warehouse_with_no_account:
 						warehouse_with_no_account.append(sle.warehouse)
+
+			# print(gl_list)
 
 			if abs(sle_rounding_diff) > (1.0 / (10**precision)) and self.is_internal_transfer():
 				warehouse_asset_account = ""
@@ -777,10 +783,8 @@ class StockController(AccountsController):
 						# try to pick valuation rate from previous sle or Item master and update in SLE
 						# Otherwise, throw an exception
 
-						if not sle.stock_value_difference and self.doctype != "Stock Reconciliation" \
-							and not item_row.get("allow_zero_valuation_rate"):
-
-							sle = self.update_stock_ledger_entries(sle)
+						# if not sle.stock_value_difference and self.doctype != "Stock Reconciliation" and not item_row.get("allow_zero_valuation_rate"):
+						# 	sle = self.update_stock_ledger_entries(sle)
 
 						to_cc = item_row.cost_center
 						if self.doctype == "Stock Entry" and self.purpose == "Material Transfer":

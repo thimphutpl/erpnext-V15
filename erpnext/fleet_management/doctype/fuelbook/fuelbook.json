@@ -23,6 +23,7 @@
   {
    "fieldname": "branch",
    "fieldtype": "Link",
+   "ignore_user_permissions": 1,
    "in_list_view": 1,
    "label": "Branch",
    "options": "Branch",
@@ -70,8 +71,9 @@
   {
    "fieldname": "equipment",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Equipment",
-   "mandatory_depends_on": "eval:doc.type == \"Own\"",
+   "mandatory_depends_on": "NULL",
    "options": "Equipment"
   },
   {
@@ -88,8 +90,8 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-25 09:57:49.310843",
- "modified_by": "kalden.dorji@thimphutechpark.bt",
+ "modified": "2026-04-06 17:47:10.403537",
+ "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Fuelbook",
  "naming_rule": "By fieldname",

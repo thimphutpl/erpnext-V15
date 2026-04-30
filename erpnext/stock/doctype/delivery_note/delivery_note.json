@@ -52,10 +52,6 @@
   "set_target_warehouse",
   "section_break_30",
   "items",
-  "transportation_details_section",
-  "select_vehicle_queue",
-  "vehicle",
-  "column_break_ywax",
   "section_break_31",
   "total_qty",
   "total_net_weight",
@@ -91,7 +87,7 @@
   "in_words",
   "disable_rounded_total",
   "transporter_info",
-  "select_vehicle_from_common_pool_queue",
+  "select_vehicle_queue",
   "vehicle_no",
   "driver_name",
   "driver_contact_no",
@@ -121,6 +117,7 @@
   "discount_amount",
   "discount_or_cost_amount",
   "challan_cost",
+  "additional_cost",
   "sec_tax_breakup",
   "other_charges_calculation",
   "packing_list",
@@ -1443,14 +1440,16 @@
   {
    "default": "0",
    "description": "If checked, Vehicle will be loaded from Common Pool Queue (Load Request)",
-   "fieldname": "select_vehicle_from_common_pool_queue",
+   "fieldname": "select_vehicle_queue",
    "fieldtype": "Check",
    "label": " Select Vehicle From Common Pool Queue"
   },
   {
    "fieldname": "load_request",
-   "fieldtype": "Data",
-   "label": "Load Request"
+   "fieldtype": "Link",
+   "label": "Load Request",
+   "options": "Load Request",
+   "read_only": 1
   },
   {
    "fieldname": "transportation_rate",
@@ -1566,28 +1565,8 @@
    "fieldname": "loading_cost",
    "fieldtype": "Currency",
    "label": "Loading Cost",
+   "precision": "2",
    "read_only": 1
-  },
-  {
-   "fieldname": "transportation_details_section",
-   "fieldtype": "Section Break",
-   "label": "Transportation Details"
-  },
-  {
-   "default": "0",
-   "fieldname": "select_vehicle_queue",
-   "fieldtype": "Check",
-   "label": "Select Vehicle From Common Pool Queue"
-  },
-  {
-   "fieldname": "column_break_ywax",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "vehicle",
-   "fieldtype": "Link",
-   "label": "Vehicle No",
-   "options": "Vehicle"
   },
   {
    "fieldname": "discount_or_cost_amount",
@@ -1601,13 +1580,18 @@
    "label": "Additional Discount Amount",
    "options": "currency",
    "print_hide": 1
+  },
+  {
+   "fieldname": "additional_cost",
+   "fieldtype": "Currency",
+   "label": "Additional Cost"
   }
  ],
  "icon": "fa fa-truck",
  "idx": 146,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-01-06 19:22:55.690805",
+ "modified": "2026-02-04 11:54:35.104550",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Delivery Note",

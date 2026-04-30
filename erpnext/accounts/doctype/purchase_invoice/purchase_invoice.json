@@ -124,6 +124,7 @@
   "other_charges",
   "total_add_ded",
   "discount_or_cost_amount",
+  "discount_amount",
   "column_break_46",
   "apply_discount_on",
   "discount",
@@ -330,7 +331,7 @@
    "label": "Posting Date",
    "oldfieldname": "posting_date",
    "oldfieldtype": "Date",
-   "print_hide": 1,
+   "print_hide": 0,
    "reqd": 1,
    "search_index": 1
   },
@@ -1066,7 +1067,6 @@
    "label": "Set Advances and Allocate (FIFO)"
   },
   {
-   "depends_on": "eval:!doc.allocate_advances_automatically",
    "fieldname": "get_advances",
    "fieldtype": "Button",
    "label": "Get Advances Paid",
@@ -1778,13 +1778,19 @@
    "fieldname": "discount_or_cost_amount",
    "fieldtype": "Data",
    "label": "Discount Amount"
+  },
+  {
+   "fieldname": "discount_amount",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Discount Amount"
   }
  ],
  "icon": "fa fa-file-text",
  "idx": 204,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-01-13 13:12:43.301232",
+ "modified": "2026-02-04 18:13:54.696616",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Purchase Invoice",

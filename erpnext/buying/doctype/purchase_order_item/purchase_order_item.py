@@ -30,7 +30,7 @@ class PurchaseOrderItem(Document):
 		blanket_order_rate: DF.Currency
 		bom: DF.Link | None
 		brand: DF.Data | None
-		business_activity: DF.Link | None
+		business_activity: DF.Link
 		company_total_stock: DF.Float
 		conversion_factor: DF.Float
 		cost_center: DF.Link

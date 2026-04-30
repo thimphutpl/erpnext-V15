@@ -17,52 +17,52 @@ erpnext.TransactionController = class TransactionController extends erpnext.taxe
 
 			frappe.model.round_floats_in(item, ["rate", "price_list_rate"]);
 
-			if(item.price_list_rate && !item.blanket_order_rate) {
-				if(item.rate > item.price_list_rate && has_margin_field) {
-					// if rate is greater than price_list_rate, set margin
-					// or set discount
-					item.discount_percentage = 0;
-					item.margin_type = 'Amount';
-					item.margin_rate_or_amount = flt(item.rate - item.price_list_rate,
-						precision("margin_rate_or_amount", item));
-					item.rate_with_margin = item.rate;
-				} else {
-					item.discount_percentage = flt((1 - item.rate / item.price_list_rate) * 100.0,
-						precision("discount_percentage", item));
-					item.discount_amount = flt(item.price_list_rate) - flt(item.rate);
-					item.margin_type = '';
-					item.margin_rate_or_amount = 0;
-					item.rate_with_margin = 0;
-				}
-			} else {
-				item.discount_percentage = 0.0;
-				item.margin_type = '';
-				item.margin_rate_or_amount = 0;
-				item.rate_with_margin = 0;
-			}
+			// if(item.price_list_rate && !item.blanket_order_rate) {
+			// 	if(item.rate > item.price_list_rate && has_margin_field) {
+			// 		// if rate is greater than price_list_rate, set margin
+			// 		// or set discount
+			// 		item.discount_percentage = 0;
+			// 		item.margin_type = 'Amount';
+			// 		item.margin_rate_or_amount = flt(item.rate - item.price_list_rate,
+			// 			precision("margin_rate_or_amount", item));
+			// 		item.rate_with_margin = item.rate;
+			// 	} else {
+			// 		item.discount_percentage = flt((1 - item.rate / item.price_list_rate) * 100.0,
+			// 			precision("discount_percentage", item));
+			// 		item.discount_amount = flt(item.price_list_rate) - flt(item.rate);
+			// 		item.margin_type = '';
+			// 		item.margin_rate_or_amount = 0;
+			// 		item.rate_with_margin = 0;
+			// 	}
+			// } else {
+			// 	item.discount_percentage = 0.0;
+			// 	item.margin_type = '';
+			// 	item.margin_rate_or_amount = 0;
+			// 	item.rate_with_margin = 0;
+			// }
 			item.base_rate_with_margin = item.rate_with_margin * flt(frm.doc.conversion_rate);
 
-			if (item.item_code && item.rate) {
-				frappe.call({
-					method: "erpnext.stock.get_item_details.get_item_tax_template",
-					args: {
-						args: {
-							item_code: item.item_code,
-							company: frm.doc.company,
-							base_net_rate: item.base_net_rate,
-							tax_category: frm.doc.tax_category,
-							item_tax_template: item.item_tax_template,
-							posting_date: frm.doc.posting_date,
-							bill_date: frm.doc.bill_date,
-							transaction_date: frm.doc.transaction_date,
-						}
-					},
-					callback: function(r) {
-						const item_tax_template = r.message;
-						frappe.model.set_value(cdt, cdn, 'item_tax_template', item_tax_template);
-					}
-				});
-			}
+			// if (item.item_code && item.rate) {
+			// 	frappe.call({
+			// 		method: "erpnext.stock.get_item_details.get_item_tax_template",
+			// 		args: {
+			// 			args: {
+			// 				item_code: item.item_code,
+			// 				company: frm.doc.company,
+			// 				base_net_rate: item.base_net_rate,
+			// 				tax_category: frm.doc.tax_category,
+			// 				item_tax_template: item.item_tax_template,
+			// 				posting_date: frm.doc.posting_date,
+			// 				bill_date: frm.doc.bill_date,
+			// 				transaction_date: frm.doc.transaction_date,
+			// 			}
+			// 		},
+			// 		callback: function(r) {
+			// 			const item_tax_template = r.message;
+			// 			frappe.model.set_value(cdt, cdn, 'item_tax_template', item_tax_template);
+			// 		}
+			// 	});
+			// }
 
 			cur_frm.cscript.set_gross_profit(item);
 			cur_frm.cscript.calculate_taxes_and_totals();

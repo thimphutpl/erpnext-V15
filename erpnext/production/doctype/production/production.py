@@ -68,7 +68,7 @@ class Production(StockController):
 		self.validate_warehouse()
 		self.validate_supplier()
 		self.validate_items()
-		self.validate_posting_time()
+		# self.validate_posting_time()
 		self.validate_lot_list()
 
 	def before_submit(self):

@@ -120,6 +120,34 @@ frappe.ui.form.on('Equipment Hiring Form', {
 		else
 			frm.set_value("advance_amount", -frm.doc.prev_advance_balance);
 	} */
+	apply_gst: function(frm){
+		if(frm.doc.apply_gst == 1){
+			frm.refresh_fields("gst_account");
+			if (frm.doc.total_hiring_amount > 0) {
+				frm.set_value("gst_amount", frm.doc.total_hiring_amount * 0.05);
+				frm.set_value("advance_amount", frm.doc.total_hiring_amount + frm.doc.total_hiring_amount * 0.05);
+				frm.refresh_fields("gst_amount");
+				frm.refresh_fields("advance_amount");
+			}
+		}else{
+			frm.set_value("gst_account", "");
+			frm.refresh_fields("gst_account");
+			frm.set_value("gst_amount", "");
+			frm.refresh_fields("gst_amount");
+			frm.set_value("advance_amount", frm.doc.total_hiring_amount);
+			frm.refresh_fields("advance_amount");
+		}
+	},
+	charges_type: function(frm){
+		if(frm.doc.charges_type == "Hire Charge Receivable"){
+			frm.set_value("gst_account", "5% GST Outward - NRDCL");
+		}else if(frm.doc.charges_type == "Hire Charge Payable"){
+			frm.set_value("gst_account", "5% GST Inward - NRDCL");
+		}else{
+			frm.set_value("gst_account", "");
+		}
+		frm.refresh_fields("gst_account");
+	}
 });
 
 cur_frm.add_fetch("tc_name", "terms", "terms")
@@ -258,10 +286,10 @@ function calculate_time(frm, cdt, cdn) {
 
 function get_rates(frm, cdt, cdn) {
 	doc = locals[cdt][cdn]
-	if (doc.equipment && doc.rate_type && doc.from_date) {
+	if (doc.equipment_type && doc.equipment_model && doc.rate_type && doc.from_date) {
 		return frappe.call({
 			method: "erpnext.fleet_management.doctype.equipment_hiring_form.equipment_hiring_form.get_hire_rates",
-			args: { equipment: doc.equipment, from_date: doc.from_date, hourly: doc.hourly },
+			args: { equipment_model: doc.equipment_model, equipment_type: doc.equipment_type, from_date: doc.from_date, hourly: doc.hourly },
 			callback: function (r) {
 				if (r.message) {
 					frappe.model.set_value(cdt, cdn, "rate", r.message[0].rate)
@@ -274,10 +302,10 @@ function get_rates(frm, cdt, cdn) {
 
 function get_idle_rates(frm, cdt, cdn) {
 	doc = locals[cdt][cdn]
-	if (doc.equipment && doc.rate_type && doc.from_date) {
+	if (doc.equipment_type && doc.equipment_model && doc.rate_type && doc.from_date) {
 		return frappe.call({
 			method: "erpnext.fleet_management.doctype.equipment_hiring_form.equipment_hiring_form.get_idle_rates",
-			args: { equipment: doc.equipment, from_date: doc.from_date, idle_rate_type: doc.idle_rate_type },
+			args: {equipment_model: doc.equipment_model, equipment_type: doc.equipment_type, from_date: doc.from_date, idle_rate_type: doc.idle_rate_type },
 			callback: function (r) {
 				if (r.message) {
 					frappe.model.set_value(cdt, cdn, "idle_rate", r.message[0].idle_rate)
@@ -377,9 +405,9 @@ frappe.ui.form.on("Equipment Hiring Form", "refresh", function(frm) {
 	frm.fields_dict['approved_items'].grid.get_field('equipment').get_query = function(doc, cdt, cdn) {
 		doc = locals[cdt][cdn]
 		return {
-			"query": "erpnext.fleet_management.doctype.equipment_hiring_form.equipment_hiring_form.equipment_query",
+			method: "erpnext.fleet_management.doctype.equipment_hiring_form.equipment_hiring_form.equipment_query",
 			// filters: {'branch': doc.branch, 'equipment_type': doc.equipment_type, "from_date": doc.from_date, "to_date": doc.to_date}
-			filters: {'equipment_type': doc.equipment_type, "from_date": doc.from_date, "to_date": doc.to_date}
+			filters: {'equipment_type': doc.equipment_type}
 
 		}
 	}

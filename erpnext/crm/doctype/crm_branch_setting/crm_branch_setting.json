@@ -24,7 +24,7 @@
    "fieldtype": "Link",
    "label": "Branch",
    "options": "Branch",
-   "unique": 1
+   "unique": 0
   },
   {
    "fieldname": "default_warehouse",

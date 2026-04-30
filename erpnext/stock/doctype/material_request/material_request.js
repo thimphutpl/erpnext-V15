@@ -117,13 +117,13 @@ frappe.ui.form.on("Material Request", {
 			if (flt(frm.doc.per_received, precision) < 100) {
 				frm.add_custom_button(__("Stop"), () => frm.events.update_status(frm, "Stopped"));
 
-				if (frm.doc.material_request_type === "Purchase") {
+				// if (frm.doc.material_request_type === "Purchase") {
 					frm.add_custom_button(
 						__("Purchase Order"),
 						() => frm.events.make_purchase_order(frm),
 						__("Create")
 					);
-				}
+				// }
 			}
 
 			if (flt(frm.doc.per_ordered, precision) < 100) {
@@ -135,7 +135,7 @@ frappe.ui.form.on("Material Request", {
 					);
 				};
 
-				if (frm.doc.material_request_type === "Material Transfer") {
+				// if (frm.doc.material_request_type === "Material Transfer") {
 					add_create_pick_list_button();
 					frm.add_custom_button(
 						__("Material Transfer"),
@@ -143,20 +143,20 @@ frappe.ui.form.on("Material Request", {
 						__("Create")
 					);
 
-					frm.add_custom_button(
-						__("Material Transfer (In Transit)"),
-						() => frm.events.make_in_transit_stock_entry(frm),
-						__("Create")
-					);
-				}
+				// 	frm.add_custom_button(
+				// 		__("Material Transfer (In Transit)"),
+				// 		() => frm.events.make_in_transit_stock_entry(frm),
+				// 		__("Create")
+				// 	);
+				// }
 
-				if (frm.doc.material_request_type === "Material Issue") {
+				// if (frm.doc.material_request_type === "Material Issue") {
 					frm.add_custom_button(
 						__("Issue Material"),
 						() => frm.events.make_stock_entry(frm),
 						__("Create")
 					);
-				}
+				// }
 
 				if (frm.doc.material_request_type === "Customer Provided") {
 					frm.add_custom_button(
@@ -166,21 +166,21 @@ frappe.ui.form.on("Material Request", {
 					);
 				}
 
-				if (frm.doc.material_request_type === "Purchase") {
+				// if (frm.doc.material_request_type === "Purchase") {
 					frm.add_custom_button(
 						__("Request for Quotation"),
 						() => frm.events.make_request_for_quotation(frm),
 						__("Create")
 					);
-				}
+				// }
 
-				if (frm.doc.material_request_type === "Purchase") {
+				// if (frm.doc.material_request_type === "Purchase") {
 					frm.add_custom_button(
 						__("Supplier Quotation"),
 						() => frm.events.make_supplier_quotation(frm),
 						__("Create")
 					);
-				}
+				// }
 
 				if (frm.doc.material_request_type === "Manufacture") {
 					frm.add_custom_button(

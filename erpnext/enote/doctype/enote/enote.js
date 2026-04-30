@@ -120,6 +120,7 @@ frappe.ui.form.on("eNote Reviewer", {
 						fieldtype: "Text Editor",
 						fieldname: "content",
 						default: remark,
+						reqd: 1,
 					}
 				],
 				size: 'medium', // small, large, extra-large 

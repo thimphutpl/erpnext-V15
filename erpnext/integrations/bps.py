@@ -148,6 +148,9 @@ def download_bs(bank='BOBL', bs_date=None):
 			if not frappe.db.exists("Bank Statement Files",{"bank_statement_date":bs_date}):
 				download_bank_statement(bank='BOBL', bs_date=bs_date)
 
+
+
+
 ''' download the bank statement files from bank and make BRS Entry accordingly '''
 @frappe.whitelist()
 def download_bank_statement(bank='BOBL', bs_date=None):

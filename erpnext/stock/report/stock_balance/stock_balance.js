@@ -4,128 +4,140 @@
 frappe.query_reports["Stock Balance"] = {
 	filters: [
 		{
-			fieldname: "company",
-			label: __("Company"),
-			fieldtype: "Link",
-			width: "80",
-			options: "Company",
-			default: frappe.defaults.get_default("company"),
+			"fieldname": "company",
+			"label": ("Company"),
+			"fieldtype": "Link",
+ 			"options": "Company",
+			"default": frappe.defaults.get_user_default("Company"),
+			"reqd": 1
 		},
 		{
-			fieldname: "from_date",
-			label: __("From Date"),
-			fieldtype: "Date",
-			width: "80",
-			reqd: 1,
-			default: frappe.datetime.add_months(frappe.datetime.get_today(), -1),
+			"fieldname":"from_date",
+			"label": __("From Date"),
+			"fieldtype": "Date",
+			"width": "80",
+			"default": frappe.datetime.add_months(frappe.datetime.get_today(), -1),
 		},
 		{
-			fieldname: "to_date",
-			label: __("To Date"),
-			fieldtype: "Date",
-			width: "80",
-			reqd: 1,
-			default: frappe.datetime.get_today(),
+			"fieldname":"to_date",
+			"label": __("To Date"),
+			"fieldtype": "Date",
+			"width": "80",
+			"default": frappe.datetime.get_today()
 		},
 		{
-			fieldname: "item_group",
-			label: __("Item Group"),
-			fieldtype: "Link",
-			width: "80",
-			options: "Item Group",
+			"fieldname": "item_code",
+			"label": __("Material Code"),
+			"fieldtype": "Link",
+			"width": "80",
+			"options": "Item",
 		},
 		{
-			fieldname: "item_code",
-			label: __("Item"),
-			fieldtype: "Link",
-			width: "80",
-			options: "Item",
-			get_query: function () {
+            "fieldname": "cost_center",
+            "label": __("Parent Cost Center"),
+			"fieldtype": "Link",
+            "width": "80",
+			"options": "Cost Center",
+			"get_query": function() {
+				var company = frappe.query_report.get_filter_value('company');
 				return {
-					query: "erpnext.controllers.queries.item_query",
-				};
+						'doctype': "Cost Center",
+						'filters': [
+								['disabled', '!=', '1'],
+								['company', '=', company],
+								['is_group', '=', '1']
+						]
+				}
+			},
+		},
+		{
+			"fieldname": "branch",
+			"label": ("Branch"),
+			"fieldtype": "Link",
+			"options": "Cost Center",
+			"get_query": function() {
+					var cost_center = frappe.query_report.get_filter_value('cost_center');
+					var company = frappe.query_report.get_filter_value('company');
+					if(cost_center!= 'Natural Resource Development Corporation Ltd - NRDCL')
+					{
+							return {"doctype": "Cost Center", "filters": {"company": company, "disabled": 0, "parent_cost_center": cost_center}}
+					}
+					else
+					{
+							return {"doctype": "Cost Center", "filters": {"company": company, "disabled": 0, "is_group": 0}}
+					}
 			},
 		},
 		{
 			fieldname: "warehouse",
 			label: __("Warehouse"),
 			fieldtype: "Link",
-			width: "80",
 			options: "Warehouse",
-			get_query: () => {
-				let warehouse_type = frappe.query_report.get_filter_value("warehouse_type");
-				let company = frappe.query_report.get_filter_value("company");
+			get_query: function () {
+                let branch = frappe.query_report.get_filter_value('branch');
 
+                if (!branch) {
+                    return {};
+                }
+
+                return {
+                    query: "erpnext.stock.report.stock_balance.stock_balance.get_filtered_warehouse",
+                    filters: {
+                        branch: branch
+                    }
+                };
+            }
+		},
+		{
+			"fieldname": "item_group",
+			"label": __("Material Group"),
+			"fieldtype": "Link",
+			"width": "80",
+			"options": "Item Group"
+		},
+		{
+			"fieldname": "item_sub_group",
+			"label": __("Material Sub Group"),
+			"fieldtype": "Link",
+			"width": "80",
+			"options": "Item Sub Group",
+			"get_query":function(){
+				var item_group = frappe.query_report.get_filter_value('item_group');
 				return {
-					filters: {
-						...(warehouse_type && { warehouse_type }),
-						...(company && { company }),
-					},
-				};
-			},
+					'doctype': "Item Sub Group",
+					'filters': [
+						['item_group', '=', item_group],
+					]
+				}
+			} 
 		},
 		{
-			fieldname: "warehouse_type",
-			label: __("Warehouse Type"),
-			fieldtype: "Link",
-			width: "80",
-			options: "Warehouse Type",
+			"fieldname": "timber_prod_group",
+			"label": ("Timber Product Group"),
+			"fieldtype": "Link",
+			"options": "Item Sub Group",
 		},
 		{
-			fieldname: "valuation_field_type",
-			label: __("Valuation Field Type"),
-			fieldtype: "Select",
-			width: "80",
-			options: "Currency\nFloat",
-			default: "Currency",
+			"fieldname": "tp_sub_group",
+			"label": ("Timber Product Sub Group"),
+			"fieldtype": "Link",
+			"options": "Item Sub Group",
+			// "get_query": function() {
+			// 		var item_group = "Timber Products";
+			// 		return {"doctype": "Item Sub Group", "filters": {"item_group": item_group}}
+			// }
 		},
 		{
-			fieldname: "include_uom",
-			label: __("Include UOM"),
-			fieldtype: "Link",
-			options: "UOM",
+			"fieldname":"timber_class",
+			"label": __("Timber Class"),
+			"fieldtype": "Link",
+			"options": "Timber Class"
 		},
 		{
-			fieldname: "show_variant_attributes",
-			label: __("Show Variant Attributes"),
-			fieldtype: "Check",
+			"fieldname": "uom",
+			"label": ("UOM"),
+			"fieldtype": "Link",
+			"options": "UOM"
 		},
-		{
-			fieldname: "show_stock_ageing_data",
-			label: __("Show Stock Ageing Data"),
-			fieldtype: "Check",
-		},
-		{
-			fieldname: "ignore_closing_balance",
-			label: __("Ignore Closing Balance"),
-			fieldtype: "Check",
-			default: 0,
-		},
-		{
-			fieldname: "include_zero_stock_items",
-			label: __("Include Zero Stock Items"),
-			fieldtype: "Check",
-			default: 0,
-		},
-		{
-			fieldname: "show_dimension_wise_stock",
-			label: __("Show Dimension Wise Stock"),
-			fieldtype: "Check",
-			default: 0,
-		},
-	],
-
-	formatter: function (value, row, column, data, default_formatter) {
-		value = default_formatter(value, row, column, data);
-
-		if (column.fieldname == "out_qty" && data && data.out_qty > 0) {
-			value = "<span style='color:red'>" + value + "</span>";
-		} else if (column.fieldname == "in_qty" && data && data.in_qty > 0) {
-			value = "<span style='color:green'>" + value + "</span>";
-		}
-
-		return value;
-	},
-};
-
-erpnext.utils.add_inventory_dimensions("Stock Balance", 8);
+	]
+}

@@ -31,6 +31,7 @@ def make_gl_entries(
 	from_repost=False,
 ):
 	if gl_map:
+		# frappe.throw(frappe.as_json(gl_map))
 		if not cancel:
 			make_acc_dimensions_offsetting_entry(gl_map)
 			validate_accounting_period(gl_map)
@@ -357,6 +358,7 @@ def update_net_values(entry):
 
 
 def save_entries(gl_map, adv_adj, update_outstanding, from_repost=False):
+	# frappe.throw(frappe.as_json(gl_map))
 	if not from_repost:
 		validate_cwip_accounts(gl_map)
 
@@ -364,7 +366,10 @@ def save_entries(gl_map, adv_adj, update_outstanding, from_repost=False):
 
 	dimension_filter_map = get_dimension_filter_map()
 	if gl_map:
-		check_freezing_date(gl_map[0]["posting_date"], adv_adj)
+		# frappe.throw(frappe.as_json(gl_map))
+		if gl_map[0]['voucher_type'] != "Payment Entry":
+			check_freezing_date(gl_map[0]["posting_date"], adv_adj)
+		# check_freezing_date(gl_map[0]["posting_date"], adv_adj)
 		is_opening = any(d.get("is_opening") == "Yes" for d in gl_map)
 		if gl_map[0]["voucher_type"] != "Period Closing Voucher":
 			validate_against_pcv(is_opening, gl_map[0]["posting_date"], gl_map[0]["company"])
@@ -376,6 +381,7 @@ def save_entries(gl_map, adv_adj, update_outstanding, from_repost=False):
 
 def make_entry(args, adv_adj, update_outstanding, from_repost=False):
 	gle = frappe.new_doc("GL Entry")
+	# frappe.throw(frappe.as_json(args))
 	gle.update(args)
 	gle.flags.ignore_permissions = 1
 	gle.flags.from_repost = from_repost
@@ -647,7 +653,14 @@ def make_reverse_gl_entries(
 			partial_cancel=partial_cancel,
 		)
 		validate_accounting_period(gl_entries)
-		check_freezing_date(gl_entries[0]["posting_date"], adv_adj)
+		
+		# frappe.throw(str(gl_entries[0]['voucher_type']))
+
+		if gl_entries[0]['voucher_type'] != "Payment Entry":
+			check_freezing_date(gl_entries[0]["posting_date"], adv_adj)
+
+		# 	frappe.throw("hihihihh")
+		# check_freezing_date(gl_entries[0]["posting_date"], adv_adj)
 
 		is_opening = any(d.get("is_opening") == "Yes" for d in gl_entries)
 		validate_against_pcv(is_opening, gl_entries[0]["posting_date"], gl_entries[0]["company"])
@@ -720,8 +733,12 @@ def check_freezing_date(posting_date, adv_adj=False):
 			frozen_accounts_modifier = frappe.db.get_value(
 				"Accounts Settings", None, "frozen_accounts_modifier"
 			)
+
+
+			# frappe.throw(str(frozen_accounts_modifier))
+			# frappe.throw(str(frappe.get_roles()))
 			if getdate(posting_date) <= getdate(acc_frozen_upto) and (
-				frozen_accounts_modifier not in frappe.get_roles() or frappe.session.user == "Administrator"
+				frozen_accounts_modifier not in frappe.get_roles()
 			):
 				frappe.throw(
 					_("You are not authorized to add or update entries before {0}").format(

@@ -120,7 +120,7 @@ class AssetValueAdjustment(Document):
 		je.posting_date = self.date
 		je.company = self.company
 		je.remark = f"Asset Adjustment Entry against {self.asset} worth {self.difference_amount}"
-		je.finance_book = self.finance_book
+		# je.finance_book = self.finance_book
 		je.branch = self.branch
 
 		credit_entry = {

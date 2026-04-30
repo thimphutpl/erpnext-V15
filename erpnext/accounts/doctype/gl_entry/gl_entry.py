@@ -38,6 +38,7 @@ class GLEntry(Document):
 		against: DF.Text | None
 		against_voucher: DF.DynamicLink | None
 		against_voucher_type: DF.Link | None
+		business_activity: DF.Link | None
 		company: DF.Link | None
 		cost_center: DF.Link | None
 		credit: DF.Currency
@@ -211,6 +212,7 @@ class GLEntry(Document):
 					)
 
 	def check_pl_account(self):
+		# pass
 		if (
 			self.is_opening == "Yes"
 			and frappe.get_cached_value("Account", self.account, "report_type") == "Profit and Loss"

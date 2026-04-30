@@ -25,15 +25,19 @@ class StockEntryDetail(Document):
 		basic_rate: DF.Currency
 		batch_no: DF.Link | None
 		bom_no: DF.Link | None
-		business_activity: DF.Link
+		business_activity: DF.Link | None
 		conversion_factor: DF.Float
 		cost_center: DF.Link | None
 		description: DF.TextEditor | None
+		equipment_issued_no: DF.Link | None
 		expense_account: DF.Link | None
 		has_item_scanned: DF.Check
 		image: DF.Attach | None
 		is_finished_item: DF.Check
 		is_scrap_item: DF.Check
+		issue_to_employee: DF.Check
+		issue_to_equipment: DF.Check
+		issued_to: DF.Link | None
 		item_code: DF.Link
 		item_group: DF.Data | None
 		item_name: DF.Data | None

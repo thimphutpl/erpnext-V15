@@ -21,6 +21,7 @@
   "region",
   "sb_accounting_details",
   "tax_withholding_category",
+  "tds_account",
   "cb_4",
   "credit_account",
   "sb_transaction_details",
@@ -83,8 +84,7 @@
    "ignore_user_permissions": 1,
    "in_list_view": 1,
    "label": "Cost Center",
-   "options": "Cost Center",
-   "read_only": 1
+   "options": "Cost Center"
   },
   {
    "depends_on": "based_on_region",
@@ -262,12 +262,19 @@
   {
    "fieldname": "section_break_34",
    "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "tds_account",
+   "fieldtype": "Link",
+   "label": "Tds Account",
+   "options": "Account",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-01-09 16:11:42.569063",
+ "modified": "2026-02-10 10:36:28.269024",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "TDS Remittance",
@@ -314,6 +321,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []

@@ -32,7 +32,7 @@ class ConsolidatedInvoice(Document):
 		items: DF.Table[ConsolidatedInvoiceItem]
 		payment_entry: DF.Data | None
 		posting_date: DF.Date
-		quantity: DF.Data
+		quantity: DF.Data | None
 		to_date: DF.Date
 		total_amount: DF.Currency
 	# end: auto-generated types
@@ -82,8 +82,8 @@ def get_invoices(name, from_date, to_date, customer, cost_center):
 	invoices = frappe.db.sql("""select si.name, sii.sales_order, si.posting_date as posting_date, si.due_date, 
 				sum(sii.qty) as qty, sum(sii.qty) as qty, sum(sii.base_net_amount) as cost_of_goods,
 				max(dn.transportation_charges) transportation_charges,
-				max(dn.challan_cost) challan_cost, si.total_taxes_and_charges as gst_amount,
-				si.grand_total amount, sii.delivery_note, si.loading_cost, si.discount_or_cost_amount as discount_amount
+				max(dn.challan_cost) challan_cost, dn.total_taxes_and_charges as gst_amount,
+				dn.grand_total amount, sii.delivery_note, dn.loading_cost, si.discount_or_cost_amount as discount_amount
 			from `tabSales Invoice` si
 			inner join `tabSales Invoice Item` sii on sii.parent = si.name
 			left join `tabDelivery Note` dn on dn.name = sii.delivery_note
@@ -94,7 +94,7 @@ def get_invoices(name, from_date, to_date, customer, cost_center):
 			and not exists (select 1 from `tabConsolidated Invoice Item` ci 
 							where ci.invoice_no = si.name and ci.docstatus != 2
 							and ci.parent != %(name)s) 
-			and si.branch = (select b.name from `tabBranch` b where b.cost_center = %(cost_center)s) 
+			and si.branch in (select b.name from `tabBranch` b where b.cost_center = %(cost_center)s) 
 			group by si.name, sii.sales_order, si.posting_date, si.due_date, sii.delivery_note
 			order by posting_date""", ({"from_date": from_date, "to_date": to_date,
 					"customer": customer, "cost_center": cost_center, "name": name}), as_dict=True)

@@ -1257,3 +1257,14 @@ def get_crm_users(doctype, txt, searchfield, start, page_len, filters):
 			'start': start,
 			'page_len': page_len
 		})
+
+@frappe.whitelist(allow_guest=True)
+@frappe.validate_and_sanitize_search_inputs
+def filter_sws_member_item(doctype, txt, searchfield, start, page_len, filters):
+        data = []
+        if not filters.get("employee"):
+            frappe.throw("Please select employee first.")
+        return frappe.db.sql("""
+        select a.name as name, a.full_name as full_name from `tabSWS Membership Item` a, `tabSWS Membership` b where a.parent = b.name
+        and b.employee = '{0}' and a.status != 'Claimed' and b.docstatus = 1
+        """.format(filters.get("employee")))

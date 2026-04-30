@@ -13,7 +13,7 @@ frappe.ui.form.on("Utility Services", {
 	"branch": function(frm){
 	},
 	"expense_account": function(frm){
-		frappe.model.get_value('Account', {'name': frm.doc.expense_account}, 'bank_account_no',
+		frappe.model.get_value('Account', {'name': frm.doc.expense_account}, 'bank_ac_no',
 		 function(d) {
 			cur_frm.set_value("bank_account", d.bank_account_no);
 		});

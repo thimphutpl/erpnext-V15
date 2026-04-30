@@ -189,6 +189,92 @@ def get_payment_entries_for_bank_clearance(
 		as_dict=1,
 	)
 
+	tds_remittance_entries = frappe.db.sql(
+		f"""
+			select
+				"TDS Remittance" as payment_document,
+				name as payment_entry,
+				cheque_no as cheque_number,
+				cheque_date as cheque_date,
+				total_tds as credit,
+				0 as debit,
+				posting_date,
+				branch as against_account,
+				clearance_date
+			from `tabTDS Remittance`
+			where
+				credit_account = %(account)s
+				and docstatus = 1
+				and posting_date >= %(from)s
+				and posting_date <= %(to)s
+				and ifnull(clearance_date, '4000-01-01') > %(to)s
+				{condition}
+			order by
+				posting_date ASC, name DESC
+		""",
+		{
+			"account": account,
+			"from": from_date,
+			"to": to_date,
+		},
+		as_dict=1,
+	)
+	# frappe.throw(f"""
+	# 	select
+	# 		"Mechanical Payment" as payment_document,
+	# 		name as payment_entry,
+	# 		cheque_no as cheque_number,
+	# 		cheque_date as cheque_date,
+	# 		net_amount as credit,
+	# 		0 as debit,
+	# 		posting_date,
+	# 		customer as against_account,
+	# 		clearance_date,
+	# 		'BTN' as account_currency
+	# 	from `tabMechanical Payment`
+	# 	where
+	# 		'{account}' IN (bank_account)
+	# 		and docstatus = 1
+	# 		and posting_date >= '{from_date}'
+	# 		and posting_date <= '{to_date}'
+	# 		and ifnull(clearance_date, '4000-01-01') > '{to_date}'
+	# 		{condition}
+	# 	order by
+	# 		posting_date ASC, name DESC
+	# 	""")
+
+	mechanical_entries = frappe.db.sql(
+		f"""
+			select
+				"Mechanical Payment" as payment_document,
+				name as payment_entry,
+				cheque_no as cheque_number,
+				cheque_date as cheque_date,
+				net_amount as credit,
+				0 as debit,
+				posting_date,
+				customer as against_account,
+				clearance_date,
+				'BTN' as account_currency
+			from `tabMechanical Payment`
+			where
+				%(account)s IN (bank_account)
+				and docstatus = 1
+				and posting_date >= %(from)s
+				and posting_date <= %(to)s
+				and ifnull(clearance_date, '4000-01-01') > %(to)s
+				{condition}
+			order by
+				posting_date ASC, name DESC
+		""",
+		{
+			"account": account,
+			"from": from_date,
+			"to": to_date,
+		},
+		as_dict=1,
+	)
+
 	pos_sales_invoices, pos_purchase_invoices = [], []
 	if include_pos_transactions:
 		si_payment = frappe.qb.DocType("Sales Invoice Payment")
@@ -249,7 +335,8 @@ def get_payment_entries_for_bank_clearance(
 		).run(as_dict=True)
 
 	entries = (
-		list(payment_entries) + list(journal_entries) + list(pos_sales_invoices) + list(pos_purchase_invoices)
+		list(payment_entries) + list(journal_entries) + list(pos_sales_invoices) + list(pos_purchase_invoices) + list(tds_remittance_entries)+list(mechanical_entries)
+		# list(payment_entries) + list(journal_entries) + list(pos_sales_invoices) + list(pos_purchase_invoices) 
 	)
 
 	return entries

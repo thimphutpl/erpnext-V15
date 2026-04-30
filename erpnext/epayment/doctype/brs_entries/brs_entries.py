@@ -68,7 +68,7 @@ def update_bank_clearance_date():
 				#Update Cheque Detail Table
 				clearance_update=0
 				print("Transaction Type:{}, Transaction No: {}".format(c.transaction_type, c.transaction_id))
-				if c.transaction_type in ["Journal Entry","TDS Remittance","Direct Payment","Payment Entry"]:
+				if c.transaction_type in ["Journal Entry","TDS Remittance","Direct Payment","Payment Entry","Mechanical Payment"]:
 					frappe.db.sql("""
 									Update `tab{0}` 
 									set clearance_date = '{1}'

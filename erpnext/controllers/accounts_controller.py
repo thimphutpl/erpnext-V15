@@ -550,7 +550,8 @@ class AccountsController(TransactionBase):
 			df = self.meta.get_field("discount_amount")
 			if self.get("discount_amount") and hasattr(self, "taxes") and not len(self.taxes):
 				df.set("print_hide", 0)
-				self.discount_amount = -self.discount_amount
+				# self.discount_amount = -self.discount_amount
+				self.discount_amount = flt(self.discount_amount or 0)
 			else:
 				df.set("print_hide", 1)
 
@@ -1235,6 +1236,8 @@ class AccountsController(TransactionBase):
 			include_unallocated=not cint(self.get("only_include_allocated_payments"))
 		)
 
+		# frappe.throw(frappe.as_json(res))
+
 		self.set("advances", [])
 		advance_allocated = 0
 		for d in res:
@@ -1242,6 +1245,7 @@ class AccountsController(TransactionBase):
 				amount = self.get("base_rounded_total") or self.base_grand_total
 			else:
 				amount = self.get("rounded_total") or self.grand_total
+			# frappe.throw(str(amount))
 			allocated_amount = min(amount - advance_allocated, d.amount)
 			advance_allocated += flt(allocated_amount)
 
@@ -1798,11 +1802,11 @@ class AccountsController(TransactionBase):
 		return amount, base_amount
 
 	def get_tax_amounts(self, tax, enable_discount_accounting):
-		# frappe.throw(frappe.as_json(tax))
-		# amount = tax.tax_amount_after_discount_amount
-		amount = tax.base_tax_amount
-		# base_amount = tax.base_tax_amount_after_discount_amount
-		base_amount = tax.base_tax_amount
+		# frappe.throw(frappe.as_json(tax.base_tax_amount))
+		amount = tax.tax_amount_after_discount_amount
+		# amount = tax.base_tax_amount
+		base_amount = tax.base_tax_amount_after_discount_amount
+		# base_amount = tax.base_tax_amount
 
 		if (
 			enable_discount_accounting
@@ -3083,20 +3087,20 @@ def get_advance_payment_entries(
 			q = q.where(payment_ref.reference_name.isin(order_list))
 		allocated = list(q.run(as_dict=True))
 		payment_entries += allocated
-	# if include_unallocated:
-	# 	q = get_common_query(
-	# 		party_type,
-	# 		party,
-	# 		party_account,
-	# 		default_advance_account,
-	# 		limit,
-	# 		condition,
-	# 	)
-	# 	q = q.select((payment_entry.unallocated_amount).as_("amount"))
-	# 	q = q.where(payment_entry.unallocated_amount > 0)
+	if include_unallocated:
+		q = get_common_query(
+			party_type,
+			party,
+			party_account,
+			default_advance_account,
+			limit,
+			condition,
+		)
+		q = q.select((payment_entry.unallocated_amount).as_("amount"))
+		q = q.where(payment_entry.unallocated_amount > 0)
 
-	# 	unallocated = list(q.run(as_dict=True))
-	# 	payment_entries += unallocated
+		unallocated = list(q.run(as_dict=True))
+		payment_entries += unallocated
 	return payment_entries
 
 

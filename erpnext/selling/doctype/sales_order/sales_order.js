@@ -14,7 +14,7 @@ frappe.ui.form.on("Sales Order", {
 			"Sales Invoice": "Sales Invoice",
 			"Material Request": "Material Request",
 			"Purchase Order": "Purchase Order",
-			Project: "Project",
+			"Project": "Project",
 			"Payment Entry": "Payment",
 			"Work Order": "Work Order",
 		};
@@ -149,7 +149,11 @@ frappe.ui.form.on("Sales Order", {
 		if (frm.doc.docstatus > 0) {
 			frm.set_df_property("reserve_stock", "description", null);
 		}
+		toggle_child_field(frm);
 	},
+	is_kidu_sale: function(frm) {
+        toggle_child_field(frm);
+    },
 
 	get_items_from_internal_purchase_order(frm) {
 		if (!frappe.model.can_read("Purchase Order")) {
@@ -647,6 +651,18 @@ return {
 		query: "erpnext.controllers.queries.customer_price_template_list",
 		filters: {'item_code': d.item_code, 'transaction_date': frm.transaction_date, 'branch': frm.branch, 'location': frm.location, 'customer': frm.customer}
 }
+}
+
+function toggle_child_field(frm) {
+    let hide = frm.doc.is_kidu_sale ? 1 : 0;
+
+    frm.fields_dict["items"].grid.update_docfield_property(
+        "price_template",
+        "hidden",
+        hide
+    );
+
+    frm.refresh_field("items");
 }
 
 
@@ -1383,7 +1399,7 @@ erpnext.selling.SalesOrderController = class SalesOrderController extends erpnex
 			return false;
 		});
 
-		if (!(this.frm.doc.is_credit && this.frm.doc.is_export) && !all_submitted) {
+		if (!(this.frm.doc.is_credit || this.frm.doc.is_kidu_sale) && !all_submitted) {
 			frappe.msgprint(__("Cannot make Delivery Note without making Payment"));
 			return false; 
 		}

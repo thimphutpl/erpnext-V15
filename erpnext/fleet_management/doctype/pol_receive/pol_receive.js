@@ -4,18 +4,13 @@
 frappe.ui.form.on('POL Receive', {	
 	setup(frm){
 		frm.set_query("equipment", function(){
-			if (!frm.doc.branch) {
-				return { filters: { name: ["=", "__no_value__"] } };
-			}
-		
-			return {
-				filters: {
-					company: frm.doc.company,
-					branch: frm.doc.branch,
-					disabled: 0
-				}
-			};
-		});
+            return {
+                query: "erpnext.fleet_management.doctype.pol_advance.pol_advance.get_equipment_by_parent_cost_center",
+                filters: {
+                    cost_center: frm.doc.cost_center
+                }
+            };
+        });
 
         frm.set_query("fuelbook", function(){
             return {

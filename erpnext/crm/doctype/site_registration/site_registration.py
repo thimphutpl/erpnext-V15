@@ -56,7 +56,7 @@ class SiteRegistration(Document):
 	# end: auto-generated types
 	def validate(self):
 		self.validate_site_registration()
-		self.validate_user()
+		# self.validate_user()
 		self.update_user_details()
 		self.update_status()
 		# self.validate_cid()

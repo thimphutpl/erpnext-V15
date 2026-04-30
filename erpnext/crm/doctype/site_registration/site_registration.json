@@ -267,7 +267,7 @@
    "fieldtype": "Table",
    "label": "Materials",
    "options": "Site Registration Item",
-   "reqd": 1
+   "reqd": 0
   },
   {
    "fieldname": "sb_distance",

@@ -15,7 +15,7 @@ erpnext.sales_common.setup_selling_controller();
 
 frappe.ui.form.on("Delivery Note", {
 	onload: function(frm){
-		cur_frm.set_query("vehicle", function() {
+		cur_frm.set_query("vehicle_no", function() {
 			var items = frm.doc.items || [];
 			var total_vol = 0;
 			for(var i = 0; i < items.length; i++ ){
@@ -36,8 +36,8 @@ frappe.ui.form.on("Delivery Note", {
 
 	},
 	"select_vehicle_queue": function(frm) {
-		cur_frm.set_value("vehicle","");
-		cur_frm.set_query("vehicle", function() {
+		cur_frm.set_value("vehicle_no","");
+		cur_frm.set_query("vehicle_no", function() {
 			var items = frm.doc.items || [];
 			var total_vol = 0;
 			for(var i = 0; i < items.length; i++ ){

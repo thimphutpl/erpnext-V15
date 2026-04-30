@@ -87,46 +87,46 @@ frappe.query_reports["Timber Sales Report"] = {
 			"fieldname": "item_group",
 			"label": ("Material Group"),
 			"fieldtype": "Link",
-			"options": "Item Sub Group",
+			"options": "Item Group",
 			"get_query": function() {
-				return {"doctype": "Item Sub Group"}
+				return {"doctype": "Item Group"}
 			},
-			"on_change": function(){
-				var item_group = frappe.query_report.get_filter_value('item_group');
-				frappe.call({
-					method:"erpnext.selling.report.timber_sales_report.timber_sales_report.get_item_sub_group",
-					args:{"item_group":item_group},
-					callback: function(r){
-						if(r.message)
-						{
-							options = []
-							for (i = 0; i < r.message.length; i++) { 
-								options[i]= r.message[i].name
-							}
-							console.log(options)
-							frappe.query_reports["Timber Sales Report"].filters[8].options = options
-							frappe.query_report.filters_by_name.item_sub_group.refresh();
-							frappe.query_report.refresh();
-						}
-					}
-					/*	console.log(r.message)
-						$.each(r.message, function(i, data){
-							$('.input-with-feedback').append(new Option(data.name))
-						});
-					frappe.query_reports.filters[1].refresh();
-					} */
-				});
-			}
+			// "on_change": function(){
+			// 	var item_group = frappe.query_report.get_filter_value('item_group');
+			// 	frappe.call({
+			// 		method:"erpnext.selling.report.timber_sales_report.timber_sales_report.get_item_sub_group",
+			// 		args:{"item_group":item_group},
+			// 		callback: function(r){
+			// 			if(r.message)
+			// 			{
+			// 				options = []
+			// 				for (i = 0; i < r.message.length; i++) { 
+			// 					options[i]= r.message[i].name
+			// 				}
+			// 				console.log(options)
+			// 				frappe.query_reports["Timber Sales Report"].filters[8].options = options
+			// 				frappe.query_report.filters_by_name.item_sub_group.refresh();
+			// 				frappe.query_report.refresh();
+			// 			}
+			// 		}
+			// 		/*	console.log(r.message)
+			// 			$.each(r.message, function(i, data){
+			// 				$('.input-with-feedback').append(new Option(data.name))
+			// 			});
+			// 		frappe.query_reports.filters[1].refresh();
+			// 		} */
+			// 	});
+			// }
 		},
 		{
 			"fieldname": "item_sub_group",
 			"label": ("Material Sub Group"),
-			"fieldtype": "Select",
-			"options": [],
-			// "get_query": function() {
-			// 		var item_group = "Timber Products";
-			// 		return {"doctype": "Item Sub Group", "filters": {"item_group": item_group}}
-			// }
+			"fieldtype": "Link",
+			"options": "Item Sub Group",
+			"get_query": function() {
+				var item_group = frappe.query_report.get_filter_value('item_group');
+				return {"doctype": "Item Sub Group", "filters": {"item_group": item_group}}
+			}
 		},
 		{
 			"fieldname": "item",

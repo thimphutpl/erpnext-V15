@@ -21,18 +21,19 @@ def get_columns(filters=None):
 				_("Sub Item Group") + ":Data:150", 
 				_("Sales Qty") + ":Float:120",
 				_("Delivered Qty") + ":Float:120",
-				# _("UOM") + ":Link/UOM:120",
+				_("UOM") + ":Link/UOM:120",
 				_("Amount") + ":Currency:120"
 			]
 		elif filters.report_by == "Sales Invoice":
 			columns = [
 				_("Branch") + ":Link/Sales Order:150", 
+				_("Transaction Type") + ":Data:150", 
 				# _("Location") + ":Data/120", 
 				# _("Customer") + ":Link/Customer:150",
 				# _("Customer Group") + ":Data:200", 
 				_("Sub Item Group") + ":Data:150", 
 				_("Delivered Qty") + ":Float:120",
-				# _("UOM") + ":Link/UOM:120",
+				_("UOM") + ":Link/UOM:120",
 				_("Amount") + ":Currency:120",
 				_("Net Total")+":Currency:120",
 			]
@@ -45,8 +46,8 @@ def get_columns(filters=None):
 				# _("Customer Group") + ":Data:200", 
 				_("Sub Item Group") + ":Data:150", 
 				_("Delivered Qty") + ":Float:120",
-				# _("UOM") + ":Link/UOM:120",
-				_("Amount") + ":Currency:120",
+				_("UOM") + ":Link/UOM:120",
+				# _("Amount") + ":Currency:120",
 				_("Net Total")+":Currency:120",
 			]
 	elif filters.summary:
@@ -64,7 +65,7 @@ def get_columns(filters=None):
 				_("Sub Group") + ":Data:100",
 				_("Actual Qty") + ":Float:90",
 				_("Qty Delivered") + ":Float:90",
-				# _("UOM") + ":Data:90",
+				_("UOM") + ":Data:90",
 				_("Amount") + ":Currency:100",
 				# _("Discount") + ":Currency:120",
 				# _("Additional Cost") + ":Currency:120",
@@ -77,14 +78,15 @@ def get_columns(filters=None):
 				_("Sales Order") + ":Link/Sales Order:100",
 				_("Delivery Note") + ":Link/Delivery Note:100",
 				_("Region") + ":Data:150",
-				_("Branch") + ":Link/Branch:120", 
+				_("Branch") + ":Link/Branch:120",
+				_("Transaction Type") + ":Data:150", 
 				_("Customer") + ":Link/Customer:150", 
 				_("Customer Number") + ":Data:100", 
 				_("Customer Group") + ":Data:200",
 				# _("Destination") + ":Data:200",
 				_("Sub Group") + ":Data:100", 
 				_("Qty Delivered") + ":Float:90",
-				# _("UOM") + ":Data:90",
+				_("UOM") + ":Data:90",
 				_("Amount") + ":Currency:100",
 				_("Discount") + ":Currency:120",
 				# _("Additional Cost") + ":Currency:120",
@@ -110,7 +112,7 @@ def get_columns(filters=None):
 				# _("Destination") + ":Data:200",
 				_("Sub Group") + ":Data:100", 
 				_("Qty Delivered") + ":Float:90",
-				# _("UOM") + ":Data:90",
+				_("UOM") + ":Data:90",
 				_("Amount") + ":Currency:100",
 				# _("Discount") + ":Currency:120",
 				# _("Additional Cost") + ":Currency:120",
@@ -139,12 +141,13 @@ def get_columns(filters=None):
 				_("Sub Group") + ":Data:100",
 				_("Actual Qty")+ ":Float:100",
 				_("Qty Delivered") + ":Float:90",
-				# _("UOM") + ":Data:90",
+				_("UOM") + ":Data:90",
 				_("Rate") + ":Float:90",
 				_("Amount") + ":Currency:100",
 				_("Discount") + ":Currency:120",
 				_("Additional Cost") + ":Currency:120",
 				_("Net Total")+":Currency:120",
+				_("Grand Total")+":Currency:120",
 				_("Challan Cost")+":Currency:120"
 			]
 		elif filters.report_by == "Sales Invoice":
@@ -156,6 +159,7 @@ def get_columns(filters=None):
 				_("Region") + ":Data:150",
 				_("Branch") + ":Link/Branch:120",
 				_("Location") + ":Link/Location:120",
+				_("Transaction Type") + ":Data:150", 
 				_("Customer") + ":Link/Customer:150", 
 				_("Customer Group") + ":Data:200",
 				_("Destination") + ":Data:200",
@@ -163,12 +167,13 @@ def get_columns(filters=None):
 				_("Item Name") + ":Data:150",
 				_("Sub Group") + ":Data:100", 
 				_("Qty Delivered") + ":Float:90",
-				# _("UOM") + ":Data:90",
+				_("UOM") + ":Data:90",
 				_("Rate") + ":Float:90",
 				_("Amount") + ":Currency:100",
 				_("Discount") + ":Currency:120",
 				_("Additional Cost") + ":Currency:120",
 				_("Net Total")+":Currency:120",
+				_("Grand Total")+":Currency:120",
 				_("Challan Cost")+":Currency:120",
 				_("Transportation Charges") + ":Currency:100",
 			]
@@ -188,12 +193,13 @@ def get_columns(filters=None):
 				_("Item Name") + ":Data:150",
 				_("Sub Group") + ":Data:100", 
 				_("Qty Delivered") + ":Float:90",
-				# _("UOM") + ":Data:90",
+				_("UOM") + ":Data:90",
 				_("Rate") + ":Float:90",
 				_("Amount") + ":Currency:100",
 				_("Discount") + ":Currency:120",
 				_("Additional Cost") + ":Currency:120",
 				_("Net Total")+":Currency:120",
+				_("Grand Total")+":Currency:120",
 				_("Challan Cost")+":Currency:120",
 				_("Transporation Rate") + ":Float:100", 
 				_("Distance") + ":Float:100", 
@@ -221,9 +227,9 @@ def get_data(filters=None):
 					WHEN is_export=1 THEN "Is Export"
 					WHEN is_kidu_sale=1 THEN "Is Kidu Sale"
 					ELSE "None"
-				END as transaction_type, 
+				END as transaction_type, soi.uom,
 				so.location, i.item_sub_group, sum(soi.qty) as qty, sum(soi.delivered_qty), 
-				 sum(soi.net_amount-so.loading_cost-so.challan_cost)
+				so.net_total
 			"""
 			group_by = " group by so.branch, so.location, i.item_sub_group"
 			order_by = ""
@@ -239,12 +245,12 @@ def get_data(filters=None):
 					WHEN is_export=1 THEN "Is Export"
 					WHEN is_kidu_sale=1 THEN "Is Kidu Sale"
 					ELSE "None"
-				END as transaction_type, 
+				END as transaction_type, soi.uom,
 				so.customer, (select mobile_no from `tabCustomer` where name=so.customer) as customer_number, so.customer_group, 
 				i.item_sub_group, sum(soi.qty) as qty, sum(soi.delivered_qty),
-				 sum(soi.amount), sum(soi.net_amount)-so.loading_cost-so.challan_cost
+				 sum(soi.amount), so.net_total
 			"""
-			group_by = " group by so.name"
+			group_by = " group by soi.name"
 			order_by = "order by so.transaction_date"
 		
 		else:
@@ -258,14 +264,23 @@ def get_data(filters=None):
 					WHEN is_export=1 THEN "Is Export"
 					WHEN is_kidu_sale=1 THEN "Is Kidu Sale"
 					ELSE "None"
-				END as transaction_type, 
-				so.customer, so.customer_group, so.shipping_address_name,
+				END as transaction_type,
+				so.customer, so.customer_group, so.shipping_address,
 				soi.item_code, soi.item_name, i.item_sub_group, sum(soi.qty) as qty, 
-				sum(soi.delivered_qty),
-				 sum(soi.rate), sum(soi.amount), so.discount_or_cost_amount, so.additional_cost, 
-				sum(soi.net_amount)-so.loading_cost-so.challan_cost, so.challan_cost
+				sum(soi.delivered_qty), soi.uom,
+				sum(soi.rate), sum(soi.amount),
+				CASE
+					WHEN so.discount_or_cost_amount > 0
+					THEN so.discount_or_cost_amount * soi.amount / so.total
+					ELSE 0
+				END as discount_or_cost_amount, so.additional_cost, 
+				CASE
+					WHEN so.discount_or_cost_amount > 0
+					THEN soi.amount - so.discount_or_cost_amount * soi.amount / so.total
+					ELSE soi.amount
+				END as amount, so.grand_total, so.challan_cost
 			"""
-			group_by = "group by so.name, soi.item_code"
+			group_by = "group by soi.name, soi.item_code"
 			order_by = "order by so.transaction_date"
 		
 		query = """
@@ -281,8 +296,16 @@ def get_data(filters=None):
 		if filters.aggregate:
 			cols = """
 				si.branch,
+				CASE
+					WHEN is_allotment=1 THEN "Is Allotment"
+					WHEN is_credit=1 THEN "Is Credit Sale"
+					WHEN is_rural_sale=1 THEN "Is Rural Sale"
+					WHEN is_export=1 THEN "Is Export"
+					WHEN is_kidu_sale=1 THEN "Is Kidu Sale"
+					ELSE "None"
+				END as transaction_type, 
 				i.item_sub_group, sum(sii.qty) as qty, sii.stock_uom as uom, sum(sii.amount),
-				sum(sii.net_amount-si.loading_cost-si.challan_cost)
+				si.net_total-si.loading_cost-si.challan_cost
 			"""
 			group_by = " group by si.branch, si.location, i.item_sub_group"
 			order_by = ""
@@ -292,12 +315,28 @@ def get_data(filters=None):
 				si.posting_date, si.name, sii.sales_order, sii.delivery_note,
 				(select cc.parent_cost_center from `tabCost Center` cc where cc.name = (select b.cost_center from `tabBranch` b where b.name = si.branch)) as region,
 				si.branch,
+				CASE
+					WHEN is_allotment=1 THEN "Is Allotment"
+					WHEN is_credit=1 THEN "Is Credit Sale"
+					WHEN is_rural_sale=1 THEN "Is Rural Sale"
+					WHEN is_export=1 THEN "Is Export"
+					WHEN is_kidu_sale=1 THEN "Is Kidu Sale"
+					ELSE "None"
+				END as transaction_type, 
 				si.customer, (select mobile_no from `tabCustomer` where name=si.customer) as customer_number, si.customer_group, 
 				i.item_sub_group, sum(sii.qty) as qty, sii.stock_uom as uom, sum(sii.amount),
-				max(si.discount_or_cost_amount) as discount_or_cost_amount,
-				sum(sii.net_amount)-max(si.loading_cost)-max(si.challan_cost)
+				CASE
+					WHEN si.discount_or_cost_amount > 0
+					THEN si.discount_or_cost_amount * sii.amount / si.total
+					ELSE 0
+				END as discount_or_cost_amount, 
+				CASE
+					WHEN si.discount_or_cost_amount > 0
+					THEN sii.amount - si.discount_or_cost_amount * sii.amount / si.total
+					ELSE sii.amount
+				END as net_total
 			"""
-			group_by = "group by si.name"
+			group_by = "group by sii.name"
 			order_by = "order by si.posting_date"
 
 		else:
@@ -305,13 +344,30 @@ def get_data(filters=None):
 				si.posting_date, si.name, sii.sales_order, sii.delivery_note,
 				(select cc.parent_cost_center from `tabCost Center` cc where cc.name = (select b.cost_center from `tabBranch` b where b.name = si.branch)) as region,
 				si.branch, si.location,
-				si.customer, si.customer_group, si.shipping_address_name, 
+				CASE
+					WHEN is_allotment=1 THEN "Is Allotment"
+					WHEN is_credit=1 THEN "Is Credit Sale"
+					WHEN is_rural_sale=1 THEN "Is Rural Sale"
+					WHEN is_export=1 THEN "Is Export"
+					WHEN is_kidu_sale=1 THEN "Is Kidu Sale"
+					ELSE "None"
+				END as transaction_type, 
+				si.customer, si.customer_group, si.shipping_address, 
 				sii.item_code, sii.item_name, i.item_sub_group, sum(sii.qty) as qty,
 				sii.stock_uom as uom, sum(sii.rate), sum(sii.amount),
-				si.discount_or_cost_amount, si.additional_cost, sum(sii.net_amount)-si.loading_cost-si.challan_cost,
+				CASE
+					WHEN si.discount_or_cost_amount > 0
+					THEN si.discount_or_cost_amount * sii.amount / si.total
+					ELSE 0
+				END as discount_or_cost_amount, si.additional_cost, 
+				CASE
+					WHEN si.discount_or_cost_amount > 0
+					THEN sii.amount - si.discount_or_cost_amount * sii.amount / si.total
+					ELSE sii.amount
+				END as net_total, si.grand_total,
 				si.challan_cost, si.transportation_charges
 			"""
-			group_by = "group by si.name, sii.item_code"
+			group_by = "group by sii.name, sii.item_code"
 			order_by = "order by si.posting_date"
 		query = """
 			select * from (
@@ -333,10 +389,10 @@ def get_data(filters=None):
 					WHEN is_export=1 THEN "Is Export"
 					WHEN is_kidu_sale=1 THEN "Is Kidu Sale"
 					ELSE "None"
-				END as transaction_type,
-				i.item_sub_group, sum(dni.qty) as qty, 
+				END as transaction_type, 
+				i.item_sub_group, sum(dni.qty) as qty, dni.uom,
 				
-				sum(dni.net_amount)-(dn.challan_cost)/(select distinct count(b.item_sub_group) from `tabDelivery Note Item` a JOIN `tabItem` b on a.item_code = b.name where a.parent = dn.name) -(dn.loading_cost)/(select distinct count(b.item_group) from `tabDelivery Note Item` a JOIN `tabItem` b on a.item_code = b.name where a.parent = dn.name)
+				dn.net_total-(dn.challan_cost)/(select distinct count(b.item_sub_group) from `tabDelivery Note Item` a JOIN `tabItem` b on a.item_code = b.name where a.parent = dn.name) -(dn.loading_cost)/(select distinct count(b.item_group) from `tabDelivery Note Item` a JOIN `tabItem` b on a.item_code = b.name where a.parent = dn.name)
 			"""
 			group_by = " group by dn.branch, dn.location, i.item_sub_group"
 			order_by = ""
@@ -355,11 +411,11 @@ def get_data(filters=None):
 					ELSE "None"
 				END as transaction_type,
 				dn.customer, (select mobile_no from `tabCustomer` where name=dn.customer) as customer_number, dn.customer_group, 
-				i.item_sub_group, sum(dni.qty) as qty, 
+				i.item_sub_group, sum(dni.qty) as qty, dni.uom
 					
-				sum(dni.net_amount)-dn.loading_cost-dn.challan_cost
+				dn.net_total-dn.loading_cost-dn.challan_cost
 			"""
-			group_by = "group by dn.name"
+			group_by = "group by dni.name"
 			order_by = "order by dn.posting_date"
 
 		else:
@@ -374,15 +430,24 @@ def get_data(filters=None):
 					WHEN is_export=1 THEN "Is Export"
 					WHEN is_kidu_sale=1 THEN "Is Kidu Sale"
 					ELSE "None"
-				END as transaction_type,
-				dn.customer, dn.customer_group, dn.shipping_address_name, 
-				dni.item_code, dni.item_name, i.item_sub_group, sum(dni.qty) as qty,
-				 sum(dni.rate), sum(dni.amount),
-				dn.discount_or_cost_amount, dn.additional_cost, sum(dni.net_amount)-(dn.challan_cost)/(select distinct count(a.item_code) from `tabDelivery Note Item` a where a.parent = dn.name) -(dn.loading_cost)/(select distinct count(a.item_code) from `tabDelivery Note Item` a where a.parent = dn.name),
+				END as transaction_type, 
+				dn.customer, dn.customer_group, dn.shipping_address, 
+				dni.item_code, dni.item_name, i.item_sub_group, sum(dni.qty) as qty, dni.uom,
+				sum(dni.rate), sum(dni.amount),
+				CASE
+					WHEN dn.discount_or_cost_amount > 0
+					THEN dn.discount_or_cost_amount * dni.amount / dn.total
+					ELSE 0
+				END as discount_or_cost_amount, dn.additional_cost, 
+				CASE
+					WHEN dn.discount_or_cost_amount > 0
+					THEN dni.amount - dn.discount_or_cost_amount * dni.amount / dn.total
+					ELSE dni.amount
+				END as net_total, dn.grand_total,
 				dn.challan_cost, dn.transportation_rate, dn.total_distance, dn.transportation_charges,
 				dn.vehicle_no, dn.driver_name, dn.driver_contact_no
 			"""
-			group_by = "group by dn.name, dni.item_code"
+			group_by = "group by dni.name, dni.item_code"
 			order_by = "order by dn.posting_date"
 		
 		query = """
@@ -521,7 +586,7 @@ def get_conditions(filters=None):
 				cond += " and dn.is_credit = 1"
 			elif filters.transaction_type == "Is Rural Sale":
 				cond += " and dn.is_rural_sale = 1"
-			if filters.transaction_type == "Is Export":
+			elif filters.transaction_type == "Is Export":
 				cond += " and dn.is_export = 1"
 			elif filters.transaction_type == "Is Kidu Sale":
 				cond += " and dn.is_kidu_sale = 1"
@@ -529,16 +594,29 @@ def get_conditions(filters=None):
 				cond += " and dn.is_allotment != 1 and dn.is_credit != 1 and dn.is_rural_sale != 1 and dn.is_export != 1 and dn.is_kidu_sale != 1"
 		else:
 			if filters.transaction_type == "Is Allotment":
-				frappe.throw("Filter not applicable for Sales Invoice")
+				cond += " and si.is_allotment = 1"
 			elif filters.transaction_type == "Is Credit Sale":
-				frappe.throw("Filter not applicable for Sales Invoice")
+				cond += " and si.is_credit = 1"
 			elif filters.transaction_type == "Is Rural Sale":
-				frappe.throw("Filter not applicable for Sales Invoice")
-			if filters.transaction_type == "Is Export":
-				frappe.throw("Filter not applicable for Sales Invoice")
+				cond += " and si.is_rural_sale = 1"
+			elif filters.transaction_type == "Is Export":
+				cond += " and si.is_export = 1"
 			elif filters.transaction_type == "Is Kidu Sale":
-				frappe.throw("Filter not applicable for Sales Invoice")
+				cond += " and si.is_kidu_sale = 1"
 			else:
-				frappe.throw("Filter not applicable for Sales Invoice")
+				cond += " and si.is_allotment != 1 and si.is_credit != 1 and si.is_rural_sale != 1 and si.is_export != 1 and si.is_kidu_sale != 1"
+		# else:
+		# 	if filters.transaction_type == "Is Allotment":
+		# 		frappe.throw("Filter not applicable for Sales Invoice")
+		# 	elif filters.transaction_type == "Is Credit Sale":
+		# 		frappe.throw("Filter not applicable for Sales Invoice")
+		# 	elif filters.transaction_type == "Is Rural Sale":
+		# 		frappe.throw("Filter not applicable for Sales Invoice")
+		# 	if filters.transaction_type == "Is Export":
+		# 		frappe.throw("Filter not applicable for Sales Invoice")
+		# 	elif filters.transaction_type == "Is Kidu Sale":
+		# 		frappe.throw("Filter not applicable for Sales Invoice")
+		# 	else:
+		# 		frappe.throw("Filter not applicable for Sales Invoice")
 
 	return cond

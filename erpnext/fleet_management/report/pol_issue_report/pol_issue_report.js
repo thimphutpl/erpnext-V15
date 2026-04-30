@@ -28,7 +28,7 @@ frappe.query_reports["POL Issue Report"] = {
 		
 		{
 			"fieldname": "not_cdcl",
-			"label": ("Include Only Gyalsung Equipments"),
+			"label": ("Include Own Equipments Only"),
 			"fieldtype": "Check",
 			"default": 1
 		},
@@ -38,11 +38,11 @@ frappe.query_reports["POL Issue Report"] = {
 			"fieldtype": "Check",
 			"default": 0
 		},
-		{
-			"fieldname": "own_cc",
-			"label": ("Show Only Received/Issued from Own Branch"),
-			"fieldtype": "Check",
-			"default": 0
-		}
+		/*{
+                        "fieldname": "own_cc",
+                        "label": ("Show Only Received/Issued from Own Branch"),
+                        "fieldtype": "Check",
+                        "default": 0
+                } */
 	]
 };

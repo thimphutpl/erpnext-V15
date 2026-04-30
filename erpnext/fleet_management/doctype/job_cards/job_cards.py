@@ -114,18 +114,19 @@ class JobCards(AccountsController):
 
 	def validate_job_datetime(self):
 		
-		if self.break_down_report_date > self.posting_date:
-			frappe.throw("The Job Card Date Cannot Be Before Break Down Report Date")
+		# if self.break_down_report_date > self.posting_date:
+		# 	frappe.throw("The Job Card Date Cannot Be Before Break Down Report Date")
 
 		br_time = frappe.db.get_value("Break Down Report", self.break_down_report, "time") 
-		frappe.log_error(f"Break Down Report Time: {br_time}", "Debug: Validate Job DateTime")
+		# frappe.log_error(f"Break Down Report Time: {br_time}", "Debug: Validate Job DateTime")
 
 		br_date_time = str(self.break_down_report_date + " " + str(br_time))
 		jc_date_time =  str(self.posting_date + " " + self.job_in_time)
 
-
 		if get_datetime(br_date_time) > get_datetime(jc_date_time):
 			frappe.throw("The Job Card Time Cannot Be Before Break Down Report Time")	
+		
+		# frappe.throw("test")
 	
 	def on_submit(self):
 		self.validate_owned_by()
@@ -310,7 +311,7 @@ class JobCards(AccountsController):
 			je.title = "Job Cards (" + self.name + ")"
 			je.voucher_type = 'Journal Entry'
 			je.naming_series = 'Maintenance Invoice'
-			je.remark = 'Payment against : ' + self.name;
+			je.remark = 'Payment against : ' + self.name
 			#je.posting_date = self.posting_date
 			je.posting_date = self.finish_date
 			je.branch = self.branch
@@ -352,7 +353,7 @@ class JobCards(AccountsController):
 					amount = self.goods_amount
 					if a == "Service":
 						amount = self.services_amount
-						account_name = services_account;
+						account_name = services_account
 					if amount != 0:
 						je.append("accounts", {
 								"account": account_name,
@@ -370,7 +371,7 @@ class JobCards(AccountsController):
 					amount = self.goods_amount
 					if a == "Service":
 						amount = self.services_amount
-						account_name = services_account;
+						account_name = services_account
 					if amount != 0:
 						je.append("accounts", {
 								"account": account_name,
@@ -438,7 +439,7 @@ def make_bank_entry(frm=None):
 		je.title = "Payment for Job Card (" + job.name + ")"
 		je.voucher_type = 'Bank Entry'
 		je.naming_series = 'Bank Receipt Voucher'
-		je.remark = 'Payment Received against : ' + job.name;
+		je.remark = 'Payment Received against : ' + job.name
 		je.posting_date = job.finish_date
 		total_amount = job.total_amount
 		je.branch = job.branch
@@ -510,8 +511,10 @@ def make_payment_entry(source_name, target_doc=None):
 	doc = get_mapped_doc("Job Cards", source_name, {
 			"Job Cards": {
 				"doctype": "Mechanical Payment",
+				"field_no_map": ["customer"],
 				"field_map": {
 					"outstanding_amount": "receivable_amount",
+					"customer": "supplier",
 				},
 				"postprocess": update_docs,
 				"validation": {"docstatus": ["=", 1], "job_cards": ["is", None]}

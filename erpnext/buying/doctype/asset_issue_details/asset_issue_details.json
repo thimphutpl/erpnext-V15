@@ -120,7 +120,6 @@
    "fieldname": "qty",
    "fieldtype": "Int",
    "label": "Issued Quantity",
-   "read_only": 1,
    "reqd": 1
   },
   {
@@ -265,8 +264,8 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-07-25 11:48:32.833815",
- "modified_by": "kalden.dorji@thimphutechpark.bt",
+ "modified": "2026-04-02 18:10:11.511649",
+ "modified_by": "Administrator",
  "module": "Buying",
  "name": "Asset Issue Details",
  "naming_rule": "Expression (old style)",

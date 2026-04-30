@@ -188,17 +188,16 @@
   {
    "fetch_from": "approver_employee.employee_name",
    "fieldname": "approver_name",
-   "fieldtype": "Link",
+   "fieldtype": "Data",
    "label": "Approver Name",
    "no_copy": 1,
-   "options": "Employee",
    "read_only": 1
   }
  ],
  "icon": "fa fa-file-text",
  "is_submittable": 1,
  "links": [],
- "modified": "2026-01-07 09:39:03.286962",
+ "modified": "2026-04-13 14:47:14.248909",
  "modified_by": "Administrator",
  "module": "eNote",
  "name": "eNote",
@@ -224,6 +223,5 @@
  "states": [],
  "title_field": "title",
  "track_changes": 1,
- "track_seen": 1,
- "track_views": 1
+ "track_seen": 1
 }

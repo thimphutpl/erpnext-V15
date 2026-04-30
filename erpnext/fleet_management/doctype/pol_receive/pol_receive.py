@@ -41,13 +41,13 @@ class POLReceive(StockController):
 		equipment_category: DF.Link | None
 		equipment_name: DF.Data | None
 		for_machineries: DF.Check
-		fuel_type: DF.Link | None
+		fuel_type: DF.Link
 		fuelbook: DF.Link
 		gst_account: DF.Link | None
 		gst_amount: DF.Currency
 		item_name: DF.Data | None
 		items: DF.Table[POLReceiveItem]
-		jv: DF.Data | None
+		jv: DF.Link | None
 		km_difference: DF.Float
 		mileage: DF.Float
 		od_amount: DF.Currency

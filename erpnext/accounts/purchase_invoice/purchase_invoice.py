@@ -325,6 +325,20 @@ class PurchaseInvoice(BuyingController):
 		self.cal_oustanding_amount()
 		self.cal_total_discount_for_each_item()
 		# self.ld_amount_net_total()
+		self.validate_cost_center()
+
+	def validate_cost_center(self):
+		cost_center = frappe.get_value("Branch",self.branch,'cost_center')
+		frappe.throw(str(cost_center))
+		if not cost_center:
+			frappe.throw("Set the Cost Center in the Branch")
+		if cost_center:
+			for i in self.items:
+				i.cost_center = cost_center
+
+			if self.taxes:
+				for i in self.taxes:
+					i.cost_center = cost_center
 	def ld_amount_net_total(self):
 		self.net_total= 0
 		for i in self.items:
@@ -834,6 +848,8 @@ class PurchaseInvoice(BuyingController):
 		validate_docs_for_deferred_accounting([], [self.name])
 
 	def on_submit(self):
+		# frappe.throw('hihihh')
+
 		# if self.discount_amount:
 		# 	frappe.throw("Under Maintenance")
 		super().on_submit()
@@ -1594,7 +1610,7 @@ class PurchaseInvoice(BuyingController):
 							# "party_type": tax.party_type if tax.party_type else None,
 							"party_type": "Supplier",
 							# "party": tax.party if tax.party else None,
-							"party": self.supplier_name,
+							"party": self.supplier,
 						},
 						account_currency,
 						item=tax,
@@ -1776,7 +1792,7 @@ class PurchaseInvoice(BuyingController):
 		discount_acc = None
 		if self.discount:
 			# discount_acc = get_account_currency(self.write_off_account)
-			discount_acc = frappe.db.get_value("Company",{"name":self.company},'discount_account')
+			discount_acc = frappe.db.get_value("Company",{"name":self.company},'default_discount_account')
 			if not discount_acc:
 				frappe.throw("Set Discount Account in the company {}".format(self.company))
 			# gl_entries.append(

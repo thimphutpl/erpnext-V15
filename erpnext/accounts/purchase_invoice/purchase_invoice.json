@@ -128,6 +128,7 @@
   "additional_discount_percentage",
   "discount_amount",
   "base_discount_amount",
+  "discount_or_cost_amount",
   "references_section",
   "material_request",
   "purchase_order",
@@ -1766,7 +1767,12 @@
    "fieldtype": "Check",
    "label": "For Project",
    "read_only": 1
-  }
+  },
+  {
+    "fieldname": "discount_or_cost_amount",
+    "fieldtype": "Data",
+    "label": "Discount Amount"
+   }
  ],
  "icon": "fa fa-file-text",
  "idx": 204,

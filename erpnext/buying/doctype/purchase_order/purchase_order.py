@@ -119,6 +119,7 @@ class PurchaseOrder(BuyingController):
 		per_billed: DF.Percent
 		per_received: DF.Percent
 		plc_conversion_rate: DF.Float
+		po_series: DF.Link | None
 		price_list_currency: DF.Link | None
 		pricing_rules: DF.Table[PricingRuleDetail]
 		project: DF.Link | None
@@ -130,7 +131,7 @@ class PurchaseOrder(BuyingController):
 		select_print_heading: DF.Link | None
 		set_from_warehouse: DF.Link | None
 		set_reserve_warehouse: DF.Link | None
-		set_warehouse: DF.Data | None
+		set_warehouse: DF.Link | None
 		shipping_address: DF.Link | None
 		shipping_address_display: DF.SmallText | None
 		status: DF.Literal["", "Draft", "On Hold", "To Receive and Bill", "To Bill", "To Receive", "Completed", "Cancelled", "Closed", "Delivered"]
@@ -140,6 +141,7 @@ class PurchaseOrder(BuyingController):
 		supplier_name: DF.Data | None
 		supplier_warehouse: DF.Link | None
 		tax: DF.Currency
+		tax_payment_jv: DF.Link | None
 		tax_withholding_category: DF.Link | None
 		tax_withholding_net_total: DF.Currency
 		taxes: DF.Table[PurchaseTaxesandCharges]
@@ -189,7 +191,7 @@ class PurchaseOrder(BuyingController):
 
 		# apply tax withholding only if checked and applicable
 		self.set_tax_withholding()
-		self.warehouse_from_branch()
+		# self.warehouse_from_branch()
 		self.validate_supplier()
 		self.validate_schedule_date()
 		validate_for_items(self)
@@ -213,6 +215,17 @@ class PurchaseOrder(BuyingController):
 			self.doctype, self.supplier, self.company, self.inter_company_order_reference
 		)
 		# self.reset_default_field_value("set_warehouse", "items", "warehouse")
+		# if flt(self.discount)>0:
+		# 	self.net_total = self.total - flt(self.discount)
+		self.calculate_total_add_ded()
+
+
+	def calculate_total_add_ded(self):
+		self.total_add_ded = flt(self.freight_and_insurance_charges) - flt(self.discount) + flt(self.tax) + flt(self.other_charges)
+		if self.total_add_ded:
+			self.net_total = self.total + self.total_add_ded
+			self.grand_total = self.net_total
+			# self.in_words = money_in_words(self.grand_total, self.currency)
 
 	def warehouse_from_branch(doc):
 		branchname=doc.branch

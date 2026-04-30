@@ -25,13 +25,13 @@ frappe.ui.form.on('Job Cards', {
 			}, __("View"));
 		}
 	
-		if (frm.doc.outstanding_amount > 0 && frm.doc.owned_by == "Others" && frappe.model.can_write("Journal Entry")) {
-			frm.add_custom_button("Receive Payment", function() {
+		if (frm.doc.outstanding_amount > 0 && frappe.model.can_write("Journal Entry")) {
+			frm.add_custom_button("Payment", function() {
 				frappe.model.open_mapped_doc({
 					method: "erpnext.fleet_management.doctype.job_cards.job_cards.make_payment_entry",
 					frm: cur_frm
 				})
-			}, __("Receive"));
+			}, __("Payment"));
 		}
 		else {
 			cur_frm.toggle_display("receive_payment", 0)

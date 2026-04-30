@@ -206,7 +206,8 @@ def get_data(
 		company_currency,
 		accumulated_values=filters.accumulated_values,
 	)
-	out = filter_out_zero_value_rows(out, parent_children_map)
+
+	out = filter_out_zero_value_rows(out, parent_children_map, filters.show_zero_values)
 
 	if out and total:
 		add_total_row(out, root_type, balance_must_be, period_list, company_currency)
@@ -320,8 +321,8 @@ def filter_out_zero_value_rows(data, parent_children_map, show_zero_values=False
 	data_with_value = []
 	for d in data:
 		if show_zero_values:
-			if d.get("closing_credit", 0) == 0 and d.get("closing_debit", 0) == 0:
-				data_with_value.append(d)
+			# if d.get("closing_credit", 0) == 0 and d.get("closing_debit", 0) == 0:
+			data_with_value.append(d)
 
 		elif d.get("has_value"):
 			data_with_value.append(d)
@@ -478,6 +479,7 @@ def set_gl_entries_by_account(
 		ignore_closing_entries,
 		ignore_opening_entries=ignore_opening_entries,
 	)
+	
 
 	if filters and filters.get("presentation_currency"):
 		convert_to_presentation_currency(gl_entries, get_currency(filters))
@@ -499,7 +501,8 @@ def get_accounting_entries(
 	ignore_closing_entries=None,
 	period_closing_voucher=None,
 	ignore_opening_entries=False,
-):
+):	
+	
 	gl_entry = frappe.qb.DocType(doctype)
 	query = (
 		frappe.qb.from_(gl_entry)
@@ -522,6 +525,8 @@ def get_accounting_entries(
 		query = query.select(gl_entry.posting_date, gl_entry.is_opening, gl_entry.fiscal_year)
 		query = query.where(gl_entry.is_cancelled == 0)
 		query = query.where(gl_entry.posting_date <= to_date)
+		if filters.business_activity:
+			query = query.where(gl_entry.business_activity==filters.business_activity)
 
 		if ignore_opening_entries and not ignore_is_opening:
 			query = query.where(gl_entry.is_opening == "No")
@@ -542,6 +547,8 @@ def get_accounting_entries(
 
 	if match_conditions:
 		query += "and" + match_conditions
+	
+	
 
 	return frappe.db.sql(query, params, as_dict=True)
 

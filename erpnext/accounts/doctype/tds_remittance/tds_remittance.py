@@ -43,6 +43,7 @@ class TDSRemittance(AccountsController):
 		region: DF.Data | None
 		remarks: DF.SmallText | None
 		tax_withholding_category: DF.Link
+		tds_account: DF.Link
 		to_date: DF.Date
 		total_amount: DF.Currency
 		total_tds: DF.Currency
@@ -72,7 +73,7 @@ class TDSRemittance(AccountsController):
 			return total_tds_amount, total_bill_amount
 		cond = self.get_condition()
 
-		entries = get_tds_invoices(self.tax_withholding_category,self.company, self.from_date, self.to_date, \
+		entries = get_tds_invoices(self.tax_withholding_category,self.tds_account,self.company, self.from_date, self.to_date, \
 			self.name, filter_existing=True, cond= cond, cost_center=self.cost_center)
 		
 		if not entries:
@@ -130,7 +131,8 @@ class TDSRemittance(AccountsController):
 			frappe.throw("Total TDS Amount is Zero.")
 
 
-def get_tds_invoices(tax_withholding_category,company, from_date, to_date, name, filter_existing = False, cond='', party_type = None, cost_center = None):
+def get_tds_invoices(tax_withholding_category,tds_account,company, from_date, to_date, name, filter_existing = False, cond='', party_type = None, cost_center = None):
+	
 	
 	accounts_cond = accounts_cond_ti = accounts_cond_eme = existing_cond = party_cond = cost_center_cond=je_cost_center_cond="" 
 
@@ -262,8 +264,40 @@ def get_tds_invoices(tax_withholding_category,company, from_date, to_date, name,
 	
 	if party_type:
 		party_cond = "and t1.party_type = '{}'".format(party_type)
-	# frappe.throw(str(accounts_cond))
-
+	
+	# frappe.throw(
+	# 	"""select t.posting_date, t.name as invoice_no, 'Journal Entry' as invoice_type,
+	# 	t1.party_type, t1.party, 
+	# 	(case when t1.party_type = 'Customer' then c.tax_id 
+	# 		when t1.party_type = 'Supplier' then s.supplier_tpn_no else null end) as tpn, 
+	# 	t1.cost_center,
+	# 	(case when t1.tax_amount > 0 and t1.debit > 0 and ifnull(t1.apply_tds) = 1 
+	# 			then t1.taxable_amount 
+	# 		else 0 end) as bill_amount, 
+	# 	(case when t1.tax_amount > 0 and t1.debit > 0 and ifnull(t1.apply_tds) = 1 
+	# 			then t1.tax_amount
+	# 		when t1.tax_amount = 0 and t1.credit > 0 then t1.credit
+	# 		else t1.debit end) as tds_amount,
+	# 	(case when t1.tax_amount > 0 and t1.debit > 0 and ifnull(t1.apply_tds) = 1 
+	# 			then t1.tax_account
+	# 		else t1.account end) as tax_account, tre.tds_remittance, tre.tds_receipt_update, t.bill_no, t.bill_date,
+	# 	(case when tre.tds_receipt_update is not null then 'Paid' else 'Unpaid' end) remittance_status
+	# 	from `tabJournal Entry` as t
+	# 		inner join `tabJournal Entry Account` t1 on t.name = t1.parent
+	# 		left join `tabCustomer` c on t1.party_type = 'Customer' and c.name = t1.party
+	# 		left join `tabSupplier` s on t1.party_type = 'Supplier' and s.name = t1.party
+	# 		left join `tabTDS Receipt Entry` tre on tre.invoice_no = t.name 
+	# 	where t.posting_date between '{from_date}' and '{to_date}'
+	# 	{accounts_cond}
+	# 	and t.docstatus = 1 and ((t.apply_tds = 1 and t.tax_withholding_category = "{tax_withholding_category}") or
+	# 	t1.account='{tds_account}')
+		
+	# 	{je_cost_center_cond}
+	# 	{existing_cond}
+	# 	{party_cond}
+	# 	{cond}""".format(accounts_cond = accounts_cond, je_cost_center_cond=je_cost_center_cond,cond = cond, existing_cond = existing_cond,\
+	# 		party_cond = party_cond, from_date=from_date, to_date=to_date, cost_center=cost_center,tax_withholding_category=tax_withholding_category,tds_account=tds_account))
+	# frappe.throw(str(cond))
 	je_entries = frappe.db.sql("""select t.posting_date, t.name as invoice_no, 'Journal Entry' as invoice_type,
 		t1.party_type, t1.party, 
 		(case when t1.party_type = 'Customer' then c.tax_id 
@@ -275,7 +309,7 @@ def get_tds_invoices(tax_withholding_category,company, from_date, to_date, name,
 		(case when t1.tax_amount > 0 and t1.debit > 0 and ifnull(t1.apply_tds) = 1 
 				then t1.tax_amount
 			when t1.tax_amount = 0 and t1.credit > 0 then t1.credit
-			else 0 end) as tds_amount,
+			else 0  end) as tds_amount,
 		(case when t1.tax_amount > 0 and t1.debit > 0 and ifnull(t1.apply_tds) = 1 
 				then t1.tax_account
 			else t1.account end) as tax_account, tre.tds_remittance, tre.tds_receipt_update, t.bill_no, t.bill_date,
@@ -287,12 +321,15 @@ def get_tds_invoices(tax_withholding_category,company, from_date, to_date, name,
 			left join `tabTDS Receipt Entry` tre on tre.invoice_no = t.name 
 		where t.posting_date between '{from_date}' and '{to_date}'
 		{accounts_cond}
-		and t.docstatus = 1 and t.apply_tds = 1 and t.tax_withholding_category = "{tax_withholding_category}"
+		and t.docstatus = 1 and ((t.apply_tds = 1 and t.tax_withholding_category = "{tax_withholding_category}") or
+		t1.account='{tds_account}')
+		
 		{je_cost_center_cond}
 		{existing_cond}
 		{party_cond}
-		{cond}""".format(accounts_cond = accounts_cond, je_cost_center_cond=je_cost_center_cond,cond = cond, existing_cond = existing_cond,\
-			party_cond = party_cond, from_date=from_date, to_date=to_date, cost_center=cost_center,tax_withholding_category=tax_withholding_category), as_dict=True)
+		""".format(accounts_cond = accounts_cond, je_cost_center_cond=je_cost_center_cond, existing_cond = existing_cond,\
+			party_cond = party_cond, from_date=from_date, to_date=to_date, cost_center=cost_center,tax_withholding_category=tax_withholding_category,tds_account=tds_account), as_dict=True)
+	
 
 	for i in je_entries:
 		#frappe.throw(str(i.party))

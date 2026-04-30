@@ -38,7 +38,6 @@ frappe.query_reports["Equipment Performance Report"] = {
                         "fieldtype": "Check",
                         "default": 1
                 },
-
 		{	
                         "fieldname": "include_disabled",
                         "label": ("Include Disbaled Equipments"),

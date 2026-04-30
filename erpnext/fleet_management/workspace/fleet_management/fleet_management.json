@@ -374,37 +374,6 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Maintenance Reports",
-   "link_count": 2,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Job Card Imprest Report",
-   "link_count": 0,
-   "link_to": "Job Card Imprest Report",
-   "link_type": "Report",
-   "onboard": 0,
-   "report_ref_doctype": "Job Cards",
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Workshop Progress Report",
-   "link_count": 0,
-   "link_to": "Workshop Progress Report",
-   "link_type": "Report",
-   "onboard": 0,
-   "report_ref_doctype": "Job Cards",
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
    "label": "Maintenance Transaction",
    "link_count": 3,
    "link_type": "DocType",
@@ -439,57 +408,6 @@
    "link_to": "Mechanical Payment",
    "link_type": "DocType",
    "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "POL Reports",
-   "link_count": 4,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "POL Receive Report",
-   "link_count": 0,
-   "link_to": "POL Receive Report",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "POL Issue Report",
-   "link_count": 0,
-   "link_to": "POL Issue Report",
-   "link_type": "Report",
-   "onboard": 0,
-   "report_ref_doctype": "POL Issue",
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "POL Balance Report",
-   "link_count": 0,
-   "link_to": "POL Balance Report",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "POL Ledger",
-   "link_count": 0,
-   "link_to": "POL Ledger",
-   "link_type": "Report",
-   "onboard": 0,
-   "report_ref_doctype": "POL Entry",
    "type": "Link"
   },
   {
@@ -554,35 +472,6 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Settings and Tools",
-   "link_count": 2,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Hire Charge Parameter",
-   "link_count": 0,
-   "link_to": "Hire Charge Parameter",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "HSD Adjustment",
-   "link_count": 0,
-   "link_to": "HSD Adjustment",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
    "label": "POL Transaction",
    "link_count": 2,
    "link_type": "DocType",
@@ -607,48 +496,6 @@
    "link_to": "POL Receive",
    "link_type": "DocType",
    "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Fleet Report",
-   "link_count": 3,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Equipment Performance Report",
-   "link_count": 0,
-   "link_to": "Equipment Performance Report",
-   "link_type": "Report",
-   "onboard": 0,
-   "report_ref_doctype": "Equipment",
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Equipment Expense Report",
-   "link_count": 0,
-   "link_to": "Equipment Expense Report",
-   "link_type": "Report",
-   "onboard": 0,
-   "report_ref_doctype": "Equipment",
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Equipment Hire Report",
-   "link_count": 0,
-   "link_to": "Equipment Hire Report",
-   "link_type": "Report",
-   "onboard": 0,
-   "report_ref_doctype": "Hire Charge Invoice",
    "type": "Link"
   },
   {
@@ -713,9 +560,155 @@
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Settings and Tools",
+   "link_count": 2,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Hire Charge Parameter",
+   "link_count": 0,
+   "link_to": "Hire Charge Parameter",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "HSD Adjustment",
+   "link_count": 0,
+   "link_to": "HSD Adjustment",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "POL Reports",
+   "link_count": 4,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "POL Receive Report",
+   "link_count": 0,
+   "link_to": "POL Receive Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "POL Issue Report",
+   "link_count": 0,
+   "link_to": "POL Issue Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "POL Balance Report",
+   "link_count": 0,
+   "link_to": "POL Balance Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "POL Ledger",
+   "link_count": 0,
+   "link_to": "POL Ledger",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Maintenance Reports",
+   "link_count": 2,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Job Card Imprest Report",
+   "link_count": 0,
+   "link_to": "Job Card Imprest Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Workshop Progress Report",
+   "link_count": 0,
+   "link_to": "Workshop Progress Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Fleet Report",
+   "link_count": 3,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Equipment Performance Report",
+   "link_count": 0,
+   "link_to": "Equipment Performance Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Equipment Expense Report",
+   "link_count": 0,
+   "link_to": "Equipment Expense Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Equipment Hire Report",
+   "link_count": 0,
+   "link_to": "Equipment Hire Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2025-09-22 12:13:19.060830",
+ "modified": "2026-03-20 12:45:17.939340",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Fleet Management",

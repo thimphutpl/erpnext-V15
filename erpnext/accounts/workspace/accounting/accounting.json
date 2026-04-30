@@ -390,56 +390,6 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Reports",
-   "link_count": 4,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "General ledger",
-   "link_count": 0,
-   "link_to": "General Ledger",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "TDS Register",
-   "link_count": 0,
-   "link_to": "TDS Register",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Accounts Payable",
-   "link_count": 0,
-   "link_to": "Accounts Payable",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Accounts Receivable",
-   "link_count": 0,
-   "link_to": "Accounts Receivable",
-   "link_type": "Report",
-   "onboard": 0,
-   "report_ref_doctype": "Sales Invoice",
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
    "label": "DHI Consolidation Reports ",
    "link_count": 4,
    "link_type": "DocType",
@@ -485,9 +435,88 @@
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Reports",
+   "link_count": 7,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "General ledger",
+   "link_count": 0,
+   "link_to": "General Ledger",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "TDS Register",
+   "link_count": 0,
+   "link_to": "TDS Register",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Accounts Payable",
+   "link_count": 0,
+   "link_to": "Accounts Payable",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Accounts Receivable",
+   "link_count": 0,
+   "link_to": "Accounts Receivable",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Party Wise Ledger",
+   "link_count": 0,
+   "link_to": "Party Wise Ledger",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "TDS Certificate",
+   "link_count": 0,
+   "link_to": "TDS Certificate",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Employee TDS Certificate",
+   "link_count": 0,
+   "link_to": "Employee TDS Certificate",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2025-09-25 11:15:34.934098",
+ "modified": "2026-02-03 16:35:13.603576",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Accounting",

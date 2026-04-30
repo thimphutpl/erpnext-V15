@@ -105,10 +105,13 @@ class CustomerOrder(Document):
 		yearly_quantity_limit_count: DF.Int
 	# end: auto-generated types
 	def validate(self):
+		# frappe.throw("Cannot Order Today as BOB Bank is Down")
+		for i in self.pool_vehicles:
+			frappe.log_error(i.vehicle_capacity)
 		if self.product_category in ("Sand", "Boulders and Aggregates"):
-    		self.sales_order_series = "Mineral Products"
+			self.sales_order_series = "Mineral Products"
 		else:
-    		self.sales_order_series = "Timber Products"
+			self.sales_order_series = "Timber Products"
 
 		
 		self.check_for_duplicates()
@@ -336,9 +339,9 @@ class CustomerOrder(Document):
 					balance = flt(limits.monthly_quantity_limit_count,2)-flt(limits.monthly_ordered_quantity_count,2)
 					self.monthly_quantity_limit_count 	= flt(limits.monthly_quantity_limit_count,2)
 					self.monthly_available_quantity_count   = flt(balance,2)
-					if flt(balance,2) < flt(self.noof_truck_load,2):
-						frappe.throw(_("You have crossed your monthly quota by {0} truck load(s)")\
-							.format(flt(self.noof_truck_load,2)-flt(balance,2)),title="Insufficient Balance")
+					# if flt(balance,2) < flt(self.noof_truck_load,2):
+					# 	frappe.throw(_("You have crossed your monthly quota by {0} truck load(s)")\
+					# 		.format(flt(self.noof_truck_load,2)-flt(balance,2)),title="Insufficient Balance")
 				if flt(limits.yearly_quantity_limit_count,2):
 					balance = flt(limits.yearly_quantity_limit_count,2)-flt(limits.yearly_ordered_quantity_count,2)
 					self.yearly_quantity_limit_count 	= flt(limits.yearly_quantity_limit_count,2)

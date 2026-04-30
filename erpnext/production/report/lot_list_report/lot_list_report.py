@@ -25,11 +25,34 @@ def get_data(filters):
 		select * from 
 		(
 			select 
-				case when ll.sales_order != 'NULL' then 'Sold' when ll.production != 'NULL' then 'Taken For Sawing' when ll.stock_entry != 'NULL' then 'Stock Transfered' else 'Unsold' end as status, 
+				CASE
+					WHEN IFNULL(SUM(td.quantity),0) >= ll.total_volume 
+						AND MAX(td.transaction_type) = 'Sales Order'
+						THEN 'Sold'
+					WHEN IFNULL(SUM(td.quantity),0) > 0 
+						AND MAX(td.transaction_type) = 'Sales Order'
+						THEN 'Partially Sold'
+
+					WHEN IFNULL(SUM(td.quantity),0) >= ll.total_volume 
+						AND MAX(td.transaction_type) = 'Stock Entry'
+						THEN 'Stock Transferred'
+
+					WHEN IFNULL(SUM(td.quantity),0) > 0 
+						AND MAX(td.transaction_type) = 'Stock Entry'
+						THEN 'Stock Partially Transferred'
+
+					ELSE 'Unsold'
+				END AS status,
 				lld.timber_class as timber_class , ll.posting_date as posting_date, lld.item as item_code, lld.item_name, lld.item_sub_group as type, 
 				lld.total_volume as volume, lld.total_pieces as pieces, ll.lot_no, monthname(ll.posting_date) as month,ll.branch,ll.warehouse 
-			from `tabLot List` ll , `tabLot List Details` lld 
-			where ll.name = lld.parent and ll.docstatus=1
+			from `tabLot List` ll 
+			LEFT JOIN `tabLot List Details` lld
+			ON ll.name = lld.parent 
+			LEFT JOIN `tabLot List Transaction Details` td
+    		ON td.parent = ll.name
+			where ll.docstatus=1
+			GROUP BY
+        		ll.name
 		) as data 
 		where 
 			posting_date >= '{0}' and posting_date <= '{1}'
@@ -51,7 +74,7 @@ def get_data(filters):
 		query+=" and type in (select distinct i.item_sub_group from `tabItem` i where i.item_group = \'"+filters.item_group+"\')"
 
 	if filters.item_code:
-		query+=" and item = \'"+filters.item_code+"\'"
+		query+=" and item_code = \'"+filters.item_code+"\'"
 	
 	if filters.status:
 		query+=" and status = \'"+filters.status+"\'"
@@ -136,3 +159,25 @@ def get_columns():
 	]
 	
 	return columns
+
+@frappe.whitelist()
+@frappe.validate_and_sanitize_search_inputs
+def get_warehouse_query(doctype, txt, searchfield, start, page_len, filters):
+
+	return frappe.db.sql("""
+		SELECT DISTINCT w.name
+		FROM `tabWarehouse` w
+		INNER JOIN `tabWarehouse Branch` wb
+			ON wb.parent = w.name
+		WHERE
+			w.disabled = 0
+			AND wb.branch = %(branch)s
+			AND w.name LIKE %(txt)s
+		ORDER BY w.name
+		LIMIT %(start)s, %(page_len)s
+	""", {
+		"branch": filters.get("branch"),
+		"txt": f"%{txt}%",
+		"start": start,
+		"page_len": page_len
+	})

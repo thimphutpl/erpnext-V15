@@ -2455,6 +2455,7 @@ def get_child_cost_centers(current_cs=None):
 	allchilds = [str('DUMMY') ]
 	allcs = []
 	cs_name = cs_par_name = ""
+	current = ""
 
 	if current_cs:
 	  #Get all cost centers

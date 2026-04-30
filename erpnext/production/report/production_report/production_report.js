@@ -126,7 +126,7 @@ frappe.query_reports["Production Report"] = {
 			"fieldtype": "Link",
 			"options": "Location",
 			"get_query": function() {
-				var branch = frappe.query_report.filters_by_name.branch.get_value();
+				var branch = frappe.query_report.get_filter_value("branch");
 				branch = branch.replace(' - NRDCL','');
 				return {
 					filters: {
@@ -137,8 +137,8 @@ frappe.query_reports["Production Report"] = {
 				// return {"doctype": "Location", "filters": {"branch": branch, "is_disabled": 0}}
 			},
 			"on_change": function(){
-				var location = frappe.query_report.get_filter_value("location");
-				var from_date = frappe.query_report.get_filter_value("from_date");
+				var location = frappe.query_report.get_filter_value("location")
+				var from_date = frappe.query_report.get_filter_value("from_date")
 				var to_date = frappe.query_report.get_filter_value("to_date")
 				if(location)
 				{

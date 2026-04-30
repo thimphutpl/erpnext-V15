@@ -9,8 +9,8 @@ from frappe.utils import flt, getdate, formatdate, cstr
 from erpnext.fleet_management.report.hsd_consumption_report.fleet_management_report import get_pol_till, get_pol_consumed_till
 
 def execute(filters=None):
-	columns = get_columns(filters);
-	data = get_data(filters);
+	columns = get_columns(filters)
+	data = get_data(filters)
 
 	return columns, data
 

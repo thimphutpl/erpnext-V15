@@ -402,12 +402,15 @@ class HireChargeInvoice(AccountsController):
 							"against": self.ehf_name,
 							"party_type": "Customer",
 							"party": self.customer,
+							"debit": self.outstanding_amount,
+							"debit_in_account_currency": self.outstanding_amount,
 							# for item in items:
-							"credit": self.outstanding_amount,
-							"credit_in_account_currency": self.outstanding_amount,
+							# "credit": self.outstanding_amount,
+							# "credit_in_account_currency": self.outstanding_amount,
 							"cost_center": self.cost_center
 					}, self.currency)
 		)
+		
 		if self.advance_amount: 
 			gl_entries.append(
 				self.get_gl_dict({
@@ -417,11 +420,14 @@ class HireChargeInvoice(AccountsController):
 							"party_type": "Customer",
 							"party": self.customer,
 							# for item in items:
-							"credit": self.advance_amount,
-							"credit_in_account_currency": self.advance_amount,
+							# "credit": self.advance_amount,
+							# "credit_in_account_currency": self.advance_amount,
+							"debit": self.advance_amount,
+							"debit_in_account_currency": self.advance_amount,
 							"cost_center": self.cost_center
 					}, self.currency)
 		)
+		
 		# for item in self.get("items"):
 		# 	if item.operator_salary:
 		# 		gl_entries.append(
@@ -444,8 +450,10 @@ class HireChargeInvoice(AccountsController):
 					"against": self.customer,
 					# "party_type": "supplier",
 					# "party": self.supplier,
-					"debit": self.total_invoice_amount,
-					"debit_in_account_currency": self.total_invoice_amount,
+					# "debit": self.total_invoice_amount,
+					# "debit_in_account_currency": self.total_invoice_amount,
+					"credit": self.total_invoice_amount,
+					"credit_in_account_currency": self.total_invoice_amount,
 					"cost_center": self.cost_center
 				}, self.currency)
 			)
@@ -490,7 +498,9 @@ class HireChargeInvoice(AccountsController):
 			# 				"cost_center": self.cost_center
 			# 		}, self.currency)
 			# 	)
-			# frappe.msgprint(format(gl_entries))
+
+			# frappe.throw()
+			
 			make_gl_entries(gl_entries, cancel=(self.docstatus == 2),update_outstanding="No", merge_entries=False)
 
 	def refund_of_excess_advance(self):

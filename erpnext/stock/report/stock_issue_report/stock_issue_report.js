@@ -42,7 +42,7 @@ frappe.query_reports["Stock Issue Report"] = {
 				if(cost_center)
 				{
 					frappe.call({
-						method:"erpnext.stock.report.stock_balance_report.stock_balance_report.get_warehouse",
+						method:"erpnext.stock.report.stock_issue_report.stock_issue_report.get_warehouse",
 						args:{"cost_center":cost_center, "from_date":from_date, "to_date": to_date},
 						callback: function(r){
 							if(r.message)
@@ -99,7 +99,7 @@ frappe.query_reports["Stock Issue Report"] = {
 			"on_change": function(){
 				var branch = frappe.query_report.get_filter_value("branch");
 				frappe.call({
-					method:"erpnext.stock.report.stock_balance_report.stock_balance_report.get_warehouse",
+					method:"erpnext.stock.report.stock_issue_report.stock_issue_report.get_warehouse",
 					args:{"branch":branch, "from_date":from_date, "to_date": to_date},
 					callback: function(r){
 						if(r.message)

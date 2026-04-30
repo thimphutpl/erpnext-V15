@@ -610,8 +610,7 @@
    "fieldname": "dzongkhag",
    "fieldtype": "Link",
    "label": "Dzongkhag",
-   "options": "Dzongkhag",
-   "reqd": 1
+   "options": "Dzongkhag"
   },
   {
    "fieldname": "bank_details_tab",
@@ -657,7 +656,7 @@
    "link_fieldname": "party"
   }
  ],
- "modified": "2025-11-04 11:12:46.239369",
+ "modified": "2026-01-29 15:33:35.951105",
  "modified_by": "Administrator",
  "module": "Selling",
  "name": "Customer",

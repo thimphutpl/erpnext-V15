@@ -27,8 +27,10 @@ class EquipmentHiringForm(AccountsController):
 		advance_amount: DF.Currency
 		advance_journal: DF.Link | None
 		amended_from: DF.Link | None
+		apply_gst: DF.Check
 		approved_items: DF.Table[HiringApprovalDetails]
 		branch: DF.Link
+		charges_type: DF.Literal["", "Hire Charge Receivable", "Hire Charge Payable"]
 		contact_number: DF.Data | None
 		cost_center: DF.Link
 		customer: DF.Link | None
@@ -36,6 +38,8 @@ class EquipmentHiringForm(AccountsController):
 		customer_cost_center: DF.ReadOnly | None
 		end_date: DF.Date | None
 		er_reference: DF.Link | None
+		gst_account: DF.Link | None
+		gst_amount: DF.Currency
 		hiring_status: DF.Check
 		location: DF.Link | None
 		payment_completed: DF.Check
@@ -211,22 +215,30 @@ class EquipmentHiringForm(AccountsController):
 			je.branch = self.branch
 
 			je.append("accounts", {
-					"account": advance_account,
-					"party_type": "Customer",
-					"party": self.customer,
-					"reference_type": "Equipment Hiring Form",
-					"reference_name": self.name,
-					"cost_center": self.cost_center,
-					"credit_in_account_currency": flt(self.advance_amount),
-					"credit": flt(self.advance_amount),
-					"is_advance": 'Yes'
-				})
+				"account": advance_account,
+				"party_type": "Customer",
+				"party": self.customer,
+				"reference_type": "Equipment Hiring Form",
+				"reference_name": self.name,
+				"cost_center": self.cost_center,
+				"credit_in_account_currency": flt(self.advance_amount) if self.apply_gst == 1 and self.charges_type == "Hire Charge Payable" else flt(self.total_hiring_amount),
+				"credit": flt(self.advance_amount) if self.apply_gst == 1 and self.charges_type == "Hire Charge Payable" else flt(self.total_hiring_amount),
+				"is_advance": 'Yes'
+			})
 
 			je.append("accounts", {
-					"account": revenue_bank,
+				"account": revenue_bank,
+				"cost_center": self.cost_center,
+				"debit_in_account_currency": flt(self.advance_amount) if self.apply_gst == 1 and self.charges_type == "Hire Charge Receivable" else flt(self.total_hiring_amount),
+				"debit": flt(self.advance_amount) if self.apply_gst == 1  and self.charges_type == "Hire Charge Receivable" else flt(self.total_hiring_amount),
+			})
+			if self.apply_gst == 1:
+				dr_or_cr = "debit" if self.charges_type == "Hire Charge Payable" else "credit"
+				je.append("accounts", {
+					"account": self.gst_account,
 					"cost_center": self.cost_center,
-					"debit_in_account_currency": flt(self.advance_amount),
-					"debit": flt(self.advance_amount),
+					dr_or_cr + "_in_account_currency": flt(self.gst_amount),
+					dr_or_cr: flt(self.gst_amount),
 				})
 			je.insert()
 			self.db_set("advance_journal", je.name)	
@@ -254,34 +266,33 @@ def fetch_fuel_rate(hourly):
 
 # def get_hire_rates(customer ="T-Customer" , equipment="EQUIP2400000", from_date= "18/11/2024"):
 @frappe.whitelist()
-def get_hire_rates(equipment, from_date, hourly):
-		if not equipment:
-				frappe.throw("Equipment Details are mandatory")
+def get_hire_rates(equipment_model, equipment_type, from_date, hourly):
+		if not equipment_type or not equipment_model:
+			frappe.throw("Equipment Details(Model/Type) are mandatory")
 		
 		hourly_name = fetch_fuel_rate(hourly)
-		e = frappe.get_doc("Equipment", equipment)
 		data = frappe.db.sql('''
-							 select {hourly_name} as rate from `tabHire Charge Parameter` where equipment ='{equipment}';
-							 '''.format(hourly_name=hourly_name,equipment=e.name),as_dict=True)
+							 select {hourly_name} as rate from `tabHire Charge Parameter` where equipment_model ='{equipment_model}' and equipment_type ='{equipment_type}';
+							 '''.format(hourly_name=hourly_name,equipment_model=equipment_model, equipment_type=equipment_type),as_dict=True)
 		if not data:
-			frappe.throw(_("No Hire Rates has been assigned for equipment type {0} and model {1}").format(e.equipment_type, e.equipment_model), title="No Data Found!")
+			frappe.throw(_("No Hire Rates has been assigned for equipment type {0} and model {1}").format(equipment_type, equipment_model), title="No Data Found!")
 		return data	
 
 @frappe.whitelist()
-def get_idle_rates(equipment, from_date, idle_rate_type):
-		if not equipment:
-				frappe.throw("Equipment Details are mandatory")
-		e = frappe.get_doc("Equipment", equipment)
+def get_idle_rates(equipment_model, equipment_type, from_date, idle_rate_type):
+		if not equipment_type or not equipment_model:
+			frappe.throw("Equipment Details(Model/Type) are mandatory")
+		# e = frappe.get_doc("Equipment", equipment)
 		idle_type = ""
 		if idle_rate_type == "Internal":
 			idle_type = "idle_internal"
 		else:
 			idle_type = "idle_external"
 		data = frappe.db.sql('''
-							 select {idle_rate_type} as idle_rate from `tabHire Charge Parameter` where equipment ='{equipment}';
-							 '''.format(idle_rate_type=idle_type ,equipment=e.name),as_dict=True)
+							 select {idle_rate_type} as idle_rate from `tabHire Charge Parameter` where equipment_model ='{equipment_model}' and equipment_type ='{equipment_type}';
+							 '''.format(idle_rate_type=idle_type ,equipment_model=equipment_model, equipment_type=equipment_type),as_dict=True)
 		if not data:
-			frappe.throw(_("No Idle Rates has been assigned for equipment type {0} and model {1}").format(e.equipment_type, e.equipment_model), title="No Data Found!")
+			frappe.throw(_("No Idle Rates has been assigned for equipment type {0} and model {1}").format(equipment_type, equipment_model), title="No Data Found!")
 		return data		
 
 @frappe.whitelist()
@@ -371,72 +382,72 @@ def update_status(name):
 
 @frappe.whitelist()
 def equipment_query(doctype, txt, searchfield, start, page_len, filters):
-		# Shiv, 20/12/2017
-		# Following code temporarily replaced by the subsequent as per Payma's request for doing backlog entries, 20/12/2017
-		# Needs to be set back later
-		'''
-	return frappe.db.sql("""
-						select
-								e.name,
-								e.equipment_type,
-								e.equipment_name
-						from `tabEquipment` e
-						where e.equipment_type = %s
-						and e.branch = %s
-						and e.is_disabled != 1
-						and e.not_cdcl = 0
-						and not exists (select 1
-										from `tabEquipment Reservation Entry` a
-										where (
-												a.from_date != a.to_date
-												and
-												(a.from_date between %s and %s or a.to_date between %s and %s)
-												)
-										and a.equipment = e.name)
-						""", (filters['equipment_type'], filters['branch'], filters['from_date'], filters['to_date'], filters['from_date'], filters['to_date']))
-		'''
+	# 	# Shiv, 20/12/2017
+	# 	# Following code temporarily replaced by the subsequent as per Payma's request for doing backlog entries, 20/12/2017
+	# 	# Needs to be set back later
+	# 	'''
+	# return frappe.db.sql("""
+	# 					select
+	# 							e.name,
+	# 							e.equipment_type,
+	# 							e.equipment_name
+	# 					from `tabEquipment` e
+	# 					where e.equipment_type = %s
+	# 					and e.branch = %s
+	# 					and e.is_disabled != 1
+	# 					and e.not_cdcl = 0
+	# 					and not exists (select 1
+	# 									from `tabEquipment Reservation Entry` a
+	# 									where (
+	# 											a.from_date != a.to_date
+	# 											and
+	# 											(a.from_date between %s and %s or a.to_date between %s and %s)
+	# 											)
+	# 									and a.equipment = e.name)
+	# 					""", (filters['equipment_type'], filters['branch'], filters['from_date'], filters['to_date'], filters['from_date'], filters['to_date']))
+	# 	'''
 		
-		# return frappe.db.sql("""
-		# 				select
-		# 						e.name,
-		# 						e.equipment_type,
-		# 						e.equipment_name
-		# 				from `tabEquipment` e
-		# 				where e.equipment_type = %(equipment_type)s
-		# 				and e.branch = %(branch)s
-		# 				and e.is_disabled != 1
-		# 				and (
-		# 						{key} like %(txt)s
-		# 						or
-		# 						equipment_type like %(txt)s
-		# 						or
-		# 						equipment_name like %(txt)s
-		# 				)
-		# 				{mcond}
-		# 				order by
-		# 						if(locate(%(_txt)s, name), locate(%(_txt)s, name), 99999),
-		# 						if(locate(%(_txt)s, equipment_type), locate(%(_txt)s, equipment_type), 99999),
-		# 						if(locate(%(_txt)s, equipment_name), locate(%(_txt)s, equipment_name), 99999),
-		# 						idx desc,
-		# 						name, equipment_type, equipment_name
-		# 				limit %(start)s, %(page_len)s
-		# 				""".format(**{
-		# 						'key': searchfield,
-		# 						'mcond': get_match_cond(doctype)
-		# 				}),
-		# 				{
-		# 		"txt": "%%%s%%" % txt,
-		# 		"_txt": txt.replace("%", ""),
-		# 		"start": start,
-		# 		"page_len": page_len,
-		# 						"equipment_type": filters['equipment_type'],
-		# 						"branch": filters['branch']
-		# 	})
+	# 	# return frappe.db.sql("""
+	# 	# 				select
+	# 	# 						e.name,
+	# 	# 						e.equipment_type,
+	# 	# 						e.equipment_name
+	# 	# 				from `tabEquipment` e
+	# 	# 				where e.equipment_type = %(equipment_type)s
+	# 	# 				and e.branch = %(branch)s
+	# 	# 				and e.is_disabled != 1
+	# 	# 				and (
+	# 	# 						{key} like %(txt)s
+	# 	# 						or
+	# 	# 						equipment_type like %(txt)s
+	# 	# 						or
+	# 	# 						equipment_name like %(txt)s
+	# 	# 				)
+	# 	# 				{mcond}
+	# 	# 				order by
+	# 	# 						if(locate(%(_txt)s, name), locate(%(_txt)s, name), 99999),
+	# 	# 						if(locate(%(_txt)s, equipment_type), locate(%(_txt)s, equipment_type), 99999),
+	# 	# 						if(locate(%(_txt)s, equipment_name), locate(%(_txt)s, equipment_name), 99999),
+	# 	# 						idx desc,
+	# 	# 						name, equipment_type, equipment_name
+	# 	# 				limit %(start)s, %(page_len)s
+	# 	# 				""".format(**{
+	# 	# 						'key': searchfield,
+	# 	# 						'mcond': get_match_cond(doctype)
+	# 	# 				}),
+	# 	# 				{
+	# 	# 		"txt": "%%%s%%" % txt,
+	# 	# 		"_txt": txt.replace("%", ""),
+	# 	# 		"start": start,
+	# 	# 		"page_len": page_len,
+	# 	# 						"equipment_type": filters['equipment_type'],
+	# 	# 						"branch": filters['branch']
+	# 	# 	})
 		return frappe.db.sql("""
 						select
 								e.name,
 								e.equipment_type,
-								e.registration_number
+								e.equipment_name
 						from `tabEquipment` e
 						where e.equipment_type = %(equipment_type)s
 						and e.is_disabled != 1
@@ -446,15 +457,15 @@ def equipment_query(doctype, txt, searchfield, start, page_len, filters):
 								or
 								equipment_type like %(txt)s
 								or
-								registration_number like %(txt)s
+								equipment_name like %(txt)s
 						)
 						{mcond}
 						order by
 								if(locate(%(_txt)s, name), locate(%(_txt)s, name), 99999),
 								if(locate(%(_txt)s, equipment_type), locate(%(_txt)s, equipment_type), 99999),
-								if(locate(%(_txt)s, registration_number), locate(%(_txt)s, registration_number), 99999),
+								if(locate(%(_txt)s, equipment_name), locate(%(_txt)s, equipment_name), 99999),
 								idx desc,
-								name, equipment_type, registration_number
+								name, equipment_type, equipment_name
 						limit %(start)s, %(page_len)s
 						""".format(**{
 								'key': searchfield,
@@ -465,7 +476,7 @@ def equipment_query(doctype, txt, searchfield, start, page_len, filters):
 				"_txt": txt.replace("%", ""),
 				"start": start,
 				"page_len": page_len,
-								"equipment_type": filters['equipment_type']
+				"equipment_type": filters['equipment_type']
 			})
 
 @frappe.whitelist()        

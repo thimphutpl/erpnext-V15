@@ -293,6 +293,7 @@ has_permission = {
 permission_query_conditions = {
     # "Employee": "erpnext.setup.doctype.employee.employee.get_permission_query_conditions",
 	"Leave Encashment Request":"hrms.hr.doctype.leave_encashment_request.leave_encashment_request.get_permission_query_conditions",
+	"eNote": "erpnext.enote.doctype.enote.enote.get_permission_query_conditions"
 }
 has_website_permission = {
 	"Sales Order": "erpnext.controllers.website_list_for_contact.has_website_permission",

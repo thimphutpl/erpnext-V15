@@ -218,11 +218,11 @@ def get_equipment_by_parent_cost_center(doctype, txt, searchfield, start, page_l
 
 	# Return format REQUIRED for link field
 	return frappe.db.sql("""
-		SELECT name
+		SELECT name, equipment_name, equipment_type, branch
 		FROM `tabEquipment`
 		WHERE branch IN %(branches)s
 		AND disabled = 0
-		AND name LIKE %(txt)s
+		AND (name LIKE %(txt)s OR equipment_name LIKE %(txt)s OR equipment_type LIKE %(txt)s OR branch LIKE %(txt)s)
 		LIMIT %(start)s, %(page_len)s
 	""", {
 		"branches": tuple(branches),

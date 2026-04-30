@@ -24,7 +24,7 @@ def get_columns():
 	]
 
 def get_data(filters):
-	query =  "select jc.name, jc.posting_date,jci.job, jci.job_name, jci.amount from `tabJob Cards` as jc,`tabJob Cards Item` as jci  where jci.parent = jc.name and jc.docstatus = 1 and jci.imprest= 1"
+	query =  "select jc.name, jc.posting_date, jci.job, jci.job_name, jci.amount from `tabJob Cards` as jc,`tabJob Cards Item` as jci where jci.parent = jc.name and jc.docstatus = 1"
 	if filters.get("cost_center"):
 		query += " and jc.cost_center = \'" + str(filters.cost_center) + "\'"
 	if filters.get("from_date") and filters.get("to_date"):

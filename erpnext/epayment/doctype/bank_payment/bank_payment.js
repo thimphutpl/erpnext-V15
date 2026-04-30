@@ -5,7 +5,7 @@
 cur_frm.add_fetch("paid_from", "bank_name", "bank_name");	
 cur_frm.add_fetch("paid_from", "bank_branch", "bank_branch");	
 cur_frm.add_fetch("paid_from", "bank_account_type", "bank_account_type");	
-cur_frm.add_fetch("paid_from", "bank_account_no", "bank_account_no");
+cur_frm.add_fetch("paid_from", "bank_ac_no", "bank_account_no");
 frappe.ui.form.on("Bank Payment", {
 	onload: function(frm){
 		enable_disable(frm);

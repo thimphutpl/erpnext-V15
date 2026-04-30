@@ -38,7 +38,11 @@ class Customer(TransactionBase):
 		from frappe.types import DF
 
 		account_manager: DF.Link | None
+		account_number: DF.Data | None
 		accounts: DF.Table[PartyAccount]
+		bank_account_type: DF.Link | None
+		bank_branch: DF.Link | None
+		bank_name: DF.Link | None
 		companies: DF.Table[AllowedToTransactWith]
 		credit_limits: DF.Table[CustomerCreditLimit]
 		customer_details: DF.Text | None
@@ -56,6 +60,7 @@ class Customer(TransactionBase):
 		default_sales_partner: DF.Link | None
 		disabled: DF.Check
 		dn_required: DF.Check
+		dzongkhag: DF.Link | None
 		email_id: DF.ReadOnly | None
 		gender: DF.Link | None
 		image: DF.AttachImage | None
@@ -64,6 +69,7 @@ class Customer(TransactionBase):
 		is_internal_customer: DF.Check
 		language: DF.Link | None
 		lead_name: DF.Link | None
+		location: DF.Data | None
 		loyalty_program: DF.Link | None
 		loyalty_program_tier: DF.Data | None
 		market_segment: DF.Link | None

@@ -287,6 +287,8 @@ def get_opening_balance(
 
 	if filters.project:
 		opening_balance = opening_balance.where(closing_balance.project == filters.project)
+	if filters.business_activity:
+		opening_balance = opening_balance.where(closing_balance.business_activity == filters.business_activity)
 
 	if filters.get("include_default_book_entries"):
 		company_fb = frappe.get_cached_value("Company", filters.company, "default_finance_book")

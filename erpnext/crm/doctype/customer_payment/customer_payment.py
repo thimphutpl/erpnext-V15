@@ -11,6 +11,38 @@ from frappe.core.doctype.user.user import send_sms
 import math
 
 class CustomerPayment(Document):
+	# begin: auto-generated types
+	# This code is auto-generated. Do not modify anything in this block.
+
+	from typing import TYPE_CHECKING
+
+	if TYPE_CHECKING:
+		from frappe.types import DF
+
+		amended_from: DF.Link | None
+		approval_status: DF.Literal["Pending", "Approved", "Rejected"]
+		bank_account: DF.Data | None
+		bank_code: DF.Data | None
+		branch: DF.Link | None
+		customer: DF.Link | None
+		customer_order: DF.Link
+		mode_of_payment: DF.Link
+		online_payment: DF.Link | None
+		paid_amount: DF.Currency
+		paid_to: DF.Link | None
+		payment_entry: DF.Link | None
+		reference_date: DF.Date | None
+		reference_no: DF.Data | None
+		rejection_reason: DF.SmallText | None
+		sales_order: DF.Link | None
+		site: DF.Link | None
+		total_balance_amount: DF.Currency
+		total_paid_amount: DF.Currency
+		total_payable_amount: DF.Currency
+		transaction_id: DF.Data | None
+		transaction_time: DF.Datetime | None
+		user: DF.Link | None
+	# end: auto-generated types
 	def validate(self):
 		self.validate_defaults()
 		self.get_customer_order()

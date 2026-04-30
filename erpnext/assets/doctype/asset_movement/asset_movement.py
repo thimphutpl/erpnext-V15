@@ -303,10 +303,10 @@ class AssetMovement(Document):
 			frappe.db.set_value("Asset", d.asset, "custodian_name", current_employee_name, update_modified=False)
 
 			equipment = frappe.db.get_value("Equipment", {"asset_code": d.asset}, "name")
-			if equipment:
-				equip = frappe.get_doc("Equipment", equipment)
-				equip.branch = branch
-				equip.save()
+			# if equipment:
+			# 	equip = frappe.get_doc("Equipment", equipment)
+			# 	equip.branch = branch
+			# 	equip.save()
 			""" Asset transfer gl """
 			if d.source_cost_center != d.target_cost_center and self.purpose == "Transfer":
 				self.posting_date = self.transaction_date

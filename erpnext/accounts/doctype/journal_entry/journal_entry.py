@@ -51,15 +51,9 @@ class JournalEntry(AccountsController):
 		from frappe.types import DF
 
 		accounts: DF.Table[JournalEntryAccount]
-		advance_payment: DF.Check
 		amended_from: DF.Link | None
 		apply_tds: DF.Check
-		approver: DF.Link | None
 		auto_repeat: DF.Link | None
-		bank_account_number: DF.Data | None
-		bank_app_ref_no: DF.Data | None
-		bank_branch: DF.Data | None
-		bank_name: DF.Data | None
 		bank_payment: DF.Link | None
 		bill_date: DF.Date | None
 		bill_no: DF.Data | None
@@ -68,22 +62,18 @@ class JournalEntry(AccountsController):
 		cheque_no: DF.Data | None
 		clearance_date: DF.Date | None
 		company: DF.Link
-		declaration_reference_no: DF.Data | None
 		difference: DF.Currency
-		dispatch_number: DF.Data | None
 		due_date: DF.Date | None
-		final_payment: DF.Check
 		finance_book: DF.Link | None
 		from_template: DF.Link | None
-		ifsc_code: DF.Data | None
 		inter_company_journal_entry_reference: DF.Link | None
 		is_opening: DF.Literal["No", "Yes"]
 		is_system_generated: DF.Check
+		journal_no: DF.Data | None
 		letter_head: DF.Link | None
 		mode_of_payment: DF.Link | None
 		money_receipt_no: DF.Data | None
 		money_receipt_prefix: DF.Data | None
-		month: DF.Literal["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
 		multi_currency: DF.Check
 		naming_series: DF.Link
 		paid_loan: DF.Data | None
@@ -93,27 +83,22 @@ class JournalEntry(AccountsController):
 		posting_date: DF.Date
 		process_deferred_accounting: DF.Link | None
 		remark: DF.SmallText | None
-		remit_bank: DF.Literal["", "Bank of Bhutan Limited", "Bhutan National Bank Limited", "Bhutan Development Bank Limited", "National Pension and Provident Fund", "Royal Insurance Corporation of Bhutan Limited", "Bhutan Insurance Limited"]
-		remit_purpose: DF.Literal["", "Salary Remittance", "Financial Institution Loan", "Group Insurance Scheme", "Provident Fund", "Salary Saving Scheme"]
-		remitter_tpan_no: DF.Data | None
 		repost_required: DF.Check
 		reversal_of: DF.Link | None
 		select_cheque_lot: DF.Link | None
 		select_print_heading: DF.Link | None
 		stock_entry: DF.Link | None
-		supplier_name: DF.Link | None
+		tax_payment_jv: DF.Check
 		tax_withholding_category: DF.Link | None
 		title: DF.Data | None
 		total_amount: DF.Currency
 		total_amount_currency: DF.Link | None
-		total_amount_in_words: DF.LongText | None
+		total_amount_in_words: DF.Data | None
 		total_credit: DF.Currency
 		total_debit: DF.Currency
 		use_check_lot: DF.Check
 		user_remark: DF.SmallText | None
-		vendor_invoice_no: DF.SmallText | None
-		verifier: DF.Link | None
-		voucher_type: DF.Literal["Journal Entry", "Inter Company Journal Entry", "Bank Entry", "Cash Entry", "Credit Card Entry", "Debit Note", "Credit Note", "Contra Entry", "Excise Entry", "Write Off Entry", "Opening Entry", "Depreciation Entry", "Exchange Rate Revaluation", "Exchange Gain Or Loss", "Deferred Revenue", "Deferred Expense"]
+		voucher_type: DF.Literal["Journal Entry", "Bank Entry", "Cash Entry", "Contra Entry", "Depreciation Entry", "Hire Charge Invoice", "Opening Entry"]
 		write_off_amount: DF.Currency
 		write_off_based_on: DF.Literal["Accounts Receivable", "Accounts Payable"]
 	# end: auto-generated types
@@ -269,7 +254,8 @@ class JournalEntry(AccountsController):
 			"Production",
 			"Royalty Payment",
 			"Hire Charge Invoice",
-			"Vehicle Logbook"
+			"Vehicle Logbook",
+			"POL Advance",
 		)
 		self.make_gl_entries(1)
 		self.update_advance_paid()
@@ -282,6 +268,7 @@ class JournalEntry(AccountsController):
 		self.update_reference_document(cancel=True)
 		check_clearance_date(self.doctype, self.name)
 		self.update_project_advance(cancel=self.docstatus == 2)
+		self.validate_in_bank_payment()
 		# travel_claim = frappe.db.sql("""select name from `tabTravel Claim` where claim_journal like '%{}%'""".format(self.name),as_dict=1)
 		# if travel_claim == [] and "Travel Payable" not in self.title:
 		# 	row = 1
@@ -357,6 +344,22 @@ class JournalEntry(AccountsController):
 
 	def get_title(self):
 		return self.pay_to_recd_from or self.accounts[0].account
+
+	def validate_in_bank_payment(self):
+		bank_payment = frappe.db.get_value(
+			"Bank Payment",
+			{
+				"transaction_type": "Journal Entry",
+				"transaction_no": self.name
+			},
+			"name"
+		)
+
+		if bank_payment:
+			frappe.throw(
+				_("Journal Entry: {0} is linked to Bank Payment: {1}. Please cancel Bank Payment first")
+				.format(self.name, bank_payment)
+			)
 
 	def update_project_cost(self, reference_name, is_advance, credit_in_account_currency, debit_in_account_currency, task):
 		""" update other expenses and total cost in project """
@@ -828,10 +831,11 @@ class JournalEntry(AccountsController):
 					doc = frappe.get_doc("Cash Deposit Entry", d.reference_name)
 					doc.db_set('journal_entry_status', "Cancelled on {0}".format(now_datetime().strftime("%Y-%m-%d %H:%M:%S")))
 				
-				# removing references
-				d.reference_type = ""
-				d.reference_name = ""
-				d.db_update()
+				if d.reference_type != "POL Advance":
+					# removing references
+					d.reference_type = ""
+					d.reference_name = ""
+					d.db_update()
 			else:
 				if d.reference_type == "Travel Advance" and d.reference_name:
 					doc = frappe.get_doc("Travel Advance", d.reference_name)
@@ -853,6 +857,7 @@ class JournalEntry(AccountsController):
 
 				elif d.reference_type == "POL Advance" and d.reference_name:
 					doc = frappe.get_doc("POL Advance", d.reference_name)
+					doc.db_set('journal_entry', self.name)
 					doc.db_set('status', "Paid")
 					doc.db_set('journal_entry_status', "Paid on {0}".format(now_datetime().strftime("%Y-%m-%d %H:%M:%S")))
 
@@ -1155,9 +1160,9 @@ class JournalEntry(AccountsController):
 			for d in self.get("accounts"):
 				if flt(d.debit) > 0:
 					# d.against_account = ", ".join(str(account) for account in set(accounts_credited) if account is not None)
-					d.against_account = ", ".join(list(set(accounts_credited)))
+					d.against_account = ", ".join(list(set(str(accounts_credited))))
 				if flt(d.credit) > 0:
-					d.against_account = ", ".join(list(set(accounts_debited)))
+					d.against_account = ", ".join(list(set(str(accounts_debited))))
 
 	def validate_debit_credit_amount(self):
 		if not (self.voucher_type == "Exchange Gain Or Loss" and self.multi_currency):

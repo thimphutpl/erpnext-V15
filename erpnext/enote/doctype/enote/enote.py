@@ -20,6 +20,8 @@ class eNote(Document):
 		from frappe.types import DF
 
 		amended_from: DF.Link | None
+		approver_employee: DF.Link | None
+		approver_name: DF.Data | None
 		category: DF.Link
 		content: DF.TextEditor | None
 		copied: DF.TableMultiSelect[NoteCopy]
@@ -315,8 +317,8 @@ class eNote(Document):
 			doc_name.save()
 
 		if reviewers:
-			frappe.db.set_value("Note Remark", {'user': frappe.session.user}, "action", "Review")
-			frappe.db.set_value("eNote Reviewer", {'user_id': frappe.session.user}, "status", "Reviewed")
+			frappe.db.set_value("Note Remark", {'user': frappe.session.user, "parent":self.name}, "action", "Review")
+			frappe.db.set_value("eNote Reviewer", {'user_id': frappe.session.user,"parent":self.name}, "status", "Reviewed")
 			query = """SELECT * FROM `tabeNote Reviewer` WHERE parent = '{0}'""".format(self.name)
 			data = frappe.db.sql(query, as_dict=1)
 			status = 1

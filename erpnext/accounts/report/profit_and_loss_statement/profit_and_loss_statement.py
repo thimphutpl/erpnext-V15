@@ -49,6 +49,8 @@ def execute(filters=None):
 		ignore_accumulated_values_for_fy=True,
 	)
 
+	# frappe.throw(frappe.as_json(expense))
+
 	net_profit_loss = get_net_profit_loss(
 		income, expense, period_list, filters.company, filters.presentation_currency
 	)

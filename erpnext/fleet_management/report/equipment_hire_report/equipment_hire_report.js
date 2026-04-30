@@ -31,12 +31,12 @@ frappe.query_reports["Equipment Hire Report"] = {
 			"width": "80",
 			"options": "Customer"
 		},
-		{
-			"fieldname": "not_cdcl",
-			"label": ("Include Only Gyalsung Equipments"),
-			"fieldtype": "Check",
-			"default": 1
-		},
+		// {
+		// 	"fieldname": "not_cdcl",
+		// 	"label": ("Include Only Gyalsung Equipments"),
+		// 	"fieldtype": "Check",
+		// 	"default": 1
+		// },
 		{
 			"fieldname": "include_disabled",
 			"label": ("Include Disbaled Equipments"),

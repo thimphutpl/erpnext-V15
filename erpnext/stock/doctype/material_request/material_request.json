@@ -45,6 +45,12 @@
   "job_card",
   "column_break_35",
   "work_order",
+  "approver_details_section",
+  "approver",
+  "column_break_aznk",
+  "approver_name",
+  "column_break_chfo",
+  "approver_designation",
   "connections_tab"
  ],
  "fields": [
@@ -69,7 +75,7 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Purpose",
-   "options": "\nPurchase\nRequsition",
+   "options": "\nPurchase\nRequisition",
    "reqd": 1
   },
   {
@@ -368,14 +374,46 @@
    "print_hide": 1,
    "reqd": 1,
    "set_only_once": 1
+  },
+  {
+   "fieldname": "approver_details_section",
+   "fieldtype": "Section Break",
+   "label": "Approver Details"
+  },
+  {
+   "fieldname": "approver",
+   "fieldtype": "Link",
+   "label": "Approver",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_aznk",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "approver_name",
+   "fieldtype": "Data",
+   "label": "Approver Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_chfo",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "approver_designation",
+   "fieldtype": "Data",
+   "label": "Approver Designation",
+   "read_only": 1
   }
  ],
  "icon": "fa fa-ticket",
  "idx": 70,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-09-12 11:40:11.109376",
- "modified_by": "kalden.dorji@thimphutechpark.bt",
+ "modified": "2026-03-16 15:22:20.423965",
+ "modified_by": "Administrator",
  "module": "Stock",
  "name": "Material Request",
  "naming_rule": "Expression",

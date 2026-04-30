@@ -112,7 +112,9 @@ class UtilityBill(Document):
 			if d.outstanding_amount > 0 and not d.payment_status_code:
 				api_name, service_id, service_type, consumer_field = frappe.db.get_value("Utility Service Type", d.utility_service_type, ["payment_api", "service_id", "service_type", "unique_key_field"])
 				api_details = frappe.get_doc("API Detail", api_name)
+				# frappe.throw(frappe.as_json(service_type))
 				url = api_details.api_link
+				
 				api_param = {}
 				os = str(d.outstanding_amount)
 				if os.count("."):
@@ -143,7 +145,12 @@ class UtilityBill(Document):
 				d.request = str(payload)
 				headers = {
 				'Content-Type': 'application/json'
-				}               
+				} 
+
+				# frappe.throw(
+				# 	f"API URL: {url}\nHeaders: {headers}\nPayload: {payload}"
+				# )
+								
 				response = requests.request("POST", url, headers=headers, data=payload)
 				details = response.json()
 				d.response = str(details)
@@ -219,7 +226,9 @@ class UtilityBill(Document):
 			if not d.utility_service_type:
 				frappe.throw("Utility Service Type is mandatory")
 			api_name, service_id, service_type, consumer_field, expense_account = frappe.db.get_value("Utility Service Type", d.utility_service_type, ["fetch_outstanding_api", "service_id", "service_type", "unique_key_field","expense_account"])
+	
 			api_details = frappe.get_doc("API Detail", api_name)
+			# frappe.throw(frappe.as_json(api_details))
 			url = api_details.api_link
 			api_param = {}
 			for a in api_details.item:
@@ -240,7 +249,7 @@ class UtilityBill(Document):
 			}
 
 			response = requests.request("POST", url, headers=headers, data=payload)
-			#frappe.throw(str(payload),str(response))
+			# frappe.throw(str(payload),str(response))
 			details = response.json()
 			res_status = details['statusCode']
 			d.payment_status = "In Progress"

@@ -32,6 +32,7 @@ class DeliveryNote(SellingController):
 		from erpnext.stock.doctype.packed_item.packed_item import PackedItem
 		from frappe.types import DF
 
+		additional_cost: DF.Currency
 		additional_cost_or_discount_description: DF.Text | None
 		additional_discount_percentage: DF.Float
 		address_display: DF.SmallText | None
@@ -97,7 +98,7 @@ class DeliveryNote(SellingController):
 		items: DF.Table[DeliveryNoteItem]
 		language: DF.Data | None
 		letter_head: DF.Link | None
-		load_request: DF.Data | None
+		load_request: DF.Link | None
 		loading_cost: DF.Currency
 		loading_rate: DF.Currency
 		location: DF.Link | None
@@ -128,7 +129,6 @@ class DeliveryNote(SellingController):
 		sales_partner: DF.Link | None
 		sales_team: DF.Table[SalesTeam]
 		select_print_heading: DF.Link | None
-		select_vehicle_from_common_pool_queue: DF.Check
 		select_vehicle_queue: DF.Check
 		selling_price_list: DF.Link
 		set_posting_time: DF.Check
@@ -158,7 +158,6 @@ class DeliveryNote(SellingController):
 		transportation_rate: DF.Data | None
 		transporter: DF.Link | None
 		transporter_name: DF.Data | None
-		vehicle: DF.Link | None
 		vehicle_no: DF.Link | None
 	# end: auto-generated types
 
@@ -273,6 +272,7 @@ class DeliveryNote(SellingController):
 					frappe.throw(_("Sales Order required for Item {0}").format(d.item_code))
 
 	def validate(self):
+		
 		self.validate_posting_time()
 		super().validate()
 		self.validate_references()
@@ -289,6 +289,7 @@ class DeliveryNote(SellingController):
 		#TTPL Code
 		self.check_transportation_detail()
 		self.update_shipping_address()
+		self.calculate_transportation()
 
 		from erpnext.stock.doctype.packed_item.packed_item import make_packing_list
 
@@ -307,9 +308,25 @@ class DeliveryNote(SellingController):
 				tax += flt(i.base_tax_amount)
 			self.total_taxes_and_charges = tax
 		if self.get('taxes'):
-			self.net_total = flt(self.total) + (flt(self.total)*0.05)- flt(self.discount_or_cost_amount)
+			self.net_total = flt(self.total) + (flt(self.total)*0.05) + flt(self.additional_cost) + flt(self.transportation_charges) + flt(self.loading_cost) - flt(self.discount_or_cost_amount)
 		else:
-			self.net_total = flt(self.total) - flt(self.discount_or_cost_amount)
+			self.net_total = flt(self.total) + flt(self.transportation_charges) + flt(self.additional_cost) + flt(self.loading_cost) - flt(self.discount_or_cost_amount)
+		if not self.get('taxes'):
+			self.grand_total = self.net_total
+
+		self.validate_cost_center()
+
+	def validate_cost_center(self):
+		cost_center = frappe.get_value("Branch",self.branch,'cost_center')
+		if not cost_center:
+			frappe.throw("Set the Cost Center in the Branch")
+		if cost_center:
+			for i in self.items:
+				i.cost_center = cost_center
+
+			if self.taxes:
+				for i in self.taxes:
+					i.cost_center = cost_center
 
 	#TTPL Code
 	def update_shipping_address(self):
@@ -326,10 +343,10 @@ class DeliveryNote(SellingController):
 
 		self.total_quantity = total_qty
 		self.transportation_charges = round(flt(self.total_quantity) * flt(self.total_distance) * flt(self.transportation_rate), 2)
-		self.discount_amount = flt(self.discount_or_cost_amount) - flt(self.transportation_charges) - flt(self.loading_cost) - flt(self.additional_cost) - flt(self.challan_cost)
+		self.discount_amount = self.discount_or_cost_amount
 				
 	def check_transportation_detail(self):
-		if self.naming_series == 'Mineral Products':
+		if self.item_series == 'Mineral Products':
 			if not self.vehicle_no:
 				frappe.throw("Transporter Detail Is Mandiatory For Mineral Products")
 			#TTPL Code
@@ -341,12 +358,12 @@ class DeliveryNote(SellingController):
 					is_boulder = frappe.db.get_value("Vehicle", self.vehicle_no, "is_boulder")
 					vehicle_capacity = frappe.db.get_value("Vehicle", self.vehicle_no, "vehicle_capacity")
 					if is_boulder == 1:
-						if total_qty > vehicle_capacity:
+						if total_qty > flt(vehicle_capacity):
 							frappe.throw("Vehicle Capacity is {0}, which is less than total quantity {1}".format(vehicle_capacity, self.total_quantity))
 				transport_mode = frappe.db.get_value("Customer Order", self.customer_order, "transport_mode")	
-				if self.select_vehicle_queue or transport_mode == "Common Pool":
+				if self.select_vehicle_queue and transport_mode == "Common Pool":
 					local_distance_limit = frappe.db.get_value("CRM Branch Setting", self.branch, "local_distance")
-					if self.total_distance > flt(local_distance_limit):
+					if flt(self.total_distance) > flt(local_distance_limit):
 						for a in frappe.db.sql("select name, vehicle, token from `tabLoad Request` where load_status = 'Queued' and crm_branch = '{0}' and vehicle_capacity = {1} order by requesting_date_time, token limit 1".format(self.branch, total_qty), as_dict=True):
 							if a.vehicle == self.vehicle_no:
 								self.load_request = a.name
@@ -517,9 +534,10 @@ class DeliveryNote(SellingController):
 				tax += flt(i.base_tax_amount)
 			self.total_taxes_and_charges = tax
 		if self.get('taxes'):
-			self.net_total = flt(self.total) + (flt(self.total)*0.05)- flt(self.discount_or_cost_amount)
+			self.net_total = flt(self.total) + (flt(self.total)*0.05) + flt(self.transportation_charges) + flt(self.loading_cost) - flt(self.discount_or_cost_amount)
+			# frappe.throw(str(self.net_total))
 		else:
-			self.net_total = flt(self.total) - flt(self.discount_or_cost_amount)
+			self.net_total = flt(self.total) + flt(self.transportation_charges) + flt(self.loading_cost) - flt(self.discount_or_cost_amount)
 		self.validate_packed_qty()
 		self.update_pick_list_status()
 
@@ -888,7 +906,7 @@ class DeliveryNote(SellingController):
 
 			# Update Load Request Queue if transport mode is Common Pool
 			# TTPL New Update
-			if doc.transport_mode == "Common Pool":
+			if doc.transport_mode == "Common Pool" and self.select_vehicle_queue:
 				if self.load_request:
 					queue_status = frappe.db.get_value("Load Request", self.load_request, "load_status")
 					if queue_status == "Queued":
@@ -1142,8 +1160,8 @@ def make_sales_invoice(source_name, target_doc=None, args=None):
 				"doctype": "Sales Invoice",
 				"field_map": {
 					"is_return": "is_return",
-					# "loading_rate" : "rate_per_unit",
-					# "loading_cost" : "total_loading_amount"  
+					# "loading_rate" : "loading_rate",
+					# "loading_cost" : "loading_cost"  
 				},
 				"validation": {"docstatus": ["=", 1]},
 			},

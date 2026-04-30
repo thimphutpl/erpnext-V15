@@ -623,7 +623,7 @@ erpnext.buying.PurchaseOrderController = class PurchaseOrderController extends (
 						schedule_date: undefined,
 					},
 					get_query_filters: {
-						material_request_type: "Purchase",
+						// material_request_type: "Purchase",
 						docstatus: 1,
 						status: ["!=", "Stopped"],
 						per_ordered: ["<", 100],
@@ -631,7 +631,7 @@ erpnext.buying.PurchaseOrderController = class PurchaseOrderController extends (
 					},
 					allow_child_item_selection: true,
 					child_fieldname: "items",
-					child_columns: ["item_code", "qty", "ordered_qty"],
+					child_columns: ["item_code", "schedule_date", "qty", "ordered_qty"],
 				});
 			},
 			__("Get Items From")

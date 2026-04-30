@@ -133,7 +133,7 @@ class TransportRequest(Document):
 				v_doc.drivers_name = self.drivers_name
 				v_doc.contact_no = self.contact_no
 				v_doc.user = self.user
-				v_doc.submit()
+				v_doc.save()
 
 		if not self.common_pool:
 			if not self.self_arranged and self.is_boulder == 0:

@@ -378,20 +378,21 @@ class Asset(AccountsController):
 		if self.is_existing_asset:
 			return
 
-		if self.available_for_use_date and getdate(self.available_for_use_date) < getdate(self.purchase_date):
-			frappe.throw(_("Available-for-use Date should be after purchase date"))
+		if self.asset_category != 'Road':
+			if self.available_for_use_date and getdate(self.available_for_use_date) < getdate(self.purchase_date):
+				frappe.throw(_("Available-for-use Date should be after purchase date"))
 
 	def validate_gross_and_purchase_amount(self):
 		if self.is_existing_asset or self.is_opening_asset:
 			return
 
-		if self.gross_purchase_amount and self.gross_purchase_amount != self.purchase_amount:
-			error_message = _(
-				"Gross Purchase Amount should be <b>equal</b> to purchase amount of one single Asset."
-			)
-			error_message += "<br>"
-			error_message += _("Please do not book expense of multiple assets against one single Asset.")
-			frappe.throw(error_message, title=_("Invalid Gross Purchase Amount"))
+		# if self.gross_purchase_amount and self.gross_purchase_amount != self.purchase_amount:
+		# 	error_message = _(
+		# 		"Gross Purchase Amount should be <b>equal</b> to purchase amount of one single Asset."
+		# 	)
+		# 	error_message += "<br>"
+		# 	error_message += _("Please do not book expense of multiple assets against one single Asset.")
+		# 	frappe.throw(error_message, title=_("Invalid Gross Purchase Amount"))
 
 	def make_asset_movement(self):
 		# reference_doctype = "Purchase Receipt" if self.purchase_receipt else "Purchase Invoice"
@@ -475,7 +476,7 @@ class Asset(AccountsController):
 					title=_("Invalid Schedule"),
 				)
 
-		if row.depreciation_start_date and getdate(row.depreciation_start_date) < getdate(self.purchase_date):
+		if row.depreciation_start_date and getdate(row.depreciation_start_date) < getdate(self.purchase_date) and self.asset_category != "Road":
 			frappe.throw(
 				_("Depreciation Row {0}: Next Depreciation Date cannot be before Purchase Date").format(
 					row.idx

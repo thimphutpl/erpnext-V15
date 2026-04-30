@@ -4,6 +4,9 @@
 // cur_frm.add_fetch("branch", "revenue_bank_account", "income_account")
 
 frappe.ui.form.on('Mechanical Payment', {
+    onload: function(frm) {
+        create_custom_buttons(frm);
+    },
     refresh: function(frm) {
         if (frm.doc.docstatus === 1) {
             frm.add_custom_button(__('Accounting Ledger'), function() {
@@ -17,6 +20,7 @@ frappe.ui.form.on('Mechanical Payment', {
                 frappe.set_route("query-report", "General Ledger");
             }, __("View"));
         }
+        create_custom_buttons(frm);
     },
 
     "tds_amount": function(frm) {
@@ -91,6 +95,7 @@ frappe.ui.form.on('Mechanical Payment', {
     get_delivery_note: function(frm) {
 		get_delivery_notes(frm);
 	},
+    
 });
 
 function calculate_totals(frm) {
@@ -188,3 +193,19 @@ frappe.ui.form.on("Mechanical Payment Item", {
         frm.trigger("receivable_amount");
     }
 });
+
+
+/* ePayment Begins */
+var create_custom_buttons = function(frm){
+	if(frm.doc.docstatus == 1 && (frm.doc.voucher_type == "Bank Entry" || frm.doc.voucher_type == "Contra Entry") && frm.doc.mode_of_payment == "Bank Payment" && frm.doc.payment_status != "Payment Successful"){
+		if(!frm.doc.bank_payment || frm.doc.payment_status == 'Failed' || frm.doc.payment_status == 'Payment Failed'){
+			frm.page.set_primary_action(__('Process Payment'), () => {
+				frappe.model.open_mapped_doc({
+					method: "erpnext.accounts.doctype.journal_entry.journal_entry.make_bank_payment",
+					frm: cur_frm
+				});
+			});
+		}
+	}
+}
+/* ePayment Ends */

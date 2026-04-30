@@ -490,7 +490,7 @@ class calculate_taxes_and_totals:
 		tax_amount = self.get_tax_amount_if_for_valuation_or_deduction(tax_amount, tax)
 
 		if row_idx == 0:
-			if self.doc.doctype in ("Purchase Order", "Purchase Invoice"):
+			if self.doc.doctype in ("Purchase Order", "Purchase Receipt", "Purchase Invoice"):
 				if frappe.db.get_value("Supplier", self.doc.supplier, "country") == "Bhutan" and tax.add_deduct_tax != "None":
 					if tax.included_in_print_rate == 0 and tax.add_deduct_tax != "None":
 						tax.total = flt(self.doc.net_total + tax_amount, tax.precision("total"))
@@ -507,7 +507,7 @@ class calculate_taxes_and_totals:
 				# 	tax.total = flt(self.doc.net_total + tax_amount, tax.precision("total"))
 				# else:
 				
-				total_amount_after_deduction = flt(flt(self.doc.net_total)-flt(self.doc.discount_or_cost_amount)+flt(self.doc.loading_cost), tax.precision("total"))
+				total_amount_after_deduction = flt(flt(self.doc.net_total)-flt(self.doc.discount_or_cost_amount)+flt(self.doc.loading_cost)+flt(self.doc.transportation_charges)+flt(self.doc.additional_cost), tax.precision("total"))
 
 				
 				taxes = flt(total_amount_after_deduction)*(flt(tax.rate)/100)
@@ -517,7 +517,7 @@ class calculate_taxes_and_totals:
 				tax.base_tax_amount_after_discount_amount= taxes
 				tax.total = flt(flt(total_amount_after_deduction)+flt(taxes), tax.precision("total"))
 		else:
-			if self.doc.doctype in ("Purchase Order", "Purchase Invoice"):
+			if self.doc.doctype in ("Purchase Order", "Purchase Receipt", "Purchase Invoice"):
 				if frappe.db.get_value("Supplier", self.doc.supplier, "country") == "Bhutan" and tax.add_deduct_tax != "None":
 					tax.total = flt(self.doc.get("taxes")[row_idx - 1].total + tax_amount, tax.precision("total"))
 				else:
@@ -531,7 +531,7 @@ class calculate_taxes_and_totals:
 				# 	tax.total = flt(self.doc.get("taxes")[row_idx - 1].total + tax_amount, tax.precision("total"))
 				# else:
 				# tax.total = flt(self.doc.get("taxes")[row_idx - 1].total+tax_amount-flt(self.doc.discount_or_cost_amount)-flt(self.doc.loading_cost), tax.precision("total"))
-				total_amount_after_deduction = flt(flt(self.doc.net_total)-flt(self.doc.discount_or_cost_amount)+flt(self.doc.loading_cost), tax.precision("total"))
+				total_amount_after_deduction = flt(flt(self.doc.net_total)-flt(self.doc.discount_or_cost_amount)+flt(self.doc.loading_cost) + flt(self.doc.transportation_charges) + flt(self.doc.additional_cost), tax.precision("total"))
 				taxes = flt(total_amount_after_deduction)*(flt(tax.rate)/100)
 				tax.tax_amount = taxes
 				tax.total = flt(flt(total_amount_after_deduction)+flt(taxes), tax.precision("total"))
@@ -559,11 +559,16 @@ class calculate_taxes_and_totals:
 		elif tax.charge_type == "On Net Total":
 		
 
-			
-			# frappe.throw(frappe.as_json(self.doc))
-			total = flt(item.net_amount) + flt(self.doc.loading_cost) - flt(self.doc.discount_or_cost_amount)
-			
-			
+			total = 0
+			if self.doc.doctype in ("Purchase Order", "Purchase Receipt", "Purchase Invoice"):
+				if frappe.get_meta(self.doc.doctype).has_field("discount_or_cost_amount"):
+				# frappe.throw(frappe.as_json(self.doc))
+					total = flt(item.net_amount) - flt(self.doc.discount_or_cost_amount)
+				else:
+					total = flt(item.net_amount)
+			else:
+				total = flt(item.net_amount) + flt(self.doc.loading_cost) + flt(self.doc.transportation_charges) + flt(self.doc.additional_cost)- flt(self.doc.discount_or_cost_amount)			
+
 			# current_tax_amount = (tax_rate / 100.0) * item.net_amount
 			current_tax_amount = (tax_rate / 100.0) * total
 			# frappe.throw(str(current_tax_amount))
@@ -656,7 +661,10 @@ class calculate_taxes_and_totals:
 		if self.doc.get("taxes"):
 			self.doc.grand_total = flt(self.doc.get("taxes")[-1].total) + grand_total_diff
 		else:
-			self.doc.grand_total = flt(self.doc.net_total)
+			if self.doc.doctype in ("Purchase Order", "Purchase Receipt", "Purchase Invoice"):
+				self.doc.grand_total = flt(self.doc.net_total)
+			else:
+				self.doc.grand_total = flt(self.doc.net_total) - flt(self.doc.discount_or_cost_amount)+flt(self.doc.loading_cost)+flt(self.doc.transportation_charges)+flt(self.doc.additional_cost)
 
 		if self.doc.get("taxes"):
 			self.doc.total_taxes_and_charges = flt(

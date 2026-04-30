@@ -38,6 +38,7 @@
   "price_list_rate",
   "col_break3",
   "amount",
+  "estimated_cost",
   "accounting_details_section",
   "expense_account",
   "column_break_glru",
@@ -60,6 +61,7 @@
   "production_plan",
   "material_request_plan_item",
   "job_card_item",
+  "reason",
   "section_break_46",
   "page_break"
  ],
@@ -495,13 +497,24 @@
    "fieldtype": "Link",
    "label": "Business Activity",
    "options": "Business Activity"
+  },
+  {
+   "default": "0",
+   "fieldname": "estimated_cost",
+   "fieldtype": "Currency",
+   "label": "Estimated Cost"
+  },
+  {
+   "fieldname": "reason",
+   "fieldtype": "Small Text",
+   "label": "Reason"
   }
  ],
  "idx": 1,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-09-11 12:03:01.232174",
+ "modified": "2026-02-06 14:47:00.131205",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Material Request Item",

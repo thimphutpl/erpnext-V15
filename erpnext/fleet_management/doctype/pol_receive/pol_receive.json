@@ -200,10 +200,12 @@
   },
   {
    "fetch_from": "equipment.fuel_type",
+   "fetch_if_empty": 1,
    "fieldname": "fuel_type",
    "fieldtype": "Link",
    "label": "Fuel Type",
-   "options": "Item"
+   "options": "Item",
+   "reqd": 1
   },
   {
    "fieldname": "amended_from",
@@ -367,7 +369,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-02-16 10:12:38.232152",
+ "modified": "2026-03-11 16:04:59.970557",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Receive",

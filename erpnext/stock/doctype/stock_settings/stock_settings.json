@@ -10,6 +10,7 @@
   "item_naming_by",
   "valuation_method",
   "item_group",
+  "allow_uom_with_conversion_rate_defined_in_item",
   "column_break_4",
   "default_warehouse",
   "sample_retention_warehouse",
@@ -474,6 +475,12 @@
    "fieldname": "allow_to_make_quality_inspection_after_purchase_or_delivery",
    "fieldtype": "Check",
    "label": "Allow to Make Quality Inspection after Purchase/Delivery"
+  },
+  {
+   "default": "0",
+   "fieldname": "allow_uom_with_conversion_rate_defined_in_item",
+   "fieldtype": "Check",
+   "label": "Allow Conversion Factor"
   }
  ],
  "icon": "icon-cog",
@@ -481,7 +488,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-08-05 12:45:23.678337",
+ "modified": "2026-01-22 15:11:52.113047",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Stock Settings",

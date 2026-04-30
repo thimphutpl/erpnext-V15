@@ -83,6 +83,7 @@
    "label": "Define Selling Price"
   },
   {
+   "allow_bulk_edit": 1,
    "fieldname": "item_rates",
    "fieldtype": "Table",
    "options": "Selling Price Rate"
@@ -91,7 +92,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-10-10 11:18:12.564297",
+ "modified": "2026-01-03 22:49:10.522651",
  "modified_by": "Administrator",
  "module": "Production",
  "name": "Customer Selling Price",

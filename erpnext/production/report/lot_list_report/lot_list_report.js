@@ -138,8 +138,16 @@ frappe.query_reports["Lot List Report"] = {
 		{
 			"fieldname": "warehouse",
 			"label": __("Warehouse"),
-			"fieldtype": "Select",
-			"options": [],
+			"fieldtype": "Link",
+			"options": "Warehouse",
+			// get_query: function () {
+			// 	return {
+			// 		query: "erpnext.production.report.lot_list_report.lot_list_report.get_warehouse_query",
+			// 		filters: {
+			// 			branch: frappe.query_report.get_filter_value("branch")
+			// 		}
+			// 	};
+			// }
 		},
 		{
 			"fieldname": "item_group",
@@ -166,7 +174,7 @@ frappe.query_reports["Lot List Report"] = {
 			"fieldname": "status",
 			"label": ("Status"),
 			"fieldtype": "Select",
-			"options":["Sold","Taken For Sawing","Stock Transferred","Unsold"]
+			"options":["", "Sold", "Partially Sold", "Taken For Sawing", "Stock Transferred", "Stock Partially Transferred", "Unsold"]
 		}
 	]
 }

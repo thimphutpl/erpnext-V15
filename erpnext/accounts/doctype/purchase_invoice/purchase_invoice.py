@@ -116,6 +116,7 @@ class PurchaseInvoice(BuyingController):
 		currency: DF.Link | None
 		disable_rounded_total: DF.Check
 		discount: DF.Currency
+		discount_amount: DF.Data | None
 		discount_or_cost_amount: DF.Data | None
 		dispatch: DF.Data | None
 		due_date: DF.Date | None
@@ -327,6 +328,20 @@ class PurchaseInvoice(BuyingController):
 		self.cal_oustanding_amount()
 		self.cal_total_discount_for_each_item()
 		# self.ld_amount_net_total()
+		self.validate_cost_center()
+
+	def validate_cost_center(self):
+		cost_center = frappe.get_value("Branch",self.branch,'cost_center')
+		# frappe.throw(str(cost_center))
+		if not cost_center:
+			frappe.throw("Set the Cost Center in the Branch")
+		if cost_center:
+			for i in self.items:
+				i.cost_center = cost_center
+
+			if self.taxes:
+				for i in self.taxes:
+					i.cost_center = cost_center
 	def ld_amount_net_total(self):
 		self.net_total= 0
 		for i in self.items:
@@ -836,6 +851,7 @@ class PurchaseInvoice(BuyingController):
 		validate_docs_for_deferred_accounting([], [self.name])
 
 	def on_submit(self):
+		# frappe.throw("joj")
 		# if self.discount_amount:
 		# 	frappe.throw("Under Maintenance")
 		super().on_submit()
@@ -1055,12 +1071,23 @@ class PurchaseInvoice(BuyingController):
 		self.negative_expense_to_be_booked = 0.0
 		gl_entries = []
 
+		item = None
+		# ba = None
+		for i in self.items:
+			item = i.item_code
+		# frappe.throw(str(item))
+		self.ba = None
+		# frappe.throw(str(self.ba))
+		if item:
+			self.ba = frappe.db.get_value("Item", {"name":item}, "business_activity")
+
 		self.make_supplier_gl_entry(gl_entries)
 		# frappe.throw(frappe.as_json(gl_entries))
 		self.make_item_gl_entries(gl_entries)
 		# frappe.throw(frappe.as_json(gl_entries))
 		# self.make_precision_loss_gl_entry(gl_entries)
 		self.make_tax_gl_entries(gl_entries)
+		
 		self.make_internal_transfer_gl_entries(gl_entries)
 
 		gl_entries = make_regional_gl_entries(gl_entries, self)
@@ -1071,8 +1098,9 @@ class PurchaseInvoice(BuyingController):
 		self.make_write_off_gl_entry(gl_entries)
 		
 		self.make_discount_gl_entry(gl_entries)
-		
+		# frappe.throw(frappe.as_json(gl_entries))
 		self.make_advance_gl_entry(gl_entries)
+		
 		
 
 		# frappe.throw(frappe.as_json(gl_entries))
@@ -1172,6 +1200,7 @@ class PurchaseInvoice(BuyingController):
 						"against_voucher_type": self.doctype,
 						"project": self.project,
 						"cost_center": self.cost_center,
+						"business_activity":self.ba,
 						# "business_activity": self.business_activity,
 					},
 					self.party_account_currency,
@@ -1242,6 +1271,7 @@ class PurchaseInvoice(BuyingController):
 									"project": item.project if item.project else "",
 									"remarks": self.get("remarks") or _("Accounting Entry for Stock"),
 									"debit": warehouse_debit_amount,
+									"business_activity":self.ba,
 									# "business_activity": self.business_activity,
 								},
 								warehouse_account[item.warehouse]["account_currency"],
@@ -1266,6 +1296,7 @@ class PurchaseInvoice(BuyingController):
 									"project": item.project if item.project else "",
 									"remarks": self.get("remarks") or _("Accounting Entry for Stock"),
 									"debit": -1 * flt(credit_amount, item.precision("base_net_amount")),
+									"business_activity":self.ba,
 									# "business_activity": self.business_activity,
 								},
 								warehouse_account[item.from_warehouse]["account_currency"],
@@ -1285,6 +1316,7 @@ class PurchaseInvoice(BuyingController):
 										"remarks": self.get("remarks") or _("Accounting Entry for Stock"),
 										"cost_center": item.cost_center,
 										"project": item.project if item.project else "",
+										"business_activity":self.ba,
 										# "business_activity": self.business_activity,
 									},
 									account_currency,
@@ -1303,6 +1335,7 @@ class PurchaseInvoice(BuyingController):
 										"remarks": self.get("remarks") or _("Accounting Entry for Stock"),
 										"cost_center": item.cost_center,
 										"project": item.project if item.project else "",
+										"business_activity":self.ba,
 										# "business_activity": self.business_activity,
 									},
 									account_currency,
@@ -1324,6 +1357,7 @@ class PurchaseInvoice(BuyingController):
 											"credit": flt(amount["base_amount"]),
 											"credit_in_account_currency": flt(amount["amount"]),
 											"project": item.project if item.project else "",
+											"business_activity":self.ba,
 											# "business_activity": self.business_activity,
 										},
 										item=item,
@@ -1346,6 +1380,7 @@ class PurchaseInvoice(BuyingController):
 									"project": item.project if item.project else "",
 									"remarks": self.get("remarks") or _("Accounting Entry for Stock"),
 									"credit": flt(item.rm_supp_cost),
+									"business_activity":self.ba,
 									# "business_activity": self.business_activity,
 								},
 								warehouse_account[self.supplier_warehouse]["account_currency"],
@@ -1375,6 +1410,7 @@ class PurchaseInvoice(BuyingController):
 									"debit": amount,
 									"cost_center": item.cost_center,
 									"project": item.project if item.project else "",
+									"business_activity":self.ba,
 								},
 								account_currency,
 								item=item,
@@ -1401,6 +1437,7 @@ class PurchaseInvoice(BuyingController):
 											"debit": discrepancy_caused_by_exchange_rate_difference,
 											"cost_center": item.cost_center,
 											"project": item.project if item.project else "",
+											"business_activity":self.ba,
 											# "business_activity": self.business_activity,
 										},
 										account_currency,
@@ -1415,6 +1452,7 @@ class PurchaseInvoice(BuyingController):
 											"credit": discrepancy_caused_by_exchange_rate_difference,
 											"cost_center": item.cost_center,
 											"project": item.project or self.project,
+											"business_activity":self.ba,
 											# "business_activity": self.business_activity,
 										},
 										account_currency,
@@ -1451,6 +1489,7 @@ class PurchaseInvoice(BuyingController):
 									"remarks": self.remarks or _("Accounting Entry for Stock"),
 									"cost_center": self.cost_center,
 									"project": item.project if item.project else "",
+									"business_activity":self.ba,
 								},
 								item=item,
 							)
@@ -1562,6 +1601,7 @@ class PurchaseInvoice(BuyingController):
 						"remarks": self.get("remarks") or _("Stock Adjustment"),
 						"cost_center": item.cost_center,
 						"project": item.project if item.project else "",
+						"business_activity":self.ba,
 					},
 					account_currency,
 					item=item,
@@ -1597,6 +1637,7 @@ class PurchaseInvoice(BuyingController):
 							"party_type": "Supplier",
 							# "party": tax.party if tax.party else None,
 							"party": self.supplier_name,
+							"business_activity":self.ba,
 						},
 						account_currency,
 						item=tax,
@@ -1645,6 +1686,7 @@ class PurchaseInvoice(BuyingController):
 								"party_type": tax.party_type if tax.party_type else None,
 								"party": tax.party if tax.party else None,
 								"remarks": self.remarks or _("Accounting Entry for Stock"),
+								"business_activity":self.ba,
 							},
 							item=tax,
 						)
@@ -1663,6 +1705,7 @@ class PurchaseInvoice(BuyingController):
 								"against": self.supplier,
 								"credit": valuation_tax[tax.name],
 								"remarks": self.remarks or _("Accounting Entry for Stock"),
+								"business_activity":self.ba,
 							},
 							item=tax,
 						)
@@ -1680,6 +1723,7 @@ class PurchaseInvoice(BuyingController):
 						"credit": flt(self.total_taxes_and_charges),
 						"credit_in_account_currency": flt(self.base_total_taxes_and_charges),
 						"cost_center": self.cost_center,
+						"business_activity":self.ba,
 					},
 					account_currency,
 					item=self,
@@ -1710,6 +1754,7 @@ class PurchaseInvoice(BuyingController):
 						"against_voucher_type": self.doctype,
 						"cost_center": self.cost_center,
 						"project": self.project,
+						"business_activity":self.ba,
 					},
 					self.party_account_currency,
 					item=self,
@@ -1726,6 +1771,7 @@ class PurchaseInvoice(BuyingController):
 						if bank_account_currency == self.company_currency
 						else self.paid_amount,
 						"cost_center": self.cost_center,
+						"business_activity":self.ba,
 					},
 					bank_account_currency,
 					item=self,
@@ -1770,6 +1816,7 @@ class PurchaseInvoice(BuyingController):
 						if write_off_account_currency == self.company_currency
 						else self.write_off_amount,
 						"cost_center": self.cost_center or self.write_off_cost_center,
+						"business_activity":self.ba,
 					},
 					item=self,
 				)
@@ -1811,6 +1858,7 @@ class PurchaseInvoice(BuyingController):
 						"credit": flt(self.discount),
 						"credit_in_account_currency": flt(self.discount),
 						"cost_center": self.cost_center ,
+						"business_activity":self.ba,
 					},
 					item=self,
 				)
@@ -1825,44 +1873,92 @@ class PurchaseInvoice(BuyingController):
 		# frappe.throw(str(advance_acc))
 		if not advance_acc:
 			frappe.throw("Please set Advance Account in the company {}".format(self.company))
-		
-		if self.total_advance:
-			# discount_acc = get_account_currency(self.write_off_account)
+		if self.advances:
+			for i in self.advances:
+				payment_debit_acc = frappe.db.sql('''
+				select account from `tabGL Entry` 
+				where voucher_no='{}' and debit>0;
+				'''.format(i.reference_name),as_dict=True)
 
-			# gl_entries.append(
-			# 	self.get_gl_dict(
-			# 		{
-			# 			"account": self.credit_to,
-			# 			"party_type": "Supplier",
-			# 			"party": self.supplier,
-			# 			"against": "40030404 - Discount on Tbills - DK",
-			# 			"debit": self.discount,
-			# 			"debit_in_account_currency": self.discount,
-			# 			"against_voucher": self.return_against
-			# 			if cint(self.is_return) and self.return_against
-			# 			else self.name,
-			# 			"against_voucher_type": self.doctype,
-			# 			"cost_center": self.cost_center,
-			# 			"project": self.project,
-			# 		},
-			# 		self.party_account_currency,
-			# 		item=self,
-			# 	)
-			# )
-			gl_entries.append(
-				self.get_gl_dict(
-					{
-						"account": advance_acc,
-						"against": self.supplier,
-						"credit": flt(self.total_advance),
-						"credit_in_account_currency": flt(self.total_advance),
-						"cost_center": self.cost_center ,
-						"party_type":"Supplier",
-						"party":self.supplier
-					},
-					item=self,
+				# frappe.throw(str(payment_debit_acc[0]['account']))
+				if payment_debit_acc[0]['account']=='Creditors - NRDCL':
+					gl_entries.append(
+					self.get_gl_dict(
+						{
+							"account": 'Creditors - NRDCL',
+							"against": self.supplier,
+							"credit": flt(i.advance_amount),
+							"credit_in_account_currency": flt(i.advance_amount),
+							"cost_center": self.cost_center ,
+							"party_type":"Supplier",
+							"party":self.supplier,
+							"business_activity":self.ba,
+						},
+						item=self,
+					)
 				)
-			)
+					
+					
+				else:
+					# frappe.throw('ihhhhhh')
+					gl_entries.append(
+					self.get_gl_dict(
+						{
+							"account": advance_acc,
+							"against": self.supplier,
+							"credit": flt(self.total_advance),
+							"credit_in_account_currency": flt(self.total_advance),
+							"cost_center": self.cost_center ,
+							"party_type":"Supplier",
+							"party":self.supplier,
+							"business_activity":self.ba,
+						},
+						item=self,
+					)
+				)
+
+
+
+			# frappe.throw(frappe.as_json((i.reference_name)))
+		
+		# if self.total_advance:
+			
+		# 	# discount_acc = get_account_currency(self.write_off_account)
+
+		# 	# gl_entries.append(
+		# 	# 	self.get_gl_dict(
+		# 	# 		{
+		# 	# 			"account": self.credit_to,
+		# 	# 			"party_type": "Supplier",
+		# 	# 			"party": self.supplier,
+		# 	# 			"against": "40030404 - Discount on Tbills - DK",
+		# 	# 			"debit": self.discount,
+		# 	# 			"debit_in_account_currency": self.discount,
+		# 	# 			"against_voucher": self.return_against
+		# 	# 			if cint(self.is_return) and self.return_against
+		# 	# 			else self.name,
+		# 	# 			"against_voucher_type": self.doctype,
+		# 	# 			"cost_center": self.cost_center,
+		# 	# 			"project": self.project,
+		# 	# 		},
+		# 	# 		self.party_account_currency,
+		# 	# 		item=self,
+		# 	# 	)
+		# 	# )
+		# 	gl_entries.append(
+		# 		self.get_gl_dict(
+		# 			{
+		# 				"account": advance_acc,
+		# 				"against": self.supplier,
+		# 				"credit": flt(self.total_advance),
+		# 				"credit_in_account_currency": flt(self.total_advance),
+		# 				"cost_center": self.cost_center ,
+		# 				"party_type":"Supplier",
+		# 				"party":self.supplier
+		# 			},
+		# 			item=self,
+		# 		)
+		# 	)
 
 
 	def make_gle_for_rounding_adjustment(self, gl_entries):
@@ -1885,6 +1981,7 @@ class PurchaseInvoice(BuyingController):
 						"cost_center": round_off_cost_center
 						if self.use_company_roundoff_cost_center
 						else (self.cost_center or round_off_cost_center),
+						"business_activity":self.ba,
 					},
 					item=self,
 				)
@@ -2131,6 +2228,8 @@ class PurchaseInvoice(BuyingController):
 			):
 				allocated_amount = tax_withholding_details["tax_amount"]
 				tax_withholding_details["tax_amount"] = 0
+
+			# frappe.throw(str(allocated_amount))
 
 			self.append(
 				"advance_tax",

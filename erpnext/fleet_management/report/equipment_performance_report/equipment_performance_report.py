@@ -13,12 +13,11 @@ from frappe import _, json
 from frappe.utils import flt, cint
 from frappe.utils.data import get_last_day
 from frappe.utils.data import flt, cint,add_days, cstr, flt, getdate, nowdate, rounded, date_diff
+
 def execute(filters=None):
 	columns = get_columns(filters)
 	data = get_data(filters)
 	return columns, data
-
-
 
 def get_data(filters):
 	data = []

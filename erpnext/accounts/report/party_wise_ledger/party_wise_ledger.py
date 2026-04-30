@@ -25,6 +25,7 @@ def get_data(filters, show_party_name):
 		"Customer": "customer_name",
 		"Supplier": "supplier_name",
 		"Employee": "employee_name",
+		"Equipment": "name",
 	}
 	parties = []
 
@@ -46,6 +47,7 @@ def get_data(filters, show_party_name):
 	else:
 		# 🔹 Single party type
 		party_type = filters.get("party_type")
+
 		party_name_field = party_map[party_type]
 
 		if not filters.get("inter_company") or party_type == "Employee":

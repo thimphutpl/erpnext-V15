@@ -216,21 +216,21 @@ frappe.ui.form.on("Purchase Order", {
 		}
 	},
 
-	freight_and_insurance_charges: function(frm) {
-		calculate_discount(frm)
-	},
+	// freight_and_insurance_charges: function(frm) {
+	// 	calculate_discount(frm)
+	// },
 
-	discount: function(frm) {
-		calculate_discount(frm)
-	},
+	// discount: function(frm) {
+	// 	calculate_discount(frm)
+	// },
 
-	other_charges: function(frm) {
-		calculate_discount(frm)
-	},
+	// other_charges: function(frm) {
+	// 	calculate_discount(frm)
+	// },
 
-	tax: function(frm) {
-		calculate_discount(frm)
-	},
+	// tax: function(frm) {
+	// 	calculate_discount(frm)
+	// },
 });
 // cur_frm.fields_dict["items"].grid.get_field("expense_account").get_query = function (doc, cdt, cdn) {
 // 	debugger
@@ -267,9 +267,6 @@ frappe.ui.form.on("Purchase Order Item", {
 	},
 
 	item_code: async function (frm, cdt, cdn) {
-		
-		
-		
 		if (frm.doc.is_subcontracted && !frm.doc.is_old_subcontracting_flow) {
 			
 			var row = locals[cdt][cdn];
@@ -637,7 +634,7 @@ erpnext.buying.PurchaseOrderController = class PurchaseOrderController extends (
 						schedule_date: undefined,
 					},
 					get_query_filters: {
-						material_request_type: "Purchase",
+						// material_request_type: "Purchase",
 						docstatus: 1,
 						status: ["!=", "Stopped"],
 						per_ordered: ["<", 100],
@@ -645,7 +642,7 @@ erpnext.buying.PurchaseOrderController = class PurchaseOrderController extends (
 					},
 					allow_child_item_selection: true,
 					child_fieldname: "items",
-					child_columns: ["item_code", "qty", "ordered_qty"],
+					child_columns: ["item_code", "schedule_date", "qty", "ordered_qty"],
 				});
 			},
 			__("Get Items From")
@@ -671,20 +668,20 @@ erpnext.buying.PurchaseOrderController = class PurchaseOrderController extends (
 			__("Get Items From")
 		);
 
-		this.frm.add_custom_button(
-			__("Update Rate as per Last Purchase"),
-			function () {
-				frappe.call({
-					method: "get_last_purchase_rate",
-					doc: me.frm.doc,
-					callback: function (r, rt) {
-						me.frm.dirty();
-						me.frm.cscript.calculate_taxes_and_totals();
-					},
-				});
-			},
-			__("Tools")
-		);
+		// this.frm.add_custom_button(
+		// 	__("Update Rate as per Last Purchase"),
+		// 	function () {
+		// 		frappe.call({
+		// 			method: "get_last_purchase_rate",
+		// 			doc: me.frm.doc,
+		// 			callback: function (r, rt) {
+		// 				me.frm.dirty();
+		// 				me.frm.cscript.calculate_taxes_and_totals();
+		// 			},
+		// 		});
+		// 	},
+		// 	__("Tools")
+		// );
 
 		this.frm.add_custom_button(
 			__("Link to Material Request"),

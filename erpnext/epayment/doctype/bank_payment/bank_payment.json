@@ -55,6 +55,7 @@
   {
    "fieldname": "branch",
    "fieldtype": "Link",
+   "in_standard_filter": 1,
    "label": "Paid From Branch",
    "options": "Branch",
    "reqd": 1
@@ -64,7 +65,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Transaction Type",
-   "options": "\nSalary\nJournal Entry\nPayment Entry\nEmployee Loan Payment\nBonus\nImprest Recoup\nLeave Travel Concession\nPBVA\nProcess MR Payment\nBulk Leave Encashment",
+   "options": "\nSalary\nJournal Entry\nPayment Entry\nEmployee Loan Payment\nBonus\nImprest Recoup\nLeave Travel Concession\nPBVA\nProcess MR Payment\nBulk Leave Encashment\nMechanical Payment",
    "reqd": 1
   },
   {
@@ -338,7 +339,7 @@
  ],
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-23 19:34:33.150502",
+ "modified": "2026-02-13 09:45:07.301177",
  "modified_by": "Administrator",
  "module": "ePayment",
  "name": "Bank Payment",
@@ -432,10 +433,11 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],
- "title_field": "remarks",
+ "title_field": "branch",
  "track_changes": 1,
  "track_views": 1
 }

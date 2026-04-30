@@ -6,6 +6,7 @@ import frappe
 from frappe.utils import flt, cint,add_days, cstr, flt, getdate, nowdate, rounded, date_diff
 from erpnext.accounts.utils import get_child_cost_centers
 
+
 def execute(filters=None):
 	columns = get_columns(filters)
 	data = get_data(filters)
@@ -35,14 +36,14 @@ def get_data(filters):
 	if filters.cost_center:
 		if not filters.get("branch"):
 			all_ccs = get_child_cost_centers(filters.cost_center)
-			data += " and se.from_warehouse in (select parent from `tabWarehouse Branch` wb where wb.branch in (select name from `tabBranch` b where b.cost_center in {0}))".format(tuple(all_ccs))
+			data += " and sed.s_warehouse in (select parent from `tabWarehouse Branch` wb where wb.branch in (select name from `tabBranch` b where b.cost_center in {0}))".format(tuple(all_ccs))
 		else:
 			branch_name = frappe.db.get_value("Branch",{"cost_center": filters.get("branch")}, "name")
-			data += " and se.from_warehouse in (select parent from `tabWarehouse Branch` wb where wb.branch in (select name from `tabBranch` b where b.name = '{0}'))".format(branch_name)
+			data += " and sed.s_warehouse in (select parent from `tabWarehouse Branch` wb where wb.branch in (select name from `tabBranch` b where b.name = '{0}'))".format(branch_name)
 	if filters.get("purpose") == "Material Receipt":
-		data += " and se.purpose = 'Material Receipt'"
+		data += " and se.stock_entry_type = 'Material Receipt'"
 	if filters.get("purpose") == "Material Transfer":
-		data += " and se.purpose = 'Material Transfer'"
+		data += " and se.stock_entry_type = 'Material Transfer'"
 	if filters.get("warehouse"):
 		data += " and sed.s_warehouse = \'" + str(filters.warehouse) + "\'"
 	if filters.get("item_code"):
@@ -57,3 +58,14 @@ def get_data(filters):
 		data += " and sed.uom = \'" + str(filters.uom) + "\'"
 
 	return frappe.db.sql(data)
+
+@frappe.whitelist()
+def get_warehouse(cost_center):
+	all_ccs = get_child_cost_centers(cost_center)
+	# frappe.msgprint(cost_center)
+	# branch = frappe.db.get_value("Branch", {"cost_center":cost_center}, "name")
+	# branch = branch.replace(' - NRDCL','')
+	sql = """ select distinct w.name as name from `tabWarehouse` w, `tabWarehouse Branch` wb where w.name = wb.parent and wb.branch in (select name from `tabBranch` b where b.cost_center in {0} ) """.format(tuple(all_ccs))
+	return frappe.db.sql(sql,as_dict=True)
+
+	

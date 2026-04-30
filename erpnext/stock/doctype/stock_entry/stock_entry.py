@@ -98,6 +98,7 @@ class StockEntry(StockController):
 		asset_repair: DF.Link | None
 		bom_no: DF.Link | None
 		branch: DF.Link
+		business_activity: DF.Link
 		company: DF.Link
 		cost_center: DF.Link | None
 		credit_note: DF.Link | None
@@ -113,7 +114,7 @@ class StockEntry(StockController):
 		items: DF.Table[StockEntryDetail]
 		job_card: DF.Link | None
 		letter_head: DF.Link | None
-		naming_series: DF.Literal["MAT-STE-.YYYY.-"]
+		naming_series: DF.Literal[None]
 		outgoing_stock_entry: DF.Link | None
 		per_transferred: DF.Percent
 		pick_list: DF.Link | None
@@ -134,6 +135,7 @@ class StockEntry(StockController):
 		source_address_display: DF.SmallText | None
 		source_warehouse_address: DF.Link | None
 		status: DF.Data | None
+		stock_entry_series: DF.Link | None
 		stock_entry_type: DF.Link
 		subcontracting_order: DF.Link | None
 		supplier: DF.Link | None
@@ -146,8 +148,11 @@ class StockEntry(StockController):
 		total_amount: DF.Currency
 		total_incoming_value: DF.Currency
 		total_outgoing_value: DF.Currency
+		transporter_name: DF.Data | None
 		use_multi_level_bom: DF.Check
 		value_difference: DF.Currency
+		vehicle_dispatch_date: DF.Data | None
+		vehicle_no: DF.Data | None
 		work_order: DF.Link | None
 	# end: auto-generated types
 
@@ -185,6 +190,7 @@ class StockEntry(StockController):
 			apply_putaway_rule(self.doctype, self.get("items"), self.company, purpose=self.purpose)
 
 	def validate(self):
+		# self.check_item_value()
 		self.pro_doc = frappe._dict()
 		if self.work_order:
 			self.pro_doc = frappe.get_doc("Work Order", self.work_order)
@@ -233,6 +239,20 @@ class StockEntry(StockController):
 			# in Manufacture Entry
 			self.reset_default_field_value("from_warehouse", "items", "s_warehouse")
 			self.reset_default_field_value("to_warehouse", "items", "t_warehouse")
+		self.validate_cost_center()
+
+	def validate_cost_center(self):
+		cost_center = frappe.get_value("Branch",self.branch,'cost_center')
+		# frappe.throw(str(cost_center))
+		if not cost_center:
+			frappe.throw("Set the Cost Center in the Branch")
+		if cost_center:
+			for i in self.items:
+				i.cost_center = cost_center
+
+			# if self.taxes:
+			# 	for i in self.taxes:
+			# 		i.cost_center = cost_center
 
 	def on_submit(self):
 		if self.purpose == "Material Transfer":
@@ -290,6 +310,20 @@ class StockEntry(StockController):
 			self.set_material_request_transfer_status("Not Started")
 		if self.purpose == "Material Transfer" and self.outgoing_stock_entry:
 			self.set_material_request_transfer_status("In Transit")
+			
+	def check_item_value(self):
+		if self.items:
+			for a in self.items:
+				a.item_group = frappe.db.get_value("Item", a.item_code, "item_group")
+				if a.issued_to and not a.issue_to_employee:
+					a.issued_to = None 
+				if flt(a.qty) == 0 or flt(a.basic_amount) == 0 or flt(a.amount) == 0:
+					frappe.throw("Either Quantity or Amount is 0 for Item <b>" + str(a.item_name) + "</b>")
+				if self.purpose == "Material Issue" and frappe.db.get_value("Item Group", a.item_group, "return_needed"):
+					if not a.old_item_returned or not a.old_item_detail:
+						frappe.throw("Old Item should be returned before issuing new item")
+		else:
+			frappe.throw("Stock Entry should have an Item Entry")
 
 	def on_update(self):
 		self.set_serial_and_batch_bundle()

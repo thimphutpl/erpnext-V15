@@ -14,14 +14,14 @@ cur_frm.add_fetch("item_code", "item_group", "item_group")
 cur_frm.add_fetch("item_code", "species", "timber_species")
 cur_frm.add_fetch("item_code", "item_sub_group", "item_sub_group")
 cur_frm.add_fetch("item_code", "material_measurement", "reading_select")
-cur_frm.add_fetch("machine_name", "equipment_number", "equipment_number")
+// cur_frm.add_fetch("machine_name", "equipment_number", "equipment_number")
 cur_frm.add_fetch("machine_name", "equipment_type", "equipment_type")
 
 frappe.ui.form.on('Production', {
 	onload: function(frm) {
-                if (!frm.doc.posting_date) {
-                        frm.set_value("posting_date", frappe.datetime.get_today());
-                }
+		if (!frm.doc.posting_date) {
+				frm.set_value("posting_date", frappe.datetime.get_today());
+		}
 	},
 
 	setup: function(frm) {

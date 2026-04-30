@@ -25,6 +25,7 @@ class MaterialRequestItem(Document):
 		conversion_factor: DF.Float
 		cost_center: DF.Link | None
 		description: DF.TextEditor | None
+		estimated_cost: DF.Currency
 		expense_account: DF.Link | None
 		from_warehouse: DF.Link | None
 		image: DF.AttachImage | None
@@ -48,6 +49,7 @@ class MaterialRequestItem(Document):
 		projected_qty: DF.Float
 		qty: DF.Float
 		rate: DF.Currency
+		reason: DF.SmallText | None
 		received_qty: DF.Float
 		sales_order: DF.Link | None
 		sales_order_item: DF.Data | None

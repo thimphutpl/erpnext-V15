@@ -507,30 +507,30 @@ def get_conditions(filters=None):
 				cond += " and i.item_sub_group in ('Log','Pole','Hakaries','Sawn','Field Sawn','Block','Block (Special Size)')"
 		elif filters.report_by == "Delivery Note":
 			if filters.item_group == "Timber By-Product":
-				cond += " and dni.item_sub_group in ('Firewood, Bhutan Furniture','BBPL firewood','Firewood(BBPL)','Firewood (Bhutan Ply)','Firewood','Post','Bakals','Woodchips','Briquette','Off-cuts/Sawn timber waste','Off-Cuts','Saw Dust')"
+				cond += " and i.item_sub_group in ('Firewood, Bhutan Furniture','BBPL firewood','Firewood(BBPL)','Firewood (Bhutan Ply)','Firewood','Post','Bakals','Woodchips','Briquette','Off-cuts/Sawn timber waste','Off-Cuts','Saw Dust')"
 			elif filters.item_group == "Timber Finished Product":
-				cond += " and dni.item_sub_group in ('Joinery Products','Glulaminated Product')"
+				cond += " and i.item_sub_group in ('Joinery Products','Glulaminated Product')"
 			elif filters.item_group == "Nursery and Plantation":
-				cond += " and dni.item_sub_group in ('Tree Seedlings','Flower Seedlings')"
+				cond += " and i.item_sub_group in ('Tree Seedlings','Flower Seedlings')"
 			else:
-				cond += " and dni.item_sub_group in ('Log','Pole','Hakaries','Sawn','Field Sawn','Block','Block (Special Size)')"
+				cond += " and i.item_sub_group in ('Log','Pole','Hakaries','Sawn','Field Sawn','Block','Block (Special Size)')"
 		elif filters.report_by == "Sales Invoice":
 			if filters.item_group == "Timber By-Product":
-				cond += " and sii.item_sub_group in ('Firewood, Bhutan Furniture','BBPL firewood','Firewood(BBPL)','Firewood (Bhutan Ply)','Firewood','Post','Bakals','Woodchips','Briquette','Off-cuts/Sawn timber waste','Off-Cuts','Saw Dust')"
+				cond += " and i.item_sub_group in ('Firewood, Bhutan Furniture','BBPL firewood','Firewood(BBPL)','Firewood (Bhutan Ply)','Firewood','Post','Bakals','Woodchips','Briquette','Off-cuts/Sawn timber waste','Off-Cuts','Saw Dust')"
 			elif filters.item_group == "Timber Finished Product":
-				cond += " and sii.item_sub_group in ('Joinery Products','Glulaminated Product')"
+				cond += " and i.item_sub_group in ('Joinery Products','Glulaminated Product')"
 			elif filters.item_group == "Nursery and Plantation":
-				cond += " and sii.item_sub_group in ('Tree Seedlings','Flower Seedlings')"
+				cond += " and i.item_sub_group in ('Tree Seedlings','Flower Seedlings')"
 			else:
-				cond += " and sii.item_sub_group in ('Log','Pole','Hakaries','Sawn','Field Sawn','Block','Block (Special Size)')"
+				cond += " and i.item_sub_group in ('Log','Pole','Hakaries','Sawn','Field Sawn','Block','Block (Special Size)')"
 
 	if filters.item_sub_group:
 		if filters.report_by == "Sales Order":
 			cond += " and i.item_sub_group = '" + str(filters.item_sub_group) + "'"
 		elif filters.report_by == "Delivery Note":
-			cond += " and dni.item_sub_group = '" + str(filters.item_sub_group) + "'"
+			cond += " and i.item_sub_group = '" + str(filters.item_sub_group) + "'"
 		elif filters.report_by == "Sales Invoice":
-			cond += " and sii.item_sub_group = '" + str(filters.item_sub_group) + "'"
+			cond += " and i.item_sub_group = '" + str(filters.item_sub_group) + "'"
 
 	if filters.item:
 		if filters.report_by == "Sales Order":
@@ -565,7 +565,7 @@ def get_conditions(filters=None):
 			cond += " and sii.warehouse = '" + str(filters.warehouse) + "'"
 		
 	if filters.location and filters.report_by == "Delivery Note":
-		cond += " and dni.location = '" + str(filters.location) + "'"
+		cond += " and dn.location = '" + str(filters.location) + "'"
 
 	# if filters.uom:
 	# 	if filters.report_by == "Sales Order":

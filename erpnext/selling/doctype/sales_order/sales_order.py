@@ -272,11 +272,15 @@ class SalesOrder(SellingController):
 		self.set_cost_center_in_child()
 		# self.net_total= self.total - flt(self.discount_or_cost_amount)
 		if flt(self.discount_or_cost_amount) >0:
-			self.net_total= self.total - flt(self.discount_or_cost_amount)
+			self.net_total= self.net_total - flt(self.discount_or_cost_amount)
+		if flt(self.additional_cost) > 0:
+			self.net_total= self.net_total + flt(self.additional_cost) 
 		if flt(self.loading_cost)>0:
-			self.net_total = self.total + flt(self.loading_cost)
-		if flt(self.loading_cost)>0 and flt(self.discount_or_cost_amount) >0:
-			self.net_total = self.total + flt(self.loading_cost)-flt(self.discount_or_cost_amount)
+			self.net_total = self.net_total + flt(self.loading_cost)
+		if flt(self.transportation_charges)>0:
+			self.net_total = self.net_total + flt(self.transportation_charges)
+		# if (flt(self.loading_cost)>0 or flt(self.additional_cost) > 0 or flt(self.transportation_charges)>0) or flt(self.discount_or_cost_amount) >0:
+		# 	self.net_total = self.total + flt(self.loading_cost) + flt(self.transportation_charges) + flt(self.additional_cost) - flt(self.discount_or_cost_amount)
 		if not self.get('taxes'):
 			self.grand_total = self.net_total
 		self.base_grand_total = self.grand_total
@@ -314,8 +318,8 @@ class SalesOrder(SellingController):
 
 		self.total_quantity = total_qty
 		self.transportation_charges = round(flt(self.total_quantity) * flt(self.total_distance) * flt(self.transportation_rate), 2)
-		self.discount_amount = flt(self.discount_or_cost_amount) - flt(self.transportation_charges) - flt(self.loading_cost) - flt(self.additional_cost) - flt(self.challan_cost)
-
+		self.net_total = self.total + flt(self.transportation_charges)
+		self.discount_amount = flt(self.discount_or_cost_amount) - flt(self.additional_cost)
 	def update_lot_onsubmit(self):
 		for item in self.items:
 			if item.lot_number:
@@ -1089,6 +1093,7 @@ def make_delivery_note(source_name, target_doc=None, kwargs=None):
 	mapper = {
 		"Sales Order": {"doctype": "Delivery Note", "field_map": {
 				"customer_order": "customer_order",
+				"sales_order_series": "item_series"
 			},"validation": {"docstatus": ["=", 1]}},
 		"Sales Taxes and Charges": {"doctype": "Sales Taxes and Charges", "reset_value": True},
 		"Sales Team": {"doctype": "Sales Team", "add_if_empty": True},
@@ -1225,7 +1230,7 @@ def get_payment_entries_for_sales_order(sales_order):
         SELECT pe.docstatus
         FROM `tabPayment Entry Reference` per
         INNER JOIN `tabPayment Entry` pe ON pe.name = per.parent
-        WHERE per.reference_doctype = 'Sales Order'
+        WHERE per.reference_doctype = 'Sales Order' and pe.docstatus = 1
           AND per.reference_name = %s
     """, sales_order, as_dict=True)
 
