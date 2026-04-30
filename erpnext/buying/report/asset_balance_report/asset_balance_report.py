@@ -12,6 +12,7 @@ def execute(filters=None):
 
 	return columns, data
 
+
 def get_data(filters):
 	conditions = get_conditions(filters)
 
@@ -43,6 +44,7 @@ def get_data(filters):
 			"" AS existing_pr
 		FROM (
 			SELECT
+				ar.name AS asset_received_entry,
 				ar.item_code,
 				ar.ref_doc,
 				ar.cost_center,
@@ -68,16 +70,18 @@ def get_data(filters):
 					SELECT SUM(ai.qty)
 					FROM `tabAsset Issue Details` ai
 					WHERE ai.item_code = ar.item_code
-					AND ai.purchase_receipt = ar.ref_doc
+					AND ai.asset_received_entries = ar.name
 					AND ai.docstatus = 1
+					AND ai.is_existing_asset = 0
 					AND ai.issued_date BETWEEN '{from_date}' AND '{to_date}'
 				), 0) AS issued_qty,
 				IFNULL((
 					SELECT SUM(ai.amount)
 					FROM `tabAsset Issue Details` ai
 					WHERE ai.item_code = ar.item_code
-					AND ai.purchase_receipt = ar.ref_doc
+					AND ai.asset_received_entries = ar.name
 					AND ai.docstatus = 1
+					AND ai.is_existing_asset = 0
 					AND ai.issued_date BETWEEN '{from_date}' AND '{to_date}'
 				), 0) AS issued_amount
 			FROM `tabAsset Received Entries` ar
@@ -85,7 +89,7 @@ def get_data(filters):
 			AND ar.docstatus = 1
 			AND ar.is_existing_asset = 0
 			{cond}
-			GROUP BY ar.item_code, ar.ref_doc, ar.cost_center, ar.branch
+			GROUP BY ar.name, ar.item_code, ar.ref_doc, ar.cost_center, ar.branch
 		) AS t
 		JOIN `tabItem` i ON i.name = t.item_code
 
@@ -122,7 +126,6 @@ def get_data(filters):
 				ar.warehouse,
 				SUM(ar.qty) AS received_qty,
 				SUM(ar.asset_rate * ar.qty) AS received_amount,
-
 				IFNULL((
 					SELECT SUM(ai.qty)
 					FROM `tabAsset Issue Details` ai
@@ -133,7 +136,6 @@ def get_data(filters):
 					AND ai.is_existing_asset = 1
 					AND ai.issued_date BETWEEN '{from_date}' AND '{to_date}'
 				), 0) AS issued_qty,
-
 				IFNULL((
 					SELECT SUM(ai.amount)
 					FROM `tabAsset Issue Details` ai
@@ -144,7 +146,6 @@ def get_data(filters):
 					AND ai.is_existing_asset = 1
 					AND ai.issued_date BETWEEN '{from_date}' AND '{to_date}'
 				), 0) AS issued_amount
-
 			FROM `tabAsset Received Entries` ar
 			WHERE ar.received_date BETWEEN '{from_date}' AND '{to_date}'
 			AND ar.docstatus = 1
