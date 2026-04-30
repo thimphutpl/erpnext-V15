@@ -245,7 +245,7 @@ def get_stock_ledger_entries(filters):
 	return frappe.db.sql("""select item_code, voucher_type, voucher_no, warehouse, posting_date, actual_qty, valuation_rate,
 			company, voucher_type, qty_after_transaction, stock_value_difference
 		from `tabStock Ledger Entry`
-		where docstatus < 2 %s order by posting_date, posting_time, name""" %
+		where is_cancelled=0 %s order by posting_date, posting_time, name""" %
 		conditions, as_dict=1)
 
 def get_item_warehouse_map(filters):

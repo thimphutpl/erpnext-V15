@@ -768,6 +768,7 @@
    "collapsible_depends_on": "eval: doc.margin_type || doc.discount_amount",
    "fieldname": "discount_and_margin_section",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Discount and Margin"
   },
   {
@@ -924,7 +925,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-01-29 14:39:28.493797",
+ "modified": "2026-04-30 11:46:46.792394",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Purchase Order Item",
