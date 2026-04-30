@@ -1345,7 +1345,7 @@ def get_invoice_list(project, party_type, party,included_gst):
 			and party = '{party}'
 			and included_gst='{included_gst}'
 			and docstatus = 1
-			and total_balance_amount > 0
+			and total_gst_amount > 0
 			""".format(project=project, party_type=party_type, party=party,included_gst=included_gst), as_dict=True)
 	return result
 

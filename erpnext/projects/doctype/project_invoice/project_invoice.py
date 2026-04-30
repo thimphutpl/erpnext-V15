@@ -63,6 +63,7 @@ class ProjectInvoice(AccountsController):
         self.load_invoice_boq()
         self.validate_items()
         self.set_defaults()
+        self.calculate_gst_amount() 
     
     def on_submit(self):
         self.update_boq_item()
@@ -85,8 +86,8 @@ class ProjectInvoice(AccountsController):
         self.update_boq()
         self.update_mb_entries()
         self.project_invoice_item_entry()
-    def before_save(self):
-        self.calculate_gst_amount()  
+
+        
     def calculate_gst_amount(self):
         self.gst_amount = 0.0
         self.total_gst_amount = 0.0
@@ -98,6 +99,8 @@ class ProjectInvoice(AccountsController):
             self.gst_amount = gst_amount
             self.total_gst_amount = total_gst_amount
             self.included_gst=1
+            self.net_invoice_amount = total_gst_amount
+            self.total_balance_amount =  self.total_balance_amount + gst_amount
         else:
             self.included_gst=0
     
@@ -446,7 +449,8 @@ class ProjectInvoice(AccountsController):
 
     def make_gl_entries(self,cancel=False):
         if self.net_invoice_amount:
-            total_amount = flt(self.net_invoice_amount) + flt(self.gst_amount)
+            total_amount = flt(self.net_invoice_amount)
+          
             from erpnext.accounts.general_ledger import make_gl_entries
             gl_entries = []
             self.posting_date = self.invoice_date
@@ -487,7 +491,7 @@ class ProjectInvoice(AccountsController):
                 self.get_gl_dict({
                         "account":  inv_gl,
                         "against": self.party,
-                        "debit" if self.party_type == "Supplier" else "credit":self.net_invoice_amount,
+                        "debit" if self.party_type == "Supplier" else "credit":self.net_invoice_amount-self.gst_amount,
                         "debit_in_account_currency" if self.party_type == "Supplier" else "credit_in_account_currency":self.net_invoice_amount,
                         "project": self.project,
                         "cost_center": self.cost_center
@@ -504,7 +508,7 @@ class ProjectInvoice(AccountsController):
                             "cost_center": self.cost_center
                     }, self.currency)
                 )
-
+           
             make_gl_entries(gl_entries, cancel=(self.docstatus == 2),update_outstanding="No", merge_entries=False)
 
     def update_boq_item(self):
