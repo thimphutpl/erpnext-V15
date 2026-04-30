@@ -28,12 +28,13 @@ def get_data(filters):
 			t.received_amount AS total_val,
 			t.issued_qty,
 			t.issued_amount AS issued_val,
-			(t.received_qty - t.issued_qty) AS balance_qty,
+			(t.received_qty - t.issued_qty) AS balance_qty,	
+					  
 			CASE
-				WHEN t.received_qty > 0 THEN
-					(t.received_qty - t.issued_qty) * (t.received_amount / t.received_qty)
+				WHEN (t.received_qty - t.issued_qty) > 0 THEN
+					(t.received_amount - t.issued_amount)
 				ELSE 0
-			END AS balance_val,
+			END AS balance_val,		  
 			CASE
 				WHEN (t.received_qty - t.issued_qty) > 0 THEN
 					CONCAT(
@@ -103,12 +104,12 @@ def get_data(filters):
 			t.received_amount AS total_val,
 			t.issued_qty,
 			t.issued_amount AS issued_val,
-			(t.received_qty - t.issued_qty) AS balance_qty,
+			(t.received_qty - t.issued_qty) AS balance_qty,								  
 			CASE
-				WHEN t.received_qty > 0 THEN
-					(t.received_qty - t.issued_qty) * (t.received_amount / t.received_qty)
+				WHEN (t.received_qty - t.issued_qty) > 0 THEN
+					(t.received_amount - t.issued_amount)
 				ELSE 0
-			END AS balance_val,
+			END AS balance_val,		  
 			"" AS purchase_receipt,
 			CASE
 				WHEN (t.received_qty - t.issued_qty) > 0 THEN t.existing_pr
