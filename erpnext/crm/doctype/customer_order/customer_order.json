@@ -64,6 +64,7 @@
   "total_item_rate",
   "total_transportation_rate",
   "total_royalty_rate",
+  "gst_amount",
   "total_payable_amount",
   "challan_cost",
   "place_order",
@@ -716,13 +717,21 @@
    "in_list_view": 1,
    "label": "User ID",
    "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "gst_amount",
+   "fieldtype": "Currency",
+   "label": "GST Amount (5%)",
+   "precision": "2",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-10-08 12:21:26.927802",
+ "modified": "2026-05-01 15:57:26.763984",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Customer Order",
