@@ -47,25 +47,37 @@ frappe.ui.form.on('Asset Issue Details', {
 			args: {
 				parent: "Purchase Receipt",
 				doctype: "Purchase Receipt Item",
-				fieldname: ["valuation_rate","rate","warehouse"],
+				// fieldname: ["valuation_rate","rate","warehouse"],
+				fieldname: ["base_net_rate", "base_rate", "warehouse"],
 				filters: {
 					"parent": frm.doc.purchase_receipt,
 					"item_code": frm.doc.item_code
 				}
 			},
 			callback: function(r){
-				if(r.message.valuation_rate){
-					cur_frm.set_value("asset_rate", r.message.valuation_rate)
+				// if(r.message.valuation_rate){
+				// 	cur_frm.set_value("asset_rate", r.message.valuation_rate)
+				// }
+				// else if(r.message.rate){
+				// 	cur_frm.set_value("asset_rate", r.message.rate)
+				// }
+				// else{
+				// 	frappe.throw("Not working")
+				// }
+				// cur_frm.set_value("warehouse",r.message.warehouse);
+				if (r.message.base_net_rate) {
+					cur_frm.set_value("asset_rate", r.message.base_net_rate);
 				}
-				else if(r.message.rate){
-					cur_frm.set_value("asset_rate", r.message.rate)
+				else if (r.message.base_rate) {
+					cur_frm.set_value("asset_rate", r.message.base_rate);
 				}
-				else{
-					frappe.throw("Not working")
+				else {
+					frappe.throw("Rate not found in Purchase Receipt Item");
 				}
-				cur_frm.set_value("warehouse",r.message.warehouse);
-			}
-		});
+					cur_frm.set_value("warehouse",r.message.warehouse);
+
+				}
+			});
 
 	},
 	"asset_received_entries": function(frm){
