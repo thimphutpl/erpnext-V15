@@ -395,11 +395,13 @@ class eNote(Document):
 						status = 0
 						break
 			if status == 1:
+				
+				doc = frappe.get_doc('eNote', self.name) 
+				doc.workflow_state = "Pending"
+				doc.save()
+				frappe.db.commit()
+				self.notify_approval()
 				return
-				# doc = frappe.get_doc('eNote', self.name) 
-				# doc.workflow_state = "Pending"
-				# doc.save()
-				# frappe.db.commit()
 				#frappe.db.set_value("eNote", {'name': self.name}, "workflow_state", "Pending")
 
    
