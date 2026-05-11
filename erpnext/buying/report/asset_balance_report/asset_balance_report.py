@@ -58,7 +58,7 @@ def get_data(filters):
 				SUM(ar.qty) AS received_qty,
 				SUM(
 					(
-						SELECT pri.base_net_amount
+						SELECT pri.base_net_rate
 						FROM `tabPurchase Receipt Item` pri
 						JOIN `tabPurchase Receipt` pr
 							ON pr.name = pri.parent
