@@ -189,11 +189,12 @@ def get_data(filters):
         WHERE a.docstatus = 1 
         AND a.available_for_use_date <= '{to_date}'
         AND a.is_free_asset = 0
-        AND (
-            a.status not in ('Scrapped', 'Sold')
-            OR
-            (a.status in ('Scrapped', 'Sold') AND a.disposal_date >= '{from_date}')
-        )
+        # AND (
+        #     a.status not in ('Scrapped', 'Sold')
+        #     OR
+        #     (a.status in ('Scrapped', 'Sold') AND a.disposal_date >= '{from_date}')
+        # )
+        AND IFNULL(a.status, '') NOT IN ('Scrapped', 'Sold')
         {cond}
         UNION
         SELECT
@@ -247,11 +248,12 @@ def get_data(filters):
         WHERE a.docstatus = 1 
         AND a.available_for_use_date <= '{to_date}'
         AND a.is_free_asset = 1
-        AND (
-            a.status not in ('Scrapped', 'Sold')
-            OR
-            (a.status in ('Scrapped', 'Sold') AND a.disposal_date >= '{from_date}')
-        )
+        # AND (
+        #     a.status not in ('Scrapped', 'Sold')
+        #     OR
+        #     (a.status in ('Scrapped', 'Sold') AND a.disposal_date >= '{from_date}')
+        # )
+        AND IFNULL(a.status, '') NOT IN ('Scrapped', 'Sold')
         {cond}
         """.format(from_date=filters.from_date, to_date=filters.to_date, cond=cond)
 
