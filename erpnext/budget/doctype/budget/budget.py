@@ -332,11 +332,14 @@ def validate_expense_against_budget(args, throw_error=True):
 			return
 
 		# 2️⃣ Posting month
+		sub_budget_amount=0
+		reapr_budget_amount=0
 		posting_date = getdate(args.posting_date)
 		month_column = calendar.month_name[posting_date.month].lower()
-	
-
+		month=calendar.month_name[posting_date.month]	
+		#frappe.throw(str(month))
 		# 3️⃣ Monthly budget from Budget Account
+		
 		budget_amount = frappe.db.sql(f"""
 			SELECT COALESCE(SUM(ba.{month_column}), 0)
 			FROM `tabBudget` b
@@ -352,7 +355,42 @@ def validate_expense_against_budget(args, throw_error=True):
 			args.company,
 			args.fiscal_year,
 		))[0][0] or 0
+		
+		sub_budget_amount = frappe.db.sql(f"""
+					SELECT SUM(ba.amount) FROM `tabSupplementary Budget` b JOIN 
+					`tabSupplementary Budget Item` ba ON b.name = ba.parent
+					WHERE ba.account = %s
+					AND b.cost_center = %s
+					AND b.company = %s
+					AND b.fiscal_year = %s
+					AND ba.month = %s
+					AND b.docstatus = 1
+				""", (
+					args.account,
+					parent_cost_center,
+					args.company,
+					args.fiscal_year,
+					month,
+				))[0][0] or 0
 
+		reapr_budget_amount = frappe.db.sql(f"""
+					SELECT SUM(ba.amount) FROM `tabBudget Reappropiation` b JOIN 
+					`tabBudget Reappropiation Detail` ba ON b.name = ba.parent
+					WHERE ba.to_account = %s
+					AND b.to_cost_center = %s
+					AND b.company = %s
+					AND b.fiscal_year = %s
+					AND ba.to_month = %s
+					AND b.docstatus = 1
+				""", (
+					args.account,
+					parent_cost_center,
+					args.company,
+					args.fiscal_year,
+					month
+				))[0][0] or 0
+
+		#frappe.throw(str(reapr_budget_amount))
 		# 4️⃣ Already booked amount for SAME MONTH
 		booked = frappe.db.sql("""
 			SELECT IFNULL(SUM(ja.debit) - SUM(ja.credit), 0)
@@ -371,9 +409,9 @@ def validate_expense_against_budget(args, throw_error=True):
 			posting_date.month,
 			posting_date.year,
 		))[0][0] or 0
-
-		remaining = flt(budget_amount) - flt(booked)
-
+		total_budget_amount=budget_amount+sub_budget_amount+reapr_budget_amount
+		remaining = flt(total_budget_amount) - flt(booked)
+		#frappe.throw(str(total_budget_amount))
 		# 5️⃣ Validate debit
 		if flt(args.get("debit")) > remaining:
 			frappe.throw(
