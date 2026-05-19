@@ -11,7 +11,7 @@ from datetime import datetime
 # #
 # Both recieved and issued pols can be queried with this
 # #
-def get_pol_till(purpose, equipment, date, pol_type=None, additional_type=None):
+def get_pol_till(purpose, equipment,branch, date, pol_type=None, additional_type=None):
 	if not equipment or not date:
 		frappe.throw(_("Equipment and Till Date are Mandatory"))
 
@@ -22,10 +22,10 @@ def get_pol_till(purpose, equipment, date, pol_type=None, additional_type=None):
 		WHERE docstatus = 1 
 			AND type = %s 
 			AND equipment = %s 
+			AND branch = %s
 			AND posting_date <= %s
 	"""
-	args = [purpose, equipment, date]
-
+	args = [purpose, equipment,branch, date]
 	if pol_type:
 		query += " AND pol_type = %s"
 		args.append(pol_type)
@@ -40,15 +40,32 @@ def get_pol_till(purpose, equipment, date, pol_type=None, additional_type=None):
 
 	return total
 
-def get_pol_tills(purpose, equipment, posting_date, pol_type=None, ):
+def get_pol_tills(purpose, equipment,pol_type=None,posting_date=None,):
 	if not equipment:
 		frappe.throw("Equipment and Till Date are Mandatory")
 	total = 0
-	query = "select sum(qty) as total from `tabPOL Entry` where docstatus = 1 and type = \'"+str(purpose)+"\' and equipment = \'" + str(equipment) + "\'"
-	if pol_type:
-		query += " and pol_type = \'" + str(pol_type) + "\'"
+	# query = "select sum(qty) as total from `tabPOL Entry` where docstatus = 1 and type = \'"+str(purpose)+"\' and equipment = \'" + str(equipment) + "\' and posting_date<=\'"+str(posting_date)
+	query = """
+		SELECT SUM(qty) AS total,posting_date
+		FROM `tabPOL Entry`
+		WHERE docstatus = 1
+		AND type = %s
+		AND equipment = %s
+
+	"""
 	
-	quantity = frappe.db.sql(query, as_dict=True)
+	args= [purpose, equipment]
+
+	if pol_type:
+		query += " AND pol_type =%s"
+		args.append(pol_type)
+	if posting_date:
+		query+="AND posting_date<=%s"
+		args.append(posting_date)
+	# frappe.throw(str(args))
+		
+	# frappe.throw(str(query))
+	quantity = frappe.db.sql(query,args, as_dict=True)
 	if quantity:
 		total = quantity[0].total
 	return total
@@ -71,11 +88,11 @@ def get_pol_transfer(purpose, equipment, date, pol_type=None):
 ##
 # Both recieved and issued pols can be queried with this
 ##
-def get_pol_between(purpose, equipment, from_date, to_date, pol_type=None):
+def get_pol_between(purpose, equipment, from_date, to_date, pol_type=None,own_cc=None):
 	if not equipment or not from_date or not to_date:
 		frappe.throw("Equipment and From/To Date are Mandatory")
 	total = 0
-	query = "select sum(qty) as total from `tabPOL Entry` where docstatus = 1 and type = \'"+str(purpose)+"\' and equipment = \'" + str(equipment) + "\' and date between \'" + str(from_date) + "\' and \'" + str(to_date) + "\'"
+	query = "select sum(qty) as total from `tabPOL Entry` where docstatus = 1 and type = \'"+str(purpose)+"\' and equipment = \'" + str(equipment) + "\' and posting_date between \'" + str(from_date) + "\' and \'" + str(to_date) + "\'"
 	if pol_type:
 		query += " and pol_type = \'" + str(pol_type) + "\'"
 		
@@ -87,7 +104,7 @@ def get_pol_between(purpose, equipment, from_date, to_date, pol_type=None):
 ##
 # Get consumed POl as per yardstick
 ##
-def get_pol_consumed_till(equipment, date,):
+def get_pol_consumed_till(equipment, date,filter_dry=None):
 	if not equipment or not date:
 		frappe.throw("Equipment and Till Date are Mandatory")
 	pol = frappe.db.sql("select sum(consumption) as total from `tabVehicle Logbook` where docstatus = 1 and equipment = %s and to_date <= %s", (equipment, date), as_dict=True)

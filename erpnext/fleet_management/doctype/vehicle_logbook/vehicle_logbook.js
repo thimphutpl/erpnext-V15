@@ -124,9 +124,9 @@ frappe.ui.form.on('Vehicle Logbook', {
 				method: "erpnext.fleet_management.doctype.vehicle_logbook.vehicle_logbook.get_equipment_data", // Update with the correct path
 				args: {
 					equipment_name: frm.doc.equipment,
-					to_date: frm.doc.to_date,
 					all_equipment: frm.doc.all_equipment || 1,
-					branch: frm.doc.branch
+					branch: frm.doc.branch,
+					to_date: frm.doc.to_date
 				},
 				callback: function (response) {
 					if (response.message) {

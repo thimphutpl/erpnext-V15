@@ -137,8 +137,8 @@ from __future__ import unicode_literals
 import frappe
 from frappe import _
 from frappe.utils import flt, getdate, formatdate, cstr
-from erpnext.fleet_management.report.fleet_management_report import get_pol_till, get_pol_consumed_till, get_pol_transfer
-# from erpnext.fleet_management.report.hsd_consumption_report.fleet_management_report import get_pol_till,  get_pol_consumed_till, get_pol_transfer, get_pol_consumed_tills
+# from erpnext.fleet_management.report.fleet_management_report import get_pol_till, get_pol_consumed_till, get_pol_transfer
+from erpnext.fleet_management.report.hsd_consumption_report.fleet_management_report import get_pol_till,get_pol_tills, get_pol_consumed_till, get_pol_transfer, get_pol_consumed_tills
 
 def execute(filters=None):
 	columns = get_columns(filters)
@@ -163,7 +163,7 @@ def get_data(filters=None):
 			received = issued = transfered = 0
 			if filters.all_equipment:
 				if eq.hsd_type == item.item_code:
-					received = get_pol_till("Receive", eq.name,item.item_code,filters.to_date)
+					received = get_pol_tills("Receive", eq.name,item.item_code,filters.to_date)
 					issued = get_pol_consumed_till(eq.name, filters.to_date,)
 					transfered = get_pol_transfer("Transfer", eq.name, item.item_code)
 			else:

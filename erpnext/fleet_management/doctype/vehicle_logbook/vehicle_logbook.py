@@ -119,13 +119,13 @@ class VehicleLogbook(Document):
 		if self.lph or self.kph:
 			self.equipment_run_by_electric = 0	
 
-        # Ensure consumption does not exceed tank balance
+		# Ensure consumption does not exceed tank balance
 		if flt(self.tank_balance) < flt(self.consumption):
 			frappe.throw(
-                ("Tank balance ({}) should be greater than or equal to consumption ({}).").format(
-                    self.tank_balance, self.consumption
-                )
-            )
+				("Tank balance ({}) should be greater than or equal to consumption ({}).").format(
+					self.tank_balance, self.consumption
+				)
+			)
 		if self.vehicle_logbook in ["Pool Vehicle", "Support Equipment"]:
 			self.customer = None 
 			self.customer_type = None
@@ -490,62 +490,63 @@ def get_opening(equipment, from_date, to_date, pol_type):
 
 
 @frappe.whitelist()
-def get_equipment_data(equipment_name, all_equipment=0, branch=None):
-    data = []
+def get_equipment_data(equipment_name,all_equipment=0, branch=None,to_date=None):
+	data = []
 
-    query = """
-        SELECT e.name, e.branch, e.registration_number, e.hsd_type, e.equipment_type
-        FROM `tabEquipment` e
-        JOIN `tabEquipment Type` et ON e.equipment_type = et.name
-    """
+	query = """
+		SELECT e.name, e.branch, e.registration_number, e.hsd_type, e.equipment_type
+		FROM `tabEquipment` e
+		JOIN `tabEquipment Type` et ON e.equipment_type = et.name
+	"""
 
-    if not all_equipment:
-        query += " WHERE et.is_container = 1"
-    else:
-        query += " WHERE 1=1"
-    
-    if branch:
-        query += " AND e.branch = %(branch)s"
-    if equipment_name:
-        query += " AND e.name = %(equipment_name)s"
-    
-    query += " ORDER BY e.branch"
-    
-    items = frappe.db.sql("""
-        SELECT item_code, item_name, stock_uom 
-        FROM `tabItem`
-        WHERE is_hsd_item = 1 AND disabled = 0
-    """, as_dict=True)
-    
-    equipment_details = frappe.db.sql(query, {
-        'branch': branch,
-        'equipment_name': equipment_name
-    }, as_dict=True)
-    
-    for eq in equipment_details:
-        for item in items:
-            received = issued = 0
-            if all_equipment:
-                if eq.hsd_type == item.item_code:
-                    received = get_pol_tills("Receive", eq.name, item.item_code)
-                    issued = get_pol_consumed_tills(eq.name,)
-            else:
-                received = get_pol_tills("Stock", eq.name, item.item_code)
-                issued = get_pol_tills("Issue", eq.name, item.item_code)
+	if not all_equipment:
+		query += " WHERE et.is_container = 1"
+	else:
+		query += " WHERE 1=1"
+	
+	if branch:
+		query += " AND e.branch = %(branch)s"
+	if equipment_name:
+		query += " AND e.name = %(equipment_name)s"
+	
+	query += " ORDER BY e.branch"
+	
+	items = frappe.db.sql("""
+		SELECT item_code, item_name, stock_uom 
+		FROM `tabItem`
+		WHERE is_hsd_item = 1 AND disabled = 0
+	""", as_dict=True)
+	
+	equipment_details = frappe.db.sql(query, {
+		'branch': branch,
+		'equipment_name': equipment_name
+		
+	}, as_dict=True)
+	
+	for eq in equipment_details:
+		for item in items:
+			received = issued = 0
+			if all_equipment:
+				if eq.hsd_type == item.item_code:
+					received = get_pol_tills("Receive", eq.name, item.item_code,to_date )
+					issued = get_pol_consumed_tills(eq.name)
+			else:
+				received = get_pol_tills("Stock", eq.name, item.item_code)
+				issued = get_pol_tills("Issue", eq.name, item.item_code)
 						
-            
-            if received or issued:
-                data.append({
-                    'received': received,
-                    'issued': issued,
-                    'balance': flt(received) - flt(issued)
-                })
+			
+			if received or issued:
+				data.append({
+					'received': received,
+					'issued': issued,
+					'balance': flt(received) - flt(issued)
+				})
 
 			# if received or issued:
 			# 		row = [received, issued, flt(received) - flt(issued)]
 			# 		data.append(row)	
-    
-    return data
+	
+	return data
 
 def get_permission_query_conditions(user):
 	if not user: user = frappe.session.user
