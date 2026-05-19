@@ -10,7 +10,7 @@
   "salary_tax_account",
   "overtime_account",
   "employee_contribution_pf",
-  "muster_roll_payable_account",
+  "muster_roll_expense_account",
   "column_break_4",
   "leave_encashment_account",
   "pbva_account",
@@ -235,12 +235,6 @@
    "options": "Account"
   },
   {
-   "fieldname": "muster_roll_payable_account",
-   "fieldtype": "Link",
-   "label": "Muster Roll Payable Account",
-   "options": "Account"
-  },
-  {
    "fieldname": "travel_refundable_account",
    "fieldtype": "Link",
    "label": "Travel Refundable Account",
@@ -272,12 +266,18 @@
    "fieldtype": "Link",
    "label": "Bank Account",
    "options": "Account"
+  },
+  {
+   "fieldname": "muster_roll_expense_account",
+   "fieldtype": "Link",
+   "label": "Muster Roll Expense Account",
+   "options": "Account"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2026-01-06 12:26:19.167155",
+ "modified": "2026-05-18 17:25:01.385178",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "HR Accounts Settings",
