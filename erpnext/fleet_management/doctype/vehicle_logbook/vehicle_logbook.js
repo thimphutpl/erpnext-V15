@@ -84,43 +84,113 @@ frappe.ui.form.on('Vehicle Logbook', {
 		}
 	},
 
-	"equipment": function (frm) {
+	// "equipment": function (frm) {
 
-		// Reset popup flag for new equipment selection
-		frm._equipment_msg_shown = false;
+	// 	// Reset popup flag for new equipment selection
+	// 	frm._equipment_msg_shown = false;
+
+	// 	if (frm.doc.equipment) {
+	// 		frappe.call({
+	// 			method: "erpnext.fleet_management.doctype.vehicle_logbook.vehicle_logbook.get_equipment_data",
+	// 			args: {
+	// 				equipment_name: frm.doc.equipment,
+	// 				all_equipment: frm.doc.all_equipment || 1,
+	// 				branch: frm.doc.branch,
+	// 				to_date: frm.doc.to_date
+	// 			},
+	// 			callback: function (response) {
+	// 				if (response.message) {
+	// 					let data = response.message;
+
+	// 					// Prevent duplicate popup
+	// 					if (frm._equipment_msg_shown) {
+	// 						return;
+	// 					}
+
+	// 					frm._equipment_msg_shown = true;
+
+	// 					frappe.msgprint({
+	// 						title: __('Fetched Equipment Data'),
+	// 						message: `<pre>${JSON.stringify(data, null, 4)}</pre>`,
+	// 						indicator: 'green'
+	// 					});
+
+	// 					if (data.length > 0) {
+	// 						frm.set_value('tank_balance', data[0].balance);
+	// 					}
+	// 				}
+	// 			}
+	// 		});
+	// 	}
+	// },
+
+	"equipment": function (frm) {
+		if (frm.doc.ehf_name && frm.doc.equipment) {
+			frappe.call({
+				method: "erpnext.fleet_management.doctype.equipment_hiring_form.equipment_hiring_form.get_rates",
+				args: { form: frm.doc.ehf_name, equipment: frm.doc.equipment },
+				callback: function (r) {
+					if (r.message) {
+						frm.set_value("rate_type", r.message[0].rate_type);
+						frm.set_value("work_rate", r.message[0].rate);
+						frm.set_value("idle_rate", r.message[0].idle_rate);
+						frm.set_value("from_date", r.message[0].from_date);
+						frm.set_value("to_date", r.message[0].to_date);
+						frm.set_value("from_time", r.message[0].from_time);
+						frm.set_value("to_time", r.message[0].to_time);
+						frm.set_value("place", r.message[0].place);
+						frm.refresh_fields();
+					}
+				}
+			});
+
+			frappe.call({
+				method: "erpnext.fleet_management.doctype.vehicle_logbook.vehicle_logbook.get_yards",
+				args: { equipment: frm.doc.equipment },
+				callback: function (r) {
+					if (r.message) {
+						frm.set_value("kph", r.message[0].kph);
+						frm.set_value("lph", flt(r.message[0].lph));
+						frm.refresh_fields();
+					} else {
+						frappe.msgprint("No yardsticks settings for the equipment");
+					}
+				}
+			});
+		}
 
 		if (frm.doc.equipment) {
 			frappe.call({
-				method: "erpnext.fleet_management.doctype.vehicle_logbook.vehicle_logbook.get_equipment_data",
+				method: "erpnext.fleet_management.doctype.vehicle_logbook.vehicle_logbook.get_equipment_data", // Update with the correct path
 				args: {
 					equipment_name: frm.doc.equipment,
+					to_date: frm.doc.to_date,
 					all_equipment: frm.doc.all_equipment || 1,
-					branch: frm.doc.branch,
-					to_date: frm.doc.to_date
+					branch: frm.doc.branch
 				},
 				callback: function (response) {
 					if (response.message) {
 						let data = response.message;
 
-						// Prevent duplicate popup
-						if (frm._equipment_msg_shown) {
-							return;
-						}
-
-						frm._equipment_msg_shown = true;
-
+						// Process and display the fetched data
 						frappe.msgprint({
 							title: __('Fetched Equipment Data'),
 							message: `<pre>${JSON.stringify(data, null, 4)}</pre>`,
 							indicator: 'green'
 						});
 
+						// Optional: You can set a field value with specific data
 						if (data.length > 0) {
 							frm.set_value('tank_balance', data[0].balance);
 						}
+					} else {
+						frappe.msgprint(__('No data found for the selected equipment.'));
 					}
 				}
 			});
+		} else {
+			// Clear related fields if no equipment is selected
+			frm.set_value('tank_balance', '');
 		}
 	},
 
