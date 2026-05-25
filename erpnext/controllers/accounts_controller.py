@@ -1169,7 +1169,7 @@ class AccountsController(TransactionBase):
 				"cost_center":d.cost_center,
 				"advance_account":d.advance_account,
 				"allocated_amount": allocated_amount,
-				"ref_exchange_rate": flt(d.exchange_rate),  # exchange_rate of advance entry
+				"ref_exchange_rate": flt(d.exchange_rate), 
 			}
 			if d.get("paid_from"):
 				advance_row["account"] = d.paid_from
@@ -1195,7 +1195,8 @@ class AccountsController(TransactionBase):
 			order_field = "purchase_order"
 			order_doctype = "Purchase Order"
 			cost_center = self.cost_center
-			party_account.append(self.credit_to)
+			party_account.append(frappe.db.get_value("Company", self.company, "supplier_advance_account"))
+			# party_account.append(self.credit_to)
 
 		party_account.extend(
 			get_party_account(party_type, party=party, company=self.company, include_advance=True)
