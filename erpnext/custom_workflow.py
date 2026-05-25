@@ -439,11 +439,11 @@ class CustomWorkflow:
 			ceo=frappe.db.get_single_value("HR Settings","ceo")
 			if self.doc.employee==ceo:
 				return
-			if frappe.session.user != self.doc.leave_approver:
-				frappe.throw(f"Only {self.doc.leave_approver} can Approved this Leave Application.")
+			if frappe.session.user != self.doc.reports_to:
+				frappe.throw(f"Only {self.doc.reports_to} can Approved this Leave Application.")
 		elif self.new_state.lower() == ("Rejected".lower()):
-			if frappe.session.user != self.doc.leave_approver:
-				frappe.throw(f"Only {self.doc.leave_approver} can Reject this Leave Application.")
+			if frappe.session.user != self.doc.reports_to:
+				frappe.throw(f"Only {self.doc.reports_to} can Reject this Leave Application.")
 		else:
 			frappe.throw(_("Invalid Workflow State {}").format(self.doc.workflow_state))
 
