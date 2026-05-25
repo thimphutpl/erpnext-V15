@@ -92,6 +92,7 @@ class StockEntry(StockController):
 		amended_from: DF.Link | None
 		apply_putaway_rule: DF.Check
 		asset_repair: DF.Link | None
+		batch_number: DF.Data | None
 		bom_no: DF.Link | None
 		branch: DF.Link
 		company: DF.Link
@@ -132,7 +133,7 @@ class StockEntry(StockController):
 		source_address_display: DF.SmallText | None
 		source_warehouse_address: DF.Link | None
 		status: DF.Data | None
-		stock_entry_purpose: DF.Literal["", "Lap test", "Sample Compliment", "Defective Replacement"]
+		stock_entry_purpose: DF.Literal["", "Lap Test", "Sample Compliment", "Defective Replacement"]
 		stock_entry_type: DF.Link
 		subcontracting_order: DF.Link | None
 		supplier: DF.Link | None
@@ -147,6 +148,7 @@ class StockEntry(StockController):
 		total_outgoing_value: DF.Currency
 		use_multi_level_bom: DF.Check
 		value_difference: DF.Currency
+		vehicle_number: DF.Link | None
 		work_order: DF.Link | None
 	# end: auto-generated types
 
