@@ -826,10 +826,11 @@ def get_balance_details(book_type, tanker=None, equipment=None, posting_date=Non
 
 	if book_type == "Common" and equipment:
 		# Fetch tanker balances
-		received_till = get_pol_tills("Stock", equipment, posting_date, pol_type)
-		issue_till = get_pol_tills("Issue", equipment, posting_date, pol_type)
+		received_till = get_pol_tills("Stock", equipment, pol_type, posting_date)
+		issue_till = get_pol_tills("Issue", equipment, pol_type, posting_date)
 		tanker_balance = flt(received_till) - flt(issue_till)
 		data = {"tanker_balance": tanker_balance, "tank_balance": 0}
+		# frappe.throw(str(tanker_balance))
 
 	elif book_type == "Own" and equipment:
 		# Fetch equipment balances

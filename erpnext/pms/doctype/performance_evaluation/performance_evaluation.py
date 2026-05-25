@@ -675,5 +675,10 @@ def get_permission_query_conditions(user):
 				and `tabEmployee`.user_id = '{user}')
 		or
 		(`tabPerformance Evaluation`.approver = '{user}' and `tabPerformance Evaluation`.workflow_state not in ('Draft', 'Rejected', 'Cancelled'))
+		or
+		(
+        	`tabPerformance Evaluation`.reviewer = '{user}'
+        	and `tabPerformance Evaluation`.workflow_state not in ('Draft', 'Rejected', 'Cancelled')
+    	)
 		)""".format(user=user)
 
