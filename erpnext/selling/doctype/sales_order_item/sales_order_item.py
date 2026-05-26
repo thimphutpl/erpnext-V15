@@ -25,6 +25,7 @@ class SalesOrderItem(Document):
 		base_price_list_rate: DF.Currency
 		base_rate: DF.Currency
 		base_rate_with_margin: DF.Currency
+		batch_number: DF.Data
 		billed_amt: DF.Currency
 		blanket_order: DF.Link | None
 		blanket_order_rate: DF.Currency
@@ -53,7 +54,7 @@ class SalesOrderItem(Document):
 		item_name: DF.Data
 		item_tax_rate: DF.Code | None
 		item_tax_template: DF.Link | None
-		lot_number: DF.Link | None
+		lot_number: DF.Data | None
 		margin_rate_or_amount: DF.Float
 		margin_type: DF.Literal["", "Percentage", "Amount"]
 		material_request: DF.Link | None

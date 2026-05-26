@@ -229,17 +229,21 @@ def get_sales_invoice_data(filters, cond, outer_cond):
         """
         group_by = " GROUP BY si.name"
         order_by = " ORDER BY si.posting_date"
-    else:
+    else:  # Detailed - FIXED
         cols = """
             si.posting_date, si.name, sii.sales_order, sii.delivery_note,
             (SELECT cc.parent_cost_center FROM `tabCost Center` cc WHERE cc.name = 
                 (SELECT b.cost_center FROM `tabBranch` b WHERE b.name = si.branch)) AS region,
-            si.branch, si.customer,(SELECT customer_group FROM `tabCustomer` WHERE name = si.customer) AS customer_group,si.shipping_address_name,
+            si.branch, si.customer,
+            (SELECT customer_group FROM `tabCustomer` WHERE name = si.customer) AS customer_group,
+            si.shipping_address_name,
             sii.item_code, sii.item_name, i.item_sub_group,
-            sii.qty AS delivered_qty, sii.rate, sii.amount, sii.net_amount
+            sii.qty AS delivered_qty, sii.rate,
+            sii.amount AS amount,
+            si.net_total AS net_total
         """
-        group_by = " GROUP BY si.name, sii.item_code"
-        order_by = " ORDER BY si.posting_date"
+        group_by = ""
+        order_by = " ORDER BY si.posting_date, sii.idx"
 
     query = f"""
         SELECT * FROM (
@@ -252,50 +256,6 @@ def get_sales_invoice_data(filters, cond, outer_cond):
         ) AS data WHERE 1=1 {outer_cond}
     """
     return frappe.db.sql(query)
-
-# -------------------- DELIVERY NOTE --------------------
-def get_delivery_note_data(filters, cond, outer_cond):
-    if filters.aggregate:
-        cols = "dn.branch, i.item_sub_group, SUM(dni.qty) AS delivered_qty, SUM(dni.amount) AS amount, SUM(dni.net_amount) AS net_total"
-        group_by = " GROUP BY dn.branch, i.item_sub_group"
-        order_by = ""
-    elif filters.summary:
-        cols = """
-            dn.posting_date, dn.name, dni.against_sales_order,
-            (SELECT cc.parent_cost_center FROM `tabCost Center` cc WHERE cc.name = 
-                (SELECT b.cost_center FROM `tabBranch` b WHERE b.name = dn.branch)) AS region,
-            dn.branch, dn.customer,
-            (SELECT mobile_no FROM `tabCustomer` WHERE name=dn.customer) AS customer_number,
-            dn.customer_group, i.item_sub_group,
-            SUM(dni.qty) AS delivered_qty, SUM(dni.amount) AS amount
-        """
-        group_by = " GROUP BY dn.name"
-        order_by = " ORDER BY dn.posting_date"
-    else:
-        cols = """
-            dn.posting_date, dn.name, dni.against_sales_order,
-            (SELECT cc.parent_cost_center FROM `tabCost Center` cc WHERE cc.name = 
-                (SELECT b.cost_center FROM `tabBranch` b WHERE b.name = dn.branch)) AS region,
-            dn.branch, dn.customer, dn.customer_group, dn.shipping_address_name,
-            dni.item_code, dni.item_name, i.item_sub_group,
-            dni.qty AS delivered_qty, dni.rate, dni.amount, dni.discount_amount AS discount,
-            0 AS additional_cost, dni.net_amount AS net_total
-        """
-        group_by = " GROUP BY dn.name, dni.item_code"
-        order_by = " ORDER BY dn.posting_date"
-
-    query = f"""
-        SELECT * FROM (
-            SELECT {cols}
-            FROM `tabDelivery Note` dn
-            INNER JOIN `tabDelivery Note Item` dni ON dn.name = dni.parent
-            INNER JOIN `tabItem` i ON dni.item_code = i.name
-            WHERE dn.docstatus = 1 {cond}
-            {group_by} {order_by}
-        ) AS data WHERE 1=1 {outer_cond}
-    """
-    return frappe.db.sql(query)
-
 # -------------------- CONDITIONS --------------------
 def get_outer_cond(filters=None):
     outer_cond = ""
