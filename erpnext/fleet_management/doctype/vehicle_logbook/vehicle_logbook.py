@@ -9,6 +9,7 @@ from frappe.utils import flt, cint, getdate, add_days, get_datetime
 from erpnext.custom_utils import check_uncancelled_linked_doc, check_future_date
 from erpnext.fleet_management.report.hsd_consumption_report.fleet_management_report import get_pol_tills, get_pol_consumed_tills
 
+
 class VehicleLogbook(Document):
 	# begin: auto-generated types
 	# This code is auto-generated. Do not modify anything in this block.
@@ -56,6 +57,7 @@ class VehicleLogbook(Document):
 		pol_type: DF.Data | None
 		pool_equipment: DF.Link | None
 		pool_equipment_number: DF.Data | None
+		posting_date: DF.Date
 		rate_type: DF.Data | None
 		reason: DF.Data | None
 		registration_number: DF.Data | None
@@ -526,6 +528,7 @@ def get_equipment_data(equipment_name,all_equipment=0, branch=None,to_date=None)
 	for eq in equipment_details:
 		for item in items:
 			received = issued = 0
+
 			if all_equipment:
 				if eq.hsd_type == item.item_code:
 					received = get_pol_tills("Receive", eq.name, item.item_code,to_date )

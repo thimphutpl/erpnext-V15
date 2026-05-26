@@ -9,6 +9,13 @@ frappe.ui.form.on('Vehicle Logbook', {
 		check_equipment_visibility(frm);
 	},
 
+	onload: function (frm) {
+		if (!frm.doc.posting_date) {
+			frm.set_value('posting_date', frappe.datetime.now_date());
+			// frm.set_value("posting_date", get_today());
+		}
+	},
+
 	refresh: function (frm) {
 		total_ro = 1
 		to_ro = 0
@@ -164,7 +171,7 @@ frappe.ui.form.on('Vehicle Logbook', {
 				method: "erpnext.fleet_management.doctype.vehicle_logbook.vehicle_logbook.get_equipment_data", // Update with the correct path
 				args: {
 					equipment_name: frm.doc.equipment,
-					to_date: frm.doc.to_date,
+					to_date: frm.doc.posting_date,
 					all_equipment: frm.doc.all_equipment || 1,
 					branch: frm.doc.branch
 				},
