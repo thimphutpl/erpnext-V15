@@ -580,6 +580,7 @@
    "label": "Equipment Run By Electricity / Non HSD Consumption"
   },
   {
+   "default": "Today",
    "fieldname": "posting_date",
    "fieldtype": "Date",
    "label": "Posting Date",
@@ -589,7 +590,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-05-26 21:09:28.215762",
+ "modified": "2026-05-26 21:42:04.401721",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Vehicle Logbook",
