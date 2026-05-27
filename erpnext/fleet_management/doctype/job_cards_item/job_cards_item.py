@@ -25,7 +25,7 @@ class JobCardsItem(Document):
 		parentfield: DF.Data
 		parenttype: DF.Data
 		quantity: DF.Float
-		stock_entry: DF.Link | None
+		stock_entry: DF.Data | None
 		tax_rate: DF.Float
 		taxes_and_charges: DF.Link | None
 		total_gst_amount: DF.Float

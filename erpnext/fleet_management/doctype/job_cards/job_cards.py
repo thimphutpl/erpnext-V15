@@ -65,6 +65,29 @@ class JobCards(AccountsController):
 		total_gst_amount: DF.Currency
 	# end: auto-generated types
 	# pass
+
+	def before_cancel(self):
+
+		# Get linked Stock Entries
+		stock_entries = frappe.get_all(
+			"Stock Entry",
+			filters={
+				"job_cards": self.name,
+				"docstatus": 1
+			},
+			pluck="name"
+		)
+
+		for se_name in stock_entries:
+
+			# Cancel submitted stock entry first
+			se = frappe.get_doc("Stock Entry", se_name)
+
+			# Unlink Job Card
+			se.db_set("job_cards", None)
+
+			# Cancel Stock Entry
+			se.cancel()
 		
 	def validate(self):
 		check_future_date(self.posting_date)
@@ -94,7 +117,6 @@ class JobCards(AccountsController):
 		self.total_amount = flt(self.services_amount) + flt(self.goods_amount)
 		self.outstanding_amount = self.total_amount +flt(self.total_gst_amount)
 	
-
 
 	def validate_owned_by(self):
 		if self.owned_by == "CDCL" and self.cost_center == self.customer_cost_center:

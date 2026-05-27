@@ -99,7 +99,7 @@
   },
   {
    "fieldname": "stock_entry",
-   "fieldtype": "Link",
+   "fieldtype": "Data",
    "label": "MIN Number",
    "options": "Stock Entry",
    "read_only": 1
@@ -159,7 +159,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-02-03 14:46:26.218864",
+ "modified": "2026-05-27 08:09:25.585151",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Job Cards Item",
