@@ -781,7 +781,6 @@
   {
    "fieldname": "batch_number",
    "fieldtype": "Data",
-   "hidden": 1,
    "label": "Batch Number",
    "no_copy": 1,
    "oldfieldname": "naming_series",
@@ -802,7 +801,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-05-21 10:30:37.237853",
+ "modified": "2026-05-27 12:37:47.795011",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Stock Entry",
