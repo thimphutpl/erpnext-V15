@@ -83,7 +83,7 @@ class ProjectSales(Document):
 		je.title = "Project Sales (" + self.name + ")"
 		je.voucher_type = 'Journal Entry'
 		je.naming_series = 'Project Sales Invoice'
-		je.remark = 'Payment against Project Sales Invoice : ' + self.name;
+		je.remark = 'Payment against Project Sales Invoice : ' + self.name
 		je.posting_date = self.posting_date
 		je.branch = self.selling_branch
 
@@ -91,10 +91,10 @@ class ProjectSales(Document):
 		#Amount Segregation
 		cc_amount = {}
 		for a in self.items:
-			if cc_amount.has_key(a.expense_account):
+			if a.expense_account in cc_amount:
 				cc_amount[a.expense_account] = cc_amount[a.expense_account] + a.amount
 			else:
-				cc_amount[a.expense_account] = a.amount;
+				cc_amount[a.expense_account] = a.amount
 			total_amount += a.amount
 		
 		if total_amount > 0:	
