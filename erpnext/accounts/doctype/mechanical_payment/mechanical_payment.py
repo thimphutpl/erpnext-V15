@@ -1419,7 +1419,7 @@ class MechanicalPayment(AccountsController):
         total = sum(item.outstanding_amount or 0 for item in (self.items or []))
         
 
-        net_total = total + gst_amount
+        net_total = total
         # frappe.throw(str(net_total))
 
         self.net_amount = net_total - deduction_amount-flt(self.tds_amount)
