@@ -9,13 +9,6 @@ frappe.ui.form.on('Vehicle Logbook', {
 		check_equipment_visibility(frm);
 	},
 
-	onload: function (frm) {
-		if (!frm.doc.posting_date) {
-			frm.set_value('posting_date', frappe.datetime.now_date());
-			// frm.set_value("posting_date", get_today());
-		}
-	},
-
 	refresh: function (frm) {
 		total_ro = 1
 		to_ro = 0
@@ -319,6 +312,11 @@ frappe.ui.form.on('Vehicle Logbook', {
 		// Set today's date if empty
 		if (!frm.doc.to_date) {
 			frm.set_value('to_date', frappe.datetime.get_today());
+		}
+
+		if (!frm.doc.posting_date) {
+			frm.set_value('posting_date', frappe.datetime.get_today());
+			// frm.set_value("posting_date", get_today());
 		}
 
 		// Make sure field is editable
