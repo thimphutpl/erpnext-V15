@@ -168,6 +168,7 @@ class PurchaseInvoice(BuyingController):
 		purchase_receipt_date: DF.Date | None
 		rejected_warehouse: DF.Link | None
 		release_date: DF.Date | None
+		remark: DF.SmallText | None
 		remarks: DF.SmallText | None
 		repost_required: DF.Check
 		represents_company: DF.Link | None
@@ -286,7 +287,7 @@ class PurchaseInvoice(BuyingController):
 
 		self.validate_posting_time()
 
-		super().validate()
+		# super().validate()
 
 		if not self.is_return:
 			self.po_required()
@@ -977,6 +978,7 @@ class PurchaseInvoice(BuyingController):
 					from_repost=from_repost,
 				)
 				self.make_exchange_gain_loss_journal()
+				frappe.throw(str(gl_entries))
 		elif self.docstatus == 2:
 			make_reverse_gl_entries(voucher_type=self.doctype, voucher_no=self.name)
 			self.cancel_provisional_entries()
@@ -2229,4 +2231,11 @@ def get_permission_query_conditions(user):
 			and ab.employee = e.name
 			and bi.parent = ab.name
 			and bi.branch = `tabPurchase Invoice`.branch)
+		or 
+			exists(select 1
+			from `tabMuster Roll Employee` e, `tabAssign Branch` ab, `tabBranch Item` bi
+			where e.user_id = '{user}'
+			and ab.employee = e.name
+			and bi.parent = ab.name
+			and bi.branch = `tabPurchase Invoice`.branch)	
 	)""".format(user=user)
