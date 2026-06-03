@@ -604,6 +604,13 @@ def get_permission_query_conditions(user):
 			and ab.employee = e.name
 			and bi.parent = ab.name
 			and bi.branch = `tabJob Cards`.branch)
+		or 
+			exists(select 1
+			from `tabMuster Roll Employee` e, `tabAssign Branch` ab, `tabBranch Item` bi
+			where e.user_id = '{user}'
+			and ab.employee = e.name
+			and bi.parent = ab.name
+			and bi.branch = `tabJob Cards`.branch)	
 	)""".format(user=user)
 @frappe.whitelist()
 def get_taxes_for_template(template_name):
