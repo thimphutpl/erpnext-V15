@@ -63,6 +63,10 @@
   "percent_completed",
   "financial_progress",
   "freeze_till",
+  "project_closure_details_section",
+  "is_closed",
+  "column_break_mddn",
+  "closure_report_completed",
   "sb_material_details",
   "task_material_item",
   "other_document_references_section",
@@ -1021,6 +1025,29 @@
    "fieldname": "project_engineer_phone_number",
    "fieldtype": "Data",
    "label": "Project Engineer Phone number"
+  },
+  {
+   "fieldname": "project_closure_details_section",
+   "fieldtype": "Section Break",
+   "label": "Project Closure Details"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_closed",
+   "fieldtype": "Check",
+   "label": "Is Closed",
+   "permlevel": 1
+  },
+  {
+   "fieldname": "column_break_mddn",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "closure_report_completed",
+   "fieldtype": "Check",
+   "label": "Closure Report Completed",
+   "permlevel": 1
   }
  ],
  "icon": "fa fa-puzzle-piece",
@@ -1029,7 +1056,7 @@
  "is_submittable": 1,
  "links": [],
  "max_attachments": 4,
- "modified": "2026-01-08 09:58:52.463760",
+ "modified": "2026-06-03 10:49:27.712269",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Project",
