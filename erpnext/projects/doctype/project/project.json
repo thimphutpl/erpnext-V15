@@ -64,9 +64,12 @@
   "financial_progress",
   "freeze_till",
   "project_closure_details_section",
-  "is_closed",
   "column_break_mddn",
-  "closure_report_completed",
+  "tech_completed",
+  "column_break_oiqu",
+  "fin_completed",
+  "column_break_zvzv",
+  "is_closed",
   "sb_material_details",
   "task_material_item",
   "other_document_references_section",
@@ -1032,11 +1035,13 @@
    "label": "Project Closure Details"
   },
   {
+   "allow_on_submit": 1,
    "default": "0",
    "fieldname": "is_closed",
    "fieldtype": "Check",
-   "label": "Is Closed",
-   "permlevel": 1
+   "label": "Project Closure Completed",
+   "permlevel": 1,
+   "read_only": 1
   },
   {
    "fieldname": "column_break_mddn",
@@ -1044,10 +1049,25 @@
   },
   {
    "default": "0",
-   "fieldname": "closure_report_completed",
+   "fieldname": "tech_completed",
    "fieldtype": "Check",
-   "label": "Closure Report Completed",
+   "label": "Technical Closure Completed",
    "permlevel": 1
+  },
+  {
+   "fieldname": "column_break_oiqu",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "fin_completed",
+   "fieldtype": "Check",
+   "label": "Financial Clousre Completed",
+   "permlevel": 1
+  },
+  {
+   "fieldname": "column_break_zvzv",
+   "fieldtype": "Column Break"
   }
  ],
  "icon": "fa fa-puzzle-piece",
@@ -1056,7 +1076,7 @@
  "is_submittable": 1,
  "links": [],
  "max_attachments": 4,
- "modified": "2026-06-03 10:49:27.712269",
+ "modified": "2026-06-03 12:44:34.381601",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Project",

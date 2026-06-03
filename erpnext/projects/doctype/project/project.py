@@ -131,6 +131,10 @@ class Project(Document):
 		self.validate_branch_change()
 		self.send_welcome_email()
 		self.check_timesheet_status()
+		if self.tech_completed and self.fin_completed:
+			self.is_closed = 1
+		else:
+			self.is_closed =0
 
 		# if not self.is_new():
 		# 	self.copy_from_template()
