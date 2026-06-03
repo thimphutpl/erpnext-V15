@@ -287,7 +287,7 @@ class PurchaseInvoice(BuyingController):
 
 		self.validate_posting_time()
 
-		# super().validate()
+		super().validate()
 
 		if not self.is_return:
 			self.po_required()
@@ -978,7 +978,7 @@ class PurchaseInvoice(BuyingController):
 					from_repost=from_repost,
 				)
 				self.make_exchange_gain_loss_journal()
-				frappe.throw(str(gl_entries))
+				# frappe.throw(str(gl_entries))
 		elif self.docstatus == 2:
 			make_reverse_gl_entries(voucher_type=self.doctype, voucher_no=self.name)
 			self.cancel_provisional_entries()

@@ -31,6 +31,8 @@
   "apply_tds",
   "tax_withholding_category",
   "amended_from",
+  "section_break_jpje",
+  "remark",
   "supplier_invoice_details",
   "bill_no",
   "column_break_15",
@@ -1777,13 +1779,22 @@
    "fieldname": "charges_without_gst",
    "fieldtype": "Currency",
    "label": "Other Charges Without GST"
+  },
+  {
+   "fieldname": "section_break_jpje",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "remark",
+   "fieldtype": "Small Text",
+   "label": "Remark"
   }
  ],
  "icon": "fa fa-file-text",
  "idx": 204,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-04-02 11:42:02.166381",
+ "modified": "2026-05-20 13:34:08.209091",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Purchase Invoice",
