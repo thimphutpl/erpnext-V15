@@ -45,6 +45,7 @@ frappe.ui.form.on('Utility Bill', {
 				});
 			}).addClass("btn-primary");
 		}
+
 	},
 	"tds_percent": function (frm) {
 		calculate_tds(frm);
@@ -114,12 +115,7 @@ frappe.ui.form.on('Utility Bill Item', {
 	},
 	tds_applicable: function (frm, cdt, cdn) {
 		calculate_net_amount(frm, cdt, cdn);
-	},
-	included_gst: function (frm, cdt, cdn) {
-		calculate_gst_amount(frm, cdt, cdn);
 	}
-
-
 });
 
 function calculate_net_amount(frm, cdt, cdn) {
@@ -145,31 +141,4 @@ function calculate_net_amount(frm, cdt, cdn) {
 	frm.set_value("total_bill_amount", total_inv_amount);
 	frm.set_value("total_tds_amount", total_tds_amount);
 	frm.set_value("net_payable_amount", total_net_amount);
-}
-function calculate_gst_amount(frm, cdt, cdn) {
-	var item = frappe.get_doc(cdt, cdn);
-
-	var gst_amount = 0.0;
-	var net_amount = 0.0;
-	var total_gst_amount = 0.0;
-	var total_net_amount = 0.0;
-
-	if (item.invoice_amount > 0) {
-		if (item.included_gst) {
-			gst_amount = (parseFloat(item.invoice_amount) * 0.05) / 1.05; // 5% included GST
-		}
-
-		net_amount = parseFloat(item.invoice_amount) - gst_amount;
-
-		frappe.model.set_value(cdt, cdn, "gst_amount", gst_amount);
-		frappe.model.set_value(cdt, cdn, "net_amount", net_amount);
-	}
-
-	// Sum all items for parent fields
-	frm.doc.item.forEach(function (d) {
-		total_gst_amount += parseFloat(d.gst_amount || 0);
-		total_net_amount += parseFloat(d.net_amount || 0);
-	});
-	frm.set_value("net_payable_amount", total_net_amount);
-	frm.set_value("total_gst_amount", total_gst_amount);
 }

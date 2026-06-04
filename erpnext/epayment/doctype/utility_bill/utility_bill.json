@@ -135,6 +135,7 @@
    "label": "Fetch Utility Outstanding"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "item",
    "fieldtype": "Table",
    "options": "Utility Bill Item",
@@ -212,7 +213,7 @@
  ],
  "is_submittable": 1,
  "links": [],
- "modified": "2026-02-22 13:21:54.571677",
+ "modified": "2026-05-28 18:58:05.893127",
  "modified_by": "Administrator",
  "module": "ePayment",
  "name": "Utility Bill",

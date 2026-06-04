@@ -415,7 +415,8 @@ class UtilityBill(Document):
 		self.update_pi_number()
 		if self.workflow_state == "Waiting For Verification":
 			self.payment_status="Pending"
-			
+	
+	
 	def before_submit(self):
 		self.utility_payment()
 		self.update_status()
@@ -483,16 +484,20 @@ class UtilityBill(Document):
 	# 			total_gst += a.gst_amount
 
 	# 	self.total_gst_amount = total_gst
-	def calculate_gst_amount(self):
-		gst_rate = 5.0
-		total_gst = 0.0
+	# def calculate_gst_amount(self):
+	# 	gst_rate = 5.0
+	# 	total_gst = 0.0
 
+	# 	for row in self.item:
+	# 		if row.payment_status == "Success":
+	# 			invoice_amount = row.invoice_amount or 0
+	# 			row.gst_amount = (invoice_amount * gst_rate) / (100 + gst_rate)
+	# 			total_gst += row.gst_amount
+	def calculate_gst_amount(self):
+		total_gst = 0.0
 		for row in self.item:
 			if row.payment_status == "Success":
-				invoice_amount = row.invoice_amount or 0
-				row.gst_amount = (invoice_amount * gst_rate) / (100 + gst_rate)
 				total_gst += row.gst_amount
-
 		self.total_gst_amount = total_gst
 	def utility_payment(self):
 		for d in self.item:
@@ -724,12 +729,22 @@ class UtilityBill(Document):
 	@frappe.whitelist()
 	def make_journal_entry(self):
 
+			
 		if self.journal_entry:
-			frappe.throw(
-				"Journal Entry No. <b>{}</b> already created for this Utility Bill".format(
-					self.journal_entry
+
+			if frappe.db.exists("Journal Entry", self.journal_entry):
+
+				status = frappe.db.get_value(
+					"Journal Entry",
+					self.journal_entry,
+					"docstatus"
 				)
-			)
+
+				# block only if not cancelled
+				if status != 2:
+					frappe.throw(
+						f"Journal Entry No. <b>{self.journal_entry}</b> already exists for this Utility Bill"
+					)
 
 		doc = frappe.new_doc("Journal Entry")
 		doc.branch = self.branch
@@ -739,6 +754,7 @@ class UtilityBill(Document):
 		doc.company = self.company
 		doc.utility_bill = str(self.name)
 		doc.remarks = "Utility Bill Payment " + str(self.name)
+		doc.status = "Completed"
 		doc.cheque_no = self.name
 		doc.cheque_date = self.posting_date
 		doc.payment_status = "Payment Successful"
@@ -752,13 +768,12 @@ class UtilityBill(Document):
 		if self.item:
 
 			for a in self.item:
-
 				if a.invoice_amount > 0 and a.payment_status == "Success":
 
 					# Debit Entry
 					doc.append("accounts", {
 						"account": a.debit_account,
-						"debit_in_account_currency": a.net_amount,
+						"debit_in_account_currency": a.net_amount-a.gst_amount,
 						"reference_type": "",
 						"reference_no": self.name,
 						"cost_center": self.cost_center,
@@ -767,7 +782,7 @@ class UtilityBill(Document):
 					})
 
 					# GST Entry
-					if a.included_gst and a.gst_amount > 0:
+					if a.gst_amount > 0:
 
 						doc.append("accounts", {
 							"account": account_head,
@@ -776,15 +791,9 @@ class UtilityBill(Document):
 							"reference_type": ""
 						})
 
-						credit_amount = a.net_amount + a.gst_amount
-
-					else:
-						credit_amount = a.net_amount
-
-					# Credit Entry
 					doc.append("accounts", {
 						"account": self.expense_account,
-						"credit_in_account_currency": credit_amount,
+						"credit_in_account_currency": a.net_amount,
 						"cost_center": self.cost_center,
 						"reference_type": ""
 					})
