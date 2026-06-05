@@ -589,7 +589,9 @@ class HireChargeInvoice(AccountsController):
 			frappe.throw("Total Invoice Amount should be greater than 0")
 		if self.balance_amount < 0:
 			frappe.throw("Balance amount cannot be negative")
-		self.outstanding_amount = self.balance_amount
+
+		# self.outstanding_amount = self.balance_amount
+		self.outstanding_amount = (self.balance_amount or 0) + (self.gst_amount or 0)
 		self.set_advance_data()
 	def set_advance_data(self):
 		advance_amount = 0
@@ -602,6 +604,7 @@ class HireChargeInvoice(AccountsController):
 			balance_amount = flt(balance_amount) + flt(a.balance_advance_amount)
 		self.advance_amount = advance_amount
 		self.balance_advance_amount = balance_amount
+
 
 	# def set_discount_data(self):
 	# 	discount_amount = 0
