@@ -32,7 +32,7 @@ def execute(filters=None):
 
 	columns = get_columns(filters)
 	data = get_data(filters)
-	add_total_row(data, filters)
+
 	return columns, data
 
 
@@ -110,30 +110,6 @@ def get_columns(filters):
 	])
 
 	return columns
-
-
-def add_total_row(data, filters):
-	if not data:
-		return
-
-	total_advance_paid = sum(row.get("advance_paid") or 0 for row in data)
-	total_advance_adjusted = sum(row.get("advance_adjusted") or 0 for row in data)
-	total_advance_balance = sum(row.get("advance_balance") or 0 for row in data)
-
-	total_row = {
-		"from_date": filters.from_date,
-		"to_date": filters.to_date,
-		"cost_center": "",
-		"party_type": "",
-		"party": "<b>Total</b>",
-		"supplier_type": "",
-		"account": "",
-		"advance_paid": total_advance_paid,
-		"advance_adjusted": total_advance_adjusted,
-		"advance_balance": total_advance_balance,
-	}
-
-	data.append(total_row)	
 
 def get_data(filters):
 	conditions = [
