@@ -623,7 +623,7 @@
   },
   {
    "fieldname": "lot_number",
-   "fieldtype": "Link",
+   "fieldtype": "Data",
    "label": "Lot Number",
    "options": "Lot List"
   }
@@ -632,7 +632,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-12-15 20:53:27.563134",
+ "modified": "2026-06-03 17:04:26.624231",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Stock Entry Detail",
