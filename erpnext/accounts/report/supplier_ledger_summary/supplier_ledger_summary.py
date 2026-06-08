@@ -1,5 +1,5 @@
-# Copyright (c) 2013, Frappe Technologies Pvt. Ltd. and contributors
-# For license information, please see license.txt
+# # Copyright (c) 2013, Frappe Technologies Pvt. Ltd. and contributors
+# # For license information, please see license.txt
 
 
 from erpnext.accounts.report.customer_ledger_summary.customer_ledger_summary import (
@@ -13,3 +13,4 @@ def execute(filters=None):
 		"naming_by": ["Buying Settings", "supp_master_name"],
 	}
 	return PartyLedgerSummaryReport(filters).run(args)
+

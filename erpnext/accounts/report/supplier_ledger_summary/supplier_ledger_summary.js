@@ -33,6 +33,21 @@ frappe.query_reports["Supplier Ledger Summary"] = {
 			options: "Finance Book",
 		},
 		{
+			fieldname: "cost_center",
+			label: __("Cost Center"),
+			fieldtype: "Link",
+			options: "Cost Center",
+			get_query: function () {
+				var company = frappe.query_report.get_filter_value("company");
+				return {
+					filters: {
+						company: company,
+						is_group: 0
+					}
+				};
+			},
+		},
+		{
 			fieldname: "party",
 			label: __("Supplier"),
 			fieldtype: "Link",

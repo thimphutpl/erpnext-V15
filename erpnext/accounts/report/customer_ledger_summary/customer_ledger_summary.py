@@ -278,10 +278,15 @@ class PartyLedgerSummaryReport:
 			conditions.append("gle.company=%(company)s")
 
 		if self.filters.finance_book:
-			conditions.append("ifnull(finance_book,'') in (%(finance_book)s, '')")
+			# conditions.append("ifnull(finance_book,'') in (%(finance_book)s, '')")
+			conditions.append("ifnull(gle.finance_book,'') in (%(finance_book)s, '')")
+
+		if self.filters.get("cost_center"):
+			conditions.append("gle.cost_center=%(cost_center)s")
 
 		if self.filters.get("party"):
-			conditions.append("party=%(party)s")
+			# conditions.append("party=%(party)s")
+			conditions.append("gle.party=%(party)s")
 
 		if self.filters.party_type == "Customer":
 			if self.filters.get("customer_group"):
