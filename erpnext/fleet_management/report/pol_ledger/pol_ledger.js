@@ -97,7 +97,7 @@ frappe.query_reports["POL Ledger"] = {
 			"reqd": 1
 		},
 		{
-			"fieldname": "tank_balance",
+			"fieldname": "all_equipment",
 			"label": "Own Tank Balance of All Equipments",
 			"fieldtype": "Check"
 		}
