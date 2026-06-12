@@ -128,6 +128,30 @@ class POLReceive(StockController):
 		self.validate_uom_is_integer("stock_uom", "qty")
 		self.validate_item()
 		self.validate_balance()
+		self.validate_duplicate_draft_receive()
+
+	def validate_duplicate_draft_receive(self):
+		"""Prevent creating another draft POL Receive for the same equipment and show existing draft ID"""
+		if self.docstatus == 0:  # Only check for draft documents
+			# Check if there's already a draft POL Receive for this equipment
+			existing_draft = frappe.db.get_value(
+				"POL Receive",
+				{
+					"equipment": self.equipment,
+					"docstatus": 0,  # Draft status
+					"name": ["!=", self.name]  # Exclude current document
+				},
+				"name"  # Get the document name/ID
+			)
+			
+			if existing_draft:
+				frappe.throw(
+					_("A draft POL Receive transaction already exists for equipment {0}.<br><br>Existing Draft Transaction: <b>{1}</b><br><br>Please complete or cancel the existing draft before creating a new one.").format(
+						frappe.bold(self.equipment),
+						frappe.bold(existing_draft)
+					)
+				)	
+
 
 	def validate_balance(self):
 		balances = get_balance_details(self.book_type, self.tanker, self.equipment, self.posting_date, self.pol_type)

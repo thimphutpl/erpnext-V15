@@ -114,6 +114,29 @@ class POLIssue(StockController):
 		""" ++++++++++ Ver 2.0.190509 Begins ++++++++++ """
 		# Ver 2.0.190509, following method added by SHIV on 2019/05/21
 		self.update_items()
+		self.validate_duplicate_draft_issue()
+
+	def validate_duplicate_draft_issue(self):
+		"""Prevent creating another draft POL Issue for the same equipment and show existing draft ID"""
+		if self.docstatus == 0:  # Only check for draft documents
+			# Check if there's already a draft POL Receive for this equipment
+			existing_draft = frappe.db.get_value(
+				"POL Issue",
+				{
+					"tanker": self.tanker,
+					"docstatus": 0,  # Draft status
+					"name": ["!=", self.name]  # Exclude current document
+				},
+				"name"  # Get the document name/ID
+			)
+			
+			if existing_draft:
+				frappe.throw(
+					_("A draft POL Issue transaction already exists for equipment {0}.<br><br>Existing Draft Transaction: <b>{1}</b><br><br>Please complete or cancel the existing draft before creating a new one.").format(
+						frappe.bold(self.tanker),
+						frappe.bold(existing_draft)
+					)
+				)				
 
 	def validate_branch(self):
 		if self.purpose == "Issue" and self.is_hsd_item and not self.tanker:
