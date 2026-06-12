@@ -174,6 +174,32 @@ def get_payment_entries_for_bank_clearance(
 		},
 		as_dict=1,
 	)
+	tds_remittance = frappe.db.sql(
+			"""
+			select
+				"TDS Remittance" as payment_document, 
+				name as payment_entry,
+				cheque_no as cheque_number, cheque_date,
+				total_tds as credit, 0 as debit, posting_date
+			from `tabTDS Remittance`
+			where
+				credit_account = %(account)s and docstatus=1
+				and posting_date >= %(from)s and posting_date <= %(to)s
+				{condition}
+			order by
+				posting_date ASC, name DESC
+		""".format(
+				condition=condition
+			),
+			{
+				"account": account,
+				"from": from_date,
+				"to": to_date,
+				"bank_account": bank_account,
+			},
+			as_dict=1,
+		)
+	# frappe.throw(str(tds_remittance))
 
 	# for pe in payment_entries:
 	# 	total_deductions = 0
@@ -271,7 +297,13 @@ def get_payment_entries_for_bank_clearance(
 		).run(as_dict=True)
 
 	entries = (
-		list(payment_entries) + list(journal_entries) + list(hsd_entries) + list(mechanical_entries) + list(pos_sales_invoices) + list(pos_purchase_invoices)
+		list(payment_entries) + 
+		list(journal_entries) + 
+		list(hsd_entries) + 
+		list(mechanical_entries) + 
+		list(pos_sales_invoices) + 
+		list(pos_purchase_invoices)+
+		list(tds_remittance)
 	)
 
 	return entries
