@@ -592,23 +592,29 @@ cur_frm.fields_dict['items'].grid.get_field('customer_price_list').get_query = f
 
 frappe.ui.form.on("Sales Order Item", {
 	qty: function (frm, cdt, cdn) {
+		
 		var item = locals[cdt][cdn]
-		if (frm.doc.naming_series && !frm.doc.is_kidu_sale) {
-			// if(item.lot_number){
-			// 	get_balance(frm, cdt, cdn);
-			// } 
-			if (item.conversion_req) {
-				frappe.model.set_value(cdt, cdn, "stock_qty", '')
-				cur_frm.refresh_field("stock_qty")
-			}
-		}
+		// if (frm.doc.naming_series && !frm.doc.is_kidu_sale) {
+		// 	// if(item.lot_number){
+		// 	// 	get_balance(frm, cdt, cdn);
+		// 	// } 
+		// 	if (item.conversion_req) {
+		// 		//alert("hi3")
+		// 		frappe.model.set_value(cdt, cdn, "stock_qty", '')
+		// 		cur_frm.refresh_field("stock_qty")
+		// 	}
+		// }
 
 		if (item.item_code && item.stock_uom) {
-			if (item.stock_uom != item.sales_uom && (typeof item.sales_uom != "undefined" && item.sales_uom != '')) {
+			 //alert("hi4")
+			if (item.stock_uom != item.uom && (typeof item.uom != "undefined" && item.uom != '')) {
+				//alert("hi5")
 				frappe.model.set_value(cdt, cdn, "stock_qty", item.conversion_factor * item.qty)
 				cur_frm.refresh_field("stock_qty")
 			}
 			else {
+				//alert("hi6")
+				//frappe.model.set_value(cdt, cdn, "stock_qty", item.conversion_factor * item.qty)
 				frappe.model.set_value(cdt, cdn, "stock_qty", item.qty)
 				cur_frm.refresh_field("stock_qty")
 			}
@@ -616,6 +622,7 @@ frappe.ui.form.on("Sales Order Item", {
 	},
 
 	sales_uom: function (frm, cdt, cdn) {
+		
 		frappe.model.set_value(cdt, cdn, "price_template", "")
 
 		var item = locals[cdt][cdn];
