@@ -101,12 +101,12 @@ class POLReceive(StockController):
 		
 	def add_previous_km(self):
 		latest_km = frappe.db.sql('''
-                            SELECT current_km_reading_2 
+							SELECT current_km_reading_2 
 							FROM `tabPOL Receive` 
 							WHERE equipment_number = '{}' and docstatus=1
 							ORDER BY previous_km_reading DESC 
 							LIMIT 1;
-                            '''.format(self.equipment_number))
+							'''.format(self.equipment_number))
 		if latest_km:
 			# frappe.throw(str(latest_km[0][0]))
 			self.previous_km_reading = latest_km[0][0]
@@ -703,3 +703,16 @@ class POLReceive(StockController):
 	# 		)
 		
 	# 	make_gl_entries(gl_entries, cancel=(self.docstatus == 2), update_outstanding="No", merge_entries=False)
+def get_permission_query_conditions(user):
+	if not user:
+		user = frappe.session.user
+	# frappe.throw(str(user))
+	user_roles = frappe.get_roles(user)
+
+	# Allow full access for privileged roles (optional)
+
+	if user == "Fleet Manager"in user_roles:
+		return ""	
+	
+
+	return """`tabPOL Receive`.owner = '{user}'""".format(user=user)

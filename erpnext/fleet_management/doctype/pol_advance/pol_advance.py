@@ -214,6 +214,7 @@ class POLAdvance(AccountsController):
 		voucher_series = "Journal Voucher"
 		party_type = ''
 		party = ''
+		
 		if account_type == "Bank":
 			voucher_type = "Bank Entry"
 			voucher_series = "Bank Receipt Voucher" if self.payment_type == "Receive" else "Bank Payment Voucher"
@@ -313,3 +314,16 @@ class POLAdvance(AccountsController):
 		ab.insert()
 		frappe.msgprint(_('Abstarct Bill {0} posted to accounts').format(frappe.get_desk_link("Abstract Bill", ab.name)))
 
+def get_permission_query_conditions(user):
+	if not user:
+		user = frappe.session.user
+	# frappe.throw(str(user))
+	user_roles = frappe.get_roles(user)
+
+	# Allow full access for privileged roles (optional)
+
+	if user == "Fleet Manager"in user_roles:
+		return ""	
+	
+
+	return """`tabPOL Advance`.owner = '{user}'""".format(user=user)
