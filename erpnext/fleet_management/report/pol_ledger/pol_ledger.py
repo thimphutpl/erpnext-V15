@@ -83,6 +83,8 @@ def get_data(filters=None):
 	
 	if not filters.all_equipment:
 		query += " and et.is_container = 1"
+		# In else condition, exclude Receive type
+		query += " and pe.type != 'Receive'"
 	
 	# When all_equipment is True, exclude Stock and Issue types
 	if filters.all_equipment:
@@ -115,16 +117,32 @@ def get_data(filters=None):
 			issued = get_pol_till("Issue", eq.equipment, eq.posting_date, eq.pol_type, posting_time=eq.posting_time)
 			balance = flt(received) - flt(issued)
 		else:
-			equipment = frappe.db.sql("select e.name, e.branch, e.equipment_type as equipment_type, et.is_container as is_container from tabEquipment e, `tabEquipment Type` et where e.equipment_type = et.name and e.name = \'" + str(eq.equipment) + "\'", as_dict=True)
+			# For non-all_equipment - exclude Receive type (already filtered in query)
+			# Check if equipment is container
+			equipment = frappe.db.sql("""
+				SELECT e.name, et.is_container 
+				FROM tabEquipment e 
+				INNER JOIN `tabEquipment Type` et ON e.equipment_type = et.name 
+				WHERE e.name = %s
+			""", (eq.equipment,), as_dict=True)
 			
 			if equipment and equipment[0]['is_container'] == 1:
-				stock = get_pol_till("Stock", eq.equipment, eq.posting_date, eq.pol_type, posting_time=eq.posting_time)
-				issued = get_pol_till("Issue", eq.equipment, eq.posting_date, eq.pol_type, posting_time=eq.posting_time)
-				balance = flt(stock) - flt(issued)
+				# For containers, calculate balance
+				if eq.type == "Stock":
+					stock = get_pol_till("Stock", eq.equipment, eq.posting_date, eq.pol_type, posting_time=eq.posting_time)
+					issued = get_pol_till("Issue", eq.equipment, eq.posting_date, eq.pol_type, posting_time=eq.posting_time)
+					balance = flt(stock) - flt(issued)
+				elif eq.type == "Issue":
+					stock = get_pol_till("Stock", eq.equipment, eq.posting_date, eq.pol_type, posting_time=eq.posting_time)
+					issued = get_pol_till("Issue", eq.equipment, eq.posting_date, eq.pol_type, posting_time=eq.posting_time)
+					balance = flt(stock) - flt(issued)
+				else:
+					balance = 0
 			else:
+				# For non-containers, balance is 0
 				balance = 0
-			received = get_pol_till("Receive", eq.equipment, eq.posting_date, eq.pol_type, posting_time=eq.posting_time)
 		
+		# Transaction quantity based on type
 		if eq.type == "Issue":
 			trans_qty = eq.qty * -1
 		else:
@@ -134,7 +152,7 @@ def get_data(filters=None):
 			get_datetime(str(eq.posting_date) + " " + str(eq.posting_time)), 
 			eq.branch, 
 			eq.equipment, 
-			item[0]['item_name'], 
+			item[0]['item_name'] if item else eq.pol_type,
 			trans_qty, 
 			balance, 
 			eq.type, 
