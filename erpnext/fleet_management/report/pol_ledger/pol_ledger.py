@@ -114,7 +114,9 @@ def get_data(filters=None):
 		if filters.all_equipment:
 			# For all equipment - use equipment level calculations
 			received = get_pol_till("Receive", eq.equipment, eq.posting_date, eq.pol_type, posting_time=eq.posting_time)
-			issued = get_pol_till("Issue", eq.equipment, eq.posting_date, eq.pol_type, posting_time=eq.posting_time)
+			# issued = get_pol_till("Issue", eq.equipment, eq.posting_date, eq.pol_type, posting_time=eq.posting_time)
+			issued = get_pol_consumed_till(eq.equipment, eq.posting_date, posting_time=eq.posting_time)
+			# transfered = get_pol_transfer("Transfer", eq.equipment, eq.posting_date, eq.pol_type, posting_time=eq.posting_time)
 			balance = flt(received) - flt(issued)
 		else:
 			# For non-all_equipment - exclude Receive type (already filtered in query)

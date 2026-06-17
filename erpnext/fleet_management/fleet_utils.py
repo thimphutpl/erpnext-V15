@@ -64,9 +64,9 @@ def get_pol_consumed_till(equipment, posting_date, posting_time="23:59:59", filt
 	posting_datetime = str(get_datetime(str(posting_date) + ' ' + str(posting_time)))
 
 	if not filter_dry:
-		pol = frappe.db.sql("select sum(consumption) as total from `tabLogbook` where docstatus = 1 and equipment = %s and cast(concat(to_date, ' ', to_time) as datetime) <= %s", (equipment, str(posting_datetime)), as_dict=True)
+		pol = frappe.db.sql("select sum(consumption) as total from `tabVehicle Logbook` where docstatus = 1 and equipment = %s and cast(concat(to_date, ' ', to_time) as datetime) <= %s", (equipment, str(posting_datetime)), as_dict=True)
 	else:
-		pol = frappe.db.sql("select sum(consumption) as total from `tabLogbook` where docstatus = 1 and equipment = %s and rate_type = 'With Fuel' and cast(concat(to_date, ' ', to_time)  as datetime) <= %s", (equipment, str(posting_datetime) ), as_dict=True)
+		pol = frappe.db.sql("select sum(consumption) as total from `tabVehicle Logbook` where docstatus = 1 and equipment = %s and rate_type = 'With Fuel' and cast(concat(to_date, ' ', to_time)  as datetime) <= %s", (equipment, str(posting_datetime) ), as_dict=True)
 	if pol:
 		return pol[0].total
 	else:
