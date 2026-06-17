@@ -33,7 +33,8 @@ def execute(filters=None):
 		"Credit",
 		period_list,
 		filters=filters,
-		accumulated_values=filters.accumulated_values,
+		# accumulated_values=filters.accumulated_values,
+		accumulated_values= False,
 		ignore_closing_entries=True,
 		ignore_accumulated_values_for_fy=True,
 	)
@@ -44,7 +45,8 @@ def execute(filters=None):
 		"Debit",
 		period_list,
 		filters=filters,
-		accumulated_values=filters.accumulated_values,
+		# accumulated_values=filters.accumulated_values,
+		accumulated_values= False,
 		ignore_closing_entries=True,
 		ignore_accumulated_values_for_fy=True,
 	)
