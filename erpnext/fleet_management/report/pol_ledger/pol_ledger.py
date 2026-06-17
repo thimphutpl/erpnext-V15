@@ -204,7 +204,7 @@ def get_columns(filters):
 			"fieldname": "balance",
 			"fieldtype": "Float",
 			"width": 100,
-			"label": "Tanker Balance"
+			"label": "Tanker/Tank Balance"
 		},
 		{
 			"fieldname": "type",
