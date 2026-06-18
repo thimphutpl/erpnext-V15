@@ -35,6 +35,14 @@ frappe.query_reports["Stock Balance"] = {
 			options: "Item Group",
 		},
 		{
+			fieldname: "item_sub_group",
+			label: __("Item Sub Group"),
+			fieldtype: "Link",
+			width: "80",
+			options: "Item Sub Group",
+
+		},
+		{
 			fieldname: "item_code",
 			label: __("Item"),
 			fieldtype: "Link",
@@ -86,6 +94,13 @@ frappe.query_reports["Stock Balance"] = {
 			options: "UOM",
 		},
 		{
+			fieldname: "summary_based_on",
+			label: __("Summary Based On"),
+			fieldtype: "Select",
+			options: "Detailed\nItem Group\nItem Group and Sub Group",
+			default: "Detailed"
+		},
+		{
 			fieldname: "show_variant_attributes",
 			label: __("Show Variant Attributes"),
 			fieldtype: "Check",
@@ -113,6 +128,7 @@ frappe.query_reports["Stock Balance"] = {
 			fieldtype: "Check",
 			default: 0,
 		},
+		
 	],
 
 	formatter: function (value, row, column, data, default_formatter) {
