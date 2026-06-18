@@ -1,6 +1,6 @@
 // Copyright (c) 2015, Frappe Technologies Pvt. Ltd. and Contributors and contributors
 // For license information, please see license.txt
-
+// ss
 frappe.query_reports["Stock Balance"] = {
 	filters: [
 		{
