@@ -142,6 +142,17 @@ class PerformanceEvaluation(Document):
 	#added by kinzang.n to prevent to edit 
 	def validate_rating_permissions(self):
 		user = frappe.session.user
+		roles = frappe.get_roles(user)
+
+		# ADMIN: FULL BYPASS
+		if "Admin" in roles:
+			return
+		
+		# HR Manager bypass ONLY if checkbox checked
+		if "HR Manager" in roles and self.allow_admin_edit:
+			return
+
+
 		
 		# if new doc, skip
 		if self.get("__islocal"):
@@ -491,6 +502,17 @@ class PerformanceEvaluation(Document):
 	#added by kinzang.n .
 	def validate_workflow_permissions(self):
 		user = frappe.session.user
+
+		roles = frappe.get_roles(user)
+		
+		# ADMIN FULL BYPASS
+		if "Admin" in roles:
+			return
+		
+		if "HR Manager" in roles and self.allow_admin_edit:
+			return
+
+
 
 		employee_user = frappe.get_value("Employee", self.employee, "user_id")
 		employee_name = self.employee_name

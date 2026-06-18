@@ -112,12 +112,41 @@ function apply_rating_permissions(frm) {
 	if (!frm.doc.employee) return;
 
 	const user = frappe.session.user;
+	// =========================
+	// ADMIN FULL OVERRIDE
+	// =========================
+	if (frappe.session.user === "Admin") {
+		set_readonly(frm, {
+			supervisor: false,
+			reviewer: false,
+			employee: false
+		});
+		return;
+	}
 
+	// =========================
+	// HR MANAGER OVERRIDE
+	// =========================
+	if (
+		frappe.user.has_role("HR Manager") &&
+		frm.doc.allow_admin_edit
+	) {
+		set_readonly(frm, {
+			supervisor: false,
+			reviewer: false,
+			employee: false
+		});
+		return;
+	}
+
+	// =========================
+	// NORMAL LOGIC
+	// =========================
 	frappe.db.get_value('Employee', frm.doc.employee, 'user_id')
 		.then(r => {
 			const employee_user = r.message.user_id;
 
-			// Employee (self)
+			// Employee
 			if (user === employee_user) {
 				set_readonly(frm, {
 					supervisor: true,
@@ -144,15 +173,83 @@ function apply_rating_permissions(frm) {
 				});
 			}
 
-			// Others (HR etc.)
+			// Others
 			else {
 				set_readonly(frm, {
-					supervisor: false,
-					reviewer: false
+					supervisor: true,
+					reviewer: true,
+					employee: true
 				});
 			}
 		});
 }
+
+// function apply_rating_permissions(frm) {
+// 	if (!frm.doc.employee) return;
+
+// 	const user = frappe.session.user;
+// 	if (frappe.user.has_role("Admin")) {
+// 		set_readonly(frm, {
+// 			supervisor: false,
+// 			reviewer: false,
+// 			employee: false
+// 		});
+// 		return;
+// 	}
+// 	if (
+// 		frappe.user.has_role("HR Manager") &&
+// 		frm.doc.allow_admin_edit
+// 	) {
+// 		set_readonly(frm, {
+// 			supervisor: false,
+// 			reviewer: false,
+// 			employee: false
+// 		});
+// 		return;
+// 	}
+
+// 	frappe.db.get_value('Employee', frm.doc.employee, 'user_id')
+// 		.then(r => {
+// 			const employee_user = r.message.user_id;
+
+// 			// Employee (self)
+// 			if (user === employee_user) {
+// 				set_readonly(frm, {
+// 					supervisor: true,
+// 					reviewer: true,
+// 					employee: false
+// 				});
+// 			}
+
+// 			// Supervisor
+// 			else if (user === frm.doc.approver) {
+// 				set_readonly(frm, {
+// 					supervisor: false,
+// 					reviewer: true,
+// 					employee: true
+// 				});
+// 			}
+
+// 			// Reviewer
+// 			else if (user === frm.doc.reviewer) {
+// 				set_readonly(frm, {
+// 					supervisor: true,
+// 					reviewer: false,
+// 					employee: true
+// 				});
+// 			}
+
+
+// 			// Others (HR etc.)
+// 			else {
+// 				set_readonly(frm, {
+// 					supervisor: true,
+// 					reviewer: true,
+// 					employee: true
+// 				});
+// 			}
+// 		});
+// }
 
 function set_readonly(frm, options) {
 

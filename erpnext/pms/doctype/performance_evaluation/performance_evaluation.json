@@ -68,9 +68,9 @@
   "reviewer_designation",
   "section_break_jkd5",
   "company",
+  "allow_admin_edit",
   "column_break_73",
-  "eval_workflow_state",
-  "amended_from"
+  "eval_workflow_state"
  ],
  "fields": [
   {
@@ -119,26 +119,6 @@
    "fieldname": "part_b_section",
    "fieldtype": "Section Break",
    "label": "Part B:(Work Competencies and Values)"
-  },
-  {
-   "fieldname": "amended_from",
-   "fieldtype": "Link",
-   "hidden": 1,
-   "label": "Amended From",
-   "no_copy": 1,
-   "options": "Performance Evaluation",
-   "print_hide": 1,
-   "read_only": 1
-  },
-  {
-   "fieldname": "amended_from",
-   "fieldtype": "Link",
-   "hidden": 1,
-   "label": "Amended From",
-   "no_copy": 1,
-   "options": "Performance Evaluation",
-   "print_hide": 1,
-   "read_only": 1
   },
   {
    "fieldname": "evaluate_target_item",
@@ -473,11 +453,18 @@
   {
    "fieldname": "column_break_nyov",
    "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "allow_admin_edit",
+   "fieldtype": "Check",
+   "label": "Allow Admin Edit",
+   "permlevel": 3
   }
  ],
  "is_submittable": 1,
  "links": [],
- "modified": "2026-01-22 17:08:34.188605",
+ "modified": "2026-05-26 21:24:34.940694",
  "modified_by": "Administrator",
  "module": "PMS",
  "name": "Performance Evaluation",
