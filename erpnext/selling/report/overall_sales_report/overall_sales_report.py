@@ -227,11 +227,10 @@ def get_data(filters=None):
 					WHEN is_export=1 THEN "Is Export"
 					WHEN is_kidu_sale=1 THEN "Is Kidu Sale"
 					ELSE "None"
-				END as transaction_type, soi.uom,
-				so.location, i.item_sub_group, sum(soi.qty) as qty, sum(soi.delivered_qty), 
-				so.net_total
+				END as transaction_type, so.location, i.item_sub_group, sum(soi.qty) as qty, 
+				sum(soi.delivered_qty), soi.uom, so.net_total
 			"""
-			group_by = " group by so.branch, so.location, i.item_sub_group"
+			group_by = " group by so.name, so.branch, so.location, i.item_sub_group"
 			order_by = ""
 		
 		elif filters.summary:
@@ -307,7 +306,7 @@ def get_data(filters=None):
 				i.item_sub_group, sum(sii.qty) as qty, sii.stock_uom as uom, sum(sii.amount),
 				si.net_total-si.loading_cost-si.challan_cost
 			"""
-			group_by = " group by si.branch, si.location, i.item_sub_group"
+			group_by = " group by si.name, si.branch, si.location, i.item_sub_group"
 			order_by = ""
 
 		elif filters.summary:
@@ -394,7 +393,7 @@ def get_data(filters=None):
 				
 				dn.net_total-(dn.challan_cost)/(select distinct count(b.item_sub_group) from `tabDelivery Note Item` a JOIN `tabItem` b on a.item_code = b.name where a.parent = dn.name) -(dn.loading_cost)/(select distinct count(b.item_group) from `tabDelivery Note Item` a JOIN `tabItem` b on a.item_code = b.name where a.parent = dn.name)
 			"""
-			group_by = " group by dn.branch, dn.location, i.item_sub_group"
+			group_by = " group by dn.name, dn.branch, dn.location, i.item_sub_group"
 			order_by = ""
 
 		elif filters.summary:
@@ -555,15 +554,14 @@ def get_conditions(filters=None):
 			cond += " and dn.location = '" + str(filters.location) + "'"
 		if filters.report_by == "Sales Order":
 			cond += " and so.location = '"+ str(filters.location) + "'"
-			
 
-	# if filters.uom:
-	# 	if filters.report_by == "Sales Order":
-	# 		cond += " and CASE WHEN soi.conversion_req=1 THEN soi.sales_uom ELSE soi.stock_uom END = '"+str(filters.uom)+"'"
-	# 	elif filters.report_by == "Sales Invoice":
-	# 		cond += " and sii.stock_uom = '"+str(filters.uom)+"'"
-	# 	else:
-	# 		cond += " and CASE WHEN dni.conversion_req=1 THEN dni.sales_uom ELSE dni.stock_uom END = '"+str(filters.uom)+"'"
+	if filters.uom:
+		if filters.report_by == "Sales Order":
+			cond += " and soi.uom = '"+str(filters.uom)+"'"
+		elif filters.report_by == "Sales Invoice":
+			cond += " and sii.stock_uom = '"+str(filters.uom)+"'"
+		else:
+			cond += " and dni.uom = '"+str(filters.uom)+"'"
 
 	if filters.transaction_type:
 		if filters.report_by == "Sales Order":

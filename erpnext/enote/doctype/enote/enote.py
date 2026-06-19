@@ -164,9 +164,12 @@ class eNote(Document):
 
 		email_template = frappe.get_doc("Email Template", template)
 		message = frappe.render_template(email_template.response, args)
-		recipients = self.doc.owner
+		# recipients = self.doc.owner
 		subject = email_template.subject
-		self.send_mail(recipients,message, subject)
+		if len(self.reviewers) > 0:
+			for reviewer in self.reviewers:
+				recipients = reviewer.user_id
+				self.send_mail(recipients,message, subject)
 
 	def notify_employee(self):
 		self.doc = self
@@ -350,6 +353,7 @@ class eNote(Document):
 def get_permission_query_conditions(user):
     if not user: user = frappe.session.user
     user_roles = frappe.get_roles(user)
+    #frappe.throw(str(user))
 
 	# reviewers  = frappe.db.sql("SELECT user_id FROM `tabeNote Reviewer")
 
@@ -357,22 +361,25 @@ def get_permission_query_conditions(user):
         return
     if "HR User" in user_roles or "HR Manager" in user_roles:
         return
-    return """(
-        `tabeNote`.owner = '{user}' or
-		IF (
-				(`tabeNote`.reviewer_required = '1' and `tabeNote`.workflow_state != 'Waiting for Reviewer') or `tabeNote`.reviewer_required = '0',  
-				`tabeNote`.permitted_user = '{user}',
-				exists(select 1
-					from `tabEmployee` e, `tabeNote Reviewer` nr
-					where e.user_id = '{user}' and '{user}' = nr.user_id and nr.parent = `tabeNote`.name)
-			)
-		or
-        exists(select 1
-			from `tabEmployee` e, `tabNote Copy` nc
-			where e.user_id = '{user}' and '{user}' = nc.user_id and nc.parent = `tabeNote`.name)
-   		)
-		""".format(user=user)
-# `tabeNote`.permitted_user = '{user}' or
+    # return f"""(
+    #     `tabeNote`.owner = '{user}' or
+	# 	 If(
+	# 			(`tabeNote`.reviewer_required = '1' and `tabeNote`.workflow_state != 'Waiting For Reviewer') or `tabeNote`.reviewer_required = '0',  
+	# 			`tabeNote`.permitted_user = '{user}',
+	# 			exists(select 1
+	# 				from `tabEmployee` e, `tabeNote Reviewer` nr
+	# 				where e.user_id = '{user}' and '{user}' = nr.user_id and nr.parent = `tabeNote`.name)
+	# 		)
+	# 	or
+    #     exists(select 1
+	# 		from `tabEmployee` e, `tabNote Copy` nc
+	# 		where e.user_id = '{user}' and '{user}' = nc.user_id and nc.parent = `tabeNote`.name)
+   	# 	)
+	# 	""".format(user=user)
+
+    return f""" (`tabeNote`.permitted_user = '{user}') or `tabeNote`.owner = '{user}' or
+            exists(select 1 from `tabEmployee` e, `tabeNote Reviewer` nr
+	 				where e.user_id = '{user}' and '{user}' = nr.user_id and nr.parent = `tabeNote`.name) """
 # or
 # 		exists(select 1
 # 			from `tabEmployee` e, `tabeNote Reviewer` nr

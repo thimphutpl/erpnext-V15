@@ -29,6 +29,8 @@ class VehicleLog(Document):
 		parenttype: DF.Data
 		pol_issued: DF.Data | None
 		purpose: DF.Text
+		qty_cft: DF.Float
+		qty_m3: DF.Float
 		time: DF.Data | None
 		to_km_reading: DF.Data | None
 		to_place: DF.Data | None

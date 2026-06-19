@@ -333,13 +333,13 @@ class CustomerOrder(Document):
                     if flt(balance,2) < flt(self.noof_truck_load,2):
                         frappe.throw(_("You have crossed your weekly quota by {0} truck load(s)")\
                             .format(flt(self.noof_truck_load,2)-flt(balance,2)),title="Insufficient Balance")
-                if flt(limits.monthly_quantity_limit_count,2):
-                    balance = flt(limits.monthly_quantity_limit_count,2)-flt(limits.monthly_ordered_quantity_count,2)
-                    self.monthly_quantity_limit_count   = flt(limits.monthly_quantity_limit_count,2)
-                    self.monthly_available_quantity_count   = flt(balance,2)
-                    if flt(balance,2) < flt(self.noof_truck_load,2):
-                        frappe.throw(_("You have crossed your monthly quota by {0} truck load(s)")\
-                            .format(flt(self.noof_truck_load,2)-flt(balance,2)),title="Insufficient Balance")
+                # if flt(limits.monthly_quantity_limit_count,2):
+                #     balance = flt(limits.monthly_quantity_limit_count,2)-flt(limits.monthly_ordered_quantity_count,2)
+                #     self.monthly_quantity_limit_count   = flt(limits.monthly_quantity_limit_count,2)
+                #     self.monthly_available_quantity_count   = flt(balance,2)
+                #     if flt(balance,2) < flt(self.noof_truck_load,2):
+                #         frappe.throw(_("You have crossed your monthly quota by {0} truck load(s)")\
+                #             .format(flt(self.noof_truck_load,2)-flt(balance,2)),title="Insufficient Balance")
                 if flt(limits.yearly_quantity_limit_count,2):
                     balance = flt(limits.yearly_quantity_limit_count,2)-flt(limits.yearly_ordered_quantity_count,2)
                     self.yearly_quantity_limit_count    = flt(limits.yearly_quantity_limit_count,2)
@@ -472,6 +472,7 @@ class CustomerOrder(Document):
                 business_activity = frappe.db.get_value("Business Activity", {"is_default": 1})
         
         if self.selection_based_on != "Lot" and self.selection_based_on != "Measurement":
+            cost_center = frappe.db.get_value("Branch", self.branch, "cost_center")
             doc = frappe.get_doc({
                 "doctype": "Sales Order",
                 "sales_order_series":self.sales_order_series,
@@ -503,12 +504,14 @@ class CustomerOrder(Document):
                     "warehouse": wh,
                     "business_activity": frappe.db.get_value("Item", self.item, "business_activity")
                 }],
+               
                  "taxes": [{
                     "charge_type": "On Net Total",
                     "account_head": "5% GST Outward - NRDCL",
                     "add_deduct_tax": "Add",
                     "is_gst": 1,
                     "rate": 5,
+                    "cost_center": cost_center if cost_center else "",
                     "tax_amount": self.gst_amount,
                     "description":'5% GST Outward'
                 }]

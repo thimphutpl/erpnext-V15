@@ -24,6 +24,7 @@
   "section_break_8",
   "letter_head",
   "gis_policy_number",
+  "money_receipt_prefix",
   "column_break_8",
   "holiday_list",
   "imprest_limit",
@@ -175,12 +176,17 @@
    "fieldtype": "Link",
    "label": "Dzongkhag",
    "options": "Dzongkhags"
+  },
+  {
+   "fieldname": "money_receipt_prefix",
+   "fieldtype": "Data",
+   "label": "Money Receipt Prefix"
   }
  ],
  "icon": "fa fa-code-fork",
  "idx": 1,
  "links": [],
- "modified": "2025-10-06 16:08:08.104597",
+ "modified": "2026-05-27 14:34:32.884846",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Branch",

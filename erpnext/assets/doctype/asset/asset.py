@@ -175,6 +175,7 @@ class Asset(AccountsController):
 
 	def on_cancel(self):
 		self.validate_cancellation()
+		self.cancel_linked_journal_entries()
 		self.cancel_movement_entries()
 		self.cancel_capitalization()
 		self.delete_depreciation_entries()
@@ -185,6 +186,40 @@ class Asset(AccountsController):
 		self.db_set("booked_fixed_asset", 0)
 		add_asset_activity(self.name, _("Asset cancelled"))
 
+	def cancel_linked_journal_entries(self):
+		# journal_entries = frappe.get_all(
+		# 	"Journal Entry",
+		# 	filters={
+		# 		"docstatus": 1,
+		# 		"reference_type": "Asset",
+		# 		"reference_name": self.name
+		# 	},
+		# 	pluck="name"
+		# )
+		je_list = frappe.db.sql("""
+			SELECT DISTINCT je.name
+			FROM `tabJournal Entry` je
+			JOIN `tabJournal Entry Account` jea ON jea.parent = je.name
+			WHERE je.docstatus = 1
+			AND jea.reference_type = 'Asset'
+			AND jea.reference_name = %s
+		""", self.name, as_dict=True)
+
+		# for row in je_list:
+		# 	je = frappe.get_doc("Journal Entry", row.name)
+		# 	je.cancel()
+
+		for row in je_list:
+			je = frappe.get_doc("Journal Entry", row.name)
+
+			try:
+				je.cancel()
+				frappe.msgprint(f"Cancelled JE: {row.name}")
+
+			except Exception as e:
+				frappe.log_error(frappe.get_traceback(), f"JE Cancel Failed: {row.name}")
+				frappe.throw(f"Failed to cancel JE {row.name}: {str(e)}")
+				
 	def after_insert(self):
 		if self.calculate_depreciation and not self.split_from:
 			asset_depr_schedules_names = make_draft_asset_depr_schedules(self)

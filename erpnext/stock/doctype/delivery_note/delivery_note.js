@@ -163,6 +163,14 @@ frappe.ui.form.on("Delivery Note", {
 			}
 		}
 	},
+	loading_rate: function(frm) {
+		var total_qty = 0;
+		for (var i in cur_frm.doc.items) {
+			var item = cur_frm.doc.items[i];
+		        total_qty += item.qty;		
+			}
+		cur_frm.set_value("loading_cost", flt(total_qty) * flt(frm.doc.loading_rate));
+	},
 });
 
 frappe.ui.form.on("Delivery Note Item", {
@@ -253,7 +261,7 @@ erpnext.stock.DeliveryNoteController = class DeliveryNoteController extends (
 			// 	);
 			// }
 
-			if (doc.docstatus == 1 && this.frm.has_perm("create")) {
+			if (doc.docstatus == 1 && this.frm.has_perm("create") && !doc.is_kidu_sale) {
 				this.frm.add_custom_button(
 					__("Sales Return"),
 					function () {

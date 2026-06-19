@@ -32,7 +32,7 @@ def get_columns(filters):
 	return cols
 
 def get_data(filters):
-	data = "select se.posting_date, sed.item_code, sed.item_name, (select i.item_group from tabItem i where i.item_code = sed.item_code) as item_group, (select i.item_sub_group from tabItem i where i.item_code = sed.item_code) as item_sub_group, sed.t_warehouse, sed.uom, sed.qty, sed.valuation_rate,sed.amount, sed.lot_number, sed.s_warehouse, se.name FROM `tabStock Entry` se, `tabStock Entry Detail` sed WHERE se.name = sed.parent and  se.docstatus = 1"
+	data = "select se.posting_date, sed.item_code, sed.item_name, (select i.item_group from `tabItem` i where i.item_code = sed.item_code) as item_group, (select i.item_sub_group from `tabItem` i where i.item_code = sed.item_code) as item_sub_group, sed.t_warehouse, sed.uom, sed.qty, sed.valuation_rate,sed.amount, sed.lot_number, sed.s_warehouse, se.name FROM `tabStock Entry` se, `tabStock Entry Detail` sed WHERE se.name = sed.parent and  se.docstatus = 1"
 	if filters.cost_center:
 		if not filters.get("branch"):
 			all_ccs = get_child_cost_centers(filters.cost_center)

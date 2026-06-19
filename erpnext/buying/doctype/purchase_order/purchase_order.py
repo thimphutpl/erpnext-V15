@@ -224,7 +224,7 @@ class PurchaseOrder(BuyingController):
 		self.total_add_ded = flt(self.freight_and_insurance_charges) - flt(self.discount) + flt(self.tax) + flt(self.other_charges)
 		if self.total_add_ded:
 			self.net_total = self.total + self.total_add_ded
-			self.grand_total = self.net_total
+			# self.grand_total = self.net_total
 			# self.in_words = money_in_words(self.grand_total, self.currency)
 
 	def warehouse_from_branch(doc):
@@ -743,6 +743,7 @@ def make_purchase_receipt(source_name, target_doc=None):
 					"material_request_date": "material_request_date",
 					"purchase_order_date": "transaction_date",
 					"material_request": "material_request",
+					"freight_and_insurance_charges": "freight_insurance_charges"
 				},
 				"validation": {
 					"docstatus": ["=", 1],
@@ -825,6 +826,7 @@ def get_mapped_purchase_invoice(source_name, target_doc=None, ignore_permissions
 				"material_request_date": "material_request_date",
 				"purchase_order_date": "transaction_date",
 				"material_request": "material_request",
+				"discount": "discount"
 			},
 			"field_no_map": ["payment_terms_template"],
 			"validation": {

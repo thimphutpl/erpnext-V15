@@ -192,12 +192,12 @@ frappe.query_reports["Overall Sales Report"] = {
 			label: __("Volume or Qty"),
 			fieldtype: "Float" 
 		},
-		// {
-		// 	fieldname: "uom",
-		// 	label: __("UOM"),
-		// 	fieldtype: "Link",
-		// 	options: "UOM"
-		// },
+		{
+			fieldname: "uom",
+			label: __("UOM"),
+			fieldtype: "Link",
+			options: "UOM"
+		},
 		{
 			fieldname: "aggregate",
 			label: __("Show Aggregate"),

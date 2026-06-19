@@ -35,37 +35,37 @@ frappe.query_reports["Stock Receipt Report"] = {
 					}
 				};
 			},
-			"on_change": function(){
-				var cost_center = frappe.query_report.get_filter_value("cost_center");
-				var from_date = frappe.query_report.get_filter_value("from_date");
-				var to_date = frappe.query_report.get_filter_value("to_date");
-				if(cost_center)
-				{
-					frappe.call({
-						method:"erpnext.stock.report.stock_balance_report.stock_balance_report.get_warehouse",
-						args:{"cost_center":cost_center, "from_date":from_date, "to_date": to_date},
-						callback: function(r){
-							if(r.message)
-							{
-								options = []
-								for (i = 0; i < r.message.length; i++) { 
-									options[i]= r.message[i].warehouse
-								}
-								let warehouse = frappe.query_report.get_filter_value("warehouse");
-								warehouse.df.options = options;
-								warehouse.refresh();
-								frappe.query_report.refresh();
+			// "on_change": function(){
+			// 	var cost_center = frappe.query_report.get_filter_value("cost_center");
+			// 	var from_date = frappe.query_report.get_filter_value("from_date");
+			// 	var to_date = frappe.query_report.get_filter_value("to_date");
+			// 	if(cost_center)
+			// 	{
+			// 		frappe.call({
+			// 			method:"erpnext.stock.report.stock_balance_report.stock_balance_report.get_warehouse",
+			// 			args:{"cost_center":cost_center, "from_date":from_date, "to_date": to_date},
+			// 			callback: function(r){
+			// 				if(r.message)
+			// 				{
+			// 					options = []
+			// 					for (i = 0; i < r.message.length; i++) { 
+			// 						options[i]= r.message[i].warehouse
+			// 					}
+			// 					let warehouse = frappe.query_report.get_filter_value("warehouse");
+			// 					warehouse.df.options = options;
+			// 					warehouse.refresh();
+			// 					frappe.query_report.refresh();
 
-								// frappe.query_report.filters_by_name.challan_no.refresh();
-								// frappe.query_reports["Production Report"].filters[19].options = options
-								// frappe.query_report.filters_by_name.challan_no.refresh();
-								// frappe.query_report.refresh();
-							}
-						}
+			// 					// frappe.query_report.filters_by_name.challan_no.refresh();
+			// 					// frappe.query_reports["Production Report"].filters[19].options = options
+			// 					// frappe.query_report.filters_by_name.challan_no.refresh();
+			// 					// frappe.query_report.refresh();
+			// 				}
+			// 			}
 						
-					});
-				}
-			},
+			// 		});
+			// 	}
+			// },
 		},
 		{
 			"fieldname": "branch",
@@ -96,28 +96,28 @@ frappe.query_reports["Stock Receipt Report"] = {
 					};
 				}
 			},
-			"on_change": function(){
-				var branch = frappe.query_report.get_filter_value("branch");
-				frappe.call({
-					method:"erpnext.stock.report.stock_balance_report.stock_balance_report.get_warehouse",
-					args:{"branch":branch, "from_date":from_date, "to_date": to_date},
-					callback: function(r){
-						if(r.message)
-						{
-							options = []
-							for (i = 0; i < r.message.length; i++) { 
-								options[i]= r.message[i].warehouse
-							}
+			// "on_change": function(){
+			// 	var branch = frappe.query_report.get_filter_value("branch");
+			// 	frappe.call({
+			// 		method:"erpnext.stock.report.stock_balance_report.stock_balance_report.get_warehouse",
+			// 		args:{"branch":branch, "from_date":from_date, "to_date": to_date},
+			// 		callback: function(r){
+			// 			if(r.message)
+			// 			{
+			// 				options = []
+			// 				for (i = 0; i < r.message.length; i++) { 
+			// 					options[i]= r.message[i].warehouse
+			// 				}
 							
-							let warehouse = frappe.query_report.get_filter_value("warehouse");
-							warehouse.df.options = options;
-							warehouse.refresh();
-							frappe.query_report.refresh();
-						}
-					}
-				})
+			// 				let warehouse = frappe.query_report.get_filter_value("warehouse");
+			// 				warehouse.df.options = options;
+			// 				warehouse.refresh();
+			// 				frappe.query_report.refresh();
+			// 			}
+			// 		}
+			// 	})
 
-			}
+			// }
 		},
 		{
 			"fieldname":"from_date",
@@ -136,9 +136,9 @@ frappe.query_reports["Stock Receipt Report"] = {
 		{
 			"fieldname": "warehouse",
 			"label": __("Warehouse"),
-			"fieldtype": "Select",
+			"fieldtype": "Link",
 			"width": "80",
-			"options": [""]
+			"options": "Warehouse"
 		},
 
 		{

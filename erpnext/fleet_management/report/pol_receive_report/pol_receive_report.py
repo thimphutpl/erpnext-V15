@@ -22,7 +22,7 @@ def get_columns(filters):
             },
             {
                 "label": ("Equipment No."),
-                "fieldname": "equipment_number",
+                "fieldname": "equipment_name",
                 "fieldtype": "Data",
                 "width": 120,
             },
@@ -38,13 +38,13 @@ def get_columns(filters):
                 "fieldtype": "Data",
                 "width": 120,
             },
-            {
-                "label": ("Received From"),
-                "fieldname": "received_from",
-                "fieldtype": "Link",
-                "options": "Branch",
-                "width": 120,
-            },
+            # {
+            #     "label": ("Received From"),
+            #     "fieldname": "received_from",
+            #     "fieldtype": "Link",
+            #     "options": "Branch",
+            #     "width": 120,
+            # },
             {
                 "label": ("Supplier"),
                 "fieldname": "supplier",
@@ -53,7 +53,7 @@ def get_columns(filters):
             },
             {
                 "label": ("Item Code"),
-                "fieldname": "pol_type",
+                "fieldname": "fuel_type",
                 "fieldtype": "Data",
                 "width": 100,
             },
@@ -87,6 +87,18 @@ def get_columns(filters):
                 "fieldtype": "Currency",
                 "width": 120,
             },
+            {
+                "label": ("GST Amount"),
+                "fieldname": "gst_amount",
+                "fieldtype": "Currency",
+                "width": 120,
+            },
+            {
+                "label": ("Total Amount"),
+                "fieldname": "total_amount",
+                "fieldtype": "Currency",
+                "width": 120,
+            },
         ]
     else:
         columns = [
@@ -99,7 +111,7 @@ def get_columns(filters):
             },
             {
                 "label": ("Equipment No."),
-                "fieldname": "equipment_number",
+                "fieldname": "equipment_name",
                 "fieldtype": "Data",
                 "width": 120,
             },
@@ -123,7 +135,7 @@ def get_columns(filters):
             },
             {
                 "label": ("Item Code"),
-                "fieldname": "pol_type",
+                "fieldname": "fuel_type",
                 "fieldtype": "Link",
                 "options": "Item",
                 "width": 100,
@@ -158,16 +170,28 @@ def get_columns(filters):
                 "fieldtype": "Currency",
                 "width": 120,
             },
+            {
+                "label": ("GST Amount"),
+                "fieldname": "gst_amount",
+                "fieldtype": "Currency",
+                "width": 120,
+            },
+            {
+                "label": ("Total Amount"),
+                "fieldname": "total_amount",
+                "fieldtype": "Currency",
+                "width": 120,
+            },
         ]
     return columns
 
 def get_data(filters):
     query = """
         SELECT 
-            p.equipment, p.equipment_number, p.book_type, p.fuelbook, 
-            p.supplier, p.pol_type, p.pol_type, p.item_name, p.posting_date, 
-            p.qty, p.rate, IFNULL(p.total_amount, 0) AS amount
-        FROM `tabPOL Receive` AS p 
+            p.equipment, p.equipment_name, p.book_type, p.fuelbook, p.supplier, p.fuel_type, p.item_name, p.posting_date, 
+            IFNULL(pi.qty, 0) as qty, IFNULL(pi.rate, 0) as rate, IFNULL(pi.amount, 0) as amount, 
+            IFNULL(p.gst_amount, 0) AS gst_amount, IFNULL(p.total_amount, 0) AS total_amount
+        FROM `tabPOL Receive` AS p INNER JOIN `tabPOL Receive Item` AS pi ON pi.parent = p.name
         WHERE p.docstatus = 1
     """
 

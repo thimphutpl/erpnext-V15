@@ -953,41 +953,41 @@ def delete_duplicate_assets_not_cancelled():
 # 		break
 	
 
-def map_clearance_jl():
-	bank = frappe.db.sql(
-		"""
-		SELECT
-			bpi.pi_number,
-			bp.transaction_no,
-			bp.posting_date,
-			bpi.status,
-			bpi.bank_journal_no
-		FROM `tabBank Payment` bp
-		INNER JOIN `tabBank Payment Item` bpi
-			ON bp.name = bpi.parent
-		WHERE bp.transaction_type = 'Journal Entry'
-		and bp.posting_date between '2026-03-01' and '2026-04-31'
-		and bpi.status='Completed'
-		GROUP BY bpi.pi_number
-		""",
-		as_dict=True
-	)
+# def map_clearance_jl():
+# 	bank = frappe.db.sql(
+# 		"""
+# 		SELECT
+# 			bpi.pi_number,
+# 			bp.transaction_no,
+# 			bp.posting_date,
+# 			bpi.status,
+# 			bpi.bank_journal_no
+# 		FROM `tabBank Payment` bp
+# 		INNER JOIN `tabBank Payment Item` bpi
+# 			ON bp.name = bpi.parent
+# 		WHERE bp.transaction_type = 'Journal Entry'
+# 		and bp.posting_date between '2026-03-01' and '2026-04-31'
+# 		and bpi.status='Completed'
+# 		GROUP BY bpi.pi_number
+# 		""",
+# 		as_dict=True
+# 	)
 
-	for i in bank:
-		frappe.db.sql(
-			"""
-			UPDATE `tabJournal Entry`
-			SET
-				cheque_no = %s,
-				cheque_date = %s,
-				clearance_date = %s
-			WHERE name = %s
-			""",
-			(i.pi_number, i.posting_date,i.posting_date, i.transaction_no)
-		)
+# 	for i in bank:
+# 		frappe.db.sql(
+# 			"""
+# 			UPDATE `tabJournal Entry`
+# 			SET
+# 				cheque_no = %s,
+# 				cheque_date = %s,
+# 				clearance_date = %s
+# 			WHERE name = %s
+# 			""",
+# 			(i.pi_number, i.posting_date,i.posting_date, i.transaction_no)
+# 		)
 
-		print(f" {i.transaction_no} {i.status} {i.bank_journal_no}")
-		frappe.db.commit()
+# 		print(f" {i.transaction_no} {i.status} {i.bank_journal_no}")
+# 		frappe.db.commit()
 		# break
 
 	# frappe.db.commit()
@@ -2352,45 +2352,7 @@ def update_salary_struct():
 	# print("✅ All updates committed")
 
 
-def map_clearance_pe():
-	bank = frappe.db.sql(
-		"""
-		SELECT bpi.pi_number, bp.transaction_no, 
-		bp.posting_date, bpi.status, bpi.bank_journal_no 
-		FROM `tabBank Payment` bp INNER JOIN `tabBank Payment Item` bpi ON bp.name = bpi.parent 
-		WHERE bp.transaction_type = 'Payment Entry' and 
-		bp.posting_date between '2026-03-01' and '2026-04-31' and 
-		bpi.status='Completed' GROUP BY bpi.pi_number;
-		""",
-		as_dict=True
-	)
-
-	for i in bank:
-
-		clearance_date = frappe.db.sql(
-			"""
-			SELECT clearance_date FROM `tabPayment Entry`
-			WHERE name = %s
-			""",
-			(i.transaction_no,),
-			as_dict=True
-		)
-
-		if not clearance_date or not clearance_date[0].get("clearance_date"):
-			frappe.db.sql(
-				"""
-				UPDATE `tabPayment Entry`
-				SET clearance_date = %s
-				WHERE name = %s
-				""",
-				(i.posting_date, i.transaction_no)
-			)
-
-			print(f" {i.transaction_no} {i.status} {i.bank_journal_no}")
-			frappe.db.commit()
-			# break
-
-	# frappe.db.commit()
+# x
 
 def correct_stock_ledger():
 	data = frappe.db.sql("""

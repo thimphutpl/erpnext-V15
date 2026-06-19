@@ -477,7 +477,16 @@ def process_debit_credit_difference(gl_map):
 
 	debit_credit_diff = get_debit_credit_difference(gl_map, precision)
 
+	# if sbdebit_credit_diff
+
+	# if debit_credit_diff > 0:
+	# 	frappe.throw(str(debit_credit_diff))
+	# frappe.log_err(debit_credit_diff)
+	# frappe.log_error(f"Debit-Credit Difference: {debit_credit_diff}", "GL Imbalance Check")
+	
+
 	if abs(debit_credit_diff) > allowance:
+		# frappe.throw(frappe.as_json(gl_map))
 		if not (
 			voucher_type == "Journal Entry"
 			and frappe.get_cached_value("Journal Entry", voucher_no, "voucher_type")

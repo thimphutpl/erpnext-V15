@@ -48,6 +48,16 @@ frappe.query_reports["Asset Register"] = {
 			"label": __("Cost Center"),
 			"fieldtype": "Link",
 			"options": "Cost Center",
+			get_query: () => {
+				// var company = frappe.query_report.get_filter_value("company");
+				return {
+					filters: {
+						disabled: 0,
+						// company: company,
+						is_group: 0
+					}
+				};
+			}
 		},
 		{
 			"fieldname": "asset_category",

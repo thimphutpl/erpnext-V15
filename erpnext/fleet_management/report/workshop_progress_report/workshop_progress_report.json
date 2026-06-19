@@ -1,15 +1,16 @@
 {
- "add_total_row": 0,
+ "add_total_row": 1,
+ "add_translate_data": 0,
  "columns": [],
  "creation": "2024-11-03 15:57:16.747600",
  "disabled": 0,
  "docstatus": 0,
  "doctype": "Report",
  "filters": [],
- "idx": 18,
+ "idx": 19,
  "is_standard": "Yes",
  "letterhead": null,
- "modified": "2025-02-26 15:04:36.256302",
+ "modified": "2026-05-13 12:20:52.424908",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Workshop Progress Report",
@@ -25,5 +26,6 @@
   {
    "role": "Fleet User"
   }
- ]
+ ],
+ "timeout": 0
 }

@@ -86,6 +86,10 @@
   "travel_advance_account",
   "cb_hr_1",
   "imprest_advance_account",
+  "gst_account_section",
+  "gst_inward",
+  "column_break_djeh",
+  "gst_outward",
   "fixed_asset_defaults",
   "accumulated_depreciation_account",
   "depreciation_expense_account",
@@ -921,6 +925,27 @@
    "fieldtype": "Link",
    "label": "Transportation Account",
    "options": "Account"
+  },
+  {
+   "fieldname": "gst_account_section",
+   "fieldtype": "Section Break",
+   "label": "GST Account"
+  },
+  {
+   "fieldname": "gst_inward",
+   "fieldtype": "Link",
+   "label": "GST Inward",
+   "options": "Account"
+  },
+  {
+   "fieldname": "column_break_djeh",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "gst_outward",
+   "fieldtype": "Link",
+   "label": "GST Outward",
+   "options": "Account"
   }
  ],
  "icon": "fa fa-building",
@@ -928,7 +953,7 @@
  "image_field": "company_logo",
  "is_tree": 1,
  "links": [],
- "modified": "2025-09-18 14:33:38.863313",
+ "modified": "2026-06-17 09:38:58.437585",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Company",

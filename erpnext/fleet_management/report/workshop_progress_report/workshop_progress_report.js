@@ -22,14 +22,18 @@ frappe.query_reports["Workshop Progress Report"] = {
 			"label": ("From Date"),
 			"fieldtype": "Date",
 			"width": "80",
-			"default": sys_defaults.year_start_date,
+			// "default": sys_defaults.year_start_date,
+			"reqd": 1
+
 		},
 		{
 			"fieldname":"to_date",
 			"label": ("To Date"),
 			"fieldtype": "Date",
 			"width": "80",
-			"default": frappe.datetime.get_today()
+			// "default": frappe.datetime.get_today()
+			"reqd": 1
+
 		},
 
 		{
@@ -37,7 +41,7 @@ frappe.query_reports["Workshop Progress Report"] = {
 			"label": ("Customer"),
 			"fieldtype": "Select",
 			"width": "80",
-			"options": ["", "Own","CDCL", "Others"]
+			"options": ["", "Own Company", "Own Branch", "Others"]
 		},
 		{
 			"fieldname": "equipment",

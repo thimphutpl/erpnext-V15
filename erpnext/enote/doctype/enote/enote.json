@@ -181,6 +181,7 @@
   {
    "fieldname": "approver_employee",
    "fieldtype": "Link",
+   "ignore_user_permissions": 1,
    "label": "Approver (Employee)",
    "no_copy": 1,
    "options": "Employee"
@@ -197,7 +198,7 @@
  "icon": "fa fa-file-text",
  "is_submittable": 1,
  "links": [],
- "modified": "2026-04-13 14:47:14.248909",
+ "modified": "2026-06-11 19:25:36.675399",
  "modified_by": "Administrator",
  "module": "eNote",
  "name": "eNote",
@@ -214,6 +215,18 @@
    "role": "All",
    "share": 1,
    "submit": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Employee",
+   "share": 1,
    "write": 1
   }
  ],

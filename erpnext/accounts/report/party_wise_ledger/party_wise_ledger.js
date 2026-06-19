@@ -59,10 +59,53 @@ frappe.query_reports["Party Wise Ledger"] = {
 			"fieldtype": "Break",
 		},
 		{
-			"fieldname":"cost_center",
-			"label": __("Cost Center"),
-			"fieldtype": "Link",
-			"options": "Cost Center"
+			fieldname: "cost_center",
+			label: __("Parent Branch"),
+			fieldtype: "Link",
+			options: "Cost Center", 
+			reqd: 1,
+			get_query: () => {
+				var company = frappe.query_report.get_filter_value("company");
+				return {
+					filters: {
+						disabled: 0,
+						company: company,
+						is_group: 1
+					}
+				};
+			}
+		},
+		{
+			fieldname: "branch",
+			label: __("Branch"),
+			fieldtype: "Link",
+			options: "Cost Center",
+			get_query: () => {
+				var cost_center = frappe.query_report.get_filter_value("cost_center")
+				var company = frappe.query_report.get_filter_value("company")
+				if(cost_center!= 'Natural Resource Development Corporation Ltd - NRDCL')
+				{
+					return {
+						filters: {
+							disabled: 0,
+							company: company,
+							parent_cost_center: cost_center
+						}
+					};
+					// return {"doctype": "Cost Center", filters: {"company": company, "is_disabled": 0, "parent_cost_center": cost_center}}
+				}
+				else
+				{
+					return {
+						filters: {
+							disabled: 0,
+							company: company,
+							is_group: 0
+						}
+					};
+					// return {"doctype": "Cost Center", "filters": {"company": company, "is_disabled": 0, "is_group": 0}}
+				}
+			}
 		},
 		{
 			"fieldname":"accounts",

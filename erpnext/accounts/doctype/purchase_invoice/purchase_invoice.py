@@ -326,7 +326,7 @@ class PurchaseInvoice(BuyingController):
 		# self.check_purchase_receipt()
 		# self.warehouse_from_branch()
 		self.cal_oustanding_amount()
-		self.cal_total_discount_for_each_item()
+		# self.cal_total_discount_for_each_item()
 		# self.ld_amount_net_total()
 		self.validate_cost_center()
 
@@ -364,9 +364,10 @@ class PurchaseInvoice(BuyingController):
 				x.amount=(flt(x.rate)*flt(x.qty))-flt(x.amount_discount)
 				# frappe.throw(str(x.amount))
 	def adjust_add_ded(self):
-		self.total_add_ded = flt(self.freight_insurance_charges) - flt(self.discount) - flt(self.total_taxes_and_charges) + flt(self.other_charges)
-		self.discount_amount = flt(self.total_add_ded)
-		# frappe.throw(str(self.discount_amount))
+		self.total_add_ded = flt(self.freight_insurance_charges) - flt(self.discount) - flt(self.tax) + flt(self.other_charges)
+		if self.total_add_ded:
+			self.net_total = self.total + self.total_add_ded
+
 	def warehouse_from_branch(doc):
 		# branchname=doc.branch
 		cost_center= frappe.db.get_value("Branch", doc.branch,"cost_center")
@@ -1097,7 +1098,7 @@ class PurchaseInvoice(BuyingController):
 		self.make_payment_gl_entries(gl_entries)
 		self.make_write_off_gl_entry(gl_entries)
 		
-		self.make_discount_gl_entry(gl_entries)
+		# self.make_discount_gl_entry(gl_entries)
 		# frappe.throw(frappe.as_json(gl_entries))
 		self.make_advance_gl_entry(gl_entries)
 		

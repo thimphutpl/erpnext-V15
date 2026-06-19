@@ -21,7 +21,7 @@ class SalesTaxesandCharges(Document):
 		base_tax_amount_after_discount_amount: DF.Currency
 		base_total: DF.Currency
 		charge_type: DF.Literal["", "Actual", "On Net Total", "On Previous Row Amount", "On Previous Row Total", "On Item Quantity"]
-		cost_center: DF.Link | None
+		cost_center: DF.Link
 		description: DF.SmallText
 		dont_recompute_tax: DF.Check
 		included_in_paid_amount: DF.Check

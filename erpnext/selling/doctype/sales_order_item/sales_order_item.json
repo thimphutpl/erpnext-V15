@@ -230,7 +230,6 @@
    "oldfieldtype": "Data",
    "options": "UOM",
    "print_width": "70px",
-   "read_only": 1,
    "width": "70px"
   },
   {
@@ -240,7 +239,6 @@
   {
    "fieldname": "uom",
    "fieldtype": "Link",
-   "hidden": 1,
    "label": "UOM",
    "options": "UOM"
   },
@@ -248,10 +246,8 @@
    "depends_on": "eval:doc.uom != doc.stock_uom",
    "fieldname": "conversion_factor",
    "fieldtype": "Float",
-   "hidden": 1,
    "label": "UOM Conversion Factor",
-   "print_hide": 1,
-   "read_only": 1
+   "print_hide": 1
   },
   {
    "depends_on": "eval:doc.uom != doc.stock_uom",
@@ -294,6 +290,7 @@
    "collapsible_depends_on": "eval: doc.margin_type || doc.discount_amount || doc.distributed_discount_amount",
    "fieldname": "discount_and_margin",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Discount and Margin"
   },
   {
@@ -990,7 +987,7 @@
    "reqd": 1
   },
   {
-   "depends_on": "eval:doc.item_code && doc.sp_type == \"General Rate\"",
+   "depends_on": "eval:doc.item_code && doc.sp_type == \"General Rate\" && !parent.is_kidu_sale",
    "fieldname": "price_template",
    "fieldtype": "Link",
    "in_list_view": 1,
@@ -998,7 +995,7 @@
    "options": "Selling Price"
   },
   {
-   "depends_on": "eval:doc.item_code && doc.sp_type != \"General Rate\"",
+   "depends_on": "eval:doc.item_code && doc.sp_type != \"General Rate\" && !parent.is_kidu_sale",
    "fieldname": "customer_price_list",
    "fieldtype": "Link",
    "label": "Customer Price List",
@@ -1014,7 +1011,7 @@
  "idx": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-09-12 14:55:56.048097",
+ "modified": "2026-05-04 16:55:49.755432",
  "modified_by": "Administrator",
  "module": "Selling",
  "name": "Sales Order Item",

@@ -95,6 +95,18 @@ frappe.ui.form.on('Mechanical Payment', {
     get_delivery_note: function(frm) {
 		get_delivery_notes(frm);
 	},
+    apply_gst: function(frm){
+		if(frm.doc.apply_gst == 1){
+			if (frm.doc.receivable_amount > 0) {
+				frm.set_value("gst_amount", frm.doc.receivable_amount * 0.05);
+				frm.refresh_fields("gst_amount");
+			}
+
+		}else{
+			frm.set_value("gst_amount", "");
+			frm.refresh_fields("gst_amount");
+		}
+	},
     
 });
 

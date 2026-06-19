@@ -111,6 +111,10 @@ class SellingController(StockController):
 		if self.get("taxes_and_charges") and not self.get("taxes") and not for_validate:
 			taxes = get_taxes_and_charges("Sales Taxes and Charges Template", self.taxes_and_charges)
 			for tax in taxes:
+				# if self.cost_center:
+				tax.update({
+					"cost_center": self.cost_center
+				})
 				self.append("taxes", tax)
 
 	def set_price_list_and_item_details(self, for_validate=False):
@@ -159,9 +163,9 @@ class SellingController(StockController):
 					_("must be between 0 and 100"),
 				)
 			)
-
+		
 		self.amount_eligible_for_commission = sum(
-			item.base_net_amount for item in self.items if item.grant_commission
+			(d.base_net_amount or 0) for d in self.items
 		)
 
 		self.total_commission = flt(

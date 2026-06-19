@@ -47,7 +47,7 @@ status_map = {
 		],
 		[
 			"To Bill",
-			"eval:(self.per_delivered >= 100 or self.skip_delivery_note) and self.per_billed < 100 and self.docstatus == 1",
+			"eval:(self.per_delivered >= 100 or self.skip_delivery_note) and self.per_billed < 100 and self.docstatus == 1 and self.is_kidu_sale == 0",
 		],
 		[
 			"To Deliver",
@@ -57,6 +57,7 @@ status_map = {
 			"Completed",
 			"eval:(self.per_delivered >= 100 or self.skip_delivery_note) and self.per_billed >= 100 and self.docstatus == 1",
 		],
+		["Completed", "eval:self.per_delivered == 100 and self.is_kidu_sale == 1 and self.docstatus == 1"],
 		["Cancelled", "eval:self.docstatus==2"],
 		["Closed", "eval:self.status=='Closed' and self.docstatus != 2"],
 		["On Hold", "eval:self.status=='On Hold'"],
@@ -85,6 +86,7 @@ status_map = {
 		["Draft", None],
 		["To Bill", "eval:self.per_billed < 100 and self.docstatus == 1"],
 		["Completed", "eval:self.per_billed == 100 and self.docstatus == 1"],
+		["Completed", "eval:self.is_kidu_sale == 1 and self.docstatus == 1"],
 		["Return Issued", "eval:self.per_returned == 100 and self.docstatus == 1"],
 		["Cancelled", "eval:self.docstatus==2"],
 		["Closed", "eval:self.status=='Closed' and self.docstatus != 2"],

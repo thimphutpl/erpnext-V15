@@ -24,8 +24,10 @@ class MechanicalPayment(AccountsController):
 		self.deduction_amount = total
 
 		self.validate_allocated()
+		if self.apply_gst and self.receivable_amount > 0:
+			self.gst_amount = flt(self.receivable_amount) * 0.05
 		self.set_missing_values()
-		self.clearance_date = None
+		# self.clearance_date = None
 
 	def set_status(self):
 		self.status = {
@@ -42,9 +44,15 @@ class MechanicalPayment(AccountsController):
 		sub_net = 0
 		sub_net = self.deduction_amount + self.tds_amount
 		if sub_net > 0:
-			self.net_amount = self.receivable_amount - sub_net
+			if self.apply_gst:
+				self.net_amount = self.receivable_amount - sub_net + self.gst_amount
+			else:
+				self.net_amount = self.receivable_amount - sub_net
 		else:
-			self.net_amount = self.receivable_amount
+			if self.apply_gst:
+				self.net_amount = self.receivable_amount + self.gst_amount
+			else:
+				self.net_amount = self.receivable_amount
 
 		if self.net_amount < 0:
 			frappe.throw("Net Amount cannot be less than Zero")
@@ -186,6 +194,8 @@ class MechanicalPayment(AccountsController):
 	def make_gl_entry(self):
 		from erpnext.accounts.general_ledger import make_gl_entries
 		receivable_account = frappe.db.get_value("Company", "Natural Resources Development Corporation Limited","default_receivable_account")
+		gst_inward = frappe.db.get_value("Company", "Natural Resources Development Corporation Limited","gst_inward")
+		gst_outward = frappe.db.get_value("Company", "Natural Resources Development Corporation Limited","gst_outward")
 		payable_account = frappe.db.get_value("Company", "Natural Resources Development Corporation Limited","default_payable_account")
 		transportation_account = frappe.db.get_value("Company", "Natural Resources Development Corporation Limited","default_transportation_account")
 		if not receivable_account and self.payment_for == "Hire Charge Invoice":
@@ -194,6 +204,10 @@ class MechanicalPayment(AccountsController):
 			frappe.throw("Setup Payable Account in Company")
 		if not transportation_account and self.payment_for == "Tranporter":
 			frappe.throw("Setup Transportation Account in Company")
+		if self.apply_gst and not gst_inward:
+			frappe.throw("Setup GST Inward Account in Company")
+		if self.apply_gst and not gst_outward:
+			frappe.throw("Setup GST Outward Account in Company")
 
 		gl_entries = []
 		if flt(self.net_amount) > 0:
@@ -209,6 +223,18 @@ class MechanicalPayment(AccountsController):
 								  "remarks": self.remarks
 								  })
 				)
+				if self.apply_gst:
+					gl_entries.append(
+						self.get_gl_dict({"account": gst_inward,
+									"debit": flt(self.gst_amount),
+									"debit_in_account_currency": flt(self.gst_amount),
+									"cost_center": self.cost_center,
+									"party_check": 1,
+									"reference_type": self.doctype,
+									"reference_name": self.name,
+									"remarks": self.remarks
+									})
+					)
 			else:
 				gl_entries.append(
 					self.get_gl_dict({"account": self.bank_account,
@@ -221,6 +247,18 @@ class MechanicalPayment(AccountsController):
 									"remarks": self.remarks
 									})
 				)
+				if self.apply_gst:
+					gl_entries.append(
+						self.get_gl_dict({"account": gst_outward,
+									"credit": flt(self.gst_amount),
+									"credit_in_account_currency": flt(self.gst_amount),
+									"cost_center": self.cost_center,
+									"party_check": 1,
+									"reference_type": self.doctype,
+									"reference_name": self.name,
+									"remarks": self.remarks
+									})
+					)
 
 		if self.tds_amount:
 			if self.payment_for != "Hire Charge Invoice":

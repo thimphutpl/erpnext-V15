@@ -108,15 +108,15 @@ def make_payment_entry(source_name, target_doc=None):
 		from erpnext.accounts.doctype.payment_entry.payment_entry import get_account_details
 		exclude = []
 		target.naming_series = "Journal Voucher"
-		target.branch = frappe.db.get_value("Branch",{"cost_center":source.cost_center},"name")
+		target.branch = source.branch
 		target.payment_type = "Receive"
 		target.party_type = "Customer"
 		target.party = source.customer
 		target.actual_receivable_amount = source.total_amount
 		target.consolidated_invoice_id = source.name
 		target.paid_from = source.debit_to
-		target.paid_to = frappe.db.get_value("Branch",frappe.db.get_value("Branch",{"cost_center":source.cost_center},"name"),"revenue_bank_account")
-		acc_to = get_account_details(frappe.db.get_value("Branch",frappe.db.get_value("Branch",{"cost_center":source.cost_center},"name"),"revenue_bank_account"), source.posting_date)
+		target.paid_to = frappe.db.get_value("Branch", source.branch, "revenue_bank_account")
+		acc_to = get_account_details(frappe.db.get_value("Branch", source.branch, "revenue_bank_account"), source.posting_date)
 		target.paid_to_account_currency = acc_to.account_currency
 		target.paid_to_account_balance = acc_to.account_balance
 		if source.debit_to:

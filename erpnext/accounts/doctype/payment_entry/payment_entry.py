@@ -1339,6 +1339,7 @@ class PaymentEntry(AccountsController):
 
 		gl_entries = []
 		self.add_party_gl_entries(gl_entries)
+		
 		self.add_bank_gl_entries(gl_entries)
 		self.add_deductions_gl_entries(gl_entries)
 		self.add_tax_gl_entries(gl_entries)
@@ -1347,6 +1348,7 @@ class PaymentEntry(AccountsController):
 
 	def make_gl_entries(self, cancel=0, adv_adj=0):
 		gl_entries = self.build_gl_map()
+		# frappe.throw(frappe.as_json(gl_entries))
 		gl_entries = process_gl_map(gl_entries)
 		make_gl_entries(gl_entries, cancel=cancel, adv_adj=adv_adj)
 		if cancel:
@@ -1415,7 +1417,7 @@ class PaymentEntry(AccountsController):
 						"account_currency": self.party_account_currency,
 						"cost_center": cost_center,
 						dr_or_cr + "_in_account_currency": d.allocated_amount,
-						dr_or_cr: allocated_amount_in_company_currency,
+						dr_or_cr: flt(d.allocated_amount, 2) if allocated_amount_in_company_currency != d.allocated_amount else allocated_amount_in_company_currency,
 					},
 					item=self,
 				)

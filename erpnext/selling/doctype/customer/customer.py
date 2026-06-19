@@ -37,17 +37,21 @@ class Customer(TransactionBase):
 		from erpnext.utilities.doctype.portal_user.portal_user import PortalUser
 		from frappe.types import DF
 
+		ac_no: DF.Data | None
 		account_manager: DF.Link | None
 		account_number: DF.Data | None
 		accounts: DF.Table[PartyAccount]
+		bank_ac_type: DF.Link | None
 		bank_account_type: DF.Link | None
+		bank_branch1: DF.Link | None
 		bank_branch: DF.Link | None
+		bank_name1: DF.Link | None
 		bank_name: DF.Link | None
 		companies: DF.Table[AllowedToTransactWith]
 		credit_limits: DF.Table[CustomerCreditLimit]
 		customer_details: DF.Text | None
 		customer_group: DF.Link | None
-		customer_id: DF.Data | None
+		customer_id: DF.Data
 		customer_name: DF.Data
 		customer_pos_id: DF.Data | None
 		customer_primary_address: DF.Link | None

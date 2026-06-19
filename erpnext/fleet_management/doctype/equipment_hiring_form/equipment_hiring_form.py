@@ -142,7 +142,9 @@ class EquipmentHiringForm(AccountsController):
 			for item in self.approved_items:
 				# Check if lumpsum_rate exists for the item in the child table
 				if flt(item.lumpsum_rate):
-					item.grand_total = flt(item.lumpsum_rate)
+					item.grand_total = flt(item.lumpsum_rate) * flt(item.total_hours)
+				if flt(item.km_based_rate):
+					item.grand_total = flt(item.km_based_rate) * flt(item.total_hours)
 				else:
 					# Keep grand_total as it is if no lumpsum_rate is provided
 					item.grand_total = item.grand_total or 0

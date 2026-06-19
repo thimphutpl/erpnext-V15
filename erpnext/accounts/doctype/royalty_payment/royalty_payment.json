@@ -2,7 +2,7 @@
  "actions": [],
  "allow_rename": 1,
  "autoname": "ROY.YY.MM.####",
- "creation": "2025-08-14 16:37:10.350792",
+ "creation": "2025-08-14 19:02:54.398715",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
@@ -171,7 +171,7 @@
    "fieldtype": "Section Break"
   },
   {
-   "depends_on": "eval:(doc.production_type==\"Planned\") && (doc.from_date && doc.to_date) || (doc.production_type==\"Adhoc\" && (doc.range_name || doc.adhoc_production) && doc.from_date && doc.to_date)",
+   "depends_on": "eval:((doc.production_type==\"Planned\") && (doc.from_date && doc.to_date) || (doc.production_type==\"Adhoc\" && (doc.range_name || doc.adhoc_production) && doc.from_date && doc.to_date)) && doc.docstatus == 0",
    "fieldname": "get_royalty_details",
    "fieldtype": "Button",
    "label": "Get Royalty Details",
@@ -431,7 +431,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-08-14 18:56:19.458861",
+ "modified": "2026-05-28 15:13:35.500988",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Royalty Payment",
@@ -454,5 +454,6 @@
  "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "track_changes": 1
 }

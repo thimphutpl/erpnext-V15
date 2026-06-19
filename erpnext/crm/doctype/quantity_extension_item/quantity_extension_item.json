@@ -104,7 +104,6 @@
   {
    "fieldname": "site_item_name",
    "fieldtype": "Data",
-   "hidden": 1,
    "label": "Site Item Name",
    "read_only": 1
   }
@@ -113,7 +112,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-08-31 13:41:22.521075",
+ "modified": "2026-05-14 14:44:20.817284",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Quantity Extension Item",

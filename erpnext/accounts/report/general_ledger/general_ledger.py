@@ -407,6 +407,17 @@ def get_data_with_opening_closing(filters, account_details, accounting_dimension
 	# closing
 	data.append(totals.closing)
 
+	net_balance = totals.closing.debit - totals.closing.credit
+
+	if net_balance >= 0:
+		totals.balance.debit = net_balance
+		totals.balance.credit = 0
+	else:
+		totals.balance.debit = 0
+		totals.balance.credit = abs(net_balance)
+
+	data.append(totals.balance)
+
 	return data
 
 
@@ -426,6 +437,7 @@ def get_totals_dict():
 		opening=_get_debit_credit_dict(_("Opening")),
 		total=_get_debit_credit_dict(_("Total")),
 		closing=_get_debit_credit_dict(_("Closing (Opening + Total)")),
+		balance=_get_debit_credit_dict(_("Balance"))
 	)
 
 

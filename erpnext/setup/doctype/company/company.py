@@ -88,6 +88,8 @@ class Company(NestedSet):
 		expenses_included_in_valuation: DF.Link | None
 		fax: DF.Data | None
 		gain_disposal_account: DF.Link | None
+		gst_inward: DF.Link | None
+		gst_outward: DF.Link | None
 		hire_charge: DF.Link | None
 		imprest_advance_account: DF.Link | None
 		is_group: DF.Check

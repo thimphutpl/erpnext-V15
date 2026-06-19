@@ -55,7 +55,7 @@ class HSDPayment(Document):
 		check_future_date(self.posting_date)
 		self.set_status()
 		self.validate_allocated_amount()
-		self.clearance_date = None
+		# self.clearance_date = None
 		if self.workflow_state=="Verified":
 			self.verifier=frappe.session.user
 		if self.workflow_state=="Waiting Approval":

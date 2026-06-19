@@ -86,19 +86,19 @@ class AssetDepreciationSchedule(Document):
 			],
 		)
 
-		if asset_depr_schedule and asset_depr_schedule != self.name:
-			if self.finance_book:
-				frappe.throw(
-					_(
-						"Asset Depreciation Schedule {0} for Asset {1} and Finance Book {2} already exists."
-					).format(asset_depr_schedule, self.asset, self.finance_book)
-				)
-			else:
-				frappe.throw(
-					_("Asset Depreciation Schedule {0} for Asset {1} already exists.").format(
-						asset_depr_schedule, self.asset
-					)
-				)
+		# if asset_depr_schedule and asset_depr_schedule != self.name:
+		# 	if self.finance_book:
+		# 		frappe.throw(
+		# 			_(
+		# 				"Asset Depreciation Schedule {0} for Asset {1} and Finance Book {2} already exists."
+		# 			).format(asset_depr_schedule, self.asset, self.finance_book)
+		# 		)
+		# 	else:
+		# 		frappe.throw(
+		# 			_("Asset Depreciation Schedule {0} for Asset {1} already exists.").format(
+		# 				asset_depr_schedule, self.asset
+		# 			)
+		# 		)
 
 	def on_submit(self):
 		self.db_set("status", "Active")

@@ -272,7 +272,6 @@ class DeliveryNote(SellingController):
 					frappe.throw(_("Sales Order required for Item {0}").format(d.item_code))
 
 	def validate(self):
-		
 		self.validate_posting_time()
 		super().validate()
 		self.validate_references()
@@ -313,7 +312,7 @@ class DeliveryNote(SellingController):
 			self.net_total = flt(self.total) + flt(self.transportation_charges) + flt(self.additional_cost) + flt(self.loading_cost) - flt(self.discount_or_cost_amount)
 		if not self.get('taxes'):
 			self.grand_total = self.net_total
-
+		self.loading_cost = flt(self.total_qty) * flt(self.loading_rate)
 		self.validate_cost_center()
 
 	def validate_cost_center(self):
@@ -569,7 +568,8 @@ class DeliveryNote(SellingController):
 		# Updating stock ledger should always be called after updating prevdoc status,
 		# because updating reserved qty in bin depends upon updated delivered qty in SO
 		self.update_stock_ledger()
-		self.make_gl_entries()
+		if not self.is_kidu_sale:
+			self.make_gl_entries()
 		self.repost_future_sle_and_gle()
 
 	def on_cancel(self):
@@ -590,7 +590,8 @@ class DeliveryNote(SellingController):
 		self.cancel_packing_slips()
 		self.update_pick_list_status()
 
-		self.make_gl_entries_on_cancel()
+		if not self.is_kidu_sale:
+			self.make_gl_entries_on_cancel()
 		self.repost_future_sle_and_gle()
 		self.ignore_linked_doctypes = (
 			"GL Entry",
@@ -848,6 +849,8 @@ class DeliveryNote(SellingController):
 			where t1.name = t2.parent and t2.delivery_note = %s and t1.docstatus = 1""",
 			(self.name),
 		)
+		frappe.errprint(str(self.name) + ", " + str(submit_rv))
+
 		if submit_rv:
 			frappe.throw(_("Sales Invoice {0} has already been submitted").format(submit_rv[0][0]))
 

@@ -214,6 +214,10 @@ frappe.ui.form.on("Hiring Approval Details", {
 		// frappe.throw("hello")
 		calculate_amount(frm, cdt, cdn)
 	},
+	"km_based_rate": function (frm, cdt, cdn) {
+		// frappe.throw("hello")
+		calculate_amount(frm, cdt, cdn)
+	},
 	"cft_qty": function (frm, cdt, cdn) {
 		calculate_amount(frm, cdt, cdn)
 	},
@@ -374,7 +378,10 @@ function calculate_amount(frm, cdt, cdn) {
 			grand_amount = item.rate * item.cft_qty
 		}
 		else if (item.lumpsum_rate){
-			grand_amount = lumpsum_rate
+			grand_amount = item.lumpsum_rate * item.total_hours
+		}
+		else if (item.km_based_rate){
+			grand_amount = item.km_based_rate * item.total_hours
 		}
 		else {
 			grand_amount = item.rate * item.total_hours

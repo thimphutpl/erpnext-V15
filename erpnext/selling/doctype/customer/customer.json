@@ -43,6 +43,12 @@
   "language",
   "column_break_45",
   "customer_details",
+  "section_break_qtfv",
+  "bank_name1",
+  "bank_branch1",
+  "column_break_adli",
+  "bank_ac_type",
+  "ac_no",
   "bank_details_tab",
   "bank_name",
   "bank_branch",
@@ -599,6 +605,7 @@
    "label": "Citizenship ID",
    "oldfieldname": "customer_group",
    "oldfieldtype": "Link",
+   "reqd": 1,
    "unique": 1
   },
   {
@@ -643,6 +650,38 @@
    "fieldname": "account_number",
    "fieldtype": "Data",
    "label": "Account Number"
+  },
+  {
+   "fieldname": "section_break_qtfv",
+   "fieldtype": "Section Break",
+   "label": "Bank Informations"
+  },
+  {
+   "fieldname": "bank_name1",
+   "fieldtype": "Link",
+   "label": "Bank Name",
+   "options": "Financial Institution"
+  },
+  {
+   "fieldname": "column_break_adli",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "bank_ac_type",
+   "fieldtype": "Link",
+   "label": "Bank Account Type",
+   "options": "Bank Account Type"
+  },
+  {
+   "fieldname": "bank_branch1",
+   "fieldtype": "Link",
+   "label": "Bank Branch",
+   "options": "Financial Institution Branch"
+  },
+  {
+   "fieldname": "ac_no",
+   "fieldtype": "Data",
+   "label": "Account Number"
   }
  ],
  "icon": "fa fa-user",
@@ -656,7 +695,7 @@
    "link_fieldname": "party"
   }
  ],
- "modified": "2026-01-29 15:33:35.951105",
+ "modified": "2026-05-15 07:29:07.564357",
  "modified_by": "Administrator",
  "module": "Selling",
  "name": "Customer",

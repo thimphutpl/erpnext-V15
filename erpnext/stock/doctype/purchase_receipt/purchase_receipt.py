@@ -310,7 +310,7 @@ class PurchaseReceipt(BuyingController):
 		self.total_add_ded = flt(self.freight_insurance_charges) - flt(self.discount) + flt(self.tax) + flt(self.other_charges)
 		if self.total_add_ded:
 			self.net_total = self.total + self.total_add_ded
-			self.grand_total = self.net_total
+			# self.grand_total = self.net_total
 			self.in_words = money_in_words(self.grand_total, self.currency)
 	def validate_provisional_expense_account(self):
 		provisional_accounting_for_non_stock_items = cint(

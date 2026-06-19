@@ -276,6 +276,7 @@ class AssetDepreciationSchedule(Document):
 		final_number_of_depreciations = cint(row.total_number_of_depreciations) - cint(
 			self.opening_number_of_booked_depreciations
 		)
+		# frappe.throw(str(final_number_of_depreciations))
 		has_pro_rata = _check_is_pro_rata(asset_doc, row)
 		# if has_pro_rata:
 		# 	final_number_of_depreciations += 1
@@ -296,6 +297,7 @@ class AssetDepreciationSchedule(Document):
 			income_accumulated_depreciation = asset_doc.income_tax_opening_depreciation_amount
 
 		count = 1
+		# frappe.throw(str(start))
 		for n in range(start, final_number_of_depreciations):
 			count += 1
 			# If depreciation is already completed (for double declining balance)
@@ -470,9 +472,12 @@ class AssetDepreciationSchedule(Document):
 			# if not has_pro_rata or (
 			# 	n < (cint(final_number_of_depreciations) - 1) or final_number_of_depreciations == 2
 			# ):
+			# frappe.throw(str(has_pro_rata))
+
 			if not has_pro_rata or (
-				n < cint(final_number_of_depreciations) - 1
+				n <= cint(final_number_of_depreciations) - 1
 			):
+
 				schedule_date = add_months(
 					row.depreciation_start_date, n * cint(row.frequency_of_depreciation)
 				)
@@ -516,6 +521,7 @@ class AssetDepreciationSchedule(Document):
 					asset_doc.available_for_use_date, -1
 				)  # needed to calc depr amount for available_for_use_date too
 				days = date_diff(row.depreciation_start_date, from_date)
+				# frappe.throw(str(schedule_date))
 				if schedule_date:
 					depreciation_amount = get_depreciation_amount(asset_doc, value_after_depreciation, row, schedule_date, days, has_pro_rata)
 				# frappe.throw("here "+str(schedule_date)+" "+str(depreciation_amount))

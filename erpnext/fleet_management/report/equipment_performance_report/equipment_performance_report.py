@@ -1,9 +1,5 @@
-# Copyright (c) 2024, Frappe Technologies Pvt. Ltd. and contributors
+	# Copyrght (c) 2013, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
-
-# def execute(filters=None):
-# 	columns, data = [], []
-# 	return columns, data
 
 from __future__ import unicode_literals
 import frappe
@@ -13,299 +9,634 @@ from frappe import _, json
 from frappe.utils import flt, cint
 from frappe.utils.data import get_last_day
 from frappe.utils.data import flt, cint,add_days, cstr, flt, getdate, nowdate, rounded, date_diff
+from erpnext.accounts.utils import get_child_cost_centers
+
 
 def execute(filters=None):
 	columns = get_columns(filters)
 	data = get_data(filters)
 	return columns, data
 
+def get_conditions(filters):
+	branch_cond = consumption_date = rate_date = jc_date = insurance_date = rev_date = stock_date = bench_date = tc_date = operator_date = le_date = ss_date= not_cdcll = dis = mr_date= equipment_category = ""
+	if not filters.cost_center:
+		return ""
+	if not filters.branch:	
+		all_ccs = get_child_cost_centers(filters.cost_center)
+		branch_cond = " and eh.branch in (select b.name from `tabCost Center` cc, `tabBranch` b where b.cost_center = cc.name and cc.name in {0})".format(tuple(all_ccs))
+	else:
+		branch = str(filters.get("branch"))
+		branch = branch.replace(' - NRDCL','')
+		branch_cond = " and eh.branch = \'"+branch+"\'"
+		if filters.get("not_cdcl"):
+			not_cdcll = " and e.not_cdcl = 0"
+		else:
+			not_cdcll = " and e.not_cdcl = 1"
+
+		if filters.get("include_disabled"):
+			dis = " and is_disabled like '%' "
+		else:
+			dis  = " and is_disabled != 1 "
+
+	if filters.get("equipment_category"):
+		equipment_category = " and e.equipment_category = '{0}'".format(filters.equipment_category)
+  
+	consumption_date  = get_dates(filters, "vl", "from_date", "to_date")
+	consumption_date_vli  = get_dates(filters, "vli", "from_date", "to_date")
+	rate_date 	  = get_dates(filters, "pol", "date")
+	jc_date	 	  = get_dates(filters, "jc", "posting_date", "finish_date")
+	insurance_date	= get_dates(filters, "ins", "je.posting_date")
+	stock_date	= get_dates(filters, "stock", "se.posting_date")
+	reg_date		  = get_dates(filters, "reg", "rd.registration_date")
+	operator_date	 = get_dates(filters, "op", "start_date", "end_date")
+	tc_date		  	  = get_dates(filters, "tc", "posting_date")
+	le_date		  = get_dates(filters, "le", "encashment_date")
+	# ss_date		   = get_dates(filters, "ss", "start_date", "ifnull(end_date,curdate())")
+	ss_date		   = get_dates(filters, "ss", "start_date")
+	rev_date		  = get_dates(filters, "revn", "ci.posting_date")
+	bench_date		= get_dates(filters, "benchmark", "hi.from_date", "hi.to_date")
+	mr_date		   = get_dates(filters, "mr_pay", "from_date", "to_date")
+	return branch_cond, consumption_date, consumption_date_vli, rate_date, jc_date, insurance_date, reg_date, stock_date, rev_date, bench_date, operator_date, tc_date, le_date, ss_date, not_cdcll, dis, mr_date, equipment_category
+
+def get_dates(filters, module = "", from_date_column = "", to_date_column = ""):
+	cond1 = ""
+	cond2 = ""
+	eh_cond = ""
+	from_date,to_date,no_of_months, from_date1, to_date1, ra = get_date_conditions(filters)
+	if from_date_column:
+		if module == "vli":
+			cond1 = ("b.{0} >= '%(from_date)s'  and b.{0} <= '%(to_date)s'").format(from_date_column)
+		else:
+			cond1 = ("{0} >= '%(from_date)s'  and {0} <= '%(to_date)s'").format(from_date_column)
+	if to_date_column:
+		if module == "vli":
+			cond2 = str("and b.{0} between '%(from_date)s' and '%(to_date)s'").format(to_date_column)
+		elif module in ("op","ss", "benchmark"):
+			cond2 = str(" or {0} between '%(from_date)s' and '%(to_date)s'").format(to_date_column)
+		else:
+			cond2 = str("and {0} between '%(from_date)s' and '%(to_date)s'").format(to_date_column)
+	cond1 = cond1 % {"from_date": from_date, "to_date": to_date}
+	cond2 = cond2 % {"from_date": from_date, "to_date": to_date}
+	return "({0} {1})".format(cond1, cond2)
+
+def get_date_conditions(filters):
+	from_date = to_date = no_of_months = from_date1 = to_date1 = no_of_months1 = 0
+	ra = []
+	months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+	no_of_months = 0
+
+	def calc_dates(from_month, to_month):
+		from_date = getdate(filters.get("fy") + "-" + str(from_month) + "-" + "01")
+		to_date   = get_last_day(getdate(filters.get("fy") + "-" + str(to_month) + "-" + "01"))
+		ra		= range(from_month, to_month+1)
+		return from_date, to_date, (to_month-from_month)+1, ra
+		
+	
+	def calc_dates_two(from_month, to_month):
+				from_date1 = getdate(filters.get("fy") + "-" + str(from_month) + "-" + "01")
+				to_date1   = get_last_day(getdate(filters.get("fy") + "-" + str(to_month) + "-" + "01"))
+				return from_date1, to_date1
+
+
+	if filters.get("period") in ("1st Quarter", "2nd Quarter", "3rd Quarter", "4th Quarter", "1st Half Year", "2nd Half Year"):
+		if filters.get("period") == "1st Quarter":
+			from_date, to_date, no_of_months, ra  = calc_dates(1,3)
+		elif filters.get("period") == "2nd Quarter":
+			from_date,to_date,no_of_months, ra  = calc_dates(4,6)
+		elif filters.get("period") == "3rd Quarter":
+			from_date,to_date,no_of_months, ra  = calc_dates(7,9)
+		elif filters.get("period") == "4th Quarter":
+			from_date,to_date,no_of_months, ra  = calc_dates(10,12)
+		elif filters.get("period") == "1st Half Year":
+			from_date,to_date,no_of_months, ra  = calc_dates(1,6)
+		elif filters.get("period") == "2nd Half Year":
+			from_date,to_date,no_of_months, ra  = calc_dates(7,12)
+		for i in ra:
+								from_date1, to_date1 = calc_dates_two(i,i)
+	elif filters.get("period") in ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"):
+		month_id	 = months.index(filters.get("period"))+1
+		from_date	= getdate(filters.get("fy") + "-" + str(month_id) + "-" + "01")
+		to_date	  = get_last_day(from_date)
+		no_of_months = 1 
+	elif filters.fy and (not filters.get("period")):
+		from_date	= getdate(filters.get("fy")+ "-" + "01" + "-" + "01")
+		to_date	  = get_last_day(getdate(filters.get("fy") + "-" + "12" + "-" + "31"))
+		no_of_months = 12
+		ra = [1,2,3,4,5,6,7,8,9,10,11,12]
+		#for i in ra:
+		#	from_date1, to_date1, no_of_months1 = calc_dates(i,i)
+	return from_date, to_date, no_of_months, from_date1, to_date1, ra
+
+
 def get_data(filters):
+	branch_cond, consumption_date, consumption_date_vli, rate_date, jc_date, insurance_date, reg_date, stock_date, rev_date, bench_date, operator_date, tc_date, le_date, ss_date, not_cdcll, dis, mr_date, equipment_category  =  get_conditions(filters)
+ 
+	from_date, to_date, no_of_months, from_date1, to_date1, ra  = get_date_conditions(filters)
+ 
 	data = []
-	cond = " and 1 =1"
-	if filters.get("branch"):
-		cond += " and eh.branch = '{0}'".format(filters.branch)
+	eq_ins = eq_reg = je_pol = dp_pol = 0
+	if not filters.cost_center:
+		return ""
+	if not filters.branch:	
+		all_ccs = get_child_cost_centers(filters.cost_center)
+		branch_cond = " and eh.branch in (select b.name from `tabCost Center` cc, `tabBranch` b where b.cost_center = cc.name and cc.name in {0})".format(tuple(all_ccs))
+	else:
+		branch = str(filters.get("branch"))
+		branch = branch.replace(' - NRDCL','')
+		branch_cond = " and eh.branch = \'"+branch+"\'"
 
 	if filters.get("not_cdcl"):
-		cond += " and e.not_cdcl  = 0"
+		not_cdcll = " and not_cdcl = 0"
+	else:
+		not_cdcll = " and not_cdcl = 1"
 
 	if filters.get("include_disabled"):
-		cond += " and e.is_disabled = 1"
+		dis = " and is_disabled like '%' "
+	else:
+		dis  = " and is_disabled != 1 "
+	
+	query = """
+		select e.name as name, eh.branch as branch, e.equipment_name as equipment_number, 
+			e.equipment_type as equipment_type, e.equipment_model as equipment_model, e.equipment_category
+			from `tabEquipment` e, `tabEquipment History` eh 
+			where eh.parent = e.name
+			{0} {1} {2} 
+			and ('{3}' between eh.from_date and ifnull(eh.to_date, now())
+			or '{4}' between eh.from_date and ifnull(eh.to_date, now()))
+			{5} group by eh.branch, eh.parent order by eh.branch, eh.parent
+	""".format(not_cdcll, branch_cond, dis, from_date, to_date, equipment_category)
+	equipments = frappe.db.sql(query, as_dict=1)
+	for eq in equipments:
+		vl_query = """
+							select sum(ifnull(consumption,0)) as consumption,
+							sum(ifnull(total_work_time,0)) as total_work_time,
+							sum(ifnull(total_idle_time,0)) as total_idle_time,
+							from `tabVehicle Logbook`
+							where equipment = '{0}'
+							and   docstatus = 1
+				and   {1} and  branch = '{2}'
+					""".format(eq.name,consumption_date, eq.branch)
+		# Metre Cube and Cubic Feet from Vehicle Log Book
+		vli = frappe.db.sql("""
+							select sum(ifnull(a.qty_cft,0)) as cft,
+							sum(ifnull(a.qty_m3,0)) as m3
+							from `tabVehicle Log` a, `tabVehicle Logbook` b
+							where a.parent = b.name and b.equipment = '{0}'
+							and  b.docstatus = 1
+				and   {1} and  b.branch = '{2}'
+					""".format(eq.name, consumption_date_vli, eq.branch), as_dict=True)[0]
 
-	equipments = """
-		select * from (select e.name, eh.branch, eh.from_date, ifnull(eh.to_date, curdate()) as to_date, e.registration_number, 
-		e.equipment_type, e.equipment_model from `tabEquipment` e, `tabEquipment History` eh  where eh.parent = e.name {0} group by e.name, eh.branch) 
-		as equip left join
-		(select eo.operator, eo.start_date, eo.employee_type, ifnull(eo.end_date, curdate()) as end_date, eo.parent 
-		from `tabEquipment Operator` eo) 
-		as opr 
-		on opr.parent = equip.name 
-		""".format(cond)
-	filter_date  = " between '{0}' and '{1}'".format(filters.from_date, filters.to_date)
-	for eq in frappe.db.sql(equipments, as_dict = True):
-		date = " between '{0}' and '{1}'".format(eq.from_date, eq.to_date)
-		gross_pay = tc = le = ot = 0.0
-		if eq.operator:
-			date = " between '{0}' and '{1}'".format(eq.start_date, eq.end_date)
-		if eq.employee_type == "Muster Roll Employee":
-			#PRoCESS FROM "PROCESS MR PAYMENT"
-			mr_pay = frappe.db.sql("""
-					select sum(ifnull(mi.total_wage,0)) as mr_wage, sum(ifnull(mi.total_ot_amount,0)) as mr_ot 
-					from `tabProcess MR Payment` mr , `tabMR Payment Item` mi
-					where mi.parent = mr.name
-					and mi.id_card = '{0}' 
-					and mr.docstatus = 1 and mr.branch = '{2}'
-					and mr.posting_date {1} and mr.posting_date {3}
-				""".format(eq.operator, date, eq.branch, filter_date), as_dict=1)[0]
-			gross_pay    = flt(mr_pay.mr_wage)
-			ot = flt(mr_pay.mr_ot)
-		elif eq.employee_type == "Employee":
-			#get tc
-			tc = frappe.db.sql("""
-					select sum(ifnull(tc.total_claim_amount,0)) as travel_claim
-					from `tabTravel Claim` tc 
-					where tc.employee = '{0}'
-					and   tc.docstatus = 1
-					and tc.branch = '{2}' and tc.posting_date {1} and tc.posting_date {3}
-				""".format(eq.operator, date, eq.branch, filter_date), as_dict=1)[0]
+		vl = frappe.db.sql("""
+							select sum(ifnull(consumption,0)) as consumption,
+							sum(ifnull(total_work_time,0)) as total_work_time,
+							sum(ifnull(total_idle_time,0)) as total_idle_time
+							from `tabVehicle Logbook`
+							where equipment = '{0}'
+							and   docstatus = 1
+			and   {1} and  branch = '{2}'
+			""".format(eq.name,consumption_date, eq.branch), as_dict=1)[0]
+		# `tabPOL Receive`
+		pol = frappe.db.sql("""
+								select (sum(qty*rate)/sum(qty)) as rate
+								from `tabPOL Receive`
+							where equipment_number = '{0}' and posting_date between '{1}' and '{2}'
+							and   docstatus = 1
+				""".format(eq.equipment_number, from_date, to_date), as_dict=1)[0]
 
-			tc = flt(tc.travel_claim)
-			#Leave Encashment Aomunt
-			lea = frappe.db.sql("""
-					select sum(ifnull(le.encashment_amount,0)) as e_amount 
-					from `tabLeave Encashment` le
-					where le.employee = '{0}'
-					and   le.docstatus = 1 and le.branch = '{3}'
-					and   le.encashment_date {1} and le.encashment_date {2}
-					""".format(eq.operator, date, filter_date, eq.branch), as_dict=1)[0]
-			le = flt(lea.e_amount)
-			ota = frappe.db.sql("""
-					select sum(ifnull((ot.rate*oti.number_of_hours), 0)) as amount from `tabOvertime Application` ot, 
-					`tabOvertime Application Item` oti 
-					where oti.parent = ot.name and ot.docstatus = 1 and 
-					oti.date {0} and ot.employee = '{1}'  and oti.date {2} and ot.branch = '{3}'
-					""".format(date, eq.operator, filter_date, eq.branch), as_dict =1)[0]
-			ot = flt(ota.amount)
-			#process salary
-			ss_date = " between ssi.from_date and ssi.to_date"
-			sal = frappe.db.sql("""
-				select ss.name, ss.employee, ss.branch,  ss.gross_pay, ssi.from_date, ssi.to_date
-				from `tabSalary Slip` ss, `tabSalary Slip Item` ssi 
-				where ss.employee = '{0}' and ssi.parent = ss.name
-				and ss.docstatus = 1
-				and ss.branch = '{1}' and (((ssi.from_date {2}) or (ssi.to_date {2})) or (( '{3}' {5}) or ('{4}' {5}))) and '{3}' 
-				<= '{6}' 
-			""".format(eq.operator, eq.branch, date, eq.start_date, eq.end_date, ss_date, filters.to_date), as_dict = True)
+		#POL Expense from Journal Entry
+		je_pol = frappe.db.sql("""
+				select sum(ifnull(jea.debit,0)) as rate
+				from `tabJournal Entry Account` jea, `tabJournal Entry` je
+				where jea.parent = je.name and jea.reference_name = '{0}'
+				and jea.account in ('POL-Machinary and Equipment - NRDCL','POL-Vehicle - NRDCL','POL-Tractor and Truck - NRDCL')
+				and je.posting_date between '{1}' and '{2}'
+				and je.docstatus = 1
+		""".format(eq.name, from_date, to_date), as_dict=1)[0]
+		# #POL Expense from Direct Payment
+		# dp_pol = frappe.db.sql("""
+		# 		select sum(ifnull(dp.taxable_amount,0)) as rate
+		# 		from `tabDirect Payment Item` dpi, `tabDirect Payment` dp
+		# 		where dpi.parent = dp.name and dpi.reference_name = '{0}'
+		# 		and dpi.account in ('POL-Machinary and Equipment - NRDCL','POL-Vehicle - NRDCL','POL-Tractor and Truck - NRDCL')
+		# 		and dp.posting_date between '{1}' and '{2}'
+		# 		and dp.docstatus = 1
+		# """.format(eq.name, from_date, to_date), as_dict=1)[0]
 
-			if sal:
-				gross_pay= 0.0
-				for s in sal:
-					total_days = flt(date_diff(s.to_date, s.from_date) + 1)
-					s_start_date = getdate(s.from_date)
-					s_end_date = getdate(s.to_date)
-					f_from_date =  getdate(filters.from_date)
-					f_to_date =    getdate(filters.to_date)
-					if f_from_date <= s_start_date and s_end_date <=  f_to_date:
-						if f_from_date < getdate(eq.start_date) < f_to_date:
-							work_date = flt(date_diff(s_end_date, eq.start_date) +1)
-							gross_pay += flt(s.gross_pay)*flt(work_date)/flt(total_days)
-							#frappe.msgprint("a000")
-						elif f_from_date < getdate(eq.end_date) < f_to_date:
-							#frappe.msgprint("a00")
-							work_date = flt(date_diff(eq.end_date, f_from_date) +1)
-							gross_pay += flt(s.gross_pay)*flt(work_date)/flt(total_days)
-						else:
-							gross_pay += flt(s.gross_pay)
-							#frappe.msgprint("a0")
-					if getdate(eq.end_date) < f_from_date:
-							gross_pay == 0.0
-							#frappe.msgprint("a")
-					if s_start_date < f_from_date < s_end_date and  s_start_date < f_to_date < s_end_date:
-						work_date = flt(date_diff(s_start_date, f_from_date) +1)
-						gross_pay += flt(s.gross_pay)*flt(work_date)/flt(total_days)
-						#frappe.msgprint("b a {0}, w{1}, t{2}".format(gross_pay, work_date, total_days))
+		# `tabJob Cards`
+		jc = frappe.db.sql("""
+								select sum(ifnull(goods_amount,0)) as goods_amount,
+									sum(ifnull(services_amount,0)) as services_amount
+								from `tabJob Cards`
+								where equipment = '{0}'
+								and   docstatus = 1
+				and   {1} and branch = '{2}'
+					""".format(eq.name,jc_date, eq.branch), as_dict=1)[0]
 
-					if s_start_date < f_from_date and f_from_date <= s_end_date <=  f_to_date and getdate(eq.end_date) > f_from_date:
-						work_date = flt(date_diff(s_end_date, f_from_date) +1)
-						gross_pay += flt(s.gross_pay)*flt(work_date)/flt(total_days)
-						#frappe.msgprint("c a {0}, w{1}, t{2}".format(gross_pay, work_date, total_days))
+		#Insurance from Journal Entry and Journal Entry Account
+		eq_ins = frappe.db.sql("""
+			 	select sum(ifnull(jea.debit,0)) as amount from `tabJournal Entry` je, `tabJournal Entry Account` jea
+				where jea.parent = je.name and jea.reference_name = '{0}'
+				and je.posting_date between '{1}' and '{2}' and jea.account in ('Insurance-Other - NRDCL','Insurance-Vehicles - NRDCL','Insurance-Tractor and Truck - NRDCL','Insurance-Machinary and Equipment - NRDCL')
+				and je.docstatus = 1
+			 """.format(eq.name, from_date, to_date), as_dict=1)[0]
 
-					if f_from_date <=  s_start_date <= f_to_date and s_end_date > f_to_date:
-						work_date = flt(date_diff(f_to_date, s_start_date) +1)
-						gross_pay += flt(s.gross_pay)*flt(work_date)/flt(total_days)
-						#frappe.msgprint("b a {0}, w{1}, t{2}".format(gross_pay, work_date, total_days))
-		eq_ex = equipment_expense(filters, eq.name, eq.branch, date, filter_date)
-		total_exp = flt(eq_ex) + flt(gross_pay) +  flt(le) + flt(tc) + flt(ot)
-		revn = revenue(filters, eq.name, eq.branch, date, filter_date)
-		rate, bench, total_hc = benchmark(filters, eq.equipment_type, eq.equipment_model)
-		ex = flt(revn) - flt(total_exp)
-		util_percent = 0.0
-		if total_hc != 0.0:
-			util_percent = 100*flt(revn)/flt(total_hc)
-			#frappe.msgprint("1 {0}".format(util_percent))
+		# eq_dp_ins = frappe.db.sql("""
+		# 	 	select sum(ifnull(dpi.taxable_amount,0)) as amount from `tabDirect Payment` dp, `tabDirect Payment Item` dpi
+		# 		where dpi.parent = dp.name and dpi.reference_name = '{0}'
+		# 		and dp.posting_date between '{1}' and '{2}' and dpi.account in ('Insurance-Other - NRDCL','Insurance-Vehicles - NRDCL','Insurance-Tractor and Truck - NRDCL','Insurance-Machinary and Equipment - NRDCL')
+		# 		and dp.docstatus = 1
+		# 	 """.format(eq.name, from_date, to_date), as_dict=1)[0]
 
-		elif flt(total_hc) == 0  and flt(revn) > 0:
-			util_percent = 100
-			#frappe.msgprint("2 {0} ".format(util_percent))
+		eq_reg = frappe.db.sql("""
+			 	select sum(ifnull(jea.debit,0)) as amount from `tabJournal Entry` je, `tabJournal Entry Account` jea
+				where jea.parent = je.name and jea.reference_name = '{0}'
+				and je.posting_date between '{1}' and '{2}' and jea.account in ('Registration & Blue Book Renewal-Vehicle - NRDCL','Registration & Blue Book Renewal-Tractor and Truck - NRDCL','Registration & Blue Book Renewal-Machinary and Equipment - NRDCL')
+				and je.docstatus = 1
+			 """.format(eq.name, from_date, to_date), as_dict=1)[0]
 
-		elif flt(total_hc) == 0.0 and flt(revn) <= 0.0:
-			util_percent = 0.0
-			#frappe.msgprint("3 {0}".format(util_percent))
+		# eq_dp_reg = frappe.db.sql("""
+		# 	 	select sum(ifnull(dpi.amount,0)) as amount from `tabDirect Payment` dp, `tabDirect Payment Item` dpi
+		# 		where dpi.parent = dp.name and dpi.reference_name = '{0}'
+		# 		and dp.posting_date between '{1}' and '{2}' and dpi.account in ('Registration & Blue Book Renewal-Vehicle - NRDCL','Registration & Blue Book Renewal-Tractor and Truck - NRDCL','Registration & Blue Book Renewal-Machinary and Equipment - NRDCL')
+		# 		and dp.docstatus = 1
+		# 	 """.format(eq.name, from_date, to_date), as_dict=1)[0]
+	
+		#Repair and Maintenance from Journal Entry
+		je_rm = frappe.db.sql("""
+				select sum(ifnull(jea.debit,0)) as amount
+				from `tabJournal Entry Account` jea, `tabJournal Entry` je
+				where jea.parent = je.name and jea.reference_name = '{0}'
+				and jea.account in ('Maint. of tyres-Vehicle - NRDCL','Maint. of tyres-Tractor and Truck - NRDCL','Maint. of tyres-Machinary and Equipment - NRDCL','R & M of Machinery and Equipment-Intergroup - NRDCL','R & M of Machinery and Equipment - NRDCL','R & M of Tractor and Truck - NRDCL','R & M of Vehicle - NRDCL','R & M of Vehicle-Intergroup - NRDCL')
+				and je.posting_date between '{1}' and '{2}'
+				and je.docstatus = 1
+		""".format(eq.name, from_date, to_date), as_dict=1)[0]
 
-		else:
-			util_percent = 0.0
-			#frappe.msgprint("4 {0}".format(util_percent))
-
-		row = [eq.name, eq.branch, eq.registration_number, eq.equipment_type, eq.equipment_model, eq.operator, total_exp, revn, ex, rate,\
-		bench,total_hc, round(util_percent,2)]
-		data.append(row)
-	return data
-
-def equipment_expense(filters, eq_name, eq_branch, date, filter_date):
-	# `tabVehicle Logbook`
-	'''vl = frappe.db.sql("""
-			select sum(ifnull(vl.consumption,0)) as consumption
-			from `tabVehicle Logbook` vl, `tabVehicle Log` l
-			where vl.equipment = '{0}'
-			and   vl.docstatus = 1 and vl.branch = '{3}'
-			and l.parent = vl.name
-			and   l.work_date {1} and l.work_date {2}
-	    """.format(eq_name, date, filter_date, eq_branch), as_dict=1)[0]'''
-
-	vl = frappe.db.sql("""
-			select sum(ifnull(vl.consumption,0)) as consumption
-			from `tabVehicle Logbook` vl
-			where vl.equipment = '{0}'
-			and   vl.docstatus = 1 and vl.branch = '{3}'
-			and   (vl.from_date {1} or vl.to_date {1}) and (vl.from_date {2} or vl.to_date {2})
-	    """.format(eq_name, date, filter_date, eq_branch), as_dict=1)[0]
-
-	# `tabPOL Receive`
-	pol = frappe.db.sql("""
-			select (sum(qty*rate)/sum(qty)) as rate
-			from `tabPOL Receive`
-			where branch = '{0}'
-			and   docstatus = 1 and posting_date {1} and posting_date {2}
-		    """.format(eq_branch, date, filter_date), as_dict=1)[0]
-	 # `tabJob Cards`
-	jc = frappe.db.sql("""
-			select sum(ifnull(jc.goods_amount,0)) as goods_amount,
-				sum(ifnull(jc.services_amount,0)) as services_amount
-			from `tabJob Cards` jc
-			where jc.equipment = '{0}'
-			and   jc.docstatus = 1
-			and   jc.finish_date {1} and jc.customer_branch = '{2}' and jc.finish_date {3}
-	    """.format(eq_name, date, eq_branch, filter_date), as_dict=1)[0]
-	#Insurance
-	ins = frappe.db.sql("""
-			select sum(ifnull(id.insured_amount,0)) as insurance  
-			from `tabInsurance Details` id, `tabInsurance and Registration` ir 
-			where id.parent = ir.name and ir.equipment = '{0}'
-			and   id.insured_date {1} and id.insured_date {2}
-		 """.format(eq_name, date, filter_date), as_dict=1)[0]
-	#Reg fee
-	reg = frappe.db.sql("""
-			select sum(ifnull(rd.registration_amount,0)) as r_amount
-			from `tabRegistration Details` rd, `tabInsurance and Registration` i  
-				where rd.parent = i.name  
-				and i.equipment = '{0}'
-				and   rd.registration_date {1} and rd.registration_date {2}
-			""".format(eq_name, date, filter_date), as_dict=1)[0]
-
-	return round(flt(vl.consumption)*flt(pol.rate),2) + round(flt(ins.insurance)+flt(reg.r_amount),2) + round(flt(jc.goods_amount),2) +\
-	round(flt(jc.services_amount),2)
+		# #Repair and Maintenance from Direct Payment
+		# dp_rm = frappe.db.sql("""
+		# 		select sum(ifnull(dp.taxable_amount,0)) as amount
+		# 		from `tabDirect Payment Item` dpi, `tabDirect Payment` dp
+		# 		where dpi.parent = dp.name and dpi.reference_name = '{0}'
+		# 		and dpi.account in ('Maint. of tyres-Vehicle - NRDCL','Maint. of tyres-Tractor and Truck - NRDCL','Maint. of tyres-Machinary and Equipment - NRDCL','R & M of Machinery and Equipment-Intergroup - NRDCL','R & M of Machinery and Equipment - NRDCL','R & M of Tractor and Truck - NRDCL','R & M of Vehicle - NRDCL','R & M of Vehicle-Intergroup - NRDCL')
+		# 		and dp.posting_date between '{1}' and '{2}'
+		# 		and dp.docstatus = 1
+		# """.format(eq.name, from_date, to_date), as_dict=1)[0]
 
 
-def revenue(filters, eq_name, eq_branch, date, filter_date):
-	#Revenue from Hire of Equipments
-	revn = frappe.db.sql("""
-		select sum(ifnull(hid.total_amount, 0)) as rev from `tabHire Invoice Details` hid, `tabHire Charge Invoice` hci
-		where hci.name = hid.parent
-		and hid.equipment = '{0}'
-		and hci.posting_date {1}
-		and hci.branch = '{2}'
-		and hci.posting_date {3}
-		and hci.docstatus =1
-	""".format(eq_name, date, eq_branch, filter_date), as_dict=1)[0]	
-	return revn.rev
+		# Stock Entry Expenses
+		stock = frappe.db.sql("""
+								select sum(ifnull(sed.amount,0)) as s_amount
+								from `tabStock Entry Detail` sed, `tabStock Entry` se  
+								where sed.parent = se.name  
+								and sed.equipment_issued_no = '{0}'
+								and   {1}
+						""".format(eq.name, stock_date), as_dict=1)[0]
 
-def benchmark(filters, equipment_type, equipment_model):
-	#benchmar
-	benchmark  = frappe.db.sql("""
-		       select hi.rate_fuel as rat, hi.perf_bench as bn, 
-		       hi.from_date as fr, hi.to_date as t
-		       from  `tabHire Charge Item` hi, `tabHire Charge Parameter` hp
-		       where hi.parent = hp.name 
-		       and hp.equipment_type = '{0}'
-		       and hp.equipment_model = '{1}'
-		""".format(equipment_type, equipment_model), as_dict=1)
-	rate = []
-	bench = []
-	total_hc = 0.0
-	util_percent = 0.0
-	for b in benchmark:
-		total_hc = 0.0
-		from_date = getdate(filters.from_date)
-		to_date = getdate(filters.to_date)
-		no_of_months = 12
-		total_no_of_days = date_diff(to_date, from_date)+1 
-		total_days_in_month  = 30
-		rate = b.rat
-		bench = b.bn
-		hc_per_month = rate*bench*8
-		hc_per_day = flt(hc_per_month)/flt(total_days_in_month)
-		total_hc = flt(hc_per_day)*flt(total_no_of_days)
-		#from_date,to_date,no_of_months, from_date1, to_date1, ra  = get_date_conditions(filters)
-		#ta = ta1= ta2 =  ta3 = ta4 = 0.0
-		'''if not b.t:
-			b.t = getdate(filters.to_date)
-
-		if b.fr >= from_date and b.t <= to_date:
-			rate.append(b.rat) 
-			bench.append(b.bn)
-			total_hc   += flt(b.rat)*flt(b.bn)*8*no_of_months
 		
-		if b.fr < from_date and b.t > to_date:
-			rate.append(b.rat)
-			bench.append(b.bn)
-			total_hc += flt(b.rat)*flt(b.bn)*no_of_months*8
-				
-
-	if not benchmark:
-		benchmark = {"rat": 0, "bn": 0, "fr": '', "t": ''}
-		#ben = [i*8 for i in bench]
-		# utility % based on existance of revenue and benchmark target'
-		#frappe.msgprint("{0}".format(total_rev))
-		if total_hc != 0.0:
-			util_percent = 100*total_rev/total_hc
-			frappe.msgprint("1 {0}".format(util_percent))
-
-		elif flt(total_hc) == 0  and flt(total_rev) > 0:
-			util_percent = 100
-			frappe.msgprint("2 {0} ".format(util_percent))
-
-		elif flt(total_hc) == 0.0 and flt(total_rev) <= 0.0:
-			util_percent = 0.0
-			frappe.msgprint("3 {0}".format(util_percent))
-
+		#Revenue from Hire of Equipments
+		if filters.get("not_cdcl"):
+			revn = frappe.db.sql("""
+								 select sum(ifnull(id.amount_work, 0)) as rev from `tabHire Invoice Details` id, `tabHire Charge Invoice` ci
+								 where ci.name = id.parent
+								 and id.equipment = '{0}'
+								 and {1}
+						 """.format(eq.name, rev_date), as_dict=1)[0]
+	
 		else:
-			util_percent = 0.0
-			frappe.msgprint("4 {0}".format(util_percent))'''
-	return rate, bench, total_hc
+			revn = frappe.db.sql("""
+								 select sum(ifnull(id.total_amount, 0)) as rev from `tabHire Invoice Details` id, `tabHire Charge Invoice` ci
+								 where ci.name = id.parent
+								 and id.equipment = '{0}'
+								 and {1}
+						 """.format(eq.name, rev_date), as_dict=1)[0]		
+
+				
+		#Looping via operator of the equipment to calculate the expensis related to operator
+		c_operator = frappe.db.sql("""
+								select eo.operator, eo.employee_type, eo.start_date, eo.end_date , eo.name, eh.branch 
+								from `tabEquipment Operator` eo, `tabEquipment History` eh
+								where eo.parent = '{0}' and eo.parent = eh.parent and eh.branch = '{1}'
+								and   eo.docstatus < 2
+						""".format(eq.name, eq.branch), as_dict=1)
+		travel_claim = 0.0
+		e_amount	 = 0.0
+		gross_pay	= 0.0
+		total_work_time = 0
+		total_idle_time = 0
+		total_cft = 0.0
+		total_m3 = 0.0
+		total_exp	= 0.0
+		total_pol_exp = 0.0
+		total_rm_exp = 0.0
+		total_op_exp = 0.0
+		total_sal	= 0.0
+		total_rev	= 0.0
+		for co in c_operator:
+			if co.employee_type =="Muster Roll Employee":
+				mr_pay = frappe.db.sql("""
+							   select sum(ifnull(mr.total_overall_amount,0)) as mr_payment
+						   from `tabProcess MR Payment` mr, `tabMR Payment Item` mi
+							   where mi.parent = mr.name
+						   and mi.id_card ='{0}'
+						   and mr.docstatus = 1
+							   and {1} 
+					""".format(co.operator, mr_date), as_dict =1) [0]
+				travel_claim += 0.0
+				e_amount += 0.0
+				gross_pay += flt(mr_pay.mr_payment)
+
+			elif co.employee_type == "Employee":	
+				tc = frappe.db.sql("""
+						select sum(ifnull(tc.total_amount,0)) as travel_claim
+						from `tabTravel Claim` tc
+						where tc.employee = '{0}'
+						and   tc.docstatus = 1
+						and   {1}
+					""".format(co.operator, tc_date), as_dict=1)[0]
+			
+				#Leave Encashment Aomun
+				lea = frappe.db.sql("""
+						select sum(ifnull(le.encashment_amount,0)) as e_amount
+						from `tabLeave Encashment` le
+						where le.employee = '{0}'
+						and   le.docstatus = 1
+						and   {1}
+					""".format(co.operator, le_date), as_dict=1)[0]
+
+				cem = frappe.db.sql("""
+						select employee, gross_pay, start_date, end_date
+						from `tabSalary Slip` ss
+						where employee = '{0}'
+						and ss.docstatus = 1
+						and {1} group by employee
+					  """.format(co.operator, ss_date),  as_dict=1)
+				#frappe.msgprint(str(cem))
+				if cem:
+					for e in cem:
+						total_days = flt(date_diff(e.end_date, e.start_date) + 1)
+						if e.end_date < co.start_date:
+							pass
+						elif co.end_date and e.start_date > co.end_date:
+							pass
+						elif co.end_date and e.start_date > co.start_date and e.end_date < co.end_date:
+							total_sal += flt(e.gross_pay)
+						
+						elif co.end_date and e.start_date <= co.start_date and e.end_date >= co.end_date:
+							days = date_diff(co.end_date, co.start_date) + 1
+							total_sal += (flt(e.gross_pay) * days ) / total_days
+						elif co.end_date and e.start_date > co.start_date and e.end_date > co.end_date:
+							days = date_diff(co.end_date, e.start_date) + 1
+							total_sal += (flt(e.gross_pay) * days ) / total_days
+						elif co.end_date and e.start_date < co.start_date and e.end_date < co.end_date:
+							days = date_diff(e.end_date, co.start_date) + 1
+							total_sal += (flt(e.gross_pay) * days ) / total_days
+						elif not co.end_date and e.start_date >= co.start_date:
+							total_sal += flt(e.gross_pay)
+						elif not co.end_date and e.start_date < co.start_date:
+							days = date_diff(e.end_date, co.start_date) + 1
+							total_sal += (flt(e.gross_pay) * days ) / total_days
+						else:
+							pass
+
+				travel_claim += flt(tc.travel_claim)
+				e_amount	 += flt(lea.e_amount)
+				gross_pay	+= flt(total_sal)
+		# total_exp	+= (flt(vl.consumption)*flt(pol.rate))+flt(eq_ins.amount)+flt(eq_dp_ins.amount)+flt(stock.s_amount)+flt(eq_reg.amount)+flt(eq_dp_reg.amount) + flt(jc.goods_amount)+flt(jc.services_amount)+ travel_claim+e_amount+gross_pay+flt(je_rm.amount)+flt(dp_rm.amount)+flt(je_pol.rate)+flt(dp_pol.rate)
+		total_exp	+= (flt(vl.consumption)*flt(pol.rate))+flt(eq_ins.amount)+flt(stock.s_amount)+flt(eq_reg.amount)+ flt(jc.goods_amount)+flt(jc.services_amount)+ travel_claim+e_amount+gross_pay+flt(je_rm.amount)+flt(je_pol.rate)
+		total_pol_exp +=(flt(vl.consumption)*flt(pol.rate))+flt(je_pol.rate)
+		total_rm_exp = flt(stock.s_amount)+flt(jc.goods_amount)+flt(jc.services_amount)+flt(je_rm.amount)
+		total_op_exp += travel_claim + e_amount + gross_pay
+		total_work_time = vl.total_work_time
+		total_idle_time = vl.total_idle_time
+		total_cft = vli.cft
+		total_m3 = vli.m3
+		pro_target = 0.0
+		#benchmark
+		benchmark  = frappe.db.sql("""
+							   select hi.rate_fuel as rat, hi.perf_bench as bn, hi.rate_broadleaf_external as cft_rate_bf, hi.rate_conifer_external as cft_rate_co,
+							   hi.from_date as fr, hi.to_date as t
+							   from  `tabHire Charge Item` hi, `tabHire Charge Parameter` hp
+							   where hi.parent = hp.name 
+							   and hp.equipment_type = '{0}'
+				   and hp.equipment_model = '{1}'
+				   and '{2}' between hi.from_date and hi.to_date and '{3}' between hi.from_date and hi.to_date
+			""".format(eq.equipment_type, eq.equipment_model, from_date, to_date), as_dict=1)
+		rate = []
+		bench = []
+		total_hc = 0
+		benchm = 0
+		cft_rate_bf = 0
+		cft_rate_co = 0
+		for a in benchmark:
+			cft_rate_bf = a.cft_rate_bf
+			cft_rate_co = a.cft_rate_co
+			from_date,to_date,no_of_months, from_date1, to_date1, ra  = get_date_conditions(filters)
+			ta = ta1= ta2 =  ta3 = ta4 = 0.0
+			if not a.t:
+				a.t = getdate(filters.to_date)
+			if filters.get("period") not in ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "1st Quarter", "2nd Quarter", "3rd Quarter", "4th Quarter", "1st Half Year", "2nd Half Year"):
+				rate.append(a.rat) 
+				bench.append(flt(a.bn))
+				benchm = a.bn
+				total_hc   += flt(a.rat)*flt(a.bn)*no_of_months
+				if filters.not_cdcl == 1:
+					total_rev += flt(a.rat)*flt(total_work_time)
+			elif filters.get("period") in ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"):
+				rate.append(a.rat)
+				bench.append(a.bn/12)
+				benchm = a.bn/12
+				cal_date = date_diff(to_date, a.fr) + 1
+				ta2 += flt(a.rat)*flt(a.bn/12)*8
+				bench_date = date_diff(to_date, from_date) + 1
+				total_hc += cal_date*ta2/bench_date
+				if filters.not_cdcl == 1: 
+					total_rev += flt(a.rat)*flt(total_work_time)
+			elif filters.get("period") in ("1st Quarter", "2nd Quarter", "3rd Quarter", "4th Quarter"):
+				rate.append(a.rat)
+				bench.append(a.bn/3)
+				benchm = a.bn/3
+				cal_date = date_diff(to_date, a.fr) + 1
+				ta2 += flt(a.rat)*flt(a.bn/12)*8
+				bench_date = date_diff(to_date, from_date) + 1
+				total_hc += cal_date*ta2/bench_date
+				if filters.not_cdcl == 1: 
+					total_rev += flt(a.rat)*flt(total_work_time)
+			elif filters.get("period") in ("1st Half Year", "2nd Half Year"):
+				rate.append(a.rat)
+				bench.append(a.bn/2)
+				benchm = a.bn/2
+				cal_date = date_diff(to_date, a.fr) + 1
+				ta2 += flt(a.rat)*flt(a.bn/12)*8
+				bench_date = date_diff(to_date, from_date) + 1
+				total_hc += cal_date*ta2/bench_date
+				if filters.not_cdcl == 1: 
+					total_rev += flt(a.rat)*flt(total_work_time)
+			if filters.get("not_cdcl")==0:
+				total_rev = flt(total_work_time) * flt(a.rat) * flt(cft_rate_bf)
+
+		if not benchmark:
+			benchmark = {"rat": 0, "bn": 0, "fr": '', "t": ''}
+		util_percent = 0
+		if total_work_time == None:
+			total_work_time = 0
+		if total_work_time != 0 and benchm != 0:
+			util_percent = 100*(total_work_time/benchm)
+		else:
+			util_percent = 0
+		
+		if filters.get("not_cdcl") == 1:
+			data.append((	
+				eq.branch,
+				eq.name,
+				eq.equipment_number,
+				eq.equipment_type,
+				eq.equipment_model,
+    			eq.equipment_category,
+				total_rm_exp,
+				total_op_exp,
+				flt(eq_ins.amount),
+				flt(eq_reg.amount),
+				total_pol_exp,
+				total_exp,
+				total_rev,
+				total_cft,
+				total_m3,
+				total_work_time,
+				benchm,
+				round(flt(util_percent),2)
+			))
+		else:
+			data.append((	
+				eq.branch,
+				eq.name,
+				eq.equipment_number,
+				eq.equipment_type,
+				eq.equipment_model,
+				eq.equipment_category,
+				total_rm_exp,
+				total_op_exp,
+				ins,
+				reg,
+				total_pol_exp,
+				total_exp,
+				total_cft,
+				total_m3,
+				cft_rate_bf,
+				cft_rate_co,
+				total_work_time,
+				total_idle_time,
+				list(set(rate)),
+				total_rev
+			))
+
+	return tuple(data)
 
 def get_columns(filters):
-	cols = [
-		("Equipment") + ":Link/Equipment:120",
-		("Branch") + ":Data:120",
-		("Registration No") + ":Data:120",
-		("Equipment Type") + ":Data:120",
-		("Equipment Model") + ":Data:120",
-		("Operator") + ":Link/Employee:120",
-		("Total Expense") + ":Currency:120",
-		("Total Revenue") + ":Currency:120",
-		("R-E") + ":Currency:120",
-		("HC Rate/Hour") + ":Currency:120",
-		("Utility/Month") + ":Data:120",
-		("Benchmark Amount") + ":Currency:120",
-		("Utility %") + ":Data:120"
-	]
+	if filters.get("not_cdcl") == 1:
+		if filters.get("period") in ("1st Quarter", "2nd Quarter", "3rd Quarter", "4th Quarter"):
+			cols = [
+				("Branch") + ":Data:120",
+				("ID") + ":Link/Equipment:120",
+				("Registration No") + ":Data:120",
+				("Equipment Type") + ":Data:120",
+				("Equipment Model") + ":Data:120",
+				("Equipment Category") + ":Data:120",
+				("Expense (Repair and Maintenance)") + ":Currency:180",
+				("Expense (Operator)") + ":Currency:120",
+				("Expense (Insurance)") + ":Currency:120",
+				("Expense (Registration & Bluebook)") + ":Currency:120",
+				("Expense (POL)") + ":Currency:120",
+				("Total Expense") + ":Currency:120",
+				("Total Revenue") + ":Currency:120",
+				("Total Cft")+":Data:140",
+				("Total M3")+":Data:140",
+				("Total Hours Worked")+":Data:140",
+				("Utility(Hours/Quarter)") + ":Float:140",
+				("Utility %") + ":Data:120"
+			]
+		elif filters.get("period") in ("1st Half Year", "2nd Half Year"):
+			cols = [
+				("Branch") + ":Data:120",
+				("ID") + ":Link/Equipment:120",
+				("Registration No") + ":Data:120",
+				("Equipment Type") + ":Data:120",
+				("Equipment Model") + ":Data:120",
+    			("Equipment Category") + ":Data:120",
+				("Expense (Repair and Maintenance)") + ":Currency:180",
+				("Expense (Operator)") + ":Currency:120",
+				("Expense (Insurance)") + ":Currency:120",
+				("Expense (Registration & Bluebook)") + ":Currency:120",
+				("Expense (POL)") + ":Currency:120",
+				("Total Expense") + ":Currency:120",
+				("Total Revenue") + ":Currency:120",
+				("Total Cft")+":Data:140",
+				("Total M3")+":Data:140",
+				("Total Hours Worked")+":Data:140",
+				("Utility(Hours/Half Year)") + ":Float:140",
+				("Utility %") + ":Data:120"
+			]
+		elif filters.get("period") in ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"):
+			cols = [
+				("Branch") + ":Data:120",
+				("ID") + ":Link/Equipment:120",
+				("Registration No") + ":Data:120",
+				("Equipment Type") + ":Data:120",
+				("Equipment Model") + ":Data:120",
+				("Equipment Category") + ":Data:120",
+				("Expense (Repair and Maintenance)") + ":Currency:180",
+				("Expense (Operator)") + ":Currency:120",
+				("Expense (Insurance)") + ":Currency:120",
+				("Expense (Registration & Bluebook)") + ":Currency:120",
+				("Expense (POL)") + ":Currency:120",
+				("Total Expense") + ":Currency:120",
+				("Total Revenue") + ":Currency:120",
+				("Total Cft")+":Data:140",
+				("Total M3")+":Data:140",
+				("Total Hours Worked")+":Data:140",
+				("Utility(Hours/Month)") + ":Float:140",
+				("Utility %") + ":Data:120"
+			]
+		else:
+			cols = [
+				("Branch") + ":Data:120",
+				("ID") + ":Link/Equipment:120",
+				("Registration No") + ":Data:120",
+				("Equipment Type") + ":Data:120",
+				("Equipment Model") + ":Data:120",
+				("Equipment Category") + ":Data:120",
+				("Expense (Repair and Maintenance)") + ":Currency:180",
+				("Expense (Operator)") + ":Currency:120",
+				("Expense (Insurance)") + ":Currency:120",
+				("Expense (Registration & Bluebook)") + ":Currency:120",
+				("Expense (POL)") + ":Currency:120",
+				("Total Expense") + ":Currency:120",
+				("Total Revenue") + ":Currency:120",
+				("Total Cft")+":Data:140",
+				("Total M3")+":Data:140",
+				("Total Hours Worked")+":Data:140",
+				("Utility(Hours/Year)") + ":Float:140",
+				("Utility %") + ":Data:120"
+			]
+	else:
+		cols = [
+			("Branch") + ":Data:120",
+			("ID") + ":Link/Equipment:120",
+			("Registration No") + ":Data:120",
+			("Equipment Type") + ":Data:120",
+			("Equipment Model") + ":Data:120",
+			("Equipment Category") + ":Data:120",
+			("Expense (Repair and Maintenance)") + ":Currency:180",
+			("Expense (Operator)") + ":Currency:120",
+			("Expense (Insurance)") + ":Currency:120",
+			("Expense (Registration & Bluebook)") + ":Currency:120",
+			("Expense (POL)") + ":Currency:120",
+			("Total Expense") + ":Currency:120",
+			("Total Cft")+":Data:140",
+			("Total M3")+":Data:140",
+			("Rate Per Cft(Broadleaf)"+":Data:140"),
+			("Rate Per Cft(Conifer)"+":Data:140"),
+			("Total Hours Worked")+":Data:140",
+			("Total Idle Hours")+":Data:140",
+			("HC Rate/Hour") + ":Currency:120",
+			("Total Revenue") + ":Currency:120",
+		]
 	return cols

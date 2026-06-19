@@ -149,3 +149,116 @@ def update_retirement_date():
 			retirement_date
 		)
 		
+def cancel_asset():
+	asset_names = [ 
+		"AS-FF-260100038-1",
+		"AS-FF-260100040-1",
+		"AS-FF-260100066-1",
+		"AS-FF-260100314-1",
+		"AS-FF-260100316-1",
+		"AS-FF-260100318-1",
+		"AS-FF-260100320-1",
+		"AS-FF-260100322-1",
+		"AS-FF-260100324-1",
+		"AS-FF-260100326-1",
+		"AS-FF-260100328-1",
+		"AS-FF-260100330-1",
+		"AS-FF-260100332-1",
+		"AS-FF-260100334-1",
+		"AS-FF-260100336-1",
+		"AS-FF-260100338-1",
+		"AS-FF-260100340-1",
+		"AS-FF-260100342-1",
+		"AS-FF-260100344-1",
+		"AS-FF-260100346-1",
+		"AS-FF-260100348-1",
+		"AS-FF-260100350-1",
+		"AS-FF-260100352-1",
+		"AS-FF-260100354-1",
+		"AS-FF-260100356-1",
+		"AS-FF-260100358-1",
+		"AS-FF-260100360-1",
+		"AS-FF-260100362-1",
+		"AS-FF-260100364-1",
+		"AS-FF-260100366-1",
+		"AS-FF-260100368-1",
+		"AS-FF-260100370-1",
+		"AS-FF-260100372-1",
+		"AS-FF-260100374-1",
+		"AS-FF-260100376-1",
+		"AS-FF-260100378-1",
+		"AS-FF-260100380-1",
+		"AS-FF-260100382-1",
+		"AS-FF-260100384-1",
+		"AS-FF-260100386-1",
+		"AS-FF-260100388-1",
+		"AS-FF-260100390-1",
+		"AS-FF-260100392-1",
+		"AS-FF-260100394-1",
+		"AS-FF-260100396-1",
+		"AS-FF-260100398-1",
+		"AS-FF-260100404-1",
+		"AS-FF-260100406-1",
+		"AS-OE-260100550-1",
+		"AS-OE-260100554-1",
+		"AS-OE-260100556-1",
+		"AS-OE-260100558-1",
+		"AS-OE-260100560-1",
+		"AS-OE-260100562-1",
+		"AS-OE-260100564-1",
+		"AS-OE-260100566-1",
+		"AS-OE-260100568-1",
+		"AS-OE-260100570-1",
+		"AS-OE-260100572-1",
+		"AS-OE-260100574-1",
+		"AS-OE-260100576-1",
+	]
+	count = 0
+	for asset_name in asset_names:
+		count+=1
+		asset = frappe.get_doc("Asset", asset_name)
+		if asset.docstatus == 1:
+			asset.cancel()
+			print(str(count)+": "+str(asset_name))
+	frappe.db.commit()
+	print(count)
+		
+def update_docstatus_of_cancelled_asset():
+	asset_names = [ 
+		"AS-FF-260100014",
+"AS-FF-260100016",
+"AS-FF-260100018",
+"AS-FF-260100020",
+"AS-FF-260100022",
+"AS-OE-260100024",
+"AS-OE-260100426",
+"AS-OE-260100428",
+"AS-OE-260100430",
+"AS-OE-260100432",
+"AS-OE-260100434",
+"AS-OE-260100436",
+"AS-OE-260100438",
+"AS-OE-260100440",
+"AS-OE-260100442",
+"AS-OE-260100462",
+"AS-OE-260100464",
+"AS-OE-260100466",
+"AS-OE-260100468",
+"AS-OE-260100470",
+	]
+	count = 0
+	for asset_name in asset_names:
+		asset = frappe.get_doc("Asset", asset_name)
+		count += 1
+		print(str(count)+": "+str(asset_name))
+		new_asset = frappe.copy_doc(asset)
+		new_asset.amended_from = asset.name
+		new_asset.docstatus = 0
+		new_asset.custodian = "NRDCL2403008"
+		new_asset.custodian_name = "Tenzin Wangchuk"
+		new_asset.branch = "Mongar"
+		new_asset.cost_center = "Mongar - NRDCL"
+		new_asset.insert()
+		new_asset.submit()
+	# frappe.db.commit()
+	print(count)

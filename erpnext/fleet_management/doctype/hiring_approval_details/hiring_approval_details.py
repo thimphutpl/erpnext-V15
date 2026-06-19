@@ -35,6 +35,8 @@ class HiringApprovalDetails(Document):
 		irate3: DF.Currency
 		irate4: DF.Currency
 		irate5: DF.Currency
+		km_based: DF.Literal["", "With Fuel", "Without Fuel"]
+		km_based_rate: DF.Currency
 		lumpsum: DF.Literal["", "With Fuel", "Without Fuel"]
 		lumpsum_rate: DF.Currency
 		parent: DF.Data
@@ -48,7 +50,7 @@ class HiringApprovalDetails(Document):
 		rate4: DF.Currency
 		rate5: DF.Currency
 		rate: DF.Currency
-		rate_type: DF.Literal["", "Lumpsum", "Hourly"]
+		rate_type: DF.Literal["", "Lumpsum", "Hourly", "KM Based"]
 		registration_number: DF.Data | None
 		remarks: DF.SmallText | None
 		request_reference: DF.Data | None

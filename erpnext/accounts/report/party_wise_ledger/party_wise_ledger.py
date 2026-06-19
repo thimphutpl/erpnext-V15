@@ -4,6 +4,7 @@
 import frappe
 from frappe import _
 from frappe.utils import flt, cint
+from erpnext.accounts.utils import get_child_cost_centers
 from erpnext.accounts.report.trial_balance.trial_balance import validate_filters
 
 
@@ -151,13 +152,25 @@ def get_data(filters, show_party_name):
 
 def get_balances(filters):
 	filters.accounts    = None if filters.get("accounts") == '%' else filters.get("accounts")
-	filters.cost_center = None if filters.get("cost_center") == '%' else filters.get("cost_center")
-	
+	# filters.cost_center = None if filters.get("cost_center") == '%' else filters.get("cost_center")
+
 	cond = ""
-	cond += " and account = '{0}'".format(filters.accounts) if filters.get("accounts") else ""
-	cond += " and cost_center = '{0}'".format(filters.cost_center) if filters.get("cost_center") else ""
+	if not filters.cost_center:
+		return ""
+	if not filters.branch:
+		all_ccs = get_child_cost_centers(filters.cost_center)
+		# cond = " and cost_center in (select b.name from `tabCost Center` cc, `tabBranch` b where b.cost_center = cc.name and cc.name in {0})".format(tuple(all_ccs))
+		cond = " and cost_center in {0}".format(tuple(all_ccs))
+
+	else:
+		branch = str(filters.get("branch"))
+		cond = " and cost_center = \'"+branch+"\'"   
+		cond += " and account = '{0}'".format(filters.accounts) if filters.get("accounts") else ""
+
+	# cond += " and cost_center = '{0}'".format(filters.cost_center) if filters.get("cost_center") else ""
+
 	sql = """
-	select
+	select distinct name,
 					{group_by} as cost_center,
 					sum(case when ifnull(is_opening, 'No') = 'Yes' or posting_date < '{from_date}' then ifnull(debit,0) else 0 end) as opening_debit,
 					sum(case when ifnull(is_opening, 'No') = 'Yes' or posting_date < '{from_date}' then ifnull(credit,0) else 0 end) as opening_credit,
@@ -168,10 +181,8 @@ def get_balances(filters):
 	and ifnull(ge.party_type, '') = '{party_type}' and ge.party_type is not null and ifnull(ge.party, '') != ''
 	and posting_date <= '{to_date}'
 	{cond}
-	and ge.account not in ('Normal Loss - SMCL','Abnormal Loss - SMCL', 'TDS - 2%% - CDCL', 'TDS - 3%% - CDCL', 'TDS - 5%% - CDCL', 'TDS - 10%% - CDCL')
-	and not exists(select 1 from `tabAccount` as ac
-							where ac.name = ge.account
-							and ac.parent_account = 'Sale of mines product - SMCL')
+	and ge.is_cancelled=0
+	and ge.account not in ('TDS - 2%% - NRDCL', 'TDS - 3%% - NRDCL', 'TDS - 5%% - NRDCL', 'TDS - 10%% - NRDCL')
 	group by {group_by}""".format(
 			company = filters.company,
 			from_date = filters.from_date,
@@ -180,7 +191,9 @@ def get_balances(filters):
 			group_by = "party,''" if filters.get("group_by_party") else "party, cost_center",
 			cond = cond
 	)
+	# frappe.throw(str(sql))
 	gle = frappe.db.sql(sql, as_dict=True)
+	# frappe.throw(str(gle))
 	
 	balances = frappe._dict()
 	for d in gle:
@@ -196,25 +209,34 @@ def get_opening_balances(filters):
 					where ac.name = ge.account
 					and ac.parent_account = 'Sale of mines product - SMCL')
 	'''
+	cond = ""
+	
+	if not filters.cost_center:
+		return ""
+	if not filters.branch:
+		all_ccs = get_child_cost_centers(filters.cost_center)
+		# cond = " and cost_center in (select b.name from `tabCost Center` cc, `tabBranch` b where b.cost_center = cc.name and cc.name in {0})".format(tuple(all_ccs))
+		cond = " and cost_center in {0}".format(tuple(all_ccs))
+
+	else:
+		branch = str(filters.get("branch"))
+		cond = " and cost_center = \'"+branch+"\'"   
 	
 	gle = frappe.db.sql("""
-		select party, cost_center, sum(debit) as opening_debit, sum(credit) as opening_credit 
+		select distinct name, party, cost_center, sum(debit) as opening_debit, sum(credit) as opening_credit 
 		from `tabGL Entry` as ge
 		where company=%(company)s 
 		and ifnull(party_type, '') = %(party_type)s and party is not null and ifnull(party, '') != ''
 		and (posting_date < %(from_date)s or ifnull(is_opening, 'No') = 'Yes')
-		and account LIKE %(account)s
-		and cost_center LIKE %(cost_center)s
-		and ge.account not in ('Normal Loss - SMCL','Abnormal Loss - SMCL', 'TDS - 2%% - CDCL', 'TDS - 3%% - CDCL', 'TDS - 5%% - CDCL', 'TDS - 10%% - CDCL')
-		and not exists(select 1 from `tabAccount` as ac
-			where ac.name = ge.account
-			and ac.parent_account = 'Sale of mines product - SMCL')
+		and account = %(account)s
+		and cost_center IN %(cost_center)s
+		and ge.account not in ('TDS - 2%% - NRDCL', 'TDS - 3%% - NRDCL', 'TDS - 5%% - NRDCL', 'TDS - 10%% - NRDCL')
 		group by party, cost_center""", {
 			"company": filters.company,
 			"from_date": filters.from_date,
 			"party_type": filters.party_type,
 			"account": filters.accounts,
-			"cost_center": filters.cost_center
+			"cost_center": cond
 		}, as_dict=True)
 		
 	opening = frappe._dict()
@@ -233,26 +255,33 @@ def get_balances_within_period(filters):
 					where ac.name = ge.account
 					and ac.parent_account = 'Sale of mines product - SMCL')
 	'''
-	
+	cond = ""
+	if not filters.cost_center:
+		return ""
+	if not filters.branch:
+		all_ccs = get_child_cost_centers(filters.cost_center)
+		# cond = " and cost_center in (select b.name from `tabCost Center` cc, `tabBranch` b where b.cost_center = cc.name and cc.name in {0})".format(tuple(all_ccs))
+		cond = " and cost_center in {0}".format(tuple(all_ccs))
+
+	else:
+		branch = str(filters.get("branch"))
+		cond = " and cost_center = \'"+branch+"\'"   
 	gle = frappe.db.sql("""
-		select party, cost_center, sum(debit) as debit, sum(credit) as credit 
+		select distinct name, party, cost_center, sum(debit) as debit, sum(credit) as credit 
 		from `tabGL Entry` as ge
 		where company=%(company)s 
 		and ifnull(party_type, '') = %(party_type)s and party_type is not null and ifnull(party, '') != ''
 		and posting_date >= %(from_date)s and posting_date <= %(to_date)s 
 		and ifnull(is_opening, 'No') = 'No'
-		and account LIKE %(account)s
-		and cost_center LIKE %(cost_center)s
-		and ge.account not in ('Normal Loss - SMCL','Abnormal Loss - SMCL', 'TDS - 2%% - CDCL', 'TDS - 3%% - CDCL', 'TDS - 5%% - CDCL', 'TDS - 10%% - CDCL')
-		and not exists(select 1 from `tabAccount` as ac
-						where ac.name = ge.account
-						and ac.parent_account = 'Sale of mines product - SMCL')		
+		and account = %(account)s
+		and cost_center IN %(cost_center)s
+		and ge.account not in ('TDS - 2%% - NRDCL', 'TDS - 3%% - NRDCL', 'TDS - 5%% - NRDCL', 'TDS - 10%% - NRDCL')
 		group by party, cost_center""", {
 			"company": filters.company,
 			"from_date": filters.from_date,
 			"to_date": filters.to_date,
 			"party_type": filters.party_type,
-			"cost_center": filters.cost_center,
+			"cost_center": cond,
 			"account": filters.accounts
 		}, as_dict=True)
 		

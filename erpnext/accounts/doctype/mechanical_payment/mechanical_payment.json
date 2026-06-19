@@ -41,6 +41,10 @@
   "transporter_payment_item",
   "sb_321",
   "deducts",
+  "gst_details_section",
+  "apply_gst",
+  "column_break_mvlj",
+  "gst_amount",
   "section_break_18",
   "amended_from",
   "column_break_20",
@@ -324,12 +328,34 @@
    "fieldname": "transporter_payment_item",
    "fieldtype": "Table",
    "options": "Transporter Payment Item"
+  },
+  {
+   "fieldname": "gst_details_section",
+   "fieldtype": "Section Break",
+   "label": "GST Details"
+  },
+  {
+   "default": "0",
+   "fieldname": "apply_gst",
+   "fieldtype": "Check",
+   "label": "Apply GST"
+  },
+  {
+   "fieldname": "column_break_mvlj",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval: doc.apply_gst == 1",
+   "fieldname": "gst_amount",
+   "fieldtype": "Currency",
+   "label": "GST Amount",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-09-20 11:02:15.770684",
+ "modified": "2026-06-16 12:34:32.287635",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Mechanical Payment",

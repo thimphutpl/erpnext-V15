@@ -600,7 +600,6 @@
    "options": "Cheque Lot"
   },
   {
-   "depends_on": "eval:doc.docstatus==1 && (doc.naming_series=='Bank Receipt Voucher' || doc.naming_series=='Cash Receipt Voucher')",
    "fieldname": "money_receipt_information_section",
    "fieldtype": "Section Break",
    "label": "Money Receipt Information"
@@ -613,10 +612,10 @@
    "label": "Get Series"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "money_receipt_prefix",
    "fieldtype": "Data",
-   "label": "Money Receipt Prefix",
-   "read_only": 1
+   "label": "Money Receipt Prefix"
   },
   {
    "fieldname": "cb_sb_mri1",
@@ -626,8 +625,7 @@
    "allow_on_submit": 1,
    "fieldname": "money_receipt_no",
    "fieldtype": "Data",
-   "label": "Money Receipt No",
-   "read_only": 1
+   "label": "Money Receipt No"
   },
   {
    "fieldname": "epayment_status_section",
@@ -679,7 +677,7 @@
    "table_fieldname": "payment_entries"
   }
  ],
- "modified": "2026-04-04 01:29:18.545390",
+ "modified": "2026-05-18 12:49:39.468824",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Journal Entry",

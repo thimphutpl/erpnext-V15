@@ -41,6 +41,6 @@ def get_data(filters):
 		query += " and jc.owned_by = \'" + str(filters.customer) + "\'"
 
 	if filters.get("equipment"):
-		query += " and jc.equipment_number = \'" + str(frappe.db.get_value("Equipment", filters.equipment, "registration_number")) + "\'"
+		query += " and jc.equipment_number = \'" + str(frappe.db.get_value("Equipment", filters.equipment, "equipment_name")) + "\'"
 
 	return frappe.db.sql(query)

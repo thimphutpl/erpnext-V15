@@ -22,6 +22,7 @@
   "equipment_model",
   "column_break_cwlv",
   "rate_type",
+  "km_based",
   "lumpsum",
   "hourly",
   "rate",
@@ -31,6 +32,7 @@
   "lumpsum_rate",
   "idle_rate_type",
   "idle_rate",
+  "km_based_rate",
   "column_break_qeii",
   "diff_rate",
   "tender_hire_rate",
@@ -147,7 +149,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Rate Type",
-   "options": "\nLumpsum\nHourly"
+   "options": "\nLumpsum\nHourly\nKM Based"
   },
   {
    "depends_on": "eval:doc.equipment",
@@ -378,12 +380,25 @@
    "fieldtype": "Select",
    "label": "Idle Rate Type",
    "options": "\nInternal\nExternal"
+  },
+  {
+   "depends_on": "eval: doc.rate_type == 'KM Based'",
+   "fieldname": "km_based",
+   "fieldtype": "Select",
+   "label": "KM Based",
+   "options": "\nWith Fuel\nWithout Fuel"
+  },
+  {
+   "depends_on": "eval:doc.km_based",
+   "fieldname": "km_based_rate",
+   "fieldtype": "Currency",
+   "label": "KM Based Rate"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-02-11 15:19:41.221530",
+ "modified": "2026-05-11 16:24:57.765514",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "Hiring Approval Details",

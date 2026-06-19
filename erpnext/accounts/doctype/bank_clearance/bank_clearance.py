@@ -110,6 +110,7 @@ class BankClearance(Document):
 					d.clearance_date = None
 
 				if d.payment_document == "Sales Invoice":
+				
 					frappe.db.set_value(
 						"Sales Invoice Payment",
 						{"parent": d.payment_entry, "account": self.get("account"), "amount": [">", 0]},
@@ -118,13 +119,32 @@ class BankClearance(Document):
 					)
 
 				else:
+					# frappe.throw('hi')
 					# using db_set to trigger notification
-					payment_entry = frappe.get_doc(d.payment_document, d.payment_entry)
-					payment_entry.db_set("clearance_date", d.clearance_date)
+					
+					# payment_entry = frappe.get_doc(d.payment_document, d.payment_entry)
+					current_clearance_date = frappe.db.get_value(
+						d.payment_document,
+						d.payment_entry,
+						"clearance_date"
+					)
+					# frappe.throw(str(d.clearance_date))
+					# if not current_clearance_date:
+					frappe.db.set_value(
+						d.payment_document,
+						d.payment_entry,
+						"clearance_date",
+						d.clearance_date,
+						update_modified=True
+					)
+					# payment_entry.flags.ignore_validate_update_after_submit = True
+					# payment_entry.clearance_date = d.clearance_date
+					# payment_entry.save()
 
 				clearance_date_updated = True
 
 		if clearance_date_updated:
+			frappe.db.commit()
 			self.get_payment_entries()
 			msgprint(_("Clearance Date updated"))
 		else:
@@ -189,6 +209,36 @@ def get_payment_entries_for_bank_clearance(
 		as_dict=1,
 	)
 
+	# tds_remittance_entries = frappe.db.sql(
+	# 	f"""
+	# 		select
+	# 			"TDS Remittance" as payment_document,
+	# 			name as payment_entry,
+	# 			cheque_no as cheque_number,
+	# 			cheque_date as cheque_date,
+	# 			total_tds as credit,
+	# 			0 as debit,
+	# 			posting_date,
+	# 			branch as against_account,
+	# 			clearance_date
+	# 		from `tabTDS Remittance`
+	# 		where
+	# 			credit_account = %(account)s
+	# 			and docstatus = 1
+	# 			and posting_date >= %(from)s
+	# 			and posting_date <= %(to)s
+	# 			and ifnull(clearance_date, '4000-01-01') <= %(to)s
+	# 			{condition}
+	# 		order by
+	# 			posting_date ASC, name DESC
+	# 	""",
+	# 	{
+	# 		"account": account,
+	# 		"from": from_date,
+	# 		"to": to_date,
+	# 	},
+	# 	as_dict=1,
+	# )
 	tds_remittance_entries = frappe.db.sql(
 		f"""
 			select
@@ -207,7 +257,6 @@ def get_payment_entries_for_bank_clearance(
 				and docstatus = 1
 				and posting_date >= %(from)s
 				and posting_date <= %(to)s
-				and ifnull(clearance_date, '4000-01-01') > %(to)s
 				{condition}
 			order by
 				posting_date ASC, name DESC
@@ -243,6 +292,30 @@ def get_payment_entries_for_bank_clearance(
 	# 		posting_date ASC, name DESC
 	# 	""")
 
+	# frappe.throw(f"""
+	# 	select
+	# 		"Mechanical Payment" as payment_document,
+	# 		name as payment_entry,
+	# 		cheque_no as cheque_number,
+	# 		cheque_date as cheque_date,
+	# 		net_amount as credit,
+	# 		0 as debit,
+	# 		posting_date,
+	# 		customer as against_account,
+	# 		clearance_date,
+	# 		'BTN' as account_currency
+	# 	from `tabMechanical Payment`
+	# 	where
+	# 		'{account}' IN (bank_account)
+	# 		and docstatus = 1
+	# 		and posting_date >= '{from_date}'
+	# 		and posting_date <= '{to_date}'
+	# 		and ifnull(clearance_date, '4000-01-01') > '{to_date}'
+	# 		{condition}
+	# 	order by
+	# 		posting_date ASC, name DESC
+	# """)
+
 	mechanical_entries = frappe.db.sql(
 		f"""
 			select
@@ -262,7 +335,7 @@ def get_payment_entries_for_bank_clearance(
 				and docstatus = 1
 				and posting_date >= %(from)s
 				and posting_date <= %(to)s
-				and ifnull(clearance_date, '4000-01-01') > %(to)s
+				
 				{condition}
 			order by
 				posting_date ASC, name DESC
@@ -274,6 +347,8 @@ def get_payment_entries_for_bank_clearance(
 		},
 		as_dict=1,
 	)
+
+	# frappe.throw(mechanical_entries)
 
 	pos_sales_invoices, pos_purchase_invoices = [], []
 	if include_pos_transactions:

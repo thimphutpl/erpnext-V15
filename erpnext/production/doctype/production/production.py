@@ -97,6 +97,7 @@ class Production(StockController):
 		self.make_gl_entries()
 		""" ++++++++++ Ver 1.0.190401 Ends ++++++++++++ """
 		self.make_production_entry()
+		self.repost_future_sle_and_gle()
 
 	def on_cancel(self):
 		self.ignore_linked_doctypes = (
@@ -118,6 +119,7 @@ class Production(StockController):
 		self.make_gl_entries_on_cancel()
 		""" ++++++++++ Ver 1.0.190401 Ends ++++++++++++ """
 		self.delete_production_entry()
+		self.repost_future_sle_and_gle()
 
 	def validate_date(self):
 		if 'Production Master' not in frappe.get_roles(frappe.session.user):
@@ -192,8 +194,8 @@ class Production(StockController):
 	def validate_raw_materials(self, prod_items):
 		''' validation for raw materials '''
 		total_raw_material_qty = 0
-		if len(self.raw_materials) > 1:
-			frappe.throw("Only One Raw Material can be inserted.")
+		# if len(self.raw_materials) > 1:
+		# 	frappe.throw("Only One Raw Material can be inserted.")
 		for item in self.get("raw_materials"):
 			if item.item_code not in prod_items:
 				frappe.throw(_("{0} is not a Production Item").format(item.item_code))
