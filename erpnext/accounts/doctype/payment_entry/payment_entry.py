@@ -3002,7 +3002,15 @@ def get_payment_entry(
 	paid_amount, received_amount, discount_amount, valid_discounts = apply_early_payment_discount(
 		paid_amount, received_amount, doc, party_account_currency, reference_date
 	)
-	# frappe.throw(str(doc.get("party")))
+	expense_account = frappe.db.get_value("Branch", doc.branch, "expense_bank_account")
+	if payment_type == "Pay" and not expense_account:
+		frappe.throw(_("Expense account not set for branch: {0}").format(_(doc.branch)))
+
+	revenue_account = frappe.db.get_value("Branch", doc.branch, "revenue_bank_account")
+	if payment_type == "Receive" and not revenue_account:
+		frappe.throw(_("Revenue account not set for branch: {0}").format(_(doc.branch)))
+
+	# frappe.throw(expense_account)
 	# frappe.throw(str(dt))
 	# frappe.throw('hihh 00')
 	pe = frappe.new_doc("Payment Entry")
@@ -3025,12 +3033,12 @@ def get_payment_entry(
 	complete_contact_details(pe)
 	pe.ensure_supplier_is_not_blocked()
 
-	pe.paid_from = party_account if payment_type == "Receive" else bank.account
-	pe.paid_to = party_account if payment_type == "Pay" else bank.account
+	pe.paid_from = party_account if payment_type == "Receive" else expense_account
+	pe.paid_to = party_account if payment_type == "Pay" else revenue_account
 	pe.paid_from_account_currency = (
-		party_account_currency if payment_type == "Receive" else bank.account_currency
+		party_account_currency if payment_type == "Receive" else frappe.db.get_value("Account", expense_account, "account_currency")
 	)
-	pe.paid_to_account_currency = party_account_currency if payment_type == "Pay" else bank.account_currency
+	pe.paid_to_account_currency = party_account_currency if payment_type == "Pay" else frappe.db.get_value("Account", revenue_account, "account_currency")
 	pe.paid_amount = paid_amount
 	pe.received_amount = received_amount
 	pe.letter_head = doc.get("letter_head")
