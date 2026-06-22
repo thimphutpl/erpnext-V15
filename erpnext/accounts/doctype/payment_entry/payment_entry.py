@@ -3010,9 +3010,6 @@ def get_payment_entry(
 	if payment_type == "Receive" and not revenue_account:
 		frappe.throw(_("Revenue account not set for branch: {0}").format(_(doc.branch)))
 
-	# frappe.throw(expense_account)
-	# frappe.throw(str(dt))
-	# frappe.throw('hihh 00')
 	pe = frappe.new_doc("Payment Entry")
 	pe.payment_type = payment_type
 	pe.company = doc.company
