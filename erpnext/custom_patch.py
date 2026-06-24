@@ -5,8 +5,6 @@ import csv
 from frappe.utils import flt, cint, nowdate, getdate, formatdate
 import re
 
-
-
 def update_asset_account():
 	count =0
 	assets = frappe.db.sql("""select name from `tabAsset` where docstatus = 0  and asset_account = 'Furniture - NRDCL' """,as_dict=True)
@@ -261,4 +259,74 @@ def update_docstatus_of_cancelled_asset():
 		new_asset.insert()
 		new_asset.submit()
 	# frappe.db.commit()
+	print(count)
+
+def update_pol_entry():
+	pols = frappe.get_all(
+		"POL Receive",
+		filters={"docstatus": 1, "fuel_type": ["is", "set"]},
+		fields={"equipment","fuel_type","branch","posting_date","posting_time","total_qty","name","fuelbook","company"}
+	)
+	count = 0
+	for pol in pols:
+		count += 1
+		container = frappe.db.get_value("Equipment Type", frappe.db.get_value("Equipment", pol.equipment, "equipment_type"), "is_container")
+		direct_consumption = frappe.db.get_value("Equipment Type", frappe.db.get_value("Equipment", pol.equipment, "equipment_type"), "no_own_tank")
+		fuelbook_branch = frappe.db.get_value("Fuelbook", pol.fuelbook, "branch")
+		if pol.branch == fuelbook_branch:
+			own = 1
+		else:
+			own = 0
+
+		con = frappe.new_doc("POL Entry")
+		con.flags.ignore_permissions = 1	
+		con.equipment = pol.equipment
+		con.pol_type = pol.fuel_type
+		con.branch = pol.branch
+		con.date = pol.posting_date
+		con.posting_time = pol.posting_time
+		con.qty = pol.total_qty
+		con.company = pol.company
+		con.reference_type = "POL Receive"
+		con.reference_name = pol.name
+		con.is_opening = 0
+		con.own_cost_center = own
+		if container:
+			con.type = "Stock"
+			con.insert()
+		
+		if direct_consumption == 0:
+			con1 = frappe.new_doc("POL Entry")
+			con1.flags.ignore_permissions = 1	
+			con1.company = pol.company
+			con1.equipment = pol.equipment
+			con1.pol_type = pol.fuel_type
+			con1.branch = pol.branch
+			con1.date = pol.posting_date
+			con1.posting_time = pol.posting_time
+			con1.qty = pol.total_qty
+			con1.reference_type = "POL Receive"
+			con1.reference_name = pol.name
+			con1.type = "Receive"
+			con1.is_opening = 0
+			con1.own_cost_center = own
+			con1.insert()
+			
+			if container:
+				con2 = frappe.new_doc("POL Entry")
+				con2.flags.ignore_permissions = 1	
+				con2.company = pol.company
+				con2.equipment = pol.equipment
+				con2.pol_type = pol.fuel_type
+				con2.branch = pol.branch
+				con2.date = pol.posting_date
+				con2.posting_time = pol.posting_time
+				con2.qty = pol.total_qty
+				con2.reference_type = "POL Receive"
+				con2.reference_name = pol.name
+				con2.type = "Issue"
+				con2.is_opening = 0
+				con2.own_cost_center = own
+				con2.insert()
+	frappe.db.commit()
 	print(count)

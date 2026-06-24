@@ -7,31 +7,33 @@
  "engine": "InnoDB",
  "field_order": [
   "branch",
-  "cost_center",
-  "equipment",
   "supplier",
-  "equipment_category",
-  "equipment_type",
   "pol_type",
   "item_name",
   "posting_date",
-  "qty",
+  "posting_time",
   "reference_type",
   "reference_name",
-  "type",
   "is_opening",
   "amended_from",
-  "posting_time",
   "current_km",
   "km_difference",
   "mileage",
-  "uom",
+  "fuelbook",
+  "own_cost_center",
+  "column_break_fyhk",
+  "cost_center",
+  "equipment",
+  "equipment_category",
+  "qty",
+  "equipment_type",
+  "type",
   "rate",
+  "uom",
   "amount",
   "memo_number",
   "pol_slip_no",
-  "fuelbook",
-  "own_cost_center"
+  "is_cancelled"
  ],
  "fields": [
   {
@@ -40,6 +42,7 @@
    "in_list_view": 1,
    "label": "Branch",
    "options": "Branch",
+   "read_only": 1,
    "reqd": 1
   },
   {
@@ -47,7 +50,8 @@
    "fieldname": "cost_center",
    "fieldtype": "Link",
    "label": "Cost Center",
-   "options": "Cost Center"
+   "options": "Cost Center",
+   "read_only": 1
   },
   {
    "fieldname": "equipment",
@@ -55,32 +59,37 @@
    "in_list_view": 1,
    "label": "Equipment",
    "options": "Equipment",
+   "read_only": 1,
    "reqd": 1
   },
   {
    "fieldname": "pol_type",
-   "fieldtype": "Data",
+   "fieldtype": "Link",
    "label": "POL Type",
    "options": "Item",
+   "read_only": 1,
    "reqd": 1
   },
   {
    "fieldname": "posting_date",
    "fieldtype": "Date",
-   "label": "Posting Date"
+   "label": "Posting Date",
+   "read_only": 1
   },
   {
    "fieldname": "qty",
    "fieldtype": "Float",
    "in_list_view": 1,
    "label": "Qty",
-   "precision": "2"
+   "precision": "2",
+   "read_only": 1
   },
   {
    "fieldname": "reference_type",
    "fieldtype": "Select",
    "label": "Reference Type",
-   "options": "\nPOL Receive\nPOL Issue\nVehicle Logbook\nHSD Adjustment\nEquipment POL Transfer"
+   "options": "\nPOL Receive\nPOL Issue\nVehicle Logbook\nHSD Adjustment\nEquipment POL Transfer",
+   "read_only": 1
   },
   {
    "fieldname": "type",
@@ -88,13 +97,15 @@
    "in_list_view": 1,
    "label": "Type",
    "options": "Receive\nIssue\nStock\nconsumed",
+   "read_only": 1,
    "reqd": 1
   },
   {
    "default": "0",
    "fieldname": "is_opening",
    "fieldtype": "Check",
-   "label": "Is Opening"
+   "label": "Is Opening",
+   "read_only": 1
   },
   {
    "fieldname": "amended_from",
@@ -108,99 +119,126 @@
   {
    "fieldname": "posting_time",
    "fieldtype": "Time",
-   "label": "Posting Time"
+   "label": "Posting Time",
+   "read_only": 1
   },
   {
    "fieldname": "current_km",
    "fieldtype": "Float",
-   "label": "Current KM"
+   "label": "Current KM",
+   "read_only": 1
   },
   {
    "fieldname": "mileage",
    "fieldtype": "Float",
-   "label": "Mileage"
+   "label": "Mileage",
+   "read_only": 1
   },
   {
    "fieldname": "uom",
    "fieldtype": "Select",
    "label": "Reading UOM",
-   "options": "\nHour\nKM"
+   "options": "\nHour\nKM",
+   "read_only": 1
   },
   {
    "fieldname": "rate",
    "fieldtype": "Currency",
-   "label": "Rate"
+   "label": "Rate",
+   "precision": "2",
+   "read_only": 1
   },
   {
    "fieldname": "amount",
    "fieldtype": "Currency",
-   "label": "Amount"
+   "label": "Amount",
+   "read_only": 1
   },
   {
    "fieldname": "memo_number",
    "fieldtype": "Data",
-   "label": "Cash Memo"
+   "label": "Cash Memo",
+   "read_only": 1
   },
   {
    "fieldname": "pol_slip_no",
    "fieldtype": "Data",
-   "label": "POL Slip No"
+   "label": "POL Slip No",
+   "read_only": 1
   },
   {
    "fieldname": "km_difference",
    "fieldtype": "Float",
-   "label": "KM Difference"
+   "label": "KM Difference",
+   "read_only": 1
   },
   {
    "fetch_from": "equipment.equipment_type",
    "fieldname": "equipment_type",
    "fieldtype": "Link",
    "label": "Equipment Type",
-   "options": "Equipment Type"
+   "options": "Equipment Type",
+   "read_only": 1
   },
   {
    "fetch_from": "equipment.equipment_category",
    "fieldname": "equipment_category",
    "fieldtype": "Link",
    "label": "Equipment Category",
-   "options": "Equipment Category"
+   "options": "Equipment Category",
+   "read_only": 1
   },
   {
    "fieldname": "fuelbook",
    "fieldtype": "Link",
    "label": "Fuelbook",
-   "options": "Fuelbook"
+   "options": "Fuelbook",
+   "read_only": 1
   },
   {
    "fieldname": "supplier",
    "fieldtype": "Link",
    "label": "Supplier",
-   "options": "Supplier"
+   "options": "Supplier",
+   "read_only": 1
   },
   {
    "fetch_from": "pol_type.item_name",
    "fieldname": "item_name",
    "fieldtype": "Data",
-   "label": "Item Name"
+   "label": "Item Name",
+   "read_only": 1
   },
   {
    "fieldname": "reference_name",
    "fieldtype": "Dynamic Link",
    "label": "Reference Name",
-   "options": "reference_type"
+   "options": "reference_type",
+   "read_only": 1
   },
   {
    "default": "1",
    "fieldname": "own_cost_center",
    "fieldtype": "Check",
-   "label": "Own Cost Center"
+   "label": "Own Cost Center",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_fyhk",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_cancelled",
+   "fieldtype": "Check",
+   "label": "Is Cancelled",
+   "read_only": 1
   }
  ],
  "in_create": 1,
  "index_web_pages_for_search": 1,
- "is_submittable": 1,
  "links": [],
- "modified": "2024-11-25 15:47:47.629506",
+ "modified": "2026-06-23 14:40:32.002064",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "POL Entry",
@@ -208,7 +246,6 @@
  "owner": "Administrator",
  "permissions": [
   {
-   "create": 1,
    "delete": 1,
    "email": 1,
    "export": 1,
@@ -216,11 +253,9 @@
    "read": 1,
    "report": 1,
    "role": "System Manager",
-   "share": 1,
-   "write": 1
+   "share": 1
   },
   {
-   "create": 1,
    "delete": 1,
    "email": 1,
    "export": 1,
@@ -228,8 +263,7 @@
    "read": 1,
    "report": 1,
    "role": "Fleet User",
-   "share": 1,
-   "write": 1
+   "share": 1
   },
   {
    "email": 1,
@@ -241,6 +275,8 @@
    "share": 1
   }
  ],
+ "quick_entry": 1,
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []

@@ -22,6 +22,7 @@ class POLEntry(Document):
 		equipment_category: DF.Link | None
 		equipment_type: DF.Link | None
 		fuelbook: DF.Link | None
+		is_cancelled: DF.Check
 		is_opening: DF.Check
 		item_name: DF.Data | None
 		km_difference: DF.Float
@@ -29,7 +30,7 @@ class POLEntry(Document):
 		mileage: DF.Float
 		own_cost_center: DF.Check
 		pol_slip_no: DF.Data | None
-		pol_type: DF.Data
+		pol_type: DF.Link
 		posting_date: DF.Date | None
 		posting_time: DF.Time | None
 		qty: DF.Float

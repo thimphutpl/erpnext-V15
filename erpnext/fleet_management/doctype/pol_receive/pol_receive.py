@@ -76,6 +76,7 @@ class POLReceive(StockController):
 		
 		gl_entries = self.get_gl_entries()
 		make_gl_entries(gl_entries)
+		self.make_pol_entry()
 		# if not self.is_opening:
 		#   self.post_journal_entry()
 		#   self.update_pol_advance()
@@ -87,10 +88,12 @@ class POLReceive(StockController):
 		from erpnext.accounts.utils import unlink_ref_doc_from_payment_entries
 
 		unlink_ref_doc_from_payment_entries(self)
-		self.ignore_linked_doctypes = ("GL Entry", "Stock Ledger Entry", "Payment Ledger Entry")
+		self.ignore_linked_doctypes = ("GL Entry", "Stock Ledger Entry", "Payment Ledger Entry", "POL Entry")
 		self.update_pol_advance(cancel=True)
 		gl_entries = self.get_gl_entries()
 		make_gl_entries(gl_entries, cancel=True)
+		self.cancel_pol_entry()
+
 
 		# self.ignore_linked_doctypes = (
 		# 	"GL Entry",
@@ -320,3 +323,84 @@ class POLReceive(StockController):
 			self.set("advances", advances)
 		else:
 			frappe.msgprint("No advances found for this request.", alert=True)
+	
+	def make_pol_entry(self):
+		# if getdate(self.posting_date) <= getdate("2018-03-31"):
+        #                 return
+		container = frappe.db.get_value("Equipment Type", frappe.db.get_value("Equipment", self.equipment, "equipment_type"), "is_container")
+		direct_consumption = frappe.db.get_value("Equipment Type", frappe.db.get_value("Equipment", self.equipment, "equipment_type"), "no_own_tank")
+		fuelbook_branch = frappe.db.get_value("Fuelbook", self.fuelbook, "branch")
+		if self.branch == fuelbook_branch:
+			own = 1
+		else:
+			own = 0
+
+		con = frappe.new_doc("POL Entry")
+		con.flags.ignore_permissions = 1	
+		con.equipment = self.equipment
+		con.pol_type = self.fuel_type
+		con.branch = self.branch
+		con.date = self.posting_date
+		con.posting_time = self.posting_time
+		con.qty = self.total_qty
+		con.company = self.company
+		con.reference_type = "POL Receive"
+		con.reference_name = self.name
+		con.is_opening = 0
+		con.own_cost_center = own
+		if container:
+			con.type = "Stock"
+			con.save()
+		
+		if direct_consumption == 0:
+			con1 = frappe.new_doc("POL Entry")
+			con1.flags.ignore_permissions = 1	
+			con1.company = self.company
+			con1.equipment = self.equipment
+			con1.pol_type = self.fuel_type
+			con1.branch = self.branch
+			con1.date = self.posting_date
+			con1.posting_time = self.posting_time
+			con1.qty = self.total_qty
+			con1.reference_type = "POL Receive"
+			con1.reference_name = self.name
+			con1.type = "Receive"
+			con1.is_opening = 0
+			con1.own_cost_center = own
+			con1.save()
+			
+			if container:
+				con2 = frappe.new_doc("POL Entry")
+				con2.flags.ignore_permissions = 1	
+				con2.company = self.company
+				con2.equipment = self.equipment
+				con2.pol_type = self.fuel_type
+				con2.branch = self.branch
+				con2.date = self.posting_date
+				con2.posting_time = self.posting_time
+				con2.qty = self.total_qty
+				con2.reference_type = "POL Receive"
+				con2.reference_name = self.name
+				con2.type = "Issue"
+				con2.is_opening = 0
+				con2.own_cost_center = own
+				con2.save()
+
+
+	def cancel_pol_entry(self):
+		entries = frappe.get_all(
+			"POL Entry",
+			filters={"reference_name": self.name},
+			pluck="name"
+		)
+
+		for entry_name in entries:
+			frappe.db.set_value(
+				"POL Entry",
+				entry_name,
+				"is_cancelled",
+				1,
+				update_modified=False
+			)
+
+
