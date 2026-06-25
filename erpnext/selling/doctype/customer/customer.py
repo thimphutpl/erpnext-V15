@@ -81,6 +81,7 @@ class Customer(TransactionBase):
 		naming_series: DF.Literal["CUST-.YYYY.-"]
 		opportunity_name: DF.Link | None
 		payment_terms: DF.Link | None
+		phone_number: DF.Data | None
 		portal_users: DF.Table[PortalUser]
 		primary_address: DF.Text | None
 		prospect_name: DF.Link | None

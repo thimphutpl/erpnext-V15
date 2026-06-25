@@ -17,6 +17,7 @@
   "customer_type",
   "customer_group",
   "customer_id",
+  "phone_number",
   "column_break0",
   "territory",
   "gender",
@@ -682,6 +683,11 @@
    "fieldname": "ac_no",
    "fieldtype": "Data",
    "label": "Account Number"
+  },
+  {
+   "fieldname": "phone_number",
+   "fieldtype": "Data",
+   "label": "Phone Number"
   }
  ],
  "icon": "fa fa-user",
@@ -695,8 +701,8 @@
    "link_fieldname": "party"
   }
  ],
- "modified": "2026-05-15 07:29:07.564357",
- "modified_by": "Administrator",
+ "modified": "2026-06-23 09:57:15.451422",
+ "modified_by": "sangay.choden@thimphutechpark.bt",
  "module": "Selling",
  "name": "Customer",
  "naming_rule": "By \"Naming Series\" field",
