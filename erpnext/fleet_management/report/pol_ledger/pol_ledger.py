@@ -16,7 +16,7 @@ def execute(filters=None):
 
 def get_data(filters=None):
 	data = []
-	query = "select * from `tabPOL Entry` where docstatus = 1 "
+	query = "select * from `tabPOL Entry` where 1 "
 	
 	if filters.from_date and filters.to_date:
 		query += " and posting_date between \'" + str(filters.from_date) + "\' and \'" + str(filters.to_date) + "\'"
@@ -33,21 +33,22 @@ def get_data(filters=None):
 		item = frappe.db.sql("select item_code, item_name, stock_uom from tabItem where `name`= \'" + str(eq.pol_type) + "\'", as_dict=True)
 	
 		branch = frappe.db.get_value(eq.reference_type, eq.reference_name, "branch")
-		dc = "No"
-		if eq.reference_type == "POL Recieve":
-			pol = frappe.get_doc(eq.reference_type, eq.reference)
-			if pol.direct_consumption:
-				dc = "Yes"
+		
 	
 #		get_pol_till(purpose, equipment, posting_date, pol_type=None, own_cc=None, posting_time="24:00"):
 		received = get_pol_till("Receive", eq.equipment, eq.posting_date, eq.pol_type, posting_time=eq.posting_time )
-		equipment = frappe.db.sql("select e.name, e.branch, e.equipment_type as equipment_type, et.is_container as is_container from tabEquipment e, `tabEquipment Type` et where e.equipment_type = et.name and e.name = \'" + str(eq.equipment) + "\'", as_dict=True)	
+		equipment = frappe.db.sql("select e.name, e.branch, e.equipment_type as equipment_type, et.is_container as is_container, et.no_own_tank as direct_consumption from tabEquipment e, `tabEquipment Type` et where e.equipment_type = et.name and e.name = \'" + str(eq.equipment) + "\'", as_dict=True)	
 		if equipment[0]['is_container'] == 1:
 			stock = get_pol_till("Stock", eq.equipment, eq.posting_date, eq.pol_type, posting_time=eq.posting_time)
 			issued = get_pol_till("Issue", eq.equipment, eq.posting_date, eq.pol_type, posting_time=eq.posting_time)
 			balance = flt(stock) - flt(issued)
 		else:
 			balance = 0
+		dc = "No"
+		if eq.reference_type == "POL Receive":
+			# pol = frappe.get_doc(eq.reference_type, eq.reference_name)
+			if equipment[0]['direct_consumption'] == 0:
+				dc = "Yes"
 		if eq.type == "Issue":
 			trans_qty = eq.qty*-1
 		else:
@@ -62,7 +63,7 @@ def get_data(filters=None):
 			"balance":balance, 
 			"type":eq.type, 
 			"reference_type":eq.reference_type,
-			"reference" :eq.reference, 
+			"reference" :eq.reference_name, 
 			"direct_comsumption": dc})
 		data.append(row)
 		

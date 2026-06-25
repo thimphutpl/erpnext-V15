@@ -340,7 +340,7 @@ class POLReceive(StockController):
 		con.equipment = self.equipment
 		con.pol_type = self.fuel_type
 		con.branch = self.branch
-		con.date = self.posting_date
+		con.posting_date = self.posting_date
 		con.posting_time = self.posting_time
 		con.qty = self.total_qty
 		con.company = self.company
@@ -359,7 +359,7 @@ class POLReceive(StockController):
 			con1.equipment = self.equipment
 			con1.pol_type = self.fuel_type
 			con1.branch = self.branch
-			con1.date = self.posting_date
+			con1.posting_date = self.posting_date
 			con1.posting_time = self.posting_time
 			con1.qty = self.total_qty
 			con1.reference_type = "POL Receive"
@@ -376,7 +376,7 @@ class POLReceive(StockController):
 				con2.equipment = self.equipment
 				con2.pol_type = self.fuel_type
 				con2.branch = self.branch
-				con2.date = self.posting_date
+				con2.posting_date = self.posting_date
 				con2.posting_time = self.posting_time
 				con2.qty = self.total_qty
 				con2.reference_type = "POL Receive"

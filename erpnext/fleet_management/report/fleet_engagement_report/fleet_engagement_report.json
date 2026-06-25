@@ -9,7 +9,7 @@
  "filters": [],
  "idx": 0,
  "is_standard": "Yes",
- "letter_head": "SMCL Letter Head",
+ "letter_head": null,
  "modified": "2022-11-27 18:58:57.104730",
  "modified_by": "Administrator",
  "module": "Fleet Management",
