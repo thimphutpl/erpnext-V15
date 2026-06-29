@@ -1048,6 +1048,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "allow_on_submit": 1,
    "default": "0",
    "fieldname": "tech_completed",
    "fieldtype": "Check",
@@ -1059,6 +1060,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "allow_on_submit": 1,
    "default": "0",
    "fieldname": "fin_completed",
    "fieldtype": "Check",
@@ -1076,7 +1078,7 @@
  "is_submittable": 1,
  "links": [],
  "max_attachments": 4,
- "modified": "2026-06-03 12:44:34.381601",
+ "modified": "2026-06-29 16:45:50.663651",
  "modified_by": "Administrator",
  "module": "Projects",
  "name": "Project",
