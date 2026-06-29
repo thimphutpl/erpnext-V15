@@ -2,6 +2,7 @@
 # License: GNU General Public License v3. See license.txt
 import json
 import frappe
+from frappe.desk.search import search_widget
 from frappe import _, msgprint
 from frappe.desk.notifications import clear_doctype_notifications
 from frappe.model.mapper import get_mapped_doc
@@ -1108,3 +1109,35 @@ def fetch_item_gl(cdn):
 	frappe.throw(str(cdn))
 
 
+@frappe.whitelist()
+def get_branches_with_non_group_cost_center(doctype, txt, searchfield, start, page_len, filters):
+    """
+    Get branches that have a cost center where is_group = 0
+    """
+    company_filter = ""
+    if filters and filters.get('company'):
+        company_filter = f"AND branch.company = '{filters.get('company')}'"
+    
+    search_filter = ""
+    if txt:
+        search_filter = f"AND branch.name LIKE '%{txt}%'"
+    
+    # Query branches with non-group cost center
+    branches = frappe.db.sql(f"""
+        SELECT 
+            branch.name,
+            branch.cost_center
+        FROM `tabBranch` branch
+        INNER JOIN `tabCost Center` cost_center 
+            ON branch.cost_center = cost_center.name
+        WHERE branch.cost_center IS NOT NULL
+        AND branch.cost_center != ''
+        AND cost_center.is_group = 0
+        {company_filter}
+        {search_filter}
+        ORDER BY branch.name ASC
+        LIMIT {start}, {page_len}
+    """, as_dict=True)
+    
+    # Format for search widget
+    return [[b.name, b.name] for b in branches]
