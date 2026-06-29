@@ -40,7 +40,6 @@ erpnext.accounts.PurchaseInvoice = class PurchaseInvoice extends erpnext.buying.
 		});
 	}
 
-
 	onload() {
 		super.onload();
 
@@ -69,9 +68,7 @@ erpnext.accounts.PurchaseInvoice = class PurchaseInvoice extends erpnext.buying.
 		if (this.frm.doc.supplier && this.frm.doc.__islocal) {
 			this.frm.trigger("supplier");
 		}
-
 	}
-
 
 	refresh(doc) {
 		const me = this;
@@ -104,15 +101,6 @@ erpnext.accounts.PurchaseInvoice = class PurchaseInvoice extends erpnext.buying.
 					__("Create")
 				);
 			}
-			// else if (!doc.on_hold) {
-			// 	this.frm.add_custom_button(
-			// 		__("Block Invoice"),
-			// 		function () {
-			// 			me.block_invoice();
-			// 		},
-			// 		__("Create")
-			// 	);
-			// }
 		}
 
 		if (doc.docstatus == 1 && doc.outstanding_amount != 0 && !doc.on_hold) {
@@ -129,16 +117,6 @@ erpnext.accounts.PurchaseInvoice = class PurchaseInvoice extends erpnext.buying.
 				);
 			}
 		}
-
-		// if (doc.outstanding_amount > 0 && !cint(doc.is_return) && !doc.on_hold) {
-		// 	this.frm.add_custom_button(
-		// 		__("Payment Request"),
-		// 		function () {
-		// 			me.make_payment_request();
-		// 		},
-		// 		__("Create")
-		// 	);
-		// }
 
 		if (doc.docstatus === 0) {
 			this.frm.add_custom_button(
@@ -463,6 +441,12 @@ erpnext.accounts.PurchaseInvoice = class PurchaseInvoice extends erpnext.buying.
 			"cost_center",
 			"project",
 		]);
+		
+		// ✅ NEW: Copy cost_center from parent to new item row
+		if (this.frm.doc.cost_center) {
+			row.cost_center = this.frm.doc.cost_center;
+			refresh_field("cost_center", cdn, "items");
+		}
 	}
 
 	on_submit() {
@@ -628,17 +612,25 @@ frappe.ui.form.on("Purchase Invoice", {
 				},
 			};
 		};
+
+		// ✅ NEW: Filter branch with non-group cost center
+		frm.set_query("branch", function (doc) {
+			return {
+				query: "erpnext.buying.doctype.purchase_order.purchase_order.get_branches_with_non_group_cost_center",
+				filters: { company: doc.company }
+			};
+		});
 	},
 
 	refresh: function (frm) {
 		frm.events.add_custom_buttons(frm);
 	},
+
 	taxes_and_charges: function (frm) {
 		if (!frm.doc.taxes_and_charges || !frm.doc.taxes_and_charges == "") {
 			frm.set_value("taxes", []);
 			frm.refresh_field("taxes")
 		}
-
 	},
 
 	mode_of_payment: function (frm) {
@@ -648,16 +640,6 @@ frappe.ui.form.on("Purchase Invoice", {
 	},
 
 	add_custom_buttons: function (frm) {
-		// if (frm.doc.docstatus == 1 && frm.doc.per_received < 100) {
-		// 	frm.add_custom_button(
-		// 		__("Purchase Receipt"),
-		// 		() => {
-		// 			frm.events.make_purchase_receipt(frm);
-		// 		},
-		// 		__("Create")
-		// 	);
-		// }
-
 		if (frm.doc.docstatus == 1 && frm.doc.per_received > 0) {
 			frm.add_custom_button(
 				__("Purchase Receipt"),
@@ -739,8 +721,63 @@ frappe.ui.form.on("Purchase Invoice", {
 		});
 	},
 
+	// ✅ NEW: When branch changes, auto-populate cost_center from branch
+	branch: function (frm) {
+		if (frm.doc.branch) {
+			frappe.call({
+				method: "frappe.client.get_value",
+				args: {
+					doctype: "Branch",
+					fieldname: "cost_center",
+					filters: { name: frm.doc.branch },
+				},
+				callback: function (r) {
+					if (r.message && r.message.cost_center) {
+						frappe.call({
+							method: "frappe.client.get_value",
+							args: {
+								doctype: "Cost Center",
+								fieldname: "is_group",
+								filters: { name: r.message.cost_center },
+							},
+							callback: function (res) {
+								if (res.message && res.message.is_group == 0) {
+									frm.set_value("cost_center", r.message.cost_center);
+								} else {
+									frappe.msgprint(__('The cost center for this branch is a group. Please select another branch.'));
+									frm.set_value("branch", null);
+									frm.set_value("cost_center", null);
+								}
+							}
+						});
+					} else {
+						frappe.msgprint(__('No cost center defined for this branch'));
+						frm.set_value("branch", null);
+						frm.set_value("cost_center", null);
+					}
+				}
+			});
+		} else {
+			frm.set_value("cost_center", null);
+		}
+	},
+
+	// ✅ NEW: When cost_center changes, update all child rows
+	cost_center: function (frm) {
+		if (frm.doc.cost_center) {
+			frm.doc.items.map(v => {
+				v.cost_center = frm.doc.cost_center;
+			});
+			frm.refresh_field("items");
+		}
+	},
+
 	company: function (frm) {
 		erpnext.accounts.dimensions.update_dimension(frm, frm.doctype);
+
+		// ✅ NEW: Reset branch and cost_center when company changes
+		frm.set_value("branch", null);
+		frm.set_value("cost_center", null);
 
 		if (frm.doc.company) {
 			frappe.call({
@@ -757,4 +794,3 @@ frappe.ui.form.on("Purchase Invoice", {
 		}
 	},
 });
-

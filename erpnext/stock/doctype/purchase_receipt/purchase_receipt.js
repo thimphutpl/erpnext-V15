@@ -44,6 +44,12 @@ frappe.ui.form.on("Purchase Receipt", {
 				},
 			};
 		});
+		frm.set_query("branch", function (doc) {
+			return {
+				query: "erpnext.buying.doctype.purchase_order.purchase_order.get_branches_with_non_group_cost_center",
+				filters: { company: doc.company }
+			};
+		});
 	},
 	onload: function (frm) {
 		erpnext.queries.setup_queries(frm, "Warehouse", function () {
@@ -171,6 +177,45 @@ frappe.ui.form.on("Purchase Receipt", {
 		erpnext.accounts.dimensions.update_dimension(frm, frm.doctype);
 	},
 
+	branch: function (frm) {
+		if (frm.doc.branch) {
+			frappe.call({
+				method: "frappe.client.get_value",
+				args: {
+					doctype: "Branch",
+					fieldname: "cost_center",
+					filters: { name: frm.doc.branch },
+				},
+				callback: function (r) {
+					if (r.message && r.message.cost_center) {
+						frappe.call({
+							method: "frappe.client.get_value",
+							args: {
+								doctype: "Cost Center",
+								fieldname: "is_group",
+								filters: { name: r.message.cost_center },
+							},
+							callback: function (res) {
+								if (res.message && res.message.is_group == 0) {
+									frm.set_value("cost_center", r.message.cost_center);
+								} else {
+									frappe.msgprint(__('The cost center for this branch is a group. Please select another branch.'));
+									frm.set_value("branch", null);
+									frm.set_value("cost_center", null);
+								}
+							}
+						});
+					} else {
+						frappe.msgprint(__('No cost center defined for this branch'));
+						frm.set_value("branch", null);
+						frm.set_value("cost_center", null);
+					}
+				}
+			});
+		} else {
+			frm.set_value("cost_center", null);
+		}
+	},
 	subcontracting_receipt: (frm) => {
 		if (
 			frm.doc.is_subcontracted === 1 &&
