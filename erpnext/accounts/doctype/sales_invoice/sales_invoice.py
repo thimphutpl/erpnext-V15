@@ -1173,15 +1173,15 @@ class SalesInvoice(SellingController):
 		return warehouse
 
 	def set_income_account_for_fixed_assets(self):
-		disposal_account = depreciation_cost_center = None
+		loss_disposal_account = gain_disposal_account = depreciation_cost_center = None
 		for d in self.get("items"):
 			if d.is_fixed_asset:
-				if not disposal_account:
-					disposal_account, depreciation_cost_center = get_disposal_account_and_cost_center(
+				if not gain_disposal_account:
+					loss_disposal_account, gain_disposal_account, depreciation_cost_center = get_disposal_account_and_cost_center(
 						self.company
 					)
 
-				d.income_account = disposal_account
+				d.income_account = gain_disposal_account
 				if not d.cost_center:
 					d.cost_center = depreciation_cost_center
 
