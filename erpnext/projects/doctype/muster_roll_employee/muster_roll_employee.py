@@ -43,6 +43,7 @@ class MusterRollEmployee(Document):
 		list_in_job_card: DF.Check
 		mess_deduction: DF.Check
 		mobile_number: DF.Data | None
+		mr_editable: DF.Check
 		mr_type: DF.Literal["Under CDCL", "Under Labour Contract"]
 		musterroll: DF.Table[Musterroll]
 		nationality: DF.Data | None
@@ -98,7 +99,7 @@ class MusterRollEmployee(Document):
 				a.rate_per_hour_normal = flt(a.rate_per_day) / 8
 
 	def check_status(self):
-		if self.status == "Left" and self.separation_date:
+		if self.status in ["Left", "Terminated"] and self.separation_date:
 			self.docstatus = 1
 
 	# Following method introducted by SHIV on 04/10/2017
@@ -201,3 +202,20 @@ def get_permission_query_conditions(user):
 			and bi.parent = ab.name
 			and bi.branch = `tabMuster Roll Employee`.branch)
 	)""".format(user=user)
+
+
+##added by Kinzang.n to enable status change
+@frappe.whitelist()
+def mr_editable(docname):
+    if "Admin" not in frappe.get_roles(frappe.session.user):
+        frappe.throw("Only Admin can use this.")
+
+    frappe.db.set_value(
+        "Muster Roll Employee",
+        docname,
+        "docstatus",
+        0,
+        update_modified=False
+    )
+
+    frappe.db.commit()
