@@ -17,6 +17,8 @@
   "naming_series",
   "supplier",
   "supplier_name",
+  "invoice_no",
+  "invoice_date",
   "column_break1",
   "posting_date",
   "schedule_date",
@@ -1359,13 +1361,23 @@
    "fieldtype": "Check",
    "label": "For Project",
    "read_only": 1
+  },
+  {
+   "fieldname": "invoice_no",
+   "fieldtype": "Data",
+   "label": "Invoice no"
+  },
+  {
+   "fieldname": "invoice_date",
+   "fieldtype": "Date",
+   "label": "Invoice Date"
   }
  ],
  "icon": "fa fa-truck",
  "idx": 261,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-04-10 10:51:06.709997",
+ "modified": "2026-07-04 10:21:55.551531",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Purchase Receipt",

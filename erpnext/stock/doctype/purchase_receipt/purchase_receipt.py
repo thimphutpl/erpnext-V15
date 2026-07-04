@@ -76,6 +76,8 @@ class PurchaseReceipt(BuyingController):
 		in_words: DF.Data | None
 		instructions: DF.SmallText | None
 		inter_company_reference: DF.Link | None
+		invoice_date: DF.Date | None
+		invoice_no: DF.Data | None
 		is_internal_supplier: DF.Check
 		is_old_subcontracting_flow: DF.Check
 		is_return: DF.Check
