@@ -690,14 +690,19 @@ class StockController(AccountsController):
 				)
 			return details
 		else:
-			details = self.get("items")
-
-			if default_expense_account or default_cost_center:
-				for d in details:
-					if default_expense_account and not d.get("expense_account"):
-						d.expense_account = default_expense_account
-					if default_cost_center and not d.get("cost_center"):
-						d.cost_center = default_cost_center
+			# details = self.get("items")
+			details = list(self.get("items"))
+			if self.doctype == "Production":
+					details.extend(self.get("raw_materials"))
+			if details:
+				if default_expense_account or default_cost_center:
+					for d in details:
+						if default_expense_account and not d.get("expense_account"):
+							d.expense_account = default_expense_account
+						if default_cost_center and not d.get("cost_center"):
+							d.cost_center = default_cost_center
+			else:
+				details.append(self)
 
 			return details
 
@@ -994,16 +999,16 @@ class StockController(AccountsController):
 		return sl_dict
 
 	def validate_warehouse_branch(self, warehouse, branch):
-                if not branch:
-                        frappe.throw("Branch is Mandatory")
-                if not warehouse:
-                        frappe.throw("Warehouse is Mandatory")
-                branches = frappe.db.sql("select parent from `tabWarehouse Branch` where branch = %s", branch, as_dict=1)
-                for a in branches:
-                        if a.parent == warehouse:
-                                return
-                frappe.throw("Warehouse <b>" + str(warehouse) + "</b> doesn't belong to <b>" + str(branch) + "</b>")
-                
+		if not branch:
+				frappe.throw("Branch is Mandatory")
+		if not warehouse:
+				frappe.throw("Warehouse is Mandatory")
+		branches = frappe.db.sql("select parent from `tabWarehouse Branch` where branch = %s", branch, as_dict=1)
+		for a in branches:
+			if a.parent == warehouse:
+				return
+		frappe.throw("Warehouse <b>" + str(warehouse) + "</b> doesn't belong to <b>" + str(branch) + "</b>")
+				
 	def update_inventory_dimensions(self, row, sl_dict) -> None:
 		# To handle delivery note and sales invoice
 		if row.get("item_row"):
