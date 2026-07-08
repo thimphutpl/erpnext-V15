@@ -35,7 +35,7 @@
    "fieldname": "expense_for",
    "fieldtype": "Select",
    "label": "Expense For",
-   "options": "\nHSD\nHire Charge\nLubricant\nOperator Allowance\nOAP Salary\nMuster Roll Employee\nGCE\nOvertime Payment\nDFG Soelra\nGFG Soelra\nThai Salary\nIndian Operators Salary\nRepair and Maintenance\nOJT\nContract Employee"
+   "options": "\nHSD\nHire Charge\nLubricant\nOperator Allowance\nOAP Salary\nMuster Roll Employee\nGCE\nOvertime Payment\nDFG Soelra\nGFG Soelra\nThai Salary\nIndian Operators Salary\nRepair and Maintenance\nOJT\nContract Employee\nGas & Utility"
   },
   {
    "fieldname": "business_activity",
@@ -118,7 +118,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-03-15 10:05:11.764391",
+ "modified": "2026-07-08 12:33:07.282909",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Expense Allocation Item",

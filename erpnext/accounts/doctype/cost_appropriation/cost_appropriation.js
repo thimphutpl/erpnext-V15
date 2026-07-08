@@ -100,12 +100,22 @@ frappe.ui.form.on("Cost Appropriation", {
 					frm.set_value("account",d.repair_and_maintenance);
 				});
 				break;
-			case "OJT": 
-				frappe.model.get_value('Accounts Settings',{'name': 'Accounts Settings'},  'ojt',
-				function(d) {
-					 frm.set_value("account",d.ojt);
-				});
+			case "Gas & Utility":
+				frappe.model.get_value(
+					"Company",
+					frm.doc.company,
+					"gas_and_utility",
+					function(d) {
+						frm.set_value("account", d.gas_and_utility);
+					}
+				);
 				break;
+			case "Gas & Utility":
+				frm.set_value(
+					"account",
+					"E202040001 - Gas & Utilities - GYALSUNG"
+				);
+				break;	
 			case "Contract Employee": 
 				frappe.model.get_value('Accounts Settings',{'name': 'Accounts Settings'},  'contract_employee',
 				function(d) {
