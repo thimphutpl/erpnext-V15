@@ -84,6 +84,7 @@
   "thai_salary",
   "indian_operators_salary",
   "ojt",
+  "gas_and_utility",
   "column_break_ybdc",
   "hsd",
   "operator_allowance",
@@ -1079,6 +1080,12 @@
    "fieldname": "gst_settings_tab",
    "fieldtype": "Tab Break",
    "label": "GST Settings"
+  },
+  {
+   "fieldname": "gas_and_utility",
+   "fieldtype": "Link",
+   "label": "Gas & Utility",
+   "options": "Account"
   }
  ],
  "icon": "fa fa-building",
@@ -1086,7 +1093,7 @@
  "image_field": "company_logo",
  "is_tree": 1,
  "links": [],
- "modified": "2026-01-29 15:54:50.465151",
+ "modified": "2026-07-08 13:07:24.234944",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Company",
