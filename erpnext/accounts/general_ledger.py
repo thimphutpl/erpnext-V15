@@ -375,6 +375,7 @@ def save_entries(gl_map, adv_adj, update_outstanding, from_repost=False):
 
 
 def make_entry(args, adv_adj, update_outstanding, from_repost=False):
+	# frappe.throw(str(args))
 	gle = frappe.new_doc("GL Entry")
 	gle.update(args)
 	gle.flags.ignore_permissions = 1
@@ -393,14 +394,21 @@ def make_entry(args, adv_adj, update_outstanding, from_repost=False):
 			if frappe.db.get_value("Account", args.account, "account_type") in account_types:
 				validate_expense_against_budget(args)
 				cc_doc = frappe.get_doc("Cost Center", args.cost_center)
-				budget_cost_center = cc_doc.budget_cost_center if cc_doc.use_budget_from_parent else args.cost_center
+				if cc_doc.use_budget_from_parent == 1:
+					budget_cost_center = cc_doc.budget_cost_center
+				elif cc_doc.use_budget_from_head_quarter_cost_center == 1:
+					budget_cost_center = cc_doc.head_quarter_cost_center
+				else:
+					budget_cost_center = args.cost_center
+				if frappe.db.get_value("Account", args.account, "is_centralized_budget") == 1 and frappe.db.get_value("Account", args.account, "cost_center"):
+					budget_cost_center = frappe.db.get_value("Account", args.account, "cost_center")
 				if not args.is_cancelled:
 					#Commit Budget
 					bud_obj = frappe.get_doc({
 						"doctype": "Committed Budget",
 						"account": args.account,
 						"cost_center": budget_cost_center,
-						"committed_cost_center": args.cost_center,
+						"committed_cost_center": budget_cost_center,
 						"project": args.project,
 						"budget_activity": args.budget_activity,
 						"budget_sub_activity": args.budget_sub_activity,

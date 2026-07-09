@@ -1,0 +1,128 @@
+<div style="margin-bottom: 7px;" class="text-center">
+    <div style="font-weight: bold; font-size: 14pt;">
+        LETTER HEAD TEST
+    </div>
+</div>
+
+<h2 class="text-center">De-Suung.</h2>
+<h4 class="text-center">Receipts and Payments Statement</h4>
+
+<hr>
+
+{%
+    function show_amount(value) {
+        var amount = parseFloat(value || 0);
+
+        if (!amount || Math.abs(amount) < 0.005) {
+            return "-";
+        }
+
+        return format_number(amount);
+    }
+
+    function show_text(value) {
+        return value || "";
+    }
+%}
+
+<table class="table table-bordered"
+    style="font-size: 8pt; padding: 0; word-wrap:normal; width: 100%; empty-cells: hide;">
+    <thead>
+        <tr>
+            <th>For the month</th>
+            <th colspan="2" style="text-align: center;">Receipt</th>
+            <th colspan="2" style="text-align: center;">Payment</th>
+            <th colspan="2" style="text-align: center;">Cumulative Balance</th>
+        </tr>
+
+        <tr>
+            <th>Group/Broad Head Of Account</th>
+            <th class="text-right" style="font-size:8pt;">For the Month (Nu.)</th>
+            <th class="text-right" style="font-size:8pt;">Annual Progressive (Nu.)</th>
+            <th class="text-right" style="font-size:8pt;">For The Month (Nu.)</th>
+            <th class="text-right" style="font-size:8pt;">Annual Progressive (Nu.)</th>
+            <th class="text-right" style="font-size:8pt;">Dr (Nu.)</th>
+            <th class="text-right" style="font-size:8pt;">Cr (Nu.)</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for (var j = 0; j < data.length; j++) { %}
+            {%
+                var row = data[j] || {};
+                var account_name = row.account_name || row.account || "";
+                var indent = parseInt(row.indent || 0);
+                var row_class = row.parent_account ? "" : "financial-statements-important";
+                row_class += account_name ? "" : " financial-statements-blank-row";
+            %}
+
+            {% if (!account_name) { %}
+                <tr class="{%= row_class %}">
+                    <td colspan="7">&nbsp;</td>
+                </tr>
+            {% } else { %}
+                <tr class="{%= row_class %}">
+                    <td>
+                        {% if (account_name == "Total" || indent == 0 || indent == 1) { %}
+                            <span style="font-weight: bold">{%= account_name %}</span>
+                        {% } else { %}
+                            <span style="color: #464646; padding-left: 15px">{%= account_name %}</span>
+                        {% } %}
+                    </td>
+
+                    <td class="text-right">
+                        {% if (account_name == "Total" || indent == 0 || indent == 1) { %}
+                            <span style="font-weight: bold">{%= show_amount(row.mcredit) %}</span>
+                        {% } else { %}
+                            <span>{%= show_amount(row.mcredit) %}</span>
+                        {% } %}
+                    </td>
+
+                    <td class="text-right">
+                        {% if (account_name == "Total" || indent == 0 || indent == 1) { %}
+                            <span style="font-weight: bold">{%= show_amount(row.credit) %}</span>
+                        {% } else { %}
+                            <span>{%= show_amount(row.credit) %}</span>
+                        {% } %}
+                    </td>
+
+                    <td class="text-right">
+                        {% if (account_name == "Total" || indent == 0 || indent == 1) { %}
+                            <span style="font-weight: bold">{%= show_amount(row.mdebit) %}</span>
+                        {% } else { %}
+                            <span>{%= show_amount(row.mdebit) %}</span>
+                        {% } %}
+                    </td>
+
+                    <td class="text-right">
+                        {% if (account_name == "Total" || indent == 0 || indent == 1) { %}
+                            <span style="font-weight: bold">{%= show_amount(row.debit) %}</span>
+                        {% } else { %}
+                            <span>{%= show_amount(row.debit) %}</span>
+                        {% } %}
+                    </td>
+
+                    <td class="text-right">
+                        {% if (account_name == "Total" || indent == 0 || indent == 1) { %}
+                            <span style="font-weight: bold">{%= show_amount(row.closing_debit) %}</span>
+                        {% } else { %}
+                            <span>{%= show_amount(row.closing_debit) %}</span>
+                        {% } %}
+                    </td>
+
+                    <td class="text-right">
+                        {% if (account_name == "Total" || indent == 0 || indent == 1) { %}
+                            <span style="font-weight: bold">{%= show_amount(row.closing_credit) %}</span>
+                        {% } else { %}
+                            <span>{%= show_amount(row.closing_credit) %}</span>
+                        {% } %}
+                    </td>
+                </tr>
+            {% } %}
+        {% } %}
+    </tbody>
+</table>
+
+<p class="text-right text-muted">
+    Printed On {%= new Date().toLocaleDateString("en-GB") %}
+</p>

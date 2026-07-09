@@ -43,16 +43,16 @@ class FiscalYear(Document):
 				(self.name),
 			)
 
-			if year_start_end_dates:
-				if (
-					getdate(self.year_start_date) != year_start_end_dates[0][0]
-					or getdate(self.year_end_date) != year_start_end_dates[0][1]
-				):
-					frappe.throw(
-						_(
-							"Cannot change Fiscal Year Start Date and Fiscal Year End Date once the Fiscal Year is saved."
-						)
-					)
+			# if year_start_end_dates:
+			# 	if (
+			# 		getdate(self.year_start_date) != year_start_end_dates[0][0]
+			# 		or getdate(self.year_end_date) != year_start_end_dates[0][1]
+			# 	):
+			# 		frappe.throw(
+			# 			_(
+			# 				"Cannot change Fiscal Year Start Date and Fiscal Year End Date once the Fiscal Year is saved."
+			# 			)
+			# 		)
 
 	def validate_is_company_calendar_year(self):
 		if self.get("companies"):

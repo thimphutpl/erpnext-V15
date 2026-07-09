@@ -18,16 +18,15 @@
   "employee",
   "naming_series",
   "first_name",
-  "middle_name",
-  "last_name",
   "column_break_9",
   "gender",
   "date_of_birth",
-  "grade",
+  "middle_name",
   "column_break1",
   "date_of_joining",
   "image",
   "status",
+  "last_name",
   "erpnext_user",
   "user_id",
   "create_user",
@@ -46,13 +45,12 @@
   "company_details_section",
   "company",
   "department",
-  "employment_type",
-  "column_break_25",
   "designation",
+  "column_break_25",
   "division",
   "section",
-  "column_break_18",
   "branch",
+  "column_break_18",
   "cost_center",
   "unit",
   "salary_information",
@@ -206,8 +204,7 @@
   {
    "fieldname": "first_name",
    "fieldtype": "Data",
-   "label": "First Name",
-   "reqd": 1
+   "label": "First Name"
   },
   {
    "allow_in_quick_entry": 1,
@@ -263,7 +260,7 @@
    "label": "Status",
    "oldfieldname": "status",
    "oldfieldtype": "Select",
-   "options": "Active\nInactive\nSuspended\nLeft",
+   "options": "Active\nInactive\nSuspended\nLeft\nDeceased",
    "reqd": 1,
    "search_index": 1
   },
@@ -273,16 +270,14 @@
    "label": "Gender",
    "oldfieldname": "gender",
    "oldfieldtype": "Select",
-   "options": "Gender",
-   "reqd": 1
+   "options": "Gender"
   },
   {
    "fieldname": "date_of_birth",
    "fieldtype": "Date",
    "label": "Date of Birth",
    "oldfieldname": "date_of_birth",
-   "oldfieldtype": "Date",
-   "reqd": 1
+   "oldfieldtype": "Date"
   },
   {
    "fieldname": "date_of_joining",
@@ -397,7 +392,6 @@
   {
    "fieldname": "department",
    "fieldtype": "Link",
-   "hidden": 1,
    "in_standard_filter": 1,
    "label": "Department",
    "oldfieldname": "department",
@@ -639,7 +633,6 @@
    "collapsible": 1,
    "fieldname": "history_in_company",
    "fieldtype": "Section Break",
-   "hidden": 1,
    "label": "History In Company",
    "options": "Simple"
   },
@@ -886,12 +879,6 @@
    "unique": 1
   },
   {
-   "fieldname": "grade",
-   "fieldtype": "Link",
-   "label": "Rank/Grade",
-   "options": "Employee Grade"
-  },
-  {
    "fieldname": "employment_details_section",
    "fieldtype": "Section Break",
    "label": "Employee Details"
@@ -918,7 +905,8 @@
    "fieldname": "employee_group",
    "fieldtype": "Link",
    "label": "Employee Group",
-   "options": "Employee Group"
+   "options": "Employee Group",
+   "read_only": 1
   },
   {
    "depends_on": "eval:doc.employment_status == \"Probation\";",
@@ -977,7 +965,6 @@
   {
    "fieldname": "unit",
    "fieldtype": "Link",
-   "hidden": 1,
    "label": "Unit",
    "options": "Department"
   },
@@ -1132,14 +1119,6 @@
    "options": "Employee Family Details"
   },
   {
-   "fieldname": "employment_type",
-   "fieldtype": "Link",
-   "ignore_user_permissions": 1,
-   "label": "Employment Type",
-   "options": "Employment Type",
-   "read_only": 1
-  },
-  {
    "fieldname": "default_shift",
    "fieldtype": "Link",
    "hidden": 1,
@@ -1185,7 +1164,7 @@
  "image_field": "image",
  "is_tree": 1,
  "links": [],
- "modified": "2026-04-16 23:46:16.915693",
+ "modified": "2026-07-09 11:04:53.862376",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee",

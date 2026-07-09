@@ -14,6 +14,7 @@ class BudgetReleaseAccount(Document):
 		from frappe.types import DF
 
 		account: DF.Link
+		account_name: DF.Data | None
 		account_number: DF.Data | None
 		approved_budget: DF.Currency
 		april: DF.Currency
@@ -31,6 +32,7 @@ class BudgetReleaseAccount(Document):
 		br_november: DF.Data | None
 		br_october: DF.Data | None
 		br_september: DF.Data | None
+		broad_head: DF.Link | None
 		bs_april: DF.Data | None
 		bs_august: DF.Data | None
 		bs_december: DF.Data | None
@@ -44,11 +46,13 @@ class BudgetReleaseAccount(Document):
 		bs_october: DF.Data | None
 		bs_september: DF.Data | None
 		budget_activity: DF.Link
+		budget_activity_name: DF.Data | None
 		budget_amount: DF.Currency
 		budget_check: DF.Literal["", "Stop", "Ignore"]
 		budget_received: DF.Currency
 		budget_sent: DF.Currency
 		budget_sub_activity: DF.Link
+		budget_sub_activity_name: DF.Data | None
 		budget_type: DF.Link | None
 		december: DF.Currency
 		february: DF.Currency
@@ -79,6 +83,7 @@ class BudgetReleaseAccount(Document):
 		sb_september: DF.Data | None
 		september: DF.Currency
 		source_of_fund: DF.Link
+		source_of_fund_name: DF.Data | None
 		supplementary_budget: DF.Currency
 	# end: auto-generated types
 

@@ -44,13 +44,13 @@ frappe.ui.form.on("Employee", {
 				}
 			};
 		});
-		// frm.set_query("grade", function () {
-		// 	return {
-		// 		"filters": {
-		// 			"company": frm.doc.company,
-		// 		}
-		// 	}
-		// });
+		frm.set_query("grade", function () {
+			return {
+				"filters": {
+					"company": frm.doc.company,
+				}
+			}
+		});
 		frm.set_query("branch", function () {
 			return {
 				"filters": {
@@ -118,6 +118,29 @@ frappe.ui.form.on("Employee", {
 				};
 			}
 		});
+	},
+	grade:function(frm){
+		if (!frm.doc.grade) {
+			frm.set_value("employee_group", null);
+			return;
+		}
+
+		frappe.call({
+			method:"erpnext.setup.doctype.employee.employee.get_employee_group_base_grade",
+			args:{
+				grade:frm.doc.grade,
+				company:frm.doc.company
+			},
+			callback:function(res){
+			if (res.message && res.message.length > 0) {
+                frm.set_value("employee_group", res.message[0].name);
+            } else {
+                frm.set_value("employee_group", null);
+            }
+			}
+
+		})
+
 	},
 	prefered_contact_email: function (frm) {
 		frm.events.update_contact(frm);

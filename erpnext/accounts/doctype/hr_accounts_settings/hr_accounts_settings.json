@@ -50,32 +50,28 @@
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Salary Payable Account",
-   "options": "Account",
-   "reqd": 1
+   "options": "Account"
   },
   {
    "fieldname": "salary_tax_account",
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Salary Tax Account",
-   "options": "Account",
-   "reqd": 1
+   "options": "Account"
   },
   {
    "fieldname": "overtime_account",
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Overtime Allowance Account",
-   "options": "Account",
-   "reqd": 1
+   "options": "Account"
   },
   {
    "fieldname": "employee_contribution_pf",
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Employer Contribution To PF",
-   "options": "Account",
-   "reqd": 1
+   "options": "Account"
   },
   {
    "fieldname": "column_break_4",
@@ -85,29 +81,25 @@
    "fieldname": "leave_encashment_account",
    "fieldtype": "Link",
    "label": "Leave Encashment Account",
-   "options": "Account",
-   "reqd": 1
+   "options": "Account"
   },
   {
    "fieldname": "pbva_account",
    "fieldtype": "Link",
    "label": "PBVA Account",
-   "options": "Account",
-   "reqd": 1
+   "options": "Account"
   },
   {
    "fieldname": "bonus_account",
    "fieldtype": "Link",
    "label": "Bonus Account",
-   "options": "Account",
-   "reqd": 1
+   "options": "Account"
   },
   {
    "fieldname": "ltc_account",
    "fieldtype": "Link",
    "label": "LTC Account",
-   "options": "Account",
-   "reqd": 1
+   "options": "Account"
   },
   {
    "fieldname": "section_break_8",
@@ -118,15 +110,13 @@
    "fieldname": "travel_incountry_account",
    "fieldtype": "Link",
    "label": "Tavel In-Country Account",
-   "options": "Account",
-   "reqd": 1
+   "options": "Account"
   },
   {
    "fieldname": "travel_outcountry_account",
    "fieldtype": "Link",
    "label": "Tavel Out-Country Account",
-   "options": "Account",
-   "reqd": 1
+   "options": "Account"
   },
   {
    "fieldname": "column_break_12",
@@ -136,15 +126,13 @@
    "fieldname": "meeting_and_seminars_in_account",
    "fieldtype": "Link",
    "label": "Meeting & Seminars Account (In-Country)",
-   "options": "Account",
-   "reqd": 1
+   "options": "Account"
   },
   {
    "fieldname": "meeting_and_seminars_out_account",
    "fieldtype": "Link",
    "label": "Meeting & Seminars Account (Out-Country)",
-   "options": "Account",
-   "reqd": 1
+   "options": "Account"
   },
   {
    "fieldname": "column_break_11",
@@ -154,15 +142,13 @@
    "fieldname": "training_incountry_account",
    "fieldtype": "Link",
    "label": "Training In-Country Account",
-   "options": "Account",
-   "reqd": 1
+   "options": "Account"
   },
   {
    "fieldname": "training_outcountry_account",
    "fieldtype": "Link",
    "label": "Training Out-Country Account",
-   "options": "Account",
-   "reqd": 1
+   "options": "Account"
   },
   {
    "fieldname": "section_break_14",
@@ -173,8 +159,7 @@
    "fieldname": "employee_advance_travel",
    "fieldtype": "Link",
    "label": "Advance To Employee (Travel) Account",
-   "options": "Account",
-   "reqd": 1
+   "options": "Account"
   },
   {
    "fieldname": "column_break_16",
@@ -184,8 +169,7 @@
    "fieldname": "employee_advance_salary",
    "fieldtype": "Link",
    "label": "Advance To Employee (Salary) Account",
-   "options": "Account",
-   "reqd": 1
+   "options": "Account"
   },
   {
    "fieldname": "sws_accounts_settings_section",
@@ -246,7 +230,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-12-03 11:10:37.956800",
+ "modified": "2026-05-23 13:22:37.934088",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "HR Accounts Settings",

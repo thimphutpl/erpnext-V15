@@ -1,12 +1,16 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "field:advance_name",
+ "autoname": "format:{advance_name} - {company_abbr}",
  "creation": "2026-03-20 13:59:27.630901",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "advance_name"
+  "advance_name",
+  "company",
+  "advance_account",
+  "company_abbr",
+  "party_type"
  ],
  "fields": [
   {
@@ -14,15 +18,42 @@
    "fieldtype": "Data",
    "label": "Advance Name",
    "unique": 1
+  },
+  {
+   "fieldname": "advance_account",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Advance Account",
+   "options": "Account",
+   "reqd": 1
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company"
+  },
+  {
+   "fetch_from": "company.abbr",
+   "fieldname": "company_abbr",
+   "fieldtype": "Data",
+   "label": "Company Abbr",
+   "read_only": 1
+  },
+  {
+   "fieldname": "party_type",
+   "fieldtype": "Select",
+   "label": "Party Type",
+   "options": "\nEmployee\nSupplier\nCustomer"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-20 14:00:45.033497",
+ "modified": "2026-05-23 12:54:54.469529",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Advance Type",
- "naming_rule": "By fieldname",
+ "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
   {

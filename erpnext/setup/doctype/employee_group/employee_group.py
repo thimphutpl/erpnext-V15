@@ -16,6 +16,8 @@ class EmployeeGroup(Document):
 		from frappe.types import DF
 		from hrms.hr.doctype.employee_group_item.employee_group_item import EmployeeGroupItem
 
+		budget_activity: DF.Link | None
+		budget_sub_activity: DF.Link | None
 		company: DF.Link
 		employee_group_name: DF.Data
 		employee_list: DF.Table[EmployeeGroupTable]
@@ -39,6 +41,7 @@ class EmployeeGroup(Document):
 		salary_advance_limit: DF.Data | None
 		salary_advance_max_months: DF.Float
 		salary_advance_type: DF.Literal["", "Flat Amount", "Basic Pay", "Net Pay", "Gross Pay"]
+		source_of_fund: DF.Link | None
 	# end: auto-generated types
 
 	pass

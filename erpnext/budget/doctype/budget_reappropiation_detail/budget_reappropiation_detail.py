@@ -16,6 +16,7 @@ class BudgetReappropiationDetail(Document):
 		amount: DF.Currency
 		from_account: DF.Link
 		from_account_number: DF.Data | None
+		from_broad_head: DF.Link
 		from_budget_activity: DF.Link
 		from_budget_sub_activity: DF.Link
 		from_month: DF.Link | None
@@ -26,9 +27,11 @@ class BudgetReappropiationDetail(Document):
 		source_of_fund: DF.Link | None
 		to_account: DF.Link
 		to_account_number: DF.Data | None
+		to_broad_head: DF.Link
 		to_budget_activity: DF.Link
 		to_budget_sub_activity: DF.Link
 		to_month: DF.Link | None
+		to_source_of_fund: DF.Link | None
 	# end: auto-generated types
 
 	pass

@@ -17,7 +17,32 @@ frappe.ui.form.on('Budget Release', {
 			return {
 				filters: {
 					company: frm.doc.company,
-					is_group: 0
+					is_group: 0,
+					disabled: 0,
+				}
+			};
+		});
+
+		frm.set_query("branch", function() {
+			return {
+				filters: {
+					company: frm.doc.company
+				}
+			};
+		});
+
+		frm.set_query("budget_activity", "accounts", function() {
+			return {
+				filters: {
+					company: frm.doc.company
+				}
+			};
+		});
+
+		frm.set_query("budget_sub_activity", "accounts", function() {
+			return {
+				filters: {
+					company: frm.doc.company
 				}
 			};
 		});
@@ -79,7 +104,27 @@ frappe.ui.form.on("Budget Release Account", {
             row.released_budget = 0;
         }
         frm.refresh_field('accounts');
+
+        if (row.monthly_release) {
+            frappe.model.set_value(cdt, cdn, 'at_hock', 0);
+            // frappe.msgprint({
+            //     message: __('Monthly Release enabled. At Hock has been disabled.'),
+            //     indicator: 'info'
+            // });
+        }
     },
+
+	at_hock: function(frm, cdt, cdn) {
+        let row = locals[cdt][cdn];
+        if (row.at_hock) {
+            frappe.model.set_value(cdt, cdn, 'monthly_release', 0);
+            // frappe.msgprint({
+            //     message: __('At Hock enabled. Monthly Release has been disabled.'),
+            //     indicator: 'info'
+            // });
+        }
+    },
+
 	"january": function(frm, cdt, cdn) {
 		set_initial_budget(frm, cdt, cdn);
 	},

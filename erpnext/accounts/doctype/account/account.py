@@ -29,6 +29,7 @@ class Account(NestedSet):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
+		from erpnext.accounts.doctype.cost_center_mapping.cost_center_mapping import CostCenterMapping
 		from frappe.types import DF
 
 		account_currency: DF.Link | None
@@ -43,6 +44,7 @@ class Account(NestedSet):
 		budget_type: DF.Link | None
 		company: DF.Link
 		cost_center: DF.Link | None
+		cost_centers: DF.Table[CostCenterMapping]
 		dhi_company: DF.Link | None
 		dhi_company_name: DF.Data | None
 		disabled: DF.Check
@@ -50,6 +52,7 @@ class Account(NestedSet):
 		ignore_budget_check: DF.Check
 		include_in_gross: DF.Check
 		is_centralized_budget: DF.Check
+		is_deposit_work: DF.Check
 		is_group: DF.Check
 		is_recovery: DF.Check
 		ledger: DF.Literal["", "Capex", "Opex"]
@@ -59,6 +62,7 @@ class Account(NestedSet):
 		report_type: DF.Literal["", "Balance Sheet", "Profit and Loss"]
 		rgt: DF.Int
 		root_type: DF.Literal["", "Asset", "Liability", "Income", "Expense", "Equity"]
+		source_of_fund: DF.Link | None
 		tax_rate: DF.Float
 	# end: auto-generated types
 
@@ -89,7 +93,7 @@ class Account(NestedSet):
 			return
 		self.validate_parent()
 		self.validate_parent_child_account_type()
-		self.validate_root_details()
+		# self.validate_root_details()
 		# Commented by Dawa Tshering on 2024/07/25
 		# validate_field_number("Account", self.name, self.account_number, self.company, "account_number")
 		self.validate_group_or_ledger()

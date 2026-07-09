@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "MA.YYYY.######",
+ "autoname": "Advance-.####",
  "creation": "2026-03-20 14:28:37.126130",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -18,26 +18,44 @@
   "employee_name",
   "section_break_enud",
   "posting_date",
-  "column_break_zkcg",
-  "account",
+  "column_break_rfnx",
+  "fiscal_year",
   "section_break_jnbi",
   "branch",
   "column_break_zczp",
   "cost_center",
-  "section_break_uewy",
-  "is_opening",
-  "opening_balance",
   "section_break_esne",
   "budget_activity",
   "budget_sub_activity",
   "source_of_fund",
-  "advance_amount",
   "amended_from",
   "column_break_ouro",
   "item_code",
   "item_name",
+  "section_break_oouh",
+  "opening_balance",
+  "section_break_exvg",
+  "apply_tds",
+  "section_break_ogrh",
+  "tds",
+  "tds_account",
+  "column_break_yfoj",
+  "tds_rate",
+  "tds_amount",
+  "section_break_yker",
+  "apply_retention",
+  "section_break_qnnp",
+  "retention",
+  "retention_account",
+  "column_break_tzva",
+  "retention_rate",
+  "retention_amount",
+  "section_break_wcbi",
+  "total_amount",
   "section_break_uujo",
-  "remarks"
+  "remarks",
+  "section_break_vobp",
+  "journal_entry"
  ],
  "fields": [
   {
@@ -59,13 +77,6 @@
   {
    "fieldname": "column_break_atkp",
    "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "customer",
-   "fieldtype": "Dynamic Link",
-   "label": "Party",
-   "options": "party_type",
-   "reqd": 1
   },
   {
    "fieldname": "section_break_esne",
@@ -93,12 +104,6 @@
    "reqd": 1
   },
   {
-   "fieldname": "advance_amount",
-   "fieldtype": "Float",
-   "label": "Advance Amount",
-   "reqd": 1
-  },
-  {
    "fieldname": "amended_from",
    "fieldtype": "Link",
    "label": "Amended From",
@@ -116,7 +121,8 @@
    "fieldname": "branch",
    "fieldtype": "Link",
    "label": "Branch",
-   "options": "Branch"
+   "options": "Branch",
+   "reqd": 1
   },
   {
    "fieldname": "column_break_zczp",
@@ -136,6 +142,7 @@
    "fieldtype": "Section Break"
   },
   {
+   "default": "Today",
    "fieldname": "posting_date",
    "fieldtype": "Date",
    "label": "Posting Date"
@@ -148,31 +155,10 @@
    "options": "Cost Center"
   },
   {
-   "fieldname": "column_break_zkcg",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "account",
-   "fieldtype": "Link",
-   "label": "Advance Account",
-   "options": "Account"
-  },
-  {
-   "fieldname": "section_break_uewy",
-   "fieldtype": "Section Break"
-  },
-  {
-   "default": "0",
-   "fieldname": "is_opening",
-   "fieldtype": "Check",
-   "in_list_view": 1,
-   "label": "Is Opening"
-  },
-  {
-   "depends_on": "eval:doc.is_opening == 1",
    "fieldname": "opening_balance",
-   "fieldtype": "Float",
-   "label": "Opening Balance"
+   "fieldtype": "Currency",
+   "label": "Advance Amount",
+   "reqd": 1
   },
   {
    "fieldname": "column_break_ouro",
@@ -193,9 +179,11 @@
    "label": "Item Name"
   },
   {
+   "depends_on": "eval:doc.party_type==\"Customer\"",
    "fieldname": "customer_cid",
    "fieldtype": "Data",
-   "label": "Customer CID/License No"
+   "label": "Customer CID/License No",
+   "mandatory_depends_on": "eval:doc.party_type==\"Customer\""
   },
   {
    "fieldname": "section_break_jfjq",
@@ -222,17 +210,147 @@
    "fieldname": "party_type",
    "fieldtype": "Select",
    "label": "Party Type",
-   "options": "\nCustomer\nSupplier\nEmployee"
+   "options": "\nSupplier\nEmployee\nCustomer",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_vobp",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "journal_entry",
+   "fieldtype": "Data",
+   "label": "Journal Entry",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_oouh",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "section_break_qnnp",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "section_break_yker",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "apply_retention",
+   "fieldtype": "Check",
+   "label": "Apply Retention"
+  },
+  {
+   "fieldname": "column_break_tzva",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "retention_amount",
+   "fieldtype": "Currency",
+   "label": "Retention Amount",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_exvg",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "apply_tds",
+   "fieldtype": "Check",
+   "label": "Apply TDS"
+  },
+  {
+   "fieldname": "section_break_ogrh",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "tds_account",
+   "fieldtype": "Data",
+   "label": "TDS Account",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_yfoj",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "tds_amount",
+   "fieldtype": "Currency",
+   "label": "TDS Amount",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "tds",
+   "fieldtype": "Link",
+   "label": "TDS",
+   "options": "Tax Withholding Category"
+  },
+  {
+   "fieldname": "tds_rate",
+   "fieldtype": "Float",
+   "label": "TDS Rate",
+   "read_only": 1
+  },
+  {
+   "fieldname": "retention",
+   "fieldtype": "Link",
+   "label": "Retention",
+   "options": "Retention Advance"
+  },
+  {
+   "fetch_from": "retention.rate",
+   "fieldname": "retention_rate",
+   "fieldtype": "Float",
+   "label": "Retention Rate",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_wcbi",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "total_amount",
+   "fieldtype": "Currency",
+   "label": "Total Amount",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "retention.retention_account",
+   "fieldname": "retention_account",
+   "fieldtype": "Data",
+   "label": "Retention Account",
+   "read_only": 1
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Dynamic Link",
+   "label": "Party",
+   "options": "party_type"
+  },
+  {
+   "fieldname": "column_break_rfnx",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "fiscal_year",
+   "fieldtype": "Link",
+   "label": "Fiscal Year",
+   "options": "Fiscal Year"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-04-09 11:57:09.399500",
+ "modified": "2026-06-18 14:37:45.768993",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Advance",
- "naming_rule": "Expression",
+ "naming_rule": "Expression (old style)",
  "owner": "Administrator",
  "permissions": [
   {
@@ -250,5 +368,6 @@
  ],
  "sort_field": "creation",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "track_changes": 1
 }

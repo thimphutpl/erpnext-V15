@@ -43,8 +43,12 @@
   "ignore_budget_check",
   "is_centralized_budget",
   "cost_center",
+  "is_deposit_work",
   "column_break_hvbi",
-  "budget_type"
+  "budget_type",
+  "source_of_fund",
+  "section_break_lhkg",
+  "cost_centers"
  ],
  "fields": [
   {
@@ -96,16 +100,14 @@
    "fieldtype": "Select",
    "in_standard_filter": 1,
    "label": "Root Type",
-   "options": "\nAsset\nLiability\nIncome\nExpense\nEquity",
-   "read_only": 1
+   "options": "\nAsset\nLiability\nIncome\nExpense\nEquity"
   },
   {
    "fieldname": "report_type",
    "fieldtype": "Select",
    "in_standard_filter": 1,
    "label": "Report Type",
-   "options": "\nBalance Sheet\nProfit and Loss",
-   "read_only": 1
+   "options": "\nBalance Sheet\nProfit and Loss"
   },
   {
    "depends_on": "eval:doc.is_group==0",
@@ -296,13 +298,35 @@
    "fieldname": "bank_account_no",
    "fieldtype": "Data",
    "label": "Bank Account No"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_deposit_work",
+   "fieldtype": "Check",
+   "label": "Is Deposit Work"
+  },
+  {
+   "fieldname": "section_break_lhkg",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "cost_centers",
+   "fieldtype": "Table",
+   "label": "Cost Centers",
+   "options": "Cost Center Mapping"
+  },
+  {
+   "fieldname": "source_of_fund",
+   "fieldtype": "Link",
+   "label": "Source of Fund",
+   "options": "Source of Fund"
   }
  ],
  "icon": "fa fa-money",
  "idx": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2026-03-20 15:13:58.680209",
+ "modified": "2026-06-26 15:43:55.164124",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Account",

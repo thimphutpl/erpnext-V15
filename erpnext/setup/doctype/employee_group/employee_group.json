@@ -39,7 +39,12 @@
   "leave_encashment_months",
   "encashment_frequency",
   "leave_credits_section",
-  "items"
+  "items",
+  "budget_activity_mapping_section",
+  "budget_activity",
+  "budget_sub_activity",
+  "column_break_guqq",
+  "source_of_fund"
  ],
  "fields": [
   {
@@ -225,10 +230,37 @@
    "label": "Company",
    "options": "Company",
    "reqd": 1
+  },
+  {
+   "fieldname": "budget_activity_mapping_section",
+   "fieldtype": "Section Break",
+   "label": "Budget Activity Mapping"
+  },
+  {
+   "fieldname": "budget_activity",
+   "fieldtype": "Link",
+   "label": "Budget Activity",
+   "options": "Budget Activity"
+  },
+  {
+   "fieldname": "budget_sub_activity",
+   "fieldtype": "Link",
+   "label": "Budget Sub Activity",
+   "options": "Budget Sub Activity"
+  },
+  {
+   "fieldname": "column_break_guqq",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "source_of_fund",
+   "fieldtype": "Link",
+   "label": "Source Of Fund",
+   "options": "Source of Fund"
   }
  ],
  "links": [],
- "modified": "2025-11-20 16:30:16.436778",
+ "modified": "2026-06-15 15:24:46.853928",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee Group",

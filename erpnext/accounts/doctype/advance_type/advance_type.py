@@ -14,7 +14,11 @@ class AdvanceType(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		advance_account: DF.Link
 		advance_name: DF.Data | None
+		company: DF.Link | None
+		company_abbr: DF.Data | None
+		party_type: DF.Literal["", "Employee", "Supplier", "Customer"]
 	# end: auto-generated types
 
 	pass

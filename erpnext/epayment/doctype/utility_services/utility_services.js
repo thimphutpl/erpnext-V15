@@ -8,7 +8,22 @@ cur_frm.add_fetch("branch","expense_bank_account","expense_account");
 cur_frm.add_fetch("branch","cost_center","cost_center");
 frappe.ui.form.on("Utility Services", {
 	refresh: function(frm) {
-
+		frm.set_query("branch", function() {
+			return {
+				filters: {
+					company: frm.doc.company,  
+				}
+			};
+		});
+		frm.set_query("expense_account", function() {
+			return {
+				filters: {
+					company: frm.doc.company,
+					is_group: 0,
+					disabled: 0
+				}
+			};
+		});
 	},
 	"branch": function(frm){
 	},

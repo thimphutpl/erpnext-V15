@@ -36,12 +36,15 @@
   "accounts",
   "budget_details",
   "section_break_13",
+  "initial_total",
   "initial_budget",
   "approved_budget",
   "withdrawal_budget",
   "column_break_14",
   "supp_total",
   "actual_total",
+  "reference_section",
+  "budget_proposal",
   "section_break_6",
   "applicable_on_material_request",
   "action_if_annual_budget_exceeded_on_mr",
@@ -63,7 +66,8 @@
    "fieldtype": "Select",
    "in_standard_filter": 1,
    "label": "Budget Against",
-   "options": "\nCost Center\nProject",
+   "options": "Cost Center",
+   "read_only": 1,
    "reqd": 1
   },
   {
@@ -71,6 +75,7 @@
    "fieldtype": "Link",
    "label": "Company",
    "options": "Company",
+   "read_only": 1,
    "reqd": 1
   },
   {
@@ -82,6 +87,7 @@
    "in_standard_filter": 1,
    "label": "Cost Center",
    "options": "Cost Center",
+   "read_only": 1,
    "reqd": 1
   },
   {
@@ -99,6 +105,7 @@
    "in_standard_filter": 1,
    "label": "Fiscal Year",
    "options": "Fiscal Year",
+   "read_only": 1,
    "reqd": 1
   },
   {
@@ -217,6 +224,7 @@
    "fieldtype": "Table",
    "label": "Budget Accounts",
    "options": "Budget Account",
+   "read_only": 1,
    "reqd": 1
   },
   {
@@ -276,7 +284,8 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Branch",
-   "options": "Branch"
+   "options": "Branch",
+   "read_only": 1
   },
   {
    "fieldname": "cost_centers",
@@ -294,6 +303,7 @@
   {
    "fieldname": "sb_bulk_data",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Bulk Data Insertion Filters"
   },
   {
@@ -351,6 +361,7 @@
   {
    "fieldname": "initial_budget",
    "fieldtype": "Currency",
+   "hidden": 1,
    "label": "Proposed Budget",
    "read_only": 1
   },
@@ -361,9 +372,11 @@
   {
    "fieldname": "withdrawal_budget",
    "fieldtype": "Currency",
-   "label": "Withdraw Budget"
+   "label": "Withdraw Budget",
+   "read_only": 1
   },
   {
+   "default": "Today",
    "fieldname": "posting_date",
    "fieldtype": "Date",
    "in_list_view": 1,
@@ -373,13 +386,33 @@
   {
    "fieldname": "approved_budget",
    "fieldtype": "Currency",
-   "label": "Approved Budget(Initial)"
+   "hidden": 1,
+   "label": "Approved Budget(Initial)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "initial_total",
+   "fieldtype": "Currency",
+   "label": "Total(Initial)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "reference_section",
+   "fieldtype": "Section Break",
+   "label": "Reference"
+  },
+  {
+   "fieldname": "budget_proposal",
+   "fieldtype": "Link",
+   "label": "Budget Proposal",
+   "options": "Budget Proposal",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-10-08 14:32:40.949093",
+ "modified": "2026-06-11 09:17:15.629143",
  "modified_by": "Administrator",
  "module": "Budget",
  "name": "Budget",

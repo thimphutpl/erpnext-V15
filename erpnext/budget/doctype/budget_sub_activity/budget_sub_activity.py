@@ -14,10 +14,11 @@ class BudgetSubActivity(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		abbr: DF.Data | None
 		company: DF.Link
 		sub_activity_code: DF.Data
 		sub_activity_name: DF.Data
 	# end: auto-generated types
 
 	def autoname(self):
-		self.name = self.sub_activity_code+" - " + self.sub_activity_name
+		self.name = self.sub_activity_code+" - " + self.sub_activity_name + " - " + self.abbr

@@ -14,6 +14,14 @@ class WithdrawalBudgetItem(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		account: DF.Link
+		account_number: DF.Data | None
+		amount: DF.Currency
+		broad_head: DF.Link
+		budget_activity: DF.Link | None
+		budget_sub_activity: DF.Link | None
+		budget_type: DF.Link | None
+		month: DF.Link | None
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data

@@ -49,9 +49,9 @@ def validate_filters(filters):
 def get_data(filters):
 	query = """
 		select reference as name, cost_center, account, project, amount,
-		(select a.remarks from `tabSupplementary Budget` a where a.name = `tabSupplementary Details`.reference) as remarks,
+		(select a.remarks from `tabSupplementary Budget` a where a.name = sd.reference) as remarks,
 		posting_date as date 
-		from `tabSupplementary Details` 
+		from `tabSupplementary Details` sd
 		where posting_date between '{from_date}' and '{to_date}'
 		""".format(from_date=filters.from_date, to_date=filters.to_date)
 

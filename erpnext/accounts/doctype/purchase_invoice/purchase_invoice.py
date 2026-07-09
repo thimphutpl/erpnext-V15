@@ -1064,6 +1064,7 @@ class PurchaseInvoice(BuyingController):
 					item=self,
 				)
 			)
+	
 
 	def make_item_gl_entries(self, gl_entries):
 		# item gl entries

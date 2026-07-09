@@ -9,6 +9,7 @@
   "reference",
   "advance_type",
   "account",
+  "total_amount",
   "advance_amount",
   "allocated_amount",
   "balance_amount"
@@ -25,7 +26,8 @@
    "fieldname": "advance_amount",
    "fieldtype": "Currency",
    "in_list_view": 1,
-   "label": "Advance Amount"
+   "label": "Advance Amount",
+   "read_only": 1
   },
   {
    "fieldname": "allocated_amount",
@@ -37,7 +39,8 @@
    "fieldname": "balance_amount",
    "fieldtype": "Currency",
    "in_list_view": 1,
-   "label": "Balance Amount"
+   "label": "Balance Amount",
+   "read_only": 1
   },
   {
    "fieldname": "reference",
@@ -51,12 +54,18 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Advance Type"
+  },
+  {
+   "fieldname": "total_amount",
+   "fieldtype": "Currency",
+   "label": "Total Amount",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-04-03 16:13:12.008682",
+ "modified": "2026-05-23 15:39:09.554414",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Mobilisation Advance Item",

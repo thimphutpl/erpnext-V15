@@ -1,0 +1,165 @@
+<h3 class="text-center">Royal Bhutan Army</h3>
+<h4 class="text-center">
+    {%= __(report.report_name) %} for the Year: {%= filters.fiscal_year %}</h4>
+<hr>
+
+<table class="table table-bordered">
+    <thead style="font-weight: bold; color: black;">
+        <tr>
+            <th>Sub Program Code</th>
+            <th>Activity Code</th>
+            <th>Sub Activity Code</th>
+            <th>Financing Code</th>
+            <th>Account Code</th>
+            <th>Title</th>
+            <th>Proposed Budget</th>
+            <th>Approved Budget</th>
+            <th>Supplementary Budget</th>
+            <th>Budget Reappropations</th>
+            <th>Revision Budget</th>  
+        </tr>
+    </thead>
+    <tbody>
+        {% 
+            var last_costcenter = "";
+            var last_activity = "";
+            var last_subactivity = "";
+            var last_financing = "";
+
+            var financing_total_proposed = 0;
+            var financing_total_approved = 0;
+            var subactivity_total_proposed = 0;
+            var subactivity_total_approved = 0;
+            var supplementary_total_approved = 0;
+            var budget_reappropations_total_approved = 0;
+            var revision_budget =0;
+        %}
+
+        {% for (var j=0; j<data.length; j++) { %}
+            {% var row = data[j]; %}
+
+            {% if (row.budget_cost_center && row.budget_cost_center != last_costcenter) { %}
+                <tr style="font-weight:bold; background:#ffffff; color:black;">
+                    <td>{%= row.budget_cost_center.split("-")[0] %}</td>
+                    <td></td><td></td><td></td><td></td>
+                    <td>{%= row.cost_center_name || "" %}</td>
+                    <td></td><td></td>
+                </tr>
+                {% last_costcenter = row.budget_cost_center; %}
+                {% last_activity = ""; last_subactivity = ""; last_financing = ""; %}
+            {% } %}
+
+            {% if (row.budget_activity && row.budget_activity != last_activity) { %}
+                <tr style="font-weight:bold;">
+                    <td></td>
+                    <td>{%= row.budget_activity.split(" ")[0] %}</td>
+                    <td></td><td></td><td></td>
+                    <td>{%= row.budget_activity.replace(row.budget_activity.split(" ")[0], "").trim() %}</td>
+                    <td></td><td></td>
+                </tr>
+                {% last_activity = row.budget_activity; %}
+                {% last_subactivity = ""; last_financing = ""; %}
+            {% } %}
+
+            {% if (row.budget_sub_activity && row.budget_sub_activity != last_subactivity) { %}
+                {% if (last_subactivity) { %}
+                    <tr style="font-weight:bold; background:#ffffff;">
+                        <td></td><td></td><td></td><td></td><td></td>
+                        <td>TOTAL SUB-ACTIVITY {%= last_subactivity.split(" ")[0] %}</td>
+                        <td>{%= subactivity_total_proposed %}</td>
+                        <td>{%= subactivity_total_approved %}</td>
+                    </tr>
+                    {% subactivity_total_proposed = 0; subactivity_total_approved = 0; %}
+                {% } %}
+                <tr style="font-weight:bold;">
+                    <td></td><td></td>
+                    <td>{%= row.budget_sub_activity.split(" ")[0] %}</td>
+                    <td></td><td></td>
+                    <td>{%= row.budget_sub_activity.replace(row.budget_sub_activity.split(" ")[0], "").trim() %}</td>
+                    <td></td><td></td>
+                </tr>
+                {% last_subactivity = row.budget_sub_activity; %}
+                {% last_financing = ""; %}
+            {% } %}
+
+            {% if (row.source_of_fund && row.financing_code != last_financing) { %}
+                {% if (last_financing) { %}
+                    <tr style="font-weight:bold; color:#0b5394;">
+                        <td></td><td></td><td></td><td></td><td></td>
+                        <td>TOTAL {%= last_financing %}</td>
+                        <td>{%= financing_total_proposed %}</td>
+                        <td>{%= financing_total_approved %}</td>
+                    </tr>
+                    {% financing_total_proposed = 0; financing_total_approved = 0; %}
+                {% } %}
+                <tr style="font-weight:bold; color:#0b5394;">
+                    <td></td><td></td><td></td>
+                    <td>{%= row.source_of_fund %}</td>
+                    <td></td>
+                    <td style="padding-left:60px;">{%= row.financing_title || "" %}</td>
+                    <td></td><td></td>
+                </tr>
+                {% last_financing = row.financing_code; %}
+            {% } %}
+
+            {% if (row.account && row.account_initial_budget && row.account_initial_budget > 0) { %}
+                {% 
+                    var acc_parts = row.account.split(" ");
+                    var acc_code = acc_parts.length > 0 ? acc_parts[0] : "";
+                    var acc_title = row.account.replace(acc_code, "").trim();
+                    var proposed_budget = row.account_initial_budget || 0;
+                    var approved_budget = row.approved_budget || 0;
+                    var s_total_approved = row.supplementary_budget || 0;
+                    var b_reappropations_total_approved = row.budget_received || 0;
+                    var r_budget = row.budget_amount || 0;
+
+                    financing_total_proposed += proposed_budget;
+                    financing_total_approved += approved_budget;
+                    subactivity_total_proposed += proposed_budget;
+                    subactivity_total_approved += approved_budget;
+                    supplementary_total_approved += supplementary_total_approved;
+                    budget_reappropations_total_approved += budget_reappropations_total_approved;
+                    revision_budget += revision_budget;
+                %}
+                <tr>
+                    <td></td><td></td><td></td><td></td>
+                    <td>{%= acc_code %}</td>
+                    <td style="padding-left:80px;">{%= acc_title %}</td>
+                    <td>{%= proposed_budget %}</td>
+                    <td>{%= approved_budget %}</td>
+                    <td>{%= s_total_approved %}</td>
+                    <td>{%= b_reappropations_total_approved%} </td>
+                    <td>{%= r_budget%} </td>
+
+                </tr>
+            {% } %}
+
+        {% } %}
+
+        {% if (last_subactivity) { %}
+        <tr style="font-weight:bold; background:#ffffff;">
+            <td></td><td></td><td></td><td></td><td></td>
+            <td>TOTAL SUB-ACTIVITY {%= last_subactivity.split(" ")[0] %}</td>
+            <td>{%= subactivity_total_proposed %}</td>
+            <td>{%= subactivity_total_approved %}</td>
+        </tr>
+        {% } %}
+
+        {% if (last_financing) { %}
+        <tr style="font-weight:bold; color:#0b5394;">
+            <td></td><td></td><td></td><td></td><td></td>
+            <td>TOTAL {%= last_financing %}</td>
+            <td>{%= financing_total_proposed %}</td>
+            <td>{%= financing_total_approved %}</td>
+        </tr>
+        {% } %}
+    </tbody>
+</table>
+
+<style>
+    .text-center {
+        font-size: 16px;
+        font-family: "Times New Roman", serif;
+        text-align: center;
+    }
+</style>

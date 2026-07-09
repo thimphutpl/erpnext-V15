@@ -11,6 +11,7 @@ from erpnext.accounts.doctype.accounting_dimension.accounting_dimension import (
 	get_accounting_dimensions,
 )
 from erpnext.accounts.utils import get_fiscal_year
+from frappe.utils import get_link_to_form
 
 
 class BudgetReleaseError(frappe.ValidationError):
@@ -44,7 +45,7 @@ class BudgetRelease(Document):
 		applicable_on_purchase_order: DF.Check
 		approved_budget: DF.Currency
 		branch: DF.Link | None
-		budget_against: DF.Literal["", "Cost Center", "Project"]
+		budget_against: DF.Literal["Cost Center"]
 		budget_balance: DF.Currency
 		budget_id: DF.Link | None
 		budget_type: DF.Data | None
@@ -71,27 +72,35 @@ class BudgetRelease(Document):
 
 	def validate(self):
 		if not self.budget_id:
-			frappe.throw(_("Budget Release should be created from Budget/Budget Proposal"), title=_("Incorrect Procedure"))
+			frappe.throw(_("Budget Release should be created from Budget Proposal"), title=_("Incorrect Procedure"))
 		if not self.get(frappe.scrub(self.budget_against)):
 			frappe.msgprint(_("{0} is mandatory").format(self.budget_against), raise_exception=True)
 		self.validate_duplicate()
 		self.validate_accounts()
 		self.set_null_value()
 		self.validate_applicable_for()
+		self.set_broad_head_from_account()
 		# self.set_initial_budget()
 		self.calculate_budget()
 		if self.accounts:
 			for item in self.accounts:
 				if item.monthly_release:
 					self.calculate_totals()
-				elif item.at_hock:
-					self.calculate_total_monthly()
-		self.validate_against_budget_proposal()
+				# elif item.at_hock:
+				# 	self.calculate_total_monthly()
+		# self.validate_against_budget_proposal()
+		self.validate_monthly_budget_release()
 
 	def on_submit(self):
 		self.post_journal_entry()
+		self.update_budget_released_amount()
+		self.create_budget_released_entries()
 
 	def on_cancel(self):
+		# Cancel all Budget Released Entries first
+		self.cancel_budget_released_entries()
+		
+		self.update_budget_released_amount(cancel=1)
 		""" ++++++++++ Ver 2.0.190509 Ends ++++++++++++ """
 		self.ignore_linked_doctypes = (
 			"GL Entry",
@@ -105,65 +114,107 @@ class BudgetRelease(Document):
 			frappe.throw("Cancel the Journal Entry " + str(self.jv) + " and proceed.")
 
 		self.db_set("jv", None)
-	# def post_journal_entry(self):
-	# 	expense_bank_account = frappe.db.get_value("Company", frappe.defaults.get_user_default("Company"), "default_mof_account")
-	# 	pol_account = frappe.db.get_value("Company", frappe.defaults.get_user_default("Company"), "budget_receive_account")
-	# 	if not expense_bank_account:
-	# 		frappe.throw("No Default Payable Account set in Company")
-   
-	# 	if not pol_account:
-	# 		frappe.throw("No Default Payable Account set in Company")
 
-	# 	if expense_bank_account and pol_account:
-	# 		je = frappe.new_doc("Journal Entry")
-	# 		je.flags.ignore_permissions = 1 
-	# 		je.title = self.name
-	# 		je.voucher_type = 'Bank Entry'
-	# 		je.naming_series = 'Bank Payment Voucher'
-	# 		je.remark = 'Payment against : ' + self.name;
-	# 		je.posting_date = self.posting_date
-	# 		je.branch = self.branch
+	def cancel_budget_released_entries(self):
+		"""Cancel all Budget Released Entries linked to this Budget Release"""
+		bre_entries = frappe.get_all("Budget Release Entry", 
+			filters={"released_budget": self.name, "docstatus": 1},
+			pluck="name")
+		
+		for bre_name in bre_entries:
+			bre = frappe.get_doc("Budget Release Entry", bre_name)
+			bre.cancel()
+			frappe.db.commit()
+		
+		if bre_entries:
+			frappe.msgprint(_("Cancelled {0} Budget Release Entry/Entries").format(len(bre_entries)))	
 
-	# 		je.append("accounts", {
-	# 				"account": pol_account,
-	# 				"cost_center": self.cost_center,
-	# 				"reference_type": "Budget Release",
-	# 				"reference_name": self.name,
-	# 				"debit_in_account_currency": flt(self.released_budget),
-	# 				"debit": flt(self.released_budget),
-	# 			})
+	def validate_monthly_budget_release(self):	
+		for item in self.accounts:
+				if item.monthly_release:
+					self.calculate_totals()
 
-	# 		je.append("accounts", {
-	# 				"account": expense_bank_account,
-	# 				"cost_center": self.cost_center,
-	# 				# "party_type": "Supplier",
-	# 				# "party": self.supplier,
-	# 				"credit_in_account_currency": flt(self.released_budget),
-	# 				"credit": flt(self.released_budget),
-	# 			})
+	def set_broad_head_from_account(self):
+		"""Auto-set broad_head as parent_account of selected account"""
+		for row in self.get("accounts"):  # Replace with your child table fieldname
+			if row.account and not row.broad_head:
+				parent_account = frappe.db.get_value("Account", row.account, "parent_account")
+				if parent_account:
+					row.broad_head = parent_account
+				else:
+					frappe.throw(f"Account {row.account} does not have a parent account")
+			elif row.account and row.broad_head:
+				# Optional: Validate that broad_head matches parent_account
+				parent_account = frappe.db.get_value("Account", row.account, "parent_account")
+				if parent_account and row.broad_head != parent_account:
+					frappe.throw(f"Broad Head {row.broad_head} does not match parent account {parent_account} of {row.account}")	
 
-	# 		je.insert()
-	# 		self.db_set("jv", je.name)
-	# 	else:
-	# 		frappe.throw("Define POL expense account in Maintenance Setting or Expense Bank in Branch")
+	def update_budget_released_amount(self, cancel=0):
+
+		for release_row in self.accounts:
+
+			# Find matching Budget Account row
+			budget_account = frappe.db.get_value(
+				"Budget Account",
+				{
+					"cost_center": self.cost_center,
+					"budget_activity": release_row.budget_activity,
+					"budget_sub_activity": release_row.budget_sub_activity,
+					"source_of_fund": release_row.source_of_fund,
+					"account": release_row.account
+				},
+				["name", "released_budget", "budget_amount"],
+				as_dict=1
+			)
+
+			if not budget_account:
+				continue
+
+			current_released = budget_account.released_budget or 0
+			current_budget_amount = budget_account.budget_amount or 0
+
+			release_amount = release_row.released_budget or 0
+
+			# On Submit
+			if not cancel:
+				new_released = release_amount
+				# new_released = current_released + release_amount
+				# new_budget_amount = current_budget_amount + release_amount
+
+			# On Cancel
+			else:
+				new_released = release_amount
+				# new_released = current_released - release_amount
+				# new_budget_amount = current_budget_amount - release_amount
+
+			frappe.db.set_value(
+				"Budget Account",
+				budget_account.name,
+				{
+					"released_budget": new_released,
+					# "budget_amount": new_budget_amount
+				}
+			)
  
-	# added sonam
 	def post_journal_entry(self):
 		from frappe.utils import flt
 		import frappe
 
+
 		company = frappe.defaults.get_user_default("Company")
 		expense_bank_account = frappe.db.get_value("Company", company, "default_mof_account")
-		pol_account = frappe.db.get_value("Company", company, "budget_receive_account")
+		bra_account = frappe.db.get_value("Company", company, "budget_receive_account")
 
 		if not expense_bank_account:
 			frappe.throw("No Default Payable Account (Default MOF Account) set in Company")
 
-		if not pol_account:
+		if not bra_account:
 			frappe.throw("No Budget Receive Account set in Company")
-		if expense_bank_account and pol_account:
+		if expense_bank_account and bra_account:
 			if self.accounts and len(self.accounts) > 0:
 				source_of_fund = self.accounts[0].source_of_fund
+				budget_activity = self.accounts[0].budget_activity
+				budget_sub_activity = self.accounts[0].budget_sub_activity
 
 			je = frappe.new_doc("Journal Entry")
 			je.flags.ignore_permissions = 1
@@ -176,12 +227,14 @@ class BudgetRelease(Document):
 			je.company = company
 
 			je.append("accounts", {
-				"account": pol_account,
+				"account": bra_account,
 				"cost_center": self.cost_center,
 				"reference_type": "Budget Release",
 				"reference_name": self.name,
 				"debit_in_account_currency": flt(self.released_budget),
 				"debit": flt(self.released_budget),
+				# "budget_activity": budget_activity,
+				# "budget_sub_activity": budget_sub_activity,
 				"source_of_fund": source_of_fund,
 			})
 
@@ -190,6 +243,8 @@ class BudgetRelease(Document):
 				"cost_center": self.cost_center,
 				"credit_in_account_currency": flt(self.released_budget),
 				"credit": flt(self.released_budget),
+				# "budget_activity": budget_activity,
+				# "budget_sub_activity": budget_sub_activity,
 				"source_of_fund": source_of_fund,
 			})
 
@@ -197,104 +252,89 @@ class BudgetRelease(Document):
 			je.submit()
 
 			self.db_set("jv", je.name)
-			frappe.msgprint(f"Journal Entry <b>{je.name}</b> created and linked successfully.")
+			# frappe.msgprint(f"Journal Entry <b>{je.name}</b> created and linked successfully.")
+			frappe.msgprint(
+				f"Journal Entry {get_link_to_form('Journal Entry', je.name)} created and linked successfully."
+			)
 		else:
 			frappe.throw("Define POL expense account in Maintenance Setting or Expense Bank in Branch")
+
+	def create_budget_released_entries(self):
+		"""Create Budget Release Entry for each account in the child table"""
+		from frappe.utils import flt
+		
+		if not self.accounts:
+			return
+		
+		created_entries = []
+		
+		for item in self.accounts:
+			if flt(item.released_budget) <= 0:
+				continue
+				
+			# Check if Budget Release Entry already exists for this combination
+			existing_entry = frappe.db.exists("Budget Release Entry", {
+				"budget_release": self.name,
+				"account": item.account,
+				"cost_center": self.cost_center,
+				"budget_activity": item.budget_activity,
+				"budget_sub_activity": item.budget_sub_activity,
+				"source_of_fund": item.source_of_fund,
+				"docstatus": ["!=", 2]  # Not cancelled
+			})
 			
-
-  
-	# def validate_against_budget_proposal(self):
-	# 	budget_against_field = frappe.scrub(self.budget_against)
-	# 	budget_against = self.get(budget_against_field)
-
-	# 	accounts = [d.account for d in self.accounts] or []
-	# 	existing_budget = frappe.db.sql(
-	# 		"""
-	# 		select sum(actual_total) as actual_total
-	# 			from `tabBudget` b
-	# 		where
-	# 			b.docstatus < 2 and b.company = %s and %s=%s and
-	# 			b.fiscal_year=%s and b.name != %s """
-	# 		% ("%s", budget_against_field, "%s", "%s", "%s"),
-	# 		(self.company, budget_against, self.fiscal_year, self.name),
-	# 		as_dict=1)
-	# 	existing_budget_release = frappe.db.sql(
-	# 		"""
-	# 		select sum(ifnull(actual_total,0)) as actual_total
-	# 			from `tabBudget Release` b
-	# 		where
-	# 			b.docstatus = 1 and b.company = %s and %s=%s and
-	# 			b.fiscal_year=%s and b.name != %s"""
-	# 		% ("%s", budget_against_field, "%s", "%s", "%s"),
-	# 		(self.company, budget_against, self.fiscal_year, self.name),
-	# 		as_dict=1)
-	# 	if len(existing_budget_release) > 0:
-	# 		existing_budget_release = existing_budget_release[0].actual_total
-	# 	if not existing_budget_release:
-	# 		existing_budget_release = 0
-	# 	if len(existing_budget) > 0:
-	# 		existing_budget = existing_budget[0].actual_total
-	# 	else:
-	# 		existing_budget = 0
-	# 	if existing_budget_release + self.actual_total > existing_budget:
-	# 		frappe.msgprint(
-	# 			_(
-	# 				"Total Budget Release amount of BTN {0} for {1} '{2}' exceeds the total budget amount of BTN {3} for fiscal year {4}"
-	# 			).format(
-	# 				existing_budget_release + self.actual_total,
-	# 				self.budget_against,
-	# 				budget_against,
-	# 				existing_budget,
-	# 				self.fiscal_year
-	# 			), raise_exception=True
-	# 		)
-	# def validate_against_budget_proposal(self):
-	# 	if any(d.monthly_release for d in self.accounts):
-	# 		return
-	# 	budget_against_field = frappe.scrub(self.budget_against)
-	# 	budget_against = self.get(budget_against_field)
-
-	# 	accounts = [d.account for d in self.accounts] or []
-	# 	existing_budget = frappe.db.sql(
-	# 		"""
-	# 		select sum(actual_total) as actual_total
-	# 			from `tabBudget` b
-	# 		where
-	# 			b.docstatus < 2 and b.company = %s and %s=%s and
-	# 			b.fiscal_year=%s and b.name != %s """
-	# 		% ("%s", budget_against_field, "%s", "%s", "%s"),
-	# 		(self.company, budget_against, self.fiscal_year, self.name),
-	# 		as_dict=1)
-	# 	existing_budget_release = frappe.db.sql(
-	# 		"""
-	# 		select sum(ifnull(actual_total,0)) as actual_total
-	# 			from `tabBudget Release` b
-	# 		where
-	# 			b.docstatus = 1 and b.company = %s and %s=%s and
-	# 			b.fiscal_year=%s and b.name != %s"""
-	# 		% ("%s", budget_against_field, "%s", "%s", "%s"),
-	# 		(self.company, budget_against, self.fiscal_year, self.name),
-	# 		as_dict=1)
-	# 	if len(existing_budget_release) > 0:
-	# 		existing_budget_release = existing_budget_release[0].actual_total
-	# 	if not existing_budget_release:
-	# 		existing_budget_release = 0
-	# 	if len(existing_budget) > 0:
-	# 		existing_budget = existing_budget[0].actual_total
-	# 	else:
-	# 		existing_budget = 0
-	# 	if existing_budget_release + self.actual_total > existing_budget and self.actual_total > existing_budget:
-	# 		frappe.msgprint(
-	# 			_(
-	# 				"Total Budget Release amount of BTN {0} for {1} '{2}' exceeds the total budget amount of BTN {3} for fiscal year {4}"
-	# 			).format(
-	# 				existing_budget_release + self.actual_total,
-	# 				self.budget_against,
-	# 				budget_against,
-	# 				existing_budget,
-	# 				self.fiscal_year
-	# 			), raise_exception=True
-	# 		)
+			if existing_entry:
+				frappe.msgprint(_("Budget Release Entry already exists for Account {0}").format(item.account))
+				continue
+			
+			# Create new Budget Release Entry
+			bre = frappe.new_doc("Budget Release Entry")
+			bre.budget_release = self.name
+			bre.budget_id = self.budget_id
+			bre.fiscal_year = self.fiscal_year
+			bre.month = self.month
+			bre.posting_date = self.posting_date
+			bre.company = self.company
+			bre.cost_center = self.cost_center
+			bre.branch = self.branch
+			
+			# Account details
+			bre.account = item.account
+			# bre.account_name = item.account_name
+			# bre.account_number = item.account_number
+			bre.broad_head = item.broad_head
+			
+			# Budget dimensions
+			bre.budget_activity = item.budget_activity
+			# bre.budget_activity_name = item.budget_activity_name
+			bre.budget_sub_activity = item.budget_sub_activity
+			# bre.budget_sub_activity_name = item.budget_sub_activity_name
+			bre.source_of_fund = item.source_of_fund
+			# bre.source_of_fund_name = item.source_of_fund_name
+			
+			# Amounts
+			bre.approved_budget = flt(item.approved_budget)
+			bre.released_budget = flt(item.released_budget)
+			# bre.supplementary_budget = flt(item.supplementary_budget)
+			# bre.budget_received = flt(item.budget_received)
+			# bre.budget_sent = flt(item.budget_sent)
+			# bre.budget_amount = flt(item.budget_amount)
+			# bre.current_balance = flt(item.current_balance) if hasattr(item, 'current_balance') else 0
+			# bre.budget_balance = flt(item.budget_balance) if hasattr(item, 'budget_balance') else 0
+			
+			# # Reference to Journal Entry
+			# bre.journal_entry = self.jv
+			
+			bre.flags.ignore_permissions = 1
+			bre.insert()
+			bre.submit()
+			
+			created_entries.append(bre.name)
+		
+		# if created_entries:
+		# 	frappe.msgprint(_("{0} Budget Release Entry/Entries created successfully: {1}").format(
+		# 		len(created_entries), ", ".join(created_entries)
+		# 	))		
  
 	def validate_against_budget_proposal(self):
 	
@@ -321,7 +361,8 @@ class BudgetRelease(Document):
 			)
 
 			total_released_for_account = flt(total_released_for_account[0].total_released) if total_released_for_account else 0
-			new_total_release = total_released_for_account + released_budget
+			# new_total_release = total_released_for_account + released_budget
+			new_total_release = released_budget
 			if new_total_release > approved_budget:
 				frappe.throw(
 					_(
@@ -432,6 +473,9 @@ class BudgetRelease(Document):
 			total_supplementary += flt(item.supplementary_budget)
 			released_budget += flt(item.released_budget)
 
+			if flt(item.released_budget, 0) > flt(item.approved_budget/ 12, 0) :
+				frappe.throw("Monthly released amount cannot be greater than approved budget by 12")
+
 		last_release = frappe.db.sql("""
 			SELECT current_balance, budget_balance
 			FROM `tabBudget Release`
@@ -445,86 +489,13 @@ class BudgetRelease(Document):
 			self.budget_balance = flt(approved_budget) - flt(released_budget)
 		else:
 			last_budget_balance = flt(last_release[0].get("budget_balance") or 0.0)
-			self.current_balance = last_budget_balance + flt(item.supplementary_budget) + flt(item.budget_received) - flt(item.budget_sent)
-			self.budget_balance = last_budget_balance - flt(released_budget)
+			self.current_balance = last_budget_balance + flt(approved_budget) + flt(item.supplementary_budget) + flt(item.budget_received) - flt(item.budget_sent)
+			self.budget_balance = last_budget_balance + flt(approved_budget) - flt(released_budget)
 
 		self.approved_budget = approved_budget
 		self.actual_total = total_actual
 		self.supp_total = total_supplementary
 		self.released_budget = released_budget
-
-
-	# def calculate_total_monthly(self):
-	# 	if not self.accounts:
-	# 		return
-
-	# 	cost_center = self.cost_center
-	# 	approved_budget = 0.0
-	# 	total_actual = 0.0
-	# 	total_supplementary = 0.0
-	# 	released_budget = 0.0
-
-	# 	for item in self.accounts:
-	# 		approved_budget += flt(item.approved_budget)
-	# 		total_actual += flt(item.budget_amount)
-	# 		total_supplementary += flt(item.supplementary_budget)
-	# 		released_budget += flt(item.released_budget)
-	# 		last_release = frappe.db.sql("""
-	# 			SELECT b.budget_balance, b.cost_center
-	# 			FROM `tabBudget Release Account` ba
-	# 			JOIN `tabBudget Release` b ON b.name = ba.parent
-	# 			WHERE b.docstatus = 1
-	# 			AND b.cost_center = %s
-	# 			AND ba.parent_account = %s
-	# 			AND ba.account = %s
-	# 			AND ba.budget_activity = %s
-	# 			AND ba.budget_sub_activity = %s
-	# 			AND ba.source_of_fund = %s
-	# 			ORDER BY b.posting_date DESC, b.creation DESC
-	# 			LIMIT 1
-	# 		""", (
-	# 			cost_center,
-	# 			item.parent_account,
-	# 			item.account,
-	# 			item.budget_activity,
-	# 			item.budget_sub_activity,
-	# 			item.source_of_fund
-	# 		), as_dict=True)
-
-	# 		if not last_release:
-	# 			item.current_balance = flt(item.approved_budget)
-	# 			item.budget_balance = flt(item.approved_budget) - flt(item.released_budget)
-	# 		else:
-	# 			last_budget_balance = flt(last_release[0].get("budget_balance") or 0.0)
-	# 			item.current_balance = last_budget_balance
-	# 			item.budget_balance = last_budget_balance - flt(item.released_budget)
-
-	# 		if flt(item.released_budget) > flt(item.current_balance):
-	# 			excess = flt(item.released_budget) - flt(item.current_balance)
-	# 			frappe.throw(_(
-	# 				"Released budget for Account {0}, Budget Activity {1}, Budget Sub Activity {2}, "
-	# 				"Source of Fund {3} remaining budget of Nu. {4} and exceeds by Nu. {5}"
-	# 			).format(
-	# 				item.account,
-	# 				item.budget_activity,
-	# 				item.budget_sub_activity,
-	# 				item.source_of_fund,
-	# 				flt(item.current_balance),
-	# 				excess
-	# 			))
-	# 	self.approved_budget = approved_budget
-	# 	self.actual_total = total_actual
-	# 	self.supp_total = total_supplementary
-	# 	self.released_budget = released_budget
-	# 	self.budget_balance = sum([flt(d.budget_balance) for d in self.accounts])
-	# 	prev_release = frappe.db.exists("Budget Release", {
-	# 		"cost_center": self.cost_center,
-	# 		"docstatus": 1
-	# 	})
-	# 	if not prev_release:
-	# 		self.current_balance = flt(self.approved_budget)
-	# 	else:
-	# 		self.current_balance = sum([flt(d.current_balance) for d in self.accounts])
  
 	def calculate_total_monthly(self):
 		from frappe.utils import flt
@@ -614,40 +585,118 @@ class BudgetRelease(Document):
 
 
 
+	# @frappe.whitelist()
+	# def get_accounts(self):
+	# 	condition = " and a.budget_type = '{}'".format(self.budget_type) if self.budget_type else ""
+	# 	entries = frappe.db.sql("""select parent_account, a.name as account, a.budget_type, account_number
+	# 						from tabAccount a
+	# 						where a.is_group = 0
+	# 						and (a.freeze_account is null or a.freeze_account != 'Yes')
+	# 						and (a.is_centralized_budget = 0 or (a.is_centralized_budget =1 and a.cost_center='{cost_center}'))
+	# 						and NOT EXISTS( select 1
+	# 							from `tabBudget` b 
+	# 							inner join `tabBudget Account` i
+	# 							on b.name = i.parent
+	# 							where  b.docstatus != 2
+	# 							and i.account = a.name
+	# 							and b.cost_center = '{cost_center}'
+	# 							and b.fiscal_year = '{fiscal_year}'
+	# 							and b.name != '{name}'
+	# 						)
+	# 						and EXISTS(select 1 
+	# 											from `tabBudget Settings Account Types` s
+	# 											where s.parent = 'Budget Settings'
+	# 											and s.account_type = a.account_type)
+	# 						{condition}
+	# 					""".format(fiscal_year =self.fiscal_year, cost_center=self.cost_center, name=self.name, condition = condition), as_dict=True)
+	# 	self.set('accounts', [])
+	# 	p_account = ""
+	# 	for d in entries:
+	# 		d.initial_budget = 0
+	# 		if d.parent_account == p_account:
+	# 			d.parent_account = ""
+	# 		else:
+	# 			p_account = d.parent_account
+	# 		row = self.append('accounts', {})
+	# 		row.update(d)
+
 	@frappe.whitelist()
 	def get_accounts(self):
+		"""Fetch account data from Budget where fiscal_year and cost_center match"""
 		condition = " and a.budget_type = '{}'".format(self.budget_type) if self.budget_type else ""
-		entries = frappe.db.sql("""select parent_account, a.name as account, a.budget_type, account_number
-							from tabAccount a
-							where a.is_group = 0
-							and (a.freeze_account is null or a.freeze_account != 'Yes')
-							and (a.is_centralized_budget = 0 or (a.is_centralized_budget =1 and a.cost_center='{cost_center}'))
-							and NOT EXISTS( select 1
-								from `tabBudget` b 
-								inner join `tabBudget Account` i
-								on b.name = i.parent
-								where  b.docstatus != 2
-								and i.account = a.name
-								and b.cost_center = '{cost_center}'
-								and b.fiscal_year = '{fiscal_year}'
-								and b.name != '{name}'
-							)
-							and EXISTS(select 1 
-												from `tabBudget Settings Account Types` s
-												where s.parent = 'Budget Settings'
-												and s.account_type = a.account_type)
-							{condition}
-						""".format(fiscal_year =self.fiscal_year, cost_center=self.cost_center, name=self.name, condition = condition), as_dict=True)
+		
+		entries = frappe.db.sql("""
+			select 
+				a.parent_account as broad_head,
+				a.name as account,
+				a.parent_account,
+				a.budget_type,
+				a.account_number,
+				ba.budget_amount as approved_budget,
+				ba.released_budget,
+				ba.budget_activity,
+				ba.budget_sub_activity,
+				ba.source_of_fund,
+				ba.budget_activity_name,
+				ba.budget_sub_activity_name,
+				ba.source_of_fund_name,
+				ba.account_name,
+				b.cost_center,
+				b.name as budget_id,
+				b.fiscal_year
+			from `tabAccount` a
+			inner join `tabBudget Account` ba on ba.account = a.name
+			inner join `tabBudget` b on b.name = ba.parent
+			where 
+				a.is_group = 0
+				and (a.freeze_account is null or a.freeze_account != 'Yes')
+				and b.docstatus = 1  -- Submitted budgets only
+				and b.fiscal_year = %(fiscal_year)s
+				and b.cost_center = %(cost_center)s
+				and (a.is_centralized_budget = 0 or (a.is_centralized_budget = 1 and a.cost_center = %(cost_center)s))
+				and EXISTS(select 1 
+					from `tabBudget Settings Account Types` s
+					where s.parent = 'Budget Settings'
+					and s.account_type = a.account_type)
+				{condition}
+			GROUP BY a.name, ba.budget_activity, ba.budget_sub_activity, ba.source_of_fund
+		""".format(condition=condition), {
+			"fiscal_year": self.fiscal_year,
+			"cost_center": self.cost_center
+		}, as_dict=True)
+		
 		self.set('accounts', [])
+		
+		if not entries:
+			frappe.msgprint(_("No accounts found with budget for Fiscal Year {0} and Cost Center {1}").format(
+				self.fiscal_year, self.cost_center
+			), indicator="orange")
+			return
+		
 		p_account = ""
 		for d in entries:
-			d.initial_budget = 0
+			# Set all required fields
+			d.broad_head = d.get("broad_head")  # Already set from parent_account
+			d.approved_budget = flt(d.get("approved_budget") or 0)
+			d.released_budget = flt(d.get("released_budget") or 0)
+			d.budget_amount = flt(d.get("approved_budget") or 0)
+			d.initial_budget = flt(d.get("approved_budget") or 0)
+			d.supplementary_budget = 0
+			d.budget_received = 0
+			d.budget_sent = 0
+			d.current_balance = flt(d.get("approved_budget") or 0)
+			d.budget_balance = flt(d.get("approved_budget") or 0) - flt(d.get("released_budget") or 0)
+			
+			# For display purposes
 			if d.parent_account == p_account:
 				d.parent_account = ""
 			else:
 				p_account = d.parent_account
+				
 			row = self.append('accounts', {})
 			row.update(d)
+		
+		frappe.msgprint(_("{0} account(s) loaded from budget").format(len(entries)), indicator="green")
 	
 def delete_committed_consumed_budget(reference=None, reference_no=None):
 	if reference and reference_no:

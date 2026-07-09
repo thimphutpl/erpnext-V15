@@ -22,6 +22,13 @@ frappe.ui.form.on("Cost Center", {
 				}
 			}
 		});
+		frm.set_query("head_quarter_cost_center", function() {
+			return {
+				filters: {
+					company: frm.doc.company
+				}
+			}
+		});
 	},
 	refresh: function (frm) {
 		if (!frm.is_new()) {

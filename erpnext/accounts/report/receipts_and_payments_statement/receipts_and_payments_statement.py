@@ -1,101 +1,211 @@
-# Copyright (c) 2024, Frappe Technologies Pvt. Ltd. and contributors
+# Copyright (c) 2026, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
-from frappe import _
 import frappe
-from erpnext.accounts.report.financial_statements import filter_accounts
-
-value_fields = ("opening_debit", "opening_credit", "debit", "credit", "mcredit", "mdebit", "closing_debit", "closing_credit")
+from frappe.utils import getdate, add_years
 
 def execute(filters=None):
-	return _execute(filters)
-
-def _execute(filters=None):
 	if not filters:
 		filters = {}
-	validate_filters(filters)
-	data    = get_data(filters)
-	columns = get_columns()
-	return columns, data
-
-def validate_filters(filters):
-	pass
-
-def get_data(filters):
-	accounts = frappe.db.sql(""" select name, parent_account, root_type, report_type, lft, rgt
-						  from `tabAccount` where company=%s order by name asc """, filters.company, as_dict=True)
-	if not accounts:
-		return None
-	
-	accounts, accounts_by_name, parent_children_map= filter_accounts(accounts)
-	min_lft, max_rgt = frappe.db.sql("""select min(lft), max(rgt) from 	`tabAccount` where company=%s""", (filters.company))[0]
-
-	# frappe.throw(str(accounts))
-	gl_entries = get_gl_entries(filters)
-	return gl_entries
-
-def get_conditions(filters):
-	conditions = []
-
-	# if filters.get("cost_center"):
-	# 	# filters.cost_center = get_cost_centers_with_children(filters.cost_center)
-	# 	conditions.append("cost_center in %(cost_center)s")
-
-	# return "and {}".format(" and ".join(conditions)) if conditions else ""
-
-	if filters.get("cost_center"):
-		conditions.append("cost_center = %(cost_center)s")
-
-	return " AND " + " AND ".join(conditions) if conditions else ""
-
-# def get_gl_entries(filters):
-# 	gl_entries = frappe.db.sql(
-# 		"""
-# 		select
-# 			name as gl_entry, posting_date, account, party_type, party,
-# 			voucher_type, voucher_subtype, voucher_no,
-# 			cost_center, project,
-# 			against_voucher_type, against_voucher, account_currency,
-# 			against, is_opening, creation, credit, debit
-# 		from `tabGL Entry`
-# 		where is_cancelled = 0 {get_conditions(filters)}
-# 	""",
-# 		filters,
-# 		as_dict=1,
-# 	)
-# 	return gl_entries
-
-def get_gl_entries(filters):
-	conditions = get_conditions(filters)
-
-	query = """
-		select
-			name as gl_entry, posting_date, account, party_type, party,
-			voucher_type, voucher_subtype, voucher_no,
-			cost_center, project,
-			against_voucher_type, against_voucher, account_currency,
-			against, is_opening, creation, credit, debit
-		from `tabGL Entry`
-		where is_cancelled = 0 {conditions}
-	""".format(conditions=conditions)
-
-	return frappe.db.sql(query, filters, as_dict=1)
-
-
-
-def get_columns():
 	columns = [
-		{"label": _("Posting Date"), "fieldname": "posting_date", "fieldtype": "Date", "width": 120},
-		{"label": _("Account"), "fieldname": "account", "fieldtype": "Link", "options": "Account", "width": 180},
-		{"label": _("Cost Center"), "fieldname": "cost_center", "width": 180},
-		{"label": _("Voucher Type"), "fieldname": "voucher_type", "width": 120},
-		{"label": _("Voucher No"), "fieldname": "voucher_no", "fieldtype": "Dynamic Link", "options": "voucher_type", "width": 180},
-		{"label": _("Against Account"), "fieldname": "against", "width": 150},
-		{"label": _("Debit Amount"), "fieldname": "debit", "width": 150},
-		{"label": _("Credit Amount"), "fieldname": "credit", "width": 150},
-		{"label": _("Party Type"), "fieldname": "party_type", "width": 100},
-		{"label": _("Party"), "fieldname": "party", "width": 150},
+		{"label": "Posting Date", "fieldname": "posting_date", "fieldtype": "Date", "width": 150},
+		{"label": "Account", "fieldname": "account", "fieldtype": "Link", "options": "Account", "width": 200},
+		{"label": "Cost Center", "fieldname": "cost_center", "fieldtype": "Link", "options": "Cost Center", "width": 150},
+		{"label": "Monthly Receipts Amount", "fieldname": "receipt_amount", "fieldtype": "Currency", "width": 150},
+		{"label": "Annual Receipts Amount", "fieldname": "annual_receipt_amount", "fieldtype": "Currency", "width": 180},
+		{"label": "Monthly Payments Amount", "fieldname": "payment_amount", "fieldtype": "Currency", "width": 150},
+		{"label": "Annual Payments Amount", "fieldname": "annual_payment_amount", "fieldtype": "Currency", "width": 180},
+		{"label": "Total", "fieldname": "total_amount", "fieldtype": "Currency", "width": 150},
+		{"label": "Company", "fieldname": "company", "fieldtype": "Link", "options": "Company", "width": 150},
+		{"label": "Fiscal Year", "fieldname": "fiscal_year", "fieldtype": "Link", "options": "Fiscal Year", "width": 150}
 	]
+	
+	# Build conditions
+	conditions = []
+	values = []
 
-	return columns
+	if filters.get("from_date"):
+		conditions.append("je.posting_date >= %s")
+		values.append(filters.get("from_date"))
+		
+		# Calculate annual period based on from_date
+		annual_start_date = getdate(filters.get("from_date"))
+		annual_end_date = add_years(annual_start_date, 1)
+	else:
+		annual_start_date = None
+		annual_end_date = None
 
+	if filters.get("to_date"):
+		conditions.append("je.posting_date <= %s")
+		values.append(filters.get("to_date"))
+
+	if filters.get("company"):
+		conditions.append("je.company = %s")
+		values.append(filters.get("company"))
+
+	if filters.get("fiscal_year"):
+		conditions.append("je.fiscal_year = %s")
+		values.append(filters.get("fiscal_year"))
+		
+		# Get fiscal year dates for annual calculation
+		fiscal_year = frappe.get_value("Fiscal Year", filters.get("fiscal_year"), 
+			["year_start_date", "year_end_date"], as_dict=1)
+		if fiscal_year:
+			annual_start_date = fiscal_year.year_start_date
+			annual_end_date = fiscal_year.year_end_date
+
+	if filters.get("account"):
+		conditions.append("je.account = %s")
+		values.append(filters.get("account"))
+
+	# Strong filter for non-zero debit amounts
+	conditions.append("COALESCE(je.debit_in_account_currency, 0) > 0")
+	
+	where_clause = " AND ".join(conditions) if conditions else "1=1"
+	
+	# Main query for period data
+	query = f"""
+		SELECT
+			je.company,
+			je.fiscal_year,
+			je.cost_center,
+			je.account,
+			je.posting_date,
+			SUM(CASE 
+				WHEN acc.account_type LIKE 'Receivable%%' 
+				THEN COALESCE(je.credit_in_account_currency, 0)
+				ELSE 0 
+			END) as receipt_amount,
+			SUM(CASE 
+				WHEN acc.account_type LIKE 'Payable%%' 
+				THEN COALESCE(je.debit_in_account_currency, 0)
+				ELSE 0 
+			END) as payment_amount
+		FROM
+			`tabGL Entry` je
+		LEFT JOIN
+			`tabAccount` acc
+				ON acc.name = je.account
+		WHERE {where_clause}
+		GROUP BY
+			je.company,
+			je.fiscal_year,
+			je.account
+		ORDER BY
+			je.posting_date DESC
+	"""
+	
+	data = frappe.db.sql(query, tuple(values), as_dict=True)
+	
+	# Calculate annual totals
+	annual_totals = {}
+	for row in data:
+		key = (row.get("company"), row.get("account"), row.get("cost_center"))
+		
+		if key not in annual_totals:
+			annual_totals[key] = {
+				"annual_receipt_amount": 0,
+				"annual_payment_amount": 0
+			}
+		
+		annual_totals[key]["annual_receipt_amount"] += row.get("receipt_amount", 0)
+		annual_totals[key]["annual_payment_amount"] += row.get("payment_amount", 0)
+	
+	# Alternative: Query for annual totals directly from database
+	if annual_start_date and annual_end_date:
+		annual_conditions = []
+		annual_values = []
+		
+		if filters.get("company"):
+			annual_conditions.append("je.company = %s")
+			annual_values.append(filters.get("company"))
+		
+		if filters.get("account"):
+			annual_conditions.append("je.account = %s")
+			annual_values.append(filters.get("account"))
+		
+		annual_conditions.append("je.posting_date >= %s")
+		annual_values.append(annual_start_date)
+		annual_conditions.append("je.posting_date <= %s")
+		annual_values.append(annual_end_date)
+		annual_conditions.append("COALESCE(je.debit_in_account_currency, 0) > 0")
+		
+		annual_where = " AND ".join(annual_conditions)
+		
+		annual_query = f"""
+			SELECT
+				je.company,
+				je.account,
+				je.cost_center,
+				SUM(CASE 
+					WHEN acc.account_type LIKE 'Receivable%%' 
+					THEN COALESCE(je.credit_in_account_currency, 0)
+					ELSE 0 
+				END) as annual_receipt_amount,
+				SUM(CASE 
+					WHEN acc.account_type LIKE 'Payable%%' 
+					THEN COALESCE(je.debit_in_account_currency, 0)
+					ELSE 0 
+				END) as annual_payment_amount
+			FROM
+				`tabGL Entry` je
+			LEFT JOIN
+				`tabAccount` acc
+					ON acc.name = je.account
+			WHERE {annual_where}
+			GROUP BY
+				je.company,
+				je.account,
+				je.cost_center
+		"""
+		
+		annual_data = frappe.db.sql(annual_query, tuple(annual_values), as_dict=True)
+		
+		# Create a lookup dictionary for annual totals
+		annual_lookup = {}
+		for annual_row in annual_data:
+			key = (annual_row.get("company"), annual_row.get("account"), annual_row.get("cost_center"))
+			annual_lookup[key] = annual_row
+	
+	# Process and filter data
+	result = []
+	for row in data:
+		# Skip if both receipt and payment amounts are zero
+		if row.get("receipt_amount") == 0 and row.get("payment_amount") == 0:
+			continue
+		
+		# Get annual amounts
+		key = (row.get("company"), row.get("account"), row.get("cost_center"))
+		
+		if annual_start_date and annual_end_date and annual_lookup:
+			annual_row = annual_lookup.get(key, {})
+			row["annual_receipt_amount"] = annual_row.get("annual_receipt_amount", 0)
+			row["annual_payment_amount"] = annual_row.get("annual_payment_amount", 0)
+		else:
+			# Use calculated annual totals from current data
+			annual_total = annual_totals.get(key, {})
+			row["annual_receipt_amount"] = annual_total.get("annual_receipt_amount", 0)
+			row["annual_payment_amount"] = annual_total.get("annual_payment_amount", 0)
+		
+		row["total_amount"] = (row.get("receipt_amount") or 0) - (row.get("payment_amount") or 0)
+		result.append(row)
+	
+	# Add summary row for totals
+	if result:
+		summary_row = {
+			"account": "TOTAL",
+			"receipt_amount": sum(row.get("receipt_amount", 0) for row in result),
+			"payment_amount": sum(row.get("payment_amount", 0) for row in result),
+			"annual_receipt_amount": sum(row.get("annual_receipt_amount", 0) for row in result),
+			"annual_payment_amount": sum(row.get("annual_payment_amount", 0) for row in result),
+			"total_amount": sum(row.get("total_amount", 0) for row in result),
+			"idx": len(result) + 1
+		}
+		result.append(summary_row)
+	
+	# Add index numbers
+	for idx, row in enumerate(result, start=1):
+		if row.get("account") != "TOTAL":
+			row["idx"] = idx
+
+	return columns, result

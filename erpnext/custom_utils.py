@@ -251,30 +251,153 @@ def check_budget_available_for_reappropiation(cost_center, budget_account, trans
 	else:
 		frappe.throw("There is no budget allocated in <b>" + str(budget_account) + "</b>")
 
-##
-# Check budget availability in the budget head
-##
-def check_budget_available(cost_center, budget_account, transaction_date, amount, project = None):
-	consumed=committed= None
+# ##
+# # Check budget availability in the budget head
+# ##
+# def check_budget_available(cost_center, budget_account, transaction_date, amount, project = None):
+# 	consumed=committed= None
+# 	if project:
+# 		budget_amount = frappe.db.sql("select b.action_if_annual_budget_exceeded as action, \
+# 						ba.budget_check, ba.budget_amount, b.deviation \
+# 						from `tabBudget` b, `tabBudget Cost Center` ba \
+# 						where b.docstatus = 1 \
+# 						and ba.parent = b.name and ba.cost_center= '{}' \
+# 						and b.fiscal_year = '{}' \
+# 						and b.project = '{}' ".format(cost_center, str(transaction_date)[0:4], project), as_dict=True)
+# 		if budget_amount:
+# 			committed = frappe.db.sql("select SUM(cb.amount) as total from `tabCommitted Budget` cb where cb.cost_center=%s and cb.project=%s and cb.reference_date between %s and %s", (cost_center, project, str(transaction_date)[0:4] + "-01-01", str(transaction_date)[0:4] + "-12-31"), as_dict=True)
+# 			consumed = frappe.db.sql("select SUM(cb.amount) as total from `tabConsumed Budget` cb where cb.cost_center=%s and cb.project=%s and cb.reference_date between %s and %s", (cost_center, project, str(transaction_date)[0:4] + "-01-01", str(transaction_date)[0:4] + "-12-31"), as_dict=True)
+# 		msg = " Project: <b> " + str(project) +"</b>, for Cost Center :  <b>" + str(cost_center) + "</b> level for <b>" + str(transaction_date)[0:4] + "</b>"
+# 	else:
+# 		bud_acc_dtl = frappe.get_doc("Account", budget_account)
+# 		if bud_acc_dtl.has_linked_budget == 1:
+# 			budget_account = bud_acc_dtl.linked_budget
+# 		#Check for Ignore Budget
+# 		if bud_acc_dtl.budget_check:
+# 			return
+# 		#Check if Budget Account is Centralized
+# 		if bud_acc_dtl.is_centralized_budget:
+# 			cost_center = bud_acc_dtl.cost_center
+# 		else:
+# 			cc_doc = frappe.get_doc("Cost Center", cost_center)
+# 			if cc_doc.use_budget_from_parent:
+# 				cost_center = cc_doc.parent_cost_center
+		
+# 		budget_amount = frappe.db.sql("select b.action_if_annual_budget_exceeded as action, \
+# 						ba.budget_check, ba.budget_amount, b.deviation \
+# 						from `tabBudget` b, `tabBudget Account` ba \
+# 						where b.docstatus = 1 \
+# 						and ba.parent = b.name and ba.account= '{}' \
+# 						and b.fiscal_year = '{}' \
+# 						and b.cost_center = '{}' ".format(budget_account, str(transaction_date)[0:4], cost_center), as_dict=True)
+# 		if budget_amount:
+# 			committed = frappe.db.sql("select SUM(cb.amount) as total from `tabCommitted Budget` cb where cb.account=%s and cb.cost_center=%s and cb.reference_date between %s and %s", (budget_account, cost_center, str(transaction_date)[0:4] + "-01-01", str(transaction_date)[0:4] + "-12-31"), as_dict=True)
+# 			consumed = frappe.db.sql("select SUM(cb.amount) as total from `tabConsumed Budget` cb where cb.account=%s and cb.cost_center=%s and cb.reference_date between %s and %s", (budget_account, cost_center, str(transaction_date)[0:4] + "-01-01", str(transaction_date)[0:4] + "-12-31"), as_dict=True)
+# 		msg = "Account: <b>" + str(budget_account) + "</b> set at <b>" + str(cost_center) + "</b> level for <b>" + str(transaction_date)[0:4] + "</b>"
+
+# 	if not budget_amount:
+# 		frappe.throw("There is no budget allocated for " + str(msg))
+
+# 	ig_or_stop = budget_amount and budget_amount[0].action or None
+# 	ig_or_stop_gl = budget_amount and budget_amount[0].budget_check or None
+# 	if ig_or_stop == "Ignore" or ig_or_stop_gl == "Ignore":
+# 		return
+# 	else:
+# 		if consumed and committed:
+# 			if flt(consumed[0].total) > flt(committed[0].total):
+# 				committed = consumed
+# 			total_consumed_amount = flt(committed[0].total) + flt(amount)
+# 			total_budget_with_deviation = 0.00
+# 			if budget_amount[0].deviation > 0:
+# 				total_budget_with_deviation = flt(budget_amount[0].budget_amount) + flt(budget_amount[0].deviation * budget_amount[0].budget_amount)/100
+# 			else:
+# 				total_budget_with_deviation = budget_amount[0].budget_amount
+# 			if flt(total_consumed_amount) > flt(total_budget_with_deviation):
+# 				balance_budget = flt(budget_amount[0].budget_amount) - flt(committed[0].total)
+# 				insufficient_amount = flt(amount) - flt(balance_budget)
+# 				frappe.throw("Budget of Nu. {} insufficient in <b> {} </b>. Total Budget is Nu. {}, total Consumed and Committed is Nu. {}. Balance budget is Nu. {}. ".format(insufficient_amount, str(msg), flt(budget_amount[0].budget_amount), flt(committed[0].total), balance_budget))
+# 		else:
+# 			frappe.throw("There is no budget allocated for " + str(msg))
+
+def deposit_work_check(args):
+	doc= frappe.db.sql("""
+					SELECT 
+						IFNULL(SUM(credit), 0) - IFNULL(SUM(debit), 0) AS total
+					FROM `tabGL Entry` 
+					WHERE account=%s
+					AND cost_center=%s
+					""",(args.get("account"),args.get("cost_center")), as_dict=1)
+
+	# debit = doc[0].get("debit")
+	# credit = doc[0].get("credit")
+	total = doc[0].get("total")
+	# frappe.throw(str(total))
+	if total < args.get("debit"):
+		frappe.throw(
+            f"Insufficient Balance in Account: {args.get('account')}<br>"
+            f"Available Balance: {frappe.utils.fmt_money(total)}"
+        )
+
+def check_budget_available(cost_center, budget_account, transaction_date, amount, project=None, budget_activity=None, budget_sub_activity=None, source_of_fund=None):
+	consumed=committed=None
+	
+	# Build additional conditions for budget_activity, budget_sub_activity, and source_of_fund
+	extra_conditions = ""
+	extra_params = []
+	
+	if budget_activity:
+		extra_conditions += " and cb.budget_activity = %s"
+		extra_params.append(budget_activity)
+	
+	if budget_sub_activity:
+		extra_conditions += " and cb.budget_sub_activity = %s"
+		extra_params.append(budget_sub_activity)
+	
+	if source_of_fund:
+		extra_conditions += " and cb.source_of_fund = %s"
+		extra_params.append(source_of_fund)
+	
 	if project:
-		budget_amount = frappe.db.sql("select b.action_if_annual_budget_exceeded as action, \
-						ba.budget_check, ba.budget_amount, b.deviation \
-						from `tabBudget` b, `tabBudget Cost Center` ba \
-						where b.docstatus = 1 \
-						and ba.parent = b.name and ba.cost_center= '{}' \
-						and b.fiscal_year = '{}' \
-						and b.project = '{}' ".format(cost_center, str(transaction_date)[0:4], project), as_dict=True)
+		budget_amount = frappe.db.sql("""
+			select b.action_if_annual_budget_exceeded as action, 
+				ba.budget_check, ba.budget_amount, b.deviation 
+			from `tabBudget` b, `tabBudget Cost Center` ba 
+			where b.docstatus = 1 
+			and ba.parent = b.name and ba.cost_center = %s 
+			and b.fiscal_year = %s 
+			and b.project = %s 
+		""", (cost_center, str(transaction_date)[0:4], project), as_dict=True)
+		
 		if budget_amount:
-			committed = frappe.db.sql("select SUM(cb.amount) as total from `tabCommitted Budget` cb where cb.cost_center=%s and cb.project=%s and cb.reference_date between %s and %s", (cost_center, project, str(transaction_date)[0:4] + "-01-01", str(transaction_date)[0:4] + "-12-31"), as_dict=True)
-			consumed = frappe.db.sql("select SUM(cb.amount) as total from `tabConsumed Budget` cb where cb.cost_center=%s and cb.project=%s and cb.reference_date between %s and %s", (cost_center, project, str(transaction_date)[0:4] + "-01-01", str(transaction_date)[0:4] + "-12-31"), as_dict=True)
-		msg = " Project: <b> " + str(project) +"</b>, for Cost Center :  <b>" + str(cost_center) + "</b> level for <b>" + str(transaction_date)[0:4] + "</b>"
+			# Build query with extra conditions
+			query = """
+				select SUM(cb.amount) as total 
+				from `tabCommitted Budget` cb 
+				where cb.cost_center = %s and cb.project = %s 
+				and cb.reference_date between %s and %s
+			""" + extra_conditions
+			
+			params = [cost_center, project, str(transaction_date)[0:4] + "-01-01", str(transaction_date)[0:4] + "-12-31"] + extra_params
+			committed = frappe.db.sql(query, params, as_dict=True)
+			
+			query_consumed = """
+				select SUM(cb.amount) as total 
+				from `tabConsumed Budget` cb 
+				where cb.cost_center = %s and cb.project = %s 
+				and cb.reference_date between %s and %s
+			""" + extra_conditions
+			
+			consumed = frappe.db.sql(query_consumed, params, as_dict=True)
+			
+		msg = " Project: <b> " + str(project) +"</b>, for Cost Center : <b>" + str(cost_center) + "</b> level for <b>" + str(transaction_date)[0:4] + "</b>"
+		
 	else:
 		bud_acc_dtl = frappe.get_doc("Account", budget_account)
-		if bud_acc_dtl.has_linked_budget == 1:
-			budget_account = bud_acc_dtl.linked_budget
-		#Check for Ignore Budget
-		if bud_acc_dtl.budget_check:
-			return
+		# if bud_acc_dtl.has_linked_budget == 1:
+		# 	budget_account = bud_acc_dtl.linked_budget
+		# #Check for Ignore Budget
+		# if bud_acc_dtl.budget_check:
+		# 	return
 		#Check if Budget Account is Centralized
 		if bud_acc_dtl.is_centralized_budget:
 			cost_center = bud_acc_dtl.cost_center
@@ -283,17 +406,49 @@ def check_budget_available(cost_center, budget_account, transaction_date, amount
 			if cc_doc.use_budget_from_parent:
 				cost_center = cc_doc.parent_cost_center
 		
-		budget_amount = frappe.db.sql("select b.action_if_annual_budget_exceeded as action, \
-						ba.budget_check, ba.budget_amount, b.deviation \
-						from `tabBudget` b, `tabBudget Account` ba \
-						where b.docstatus = 1 \
-						and ba.parent = b.name and ba.account= '{}' \
-						and b.fiscal_year = '{}' \
-						and b.cost_center = '{}' ".format(budget_account, str(transaction_date)[0:4], cost_center), as_dict=True)
+		budget_amount = frappe.db.sql("""
+			select b.action_if_annual_budget_exceeded as action, 
+				ba.budget_check, ba.budget_amount, b.deviation 
+			from `tabBudget` b, `tabBudget Account` ba 
+			where b.docstatus = 1 
+			and ba.parent = b.name and ba.account = %s 
+			and b.fiscal_year = %s 
+			and b.cost_center = %s 
+			and ba.budget_activity =%s
+			and ba.budget_sub_activity =%s
+			and  ba.source_of_fund =%s
+		""", (budget_account, str(transaction_date)[0:4], cost_center), as_dict=True)
+		
 		if budget_amount:
-			committed = frappe.db.sql("select SUM(cb.amount) as total from `tabCommitted Budget` cb where cb.account=%s and cb.cost_center=%s and cb.reference_date between %s and %s", (budget_account, cost_center, str(transaction_date)[0:4] + "-01-01", str(transaction_date)[0:4] + "-12-31"), as_dict=True)
-			consumed = frappe.db.sql("select SUM(cb.amount) as total from `tabConsumed Budget` cb where cb.account=%s and cb.cost_center=%s and cb.reference_date between %s and %s", (budget_account, cost_center, str(transaction_date)[0:4] + "-01-01", str(transaction_date)[0:4] + "-12-31"), as_dict=True)
+			# Build query with extra conditions
+			query = """
+				select SUM(cb.amount) as total 
+				from `tabCommitted Budget` cb 
+				where cb.account = %s and cb.cost_center = %s 
+				and cb.reference_date between %s and %s
+			""" + extra_conditions
+			
+			params = [budget_account, cost_center, str(transaction_date)[0:4] + "-01-01", str(transaction_date)[0:4] + "-12-31"] + extra_params
+			committed = frappe.db.sql(query, params, as_dict=True)
+			
+			query_consumed = """
+				select SUM(cb.amount) as total 
+				from `tabConsumed Budget` cb 
+				where cb.account = %s and cb.cost_center = %s 
+				and cb.reference_date between %s and %s
+			""" + extra_conditions
+			
+			consumed = frappe.db.sql(query_consumed, params, as_dict=True)
+			
 		msg = "Account: <b>" + str(budget_account) + "</b> set at <b>" + str(cost_center) + "</b> level for <b>" + str(transaction_date)[0:4] + "</b>"
+		
+		# Add extra info to message if provided
+		if budget_activity:
+			msg += " with Budget Activity: <b>" + str(budget_activity) + "</b>"
+		if budget_sub_activity:
+			msg += " and Sub Activity: <b>" + str(budget_sub_activity) + "</b>"
+		if source_of_fund:
+			msg += " and Source of Fund: <b>" + str(source_of_fund) + "</b>"
 
 	if not budget_amount:
 		frappe.throw("There is no budget allocated for " + str(msg))

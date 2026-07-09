@@ -8,8 +8,8 @@ frappe.provide("erpnext.journal_entry");
 
 frappe.ui.form.on("Journal Entry", {
 	setup: function (frm) {
-		// draw_tds_table(frm);
-		render_tds_table(frm);
+		draw_tds_table(frm);
+		// render_tds_table(frm);
 		frm.add_fetch("bank_account", "account", "account");
 		frm.ignore_doctypes_on_cancel_all = [
 			"Sales Invoice",
@@ -26,22 +26,11 @@ frappe.ui.form.on("Journal Entry", {
 		];
 
 
-		// filter naming base on entry type
-		frm.set_query("naming_series", function () {
-			var entry_type = in_list(["Journal Entry", "Opening Entry", "Depreciation Entry"], frm.doc.voucher_type) ?
-				"Journal Entry" : frm.doc.voucher_type;
-
-			return {
-				filters: {
-					"entry_type": entry_type,
-				}
-			}
-		});
 		frm.set_query("broad_head", "accounts", function(doc, cdt, cdn) {
             return {
                 filters: {
 					"company": frm.doc.company,
-                    is_group: 1
+					"is_group":1
                 }
             };
         });
@@ -50,6 +39,13 @@ frappe.ui.form.on("Journal Entry", {
                 filters: {
                     "company": frm.doc.company,
                     "is_group": 0,
+                }
+            };
+        });
+		frm.set_query("branch", function() {
+            return {
+                filters: {
+                    "company": frm.doc.company
                 }
             };
         });
@@ -67,25 +63,40 @@ frappe.ui.form.on("Journal Entry", {
 
 	},
 	onload: function (frm) {
-		// draw_tds_table(frm);
-		render_tds_table(frm);
+		draw_tds_table(frm);
+		// render_tds_table(frm);
 		create_custom_buttons(frm);
 	},
+	branch(frm) {
+
+         if (!frm.doc.branch) {
+
+            (frm.doc.accounts || []).forEach(row => {
+                row.cost_center = "";
+            });
+
+            frm.refresh_field('accounts');
+            return;
+        }
+		
+        frappe.db.get_value('Branch', frm.doc.branch, 'cost_center')
+            .then(r => {
+
+                if (r.message && r.message.cost_center) {
+
+                    let cost_center = r.message.cost_center;
+
+                    // update all child table rows
+                    (frm.doc.accounts || []).forEach(row => {
+                        row.cost_center = cost_center;
+                    });
+
+                    frm.refresh_field('accounts');
+                }
+            });
+    },
 	refresh: function (frm) {
-		if (frm.doc.customer && frm.doc.customer != "") {
-			frm.set_df_property("get_mobilisation_advance", "hidden", 0);
-			frm.set_df_property("mobilisation_advance", "hidden", 0);
-		} else {
-			frm.set_df_property("get_mobilisation_advance", "hidden", 1);
-			frm.set_df_property("mobilisation_advance", "hidden", 1);
-		}
-		if (frm.doc.is_running_bill) {
-			frm.set_df_property("advance_type", "hidden", 1);
-			frm.set_df_property("account", "hidden", 1);
-		} else {
-			frm.set_df_property("advance_type", "hidden", 0);
-			frm.set_df_property("account", "hidden", 0);
-		}
+
 		erpnext.toggle_naming_series();
 
 		frm.trigger("toggle_cheque_log");
@@ -167,76 +178,11 @@ frappe.ui.form.on("Journal Entry", {
 		}
 
 		erpnext.accounts.unreconcile_payment.add_unreconcile_btn(frm);
-		// draw_tds_table(frm);
-		render_tds_table(frm);
+		draw_tds_table(frm);
+		// render_tds_table(frm);
 		create_custom_buttons(frm);
 	},
-	customer: function (frm) {
-		if (frm.doc.customer && frm.doc.customer != "") {
-			// Customer has value - show fields
-			frm.set_df_property("get_mobilisation_advance", "hidden", 0);
-			frm.set_df_property("mobilisation_advance", "hidden", 0);
-		} else {
-			// Customer is empty - hide fields
-			frm.set_df_property("get_mobilisation_advance", "hidden", 1);
-			frm.set_df_property("mobilisation_advance", "hidden", 1);
 
-			// Clear the mobilisation_advance field when customer is cleared
-			frm.set_value("mobilisation_advance", null);
-		}
-	},
-	is_running_bill: function (frm) {
-		if (frm.doc.is_running_bill) {
-			frm.set_df_property("advance_type", "hidden", 1);
-			frm.set_df_property("account", "hidden", 1);
-		} else {
-			frm.set_df_property("advance_type", "hidden", 0);
-			frm.set_df_property("account", "hidden", 0);
-		}
-	},
-
-	get_mobilisation_advance: function (frm) {
-		// alert(frm.doc.is_running_bill)
-		frappe.call({
-			method: "erpnext.accounts.doctype.mobilisation_entry.mobilisation_entry.get_mobilisation_advance",
-			args: {
-				customer: frm.doc.customer,
-				// is_running_bill: is_running_bill,
-				branch: frm.doc.branch
-
-			},
-			callback: function (response) {
-				frm.clear_table('mobilisation_advance');
-				if (response.message) {
-					if (typeof response.message === "string") {
-						// Show server message
-						frappe.msgprint(response.message);
-
-
-					} else {
-						response.message.forEach(function (advance) {
-							let row = frm.add_child('mobilisation_advance');
-							row.reference = advance.reference;
-							row.account = advance.account;
-							row.advance_type = advance.advance_type;
-							row.advance_amount = advance.advance_amount;
-							row.balance_amount = advance.balance_amount;
-							row.posting_date = advance.posting_date;
-							// Add any other fields you have in child table
-						});
-
-					}
-					// Add each advance to child table
-
-
-					// Refresh child table
-					frm.refresh_field('mobilisation_advance');
-				}
-
-			}
-		});
-
-	},
 
 	toggle_cheque_log: (frm) => {
 		frappe.call({
@@ -338,56 +284,49 @@ frappe.ui.form.on("Journal Entry", {
 
 		erpnext.accounts.dimensions.update_dimension(frm, frm.doctype);
 	},
- 	account: function (frm) {
+ 	// account: function (frm) {
         
         
-        frappe.call({
-            method: "erpnext.accounts.doctype.journal_entry.journal_entry.company_base_account",
-            args: {
-                company: frm.doc.company,
-                is_group: 0
-            },
-            // callback: function(res) {
-            //     if (res.message && res.message.length > 0) {
-            //         frm.set_value("account", res.message.name);
-            //     }
-            // }
-        });
-    },
+    //     frappe.call({
+    //         method: "erpnext.accounts.doctype.journal_entry.journal_entry.company_base_account",
+    //         args: {
+    //             company: frm.doc.company,
+    //             is_group: 0
+    //         },
+    //         // callback: function(res) {
+    //         //     if (res.message && res.message.length > 0) {
+    //         //         frm.set_value("account", res.message.name);
+    //         //     }
+    //         // }
+    //     });
+    // },
 
 	voucher_type: function (frm) {
 		if (!frm.doc.company) return null;
+		if(!frm.doc.voucher_type){
+			frm.set_value("naming_series", "");
+		};
+		frappe.call({
+			method:"erpnext.accounts.doctype.journal_entry.journal_entry.get_voucher_type",
+			args: {
+				"voucher_type": frm.doc.voucher_type
+			},
+			callback: function (r) {
+				if (r.message) {
+		
+				
+					frm.set_value("naming_series", r.message);
+					
+				}else{
+					frm.set_value("naming_series", "");
+				}
 
-		// if (
-		// 	!(frm.doc.accounts || []).length ||
-		// 	((frm.doc.accounts || []).length === 1 && !frm.doc.accounts[0].account)
-		// ) {
-		// 	if (["Bank Entry", "Cash Entry"].includes(frm.doc.voucher_type)) {
-		// 		return frappe.call({
-		// 			type: "GET",
-		// 			method: "erpnext.accounts.doctype.journal_entry.journal_entry.get_default_bank_cash_account",
-		// 			args: {
-		// 				account_type:
-		// 					frm.doc.voucher_type == "Bank Entry"
-		// 						? "Bank"
-		// 						: frm.doc.voucher_type == "Cash Entry"
-		// 						? "Cash"
-		// 						: null,
-		// 				company: frm.doc.company,
-		// 			},
-		// 			callback: function (r) {
-		// 				if (r.message) {
-		// 					// If default company bank account not set
-		// 					if (!$.isEmptyObject(r.message)) {
-		// 						update_jv_details(frm.doc, [r.message]);
-		// 					}
-		// 				}
-		// 			},
-		// 		});
-		// 	}
-		// }
+				
+			}
+		})
+
+		
 	},
-
 	from_template: function (frm) {
 		if (frm.doc.from_template) {
 			frappe.db.get_doc("Journal Entry Template", frm.doc.from_template).then((doc) => {
@@ -405,373 +344,34 @@ frappe.ui.form.on("Journal Entry", {
 	},
 
 	apply_tds: function (frm) {
+		// $.each(frm.doc.accounts || [], function(i, row) {
+		// 	if(row.add_deduct_tax){
+		// 		frappe.model.set_value(row.doctype, row.name, "apply_tds", cint(frm.doc.apply_tds));
+		// 	}
+		// })
 		$.each(frm.doc.accounts || [], function (i, row) {
-			if (row.add_deduct_tax) {
-				frappe.model.set_value(row.doctype, row.name, "apply_tds", cint(frm.doc.apply_tds));
-			}
-		})
-
-		// draw_tds_table(frm);
-		render_tds_table(frm);
-
+			erpnext.journal_entry.set_apply_tds(frm, row.doctype, row.name);
+		});
+		draw_tds_table(frm);
 	},
 
 	tax_withholding_category: function (frm) {
+		// $.each(frm.doc.accounts || [], function(i, row) {
+		// 	if(row.add_deduct_tax){
+		// 		erpnext.journal_entry.set_tds_account(frm, row.doctype, row.name);
+		// 	}
+		// })
 		$.each(frm.doc.accounts || [], function (i, row) {
-			if (row.add_deduct_tax) {
-				erpnext.journal_entry.set_tds_account(frm, row.doctype, row.name);
-			}
+			erpnext.journal_entry.set_apply_tds(frm, row.doctype, row.name);
 		})
 	},
-	purchase_taxes_and_charges_template: function (frm) {
-		frm.trigger("fetch_taxes_from_template");
-	},
 
-	fetch_taxes_from_template: function (frm) {
-		let master_doctype = "";
-		let taxes_and_charges = "";
 
-		master_doctype = "Purchase Taxes and Charges Template";
-		taxes_and_charges = frm.doc.purchase_taxes_and_charges_template;
 
-		if (frm.doc.party_type == "Supplier") {
-			master_doctype = "Purchase Taxes and Charges Template";
-			taxes_and_charges = frm.doc.purchase_taxes_and_charges_template;
-		} else if (frm.doc.party_type == "Customer") {
-			master_doctype = "Sales Taxes and Charges Template";
-			taxes_and_charges = frm.doc.sales_taxes_and_charges_template;
-		}
 
-		if (!taxes_and_charges) {
-			return;
-		}
 
-		frappe.call({
-			method: "erpnext.controllers.accounts_controller.get_taxes_and_charges",
-			args: {
-				master_doctype: master_doctype,
-				master_name: taxes_and_charges,
-			},
-			callback: function (r) {
-				if (!r.exc && r.message) {
-					// set taxes table
-					if (r.message) {
-						for (let tax of r.message) {
-							if (tax.charge_type === "On Net Total") {
-								tax.charge_type = "On Paid Amount";
-							}
-							tax.cost_center = frm.doc.cost_center ?? '';
-							frm.add_child("taxes", tax);
-						}
-						frm.events.apply_taxes(frm);
-						frm.events.set_unallocated_amount(frm);
-					}
-				}
-			},
-		});
-	},
-	apply_taxes: function (frm) {
-		frm.events.initialize_taxes(frm);
-		frm.events.determine_exclusive_rate(frm);
-		frm.events.calculate_taxes(frm);
-	},
-
-	initialize_taxes: function (frm) {
-		$.each(frm.doc["taxes"] || [], function (i, tax) {
-			frm.events.validate_taxes_and_charges(tax);
-			frm.events.validate_inclusive_tax(tax);
-			tax.item_wise_tax_detail = {};
-			let tax_fields = [
-				"total",
-				"tax_fraction_for_current_item",
-				"grand_total_fraction_for_current_item",
-			];
-
-			if (cstr(tax.charge_type) != "Actual") {
-				tax_fields.push("tax_amount");
-			}
-
-			$.each(tax_fields, function (i, fieldname) {
-				tax[fieldname] = 0.0;
-			});
-
-			console.log(frm.doc.base_paid_amount)
-			var ded = frm.doc.references || [];
-			// var total_amount = 0.0;
-
-			// for(var i=0; i<ded.length; i++){
-			// 	if (ded[i].total_amount){
-			// 		total_amount += parseFloat(ded[i].total_amount);
-			// 	}
-			// }
-			// console.log(total_amount)
-			// frm.doc.paid_amount_after_tax = total_amount;
-			frm.doc.paid_amount_after_tax = frm.doc.base_paid_amount;
-		});
-	},
-
-	validate_taxes_and_charges: function (d) {
-		let msg = "";
-
-		if (d.account_head && !d.description) {
-			// set description from account head
-			d.description = d.account_head.split(" - ").slice(0, -1).join(" - ");
-		}
-
-		if (!d.charge_type && (d.row_id || d.rate || d.tax_amount)) {
-			msg = __("Please select Charge Type first");
-			d.row_id = "";
-			d.rate = d.tax_amount = 0.0;
-		} else if (
-			(d.charge_type == "Actual" ||
-				d.charge_type == "On Net Total" ||
-				d.charge_type == "On Paid Amount") &&
-			d.row_id
-		) {
-			msg = __(
-				"Can refer row only if the charge type is 'On Previous Row Amount' or 'Previous Row Total'"
-			);
-			d.row_id = "";
-		} else if (
-			(d.charge_type == "On Previous Row Amount" || d.charge_type == "On Previous Row Total") &&
-			d.row_id
-		) {
-			if (d.idx == 1) {
-				msg = __(
-					"Cannot select charge type as 'On Previous Row Amount' or 'On Previous Row Total' for first row"
-				);
-				d.charge_type = "";
-			} else if (!d.row_id) {
-				msg = __("Please specify a valid Row ID for row {0} in table {1}", [d.idx, __(d.doctype)]);
-				d.row_id = "";
-			} else if (d.row_id && d.row_id >= d.idx) {
-				msg = __(
-					"Cannot refer row number greater than or equal to current row number for this Charge type"
-				);
-				d.row_id = "";
-			}
-		}
-		if (msg) {
-			frappe.validated = false;
-			refresh_field("taxes");
-			frappe.throw(msg);
-		}
-	},
-
-	validate_inclusive_tax: function (tax) {
-		let actual_type_error = function () {
-			let msg = __("Actual type tax cannot be included in Item rate in row {0}", [tax.idx]);
-			frappe.throw(msg);
-		};
-
-		let on_previous_row_error = function (row_range) {
-			let msg = __("For row {0} in {1}. To include {2} in Item rate, rows {3} must also be included", [
-				tax.idx,
-				__(tax.doctype),
-				tax.charge_type,
-				row_range,
-			]);
-			frappe.throw(msg);
-		};
-
-		if (cint(tax.included_in_paid_amount)) {
-			if (tax.charge_type == "Actual") {
-				// inclusive tax cannot be of type Actual
-				actual_type_error();
-			} else if (
-				tax.charge_type == "On Previous Row Amount" &&
-				!cint(this.frm.doc["taxes"][tax.row_id - 1].included_in_paid_amount)
-			) {
-				// referred row should also be an inclusive tax
-				on_previous_row_error(tax.row_id);
-			} else if (tax.charge_type == "On Previous Row Total") {
-				let taxes_not_included = $.map(this.frm.doc["taxes"].slice(0, tax.row_id), function (t) {
-					return cint(t.included_in_paid_amount) ? null : t;
-				});
-				if (taxes_not_included.length > 0) {
-					// all rows above this tax should be inclusive
-					on_previous_row_error(tax.row_id == 1 ? "1" : "1 - " + tax.row_id);
-				}
-			}
-		}
-	},
-
-	determine_exclusive_rate: function (frm) {
-		let has_inclusive_tax = false;
-		$.each(frm.doc["taxes"] || [], function (i, row) {
-			if (cint(row.included_in_paid_amount)) has_inclusive_tax = true;
-		});
-		if (has_inclusive_tax == false) return;
-
-		let cumulated_tax_fraction = 0.0;
-		$.each(frm.doc["taxes"] || [], function (i, tax) {
-			tax.tax_fraction_for_current_item = frm.events.get_current_tax_fraction(frm, tax);
-
-			if (i == 0) {
-				tax.grand_total_fraction_for_current_item = 1 + tax.tax_fraction_for_current_item;
-			} else {
-				tax.grand_total_fraction_for_current_item =
-					frm.doc["taxes"][i - 1].grand_total_fraction_for_current_item +
-					tax.tax_fraction_for_current_item;
-			}
-
-			cumulated_tax_fraction += tax.tax_fraction_for_current_item;
-			frm.doc.paid_amount_after_tax = flt(frm.doc.base_paid_amount / (1 + cumulated_tax_fraction));
-		});
-	},
-
-	get_current_tax_fraction: function (frm, tax) {
-		let current_tax_fraction = 0.0;
-
-		if (cint(tax.included_in_paid_amount)) {
-			let tax_rate = tax.rate;
-
-			if (tax.charge_type == "On Paid Amount") {
-				current_tax_fraction = tax_rate / 100.0;
-			} else if (tax.charge_type == "On Previous Row Amount") {
-				current_tax_fraction =
-					(tax_rate / 100.0) * frm.doc["taxes"][cint(tax.row_id) - 1].tax_fraction_for_current_item;
-			} else if (tax.charge_type == "On Previous Row Total") {
-				current_tax_fraction =
-					(tax_rate / 100.0) *
-					frm.doc["taxes"][cint(tax.row_id) - 1].grand_total_fraction_for_current_item;
-			}
-		}
-
-		if (tax.add_deduct_tax && tax.add_deduct_tax == "Deduct") {
-			current_tax_fraction *= -1;
-		}
-		return current_tax_fraction;
-	},
-
-	calculate_taxes: function (frm) {
-		frm.doc.total_taxes_and_charges = 0.0;
-		frm.doc.base_total_taxes_and_charges = 0.0;
-
-		let company_currency = frappe.get_doc(":Company", frm.doc.company).default_currency;
-		let actual_tax_dict = {};
-
-		// maintain actual tax rate based on idx
-		$.each(frm.doc["taxes"] || [], function (i, tax) {
-			if (tax.charge_type == "Actual") {
-				actual_tax_dict[tax.idx] = flt(tax.tax_amount, precision("tax_amount", tax));
-			}
-		});
-
-		$.each(frm.doc["taxes"] || [], function (i, tax) {
-			let current_tax_amount = frm.events.get_current_tax_amount(frm, tax);
-
-			// Adjust divisional loss to the last item
-			if (tax.charge_type == "Actual") {
-				actual_tax_dict[tax.idx] -= current_tax_amount;
-				if (i == frm.doc["taxes"].length - 1) {
-					current_tax_amount += actual_tax_dict[tax.idx];
-				}
-			}
-
-			// tax accounts are only in company currency
-			tax.base_tax_amount = current_tax_amount;
-			current_tax_amount *= tax.add_deduct_tax == "Deduct" ? -1.0 : 1.0;
-
-			if (i == 0) {
-				tax.total = flt(frm.doc.paid_amount_after_tax + current_tax_amount, precision("total", tax));
-			} else {
-				tax.total = flt(frm.doc["taxes"][i - 1].total + current_tax_amount, precision("total", tax));
-			}
-
-			// tac accounts are only in company currency
-			tax.base_total = tax.total;
-
-			// calculate total taxes and base total taxes
-			if (frm.doc.payment_type == "Pay") {
-				// tax accounts only have company currency
-				if (tax.currency != frm.doc.paid_to_account_currency) {
-					//total_taxes_and_charges has the target currency. so using target conversion rate
-					frm.doc.total_taxes_and_charges += flt(current_tax_amount / frm.doc.target_exchange_rate);
-				} else {
-					frm.doc.total_taxes_and_charges += current_tax_amount;
-				}
-			} else if (frm.doc.payment_type == "Receive") {
-				if (tax.currency != frm.doc.paid_from_account_currency) {
-					//total_taxes_and_charges has the target currency. so using source conversion rate
-					frm.doc.total_taxes_and_charges += flt(current_tax_amount / frm.doc.source_exchange_rate);
-				} else {
-					frm.doc.total_taxes_and_charges += current_tax_amount;
-				}
-			}
-
-			frm.doc.base_total_taxes_and_charges += tax.base_tax_amount;
-
-			frm.refresh_field("taxes");
-			frm.refresh_field("total_taxes_and_charges");
-			frm.refresh_field("base_total_taxes_and_charges");
-		});
-	},
 });
 
-var render_tds_table = function (frm) {
-	if (frm.doc.apply_tds == 1) {
-		let wrapper = $(frm.fields_dict["tds_table"].wrapper).empty();
-		let i = 1
-		let data = [];
-
-		frm.doc.accounts.map(v => {
-			if (flt(v.apply_tds) == 1) {
-				let r = [
-					i,
-					frappe.format(v["tax_account"], { fieldtype: "Link", options: "Account" }),
-					frappe.format(v["party"], { fieldtype: "Data" }),
-					frappe.format(v["cost_center"], { fieldtype: "Link", options: "Cost Center" }),
-					frappe.format(0, { fieldtype: "Currency" }),
-					frappe.format(v["tax_amount"], { fieldtype: "Currency" }),
-				]
-				i = i + 1
-				data.push(r)
-			}
-		})
-
-
-
-		let columns = [
-			{ name: __("No."), editable: false, resizable: false, format: (value) => value, width: 60 },
-			{ name: __("Tax Account"), editable: false, resizable: true, width: 200 },
-			{ name: __("Party"), editable: false, resizable: true, width: 180 },
-			{ name: __("Cost Center"), editable: false, resizable: true, width: 200 },
-			{ name: __("Debit"), editable: false, resizable: true, width: 164 },
-			{ name: __("Credit"), editable: false, resizable: true, width: 164 },
-		];
-
-
-		let datatable = new frappe.DataTable(wrapper.get(0), {
-			columns: columns,
-			data: data,
-			layout: "fluid",
-			serialNoColumn: false,
-			checkboxColumn: true,
-			cellHeight: 35,
-		});
-
-		datatable.style.setStyle(`.dt-scrollable`, {
-			"font-size": "0.75rem",
-			"margin-bottom": "1rem",
-			"margin-left": "0.35rem",
-			"margin-right": "0.35rem",
-		});
-		datatable.style.setStyle(`.dt-header`, { "margin-left": "0.35rem", "margin-right": "0.35rem" });
-		datatable.style.setStyle(`.dt-cell--header .dt-cell__content`, {
-			color: "var(--gray-600)",
-			"font-size": "var(--text-sm)",
-		});
-		datatable.style.setStyle(`.dt-cell`, { color: "var(--text-color)" });
-		datatable.style.setStyle(`.dt-cell--col-1`, { "text-align": "center" });
-		datatable.style.setStyle(`.dt-cell--col-2`, { "font-weight": 600 });
-		datatable.style.setStyle(`.dt-cell--col-4`, { "font-weight": 600 });
-		datatable.style.setStyle(`.dt-cell--col-5`, { "font-weight": 600 });
-		datatable.style.setStyle(`.dt-cell--col-6`, { "font-weight": 600 });
-	} else {
-		let wrapper = $(frm.fields_dict["tds_table"].wrapper).empty();
-	}
-}
 
 var draw_tds_table = function (frm) {
 	let is_tds = false
@@ -782,7 +382,8 @@ var draw_tds_table = function (frm) {
 	row += "<td style='width:5%;text-align:center;'><i class='fa fa-gear'></i></td></tr></tbody>"
 	row += "<tbody>"
 	frm.doc.accounts.map(v => {
-		if (flt(v.apply_tds) == 1) {
+
+		if (flt(frm.doc.apply_tds) == 1 && flt(v.apply_tds) == 1) {
 			is_tds = true
 			row += "<tr><th style='width:4%;'><div style='height:13px;width:13px;border-radius:3px;background:#ebeef0;'></div></th>"
 			row += "<th style='width:4%;'>" + i + "</th> "
@@ -798,7 +399,7 @@ var draw_tds_table = function (frm) {
 	if (is_tds) $(cur_frm.fields_dict.tds_table.wrapper).html('<table class="table table-bordered">' + row + '</table>');
 	else $(cur_frm.fields_dict.tds_table.wrapper).html('');
 
-	// frm.refresh_field("tds_table")
+	frm.refresh_field("tds_table")
 }
 
 var update_jv_details = function (doc, r) {
@@ -999,6 +600,7 @@ cur_frm.cscript.update_totals = function (doc) {
 	refresh_many(["total_debit", "total_credit", "difference"]);
 };
 
+
 cur_frm.cscript.get_balance = function (doc, dt, dn) {
 	cur_frm.cscript.update_totals(doc);
 	cur_frm.call("get_balance", null, () => {
@@ -1026,6 +628,7 @@ frappe.ui.form.on("Journal Entry Account", {
 			});
 		}
 	},
+
 	cost_center: function (frm, dt, dn) {
 		// Don't reset for Gain/Loss type journals, as it will make Debit and Credit values '0'
 		if (frm.doc.voucher_type != "Exchange Gain Or Loss") {
@@ -1035,6 +638,94 @@ frappe.ui.form.on("Journal Entry Account", {
 
 	account: function (frm, dt, dn) {
 		erpnext.journal_entry.set_account_details(frm, dt, dn);
+		var d = frappe.get_doc(dt, dn);
+		frm.call({
+			method: "erpnext.accounts.doctype.journal_entry.journal_entry.account_bank",
+			args: {
+				"account": d.account
+			},
+			callback: function(r) {
+				if (!r.message) return;
+				let data = r.message;
+				let bank_type = data.account_type;
+				let is_deposit_work = data.is_deposit_work;
+				
+
+				// let bank_type = r.message;
+				// let is_deposit_work = r.is_deposit_work;
+			
+
+				if (bank_type === "Bank" || bank_type === "Cash" || is_deposit_work==1) {
+					frm.fields_dict.accounts.grid.update_docfield_property(
+                        "budget_activity",
+                        "hidden",
+                        1
+                    );
+					frm.fields_dict.accounts.grid.update_docfield_property(
+                        "budget_sub_activity",
+                        "hidden",
+                        1
+                    );
+					frm.fields_dict.accounts.grid.update_docfield_property(
+                        "source_of_fund",
+                        "hidden",
+                        1
+                    );
+					frm.fields_dict.accounts.grid.update_docfield_property(
+                        "budget_activity",
+                        "reqd",
+                        0
+                    );
+					frm.fields_dict.accounts.grid.update_docfield_property(
+                        "budget_sub_activity",
+                        "reqd",
+                        0
+                    );
+					frm.fields_dict.accounts.grid.update_docfield_property(
+                        "source_of_fund",
+                        "reqd",
+                        0
+                    );
+				} 
+				else{
+					frm.fields_dict.accounts.grid.update_docfield_property(
+						"budget_activity",
+						"hidden",
+						0
+					);
+					frm.fields_dict.accounts.grid.update_docfield_property(
+						"budget_sub_activity",
+						"hidden",
+						0
+					);
+					frm.fields_dict.accounts.grid.update_docfield_property(
+						"source_of_fund",
+						"hidden",
+						0
+					);
+					frm.fields_dict.accounts.grid.update_docfield_property(
+						"budget_activity",
+						"reqd",
+						1
+					);
+					frm.fields_dict.accounts.grid.update_docfield_property(
+						"budget_sub_activity",
+						"reqd",
+						1
+					);
+					frm.fields_dict.accounts.grid.update_docfield_property(
+						"source_of_fund",
+						"reqd",
+						1
+					);
+				}
+				
+			}
+		})
+
+
+		
+		
 	},
 
 	debit_in_account_currency: function (frm, cdt, cdn) {
@@ -1052,10 +743,12 @@ frappe.ui.form.on("Journal Entry Account", {
 	},
 
 	debit: function (frm, dt, dn) {
+		erpnext.journal_entry.set_bank_payment_amount(frm, cdt, cdn);
 		cur_frm.cscript.update_totals(frm.doc);
 	},
 
 	credit: function (frm, dt, dn) {
+		erpnext.journal_entry.set_bank_payment_amount(frm, cdt, cdn);
 		cur_frm.cscript.update_totals(frm.doc);
 	},
 
@@ -1071,12 +764,10 @@ frappe.ui.form.on("Journal Entry Account", {
 		erpnext.journal_entry.set_tax_in_company_currency(frm, cdt, cdn);
 	},
 
-	// following methods added by SHIV on 2022/09/17
+
+
 	apply_tds: function (frm, cdt, cdn) {
 		erpnext.journal_entry.set_tds_account(frm, cdt, cdn);
-		var row = locals[cdt][cdn];
-		frappe.model.set_value(cdt, cdn, "taxable_amount_in_account_currency",
-			flt(row.debit_in_account_currency) || flt(row.credit_in_account_currency));
 		cur_frm.cscript.update_totals(frm.doc);
 	},
 
@@ -1096,6 +787,7 @@ frappe.ui.form.on("Journal Entry Account", {
 	},
 
 	tax_amount: function (frm, cdt, cdn) {
+		erpnext.journal_entry.set_bank_payment_amount(frm, cdt, cdn);
 		cur_frm.cscript.update_totals(frm.doc);
 	}
 });
@@ -1125,6 +817,73 @@ $.extend(erpnext.journal_entry, {
 			);
 		});
 	},
+	set_bank_payment_amount: function (frm, cdt, cdn) {
+		var company_currency = frappe.get_doc(":Company", frm.doc.company).default_currency;
+		// var tax_amount = 0;
+		// var tax_amount = 0;
+		let payable_amount = 0, tax_amount = 0;
+		let bank_entry = [], bank_amount = 0;
+		// var bank_entry=[];
+		// var bank_amount = 0;
+		$.each(frm.doc.accounts || [], function (i, row) {
+			if (row.account_type == "Bank" || row.account_type == "Cash") {
+				if (frm.doc.currency != company_currency) {
+					bank_amount += (flt(row.debit_in_currency) - flt(row.credit_in_currency));
+				} else {
+					bank_amount += (flt(row.debit_in_account_currency) - flt(row.credit_in_account_currency));
+				}
+				bank_entry.push([row.doctype, row.name]);
+			} else {
+				if ((frm.doc.currency != company_currency) && frm.doc.currency && frm.doc.company_currency) {
+					payable_amount += (flt(row.debit_in_currency) - flt(row.credit_in_currency));
+					tax_amount += flt(row.tax_amount_in_currency);
+				} else {
+					payable_amount += (flt(row.debit_in_account_currency) - flt(row.credit_in_account_currency));
+					tax_amount += flt(row.tax_amount_in_account_currency);
+				}
+			}
+		})
+		if (bank_entry.length == 1 && Math.abs(bank_amount) != flt(Math.abs(payable_amount) - Math.abs(tax_amount))) {
+			if (flt(payable_amount) > 0) {
+				if ((frm.doc.currency != company_currency) && frm.doc.currency && frm.doc.company_currency) {
+					frappe.model.set_value(bank_entry[0][0], bank_entry[0][1], 'debit_in_currency', 0);
+					frappe.model.set_value(bank_entry[0][0], bank_entry[0][1], 'credit_in_currency', Math.abs(payable_amount) - Math.abs(tax_amount));
+				} else {
+					frappe.model.set_value(bank_entry[0][0], bank_entry[0][1], 'debit_in_account_currency', 0);
+					frappe.model.set_value(bank_entry[0][0], bank_entry[0][1], 'credit_in_account_currency', Math.abs(payable_amount) - Math.abs(tax_amount));
+				}
+
+			} else {
+				if (frm.doc.currency != company_currency) {
+					frappe.model.set_value(bank_entry[0][0], bank_entry[0][1], 'debit_in_currency', Math.abs(payable_amount) - Math.abs(tax_amount));
+					frappe.model.set_value(bank_entry[0][0], bank_entry[0][1], 'credit_in_currency', 0);
+				} else {
+					frappe.model.set_value(bank_entry[0][0], bank_entry[0][1], 'debit_in_account_currency', Math.abs(payable_amount) - Math.abs(tax_amount));
+					frappe.model.set_value(bank_entry[0][0], bank_entry[0][1], 'credit_in_account_currency', 0);
+				}
+			}
+		}
+		// cur_frm.refresh_fields();
+		cur_frm.refresh_fields(["debit_in_currency", "credit_in_currency"]);
+	},
+	set_apply_tds: function (frm, cdt, cdn) {
+		var row = locals[cdt][cdn];
+		frappe.model.set_value(cdt, cdn, 'apply_tds', 0);
+		if (cint(frm.doc.apply_tds) &&
+			(['Payable', 'Receivable']).includes(row.account_type) && row.party) {
+			frappe.model.set_value(cdt, cdn, 'apply_tds', cint(frm.doc.apply_tds));
+		}
+		// frappe.call({
+		// 	method: "check_ezetop",
+		// 	doc: frm.doc,
+		// 	args: {"account_type": row.account_type},
+		// 	callback: function(r){
+		// 		if(frm.doc.voucher_type == 'Bank Entry' && cint(frm.doc.apply_tds) && r.message == 1){
+		// 			frappe.model.set_value(cdt, cdn, 'apply_tds', cint(frm.doc.apply_tds));
+		// 	}
+		// 	}
+		// })
+	},
 
 	set_debit_credit_in_company_currency: function (frm, cdt, cdn) {
 		var row = locals[cdt][cdn];
@@ -1146,17 +905,17 @@ $.extend(erpnext.journal_entry, {
 		cur_frm.cscript.update_totals(frm.doc);
 	},
 
-	// added by SHIV on 2022/09/17
 	set_tax_in_company_currency: function (frm, cdt, cdn) {
-		// console.log("set_tax_in_company_currency");
+		console.log("set_tax_in_company_currency");
 		var row = locals[cdt][cdn], tax_amount = 0.0;
-
+		frappe.model.set_value(cdt, cdn, "taxable_amount_in_account_currency",
+			flt(row.debit_in_account_currency) || flt(row.credit_in_account_currency));
 		frappe.model.set_value(cdt, cdn, "taxable_amount",
 			flt(flt(row.taxable_amount_in_account_currency) * row.exchange_rate, precision("taxable_amount", row)));
 
 		tax_amount = flt(row.taxable_amount_in_account_currency) * flt(row.rate) / 100;
 		tax_amount = (cint(frm.doc.apply_tds) && cint(row.apply_tds) && row.add_deduct_tax) ? flt(tax_amount) : 0;
-
+		// frappe.throw(String(tax_amount))
 		frappe.model.set_value(cdt, cdn, "tax_amount_in_account_currency",
 			flt(tax_amount, precision("tax_amount", row)));
 
@@ -1165,7 +924,7 @@ $.extend(erpnext.journal_entry, {
 
 		cur_frm.cscript.update_totals(frm.doc);
 	},
-
+	
 	// added by SHIV on 2022/09/21
 	set_tds_account: function (frm, cdt, cdn) {
 		var row = locals[cdt][cdn];
@@ -1184,8 +943,9 @@ $.extend(erpnext.journal_entry, {
 				}
 			}
 		})
+		frm.refresh_fields();
 	},
-
+	
 	set_exchange_rate: function (frm, cdt, cdn) {
 		var company_currency = frappe.get_doc(":Company", frm.doc.company).default_currency;
 		var row = locals[cdt][cdn];
@@ -1222,6 +982,7 @@ $.extend(erpnext.journal_entry, {
 		}
 		refresh_field("exchange_rate", cdn, "accounts");
 	},
+
 
 	quick_entry: function (frm) {
 		var naming_series_options = frm.fields_dict.naming_series.df.options;

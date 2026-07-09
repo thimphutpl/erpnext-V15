@@ -15,12 +15,15 @@ class UtilityServices(Document):
 		from erpnext.epayment.doctype.utility_services_item.utility_services_item import UtilityServicesItem
 		from frappe.types import DF
 
+		abbr: DF.Data | None
 		bank_account: DF.Data
 		branch: DF.Link
+		company: DF.Link
 		cost_center: DF.Link
 		expense_account: DF.Link
 		item: DF.Table[UtilityServicesItem]
 	# end: auto-generated types
+
 	def validate(self):
 		self.validate_duplicate()
 	

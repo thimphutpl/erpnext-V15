@@ -15,6 +15,7 @@ class BudgetActivity(Document):
         from erpnext.budget.doctype.sub_actvity_list.sub_actvity_list import SubActvityList
         from frappe.types import DF
 
+        abbr: DF.Data
         activity_code: DF.Data
         activity_name: DF.Data
         company: DF.Link
@@ -23,4 +24,4 @@ class BudgetActivity(Document):
 
     def autoname(self):
         # frappe.throw("here")
-        self.name = self.activity_code + " - " + self.activity_name
+        self.name = self.activity_code + " - " + self.activity_name + " - " + self.abbr

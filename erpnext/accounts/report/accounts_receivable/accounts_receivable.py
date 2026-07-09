@@ -236,8 +236,12 @@ class ReceivablePayableReport:
 				ple.voucher_type in ["Journal Entry", "Payment Entry"]
 				and ple.voucher_no != ple.against_voucher_no
 			):
-				row.paid -= amount
-				row.paid_in_account_currency -= amount_in_account_currency
+				if ple.against_voucher_type in ("Advance", "Advance Recoup"):
+					row.invoiced += amount
+					row.invoiced_in_account_currency += amount_in_account_currency
+				else:
+					row.paid -= amount
+					row.paid_in_account_currency -= amount_in_account_currency
 			else:
 				row.invoiced += amount
 				row.invoiced_in_account_currency += amount_in_account_currency

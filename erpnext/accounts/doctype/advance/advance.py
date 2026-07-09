@@ -1,12 +1,53 @@
-# # Copyright (c) 2026, Frappe Technologies Pvt. Ltd. and contributors
-# # For license information, please see license.txt
 import frappe
 from frappe import _
 from frappe.model.document import Document
+from frappe.model.naming import make_autoname
 from frappe.utils import money_in_words
 from erpnext.custom_utils import prepare_gl
-from frappe.utils import flt
+from frappe.utils import flt,nowtime
+
 class Advance(Document):
+	# begin: auto-generated types
+	# This code is auto-generated. Do not modify anything in this block.
+
+	from typing import TYPE_CHECKING
+
+	if TYPE_CHECKING:
+		from frappe.types import DF
+
+		advance_type: DF.Link
+		amended_from: DF.Link | None
+		apply_retention: DF.Check
+		apply_tds: DF.Check
+		branch: DF.Link
+		budget_activity: DF.Link
+		budget_sub_activity: DF.Link
+		company: DF.Link
+		cost_center: DF.Link | None
+		customer: DF.DynamicLink | None
+		customer_cid: DF.Data | None
+		employee: DF.Link | None
+		employee_name: DF.Data | None
+		fiscal_year: DF.Link | None
+		item_code: DF.Data | None
+		item_name: DF.Data | None
+		journal_entry: DF.Data | None
+		opening_balance: DF.Currency
+		party_type: DF.Literal["", "Supplier", "Employee", "Customer"]
+		posting_date: DF.Date | None
+		remarks: DF.SmallText | None
+		retention: DF.Link | None
+		retention_account: DF.Data | None
+		retention_amount: DF.Currency
+		retention_rate: DF.Float
+		source_of_fund: DF.Link
+		tds: DF.Link | None
+		tds_account: DF.Data | None
+		tds_amount: DF.Currency
+		tds_rate: DF.Float
+		total_amount: DF.Currency
+	# end: auto-generated types
+
 	# begin: auto-generated types
 	# This code is auto-generated. Do not modify anything in this block.
 
@@ -36,116 +77,241 @@ class Advance(Document):
 		posting_date: DF.Date | None
 		remarks: DF.SmallText | None
 		source_of_fund: DF.Link
-	# end: auto-generated types
-
 	def validate(self):
-		"""Validate document before save"""
-		self.validate_required_fields()
-		self.validate_advance_amount()
+		self.calcalute_tds()
+		self.calculate_retention()
+		self.calculate_total_amount()
 
-	def validate_required_fields(self):
-		"""Check if all required fields are present"""
-		required_fields = ["company", "customer", "advance_amount", "posting_date"]
-		for field in required_fields:
-			if not self.get(field):
-				frappe.throw(_("{0} is required").format(self.meta.get_field(field).label))
 
-	def validate_advance_amount(self):
-		"""Validate advance amount is positive"""
-		if self.advance_amount <= 0:
-			frappe.throw(_("Advance Amount must be greater than zero"))
+
 
 	def on_submit(self):
 		self.update_general_ledger()
 		self.post_journal_entry()
+		self.make_mobilisation_entry()
+	def calcalute_tds(self):
+		if self.apply_tds and self.tds:
+			self.tds_amount = flt(self.opening_balance) * flt(self.tds_rate)/100
+		else:
+			self.tds_amount = 0
+		
+	def calculate_retention(self):
+		if self.apply_retention and self.retention:
+			self.retention_amount = flt(self.opening_balance) * flt(self.retention_rate)/100
+		else:
+			self.retention_amount = 0
 
-
+	def calculate_total_amount(self):
+		self.total_amount = (
+			flt(self.opening_balance)
+			- flt(self.tds_amount)
+			- flt(self.retention_amount)
+		)
 	def update_general_ledger(self):
 		gl_entries = []
-		debit_account = frappe.db.get_value("Company", self.company, "default_payable_account")
-		credit_account = frappe.db.get_value("Company", self.company, "default_receivable_account")
-		gl_entries.append(
-			prepare_gl(self, {
-				"account":debit_account,
-				"credit": flt(self.advance_amount),
-				"credit_in_account_currency": flt(self.advance_amount),
-				"cost_center": self.cost_center,
-			
-			})
-		)
+
+		debit_account = frappe.db.get_value("Advance Type", self.advance_type, "advance_account")
+		credit_account = frappe.db.get_value("Company", self.company, "default_bank_account")
+		if not debit_account:
+			frappe.throw("Please set Advance Account in Advance Type")
+		if not credit_account:
+			frappe.throw("Please set Default Bank Account in Company")
+
 		gl_entries.append(
 			prepare_gl(self, {
 				"account": credit_account,
-				"debit": flt(self.advance_amount),
-				"debit_in_account_currency": flt(self.advance_amount),
+				"credit": flt(self.opening_balance),
+				"credit_in_account_currency": flt(self.opening_balance),
+				"cost_center": self.cost_center,
+		
+			})
+		)
+	
+		gl_entries.append(
+			prepare_gl(self, {
+				"account": debit_account,
+				"debit": flt(self.opening_balance),
+				"debit_in_account_currency": flt(self.opening_balance),
 				"cost_center": self.cost_center,
 			
 			})
 		)
 		if gl_entries:
 			from erpnext.accounts.general_ledger import make_gl_entries
-			make_gl_entries(gl_entries, cancel=(self.docstatus == 2), merge_entries=False)	
-
+			make_gl_entries(gl_entries, cancel=(self.docstatus == 2), merge_entries=False)
+			
 	def post_journal_entry(self):
-		debit_account = frappe.db.get_value("Company", self.company, "default_payable_account")
-		credit_account = frappe.db.get_value("Company", self.company, "default_receivable_account")
+		debit_account = frappe.db.get_value("Advance Type", self.advance_type, "advance_account")
+		credit_account = frappe.db.get_value("Company", self.company, "default_bank_account")
+		if not debit_account:
+			frappe.throw("Setup Default Advance Account in Advance Type <b>{}</b>".format(self.advance_type))
+		
+		if not credit_account:
+			frappe.throw("Setup Default Bank Account in Company Settings")
+		
+		voucher_type = "Journal Entry"
+		voucher_series = "Journal Voucher"
+		party_type = ""
+		party = ""
+
+		debit_account_type = frappe.db.get_value("Account", debit_account, "account_type")
+
+		credit_account_type = frappe.db.get_value("Account", credit_account, "account_type")
+
+
+		if credit_account_type == "Bank":
+			voucher_type = "Bank Entry"
+			voucher_series = "Bank Payment Voucher"
+
+		if debit_account_type in ("Payable", "Receivable"):
+			party_type = self.party_type
+			party = self.customer
+		elif debit_account_type == "Expense Account":
+			party_type = ""
+			party = ""
+		remarks = []
+		if self.remarks:
+			remarks.append(_("Note: {0}").format(self.remarks))
+
+		remarkss = "".join(remarks)
 		je = frappe.new_doc("Journal Entry")
-		je.flags.ignore_permissions = 1 
-		je.title = f"Advance - {self.name}",
-		je.voucher_type = 'Journal Entry'
-		je.naming_series = 'Journal Voucher'
-		je.remark = 'Payment against : ' + self.name
+		je.voucher_type = voucher_type
+		je.naming_series = voucher_series
+		je.title = "Advance - " + self.name
+		je.user_remark = remarkss if remarkss else "Note: " + "Advance - " + self.name
 		je.posting_date = self.posting_date
 		je.company = self.company
+		je.total_amount_in_words = money_in_words(self.total_amount)
 		je.branch = self.branch
-		je.customer = self.customer
-		je.advance_type = self.advance_type
-		je.account = self.account
-		if self.advance_amount > 0:
-			je.append("accounts", {
-				"account": credit_account,
-				"reference_type": "Advance",
-				"reference_name": self.name,
-				"cost_center": self.cost_center,
-				"credit_in_account_currency": flt(self.advance_amount),
-				"credit": flt(self.advance_amount),
-				"party_type": self.party_type,
-				"party": self.customer,
-			})
+		# je.update({
+		# 		"doctype": "Journal Entry",
+		# 		"voucher_type": voucher_type,
+		# 		"naming_series": voucher_series,
+		# 		"title": "Advance - " + self.name,
+		# 		"user_remark": remarkss if remarkss else "Note: " + "Advance - " + self.name,
+		# 		"posting_date": self.posting_date,
+		# 		"company": self.company,
+		# 		"total_amount_in_words": money_in_words(self.total_amount),
+		# 		"branch": self.branch
+		# 	})
+		if flt(self.total_amount) > 0:
 			je.append("accounts", {
 				"account": debit_account,
 				"reference_type": "Advance",
 				"reference_name": self.name,
 				"cost_center": self.cost_center,
-				"debit_in_account_currency": flt(self.advance_amount),
-				"debit": flt(self.advance_amount),
-				"party_type": self.party_type,
-				"party": self.customer,
+				"debit_in_account_currency": flt(self.opening_balance),
+				"debit": flt(self.opening_balance),
+				"party_type": party_type,
+				"party": party,
+				"budget_activity": self.budget_activity,
+				"budget_sub_activity": self.budget_sub_activity,
+				"source_of_fund": self.source_of_fund
 			})
+			je.append("accounts", {
+				"account": credit_account,
+				"reference_type": "Advance",
+				"reference_name": self.name,
+				"cost_center": self.cost_center,
+				"credit_in_account_currency": flt(self.total_amount),
+				"credit": flt(self.total_amount)
+				# "party_type": self.party_type,
+				# "party": self.customer,
+			})
+			if self.tds_amount > 0 and  self.tds_account:
+				je.append("accounts", {
+				"account": self.tds_account,
+				"reference_type": "Advance",
+				"reference_name": self.name,
+				"cost_center": self.cost_center,
+				"credit_in_account_currency": flt(self.tds_amount),
+				"credit": flt(self.tds_amount),
+				"party_type": party_type,
+				"party": party,
+			})
+			if self.retention_amount > 0:
+				je.append("accounts", {
+				"account": self.retention_account,
+				"reference_type": "Advance",
+				"reference_name": self.name,
+				"cost_center": self.cost_center,
+				"credit_in_account_currency": flt(self.retention_amount),
+				"credit": flt(self.retention_amount),
+				"party_type": party_type,
+				"party": party,
+			})
+
+			# je.append("accounts", {
+			# 	"account": debit_account,
+			# 	"reference_type": "Advance",
+			# 	"reference_name": self.name,
+			# 	"cost_center": self.cost_center,
+			# 	"debit_in_account_currency": flt(self.opening_balance),
+			# 	"debit": flt(self.opening_balance),
+			# 	"party_type": party_type,
+			# 	"party": party,
+			# })
+			# je.append("accounts", {
+			# 	"account": credit_account,
+			# 	"reference_type": "Advance",
+			# 	"reference_name": self.name,
+			# 	"cost_center": self.cost_center,
+			# 	"credit_in_account_currency": flt(self.total_amount),
+			# 	"credit": flt(self.total_amount),
+			# 	# "party_type": self.party_type,
+			# 	# "party": self.customer,
+			# })
 			
-		je.save()
-		frappe.db.commit()		
+			
+		je.insert()
+		# frappe.db.commit()		
+		self.db_set("journal_entry", je.name)
+		frappe.msgprint("Journal Entry created. {}".format(frappe.get_desk_link("Journal Entry", je.name)))
+
+	def make_mobilisation_entry(self, cancel=False):
+		party = None
+		if  self.party_type == "Customer":
+			party = self.customer
+		elif self.party_type == "Supplier":
+			party = self.customer
+		else:
+			party = self.customer
+
+		con = frappe.new_doc("Advance Entry")
+		con.branch = self.branch
+		con.posting_date = self.posting_date
+		con.posting_time = nowtime()
+		con.party_type= self.party_type
+		con.customer = party
+		con.branch = self.branch
+		con.reference_type = "Advance Entry"
+		con.is_running_bill = 0
+		con.advance = self.name
+		con.append("mobilisation_entry", {
+			"reference":self.name,
+			"total_amount": self.total_amount,
+			"advance_amount": self.total_amount,
+			"balance_amount": self.total_amount
+		})
+		con.insert(ignore_permissions=True)
+		con.submit()
 
 
-
-# @frappe.whitelist()
-# def get_advance(customer, branch):
-#     if not customer:
-#         frappe.throw(_("Customer is required"))
-#     filters = {
-#         "customer": customer,
-#         "docstatus": 1  # Only submitted documents
-#     }
-#     if branch:
-#         filters["branch"] = branch
-#     advances = frappe.db.get_all(
-#         "Mobilisation Entry",
-#         filters=filters,
-#         fields=["name","account","advance_amount", "advance_type"]
-#     )
+@frappe.whitelist()
+def tax_account(name,company):
+	doc = frappe.db.sql("""
+		SELECT 
+			twr.tax_withholding_rate,
+			twa.account 
+		FROM `tabTax Withholding Category` AS twc
+		INNER JOIN `tabTax Withholding Rate` AS twr
+			ON twc.name = twr.parent
+		INNER JOIN `tabTax Withholding Account` AS twa
+			ON twc.name = twa.parent
+		WHERE 
+			twc.name = %s
+		AND 
+			twa.company = %s
+	""", (name,company), as_dict=True)
 	
-#     return advances
-
-
-
-
+	return doc[0] if doc else None

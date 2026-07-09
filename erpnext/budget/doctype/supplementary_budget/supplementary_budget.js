@@ -20,6 +20,22 @@ frappe.ui.form.on('Supplementary Budget', {
 				]
 			}
 		});
+
+		frm.set_query("budget_activity", "items", function() {
+			return {
+				filters: {
+					company: frm.doc.company
+				}
+			};
+		});
+
+		frm.set_query("budget_sub_activity", "items", function() {
+			return {
+				filters: {
+					company: frm.doc.company
+				}
+			};
+		});
 	},
 	refresh: function(frm) {
 		apply_account_filter(frm)

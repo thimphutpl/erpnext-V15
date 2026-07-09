@@ -26,6 +26,7 @@ class CostCenter(NestedSet):
 		cost_center_name: DF.Data
 		cost_center_number: DF.Data | None
 		disabled: DF.Check
+		head_quarter_cost_center: DF.Link | None
 		holiday_list: DF.Link | None
 		is_group: DF.Check
 		lft: DF.Int
@@ -33,6 +34,7 @@ class CostCenter(NestedSet):
 		parent_cost_center: DF.Link | None
 		rgt: DF.Int
 		sub_activity: DF.Table[SubActivity]
+		use_budget_from_head_quarter_cost_center: DF.Check
 		use_budget_from_parent: DF.Check
 		warehouse: DF.Link | None
 	# end: auto-generated types

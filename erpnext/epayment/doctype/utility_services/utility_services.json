@@ -1,15 +1,17 @@
 {
  "actions": [],
  "allow_import": 1,
- "autoname": "UTILITY.YY.MM.###",
+ "autoname": "format:UTILITY{MM}{YYYY} - {abbr}",
  "creation": "2021-05-20 08:54:09.492438",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "company",
   "branch",
   "cost_center",
   "column_break_2",
+  "abbr",
   "expense_account",
   "bank_account",
   "section_break_5",
@@ -59,14 +61,28 @@
    "fieldname": "item",
    "fieldtype": "Table",
    "options": "Utility Services Item"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "company.abbr",
+   "fieldname": "abbr",
+   "fieldtype": "Data",
+   "label": "Abbr",
+   "read_only": 1
   }
  ],
  "links": [],
- "modified": "2025-05-05 17:25:31.047524",
+ "modified": "2026-07-08 16:24:20.815043",
  "modified_by": "Administrator",
  "module": "ePayment",
  "name": "Utility Services",
- "naming_rule": "Expression (old style)",
+ "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
   {

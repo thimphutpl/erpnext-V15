@@ -10,6 +10,27 @@ frappe.ui.form.on('TDS Remittance', {
 		$(".grid-upload").addClass('hidden');
 	},
 
+	onload: function (frm) {
+		// frm.set_query("cost_center", "accounts", function() {
+		// 	return {
+		// 		filters: {
+		// 			company: frm.doc.company,
+		// 			disabled: 0,
+		// 		}
+		// 	};
+		// });
+
+		frm.set_query("credit_account", function() {
+			return {
+				filters: {
+					company: frm.doc.company,
+					account: frm.doc.account,
+					is_group: 0
+				}
+			};
+		});
+	},
+
 	refresh: function (frm) {
 		if (frm.doc.docstatus == 1) {
 			show_custom_buttons(frm);

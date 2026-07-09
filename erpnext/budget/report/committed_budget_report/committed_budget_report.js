@@ -63,20 +63,20 @@ frappe.query_reports["Committed Budget Report"] = {
 			},
 			"reqd":1
 		},
-		{
-			"fieldname": "project",
-			"label": __("Project"),
-			"fieldtype": "Link",
-			"options": "Project",
-			"get_query": function() {
-				return {
-					"doctype": "Project",
-					"filters": {
-						"status": "Open",
-					}
-				}
-			}
-		},
+		// {
+		// 	"fieldname": "project",
+		// 	"label": __("Project"),
+		// 	"fieldtype": "Link",
+		// 	"options": "Project",
+		// 	"get_query": function() {
+		// 		return {
+		// 			"doctype": "Project",
+		// 			"filters": {
+		// 				"status": "Open",
+		// 			}
+		// 		}
+		// 	}
+		// },
 		{
 			"fieldname": "cost_center",
 			"label": __("Cost Center"),

@@ -187,6 +187,9 @@ def get_conditions(filters):
     
     if filters.get("budget_activity"):
         conditions.append("ba.budget_activity = %(budget_activity)s")
+
+    if filters.get("budget_sub_activity"):
+        conditions.append("ba.budget_sub_activity = %(budget_sub_activity)s")        
     
     if filters.get("budget_name"):
         conditions.append("b.name = %(budget_name)s")

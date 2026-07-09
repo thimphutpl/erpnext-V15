@@ -6,6 +6,7 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "company",
   "branch",
   "transaction_type",
   "transaction_no",
@@ -46,7 +47,6 @@
   "sb_uploads",
   "uploads",
   "sb_additional_information",
-  "company",
   "amended_from",
   "workflow_state",
   "approver"
@@ -338,7 +338,7 @@
  ],
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-23 19:34:33.150502",
+ "modified": "2026-07-08 16:59:18.944140",
  "modified_by": "Administrator",
  "module": "ePayment",
  "name": "Bank Payment",

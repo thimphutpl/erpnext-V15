@@ -12,10 +12,13 @@
   "posting_time",
   "branch",
   "cost_center",
+  "party_type",
   "customer",
   "is_running_bill",
   "section_break_grmq",
-  "mobilisation_entry"
+  "mobilisation_entry",
+  "advance_recoup",
+  "advance"
  ],
  "fields": [
   {
@@ -27,7 +30,7 @@
    "fieldtype": "Link",
    "label": "Amended From",
    "no_copy": 1,
-   "options": "Mobilisation Entry",
+   "options": "Advance Entry",
    "print_hide": 1,
    "read_only": 1,
    "search_index": 1
@@ -50,14 +53,8 @@
   {
    "fieldname": "mobilisation_entry",
    "fieldtype": "Table",
-   "label": "Mobilisation Entry",
+   "label": "Advance Entry",
    "options": "Mobilisation Entry Item"
-  },
-  {
-   "fieldname": "customer",
-   "fieldtype": "Link",
-   "label": "Customer",
-   "options": "Customer"
   },
   {
    "fieldname": "posting_time",
@@ -75,15 +72,41 @@
    "fieldname": "is_running_bill",
    "fieldtype": "Check",
    "label": "Is Running Bill"
+  },
+  {
+   "fieldname": "party_type",
+   "fieldtype": "Select",
+   "label": "Party Type",
+   "options": "\nSupplier\nEmployee\nCustomer"
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Dynamic Link",
+   "label": "Party",
+   "options": "party_type"
+  },
+  {
+   "fieldname": "advance_recoup",
+   "fieldtype": "Link",
+   "label": "Advance Recoup",
+   "options": "Advance Recoup",
+   "read_only": 1
+  },
+  {
+   "fieldname": "advance",
+   "fieldtype": "Link",
+   "label": "Advance",
+   "options": "Advance",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-04-01 12:00:07.120690",
+ "modified": "2026-06-26 12:19:04.683725",
  "modified_by": "Administrator",
  "module": "Accounts",
- "name": "Mobilisation Entry",
+ "name": "Advance Entry",
  "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [

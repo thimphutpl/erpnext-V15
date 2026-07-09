@@ -8,7 +8,7 @@ import requests, json
 from frappe.model.document import Document
 from frappe.utils import flt, cint, getdate, get_datetime, get_url, nowdate, now_datetime, money_in_words
 from erpnext.custom_utils import check_future_date
-# from erpnext.integrations.bank_api import fetch_balance
+from erpnext.integrations.bank_api import fetch_balance
 from erpnext.epayment.doctype.bank_payment.bank_payment import get_transaction_id
 
 
@@ -41,6 +41,7 @@ class UtilityBill(Document):
 		utility_services: DF.Link
 		workflow_state: DF.Link | None
 	# end: auto-generated types
+
 	def validate(self):
 		check_future_date(self.posting_date)
 		self.calculate_tds_net()
@@ -108,6 +109,7 @@ class UtilityBill(Document):
 			frappe.throw("Net Payable amount should be greater than zero")
 	
 	def utility_payment(self):
+		# frappe.throw(str("hi"))
 		for d in self.item:
 			if d.outstanding_amount > 0 and not d.payment_status_code:
 				api_name, service_id, service_type, consumer_field = frappe.db.get_value("Utility Service Type", d.utility_service_type, ["payment_api", "service_id", "service_type", "unique_key_field"])
@@ -159,6 +161,7 @@ class UtilityBill(Document):
 
 	@frappe.whitelist()
 	def get_utility_services(self):
+	
 		data = []
 		data = frappe.db.sql("""
 					  SELECT 
@@ -172,11 +175,13 @@ class UtilityBill(Document):
 						and u.name = '{}'
 					   """.format(self.utility_services), as_dict=True)
 		self.set('item', [])
+		# frappe.throw(str(data))
 		for d in data:
 			row = self.append('item', {})
 			api_name, service_id, service_type, consumer_field, expense_account = frappe.db.get_value("Utility Service Type", d.utility_service_type, ["fetch_outstanding_api", "service_id", "service_type", "unique_key_field","expense_account"])
 			api_details = frappe.get_doc("API Detail", api_name)
 			url = api_details.api_link
+			# frappe.throw(str(url))
 			api_param = {}
 			for a in api_details.item:
 				if a.pre_defined_value:

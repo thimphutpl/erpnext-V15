@@ -1,0 +1,157 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-06-14 17:54:59.664060",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "company",
+  "broad_head",
+  "account",
+  "cost_center",
+  "branch",
+  "approved_budget",
+  "released_budget",
+  "column_break_zgcx",
+  "fiscal_year",
+  "posting_date",
+  "monthly_release",
+  "ad_hoc",
+  "budget_activity",
+  "budget_sub_activity",
+  "source_of_fund",
+  "month"
+ ],
+ "fields": [
+  {
+   "fieldname": "broad_head",
+   "fieldtype": "Link",
+   "label": "Broad Head",
+   "options": "Account"
+  },
+  {
+   "fieldname": "account",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Account",
+   "options": "Account",
+   "reqd": 1
+  },
+  {
+   "fieldname": "budget_activity",
+   "fieldtype": "Link",
+   "label": "Budget Activity",
+   "options": "Budget Activity",
+   "reqd": 1
+  },
+  {
+   "fieldname": "budget_sub_activity",
+   "fieldtype": "Link",
+   "label": "Budget Sub Activity",
+   "options": "Budget Sub Activity",
+   "reqd": 1
+  },
+  {
+   "fieldname": "source_of_fund",
+   "fieldtype": "Link",
+   "label": "Source of Fund",
+   "options": "Source of Fund",
+   "reqd": 1
+  },
+  {
+   "fieldname": "approved_budget",
+   "fieldtype": "Currency",
+   "label": "Approved Budget",
+   "reqd": 1
+  },
+  {
+   "fieldname": "released_budget",
+   "fieldtype": "Currency",
+   "label": "Released Budget",
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "monthly_release",
+   "fieldtype": "Check",
+   "label": "Monthly Release"
+  },
+  {
+   "default": "0",
+   "fieldname": "ad_hoc",
+   "fieldtype": "Check",
+   "label": "Ad Hoc"
+  },
+  {
+   "fieldname": "cost_center",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Cost Center",
+   "options": "Cost Center",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_zgcx",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Company",
+   "options": "Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "fiscal_year",
+   "fieldtype": "Link",
+   "label": "Fiscal Year",
+   "options": "Fiscal Year",
+   "reqd": 1
+  },
+  {
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "label": "Posting Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Branch",
+   "options": "Branch",
+   "reqd": 1
+  },
+  {
+   "fieldname": "month",
+   "fieldtype": "Select",
+   "label": "Month",
+   "options": "\nJuly\nAugust\nSeptember\nOctober\nNovember\nDecember\nJanuary\nFebruary\nMarch\nApril\nMay\nJune"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-06-14 18:24:55.618867",
+ "modified_by": "Administrator",
+ "module": "Budget",
+ "name": "Budget Release Entry",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

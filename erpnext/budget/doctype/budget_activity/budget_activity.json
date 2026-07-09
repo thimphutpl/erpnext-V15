@@ -6,6 +6,8 @@
  "engine": "InnoDB",
  "field_order": [
   "company",
+  "column_break_xcqi",
+  "abbr",
   "activity_details_section",
   "activity_code",
   "column_break_figl",
@@ -53,11 +55,22 @@
    "label": "Company",
    "options": "Company",
    "reqd": 1
+  },
+  {
+   "fieldname": "column_break_xcqi",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "company.abbr",
+   "fieldname": "abbr",
+   "fieldtype": "Data",
+   "label": "Abbr",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-18 15:45:28.224185",
+ "modified": "2026-06-11 16:41:02.319061",
  "modified_by": "Administrator",
  "module": "Budget",
  "name": "Budget Activity",

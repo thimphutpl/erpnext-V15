@@ -1,12 +1,13 @@
 # Copyright (c) 2026, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
-import frappe
+import frappe 
+from frappe import _
 from frappe.model.document import Document
 from frappe.utils import flt
 
 
-class MobilisationEntry(Document):
+class AdvanceEntry(Document):
 	# begin: auto-generated types
 	# This code is auto-generated. Do not modify anything in this block.
 
@@ -16,24 +17,28 @@ class MobilisationEntry(Document):
 		from erpnext.accounts.doctype.mobilisation_entry_item.mobilisation_entry_item import MobilisationEntryItem
 		from frappe.types import DF
 
+		advance: DF.Link | None
+		advance_recoup: DF.Link | None
 		amended_from: DF.Link | None
 		branch: DF.Link | None
 		cost_center: DF.Link | None
-		customer: DF.Link | None
+		customer: DF.DynamicLink | None
 		is_running_bill: DF.Check
 		mobilisation_entry: DF.Table[MobilisationEntryItem]
+		party_type: DF.Literal["", "Supplier", "Employee", "Customer"]
 		posting_date: DF.Date | None
 		posting_time: DF.Time | None
 	# end: auto-generated types
 
 	pass
 @frappe.whitelist()
-def get_mobilisation_advance(customer,branch=None):
+def get_advance(customer,branch=None):
+   
     # frappe.msgprint(str(is_running_bill))
     if not customer:
         frappe.throw(_("Customer is required"))
 
-    filters = {"customer": customer, "docstatus": 1,"is_running_bill": 1}
+    filters = {"customer": customer}
     # if is_running_bill is not None:
     #     filters["is_running_bill"] = is_running_bill
     if branch:
@@ -41,30 +46,30 @@ def get_mobilisation_advance(customer,branch=None):
 
 
     entries = frappe.get_all(
-        "Mobilisation Entry",
+        "Advance Entry",
         filters=filters,
         fields=["name","branch","posting_date"],
-        
-        # limit=1
+        limit=1
     )
-
+   
     result = []
 
     for entry in entries:
         children = frappe.get_all(
             "Mobilisation Entry Item",
             filters={"parent": entry.name},
-            fields=["reference","advance_type","account","advance_amount","balance_amount"]
+            fields=["reference","advance_type","account","advance_amount","total_amount","balance_amount"]
         )
         for child in children:
             if flt(child.balance_amount) > 0:
                 result.append({
-                    "mobilisation_entry": entry.name,
+                    "advance_entry": entry.name,
                     "posting_date": entry.posting_date,
                     "branch": entry.branch,
                     "reference": child.reference,
                     "advance_type": child.advance_type,
                     "account": child.account,
+                    "total_amount": child.advance_amount,
                     "advance_amount": child.advance_amount,
                     "balance_amount": child.balance_amount
                 })

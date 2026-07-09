@@ -23,6 +23,7 @@ class MobilisationEntryItem(Document):
 		parentfield: DF.Data
 		parenttype: DF.Data
 		reference: DF.Link | None
+		total_amount: DF.Currency
 	# end: auto-generated types
 
 	pass

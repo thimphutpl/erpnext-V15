@@ -27,6 +27,36 @@ frappe.ui.form.on('Budget Reappropiation', {
 				}
 			}
 		});
+		frm.set_query("from_budget_activity", "items", function() {
+			return {
+				filters: {
+					company: frm.doc.company
+				}
+			};
+		});
+
+		frm.set_query("from_budget_sub_activity", "items", function() {
+			return {
+				filters: {
+					company: frm.doc.company
+				}
+			};
+		});
+		frm.set_query("to_budget_activity", "items", function() {
+			return {
+				filters: {
+					company: frm.doc.company
+				}
+			};
+		});
+
+		frm.set_query("to_budget_sub_activity", "items", function() {
+			return {
+				filters: {
+					company: frm.doc.company
+				}
+			};
+		});
 	},
 	budget_type:function(frm){
 		apply_account_filter(frm)

@@ -26,9 +26,9 @@
   "section_break_13",
   "approved_budget",
   "column_break_osec",
-  "current_balance",
-  "column_break_lvka",
   "released_budget",
+  "column_break_lvka",
+  "current_balance",
   "column_break_14",
   "budget_balance",
   "column_break_pvda",
@@ -57,7 +57,7 @@
    "fieldtype": "Select",
    "in_standard_filter": 1,
    "label": "Budget Against",
-   "options": "\nCost Center\nProject",
+   "options": "Cost Center",
    "reqd": 1
   },
   {
@@ -278,7 +278,7 @@
    "fieldname": "budget_id",
    "fieldtype": "Link",
    "label": "Budget ID",
-   "options": "Budget",
+   "options": "Budget Proposal",
    "read_only": 1
   },
   {
@@ -301,13 +301,14 @@
   {
    "fieldname": "approved_budget",
    "fieldtype": "Currency",
-   "label": "Approved budget"
+   "label": "Total Approved budget"
   },
   {
    "fieldname": "column_break_osec",
    "fieldtype": "Column Break"
   },
   {
+   "default": "Today",
    "fieldname": "posting_date",
    "fieldtype": "Date",
    "in_list_view": 1,
@@ -318,6 +319,7 @@
   {
    "fieldname": "budget_balance",
    "fieldtype": "Currency",
+   "hidden": 1,
    "label": "Budget Balance",
    "read_only": 1
   },
@@ -328,12 +330,13 @@
   {
    "fieldname": "released_budget",
    "fieldtype": "Currency",
-   "label": "Released Budget(Initial)",
+   "label": "Total Released Budget",
    "read_only": 1
   },
   {
    "fieldname": "current_balance",
    "fieldtype": "Currency",
+   "hidden": 1,
    "label": "Current Balance",
    "read_only": 1
   },
@@ -345,7 +348,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-10-16 09:39:04.733360",
+ "modified": "2026-06-17 14:31:45.530767",
  "modified_by": "Administrator",
  "module": "Budget",
  "name": "Budget Release",

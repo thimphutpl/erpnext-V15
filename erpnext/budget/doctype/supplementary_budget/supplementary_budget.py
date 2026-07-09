@@ -23,6 +23,21 @@ class SupplementaryBudget(Document):
         elif self.supplementary_type == "New Supplementary Budget":
             self.new_supplement_budget(cancel=True)
 
+    def set_broad_head_from_account(self):
+        """Auto-set broad_head as parent_account of selected account"""
+        for row in self.get("items"):  # Replace with your child table fieldname
+            if row.account and not row.broad_head:
+                parent_account = frappe.db.get_value("Account", row.account, "parent_account")
+                if parent_account:
+                    row.broad_head = parent_account
+                else:
+                    frappe.throw(f"Account {row.account} does not have a parent account")
+            elif row.account and row.broad_head:
+                # Optional: Validate that broad_head matches parent_account
+                parent_account = frappe.db.get_value("Account", row.account, "parent_account")
+                if parent_account and row.broad_head != parent_account:
+                    frappe.throw(f"Broad Head {row.broad_head} does not match parent account {parent_account} of {row.account}")            
+
     def validate_budget(self):
         if self.supplementary_type == "New Supplementary Budget":
             return
@@ -80,7 +95,7 @@ class SupplementaryBudget(Document):
                 frappe.throw(_("Budget Supplementary Amount should be greater than 0 for record {0}").format(d.idx))
 
             query = f"""
-                SELECT ba.name, ba.account
+                SELECT ba.name, ba.account, b.name
                 FROM `tabBudget` b, `tabBudget Account` ba
                 WHERE ba.parent = b.name
                   AND b.docstatus < 2
@@ -102,14 +117,19 @@ class SupplementaryBudget(Document):
 
             if to_account:
                 to_budget_account = frappe.get_doc("Budget Account", to_account[0].name)
+                to_budget = frappe.get_doc("Budget", to_account.name)
 
                 if cancel:
                     total = flt(to_budget_account.budget_amount) - flt(d.amount)
                     sup_budget = flt(to_budget_account.supplementary_budget) - flt(d.amount)
+                    # initial_total = flt(to_budget.initial_total) + flt(d.amount)
+                    # actual_total = flt(to_budget.actual_total) + flt(d.amount)
                     frappe.db.sql("DELETE FROM `tabSupplementary Details` WHERE reference = %s", self.name)
                 else:
                     sup_budget = flt(to_budget_account.supplementary_budget) + flt(d.amount)
                     total = flt(to_budget_account.budget_amount) + flt(d.amount)
+                    # initial_total = flt(to_budget.initial_total) + flt(d.amount)
+                    # actual_total = flt(to_budget.actual_total) + flt(d.amount)
                     supp_details = frappe.new_doc("Supplementary Details")
                     supp_details.budget_against = self.budget_against
                     supp_details.cost_center = self.cost_center if self.budget_against == "Cost Center" else ""
@@ -127,6 +147,8 @@ class SupplementaryBudget(Document):
 
                 monthly_budget = frappe.db.get_single_value("Budget Settings", "monthly_budget_check")
                 to_budget_account.db_set("supplementary_budget", flt(sup_budget, 2))
+                # to_budget.db_set("initial_total", flt(initial_total))
+                # to_budget.db_set("actual_total", flt(actual_total))
 
                 self.update_budget_release(d, budget_against_field, budget_against, cancel)
 

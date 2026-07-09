@@ -25,12 +25,10 @@
   "company_info",
   "company_logo",
   "date_of_incorporation",
-  "phone_no",
   "email",
   "company_description",
   "column_break1",
   "date_of_commencement",
-  "fax",
   "website",
   "address_html",
   "registration_info",
@@ -160,39 +158,7 @@
   "budget_tab",
   "default_mof_account",
   "column_break_aovw",
-  "budget_receive_account",
-  "hr_accounts_settings_tab",
-  "salary_payable_account",
-  "salary_tax_account",
-  "overtime_allowance_account",
-  "employee_contribution_pf",
-  "column_break_yogf",
-  "leave_encashment_account",
-  "pbva_account",
-  "bonus_account",
-  "ltc_account",
-  "section_break_qlky",
-  "travel_incountry_account",
-  "travel_outcountry_account",
-  "column_break_fvcq",
-  "meeting_and_seminars_in_account",
-  "meeting_and_seminars_out_account",
-  "column_break_wjub",
-  "training_incountry_account",
-  "training_outcountry_account",
-  "section_break_14",
-  "employee_advance_travel",
-  "column_break_16",
-  "employee_advance_salary",
-  "sws_accounts_settings_section",
-  "sws_credit_account",
-  "column_break_qnkc",
-  "sws_debit_account",
-  "payable_account_section",
-  "leave_encashment_payable",
-  "column_break_jgtd",
-  "travel_claim_payable",
-  "muster_roll_payable_account"
+  "budget_receive_account"
  ],
  "fields": [
   {
@@ -657,22 +623,6 @@
    "label": "Date of Commencement"
   },
   {
-   "fieldname": "phone_no",
-   "fieldtype": "Data",
-   "label": "Phone No",
-   "oldfieldname": "phone_no",
-   "oldfieldtype": "Data",
-   "options": "Phone"
-  },
-  {
-   "fieldname": "fax",
-   "fieldtype": "Data",
-   "label": "Fax",
-   "oldfieldname": "fax",
-   "oldfieldtype": "Data",
-   "options": "Phone"
-  },
-  {
    "fieldname": "email",
    "fieldtype": "Data",
    "label": "Email",
@@ -764,7 +714,6 @@
   {
    "fieldname": "fixed_asset_defaults",
    "fieldtype": "Section Break",
-   "hidden": 1,
    "label": "Fixed Asset Defaults"
   },
   {
@@ -853,13 +802,11 @@
   {
    "fieldname": "buying_and_selling_tab",
    "fieldtype": "Tab Break",
-   "hidden": 1,
    "label": "Buying and Selling"
   },
   {
    "fieldname": "stock_tab",
    "fieldtype": "Tab Break",
-   "hidden": 1,
    "label": "Stock"
   },
   {
@@ -1037,7 +984,6 @@
   {
    "fieldname": "fleet_accounts_section",
    "fieldtype": "Section Break",
-   "hidden": 1,
    "label": "Fleet Accounts"
   },
   {
@@ -1075,7 +1021,6 @@
   {
    "fieldname": "fleet_tab",
    "fieldtype": "Tab Break",
-   "hidden": 1,
    "label": "Fleet"
   },
   {
@@ -1164,203 +1109,6 @@
   {
    "fieldname": "column_break_aovw",
    "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "hr_accounts_settings_tab",
-   "fieldtype": "Tab Break",
-   "label": "HR Accounts Settings"
-  },
-  {
-   "fieldname": "salary_payable_account",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "Salary Payable Account",
-   "options": "Account"
-  },
-  {
-   "fieldname": "column_break_yogf",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "leave_encashment_account",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "Leave Encashment Account",
-   "options": "Account"
-  },
-  {
-   "fieldname": "salary_tax_account",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "Salary Tax Account",
-   "options": "Account"
-  },
-  {
-   "fieldname": "pbva_account",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "PBVA Account",
-   "options": "Account"
-  },
-  {
-   "fieldname": "overtime_allowance_account",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "Overtime Allowance Account",
-   "options": "Account"
-  },
-  {
-   "fieldname": "bonus_account",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "Bonus Account",
-   "options": "Account"
-  },
-  {
-   "fieldname": "muster_roll_payable_account",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "Muster Roll Payable Account",
-   "options": "Account"
-  },
-  {
-   "fieldname": "ltc_account",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "LTC Account",
-   "options": "Account"
-  },
-  {
-   "fieldname": "employee_contribution_pf",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "Employer Contribution To PF",
-   "options": "Account"
-  },
-  {
-   "fieldname": "section_break_qlky",
-   "fieldtype": "Section Break",
-   "label": "Travel/Training Accounts Settings"
-  },
-  {
-   "fieldname": "travel_incountry_account",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "Tavel In-Country Account",
-   "options": "Account"
-  },
-  {
-   "fieldname": "travel_outcountry_account",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "Tavel Out-Country Account",
-   "options": "Account"
-  },
-  {
-   "fieldname": "column_break_fvcq",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "meeting_and_seminars_in_account",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "Meeting &Seminars Account (In-Country)",
-   "options": "Account"
-  },
-  {
-   "fieldname": "meeting_and_seminars_out_account",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "Meeting & Seminars Account (Out-Country)",
-   "options": "Account"
-  },
-  {
-   "fieldname": "column_break_wjub",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "training_incountry_account",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "Training In-Country Account",
-   "options": "Account"
-  },
-  {
-   "fieldname": "training_outcountry_account",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "Training Out-Country Account",
-   "options": "Account"
-  },
-  {
-   "fieldname": "section_break_14",
-   "fieldtype": "Section Break",
-   "label": "Advance Accounts Settings"
-  },
-  {
-   "fieldname": "employee_advance_travel",
-   "fieldtype": "Link",
-   "label": "Advance To Employee (Travel) Account",
-   "options": "Account"
-  },
-  {
-   "fieldname": "column_break_16",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "employee_advance_salary",
-   "fieldtype": "Link",
-   "label": "Advance To Employee (Salary) Account",
-   "options": "Account"
-  },
-  {
-   "fieldname": "sws_accounts_settings_section",
-   "fieldtype": "Section Break",
-   "label": "SWS Accounts Settings"
-  },
-  {
-   "fieldname": "sws_credit_account",
-   "fieldtype": "Link",
-   "label": "SWS Credit Account",
-   "options": "Account"
-  },
-  {
-   "fieldname": "column_break_qnkc",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "sws_debit_account",
-   "fieldtype": "Link",
-   "label": "SWS Debit Account",
-   "options": "Account"
-  },
-  {
-   "fieldname": "payable_account_section",
-   "fieldtype": "Section Break",
-   "label": "Payable Accounts Settings"
-  },
-  {
-   "fieldname": "leave_encashment_payable",
-   "fieldtype": "Link",
-   "label": "Leave Encashment Payable",
-   "options": "Account"
-  },
-  {
-   "fieldname": "column_break_jgtd",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "travel_claim_payable",
-   "fieldtype": "Link",
-   "label": "Travel Claim Payable",
-   "options": "Account"
-  },
-  {
-   "fieldname": "muster_roll_payable_account",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "Muster Roll Payable Account",
-   "options": "Account"
   }
  ],
  "icon": "fa fa-building",
@@ -1368,7 +1116,7 @@
  "image_field": "company_logo",
  "is_tree": 1,
  "links": [],
- "modified": "2026-04-14 08:18:18.965013",
+ "modified": "2026-06-17 16:22:35.977870",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Company",

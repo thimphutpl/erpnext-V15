@@ -21,7 +21,7 @@ class BudgetReappropiation(Document):
 		approver: DF.Link | None
 		approver_designation: DF.Data | None
 		approver_name: DF.Data | None
-		budget_against: DF.Literal["Cost Center", "Project"]
+		budget_against: DF.Literal["Cost Center"]
 		budget_type: DF.Link | None
 		company: DF.Link | None
 		fiscal_year: DF.Link
@@ -33,14 +33,31 @@ class BudgetReappropiation(Document):
 		to_project: DF.Link | None
 		total_reappropiation_amount: DF.Currency
 	# end: auto-generated types
+
 	
 	def validate(self):
 		self.validate_budget()
 		self.budget_check()
+		self.set_broad_head_from_account()
 
 	def on_submit(self):
 		# Only implement cancel logic here when submitting
 		self.budget_appropriate(cancel=False)
+
+	def set_broad_head_from_account(self):
+		"""Auto-set broad_head as parent_account of selected account"""
+		for row in self.get("items"):  # Replace with your child table fieldname
+			if row.from_account and not row.from_broad_head:
+				parent_account = frappe.db.get_value("Account", row.from_account, "parent_account")
+				if parent_account:
+					row.from_broad_head = parent_account
+				else:
+					frappe.throw(f"Account {row.from_account} does not have a parent account")
+			elif row.to_account and row.to_broad_head:
+				# Optional: Validate that broad_head matches parent_account
+				parent_account = frappe.db.get_value("Account", row.to_account, "parent_account")
+				if parent_account and row.to_broad_head != parent_account:
+					frappe.throw(f"Broad Head {row.to_broad_head} does not match parent account {parent_account} of {row.to_account}")	
 	
 	def validate_budget(self):
 		budget_against_field = frappe.scrub(self.budget_against)
@@ -177,13 +194,13 @@ class BudgetReappropiation(Document):
 				if d.amount <= 0:
 					frappe.throw("Budget appropriation Amount should be greater than 0 for record " + str(d.idx))
 				
-				self.update_budget_release_reappropriation(
-					d,
-					budget_against_field,
-					from_budget_against,
-					to_budget_against,
-					cancel
-				)
+				# self.update_budget_release_reappropriation(
+				# 	d,
+				# 	budget_against_field,
+				# 	from_budget_against,
+				# 	to_budget_against,
+				# 	cancel
+				# )
 				
 				from_account_query = """
 					SELECT ba.name, ba.account
@@ -194,9 +211,13 @@ class BudgetReappropiation(Document):
 					AND b.{budget_field} = %s
 					AND b.fiscal_year = %s
 					AND ba.account = %s
+					AND ba.budget_activity = %s
+					AND ba.budget_sub_activity = %s
+					AND ba.source_of_fund = %s
 				""".format(budget_field=budget_against_field)
 				
-				from_account_params = [self.company, from_budget_against, self.fiscal_year, d.from_account]
+				from_account_params = [self.company, from_budget_against, self.fiscal_year, d.from_account, d.from_budget_activity, d.from_budget_sub_activity, d.source_of_fund]
+				# frappe.throw(str(from_account_query))
 				
 				if hasattr(d, 'from_budget_activity') and d.from_budget_activity:
 					from_account_query += " AND ba.budget_activity = %s"
@@ -345,9 +366,13 @@ class BudgetReappropiation(Document):
 					AND b.{budget_field} = %s
 					AND b.fiscal_year = %s
 					AND ba.account = %s
+					AND ba.budget_activity = %s
+					AND ba.budget_sub_activity = %s
+					AND ba.source_of_fund = %s
 				""".format(budget_field=budget_against_field)
 				
-				to_account_params = [self.company, to_budget_against, self.fiscal_year, d.to_account]
+				to_account_params = [self.company, to_budget_against, self.fiscal_year, d.to_account, d.to_budget_activity, d.to_budget_sub_activity, d.to_source_of_fund]
+				# frappe.throw(str(to_account_query))
 				
 				# Add budget activity filter if available
 				if hasattr(d, 'to_budget_activity') and d.to_budget_activity:
@@ -528,64 +553,87 @@ class BudgetReappropiation(Document):
 		# ===============================
 		from_release = frappe.db.sql(f"""
 			SELECT bra.name, br.name as parent
-			FROM `tabBudget Release` br
-			JOIN `tabBudget Release Account` bra ON bra.parent = br.name
+			FROM `tabBudget` br
+			JOIN `tabBudget Account` bra ON bra.parent = br.name
+			WHERE br.docstatus < 2
+			AND br.company = %s
+			AND br.{budget_against_field} = %s
+			AND br.fiscal_year = %s
+			AND bra.account = %s
+			AND bra.budget_Activity =%s
+			AND bra.budget_sub_activity =%s
+			AND bra.source_of_fund = %s
+		""", (self.company, from_budget_against, self.fiscal_year, d.from_account, d.from_budget_activity, d.from_budget_sub_activity, d.source_of_fund), as_dict=1)
+
+		from_release = frappe.db.sql(f"""
+			SELECT bra.name, br.name as parent
+			FROM `tabBudget` br
+			JOIN `tabBudget Account` bra ON bra.parent = br.name
 			WHERE br.docstatus < 2
 			AND br.company = %s
 			AND br.{budget_against_field} = %s
 			AND br.fiscal_year = %s
 			AND bra.account = %s
 		""", (self.company, from_budget_against, self.fiscal_year, d.from_account), as_dict=1)
+		# frappe.throw(str(from_release))
 
 		if from_release:
-			bra_doc = frappe.get_doc("Budget Release Account", from_release[0].name)
+			bra_doc = frappe.get_doc("Budget Account", from_release[0].name)
 
 			if cancel:
 				sent = flt(bra_doc.budget_sent) - flt(d.amount)
+				# sent = flt(bra_doc.budget_amount) + flt(d.amount)
 			else:
 				sent = flt(bra_doc.budget_sent) + flt(d.amount)
+				# sent = flt(bra_doc.budget_amount) - flt(d.amount)
 
 			bra_doc.db_set("budget_sent", flt(sent, 2))
 
-			# Update parent
-			parent_doc = frappe.get_doc("Budget Release", from_release[0].parent)
+			# # Update parent
+			# parent_doc = frappe.get_doc("Budget", from_release[0].parent)
 
-			if cancel:
-				parent_doc.db_set("budget_balance", flt(parent_doc.budget_balance) + flt(d.amount))
-			else:
-				parent_doc.db_set("budget_balance", flt(parent_doc.budget_balance) - flt(d.amount))
+			# if cancel:
+			# 	parent_doc.db_set("budget_amount", flt(parent_doc.budget_amount) + flt(d.amount))
+			# else:
+			# 	parent_doc.db_set("budget_amount", flt(parent_doc.budget_amount) - flt(d.amount))
 
 		# ===============================
 		# TO SIDE (BUDGET RECEIVED)
 		# ===============================
 		to_release = frappe.db.sql(f"""
 			SELECT bra.name, br.name as parent
-			FROM `tabBudget Release` br
-			JOIN `tabBudget Release Account` bra ON bra.parent = br.name
+			FROM `tabBudget` br
+			JOIN `tabBudget Account` bra ON bra.parent = br.name
 			WHERE br.docstatus < 2
 			AND br.company = %s
 			AND br.{budget_against_field} = %s
 			AND br.fiscal_year = %s
 			AND bra.account = %s
-		""", (self.company, to_budget_against, self.fiscal_year, d.to_account), as_dict=1)
+			AND bra.budget_Activity =%s
+			AND bra.budget_sub_activity =%s
+			AND bra.source_of_fund = %s
+		""", (self.company, to_budget_against, self.fiscal_year, d.to_account, d.to_budget_activity, d.to_budget_sub_activity, d.to_source_of_fund), as_dict=1)
+		# frappe.throw(str(to_release))
 
 		if to_release:
-			bra_doc = frappe.get_doc("Budget Release Account", to_release[0].name)
+			bra_doc = frappe.get_doc("Budget Account", to_release[0].name)
 
 			if cancel:
 				received = flt(bra_doc.budget_received) - flt(d.amount)
+				# received = flt(bra_doc.budget_amount) - flt(d.amount)
 			else:
 				received = flt(bra_doc.budget_received) + flt(d.amount)
+				# received = flt(bra_doc.budget_amount) + flt(d.amount)
 
 			bra_doc.db_set("budget_received", flt(received, 2))
 
-			# Update parent
-			parent_doc = frappe.get_doc("Budget Release", to_release[0].parent)
+			# # Update parent
+			# parent_doc = frappe.get_doc("Budget", to_release[0].parent)
 
-			if cancel:
-				parent_doc.db_set("budget_balance", flt(parent_doc.budget_balance) - flt(d.amount))
-			else:
-				parent_doc.db_set("budget_balance", flt(parent_doc.budget_balance) + flt(d.amount))				
+			# if cancel:
+			# 	parent_doc.db_set("budget_amount", flt(parent_doc.budget_amount) - flt(d.amount))
+			# else:
+			# 	parent_doc.db_set("budget_amount", flt(parent_doc.budget_amount) + flt(d.amount))				
 
 def get_permission_query_conditions(user):
 	if not user: user = frappe.session.user

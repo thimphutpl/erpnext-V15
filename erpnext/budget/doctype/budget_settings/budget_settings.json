@@ -74,13 +74,13 @@
    "fieldname": "budget_against",
    "fieldtype": "Select",
    "label": "Budget Level",
-   "options": "Cost Center\nProject"
+   "options": "Cost Center"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-12-02 11:14:54.151406",
+ "modified": "2026-06-10 11:02:55.129914",
  "modified_by": "Administrator",
  "module": "Budget",
  "name": "Budget Settings",

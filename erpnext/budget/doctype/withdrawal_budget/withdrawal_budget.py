@@ -36,6 +36,7 @@ class WithdrawalBudget(Document):
 	def validate(self):
 		# validate_workflow_states(self)
 		self.validate_budget()
+		self.set_broad_head_from_account()
 		# if self.workflow_state != "Submitted":
 		# 	notify_workflow_states(self)
 
@@ -46,6 +47,21 @@ class WithdrawalBudget(Document):
 	def on_cancel(self):
 		self.withdrawal_budget(cancel=True)
 		# notify_workflow_states(self)
+
+	def set_broad_head_from_account(self):
+		"""Auto-set broad_head as parent_account of selected account"""
+		for row in self.get("items"):  # Replace with your child table fieldname
+			if row.account and not row.broad_head:
+				parent_account = frappe.db.get_value("Account", row.account, "parent_account")
+				if parent_account:
+					row.broad_head = parent_account
+				else:
+					frappe.throw(f"Account {row.account} does not have a parent account")
+			elif row.account and row.broad_head:
+				# Optional: Validate that broad_head matches parent_account
+				parent_account = frappe.db.get_value("Account", row.account, "parent_account")
+				if parent_account and row.broad_head != parent_account:
+					frappe.throw(f"Broad Head {row.broad_head} does not match parent account {parent_account} of {row.account}")  	
 
 	#Added by Thukten on 13th Sept, 2023
 	def validate_budget(self):

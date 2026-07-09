@@ -14,28 +14,28 @@ class HRAccountsSettings(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
-		bonus_account: DF.Link
+		bonus_account: DF.Link | None
 		company: DF.Link
-		employee_advance_salary: DF.Link
-		employee_advance_travel: DF.Link
-		employee_contribution_pf: DF.Link
-		leave_encashment_account: DF.Link
+		employee_advance_salary: DF.Link | None
+		employee_advance_travel: DF.Link | None
+		employee_contribution_pf: DF.Link | None
+		leave_encashment_account: DF.Link | None
 		leave_encashment_payable: DF.Link | None
-		ltc_account: DF.Link
-		meeting_and_seminars_in_account: DF.Link
-		meeting_and_seminars_out_account: DF.Link
+		ltc_account: DF.Link | None
+		meeting_and_seminars_in_account: DF.Link | None
+		meeting_and_seminars_out_account: DF.Link | None
 		muster_roll_payable_account: DF.Link | None
-		overtime_account: DF.Link
-		pbva_account: DF.Link
-		salary_payable_account: DF.Link
-		salary_tax_account: DF.Link
+		overtime_account: DF.Link | None
+		pbva_account: DF.Link | None
+		salary_payable_account: DF.Link | None
+		salary_tax_account: DF.Link | None
 		sws_credit_account: DF.Link | None
 		sws_debit_account: DF.Link | None
-		training_incountry_account: DF.Link
-		training_outcountry_account: DF.Link
+		training_incountry_account: DF.Link | None
+		training_outcountry_account: DF.Link | None
 		travel_claim_payable: DF.Link | None
-		travel_incountry_account: DF.Link
-		travel_outcountry_account: DF.Link
+		travel_incountry_account: DF.Link | None
+		travel_outcountry_account: DF.Link | None
 	# end: auto-generated types
 
 	pass

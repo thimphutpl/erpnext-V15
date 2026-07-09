@@ -83,6 +83,13 @@ class Employee(NestedSet):
 			self.update_user()
 			self.update_user_permissions()
 		self.reset_employee_emails_cache()
+		self.update_salary_structure()
+	def update_salary_structure(self):
+		ss = frappe.db.get_value("Salary Structure", {"employee": self.name, "is_active": "Yes"}, "name")
+		if ss:
+			doc = frappe.get_doc("Salary Structure", ss)
+			doc.flags.ignore_permissions = 1
+			doc.save()
 
 	def update_user_permissions(self):
 		if not self.create_user_permission:
@@ -358,7 +365,16 @@ def create_user(employee, user=None, email=None):
 	emp.save()
 	return user.name
 
-
+@frappe.whitelist()
+def get_employee_group_base_grade(grade,company):
+	doc= frappe.db.sql("""SELECT egm.name FROM 
+					`tabEmployee Group Master` egm 
+					JOIN `tabEmployee Group Master Item` egmi 
+					ON egm.name = egmi.parent
+					WHERE egmi.grade = %s 
+					AND egm.company = %s
+					""",(grade,company),as_dict=1)
+	return doc
 def get_all_employee_emails(company):
 	"""Returns list of employee emails either based on user_id or company_email"""
 	employee_list = frappe.get_all(

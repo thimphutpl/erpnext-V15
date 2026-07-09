@@ -1,0 +1,99 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-05-23 14:17:46.021871",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "invoice_no",
+  "invoice_date",
+  "account",
+  "broad_head",
+  "budget_activity",
+  "budget_sub_activity",
+  "source_of_fund",
+  "amount",
+  "bill_attachment"
+ ],
+ "fields": [
+  {
+   "fieldname": "invoice_no",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Invoice No"
+  },
+  {
+   "fieldname": "invoice_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Invoice Date"
+  },
+  {
+   "fieldname": "account",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Account",
+   "options": "Account",
+   "reqd": 1
+  },
+  {
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Amount",
+   "precision": "2",
+   "reqd": 1
+  },
+  {
+   "fieldname": "budget_activity",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Budget Activity",
+   "options": "Budget Activity",
+   "reqd": 1
+  },
+  {
+   "fieldname": "budget_sub_activity",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Budget Sub Activity",
+   "options": "Budget Sub Activity",
+   "reqd": 1
+  },
+  {
+   "fieldname": "source_of_fund",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Source of Fund",
+   "options": "Source of Fund",
+   "reqd": 1
+  },
+  {
+   "fieldname": "bill_attachment",
+   "fieldtype": "Attach",
+   "in_list_view": 1,
+   "label": "Bill Attachment"
+  },
+  {
+   "fieldname": "broad_head",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Broad Head",
+   "options": "Account",
+   "reqd": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-05-25 14:03:02.764028",
+ "modified_by": "Administrator",
+ "module": "Budget",
+ "name": "Advance Recoup Item",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

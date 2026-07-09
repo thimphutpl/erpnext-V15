@@ -1,16 +1,18 @@
 {
  "actions": [],
  "allow_import": 1,
- "autoname": "field:service_name",
+ "autoname": "format:{service_name} - {abbr}",
  "creation": "2021-05-20 04:42:14.096871",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "company",
   "party",
   "unique_key_field",
   "expense_account",
   "column_break_2",
+  "abbr",
   "service_name",
   "service_type",
   "service_id",
@@ -50,8 +52,7 @@
   {
    "fieldname": "service_name",
    "fieldtype": "Data",
-   "label": "Service Name",
-   "unique": 1
+   "label": "Service Name"
   },
   {
    "fieldname": "service_type",
@@ -101,13 +102,28 @@
    "fieldtype": "Data",
    "label": "Fetch Outstanding API Link",
    "read_only": 1
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "company.abbr",
+   "fieldname": "abbr",
+   "fieldtype": "Data",
+   "label": "Abbr",
+   "read_only": 1
   }
  ],
  "links": [],
- "modified": "2024-11-23 12:16:27.075047",
+ "modified": "2026-07-08 16:20:00.391829",
  "modified_by": "Administrator",
  "module": "ePayment",
  "name": "Utility Service Type",
+ "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
   {

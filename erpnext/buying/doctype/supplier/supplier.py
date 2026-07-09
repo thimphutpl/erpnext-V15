@@ -31,9 +31,13 @@ class Supplier(TransactionBase):
 		from erpnext.utilities.doctype.portal_user.portal_user import PortalUser
 		from frappe.types import DF
 
+		account_number: DF.Data | None
 		accounts: DF.Table[PartyAccount]
 		allow_purchase_invoice_creation_without_purchase_order: DF.Check
 		allow_purchase_invoice_creation_without_purchase_receipt: DF.Check
+		bank_account_type: DF.Link | None
+		bank_branch: DF.Link | None
+		bank_name: DF.Link | None
 		companies: DF.Table[AllowedToTransactWith]
 		country: DF.Link | None
 		default_bank_account: DF.Link | None

@@ -2,10 +2,6 @@
 // For license information, please see license.txt
 
 frappe.query_reports["Budget Proposal Report"] = {
-	"onload": function(query_report) {
-		var month_filter = query_report.get_filter("month");
-		month_filter.toggle(false);
-    },
 	"filters": [
 		{
 			"fieldname": "fiscal_year",
@@ -19,16 +15,35 @@ frappe.query_reports["Budget Proposal Report"] = {
 				if (!fiscal_year) {
 					return;
 				}
-				frappe.model.with_doc("Fiscal Year", fiscal_year, function(r) {
-					var fy = frappe.model.get_doc("Fiscal Year", fiscal_year);
-					query_report.filters_by_name.from_date.set_input(fy.year_start_date);
-					query_report.filters_by_name.to_date.set_input(fy.year_end_date);
-					query_report.trigger_refresh();
+				frappe.call({
+					method: "frappe.client.get_value",
+					args: {
+						"doctype": "Fiscal Year",
+						"filters": {"name": fiscal_year},
+						"fieldname": ["year_start_date", "year_end_date"]
+					},
+					callback: function(r) {
+						if (r.message) {
+							// Set the from_date and to_date filters
+							var from_date_filter = query_report.get_filter("from_date");
+							var to_date_filter = query_report.get_filter("to_date");
+							
+							if (from_date_filter) {
+								from_date_filter.set_value(r.message.year_start_date);
+							}
+							if (to_date_filter) {
+								to_date_filter.set_value(r.message.year_end_date);
+							}
+							
+							// Refresh the report
+							query_report.trigger_refresh();
+						}
+					}
 				});
 			}
 		},
 		{
-			"fieldname": "date",
+			"fieldname": "from_date",
 			"label": __("From Date"),
 			"fieldtype": "Date",
 			"default": frappe.defaults.get_user_default("year_start_date"),
@@ -40,25 +55,54 @@ frappe.query_reports["Budget Proposal Report"] = {
 			"default": frappe.defaults.get_user_default("year_end_date"),
 		},
 		{
+			"fieldname": "company",
+			"label": __("Company"),
+			"fieldtype": "Link",
+			"options": "Company",
+		},
+		{
+			"fieldname": "budget_activity",
+			"label": __("Budget Activity"),
+			"fieldtype": "Link",
+			"options": "Budget Activity",
+		},
+		{
+			"fieldname": "budget_sub_activity",
+			"label": __("Budget Sub Activity"),
+			"fieldtype": "Link",
+			"options": "Budget Sub Activity",
+		},
+		{
+			"fieldname": "source_of_fund",
+			"label": __("Source of Fund"),
+			"fieldtype": "Link",
+			"options": "Source Of Fund",
+		},
+		{
 			"fieldname":"budget_against",
 			"label": __("Budget Against"),
 			"fieldtype": "Select",
-			// "options": ["", __("Cost Center"), __("Project")],
 			"options": ["", __("Cost Center")],
 			on_change: function(query_report){
 				var budget_against = frappe.query_report.get_filter_value('budget_against');
+				var cost_center_filter = frappe.query_report.get_filter("cost_center");
+				var project_filter = frappe.query_report.get_filter("project");
+				var group_by_account_filter = frappe.query_report.get_filter("group_by_account");
+				var controllable_filter = frappe.query_report.get_filter("controllable");
+				var budget_type_filter = frappe.query_report.get_filter("budget_type");
+				
 				if(budget_against == "Project"){
-					var cost_center = frappe.query_report.get_filter("cost_center"); cost_center.toggle(false);
-					var project = frappe.query_report.get_filter("project"); project.toggle(true);
-					var group_by_account = frappe.query_report.get_filter("group_by_account"); group_by_account.toggle(false);
-					var controllable = frappe.query_report.get_filter("controllable"); controllable.toggle(false);	
-					var budget_type = frappe.query_report.get_filter("budget_type"); budget_type.toggle(false);	
-				}else{
-					var cost_center = frappe.query_report.get_filter("cost_center"); cost_center.toggle(true);
-					var project = frappe.query_report.get_filter("project"); project.toggle(false);	
-					var group_by_account = frappe.query_report.get_filter("group_by_account"); group_by_account.toggle(true);
-					var controllable = frappe.query_report.get_filter("controllable"); controllable.toggle(true);
-					var budget_type = frappe.query_report.get_filter("budget_type"); budget_type.toggle(true);			
+					if (cost_center_filter) cost_center_filter.toggle(false);
+					if (project_filter) project_filter.toggle(true);
+					if (group_by_account_filter) group_by_account_filter.toggle(false);
+					if (controllable_filter) controllable_filter.toggle(false);	
+					if (budget_type_filter) budget_type_filter.toggle(false);	
+				} else {
+					if (cost_center_filter) cost_center_filter.toggle(true);
+					if (project_filter) project_filter.toggle(false);	
+					if (group_by_account_filter) group_by_account_filter.toggle(true);
+					if (controllable_filter) controllable_filter.toggle(true);
+					if (budget_type_filter) budget_type_filter.toggle(true);			
 				}
 				query_report.trigger_refresh();	
 			},
@@ -70,15 +114,40 @@ frappe.query_reports["Budget Proposal Report"] = {
 			"label": __("Branch"),
 			"fieldtype": "Link",
 			"options": "Cost Center",
-			"get_query": function() {return {'filters': [['Cost Center', 'disabled', '!=', '1']]}}
+			"get_query": function() {
+				return {
+					'filters': [
+						['Cost Center', 'disabled', '!=', '1']
+					]
+				};
+			}
 		},
-		// {
-		// 	"fieldname": "budget_type",
-		// 	"label": __("Budget Type"),
-		// 	"fieldtype": "Link",
-		// 	"options": "Budget Type",
-		// 	"ignore_user_permissions":1
-		// },
+		{
+			"fieldname": "project",
+			"label": __("Project"),
+			"fieldtype": "Link",
+			"options": "Project",
+			"hidden": 1
+		},
+		{
+			"fieldname": "group_by_account",
+			"label": __("Group By Account"),
+			"fieldtype": "Check",
+			"default": 0,
+		},
+		{
+			"fieldname": "controllable",
+			"label": __("Controllable"),
+			"fieldtype": "Check",
+			"default": 0,
+		},
+		{
+			"fieldname": "budget_type",
+			"label": __("Budget Type"),
+			"fieldtype": "Link",
+			"options": "Budget Type",
+			"ignore_user_permissions": 1
+		},
 		{
 			"fieldname": "month",
 			"label": __("Month"),
@@ -86,6 +155,61 @@ frappe.query_reports["Budget Proposal Report"] = {
 			"width": "100",
 			"options": ["January","February","March","April","May","June","July","August","September","October","November","December"],
 		},
-	
 	],
-   }
+	
+	"onload": function(query_report) {
+		// Initially hide month filter (as per original requirement)
+		var month_filter = query_report.get_filter("month");
+		if (month_filter) {
+			month_filter.toggle(false);
+		}
+		
+		// Set initial visibility for other filters based on default budget_against
+		var budget_against = query_report.get_values().budget_against;
+		var cost_center_filter = query_report.get_filter("cost_center");
+		var project_filter = query_report.get_filter("project");
+		var group_by_account_filter = query_report.get_filter("group_by_account");
+		var controllable_filter = query_report.get_filter("controllable");
+		var budget_type_filter = query_report.get_filter("budget_type");
+		
+		if (budget_against == "Project") {
+			if (cost_center_filter) cost_center_filter.toggle(false);
+			if (project_filter) project_filter.toggle(true);
+			if (group_by_account_filter) group_by_account_filter.toggle(false);
+			if (controllable_filter) controllable_filter.toggle(false);
+			if (budget_type_filter) budget_type_filter.toggle(false);
+		} else {
+			if (cost_center_filter) cost_center_filter.toggle(true);
+			if (project_filter) project_filter.toggle(false);
+			if (group_by_account_filter) group_by_account_filter.toggle(true);
+			if (controllable_filter) controllable_filter.toggle(true);
+			if (budget_type_filter) budget_type_filter.toggle(true);
+		}
+		
+		// Auto-set from_date and to_date when fiscal_year is selected (if not already set)
+		var fiscal_year = query_report.get_values().fiscal_year;
+		if (fiscal_year && (!query_report.get_values().from_date || !query_report.get_values().to_date)) {
+			frappe.call({
+				method: "frappe.client.get_value",
+				args: {
+					"doctype": "Fiscal Year",
+					"filters": {"name": fiscal_year},
+					"fieldname": ["year_start_date", "year_end_date"]
+				},
+				callback: function(r) {
+					if (r.message) {
+						var from_date_filter = query_report.get_filter("from_date");
+						var to_date_filter = query_report.get_filter("to_date");
+						
+						if (from_date_filter && !query_report.get_values().from_date) {
+							from_date_filter.set_value(r.message.year_start_date);
+						}
+						if (to_date_filter && !query_report.get_values().to_date) {
+							to_date_filter.set_value(r.message.year_end_date);
+						}
+					}
+				}
+			});
+		}
+	}
+}

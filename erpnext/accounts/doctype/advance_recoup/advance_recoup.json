@@ -1,0 +1,186 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "AR-.####",
+ "creation": "2026-05-13 20:07:25.516776",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_b5ij",
+  "amended_from",
+  "company",
+  "column_break_elrn",
+  "branch",
+  "cost_center",
+  "section_break_gdww",
+  "party_type",
+  "customer",
+  "column_break_nodq",
+  "advance_type",
+  "posting_date",
+  "section_break_hgig",
+  "is_running_bill",
+  "section_break_qekx",
+  "get_advance",
+  "advance_list",
+  "section_break_ugyz",
+  "expense_details",
+  "total_amount",
+  "section_break_edmx",
+  "journal_entry"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_b5ij",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Advance Recoup",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company ",
+   "options": "Company"
+  },
+  {
+   "fieldname": "column_break_elrn",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Branch",
+   "options": "Branch",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "branch.cost_center",
+   "fieldname": "cost_center",
+   "fieldtype": "Link",
+   "label": "Cost Center",
+   "options": "Cost Center",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_gdww",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "advance_type",
+   "fieldtype": "Link",
+   "label": "Advance Type",
+   "options": "Advance Type"
+  },
+  {
+   "fieldname": "column_break_nodq",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "party_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Party Type",
+   "options": "\nCustomer\nSupplier\nEmployee",
+   "reqd": 1
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Dynamic Link",
+   "label": "Party",
+   "options": "party_type"
+  },
+  {
+   "fieldname": "section_break_qekx",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "advance_list",
+   "fieldtype": "Table",
+   "label": "Advance List",
+   "options": "Mobilisation Advance Item"
+  },
+  {
+   "fieldname": "get_advance",
+   "fieldtype": "Button",
+   "label": "Get Advance"
+  },
+  {
+   "default": "Today",
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "label": "Posting Date"
+  },
+  {
+   "fieldname": "section_break_edmx",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "journal_entry",
+   "fieldtype": "Data",
+   "label": "Journal Entry",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_hgig",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_running_bill",
+   "fieldtype": "Check",
+   "label": "Is Running Bill"
+  },
+  {
+   "fieldname": "section_break_ugyz",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "expense_details",
+   "fieldtype": "Table",
+   "label": "Expense Details",
+   "options": "Advance Recoup Item"
+  },
+  {
+   "fieldname": "total_amount",
+   "fieldtype": "Currency",
+   "label": "Total Amount",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2026-05-25 14:02:38.639738",
+ "modified_by": "Administrator",
+ "module": "Accounts",
+ "name": "Advance Recoup",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

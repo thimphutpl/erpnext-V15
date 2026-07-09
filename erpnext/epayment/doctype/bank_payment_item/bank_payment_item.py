@@ -14,7 +14,7 @@ class BankPaymentItem(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
-		amount: DF.Currency
+		amount: DF.Float
 		bank_account_no: DF.Data | None
 		bank_account_type: DF.Data | None
 		bank_branch: DF.Link | None
@@ -41,4 +41,5 @@ class BankPaymentItem(Document):
 		transaction_type: DF.Link | None
 		vehicle_no: DF.Data | None
 	# end: auto-generated types
+
 	pass

@@ -37,6 +37,7 @@ class BankPaymentSettings(Document):
 		upload_path: DF.Data | None
 		username: DF.Data
 	# end: auto-generated types
+
 	def validate(self):
 		self.validate_upload_path()
 

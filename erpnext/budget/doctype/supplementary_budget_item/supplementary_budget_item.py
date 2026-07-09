@@ -13,17 +13,19 @@ class SupplementaryBudgetItem(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
-		account: DF.Link | None
+		account: DF.Link
 		account_number: DF.Data | None
 		amount: DF.Currency
-		budget_activity: DF.Link | None
-		budget_sub_activity: DF.Link | None
+		broad_head: DF.Link
+		budget_activity: DF.Link
+		budget_sub_activity: DF.Link
 		budget_type: DF.Link | None
 		month: DF.Link | None
 		name: DF.Int | None
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
+		source_of_fund: DF.Link
 	# end: auto-generated types
 
 	pass

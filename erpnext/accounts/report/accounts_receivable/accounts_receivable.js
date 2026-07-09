@@ -217,7 +217,7 @@ erpnext.utils.add_dimensions("Accounts Receivable", 9);
 function get_party_type_options() {
 	let options = [];
 	frappe.db
-		.get_list("Party Type", { filters: { account_type: "Receivable" }, fields: ["name"] })
+		.get_list("Party Type", { filters: { account_type: ["in", ("Receivable", "Payable")]}, fields: ["name"] })
 		.then((res) => {
 			res.forEach((party_type) => {
 				options.push(party_type.name);

@@ -371,7 +371,26 @@ frappe.ui.form.on("Company", {
 				filters: { company: doc.name,},
 			};
 		});
-
+        frm.set_query("current_account", function (doc) {
+			return {
+				filters: { company: doc.name},
+			};
+		});
+		  frm.set_query("capital_account", function (doc) {
+			return {
+				filters: { company: doc.name},
+			};
+		});
+		  frm.set_query("lending_account", function (doc) {
+			return {
+				filters: { company: doc.name},
+			};
+		});
+		  frm.set_query("repayment_account", function (doc) {
+			return {
+				filters: { company: doc.name},
+			};
+		});
 		frm.set_query("default_selling_terms", function () {
 			return { filters: { selling: 1 } };
 		});

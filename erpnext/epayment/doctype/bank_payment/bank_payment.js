@@ -37,6 +37,15 @@ frappe.ui.form.on("Bank Payment", {
 				}
 			};
 		});
+
+		cur_frm.set_query("branch", function() {
+			return {
+				"filters": {
+					"disabled": 0,
+					"company": cur_frm.doc.company
+				}
+			};
+		});
 	
 	},
 	refresh: function(frm) {
@@ -119,18 +128,28 @@ frappe.ui.form.on('Bank Payment Item', {
 
 var fetch_bank_balance = function(frm){
 	if(frm.doc.bank_account_no){
+
+		frappe.dom.freeze("Fetching Bank Balance...");
+
 		frappe.call({
 			method: "erpnext.integrations.bank_api.fetch_balance",
 			args: {
-				account_no: frm.doc.bank_account_no,
+				accountId: frm.doc.bank_account_no,
 			},
 			callback: function(r) {
+
+				frappe.dom.unfreeze();
+
 				if(r.message) {
 					console.log(r.message);
-					if(r.message.status == "0")
+
+					if(r.message.status == "0"){
 						frm.set_value("bank_balance", r.message.balance_amount);
-					else	
+					} else {
 						frappe.throw("Unable to fetch Bank Balance");
+					}
+				} else {
+					frappe.throw("No response from server");
 				}
 			}
 		});

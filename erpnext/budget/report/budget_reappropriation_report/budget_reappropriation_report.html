@@ -1,0 +1,380 @@
+<div class="budget-reappropriation-print">
+
+    {%
+        function text(value) {
+            if (value === null || value === undefined) {
+                return "";
+            }
+            return value.toString();
+        }
+
+        function number(value) {
+            if (value === null || value === undefined || value === "") {
+                return 0;
+            }
+
+            if (typeof value === "number") {
+                return value;
+            }
+
+            value = text(value)
+                .replace(/Nu\./gi, "")
+                .replace(/,/g, "")
+                .replace(/[^\d.-]/g, "")
+                .trim();
+
+            value = parseFloat(value || 0);
+            return isNaN(value) ? 0 : value;
+        }
+
+        function money(value) {
+            value = number(value);
+            return value.toLocaleString("en-IN", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+
+        function get_value(row, keys) {
+            if (!row) {
+                return "";
+            }
+
+            for (var i = 0; i < keys.length; i++) {
+                var key = keys[i];
+
+                if (
+                    row[key] !== undefined &&
+                    row[key] !== null &&
+                    row[key] !== ""
+                ) {
+                    return row[key];
+                }
+            }
+
+            return "";
+        }
+
+        function get_company_title(name) {
+            name = text(name);
+
+            if (name.indexOf("Royal Bhutan Army") !== -1) {
+                return "ROYAL BHUTAN ARMY";
+            }
+
+            if (name.indexOf("Royal Body Guard") !== -1) {
+                return "ROYAL BODY GUARD";
+            }
+
+            return name.toUpperCase();
+        }
+
+        var company_name = get_company_title(filters.company || "Royal Bhutan Army");
+        var fiscal_year = filters.fiscal_year || "";
+
+        var total_from_approved_budget = 0;
+        var total_to_approved_budget = 0;
+        var total_from_amount = 0;
+        var total_to_amount = 0;
+    %}
+
+    <div class="reappropriation-title-section">
+        <h3>{%= company_name %}</h3>
+        <h4>Budget Reappropriation Report for the Year: {%= fiscal_year %}</h4>
+    </div>
+
+    <table class="reappropriation-table">
+        <colgroup>
+            <col style="width: 8%;">
+            <col style="width: 9.5%;">
+            <col style="width: 9%;">
+            <col style="width: 6%;">
+            <col style="width: 8%;">
+            <col style="width: 6%;">
+            <col style="width: 5%;">
+
+            <col style="width: 8%;">
+            <col style="width: 9.5%;">
+            <col style="width: 9%;">
+            <col style="width: 6%;">
+            <col style="width: 8%;">
+            <col style="width: 6%;">
+            <col style="width: 5%;">
+        </colgroup>
+
+        <thead>
+            <tr>
+                <th colspan="7" class="group-header">Re-appropriation From</th>
+                <th colspan="7" class="group-header">Re-appropriation To</th>
+            </tr>
+
+            <tr>
+                <th>From Cost Center</th>
+                <th>From Budget Activity</th>
+                <th>From Budget Sub Activity</th>
+                <th>From Financial Code</th>
+                <th>From Account</th>
+                <th>From Approved Budget</th>
+                <th>From Amount</th>
+
+                <th>To Cost Center</th>
+                <th>To Budget Activity</th>
+                <th>To Budget Sub Activity</th>
+                <th>To Financial Code</th>
+                <th>To Account</th>
+                <th>To Approved Budget</th>
+                <th>To Amount</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for (var j = 0; j < data.length; j++) { %}
+                {%
+                    var row = data[j] || {};
+
+                    var from_cost_center = get_value(row, [
+                        "from_cc",
+                        "from_cost_center",
+                        "From Cost Center"
+                    ]);
+
+                    var from_budget_activity = get_value(row, [
+                        "from_budget_activity",
+                        "From Budget Activity"
+                    ]);
+
+                    var from_budget_sub_activity = get_value(row, [
+                        "from_budget_sub_activity",
+                        "From Budget Sub Activity"
+                    ]);
+
+                    var from_financial_code = get_value(row, [
+                        "source_of_fund",
+                        "from_source_of_fund",
+                        "From Financial Code",
+                        "From Source of Fund"
+                    ]);
+
+                    var from_account = get_value(row, [
+                        "from_acc",
+                        "from_account",
+                        "From Account"
+                    ]);
+
+                    var from_approved_budget_value = get_value(row, [
+                        "from_approved_budget",
+                        "From Approved Budget"
+                    ]);
+
+                    var to_cost_center = get_value(row, [
+                        "to_cc",
+                        "to_cost_center",
+                        "To Cost Center"
+                    ]);
+
+                    var to_budget_activity = get_value(row, [
+                        "to_budget_activity",
+                        "To Budget Activity"
+                    ]);
+
+                    var to_budget_sub_activity = get_value(row, [
+                        "to_budget_sub_activity",
+                        "To Budget Sub Activity"
+                    ]);
+
+                    var to_financial_code = get_value(row, [
+                        "to_source_of_fund",
+                        "To Financial Code",
+                        "To Source of Fund"
+                    ]);
+
+                    var to_account = get_value(row, [
+                        "to_acc",
+                        "to_account",
+                        "To Account"
+                    ]);
+
+                    var to_approved_budget_value = get_value(row, [
+                        "to_approved_budget",
+                        "To Approved Budget"
+                    ]);
+
+                    var amount_value = get_value(row, [
+                        "amount",
+                        "Amount"
+                    ]);
+
+                    var from_approved_budget = number(from_approved_budget_value);
+                    var to_approved_budget = number(to_approved_budget_value);
+                    var amount = number(amount_value);
+
+                    total_from_approved_budget += from_approved_budget;
+                    total_to_approved_budget += to_approved_budget;
+                    total_from_amount += amount;
+                    total_to_amount += amount;
+                %}
+
+                <tr class="data-row">
+                    <td>{%= from_cost_center %}</td>
+                    <td>{%= from_budget_activity %}</td>
+                    <td>{%= from_budget_sub_activity %}</td>
+                    <td>{%= from_financial_code %}</td>
+                    <td>{%= from_account %}</td>
+                    <td class="amount-cell">{%= money(from_approved_budget) %}</td>
+                    <td class="amount-cell">{%= money(amount) %}</td>
+
+                    <td>{%= to_cost_center %}</td>
+                    <td>{%= to_budget_activity %}</td>
+                    <td>{%= to_budget_sub_activity %}</td>
+                    <td>{%= to_financial_code %}</td>
+                    <td>{%= to_account %}</td>
+                    <td class="amount-cell">{%= money(to_approved_budget) %}</td>
+                    <td class="amount-cell">{%= money(amount) %}</td>
+                </tr>
+            {% } %}
+
+            <tr class="total-row grand-total-row">
+                <td colspan="5" class="total-label">Grand Total</td>
+                <td class="amount-cell">{%= money(total_from_approved_budget) %}</td>
+                <td class="amount-cell">{%= money(total_from_amount) %}</td>
+
+                <td colspan="5" class="total-label">Grand Total</td>
+                <td class="amount-cell">{%= money(total_to_approved_budget) %}</td>
+                <td class="amount-cell">{%= money(total_to_amount) %}</td>
+            </tr>
+        </tbody>
+    </table>
+
+</div>
+
+<style>
+    @page {
+        size: A4 landscape;
+        margin: 7mm 7mm 8mm 7mm;
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    .print-format {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+
+    .budget-reappropriation-print {
+        font-family: "Times New Roman", serif;
+        color: #000;
+        width: 100%;
+        max-width: 100%;
+        font-size: 12px;
+        overflow: hidden;
+    }
+
+    .reappropriation-title-section {
+        text-align: center;
+        margin-top: 4px;
+        margin-bottom: 28px;
+    }
+
+    .reappropriation-title-section h3 {
+        font-size: 21px;
+        font-weight: 700;
+        margin: 0 0 5px 0;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        color: #000;
+    }
+
+    .reappropriation-title-section h4 {
+        font-size: 17px;
+        font-weight: 700;
+        margin: 0;
+        color: #000;
+    }
+
+    .reappropriation-table {
+        width: 98%;
+        max-width: 98%;
+        margin: 0 auto;
+        border-collapse: collapse;
+        table-layout: fixed;
+        font-size: 11px;
+        border: 0.9px solid #a8a8a8 !important;
+    }
+
+    .reappropriation-table th,
+    .reappropriation-table td {
+        border: 0.5px solid #b8b8b8 !important;
+        padding: 5px 4px;
+        vertical-align: middle;
+        color: #000 !important;
+        background: #fff !important;
+        line-height: 1.2;
+        word-break: break-word;
+        overflow-wrap: break-word;
+    }
+
+    .reappropriation-table th {
+        text-align: center;
+        font-weight: 700;
+        font-size: 11px;
+        background-color: #f7f7f7 !important;
+        border-bottom: 0.9px solid #a8a8a8 !important;
+    }
+
+    .group-header {
+        font-size: 14px !important;
+        font-weight: 700 !important;
+        text-align: center !important;
+        background-color: #f3f3f3 !important;
+        padding: 7px 5px !important;
+    }
+
+    .reappropriation-table thead tr:nth-child(2) th {
+        vertical-align: middle !important;
+        text-align: center !important;
+        height: 52px !important;
+        line-height: 1.15 !important;
+        padding-top: 7px !important;
+        padding-bottom: 7px !important;
+    }
+
+    .data-row td {
+        font-weight: 500;
+        font-size: 10.8px;
+        background: #fff !important;
+        text-align: center;
+    }
+
+    .total-row td {
+        font-weight: 700;
+        font-size: 11.2px;
+        background: #fafafa !important;
+        border-top: 0.7px solid #d6d6d6 !important;
+        border-bottom: 0.7px solid #d6d6d6 !important;
+    }
+
+    .grand-total-row td {
+        background: #f7f7f7 !important;
+    }
+
+    .total-label {
+        text-align: right !important;
+        text-transform: uppercase;
+    }
+
+    .amount-cell {
+        text-align: right !important;
+        white-space: nowrap;
+        padding-right: 6px !important;
+    }
+
+    thead {
+        display: table-header-group;
+    }
+
+    tr {
+        page-break-inside: avoid;
+    }
+</style>
