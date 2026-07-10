@@ -84,7 +84,8 @@
   "subscription_section",
   "auto_repeat",
   "amended_from",
-  "repost_required"
+  "repost_required",
+  "workflow_state"
  ],
  "fields": [
   {
@@ -131,6 +132,7 @@
    "width": "50%"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "posting_date",
    "fieldtype": "Date",
    "label": "Posting Date",
@@ -688,6 +690,12 @@
    "fieldtype": "Link",
    "label": "Select Cheque Lot",
    "options": "Cheque Lot"
+  },
+  {
+   "fieldname": "workflow_state",
+   "fieldtype": "Link",
+   "label": "Workflow State",
+   "options": "Workflow State"
   }
  ],
  "icon": "fa fa-file-text",
@@ -702,7 +710,7 @@
    "table_fieldname": "payment_entries"
   }
  ],
- "modified": "2026-07-03 10:53:02.703633",
+ "modified": "2026-07-10 17:45:07.486005",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Journal Entry",
