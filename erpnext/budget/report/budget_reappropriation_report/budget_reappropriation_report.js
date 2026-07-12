@@ -9,8 +9,9 @@ frappe.query_reports["Budget Reappropriation Report"] = {
             label: __("Company"),
             fieldtype: "Link",
             options: "Company",
-            default: frappe.defaults.get_user_default("Company"),
-            reqd: 1
+            "on_change": function (query_report) {
+                set_program_code(query_report);
+            }
         },
         {
             fieldname: "fiscal_year",
@@ -135,5 +136,33 @@ function set_fiscal_year_dates(query_report) {
 
             query_report.refresh();
         }
+    });
+}
+
+function set_program_code(report) {
+	
+    let company = report.get_filter_value("company");
+
+    if (!company) {
+        report.program_code = "";
+        report.program_name = "";
+        report.refresh();
+        return;
+    }
+
+    frappe.db.get_value(
+        "Company",
+        company,
+        [
+            "program_code",
+            "program_name"
+        ]
+    ).then(r => {
+
+        report.program_code = r.message.program_code || "";
+        report.program_name = r.message.program_name || "";
+
+        report.refresh();
+
     });
 }

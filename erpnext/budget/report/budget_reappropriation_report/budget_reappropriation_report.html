@@ -72,6 +72,13 @@
         var company_name = get_company_title(filters.company || "Royal Bhutan Army");
         var fiscal_year = filters.fiscal_year || "";
 
+        var today = new Date();
+
+        var printed_date =
+            ("0" + today.getDate()).slice(-2) + "/" +
+            ("0" + (today.getMonth() + 1)).slice(-2) + "/" +
+            today.getFullYear();
+
         var total_from_approved_budget = 0;
         var total_to_approved_budget = 0;
         var total_from_amount = 0;
@@ -80,7 +87,74 @@
 
     <div class="reappropriation-title-section">
         <h3>{%= company_name %}</h3>
-        <h4>Budget Reappropriation Report for the Year: {%= fiscal_year %}</h4>
+    
+        <h4>
+            Budget Reappropriation Report for the Year: {%= fiscal_year %}
+        </h4>
+    
+        <div class="budget-form-row">
+            Budget Form IX
+        </div>
+    </div>
+
+    <div class="print-details-section">
+
+        <div class="print-detail-row">
+            <div class="print-detail-label">
+                Printed Date:
+            </div>
+
+            <div class="print-detail-value">
+                {%= printed_date %}
+            </div>
+        </div>
+
+        <div class="print-detail-row">
+            <div class="print-detail-label">
+                Order No.:
+            </div>
+
+            <div class="print-detail-value">
+                &nbsp;
+            </div>
+        </div>
+
+        <div class="print-detail-row">
+            <div class="print-detail-label">
+                Order Date:
+            </div>
+
+            <div class="print-detail-value">
+                &nbsp;
+            </div>
+        </div>
+
+    </div>
+
+    <div class="report-information-section">
+
+        <div class="report-information-left">
+    
+            <p class="administrative-unit">
+                <span class="report-label">Administrative Unit:</span>
+                <span class="report-value">303.01 SUNCHOB SERVICES</span>
+            </p>
+    
+            <p class="program-information">
+                <span class="report-label">Program:</span>
+                <span class="report-value">
+                    {%= frappe.query_report.program_code || "" %}
+                    -
+                    {%= frappe.query_report.program_name || "" %}
+                </span>
+            </p>
+    
+        </div>
+    
+        <div class="report-unit">
+            (Ngultrum in Millions)
+        </div>
+    
     </div>
 
     <table class="reappropriation-table">
@@ -272,9 +346,10 @@
     }
 
     .reappropriation-title-section {
+        width: 100%;
         text-align: center;
         margin-top: 4px;
-        margin-bottom: 28px;
+        margin-bottom: 30px;
     }
 
     .reappropriation-title-section h3 {
@@ -291,6 +366,39 @@
         font-weight: 700;
         margin: 0;
         color: #000;
+    }
+
+    .budget-form-row {
+        width: 98%;
+        margin: 10px auto 0 auto;
+        text-align: right;
+        font-size: 12px;
+        font-weight: 700;
+        line-height: 1.2;
+        color: #000;
+    }
+
+    .print-details-section {
+        width: 98%;
+        margin: 0 auto 18px auto;
+        font-size: 12px;
+        font-weight: 700;
+        color: #000;
+    }
+
+    .print-detail-row {
+        display: grid;
+        grid-template-columns: 160px 190px;
+        column-gap: 25px;
+        align-items: center;
+        min-height: 25px;
+        margin-bottom: 5px;
+    }
+
+    .print-detail-label,
+    .print-detail-value {
+        line-height: 1.3;
+        text-align: left;
     }
 
     .reappropriation-table {
@@ -377,4 +485,58 @@
     tr {
         page-break-inside: avoid;
     }
-</style>
+
+    .report-information-section {
+    width: 98%;
+    margin: 0 auto 16px auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 20px;
+    font-size: 12px;
+    line-height: 1.35;
+}
+
+.report-information-left {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.report-information-left p {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: flex-start;
+}
+
+.report-label {
+    width: 185px;
+    flex: 0 0 185px;
+    text-align: left;
+}
+
+.report-value {
+    display: inline-block;
+    text-align: left;
+}
+
+.administrative-unit {
+    font-style: italic;
+    font-weight: 600;
+    margin-bottom: 6px !important;
+}
+
+.program-information {
+    font-style: normal;
+    font-weight: 500;
+}
+
+.report-unit {
+    flex-shrink: 0;
+    font-weight: 600;
+    text-align: right;
+    white-space: nowrap;
+    padding-bottom: 1px;
+}

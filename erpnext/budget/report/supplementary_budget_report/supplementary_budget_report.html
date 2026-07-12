@@ -1,165 +1,1891 @@
-<h3 class="text-center">Royal Bhutan Army</h3>
-<h4 class="text-center">
-    {%= __(report.report_name) %} for the Year: {%= filters.fiscal_year %}</h4>
-<hr>
+<div class="supplementary-budget-print">
 
-<table class="table table-bordered">
-    <thead style="font-weight: bold; color: black;">
-        <tr>
-            <th>Sub Program Code</th>
-            <th>Activity Code</th>
-            <th>Sub Activity Code</th>
-            <th>Financing Code</th>
-            <th>Account Code</th>
-            <th>Title</th>
-            <th>Proposed Budget</th>
-            <th>Approved Budget</th>
-            <th>Supplementary Budget</th>
-            <th>Budget Reappropations</th>
-            <th>Revision Budget</th>  
-        </tr>
-    </thead>
-    <tbody>
-        {% 
-            var last_costcenter = "";
-            var last_activity = "";
-            var last_subactivity = "";
-            var last_financing = "";
+    {%
+        /* =====================================================
+           COMMON FUNCTIONS
+           ===================================================== */
 
-            var financing_total_proposed = 0;
-            var financing_total_approved = 0;
-            var subactivity_total_proposed = 0;
-            var subactivity_total_approved = 0;
-            var supplementary_total_approved = 0;
-            var budget_reappropations_total_approved = 0;
-            var revision_budget =0;
-        %}
+        function text(value) {
+            if (value === null || value === undefined) {
+                return "";
+            }
 
-        {% for (var j=0; j<data.length; j++) { %}
-            {% var row = data[j]; %}
+            return String(value).trim();
+        }
 
-            {% if (row.budget_cost_center && row.budget_cost_center != last_costcenter) { %}
-                <tr style="font-weight:bold; background:#ffffff; color:black;">
-                    <td>{%= row.budget_cost_center.split("-")[0] %}</td>
-                    <td></td><td></td><td></td><td></td>
-                    <td>{%= row.cost_center_name || "" %}</td>
-                    <td></td><td></td>
-                </tr>
-                {% last_costcenter = row.budget_cost_center; %}
-                {% last_activity = ""; last_subactivity = ""; last_financing = ""; %}
+
+        function number(value) {
+            if (
+                value === null ||
+                value === undefined ||
+                value === ""
+            ) {
+                return 0;
+            }
+
+            if (typeof value === "number") {
+                return value;
+            }
+
+            var cleaned_value = String(value)
+                .replace(/Nu\./gi, "")
+                .replace(/,/g, "")
+                .trim();
+
+            var parsed_value = parseFloat(cleaned_value);
+
+            return isNaN(parsed_value)
+                ? 0
+                : parsed_value;
+        }
+
+
+        function money(value) {
+            value = number(value);
+
+            var is_negative = value < 0;
+
+            value = Math.abs(value);
+
+            var fixed_value = value.toFixed(2);
+            var value_parts = fixed_value.split(".");
+
+            value_parts[0] = value_parts[0].replace(
+                /\B(?=(\d{3})+(?!\d))/g,
+                ","
+            );
+
+            return (
+                (is_negative ? "-" : "") +
+                value_parts.join(".")
+            );
+        }
+
+
+        function format_date(value) {
+            value = text(value);
+
+            if (!value) {
+                return "";
+            }
+
+            var date_parts = value.split("-");
+
+            /*
+                Convert:
+                2026-07-12
+
+                Into:
+                12/07/2026
+            */
+            if (
+                date_parts.length === 3 &&
+                date_parts[0].length === 4
+            ) {
+                return (
+                    date_parts[2] +
+                    "/" +
+                    date_parts[1] +
+                    "/" +
+                    date_parts[0]
+                );
+            }
+
+            return value;
+        }
+
+
+        function split_by_dash(value) {
+            value = text(value);
+
+            if (!value) {
+                return [];
+            }
+
+            return value.split(/\s+-\s+/);
+        }
+
+
+        function is_code(value) {
+            value = text(value);
+
+            return /^[A-Za-z0-9]+(?:\.[A-Za-z0-9]+)*$/.test(
+                value
+            );
+        }
+
+
+        function get_first_code(value) {
+            value = text(value);
+
+            if (!value) {
+                return "";
+            }
+
+            var match = value.match(
+                /^([A-Za-z0-9.]+)/
+            );
+
+            if (match && match[1]) {
+                return match[1];
+            }
+
+            return value;
+        }
+
+
+        function get_title_after_first_code(value) {
+            value = text(value);
+
+            if (!value) {
+                return "";
+            }
+
+            return value
+                .replace(
+                    /^[A-Za-z0-9.]+\s*(?:-\s*)?/,
+                    ""
+                )
+                .trim();
+        }
+
+
+        /* =====================================================
+           COST CENTER
+           ===================================================== */
+
+        function parse_cost_center(value) {
+            value = text(value);
+
+            if (!value) {
+                return {
+                    code: "",
+                    title: ""
+                };
+            }
+
+            return {
+                code: get_first_code(value),
+                title: get_title_after_first_code(value)
+            };
+        }
+
+
+        /* =====================================================
+           ACTIVITY
+           ===================================================== */
+
+        function parse_activity(value) {
+            value = text(value);
+
+            if (!value) {
+                return {
+                    code: "",
+                    title: ""
+                };
+            }
+
+            var parts = split_by_dash(value);
+
+            /*
+                Example:
+                001 - 001.00 -
+                GENERAL ADMINISTRATION - RBA
+            */
+            if (
+                parts.length >= 3 &&
+                is_code(parts[0]) &&
+                is_code(parts[1])
+            ) {
+                return {
+                    code: text(parts[1]),
+
+                    title: parts
+                        .slice(2)
+                        .join(" - ")
+                        .trim()
+                };
+            }
+
+            /*
+                Example:
+                001.00 -
+                GENERAL ADMINISTRATION - RBA
+            */
+            if (
+                parts.length >= 2 &&
+                is_code(parts[0])
+            ) {
+                return {
+                    code: text(parts[0]),
+
+                    title: parts
+                        .slice(1)
+                        .join(" - ")
+                        .trim()
+                };
+            }
+
+            return {
+                code: get_first_code(value),
+                title: get_title_after_first_code(value)
+            };
+        }
+
+
+        /* =====================================================
+           SUB ACTIVITY
+           ===================================================== */
+
+        function parse_sub_activity(value) {
+            value = text(value);
+
+            if (!value) {
+                return {
+                    code: "",
+                    title: ""
+                };
+            }
+
+            var parts = split_by_dash(value);
+
+            /*
+                Example:
+                001 - 001.01 -
+                PAY AND ALLOWANCES
+            */
+            if (
+                parts.length >= 3 &&
+                is_code(parts[0]) &&
+                is_code(parts[1])
+            ) {
+                return {
+                    code: text(parts[1]),
+
+                    title: parts
+                        .slice(2)
+                        .join(" - ")
+                        .trim()
+                };
+            }
+
+            /*
+                Example:
+                001.01 -
+                PAY AND ALLOWANCES
+            */
+            if (
+                parts.length >= 2 &&
+                is_code(parts[0])
+            ) {
+                return {
+                    code: text(parts[0]),
+
+                    title: parts
+                        .slice(1)
+                        .join(" - ")
+                        .trim()
+                };
+            }
+
+            return {
+                code: get_first_code(value),
+                title: get_title_after_first_code(value)
+            };
+        }
+
+
+        /* =====================================================
+           ACCOUNT
+           ===================================================== */
+
+        function parse_account(value) {
+            value = text(value);
+
+            if (!value) {
+                return {
+                    code: "",
+                    title: ""
+                };
+            }
+
+            var parts = split_by_dash(value);
+
+            /*
+                Example:
+                1.01 - Pay & Allowances - RBA
+            */
+            if (
+                parts.length >= 2 &&
+                is_code(parts[0])
+            ) {
+                return {
+                    code: text(parts[0]),
+
+                    title: parts
+                        .slice(1)
+                        .join(" - ")
+                        .trim()
+                };
+            }
+
+            return {
+                code: get_first_code(value),
+                title: get_title_after_first_code(value)
+            };
+        }
+
+
+        /* =====================================================
+           COMPANY TITLE
+           ===================================================== */
+
+        function get_company_title(company) {
+            company = text(company);
+
+            if (
+                company.toLowerCase().indexOf(
+                    "royal body guard"
+                ) !== -1
+            ) {
+                return "ROYAL BODY GUARD";
+            }
+
+            if (
+                company.toLowerCase().indexOf(
+                    "royal bhutan army"
+                ) !== -1
+            ) {
+                return "ROYAL BHUTAN ARMY";
+            }
+
+            return company.toUpperCase();
+        }
+
+
+        /* =====================================================
+           FINANCING TOTAL LABEL
+           ===================================================== */
+
+        function get_financing_total_label(
+            financing_code,
+            source_of_fund
+        ) {
+            var combined_value = (
+                text(financing_code) +
+                " " +
+                text(source_of_fund)
+            ).toUpperCase();
+
+            if (
+                combined_value.indexOf("GOI") !== -1
+            ) {
+                return "TOTAL GOI";
+            }
+
+            if (
+                combined_value.indexOf("RGOB") !== -1
+            ) {
+                return "TOTAL RGOB";
+            }
+
+            if (source_of_fund) {
+                return (
+                    "TOTAL " +
+                    text(source_of_fund).toUpperCase()
+                );
+            }
+
+            return (
+                "TOTAL " +
+                text(financing_code).toUpperCase()
+            );
+        }
+
+
+        /* =====================================================
+           REPORT VARIABLES
+           ===================================================== */
+
+        var company_name = get_company_title(
+            filters.company || "Royal Body Guard"
+        );
+
+        var fiscal_year =
+            filters.fiscal_year || "";
+
+        var report_rows =
+            data || [];
+
+        var first_row =
+            report_rows.length
+                ? report_rows[0]
+                : {};
+
+
+        /* =====================================================
+           INFORMATION ABOVE TABLE
+           ===================================================== */
+
+        var printed_date = format_date(
+            frappe.datetime.get_today()
+        );
+
+
+        var order_no =
+            filters.order_no ||
+            filters.order_number ||
+            first_row.order_no ||
+            first_row.order_number ||
+            first_row.supplementary_order_no ||
+            "";
+
+
+        var order_date = format_date(
+            filters.order_date ||
+            first_row.order_date ||
+            first_row.supplementary_order_date ||
+            ""
+        );
+
+
+        var supplementary_type =
+            filters.supplementary_type ||
+            filters.type_of_supplementary ||
+            first_row.supplementary_type ||
+            first_row.type_of_supplementary ||
+            "Additional Supplementary Budget";
+
+
+        /*
+            Administrative Unit is hardcoded.
+            It will show in every print format.
+        */
+
+        var administrative_unit =
+            "303.01  SUNGCHOB SERVICES";
+
+
+        /*
+            Program is fetched from filters or report data.
+
+            Supported separate fields:
+            program_code
+            program_name
+            company_program_code
+            company_program_name
+
+            It also supports a combined field:
+            program
+        */
+
+        var program_value =
+            filters.program ||
+            first_row.program ||
+            first_row.company_program ||
+            "";
+
+        var program_details =
+            parse_cost_center(program_value);
+
+        var program_code =
+            filters.program_code ||
+            first_row.program_code ||
+            first_row.company_program_code ||
+            program_details.code ||
+            "";
+
+        var program_name =
+            filters.program_name ||
+            first_row.program_name ||
+            first_row.company_program_name ||
+            program_details.title ||
+            "";
+
+
+        /* =====================================================
+           EXPLANATION BELOW TABLE
+           ===================================================== */
+
+        var explanation =
+            filters.explanation ||
+            filters.justification ||
+            filters.remarks ||
+            "";
+
+        if (!explanation) {
+            for (
+                var explanation_index = 0;
+                explanation_index < report_rows.length;
+                explanation_index++
+            ) {
+                if (
+                    report_rows[explanation_index] &&
+                    report_rows[explanation_index].remarks
+                ) {
+                    explanation =
+                        report_rows[explanation_index].remarks;
+
+                    break;
+                }
+            }
+        }
+
+
+        /* =====================================================
+           PREVIOUS HIERARCHY VALUES
+           ===================================================== */
+
+        var last_cost_center_key = "";
+        var last_activity_key = "";
+        var last_sub_activity_key = "";
+        var last_financing_key = "";
+
+        var last_sub_activity_code = "";
+        var last_financing_total_label = "";
+
+
+        /* =====================================================
+           TOTALS
+           ===================================================== */
+
+        var financing_total = 0;
+        var sub_activity_total = 0;
+        var grand_total = 0;
+    %}
+
+
+    <!-- =====================================================
+         REPORT TITLE
+         ===================================================== -->
+
+    <div class="report-title-section">
+
+        <h3>
+            {%= company_name %}
+        </h3>
+
+        <h4>
+            Supplementary Budget Report for the Year:
+            {%= fiscal_year %}
+        </h4>
+
+        <!-- <div class="report-period">
+
+            {% if (filters.from_date) { %}
+
+                <span class="report-period-item">
+                    From:
+                    <strong>
+                        {%= format_date(filters.from_date) %}
+                    </strong>
+                </span>
+
             {% } %}
 
-            {% if (row.budget_activity && row.budget_activity != last_activity) { %}
-                <tr style="font-weight:bold;">
-                    <td></td>
-                    <td>{%= row.budget_activity.split(" ")[0] %}</td>
-                    <td></td><td></td><td></td>
-                    <td>{%= row.budget_activity.replace(row.budget_activity.split(" ")[0], "").trim() %}</td>
-                    <td></td><td></td>
-                </tr>
-                {% last_activity = row.budget_activity; %}
-                {% last_subactivity = ""; last_financing = ""; %}
+
+            {% if (filters.to_date) { %}
+
+                <span class="report-period-item">
+                    To:
+                    <strong>
+                        {%= format_date(filters.to_date) %}
+                    </strong>
+                </span>
+
             {% } %}
 
-            {% if (row.budget_sub_activity && row.budget_sub_activity != last_subactivity) { %}
-                {% if (last_subactivity) { %}
-                    <tr style="font-weight:bold; background:#ffffff;">
-                        <td></td><td></td><td></td><td></td><td></td>
-                        <td>TOTAL SUB-ACTIVITY {%= last_subactivity.split(" ")[0] %}</td>
-                        <td>{%= subactivity_total_proposed %}</td>
-                        <td>{%= subactivity_total_approved %}</td>
-                    </tr>
-                    {% subactivity_total_proposed = 0; subactivity_total_approved = 0; %}
-                {% } %}
-                <tr style="font-weight:bold;">
-                    <td></td><td></td>
-                    <td>{%= row.budget_sub_activity.split(" ")[0] %}</td>
-                    <td></td><td></td>
-                    <td>{%= row.budget_sub_activity.replace(row.budget_sub_activity.split(" ")[0], "").trim() %}</td>
-                    <td></td><td></td>
-                </tr>
-                {% last_subactivity = row.budget_sub_activity; %}
-                {% last_financing = ""; %}
-            {% } %}
+        </div> -->
 
-            {% if (row.source_of_fund && row.financing_code != last_financing) { %}
-                {% if (last_financing) { %}
-                    <tr style="font-weight:bold; color:#0b5394;">
-                        <td></td><td></td><td></td><td></td><td></td>
-                        <td>TOTAL {%= last_financing %}</td>
-                        <td>{%= financing_total_proposed %}</td>
-                        <td>{%= financing_total_approved %}</td>
-                    </tr>
-                    {% financing_total_proposed = 0; financing_total_approved = 0; %}
-                {% } %}
-                <tr style="font-weight:bold; color:#0b5394;">
-                    <td></td><td></td><td></td>
-                    <td>{%= row.source_of_fund %}</td>
-                    <td></td>
-                    <td style="padding-left:60px;">{%= row.financing_title || "" %}</td>
-                    <td></td><td></td>
-                </tr>
-                {% last_financing = row.financing_code; %}
-            {% } %}
+    </div>
+	
 
-            {% if (row.account && row.account_initial_budget && row.account_initial_budget > 0) { %}
-                {% 
-                    var acc_parts = row.account.split(" ");
-                    var acc_code = acc_parts.length > 0 ? acc_parts[0] : "";
-                    var acc_title = row.account.replace(acc_code, "").trim();
-                    var proposed_budget = row.account_initial_budget || 0;
-                    var approved_budget = row.approved_budget || 0;
-                    var s_total_approved = row.supplementary_budget || 0;
-                    var b_reappropations_total_approved = row.budget_received || 0;
-                    var r_budget = row.budget_amount || 0;
 
-                    financing_total_proposed += proposed_budget;
-                    financing_total_approved += approved_budget;
-                    subactivity_total_proposed += proposed_budget;
-                    subactivity_total_approved += approved_budget;
-                    supplementary_total_approved += supplementary_total_approved;
-                    budget_reappropations_total_approved += budget_reappropations_total_approved;
-                    revision_budget += revision_budget;
-                %}
+    <!-- =====================================================
+         INFORMATION ABOVE TABLE
+         ===================================================== -->
+
+    <div class="outside-table-header">
+
+        <div class="outside-header-left">
+
+            <div class="outside-information-row">
+
+                <div class="outside-information-label">
+                    Printed Date:
+                </div>
+
+                <div class="outside-information-value">
+                    {%= printed_date %}
+                </div>
+
+            </div>
+
+
+            <div class="outside-information-row">
+
+                <div class="outside-information-label">
+                    Order No.:
+                </div>
+
+                <div class="outside-information-value">
+                    {%= order_no || "" %}
+                </div>
+
+            </div>
+
+
+            <div class="outside-information-row">
+
+                <div class="outside-information-label">
+                    Order Date:
+                </div>
+
+                <div class="outside-information-value">
+                    {%= order_date || "" %}
+                </div>
+
+            </div>
+
+
+            <div class="outside-information-row">
+
+                <div class="outside-information-label">
+                    Type of Supplementary Required:
+                </div>
+
+                <div class="outside-information-value supplementary-type">
+                    {%= supplementary_type || "" %}
+                </div>
+
+            </div>
+
+		
+
+            <div class="outside-information-row">
+
+                <div class="outside-information-label">
+                    Administrative Unit:
+                </div>
+
+                <div class="outside-information-value administrative-unit-value">
+                    {%= administrative_unit %}
+                </div>
+
+            </div>
+
+            <div class="outside-information-row">
+
+                <div class="outside-information-label">
+                    Program:
+                </div>
+
+                <div class="outside-information-value program-value">
+                    {%= frappe.query_report.program_code || "" %}
+                    -
+                    {%= frappe.query_report.program_name || "" %}
+                </div>
+        
+            </div>
+            
+        </div>
+        
+        <div class="outside-header-right">
+            Budget Form VIII
+        </div>
+    </div>
+
+    <div class="ngultrum-note">
+        (Ngultrum in Millions)
+    </div>
+
+
+    <!-- =====================================================
+         REPORT TABLE
+         ===================================================== -->
+
+    <table class="supplementary-table">
+
+        <colgroup>
+            <col class="column-sub-program">
+            <col class="column-activity">
+            <col class="column-sub-activity">
+            <col class="column-financing">
+            <col class="column-source-fund">
+            <col class="column-account">
+            <col class="column-title">
+            <col class="column-approved-budget">
+        </colgroup>
+
+
+        <thead>
+
+            <tr>
+
+                <th>
+                    Sub Program<br>
+                    Code
+                </th>
+
+                <th>
+                    Activity<br>
+                    Code
+                </th>
+
+                <th>
+                    Sub Activity<br>
+                    Code
+                </th>
+
+                <th>
+                    Financing<br>
+                    Code
+                </th>
+
+                <th>
+                    Source of Fund
+                </th>
+
+                <th>
+                    Account<br>
+                    Code
+                </th>
+
+                <th>
+                    Title
+                </th>
+
+                <th>
+                    Approved<br>
+                    Budget
+                </th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody>
+
+            {% if (!report_rows.length) { %}
+
                 <tr>
-                    <td></td><td></td><td></td><td></td>
-                    <td>{%= acc_code %}</td>
-                    <td style="padding-left:80px;">{%= acc_title %}</td>
-                    <td>{%= proposed_budget %}</td>
-                    <td>{%= approved_budget %}</td>
-                    <td>{%= s_total_approved %}</td>
-                    <td>{%= b_reappropations_total_approved%} </td>
-                    <td>{%= r_budget%} </td>
+
+                    <td
+                        colspan="8"
+                        class="no-data-row"
+                    >
+                        No records found for the selected filters.
+                    </td>
 
                 </tr>
+
             {% } %}
 
-        {% } %}
 
-        {% if (last_subactivity) { %}
-        <tr style="font-weight:bold; background:#ffffff;">
-            <td></td><td></td><td></td><td></td><td></td>
-            <td>TOTAL SUB-ACTIVITY {%= last_subactivity.split(" ")[0] %}</td>
-            <td>{%= subactivity_total_proposed %}</td>
-            <td>{%= subactivity_total_approved %}</td>
-        </tr>
-        {% } %}
+            {% for (
+                var row_index = 0;
+                row_index < report_rows.length;
+                row_index++
+            ) { %}
 
-        {% if (last_financing) { %}
-        <tr style="font-weight:bold; color:#0b5394;">
-            <td></td><td></td><td></td><td></td><td></td>
-            <td>TOTAL {%= last_financing %}</td>
-            <td>{%= financing_total_proposed %}</td>
-            <td>{%= financing_total_approved %}</td>
-        </tr>
-        {% } %}
-    </tbody>
-</table>
+                {%
+                    var row =
+                        report_rows[row_index] || {};
+
+
+                    /* Cost Center */
+
+                    var cost_center_value =
+                        row.to_cc ||
+                        row.to_project ||
+                        "";
+
+                    var cost_center_details =
+                        parse_cost_center(
+                            cost_center_value
+                        );
+
+                    var cost_center_code =
+                        cost_center_details.code;
+
+                    var cost_center_title =
+                        cost_center_details.title;
+
+
+                    /* Activity */
+
+                    var activity_value =
+                        row.budget_activity || "";
+
+                    var activity_details =
+                        parse_activity(
+                            activity_value
+                        );
+
+                    var activity_code =
+                        activity_details.code;
+
+                    var activity_title =
+                        activity_details.title;
+
+
+                    /* Sub Activity */
+
+                    var sub_activity_value =
+                        row.budget_sub_activity || "";
+
+                    var sub_activity_details =
+                        parse_sub_activity(
+                            sub_activity_value
+                        );
+
+                    var sub_activity_code =
+                        sub_activity_details.code;
+
+                    var sub_activity_title =
+                        sub_activity_details.title;
+
+
+                    /* Financing Code */
+
+                    var financing_code =
+                        text(row.fic);
+
+
+                    /* Source of Fund */
+
+                    var source_of_fund =
+                        text(row.source_of_fund);
+
+
+                    /* Account */
+
+                    var account_value =
+                        row.to_acc || "";
+
+                    var account_details =
+                        parse_account(
+                            account_value
+                        );
+
+                    var account_code =
+                        account_details.code;
+
+                    var account_title =
+                        account_details.title;
+
+
+                    /* Approved Budget */
+
+                    var approved_budget =
+                        number(row.amount);
+
+
+                    /* Hierarchy keys */
+
+                    var cost_center_key =
+                        text(cost_center_value);
+
+                    var activity_key = [
+                        cost_center_key,
+                        text(activity_value)
+                    ].join("||");
+
+                    var sub_activity_key = [
+                        activity_key,
+                        text(sub_activity_value)
+                    ].join("||");
+
+                    var financing_key = "";
+
+                    if (
+                        financing_code ||
+                        source_of_fund
+                    ) {
+                        financing_key = [
+                            sub_activity_key,
+                            financing_code,
+                            source_of_fund
+                        ].join("||");
+                    }
+
+
+                    /* Detect changes */
+
+                    var cost_center_changed =
+                        cost_center_key !==
+                        last_cost_center_key;
+
+                    var activity_changed =
+                        activity_key !==
+                        last_activity_key;
+
+                    var sub_activity_changed =
+                        sub_activity_key !==
+                        last_sub_activity_key;
+
+                    var financing_changed =
+                        financing_key !==
+                        last_financing_key;
+
+
+                    var financing_total_label =
+                        get_financing_total_label(
+                            financing_code,
+                            source_of_fund
+                        );
+                %}
+
+
+                <!-- Close previous financing group -->
+
+                {% if (
+                    financing_changed &&
+                    last_financing_key
+                ) { %}
+
+                    <tr class="total-row financing-total-row">
+
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+
+                        <td class="total-label">
+                            {%= last_financing_total_label %}
+                        </td>
+
+                        <td class="amount-cell">
+                            {%= money(financing_total) %}
+                        </td>
+
+                    </tr>
+
+                    {%
+                        financing_total = 0;
+                    %}
+
+                {% } %}
+
+
+                <!-- Close previous sub-activity group -->
+
+                {% if (
+                    sub_activity_changed &&
+                    last_sub_activity_key
+                ) { %}
+
+                    <tr class="total-row sub-activity-total-row">
+
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+
+                        <td class="total-label">
+                            TOTAL SUB-ACTIVITY
+                            {%= last_sub_activity_code %}
+                        </td>
+
+                        <td class="amount-cell">
+                            {%= money(sub_activity_total) %}
+                        </td>
+
+                    </tr>
+
+                    {%
+                        sub_activity_total = 0;
+                    %}
+
+                {% } %}
+
+
+                <!-- Cost Center row -->
+
+                {% if (
+                    cost_center_value &&
+                    cost_center_changed
+                ) { %}
+
+                    <tr class="hierarchy-row cost-center-row">
+
+                        <td>
+                            {%= cost_center_code %}
+                        </td>
+
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+
+                        <td>
+                            {%= cost_center_title %}
+                        </td>
+
+                        <td></td>
+
+                    </tr>
+
+                {% } %}
+
+
+                <!-- Activity row -->
+
+                {% if (
+                    activity_value &&
+                    activity_changed
+                ) { %}
+
+                    <tr class="hierarchy-row activity-row">
+
+                        <td></td>
+
+                        <td>
+                            {%= activity_code %}
+                        </td>
+
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+
+                        <td>
+                            {%= activity_title %}
+                        </td>
+
+                        <td></td>
+
+                    </tr>
+
+                {% } %}
+
+
+                <!-- Sub Activity row -->
+
+                {% if (
+                    sub_activity_value &&
+                    sub_activity_changed
+                ) { %}
+
+                    <tr class="hierarchy-row sub-activity-row">
+
+                        <td></td>
+                        <td></td>
+
+                        <td>
+                            {%= sub_activity_code %}
+                        </td>
+
+                        <td></td>
+                        <td></td>
+                        <td></td>
+
+                        <td>
+                            {%= sub_activity_title %}
+                        </td>
+
+                        <td></td>
+
+                    </tr>
+
+                {% } %}
+
+
+                <!-- Financing row -->
+
+                {% if (
+                    financing_changed &&
+                    (
+                        financing_code ||
+                        source_of_fund
+                    )
+                ) { %}
+
+                    <tr class="hierarchy-row financing-row">
+
+                        <td></td>
+                        <td></td>
+                        <td></td>
+
+                        <td>
+                            {%= financing_code %}
+                        </td>
+
+                        <td>
+                            {%= source_of_fund %}
+                        </td>
+
+                        <td></td>
+
+                        <td>
+                            {%= source_of_fund %}
+                        </td>
+
+                        <td></td>
+
+                    </tr>
+
+                {% } %}
+
+
+                <!-- Account row -->
+
+                <tr class="data-row">
+
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+
+                    <td>
+                        {%= account_code %}
+                    </td>
+
+                    <td>
+                        {%= account_title %}
+                    </td>
+
+                    <td class="amount-cell">
+                        {%= money(approved_budget) %}
+                    </td>
+
+                </tr>
+
+
+                {%
+                    financing_total +=
+                        approved_budget;
+
+                    sub_activity_total +=
+                        approved_budget;
+
+                    grand_total +=
+                        approved_budget;
+
+
+                    last_cost_center_key =
+                        cost_center_key;
+
+                    last_activity_key =
+                        activity_key;
+
+                    last_sub_activity_key =
+                        sub_activity_key;
+
+                    last_financing_key =
+                        financing_key;
+
+                    last_sub_activity_code =
+                        sub_activity_code;
+
+                    last_financing_total_label =
+                        financing_total_label;
+                %}
+
+            {% } %}
+
+
+            <!-- Last financing total -->
+
+            {% if (
+                report_rows.length &&
+                last_financing_key
+            ) { %}
+
+                <tr class="total-row financing-total-row">
+
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+
+                    <td class="total-label">
+                        {%= last_financing_total_label %}
+                    </td>
+
+                    <td class="amount-cell">
+                        {%= money(financing_total) %}
+                    </td>
+
+                </tr>
+
+            {% } %}
+
+
+            <!-- Last sub activity total -->
+
+            {% if (
+                report_rows.length &&
+                last_sub_activity_key
+            ) { %}
+
+                <tr class="total-row sub-activity-total-row">
+
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+
+                    <td class="total-label">
+                        TOTAL SUB-ACTIVITY
+                        {%= last_sub_activity_code %}
+                    </td>
+
+                    <td class="amount-cell">
+                        {%= money(sub_activity_total) %}
+                    </td>
+
+                </tr>
+
+            {% } %}
+
+
+            <!-- Grand total -->
+
+            {% if (report_rows.length) { %}
+
+                <tr class="grand-total-row">
+
+                    <td
+                        colspan="7"
+                        class="grand-total-label"
+                    >
+                        GRAND TOTAL
+                    </td>
+
+                    <td class="amount-cell">
+                        {%= money(grand_total) %}
+                    </td>
+
+                </tr>
+
+            {% } %}
+
+        </tbody>
+
+    </table>
+
+
+    <!-- =====================================================
+         INFORMATION BELOW TABLE
+         ===================================================== -->
+
+    <div class="outside-table-footer">
+
+        <div class="explanation-section">
+
+            <div class="explanation-heading">
+                Explanation / Justification for Supplementary Budget:
+            </div>
+
+            <div class="explanation-text">
+                {%= explanation || "" %}
+            </div>
+
+        </div>
+
+
+        <div class="signature-section">
+
+            <div class="signature-item signature-left">
+
+                <div class="signature-space"></div>
+
+                <div class="signature-title">
+                    (Head of the Agency)
+                </div>
+
+            </div>
+
+
+            <div class="signature-item signature-right">
+
+                <div class="signature-space"></div>
+
+                <div class="signature-title">
+                    (Head of AFDA/FS)
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     PAGE NUMBER ONLY
+     ===================================================== -->
+
+<div id="footer-html" class="visible-pdf">
+
+    <div class="page-only-footer">
+
+        Page
+        <span class="page"></span>
+        of
+        <span class="topage"></span>
+
+    </div>
+
+</div>
+
 
 <style>
-    .text-center {
-        font-size: 16px;
+
+    @page {
+        size: A4 landscape;
+        margin: 7mm 7mm 15mm 7mm;
+    }
+
+
+    * {
+        box-sizing: border-box;
+    }
+
+
+    .print-format {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+
+
+    .supplementary-budget-print {
+        width: 100%;
+        max-width: 100%;
+        overflow: hidden;
+        color: #000;
         font-family: "Times New Roman", serif;
+        font-size: 12px;
+    }
+
+    .ngultrum-note {
+    width: 98%;
+    margin: -28px auto 7px auto;
+    padding-right: 8px;
+    text-align: right !important;
+    font-family: "Times New Roman", serif;
+    font-size: 12.5px;
+    font-weight: 400;
+    line-height: 1.4;
+    white-space: nowrap;
+}
+
+
+    /* =====================================================
+       REPORT TITLE
+       ===================================================== */
+
+    .report-title-section {
+        margin-top: 5px;
+        margin-bottom: 22px;
         text-align: center;
     }
+
+
+    .report-title-section h3 {
+        margin: 0 0 9px 0;
+        color: #000;
+        font-size: 21px;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+        text-transform: uppercase;
+    }
+
+
+    .report-title-section h4 {
+        margin: 0;
+        color: #000;
+        font-size: 17px;
+        font-weight: 700;
+    }
+
+
+    .report-period {
+        margin-top: 10px;
+        font-size: 12px;
+    }
+
+
+    .report-period-item {
+        display: inline-block;
+        margin: 0 16px;
+    }
+
+
+    /* =====================================================
+       INFORMATION ABOVE TABLE
+       ===================================================== */
+
+    .outside-table-header {
+        width: 98%;
+        margin: 0 auto 20px auto;
+        display: table;
+        table-layout: fixed;
+        color: #000;
+        font-family: "Times New Roman", serif;
+        font-size: 12.5px;
+        page-break-inside: avoid;
+    }
+
+
+    .outside-header-left,
+    .outside-header-right {
+        display: table-cell;
+        vertical-align: top;
+    }
+
+
+    .outside-header-left {
+        width: 72%;
+        text-align: left;
+    }
+
+
+    .outside-header-right {
+        width: 28%;
+        padding-top: 3px;
+        padding-right: 3px;
+        text-align: right;
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+
+    .outside-information-row {
+        width: 100%;
+        display: table;
+        table-layout: fixed;
+        margin-bottom: 8px;
+        line-height: 1.45;
+    }
+
+
+    .outside-information-row:last-child {
+        margin-bottom: 0;
+    }
+
+
+    .outside-information-label,
+    .outside-information-value {
+        display: table-cell;
+        vertical-align: top;
+    }
+
+
+    .outside-information-label {
+        width: 255px;
+        padding-right: 28px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+
+    .outside-information-value {
+        padding-left: 4px;
+        font-weight: 400;
+        text-align: left;
+    }
+
+
+    .supplementary-type {
+        font-weight: 700;
+    }
+
+
+    .administrative-unit-value,
+    .program-value {
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+
+    /* =====================================================
+       TABLE
+       ===================================================== */
+
+    .supplementary-table {
+        width: 98%;
+        max-width: 98%;
+        margin: 0 auto;
+        border: 0.8px solid #9e9e9e !important;
+        border-collapse: collapse;
+        table-layout: fixed;
+        font-size: 12px;
+    }
+
+
+    .supplementary-table th,
+    .supplementary-table td {
+        border: 0.6px solid #b5b5b5 !important;
+        padding: 7px 6px;
+        background: #fff !important;
+        color: #000 !important;
+        line-height: 1.35;
+        vertical-align: middle;
+        overflow-wrap: break-word;
+        word-break: normal;
+    }
+
+
+    .supplementary-table th {
+        padding-top: 9px;
+        padding-bottom: 9px;
+        border-bottom: 0.9px solid #8f8f8f !important;
+        background-color: #f8f8f8 !important;
+        font-size: 12px;
+        font-weight: 700;
+        text-align: center;
+        vertical-align: middle;
+    }
+
+
+    /* =====================================================
+       COLUMN WIDTHS
+       ===================================================== */
+
+    .column-sub-program {
+        width: 11%;
+    }
+
+
+    .column-activity {
+        width: 9%;
+    }
+
+
+    .column-sub-activity {
+        width: 10%;
+    }
+
+
+    .column-financing {
+        width: 9%;
+    }
+
+
+    .column-source-fund {
+        width: 13%;
+    }
+
+
+    .column-account {
+        width: 10%;
+    }
+
+
+    .column-title {
+        width: 25%;
+    }
+
+
+    .column-approved-budget {
+        width: 13%;
+    }
+
+
+    /* =====================================================
+       COLUMN ALIGNMENT
+       ===================================================== */
+
+    .supplementary-table th:nth-child(1),
+    .supplementary-table td:nth-child(1),
+
+    .supplementary-table th:nth-child(2),
+    .supplementary-table td:nth-child(2),
+
+    .supplementary-table th:nth-child(3),
+    .supplementary-table td:nth-child(3),
+
+    .supplementary-table th:nth-child(4),
+    .supplementary-table td:nth-child(4),
+
+    .supplementary-table th:nth-child(6),
+    .supplementary-table td:nth-child(6) {
+        text-align: center;
+    }
+
+
+    .supplementary-table th:nth-child(5),
+    .supplementary-table td:nth-child(5),
+
+    .supplementary-table th:nth-child(7),
+    .supplementary-table td:nth-child(7) {
+        text-align: left;
+    }
+
+
+    .supplementary-table th:nth-child(8),
+    .supplementary-table td:nth-child(8) {
+        text-align: right;
+    }
+
+
+    /* =====================================================
+       HIERARCHY ROWS
+       ===================================================== */
+
+    .hierarchy-row td {
+        padding-top: 9px;
+        padding-bottom: 9px;
+        background: #fbfbfb !important;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+
+    .cost-center-row td:nth-child(1),
+    .cost-center-row td:nth-child(7) {
+        font-weight: 700;
+    }
+
+
+    .activity-row td:nth-child(2),
+    .activity-row td:nth-child(7) {
+        font-weight: 700;
+    }
+
+
+    .sub-activity-row td:nth-child(3),
+    .sub-activity-row td:nth-child(7) {
+        font-weight: 700;
+    }
+
+
+    .financing-row td:nth-child(4),
+    .financing-row td:nth-child(5),
+    .financing-row td:nth-child(7) {
+        font-weight: 700;
+    }
+
+
+    .data-row td {
+        padding-top: 7px;
+        padding-bottom: 7px;
+        background: #fff !important;
+        font-size: 12px;
+        font-weight: 500;
+    }
+
+
+    .activity-row td:nth-child(2),
+    .sub-activity-row td:nth-child(3),
+    .financing-row td:nth-child(4),
+    .data-row td:nth-child(6) {
+        white-space: nowrap;
+        word-break: normal;
+        overflow-wrap: normal;
+    }
+
+
+    /* =====================================================
+       TOTAL ROWS
+       ===================================================== */
+
+    .total-row td {
+        border-top: 0.8px solid #a5a5a5 !important;
+        border-bottom: 0.8px solid #a5a5a5 !important;
+        background: #fafafa !important;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+
+    .sub-activity-total-row td {
+        background: #f6f6f6 !important;
+    }
+
+
+    .total-label {
+        text-align: right !important;
+        text-transform: uppercase;
+    }
+
+
+    .amount-cell {
+        text-align: right !important;
+        white-space: nowrap;
+    }
+
+
+    .grand-total-row td {
+        border-top: 1px solid #8f8f8f !important;
+        border-bottom: 1px solid #8f8f8f !important;
+        background: #f4f4f4 !important;
+        font-size: 12.5px;
+        font-weight: 700;
+    }
+
+
+    .grand-total-label {
+        text-align: right !important;
+    }
+
+
+    .no-data-row {
+        padding: 18px !important;
+        text-align: center !important;
+        font-weight: 700;
+    }
+
+
+    /* =====================================================
+       INFORMATION BELOW TABLE
+       ===================================================== */
+
+    .outside-table-footer {
+        width: 98%;
+        margin: 22px auto 0 auto;
+        color: #000;
+        font-family: "Times New Roman", serif;
+        font-size: 12px;
+        page-break-inside: avoid;
+    }
+
+
+    .explanation-section {
+        width: 100%;
+        margin-top: 0;
+        text-align: left;
+        line-height: 1.55;
+    }
+
+
+    .explanation-heading {
+        margin-bottom: 12px;
+        font-size: 12.5px;
+        font-weight: 700;
+    }
+
+
+    .explanation-text {
+        width: 100%;
+        min-height: 85px;
+        padding-top: 3px;
+        line-height: 1.55;
+        white-space: pre-wrap;
+    }
+
+
+    .signature-section {
+        width: 100%;
+        margin-top: 55px;
+        display: table;
+        table-layout: fixed;
+        page-break-inside: avoid;
+    }
+
+
+    .signature-item {
+        width: 50%;
+        display: table-cell;
+        padding: 0 55px;
+        text-align: center;
+        vertical-align: bottom;
+    }
+
+
+    .signature-space {
+        height: 45px;
+    }
+
+
+    .signature-title {
+        margin-top: 10px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+
+    /* =====================================================
+       PAGE NUMBER ONLY
+       ===================================================== */
+
+    #footer-html {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        color: #000;
+        font-family: "Times New Roman", serif;
+    }
+
+
+    .page-only-footer {
+        width: 100%;
+        padding-right: 4px;
+        text-align: right;
+        font-size: 10px;
+        line-height: 1.2;
+    }
+
+
+    /* =====================================================
+       PRINT SETTINGS
+       ===================================================== */
+
+    thead {
+        display: table-header-group;
+    }
+
+
+    tr {
+        page-break-inside: avoid;
+    }
+
+
+    @media screen {
+
+        #footer-html {
+            display: none;
+        }
+
+    }
+
+
+    @media print {
+
+        .supplementary-table th,
+        .hierarchy-row td,
+        .total-row td,
+        .grand-total-row td {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+
+        .outside-table-header,
+        .outside-information-row,
+        .signature-section {
+            display: table !important;
+        }
+
+
+        .outside-header-left,
+        .outside-header-right,
+        .outside-information-label,
+        .outside-information-value,
+        .signature-item {
+            display: table-cell !important;
+        }
+
+
+        #footer-html {
+            display: block !important;
+        }
+
+    }
+
 </style>

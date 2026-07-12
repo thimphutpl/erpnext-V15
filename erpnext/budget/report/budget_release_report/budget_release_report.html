@@ -116,6 +116,48 @@
         <h3>{%= company_name %}</h3>
         <h4>Budget Release Report for the Year: {%= fiscal_year %}</h4>
     </div>
+
+
+    <!-- <div style="display: flex; justify-content: space-between; align-items: center;">
+    <div style="margin:0;">
+        <p style="font-style: italic;">
+            Administartive Unit: 303.01 SUNCHOB SERVICES
+        </p>
+        <p style="margin:0;">
+            Program: {%= frappe.query_report.program_code || "" %}
+            -
+            {%= frappe.query_report.program_name || "" %}
+        </p>
+
+
+    </div>
+
+    <p style="margin: 0;">
+        (Ngultrum in Millions)
+    </p>
+</div> -->
+
+<div class="report-info-section">
+
+    <div class="report-info-left">
+        <p class="administrative-unit">
+            <strong>Administrative Unit:</strong>
+            303.01 SUNCHOB SERVICES
+        </p>
+
+        <p class="program-info">
+            <strong>Program:</strong>
+            {%= frappe.query_report.program_code || "" %}
+            -
+            {%= frappe.query_report.program_name || "" %}
+        </p>
+    </div>
+
+    <div class="report-currency">
+        (Ngultrum in Millions)
+    </div>
+
+</div>
     
     <table class="release-table">
         <thead>
@@ -554,4 +596,42 @@
         tr {
             page-break-inside: avoid;
         }
+
+        .report-info-section {
+    width: 98%;
+    margin: 0 auto 18px auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    font-family: "Times New Roman", serif;
+    color: #000;
+}
+
+.report-info-left {
+    text-align: left;
+}
+
+.report-info-left p {
+    margin: 0;
+    padding: 0;
+    font-size: 14px;
+    line-height: 1.8;
+}
+
+.administrative-unit {
+    font-style: italic;
+}
+
+.program-info {
+    font-style: normal;
+}
+
+.report-currency {
+    margin: 0;
+    padding: 0 0 3px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: right;
+    white-space: nowrap;
+}
     </style>
