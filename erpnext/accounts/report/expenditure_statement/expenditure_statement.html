@@ -51,6 +51,36 @@
         return "";
     }
 
+    function clean_master_name(value, code) {
+        if (is_empty(value)) return "";
+
+        var result = String(value)
+            .replace(/<[^>]*>/g, "")
+            .replace(/\s+/g, " ")
+            .trim();
+
+        var code_text = is_empty(code) ? "" : String(code).trim();
+
+        if (code_text) {
+            var escaped_code = code_text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+            result = result.replace(
+                new RegExp("^" + escaped_code + "\\s*-\\s*", "i"),
+                ""
+            );
+        }
+
+        result = result
+            .replace(/\s*-\s*RBA\s*$/i, "")
+            .replace(/\s*-\s*Royal Bhutan Army\s*$/i, "")
+            .trim();
+
+        if (result === code_text) {
+            return "";
+        }
+
+        return result;
+    }
+
     function get_number(row, fieldnames, label_names) {
         var value = get_value(row, fieldnames, label_names);
 
@@ -205,20 +235,20 @@
                     ]);
 
                     var sp_title = get_value(row, [
+                        "sp_name",
                         "sp_title",
                         "sub_program_title",
                         "sub_program_name",
                         "cost_center_name"
                     ], [
+                        "SP Name",
                         "SP Title",
                         "Sub Program Title",
                         "Sub Program Name",
                         "Cost Center Name"
                     ]);
 
-                    if (!sp_title) {
-                        sp_title = sp;
-                    }
+                    sp_title = clean_master_name(sp_title, sp);
 
                     var ac = get_value(row, [
                         "ac",
@@ -229,18 +259,18 @@
                     ]);
 
                     var ac_title = get_value(row, [
+                        "ac_name",
                         "ac_title",
                         "activity_title",
                         "activity_name"
                     ], [
+                        "AC Name",
                         "AC Title",
                         "Activity Title",
                         "Activity Name"
                     ]);
 
-                    if (!ac_title) {
-                        ac_title = ac;
-                    }
+                    ac_title = clean_master_name(ac_title, ac);
 
                     var fic = get_value(row, [
                         "fic",
@@ -253,20 +283,20 @@
                     ]);
 
                     var fic_title = get_value(row, [
+                        "fic_name",
                         "fic_title",
                         "financing_title",
                         "source_of_fund_title",
                         "source_of_fund_name"
                     ], [
+                        "FIC Name",
                         "FIC Title",
                         "Financing Title",
                         "Source of Fund Title",
                         "Source of Fund Name"
                     ]);
 
-                    if (!fic_title) {
-                        fic_title = fic;
-                    }
+                    fic_title = clean_master_name(fic_title, fic);
 
                     var obc = get_value(row, [
                         "obc",
@@ -278,25 +308,33 @@
                         "Object Code"
                     ]);
 
+                    /*
+                     * Prioritize account_name. The old "names" value may
+                     * contain only the OBC code or the complete Account ID.
+                     */
                     var names = get_value(row, [
-                        "names",
-                        "title",
                         "account_name",
-                        "account_title"
+                        "account_title",
+                        "names",
+                        "title"
                     ], [
-                        "Names",
-                        "Title",
                         "Account Name",
-                        "Account Title"
+                        "Account Title",
+                        "Names",
+                        "Title"
                     ]);
 
+                    names = clean_master_name(names, obc);
+
                     var amount = get_number(row, [
+                        "monthly_amount",
                         "amount"
                     ], [
                         "Amount"
                     ]);
 
                     var personal_advance = get_number(row, [
+                        "monthly_personal_advance",
                         "personal_advance",
                         "personal_advance_amount"
                     ], [
@@ -304,6 +342,7 @@
                     ]);
 
                     var suspense = get_number(row, [
+                        "monthly_suspense",
                         "suspense",
                         "suspense_amount"
                     ], [
@@ -645,7 +684,7 @@
     }
 
     .report-header h4 {
-        font-size: 16spx !important;
+        font-size: 16px !important;
         font-weight: 700 !important;
         margin: 0 0 8px 0 !important;
         padding: 0 !important;
