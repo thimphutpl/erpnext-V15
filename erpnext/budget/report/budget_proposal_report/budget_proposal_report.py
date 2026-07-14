@@ -135,7 +135,7 @@ def get_data(filters):
             b.fiscal_year,
             ba.approved_budget,
             b.initial_budget,
-            b.withdraw_budget,
+            b.withdrawal_budget,
             b.actual_total,
             ba.account,
             ba.account_number,

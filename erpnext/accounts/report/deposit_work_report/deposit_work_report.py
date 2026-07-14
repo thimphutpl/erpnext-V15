@@ -4,43 +4,6 @@
 from __future__ import unicode_literals
 import frappe
 
-# def execute(filters=None):
-# 	columns = get_columns()
-# 	data = get_data(filters)
-
-# 	return columns, data
-# def get_columns():
-# 		return[
-# 			("Name of Work") + "Data:200",
-# 			("Type of Work") + "Data:150",
-# 			("Customer") + "Data:150",
-# 			("Recieved Amount") + "Currency:100",
-# 			("Expense Amount") + "Currency: 100",
-# 			("Balance") + "Currency:100",
-# 			("From Date") + "Date: 100",
-# 			("To Date") + "Date:100"
-
-# 	]
-
-# def get_data(filters):
-# 	query = """SELECT name_of_work,
-# 	work_type,
-# 	 customer,
-# 	 total_received_amount,
-# 	 total_expense_amount,
-# 	  balance_amount,
-# 	start_date,
-# 	end_date
-# 	FROM `tabDeposit Work`
-# 	where docstatus = 0 """
-
-# 	if filters.get("branch"):
-# 		query += "and branch = \'" + str(filters.branch) + "\'"
-
-# 	if filters.get("from_date") and filters.get("to_date"):
-# 		query += "and end_date between \'" + str(filters.from_date) +"\' and \' " + str(filters.to_date) +"\'"
-# 	return frappe.db.sql(query)
-
 
 def execute(filters=None):
     columns = get_columns()
@@ -49,48 +12,100 @@ def execute(filters=None):
 
 def get_columns():
     return [
+        {
+            "label":"Company",
+            "fieldname":"company",
+            "fieldtype":"Data",
+             "width": 150
+
+        },
+         {
+            "label":"Fiscal Year",
+            "fieldname":"fiscal_year",
+            "fieldtype":"Data",
+             "width": 80
+
+        },
+         {
+            "label":"Broad Head",
+            "fieldname":"broad_head",
+            "fieldtype":"Data",
+             "width": 120
+
+        },
+        {
+            "label":"Branch",
+            "fieldname":"branch",
+            "fieldtype":"Data",
+             "width": 120
+
+        },
         {"label": "Posting Date", "fieldname": "posting_date", "fieldtype": "Date", "width": 120},
         {"label": "Journal Entry", "fieldname": "journal_entry", "fieldtype": "Link", "options": "Journal Entry", "width": 180},
-        {"label": "Broad Head", "fieldname": "broad_head", "fieldtype": "Link", "options": "Account", "width": 200},
         {"label": "Account", "fieldname": "account", "fieldtype": "Link", "options": "Account", "width": 200},
         {"label": "Debit", "fieldname": "debit", "fieldtype": "Currency", "width": 120},
-        {"label": "Credit", "fieldname": "credit", "fieldtype": "Currency", "width": 120},
-        {"label": "Remarks", "fieldname": "remarks", "fieldtype": "Data", "width": 250},
+        {"label": "Credit", "fieldname": "credit", "fieldtype": "Currency", "width": 120}
     ]
 
-
 def get_data(filters):
+    if not filters:
+        filters = {}
 
-    conditions = ""
+    conditions = """
+   
+    """
 
     if filters.get("account"):
-        conditions += " AND jea.account = %(account)s"
-
+        conditions += " AND je.account = %(account)s"
     if filters.get("from_date"):
         conditions += " AND je.posting_date >= %(from_date)s"
-
     if filters.get("to_date"):
         conditions += " AND je.posting_date <= %(to_date)s"
+    if filters.get("company"):
+        conditions += " AND je.company = %(company)s"
+    if filters.get("broad_head"):
+        conditions += " AND jea.broad_head = %(broad_head)s"
+    if filters.get("branch"):
+        conditions += " AND j.branch = %(branch)s"
+    if filters.get("fiscal_year"):
+        conditions += " AND je.fiscal_year = %(fiscal_year)s"
 
     data = frappe.db.sql(
         f"""
         SELECT
             je.posting_date,
-            je.name as journal_entry,
-            jea.account,
-            jea.broad_head,
-            jea.debit_in_account_currency as debit,
-            jea.credit_in_account_currency as credit,
-            je.user_remark as remarks
+            je.voucher_no AS journal_entry,
+            je.account,
+            acc.account_name,
+            acc.parent_account,
+            je.debit_in_account_currency AS debit,
+            je.credit_in_account_currency AS credit,
+            je.company as company,
+            jea.broad_head as broad_head,
+            j.branch as branch,
+            je.fiscal_year as fiscal_year
+
         FROM
-            `tabJournal Entry` je
-        JOIN
+            `tabGL Entry` je
+        INNER JOIN
             `tabJournal Entry Account` jea
-        ON
-            je.name = jea.parent
+            ON jea.parent = je.voucher_no
+        INNER JOIN
+            `tabJournal Entry` j
+            ON j.name= je.voucher_no
+        INNER JOIN
+            `tabAccount` acc
+            ON acc.name = je.account
+            AND jea.account = je.account
+        
+
         WHERE
             je.docstatus = 1
+            AND
+            acc.is_deposit_work = 1
+            AND je.is_cancelled=0
             {conditions}
+
         ORDER BY
             je.posting_date ASC
         """,

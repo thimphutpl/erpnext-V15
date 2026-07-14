@@ -58,7 +58,7 @@ def execute(filters=None):
 				ON bra.parent = br.name		
 		LEFT JOIN
 			`tabJournal Entry` je
-				ON je.account = bra.account
+				ON je.name = br.jv
 		LEFT JOIN
 			`tabJournal Entry Account` jea
 				ON jea.parent = je.name

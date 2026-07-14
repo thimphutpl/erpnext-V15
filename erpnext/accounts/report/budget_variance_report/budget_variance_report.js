@@ -95,7 +95,8 @@ function get_filters() {
                 "Proposed Budget",
                 "Approved Budget",
                 "Current Budget"
-            ]
+            ],
+            default: "Approved Budget"
         },
         {
             fieldname: "budget_against_filter",

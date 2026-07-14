@@ -216,3 +216,21 @@ def get_auto_name(dn, naming_series=None):
 			series_seq = str(dn.employee)+"/LE/"
                 
 	return str(series_seq) + ".YY.MM"
+def delete_doc():
+    delww = frappe.db.sql(""" select name from `tabJournal Entry` """ ,as_dict=1)
+    for d in delww:
+        doc=frappe.get_doc("Journal Entry",d.name)
+        if doc.docstatus == 1:
+		
+           doc.cancel()
+           doc.flags.ignore_link=True
+        elif doc.docstatus == 2:
+            pass
+        #doc.cancel()
+        frappe.db.commit()
+        doc.delete()
+        doc.flags.ignore_links = True
+        
+               
+        
+

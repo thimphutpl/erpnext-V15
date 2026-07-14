@@ -1,6 +1,3 @@
-# Copyright (c) 2024, Frappe Technologies Pvt. Ltd. and contributors
-# For license information, please see license.txt
-
 import frappe
 from frappe.model.document import Document
 from frappe.utils import flt, cint
@@ -29,7 +26,7 @@ class TDSRemittance(AccountsController):
 		cheque_no: DF.Data | None
 		clearance_date: DF.Date | None
 		company: DF.Link
-		cost_center: DF.Link
+		cost_center: DF.Link | None
 		credit_account: DF.Link
 		default_region_cost_center: DF.Link | None
 		from_date: DF.Date
@@ -48,7 +45,6 @@ class TDSRemittance(AccountsController):
 		total_tds: DF.Currency
 		use_cheque_lot: DF.Check
 	# end: auto-generated types
-
 	
 	def validate(self):
 		self.calculate_total()
@@ -215,10 +211,10 @@ def get_tds_invoices(tax_withholding_category, from_date, to_date, name, filter_
 	# Journal Entry
 	if len(accounts) == 1:
 		accounts_cond = """and (t1.account = "{0}" or 
-			(t1.tax_account = "{0}" and ifnull(t1.apply_tds,0) = 1)""".format(accounts[0])
+			(t1.tax_account = "{0}" and ifnull(t1.apply_tds,0) = 1))""".format(accounts[0])
 	else:
 		accounts_cond = """and (t1.account in ({0}) or 
-			t1.tax_account in ({0}) and ifnull(t1.apply_tds,0) = 1)""".format('"' + '","'.join(accounts) + '"')
+			t1.tax_accout in ({0}) and ifnull(t1.apply_tds,0) = 1))""".format('"' + '","'.join(accounts) + '"')
 	
 	if party_type:
 		party_cond = "and t1.party_type = '{}'".format(party_type)
@@ -246,14 +242,12 @@ def get_tds_invoices(tax_withholding_category, from_date, to_date, name, filter_
 			left join `tabTDS Receipt Entry` tre on tre.invoice_no = t.name 
 		where t.posting_date between '{from_date}' and '{to_date}'
 		{accounts_cond}
-		and t.owner = t1.owner 
 		and t.docstatus = 1 and t.apply_tds = 1 
 		and t1.cost_center = '{cost_center}'
 		{existing_cond}
 		{party_cond}
 		{cond}""".format(accounts_cond = accounts_cond, cond = cond, existing_cond = existing_cond,\
 			party_cond = party_cond, from_date=from_date, to_date=to_date, cost_center=cost_center), as_dict=True)
-
 	# Transporter Invoice
 	# ti_entries = frappe.db.sql("""select t.posting_date, t.name as invoice_no, 'Transporter Invoice' as invoice_type,
 	# 			'Supplier' as party_type, t.supplier as party, 

@@ -70,6 +70,7 @@ frappe.query_reports["Budget Proposal Report"] = {
             "label": __("Company"),
             "fieldtype": "Link",
             "options": "Company",
+            "default": frappe.defaults.get_user_default("Company"),
             "on_change": function (query_report) {
                 set_program_code(query_report);
             }
@@ -229,7 +230,7 @@ frappe.query_reports["Budget Proposal Report"] = {
 }
 
 function set_program_code(report) {
-    
+
     let company = report.get_filter_value("company");
 
     if (!company) {

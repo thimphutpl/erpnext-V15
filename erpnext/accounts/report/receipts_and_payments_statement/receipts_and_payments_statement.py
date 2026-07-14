@@ -80,6 +80,11 @@ def execute(filters=None):
 				WHEN acc.account_type LIKE 'Payable%%' 
 				THEN COALESCE(je.debit_in_account_currency, 0)
 				ELSE 0 
+			END) as payment_amount,
+            SUM(CASE 
+				WHEN acc.account_type LIKE 'Asset Received But Not Billed%%' 
+				THEN COALESCE(je.debit_in_account_currency, 0)
+				ELSE 0 
 			END) as payment_amount
 		FROM
 			`tabGL Entry` je

@@ -22,9 +22,9 @@ def get_columns():
     return [
         {
             "fieldname": "sp",
-            "label": _("SP"),
+            "label": _("Sub Program"),
             "fieldtype": "Data",
-            "width": 100
+            "width": 150
         },
         {
             "fieldname": "ac",
@@ -48,7 +48,7 @@ def get_columns():
             "fieldname": "names",
             "label": _("Names"),
             "fieldtype": "Data",
-            "width": 250
+            "width": 150
         },
         {
             "fieldname": "monthly_amount",
@@ -87,6 +87,7 @@ def get_columns():
             "width": 150
         }
     ]
+
 
 def get_data(filters):
     # Get monthly data
@@ -145,9 +146,11 @@ def get_monthly_data(filters):
     conditions.append(
         "gle.budget_activity IS NOT NULL"
     )
+
     conditions.append(
         "gle.budget_activity != ''"
     )
+
     conditions.append(
         "gle.is_cancelled = 0"
     )
@@ -157,6 +160,7 @@ def get_monthly_data(filters):
     sql_query = """
         SELECT
             cc.cost_center_number AS sp,
+            cc.cost_center_name AS cost_center_name,
 
             ba.activity_code AS ac,
             ba.activity_name AS ac_name,
@@ -168,7 +172,7 @@ def get_monthly_data(filters):
             acc.name AS account_name,
             acc.parent_account,
 
-            -- Monthly amounts by type
+            -- Monthly Current
             SUM(
                 IF(
                     acc.parent_account LIKE
@@ -181,6 +185,7 @@ def get_monthly_data(filters):
                 )
             ) AS monthly_current,
 
+            -- Monthly Capital
             SUM(
                 IF(
                     acc.parent_account LIKE
@@ -193,6 +198,7 @@ def get_monthly_data(filters):
                 )
             ) AS monthly_capital,
 
+            -- Monthly Lending
             SUM(
                 IF(
                     acc.parent_account LIKE
@@ -205,6 +211,7 @@ def get_monthly_data(filters):
                 )
             ) AS monthly_lending,
 
+            -- Monthly Repayment
             SUM(
                 IF(
                     acc.parent_account LIKE
@@ -217,7 +224,7 @@ def get_monthly_data(filters):
                 )
             ) AS monthly_repayment,
 
-            -- Personal Advance
+            -- Monthly Personal Advance
             SUM(
                 IF(
                     acc.account_number = '88.01',
@@ -226,7 +233,7 @@ def get_monthly_data(filters):
                 )
             ) AS monthly_personal_advance,
 
-            -- Suspense
+            -- Monthly Suspense
             SUM(
                 IF(
                     acc.account_number IN (
@@ -234,6 +241,7 @@ def get_monthly_data(filters):
                         '89.01',
                         '89.02'
                     ),
+
                     gle.debit - gle.credit,
                     0
                 )
@@ -263,6 +271,7 @@ def get_monthly_data(filters):
 
         GROUP BY
             cc.cost_center_number,
+            cc.cost_center_name,
 
             ba.activity_code,
             ba.activity_name,
@@ -274,7 +283,9 @@ def get_monthly_data(filters):
             acc.name,
             acc.parent_account
 
-    """.format(where_clause=where_clause)
+    """.format(
+        where_clause=where_clause
+    )
 
     return frappe.db.sql(
         sql_query,
@@ -327,7 +338,9 @@ def get_annual_data(filters):
         conditions.append(
             "gle.company = %(company)s"
         )
-        values["company"] = annual_filters.get("company")
+        values["company"] = annual_filters.get(
+            "company"
+        )
 
     if annual_filters.get("fiscal_year"):
         conditions.append(
@@ -344,9 +357,11 @@ def get_annual_data(filters):
         conditions.append(
             "gle.posting_date BETWEEN %(from_date)s AND %(to_date)s"
         )
+
         values["from_date"] = annual_filters.get(
             "from_date"
         )
+
         values["to_date"] = annual_filters.get(
             "to_date"
         )
@@ -355,6 +370,7 @@ def get_annual_data(filters):
         conditions.append(
             "gle.cost_center = %(cost_center)s"
         )
+
         values["cost_center"] = annual_filters.get(
             "cost_center"
         )
@@ -362,9 +378,11 @@ def get_annual_data(filters):
     conditions.append(
         "gle.budget_activity IS NOT NULL"
     )
+
     conditions.append(
         "gle.budget_activity != ''"
     )
+
     conditions.append(
         "gle.is_cancelled = 0"
     )
@@ -374,6 +392,7 @@ def get_annual_data(filters):
     sql_query = """
         SELECT
             cc.cost_center_number AS sp,
+            cc.cost_center_name AS cost_center_name,
 
             ba.activity_code AS ac,
             ba.activity_name AS ac_name,
@@ -383,7 +402,7 @@ def get_annual_data(filters):
 
             acc.account_number AS obc,
 
-            -- Annual amounts by type
+            -- Annual Current
             SUM(
                 IF(
                     acc.parent_account LIKE
@@ -396,6 +415,7 @@ def get_annual_data(filters):
                 )
             ) AS annual_current,
 
+            -- Annual Capital
             SUM(
                 IF(
                     acc.parent_account LIKE
@@ -408,6 +428,7 @@ def get_annual_data(filters):
                 )
             ) AS annual_capital,
 
+            -- Annual Lending
             SUM(
                 IF(
                     acc.parent_account LIKE
@@ -420,6 +441,7 @@ def get_annual_data(filters):
                 )
             ) AS annual_lending,
 
+            -- Annual Repayment
             SUM(
                 IF(
                     acc.parent_account LIKE
@@ -449,6 +471,7 @@ def get_annual_data(filters):
                         '89.01',
                         '89.02'
                     ),
+
                     gle.debit - gle.credit,
                     0
                 )
@@ -478,6 +501,7 @@ def get_annual_data(filters):
 
         GROUP BY
             cc.cost_center_number,
+            cc.cost_center_name,
 
             ba.activity_code,
             ba.activity_name,
@@ -487,7 +511,9 @@ def get_annual_data(filters):
 
             acc.account_number
 
-    """.format(where_clause=where_clause)
+    """.format(
+        where_clause=where_clause
+    )
 
     return frappe.db.sql(
         sql_query,
@@ -496,12 +522,24 @@ def get_annual_data(filters):
     )
 
 
+def combine_code_and_name(code, name):
+    code = str(code or "").strip()
+    name = str(name or "").strip()
+
+    if code and name:
+        return "{0} - {1}".format(
+            code,
+            name
+        )
+
+    return code or name
+
+
 def combine_data(monthly_data, annual_data):
     final_data = []
-
-    # Create dictionary for annual data
     annual_dict = {}
 
+    # Annual data key uses the original raw SP code
     for row in annual_data:
         key = (
             row.get("sp"),
@@ -514,6 +552,7 @@ def combine_data(monthly_data, annual_data):
 
     # Combine monthly and annual data
     for monthly_row in monthly_data:
+        # Match using the original raw SP code
         key = (
             monthly_row.get("sp"),
             monthly_row.get("ac"),
@@ -527,35 +566,103 @@ def combine_data(monthly_data, annual_data):
         )
 
         monthly_amount = (
-            flt(monthly_row.get("monthly_current", 0))
-            + flt(monthly_row.get("monthly_capital", 0))
-            + flt(monthly_row.get("monthly_lending", 0))
-            + flt(monthly_row.get("monthly_repayment", 0))
+            flt(
+                monthly_row.get(
+                    "monthly_current",
+                    0
+                )
+            )
+            + flt(
+                monthly_row.get(
+                    "monthly_capital",
+                    0
+                )
+            )
+            + flt(
+                monthly_row.get(
+                    "monthly_lending",
+                    0
+                )
+            )
+            + flt(
+                monthly_row.get(
+                    "monthly_repayment",
+                    0
+                )
+            )
         )
 
         annual_amount = (
-            flt(annual_row.get("annual_current", 0))
-            + flt(annual_row.get("annual_capital", 0))
-            + flt(annual_row.get("annual_lending", 0))
-            + flt(annual_row.get("annual_repayment", 0))
+            flt(
+                annual_row.get(
+                    "annual_current",
+                    0
+                )
+            )
+            + flt(
+                annual_row.get(
+                    "annual_capital",
+                    0
+                )
+            )
+            + flt(
+                annual_row.get(
+                    "annual_lending",
+                    0
+                )
+            )
+            + flt(
+                annual_row.get(
+                    "annual_repayment",
+                    0
+                )
+            )
         )
 
         final_row = {
-            "sp": monthly_row.get("sp", ""),
+            # Show SP code and Cost Center name together
+            "sp": combine_code_and_name(
+                monthly_row.get(
+                    "sp",
+                    ""
+                ),
+                monthly_row.get(
+                    "cost_center_name",
+                    ""
+                )
+            ),
 
-            "ac": monthly_row.get("ac", ""),
+            # Keep Cost Center name available in returned data
+            # but do not show it as a separate column
+            "cost_center_name": monthly_row.get(
+                "cost_center_name",
+                ""
+            ),
+
+            "ac": monthly_row.get(
+                "ac",
+                ""
+            ),
+
             "ac_name": monthly_row.get(
                 "ac_name",
                 ""
             ),
 
-            "fic": monthly_row.get("fic", ""),
+            "fic": monthly_row.get(
+                "fic",
+                ""
+            ),
+
             "fic_name": monthly_row.get(
                 "fic_name",
                 ""
             ),
 
-            "obc": monthly_row.get("obc", ""),
+            "obc": monthly_row.get(
+                "obc",
+                ""
+            ),
 
             "names": monthly_row.get(
                 "account_name",
@@ -658,15 +765,17 @@ def combine_data(monthly_data, annual_data):
             or final_row["monthly_personal_advance"] != 0
             or final_row["annual_personal_advance"] != 0
         ):
-            final_data.append(final_row)
+            final_data.append(
+                final_row
+            )
 
     # Sort report data
     final_data.sort(
-        key=lambda x: (
-            x["sp"],
-            x["ac"],
-            x["fic"],
-            x["obc"]
+        key=lambda row: (
+            row.get("sp") or "",
+            row.get("ac") or "",
+            row.get("fic") or "",
+            row.get("obc") or ""
         )
     )
 
@@ -703,53 +812,89 @@ def add_summary_rows(
     # Monthly totals
     for row in monthly_data:
         monthly_totals["current"] += flt(
-            row.get("monthly_current", 0)
+            row.get(
+                "monthly_current",
+                0
+            )
         )
 
         monthly_totals["capital"] += flt(
-            row.get("monthly_capital", 0)
+            row.get(
+                "monthly_capital",
+                0
+            )
         )
 
         monthly_totals["lending"] += flt(
-            row.get("monthly_lending", 0)
+            row.get(
+                "monthly_lending",
+                0
+            )
         )
 
         monthly_totals["repayment"] += flt(
-            row.get("monthly_repayment", 0)
+            row.get(
+                "monthly_repayment",
+                0
+            )
         )
 
         monthly_totals["personal_advance"] += flt(
-            row.get("monthly_personal_advance", 0)
+            row.get(
+                "monthly_personal_advance",
+                0
+            )
         )
 
         monthly_totals["suspense"] += flt(
-            row.get("monthly_suspense", 0)
+            row.get(
+                "monthly_suspense",
+                0
+            )
         )
 
     # Annual totals
     for row in annual_data:
         annual_totals["current"] += flt(
-            row.get("annual_current", 0)
+            row.get(
+                "annual_current",
+                0
+            )
         )
 
         annual_totals["capital"] += flt(
-            row.get("annual_capital", 0)
+            row.get(
+                "annual_capital",
+                0
+            )
         )
 
         annual_totals["lending"] += flt(
-            row.get("annual_lending", 0)
+            row.get(
+                "annual_lending",
+                0
+            )
         )
 
         annual_totals["repayment"] += flt(
-            row.get("annual_repayment", 0)
+            row.get(
+                "annual_repayment",
+                0
+            )
         )
 
         annual_totals["personal_advance"] += flt(
-            row.get("annual_personal_advance", 0)
+            row.get(
+                "annual_personal_advance",
+                0
+            )
         )
 
         annual_totals["suspense"] += flt(
-            row.get("annual_suspense", 0)
+            row.get(
+                "annual_suspense",
+                0
+            )
         )
 
     def add_breakdown_rows(section_name):
@@ -952,8 +1097,7 @@ def add_summary_rows(
 
         return rows
 
-    # Blank row before summary sections
-    final_data.append({
+    blank_row = {
         "sp": "",
         "ac": "",
         "fic": "",
@@ -963,7 +1107,12 @@ def add_summary_rows(
         "annual_amount": 0,
         "is_summary": 1,
         "indent": 0
-    })
+    }
+
+    # Blank row before Total OBC/GL
+    final_data.append(
+        dict(blank_row)
+    )
 
     # Total OBC/GL
     final_data.extend(
@@ -972,18 +1121,10 @@ def add_summary_rows(
         )
     )
 
-    # Blank row
-    final_data.append({
-        "sp": "",
-        "ac": "",
-        "fic": "",
-        "obc": "",
-        "names": "",
-        "monthly_amount": 0,
-        "annual_amount": 0,
-        "is_summary": 1,
-        "indent": 0
-    })
+    # Blank row before Total Activity
+    final_data.append(
+        dict(blank_row)
+    )
 
     # Total Activity
     final_data.extend(
@@ -992,18 +1133,10 @@ def add_summary_rows(
         )
     )
 
-    # Blank row
-    final_data.append({
-        "sp": "",
-        "ac": "",
-        "fic": "",
-        "obc": "",
-        "names": "",
-        "monthly_amount": 0,
-        "annual_amount": 0,
-        "is_summary": 1,
-        "indent": 0
-    })
+    # Blank row before Total Sub-program
+    final_data.append(
+        dict(blank_row)
+    )
 
     # Total Sub-program
     final_data.extend(
@@ -1012,18 +1145,10 @@ def add_summary_rows(
         )
     )
 
-    # Blank row
-    final_data.append({
-        "sp": "",
-        "ac": "",
-        "fic": "",
-        "obc": "",
-        "names": "",
-        "monthly_amount": 0,
-        "annual_amount": 0,
-        "is_summary": 1,
-        "indent": 0
-    })
+    # Blank row before Total Program
+    final_data.append(
+        dict(blank_row)
+    )
 
     # Total Program
     final_data.extend(

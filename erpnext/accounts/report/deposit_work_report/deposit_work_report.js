@@ -2,45 +2,71 @@
 // For license information, please see license.txt
 
 frappe.query_reports["Deposit Work Report"] = {
-	"filters": [
-		// {
-		// 	"fieldname" : "branch",
-		// 	"label" : ("Branch"),
-		// 	"fieldtype" : "Link",
-		// 	"options": "Branch",
-		// 	"width" : "120",
-		// },
-		// {
-		// 	"fieldname" : "from_date",
-		// 	"label" : ("From Date"),
-		// 	"fieldtype" : " Date",
-		// 	"width" : "100",
-		// },
-		// {
-		// 	"fieldname": "to_date",
-		// 	"label" : ("To Date"),
-		// 	"fieldtype" : "Date",
-		// 	"width" : "100"
-		// },
+    "filters": [
+        {
+            "fieldname": "company",
+            "label": "Company",
+            "fieldtype": "Link",
+            "options": "Company",
+            "default": frappe.defaults.get_user_default("Company")
 
-		{
-			fieldname: "broad_head",
-			label: __("Broad Head"),
-			fieldtype: "Link",
-			options: "Account",
-			get_query: function () {
-				return {
-					filters: {
-						is_group: 1,
-					}
-				};
-			}
-		},
+
+        },
+        {
+            "fieldname": "fiscal_year",
+            "label": "Fiscal Year",
+            "fieldtype": "Link",
+            "options": "Fiscal Year",
+
+
+
+        },
+        {
+            "fieldname": "broad_head",
+            "label": "Broad Head",
+            "fieldtype": "Link",
+            "options": "Account",
+            get_query: function () {
+                return {
+                    filters: {
+                        is_deposit_work: 1,
+                        company: frappe.query_report.get_filter_value("company")
+                    }
+                };
+            }
+
+
+        },
+        {
+            "fieldname": "branch",
+            "label": "Branch",
+            "fieldtype": "Link",
+            "options": "Branch",
+            get_query: function () {
+                return {
+                    filters: {
+                        disabled: 0,
+                        company: frappe.query_report.get_filter_value("company")
+                    }
+                };
+            }
+
+
+        },
         {
             "fieldname": "account",
             "label": "Account",
             "fieldtype": "Link",
-            "options": "Account"
+            "options": "Account",
+            get_query: function () {
+                return {
+                    filters: {
+                        is_deposit_work: 1,
+                        company: frappe.query_report.get_filter_value("company")
+
+                    }
+                };
+            }
         },
         {
             "fieldname": "from_date",
@@ -54,5 +80,5 @@ frappe.query_reports["Deposit Work Report"] = {
             "fieldtype": "Date",
             "default": frappe.datetime.month_end()
         }
-	]
+    ]
 }

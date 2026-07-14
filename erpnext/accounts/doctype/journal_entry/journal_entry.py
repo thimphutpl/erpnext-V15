@@ -205,7 +205,7 @@ class JournalEntry(AccountsController):
 					"debit": d.debit_in_account_currency,
 					"cost_center": d.cost_center
 				}
-				deposit_work_check(args)
+				# deposit_work_check(args)
 
 
 	def set_broad_head_from_account(self):
@@ -676,10 +676,10 @@ class JournalEntry(AccountsController):
 				)
 	def unlink_bank_payment(self):
 		bank_payment = frappe.db.get_value(
-        "Bank Payment",
-        {"transaction_no": self.name},
-        "name"
-    )
+		"Bank Payment",
+		{"transaction_no": self.name},
+		"name"
+	)
 
 		if bank_payment:
 			bp = frappe.get_doc("Bank Payment", bank_payment)
@@ -707,6 +707,8 @@ class JournalEntry(AccountsController):
 							"Row {0}: Party Type and Party is required for Receivable / Payable account {1}"
 						).format(d.idx, d.account)
 					)
+			elif account_type in ["Asset Received But Not Billed"]:
+				return
 				# elif (
 				# 	d.party_type
 				# 	and frappe.db.get_value("Party Type", d.party_type, "account_type") != account_type 
@@ -2104,13 +2106,13 @@ def company_base_account(company, is_group=0):
 
 @frappe.whitelist()
 def account_bank(account):
-    data = frappe.db.get_value(
-        "Account",
-        account,
-        ["account_type", "is_deposit_work"],
-        as_dict=True
-    )
-    return data
+	data = frappe.db.get_value(
+		"Account",
+		account,
+		["account_type", "is_deposit_work"],
+		as_dict=True
+	)
+	return data
 @frappe.whitelist()
 def get_voucher_type(voucher_type):
 	
