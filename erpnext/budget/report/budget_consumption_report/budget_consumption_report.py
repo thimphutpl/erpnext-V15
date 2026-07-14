@@ -341,17 +341,19 @@ def get_data(query, from_date, to_date, filters):
             adjustment = flt(monthly_received, 2) - flt(monthly_sent, 2)
             release_adjustment = 0
             initial_budget_release = 0
+            initial_budget_approve = 0
             release_supplement = 0
         else:
             initial_budget = d.initial_budget
             initial_budget_release = flt(d.initial_budget_release, 0)
+            initial_budget_approve = flt(d.initial_budget_approve, 0)
             adjustment = flt(d.added) - flt(d.deducted)
             release_adjustment = flt(d.release_added) - flt(d.release_deducted)
             supplement = flt(d.supplement)
             release_supplement = flt(d.release_supplement)
         
         # Current = Initial Proposed + Adjustment
-        current = flt(initial_budget_release) + flt(adjustment) + flt(supplement)
+        current = flt(initial_budget_approve) + flt(adjustment) + flt(supplement)
 
         if filters.monthly_budget:
             cost_center = d.cost_center
@@ -486,7 +488,7 @@ def get_data(query, from_date, to_date, filters):
                     # IMPORTANT MAPPINGS
                     "account_initial_budget": flt(initial_budget),
 
-                    "approved_budget": flt(initial_budget_release),
+                    "approved_budget": flt(initial_budget_approve),
 
                     "supplementary_budget": supplement,
 
@@ -766,6 +768,19 @@ def construct_query(from_date, to_date, filters=None):
                     AND bra.source_of_fund = ba.source_of_fund
                     AND br.posting_date BETWEEN '{from_date}' AND '{to_date}'
             ), 0) as initial_budget_release,
+            COALESCE((
+                SELECT SUM(bra.approved_budget)
+                FROM `tabBudget` br
+                INNER JOIN `tabBudget Account` bra ON bra.parent = br.name
+                WHERE br.docstatus = 1 
+                    AND br.fiscal_year = "{fiscal_year}"
+                    AND br.cost_center = b.cost_center
+                    AND bra.account = ba.account
+                    AND bra.budget_activity = ba.budget_activity
+                    AND bra.budget_sub_activity = ba.budget_sub_activity
+                    AND bra.source_of_fund = ba.source_of_fund
+                    AND br.posting_date BETWEEN '{from_date}' AND '{to_date}'
+            ), 0) as initial_budget_approve,
             COALESCE((
                 SELECT SUM(bra.budget_received)
                 FROM `tabBudget Release` br

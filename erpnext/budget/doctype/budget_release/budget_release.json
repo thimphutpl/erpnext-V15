@@ -301,7 +301,8 @@
   {
    "fieldname": "approved_budget",
    "fieldtype": "Currency",
-   "label": "Total Approved budget"
+   "label": "Total Approved budget",
+   "precision": "0"
   },
   {
    "fieldname": "column_break_osec",
@@ -348,7 +349,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-06-17 14:31:45.530767",
+ "modified": "2026-07-14 13:44:22.741684",
  "modified_by": "Administrator",
  "module": "Budget",
  "name": "Budget Release",

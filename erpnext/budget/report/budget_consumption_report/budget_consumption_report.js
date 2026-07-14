@@ -60,6 +60,7 @@ frappe.query_reports["Budget Consumption Report"] = {
             "label": __("Company"),
             "fieldtype": "Link",
             "options": "Company",
+            "default": frappe.defaults.get_user_default("Company"),
             "on_change": function (query_report) {
                 set_program_code(query_report);
             }

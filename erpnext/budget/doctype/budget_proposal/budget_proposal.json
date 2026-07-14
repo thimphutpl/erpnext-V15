@@ -352,6 +352,7 @@
    "fieldname": "initial_budget",
    "fieldtype": "Currency",
    "label": "Proposed Budget",
+   "precision": "0",
    "read_only": 1
   },
   {
@@ -382,7 +383,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-06-11 09:16:50.769913",
+ "modified": "2026-07-14 13:42:12.361252",
  "modified_by": "Administrator",
  "module": "Budget",
  "name": "Budget Proposal",
