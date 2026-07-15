@@ -29,6 +29,21 @@ frappe.ui.form.on("Cost Center", {
 				}
 			}
 		});
+
+		frm.set_query("budget_activity", function() {
+			return {
+				filters: {
+					company: frm.doc.company
+				}
+			}
+		});
+		frm.set_query("budget_sub_activity", function() {
+			return {
+				filters: {
+					company: frm.doc.company
+				}
+			}
+		});
 	},
 	refresh: function (frm) {
 		if (!frm.is_new()) {

@@ -28,7 +28,12 @@
   "use_budget_from_head_quarter_cost_center",
   "head_quarter_cost_center",
   "section_break_hefj",
-  "sub_activity"
+  "sub_activity",
+  "section_break_cqfp",
+  "budget_activity",
+  "source_of_fund",
+  "column_break_ozle",
+  "budget_sub_activity"
  ],
  "fields": [
   {
@@ -185,13 +190,39 @@
    "fieldtype": "Link",
    "label": "Head Quarter Cost Center",
    "options": "Cost Center"
+  },
+  {
+   "fieldname": "section_break_cqfp",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "budget_activity",
+   "fieldtype": "Link",
+   "label": "Budget Activity",
+   "options": "Budget Activity"
+  },
+  {
+   "fieldname": "source_of_fund",
+   "fieldtype": "Link",
+   "label": "Source of Fund",
+   "options": "Source of Fund"
+  },
+  {
+   "fieldname": "column_break_ozle",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "budget_sub_activity",
+   "fieldtype": "Link",
+   "label": "Budget Sub Activity",
+   "options": "Budget Sub Activity"
   }
  ],
  "icon": "fa fa-money",
  "idx": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2026-06-22 15:05:36.075164",
+ "modified": "2026-07-15 20:59:46.444653",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Cost Center",

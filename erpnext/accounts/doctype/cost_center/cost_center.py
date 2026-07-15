@@ -21,7 +21,9 @@ class CostCenter(NestedSet):
 		from frappe.types import DF
 
 		branch_created: DF.Check
+		budget_activity: DF.Link | None
 		budget_cost_center: DF.Link | None
+		budget_sub_activity: DF.Link | None
 		company: DF.Link
 		cost_center_name: DF.Data
 		cost_center_number: DF.Data | None
@@ -33,6 +35,7 @@ class CostCenter(NestedSet):
 		old_parent: DF.Link | None
 		parent_cost_center: DF.Link | None
 		rgt: DF.Int
+		source_of_fund: DF.Link | None
 		sub_activity: DF.Table[SubActivity]
 		use_budget_from_head_quarter_cost_center: DF.Check
 		use_budget_from_parent: DF.Check
