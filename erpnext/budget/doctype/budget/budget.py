@@ -48,7 +48,7 @@ class Budget(Document):
 		applicable_on_material_request: DF.Check
 		applicable_on_purchase_order: DF.Check
 		approved_budget: DF.Currency
-		branch: DF.Link | None
+		branch: DF.Link
 		budget_accounts: DF.TableMultiSelect[BudgetAccounts]
 		budget_activities: DF.TableMultiSelect[BudgetActivities]
 		budget_against: DF.Literal["Cost Center"]
@@ -470,7 +470,6 @@ def delete_committed_consumed_budget(reference=None, reference_no=None):
 
 #work under this method for budget release changes Kinley
 def compare_expense_with_budget(args, error, budget_amount, action_for, action, budget_against, amount=0, throw_error=None):
-	# frappe.throw(str(budget_amount))
 	actual_expense = amount or args.amount
 	if args.project:
 		condition = " and cb.project = '{}'".format(budget_against)
@@ -889,10 +888,12 @@ def validate_budget_records(args, error, budget_records, throw_error):
 				args, error, budget_amount, _("Accumulated Monthly"), monthly_action, budget.budget_against, amount, throw_error
 			)
 		else:
-			budget_amount = budget.budget_amount
+			# budget_amount = budget.budget_amount
+			budget_amount = budget.released_budget
 			if yearly_action in ("Stop", "Warn"):
 				compare_expense_with_budget(
-					args, error, flt(budget.budget_amount), _("Annual"), yearly_action, budget.budget_against, amount, throw_error
+					args, error, flt(budget.released_budget), _("Annual"), yearly_action, budget.budget_against, amount, throw_error
+					# args, error, flt(budget.budget_amount), _("Annual"), yearly_action, budget.budget_against, amount, throw_error
 				)
 def validate_expense_against_budget(args, throw_error=True):
 	# frappe.msgprint(str(args))
@@ -977,6 +978,7 @@ def validate_expense_against_budget(args, throw_error=True):
 					ba.budget_sub_activity,
 					ba.source_of_fund,
 					ba.budget_amount,
+					ba.released_budget,
 					ba.account,
 					ifnull(b.applicable_on_material_request, 0) as for_material_request,
 					ifnull(applicable_on_purchase_order, 0) as for_purchase_order,

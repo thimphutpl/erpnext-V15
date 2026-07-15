@@ -51,7 +51,7 @@ class BudgetProposal(Document):
         applicable_on_material_request: DF.Check
         applicable_on_purchase_order: DF.Check
         approved_budget: DF.Currency
-        branch: DF.Link | None
+        branch: DF.Link
         budget_accounts: DF.TableMultiSelect[BudgetAccounts]
         budget_activities: DF.TableMultiSelect[BudgetActivities]
         budget_against: DF.Literal["Cost Center"]
@@ -407,6 +407,7 @@ class BudgetProposal(Document):
         budget.fiscal_year = self.fiscal_year
         budget.budget_against = self.budget_against
         budget.cost_center = self.cost_center
+        budget.branch = self.branch
         budget.project = self.project
         budget.monthly_distribution = self.monthly_distribution
         
