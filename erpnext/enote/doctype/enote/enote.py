@@ -20,9 +20,12 @@ class eNote(Document):
 		from frappe.types import DF
 
 		amended_from: DF.Link | None
+		branch: DF.Link | None
 		category: DF.Link
+		company: DF.Link | None
 		content: DF.TextEditor | None
 		copied: DF.TableMultiSelect[NoteCopy]
+		department: DF.Link | None
 		enote_format: DF.Data | None
 		enote_series: DF.Link
 		enote_type: DF.Link
@@ -215,9 +218,10 @@ class eNote(Document):
 		email_template = frappe.get_doc("Email Template", template)
 		message = frappe.render_template(email_template.response, args)
 		recipients = self.forward_to
+		# frappe.throw(str(recipients))
 		subject = email_template.subject
 		self.send_mail(recipients,message, subject)
-  
+
 	def get_attachment(self):
 		"""check print settings are attach the pdf"""
 		print_settings = frappe.get_doc("Print Settings", "Print Settings")
