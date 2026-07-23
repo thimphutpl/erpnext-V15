@@ -16,6 +16,7 @@ class SupplementaryBudgetItem(Document):
 		account: DF.Link
 		account_number: DF.Data | None
 		amount: DF.Currency
+		approved_budget: DF.Currency
 		broad_head: DF.Link
 		budget_activity: DF.Link
 		budget_sub_activity: DF.Link

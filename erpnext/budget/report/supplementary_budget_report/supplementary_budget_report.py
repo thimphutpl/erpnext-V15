@@ -179,11 +179,19 @@ def get_data(filters):
 			sbi.broad_head AS broad_head,
 			sbi.account AS to_acc,
 			sbi.account_number AS account_number,
+			sbi.approved_budget AS approved_budget,
 			sbi.amount AS amount,
 			sbi.month AS month,
 			sbi.budget_activity AS budget_activity,
 			sbi.budget_sub_activity AS budget_sub_activity,
-			sbi.source_of_fund AS source_of_fund,
+
+			/* Keep Link ID for internal lookups */
+			sbi.source_of_fund AS source_of_fund_id,
+
+			/* Show Source of Fund descriptive name */
+			sof.source_of_fund AS source_of_fund,
+
+			/* Financial Code */
 			sof.fic AS fic,
 
 			/* FIC is available in Source of Fund */
@@ -197,7 +205,6 @@ def get_data(filters):
 
 		LEFT JOIN `tabSource of Fund` sof
 			ON sof.name = sbi.source_of_fund
-
 
 		WHERE {conditions}
 
@@ -342,7 +349,7 @@ def add_print_format_fields(data):
 		row.financing_source_acronym = first_value(
 			get_optional_value(
 				"Source of Fund",
-				row.source_of_fund,
+				row.source_of_fund_id,
 				[
 					"acronym",
 					"source_acronym",
@@ -368,7 +375,7 @@ def add_print_format_fields(data):
 			),
 			get_optional_value(
 				"Source of Fund",
-				row.source_of_fund,
+				row.source_of_fund_id,
 				[
 					"fin_type",
 					"finance_type",
@@ -385,22 +392,10 @@ def add_print_format_fields(data):
 			or row.budget_activity
 		)
 
-		# Existing approved budget, when stored in the child row
-		approved_budget = get_optional_value(
-			"Supplementary Budget Item",
-			row.item_row,
-			[
-				"approved_budget",
-				"current_budget",
-				"original_budget",
-				"available_budget"
-			]
-		)
-
-		row.approved_budget = (
-			flt(approved_budget)
-			if approved_budget not in (None, "")
-			else None
+		# Approved Budget
+		row.approved_budget = flt(
+			row.approved_budget or 0,
+			2
 		)
 
 		# Check whether separate RGOB and Donor fields exist
@@ -687,11 +682,9 @@ def get_columns(filters):
 		{
 			"fieldname": "source_of_fund",
 			"label": _("Source of Fund"),
-			"fieldtype": "Link",
-			"options": "Source of Fund",
+			"fieldtype": "Data",
 			"width": 180
 		},
-		
 		{
 			"fieldname": "budget_activity",
 			"label": _("Budget Activity"),
@@ -707,13 +700,17 @@ def get_columns(filters):
 			"width": 260
 		},
 		{
+			"fieldname": "approved_budget",
+			"label": _("Approved Budget"),
+			"fieldtype": "Currency",
+			"width": 150
+		},
+		{
 			"fieldname": "amount",
 			"label": _("Amount"),
 			"fieldtype": "Data",
-		
-			"width": 260
+			"width": 150
 		},
-	
 		{
 			"fieldname": "remarks",
 			"label": _("Remarks"),

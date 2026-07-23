@@ -1,284 +1,553 @@
-<div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+<div class="budget-print">
 
-    <!-- Left corner -->
-    <div style="text-align: left; flex: 1;">
-        <p>Printed date: {%= frappe.datetime.get_today() %}</p>
+    <div class="report-header">
+        <div class="header-left">
+            Printed date: {%= frappe.datetime.get_today() %}
+        </div>
+
+        <div class="header-center">
+            <div class="sungchob">SUNGCHOB</div>
+            <div class="company-name">{%= filters.company || "" %}</div>
+            <div class="report-title">
+                {%= __(report.report_name) %} for the Year: {%= filters.fiscal_year || "" %}
+            </div>
+        </div>
+
+        <div class="header-right">Budget Form III</div>
     </div>
 
-    <!-- Middle -->
-    <div style="text-align: center; flex: 1;">
-        <h3 vclass="text-center"> SUNGCHOB</h3>
-        <h3 class="text-center">{%= filters.company %}</h3>
-        <h4 class="text-center">
-            {%= __(report.report_name) %} for the Year: {%= filters.fiscal_year %}
-        </h4>
-    </div>
+    <hr>
 
-    <!-- Right corner -->
-    <div style="text-align: right; flex: 1;">
-        <p>Budget Form III</p>
-    </div>
+    <div class="report-info">
+        <div class="administrative-unit">
+            Administrative Unit: 303.01 SUNGCHOB SERVICES
+        </div>
 
-</div>
-<hr>
-<div style="display: flex; justify-content: space-between; align-items: center;">
-    <div style="margin:0;">
-        <p style="font-style: italic;">
-            Administartive Unit: 303.01 SUNCHOB SERVICES
-        </p>
-        <p style="margin:0;">
-            Program: {%= frappe.query_report.program_code || "" %}
+        <div class="program">
+            Program:
+            {%= frappe.query_report.program_code || "" %}
             -
             {%= frappe.query_report.program_name || "" %}
-        </p>
-
-
+        </div>
     </div>
 
-    <p style="margin: 0;">
-        <!-- (Ngultrum in Millions) -->
-    </p>
-</div>
-<table class="table table-bordered custom-table">
-    <thead>
-        <tr>
-            <th>Sub Program Code</th>
-            <th>Activity Code</th>
-            <th>Sub Activity Code</th>
-            <th>Financing Code</th>
-            <th>Account Code</th>
-            <th>Title</th>
-            <!-- <th>Proposed Budget</th> -->
-            <!-- <th>Approved Budget</th> -->
-            <th>Supplementary Budget</th>
-            <th>Budget Reappropations</th>
-            <th>Revision Budget</th>
-            <th>Current Budget</th>
-            <th>Consumed Budget</th>
-            <th>Available Budget</th>
-            <th>Budget Approved</th>
-        </tr>
-    </thead>
-    <tbody>
-        {%
-        var last_costcenter = "";
-        var last_activity = "";
-        var last_subactivity = "";
-        var last_financing = "";
-
-        var financing_total_proposed = 0;
-        var financing_total_approved = 0;
-        var subactivity_total_proposed = 0;
-        var subactivity_total_approved = 0;
-        var supplementary_total_approved = 0;
-        var budget_reappropations_total_approved = 0;
-        var revision_budget =0;
-        var current_budget =0;
-        var consumed_budget = 0;
-        var available_budget = 0;
-        var budget_approved = 0;
-        %}
-
-        {% for (var j=0; j<data.length; j++) { %} {% var row=data[j]; %} {% if (row.budget_cost_center &&
-            row.budget_cost_center !=last_costcenter) { %} <tr>
-            <td>{%= row.budget_cost_center.split("-")[0] %}</td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td>{%= row.cost_center_name || "" %}</td>
-            <td></td>
-            <td></td>
-            </tr>
-            {% last_costcenter = row.budget_cost_center; %}
-            {% last_activity = ""; last_subactivity = ""; last_financing = ""; %}
-            {% } %}
-
-            {% if (row.budget_activity && row.budget_activity != last_activity) { %}
+    <table class="table table-bordered custom-table">
+        <thead>
             <tr>
-                <td></td>
-                <td>{%= row.budget_activity.split(" ")[0] %}</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td>{%= row.budget_activity.replace(row.budget_activity.split(" ")[0], "").trim() %}</td>
-                <td></td>
-                <td></td>
+                <th rowspan="2" class="spc-column">SPC</th>
+                <th rowspan="2" class="acsac-column">AC/SAC</th>
+                <th rowspan="2" class="fic-column">FIC</th>
+                <th rowspan="2" class="obc-column">OBC</th>
+                <th rowspan="2" class="title-column">TITLE</th>
+                <th colspan="5" class="appropriation-heading">APPROPRIATIONS</th>
             </tr>
-            {% last_activity = row.budget_activity; %}
-            {% last_subactivity = ""; last_financing = ""; %}
-            {% } %}
-
-            {% if (row.budget_sub_activity && row.budget_sub_activity != last_subactivity) { %}
-            {% if (last_subactivity) { %}
             <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td>TOTAL SUB-ACTIVITY {%= last_subactivity.split(" ")[0] %}</td>
-                <td>{%= subactivity_total_proposed %}</td>
-                <td>{%= subactivity_total_approved %}</td>
+                <th class="amount-column">CURRENT</th>
+                <th class="amount-column">CAPITAL</th>
+                <th class="amount-column">LENDING</th>
+                <th class="amount-column">REPAYMENT</th>
+                <th class="amount-column">TOTAL</th>
             </tr>
+        </thead>
+
+        <tbody>
             {%
-            subactivity_total_proposed = 0;
-            subactivity_total_approved = 0; %}
-            {% } %}
-            <tr>
-                <td></td>
-                <td></td>
-                <td>{%= row.budget_sub_activity.split(" ")[0] %}</td>
-                <td></td>
-                <td></td>
-                <td>{%= row.budget_sub_activity.replace(row.budget_sub_activity.split(" ")[0], "").trim() %}</td>
-                <td></td>
-                <td></td>
-            </tr>
-            {% last_subactivity = row.budget_sub_activity; %}
-            {% last_financing = ""; %}
-            {% } %}
+                function get_value(row, fields) {
+                    for (var i = 0; i < fields.length; i++) {
+                        var value = row[fields[i]];
 
-            {% if (row.source_of_fund && row.financing_code != last_financing) { %}
-            {% if (last_financing) { %}
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td>TOTAL {%= last_financing %}</td>
-                <td>{%= financing_total_proposed %}</td>
-                <td>{%= financing_total_approved %}</td>
-            </tr>
-            {% financing_total_proposed = 0; financing_total_approved = 0; %}
-            {% } %}
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td>{%= row.source_of_fund %}</td>
-                <td></td>
-                <td>{%= row.financing_title || "" %}</td>
-                <td></td>
-                <td></td>
-            </tr>
-            {% last_financing = row.financing_code; %}
-            {% } %}
+                        if (
+                            value !== undefined &&
+                            value !== null &&
+                            value !== ""
+                        ) {
+                            return value;
+                        }
+                    }
 
-            {% if (row.account && row.account_initial_budget && row.account_initial_budget > 0) { %}
-            {%
-            var acc_parts = row.account.split(" ");
-            var acc_code = acc_parts.length > 0 ? acc_parts[0] : "";
-            var acc_title = row.account.replace(acc_code, "").trim();
-            var proposed_budget = row.account_initial_budget || 0;
-            var approved_budget = row.approved_budget || 0;
-            var s_total_approved = row.supplementary_budget || 0;
-            var b_reappropations_total_approved = row.budget_received || 0;
-            var r_budget = row.budget_amount || 0;
-            var cur_budget = row.current || 0;
-            var c_budget = row.consumed || 0;
-            var a_budget = row.available || 0;
-            var a_budget_approved = row.approved_budget || 0;
+                    return 0;
+                }
 
-            financing_total_proposed += proposed_budget;
-            financing_total_approved += approved_budget;
-            subactivity_total_proposed += proposed_budget;
-            subactivity_total_approved += approved_budget;
-            supplementary_total_approved += supplementary_total_approved;
-            budget_reappropations_total_approved += budget_reappropations_total_approved;
-            revision_budget += revision_budget;
-            consumed_budget += consumed_budget;
-            available_budget += available_budget;
-            budget_approved +=budget_approved;
+                function to_number(value) {
+                    if (
+                        value === undefined ||
+                        value === null ||
+                        value === ""
+                    ) {
+                        return 0;
+                    }
 
+                    if (typeof value === "number") {
+                        return value;
+                    }
+
+                    var cleaned = String(value).replace(/[^0-9.-]/g, "");
+                    return Number(cleaned) || 0;
+                }
+
+                function format_amount(value) {
+                    return to_number(value).toLocaleString("en-US", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    });
+                }
+
+                function get_code(value) {
+                    if (!value) {
+                        return "";
+                    }
+
+                    var text = String(value).trim();
+
+                    if (text.indexOf(" - ") !== -1) {
+                        return text.split(" - ")[0].trim();
+                    }
+
+                    return text.split(/\s+/)[0].trim();
+                }
+
+                function get_title(value) {
+                    if (!value) {
+                        return "";
+                    }
+
+                    var text = String(value).trim();
+                    var code = get_code(text);
+
+                    return text
+                        .replace(code, "")
+                        .replace(/^\s*-\s*/, "")
+                        .trim();
+                }
+
+                function get_revision(row) {
+                    return to_number(
+                        get_value(row, [
+                            "revision",
+                            "revision_budget",
+                            "budget_amount"
+                        ])
+                    );
+                }
+
+                function get_capital(row) {
+                    return to_number(
+                        get_value(row, [
+                            "capital_budget",
+                            "capital"
+                        ])
+                    );
+                }
+
+                function get_lending(row) {
+                    return to_number(
+                        get_value(row, [
+                            "lending_budget",
+                            "lending"
+                        ])
+                    );
+                }
+
+                function get_repayment(row) {
+                    return to_number(
+                        get_value(row, [
+                            "repayment_budget",
+                            "repayment"
+                        ])
+                    );
+                }
+
+                function get_source_key(row) {
+                    return row.source_of_fund || row.financing_code || "";
+                }
+
+                function get_group_key(row) {
+                    return [
+                        row.budget_cost_center || "",
+                        row.budget_activity || "",
+                        row.budget_sub_activity || "",
+                        get_source_key(row)
+                    ].join("|");
+                }
+
+                /* Show all account rows, including zero Revision rows. */
+                var print_rows = [];
+
+                for (var p = 0; p < data.length; p++) {
+                    var source_row = data[p];
+
+                    if (source_row.account) {
+                        print_rows.push(source_row);
+                    }
+                }
+
+                var previous_cost_center = "";
+                var previous_activity = "";
+                var previous_sub_activity = "";
+                var previous_source = "";
+
+                var source_current_total = 0;
+                var source_capital_total = 0;
+                var source_lending_total = 0;
+                var source_repayment_total = 0;
+                var source_total = 0;
+
+                var grand_current_total = 0;
+                var grand_capital_total = 0;
+                var grand_lending_total = 0;
+                var grand_repayment_total = 0;
+                var grand_total = 0;
             %}
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td>{%= acc_code %}</td>
-                <td>{%= acc_title %}</td>
-                <!-- <td>{%= proposed_budget %}</td> -->
-                <!-- <td>{%= approved_budget %}</td> -->
-                <td>{%= s_total_approved %}</td>
-                <td>{%= b_reappropations_total_approved%} </td>
-                <td>{%= r_budget%} </td>
-                <td>{%= cur_budget%} </td>
-                <td>{%= c_budget%} </td>
-                <td>{%= a_budget%}</td>
-                <td>{%= a_budget_approved%}</td>
 
-            </tr>
+            {% if (print_rows.length === 0) { %}
+                <tr>
+                    <td colspan="10" class="no-data">
+                        No account data is available.
+                    </td>
+                </tr>
             {% } %}
 
+            {% for (var j = 0; j < print_rows.length; j++) { %}
+                {%
+                    var row = print_rows[j];
+                    var next_row = print_rows[j + 1];
+
+                    var current_cost_center = row.budget_cost_center || "";
+                    var current_activity = row.budget_activity || "";
+                    var current_sub_activity = row.budget_sub_activity || "";
+                    var current_source = get_source_key(row);
+
+                    var current_group_key = get_group_key(row);
+                    var next_group_key = next_row ? get_group_key(next_row) : "";
+
+                    /* CURRENT is taken from Revision. */
+                    var current_amount = get_revision(row);
+                    var capital_amount = get_capital(row);
+                    var lending_amount = get_lending(row);
+                    var repayment_amount = get_repayment(row);
+
+                    var row_total =
+                        current_amount +
+                        capital_amount +
+                        lending_amount +
+                        repayment_amount;
+                %}
+
+                {% if (
+                    current_cost_center &&
+                    current_cost_center !== previous_cost_center
+                ) { %}
+                    <tr class="group-row">
+                        <td>{%= get_code(current_cost_center) %}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>{%= row.cost_center_name || get_title(current_cost_center) %}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+
+                    {%
+                        previous_cost_center = current_cost_center;
+                        previous_activity = "";
+                        previous_sub_activity = "";
+                        previous_source = "";
+                    %}
+                {% } %}
+
+                {% if (
+                    current_activity &&
+                    current_activity !== previous_activity
+                ) { %}
+                    <tr class="group-row">
+                        <td></td>
+                        <td>{%= get_code(current_activity) %}</td>
+                        <td></td>
+                        <td></td>
+                        <td>{%= get_title(current_activity) %}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+
+                    {%
+                        previous_activity = current_activity;
+                        previous_sub_activity = "";
+                        previous_source = "";
+                    %}
+                {% } %}
+
+                {% if (
+                    current_sub_activity &&
+                    current_sub_activity !== previous_sub_activity
+                ) { %}
+                    <tr class="group-row">
+                        <td></td>
+                        <td>{%= get_code(current_sub_activity) %}</td>
+                        <td></td>
+                        <td></td>
+                        <td>{%= get_title(current_sub_activity) %}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+
+                    {%
+                        previous_sub_activity = current_sub_activity;
+                        previous_source = "";
+                    %}
+                {% } %}
+
+                {% if (
+                    current_source &&
+                    current_source !== previous_source
+                ) { %}
+                    <tr class="group-row">
+                        <td></td>
+                        <td></td>
+                        <td>{%= get_code(row.source_of_fund || current_source) %}</td>
+                        <td></td>
+                        <td>
+                            {%= row.source_of_fund_name ||
+                                row.financing_title ||
+                                get_title(row.source_of_fund) %}
+                        </td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+
+                    {% previous_source = current_source; %}
+                {% } %}
+
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>{%= get_code(row.account) %}</td>
+                    <td>{%= get_title(row.account) %}</td>
+                    <td class="amount">{%= format_amount(current_amount) %}</td>
+                    <td class="amount">{%= format_amount(capital_amount) %}</td>
+                    <td class="amount">{%= format_amount(lending_amount) %}</td>
+                    <td class="amount">{%= format_amount(repayment_amount) %}</td>
+                    <td class="amount">{%= format_amount(row_total) %}</td>
+                </tr>
+
+                {%
+                    source_current_total += current_amount;
+                    source_capital_total += capital_amount;
+                    source_lending_total += lending_amount;
+                    source_repayment_total += repayment_amount;
+                    source_total += row_total;
+
+                    grand_current_total += current_amount;
+                    grand_capital_total += capital_amount;
+                    grand_lending_total += lending_amount;
+                    grand_repayment_total += repayment_amount;
+                    grand_total += row_total;
+                %}
+
+                {% if (
+                    current_group_key !== next_group_key ||
+                    j === print_rows.length - 1
+                ) { %}
+                    <tr class="subtotal-row">
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>
+                            TOTAL
+                            {%= row.source_of_fund_name ||
+                                row.financing_title ||
+                                get_code(row.source_of_fund || current_source) %}
+                        </td>
+                        <td class="amount">{%= format_amount(source_current_total) %}</td>
+                        <td class="amount">{%= format_amount(source_capital_total) %}</td>
+                        <td class="amount">{%= format_amount(source_lending_total) %}</td>
+                        <td class="amount">{%= format_amount(source_repayment_total) %}</td>
+                        <td class="amount">{%= format_amount(source_total) %}</td>
+                    </tr>
+
+                    {%
+                        source_current_total = 0;
+                        source_capital_total = 0;
+                        source_lending_total = 0;
+                        source_repayment_total = 0;
+                        source_total = 0;
+                    %}
+                {% } %}
             {% } %}
 
-            {% if (last_subactivity) { %}
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td>TOTAL SUB-ACTIVITY {%= last_subactivity.split(" ")[0] %}</td>
-                <td>{%= subactivity_total_proposed %}</td>
-                <td>{%= subactivity_total_approved %}</td>
-            </tr>
+            {% if (print_rows.length > 0) { %}
+                <tr class="grand-total-row">
+                    <td colspan="5">GRAND TOTAL</td>
+                    <td class="amount">{%= format_amount(grand_current_total) %}</td>
+                    <td class="amount">{%= format_amount(grand_capital_total) %}</td>
+                    <td class="amount">{%= format_amount(grand_lending_total) %}</td>
+                    <td class="amount">{%= format_amount(grand_repayment_total) %}</td>
+                    <td class="amount">{%= format_amount(grand_total) %}</td>
+                </tr>
             {% } %}
-
-            {% if (last_financing) { %}
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td>TOTAL {%= last_financing %}</td>
-                <td>{%= financing_total_proposed %}</td>
-                <td>{%= financing_total_approved %}</td>
-            </tr>
-            {% } %}
-    </tbody>
-</table>
+        </tbody>
+    </table>
+</div>
 
 <style>
-    .text-center {
-        font-size: 16px;
-        font-family: "Times New Roman", serif;
+    .budget-print {
+        width: 100%;
+        color: #000;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .report-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        width: 100%;
+    }
+
+    .header-left,
+    .header-right {
+        flex: 1;
+        padding-top: 10px;
+        font-size: 12px;
+    }
+
+    .header-right {
+        text-align: right;
+    }
+
+    .header-center {
+        flex: 2;
         text-align: center;
+        font-family: "Times New Roman", serif;
+    }
+
+    .sungchob {
+        margin-bottom: 7px;
+        font-size: 18px;
+        font-weight: 700;
+    }
+
+    .company-name {
+        margin-bottom: 7px;
+        font-size: 16px;
+        font-weight: 700;
+    }
+
+    .report-title {
+        font-size: 15px;
+        font-weight: 700;
+    }
+
+    .report-info {
+        margin: 12px 0 14px;
+        font-size: 12px;
+    }
+
+    .administrative-unit {
+        margin-bottom: 4px;
+        font-style: italic;
     }
 
     .custom-table {
-
-        border: 1px solid #969696 !important;
-
-    }
-
-    .custom-table th {
-        white-space: normal;
-        vertical-align: middle;
-        padding: 8px 4px;
-        line-height: 1.2;
+        width: 100%;
+        table-layout: fixed;
+        border-collapse: collapse;
+        border: 1px solid #8f8f8f !important;
     }
 
     .custom-table th,
     .custom-table td {
-        border: 1px solid #969696 !important;
+        padding: 7px 6px;
+        border: 1px solid #8f8f8f !important;
+        vertical-align: middle;
+    }
 
+    .custom-table th {
+        background: #f2f2f2 !important;
+        color: #606d79 !important;
+        text-align: center;
+        font-size: 12px;
+        font-weight: 700;
+        line-height: 1.25;
     }
 
     .custom-table td {
         font-size: 11px;
+        line-height: 1.35;
     }
 
-    .custom-table th {
-        background-color: #DBDBDB !important;
-        text-align: center;
-        font-size: 11px;
-        font-weight: 600;
-        font-family: Arial, Helvetica, sans-serif;
-        color: black;
+    .custom-table td:nth-child(5) {
+        font-size: 11.5px;
+    }
+
+    .spc-column,
+    .fic-column,
+    .obc-column {
+        width: 6%;
+    }
+
+    .acsac-column {
+        width: 7%;
+    }
+
+    .title-column {
+        width: 32%;
+    }
+
+    .amount-column {
+        width: 9%;
+    }
+
+    .amount {
+        text-align: right;
+        white-space: nowrap;
+    }
+
+    .group-row td {
+        font-weight: 500;
+    }
+
+    .subtotal-row td {
+        background: #f7f7f7 !important;
+        font-weight: 700;
+        font-size: 11.5px;
+    }
+
+    .grand-total-row td {
+        background: #ececec !important;
+        font-weight: 700;
+        font-size: 11.5px;
+        border-top: 2px solid #555 !important;
+    }
+
+    .grand-total-row td:first-child {
+        text-align: right;
+    }
+
+    @media print {
+        @page {
+            size: A4 landscape;
+            margin: 10mm;
+        }
+
+        .custom-table thead {
+            display: table-header-group;
+        }
+
+        .custom-table tr {
+            page-break-inside: avoid;
+        }
     }
 </style>

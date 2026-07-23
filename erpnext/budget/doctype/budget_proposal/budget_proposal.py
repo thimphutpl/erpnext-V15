@@ -135,6 +135,7 @@ class BudgetProposal(Document):
         self.source_of_funds = []
         self.budget_accounts = []
         self.set_broad_head_from_account()
+        self.validate_cost_center()
         # Generate combinations automatically
         # self.generate_combinations()
 
@@ -277,6 +278,11 @@ class BudgetProposal(Document):
         self.create_or_update_budget()
         # Validate approved_budget before submission
         self.validate_approved_budget()	
+
+    def validate_cost_center(self):
+        for i in self.accounts:
+            if i.cost_center != self.cost_center:
+                frappe.throw("Both the parent and child cost center should have same.")        
 
     def validate_approved_budget(self):
         """Validate that approved_budget is not empty/null for all rows"""
@@ -621,23 +627,63 @@ class BudgetProposal(Document):
     def get_filtered_budget_data(self):
         r_data = []
         total = 0
-        cond = ""
+        # cond = ""
+        # if self.cost_center:
+        #     cond += "and ba.cost_center = '{}'".format(self.cost_center)
+        # if len(self.budget_activities) > 0:
+        #     cond += "and ba.budget_activity in ({})".format(", ".join("'"+ba.budget_activity+"'" for ba in self.budget_activities))
+        # if len(self.budget_sub_activities) > 0:
+        #     cond += "and ba.budget_sub_activity in ({})".format(", ".join("'"+bsa.budget_sub_activity+"'" for bsa in self.budget_sub_activities))
+        # if len(self.source_of_funds) > 0:
+        #     cond += "and ba.source_of_fund in ({})".format(", ".join("'"+sf.source_of_fund+"'" for sf in self.source_of_funds))
+        # if len(self.budget_accounts) > 0:
+        #     cond += "and ba.account in ({})".format(", ".join("'"+bac.account+"'" for bac in self.budget_accounts))
+        # data = frappe.db.sql("""
+        #         select ba.cost_center, ba.budget_activity,
+        #                ba.budget_sub_activity, ba.source_of_fund, ba.account, ba.initial_budget
+        #                from `tabBudget Account` ba where ba.parent = '{}'
+        #                {}
+        #     """.format(self.name, cond), as_dict = 1)
+
+        # Build the conditions dynamically with placeholders
+        conditions = []
+        params = [self.name]
+
         if self.cost_center:
-            cond += "and ba.cost_center = '{}'".format(self.cost_center)
+            conditions.append("ba.cost_center = %s")
+            params.append(self.cost_center)
+
         if len(self.budget_activities) > 0:
-            cond += "and ba.budget_activity in ({})".format(", ".join("'"+ba.budget_activity+"'" for ba in self.budget_activities))
+            placeholders = ", ".join(["%s"] * len(self.budget_activities))
+            conditions.append(f"ba.budget_activity in ({placeholders})")
+            params.extend([ba.budget_activity for ba in self.budget_activities])
+
         if len(self.budget_sub_activities) > 0:
-            cond += "and ba.budget_sub_activity in ({})".format(", ".join("'"+bsa.budget_sub_activity+"'" for bsa in self.budget_sub_activities))
+            placeholders = ", ".join(["%s"] * len(self.budget_sub_activities))
+            conditions.append(f"ba.budget_sub_activity in ({placeholders})")
+            params.extend([bsa.budget_sub_activity for bsa in self.budget_sub_activities])
+
         if len(self.source_of_funds) > 0:
-            cond += "and ba.source_of_fund in ({})".format(", ".join("'"+sf.source_of_fund+"'" for sf in self.source_of_funds))
+            placeholders = ", ".join(["%s"] * len(self.source_of_funds))
+            conditions.append(f"ba.source_of_fund in ({placeholders})")
+            params.extend([sf.source_of_fund for sf in self.source_of_funds])
+
         if len(self.budget_accounts) > 0:
-            cond += "and ba.account in ({})".format(", ".join("'"+bac.account+"'" for bac in self.budget_accounts))
-        data = frappe.db.sql("""
-                select ba.cost_center, ba.budget_activity,
-                       ba.budget_sub_activity, ba.source_of_fund, ba.account, ba.initial_budget
-                       from `tabBudget Account` ba where ba.parent = '{}'
-                       {}
-            """.format(self.name, cond), as_dict = 1)
+            placeholders = ", ".join(["%s"] * len(self.budget_accounts))
+            conditions.append(f"ba.account in ({placeholders})")
+            params.extend([bac.account for bac in self.budget_accounts])
+
+        # Build the complete query
+        where_clause = " and ".join(conditions) if conditions else "1=1"
+        query = f"""
+            select ba.cost_center, ba.budget_activity,
+                ba.budget_sub_activity, ba.source_of_fund, ba.account, ba.initial_budget
+            from `tabBudget Account` ba 
+            where ba.parent = %s and {where_clause}
+        """
+
+        data = frappe.db.sql(query, params, as_dict=1)
+
         for d in data:
             r_data.append({"cost_center": d.cost_center, "budget_activity": d.budget_activity, "budget_sub_activity": d.budget_sub_activity, "account": d.account, "initial_budget": d.initial_budget})
             total += flt(d.initial_budget)

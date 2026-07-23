@@ -47,7 +47,7 @@ frappe.query_reports["Budget Proposal Report"] = {
                             }
 
                             // Refresh the report
-                            query_report.trigger_refresh();
+                            query_report.refresh();
                         }
                     }
                 });
@@ -91,7 +91,7 @@ frappe.query_reports["Budget Proposal Report"] = {
             "fieldname": "source_of_fund",
             "label": __("Source of Fund"),
             "fieldtype": "Link",
-            "options": "Source Of Fund",
+            "options": "Source of Fund",
         },
         {
             "fieldname": "budget_against",
@@ -229,6 +229,33 @@ frappe.query_reports["Budget Proposal Report"] = {
     }
 }
 
+// function set_program_code(report) {
+
+//     let company = report.get_filter_value("company");
+
+//     if (!company) {
+//         report.program_code = "";
+//         report.program_name = "";
+//         report.refresh();
+//         return;
+//     }
+
+//     frappe.db.get_value(
+//         "Company",
+//         company,
+//         [
+//             "program_code",
+//             "program_name"
+//         ]
+//     ).then(r => {
+
+//         report.program_code = r.message.program_code || "";
+//         report.program_name = r.message.program_name || "";
+
+//         report.refresh();
+
+//     });
+// }
 function set_program_code(report) {
 
     let company = report.get_filter_value("company");
@@ -236,7 +263,8 @@ function set_program_code(report) {
     if (!company) {
         report.program_code = "";
         report.program_name = "";
-        report.refresh();
+
+        frappe.query_report.refresh();
         return;
     }
 
@@ -249,10 +277,19 @@ function set_program_code(report) {
         ]
     ).then(r => {
 
-        report.program_code = r.message.program_code || "";
-        report.program_name = r.message.program_name || "";
+        if (r.message) {
 
-        report.refresh();
+            report.program_code = r.message.program_code || "";
+            report.program_name = r.message.program_name || "";
+
+        } else {
+
+            report.program_code = "";
+            report.program_name = "";
+
+        }
+
+        frappe.query_report.refresh();
 
     });
 }

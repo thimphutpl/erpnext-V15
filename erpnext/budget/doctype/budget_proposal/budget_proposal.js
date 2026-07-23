@@ -178,6 +178,65 @@ frappe.ui.form.on('Budget Proposal', {
 		frm.set_query("branch", createFilter({}));
 	},
 
+	cost_center: function(frm) {
+        // Only proceed if:
+        // 1. There are existing accounts with cost center
+        // 2. We're actually changing the cost center (not setting it for first time)
+        // 3. The new cost center is different from the existing one
+        
+        if (frm.doc.accounts && frm.doc.accounts.length > 0) {
+            // Check if any row already has a cost center set
+            let hasCostCenter = frm.doc.accounts.some(row => row.cost_center);
+            
+            // Check if we're actually changing the cost center
+            let currentCostCenter = frm.doc.cost_center;
+            let oldCostCenter = frm._previous_cost_center || '';
+            
+            // Only show confirmation if:
+            // 1. There are rows with cost center already
+            // 2. The new cost center is different from the old one
+            // 3. It's not the first time setting cost center
+            if (hasCostCenter && oldCostCenter && currentCostCenter !== oldCostCenter) {
+                frappe.confirm(
+                    __('Do you want to update the cost center for all existing rows in the accounts table?'),
+                    function() {
+                        // User confirmed - update all rows
+                        let accounts = frm.doc.accounts;
+                        for (let i = 0; i < accounts.length; i++) {
+                            frappe.model.set_value(accounts[i].doctype, accounts[i].name, 'cost_center', frm.doc.cost_center);
+                        }
+                        frm.refresh_field('accounts');
+                        
+                        // Show success message
+                        frappe.show_alert({
+                            message: __('Cost center updated for all rows'),
+                            indicator: 'green'
+                        });
+                    },
+                    function() {
+                        // User cancelled - revert the cost_center field
+                        frm.set_value('cost_center', oldCostCenter);
+                    }
+                );
+            }
+        }
+        
+        // Store current value for next comparison
+        frm._previous_cost_center = frm.doc.cost_center;
+    },
+    
+    // Also handle the case when cost_center is set from child table
+    cost_centers: function(frm) {
+        // If cost_centers table is used, you might want to trigger update here too
+        if (frm.doc.cost_centers && frm.doc.cost_centers.length > 0) {
+            // Optionally update from the first cost_center in the table
+            // let first_cost_center = frm.doc.cost_centers[0].cost_center;
+            // if (first_cost_center && frm.doc.cost_center !== first_cost_center) {
+            //     frm.set_value('cost_center', first_cost_center);
+            // }
+        }
+    },
+
 	budget_against: function(frm) {
 		frm.trigger("set_null_value")
 		frm.trigger("toggle_reqd_fields")
@@ -262,7 +321,7 @@ frappe.ui.form.on('Budget Proposal', {
 		})
 	},
 	get_budget_heads: function(frm) {
-		if(frm.doc.cost_centers && frm.doc.budget_activities && frm.doc.budget_sub_activities && frm.doc.source_of_funds){
+		if(frm.doc.cost_center && frm.doc.budget_activities && frm.doc.budget_sub_activities && frm.doc.source_of_funds){
 			return frappe.call({
 				method: "get_budget_heads",
 				doc: frm.doc,

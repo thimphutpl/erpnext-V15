@@ -50,7 +50,7 @@ class SupplementaryBudget(Document):
 
         for d in self.items:
             query = f"""
-                SELECT b.name, ba.account
+                SELECT b.name, ba.account, ba.budget_amount
                 FROM `tabBudget` b, `tabBudget Account` ba
                 WHERE ba.parent = b.name
                   AND b.docstatus = 1
@@ -79,8 +79,13 @@ class SupplementaryBudget(Document):
                     error_message += _(" with budget activity '{0}'").format(d.budget_activity)
                 if d.get('budget_sub_activity'):
                     error_message += _(" and budget sub-activity '{0}'").format(d.budget_sub_activity)
-
+                
                 frappe.throw(error_message)
+
+            d.approved_budget = flt(
+            budget_exist[0].budget_amount,
+            2
+        )
 
     def supplement_budget(self, cancel=False):
         if frappe.db.get_value("Fiscal Year", self.fiscal_year, "closed"):

@@ -549,9 +549,14 @@
            TOTALS
            ===================================================== */
 
-        var financing_total = 0;
-        var sub_activity_total = 0;
-        var grand_total = 0;
+        var financing_approved_total = 0;
+        var financing_supplementary_total = 0;
+
+        var sub_activity_approved_total = 0;
+        var sub_activity_supplementary_total = 0;
+
+        var grand_approved_total = 0;
+        var grand_supplementary_total = 0;
     %}
 
 
@@ -696,7 +701,7 @@
     </div>
 
     <div class="ngultrum-note">
-        (Ngultrum in Millions)
+        (Ngultrum)
     </div>
 
 
@@ -707,14 +712,13 @@
     <table class="supplementary-table">
 
         <colgroup>
-            <col class="column-sub-program">
-            <col class="column-activity">
-            <col class="column-sub-activity">
+            <col class="column-spc">
+            <col class="column-ac-sac">
             <col class="column-financing">
-            <col class="column-source-fund">
             <col class="column-account">
             <col class="column-title">
             <col class="column-approved-budget">
+            <col class="column-supplementary-amount">
         </colgroup>
 
 
@@ -723,41 +727,33 @@
             <tr>
 
                 <th>
-                    Sub Program<br>
-                    Code
+                    SPC
                 </th>
 
                 <th>
-                    Activity<br>
-                    Code
+                    Ac/SAC
                 </th>
 
                 <th>
-                    Sub Activity<br>
-                    Code
+                    FIC
                 </th>
 
                 <th>
-                    Financing<br>
-                    Code
+                    OBC
                 </th>
 
                 <th>
-                    Source of Fund
-                </th>
-
-                <th>
-                    Account<br>
-                    Code
-                </th>
-
-                <th>
-                    Title
+                    Name of Activity
                 </th>
 
                 <th>
                     Approved<br>
                     Budget
+                </th>
+
+                <th>
+                    Supplementary<br>
+                    Amount
                 </th>
 
             </tr>
@@ -772,7 +768,7 @@
                 <tr>
 
                     <td
-                        colspan="8"
+                        colspan="7"
                         class="no-data-row"
                     >
                         No records found for the selected filters.
@@ -879,6 +875,12 @@
                     /* Approved Budget */
 
                     var approved_budget =
+                        number(row.approved_budget);
+
+
+                    /* Supplementary Amount */
+
+                    var supplementary_amount =
                         number(row.amount);
 
 
@@ -951,21 +953,24 @@
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td></td>
-                        <td></td>
 
                         <td class="total-label">
                             {%= last_financing_total_label %}
                         </td>
 
                         <td class="amount-cell">
-                            {%= money(financing_total) %}
+                            {%= money(financing_approved_total) %}
+                        </td>
+
+                        <td class="amount-cell">
+                            {%= money(financing_supplementary_total) %}
                         </td>
 
                     </tr>
 
                     {%
-                        financing_total = 0;
+                        financing_approved_total = 0;
+                        financing_supplementary_total = 0;
                     %}
 
                 {% } %}
@@ -984,8 +989,6 @@
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td></td>
-                        <td></td>
 
                         <td class="total-label">
                             TOTAL SUB-ACTIVITY
@@ -993,13 +996,18 @@
                         </td>
 
                         <td class="amount-cell">
-                            {%= money(sub_activity_total) %}
+                            {%= money(sub_activity_approved_total) %}
+                        </td>
+
+                        <td class="amount-cell">
+                            {%= money(sub_activity_supplementary_total) %}
                         </td>
 
                     </tr>
 
                     {%
-                        sub_activity_total = 0;
+                        sub_activity_approved_total = 0;
+                        sub_activity_supplementary_total = 0;
                     %}
 
                 {% } %}
@@ -1016,10 +1024,11 @@
 
                         <td>
                             {%= cost_center_code %}
+                            {% if (cost_center_title) { %}
+                                {%= " " + cost_center_title %}
+                            {% } %}
                         </td>
 
-                        <td></td>
-                        <td></td>
                         <td></td>
                         <td></td>
                         <td></td>
@@ -1028,6 +1037,7 @@
                             {%= cost_center_title %}
                         </td>
 
+                        <td></td>
                         <td></td>
 
                     </tr>
@@ -1052,13 +1062,12 @@
 
                         <td></td>
                         <td></td>
-                        <td></td>
-                        <td></td>
 
                         <td>
                             {%= activity_title %}
                         </td>
 
+                        <td></td>
                         <td></td>
 
                     </tr>
@@ -1076,7 +1085,6 @@
                     <tr class="hierarchy-row sub-activity-row">
 
                         <td></td>
-                        <td></td>
 
                         <td>
                             {%= sub_activity_code %}
@@ -1084,12 +1092,12 @@
 
                         <td></td>
                         <td></td>
-                        <td></td>
 
                         <td>
                             {%= sub_activity_title %}
                         </td>
 
+                        <td></td>
                         <td></td>
 
                     </tr>
@@ -1111,22 +1119,18 @@
 
                         <td></td>
                         <td></td>
-                        <td></td>
 
                         <td>
                             {%= financing_code %}
                         </td>
 
-                        <td>
-                            {%= source_of_fund %}
-                        </td>
-
                         <td></td>
 
                         <td>
                             {%= source_of_fund %}
                         </td>
 
+                        <td></td>
                         <td></td>
 
                     </tr>
@@ -1138,8 +1142,6 @@
 
                 <tr class="data-row">
 
-                    <td></td>
-                    <td></td>
                     <td></td>
                     <td></td>
                     <td></td>
@@ -1156,18 +1158,31 @@
                         {%= money(approved_budget) %}
                     </td>
 
+                    <td class="amount-cell">
+                        {%= money(supplementary_amount) %}
+                    </td>
+
                 </tr>
 
 
                 {%
-                    financing_total +=
+                    financing_approved_total +=
                         approved_budget;
 
-                    sub_activity_total +=
+                    financing_supplementary_total +=
+                        supplementary_amount;
+
+                    sub_activity_approved_total +=
                         approved_budget;
 
-                    grand_total +=
+                    sub_activity_supplementary_total +=
+                        supplementary_amount;
+
+                    grand_approved_total +=
                         approved_budget;
+
+                    grand_supplementary_total +=
+                        supplementary_amount;
 
 
                     last_cost_center_key =
@@ -1205,15 +1220,17 @@
                     <td></td>
                     <td></td>
                     <td></td>
-                    <td></td>
-                    <td></td>
 
                     <td class="total-label">
                         {%= last_financing_total_label %}
                     </td>
 
                     <td class="amount-cell">
-                        {%= money(financing_total) %}
+                        {%= money(financing_approved_total) %}
+                    </td>
+
+                    <td class="amount-cell">
+                        {%= money(financing_supplementary_total) %}
                     </td>
 
                 </tr>
@@ -1234,8 +1251,6 @@
                     <td></td>
                     <td></td>
                     <td></td>
-                    <td></td>
-                    <td></td>
 
                     <td class="total-label">
                         TOTAL SUB-ACTIVITY
@@ -1243,7 +1258,11 @@
                     </td>
 
                     <td class="amount-cell">
-                        {%= money(sub_activity_total) %}
+                        {%= money(sub_activity_approved_total) %}
+                    </td>
+
+                    <td class="amount-cell">
+                        {%= money(sub_activity_supplementary_total) %}
                     </td>
 
                 </tr>
@@ -1258,14 +1277,18 @@
                 <tr class="grand-total-row">
 
                     <td
-                        colspan="7"
+                        colspan="5"
                         class="grand-total-label"
                     >
                         GRAND TOTAL
                     </td>
 
                     <td class="amount-cell">
-                        {%= money(grand_total) %}
+                        {%= money(grand_approved_total) %}
+                    </td>
+
+                    <td class="amount-cell">
+                        {%= money(grand_supplementary_total) %}
                     </td>
 
                 </tr>
@@ -1557,43 +1580,38 @@
        COLUMN WIDTHS
        ===================================================== */
 
-    .column-sub-program {
-        width: 11%;
+    .column-spc {
+        width: 14%;
     }
 
 
-    .column-activity {
-        width: 9%;
-    }
-
-
-    .column-sub-activity {
+    .column-ac-sac {
         width: 10%;
     }
 
 
     .column-financing {
-        width: 9%;
-    }
-
-
-    .column-source-fund {
-        width: 13%;
+        width: 11%;
     }
 
 
     .column-account {
-        width: 10%;
+        width: 11%;
     }
 
 
     .column-title {
-        width: 25%;
+        width: 30%;
     }
 
 
     .column-approved-budget {
-        width: 13%;
+        width: 12%;
+    }
+
+
+    .column-supplementary-amount {
+        width: 12%;
     }
 
 
@@ -1602,35 +1620,37 @@
        ===================================================== */
 
     .supplementary-table th:nth-child(1),
-    .supplementary-table td:nth-child(1),
-
     .supplementary-table th:nth-child(2),
-    .supplementary-table td:nth-child(2),
-
     .supplementary-table th:nth-child(3),
+    .supplementary-table th:nth-child(4) {
+        text-align: center;
+    }
+
+
+    .supplementary-table td:nth-child(2),
     .supplementary-table td:nth-child(3),
-
-    .supplementary-table th:nth-child(4),
-    .supplementary-table td:nth-child(4),
-
-    .supplementary-table th:nth-child(6),
-    .supplementary-table td:nth-child(6) {
+    .supplementary-table td:nth-child(4) {
         text-align: center;
     }
 
 
     .supplementary-table th:nth-child(5),
-    .supplementary-table td:nth-child(5),
-
-    .supplementary-table th:nth-child(7),
-    .supplementary-table td:nth-child(7) {
+    .supplementary-table td:nth-child(5) {
         text-align: left;
     }
 
 
-    .supplementary-table th:nth-child(8),
-    .supplementary-table td:nth-child(8) {
+    .supplementary-table th:nth-child(6),
+    .supplementary-table td:nth-child(6),
+
+    .supplementary-table th:nth-child(7),
+    .supplementary-table td:nth-child(7) {
         text-align: right;
+    }
+
+
+    .cost-center-row td:nth-child(1) {
+        text-align: left;
     }
 
 
@@ -1648,26 +1668,25 @@
 
 
     .cost-center-row td:nth-child(1),
-    .cost-center-row td:nth-child(7) {
+    .cost-center-row td:nth-child(5) {
         font-weight: 700;
     }
 
 
     .activity-row td:nth-child(2),
-    .activity-row td:nth-child(7) {
+    .activity-row td:nth-child(5) {
         font-weight: 700;
     }
 
 
-    .sub-activity-row td:nth-child(3),
-    .sub-activity-row td:nth-child(7) {
+    .sub-activity-row td:nth-child(2),
+    .sub-activity-row td:nth-child(5) {
         font-weight: 700;
     }
 
 
-    .financing-row td:nth-child(4),
-    .financing-row td:nth-child(5),
-    .financing-row td:nth-child(7) {
+    .financing-row td:nth-child(3),
+    .financing-row td:nth-child(5) {
         font-weight: 700;
     }
 
@@ -1682,9 +1701,9 @@
 
 
     .activity-row td:nth-child(2),
-    .sub-activity-row td:nth-child(3),
-    .financing-row td:nth-child(4),
-    .data-row td:nth-child(6) {
+    .sub-activity-row td:nth-child(2),
+    .financing-row td:nth-child(3),
+    .data-row td:nth-child(4) {
         white-space: nowrap;
         word-break: normal;
         overflow-wrap: normal;

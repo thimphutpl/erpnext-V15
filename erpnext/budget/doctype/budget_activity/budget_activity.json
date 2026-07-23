@@ -26,6 +26,7 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Activity Code",
+   "precision": "2",
    "reqd": 1
   },
   {
@@ -70,7 +71,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-06-11 16:41:02.319061",
+ "modified": "2026-07-18 09:30:01.367894",
  "modified_by": "Administrator",
  "module": "Budget",
  "name": "Budget Activity",

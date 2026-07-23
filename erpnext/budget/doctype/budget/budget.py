@@ -1012,6 +1012,7 @@ def validate_expense_against_budget(args, throw_error=True):
 				),
 				as_dict=True
 			)
+			# frappe.throw(str(budget_records))
 
 			if budget_records:
 				validate_budget_records(args, error, budget_records, throw_error)
@@ -1019,7 +1020,8 @@ def validate_expense_against_budget(args, throw_error=True):
 				frappe.throw("Budget not available for <b>%s </b> in %s <b>%s</b> for Activity: <b>%s</b> Sub Activity: <b>%s</b> Source of Fund: <b>%s</b> for fiscal year <b>%s</b>" % (
 					args.account, 
 					budget_against, 
-					frappe.db.escape(args.get(budget_against)), 
+					# frappe.db.escape(args.get(budget_against)), 
+					args.cost_center,
 					args.budget_activity, 
 					args.budget_sub_activity, 
 					args.source_of_fund, 

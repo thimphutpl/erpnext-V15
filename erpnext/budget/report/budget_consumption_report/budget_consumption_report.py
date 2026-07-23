@@ -962,7 +962,7 @@ def get_columns(filters):
         # },
         {
             "fieldname": "current",
-            "label": "Current",
+            "label": "Revision",
             "fieldtype": "Currency",
             "width": 120
         },
