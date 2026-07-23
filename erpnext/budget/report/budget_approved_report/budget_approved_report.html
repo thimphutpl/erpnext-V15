@@ -275,22 +275,22 @@
 
 
                 <td style=" text-align:right">
-                    {%= row.current_budget || 0 %}
+                    {%= parseFloat(row.current_budget || 0).toLocaleString() %}
                 </td>
 
                 <td style="text-align:right">
-                    {%= row.capital_budget || 0 %}
+                    {%= parseFloat(row.capital_budget || 0).toLocaleString() %}
                 </td>
 
 
                 <td style="text-align:right">
-                    {%= row.lending_budget || 0 %}
+                    {%= parseFloat(row.lending_budget || 0).toLocaleString() %}
                 </td>
                 <td style="text-align:right">
-                    {%= row.repayment_budget || 0 %}
+                    {%= parseFloat(row.repayment_budget || 0).toLocaleString() %}
                 </td>
                 <td style="text-align:right">
-                    {%= row.total_budget || 0 %}
+                    {%= parseFloat(row.total_budget || 0).toLocaleString() %}
                 </td>
             </tr>
 
@@ -302,12 +302,12 @@
                 <td></td>
                 <td></td>
                 <td></td>
-                <td>Total {%= row.source_of_fund_name %}</td>
-                <td>{%= sub_total_current %}</td>
-                <td>{%= sub_total_capital %}</td>
-                <td>{%= sub_total_lending %}</td>
-                <td>{%= sub_total_repayment %}</td>
-                <td>{%=sub_total_total %}</td>
+                <td style="text-align:right">Total {%= row.source_of_fund_name %}</td>
+                <td style="text-align:right">{%= parseFloat(sub_total_current).toLocaleString() %}</td>
+                <td style="text-align:right">{%= parseFloat(sub_total_capital).toLocaleString() %}</td>
+                <td style="text-align:right">{%= parseFloat(sub_total_lending).toLocaleString() %}</td>
+                <td style="text-align:right">{%= parseFloat(sub_total_repayment).toLocaleString() %}</td>
+                <td style="text-align:right">{%= parseFloat(sub_total_total).toLocaleString() %}</td>
 
             </tr>
 
