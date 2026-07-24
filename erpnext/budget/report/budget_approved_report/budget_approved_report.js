@@ -1,17 +1,6 @@
 // Copyright (c) 2026, Frappe Technologies Pvt. Ltd. and contributors
 // For license information, please see license.txt
 frappe.query_reports["Budget Approved Report"] = {
-
-    // onload: function (report) {
-    //     frappe.db.get_value(
-    //         "Company",
-    //         report.get_filter_value("company"),
-    //         "program_code"
-    //     ).then(r => {
-    //         report.program_code = r.message.program_code;
-    //         report.refresh();
-    //     });
-    // },
     "filters": [
         {
             "fieldname": "fiscal_year",
@@ -225,6 +214,16 @@ frappe.query_reports["Budget Approved Report"] = {
                 }
             });
         }
+        frappe.after_ajax(() => {
+
+            let company = query_report.get_filter_value("company");
+
+            if (company) {
+                set_program_code(query_report);
+            }
+
+        });
+
     }
 }
 

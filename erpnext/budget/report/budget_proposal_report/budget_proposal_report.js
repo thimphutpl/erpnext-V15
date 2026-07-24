@@ -226,6 +226,15 @@ frappe.query_reports["Budget Proposal Report"] = {
                 }
             });
         }
+        frappe.after_ajax(() => {
+
+            let company = query_report.get_filter_value("company");
+
+            if (company) {
+                set_program_code(query_report);
+            }
+
+        });
     }
 }
 
