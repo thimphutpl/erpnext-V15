@@ -38,35 +38,28 @@ function get_filters() {
     let budget_against_options = get_dimensions();
 
     let filters = [
+
         {
-            fieldname: "from_fiscal_year",
-            label: __("From Fiscal Year"),
+            fieldname: "fiscal_year",
+            label: __("Fiscal Year"),
             fieldtype: "Link",
             options: "Fiscal Year",
             default: erpnext.utils.get_fiscal_year(frappe.datetime.get_today()),
             reqd: 1,
         },
-        {
-            fieldname: "to_fiscal_year",
-            label: __("To Fiscal Year"),
-            fieldtype: "Link",
-            options: "Fiscal Year",
-            default: erpnext.utils.get_fiscal_year(frappe.datetime.get_today()),
-            reqd: 1,
-        },
-        {
-            fieldname: "period",
-            label: __("Period"),
-            fieldtype: "Select",
-            options: [
-                { value: "Monthly", label: __("Monthly") },
-                { value: "Quarterly", label: __("Quarterly") },
-                { value: "Half-Yearly", label: __("Half-Yearly") },
-                { value: "Yearly", label: __("Yearly") },
-            ],
-            default: "Yearly",
-            reqd: 1,
-        },
+        // {
+        //     fieldname: "period",
+        //     label: __("Period"),
+        //     fieldtype: "Select",
+        //     options: [
+        //         { value: "Monthly", label: __("Monthly") },
+        //         { value: "Quarterly", label: __("Quarterly") },
+        //         { value: "Half-Yearly", label: __("Half-Yearly") },
+        //         { value: "Yearly", label: __("Yearly") },
+        //     ],
+        //     default: "Yearly",
+        //     reqd: 1,
+        // },
         {
             fieldname: "company",
             label: __("Company"),
@@ -74,6 +67,9 @@ function get_filters() {
             options: "Company",
             default: frappe.defaults.get_user_default("Company"),
             reqd: 1,
+            "on_change": function (query_report) {
+                set_program_code(query_report);
+            }
         },
         {
             fieldname: "budget_against",
@@ -82,10 +78,7 @@ function get_filters() {
             options: budget_against_options,
             default: "Cost Center",
             reqd: 1,
-            on_change: function () {
-                frappe.query_report.set_filter_value("budget_against_filter", []);
-                frappe.query_report.refresh();
-            },
+
         },
         {
             fieldname: "type",
@@ -98,26 +91,63 @@ function get_filters() {
             ],
             default: "Approved Budget"
         },
-        {
-            fieldname: "budget_against_filter",
-            label: __("Dimension Filter"),
-            fieldtype: "MultiSelectList",
-            get_data: function (txt) {
-                if (!frappe.query_report.filters) return;
+        // {
+        //     fieldname: "budget_against_filter",
+        //     label: __("Dimension Filter"),
+        //     fieldtype: "MultiSelectList",
+        //     get_data: function (txt) {
+        //         if (!frappe.query_report.filters) return;
 
-                let budget_against = frappe.query_report.get_filter_value("budget_against");
-                if (!budget_against) return;
+        //         let budget_against = frappe.query_report.get_filter_value("budget_against");
+        //         if (!budget_against) return;
 
-                return frappe.db.get_link_options(budget_against, txt);
-            },
-        },
-        {
-            fieldname: "show_cumulative",
-            label: __("Show Cumulative Amount"),
-            fieldtype: "Check",
-            default: 0,
-        },
+        //         return frappe.db.get_link_options(budget_against, txt);
+        //     },
+        // },
+        // {
+        //     fieldname: "show_cumulative",
+        //     label: __("Show Cumulative Amount"),
+        //     fieldtype: "Check",
+        //     default: 0,
+        // },
     ];
 
     return filters;
+}
+function set_program_code(report) {
+
+    let company = report.get_filter_value("company");
+
+    if (!company) {
+        report.program_code = "";
+        report.program_name = "";
+
+        frappe.query_report.load();
+        return;
+    }
+
+    frappe.db.get_value(
+        "Company",
+        company,
+        [
+            "program_code",
+            "program_name"
+        ]
+    ).then(r => {
+
+        if (r.message) {
+
+            report.program_code = r.message.program_code || "";
+            report.program_name = r.message.program_name || "";
+
+        } else {
+
+            report.program_code = "";
+            report.program_name = "";
+
+        }
+
+        frappe.query_report.load();
+
+    });
 }

@@ -1,0 +1,243 @@
+<div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+    <div style="text-align: left; flex: 1;">
+        <p>Printed date: {%= frappe.datetime.get_today() %}</p>
+    </div>
+    <div style="text-align: center; flex: 1;">
+        <h3 vclass="text-center"> SUNGCHOB</h3>
+        <h5 class="text-center">
+            {%= __(filters.type) %} Summer by Object Classification Fiscal Year: {%= filters.fiscal_year %}
+        </h5>
+    </div>
+    <div style="text-align: right; flex: 1;">
+        <p>Budget Form II</p>
+    </div>
+
+</div>
+<hr>
+
+<div style="display: flex; justify-content: space-between; align-items: center;">
+    <div style="margin:0;">
+        <p style="font-style: italic;">
+            Administartive Unit: 303.01 SUNCHOB SERVICES
+        </p>
+        <p style="margin:0;">
+            Program: {%= frappe.query_report.program_code || "" %}
+            -
+            {%= frappe.query_report.program_name || "" %}
+        </p>
+
+
+    </div>
+    <p style="margin: 0;">
+    </p>
+</div>
+<table class="table table-bordered custom-table">
+
+
+    <thead>
+        <tr>
+            <th class="title">Object Code</th>
+            <th class="title">Object Classification</th>
+            <th class="title">Parent Account</th>
+            <th class="title">I Actual Expenditure-</th>
+            <th class="title">II Revised Budget</th>
+            <th class="title">III {%= (filters.type)%}</th>
+            <th class="title">V Difference in Amount (III-II)</th>
+            <th class="title">V Difference in % (III-II)/II * 100</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        <!-- 10 A Current -->
+        {%
+        var current_rows = data.filter(function(row){
+        return (row.parent_account || "").toLowerCase().includes("10 a");
+        });
+        %}
+
+
+        {% for row in current_rows %}
+
+        <tr>
+            <td>
+                {%= row.account && row.account.match(/^[\d.]+/)
+                ? row.account.match(/^[\d.]+/)[0]
+                : "" %}
+            </td>
+
+            <td>
+                {%= row.account
+                ? row.account
+                .replace(/^[\d.]+\s*-\s*/, '')
+                .replace(/\s*-\s*[A-Z]+$/, '')
+                : "" %}
+            </td>
+
+            <td>{%= row.parent_account %}</td>
+
+            <td>{%= row.i_actual_expenditure %}</td>
+            <td>{%= row.ii_revised_budget %}</td>
+            <td>{%= row.iii_approved_budget %}</td>
+            <td>{%= row.difference_in_amount %}</td>
+            <td>{%= row.difference_in_percentage %}</td>
+
+        </tr>
+
+        {% endfor %}
+
+
+        <tr style="font-weight:bold;background:#DBDBDB;">
+            <td colspan="3">Total Current</td>
+
+            <td>
+                {%= current_rows.reduce((sum,row)=>sum + flt(row.i_actual_expenditure),0) %}
+            </td>
+
+            <td>
+                {%= current_rows.reduce((sum,row)=>sum + flt(row.ii_revised_budget),0) %}
+            </td>
+
+            <td>
+                {%= current_rows.reduce((sum,row)=>sum + flt(row.iii_approved_budget),0) %}
+            </td>
+
+            <td>
+                {%= current_rows.reduce((sum,row)=>sum + flt(row.difference_in_amount),0) %}
+            </td>
+            <td>
+                {%= current_rows.reduce((sum,row)=>sum + flt(row.difference_in_percentage),0) %}
+            </td>
+
+            <td></td>
+        </tr>
+
+
+
+        <!-- 10 B Capital -->
+
+        {%
+        var capital_rows = data.filter(function(row){
+        return (row.parent_account || "").toLowerCase().includes("10 b");
+        });
+        %}
+
+
+        {% for row in capital_rows %}
+
+        <tr>
+            <td>
+                {%= row.account && row.account.match(/^[\d.]+/)
+                ? row.account.match(/^[\d.]+/)[0]
+                : "" %}
+            </td>
+
+            <td>
+                {%= row.account
+                ? row.account
+                .replace(/^[\d.]+\s*-\s*/, '')
+                .replace(/\s*-\s*[A-Z]+$/, '')
+                : "" %}
+            </td>
+
+            <td>{%= row.parent_account %}</td>
+
+            <td>{%= row.i_actual_expenditure %}</td>
+            <td>{%= row.ii_revised_budget %}</td>
+            <td>{%= row.iii_approved_budget %}</td>
+            <td>{%= row.difference_in_amount %}</td>
+            <td>{%= row.difference_in_percentage %}</td>
+
+        </tr>
+
+        {% endfor %}
+
+
+        <tr style="font-weight:bold;background:#DBDBDB;">
+            <td colspan="3">Total Capital</td>
+
+            <td>
+                {%= capital_rows.reduce((sum,row)=>sum + flt(row.i_actual_expenditure),0) %}
+            </td>
+
+            <td>
+                {%= capital_rows.reduce((sum,row)=>sum + flt(row.ii_revised_budget),0) %}
+            </td>
+
+            <td>
+                {%= capital_rows.reduce((sum,row)=>sum + flt(row.iii_approved_budget),0) %}
+            </td>
+
+            <td>
+                {%= capital_rows.reduce((sum,row)=>sum + flt(row.difference_in_amount),0) %}
+            </td>
+            <td>
+                {%= capital_rows.reduce((sum,row)=>sum + flt(row.difference_in_percentage),0) %}
+            </td>
+
+            <td></td>
+        </tr>
+
+
+
+        <!-- Grand Total -->
+
+        <!-- <tr style="font-weight:bold;background:#BFBFBF;">
+
+            <td colspan="3">Grand Total</td>
+
+            <td>
+                {%= data.reduce((sum,row)=>sum + flt(row.i_actual_expenditure),0) %}
+            </td>
+
+            <td>
+                {%= data.reduce((sum,row)=>sum + flt(row.ii_revised_budget),0) %}
+            </td>
+
+            <td>
+                {%= data.reduce((sum,row)=>sum + flt(row.iii_approved_budget),0) %}
+            </td>
+
+            <td>
+                {%= data.reduce((sum,row)=>sum + flt(row.difference_in_amount),0) %}
+            </td>
+
+            <td></td>
+
+        </tr> -->
+
+
+    </tbody>
+
+</table>
+
+
+<style>
+    .text-center {
+        font-size: 14px;
+        font-family: " Times New Roman", serif;
+        text-align: center;
+    }
+
+    .custom-table {
+        border: 1px solid #969696 !important;
+    }
+
+    .custom-table th,
+    .custom-table td {
+        border: 1px solid #969696 !important;
+    }
+
+    .custom-table td {
+        font-size: 12px;
+    }
+
+    .custom-table th {
+        background-color: #DBDBDB !important;
+        text-align: center;
+        font-size:
+            13px;
+        font-weight: 600;
+        font-family: Arial, Helvetica, sans-serif;
+        color: black;
+    }
+</style>
