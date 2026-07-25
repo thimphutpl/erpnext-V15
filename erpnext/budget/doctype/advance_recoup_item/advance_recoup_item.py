@@ -25,6 +25,7 @@ class AdvanceRecoupItem(Document):
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
+		remark: DF.SmallText | None
 		source_of_fund: DF.Link
 	# end: auto-generated types
 
