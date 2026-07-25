@@ -29,6 +29,7 @@ from pypika import Order
 from pypika.terms import ExistsCriterion
 
 import erpnext
+import math
 
 # imported to enable erpnext.accounts.utils.get_account_currency
 from erpnext.accounts.doctype.account.account import get_account_currency
@@ -2221,3 +2222,64 @@ def make_asset_transfer_gl(self, asset, date, from_cc, to_cc, cancel, not_legacy
 		)
 
 	make_gl_entries(gl_entries, cancel=cancel, update_outstanding="No", merge_entries=False)
+@frappe.whitelist()
+def calculate_promoted_basic(new_grade, fiscal_year, company, current_basic, current_increment, promoted_increment):
+
+    # Get Promotion Rule
+    promotion_rule = frappe.db.get_value(
+        "Promotion Rule",
+        {
+            "grade": new_grade,
+            "fiscal_year": fiscal_year,
+            "company": company
+        },
+        "name"
+    )
+
+    if not promotion_rule:
+        frappe.throw(
+            f"Promotion Rule not found for {new_grade}"
+        )
+
+
+    # Get Pay Scale table
+    pay_scales = frappe.get_all(
+        "Promotion Rule Item",
+        filters={
+            "parent": promotion_rule
+        },
+        fields=["amount"],
+        order_by="amount asc"
+    )
+
+
+    if not pay_scales:
+        frappe.throw(
+            f"Pay Scale not found for {new_grade}"
+        )
+
+
+    # Promotion formula
+    new_basic = (
+        flt(current_basic)
+        + flt(current_increment)
+        + flt(promoted_increment)
+    )
+   
+
+
+    # Find nearest higher pay scale
+    final_basic = None
+
+    for row in pay_scales:
+        if row.amount >= new_basic:
+            final_basic = row.amount
+            break
+
+
+    # If above maximum, take last amount
+    if not final_basic:
+        final_basic = pay_scales[-1].amount
+
+
+    return final_basic
