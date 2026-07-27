@@ -42,6 +42,8 @@
   "column_break_24",
   "budget_amount",
   "withdrawal_budget",
+  "section_break_thus",
+  "remarks",
   "reappropiation_budget_details",
   "supplementary_budget",
   "released_budget",
@@ -563,11 +565,20 @@
    "options": "Account",
    "read_only": 1,
    "reqd": 1
+  },
+  {
+   "fieldname": "section_break_thus",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Small Text",
+   "label": "Remarks"
   }
  ],
  "istable": 1,
  "links": [],
- "modified": "2026-07-06 07:14:56.192586",
+ "modified": "2026-07-27 14:21:01.337677",
  "modified_by": "Administrator",
  "module": "Budget",
  "name": "Budget Account",

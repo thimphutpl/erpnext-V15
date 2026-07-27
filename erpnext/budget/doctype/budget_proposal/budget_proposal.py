@@ -448,6 +448,7 @@ class BudgetProposal(Document):
             budget_account.budget_received = proposal_account.budget_received
             budget_account.budget_sent = proposal_account.budget_sent
             budget_account.budget_amount = proposal_account.approved_budget
+            budget_account.remarks = proposal_account.remarks
             
             # Map monthly distribution if applicable
             if self.monthly_distribution:

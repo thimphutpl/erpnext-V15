@@ -69,6 +69,7 @@ class BudgetAccount(Document):
 		parentfield: DF.Data
 		parenttype: DF.Data
 		released_budget: DF.Currency
+		remarks: DF.SmallText | None
 		sb_april: DF.Data | None
 		sb_august: DF.Data | None
 		sb_december: DF.Data | None
