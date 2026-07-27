@@ -14,6 +14,7 @@ def execute(filters=None):
 
 
 
+
 # def get_data(filters):
 # 	conditions = get_conditions(filters)
 
@@ -25,16 +26,21 @@ def execute(filters=None):
 # 			i.asset_sub_category,
 # 			t.cost_center,
 # 			t.received_qty AS total_qty,
-# 			t.received_amount AS total_val,
+
+# 			(t.received_qty * t.base_net_rate) AS total_val,
+
 # 			t.issued_qty,
-# 			t.issued_amount AS issued_val,
-# 			(t.received_qty - t.issued_qty) AS balance_qty,	
-					  
+
+# 			(t.issued_qty * t.base_net_rate) AS issued_val,
+
+# 			(t.received_qty - t.issued_qty) AS balance_qty,
+
 # 			CASE
 # 				WHEN (t.received_qty - t.issued_qty) > 0 THEN
-# 					(t.received_amount - t.issued_amount)
+# 					((t.received_qty - t.issued_qty) * t.base_net_rate)
 # 				ELSE 0
-# 			END AS balance_val,		  
+# 			END AS balance_val,
+
 # 			CASE
 # 				WHEN (t.received_qty - t.issued_qty) > 0 THEN
 # 					CONCAT(
@@ -43,22 +49,27 @@ def execute(filters=None):
 # 					)
 # 				ELSE ''
 # 			END AS purchase_receipt,
+
 # 			"" AS existing_pr
+
 # 		FROM (
 # 			SELECT
 # 				ar.item_code,
 # 				ar.ref_doc,
 # 				ar.cost_center,
+
 # 				(
 # 					SELECT pri.warehouse
 # 					FROM `tabPurchase Receipt Item` pri
 # 					WHERE pri.name = ar.child_ref
 # 					LIMIT 1
 # 				) AS warehouse,
+
 # 				SUM(ar.qty) AS received_qty,
-# 				SUM(
+
+# 				MAX(
 # 					(
-# 						SELECT pri.base_net_amount
+# 						SELECT pri.base_net_rate
 # 						FROM `tabPurchase Receipt Item` pri
 # 						JOIN `tabPurchase Receipt` pr
 # 							ON pr.name = pri.parent
@@ -66,7 +77,8 @@ def execute(filters=None):
 # 						AND pr.branch = ar.branch
 # 						LIMIT 1
 # 					)
-# 				) AS received_amount,
+# 				) AS base_net_rate,
+
 # 				IFNULL((
 # 					SELECT SUM(ai.qty)
 # 					FROM `tabAsset Issue Details` ai
@@ -74,15 +86,8 @@ def execute(filters=None):
 # 					AND ai.purchase_receipt = ar.ref_doc
 # 					AND ai.docstatus = 1
 # 					AND ai.issued_date BETWEEN '{from_date}' AND '{to_date}'
-# 				), 0) AS issued_qty,
-# 				IFNULL((
-# 					SELECT SUM(ai.amount)
-# 					FROM `tabAsset Issue Details` ai
-# 					WHERE ai.item_code = ar.item_code
-# 					AND ai.purchase_receipt = ar.ref_doc
-# 					AND ai.docstatus = 1
-# 					AND ai.issued_date BETWEEN '{from_date}' AND '{to_date}'
-# 				), 0) AS issued_amount
+# 				), 0) AS issued_qty
+
 # 			FROM `tabAsset Received Entries` ar
 # 			WHERE ar.received_date BETWEEN '{from_date}' AND '{to_date}'
 # 			AND ar.docstatus = 1
@@ -90,6 +95,7 @@ def execute(filters=None):
 # 			{cond}
 # 			GROUP BY ar.item_code, ar.ref_doc, ar.cost_center, ar.branch
 # 		) AS t
+
 # 		JOIN `tabItem` i ON i.name = t.item_code
 
 # 		UNION ALL
@@ -104,17 +110,21 @@ def execute(filters=None):
 # 			t.received_amount AS total_val,
 # 			t.issued_qty,
 # 			t.issued_amount AS issued_val,
-# 			(t.received_qty - t.issued_qty) AS balance_qty,								  
+# 			(t.received_qty - t.issued_qty) AS balance_qty,
+
 # 			CASE
 # 				WHEN (t.received_qty - t.issued_qty) > 0 THEN
 # 					(t.received_amount - t.issued_amount)
 # 				ELSE 0
-# 			END AS balance_val,		  
+# 			END AS balance_val,
+
 # 			"" AS purchase_receipt,
+
 # 			CASE
 # 				WHEN (t.received_qty - t.issued_qty) > 0 THEN t.existing_pr
 # 				ELSE ''
 # 			END AS existing_pr
+
 # 		FROM (
 # 			SELECT
 # 				ar.name AS asset_received_entry,
@@ -155,6 +165,7 @@ def execute(filters=None):
 # 			{cond}
 # 			GROUP BY ar.name, ar.item_code, ar.ref_doc, ar.existing_pr_reference, ar.cost_center, ar.warehouse, ar.branch
 # 		) AS t
+
 # 		JOIN `tabItem` i ON i.name = t.item_code
 
 # 		ORDER BY item_code, cost_center, purchase_receipt, existing_pr
@@ -176,18 +187,14 @@ def get_data(filters):
 			i.asset_sub_category,
 			t.cost_center,
 			t.received_qty AS total_qty,
-
-			(t.received_qty * t.base_net_rate) AS total_val,
-
+			t.received_amount AS total_val,
 			t.issued_qty,
-
-			(t.issued_qty * t.base_net_rate) AS issued_val,
-
+			t.issued_amount AS issued_val,
 			(t.received_qty - t.issued_qty) AS balance_qty,
 
 			CASE
 				WHEN (t.received_qty - t.issued_qty) > 0 THEN
-					((t.received_qty - t.issued_qty) * t.base_net_rate)
+					(t.received_amount - t.issued_amount)
 				ELSE 0
 			END AS balance_val,
 
@@ -217,36 +224,56 @@ def get_data(filters):
 
 				SUM(ar.qty) AS received_qty,
 
-				MAX(
-					(
-						SELECT pri.base_net_rate
-						FROM `tabPurchase Receipt Item` pri
-						JOIN `tabPurchase Receipt` pr
-							ON pr.name = pri.parent
-						WHERE pri.name = ar.child_ref
-						AND pr.branch = ar.branch
-						LIMIT 1
+				SUM(
+					ar.qty * IFNULL(
+						(
+							SELECT pri.base_net_rate
+							FROM `tabPurchase Receipt Item` pri
+							JOIN `tabPurchase Receipt` pr
+								ON pr.name = pri.parent
+							WHERE pri.name = ar.child_ref
+							  AND pr.branch = ar.branch
+							LIMIT 1
+						),
+						0
 					)
-				) AS base_net_rate,
+				) AS received_amount,
 
 				IFNULL((
 					SELECT SUM(ai.qty)
 					FROM `tabAsset Issue Details` ai
 					WHERE ai.item_code = ar.item_code
-					AND ai.purchase_receipt = ar.ref_doc
-					AND ai.docstatus = 1
-					AND ai.issued_date BETWEEN '{from_date}' AND '{to_date}'
-				), 0) AS issued_qty
+					  AND ai.purchase_receipt = ar.ref_doc
+					  AND ai.branch = ar.branch
+					  AND ai.docstatus = 1
+					  AND ai.issued_date BETWEEN '{from_date}' AND '{to_date}'
+				), 0) AS issued_qty,
+
+				IFNULL((
+					SELECT SUM(ai.amount)
+					FROM `tabAsset Issue Details` ai
+					WHERE ai.item_code = ar.item_code
+					  AND ai.purchase_receipt = ar.ref_doc
+					  AND ai.branch = ar.branch
+					  AND ai.docstatus = 1
+					  AND ai.issued_date BETWEEN '{from_date}' AND '{to_date}'
+				), 0) AS issued_amount
 
 			FROM `tabAsset Received Entries` ar
 			WHERE ar.received_date BETWEEN '{from_date}' AND '{to_date}'
-			AND ar.docstatus = 1
-			AND ar.is_existing_asset = 0
-			{cond}
-			GROUP BY ar.item_code, ar.ref_doc, ar.cost_center, ar.branch
+			  AND ar.docstatus = 1
+			  AND ar.is_existing_asset = 0
+			  {cond}
+
+			GROUP BY
+				ar.item_code,
+				ar.ref_doc,
+				ar.cost_center,
+				ar.branch
 		) AS t
 
-		JOIN `tabItem` i ON i.name = t.item_code
+		JOIN `tabItem` i
+			ON i.name = t.item_code
 
 		UNION ALL
 
@@ -271,7 +298,8 @@ def get_data(filters):
 			"" AS purchase_receipt,
 
 			CASE
-				WHEN (t.received_qty - t.issued_qty) > 0 THEN t.existing_pr
+				WHEN (t.received_qty - t.issued_qty) > 0 THEN
+					t.existing_pr
 				ELSE ''
 			END AS existing_pr
 
@@ -290,35 +318,49 @@ def get_data(filters):
 					SELECT SUM(ai.qty)
 					FROM `tabAsset Issue Details` ai
 					WHERE ai.item_code = ar.item_code
-					AND ai.branch = ar.branch
-					AND ai.asset_received_entries = ar.name
-					AND ai.docstatus = 1
-					AND ai.is_existing_asset = 1
-					AND ai.issued_date BETWEEN '{from_date}' AND '{to_date}'
+					  AND ai.branch = ar.branch
+					  AND ai.asset_received_entries = ar.name
+					  AND ai.docstatus = 1
+					  AND ai.is_existing_asset = 1
+					  AND ai.issued_date BETWEEN '{from_date}' AND '{to_date}'
 				), 0) AS issued_qty,
 
 				IFNULL((
 					SELECT SUM(ai.amount)
 					FROM `tabAsset Issue Details` ai
 					WHERE ai.item_code = ar.item_code
-					AND ai.branch = ar.branch
-					AND ai.asset_received_entries = ar.name
-					AND ai.docstatus = 1
-					AND ai.is_existing_asset = 1
-					AND ai.issued_date BETWEEN '{from_date}' AND '{to_date}'
+					  AND ai.branch = ar.branch
+					  AND ai.asset_received_entries = ar.name
+					  AND ai.docstatus = 1
+					  AND ai.is_existing_asset = 1
+					  AND ai.issued_date BETWEEN '{from_date}' AND '{to_date}'
 				), 0) AS issued_amount
 
 			FROM `tabAsset Received Entries` ar
 			WHERE ar.received_date BETWEEN '{from_date}' AND '{to_date}'
-			AND ar.docstatus = 1
-			AND ar.is_existing_asset = 1
-			{cond}
-			GROUP BY ar.name, ar.item_code, ar.ref_doc, ar.existing_pr_reference, ar.cost_center, ar.warehouse, ar.branch
+			  AND ar.docstatus = 1
+			  AND ar.is_existing_asset = 1
+			  {cond}
+
+			GROUP BY
+				ar.name,
+				ar.item_code,
+				ar.ref_doc,
+				ar.existing_pr_reference,
+				ar.cost_center,
+				ar.warehouse,
+				ar.branch
 		) AS t
 
-		JOIN `tabItem` i ON i.name = t.item_code
+		JOIN `tabItem` i
+			ON i.name = t.item_code
 
-		ORDER BY item_code, cost_center, purchase_receipt, existing_pr
+		ORDER BY
+			item_code,
+			cost_center,
+			purchase_receipt,
+			existing_pr
+
 	""".format(
 		from_date=filters.get("from_date"),
 		to_date=filters.get("to_date"),
