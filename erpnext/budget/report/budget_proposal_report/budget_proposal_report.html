@@ -145,9 +145,9 @@ if (filters.budget_form == "Budget Form III") {
             <td></td>
             <td></td>
             <td>{%=
-                row.budget_cost_center.replace(/^\d+\s*-\s*(RBG\s+)?/i, "")
-                .replace(/\s*-\s*RBG\s*$/i, "")
-                .trim() %}</td>
+                row.budget_cost_center.replace(/^\d+(\.\d+)?\s*-\s*/, "")
+                .replace(/\s*-\s*(RBA|RBG)\s*$/i, "")
+                .trim()%}</td>
             <td></td>
             <td></td>
             <td></td>
@@ -166,9 +166,7 @@ if (filters.budget_form == "Budget Form III") {
                 <td></td>
                 <td>{%= row.budget_activity_name || (row.budget_activity ?
                     row.budget_activity.replace(/^\d+(\.\d+)?\s*-\s*/, "")
-
-                    .replace(/\s*-\s*RBG\s*$/i, "")
-
+                    .replace(/\s*-\s*(RBA|RBG)\s*$/i, "")
                     .trim() : "") %}</td>
                 <td></td>
                 <td></td>
@@ -188,10 +186,8 @@ if (filters.budget_form == "Budget Form III") {
                 <td></td>
                 <td>{%= row.budget_sub_activity_name || (row.budget_sub_activity ?
                     row.budget_sub_activity.replace(/^\d+(\.\d+)?\s*-\s*/, "")
-
-                    .replace(/\s*-\s*RBG\s*$/i, "")
-
-                    .trim() : "") %}</td>
+                    .replace(/\s*-\s*(RBA|RBG)\s*$/i, "")
+                    .trim(): "") %}</td>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -302,9 +298,7 @@ if (filters.budget_form == "Budget Form III") {
                 <td></td>
                 <td style="text-align:right">Total {%= row.budget_sub_activity_name || (row.budget_sub_activity ?
                     row.budget_sub_activity.replace(/^\d+(\.\d+)?\s*-\s*/, "")
-
-                    .replace(/\s*-\s*RBG\s*$/i, "")
-
+                    .replace(/\s*-\s*(RBA|RBG)\s*$/i, "")
                     .trim() : "") %}</td>
                 <td style="text-align:right">{%= parseFloat(sub_act_current).toLocaleString(undefined,
                     {minimumFractionDigits: 2}) %}</td>
@@ -330,9 +324,7 @@ if (filters.budget_form == "Budget Form III") {
                 <td></td>
                 <td style="text-align:right">Total {%= row.budget_activity_name || (row.budget_activity ?
                     row.budget_activity.replace(/^\d+(\.\d+)?\s*-\s*/, "")
-
-                    .replace(/\s*-\s*RBG\s*$/i, "")
-
+                    .replace(/\s*-\s*(RBA|RBG)\s*$/i, "")
                     .trim() : "") %}</td>
                 <td style="text-align:right">{%= parseFloat(act_current).toLocaleString(undefined,
                     {minimumFractionDigits: 2}) %}</td>
@@ -357,9 +349,10 @@ if (filters.budget_form == "Budget Form III") {
                 <td></td>
                 <td></td>
                 <td></td>
-                <td style="text-align:right">Total {%= row.budget_cost_center.replace(/^\d+\s*-\s*(RBG\s+)?/i, "")
-                    .replace(/\s*-\s*RBG\s*$/i, "")
-                    .trim() %}</td>
+                <td style="text-align:right">Total {%= row.budget_cost_center.replace(/^\d+(\.\d+)?\s*-\s*(\w+\s+)?/i,
+                    "")
+                    .replace(/\s*-\s*\w+(\s+\w+)?\s*$/i, "")
+                    .trim()%}</td>
                 <td style="text-align:right">{%= parseFloat(sp_current).toLocaleString(undefined,
                     {minimumFractionDigits: 2}) %}</td>
                 <td style="text-align:right">{%= parseFloat(sp_capital).toLocaleString(undefined,
@@ -459,9 +452,9 @@ if (filters.budget_form == "Budget Form III") {
                 lending: 0,
                 repayment: 0,
                 total: 0,
-                title: row.budget_cost_center.replace(/^\d+\s*-\s*(RBG\s+)?/i, "")
-                .replace(/\s*-\s*RBG\s*$/i, "")
-                .trim()
+                title: row.budget_cost_center.replace(/^\d+(\.\d+)?\s*-\s*/, "")
+.replace(/\s*-\s*(RBA|RBG)\s*$/i, "")
+.trim()
             };
         }
 
