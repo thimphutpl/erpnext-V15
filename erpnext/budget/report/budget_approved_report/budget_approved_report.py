@@ -161,6 +161,12 @@ def get_columns():
             "label": _("Budget Received"),
             "fieldtype": "Currency",
             "width": 130
+        },
+        {
+            "fieldname": "remarks",
+            "label": _("Remarks"),
+            "fieldtype": "Small Text",
+            "width": 130
         }
 
     ]
@@ -188,6 +194,7 @@ def get_data(filters):
             ba.budget_amount,
             ba.supplementary_budget,
             ba.budget_received,
+            ba.remarks,
 
 
             ba.source_of_fund,
