@@ -254,6 +254,7 @@ frappe.query_reports["Budget Approved Report"] = {
 
 //     });
 // }
+
 function set_program_code(report) {
 
     let company = report.get_filter_value("company");

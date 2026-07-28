@@ -2,9 +2,6 @@
 # For license information, please see license.txt
 
 # import frappe
-
-
-
 import frappe
 from frappe import _
 
