@@ -42,51 +42,110 @@ def get_cost_center_for_row(d):
 def get_data(filters):
 	data = []
 	conditions = get_condition(filters)
+
 	for d in frappe.db.sql('''
-			SELECT ti.party, ti.posting_date, ti.bill_amount, t.tax_withholding_category, 
-				ti.tds_amount, t.cheque_no, t.cheque_date, ti.invoice_no, ti.invoice_type,
-				t.tds_receipt_number, t.tds_receipt_date
-			FROM `tabTDS Receipt Update` t INNER JOIN `tabTDS Remittance Item` ti ON t.name = ti.parent
-			WHERE t.docstatus = 1 AND t.purpose = 'Other Invoice' {condition}
+			SELECT
+				ti.party,
+				ti.posting_date,
+				ti.bill_amount,
+				t.tax_withholding_category,
+				ti.tds_amount,
+				t.cheque_no,
+				t.cheque_date,
+				ti.invoice_no,
+				ti.invoice_type,
+				t.tds_receipt_number,
+				t.tds_receipt_date
+			FROM `tabTDS Receipt Update` t
+			INNER JOIN `tabTDS Remittance Item` ti
+				ON t.name = ti.parent
+			WHERE
+				t.docstatus = 1
+				AND t.purpose = 'Other Invoice'
+				{condition}
 		'''.format(condition=conditions), as_dict=True):
+
 		match d.invoice_type:
 			case "Purchase Invoice":
 				tds_rate = frappe.db.get_value(
 					"Purchase Taxes and Charges",
 					{
 						"parent": d.invoice_no,
-						"account_head": ["!=", "L202030111 - Retention Money Payable - GYALSUNG"]
+						"account_head": [
+							"!=",
+							"L202030111 - Retention Money Payable - GYALSUNG"
+						]
 					},
 					"rate"
 				)
 
+				# Fetch Net Total (BTN) directly from Purchase Invoice
+				bill_amount = frappe.db.get_value(
+					"Purchase Invoice",
+					d.invoice_no,
+					"base_net_total"
+				)
+
 				d.update({
-					"tds_rate": tds_rate  # Add the tds_rate value to the dictionary
+					"bill_amount": bill_amount,
+					"tds_rate": tds_rate
 				})
+
 			case "Journal Entry":
 				d.update({
-					"tds_rate": frappe.db.get_value("Journal Entry Account",{"parent":d.invoice_no,"tax_amount":(">",0)},"rate")
+					"tds_rate": frappe.db.get_value(
+						"Journal Entry Account",
+						{"parent": d.invoice_no, "tax_amount": (">", 0)},
+						"rate"
+					)
 				})
+
 			case "Payment Entry":
 				d.update({
-					"tds_rate": frappe.db.get_value("Advance Taxes and Charges",{"parent":d.invoice_no,"tax_amount":(">",0)},"rate")
+					"tds_rate": frappe.db.get_value(
+						"Advance Taxes and Charges",
+						{"parent": d.invoice_no, "tax_amount": (">", 0)},
+						"rate"
+					)
 				})
+
 			case "Transporter Invoice":
 				d.update({
-					"tds_rate": frappe.db.get_value("Transporter Invoice Deduction",{"parent":d.invoice_no,"amount":(">",0),"deduction_type":"TDS Deduction"},"percent")
+					"tds_rate": frappe.db.get_value(
+						"Transporter Invoice Deduction",
+						{
+							"parent": d.invoice_no,
+							"amount": (">", 0),
+							"deduction_type": "TDS Deduction"
+						},
+						"percent"
+					)
 				})
+
 			case "EME Invoice":
 				d.update({
-					"tds_rate": frappe.db.get_value("EME Invoice",{"tds_amount":(">",0),"name":d.invoice_no},"tds_percent")
+					"tds_rate": frappe.db.get_value(
+						"EME Invoice",
+						{"tds_amount": (">", 0), "name": d.invoice_no},
+						"tds_percent"
+					)
 				})
+
 			case "Mechanical Payment":
 				d.update({
-					"tds_rate": frappe.db.get_value("Mechanical Payment",{"tds_amount":(">",0),"name":d.invoice_no},"tax_withholding_rate")
+					"tds_rate": frappe.db.get_value(
+						"Mechanical Payment",
+						{
+							"tds_amount": (">", 0),
+							"name": d.invoice_no
+						},
+						"tax_withholding_rate"
+					)
 				})
-		d.update({"cost_center": get_cost_center_for_row(d)})
 
-			
+		d.update({"cost_center": get_cost_center_for_row(d)})
 		data.append(d)
+
 	return data
 def get_condition(filters):
 	conditions = []
