@@ -89,6 +89,20 @@ class Advance(Document):
 		self.update_general_ledger()
 		self.post_journal_entry()
 		self.make_mobilisation_entry()
+	def on_cancel(self):
+		self.cancel_general_ledger()
+	
+	def cancel_general_ledger(self):
+	
+		frappe.db.sql("""
+			UPDATE `tabGL Entry`
+			SET is_cancelled = 1
+			WHERE voucher_type = 'Advance'
+			AND voucher_no = %s
+			AND is_cancelled = 0
+		""", (self.name,))
+
+		frappe.db.commit()
 	def calcalute_tds(self):
 		if self.apply_tds and self.tds:
 			self.tds_amount = flt(self.opening_balance) * flt(self.tds_rate)/100
@@ -183,17 +197,6 @@ class Advance(Document):
 		je.company = self.company
 		je.total_amount_in_words = money_in_words(self.total_amount)
 		je.branch = self.branch
-		# je.update({
-		# 		"doctype": "Journal Entry",
-		# 		"voucher_type": voucher_type,
-		# 		"naming_series": voucher_series,
-		# 		"title": "Advance - " + self.name,
-		# 		"user_remark": remarkss if remarkss else "Note: " + "Advance - " + self.name,
-		# 		"posting_date": self.posting_date,
-		# 		"company": self.company,
-		# 		"total_amount_in_words": money_in_words(self.total_amount),
-		# 		"branch": self.branch
-		# 	})
 		if flt(self.total_amount) > 0:
 			je.append("accounts", {
 				"account": debit_account,
@@ -215,8 +218,6 @@ class Advance(Document):
 				"cost_center": self.cost_center,
 				"credit_in_account_currency": flt(self.total_amount),
 				"credit": flt(self.total_amount)
-				# "party_type": self.party_type,
-				# "party": self.customer,
 			})
 			if self.tds_amount > 0 and  self.tds_account:
 				je.append("accounts", {
@@ -241,30 +242,10 @@ class Advance(Document):
 				"party": party,
 			})
 
-			# je.append("accounts", {
-			# 	"account": debit_account,
-			# 	"reference_type": "Advance",
-			# 	"reference_name": self.name,
-			# 	"cost_center": self.cost_center,
-			# 	"debit_in_account_currency": flt(self.opening_balance),
-			# 	"debit": flt(self.opening_balance),
-			# 	"party_type": party_type,
-			# 	"party": party,
-			# })
-			# je.append("accounts", {
-			# 	"account": credit_account,
-			# 	"reference_type": "Advance",
-			# 	"reference_name": self.name,
-			# 	"cost_center": self.cost_center,
-			# 	"credit_in_account_currency": flt(self.total_amount),
-			# 	"credit": flt(self.total_amount),
-			# 	# "party_type": self.party_type,
-			# 	# "party": self.customer,
-			# })
 			
 			
-		je.insert()
-		# frappe.db.commit()		
+			
+		je.insert()		
 		self.db_set("journal_entry", je.name)
 		frappe.msgprint("Journal Entry created. {}".format(frappe.get_desk_link("Journal Entry", je.name)))
 

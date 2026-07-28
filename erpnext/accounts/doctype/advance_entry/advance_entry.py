@@ -69,7 +69,7 @@ def get_advance(customer,branch=None):
                     "reference": child.reference,
                     "advance_type": child.advance_type,
                     "account": child.account,
-                    "total_amount": child.advance_amount,
+                    "total_amount": child.balance_amount,
                     "advance_amount": child.advance_amount,
                     "balance_amount": child.balance_amount
                 })

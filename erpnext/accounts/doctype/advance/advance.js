@@ -111,6 +111,14 @@ frappe.ui.form.on("Advance", {
     },
 
     refresh(frm) {
+
+         frm.add_custom_button('Start Tour', () => {
+            const tour_name = 'Advance';
+
+            frm.tour.init({ tour_name }).then(() => {
+                frm.tour.start();
+            });
+        });
         if (frm.doc.docstatus == 1) {
             cur_frm.add_custom_button(__('Accounting Ledger'), function () {
                 frappe.route_options = {
