@@ -5,17 +5,37 @@
     <div style="text-align: center; flex: 1;">
         <h3 class="text-center"> SUNGCHOB</h3>
         <h3 class="text-center">{%= filters.company %}</h3>
+        {%
+        if (filters.budget_form == "Budget Form III") {
+        %}
         <h4 class="text-center">
             {%= __(report.report_name) %} for the Year: {%= filters.fiscal_year %}
         </h4>
+        {%
+        } else {
+        %}
+        <h4 class="text-center">
+            Summary Of {%= __(report.report_name) %} Estimates Fiscal Year: {%= filters.fiscal_year %}
+        </h4>
+        <p> Administrative Unit: 303.01 SUNCHOB SERVICES</p>
+        <p>
+            Program: {%= frappe.query_report.program_code || "" %} - {%= frappe.query_report.program_name || "" %}
+        </p>
+        {%
+        }
+        %}
     </div>
     <div style="text-align: right; flex: 1;">
-        <p>Budget Form III</p>
+        <p>{%=filters.budget_form%}</p>
     </div>
 </div>
 <hr>
 
 <div style="display: flex; justify-content: space-between; align-items: center;">
+    {%
+    if (filters.budget_form == "Budget Form III") {
+    %}
+
     <div style="margin:0;">
         <p style="font-style: italic;">
             Administrative Unit: 303.01 SUNCHOB SERVICES
@@ -24,7 +44,25 @@
             Program: {%= frappe.query_report.program_code || "" %} - {%= frappe.query_report.program_name || "" %}
         </p>
     </div>
+    {%
+    } else {
+    %}
+    <div style="margin:0;">
+        <p style="font-style: italic;">
+            Administrative Unit: 303.01 SUNCHOB SERVICES
+        </p>
+    </div>
+    {%
+    }
+    %}
 </div>
+
+
+
+{%
+if (filters.budget_form == "Budget Form III") {
+%}
+
 
 <table class="table table-bordered custom-table">
     <thead>
@@ -356,6 +394,143 @@
             </tr>
     </tbody>
 </table>
+{%
+} else {
+%}
+<table class="table table-bordered custom-table">
+    <thead>
+        <tr>
+            <th class="title">No</th>
+            <th class="title">Sub Program</th>
+            <th class="title">Title</th>
+            <th class="title">Current</th>
+            <th class="title">Capital</th>
+            <th class="title">Lending</th>
+            <th class="title">Repayment</th>
+            <th class="title">Total</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        {%
+        var grouped = {};
+        var grand_current = 0;
+        var grand_capital = 0;
+        var grand_lending = 0;
+        var grand_repayment = 0;
+        var grand_total = 0;
+
+        for (var i = 0; i < data.length; i++) { var row=data[i]; var sub_program=row.budget_cost_center ?
+            row.budget_cost_center.split("-")[0].trim().split(" ")[0]
+        : "";
+
+   
+        if (!sub_program) {
+            continue;
+        }
+
+
+        if (!grouped[sub_program]) {
+
+            grouped[sub_program] = {
+                current: 0,
+                capital: 0,
+                lending: 0,
+                repayment: 0,
+                total: 0,
+                title: row.cost_center_name || ""
+            };
+        }
+
+
+        grouped[sub_program].current += Number(row.current_budget || 0);
+        grouped[sub_program].capital += Number(row.capital_budget || 0);
+        grouped[sub_program].lending += Number(row.lending_budget || 0);
+        grouped[sub_program].repayment += Number(row.repayment_budget || 0);
+        grouped[sub_program].total += Number(row.total_budget || 0);
+
+
+        grand_current += Number(row.current_budget || 0);
+        grand_capital += Number(row.capital_budget || 0);
+        grand_lending += Number(row.lending_budget || 0);
+        grand_repayment += Number(row.repayment_budget || 0);
+        grand_total += Number(row.total_budget || 0);
+    }
+
+        var count = 1;
+
+        for (var sub_program in grouped) {
+
+            var row = grouped[sub_program];
+        %}
+
+        <tr>
+            <td>{%= count %}</td>
+
+            <td>{%= sub_program %}</td>
+
+            <td>{%= row.title %}</td>
+
+            <td style=" text-align:right">
+            {%= row.current.toLocaleString(undefined,{minimumFractionDigits:2}) %}
+            </td>
+
+            <td style="text-align:right">
+                {%= row.capital.toLocaleString(undefined,{minimumFractionDigits:2}) %}
+            </td>
+
+            <td style="text-align:right">
+                {%= row.lending.toLocaleString(undefined,{minimumFractionDigits:2}) %}
+            </td>
+
+            <td style="text-align:right">
+                {%= row.repayment.toLocaleString(undefined,{minimumFractionDigits:2}) %}
+            </td>
+
+            <td style="text-align:right">
+                {%= row.total.toLocaleString(undefined,{minimumFractionDigits:2}) %}
+            </td>
+            </tr>
+
+            {%
+            count++;
+            }
+            %}
+
+            <tr style="font-weight:bold;background:#d0d0d0;">
+                <td></td>
+                <td></td>
+                <td>Totals By SPC</td>
+
+                <td style="text-align:right">
+                    {%= grand_current.toLocaleString(undefined,{minimumFractionDigits:2}) %}
+                </td>
+
+                <td style="text-align:right">
+                    {%= grand_capital.toLocaleString(undefined,{minimumFractionDigits:2}) %}
+                </td>
+
+                <td style="text-align:right">
+                    {%= grand_lending.toLocaleString(undefined,{minimumFractionDigits:2}) %}
+                </td>
+
+                <td style="text-align:right">
+                    {%= grand_repayment.toLocaleString(undefined,{minimumFractionDigits:2}) %}
+                </td>
+
+                <td style="text-align:right">
+                    {%= grand_total.toLocaleString(undefined,{minimumFractionDigits:2}) %}
+                </td>
+            </tr>
+
+
+
+    </tbody>
+</table>
+{%
+}
+%}
 
 <style>
     .text-center {

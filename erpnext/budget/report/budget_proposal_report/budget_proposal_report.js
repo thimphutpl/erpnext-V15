@@ -163,6 +163,15 @@ frappe.query_reports["Budget Proposal Report"] = {
             "options": "Budget Type",
             "ignore_user_permissions": 1
         },
+
+        {
+            "fieldname": "budget_form",
+            "label": __("Budget Form"),
+            "fieldtype": "Select",
+            "default": "",
+            "options": ["", "Budget Form I", "Budget Form III"],
+
+        },
         {
             "fieldname": "month",
             "label": __("Month"),
