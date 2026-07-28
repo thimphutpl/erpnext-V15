@@ -39,6 +39,7 @@
             <th class="title">Lending</th>
             <th class="title">Repayment</th>
             <th class="title">Total</th>
+            <th class="title">Remarks</th>
         </tr>
     </thead>
     <tbody>
@@ -153,6 +154,7 @@
                 <td style="text-align:right">{%= parseFloat(row.lending_budget || 0).toLocaleString(undefined, {minimumFractionDigits: 2}) %}</td>
                 <td style="text-align:right">{%= parseFloat(row.repayment_budget || 0).toLocaleString(undefined, {minimumFractionDigits: 2}) %}</td>
                 <td style="text-align:right">{%= parseFloat(row.total_budget || 0).toLocaleString(undefined, {minimumFractionDigits: 2}) %}</td>
+                <td style="text-align:right">{%= row.remarks || "" %}</td>
             </tr>
 
         {%
