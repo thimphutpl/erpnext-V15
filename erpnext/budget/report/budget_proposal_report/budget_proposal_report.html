@@ -145,7 +145,8 @@ if (filters.budget_form == "Budget Form III") {
             <td></td>
             <td></td>
             <td>{%= row.cost_center_name || (row.budget_cost_center ?
-                row.budget_cost_center.replace(/^[\d.]+\s*(-\s*)?/, '').replace(/\s*-\s*.*$/, '') : "") %}</td>
+                row.budget_cost_center.replace(/^\d+(\.\d+)?\s*-?\s*RBG\s*/i, "")
+                .replace(/\s*-?\s*RBG\s*$/i, "") : "") %}</td>
             <td></td>
             <td></td>
             <td></td>
