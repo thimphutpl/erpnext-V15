@@ -47,22 +47,20 @@
         var previous_budget_activity = "";
         var previous_budget_sub_activity = "";
         var previous_source_of_fund = "";
-        var previous_spc = "";
 
-        var sub_total_current = 0, sub_total_capital = 0, sub_total_lending = 0, sub_total_repayment = 0,
-
-        sub_total_total = 0;
-        var sp_current = 0, sp_capital = 0,sp_lending = 0,sp_repayment = 0,sp_total = 0;
-        var p_current = 0, p_capital = 0,p_lending = 0,p_repayment = 0,p_total = 0;
+        var sub_total_current = 0, sub_total_capital = 0, sub_total_lending = 0, sub_total_repayment = 0, sub_total_total = 0;
         var sub_act_current = 0, sub_act_capital = 0, sub_act_lending = 0, sub_act_repayment = 0, sub_act_total = 0;
         var act_current = 0, act_capital = 0, act_lending = 0, act_repayment = 0, act_total = 0;
+        var sp_current = 0, sp_capital = 0, sp_lending = 0, sp_repayment = 0, sp_total = 0;
+        var p_current = 0, p_capital = 0, p_lending = 0, p_repayment = 0, p_total = 0;
 
-        for (var i = 0; i < data.length; i++) { var row=data[i]; if (!row || (!row.account && !row.budget_activity &&
-            !row.budget_sub_activity)) { continue; } var current_budget_cost_center=row.budget_cost_center ?
-            String(row.budget_cost_center).split("-")[0].trim() : "" ; var current_code=row.budget_activity ?
-            String(row.budget_activity).split(" ")[0].trim() : "";
 
-            var current_spc = current_budget_cost_center;
+        for (var i = 0; i < data.length; i++) { 
+            var row = data[i]; 
+            if (!row || (!row.account && !row.budget_activity && !row.budget_sub_activity)) { continue; } 
+
+            var current_budget_cost_center = row.budget_cost_center ? String(row.budget_cost_center).split("-")[0].trim() : "";
+            var current_code = row.budget_activity ? String(row.budget_activity).split(" ")[0].trim() : "";
             var current_budget_sub_activity = row.budget_sub_activity ? String(row.budget_sub_activity).split(" ")[0].trim() : "";
             var current_source_of_fund = row.source_of_fund ? String(row.source_of_fund).split(" ")[0].trim() : "";
 
@@ -77,7 +75,6 @@
             sub_total_lending += c_lend;
             sub_total_repayment += c_repay;
             sub_total_total += c_tot;
-
 
             sub_act_current += c_curr;
             sub_act_capital += c_cap;
@@ -102,306 +99,185 @@
             p_repayment += c_repay;
             p_total += c_tot;
 
-
             if (current_budget_cost_center !== previous_budget_cost_center) { 
         %} 
-            <tr class=" group-header">
-            <td>{%= current_budget_cost_center %}</td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td>{%= row.cost_center_name || (row.budget_cost_center ?
-                row.budget_cost_center.replace(/^[\d.]+\s*(-\s*)?/, '').replace(/\s*-\s*.*$/, '') : "") %}</td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
+            <tr class="group-header">
+                <td>{%= current_budget_cost_center %}</td>
+                <td></td><td></td><td></td>
+                <td>{%= row.cost_center_name || (row.budget_cost_center ? row.budget_cost_center.replace(/^[\d.]+\s*(-\s*)?/, '').replace(/\s*-\s*.*$/, '') : "") %}</td>
+                <td></td><td></td><td></td><td></td><td></td>
             </tr>
-            {% }
+        {% } 
 
-            if (current_budget_cost_center !== previous_budget_cost_center || current_code !== previous_budget_activity)
-            {
-            %}
+            if (current_budget_cost_center !== previous_budget_cost_center || current_code !== previous_budget_activity) { 
+        %}
             <tr class="group-header">
                 <td></td>
                 <td>{%= current_code %}</td>
-                <td></td>
-                <td></td>
-                <td>{%= row.budget_activity_name || (row.budget_activity ?
-                    row.budget_activity.replace(/^[\d.]+\s*(-\s*)?/, '').replace(/\s*-\s*.*$/, '') : "") %}</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
+                <td></td><td></td>
+                <td>{%= row.budget_activity_name || (row.budget_activity ? row.budget_activity.replace(/^[\d.]+\s*(-\s*)?/, '').replace(/\s*-\s*.*$/, '') : "") %}</td>
+                <td></td><td></td><td></td><td></td><td></td>
             </tr>
-            {% }
+        {% } 
 
-            if (current_budget_cost_center !== previous_budget_cost_center || current_code !== previous_budget_activity
-            || current_budget_sub_activity !== previous_budget_sub_activity) {
-            %}
+            if (current_budget_cost_center !== previous_budget_cost_center || current_code !== previous_budget_activity || current_budget_sub_activity !== previous_budget_sub_activity) { 
+        %}
             <tr class="group-header">
                 <td></td>
                 <td>{%= current_budget_sub_activity %}</td>
-                <td></td>
-                <td></td>
-                <td>{%= row.budget_sub_activity_name || (row.budget_sub_activity ?
-                    row.budget_sub_activity.replace(/^[\d.]+\s*(-\s*)?/, '').replace(/\s*-\s*.*$/, '') : "") %}</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
+                <td></td><td></td>
+                <td>{%= row.budget_sub_activity_name || (row.budget_sub_activity ? row.budget_sub_activity.replace(/^[\d.]+\s*(-\s*)?/, '').replace(/\s*-\s*.*$/, '') : "") %}</td>
+                <td></td><td></td><td></td><td></td><td></td>
             </tr>
-            {% }
+        {% } 
 
-            if (current_budget_cost_center !== previous_budget_cost_center || current_code !== previous_budget_activity
-            || current_budget_sub_activity !== previous_budget_sub_activity || current_source_of_fund !==
-            previous_source_of_fund) {
-            %}
+            if (current_budget_cost_center !== previous_budget_cost_center || current_code !== previous_budget_activity || current_budget_sub_activity !== previous_budget_sub_activity || current_source_of_fund !== previous_source_of_fund) { 
+        %}
             <tr class="group-header">
-                <td></td>
-                <td></td>
+                <td></td><td></td>
                 <td>{%= current_source_of_fund %}</td>
                 <td></td>
                 <td>{%= row.source_of_fund_name || "" %}</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
+                <td></td><td></td><td></td><td></td><td></td>
             </tr>
-            {% } %}
+        {% } %}
 
             <!-- Detail Account Row -->
             <tr>
-                <td></td>
-                <td></td>
-                <td></td>
+                <td></td><td></td><td></td>
                 <td>{%= row.account ? row.account.split(" ")[0] : "" %}</td>
-                <td>{%= row.account ? row.account.replace(/^[\d.]+\s*(-\s*)?/, '').replace(/\s*-\s*.*$/, '') : "" %}
-                </td>
-                <td style="text-align:right">{%= parseFloat(row.current_budget || 0).toLocaleString(undefined,
-                    {minimumFractionDigits: 2}) %}</td>
-                <td style="text-align:right">{%= parseFloat(row.capital_budget || 0).toLocaleString(undefined,
-                    {minimumFractionDigits: 2}) %}</td>
-                <td style="text-align:right">{%= parseFloat(row.lending_budget || 0).toLocaleString(undefined,
-                    {minimumFractionDigits: 2}) %}</td>
-                <td style="text-align:right">{%= parseFloat(row.repayment_budget || 0).toLocaleString(undefined,
-                    {minimumFractionDigits: 2}) %}</td>
-                <td style="text-align:right">{%= parseFloat(row.total_budget || 0).toLocaleString(undefined,
-                    {minimumFractionDigits: 2}) %}</td>
+                <!-- <td>{%= row.account ? row.account.replace(/^[\d.]+\s*(-\s*)?/, '').replace(/\s*-\s*.*$/, '') : "" %}</td> -->
+                <td>{%= row.account ? row.account.replace(/^[\d.]+\s*-\s*/, '').replace(/\s*-\s*[^-]+$/, '') : "" %}</td>
+                <td style="text-align:right">{%= parseFloat(row.current_budget || 0).toLocaleString(undefined, {minimumFractionDigits: 2}) %}</td>
+                <td style="text-align:right">{%= parseFloat(row.capital_budget || 0).toLocaleString(undefined, {minimumFractionDigits: 2}) %}</td>
+                <td style="text-align:right">{%= parseFloat(row.lending_budget || 0).toLocaleString(undefined, {minimumFractionDigits: 2}) %}</td>
+                <td style="text-align:right">{%= parseFloat(row.repayment_budget || 0).toLocaleString(undefined, {minimumFractionDigits: 2}) %}</td>
+                <td style="text-align:right">{%= parseFloat(row.total_budget || 0).toLocaleString(undefined, {minimumFractionDigits: 2}) %}</td>
             </tr>
 
-            {%
+        {%
             var next_row = data[i + 1];
             var print_source_total = false;
             var print_sub_act_total = false;
             var print_act_total = false;
             var print_sp_total = false;
 
-
-
             if (!next_row) {
-            print_source_total = true;
-            print_sub_act_total = true;
-            print_act_total = true;
-            print_sp_total = true;
-
+                print_source_total = true;
+                print_sub_act_total = true;
+                print_act_total = true;
+                print_sp_total=true;
             } else {
-            var next_cost_center = next_row.budget_cost_center ?
-            String(next_row.budget_cost_center).split("-")[0].trim() : "";
+                var next_cost_center = next_row.budget_cost_center ? String(next_row.budget_cost_center).split("-")[0].trim() : "";
+                var next_activity = next_row.budget_activity ? String(next_row.budget_activity).split(" ")[0].trim() : "";
+                var next_sub_activity = next_row.budget_sub_activity ? String(next_row.budget_sub_activity).split(" ")[0].trim() : "";
+                var next_source = next_row.source_of_fund ? String(next_row.source_of_fund).split(" ")[0].trim() : "";
 
+                print_source_total = current_budget_cost_center !== next_cost_center || current_code !== next_activity || current_budget_sub_activity !== next_sub_activity || current_source_of_fund !== next_source;
+                print_sub_act_total = current_budget_cost_center !== next_cost_center || current_code !== next_activity || current_budget_sub_activity !== next_sub_activity;
+                print_act_total = current_budget_cost_center !== next_cost_center || current_code !== next_activity;
+                print_sp_total= current_budget_cost_center !== next_cost_center
 
-            var next_activity = next_row.budget_activity ? String(next_row.budget_activity).split(" ")[0].trim() : "";
-            var next_sub_activity = next_row.budget_sub_activity ? String(next_row.budget_sub_activity).split("
-            ")[0].trim() : "";
-            var next_source = next_row.source_of_fund ? String(next_row.source_of_fund).split(" ")[0].trim() : "";
-
-
-
-            print_source_total = current_budget_cost_center !== next_cost_center || current_code !== next_activity ||
-            current_budget_sub_activity !== next_sub_activity || current_source_of_fund !== next_source;
-            print_sub_act_total = current_budget_cost_center !== next_cost_center || current_code !== next_activity ||
-            current_budget_sub_activity !== next_sub_activity;
-            print_act_total = current_budget_cost_center !== next_cost_center || current_code !== next_activity;
-
-
-
-            print_sp_total = current_budget_cost_center !== next_cost_center;
             }
 
-
-            if (print_source_total) {
-            %}
+            if (print_source_total) { 
+        %}
             <tr style="font-weight: bold; background-color: #f5f5f5;">
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
+                <td></td><td></td><td></td><td></td>
                 <td style="text-align:right">Total {%= row.source_of_fund_name || "" %}</td>
-                <td style="text-align:right">{%= parseFloat(sub_total_current).toLocaleString(undefined,
-                    {minimumFractionDigits: 2}) %}</td>
-                <td style="text-align:right">{%= parseFloat(sub_total_capital).toLocaleString(undefined,
-                    {minimumFractionDigits: 2}) %}</td>
-                <td style="text-align:right">{%= parseFloat(sub_total_lending).toLocaleString(undefined,
-                    {minimumFractionDigits: 2}) %}</td>
-                <td style="text-align:right">{%= parseFloat(sub_total_repayment).toLocaleString(undefined,
-                    {minimumFractionDigits: 2}) %}</td>
-                <td style="text-align:right">{%= parseFloat(sub_total_total).toLocaleString(undefined,
-                    {minimumFractionDigits: 2}) %}</td>
+                <td style="text-align:right">{%= parseFloat(sub_total_current).toLocaleString(undefined, {minimumFractionDigits: 2}) %}</td>
+                <td style="text-align:right">{%= parseFloat(sub_total_capital).toLocaleString(undefined, {minimumFractionDigits: 2}) %}</td>
+                <td style="text-align:right">{%= parseFloat(sub_total_lending).toLocaleString(undefined, {minimumFractionDigits: 2}) %}</td>
+                <td style="text-align:right">{%= parseFloat(sub_total_repayment).toLocaleString(undefined, {minimumFractionDigits: 2}) %}</td>
+                <td style="text-align:right">{%= parseFloat(sub_total_total).toLocaleString(undefined, {minimumFractionDigits: 2}) %}</td>
             </tr>
-            {%
-            sub_total_current = 0; sub_total_capital = 0; sub_total_lending = 0; sub_total_repayment = 0;
-            sub_total_total = 0;
+        {%
+                sub_total_current = 0; sub_total_capital = 0; sub_total_lending = 0; sub_total_repayment = 0; sub_total_total = 0;
             }
 
-            if (print_sub_act_total) {
-            %}
+            if (print_sub_act_total) { 
+        %}
             <tr style="font-weight: bold; background-color: #e9e9e9;">
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td style="text-align:right">Total {%= row.budget_sub_activity_name || (row.budget_sub_activity ?
-                    row.budget_sub_activity.replace(/^[\d.]+\s*(-\s*)?/, '').replace(/\s*-\s*.*$/, '') : "") %}</td>
-                <td style="text-align:right">{%= parseFloat(sub_act_current).toLocaleString(undefined,
-                    {minimumFractionDigits: 2}) %}</td>
-                <td style="text-align:right">{%= parseFloat(sub_act_capital).toLocaleString(undefined,
-                    {minimumFractionDigits: 2}) %}</td>
-                <td style="text-align:right">{%= parseFloat(sub_act_lending).toLocaleString(undefined,
-                    {minimumFractionDigits: 2}) %}</td>
-                <td style="text-align:right">{%= parseFloat(sub_act_repayment).toLocaleString(undefined,
-                    {minimumFractionDigits: 2}) %}</td>
-                <td style="text-align:right">{%= parseFloat(sub_act_total).toLocaleString(undefined,
-                    {minimumFractionDigits: 2}) %}</td>
+                <td></td><td></td><td></td><td></td>
+                <td style="text-align:right">Total {%= row.budget_sub_activity_name || (row.budget_sub_activity ? row.budget_sub_activity.replace(/^[\d.]+\s*(-\s*)?/, '').replace(/\s*-\s*.*$/, '') : "") %}</td>
+                <td style="text-align:right">{%= parseFloat(sub_act_current).toLocaleString(undefined, {minimumFractionDigits: 2}) %}</td>
+                <td style="text-align:right">{%= parseFloat(sub_act_capital).toLocaleString(undefined, {minimumFractionDigits: 2}) %}</td>
+                <td style="text-align:right">{%= parseFloat(sub_act_lending).toLocaleString(undefined, {minimumFractionDigits: 2}) %}</td>
+                <td style="text-align:right">{%= parseFloat(sub_act_repayment).toLocaleString(undefined, {minimumFractionDigits: 2}) %}</td>
+                <td style="text-align:right">{%= parseFloat(sub_act_total).toLocaleString(undefined, {minimumFractionDigits: 2}) %}</td>
             </tr>
-            {%
-            sub_act_current = 0; sub_act_capital = 0; sub_act_lending = 0; sub_act_repayment = 0; sub_act_total = 0;
+        {%
+                sub_act_current = 0; sub_act_capital = 0; sub_act_lending = 0; sub_act_repayment = 0; sub_act_total = 0;
             }
 
-
-
-            if (print_act_total) {
-            %}
+            if (print_act_total) { 
+        %}
             <tr style="font-weight: bold; background-color: #dcdcdc;">
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td style="text-align:right">Total {%= row.budget_activity_name || (row.budget_activity ?
-                    row.budget_activity.replace(/^[\d.]+\s*(-\s*)?/, '').replace(/\s*-\s*.*$/, '') : "") %}</td>
-                <td style="text-align:right">{%= parseFloat(act_current).toLocaleString(undefined,
-                    {minimumFractionDigits: 2}) %}</td>
-                <td style="text-align:right">{%= parseFloat(act_capital).toLocaleString(undefined,
-                    {minimumFractionDigits: 2}) %}</td>
-                <td style="text-align:right">{%= parseFloat(act_lending).toLocaleString(undefined,
-                    {minimumFractionDigits: 2}) %}</td>
-                <td style="text-align:right">{%= parseFloat(act_repayment).toLocaleString(undefined,
-                    {minimumFractionDigits: 2}) %}</td>
-                <td style="text-align:right">{%= parseFloat(act_total).toLocaleString(undefined, {minimumFractionDigits:
-                    2}) %}</td>
+                <td></td><td></td><td></td><td></td>
+                <td style="text-align:right">Total {%= row.budget_activity_name || (row.budget_activity ? row.budget_activity.replace(/^[\d.]+\s*(-\s*)?/, '').replace(/\s*-\s*.*$/, '') : "") %}</td>
+                <td style="text-align:right">{%= parseFloat(act_current).toLocaleString(undefined, {minimumFractionDigits: 2}) %}</td>
+                <td style="text-align:right">{%= parseFloat(act_capital).toLocaleString(undefined, {minimumFractionDigits: 2}) %}</td>
+                <td style="text-align:right">{%= parseFloat(act_lending).toLocaleString(undefined, {minimumFractionDigits: 2}) %}</td>
+                <td style="text-align:right">{%= parseFloat(act_repayment).toLocaleString(undefined, {minimumFractionDigits: 2}) %}</td>
+                <td style="text-align:right">{%= parseFloat(act_total).toLocaleString(undefined, {minimumFractionDigits: 2}) %}</td>
             </tr>
-            {%
-            act_current = 0; act_capital = 0; act_lending = 0; act_repayment = 0; act_total = 0;
-            }
-
-            if (print_sp_total) {
-            %}
-
-            <tr style="font-weight:bold;background:#d0d0d0;">
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-
-                <td style="text-align:right">
-                    Total Sub-Program {%= current_budget_cost_center %}
-                </td>
-
-                <td style="text-align:right">
-                    {%= sp_current.toLocaleString(undefined,{minimumFractionDigits:2}) %}
-                </td>
-
-                <td style="text-align:right">
-                    {%= sp_capital.toLocaleString(undefined,{minimumFractionDigits:2}) %}
-                </td>
-
-                <td style="text-align:right">
-                    {%= sp_lending.toLocaleString(undefined,{minimumFractionDigits:2}) %}
-                </td>
-
-                <td style="text-align:right">
-                    {%= sp_repayment.toLocaleString(undefined,{minimumFractionDigits:2}) %}
-                </td>
-
-                <td style="text-align:right">
-                    {%= sp_total.toLocaleString(undefined,{minimumFractionDigits:2}) %}
-                </td>
-            </tr>
-
-            {%
-            sp_current = 0;sp_capital = 0;sp_lending = 0;sp_repayment = 0;sp_total = 0;
-
-
+        {%
+                act_current = 0; act_capital = 0; act_lending = 0; act_repayment = 0; act_total = 0;
             }
 
 
-
-
-
-
-
+            if (print_sp_total) { 
+                %}
+                    <tr style="font-weight: bold; background-color: #dcdcdc;">
+                        <td></td><td></td><td></td><td></td>
+                        <td style="text-align:right">Total {%= current_budget_cost_center %}</td>
+                        <td style="text-align:right">{%= parseFloat(sp_current).toLocaleString(undefined, {minimumFractionDigits: 2}) %}</td>
+                        <td style="text-align:right">{%= parseFloat(sp_capital).toLocaleString(undefined, {minimumFractionDigits: 2}) %}</td>
+                        <td style="text-align:right">{%= parseFloat(sp_lending).toLocaleString(undefined, {minimumFractionDigits: 2}) %}</td>
+                        <td style="text-align:right">{%= parseFloat(sp_repayment).toLocaleString(undefined, {minimumFractionDigits: 2}) %}</td>
+                        <td style="text-align:right">{%= parseFloat(sp_total).toLocaleString(undefined, {minimumFractionDigits: 2}) %}</td>
+                    </tr>
+                {%
+                        sp_current = 0; sp_capital = 0; sp_lending = 0; sp_repayment = 0; sp_total = 0;
+                    }
 
             previous_budget_cost_center = current_budget_cost_center;
-
             previous_budget_activity = current_code;
             previous_budget_sub_activity = current_budget_sub_activity;
             previous_source_of_fund = current_source_of_fund;
-            }
+        } 
+        %}
 
+        <tr style="font-weight:bold;background:#c8c8c8">
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
 
+            <td style="text-align:right">
+                Total Program {%= frappe.query_report.program_code %}
+            </td>
 
+            <td style="text-align:right">
+                {%= p_current.toLocaleString(undefined,{minimumFractionDigits:2}) %}
+            </td>
 
+            <td style="text-align:right">
+                {%= p_capital.toLocaleString(undefined,{minimumFractionDigits:2}) %}
+            </td>
 
+            <td style="text-align:right">
+                {%= p_lending.toLocaleString(undefined,{minimumFractionDigits:2}) %}
+            </td>
 
+            <td style="text-align:right">
+                {%= p_repayment.toLocaleString(undefined,{minimumFractionDigits:2}) %}
+            </td>
 
-
-
-            %}
-            <tr style="font-weight:bold;background:#c8c8c8;">
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-
-                <td style="text-align:right">
-                    Total Program {%= frappe.query_report.program_code %}
-                </td>
-
-                <td style="text-align:right">
-                    {%= p_current.toLocaleString(undefined,{minimumFractionDigits:2}) %}
-                </td>
-
-                <td style="text-align:right">
-                    {%= p_capital.toLocaleString(undefined,{minimumFractionDigits:2}) %}
-                </td>
-
-                <td style="text-align:right">
-                    {%= p_lending.toLocaleString(undefined,{minimumFractionDigits:2}) %}
-                </td>
-
-                <td style="text-align:right">
-                    {%= p_repayment.toLocaleString(undefined,{minimumFractionDigits:2}) %}
-                </td>
-
-                <td style="text-align:right">
-                    {%= p_total.toLocaleString(undefined,{minimumFractionDigits:2}) %}
-                </td>
-            </tr>
-
-
+            <td style="text-align:right">
+                {%= p_total.toLocaleString(undefined,{minimumFractionDigits:2}) %}
+            </td>
+        </tr>
     </tbody>
 </table>
 
@@ -442,12 +318,10 @@
         table.custom-table {
             page-break-inside: auto;
         }
-
         table.custom-table tr {
             page-break-inside: avoid;
             page-break-after: auto;
         }
-
         table.custom-table thead {
             display: table-header-group;
         }

@@ -16,6 +16,7 @@ class BudgetSubActivity(Document):
 
 		abbr: DF.Data | None
 		company: DF.Link
+		disabled: DF.Check
 		sub_activity_code: DF.Data
 		sub_activity_name: DF.Data
 	# end: auto-generated types

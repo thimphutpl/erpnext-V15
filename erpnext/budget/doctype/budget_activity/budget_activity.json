@@ -8,6 +8,7 @@
   "company",
   "column_break_xcqi",
   "abbr",
+  "disabled",
   "activity_details_section",
   "activity_code",
   "column_break_figl",
@@ -48,6 +49,7 @@
   {
    "fieldname": "table_rllq",
    "fieldtype": "Table",
+   "hidden": 1,
    "options": "Sub Actvity List"
   },
   {
@@ -67,11 +69,17 @@
    "fieldtype": "Data",
    "label": "Abbr",
    "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "disabled",
+   "fieldtype": "Check",
+   "label": "Disabled"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-07-18 09:30:01.367894",
+ "modified": "2026-07-23 12:06:50.671948",
  "modified_by": "Administrator",
  "module": "Budget",
  "name": "Budget Activity",

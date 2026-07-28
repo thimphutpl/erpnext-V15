@@ -19,6 +19,7 @@ class BudgetActivity(Document):
         activity_code: DF.Data
         activity_name: DF.Data
         company: DF.Link
+        disabled: DF.Check
         table_rllq: DF.Table[SubActvityList]
     # end: auto-generated types
 

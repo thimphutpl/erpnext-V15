@@ -69,6 +69,7 @@ class BudgetProposalAccount(Document):
 		parent_account: DF.Link | None
 		parentfield: DF.Data
 		parenttype: DF.Data
+		remarks: DF.SmallText | None
 		sb_april: DF.Data | None
 		sb_august: DF.Data | None
 		sb_december: DF.Data | None

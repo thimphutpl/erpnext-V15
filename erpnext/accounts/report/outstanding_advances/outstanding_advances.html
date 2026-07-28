@@ -1,0 +1,262 @@
+<div class="outstanding-advance-print">
+
+    <div class="report-header">
+        <div class="header-left">
+            Printed date: {%= frappe.datetime.get_today() %}
+        </div>
+
+        <div class="header-center">
+            <div class="company-name">
+                {%= filters.company || "" %}
+            </div>
+
+            <div class="report-title">
+                {%= __(report.report_name) %}
+                for the Year:
+                {%= filters.fiscal_year || "" %}
+            </div>
+        </div>
+
+        <!-- Kept empty intentionally: no Budget Form III -->
+        <div class="header-right"></div>
+    </div>
+
+    <hr>
+
+    <div class="report-info">
+        <div class="administrative-unit">
+            Administrative Unit: 303.01 SUNGCHOB SERVICES
+        </div>
+
+        <div class="program">
+            <strong>Program:</strong>
+            {%= frappe.query_report.program_code || "" %}
+            {% if (
+                frappe.query_report.program_code &&
+                frappe.query_report.program_name
+            ) { %}
+                -
+            {% } %}
+            {%= frappe.query_report.program_name || "" %}
+        </div>
+    </div>
+
+    <table class="table table-bordered custom-table">
+        <thead>
+            <tr>
+                <th>Party/Employee</th>
+                <th>Code</th>
+                <th>Name</th>
+                <th>Activity Code</th>
+                <th>FI Code</th>
+                <th>Opening Balance</th>
+                <th>Settlement Amount</th>
+                <th>Total Outstanding</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {%
+                function to_number(value) {
+                    if (value === undefined || value === null || value === "") {
+                        return 0;
+                    }
+
+                    if (typeof value === "number") {
+                        return value;
+                    }
+
+                    var cleaned = String(value).replace(/[^0-9.-]/g, "");
+                    return Number(cleaned) || 0;
+                }
+
+                function format_amount(value) {
+                    return to_number(value).toLocaleString("en-US", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    });
+                }
+
+                var total_opening_balance = 0;
+                var total_settlement_amount = 0;
+                var total_outstanding = 0;
+            %}
+
+            {% for (var i = 0; i < data.length; i++) { %}
+                {%
+                    var row = data[i];
+                    var opening_balance = to_number(row.opening_balance);
+                    var settlement_amount = to_number(row.settlement_amount);
+                    var outstanding_amount = to_number(row.total_outstanding);
+
+                    var is_total_row =
+                        (
+                            String(row.customer || "").trim().toLowerCase() === "total"
+                            ||
+                            (
+                                !row.customer &&
+                                !row.code &&
+                                !row.name &&
+                                !row.activity_code &&
+                                !row.fi_code &&
+                                (
+                                    opening_balance !== 0 ||
+                                    settlement_amount !== 0 ||
+                                    outstanding_amount !== 0
+                                )
+                            )
+                        );
+                %}
+
+                {% if (is_total_row) { %}
+                    <tr class="total-row">
+                        <td colspan="5">TOTAL</td>
+                        <td class="amount">{%= format_amount(opening_balance) %}</td>
+                        <td class="amount">{%= format_amount(settlement_amount) %}</td>
+                        <td class="amount">{%= format_amount(outstanding_amount) %}</td>
+                    </tr>
+                {% } else { %}
+                    <tr>
+                        <td>{%= row.customer || "" %}</td>
+                        <td>{%= row.code || "" %}</td>
+                        <td>{%= row.name || "" %}</td>
+                        <td class="text-center">{%= row.activity_code || "" %}</td>
+                        <td class="text-center">{%= row.fi_code || "" %}</td>
+                        <td class="amount">{%= format_amount(opening_balance) %}</td>
+                        <td class="amount">{%= format_amount(settlement_amount) %}</td>
+                        <td class="amount">{%= format_amount(outstanding_amount) %}</td>
+                    </tr>
+                {% } %}
+            {% } %}
+
+        </tbody>
+    </table>
+</div>
+
+<style>
+    .outstanding-advance-print {
+        width: 100%;
+        color: #000;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .report-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .header-left,
+    .header-right {
+        flex: 1;
+        font-size: 12px;
+        padding-top: 8px;
+    }
+
+    .header-right {
+        text-align: right;
+        line-height: 1.5;
+    }
+
+    .header-center {
+        flex: 2;
+        text-align: center;
+        font-family: "Times New Roman", serif;
+    }
+
+    .company-name {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+
+    .report-title {
+        font-size: 16px;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+
+    .report-info {
+        margin: 12px 0 14px;
+        font-size: 12px;
+    }
+
+    .administrative-unit {
+        margin-bottom: 4px;
+        font-style: italic;
+    }
+
+    .custom-table {
+        width: 100%;
+        table-layout: fixed;
+        border-collapse: collapse;
+        border: 1px solid #8f8f8f !important;
+    }
+
+    .custom-table th,
+    .custom-table td {
+        border: 1px solid #8f8f8f !important;
+        vertical-align: middle;
+        padding: 7px 6px;
+    }
+
+    .custom-table th {
+        background-color: #e8e8e8 !important;
+        text-align: center;
+        font-size: 11px;
+        font-weight: 700;
+        line-height: 1.25;
+    }
+
+    .custom-table td {
+        font-size: 10.5px;
+        line-height: 1.35;
+        overflow-wrap: anywhere;
+    }
+
+    .custom-table th:nth-child(1) { width: 17%; }
+    .custom-table th:nth-child(2) { width: 10%; }
+    .custom-table th:nth-child(3) { width: 19%; }
+    .custom-table th:nth-child(4),
+    .custom-table th:nth-child(5) { width: 9%; }
+    .custom-table th:nth-child(6),
+    .custom-table th:nth-child(7),
+    .custom-table th:nth-child(8) { width: 12%; }
+
+    .text-center {
+        text-align: center;
+    }
+
+    .amount {
+        text-align: right;
+        white-space: nowrap;
+    }
+
+    .total-row td {
+        background-color: #f1f1f1 !important;
+        font-weight: 700;
+        border-top: 2px solid #555 !important;
+    }
+
+    .total-row td:first-child {
+        text-align: right;
+        padding-right: 10px;
+    }
+
+    @media print {
+        @page {
+            size: A4 landscape;
+            margin: 10mm;
+        }
+
+        .custom-table thead {
+            display: table-header-group;
+        }
+
+        .custom-table tr {
+            page-break-inside: avoid;
+        }
+    }
+</style>

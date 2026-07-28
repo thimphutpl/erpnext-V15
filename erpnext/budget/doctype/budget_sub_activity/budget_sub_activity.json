@@ -8,6 +8,7 @@
   "company",
   "column_break_afau",
   "abbr",
+  "disabled",
   "section_break_decj",
   "sub_activity_code",
   "column_break_lpnd",
@@ -52,11 +53,17 @@
    "fieldname": "abbr",
    "fieldtype": "Data",
    "label": "Abbr"
+  },
+  {
+   "default": "0",
+   "fieldname": "disabled",
+   "fieldtype": "Check",
+   "label": "Disabled"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-06-11 16:54:15.207309",
+ "modified": "2026-07-23 12:07:24.004045",
  "modified_by": "Administrator",
  "module": "Budget",
  "name": "Budget Sub Activity",
