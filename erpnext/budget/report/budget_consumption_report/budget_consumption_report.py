@@ -44,8 +44,8 @@ def execute(filters=None):
     queries = construct_query(from_date, to_date, filters)
     data = get_data(queries, from_date, to_date, filters)
 
-    extra_data = get_extra_entries(filters, from_date, to_date)
-    data.extend(extra_data)
+    # extra_data = get_extra_entries(filters, from_date, to_date)
+    # data.extend(extra_data)
     get_suppl= get_supplementary_items(filters,from_date,to_date)
     data.extend(get_suppl)
     
@@ -163,7 +163,7 @@ def get_extra_entries(filters, from_date, to_date):
     #     {conditions}
     # """.format(conditions=consumed_conditions)
     
-    # consumed_params = [from_date, to_date]
+    # consumed_params = [from_date, to_date]ud
     # if filters.cost_center:
     #     consumed_params.append(filters.cost_center)        
     # if filters.project:

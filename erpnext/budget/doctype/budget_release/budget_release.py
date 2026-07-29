@@ -86,8 +86,8 @@ class BudgetRelease(Document):
 			for item in self.accounts:
 				if item.monthly_release:
 					self.calculate_totals()
-				# elif item.at_hock:
-				# 	self.calculate_total_monthly()
+				elif item.at_hock:
+					self.calculate_total_monthly()
 		# self.validate_against_budget_proposal()
 		self.validate_monthly_budget_release()
 
@@ -545,19 +545,19 @@ class BudgetRelease(Document):
 				item.current_balance = last_budget_balance + flt(item.supplementary_budget) + flt(item.budget_received) - flt(item.budget_sent)
 			item.budget_balance = flt(item.current_balance) - flt(item.released_budget)
 			
-			if flt(item.released_budget) > flt(item.current_balance):
-				excess = flt(item.released_budget) - flt(item.current_balance)
-				frappe.throw(_(
-					"Released budget for Account {0}, Budget Activity {1}, Budget Sub Activity {2}, "
-					"Source of Fund {3} remaining budget of Nu. {4} and exceeds by Nu. {5}"
-				).format(
-					item.account,
-					item.budget_activity,
-					item.budget_sub_activity,
-					item.source_of_fund,
-					flt(item.current_balance),
-					excess
-				))
+			# if flt(item.released_budget) > flt(item.current_balance):
+			# 	excess = flt(item.released_budget) - flt(item.current_balance)
+			# 	frappe.throw(_(
+			# 		"Released budget for Account {0}, Budget Activity {1}, Budget Sub Activity {2}, "
+			# 		"Source of Fund {3} remaining budget of Nu. {4} and exceeds by Nu. {5}"
+			# 	).format(
+			# 		item.account,
+			# 		item.budget_activity,
+			# 		item.budget_sub_activity,
+			# 		item.source_of_fund,
+			# 		flt(item.current_balance),
+			# 		excess
+			# 	))
 
 		self.approved_budget = approved_budget
 		self.actual_total = total_actual
