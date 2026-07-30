@@ -16,6 +16,19 @@ frappe.query_reports["Budget Variance Report"] = {
 
         return value;
     },
+
+    "onload": function (query_report) {
+        frappe.after_ajax(() => {
+
+            let company = query_report.get_filter_value("company");
+
+            if (company) {
+                set_program_code(query_report);
+            }
+
+        });
+
+    }
 };
 function get_filters() {
     function get_dimensions() {
@@ -74,10 +87,11 @@ function get_filters() {
         {
             fieldname: "budget_against",
             label: __("Budget Against"),
-            fieldtype: "Select",
-            options: budget_against_options,
+            fieldtype: "Data",
+            // options: budget_against_options,
             default: "Cost Center",
             reqd: 1,
+            read_only: 1
 
         },
         {
@@ -85,11 +99,12 @@ function get_filters() {
             label: "Type",
             fieldtype: "Select",
             options: [
+                "",
                 "Proposed Budget",
                 "Approved Budget",
                 "Current Budget"
             ],
-            default: "Approved Budget"
+
         },
         // {
         //     fieldname: "budget_against_filter",

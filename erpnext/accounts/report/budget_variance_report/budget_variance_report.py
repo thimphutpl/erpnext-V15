@@ -1212,6 +1212,13 @@ def get_columns(filters):
 				"options": "Account",
 				"width": 100,
 			},
+			{
+                            "label": _("Parent Account"),
+                            "fieldname": "parent_account",
+                            "fieldtype": "Link",
+                            "options": "Account",
+                            "width": 100,
+                        },
 
 			{
 				"label": _(f"I Actual Expenditure-({prev_fiscal_year})"),
@@ -1334,6 +1341,13 @@ def get_columns(filters):
 				"options": "Account",
 				"width": 100,
 			},
+			{
+                            "label": _("Parent Account"),
+                            "fieldname": "parent_account",
+                            "fieldtype": "Link",
+                            "options": "Account",
+                            "width": 100,
+                        },
 
 			{
 				"label": _(f"I Actual Expenditure-({prev_fiscal_year})"),
@@ -1391,28 +1405,31 @@ def get_data(filters):
 			SELECT
 				curr_bp.{budget_against} AS budget_against,
 				curr_bpa.account,
+				acc.parent_account,
 				IFNULL(
-					prev_bpa.approved_budget,
+					prev_bpa.initial_budget,
 					0
 				) AS ii_revised_budget,
 				IFNULL(
-					curr_bpa.approved_budget,
+					curr_bpa.initial_budget,
 					0
 				) AS iii_approved_budget
-			FROM `tabBudget` curr_bp
-			INNER JOIN `tabBudget Account` curr_bpa
+			FROM `tabBudget Proposal` curr_bp
+			INNER JOIN `tabBudget Proposal Account` curr_bpa
 
 				ON curr_bp.name = curr_bpa.parent
+			 INNER JOIN `tabAccount` acc
+                            ON acc.name = curr_bpa.account
 
 
-			LEFT JOIN `tabBudget` prev_bp
+			LEFT JOIN `tabBudget Proposal` prev_bp
 
 				ON prev_bp.company = curr_bp.company
 
 				AND prev_bp.{budget_against}= curr_bp.{budget_against}
 				AND prev_bp.fiscal_year = %s
 				AND prev_bp.docstatus = 1
-			LEFT JOIN `tabBudget Account` prev_bpa
+			LEFT JOIN `tabBudget Proposal Account` prev_bpa
 				ON prev_bp.name = prev_bpa.parent
 				AND prev_bpa.account = curr_bpa.account
 			WHERE
@@ -1611,19 +1628,22 @@ def get_data(filters):
 			SELECT
 				curr_bp.{budget_against} AS budget_against,
 				curr_bpa.account,
+				acc.parent_account,
 				IFNULL(
-					prev_bpa.approved_budget,
+					prev_bpa.budget_amount,
 					0
 				) AS ii_revised_budget,
 				IFNULL(
-					curr_bpa.approved_budget,
+					curr_bpa.budget_amount,
 					0
 				) AS iii_approved_budget
 			FROM `tabBudget` curr_bp
 			INNER JOIN `tabBudget Account` curr_bpa
 
 				ON curr_bp.name = curr_bpa.parent
-                
+            INNER JOIN `tabAccount` acc
+                ON acc.name = curr_bpa.account
+        
 
 
 			LEFT JOIN `tabBudget` prev_bp
