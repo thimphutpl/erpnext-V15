@@ -2,6 +2,7 @@
 # # For license information, please see license.txt
 
 from __future__ import unicode_literals
+import json
 import frappe
 from frappe import _
 from frappe.utils import get_fullname
@@ -197,8 +198,22 @@ class BankPayment(Document):
 			now = datetime.now()
 			now_time = now.strftime(hms)
 			now_time = datetime.strptime(now_time, hms)
-			start_time = str(frappe.db.get_value("Bank Payment Settings", "BOBL", "from_time"))
-			end_time = str(frappe.db.get_value("Bank Payment Settings", "BOBL", "to_time"))
+			# start_time = str(frappe.db.get_value("Bank Payment Settings", "BOBL", "from_time"))
+			# end_time = str(frappe.db.get_value("Bank Payment Settings", "BOBL", "to_time"))
+			start_time = str(
+				frappe.db.get_value(
+					"Bank Payment Settings",
+					"BOBL",
+					"from_time"
+				)
+			).split(".")[0]
+			end_time = str(
+				frappe.db.get_value(
+					"Bank Payment Settings",
+					"BOBL",
+					"to_time"
+				)
+			).split(".")[0]
 			from_time = datetime.strptime(start_time, hms)
 			to_time = datetime.strptime(end_time, hms)
 			if now_time >= from_time and now_time <= to_time:
@@ -594,7 +609,7 @@ class BankPayment(Document):
 			(
 				self.month,             # for remarks: {month}
 				self.fiscal_year,       # for remarks: {salary_year}
-				      # for remarks: {institution}
+					  # for remarks: {institution}
 				self.transaction        # for WHERE je.name = %s
 			),
 			as_dict=True
@@ -763,7 +778,7 @@ class BankPayment(Document):
 					as_dict=True,
 				):
 					amount = flt(b.debit - b.credit - b.tax_amount, 2)
-					# frappe.throw(str(amount))
+					# frappe.throw(str(b.debit))
 					payment_dtl.append(
 						{
 							"party": b.party,
@@ -1400,11 +1415,15 @@ def process_one_to_one_payment(doc, publish_progress=True):
 	stat = 0
 	processing = completed = failed = doc_modified = 0
 	PromoCode = frappe.db.get_value("Bank Payment Settings", "BOBL", "promo_code")
+	posting_date = getdate(doc.posting_date).strftime("%Y%m%d")
+	
 	# frappe.throw(str(doc))
+
 	for i in doc.get("items"):
 		PEMSRefNum = i.pi_number
 		bpi = frappe.get_doc("Bank Payment Item", i.name)
 		if i.bank_name == "BOBL":
+			
 			from_acc = doc.bank_account_no
 			trans_amount = i.amount
 			to_acc = i.bank_account_no
@@ -1483,6 +1502,7 @@ def process_one_to_one_payment(doc, publish_progress=True):
 							"financial_system_code",
 						)
 					)
+				
 			BnfcryAcctTyp = bnf_acc_type
 			BnfcryRmrk = str(doc.remarks)
 			RemitterName = doc.company
@@ -1498,17 +1518,24 @@ def process_one_to_one_payment(doc, publish_progress=True):
 				BfscCode,
 				RemitterAcctType,
 				PEMSRefNum,
+				posting_date
 			)
 		if result["status"] == "Success":
 			completed += 1
 			bpi.db_set("status", "Completed")
+			frappe.msgprint("Payment completed successfully")
 		else:
 			stat = 1
 			failed += 1
 			bpi.db_set("status", "Failed")
+			frappe.msgprint("Payment Failed")
 
-		bpi.db_set("error_message", str(result["message"]))
-		bpi.db_set("bank_journal_no", str(result["jrnl_no"]))
+		# bpi.db_set("error_message", str(result["message"],""))
+		# bpi.db_set("remarks", str(result["message"]))
+		# bpi.db_set("bank_journal_no", str(result["jrnl_no"]))
+		bpi.db_set("error_message", str(result.get("message", "")))
+		bpi.db_set("remarks", str(result.get("message", "")))
+		bpi.db_set("bank_journal_no", str(result.get("jrnl_no") or ""))
 
 	# update bank payment and transaction status
 	status = None
@@ -1581,7 +1608,6 @@ def generate_files(doc, posting_date):
 		# add bank payment file
 		if i.note_type == "Intra-Bank Payment":
 			filepath, noof_transactions = get_intra_bank_file(doc, filename, posting_date)
-			frappe.throw(str(noof_transactions))
 			if filepath:
 				file_list.append([filepath, os.path.basename(filepath), noof_transactions])
 		elif i.note_type == "Inter-Bank Payment":

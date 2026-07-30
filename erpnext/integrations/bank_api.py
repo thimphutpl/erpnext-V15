@@ -1,4 +1,5 @@
 from __future__ import unicode_literals
+import json
 import frappe
 import requests, base64
 from xml.etree import ElementTree
@@ -24,6 +25,7 @@ def encrypt_credential(api):
 
 @frappe.whitelist()
 def intra_payment(from_acc, trans_amount, promo_no, to_acc, unique_transaction_no):
+    # frappe.throw(str(promo_no))
     if not frappe.db.get_value('Bank Payment Settings', "BOBL", 'enable_one_to_one'):
         return
   
@@ -94,40 +96,115 @@ def intra_payment(from_acc, trans_amount, promo_no, to_acc, unique_transaction_n
       
     }
    
-    # frappe.throw(str(payload))
+#    # frappe.throw(str(payload))
     response = requests.request("POST", url, headers=headers, json=payload)
-    # response_data = response.json()
+#     # response_data = response.json()
+#     try:
+#         response_data = response.json()
+#     except ValueError:
+#         return {
+#             "jrnl_no": "",
+#             "status": "Failed",
+#             "message": "Invalid JSON response from bank API"
+#         }
+
+#     svc = response_data.get("SvcRs", {}).get("DepAcctFundXferRs", {})
+#     header = svc.get("RsHeader", {})
+#     stat = svc.get("Stat", {})
+#     frappe.throw(str(response_data))
+
+#     jrnl_no = header.get("JrnlNum", "")
+
+#     if "OkMessage" in stat:
+#         ok = stat["OkMessage"]
+#         return {
+#             "jrnl_no": jrnl_no,
+#             "status": "Success",
+#             "message": ok.get("RcptData", "")
+#         }
+
+#     if "ErrorMessage" in stat:
+#         err = stat["ErrorMessage"]
+
+#         if isinstance(err, dict):
+#             message = err.get("ErrorMessage", "")
+#         else:
+#             message = str(err)
+
+#         return {
+#             "jrnl_no": jrnl_no,
+#             "status": "Failed",
+#             "message": message
+#         }
+
+#     return {
+#         "jrnl_no": jrnl_no,
+#         "status": "Failed",
+#         "message": "Unknown response from bank API"
+#     }
     try:
         response_data = response.json()
+        # frappe.throw(str(response_data))
     except ValueError:
-        return {
-            "jrnl_no": "",
-            "status": "Failed",
-            "message": "Invalid JSON response from bank API"
-        }
+            
+            return {
+                "jrnl_no": "",
+                "status": "Failed",
+                "message": "Invalid JSON response from bank API"
+            }
 
+
+    # Handle INTERNAL_SERVER_ERROR response
+    if response_data.get("status") == "INTERNAL_SERVER_ERROR":
+
+            error_data = json.loads(response_data["errors"][0])
+
+            if "errorDetails" in error_data:
+                description = error_data["errorDetails"][0]["description"]
+
+            elif "errorMessageList" in error_data:
+                description = error_data["errorMessageList"][0]["description"]
+
+            return {
+                "status": "Failed",
+                "message": description
+            }
+
+
+
+    # Handle successful response
     svc = response_data.get("SvcRs", {}).get("DepAcctFundXferRs", {})
+
     header = svc.get("RsHeader", {})
     stat = svc.get("Stat", {})
-    # frappe.throw(str(response_data))
 
     jrnl_no = header.get("JrnlNum", "")
 
+
+    # Success response
     if "OkMessage" in stat:
-        ok = stat["OkMessage"]
+
+        ok_message = stat["OkMessage"]
+
         return {
             "jrnl_no": jrnl_no,
             "status": "Success",
-            "message": ok.get("RcptData", "")
+            "message": ok_message.get("RcptData", "")
         }
 
-    if "ErrorMessage" in stat:
-        err = stat["ErrorMessage"]
 
-        if isinstance(err, dict):
-            message = err.get("ErrorMessage", "")
+    # Bank returned failure inside Stat
+    if "ErrorMessage" in stat:
+
+        error_message = stat["ErrorMessage"]
+
+        if isinstance(error_message, dict):
+            message = error_message.get(
+                "ErrorMessage",
+                "Payment failed"
+            )
         else:
-            message = str(err)
+            message = str(error_message)
 
         return {
             "jrnl_no": jrnl_no,
@@ -135,209 +212,193 @@ def intra_payment(from_acc, trans_amount, promo_no, to_acc, unique_transaction_n
             "message": message
         }
 
-    return {
-        "jrnl_no": jrnl_no,
-        "status": "Failed",
-        "message": "Unknown response from bank API"
-    }
+
+    # Unexpected response - stop immediately
+    frappe.throw(
+        f"Unexpected response from bank API: {response_data}"
+    )
   
-
-
-    # frappe.throw(str(response_data))
-    
-    
-    # namespaces = {
-    #     'soap': 'http://schemas.xmlsoap.org/soap/envelope/',
-    #     'ns2': 'http://TCS.BANCS.Adapter/BANCSSchema',
-    #     'ns3': 'http://BaNCS.TCS.com/webservice/TransferDepositAccountFundSecuredInterface/v1'
-    # }
-
-    # JrnlNum=""
-    # errorMessage=""
-    # successMessage= ""
-    # message = ""
-    # status = ""
-    # dom = ElementTree.fromstring(response.text)
-    # for name in dom.findall('./soap:Body/ns3:transferDepositAccountFundSecuredResponse/DepAcctFundXferRs/ns2:RsHeader/ns2:JrnlNum', namespaces):
-    #     JrnlNum = name.text
-    # for name in dom.findall('./soap:Body/ns3:transferDepositAccountFundSecuredResponse/DepAcctFundXferRs/ns2:Stat/ns2:ErrorMessage/ns2:ErrorMessage', namespaces):
-    #     errorMessage = name.text
-    # for name in dom.findall('./soap:Body/ns3:transferDepositAccountFundSecuredResponse/DepAcctFundXferRs/ns2:Stat/ns2:OkMessage/ns2:RcptData', namespaces):
-    #     successMessage = name.text 
-    # if successMessage:
-    #     message = successMessage
-    #     status = "Success"
-    # else:
-    #     message = errorMessage
-    #     status = "Failed"
-
-    # return {"jrnl_no":JrnlNum, "status":status, "message":message}
-
 @frappe.whitelist()
-def inter_payment(Amt, PayeeAcctNum, BnfcryAcct, BnfcryName, BnfcryAcctTyp, BnfcryRmrk, RemitterName, BfscCode, RemitterAcctType, PEMSRefNum):
+def inter_payment(Amt, PayeeAcctNum, BnfcryAcct, BnfcryName, BnfcryAcctTyp, BnfcryRmrk, RemitterName, BfscCode, RemitterAcctType, PEMSRefNum,posting_date):
+  
     if not frappe.db.get_value('Bank Payment Settings', "BOBL", 'enable_one_to_one'):
         return
-    '''
-    doc = frappe.get_doc("API Detail", "ONE TO ONE - INTER BANK")
-    url = doc.api_link
-    for a in doc.item:
-        if a.param == "user_id":
-            user_id = a.defined_value
-        elif a.param == "password":
-            password = a.defined_value
-    '''
-    header_credential, url = encrypt_credential(api="ONE TO ONE - INTER BANK")
+
+    api_key, url = encrypt_credential(api="ONE TO ONE - INTER BANK")
 
     if Amt > 1000000:
-        ModeOfPmt = str("01")
+        clearingType = 1
     else:
-        ModeOfPmt = str("02")   
-    #url = "http://10.30.30.195:8888/OutwardDebit/OutwardDebitInterfaceHttpService"
-    payload="""
-        <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v1="http://BaNCS.TCS.com/webservice/OutwardDebitInterface/v1" xmlns:ban="http://TCS.BANCS.Adapter/BANCSSchema">
-            <soapenv:Header/>
-            <soapenv:Body>
-                <v1:outwardDebit>
-                    <OutwardDrRq>
-                        <ban:RqHeader>
-                        <!--Optional:-->
-                        <ban:Filler1></ban:Filler1>
-                        <!--Optional:-->
-                        <ban:MsgLen></ban:MsgLen>
-                        <!--Optional:-->
-                        <ban:Filler2></ban:Filler2>
-                        <!--Optional:-->
-                        <ban:MsgTyp></ban:MsgTyp>
-                        <!--Optional:-->
-                        <ban:Filler3></ban:Filler3>
-                        <!--Optional:-->
-                        <ban:CycNum></ban:CycNum>
-                        <!--Optional:-->
-                        <ban:MsgNum></ban:MsgNum>
-                        <!--Optional:-->
-                        <ban:SegNum></ban:SegNum>
-                        <!--Optional:-->
-                        <ban:SegNum2></ban:SegNum2>
-                        <!--Optional:-->
-                        <ban:FrontEndNum></ban:FrontEndNum>
-                        <!--Optional:-->
-                        <ban:TermlNum></ban:TermlNum>
-                        <!--Optional:-->
-                        <ban:InstNum>003</ban:InstNum>
-                        <ban:BrchNum>00010</ban:BrchNum>
-                        <!--Optional:-->
-                        <ban:WorkstationNum></ban:WorkstationNum>
-                        <!--Optional:-->
-                        <ban:TellerNum>8885</ban:TellerNum>
-                        <!--Optional:-->
-                        <ban:TranNum></ban:TranNum>
-                        <!--Optional:-->
-                        <ban:JrnlNum></ban:JrnlNum>
-                        <!--Optional:-->
-                        <ban:HdrDt></ban:HdrDt>
-                        <!--Optional:-->
-                        <ban:Filler4></ban:Filler4>
-                        <!--Optional:-->
-                        <ban:Filler5></ban:Filler5>
-                        <!--Optional:-->
-                        <ban:Filler6></ban:Filler6>
-                        <!--Optional:-->
-                        <ban:Flag1></ban:Flag1>
-                        <!--Optional:-->
-                        <ban:Flag2></ban:Flag2>
-                        <!--Optional:-->
-                        <ban:Flag3></ban:Flag3>
-                        <!--Optional:-->
-                        <ban:Flag4>W</ban:Flag4>
-                        <ban:Flag5>Y</ban:Flag5>
-                        <!--Optional:-->
-                        <ban:Flag6></ban:Flag6>
-                        <!--Optional:-->
-                        <ban:Flag7></ban:Flag7>
-                        <!--Optional:-->
-                        <ban:SprvsrID></ban:SprvsrID>
-                        <!--Optional:-->
-                        <ban:SupDate></ban:SupDate>
-                        <!--Optional:-->
-                        <ban:CheckerID1></ban:CheckerID1>
-                        <!--Optional:-->
-                        <ban:ParentBlinkJrnlNum></ban:ParentBlinkJrnlNum>
-                        <!--Optional:-->
-                        <ban:CheckerID2></ban:CheckerID2>
-                        <!--Optional:-->
-                        <ban:BlinkJrnlNum></ban:BlinkJrnlNum>
-                        <ban:UUIDSource></ban:UUIDSource>
-                        <ban:UUIDNUM>{10}</ban:UUIDNUM>
-                        <!--Optional:-->
-                        <ban:UUIDSeqNo></ban:UUIDSeqNo>
-                        </ban:RqHeader>
-                        <ban:Data>
-                        <ban:ModeOfPmt>{0}</ban:ModeOfPmt>
-                        <ban:Amt>{1}</ban:Amt>
-                        <ban:PayeeAcctNum>{2}</ban:PayeeAcctNum>
-                        <ban:BnfcryAcct>{3}</ban:BnfcryAcct>
-                        <ban:BnfcryName>{4}</ban:BnfcryName>
-                        <ban:BnfcryAcctTyp>{5}</ban:BnfcryAcctTyp>
-                        <!--Optional:-->
-                        <ban:BnfcryRmrk>{6}</ban:BnfcryRmrk>
-                        <!--Optional:-->
-                        <ban:RemitterRmrk>{6}</ban:RemitterRmrk>
-                        <ban:RemitterName>{7}</ban:RemitterName>
-                        <ban:BfscCode>{8}</ban:BfscCode>
-                        <ban:BnfcryAmt>{1}</ban:BnfcryAmt>
-                        <ban:RemitterAcctTyp>{9}</ban:RemitterAcctTyp>
-                        <ban:SndToRcvrInfo>{6}</ban:SndToRcvrInfo>
-                        <!--Optional:-->
-                        <ban:SndToRcvrInfo1></ban:SndToRcvrInfo1>
-                        <!--Optional:-->
-                        <ban:SndToRcvrInfo2></ban:SndToRcvrInfo2>
-                        <ban:Comsn>0</ban:Comsn>
-                        <ban:TtlAmt>{1}</ban:TtlAmt>
-                        <ban:TxnCurrCode1>BTN</ban:TxnCurrCode1>
-                        <!--Optional:-->
-                        <ban:Amount3></ban:Amount3>
-                        <!--Optional:-->
-                        <ban:EmailID></ban:EmailID>
-                        <ban:RemitterAcctNum>{2}</ban:RemitterAcctNum>
-                        <ban:PEMSRefNum>{10}</ban:PEMSRefNum>
-                        </ban:Data>
-                    </OutwardDrRq>
-                </v1:outwardDebit>
-            </soapenv:Body>
-        </soapenv:Envelope>""".format(ModeOfPmt, Amt, PayeeAcctNum, BnfcryAcct, BnfcryName, BnfcryAcctTyp, BnfcryRmrk, RemitterName, BfscCode, RemitterAcctType, PEMSRefNum)
+        clearingType = 3
+    
+    payload = {
+                "skipErrorIds": [
+                    1384086
+                ],
+                "initiatePayment": {
+                    "messageHeader": {
+                        "messageType": 4033,
+                        "initiatingChannelReference": 3,
+                        "initiatingBranchReference": "20",
+                        "externalUserID": "28"
+                    },
+                    "remDetails": {
+                        "instrumentId": 1,
+                        "requestedExecutionDate": posting_date,
+                        "transferAmountCurrency": "BTN",
+                        "transferAmount": Amt,
+                        "waiveChargeFlag": 1,
+                        "debtorAccountType": RemitterAcctType,
+                        "transactionReference": PEMSRefNum,
+                        "debtorAccount": PayeeAcctNum,
+                        "orderingCustomerName": RemitterName,
+                        "direction": 2,
+                        "orderType": 101
+                    },
+                    "pymntDetails": {
+                        "clearingType": clearingType,
+                        "beneficiaryName": BnfcryName,
+                        "beneficiaryIdentifierType": 5,
+                        "beneficiaryAccountType": BnfcryAcctTyp,
+                        "beneficiaryAccount": BnfcryAcct,
+                        "beneficiaryBankIdentifierType": 150,
+                        "beneficiaryBankIdentifier": BfscCode
+                    },
+                    "additionalDetails": {
+                    "remittanceInfoLine1": PEMSRefNum
+                    }
+                }
+            }
     headers = {
-    'Authorization': 'Basic RVBBWUNEQ0w6cGFzc3dvcmQxMjMk',
-    'Content-Type': 'application/xml'
-    }
-    response = requests.request("POST", url, headers=headers, data=payload)
-    from xml.etree import ElementTree
-
-    namespaces = {
-        'soap': 'http://schemas.xmlsoap.org/soap/envelope/',
-        'ns2': 'http://TCS.BANCS.Adapter/BANCSSchema',
-        'ns3': 'http://BaNCS.TCS.com/webservice/OutwardDebitInterface/v1'
+        'X-BoB-Api-Key': api_key,
+        "delChannel":"BOB",
+        'accept': 'application/json',
+        'Content-Type': 'application/json',
+      
     }
 
-    JrnlNum=""
-    errorMessage=""
-    successMessage= ""
-    dom = ElementTree.fromstring(response.text)
-    for name in dom.findall('./soap:Body/ns3:outwardDebitResponse/OutwardDrRs/ns2:RsHeader/ns2:JrnlNum', namespaces):
-        JrnlNum = name.text
-    for name in dom.findall('./soap:Body/ns3:outwardDebitResponse/OutwardDrRs/ns2:Stat/ns2:ErrorMessage/ns2:ErrorMessage', namespaces):
-        errorMessage = name.text
-    for name in dom.findall('./soap:Body/ns3:outwardDebitResponse/OutwardDrRs/ns2:Stat/ns2:OkMessage/ns2:RcptData', namespaces):
-        successMessage = name.text
+    # try:
+    #     response = requests.post(
+    #         url,
+    #         headers=headers,
+    #         json=payload,
+    #         timeout=60
+    #     )
 
-    if successMessage:
-        message = successMessage
-        status = "Success"
-    else:
-        message = errorMessage
-        status = "Failed"
+    #     data = response.json()
+    #     frappe.throw(str(data))
 
-    return {"jrnl_no":JrnlNum, "status":status, "message":message}
+    #     payment_response = data.get("initiatePaymentResponse", {})
+    #     status = payment_response.get("status", {})
+    #     payment = payment_response.get("response", {})
 
+    #     # Success
+    #     if status.get("successFlag") == 1:
+    #         return {
+    #             "status": "Success",
+    #             "payment_reference": payment.get("pymntReference"),
+    #             "transaction_reference": payment.get("transactionReference"),
+    #             "execution_date": payment_response.get("CLS_CT_REM", {}).get("EXEC_DT"),
+    #             "response": data
+    #         }
+
+    #     # Failed
+    #     error_code = None
+    #     error_description = "Payment Failed"
+
+    #     errors = data.get("errors", [])
+
+    #     if errors:
+    #         try:
+    #             error_data = json.loads(errors[0])
+    #             detail = error_data.get("errorDetails", [{}])[0]
+
+    #             error_code = detail.get("errorCode")
+    #             error_description = detail.get("description")
+
+    #         except Exception:
+    #             pass
+
+    #     return {
+    #         "status": "Failed",
+    #         "error_code": error_code,
+    #         "error_description": error_description,
+    #         "response": data
+    #     }
+
+    # except requests.exceptions.RequestException as e:
+    #     frappe.log_error(
+    #         frappe.get_traceback(),
+    #         "BOBL Inter Payment API"
+    #     )
+    #     frappe.throw(str(e))
+
+    # except ValueError:
+    #     frappe.throw(response.text)
+    try:
+        response = requests.request("POST", url, headers=headers, json=payload)
+
+        try:
+            response_data = response.json()
+
+        except ValueError:
+            return {
+                "status": "Failed",
+                "message": "Invalid JSON response from bank API"
+            }
+
+
+        # Handle Success Response
+        payment_response = response_data.get("initiatePaymentResponse", {})
+
+        status = payment_response.get("status", {})
+        payment = payment_response.get("response", {})
+
+        if status.get("successFlag") == 1:
+            return {
+                "status": "Success",
+                "payment_reference": payment.get("pymntReference"),
+                "transaction_reference": payment.get("transactionReference"),
+                "execution_date": payment_response.get("CLS_CT_REM", {}).get("EXEC_DT"),
+                "response": response_data
+            }
+
+
+        # Handle INTERNAL_SERVER_ERROR Response
+        if response_data.get("status") == "INTERNAL_SERVER_ERROR":
+
+            error_data = json.loads(response_data["errors"][0])
+
+            if "errorDetails" in error_data:
+                description = error_data["errorDetails"][0]["description"]
+
+            elif "errorMessageList" in error_data:
+                description = error_data["errorMessageList"][0]["description"]
+
+            return {
+                "status": "Failed",
+                "message": description
+            }
+
+
+        # Unexpected response
+        frappe.throw(
+            f"Unexpected response from bank API: {response_data}"
+        )
+
+
+    except requests.exceptions.RequestException as e:
+
+        frappe.log_error(
+            frappe.get_traceback(),
+            "BOBL Payment API"
+        )
+
+        frappe.throw(str(e))
+
+    
+
+    
 @frappe.whitelist()
 def inr_remittance(AcctNum, Amt, BnfcryAcct, BnfcryName, BnfcryAddr1, IFSC, BankCode, PurpCode, RemittersName, RemittersAddr1, ComsnOpt, PromoCode, PemsRefNum):
     if not frappe.db.get_value('Bank Payment Settings', "BOBL", 'enable_one_to_one'):
