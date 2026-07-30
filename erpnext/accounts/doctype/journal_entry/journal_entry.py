@@ -2041,7 +2041,7 @@ def get_permission_query_conditions(user):
 	if not user: user = frappe.session.user
 	user_roles = frappe.get_roles(user)
 
-	if user == "Administrator" or "System Manager" in user_roles or "Accounts Manager" in user_roles or "Accounts User" in user_roles: 
+	if user == "Administrator" or "System Manager" in user_roles or "Accounts Manager" in user_roles or "Accounts User" in user_roles or "Auditor" in user_roles: 
 		return
 
 	return """(
@@ -2049,13 +2049,6 @@ def get_permission_query_conditions(user):
 			from `tabEmployee` as e
 			where e.branch = `tabJournal Entry`.branch
 			and e.user_id = '{user}')
-		or
-		exists(select 1
-			from `tabEmployee` e, `tabAssign Branch` ab, `tabBranch Item` bi
-			where e.user_id = '{user}'
-			and ab.employee = e.name
-			and bi.parent = ab.name
-			and bi.branch = `tabJournal Entry`.branch)
 	)""".format(user=user)
 
 # ePayment Begins

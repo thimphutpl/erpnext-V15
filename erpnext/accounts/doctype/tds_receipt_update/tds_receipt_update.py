@@ -256,11 +256,4 @@ def get_permission_query_conditions(user):
 			from `tabEmployee` as e
 			where e.branch = `tabTDS Receipt Update`.branch
 			and e.user_id = '{user}')
-		or
-		exists(select 1
-			from `tabEmployee` e, `tabAssign Branch` ab, `tabBranch Item` bi
-			where e.user_id = '{user}'
-			and ab.employee = e.name
-			and bi.parent = ab.name
-			and bi.branch = `tabTDS Receipt Update`.branch)
 	)""".format(user=user)

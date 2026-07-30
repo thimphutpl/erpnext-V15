@@ -453,3 +453,39 @@ def has_upload_permission(doc, ptype="read", user=None):
 	if get_doc_permissions(doc, user=user, ptype=ptype).get(ptype):
 		return True
 	return doc.user_id == user
+
+
+
+def get_permission_query_conditions(user):
+	#frappe.throw("hiii")
+	if not user: user = frappe.session.user
+	user_roles = frappe.get_roles(user)
+	if "HR User" in user_roles or "HR Manager" in user_roles or "Accounts User" in user_roles or "CEO" in user_roles or "Auditor" in user_roles:
+		return
+	if "Management" in user_roles:
+		return """(
+			name in (select e1.name
+				from `tabEmployee` as e1, `tabEmployee` as e2
+				where e1.name = e2.name
+				and e1.user_id = '{user}')
+				))
+		)""".format(user=user)
+	else:
+		return """(
+			name in (select e1.name
+				from `tabEmployee` as e1, `tabEmployee` as e2
+				where e1.name = e2.name
+				and e1.user_id = '{user}')
+		)""".format(user=user)
+
+def has_record_permission(doc, user):
+	if not user: user = frappe.session.user
+	user_roles = frappe.get_roles(user)
+
+	if "HR User" in user_roles or "HR Manager" in user_roles or "Auditor" in user_roles:
+		return True
+	else:			
+		if frappe.db.exists("Employee", {"name":doc.name, "user_id": user}):
+			return True
+		else:
+			return False 

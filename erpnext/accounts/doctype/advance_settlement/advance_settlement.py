@@ -401,17 +401,23 @@ class AdvanceSettlement(Document):
 				"branch": self.branch
 
 			})
-
-			
-
-					
-			
-		
 			
 		je.insert()
 		# frappe.db.commit()		
 		self.db_set("journal_entry", je.name)
 		frappe.msgprint("Journal Entry created. {}".format(frappe.get_desk_link("Journal Entry", je.name)))
 
+def get_permission_query_conditions(user):
+	if not user: user = frappe.session.user
+	user_roles = frappe.get_roles(user)
 
+	if user == "Administrator" or "System Manager" in user_roles or "Accounts User" in user_roles or "Accounts Manager" in user_roles: 
+		return
+
+	return """(
+		exists(select 1
+			from `tabEmployee` as e
+			where e.branch = `tabAdvance Settlement`.branch
+			and e.user_id = '{user}')
+	)""".format(user=user)
 	

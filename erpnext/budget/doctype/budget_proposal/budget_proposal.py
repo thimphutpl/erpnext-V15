@@ -139,6 +139,105 @@ class BudgetProposal(Document):
         # Generate combinations automatically
         # self.generate_combinations()
 
+        self.validate_budget_activities()
+        self.validate_budget_sub_activities()
+        self.validate_budget_accounts()
+        self.validate_source_of_funds()
+        # Generate combinations automatically
+        # self.generate_combinations()
+
+    def validate_budget_activities(self):
+        """Validate that budget_activities entries are valid and not empty"""
+        if self.budget_activities:
+            for row in self.budget_activities:
+                if not row.budget_activity:
+                    frappe.throw(_("Budget Activity cannot be empty. Please select a valid Budget Activity."))
+                
+                # Check if the budget activity exists
+                if not frappe.db.exists("Budget Activity", row.budget_activity):
+                    frappe.throw(_("Budget Activity '{0}' does not exist. Please select a valid Budget Activity.").format(row.budget_activity))
+                
+                # Check if the budget activity is active/enabled (if you have a status field)
+                activity_doc = frappe.get_doc("Budget Activity", row.budget_activity)
+                if hasattr(activity_doc, 'disabled') and activity_doc.disabled:
+                    frappe.throw(_("Budget Activity '{0}' is disabled. Please select an active Budget Activity.").format(row.budget_activity))
+
+    def validate_budget_sub_activities(self):
+        """Validate that budget_sub_activities entries are valid and not empty"""
+        if self.budget_sub_activities:
+            for row in self.budget_sub_activities:
+                if not row.budget_sub_activity:
+                    frappe.throw(_("Budget Sub Activity cannot be empty. Please select a valid Budget Sub Activity."))
+                
+                # Check if the budget sub activity exists
+                if not frappe.db.exists("Budget Sub Activity", row.budget_sub_activity):
+                    frappe.throw(_("Budget Sub Activity '{0}' does not exist. Please select a valid Budget Sub Activity.").format(row.budget_sub_activity))
+                
+                # Check if the budget sub activity is active/enabled
+                sub_activity_doc = frappe.get_doc("Budget Sub Activity", row.budget_sub_activity)
+                if hasattr(sub_activity_doc, 'disabled') and sub_activity_doc.disabled:
+                    frappe.throw(_("Budget Sub Activity '{0}' is disabled. Please select an active Budget Sub Activity.").format(row.budget_sub_activity))
+                
+                # Optional: Validate that the sub activity belongs to one of the selected activities
+                if self.budget_activities:
+                    parent_activity = frappe.db.get_value("Budget Sub Activity", row.budget_sub_activity, "budget_activity")
+                    selected_activities = [d.budget_activity for d in self.budget_activities]
+                    if parent_activity and parent_activity not in selected_activities:
+                        frappe.throw(_("Budget Sub Activity '{0}' belongs to Budget Activity '{1}' which is not selected. Please select the parent activity first.").format(
+                            row.budget_sub_activity, parent_activity
+                        ))
+
+    def validate_budget_accounts(self):
+        """Validate that budget_accounts entries are valid and not empty"""
+        if self.budget_accounts:
+            for row in self.budget_accounts:
+                if not row.account:
+                    frappe.throw(_("Budget Account cannot be empty. Please select a valid Account."))
+                
+                # Check if the account exists
+                if not frappe.db.exists("Account", row.account):
+                    frappe.throw(_("Account '{0}' does not exist. Please select a valid Account.").format(row.account))
+                
+                # Check if the account belongs to the same company
+                account_company = frappe.db.get_value("Account", row.account, "company")
+                if account_company and account_company != self.company:
+                    frappe.throw(_("Account '{0}' belongs to company '{1}' which is different from the proposal company '{2}'.").format(
+                        row.account, account_company, self.company
+                    ))
+                
+                # Check if the account is a group account
+                is_group = frappe.db.get_value("Account", row.account, "is_group")
+                if is_group:
+                    frappe.throw(_("Account '{0}' is a group account. Please select a leaf account.").format(row.account))
+                
+                # Check if account is active/enabled
+                disabled = frappe.db.get_value("Account", row.account, "disabled")
+                if disabled:
+                    frappe.throw(_("Account '{0}' is disabled. Please select an active Account.").format(row.account))
+
+    def validate_source_of_funds(self):
+        """Validate that budget_source_of_fundsactivities entries are valid and not empty"""
+        if self.source_of_funds:
+            for row in self.source_of_funds:
+                if not row.source_of_fund:
+                    frappe.throw(_("Source of Fund cannot be empty. Please select a valid Source of Fund."))
+                
+                # Check if the budget activity exists
+                if not frappe.db.exists("Source of Fund", row.source_of_fund):
+                    frappe.throw(_("Source of Fund '{0}' does not exist. Please select a valid Source of Fund.").format(row.source_of_fund))
+                
+                # Check if the budget activity is active/enabled (if you have a status field)
+                activity_doc = frappe.get_doc("Source of Fund", row.source_of_fund)
+                if hasattr(activity_doc, 'disabled') and activity_doc.disabled:
+                    frappe.throw(_("Source of Fund '{0}' is disabled. Please select an active Source of Fund.").format(row.source_of_fund))                    
+
+    def validate_single_value_input(self, fieldname, doctype, label):
+        """Generic validation for single value fields"""
+        value = self.get(fieldname)
+        if value:
+            if not frappe.db.exists(doctype, value):
+                frappe.throw(_("{0} '{1}' does not exist. Please select a valid {0}.").format(label, value))
+
     def before_save(self):
         """Process duplicates before saving"""
         self.process_duplicate_names()
