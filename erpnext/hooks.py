@@ -386,6 +386,9 @@ auto_cancel_exempted_doctypes = [
 
 scheduler_events = {
 	"cron": {
+        "* * * * *": [
+			"erpnext.integrations.bps.process_files"
+		],
 		"0/15 * * * *": [
 			"erpnext.manufacturing.doctype.bom_update_log.bom_update_log.resume_bom_cost_update_jobs",
 			"erpnext.accounts.doctype.process_payment_reconciliation.process_payment_reconciliation.trigger_reconciliation_for_queued_docs",
@@ -566,6 +569,61 @@ regional_overrides = {
 		"erpnext.controllers.accounts_controller.validate_regional": "erpnext.regional.italy.utils.sales_invoice_validate",
 	},
 }
+
+has_permission = {
+	# "Material Request":"erpnext.stock.doctype.material_request.material_request.has_record_permission",
+	"Employee": "erpnext.setup.doctype.employee.employee.has_record_permission",
+	"Salary Structure": "hrms.payroll.doctype.salary_structure.salary_structure.has_record_permission",
+	"Salary Slip": "hrms.payroll.doctype.salary_slip.salary_slip.has_record_permission",
+	"Employee Promotion": "hrms.hr.doctype.employee_promotion.employee_promotion.has_record_permission",
+	"Increment Entry": "hrms.hr.doctype.increment_entry.increment_entry.has_record_permission",
+
+}
+
+permission_query_conditions = {
+    "eNote": "erpnext.enote.doctype.enote.enote.get_permission_query_conditions",
+	"Advance": "erpnext.accounts.doctype.advance.advance.get_permission_query_conditions",
+	"Advance Settlement": "erpnext.accounts.doctype.advance_settlement.advance_settlement.get_permission_query_conditions",
+	"Journal Entry": "erpnext.accounts.doctype.journal_entry.journal_entry.get_permission_query_conditions",
+	# "Payment Entry": "erpnext.accounts.doctype.payment_entry.payment_entry.get_permission_query_conditions",
+	"TDS Remittance": "erpnext.accounts.doctype.tds_remittance.tds_remittance.get_permission_query_conditions",
+	"TDS Receipt Update": "erpnext.accounts.doctype.tds_receipt_update.tds_receipt_update.get_permission_query_conditions",
+	# "Purchase Order": "erpnext.buying.doctype.purchase_order.purchase_order.get_permission_query_conditions",
+	# "Purchase Invoice": "erpnext.accounts.doctype.purchase_invoice.purchase_invoice.get_permission_query_conditions",
+	# "Purchase Receipt": "erpnext.stock.doctype.purchase_receipt.purchase_receipt.get_permission_query_conditions",
+	# "Sales Order": "erpnext.selling.doctype.sales_order.sales_order.get_permission_query_conditions",
+	# "Target Set Up": "erpnext.pms.doctype.target_set_up.target_set_up.get_permission_query_conditions",
+	# "Review": "erpnext.pms.doctype.review.review.get_permission_query_conditions",
+	# "Performance Evaluation": "erpnext.pms.doctype.performance_evaluation.performance_evaluation.get_permission_query_conditions",
+	# "Delivery Note": "erpnext.stock.doctype.delivery_note.delivery_note.get_permission_query_conditions",
+	# "Sales Invoice": "erpnext.accounts.doctype.sales_invoice.sales_invoice.get_permission_query_conditions",
+	# "Material Request": "erpnext.stock.doctype.material_request.material_request.get_permission_query_conditions",
+	# "Stock Entry": "erpnext.stock.doctype.stock_entry.stock_entry.get_permission_query_conditions",
+	"Employee": "erpnext.setup.doctype.employee.employee.get_permission_query_conditions",
+	"Semso Entry": "hrms.hr.doctype.semso_entry.semso_entry.get_permission_query_conditions",
+	"Employee Promotion": "hrms.hr.doctype.employee_promotion.employee_promotion.get_permission_query_conditions",
+	"Increment Entry": "hrms.hr.doctype.increment_entry.increment_entry.get_permission_query_conditions",
+    "Salary Structure": "hrms.payroll.doctype.salary_structure.salary_structure.get_permission_query_conditions",
+	"Salary Slip": "hrms.payroll.doctype.salary_slip.salary_slip.get_permission_query_conditions",
+	# "Leave Application": "hrms.hr.doctype.leave_application.leave_application.get_permission_query_conditions",
+    # "Employee Separation": "hrms.hr.doctype.employee_separation.employee_separation.get_permission_query_conditions",
+	# "Travel Authorization": "hrms.hr.doctype.travel_authorization.travel_authorization.get_permission_query_conditions",
+	# "Travel Claim": "hrms.hr.doctype.travel_claim.travel_claim.get_permission_query_conditions",
+	# "POL Issue": "erpnext.fleet_management.doctype.pol_issue.pol_issue.get_permission_query_conditions",
+	# "POL Receive": "erpnext.fleet_management.doctype.pol_receive.pol_receive.get_permission_query_conditions",
+	# "Break Down Report": "erpnext.fleet_management.doctype.break_down_report.break_down_report.get_permission_query_conditions",
+	# "Job Cards": "erpnext.fleet_management.doctype.job_cards.job_cards.get_permission_query_conditions",
+	# "Vehicle Logbook": "erpnext.fleet_management.doctype.vehicle_logbook.vehicle_logbook.get_permission_query_conditions",
+	# "Equipment Request": "erpnext.fleet_management.doctype.equipment_request.equipment_request.get_permission_query_conditions",
+	# "Asset Movement": "erpnext.asset.doctype.asset_movement.asset_movement.get_permission_query_conditions",
+	"Imprest Advance": "erpnext.accounts.doctype.imprest_advance.imprest_advance.get_permission_query_conditions",
+	"Imprest Recoup": "erpnext.accounts.doctype.imprest_recoup.imprest_recoup.get_permission_query_conditions",
+	# "Hire Charge Invoice": "erpnext.accounts.doctype.hire_charge_invoice.hire_charge_invoice.get_permission_query_conditions",
+	# "Budget Reappropiation":"erpnext.budget.doctype.budget_reappropiation.budget_reappropiation.get_permission_query_conditions",
+	# "Bank Payment":"erpnext.epayment.doctype.bank_payment.bank_payment.get_permission_query_conditions",
+	# "Equipment Request":"erpnext.fleet_management.doctype.equipment_request.equipment_request.get_permission_query_conditions",
+}
+
 user_privacy_documents = [
 	{
 		"doctype": "Lead",
