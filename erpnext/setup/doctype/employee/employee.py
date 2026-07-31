@@ -436,16 +436,46 @@ def on_doctype_update():
 	frappe.db.add_index("Employee", ["lft", "rgt"])
 
 
-def has_user_permission_for_employee(user_name, employee_name):
-	return frappe.db.exists(
-		{
-			"doctype": "User Permission",
-			"user": user_name,
-			"allow": "Employee",
-			"for_value": employee_name,
-		}
-	)
+# def has_user_permission_for_employee(user_name, employee_name):
+# 	return frappe.db.exists(
+# 		{
+# 			"doctype": "User Permission",
+# 			"user": user_name,
+# 			"allow": "Employee",
+# 			"for_value": employee_name,
+# 		}
+# 	)
 
+
+def has_user_permission_for_employee(user_name, employee_name):
+
+    roles = frappe.get_roles(user_name)
+
+    if "ICT Admin" in roles:
+
+        user_company = frappe.db.get_value(
+            "Employee",
+            {"user_id": user_name},
+            "company"
+        )
+
+        employee_company = frappe.db.get_value(
+            "Employee",
+            employee_name,
+            "company"
+        )
+
+        return user_company == employee_company
+
+    # Other users use User Permission
+    return frappe.db.exists(
+        {
+            "doctype": "User Permission",
+            "user": user_name,
+            "allow": "Employee",
+            "for_value": employee_name,
+        }
+    )
 
 def has_upload_permission(doc, ptype="read", user=None):
 	if not user:
@@ -460,7 +490,7 @@ def get_permission_query_conditions(user):
 	#frappe.throw("hiii")
 	if not user: user = frappe.session.user
 	user_roles = frappe.get_roles(user)
-	if "HR User" in user_roles or "HR Manager" in user_roles or "Accounts User" in user_roles or "CEO" in user_roles or "Auditor" in user_roles:
+	if "HR User" in user_roles or "HR Manager" in user_roles or "ICT Admin" in user_roles or "Accounts User" in user_roles or "CEO" in user_roles or "Auditor" in user_roles:
 		return
 	if "Management" in user_roles:
 		return """(
@@ -482,7 +512,7 @@ def has_record_permission(doc, user):
 	if not user: user = frappe.session.user
 	user_roles = frappe.get_roles(user)
 
-	if "HR User" in user_roles or "HR Manager" in user_roles or "Auditor" in user_roles:
+	if "HR User" in user_roles or "HR Manager" in user_roles or "Auditor" in user_roles or "ICT Admin" in user_roles:
 		return True
 	else:			
 		if frappe.db.exists("Employee", {"name":doc.name, "user_id": user}):
