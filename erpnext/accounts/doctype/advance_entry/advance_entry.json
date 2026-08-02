@@ -15,6 +15,7 @@
   "party_type",
   "customer",
   "is_running_bill",
+  "is_opening",
   "section_break_grmq",
   "mobilisation_entry",
   "advance_recoup",
@@ -98,12 +99,18 @@
    "label": "Advance",
    "options": "Advance",
    "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_opening",
+   "fieldtype": "Check",
+   "label": "Is Opening"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-07-15 13:29:27.295105",
+ "modified": "2026-07-31 11:13:34.140138",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Advance Entry",

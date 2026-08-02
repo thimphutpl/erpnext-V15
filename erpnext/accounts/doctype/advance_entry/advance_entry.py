@@ -23,6 +23,7 @@ class AdvanceEntry(Document):
 		branch: DF.Link | None
 		cost_center: DF.Link | None
 		customer: DF.DynamicLink | None
+		is_opening: DF.Check
 		is_running_bill: DF.Check
 		mobilisation_entry: DF.Table[MobilisationEntryItem]
 		party_type: DF.Literal["", "Supplier", "Employee", "Customer"]

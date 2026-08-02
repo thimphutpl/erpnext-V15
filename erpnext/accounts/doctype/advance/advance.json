@@ -32,6 +32,8 @@
   "column_break_ouro",
   "item_code",
   "item_name",
+  "section_break_vfwg",
+  "is_opening",
   "section_break_oouh",
   "opening_balance",
   "section_break_exvg",
@@ -341,12 +343,22 @@
    "fieldtype": "Link",
    "label": "Fiscal Year",
    "options": "Fiscal Year"
+  },
+  {
+   "fieldname": "section_break_vfwg",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_opening",
+   "fieldtype": "Check",
+   "label": "Is Opening"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-06-18 14:37:45.768993",
+ "modified": "2026-07-31 11:12:46.016135",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Advance",

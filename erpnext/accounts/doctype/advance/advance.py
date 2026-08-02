@@ -29,6 +29,7 @@ class Advance(Document):
 		employee: DF.Link | None
 		employee_name: DF.Data | None
 		fiscal_year: DF.Link | None
+		is_opening: DF.Check
 		item_code: DF.Data | None
 		item_name: DF.Data | None
 		journal_entry: DF.Data | None
@@ -257,6 +258,7 @@ class Advance(Document):
 			party = self.customer
 		else:
 			party = self.customer
+		account = frappe.db.get_value("Advance Type", self.advance_type, "advance_account")
 
 		con = frappe.new_doc("Advance Entry")
 		con.branch = self.branch
@@ -267,10 +269,13 @@ class Advance(Document):
 		con.branch = self.branch
 		con.reference_type = "Advance Entry"
 		con.is_running_bill = 0
+		con.is_opening=self.is_opening
 		con.advance = self.name
 		con.append("mobilisation_entry", {
 			"reference":self.name,
+			"advance_type":self.advance_type,
 			"total_amount": self.total_amount,
+			"account": account,
 			"advance_amount": self.total_amount,
 			"balance_amount": self.total_amount
 		})
