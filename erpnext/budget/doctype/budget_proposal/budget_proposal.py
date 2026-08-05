@@ -1655,3 +1655,25 @@ def get_parent_account(account):
         return ""
     parent = frappe.db.get_value("Account", account, "parent_account")
     return parent or ""		
+
+def get_permission_query_conditions(user=None):
+    if not user:
+        user = frappe.session.user
+
+    roles = frappe.get_roles(user)
+
+    if "System Manager" in roles:
+        return ""
+
+    if "Budget User" in roles:
+        return f"""
+            `tabBudget Proposal`.owner = {frappe.db.escape(user)}
+            AND `tabBudget Proposal`.workflow_state  IN('Draft','Waiting for MOF Finance Approval','Approved','Rejected')
+        """
+
+    if "Budget Approver" in roles:
+        return """
+            `tabBudget Proposal`.workflow_state IN('Waiting for MOF Finance Approval','Approved','Rejected')
+        """
+
+    return "1=0"

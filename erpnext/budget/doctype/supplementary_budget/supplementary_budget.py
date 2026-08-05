@@ -277,3 +277,24 @@ class SupplementaryBudget(Document):
                 supp_details.posting_date = nowdate()
                 supp_details.fiscal_year = self.fiscal_year
                 supp_details.insert(ignore_permissions=True)
+def get_permission_query_conditions(user=None):
+    if not user:
+        user = frappe.session.user
+
+    roles = frappe.get_roles(user)
+
+    if "System Manager" in roles:
+        return ""
+
+    if "Budget User" in roles:
+        return f"""
+            `tabSupplementary Budget`.owner = {frappe.db.escape(user)}
+            AND `tabBudget Proposal`.workflow_state  IN('Draft','Waiting for Approval','Approved','Rejected')
+        """
+
+    if "Budget Approver" in roles:
+        return """
+            `tabSupplementary Budget`.workflow_state IN('Waiting for Approval','Approved','Rejected')
+        """
+
+    return "1=0"

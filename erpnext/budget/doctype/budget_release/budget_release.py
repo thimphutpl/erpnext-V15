@@ -1098,3 +1098,29 @@ def get_expense_cost_center(doctype, args):
 		return frappe.db.get_value(
 			doctype, args.get(frappe.scrub(doctype)), ["cost_center", "default_expense_account"]
 		)
+
+def get_permission_query_conditions(user=None):
+    if not user:
+        user = frappe.session.user
+
+    roles = frappe.get_roles(user)
+
+    if "System Manager" in roles:
+        return ""
+
+    if "Accounts User" in roles:
+        return f"""
+            `tabBudget Release`.owner = {frappe.db.escape(user)}
+            AND `tabBudget Release`.workflow_state  IN('Draft','Waiting for MOF Finance Approval','Waiting Accounts Verification','Approved','Rejected')
+        """
+
+    if "Accounts Manager" in roles:
+        return """
+            `tabBudget Proposal`.workflow_state IN('Waiting Accounts Verification','Approved','Rejected')
+        """
+    if "Budget Approver" in roles:
+        return """
+            `tabBudget Release`.workflow_state IN('Waiting for MOF Finance Approval','Approved','Rejected')
+        """
+
+    return "1=0"

@@ -635,37 +635,24 @@ class BudgetReappropiation(Document):
 			# else:
 			# 	parent_doc.db_set("budget_amount", flt(parent_doc.budget_amount) + flt(d.amount))				
 
-def get_permission_query_conditions(user):
-	if not user: user = frappe.session.user
-	user_roles = frappe.get_roles(user)
+def get_permission_query_conditions(user=None):
+    if not user:
+        user = frappe.session.user
 
-	if any(role in user_roles for role in {"Administrator", "Budget Manager", "CEO"}):
-		return
+    roles = frappe.get_roles(user)
 
-	return """(
-		owner = '{user}'
-		or
-		name in (select e.name
-				from `tabBudget Reappropiation` e
-				where e.from_cost_center in (
-					select b.cost_center
-					from `tabEmployee` a, `tabAssign Branch` ab, `tabBranch Item` bi, tabBranch b
-					where a.user_id = '{user}'
-					and ab.employee = a.name
-					and bi.parent = ab.name
-					and b.name = bi.branch
-				))
-		or
-		name in (select e.name
-				from `tabBudget Reappropiation` e
-				where e.to_cost_center in (
-					select b.cost_center
-					from `tabEmployee` a, `tabAssign Branch` ab, `tabBranch Item` bi, tabBranch b
-					where a.user_id = '{user}'
-					and ab.employee = a.name
-					and bi.parent = ab.name
-					and b.name = bi.branch
-				))
-		or
-		(approver = '{user}' and workflow_state not in  ('Draft','Rejected','Cancelled'))
-	)""".format(user=user)
+    if "System Manager" in roles:
+        return ""
+
+    if "Budget User" in roles:
+        return f"""
+            `tabSupplementary Budget`.owner = {frappe.db.escape(user)}
+            AND `tabBudget Proposal`.workflow_state  IN('Draft','Waiting for Approval','Approved','Rejected')
+        """
+
+    if "Budget Approver" in roles:
+        return """
+            `tabSupplementary Budget`.workflow_state IN('Waiting for Approval')
+        """
+
+    return "1=0"
