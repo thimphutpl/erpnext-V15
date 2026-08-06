@@ -6,4 +6,3 @@ frappe.ui.form.on('eNote Type', {
 
 	// }
 });
-

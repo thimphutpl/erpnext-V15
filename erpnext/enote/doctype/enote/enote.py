@@ -376,7 +376,3 @@ def get_permission_query_conditions(user):
 # 		exists(select 1
 # 			from `tabEmployee` e, `tabeNote Reviewer` nr
 # 			where e.user_id = '{user}' and '{user}' = nr.user_id and nr.parent = `tabeNote`.name)
-   
-   
-   
-   
