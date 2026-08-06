@@ -6,3 +6,5 @@ from frappe.model.document import Document
 
 class eNoteSeries(Document):
 	pass
+
+
