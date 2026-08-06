@@ -622,6 +622,10 @@ permission_query_conditions = {
 	# "Budget Reappropiation":"erpnext.budget.doctype.budget_reappropiation.budget_reappropiation.get_permission_query_conditions",
 	# "Bank Payment":"erpnext.epayment.doctype.bank_payment.bank_payment.get_permission_query_conditions",
 	# "Equipment Request":"erpnext.fleet_management.doctype.equipment_request.equipment_request.get_permission_query_conditions",
+    "Budget Proposal": "erpnext.budget.doctype.budget_proposal.budget_proposal.get_permission_query_conditions",
+    "Budget Release": "erpnext.budget.doctype.budget_release.budget_release.get_permission_query_conditions",
+    "Supplmentary Budget": "erpnext.budget.doctype.supplementary_budget.supplementary_budget.get_permission_query_conditions",
+    "Budget Reappropiation": "erpnext.budget.doctype.budget_reappropiation.budget_reappropiation.get_permission_query_conditions"
 }
 
 user_privacy_documents = [
