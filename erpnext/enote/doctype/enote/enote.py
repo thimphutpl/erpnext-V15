@@ -1,5 +1,6 @@
 # Copyright (c) 2023, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
+#
 
 import frappe
 from frappe.model.document import Document
@@ -36,6 +37,7 @@ class eNote(Document):
 		type: DF.Literal["", "Process", "Payment"]
 		workflow_state: DF.Link | None
 	# end: auto-generated types
+
 	
 	def on_submit(self):
 		self.enote_format = make_autoname(str(self.enote_series)+".YYYY./.#####")
@@ -173,16 +175,16 @@ class eNote(Document):
 		args.update({
 			"workflow_state": self.doc.workflow_state
 		})
-		template = frappe.db.get_single_value('HR Settings', 'enote_status_notification')
-		if not template:
-			frappe.msgprint(_("Please set default template for eNote Status Notification in HR Settings."))
-			return
+		# template = frappe.db.get_single_value('HR Settings', 'enote_status_notification')
+		# if not template:
+		# 	frappe.msgprint(_("Please set default template for eNote Status Notification in HR Settings."))
+		# 	return
 
-		email_template = frappe.get_doc("Email Template", template)
-		message = frappe.render_template(email_template.response, args)
-		recipients = self.doc.owner
-		subject = email_template.subject
-		self.send_mail(recipients,message, subject)
+		# email_template = frappe.get_doc("Email Template", template)
+		# message = frappe.render_template(email_template.response, args)
+		# recipients = self.doc.owner
+		# subject = email_template.subject
+		# self.send_mail(recipients,message, subject)
 
 	def notify_copy_to(self):
 		parent_doc = frappe.get_doc(self.doctype, self.name)

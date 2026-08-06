@@ -178,7 +178,7 @@
  "icon": "fa fa-file-text",
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-21 16:36:00.965777",
+ "modified": "2026-08-03 14:17:44.111840",
  "modified_by": "Administrator",
  "module": "eNote",
  "name": "eNote",
@@ -206,3 +206,5 @@
  "track_seen": 1,
  "track_views": 1
 }
+
+
