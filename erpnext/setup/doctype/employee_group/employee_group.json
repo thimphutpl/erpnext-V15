@@ -44,7 +44,9 @@
   "budget_activity",
   "budget_sub_activity",
   "column_break_guqq",
-  "source_of_fund"
+  "source_of_fund",
+  "section_break_bacp",
+  "employee_grade"
  ],
  "fields": [
   {
@@ -257,10 +259,20 @@
    "fieldtype": "Link",
    "label": "Source Of Fund",
    "options": "Source of Fund"
+  },
+  {
+   "fieldname": "section_break_bacp",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "employee_grade",
+   "fieldtype": "Table",
+   "label": "Employee Grade",
+   "options": "Employee Group Master Item"
   }
  ],
  "links": [],
- "modified": "2026-06-15 15:24:46.853928",
+ "modified": "2026-08-06 14:01:13.213467",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee Group",

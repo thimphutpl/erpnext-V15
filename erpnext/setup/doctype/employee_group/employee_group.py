@@ -15,10 +15,12 @@ class EmployeeGroup(Document):
 		from erpnext.setup.doctype.employee_group_table.employee_group_table import EmployeeGroupTable
 		from frappe.types import DF
 		from hrms.hr.doctype.employee_group_item.employee_group_item import EmployeeGroupItem
+		from hrms.hr.doctype.employee_group_master_item.employee_group_master_item import EmployeeGroupMasterItem
 
 		budget_activity: DF.Link | None
 		budget_sub_activity: DF.Link | None
 		company: DF.Link
+		employee_grade: DF.Table[EmployeeGroupMasterItem]
 		employee_group_name: DF.Data
 		employee_list: DF.Table[EmployeeGroupTable]
 		employee_pf: DF.Percent
