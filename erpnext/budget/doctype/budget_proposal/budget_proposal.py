@@ -1662,13 +1662,19 @@ def get_permission_query_conditions(user=None):
 
     roles = frappe.get_roles(user)
 
+
     if "System Manager" in roles:
         return ""
 
+    # if "Budget User" in roles:
+    #     return f"""
+    #         # `tabBudget Proposal`.owner = {frappe.db.escape(user)}
+    #         AND `tabBudget Proposal`.workflow_state  IN('Draft','Waiting for MOF Finance Approval','Approved','Rejected')
+    #     """
+
     if "Budget User" in roles:
         return f"""
-            `tabBudget Proposal`.owner = {frappe.db.escape(user)}
-            AND `tabBudget Proposal`.workflow_state  IN('Draft','Waiting for MOF Finance Approval','Approved','Rejected')
+            `tabBudget Proposal`.workflow_state  IN('Draft','Waiting for MOF Finance Approval','Approved','Rejected')
         """
 
     if "Budget Approver" in roles:
