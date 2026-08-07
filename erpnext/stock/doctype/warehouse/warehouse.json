@@ -14,6 +14,7 @@
   "is_group",
   "parent_warehouse",
   "is_rejected_warehouse",
+  "allow_negative_stock",
   "column_break_4",
   "account",
   "company",
@@ -270,13 +271,19 @@
    "fieldname": "items",
    "fieldtype": "Table",
    "options": "Warehouse Branch"
+  },
+  {
+   "default": "0",
+   "fieldname": "allow_negative_stock",
+   "fieldtype": "Check",
+   "label": "Allow Negative Stock"
   }
  ],
  "icon": "fa fa-building",
  "idx": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2025-02-17 18:29:56.133618",
+ "modified": "2026-08-06 14:59:40.914205",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Warehouse",

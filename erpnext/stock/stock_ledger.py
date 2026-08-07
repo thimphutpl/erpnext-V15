@@ -105,6 +105,7 @@ def make_sl_entries(sl_entries, allow_negative_stock=False, via_landed_cost_vouc
 
 			is_stock_item = frappe.get_cached_value("Item", args.get("item_code"), "is_stock_item")
 			if is_stock_item:
+				#frappe.throw(str(allow_negative_stock))
 				bin_name = get_or_make_bin(args.get("item_code"), args.get("warehouse"))
 				args.reserved_stock = flt(frappe.db.get_value("Bin", bin_name, "reserved_stock"))
 				repost_current_voucher(args, allow_negative_stock, via_landed_cost_voucher)
@@ -116,6 +117,7 @@ def make_sl_entries(sl_entries, allow_negative_stock=False, via_landed_cost_vouc
 
 
 def repost_current_voucher(args, allow_negative_stock=False, via_landed_cost_voucher=False):
+	
 	if args.get("actual_qty") or args.get("voucher_type") == "Stock Reconciliation":
 		if not args.get("posting_date"):
 			args["posting_date"] = nowdate()
@@ -535,14 +537,15 @@ class update_entries_after:
 		self.allow_zero_rate = allow_zero_rate
 		self.via_landed_cost_voucher = via_landed_cost_voucher
 		self.item_code = args.get("item_code")
+		self.warehouse=args.get("warehouse")
 		self.use_moving_avg_for_batch = frappe.db.get_single_value(
 			"Stock Settings", "do_not_use_batchwise_valuation"
 		)
 
 		self.allow_negative_stock = allow_negative_stock or is_negative_stock_allowed(
-			item_code=self.item_code
+			item_code=self.item_code,warehouse=self.warehouse
 		)
-
+		#frappe.throw(str(self.allow_negative_stock))
 		self.args = frappe._dict(args)
 		if self.args.sle_id:
 			self.args["name"] = self.args.sle_id
@@ -2153,10 +2156,14 @@ def validate_reserved_batch_nos(item_code, warehouse, batch_nos):
 				frappe.throw(msg, title=_("Reserved Stock for Batch"))
 
 
-def is_negative_stock_allowed(*, item_code: str | None = None) -> bool:
+def is_negative_stock_allowed(*, item_code: str | None = None,warehouse: str | None = None) -> bool:
+	
 	if cint(frappe.db.get_single_value("Stock Settings", "allow_negative_stock", cache=True)):
 		return True
 	if item_code and cint(frappe.db.get_value("Item", item_code, "allow_negative_stock", cache=True)):
+		return True
+
+	if warehouse and cint(frappe.db.get_value("Warehouse", warehouse, "allow_negative_stock", cache=True)):
 		return True
 	return False
 

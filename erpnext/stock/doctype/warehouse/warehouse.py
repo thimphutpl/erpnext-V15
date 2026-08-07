@@ -24,6 +24,7 @@ class Warehouse(NestedSet):
 		account: DF.Link | None
 		address_line_1: DF.Data | None
 		address_line_2: DF.Data | None
+		allow_negative_stock: DF.Check
 		city: DF.Data | None
 		company: DF.Link
 		default_in_transit_warehouse: DF.Link | None
