@@ -365,16 +365,57 @@ def create_user(employee, user=None, email=None):
 	emp.save()
 	return user.name
 
+# @frappe.whitelist()
+# def get_employee_group_base_grade(grade,company):
+# 	doc= frappe.db.sql("""SELECT egm.name FROM 
+# 					`tabEmployee Group` egm 
+# 					JOIN `tabEmployee Group Master Item` egmi 
+# 					ON egm.name = egmi.parent
+# 					WHERE egmi.grade = %s 
+# 					AND egm.company = %s
+# 					""",(grade,company),as_dict=1)
+# 	return doc
 @frappe.whitelist()
-def get_employee_group_base_grade(grade,company):
-	doc= frappe.db.sql("""SELECT egm.name FROM 
-					`tabEmployee Group Master` egm 
-					JOIN `tabEmployee Group Master Item` egmi 
-					ON egm.name = egmi.parent
-					WHERE egmi.grade = %s 
-					AND egm.company = %s
-					""",(grade,company),as_dict=1)
-	return doc
+def validate_employee_group_grade(employee_group, grade, company):
+
+    exists = frappe.db.sql("""
+        SELECT
+            egm.name
+        FROM
+            `tabEmployee Group` egm
+        INNER JOIN
+            `tabEmployee Group Master Item` egmi
+        ON
+            egm.name = egmi.parent
+        WHERE
+            egm.name = %s
+            AND egmi.grade = %s
+            AND egm.company = %s
+    """, (employee_group, grade, company), as_dict=True)
+
+
+
+    return True if exists else False
+
+@frappe.whitelist()
+def check_grade_in_employee_group(employee_group, grade):
+    """
+    Check whether selected employee grade exists
+    under selected employee group
+    """
+
+    if not employee_group or not grade:
+        return False
+
+    grade_exists = frappe.db.exists(
+        "Employee Group Master Item",
+        {
+            "parent": employee_group,
+            "grade": grade
+        }
+    )
+
+    return True if grade_exists else False
 def get_all_employee_emails(company):
 	"""Returns list of employee emails either based on user_id or company_email"""
 	employee_list = frappe.get_all(
