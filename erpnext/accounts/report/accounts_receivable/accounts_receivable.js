@@ -20,6 +20,18 @@ frappe.query_reports["Accounts Receivable"] = {
 			default: frappe.datetime.get_today(),
 		},
 		{
+			fieldname: "period",
+			label: __("Period"),
+			fieldtype: "Select",
+			options: "Daily\nMonthly\nYearly",
+			default: "Daily",
+			on_change: function() {
+				let period = frappe.query_report.get_filter_value("period");
+				frappe.query_report.toggle_filter_display("group_by_party", period === "Daily");
+				frappe.query_report.refresh();
+			}
+		},
+		{
 			fieldname: "finance_book",
 			label: __("Finance Book"),
 			fieldtype: "Link",
