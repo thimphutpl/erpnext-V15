@@ -139,6 +139,13 @@ frappe.ui.form.on('Budget Proposal', {
 			};
 		});
 		//erpnext.accounts.dimensions.setup_dimension_filters(frm, frm.doctype);
+
+		// Ensure any existing rows have approved_budget populated
+        frm.doc.accounts.forEach(function(row) {
+            if (row.initial_budget && (!row.approved_budget || row.approved_budget === 0)) {
+                frappe.model.set_value(row.doctype, row.name, 'approved_budget', row.initial_budget);
+            }
+        });
 	},
 
 	refresh: function(frm) {
@@ -540,7 +547,23 @@ frappe.ui.form.on("Budget Proposal Account", {
 				}
 			}
 		})
-	}
+	},
+	initial_budget: function(frm, cdt, cdn) {
+        let row = locals[cdt][cdn];
+        // If approved_budget is empty or 0, auto-fill with initial_budget
+        if (row.initial_budget && (!row.approved_budget || row.approved_budget === 0)) {
+            frappe.model.set_value(cdt, cdn, 'approved_budget', row.initial_budget);
+        }
+    },
+    
+    approved_budget: function(frm, cdt, cdn) {
+        // Optional: Track that user manually changed approved_budget
+        let row = locals[cdt][cdn];
+        if (row.approved_budget && row.initial_budget && row.approved_budget !== row.initial_budget) {
+            // User manually changed approved_budget - you can add a flag if needed
+            // row.approved_budget_manually_changed = 1;
+        }
+    }
 }); 
 
 function set_initial_budget(frm, cdt, cdn){

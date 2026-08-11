@@ -145,6 +145,17 @@ class BudgetProposal(Document):
         self.validate_source_of_funds()
         # Generate combinations automatically
         # self.generate_combinations()
+        self.auto_fill_approved_budget()
+
+    def auto_fill_approved_budget(self):
+        """Auto-fill approved_budget with initial_budget for new or empty rows"""
+        for row in self.get("accounts"):
+            # If initial_budget has value and approved_budget is empty or 0
+            if row.initial_budget and (not row.approved_budget or row.approved_budget == 0):
+                row.approved_budget = row.initial_budget
+            # If initial_budget is 0 and approved_budget is empty, set to 0
+            elif row.initial_budget == 0 and not row.approved_budget:
+                row.approved_budget = 0
 
     def validate_budget_activities(self):
         """Validate that budget_activities entries are valid and not empty"""
