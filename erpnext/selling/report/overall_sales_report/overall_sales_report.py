@@ -223,7 +223,7 @@ def get_sales_invoice_data(filters, cond, outer_cond):
                 FROM `tabSales Taxes and Charges` st
             WHERE st.parent = si.name 
                 AND st.charge_type = 'Actual' AND st.is_gst = 0) AS transportation_charges,
-            SUM(sii.amount) AS amount,
+            SUM(sii.base_amount) AS amount,
             si.net_total AS net_total,
             si.grand_total AS grand_total
         """
@@ -238,8 +238,8 @@ def get_sales_invoice_data(filters, cond, outer_cond):
             (SELECT customer_group FROM `tabCustomer` WHERE name = si.customer) AS customer_group,
             si.shipping_address_name,
             sii.item_code, sii.item_name, i.item_sub_group,
-            sii.qty AS delivered_qty, sii.rate,
-            sii.amount AS amount,
+            sii.qty AS delivered_qty, sii.base_rate,
+            sii.base_amount AS amount,
             si.net_total AS net_total
         """
         group_by = ""
