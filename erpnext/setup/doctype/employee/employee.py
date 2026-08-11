@@ -98,6 +98,14 @@ class Employee(NestedSet):
 			self.update_user()
 			self.update_user_permissions()
 		self.reset_employee_emails_cache()
+		self.update_salary_structure()
+
+	def update_salary_structure(self):
+		ss = frappe.db.get_value("Salary Structure", {"employee": self.name, "is_active": "Yes"}, "name")
+		if ss:
+			doc = frappe.get_doc("Salary Structure", ss)
+			doc.flags.ignore_permissions = 1
+			doc.save()
 
 	def update_user_permissions(self):
 		if not self.create_user_permission:
@@ -302,10 +310,10 @@ def get_holiday_list_for_employee(employee, raise_exception=True):
 def is_holiday(employee, date=None, raise_exception=True, only_non_weekly=False, with_description=False):
 	"""
 	Returns True if given Employee has an holiday on the given date
-	        :param employee: Employee `name`
-	        :param date: Date to check. Will check for today if None
-	        :param raise_exception: Raise an exception if no holiday list found, default is True
-	        :param only_non_weekly: Check only non-weekly holidays, default is False
+			:param employee: Employee `name`
+			:param date: Date to check. Will check for today if None
+			:param raise_exception: Raise an exception if no holiday list found, default is True
+			:param only_non_weekly: Check only non-weekly holidays, default is False
 	"""
 
 	holiday_list = get_holiday_list_for_employee(employee, raise_exception)
