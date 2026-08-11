@@ -143,7 +143,7 @@ if (filters.budget_form == "Budget Form III") {
             <tr class="group-header">
                 <td>{%= current_budget_cost_center %}</td>
                 <td></td><td></td><td></td>
-                <td>{%= row.cost_center_name || (row.budget_cost_center ? row.budget_cost_center.replace(/^[\d.]+\s*(-\s*)?/, '').replace(/\s*-\s*.*$/, '') : "") %}</td>
+                <td>{%= row.cost_center_name || (row.budget_cost_center ? row.budget_cost_center.replace(/^\d+(\.\d+)?\s*-\s*/, "").replace(/\s*-\s*(RBA|RBG)\s*$/i, "").trim() : "")</td>
                 <td></td><td></td><td></td><td></td><td></td>
             </tr>
         {% } 
@@ -154,7 +154,7 @@ if (filters.budget_form == "Budget Form III") {
                 <td></td>
                 <td>{%= current_code %}</td>
                 <td></td><td></td>
-                <td>{%= row.budget_activity_name || (row.budget_activity ? row.budget_activity.replace(/^[\d.]+\s*(-\s*)?/, '').replace(/\s*-\s*.*$/, '') : "") %}</td>
+                <td>{%= row.budget_activity_name || (row.budget_activity ? row.budget_activity.replace(/^\d+(\.\d+)?\s*-\s*/, "").replace(/\s*-\s*(RBA|RBG)\s*$/i, "").trim() : "")</td>
                 <td></td><td></td><td></td><td></td><td></td>
             </tr>
         {% } 
@@ -165,7 +165,7 @@ if (filters.budget_form == "Budget Form III") {
                 <td></td>
                 <td>{%= current_budget_sub_activity %}</td>
                 <td></td><td></td>
-                <td>{%= row.budget_sub_activity_name || (row.budget_sub_activity ? row.budget_sub_activity.replace(/^[\d.]+\s*(-\s*)?/, '').replace(/\s*-\s*.*$/, '') : "") %}</td>
+                <td>{%= row.budget_sub_activity_name || (row.budget_sub_activity ? row.budget_sub_activity.replace(/^\d+(\.\d+)?\s*-\s*/, "").replace(/\s*-\s*(RBA|RBG)\s*$/i, "").trim() : "")</td>
                 <td></td><td></td><td></td><td></td><td></td>
             </tr>
         {% } 
