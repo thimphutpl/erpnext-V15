@@ -133,7 +133,7 @@ class StockEntry(StockController):
 		source_address_display: DF.SmallText | None
 		source_warehouse_address: DF.Link | None
 		status: DF.Data | None
-		stock_entry_purpose: DF.Literal["", "Lap Test", "Sample Compliment", "Defective Replacement"]
+		stock_entry_purpose: DF.Literal["", "Lap Test", "Sample Compliment", "Defective Replacement", "Write Off"]
 		stock_entry_type: DF.Link
 		subcontracting_order: DF.Link | None
 		supplier: DF.Link | None
@@ -195,6 +195,7 @@ class StockEntry(StockController):
 		self.validate_item()
 		self.validate_customer_provided_item()
 		self.validate_qty()
+		self.set_actual_qty()
 		self.set_transfer_qty()
 		self.validate_uom_is_integer("uom", "qty")
 		self.validate_uom_is_integer("stock_uom", "transfer_qty")

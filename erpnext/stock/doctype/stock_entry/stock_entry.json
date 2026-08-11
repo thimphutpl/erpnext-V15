@@ -776,7 +776,7 @@
    "no_copy": 1,
    "oldfieldname": "posting_date",
    "oldfieldtype": "Date",
-   "options": "\nLap Test\nSample Compliment\nDefective Replacement"
+   "options": "\nLap Test\nSample Compliment\nDefective Replacement\nWrite Off"
   },
   {
    "fieldname": "batch_number",
@@ -801,7 +801,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-05-27 12:37:47.795011",
+ "modified": "2026-08-11 11:32:13.792369",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Stock Entry",
