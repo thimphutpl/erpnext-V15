@@ -514,8 +514,11 @@ class CustomWorkflow:
 				)
 			self.set_approver("Supervisor")
 		elif self.new_state.lower() == ("Waiting for Finance Verification".lower()):
-			if "Accounts Manager" not in frappe.get_roles(frappe.session.user):
-				frappe.throw("Only users with Accounts Manager role can forward this Request.")				
+			#frappe.throw(self.doc.approver)
+			if frappe.session.user != self.doc.approver:
+				frappe.throw("Only approver can approved this Request.")
+			
+								
 		elif self.new_state.lower() == ("Approved".lower()):
 			if "Accounts Manager" not in frappe.get_roles(frappe.session.user):
 				frappe.throw("Only users with Accounts Manager role can forward this Request.")	
