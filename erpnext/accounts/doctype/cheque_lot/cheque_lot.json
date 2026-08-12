@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "CH.YY.MM.##",
+ "autoname": "CHQ.YY.MM.##",
  "creation": "2022-09-15 10:29:18.046631",
  "doctype": "DocType",
  "editable_grid": 1,
@@ -105,7 +105,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2022-09-22 01:47:12.735932",
+ "modified": "2026-08-12 13:06:17.114038",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Cheque Lot",

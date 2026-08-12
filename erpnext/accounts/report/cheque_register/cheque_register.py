@@ -45,7 +45,7 @@ def construct_query(filters=None):
 			je.pay_to_recd_from recipient, 
 			CASE je.docstatus WHEN 2 THEN 'CANCELLED' ELSE null END AS cheque_status 
 		FROM `tabJournal Entry` je 
-		WHERE je.naming_series IN ('Bank Payment Voucher') 
+		WHERE je.naming_series IN ('Bank Payment Voucher', 'Disbursement Voucher') 
 		AND IFNULL(je.cheque_no,'') != '' 
 		AND je.posting_date BETWEEN '{from_date}' AND '{to_date}' 
 		AND NOT EXISTS (SELECT 1 from `tabJournal Entry` je1 where je1.amended_from = je.name) 
