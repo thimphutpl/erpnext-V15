@@ -472,9 +472,9 @@ class BudgetRelease(Document):
 			total_actual += flt(item.budget_amount)
 			total_supplementary += flt(item.supplementary_budget)
 			released_budget += flt(item.released_budget)
-
-			if flt(item.released_budget, 0) > flt(item.approved_budget/ 12, 0) :
-				frappe.throw("Monthly released amount cannot be greater than approved budget by 12")
+			if item.monthly_release:
+				if flt(item.released_budget, 0) > flt(item.approved_budget/ 12, 0) :
+					frappe.throw("Monthly released amount cannot be greater than approved budget by 12")
 
 		last_release = frappe.db.sql("""
 			SELECT current_balance, budget_balance
