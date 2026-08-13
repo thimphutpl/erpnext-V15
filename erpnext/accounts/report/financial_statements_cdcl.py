@@ -327,9 +327,9 @@ def set_gl_entries_by_account(
 	if from_date and to_date:
 		if open_date:
 			# Use alias 'gl' for fields
-			additional_conditions.append(f" and gl.posting_date < '{open_date}' and gl.docstatus = 1 ")
+			additional_conditions.append(f" and gl.posting_date < '{open_date}' and gl.docstatus = 1 and gl.is_cancelled=0 ")
 		else:
-			additional_conditions.append(" and gl.posting_date BETWEEN %(from_date)s AND %(to_date)s and gl.docstatus = 1 ")
+			additional_conditions.append(" and gl.posting_date BETWEEN %(from_date)s AND %(to_date)s and gl.docstatus = 1 and gl.is_cancelled=0 ")
 
 	# Add project filter condition
 	if project:
