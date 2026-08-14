@@ -1261,7 +1261,7 @@ class JournalEntry(AccountsController):
 		currency = bank_account_currency = party_account_currency = pay_to_recd_from = None
 		party_type = None
 		for d in self.get("accounts"):
-			if d.party_type in ["Customer", "Supplier"] and d.party:
+			if d.party_type in ["Customer", "Supplier", "Employee"] and d.party:
 				party_type = d.party_type
 				if not pay_to_recd_from:
 					pay_to_recd_from = d.party
@@ -1274,10 +1274,24 @@ class JournalEntry(AccountsController):
 				bank_amount += flt(d.debit_in_account_currency) or flt(d.credit_in_account_currency)
 				bank_account_currency = d.account_currency
 
+		# if party_type and pay_to_recd_from:
+		# 	self.pay_to_recd_from = frappe.db.get_value(
+		# 		party_type, pay_to_recd_from, "customer_name" if party_type == "Customer" else "supplier_name"
+		# 	)
+
 		if party_type and pay_to_recd_from:
-			self.pay_to_recd_from = frappe.db.get_value(
-				party_type, pay_to_recd_from, "customer_name" if party_type == "Customer" else "supplier_name"
-			)
+			if party_type == "Customer":
+				self.pay_to_recd_from = frappe.db.get_value(
+					"Customer", pay_to_recd_from, "customer_name"
+				)
+			elif party_type == "Supplier":
+				self.pay_to_recd_from = frappe.db.get_value(
+					"Supplier", pay_to_recd_from, "supplier_name"
+				)
+			elif party_type == "Employee":
+				self.pay_to_recd_from = frappe.db.get_value(
+					"Employee", pay_to_recd_from, "employee_name"
+				)	
 			if bank_amount:
 				total_amount = bank_amount
 				currency = bank_account_currency
@@ -1419,7 +1433,8 @@ class JournalEntry(AccountsController):
 	def toggle_cheque_log(self):
 		mandatory = 0
 		cheque_required = frappe.db.get_value("Company", self.company, "cheque_required")
-		if cheque_required and self.voucher_type=="Bank Entry" or self.mode_of_payment == 'Cheque':
+		# if cheque_required and self.voucher_type=="Bank Entry" or self.mode_of_payment == 'Cheque':
+		if cheque_required and self.voucher_type=="Bank Entry":
 			mandatory = 1
 		return mandatory
 
@@ -2037,19 +2052,47 @@ def get_tds_account(tax_withholding_category):
 		where t.name = "{}" """.format(tax_withholding_category), as_dict=True)
 	return account[0] if account else None
 
-def get_permission_query_conditions(user):
-	if not user: user = frappe.session.user
-	user_roles = frappe.get_roles(user)
+# def get_permission_query_conditions(user):
+# 	if not user: user = frappe.session.user
+# 	user_roles = frappe.get_roles(user)
 
-	if user == "Administrator" or "System Manager" in user_roles or "Accounts Manager" in user_roles or "Accounts User" in user_roles or "Auditor" in user_roles: 
-		return
+# 	if user == "Administrator" or "System Manager" in user_roles or "Accounts Manager" in user_roles or "Accounts User" in user_roles or "Auditor" in user_roles: 
+# 		return
 
-	return """(
-		exists(select 1
-			from `tabEmployee` as e
-			where e.branch = `tabJournal Entry`.branch
-			and e.user_id = '{user}')
-	)""".format(user=user)
+# 	return """(
+# 		exists(select 1
+# 			from `tabEmployee` as e
+# 			where e.branch = `tabJournal Entry`.branch
+# 			and e.user_id = '{user}')
+# 	)""".format(user=user)
+
+	def get_permission_query_conditions(user=None):
+		if not user:
+			user = frappe.session.user
+
+		roles = frappe.get_roles(user)
+
+		if "System Manager" or "Administrator" in roles:
+			return ""
+
+		if "Accounts User" in roles:
+			return f"""
+				`tabJournal Entry`.owner = {frappe.db.escape(user)}
+				AND `tabJournal Entry`.workflow_state  IN('Draft','Waiting For Verification','Waiting Approval','Approved','Rejected')
+			"""
+
+		if "Accounts Verifier" in roles:
+			return f"""
+				`tabJournal Entry`.owner = {frappe.db.escape(user)}
+				AND `tabJournal Entry`.workflow_state  IN('Waiting For Verification','Waiting Approval','Approved','Rejected')
+			"""	
+
+		if "Accounts Manager" in roles:
+			return """
+				`tabJournal Entry`.workflow_state IN('Waiting Approval','Approved','Rejected')
+			"""
+
+		return "1=0"	
 
 # ePayment Begins
 @frappe.whitelist()
@@ -2108,5 +2151,34 @@ def account_bank(account):
 	return data
 @frappe.whitelist()
 def get_voucher_type(voucher_type):
-	
-	return frappe.db.get_value("Journal Entry Series", voucher_type, "entry_type")	
+    return frappe.db.get_value(
+        "Journal Entry Series",
+        {
+            "entry_type": voucher_type,
+            "enabled": 1
+        },
+        "prefix"
+    )	
+
+
+def get_permission_query_conditions(user=None):
+    if not user:
+        user = frappe.session.user
+
+    roles = frappe.get_roles(user)
+
+    if "System Manager" in roles:
+        return ""
+
+    if "Budget User" in roles:
+        return f"""
+            `tabBudget Proposal`.owner = {frappe.db.escape(user)}
+            AND `tabBudget Proposal`.workflow_state  IN('Draft','Waiting for MOF Finance Approval','Approved','Rejected')
+        """
+
+    if "Budget Approver" in roles:
+        return """
+            `tabBudget Proposal`.workflow_state IN('Waiting for MOF Finance Approval','Approved','Rejected')
+        """
+
+    return "1=0"	

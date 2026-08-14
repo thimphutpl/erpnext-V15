@@ -301,32 +301,32 @@ frappe.ui.form.on("Journal Entry", {
     //     });
     // },
 
-    voucher_type: function (frm) {
-        if (!frm.doc.company) return null;
-        if (!frm.doc.voucher_type) {
-            frm.set_value("naming_series", "");
-        };
-        frappe.call({
-            method: "erpnext.accounts.doctype.journal_entry.journal_entry.get_voucher_type",
-            args: {
-                "voucher_type": frm.doc.voucher_type
-            },
-            callback: function (r) {
-                if (r.message) {
+    // voucher_type: function (frm) {
+    //     if (!frm.doc.company) return null;
+    //     if (!frm.doc.voucher_type) {
+    //         frm.set_value("naming_series", "");
+    //     };
+    //     frappe.call({
+    //         method: "erpnext.accounts.doctype.journal_entry.journal_entry.get_voucher_type",
+    //         args: {
+    //             "voucher_type": frm.doc.voucher_type
+    //         },
+    //         callback: function (r) {
+    //             if (r.message) {
 
 
-                    frm.set_value("naming_series", r.message);
+    //                 frm.set_value("naming_series", r.message);
 
-                } else {
-                    frm.set_value("naming_series", "");
-                }
-
-
-            }
-        })
+    //             } else {
+    //                 frm.set_value("naming_series", "");
+    //             }
 
 
-    },
+    //         }
+    //     })
+
+
+    // },
     from_template: function (frm) {
         if (frm.doc.from_template) {
             frappe.db.get_doc("Journal Entry Template", frm.doc.from_template).then((doc) => {
