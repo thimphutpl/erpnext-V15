@@ -2161,24 +2161,24 @@ def get_voucher_type(voucher_type):
     )	
 
 
-def get_permission_query_conditions(user=None):
-    if not user:
-        user = frappe.session.user
+# def get_permission_query_conditions(user=None):
+#     if not user:
+#         user = frappe.session.user
 
-    roles = frappe.get_roles(user)
+#     roles = frappe.get_roles(user)
 
-    if "System Manager" in roles:
-        return ""
+#     if "System Manager" in roles:
+#         return ""
 
-    if "Accounts User" in roles:
-        return f"""
-            `tabBudget Proposal`.owner = {frappe.db.escape(user)}
-            AND `tabBudget Proposal`.workflow_state  IN('Draft','Waiting for MOF Finance Approval','Approved','Rejected')
-        """
+#     if "Accounts User" in roles:
+#         return f"""
+#             `tabJournal Entry`.owner = {frappe.db.escape(user)}
+#             AND `tabJournal Entry`.workflow_state  IN('Draft','Waiting for MOF Finance Approval','Approved','Rejected')
+#         """
 
-    if "Accounts Manager" in roles:
-        return """
-            `tabBudget Proposal`.workflow_state IN('Waiting for MOF Finance Approval','Approved','Rejected')
-        """
+#     if "Accounts Manager" in roles:
+#         return """
+#             `tabBudget Proposal`.workflow_state IN('Waiting for MOF Finance Approval','Approved','Rejected')
+#         """
 
-    return "1=0"	
+#     return "1=0"	
