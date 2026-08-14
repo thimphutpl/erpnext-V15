@@ -576,7 +576,7 @@ has_permission = {
 	"Salary Structure": "hrms.payroll.doctype.salary_structure.salary_structure.has_record_permission",
 	"Salary Slip": "hrms.payroll.doctype.salary_slip.salary_slip.has_record_permission",
 	"Employee Promotion": "hrms.hr.doctype.employee_promotion.employee_promotion.has_record_permission",
-	"Increment Entry": "hrms.hr.doctype.increment_entry.increment_entry.has_record_permission",
+	"Increment Entry": "hrms.payroll.doctype.increment_entry.increment_entry.has_record_permission",
 
 }
 
@@ -602,7 +602,7 @@ permission_query_conditions = {
 	"Employee": "erpnext.setup.doctype.employee.employee.get_permission_query_conditions",
 	"Semso Entry": "hrms.hr.doctype.semso_entry.semso_entry.get_permission_query_conditions",
 	"Employee Promotion": "hrms.hr.doctype.employee_promotion.employee_promotion.get_permission_query_conditions",
-	"Increment Entry": "hrms.hr.doctype.increment_entry.increment_entry.get_permission_query_conditions",
+	"Increment Entry": "hrms.payroll.doctype.increment_entry.increment_entry.get_permission_query_conditions",
     "Salary Structure": "hrms.payroll.doctype.salary_structure.salary_structure.get_permission_query_conditions",
 	"Salary Slip": "hrms.payroll.doctype.salary_slip.salary_slip.get_permission_query_conditions",
 	# "Leave Application": "hrms.hr.doctype.leave_application.leave_application.get_permission_query_conditions",
