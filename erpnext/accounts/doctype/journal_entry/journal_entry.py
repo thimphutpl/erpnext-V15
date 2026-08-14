@@ -2170,13 +2170,13 @@ def get_permission_query_conditions(user=None):
     if "System Manager" in roles:
         return ""
 
-    if "Budget User" in roles:
+    if "Accounts User" in roles:
         return f"""
             `tabBudget Proposal`.owner = {frappe.db.escape(user)}
             AND `tabBudget Proposal`.workflow_state  IN('Draft','Waiting for MOF Finance Approval','Approved','Rejected')
         """
 
-    if "Budget Approver" in roles:
+    if "Accounts Manager" in roles:
         return """
             `tabBudget Proposal`.workflow_state IN('Waiting for MOF Finance Approval','Approved','Rejected')
         """
