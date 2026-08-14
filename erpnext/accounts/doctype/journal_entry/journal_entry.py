@@ -2066,33 +2066,33 @@ def get_tds_account(tax_withholding_category):
 # 			and e.user_id = '{user}')
 # 	)""".format(user=user)
 
-	def get_permission_query_conditions(user=None):
-		if not user:
-			user = frappe.session.user
+def get_permission_query_conditions(user=None):
+	if not user:
+		user = frappe.session.user
 
-		roles = frappe.get_roles(user)
+	roles = frappe.get_roles(user)
 
-		if "System Manager" or "Administrator" in roles:
-			return ""
+	if "System Manager" or "Administrator" in roles:
+		return ""
 
-		if "Accounts User" in roles:
-			return f"""
-				`tabJournal Entry`.owner = {frappe.db.escape(user)}
-				AND `tabJournal Entry`.workflow_state  IN('Draft','Waiting For Verification','Waiting Approval','Approved','Rejected')
-			"""
+	if "Accounts User" in roles:
+		return f"""
+			`tabJournal Entry`.owner = {frappe.db.escape(user)}
+			AND `tabJournal Entry`.workflow_state  IN('Draft','Waiting For Verification','Waiting Approval')
+		"""
 
-		if "Accounts Verifier" in roles:
-			return f"""
-				`tabJournal Entry`.owner = {frappe.db.escape(user)}
-				AND `tabJournal Entry`.workflow_state  IN('Waiting For Verification','Waiting Approval','Approved','Rejected')
-			"""	
+	if "Accounts Verifier" in roles:
+		return f"""
+			`tabJournal Entry`.owner = {frappe.db.escape(user)}
+			AND `tabJournal Entry`.workflow_state  IN('Waiting For Verification','Waiting Approval','Approved','Rejected')
+		"""	
 
-		if "Accounts Manager" in roles:
-			return """
-				`tabJournal Entry`.workflow_state IN('Waiting Approval','Approved','Rejected')
-			"""
+	if "Accounts Manager" in roles:
+		return """
+			`tabJournal Entry`.workflow_state IN('Waiting Approval','Approved','Rejected')
+		"""
 
-		return "1=0"	
+	return "1=0"	
 
 # ePayment Begins
 @frappe.whitelist()
@@ -2159,26 +2159,3 @@ def get_voucher_type(voucher_type):
         },
         "prefix"
     )	
-
-
-# def get_permission_query_conditions(user=None):
-#     if not user:
-#         user = frappe.session.user
-
-#     roles = frappe.get_roles(user)
-
-#     if "System Manager" in roles:
-#         return ""
-
-#     if "Accounts User" in roles:
-#         return f"""
-#             `tabJournal Entry`.owner = {frappe.db.escape(user)}
-#             AND `tabJournal Entry`.workflow_state  IN('Draft','Waiting for MOF Finance Approval','Approved','Rejected')
-#         """
-
-#     if "Accounts Manager" in roles:
-#         return """
-#             `tabBudget Proposal`.workflow_state IN('Waiting for MOF Finance Approval','Approved','Rejected')
-#         """
-
-#     return "1=0"	
