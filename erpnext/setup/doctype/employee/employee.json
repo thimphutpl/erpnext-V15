@@ -59,6 +59,7 @@
   "salary_mode",
   "salary_cb",
   "payroll_cost_center",
+  "ignore_from_payroll_entry",
   "column_break_xjso",
   "bank_details_section",
   "bank_name",
@@ -1158,6 +1159,12 @@
   {
    "fieldname": "salary_cb",
    "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "ignore_from_payroll_entry",
+   "fieldtype": "Check",
+   "label": "Ignore From Payroll Entry"
   }
  ],
  "icon": "fa fa-user",
@@ -1165,7 +1172,7 @@
  "image_field": "image",
  "is_tree": 1,
  "links": [],
- "modified": "2026-08-07 09:41:04.262409",
+ "modified": "2026-08-14 09:03:33.577450",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee",
