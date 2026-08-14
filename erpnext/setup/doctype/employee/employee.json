@@ -259,10 +259,10 @@
    "fieldname": "status",
    "fieldtype": "Select",
    "label": "Status",
+   "mandatory_depends_on": "eval:!doc.ignore_from_payroll_entry",
    "oldfieldname": "status",
    "oldfieldtype": "Select",
    "options": "Active\nInactive\nSuspended\nLeft\nDeceased",
-   "reqd": 1,
    "search_index": 1
   },
   {
@@ -284,9 +284,9 @@
    "fieldname": "date_of_joining",
    "fieldtype": "Date",
    "label": "Date of Joining",
+   "mandatory_depends_on": "eval:!doc.ignore_from_payroll_entry",
    "oldfieldname": "date_of_joining",
-   "oldfieldtype": "Date",
-   "reqd": 1
+   "oldfieldtype": "Date"
   },
   {
    "allow_in_quick_entry": 1,
@@ -424,6 +424,7 @@
    "fieldname": "branch",
    "fieldtype": "Link",
    "label": "Location/Branch",
+   "mandatory_depends_on": "eval:!doc.ignore_from_payroll_entry",
    "oldfieldname": "branch",
    "oldfieldtype": "Link",
    "options": "Branch"
@@ -907,8 +908,8 @@
    "fieldname": "employee_group",
    "fieldtype": "Link",
    "label": "Employee Group",
-   "options": "Employee Group",
-   "reqd": 1
+   "mandatory_depends_on": "eval:!doc.ignore_from_payroll_entry",
+   "options": "Employee Group"
   },
   {
    "depends_on": "eval:doc.employment_status == \"Probation\";",
@@ -1172,7 +1173,7 @@
  "image_field": "image",
  "is_tree": 1,
  "links": [],
- "modified": "2026-08-14 09:03:33.577450",
+ "modified": "2026-08-14 09:20:38.886512",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee",
