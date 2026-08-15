@@ -221,8 +221,9 @@
   },
   {
    "fieldname": "journal_entry",
-   "fieldtype": "Data",
+   "fieldtype": "Link",
    "label": "Journal Entry",
+   "options": "Journal Entry",
    "read_only": 1
   },
   {
@@ -358,7 +359,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-07-31 11:12:46.016135",
+ "modified": "2026-08-15 15:38:11.584228",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Advance",

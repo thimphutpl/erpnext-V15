@@ -333,6 +333,7 @@ class JournalEntry(AccountsController):
 		self.update_booked_depreciation(1)
 		self.update_reference_document(cancel=True)
 		self.unlink_bank_payment()
+		self.unlink_advance()
 		check_clearance_date(self.doctype, self.name)
 		self.update_project_advance(cancel=self.docstatus == 2)
 		self.link_je_to_imprest(cancel=self.docstatus == 2)
@@ -688,8 +689,21 @@ class JournalEntry(AccountsController):
 				# frappe.throw(str("hi"))
 				bp.flags.ignore_linked_doctypes = True
 				bp.cancel()
-				# frappe.db.set_value("Journal Entry", self.name, "inter_company_journal_entry_reference", "")
-
+			# frappe.db.set_value("Journal Entry", self.name, "inter_company_journal_entry_reference", "")
+	def unlink_advance(self):
+		frappe.db.set_value(
+			"Journal Entry",
+			self.name,
+			"workflow_state",
+			"Cancelled",
+			update_modified=False,
+		)
+		frappe.db.sql(
+			""" update `tabAdvance`
+			set journal_entry = null where journal_entry = %s""",
+			self.name,
+		)
+	
 	def unlink_asset_adjustment_entry(self):
 		frappe.db.sql(
 			""" update `tabAsset Value Adjustment`

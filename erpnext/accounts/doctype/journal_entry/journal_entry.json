@@ -57,6 +57,8 @@
   "bill_no",
   "bill_date",
   "due_date",
+  "reference_doctype",
+  "reference_link",
   "write_off",
   "write_off_based_on",
   "get_outstanding_invoices",
@@ -696,6 +698,18 @@
    "fieldtype": "Link",
    "label": "Workflow State",
    "options": "Workflow State"
+  },
+  {
+   "fieldname": "reference_doctype",
+   "fieldtype": "Link",
+   "label": "Reference Doctype",
+   "options": "DocType"
+  },
+  {
+   "fieldname": "reference_link",
+   "fieldtype": "Dynamic Link",
+   "label": "Reference",
+   "options": "reference_doctype"
   }
  ],
  "icon": "fa fa-file-text",
@@ -710,7 +724,7 @@
    "table_fieldname": "payment_entries"
   }
  ],
- "modified": "2026-07-10 17:45:07.486005",
+ "modified": "2026-08-15 15:06:01.172547",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Journal Entry",

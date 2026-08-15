@@ -32,7 +32,7 @@ class Advance(Document):
 		is_opening: DF.Check
 		item_code: DF.Data | None
 		item_name: DF.Data | None
-		journal_entry: DF.Data | None
+		journal_entry: DF.Link | None
 		opening_balance: DF.Currency
 		party_type: DF.Literal["", "Supplier", "Employee", "Customer"]
 		posting_date: DF.Date | None
@@ -90,18 +90,45 @@ class Advance(Document):
 		self.update_general_ledger()
 		self.post_journal_entry()
 		self.make_mobilisation_entry()
+
+	def cancel(self):
+		self.ignore_linked_doctypes = (
+			"Journal Entry",
+			"GL Entry",
+			"Payment Ledger Entry",
+		)
+
+		return super().cancel()
+
+
 	def on_cancel(self):
-		self.cancel_general_ledger()
+		self.cancel_linked_advance_entry()
 	
-	def cancel_general_ledger(self):
 	
-		frappe.db.sql("""
-			UPDATE `tabGL Entry`
-			SET is_cancelled = 1
-			WHERE voucher_type = 'Advance'
-			AND voucher_no = %s
-			AND is_cancelled = 0
-		""", (self.name,))
+	
+
+	def cancel_linked_advance_entry(self):
+		advance_entries = frappe.get_all(
+			"Advance Entry",
+			filters={
+				"advance": self.name,
+				"docstatus": 1
+			},
+			pluck="name"
+		)
+
+		for advance_entry in advance_entries:
+			doc = frappe.get_doc("Mobilisation Entry Item", advance_entry)
+			doc.cancel()
+
+
+	# def cancel_general_ledger(self):
+	# 	frappe.db.sql("""
+	# 		UPDATE `tabGL Entry`
+	# 		SET is_cancelled = 1
+	# 		where voucher_no = %s
+	# 		AND is_cancelled = 0
+	# 	""", (self.name,))
 
 		frappe.db.commit()
 	def calcalute_tds(self):
@@ -164,8 +191,8 @@ class Advance(Document):
 		if not credit_account:
 			frappe.throw("Setup Default Bank Account in Company Settings")
 		
-		voucher_type = "Journal Entry"
-		voucher_series = "Journal Voucher"
+		voucher_type = ""
+		voucher_series = ""
 		party_type = ""
 		party = ""
 
@@ -174,9 +201,17 @@ class Advance(Document):
 		credit_account_type = frappe.db.get_value("Account", credit_account, "account_type")
 
 
-		if credit_account_type == "Bank":
+		if self.is_opening:
+			voucher_type = "Opening Entry"
+			voucher_series = "Opening Entry"
+		else:
 			voucher_type = "Bank Entry"
 			voucher_series = "Bank Payment Voucher"
+		naming_series = frappe.db.get_value(
+			"Journal Entry Series",
+			voucher_series,
+			"name"
+		)
 
 		if debit_account_type in ("Payable", "Receivable"):
 			party_type = self.party_type
@@ -191,13 +226,15 @@ class Advance(Document):
 		remarkss = "".join(remarks)
 		je = frappe.new_doc("Journal Entry")
 		je.voucher_type = voucher_type
-		je.naming_series = voucher_series
+		je.naming_series = naming_series
 		je.title = "Advance - " + self.name
-		je.user_remark = remarkss if remarkss else "Note: " + "Advance - " + self.name
+		je.remark = remarkss if remarkss else "Note: " + "Advance - " + self.name
 		je.posting_date = self.posting_date
 		je.company = self.company
 		je.total_amount_in_words = money_in_words(self.total_amount)
 		je.branch = self.branch
+		je.reference_doctype= self.doctype
+		je.reference_link = self.name
 		if flt(self.total_amount) > 0:
 			je.append("accounts", {
 				"account": debit_account,
