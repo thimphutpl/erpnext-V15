@@ -226,7 +226,10 @@ def get_conditions(filters):
 		filters.cost_center = get_cost_centers_with_children(filters.cost_center)
 		if filters.get("show_overhead_cost"):
 			# Show entries for selected cost centers WITHOUT projects
-			conditions.append("cost_center in %(cost_center)s AND project IS NULL")
+			# conditions.append("cost_center in %(cost_center)s AND project IS NULL")
+			conditions.append(
+				"cost_center in %(cost_center)s AND IFNULL(project, '') = ''"
+			)
 		else:
 			# Original logic (all entries for cost centers)
 			conditions.append("cost_center in %(cost_center)s")
