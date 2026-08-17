@@ -43,6 +43,9 @@ frappe.ui.form.on("Advance Settlement", {
                             let row = frm.add_child('advance_list');
                             row.reference = advance.reference;
                             row.account = advance.account;
+                            row.budget_activity = advance.budget_activity;
+                            row.budget_sub_activity = advance.budget_sub_activity;
+                            row.source_of_fund = advance.source_of_fund;
                             row.advance_type = advance.advance_type;
                             row.advance_amount = advance.advance_amount;
                             row.total_amount = advance.total_amount;

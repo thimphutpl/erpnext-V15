@@ -59,7 +59,7 @@ def get_advance(customer,branch=None):
         children = frappe.get_all(
             "Mobilisation Entry Item",
             filters={"parent": entry.name},
-            fields=["reference","advance_type","account","advance_amount","total_amount","balance_amount"]
+            fields=["reference","advance_type","account","advance_amount","total_amount","balance_amount","budget_activity","budget_sub_activity","source_of_fund"],
         )
         for child in children:
             if flt(child.balance_amount) > 0:
@@ -70,6 +70,9 @@ def get_advance(customer,branch=None):
                     "reference": child.reference,
                     "advance_type": child.advance_type,
                     "account": child.account,
+                    "budget_activity": child.budget_activity,
+                    "budget_sub_activity": child.budget_sub_activity,
+                    "source_of_fund": child.source_of_fund,
                     "total_amount": child.balance_amount,
                     "advance_amount": child.advance_amount,
                     "balance_amount": child.balance_amount

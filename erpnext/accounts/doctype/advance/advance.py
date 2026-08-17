@@ -13,15 +13,13 @@ class Advance(Document):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
+		from erpnext.accounts.doctype.advance_item.advance_item import AdvanceItem
 		from frappe.types import DF
 
+		advance_details: DF.Table[AdvanceItem]
 		advance_type: DF.Link
 		amended_from: DF.Link | None
-		apply_retention: DF.Check
-		apply_tds: DF.Check
 		branch: DF.Link
-		budget_activity: DF.Link
-		budget_sub_activity: DF.Link
 		company: DF.Link
 		cost_center: DF.Link | None
 		customer: DF.DynamicLink | None
@@ -30,22 +28,10 @@ class Advance(Document):
 		employee_name: DF.Data | None
 		fiscal_year: DF.Link | None
 		is_opening: DF.Check
-		item_code: DF.Data | None
-		item_name: DF.Data | None
 		journal_entry: DF.Link | None
-		opening_balance: DF.Currency
 		party_type: DF.Literal["", "Supplier", "Employee", "Customer"]
 		posting_date: DF.Date | None
 		remarks: DF.SmallText | None
-		retention: DF.Link | None
-		retention_account: DF.Data | None
-		retention_amount: DF.Currency
-		retention_rate: DF.Float
-		source_of_fund: DF.Link
-		tds: DF.Link | None
-		tds_account: DF.Data | None
-		tds_amount: DF.Currency
-		tds_rate: DF.Float
 		total_amount: DF.Currency
 	# end: auto-generated types
 
@@ -79,8 +65,8 @@ class Advance(Document):
 		remarks: DF.SmallText | None
 		source_of_fund: DF.Link
 	def validate(self):
-		self.calcalute_tds()
-		self.calculate_retention()
+		# self.calcalute_tds()
+		# self.calculate_retention()
 		self.calculate_total_amount()
 
 
@@ -103,9 +89,9 @@ class Advance(Document):
 
 	def on_cancel(self):
 		self.cancel_linked_advance_entry()
-	
-	
-	
+
+
+
 
 	def cancel_linked_advance_entry(self):
 		advance_entries = frappe.get_all(
@@ -131,24 +117,17 @@ class Advance(Document):
 	# 	""", (self.name,))
 
 		frappe.db.commit()
-	def calcalute_tds(self):
-		if self.apply_tds and self.tds:
-			self.tds_amount = flt(self.opening_balance) * flt(self.tds_rate)/100
-		else:
-			self.tds_amount = 0
-		
-	def calculate_retention(self):
-		if self.apply_retention and self.retention:
-			self.retention_amount = flt(self.opening_balance) * flt(self.retention_rate)/100
-		else:
-			self.retention_amount = 0
+
 
 	def calculate_total_amount(self):
-		self.total_amount = (
-			flt(self.opening_balance)
-			- flt(self.tds_amount)
-			- flt(self.retention_amount)
-		)
+		total_amount = 0
+
+		for item in self.advance_details:
+			total_amount += item.opening_balance or 0
+
+		self.total_amount = total_amount
+
+	
 	def update_general_ledger(self):
 		gl_entries = []
 
@@ -161,36 +140,62 @@ class Advance(Document):
 
 		gl_entries.append(
 			prepare_gl(self, {
-				"account": credit_account,
-				"credit": flt(self.opening_balance),
-				"credit_in_account_currency": flt(self.opening_balance),
-				"cost_center": self.cost_center,
-		
-			})
-		)
-	
-		gl_entries.append(
-			prepare_gl(self, {
 				"account": debit_account,
-				"debit": flt(self.opening_balance),
-				"debit_in_account_currency": flt(self.opening_balance),
+				"debit": flt(self.total_amount),
+				"debit_in_account_currency": flt(self.total_amount),
 				"cost_center": self.cost_center,
-			
+
 			})
 		)
+		for item in self.advance_details:
+			amount = flt(item.total_amount)
+			tds_amount = flt(item.tds_amount)
+			retention_amount = flt(item.retention_amount)
+   
+			gl_entries.append(
+				prepare_gl(self, {
+					"account": credit_account,
+					"credit": flt(amount),
+					"credit_in_account_currency": flt(amount),
+					"cost_center": self.cost_center,
+
+				})
+			)
+			if tds_amount and item.tds_account:
+					gl_entries.append(
+						prepare_gl(self, {
+							"account": item.tds_account,
+							"credit": tds_amount,
+							"credit_in_account_currency": tds_amount,
+							"cost_center": self.cost_center,
+						})
+					)
+
+				# Retention
+			if retention_amount and item.retention_account:
+				gl_entries.append(
+					prepare_gl(self, {
+						"account": item.retention_account,
+						"credit": retention_amount,
+						"credit_in_account_currency": retention_amount,
+						"cost_center": self.cost_center,
+					})
+				)
+   
+
 		if gl_entries:
 			from erpnext.accounts.general_ledger import make_gl_entries
 			make_gl_entries(gl_entries, cancel=(self.docstatus == 2), merge_entries=False)
-			
+
 	def post_journal_entry(self):
 		debit_account = frappe.db.get_value("Advance Type", self.advance_type, "advance_account")
 		credit_account = frappe.db.get_value("Company", self.company, "default_bank_account")
 		if not debit_account:
 			frappe.throw("Setup Default Advance Account in Advance Type <b>{}</b>".format(self.advance_type))
-		
+
 		if not credit_account:
 			frappe.throw("Setup Default Bank Account in Company Settings")
-		
+
 		voucher_type = ""
 		voucher_series = ""
 		party_type = ""
@@ -236,54 +241,66 @@ class Advance(Document):
 		je.reference_doctype= self.doctype
 		je.reference_link = self.name
 		if flt(self.total_amount) > 0:
+	  
 			je.append("accounts", {
 				"account": debit_account,
 				"reference_type": "Advance",
 				"reference_name": self.name,
 				"cost_center": self.cost_center,
-				"debit_in_account_currency": flt(self.opening_balance),
-				"debit": flt(self.opening_balance),
+				"debit_in_account_currency": flt(self.total_amount),
+				"debit": flt(self.total_amount),
 				"party_type": party_type,
 				"party": party,
-				"budget_activity": self.budget_activity,
-				"budget_sub_activity": self.budget_sub_activity,
-				"source_of_fund": self.source_of_fund
+				# "budget_activity": self.budget_activity,
+				# "budget_sub_activity": self.budget_sub_activity,
+				# "source_of_fund": self.source_of_fund
 			})
-			je.append("accounts", {
-				"account": credit_account,
-				"reference_type": "Advance",
-				"reference_name": self.name,
-				"cost_center": self.cost_center,
-				"credit_in_account_currency": flt(self.total_amount),
-				"credit": flt(self.total_amount)
-			})
-			if self.tds_amount > 0 and  self.tds_account:
-				je.append("accounts", {
-				"account": self.tds_account,
-				"reference_type": "Advance",
-				"reference_name": self.name,
-				"cost_center": self.cost_center,
-				"credit_in_account_currency": flt(self.tds_amount),
-				"credit": flt(self.tds_amount),
-				"party_type": party_type,
-				"party": party,
-			})
-			if self.retention_amount > 0:
-				je.append("accounts", {
-				"account": self.retention_account,
-				"reference_type": "Advance",
-				"reference_name": self.name,
-				"cost_center": self.cost_center,
-				"credit_in_account_currency": flt(self.retention_amount),
-				"credit": flt(self.retention_amount),
-				"party_type": party_type,
-				"party": party,
-			})
+		for item in self.advance_details:
+			amount = flt(item.total_amount)
+			tds_amount = flt(item.tds_amount)
+			retention_amount = flt(item.retention_amount)
 
-			
-			
-			
-		je.insert()		
+			# NET BANK AMOUNT
+			if amount:
+				je.append("accounts", {
+					"account": credit_account,
+					"reference_type": "Advance",
+					"reference_name": self.name,
+					"cost_center": self.cost_center,
+					"credit_in_account_currency": amount,
+					"credit": amount
+				})
+
+			# TDS
+			if tds_amount > 0 and item.tds_account:
+				je.append("accounts", {
+					"account": item.tds_account,
+					"reference_type": "Advance",
+					"reference_name": self.name,
+					"cost_center": self.cost_center,
+					"credit_in_account_currency": tds_amount,
+					"credit": tds_amount,
+					"party_type": party_type,
+					"party": party,
+				})
+
+			# RETENTION
+			if retention_amount > 0 and item.retention_account:
+				je.append("accounts", {
+					"account": item.retention_account,
+					"reference_type": "Advance",
+					"reference_name": self.name,
+					"cost_center": self.cost_center,
+					"credit_in_account_currency": retention_amount,
+					"credit": retention_amount,
+					"party_type": party_type,
+					"party": party,
+				})
+
+
+
+	
+		je.insert()
 		self.db_set("journal_entry", je.name)
 		frappe.msgprint("Journal Entry created. {}".format(frappe.get_desk_link("Journal Entry", je.name)))
 
@@ -308,14 +325,26 @@ class Advance(Document):
 		con.is_running_bill = 0
 		con.is_opening=self.is_opening
 		con.advance = self.name
-		con.append("mobilisation_entry", {
-			"reference":self.name,
-			"advance_type":self.advance_type,
-			"total_amount": self.total_amount,
-			"account": account,
-			"advance_amount": self.total_amount,
-			"balance_amount": self.total_amount
-		})
+  
+		for item in self.advance_details:
+			net_amount = (
+				(item.total_amount or 0)
+			)
+			budget_activity = item.budget_activity
+			budget_sub_activity = item.budget_sub_activity
+			source_of_fund = item.source_of_fund
+   
+			con.append("mobilisation_entry", {
+				"reference":self.name,
+				"advance_type":self.advance_type,
+				"total_amount": net_amount,
+				"budget_activity": budget_activity,
+				"budget_sub_activity":budget_sub_activity,
+				"source_of_fund":source_of_fund,   
+				"account": account,
+				"advance_amount": net_amount,
+				"balance_amount": net_amount
+			})
 		con.insert(ignore_permissions=True)
 		con.submit()
 
@@ -323,20 +352,20 @@ class Advance(Document):
 @frappe.whitelist()
 def tax_account(name,company):
 	doc = frappe.db.sql("""
-		SELECT 
+		SELECT
 			twr.tax_withholding_rate,
-			twa.account 
+			twa.account
 		FROM `tabTax Withholding Category` AS twc
 		INNER JOIN `tabTax Withholding Rate` AS twr
 			ON twc.name = twr.parent
 		INNER JOIN `tabTax Withholding Account` AS twa
 			ON twc.name = twa.parent
-		WHERE 
+		WHERE
 			twc.name = %s
-		AND 
+		AND
 			twa.company = %s
 	""", (name,company), as_dict=True)
-	
+
 	return doc[0] if doc else None
 
 
@@ -344,7 +373,7 @@ def get_permission_query_conditions(user):
 	if not user: user = frappe.session.user
 	user_roles = frappe.get_roles(user)
 
-	if user == "Administrator" or "System Manager" in user_roles or "Accounts User" in user_roles or "Accounts Manager" in user_roles: 
+	if user == "Administrator" or "System Manager" in user_roles or "Accounts User" in user_roles or "Accounts Manager" in user_roles:
 		return
 
 	return """(

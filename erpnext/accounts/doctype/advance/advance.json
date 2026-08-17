@@ -25,33 +25,12 @@
   "column_break_zczp",
   "cost_center",
   "section_break_esne",
-  "budget_activity",
-  "budget_sub_activity",
-  "source_of_fund",
   "amended_from",
   "column_break_ouro",
-  "item_code",
-  "item_name",
   "section_break_vfwg",
   "is_opening",
-  "section_break_oouh",
-  "opening_balance",
-  "section_break_exvg",
-  "apply_tds",
-  "section_break_ogrh",
-  "tds",
-  "tds_account",
-  "column_break_yfoj",
-  "tds_rate",
-  "tds_amount",
-  "section_break_yker",
-  "apply_retention",
-  "section_break_qnnp",
-  "retention",
-  "retention_account",
-  "column_break_tzva",
-  "retention_rate",
-  "retention_amount",
+  "section_break_vxdw",
+  "advance_details",
   "section_break_wcbi",
   "total_amount",
   "section_break_uujo",
@@ -83,27 +62,6 @@
   {
    "fieldname": "section_break_esne",
    "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "budget_activity",
-   "fieldtype": "Link",
-   "label": "Budget Activity",
-   "options": "Budget Activity",
-   "reqd": 1
-  },
-  {
-   "fieldname": "budget_sub_activity",
-   "fieldtype": "Link",
-   "label": "Budget Sub Activity",
-   "options": "Budget Sub Activity",
-   "reqd": 1
-  },
-  {
-   "fieldname": "source_of_fund",
-   "fieldtype": "Link",
-   "label": "Source of Fund",
-   "options": "Source of Fund",
-   "reqd": 1
   },
   {
    "fieldname": "amended_from",
@@ -157,28 +115,8 @@
    "options": "Cost Center"
   },
   {
-   "fieldname": "opening_balance",
-   "fieldtype": "Currency",
-   "label": "Advance Amount",
-   "reqd": 1
-  },
-  {
    "fieldname": "column_break_ouro",
    "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "item_code",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Particular"
-  },
-  {
-   "fetch_from": "item_code.item_name",
-   "fieldname": "item_name",
-   "fieldtype": "Data",
-   "hidden": 1,
-   "in_list_view": 1,
-   "label": "Item Name"
   },
   {
    "depends_on": "eval:doc.party_type==\"Customer\"",
@@ -227,91 +165,6 @@
    "read_only": 1
   },
   {
-   "fieldname": "section_break_oouh",
-   "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "section_break_qnnp",
-   "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "section_break_yker",
-   "fieldtype": "Section Break"
-  },
-  {
-   "default": "0",
-   "fieldname": "apply_retention",
-   "fieldtype": "Check",
-   "label": "Apply Retention"
-  },
-  {
-   "fieldname": "column_break_tzva",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "retention_amount",
-   "fieldtype": "Currency",
-   "label": "Retention Amount",
-   "precision": "2",
-   "read_only": 1
-  },
-  {
-   "fieldname": "section_break_exvg",
-   "fieldtype": "Section Break"
-  },
-  {
-   "default": "0",
-   "fieldname": "apply_tds",
-   "fieldtype": "Check",
-   "label": "Apply TDS"
-  },
-  {
-   "fieldname": "section_break_ogrh",
-   "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "tds_account",
-   "fieldtype": "Data",
-   "label": "TDS Account",
-   "read_only": 1
-  },
-  {
-   "fieldname": "column_break_yfoj",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "tds_amount",
-   "fieldtype": "Currency",
-   "label": "TDS Amount",
-   "precision": "2",
-   "read_only": 1
-  },
-  {
-   "fieldname": "tds",
-   "fieldtype": "Link",
-   "label": "TDS",
-   "options": "Tax Withholding Category"
-  },
-  {
-   "fieldname": "tds_rate",
-   "fieldtype": "Float",
-   "label": "TDS Rate",
-   "read_only": 1
-  },
-  {
-   "fieldname": "retention",
-   "fieldtype": "Link",
-   "label": "Retention",
-   "options": "Retention Advance"
-  },
-  {
-   "fetch_from": "retention.rate",
-   "fieldname": "retention_rate",
-   "fieldtype": "Float",
-   "label": "Retention Rate",
-   "read_only": 1
-  },
-  {
    "fieldname": "section_break_wcbi",
    "fieldtype": "Section Break"
   },
@@ -320,13 +173,6 @@
    "fieldtype": "Currency",
    "label": "Total Amount",
    "precision": "2",
-   "read_only": 1
-  },
-  {
-   "fetch_from": "retention.retention_account",
-   "fieldname": "retention_account",
-   "fieldtype": "Data",
-   "label": "Retention Account",
    "read_only": 1
   },
   {
@@ -354,12 +200,22 @@
    "fieldname": "is_opening",
    "fieldtype": "Check",
    "label": "Is Opening"
+  },
+  {
+   "fieldname": "section_break_vxdw",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "advance_details",
+   "fieldtype": "Table",
+   "label": "Advance Details",
+   "options": "Advance Item"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-08-15 15:38:11.584228",
+ "modified": "2026-08-17 12:06:22.332811",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Advance",

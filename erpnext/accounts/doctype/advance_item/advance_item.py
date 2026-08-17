@@ -5,7 +5,7 @@
 from frappe.model.document import Document
 
 
-class MobilisationAdvanceItem(Document):
+class AdvanceItem(Document):
 	# begin: auto-generated types
 	# This code is auto-generated. Do not modify anything in this block.
 
@@ -14,18 +14,24 @@ class MobilisationAdvanceItem(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
-		account: DF.Link | None
-		advance_amount: DF.Currency
-		advance_type: DF.Data | None
-		allocated_amount: DF.Currency
-		balance_amount: DF.Currency
-		budget_activity: DF.Link | None
-		budget_sub_activity: DF.Link | None
+		apply_retention: DF.Check
+		apply_tds: DF.Check
+		budget_activity: DF.Link
+		budget_sub_activity: DF.Link
+		opening_balance: DF.Currency
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
-		reference: DF.Link | None
-		source_of_fund: DF.Link | None
+		particular: DF.SmallText | None
+		retention: DF.Link | None
+		retention_account: DF.Data | None
+		retention_amount: DF.Currency
+		retention_rate: DF.Currency
+		source_of_fund: DF.Link
+		tds: DF.Link | None
+		tds_account: DF.Data | None
+		tds_amount: DF.Currency
+		tds_rate: DF.Currency
 		total_amount: DF.Currency
 	# end: auto-generated types
 

@@ -19,10 +19,13 @@ class MobilisationEntryItem(Document):
 		advance_type: DF.Data | None
 		allocated_amount: DF.Currency
 		balance_amount: DF.Currency
+		budget_activity: DF.Link | None
+		budget_sub_activity: DF.Link | None
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
 		reference: DF.Link | None
+		source_of_fund: DF.Link | None
 		total_amount: DF.Currency
 	# end: auto-generated types
 
