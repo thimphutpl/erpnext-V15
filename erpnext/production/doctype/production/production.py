@@ -619,11 +619,11 @@ class Production(StockController):
 			doc.ref_doc = self.name
 			doc.production_type = self.production_type
 			doc.adhoc_production = self.adhoc_production
-			doc.timber_species = a.timber_species
+			# doc.timber_species = a.timber_species
 			doc.cable_line_no = self.cable_line_no
 			doc.production_area = self.production_area
-			if a.timber_species:
-				doc.timber_class, doc.timber_type = frappe.db.get_value("Timber Species", a.timber_species, ["timber_class", "timber_type"])
+			# if a.timber_species:
+			# 	doc.timber_class, doc.timber_type = frappe.db.get_value("Timber Species", a.timber_species, ["timber_class", "timber_type"])
 			doc.submit()
 
 	def delete_production_entry(self):
