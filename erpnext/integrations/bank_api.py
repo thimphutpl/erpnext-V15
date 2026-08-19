@@ -50,7 +50,7 @@ def intra_payment(from_acc, trans_amount, promo_no, to_acc, unique_transaction_n
                         "InstNum": "-999",
                         "BrchNum": "-999",
                         "WorkstationNum": "-999",
-                        "TellerNum": "-999",
+                        "TellerNum": "28",
                         "TranNum": "-999",
                         "JrnlNum": "-999",
                         "HdrDt": "NS",
