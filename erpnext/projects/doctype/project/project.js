@@ -99,7 +99,7 @@ frappe.ui.form.on("Project", {
 					}
 				});
 			}
-		});		
+		});
 	},
 
 	refresh: function (frm) {
@@ -181,7 +181,7 @@ frappe.ui.form.on("Project", {
 			doc:frm.doc,
 			callback: function(r){     
 				console.log(r.message)
-				toggle_remarks_display(frm, r.message[0])
+				toggle_remarks_display(frm, r.message)
 			}
 		})
 		// +++++++++++++++++++++ Ends +++++++++++++++++++++

@@ -1244,14 +1244,12 @@ class Project(Document):
 			self.status = "Completed"
 	@frappe.whitelist()
 	def check_logged_in_user_role(self):
-		#return values initialization-----------------
 		freeze_project = 1
-		#----------------------------Supervisor------------------------------------------------------------------------------------------------------------------------------------------------------------|
 		user = frappe.session.user
 		user_roles = frappe.get_roles(user)
 
 		if user == "Administrator":
-			freeze_project = 0
+			freeze_project = 1
 		if "Freeze Project" in user_roles:
 			freeze_project = 0
 		
