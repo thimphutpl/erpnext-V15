@@ -25,7 +25,6 @@ def encrypt_credential(api):
 
 @frappe.whitelist()
 def intra_payment(from_acc, trans_amount, promo_no, to_acc, unique_transaction_no):
-    # frappe.throw(str(promo_no))
     if not frappe.db.get_value('Bank Payment Settings', "BOBL", 'enable_one_to_one'):
         return
   
