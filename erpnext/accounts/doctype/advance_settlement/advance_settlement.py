@@ -71,16 +71,13 @@ class AdvanceSettlement(Document):
 		self.calculate_tds()
 		self.calculate_retention()
 		self.calculate_net_amount()
-	# 	if self.docstatus==0:
-	# 		self.calculate_amount()
-		# self.check_budget_availability()
+
 	
 		
 	def on_submit(self):
-		# self.calculate_advance_balance()
+
 
 		if self.is_running_bill:
-			self.update_general_ledger()
 			self.post_journal_entry()
 			self.make_mobilisation_entry()
 	
@@ -180,219 +177,6 @@ class AdvanceSettlement(Document):
 	
 	
 
-	# def update_general_ledger(self):
-	# 	gl_entries = []
-	# 	broad_head=None
-	# 	budget_activity=None
-	# 	budget_sub_activity=None
-	# 	source_of_fund=None
-	# 	account=None
-		
-
-	# 	credit_account = frappe.db.get_value("Advance Type", self.advance_type, "advance_account")
-	# 	expense_amount = self.get_expense_amount()
-
-	# 	for item in self.expense_details:
-	# 		# account=item.account
-	# 		# broad_head=item.broad_head
-	# 		# budget_activity = item.budget_activity
-	# 		# budget_sub_activity = item.budget_sub_activity
-	# 		# source_of_fund = item.source_of_fund
-	# 		gl_entries.append(
-	# 			prepare_gl(self, {
-	# 				"account": item.account,
-	# 				"reference_type":self.doctype,
-	# 				"reference_name": self.name,
-	# 				"cost_center": self.cost_center,
-	# 				"debit_in_account_currency": flt(expense_amount),
-	# 				"debit": flt(expense_amount),
-	# 				"broad_head": item.broad_head,
-	# 				"budget_activity":item.budget_activity,
-	# 				"budget_sub_activity": item.budget_sub_activity,
-	# 				"source_of_fund": item.source_of_fund
-					
-	# 			})
-	# 		)
-	# 	for i in self.advance_list:
-	# 		gl_entries.append(
-	# 				prepare_gl(self, {
-	# 					"account":i.account,
-	# 					"reference_type": self.doctype,
-	# 					"reference_name": self.name,
-	# 					"cost_center": self.cost_center,
-	# 					"credit_in_account_currency": flt(i.allocated_amount),
-	# 					"credit": flt(i.allocated_amount),
-	# 					"broad_head": broad_head,
-	# 					"budget_activity":budget_activity,
-	# 					"budget_sub_activity": budget_sub_activity,
-	# 					"source_of_fund": source_of_fund
-						
-	# 				})
-	# 			)
-
-	# 	if not credit_account:
-	# 		frappe.throw("Please set Default Bank Account in Company")
-	# 	# frappe.throw(str(account))
-		   
-	
-	# 	gl_entries.append(
-	# 		prepare_gl(self, {
-	# 			"account":credit_account,
-	# 			"reference_type": self.doctype,
-	# 			"reference_name": self.name,
-	# 			"cost_center": self.cost_center,
-	# 			"credit_in_account_currency": flt(self.net_amount),
-	# 			"credit": flt(self.net_amount),
-	# 			"broad_head": broad_head,
-	# 			"budget_activity":budget_activity,
-	# 			"budget_sub_activity": budget_sub_activity,
-	# 			"source_of_fund": source_of_fund
-				
-	# 		})
-	# 	)
-	# 	gl_entries.append(
-	# 		prepare_gl(self, {
-	# 			"account":self.tds_account,
-	# 			"reference_type": self.doctype,
-	# 			"reference_name": self.name,
-	# 			"cost_center": self.cost_center,
-	# 			"credit_in_account_currency": flt(self.tds_amount),
-	# 			"credit": flt(self.tds_amount),
-	# 			"broad_head": broad_head,
-	# 			"budget_activity":budget_activity,
-	# 			"budget_sub_activity": budget_sub_activity,
-	# 			"source_of_fund": source_of_fund
-				
-	# 		})
-	# 	)
-	# 	gl_entries.append(
-	# 		prepare_gl(self, {
-	# 			"account":self.retention_account,
-	# 			"reference_type": self.doctype,
-	# 			"reference_name": self.name,
-	# 			"cost_center": self.cost_center,
-	# 			"credit_in_account_currency": flt(self.retention_amount),
-	# 			"credit": flt(self.retention_amount),
-	# 			"broad_head": broad_head,
-	# 			"budget_activity":budget_activity,
-	# 			"budget_sub_activity": budget_sub_activity,
-	# 			"source_of_fund": source_of_fund
-				
-	# 		})
-	# 	)
-
-
-
-		
-		
-	# 	# frappe.throw(str(gl_entries))
-	
-	# 	if gl_entries:
-	# 		from erpnext.accounts.general_ledger import make_gl_entries
-	# 		make_gl_entries(gl_entries, cancel=(self.docstatus == 2), merge_entries=False)
-	def update_general_ledger(self):
-		gl_entries = []
-		
-
-		credit_account = frappe.db.get_value("Company", self.company, "default_bank_account")
-		# cash_account = frappe.db.get_value("Company",self.company,"default_cash_account")
-
-		# account_type = frappe.db.get_value("Account", credit_account, "account_type")
-		# if credit_account =="Bank":
-		# 	credit_account = frappe.db.get_value("Company", self.company, "default_bank_account")
-		# elif account_type == "Cash":
-		# 	cash_account = frappe.db.get_value("Company",self.company,"default_cash_account")
-		
-	
-
-
-
-
-		if not credit_account:
-			frappe.throw(
-				f"Please set Advance Account in Advance Type: {self.advance_type}"
-			)
-
-		expense_amount = flt(self.get_expense_amount())
-
-		# Expense
-		for item in self.expense_details:
-			gl_entries.append(
-				prepare_gl(self, {
-					"account": item.account,
-					"voucher_type": self.doctype,
-					"voucher_no": self.name,
-					"cost_center": self.cost_center,
-					"debit_in_account_currency": expense_amount,
-					"debit": expense_amount,
-					"broad_head": item.broad_head,
-					"budget_activity": item.budget_activity,
-					"budget_sub_activity": item.budget_sub_activity,
-					"source_of_fund": item.source_of_fund,
-				})
-			)
-
-		# Advance
-		for i in self.advance_list:
-			gl_entries.append(
-				prepare_gl(self, {
-					"account": i.account,
-					"voucher_type": self.doctype,
-					"voucher_no": self.name,
-					"cost_center": self.cost_center,
-					"credit_in_account_currency": flt(i.allocated_amount),
-					"credit": flt(i.allocated_amount),
-				})
-			)
-
-		# Advance account
-		if flt(self.net_amount):
-			gl_entries.append(
-				prepare_gl(self, {
-					"account": credit_account,
-					"voucher_type": self.doctype,
-					"voucher_no": self.name,
-					"cost_center": self.cost_center,
-					"credit_in_account_currency": flt(self.net_amount),
-					"credit": flt(self.net_amount),
-				})
-			)
-
-		# TDS
-		if self.tds_account and flt(self.tds_amount):
-			gl_entries.append(
-				prepare_gl(self, {
-					"account": self.tds_account,
-					"voucher_type": self.doctype,
-					"voucher_no": self.name,
-					"cost_center": self.cost_center,
-					"credit_in_account_currency": flt(self.tds_amount),
-					"credit": flt(self.tds_amount),
-				})
-			)
-
-		# Retention
-		if self.retention_account and flt(self.retention_amount):
-			gl_entries.append(
-				prepare_gl(self, {
-					"account": self.retention_account,
-					"voucher_type": self.doctype,
-					"voucher_no": self.name,
-					"cost_center": self.cost_center,
-					"credit_in_account_currency": flt(self.retention_amount),
-					"credit": flt(self.retention_amount),
-				})
-			)
-
-		# Post GL Entries
-		if gl_entries:
-			from erpnext.accounts.general_ledger import make_gl_entries
-
-			make_gl_entries(
-				gl_entries,
-				cancel=(self.docstatus == 2),
-				merge_entries=False
-			)
 	
 	def post_journal_entry(self):
 		
@@ -403,10 +187,7 @@ class AdvanceSettlement(Document):
 		voucher_series = "Journal Voucher"
 		party_type = ""
 		party = ""
-
 		credit_account_type = frappe.db.get_value("Account", credit_account, "account_type")
-
-	   
 
 
 		if credit_account_type in ("Payable", "Receivable"):
@@ -459,6 +240,8 @@ class AdvanceSettlement(Document):
 					"budget_activity": budget_activity,
 					"budget_sub_activity": budget_sub_activity,
 					"source_of_fund": source_of_fund,
+					"party_type": party_type,
+					"party": party
 
 					})
 
@@ -486,8 +269,8 @@ class AdvanceSettlement(Document):
 				"cost_center": self.cost_center,
 				"credit_in_account_currency": flt(self.tds_amount),
 				"credit": flt(self.tds_amount),
-				"party_type": party_type,
-				"party": party,
+				"party_type": self.party_type,
+				"party": self.customer,
 			})
 			if self.retention_amount > 0:
 				je.append("accounts", {
@@ -497,8 +280,8 @@ class AdvanceSettlement(Document):
 				"cost_center": self.cost_center,
 				"credit_in_account_currency": flt(self.retention_amount),
 				"credit": flt(self.retention_amount),
-				"party_type": party_type,
-				"party": party,
+				"party_type": self.party_type,
+				"party": self.customer,
 			})
 
 

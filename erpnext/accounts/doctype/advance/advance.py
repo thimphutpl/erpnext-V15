@@ -73,7 +73,6 @@ class Advance(Document):
 
 
 	def on_submit(self):
-		self.update_general_ledger()
 		self.post_journal_entry()
 		self.make_mobilisation_entry()
 
@@ -128,64 +127,7 @@ class Advance(Document):
 		self.total_amount = total_amount
 
 	
-	def update_general_ledger(self):
-		gl_entries = []
-
-		debit_account = frappe.db.get_value("Advance Type", self.advance_type, "advance_account")
-		credit_account = frappe.db.get_value("Company", self.company, "default_bank_account")
-		if not debit_account:
-			frappe.throw("Please set Advance Account in Advance Type")
-		if not credit_account:
-			frappe.throw("Please set Default Bank Account in Company")
-
-		gl_entries.append(
-			prepare_gl(self, {
-				"account": debit_account,
-				"debit": flt(self.total_amount),
-				"debit_in_account_currency": flt(self.total_amount),
-				"cost_center": self.cost_center,
-
-			})
-		)
-		for item in self.advance_details:
-			amount = flt(item.total_amount)
-			tds_amount = flt(item.tds_amount)
-			retention_amount = flt(item.retention_amount)
-   
-			gl_entries.append(
-				prepare_gl(self, {
-					"account": credit_account,
-					"credit": flt(amount),
-					"credit_in_account_currency": flt(amount),
-					"cost_center": self.cost_center,
-
-				})
-			)
-			if tds_amount and item.tds_account:
-					gl_entries.append(
-						prepare_gl(self, {
-							"account": item.tds_account,
-							"credit": tds_amount,
-							"credit_in_account_currency": tds_amount,
-							"cost_center": self.cost_center,
-						})
-					)
-
-				# Retention
-			if retention_amount and item.retention_account:
-				gl_entries.append(
-					prepare_gl(self, {
-						"account": item.retention_account,
-						"credit": retention_amount,
-						"credit_in_account_currency": retention_amount,
-						"cost_center": self.cost_center,
-					})
-				)
-   
-
-		if gl_entries:
-			from erpnext.accounts.general_ledger import make_gl_entries
-			make_gl_entries(gl_entries, cancel=(self.docstatus == 2), merge_entries=False)
+	
 
 	def post_journal_entry(self):
 		debit_account = frappe.db.get_value("Advance Type", self.advance_type, "advance_account")
