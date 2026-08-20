@@ -293,21 +293,24 @@
 #     return columns
 
 
-# # @frappe.whitelist()
-# # def fetch_tank_balance_from_hsd(equipment):
-# #     if not equipment:
-# #         frappe.throw("Equipment is required to fetch Tank Balance.")
 
-# #     closing = frappe.db.get_value("HSD Consumption Report", {"equipment": equipment}, "closing")
+
+
+# @frappe.whitelist()
+# def fetch_tank_balance_from_hsd(equipment):
+#     if not equipment:
+#         frappe.throw("Equipment is required to fetch Tank Balance.")
+
+#     closing = frappe.db.get_value("HSD Consumption Report", {"equipment": equipment}, "closing")
     
-# #     if closing is None:
-# #         frappe.throw(f"No HSD Consumption Report entry found for the selected equipment: {equipment}")
+#     if closing is None:
+#         frappe.throw(f"No HSD Consumption Report entry found for the selected equipment: {equipment}")
 
-# #     return closing
+#     return closing
 
 
 
-# Copyright (c) 2024
+#Copyright (c) 2024
 
 # from __future__ import unicode_literals
 # import frappe
@@ -483,6 +486,10 @@
 #     ]
 
 
+
+
+
+
 from __future__ import unicode_literals
 import frappe
 from frappe import _
@@ -511,31 +518,62 @@ def get_data(query, filters=None):
 		own_cc = 0
 		if filters.own_cc:
 			own_cc = 1
-		d.drawn = get_pol_between("Receive", d.name, filters.from_date, filters.to_date, d.hsd_type, own_cc)
-		received_till = get_pol_tills("Receive", d.name, add_days(getdate(filters.from_date), -1), d.hsd_type)
-		consumed_till = get_pol_consumed_till(d.name, add_days(getdate(filters.from_date), -1), filter_dry=own_cc)
-		consumed_till_end = get_pol_consumed_till(d.name, filters.to_date, filter_dry=own_cc)
-		d.consumed = flt(consumed_till_end) - flt(consumed_till)
+		#d.drawn = get_pol_between("Receive", d.name, filters.from_date, filters.to_date, d.hsd_type, own_cc)
+		# HSD received during the selected period
+		opening_date = add_days(getdate(filters.from_date), -1)
+
+		d.drawn = get_pol_between("Receive",d.name,filters.from_date,filters.to_date,d.hsd_type,own_cc)
+
+		#received_till = get_pol_tills("Receive", d.name, add_days(getdate(filters.from_date), -1), d.hsd_type)
+		#received_till = get_pol_tills( "Receive", d.name, opening_date, d.hsd_type )
+		# Previous HSD Received
+		received_till = frappe.db.sql(""" SELECT COALESCE(SUM(pr.qty), 0) FROM `tabPOL Receive` pr WHERE pr.docstatus = 1 AND pr.equipment = %s AND pr.pol_type = %s AND pr.posting_date <= %s
+		""", ( d.name, d.hsd_type, opening_date ))[0][0] or 0
+
+
+		#consumed_till = get_pol_consumed_till(d.name, add_days(getdate(filters.from_date), -1), filter_dry=own_cc)
+		consumed_till = get_pol_consumed_till( d.name, opening_date, filter_dry=own_cc ) 
 		d.opening = flt(received_till) - flt(consumed_till)
-		d.closing = flt(d.opening) + flt(d.drawn) - flt(d.consumed)
+		
+
+		# frappe.log_error(	title="Opening Balance Check",	message=f""" Equipment: {d.name} HSD Type: {d.hsd_type} Opening Date: {opening_date} Received Till: {received_till}
+		# Consumed Till: {consumed_till} Opening Balance: {d.opening} """)
+
+
+		#consumed_till_end = get_pol_consumed_till(d.name, filters.to_date, filter_dry=own_cc)
+		# HSD consumed during the selected period
+		consumed_till_end = get_pol_consumed_till(d.name,filters.to_date,filter_dry=own_cc)
+		d.consumed = flt(consumed_till_end) - flt(consumed_till)
+
+		# received_to_date = get_pol_tills("Receive",d.name,filters.to_date,d.hsd_type)
+		# consumed_to_date = get_pol_consumed_till(d.name,filters.to_date,filter_dry=own_cc)
+		# Closing balance as of To Date
+		d.closing = (flt(d.opening)+ flt(d.drawn) - flt(d.consumed))
+
+		#d.consumed = flt(consumed_till_end) - flt(consumed_till)
+		#d.opening = flt(received_till) - flt(consumed_till)
+		#d.closing = flt(d.opening) + flt(d.drawn) - flt(d.consumed)
 		d.open_km = get_km_till(d.name, add_days(getdate(filters.from_date), -1))
 		d.open_hr = get_hour_till(d.name, add_days(getdate(filters.from_date), -1))
+		#d.tank_capacity = flt(frappe.db.get_value("Equipment", d.name, "tank_capacity")) or 0
+
 		d.close_km = get_km_till(d.name, filters.to_date)
 		d.close_hr = get_hour_till(d.name, filters.to_date)
 
-		d.cap = frappe.db.get_value("Equipment", d.equipment, "tank_capacity")
+		d.cap = frappe.db.get_value("Equipment", d.name, "tank_capacity")
 		# rate = frappe.db.sql("select (sum(pol.qty*pol.rate)/sum(pol.qty)) as rate from tabPOL Receive pol where pol.branch = %s and pol.docstatus = 1 and pol.pol_type = %s", (d.branch, d.hsd_type))
 		rate = frappe.db.sql("""SELECT (SUM(pol.qty * pol.rate) / SUM(pol.qty)) AS rate FROM `tabPOL Receive` pol WHERE pol.branch = %s AND pol.docstatus = 1 AND pol.pol_type = %s""", (d.branch, d.hsd_type))
 		d.rate = rate and flt(rate[0][0]) or 0.0
 	
 		vl_records = frappe.db.sql("select place from `tabVehicle Logbook` where equipment = %s and docstatus = 1 order by to_date desc limit 1", d.name, as_dict=1)
 		d.place = vl_records and flt(vl_records[0].place) or ""
-
-		ys_records = frappe.db.sql("select hci.yard_hours, hci.yard_distance from `tabHire Charge Item` hci, `tabHire Charge Parameter` hcp where hcp.name = hci.parent and hcp.equipment_type = %s and hcp.equipment_model = %s and (%s between from_date and ifnull(to_date, curdate()) or %s between from_date and ifnull(to_date, curdate()))", (d.equipment_type, d.equipment_model, filters.from_date, filters.to_date), as_dict=1)
-		d.yskm = ys_records and flt(ys_records[0].yard_distance) or 0
-		d.yshour = ys_records and flt(ys_records[0].yard_hours) or 0
+		d.yskm = frappe.db.get_value("Equipment", d.name, "kph")	
+		d.yshour = frappe.db.get_value("Equipment", d.name, "lph")
+		# ys_records = frappe.db.sql("select hci.yard_hours, hci.yard_distance from `tabHire Charge Item` hci, `tabHire Charge Parameter` hcp where hcp.name = hci.parent and hcp.equipment_type = %s and hcp.equipment_model = %s and (%s between from_date and ifnull(to_date, curdate()) or %s between from_date and ifnull(to_date, curdate()))", (d.equipment_type, d.equipment_model, filters.from_date, filters.to_date), as_dict=1)
+		# d.yskm = ys_records and flt(ys_records[0].yard_distance) or 0
+		# d.yshour = ys_records and flt(ys_records[0].yard_hours) or 0
 	
-		row = [d.name, d.equipment_category, d.equipment_type, d.registration_number, d.place, ("{0}" '/' "{1}".format(d.open_km, d.open_hr)), ("{0}" '/' "{1}".format(d.close_km,d.close_hr)), round(d.close_km-d.open_km,2), round(d.close_hr-d.open_hr,2),
+		row = [d.name, d.equipment_category, d.equipment_type, d.registration_number,  ("{0}" '/' "{1}".format(d.open_km, d.open_hr)), ("{0}" '/' "{1}".format(d.close_km,d.close_hr)), round(d.close_km-d.open_km,2), round(d.close_hr-d.open_hr,2),
 		round(flt(d.drawn),2), round(flt(d.opening),2), round((flt(d.drawn)+flt(d.opening)),2),
 		d.yskm, d.yshour, round(d.consumed,2), round(flt(d.closing),2), flt(d.cap), round(flt(d.rate),2), round((flt(d.rate)*flt(d.consumed)),2)]
 		data.append(row);
@@ -579,8 +617,8 @@ def get_columns():
 		("HSD Drawn(L)")+":data:100",
 		("Prev Bal(L)")+":data:100",
 		("Total HSD(L)")+":data:100",
-		("Per KM")+":data:110",
-		("Per Hour")+":data:110",
+		("Yardstick(Per KM)")+":data:110",
+		("Yardstick(Per Hour)")+":data:110",
 		("HSD Consumption(L)")+":data:110",
 		("Closing Bal(L)")+":data:110",
 		("Tank Capacity")+":data:110",

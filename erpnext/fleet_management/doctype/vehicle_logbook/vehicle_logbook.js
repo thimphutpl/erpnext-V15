@@ -8,6 +8,13 @@ frappe.ui.form.on('Vehicle Logbook', {
 	ehf_name: function (frm) {
 		check_equipment_visibility(frm);
 	},
+	"posting_date": function (frm) {
+		// Whenever posting date is changed,
+		// clear only these 3 fields
+		frm.set_value("equipment", null);
+		frm.set_value("tank_balance", 0);
+		frm.set_value("registration_number", null);
+	},
 
 	refresh: function (frm) {
 		total_ro = 1
