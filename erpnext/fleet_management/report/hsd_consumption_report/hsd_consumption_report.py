@@ -527,8 +527,10 @@ def get_data(query, filters=None):
 		#received_till = get_pol_tills("Receive", d.name, add_days(getdate(filters.from_date), -1), d.hsd_type)
 		#received_till = get_pol_tills( "Receive", d.name, opening_date, d.hsd_type )
 		# Previous HSD Received
-		received_till = frappe.db.sql(""" SELECT COALESCE(SUM(pr.qty), 0) FROM `tabPOL Receive` pr WHERE pr.docstatus = 1 AND pr.equipment = %s AND pr.pol_type = %s AND pr.posting_date <= %s
-		""", ( d.name, d.hsd_type, opening_date ))[0][0] or 0
+		# received_till = frappe.db.sql(""" SELECT COALESCE(SUM(pr.qty), 0) FROM `tabPOL Receive` pr WHERE pr.docstatus = 1 AND pr.equipment = %s AND pr.pol_type = %s AND pr.posting_date <= %s
+		# """, ( d.name, d.hsd_type, opening_date ))[0][0] or 0
+		received_till = frappe.db.sql(""" SELECT COALESCE(SUM(qty), 0) FROM `tabPOL Entry` WHERE docstatus = 1 AND type = 'Receive' AND equipment = %s AND posting_date <= %s
+		AND pol_type = %s """, ( d.name, opening_date, d.hsd_type ))[0][0] or 0
 
 
 		#consumed_till = get_pol_consumed_till(d.name, add_days(getdate(filters.from_date), -1), filter_dry=own_cc)
