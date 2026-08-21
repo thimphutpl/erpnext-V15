@@ -85,6 +85,8 @@ class JournalEntry(AccountsController):
 		posting_date: DF.Date
 		process_deferred_accounting: DF.Link | None
 		purchase_taxes_and_charges_template: DF.Link | None
+		reference_doctype: DF.Link | None
+		reference_link: DF.DynamicLink | None
 		remark: DF.SmallText | None
 		repost_required: DF.Check
 		reversal_of: DF.Link | None
@@ -102,6 +104,7 @@ class JournalEntry(AccountsController):
 		use_check_lot: DF.Check
 		user_remark: DF.SmallText | None
 		voucher_type: DF.Literal["", "Journal Entry", "Disbursement Voucher", "Journal Voucher", "Other Voucher", "Reversal Voucher", "Write Off Entry", "Opening Entry", "Bank Entry"]
+		workflow_state: DF.Link | None
 		write_off_amount: DF.Currency
 		write_off_based_on: DF.Literal["Accounts Receivable", "Accounts Payable"]
 	# end: auto-generated types
@@ -116,6 +119,11 @@ class JournalEntry(AccountsController):
 				frappe.get_desk_link("Journal Entry Series", self.naming_series)
 			))
 		self.name = make_autoname(str(prefix) + ".YYYY.MM.####")
+	def before_delete(self):
+		if self.workflow_state != "Draft":
+			frappe.throw(
+				"Only documents in Draft workflow state can be deleted."
+			)
 
 
 
@@ -260,7 +268,7 @@ class JournalEntry(AccountsController):
 		
 		self.validate_cheque_info()
 		self.check_credit_limit()
-		# if self.docstatus != 1:
+		self.update_other_deposit_status()
 		self.make_gl_entries()
 		self.update_advance_paid()
 		self.update_asset_value()
@@ -307,6 +315,27 @@ class JournalEntry(AccountsController):
 			if self.needs_repost:
 				self.validate_for_repost()
 				self.db_set("repost_required", self.needs_repost)
+	def update_other_deposit_status(self):
+
+		# Only process approved Journal Entries
+		if self.workflow_state != "Approved":
+			return
+
+		# Only Other Deposit Claim Journal Entries
+		if self.reference_doctype != "Other Deposit Claim":
+			return
+
+		# Must have a claim reference
+		if not self.reference_link:
+			return
+
+		# Update the claim as Paid
+		frappe.db.set_value(
+			"Other Deposit Claim",
+			self.reference_link,
+			"payment_status",
+			"Paid"
+		)
 
 	def on_cancel(self):
 		# References for this Journal are removed on the `on_cancel` event in accounts_controller
@@ -2159,17 +2188,17 @@ def account_bank(account):
 	data = frappe.db.get_value(
 		"Account",
 		account,
-		["account_type", "is_deposit_work"],
+		["account_type", "is_deposit_work","ignore_budget_activity"],
 		as_dict=True
 	)
 	return data
 @frappe.whitelist()
 def get_voucher_type(voucher_type):
-    return frappe.db.get_value(
-        "Journal Entry Series",
-        {
-            "entry_type": voucher_type,
-            "enabled": 1
-        },
-        "prefix"
-    )	
+	return frappe.db.get_value(
+		"Journal Entry Series",
+		{
+			"entry_type": voucher_type,
+			"enabled": 1
+		},
+		"prefix"
+	)	

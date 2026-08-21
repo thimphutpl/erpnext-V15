@@ -649,13 +649,10 @@ frappe.ui.form.on("Journal Entry Account", {
                 let data = r.message;
                 let bank_type = data.account_type;
                 let is_deposit_work = data.is_deposit_work;
-
-
+                let ignore_budget_activity = data.ignore_budget_activity;
                 // let bank_type = r.message;
                 // let is_deposit_work = r.is_deposit_work;
-
-
-                if (bank_type === "Bank" || bank_type === "Cash" || is_deposit_work == 1) {
+                if (bank_type === "Bank" || bank_type === "Cash" || is_deposit_work == 1 || ignore_budget_activity == 1) {
                     frm.fields_dict.accounts.grid.update_docfield_property(
                         "budget_activity",
                         "hidden",
@@ -722,9 +719,6 @@ frappe.ui.form.on("Journal Entry Account", {
 
             }
         })
-
-
-
 
     },
 

@@ -4,6 +4,7 @@
  "allow_import": 1,
  "autoname": "naming_series:journal_entry_series",
  "creation": "2022-01-25 10:29:58.717206",
+ "default_view": "List",
  "doctype": "DocType",
  "document_type": "Document",
  "engine": "InnoDB",
@@ -123,7 +124,6 @@
    "oldfieldname": "naming_series",
    "oldfieldtype": "Select",
    "options": "Journal Entry Series",
-   "print_hide": 1,
    "reqd": 1,
    "set_only_once": 1
   },
@@ -724,7 +724,7 @@
    "table_fieldname": "payment_entries"
   }
  ],
- "modified": "2026-08-15 15:06:01.172547",
+ "modified": "2026-08-18 23:22:40.725333",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Journal Entry",
@@ -770,6 +770,7 @@
   }
  ],
  "search_fields": "voucher_type,posting_date, due_date, cheque_no",
+ "show_preview_popup": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],
