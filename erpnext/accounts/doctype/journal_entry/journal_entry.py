@@ -2188,7 +2188,7 @@ def account_bank(account):
 	data = frappe.db.get_value(
 		"Account",
 		account,
-		["account_type", "is_deposit_work","ignore_budget_activity"],
+		["account_type", "is_deposit_work","ignore_budget_check"],
 		as_dict=True
 	)
 	return data
