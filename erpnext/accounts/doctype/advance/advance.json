@@ -8,6 +8,7 @@
  "field_order": [
   "company",
   "advance_type",
+  "mode_of_payment",
   "column_break_atkp",
   "party_type",
   "customer",
@@ -210,12 +211,18 @@
    "fieldtype": "Table",
    "label": "Advance Details",
    "options": "Advance Item"
+  },
+  {
+   "fieldname": "mode_of_payment",
+   "fieldtype": "Link",
+   "label": "Mode of Payment",
+   "options": "Mode of Payment"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-08-17 12:06:22.332811",
+ "modified": "2026-08-21 18:14:03.854235",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Advance",

@@ -29,6 +29,7 @@ class Advance(Document):
 		fiscal_year: DF.Link | None
 		is_opening: DF.Check
 		journal_entry: DF.Link | None
+		mode_of_payment: DF.Link | None
 		party_type: DF.Literal["", "Supplier", "Employee", "Customer"]
 		posting_date: DF.Date | None
 		remarks: DF.SmallText | None
@@ -131,7 +132,10 @@ class Advance(Document):
 
 	def post_journal_entry(self):
 		debit_account = frappe.db.get_value("Advance Type", self.advance_type, "advance_account")
-		credit_account = frappe.db.get_value("Company", self.company, "default_bank_account")
+		if self.mode_of_payment=="Wire Transfer":
+			credit_account = frappe.db.get_value("Company", self.company, "default_bank_account")
+		elif self.mode_of_payment=="Cash":
+			credit_account = frappe.db.get_value("Company", self.company, "default_cash_account")
 		if not debit_account:
 			frappe.throw("Setup Default Advance Account in Advance Type <b>{}</b>".format(self.advance_type))
 
@@ -182,6 +186,7 @@ class Advance(Document):
 		je.branch = self.branch
 		je.reference_doctype= self.doctype
 		je.reference_link = self.name
+		je.mode_of_payment=self.mode_of_payment
 		if flt(self.total_amount) > 0:
 	  
 			je.append("accounts", {
