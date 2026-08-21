@@ -495,7 +495,6 @@ class BankPayment(Document):
 	def load_items(self):
 		total_amount = 0
 		self.set("items", [])
-		# frappe.throw(str(self.get_transactions()))
 		for i in self.get_transactions():
 			import re
 			# frappe.throw(str(i.beneficiary_name))
@@ -678,7 +677,7 @@ class BankPayment(Document):
 								FROM `tabJournal Entry` je 
 								where je.docstatus = 1
 								{cond}
-								AND je.voucher_type in ('Bank Entry','Journal Entry') 
+								AND je.voucher_type in ('Bank Entry','Journal Entry','Disbursement Voucher') 
 								AND NOT EXISTS(select 1
 									FROM `tabBank Payment Item` bpi
 									WHERE bpi.transaction_type = 'Journal Entry'
@@ -693,7 +692,8 @@ class BankPayment(Document):
 			),
 			as_dict=True,
 		):
-			if a.voucher_type == "Journal Entry":
+			if a.voucher_type == "Bank Entry":
+				# frappe.throw(str("hi"))
 				debit_amt = credit_amt = 0.00
 				debit_bank_account = 0
 				# t = frappe.db.sql(
@@ -711,13 +711,18 @@ class BankPayment(Document):
 				# )
 				# frappe.throw(str(t))
 				for p in frappe.db.sql(
-					"""select a.account, round(a.debit_in_account_currency,2) as debit, 
-									round(a.credit_in_account_currency,2) as credit,
-									b.bank_name, b.bank_branch, b.bank_account_type, b.bank_account_no, b.company
-									from `tabJournal Entry Account` a
-									inner join `tabAccount` b on a.account = b.name
-									where a.parent = '{journal_entry}'
-									and b.account_type = "Bank"
+					"""select a.account, 
+							round(a.debit_in_account_currency,2) as debit, 
+							round(a.credit_in_account_currency,2) as credit,
+							b.bank_name, 
+							b.bank_branch, 
+							b.bank_account_type, 
+							b.bank_account_no, 
+							b.company
+						from `tabJournal Entry Account` a
+							inner join `tabAccount` b on a.account = b.name
+						where a.parent = '{journal_entry}'
+							and b.account_type = "Bank"
 									""".format(
 						journal_entry=a.transaction_id
 					),
@@ -745,7 +750,7 @@ class BankPayment(Document):
 						)
 					if flt(p.debit) > 0:
 						debit_bank_account += 1
-			elif a.voucher_type == "Bank Entry":
+			elif a.voucher_type == "Disbursement Voucher":
 			
 				
 				payment_dtl = []
@@ -762,7 +767,7 @@ class BankPayment(Document):
 				# 	(a.transaction_id,),
 				# 	as_dict=True,
 				# )
-				# frappe.throw(str(t))
+				
 				for b in frappe.db.sql(
 					"""select party, party_type,
 										sum(if(credit>0, credit, credit_in_account_currency)) as credit,
@@ -1217,6 +1222,8 @@ class BankPayment(Document):
 			frappe.throw(_("Please select Fiscal Year"))
 		elif not self.month:
 			frappe.throw(_("Please select Month"))
+		month_number = datetime.strptime(self.month, "%B").strftime("%m")
+		
 
 		cond = self.get_conditions()
 		return frappe.db.sql(
@@ -1251,8 +1258,8 @@ class BankPayment(Document):
 					)
 		""".format(
 				salary_year=self.fiscal_year,
-				salary_month=self.month,
-				month=self.month,
+				salary_month=month_number,
+				month=month_number,
 				bank_payment=self.name,
 				cond=cond,
 			),
