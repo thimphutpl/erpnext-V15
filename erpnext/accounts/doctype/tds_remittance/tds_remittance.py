@@ -209,12 +209,31 @@ def get_tds_invoices(tax_withholding_category, from_date, to_date, name, filter_
 			party_cond = party_cond, from_date=from_date, to_date=to_date, cost_center=cost_center), as_dict=True)
 
 	# Journal Entry
+	# if len(accounts) == 1:
+	# 	accounts_cond = """and (t1.account = "{0}" or 
+	# 		(t1.tax_account = "{0}" and ifnull(t1.apply_tds,0) = 1))""".format(accounts[0])
+	# else:
+	# 	accounts_cond = """and (t1.account in ({0}) or 
+	# 		t1.tax_accout in ({0}) and ifnull(t1.apply_tds,0) = 1))""".format('"' + '","'.join(accounts) + '"')
+	# Journal Entry
 	if len(accounts) == 1:
-		accounts_cond = """and (t1.account = "{0}" or 
-			(t1.tax_account = "{0}" and ifnull(t1.apply_tds,0) = 1))""".format(accounts[0])
+		accounts_cond = """and (
+			t1.account = "{0}" 
+			or 
+			(t1.tax_account = "{0}" and ifnull(t1.apply_tds,0) = 1)
+		)""".format(accounts[0])
+
 	else:
-		accounts_cond = """and (t1.account in ({0}) or 
-			t1.tax_accout in ({0}) and ifnull(t1.apply_tds,0) = 1))""".format('"' + '","'.join(accounts) + '"')
+		account_list = '"' + '","'.join(accounts) + '"'
+
+		accounts_cond = """and (
+			t1.account in ({0})
+			or
+			(
+				t1.tax_account in ({0})
+				and ifnull(t1.apply_tds,0) = 1
+			)
+		)""".format(account_list)
 	
 	if party_type:
 		party_cond = "and t1.party_type = '{}'".format(party_type)
@@ -351,11 +370,4 @@ def get_permission_query_conditions(user):
 			from `tabEmployee` as e
 			where e.branch = `tabTDS Remittance`.branch
 			and e.user_id = '{user}')
-		or
-		exists(select 1
-			from `tabEmployee` e, `tabAssign Branch` ab, `tabBranch Item` bi
-			where e.user_id = '{user}'
-			and ab.employee = e.name
-			and bi.parent = ab.name
-			and bi.branch = `tabTDS Remittance`.branch)
 	)""".format(user=user)
