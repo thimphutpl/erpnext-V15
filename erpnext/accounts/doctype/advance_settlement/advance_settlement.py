@@ -181,15 +181,13 @@ class AdvanceSettlement(Document):
 	def post_journal_entry(self):
 		
 		credit_account = frappe.db.get_value("Company", self.company, "default_bank_account")
-	 
-		
 		voucher_type = "Disbursement Voucher"
-		voucher_series = "Disbursement Voucher"
-		naming_series = frappe.db.get_value(
-                    "Journal Entry Series",
-                    voucher_series,
-                    "name"
-                )
+		naming_series = "Disbursement Voucher"
+		prefix = frappe.db.get_value(
+					"Journal Entry Series",
+					naming_series,
+					"name"
+				)
 		party_type = ""
 		party = ""
 		credit_account_type = frappe.db.get_value("Account", credit_account, "account_type")
@@ -207,7 +205,15 @@ class AdvanceSettlement(Document):
 		source_of_fund=None
 		allocated_amount = self.get_allocated_amount()
 		expense_amount = self.get_expense_amount()
+		je.voucher_type=voucher_type
+		je.title=self.name
+		je.naming_series=prefix
+		je.posting_date=self.posting_date
+		je.company=self.company
+		je.branch=self.branch
+		je.total_amount_in_words= money_in_words(self.net_amount),
 
+	
 
 
 		for item in self.expense_details:
@@ -288,20 +294,6 @@ class AdvanceSettlement(Document):
 				"party_type": self.party_type,
 				"party": self.customer,
 			})
-
-
-			je.update({
-				"doctype": "Journal Entry",
-				"voucher_type": voucher_type,
-				"naming_series": naming_series,
-				"title": self.name,
-				"posting_date": self.posting_date,
-				"company": self.company,
-				"total_amount_in_words": money_in_words(self.net_amount),
-				"branch": self.branch
-
-			})
-			
 		je.insert()
 		# frappe.db.commit()		
 		self.db_set("journal_entry", je.name)
