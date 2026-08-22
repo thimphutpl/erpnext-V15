@@ -190,10 +190,23 @@ class AdvanceSettlement(Document):
 				)
 		party_type = ""
 		party = ""
+		account_type = ""
 		credit_account_type = frappe.db.get_value("Account", credit_account, "account_type")
+		tds_account = frappe.db.get_value("Account", self.tds_account, "account_type")
+		retention_account = frappe.db.get_value("Account", self.retention_account, "account_type")
 
+		for item in self.advance_list:
+			advance_account = item.account
 
-		if credit_account_type in ("Payable", "Receivable"):
+			account_type = frappe.db.get_value(
+				"Account", advance_account, "account_type"
+			)
+		
+		
+	
+		
+		
+		if credit_account_type in ("Payable", "Receivable") or account_type in ("Payable", "Receivable") or tds_account in ("Payable", "Receivable") or retention_account in ("Payable", "Receivable"):
 			party_type = self.party_type
 			party = self.customer
 
@@ -281,7 +294,7 @@ class AdvanceSettlement(Document):
 				"credit_in_account_currency": flt(self.tds_amount),
 				"credit": flt(self.tds_amount),
 				"party_type": self.party_type,
-				"party": self.customer,
+				"party": party,
 			})
 			if self.retention_amount > 0:
 				je.append("accounts", {
@@ -292,7 +305,7 @@ class AdvanceSettlement(Document):
 				"credit_in_account_currency": flt(self.retention_amount),
 				"credit": flt(self.retention_amount),
 				"party_type": self.party_type,
-				"party": self.customer,
+				"party": party,
 			})
 		je.insert()
 		# frappe.db.commit()		
