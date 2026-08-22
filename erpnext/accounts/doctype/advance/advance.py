@@ -161,11 +161,23 @@ class Advance(Document):
 		voucher_series = ""
 		party_type = ""
 		party = ""
+		account_type=""
 
 		debit_account_type = frappe.db.get_value("Account", debit_account, "account_type")
 
-		tds_account = frappe.db.get_value("Account", self.tds_account, "account_type")
-		retention_account = frappe.db.get_value("Account", self.retention_account, "account_type")
+		for item in self.advance_details:
+			account = item.tds_account
+
+			account_type = frappe.db.get_value(
+				"Account", account, "account_type"
+			)
+		for item in self.advance_details:
+			account = item.retention_account
+
+			account_type = frappe.db.get_value(
+				"Account", account, "account_type"
+			)
+
 
 
 		if self.is_opening:
@@ -180,7 +192,7 @@ class Advance(Document):
 			"name"
 		)
 
-		if debit_account_type in ("Payable", "Receivable") or tds_account in ("Payable", "Receivable") or retention_account in ("Payable", "Receivable"):
+		if debit_account_type in ("Payable", "Receivable") or account_type in ("Payable", "Receivable"):
 			party_type = self.party_type
 			party = self.customer
 		elif debit_account_type == "Expense Account":
