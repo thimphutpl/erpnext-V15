@@ -156,8 +156,8 @@ class Advance(Document):
 			voucher_type = "Opening Entry"
 			voucher_series = "Opening Entry"
 		else:
-			voucher_type = "Bank Entry"
-			voucher_series = "Bank Payment Voucher"
+			voucher_type = "Disbursement Voucher"
+			voucher_series = "Disbursement Voucher"
 		naming_series = frappe.db.get_value(
 			"Journal Entry Series",
 			voucher_series,

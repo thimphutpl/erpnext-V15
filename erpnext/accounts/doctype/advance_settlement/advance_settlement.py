@@ -183,8 +183,13 @@ class AdvanceSettlement(Document):
 		credit_account = frappe.db.get_value("Company", self.company, "default_bank_account")
 	 
 		
-		voucher_type = "Journal Entry"
-		voucher_series = "Journal Voucher"
+		voucher_type = "Disbursement Voucher"
+		voucher_series = "Disbursement Voucher"
+		naming_series = frappe.db.get_value(
+                    "Journal Entry Series",
+                    voucher_series,
+                    "name"
+                )
 		party_type = ""
 		party = ""
 		credit_account_type = frappe.db.get_value("Account", credit_account, "account_type")
@@ -288,7 +293,7 @@ class AdvanceSettlement(Document):
 			je.update({
 				"doctype": "Journal Entry",
 				"voucher_type": voucher_type,
-				"naming_series": voucher_series,
+				"naming_series": naming_series,
 				"title": self.name,
 				"posting_date": self.posting_date,
 				"company": self.company,
