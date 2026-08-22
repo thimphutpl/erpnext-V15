@@ -47,6 +47,7 @@
   "default_settings",
   "default_bank_account",
   "default_cash_account",
+  "default_dk_account",
   "default_receivable_account",
   "default_payable_account",
   "write_off_account",
@@ -60,6 +61,7 @@
   "payment_terms",
   "cost_center",
   "default_finance_book",
+  "default_temporary_account",
   "fleet_accounts_section",
   "insurance_expense_account",
   "pol_expense_account",
@@ -110,6 +112,11 @@
   "depreciation_cost_center",
   "capital_work_in_progress_account",
   "asset_received_but_not_billed",
+  "accounts_closing_tab",
+  "acc_frozen_upto",
+  "ignore_account_closing_balance",
+  "column_break_rluf",
+  "frozen_accounts_modifier",
   "buying_and_selling_tab",
   "sales_settings",
   "default_buying_terms",
@@ -219,7 +226,6 @@
   {
    "fieldname": "company_logo",
    "fieldtype": "Attach Image",
-   "hidden": 1,
    "label": "Company Logo"
   },
   {
@@ -1121,6 +1127,47 @@
    "fieldname": "program_name",
    "fieldtype": "Data",
    "label": "Program Name"
+  },
+  {
+   "fieldname": "accounts_closing_tab",
+   "fieldtype": "Tab Break",
+   "label": "Accounts Closing"
+  },
+  {
+   "description": "Accounting entries are frozen up to this date. Nobody can create or modify entries except users with the role specified below",
+   "fieldname": "acc_frozen_upto",
+   "fieldtype": "Date",
+   "label": "Accounts Frozen Till Date"
+  },
+  {
+   "fieldname": "column_break_rluf",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "description": "Financial reports will be generated using GL Entry doctypes (should be enabled if Period Closing Voucher is not posted for all years sequentially or missing) ",
+   "fieldname": "ignore_account_closing_balance",
+   "fieldtype": "Check",
+   "label": "Ignore Account Closing Balance"
+  },
+  {
+   "description": "Users with this role are allowed to set frozen accounts and create / modify accounting entries against frozen accounts",
+   "fieldname": "frozen_accounts_modifier",
+   "fieldtype": "Link",
+   "label": "Role Allowed to Set Frozen Accounts and Edit Frozen Entries",
+   "options": "Role"
+  },
+  {
+   "fieldname": "default_dk_account",
+   "fieldtype": "Link",
+   "label": "Default DK Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "default_temporary_account",
+   "fieldtype": "Link",
+   "label": "Default Temporary Account",
+   "options": "Account"
   }
  ],
  "icon": "fa fa-building",
@@ -1128,7 +1175,7 @@
  "image_field": "company_logo",
  "is_tree": 1,
  "links": [],
- "modified": "2026-07-12 18:33:58.385927",
+ "modified": "2026-08-22 18:19:49.806248",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Company",
