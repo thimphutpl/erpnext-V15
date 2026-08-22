@@ -133,13 +133,22 @@ class Advance(Document):
 	def post_journal_entry(self):
 		debit_account = frappe.db.get_value("Advance Type", self.advance_type, "advance_account")
 		credit_account = None
-		if self.mode_of_payment=="Wire Transfer":
-			credit_account = frappe.db.get_value("Company", self.company, "default_bank_account")
-		if self.mode_of_payment=="Cash":
-			credit_account = frappe.db.get_value("Company", self.company, "default_cash_account")
-		if self.is_opening ==1:
-			credit_account = frappe.db.get_value("Company", self.company, "default_temporary_account")
-	
+		if self.is_opening == 1:
+			credit_account = frappe.db.get_value(
+				"Company", self.company, "default_temporary_account"
+			)
+		elif self.mode_of_payment == "Cash":
+			credit_account = frappe.db.get_value(
+				"Company", self.company, "default_cash_account"
+			)
+		elif self.mode_of_payment == "Wire Transfer":
+			credit_account = frappe.db.get_value(
+				"Company", self.company, "default_bank_account"
+			)
+		else:
+			credit_account = frappe.db.get_value(
+				"Company", self.company, "default_bank_account"
+			)
 	
 	
 		if not debit_account:
