@@ -14,6 +14,7 @@ class AdvanceItem(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		amount: DF.Currency
 		apply_retention: DF.Check
 		apply_tds: DF.Check
 		budget_activity: DF.Link
@@ -32,7 +33,6 @@ class AdvanceItem(Document):
 		tds_account: DF.Data | None
 		tds_amount: DF.Currency
 		tds_rate: DF.Currency
-		total_amount: DF.Currency
 	# end: auto-generated types
 
 	pass
