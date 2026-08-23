@@ -1,0 +1,208 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:ODC-{MM}-{####}",
+ "creation": "2026-08-19 09:53:47.079385",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_p5wh",
+  "amended_from",
+  "company",
+  "branch",
+  "column_break_fwee",
+  "posting_date",
+  "cost_center",
+  "filter_section",
+  "party_type",
+  "column_break_upam",
+  "party",
+  "column_break_ajzm",
+  "account_deposit",
+  "section_break_bafs",
+  "get_all_other_deposit",
+  "section_break_jlgc",
+  "other_deposite_details",
+  "section_break_bkea",
+  "total_amount",
+  "section_break_kqqj",
+  "remarks",
+  "reference_section",
+  "journal_entry",
+  "column_break_nxhb",
+  "payment_status"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_p5wh",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Other Deposit Claim",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Company",
+   "options": "Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Branch",
+   "options": "Branch",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_fwee",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Posting Date",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "branch.cost_center",
+   "fieldname": "cost_center",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Cost Center",
+   "options": "Cost Center",
+   "reqd": 1
+  },
+  {
+   "fieldname": "filter_section",
+   "fieldtype": "Section Break",
+   "label": "Filter"
+  },
+  {
+   "fieldname": "party_type",
+   "fieldtype": "Select",
+   "label": "Party Type",
+   "options": "\nCustomer\nEmployee\nSupplier",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_upam",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "party",
+   "fieldtype": "Dynamic Link",
+   "label": "Party",
+   "options": "party_type",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_jlgc",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "other_deposite_details",
+   "fieldtype": "Table",
+   "label": "Other Deposite Details",
+   "options": "Other Deposit Item"
+  },
+  {
+   "fieldname": "section_break_bafs",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_ajzm",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "account_deposit",
+   "fieldtype": "Link",
+   "label": "Account",
+   "options": "Account",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_bkea",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "total_amount",
+   "fieldtype": "Currency",
+   "label": "Total Amount",
+   "read_only": 1
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "reference_section",
+   "fieldtype": "Section Break",
+   "label": "Reference"
+  },
+  {
+   "fieldname": "journal_entry",
+   "fieldtype": "Link",
+   "label": "Journal Entry",
+   "options": "Journal Entry"
+  },
+  {
+   "fieldname": "section_break_kqqj",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Small Text",
+   "label": "Remark"
+  },
+  {
+   "fieldname": "column_break_nxhb",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "get_all_other_deposit",
+   "fieldtype": "Button",
+   "label": "Get All Other Deposit"
+  },
+  {
+   "fieldname": "payment_status",
+   "fieldtype": "Data",
+   "label": "Payment Status",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2026-08-22 22:06:06.170895",
+ "modified_by": "Administrator",
+ "module": "Accounts",
+ "name": "Other Deposit Claim",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

@@ -1,0 +1,220 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:RD-{MM}-{####}",
+ "creation": "2026-08-18 22:57:18.810930",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_5kuq",
+  "amended_from",
+  "company",
+  "column_break_nepg",
+  "posting_date",
+  "section_break_zswj",
+  "branch",
+  "column_break_htto",
+  "cost_center",
+  "paid_to_section",
+  "party_type",
+  "board_head",
+  "column_break_yung",
+  "party",
+  "account",
+  "section_break_fcvs",
+  "account_deposit",
+  "get_all_other_deposite",
+  "section_break_jssq",
+  "other_deposits",
+  "section_break_qghx",
+  "amount",
+  "section_break_iekt",
+  "remarks",
+  "reference_section",
+  "journal_entry"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_5kuq",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Refundable Deposits",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Company",
+   "options": "Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_nepg",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Posting Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_zswj",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Branch",
+   "options": "Branch",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_htto",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "branch.cost_center",
+   "fieldname": "cost_center",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Cost Center",
+   "options": "Cost Center",
+   "reqd": 1
+  },
+  {
+   "fieldname": "board_head",
+   "fieldtype": "Link",
+   "label": "Board Head",
+   "options": "Account",
+   "reqd": 1
+  },
+  {
+   "fieldname": "account",
+   "fieldtype": "Link",
+   "label": "Account ",
+   "options": "Account",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_fcvs",
+   "fieldtype": "Section Break",
+   "label": "Filter"
+  },
+  {
+   "default": "0",
+   "fieldname": "get_all_other_deposite",
+   "fieldtype": "Button",
+   "label": "Get All Other Deposits"
+  },
+  {
+   "fieldname": "section_break_qghx",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "label": "Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "account_deposit",
+   "fieldtype": "Link",
+   "label": "Account",
+   "options": "Account",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_iekt",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Small Text",
+   "label": "Remark"
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "reference_section",
+   "fieldtype": "Section Break",
+   "label": "Reference"
+  },
+  {
+   "fieldname": "journal_entry",
+   "fieldtype": "Link",
+   "label": "Journal Entry",
+   "options": "Journal Entry",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_jssq",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "other_deposits",
+   "fieldtype": "Table",
+   "label": "Other Deposits",
+   "options": "MOF Payment Item"
+  },
+  {
+   "fieldname": "paid_to_section",
+   "fieldtype": "Section Break",
+   "label": "Paid To"
+  },
+  {
+   "fieldname": "party_type",
+   "fieldtype": "Select",
+   "label": "Party Type",
+   "options": "\nEmployee\nCustomer\nEmployee",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_yung",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "party",
+   "fieldtype": "Dynamic Link",
+   "label": "Party",
+   "options": "party_type",
+   "reqd": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2026-08-23 11:48:15.454239",
+ "modified_by": "Administrator",
+ "module": "Accounts",
+ "name": "Refundable Deposits",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}
