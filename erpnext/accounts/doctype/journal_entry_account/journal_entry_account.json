@@ -10,6 +10,7 @@
   "broad_head",
   "account",
   "account_type",
+  "ignore_budget_details",
   "col_break1",
   "bank_account",
   "party_type",
@@ -294,11 +295,13 @@
    "label": "Bill Date"
   },
   {
+   "depends_on": "eval:!doc.ignore_budget_details",
    "description": "If Income or Expense",
    "fieldname": "business_activity",
    "fieldtype": "Link",
    "hidden": 1,
    "label": "Business Activity",
+   "mandatory_depends_on": "eval:!doc.ignore_budget_details",
    "options": "Business Activity"
   },
   {
@@ -375,24 +378,30 @@
    "read_only": 1
   },
   {
+   "depends_on": "eval:!doc.ignore_budget_details",
    "description": "If Income or Expense",
    "fieldname": "budget_activity",
    "fieldtype": "Link",
    "label": "Budget Activity",
+   "mandatory_depends_on": "eval:!doc.ignore_budget_details",
    "options": "Budget Activity"
   },
   {
+   "depends_on": "eval:!doc.ignore_budget_details",
    "description": "If Income or Expense",
    "fieldname": "budget_sub_activity",
    "fieldtype": "Link",
    "label": "Budget Sub Activity",
+   "mandatory_depends_on": "eval:!doc.ignore_budget_details",
    "options": "Budget Sub Activity"
   },
   {
+   "depends_on": "eval:!doc.ignore_budget_details",
    "description": "If Income or Expense",
    "fieldname": "source_of_fund",
    "fieldtype": "Link",
    "label": "Source of Fund",
+   "mandatory_depends_on": "eval:!doc.ignore_budget_details",
    "options": "Source of Fund"
   },
   {
@@ -407,12 +416,20 @@
    "fieldtype": "Link",
    "label": "Branch",
    "options": "Branch"
+  },
+  {
+   "default": "0",
+   "description": "Check this option if Budget Activity, Budget Sub Activity, and Source of Fund are not applicable for this account.",
+   "fieldname": "ignore_budget_details",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Ignore Budget Details"
   }
  ],
  "idx": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-08-19 10:44:46.957732",
+ "modified": "2026-08-23 19:32:57.498508",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Journal Entry Account",

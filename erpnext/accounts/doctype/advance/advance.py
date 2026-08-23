@@ -218,32 +218,31 @@ class Advance(Document):
 		if flt(self.total_amount) > 0:
 	  
 			je.append("accounts", {
-				"account": debit_account,
+				"account": credit_account,
 				"reference_type": "Advance",
 				"reference_name": self.name,
 				"cost_center": self.cost_center,
-				"debit_in_account_currency": flt(self.total_amount),
-				"debit": flt(self.total_amount),
-				"party_type": party_type,
-				"party": party,
-				# "budget_activity": self.budget_activity,
-				# "budget_sub_activity": self.budget_sub_activity,
-				# "source_of_fund": self.source_of_fund
+				"credit_in_account_currency": self.total_amount,
+				"credit": self.total_amount,
+				"ignore_budget_details":1
 			})
+
 		for item in self.advance_details:
-			amount = flt(item.total_amount)
+			amount = flt(item.amount)
 			tds_amount = flt(item.tds_amount)
 			retention_amount = flt(item.retention_amount)
-
-			# NET BANK AMOUNT
 			if amount:
 				je.append("accounts", {
-					"account": credit_account,
+					"account": debit_account,
 					"reference_type": "Advance",
 					"reference_name": self.name,
 					"cost_center": self.cost_center,
-					"credit_in_account_currency": amount,
-					"credit": amount
+					"debit_in_account_currency": flt(amount),
+					"debit": flt(amount),
+					"party_type": party_type,
+					"party": party,
+					"ignore_budget_details":1
+
 				})
 
 			# TDS
@@ -253,10 +252,11 @@ class Advance(Document):
 					"reference_type": "Advance",
 					"reference_name": self.name,
 					"cost_center": self.cost_center,
-					"credit_in_account_currency": tds_amount,
+					"debit_in_account_currency": tds_amount,
 					"credit": tds_amount,
 					"party_type": party_type,
 					"party": party,
+					"ignore_budget_details":1
 				})
 
 			# RETENTION
@@ -266,10 +266,11 @@ class Advance(Document):
 					"reference_type": "Advance",
 					"reference_name": self.name,
 					"cost_center": self.cost_center,
-					"credit_in_account_currency": retention_amount,
-					"credit": retention_amount,
+					"debit_in_account_currency": retention_amount,
+					"debit": retention_amount,
 					"party_type": party_type,
 					"party": party,
+					"ignore_budget_details":1
 				})
 
 
@@ -303,7 +304,7 @@ class Advance(Document):
   
 		for item in self.advance_details:
 			net_amount = (
-				(item.total_amount or 0)
+				(item.amount or 0)
 			)
 			budget_activity = item.budget_activity
 			budget_sub_activity = item.budget_sub_activity

@@ -34,6 +34,7 @@ class JournalEntryAccount(Document):
 		debit: DF.Currency
 		debit_in_account_currency: DF.Currency
 		exchange_rate: DF.Float
+		ignore_budget_details: DF.Check
 		is_advance: DF.Literal["No", "Yes"]
 		parent: DF.Data
 		parentfield: DF.Data

@@ -638,87 +638,87 @@ frappe.ui.form.on("Journal Entry Account", {
 
     account: function (frm, dt, dn) {
         erpnext.journal_entry.set_account_details(frm, dt, dn);
-        var d = frappe.get_doc(dt, dn);
-        frm.call({
-            method: "erpnext.accounts.doctype.journal_entry.journal_entry.account_bank",
-            args: {
-                "account": d.account
-            },
-            callback: function (r) {
-                if (!r.message) return;
-                let data = r.message;
-                let bank_type = data.account_type;
-                let is_deposit_work = data.is_deposit_work;
-                let ignore_budget_activity = data.ignore_budget_activity;
-                // let bank_type = r.message;
-                // let is_deposit_work = r.is_deposit_work;
-                if (bank_type === "Bank" || bank_type === "Cash" || is_deposit_work == 1 || ignore_budget_activity == 1 || d.broad_head =="6 e - Others - RBA") {
-                    frm.fields_dict.accounts.grid.update_docfield_property(
-                        "budget_activity",
-                        "hidden",
-                        1
-                    );
-                    frm.fields_dict.accounts.grid.update_docfield_property(
-                        "budget_sub_activity",
-                        "hidden",
-                        1
-                    );
-                    frm.fields_dict.accounts.grid.update_docfield_property(
-                        "source_of_fund",
-                        "hidden",
-                        1
-                    );
-                    frm.fields_dict.accounts.grid.update_docfield_property(
-                        "budget_activity",
-                        "reqd",
-                        0
-                    );
-                    frm.fields_dict.accounts.grid.update_docfield_property(
-                        "budget_sub_activity",
-                        "reqd",
-                        0
-                    );
-                    frm.fields_dict.accounts.grid.update_docfield_property(
-                        "source_of_fund",
-                        "reqd",
-                        0
-                    );
-                }
-                else {
-                    frm.fields_dict.accounts.grid.update_docfield_property(
-                        "budget_activity",
-                        "hidden",
-                        0
-                    );
-                    frm.fields_dict.accounts.grid.update_docfield_property(
-                        "budget_sub_activity",
-                        "hidden",
-                        0
-                    );
-                    frm.fields_dict.accounts.grid.update_docfield_property(
-                        "source_of_fund",
-                        "hidden",
-                        0
-                    );
-                    frm.fields_dict.accounts.grid.update_docfield_property(
-                        "budget_activity",
-                        "reqd",
-                        1
-                    );
-                    frm.fields_dict.accounts.grid.update_docfield_property(
-                        "budget_sub_activity",
-                        "reqd",
-                        1
-                    );
-                    frm.fields_dict.accounts.grid.update_docfield_property(
-                        "source_of_fund",
-                        "reqd",
-                        1
-                    );
-                }
+        // var d = frappe.get_doc(dt, dn);
+        // frm.call({
+        //     method: "erpnext.accounts.doctype.journal_entry.journal_entry.account_bank",
+        //     args: {
+        //         "account": d.account
+        //     },
+        //     callback: function (r) {
+        //         if (!r.message) return;
+        //         let data = r.message;
+        //         let bank_type = data.account_type;
+        //         let is_deposit_work = data.is_deposit_work;
+        //         let ignore_budget_activity = data.ignore_budget_activity;
+        //         // let bank_type = r.message;
+        //         // let is_deposit_work = r.is_deposit_work;
+        //         if (bank_type === "Bank" || bank_type === "Cash" || is_deposit_work == 1 || ignore_budget_activity == 1 || d.broad_head =="6 e - Others - RBA" || d.broad_head =="9 f - Other Deposits - RBA") {
+        //             frm.fields_dict.accounts.grid.update_docfield_property(
+        //                 "budget_activity",
+        //                 "hidden",
+        //                 1
+        //             );
+        //             frm.fields_dict.accounts.grid.update_docfield_property(
+        //                 "budget_sub_activity",
+        //                 "hidden",
+        //                 1
+        //             );
+        //             frm.fields_dict.accounts.grid.update_docfield_property(
+        //                 "source_of_fund",
+        //                 "hidden",
+        //                 1
+        //             );
+        //             frm.fields_dict.accounts.grid.update_docfield_property(
+        //                 "budget_activity",
+        //                 "reqd",
+        //                 0
+        //             );
+        //             frm.fields_dict.accounts.grid.update_docfield_property(
+        //                 "budget_sub_activity",
+        //                 "reqd",
+        //                 0
+        //             );
+        //             frm.fields_dict.accounts.grid.update_docfield_property(
+        //                 "source_of_fund",
+        //                 "reqd",
+        //                 0
+        //             );
+        //         }
+        //         else {
+        //             frm.fields_dict.accounts.grid.update_docfield_property(
+        //                 "budget_activity",
+        //                 "hidden",
+        //                 0
+        //             );
+        //             frm.fields_dict.accounts.grid.update_docfield_property(
+        //                 "budget_sub_activity",
+        //                 "hidden",
+        //                 0
+        //             );
+        //             frm.fields_dict.accounts.grid.update_docfield_property(
+        //                 "source_of_fund",
+        //                 "hidden",
+        //                 0
+        //             );
+        //             frm.fields_dict.accounts.grid.update_docfield_property(
+        //                 "budget_activity",
+        //                 "reqd",
+        //                 1
+        //             );
+        //             frm.fields_dict.accounts.grid.update_docfield_property(
+        //                 "budget_sub_activity",
+        //                 "reqd",
+        //                 1
+        //             );
+        //             frm.fields_dict.accounts.grid.update_docfield_property(
+        //                 "source_of_fund",
+        //                 "reqd",
+        //                 1
+        //             );
+        //         }
 
-            }
-        })
+        //     }
+        // })
 
     },
 
