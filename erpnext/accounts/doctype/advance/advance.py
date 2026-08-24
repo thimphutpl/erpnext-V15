@@ -133,10 +133,16 @@ class Advance(Document):
 	def post_journal_entry(self):
 		debit_account = frappe.db.get_value("Advance Type", self.advance_type, "advance_account")
 		credit_account = None
+		voucher_type = ""
+		voucher_series = ""
+		party_type = ""
+		party = ""
+		account_type=""
 		if self.is_opening == 1:
 			credit_account = frappe.db.get_value(
 				"Company", self.company, "default_temporary_account"
 			)
+	
 		elif self.mode_of_payment == "Cash":
 			credit_account = frappe.db.get_value(
 				"Company", self.company, "default_cash_account"
@@ -145,6 +151,7 @@ class Advance(Document):
 			credit_account = frappe.db.get_value(
 				"Company", self.company, "default_bank_account"
 			)
+
 		else:
 			credit_account = frappe.db.get_value(
 				"Company", self.company, "default_bank_account"
@@ -157,11 +164,7 @@ class Advance(Document):
 		if not credit_account:
 			frappe.throw("Setup Default Bank Account in Company Settings")
 
-		voucher_type = ""
-		voucher_series = ""
-		party_type = ""
-		party = ""
-		account_type=""
+		
 
 		debit_account_type = frappe.db.get_value("Account", debit_account, "account_type")
 
@@ -224,7 +227,6 @@ class Advance(Document):
 				"cost_center": self.cost_center,
 				"credit_in_account_currency": self.total_amount,
 				"credit": self.total_amount,
-				"ignore_budget_details":1
 			})
 
 		for item in self.advance_details:
@@ -240,8 +242,7 @@ class Advance(Document):
 					"debit_in_account_currency": flt(amount),
 					"debit": flt(amount),
 					"party_type": party_type,
-					"party": party,
-					"ignore_budget_details":1
+					"party": party
 
 				})
 
@@ -255,8 +256,7 @@ class Advance(Document):
 					"debit_in_account_currency": tds_amount,
 					"credit": tds_amount,
 					"party_type": party_type,
-					"party": party,
-					"ignore_budget_details":1
+					"party": party
 				})
 
 			# RETENTION
@@ -269,8 +269,7 @@ class Advance(Document):
 					"debit_in_account_currency": retention_amount,
 					"debit": retention_amount,
 					"party_type": party_type,
-					"party": party,
-					"ignore_budget_details":1
+					"party": party
 				})
 
 
@@ -296,6 +295,7 @@ class Advance(Document):
 		con.posting_time = nowtime()
 		con.party_type= self.party_type
 		con.customer = party
+		con.advance_type=self.advance_type
 		con.branch = self.branch
 		con.reference_type = "Advance Entry"
 		con.is_running_bill = 0

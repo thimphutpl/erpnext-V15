@@ -19,6 +19,7 @@ class AdvanceEntry(Document):
 
 		advance: DF.Link | None
 		advance_recoup: DF.Link | None
+		advance_type: DF.Link | None
 		amended_from: DF.Link | None
 		branch: DF.Link | None
 		cost_center: DF.Link | None
@@ -33,24 +34,24 @@ class AdvanceEntry(Document):
 
 	pass
 @frappe.whitelist()
-def get_advance(customer,branch=None):
-   
-    # frappe.msgprint(str(is_running_bill))
+def get_advance(customer,party_type,advance_type,branch=None):
     if not customer:
         frappe.throw(_("Customer is required"))
 
     filters = {"customer": customer}
-    # if is_running_bill is not None:
-    #     filters["is_running_bill"] = is_running_bill
     if branch:
         filters["branch"] = branch
+
+    if party_type:
+        filters["party_type"] = party_type
+    if advance_type:
+        filters["advance_type"] = advance_type
 
 
     entries = frappe.get_all(
         "Advance Entry",
         filters=filters,
         fields=["name","branch","posting_date"],
-        limit=1
     )
    
     result = []
@@ -58,12 +59,26 @@ def get_advance(customer,branch=None):
     for entry in entries:
         children = frappe.get_all(
             "Mobilisation Entry Item",
-            filters={"parent": entry.name},
-            fields=["reference","advance_type","account","advance_amount","total_amount","balance_amount","budget_activity","budget_sub_activity","source_of_fund"],
+            filters={"parent": entry.name,
+                     "balance_amount": [">", 0]},
+            fields=[
+                    "name",
+                    "reference",
+                    "advance_type",
+                    "account",
+                    "advance_amount",
+                    "total_amount",
+                    "balance_amount",
+                    "budget_activity",
+                    "budget_sub_activity",
+                    "source_of_fund",
+                     
+                ],
         )
         for child in children:
             if flt(child.balance_amount) > 0:
                 result.append({
+                    "parent": entry.parent,
                     "advance_entry": entry.name,
                     "posting_date": entry.posting_date,
                     "branch": entry.branch,
