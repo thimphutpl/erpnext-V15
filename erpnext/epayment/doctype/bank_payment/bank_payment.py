@@ -813,6 +813,15 @@ class BankPayment(Document):
 							party=i["party"]
 						)
 						employee = i["party"]
+					elif i["party_type"] == "Customer":
+						query = """select c.bank_name, c.bank_branch, c.bank_account_type, 
+										c.account_number as bank_account_no, c.customer_name as beneficiary_name
+										from `tabCustomer` c
+										WHERE c.name = '{party}'
+									""".format(
+							party=i["party"]
+						)
+						customer = i["party"]	
 					elif i["party_type"] == "Muster Roll Employee":
 						query = """select e.bank_name, e.bank_branch, e.bank_account_type, e.person_name as beneficiary_name,
 										e.bank_ac_no as bank_account_no
