@@ -61,13 +61,6 @@ def get_columns(filters):
 			"width": 180,
 		},
 		{
-			"label": _("Project"),
-			"fieldname": "project",
-			"fieldtype": "Link",
-			"options": "Project",
-			"width": 180,
-		},
-		{
 			"label": _("Party Type"),
 			"fieldname": "party_type",
 			"fieldtype": "Data",
@@ -82,7 +75,18 @@ def get_columns(filters):
 		},
 	]
 
-	
+	if cint(filters.get("all_projects")) or filters.get("project"):
+		columns.insert(
+			3,
+			{
+				"label": _("Project"),
+				"fieldname": "project",
+				"fieldtype": "Link",
+				"options": "Project",
+				"width": 180,
+			},
+		)
+
 	if filters.get("party_type") != "Employee":
 		columns.append({
 			"label": _("Supplier Type"),
@@ -121,7 +125,9 @@ def get_columns(filters):
 
 	return columns
 
+
 def get_data(filters):
+	include_project = cint(filters.get("all_projects")) or filters.get("project")
 	conditions = [
 		"gle.company = %(company)s",
 		"gle.is_cancelled = 0",
@@ -164,6 +170,9 @@ def get_data(filters):
 		params["supplier_type"] = filters.supplier_type
 
 	where_clause = " AND ".join(conditions)
+	project_column = "IFNULL(gle.project, '') AS project," if include_project else ""
+	project_group_by = "gle.project," if include_project else ""
+	project_order_by = ", gle.project" if include_project else ""
 
 	return frappe.db.sql(
 		f"""
@@ -171,7 +180,7 @@ def get_data(filters):
 			%(from_date)s AS from_date,
 			%(to_date)s AS to_date,
 			IFNULL(gle.cost_center, '') AS cost_center,
-			IFNULL(gle.project, '') AS project,
+			{project_column}
 			IFNULL(gle.party_type, '') AS party_type,
 			IFNULL(gle.party, '') AS party,
 			IFNULL(s.supplier_type, '') AS supplier_type,
@@ -186,7 +195,7 @@ def get_data(filters):
 		WHERE {where_clause}
 		GROUP BY
 			gle.cost_center,
-			gle.project,
+			{project_group_by}
 			gle.party_type,
 			gle.party,
 			s.supplier_type,
@@ -197,8 +206,7 @@ def get_data(filters):
 			gle.account,
 			gle.party_type,
 			gle.party,
-			gle.cost_center,
-			gle.project
+			gle.cost_center{project_order_by}
 		""",
 		params,
 		as_dict=True,
