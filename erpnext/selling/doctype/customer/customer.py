@@ -96,14 +96,14 @@ class Customer(TransactionBase):
 		info = get_dashboard_info(self.doctype, self.name, self.loyalty_program)
 		self.set_onload("dashboard_info", info)
 
-	def autoname(self):
-		cust_master_name = frappe.defaults.get_global_default("cust_master_name")
-		if cust_master_name == "Customer Name":
-			self.name = self.get_customer_name()
-		elif cust_master_name == "Naming Series":
-			set_name_by_naming_series(self)
-		else:
-			self.name = set_name_from_naming_options(frappe.get_meta(self.doctype).autoname, self)
+	# def autoname(self):
+	# 	cust_master_name = frappe.defaults.get_global_default("cust_master_name")
+	# 	if cust_master_name == "Customer Name":
+	# 		self.name = self.get_customer_name()
+	# 	elif cust_master_name == "Naming Series":
+	# 		set_name_by_naming_series(self)
+	# 	else:
+	# 		self.name = set_name_from_naming_options(frappe.get_meta(self.doctype).autoname, self)
 
 	def get_customer_name(self):
 		if frappe.db.get_value("Customer", self.customer_name) and not frappe.flags.in_import:
