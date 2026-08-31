@@ -3,7 +3,7 @@
 
 import frappe
 from frappe import _
-from frappe.utils import getdate, nowdate
+from frappe.utils import cint, getdate, nowdate
 
 
 COMPANY = "GYALSUNG INFRA"
@@ -29,6 +29,9 @@ def execute(filters=None):
 
 	if getdate(filters.from_date) > getdate(filters.to_date):
 		frappe.throw(_("Start Date cannot be greater than End Date"))
+
+	if cint(filters.get("all_projects")) and not filters.get("cost_center"):
+		frappe.throw(_("Please select a Cost Center to view all projects"))
 
 	columns = get_columns(filters)
 	data = get_data(filters)
@@ -142,7 +145,9 @@ def get_data(filters):
 		conditions.append("gle.cost_center = %(cost_center)s")
 		params["cost_center"] = filters.cost_center
 
-	if filters.get("project"):
+	if cint(filters.get("all_projects")):
+		conditions.extend(["gle.project IS NOT NULL", "gle.project != ''"])
+	elif filters.get("project"):
 		conditions.append("gle.project = %(project)s")
 		params["project"] = filters.project
 

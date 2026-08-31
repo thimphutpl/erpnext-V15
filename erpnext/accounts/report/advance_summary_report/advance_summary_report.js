@@ -17,10 +17,22 @@ frappe.query_reports["Advance Summary Report"] = {
 			}
 		},
 		{
+			fieldname: "all_projects",
+			label: __("All Projects"),
+			fieldtype: "Check",
+			default: 0,
+			on_change: function () {
+				if (frappe.query_report.get_filter_value("all_projects")) {
+					frappe.query_report.set_filter_value("project", "");
+				}
+			}
+		},
+		{
 			fieldname: "project",
 			label: __("Project"),
 			fieldtype: "Link",
 			options: "Project",
+			depends_on: "eval:!doc.all_projects",
 			get_query: function () {
 				return {
 					filters: {
