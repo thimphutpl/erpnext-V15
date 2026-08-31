@@ -194,7 +194,13 @@ def get_data(filters):
         #     OR
         #     (a.status in ('Scrapped', 'Sold') AND a.disposal_date >= '{from_date}')
         # )
-        AND IFNULL(a.status, '') NOT IN ('Scrapped', 'Sold')
+        AND (
+            a.status NOT IN ('Scrapped', 'Sold')
+            OR (
+                a.status IN ('Scrapped', 'Sold')
+                AND a.disposal_date BETWEEN '{from_date}' AND '{to_date}'
+            )
+        )
         {cond}
         UNION
         SELECT
@@ -253,7 +259,14 @@ def get_data(filters):
         #     OR
         #     (a.status in ('Scrapped', 'Sold') AND a.disposal_date >= '{from_date}')
         # )
-        AND IFNULL(a.status, '') NOT IN ('Scrapped', 'Sold')
+
+        AND (
+            a.status NOT IN ('Scrapped', 'Sold')
+            OR (
+                a.status IN ('Scrapped', 'Sold')
+                AND a.disposal_date BETWEEN '{from_date}' AND '{to_date}'
+            )
+        )
         {cond}
         """.format(from_date=filters.from_date, to_date=filters.to_date, cond=cond)
 
