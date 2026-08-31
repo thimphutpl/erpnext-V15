@@ -392,7 +392,11 @@ class BudgetRelease(Document):
 			% ("%s", budget_against_field, "%s", "%s", "%s", "%s", ",".join(["%s"] * len(accounts))),
 			(self.company, budget_against, self.fiscal_year, self.month, self.name) + tuple(accounts),
 			as_dict=1)
-		if existing_budget:
+
+		for acc in self.accounts:
+			monthly_release = acc.monthly_release == 1;	
+
+		if existing_budget and monthly_release:
 			for d in existing_budget:
 				frappe.msgprint(
 					_(
