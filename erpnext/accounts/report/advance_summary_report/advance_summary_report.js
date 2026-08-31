@@ -17,6 +17,19 @@ frappe.query_reports["Advance Summary Report"] = {
 			}
 		},
 		{
+			fieldname: "project",
+			label: __("Project"),
+			fieldtype: "Link",
+			options: "Project",
+			get_query: function () {
+				return {
+					filters: {
+						company: "GYALSUNG INFRA"
+					}
+				};
+			}
+		},
+		{
 			fieldname: "from_date",
 			label: __("Start Date"),
 			fieldtype: "Date",

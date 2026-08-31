@@ -58,6 +58,13 @@ def get_columns(filters):
 			"width": 180,
 		},
 		{
+			"label": _("Project"),
+			"fieldname": "project",
+			"fieldtype": "Link",
+			"options": "Project",
+			"width": 180,
+		},
+		{
 			"label": _("Party Type"),
 			"fieldname": "party_type",
 			"fieldtype": "Data",
@@ -135,6 +142,10 @@ def get_data(filters):
 		conditions.append("gle.cost_center = %(cost_center)s")
 		params["cost_center"] = filters.cost_center
 
+	if filters.get("project"):
+		conditions.append("gle.project = %(project)s")
+		params["project"] = filters.project
+
 	if filters.get("party_type"):
 		conditions.append("gle.party_type = %(party_type)s")
 		params["party_type"] = filters.party_type
@@ -155,6 +166,7 @@ def get_data(filters):
 			%(from_date)s AS from_date,
 			%(to_date)s AS to_date,
 			IFNULL(gle.cost_center, '') AS cost_center,
+			IFNULL(gle.project, '') AS project,
 			IFNULL(gle.party_type, '') AS party_type,
 			IFNULL(gle.party, '') AS party,
 			IFNULL(s.supplier_type, '') AS supplier_type,
@@ -169,6 +181,7 @@ def get_data(filters):
 		WHERE {where_clause}
 		GROUP BY
 			gle.cost_center,
+			gle.project,
 			gle.party_type,
 			gle.party,
 			s.supplier_type,
@@ -179,7 +192,8 @@ def get_data(filters):
 			gle.account,
 			gle.party_type,
 			gle.party,
-			gle.cost_center
+			gle.cost_center,
+			gle.project
 		""",
 		params,
 		as_dict=True,
