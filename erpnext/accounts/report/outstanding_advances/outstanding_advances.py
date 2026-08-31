@@ -58,8 +58,14 @@ def get_columns():
             "width": 120,
         },
         {
-            "fieldname": "opening_balance",
+            "fieldname": "testing",
             "label": _("Opening Balance"),
+            "fieldtype": "Currency",
+            "width": 150,
+        },
+        {
+            "fieldname": "opening_balance",
+            "label": _("Advance Amount"),
             "fieldtype": "Currency",
             "width": 150,
         },
@@ -102,6 +108,11 @@ def get_data(filters):
             settlement.name
         )
 
+        # Get opening items where is_opening = 1 in the linked Advance
+        opening_items = get_opening_items(
+            settlement.name
+        )
+
         recoup_items = get_recoup_items(
             settlement.name,
             filters,
@@ -115,6 +126,11 @@ def get_data(filters):
         total_opening_balance = sum(
             item.get("advance_amount") or 0
             for item in mobilisation_items
+        )
+
+        total_testing = sum(
+            item.get("advance_amount") or 0
+            for item in opening_items
         )
 
         total_settlement_amount = sum(
@@ -158,6 +174,7 @@ def get_data(filters):
                     or ""
                 ),
                 "opening_balance": total_opening_balance,
+                "testing": total_testing,
                 "settlement_amount": total_settlement_amount,
                 "total_outstanding": total_outstanding,
             }
@@ -297,6 +314,32 @@ def get_mobilisation_items(settlement_name):
         ],
         order_by="idx asc",
     )
+
+
+def get_opening_items(settlement_name):
+    """
+    Get Mobilisation Advance Item rows where the linked Advance has is_opening = 1.
+    Uses SQL to join with the Advance doctype.
+    """
+    
+    # Use SQL to join Mobilisation Advance Item with Advance doctype
+    # to filter by is_opening = 1
+    result = frappe.db.sql("""
+        SELECT 
+            mai.advance_amount
+        FROM 
+            `tabMobilisation Advance Item` mai
+        INNER JOIN 
+            `tabAdvance` a ON mai.reference = a.name
+        WHERE 
+            mai.parent = %s
+            AND mai.parenttype = 'Advance Settlement'
+            AND a.is_opening = 1
+        ORDER BY 
+            mai.idx ASC
+    """, (settlement_name,), as_dict=True)
+    
+    return result
 
 
 def get_recoup_items(settlement_name, filters):
