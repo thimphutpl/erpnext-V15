@@ -113,7 +113,7 @@
    "label": "Entry Type",
    "oldfieldname": "voucher_type",
    "oldfieldtype": "Select",
-   "options": "\nJournal Entry\nDisbursement Voucher\nJournal Voucher\nOther Voucher\nReversal Voucher\nWrite Off Entry\nOpening Entry\nBank Entry",
+   "options": "\nJournal Entry\nDisbursement Voucher\nJournal Voucher\nOther Voucher\nReversal Voucher\nWrite Off Entry\nOpening Entry\nBank Entry\nContra Entry",
    "reqd": 1,
    "search_index": 1
   },
@@ -724,7 +724,7 @@
    "table_fieldname": "payment_entries"
   }
  ],
- "modified": "2026-08-18 23:22:40.725333",
+ "modified": "2026-09-01 10:45:35.183099",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Journal Entry",

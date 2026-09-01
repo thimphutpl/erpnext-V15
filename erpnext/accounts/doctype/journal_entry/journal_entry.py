@@ -103,7 +103,7 @@ class JournalEntry(AccountsController):
 		total_taxes_and_charges: DF.Currency
 		use_check_lot: DF.Check
 		user_remark: DF.SmallText | None
-		voucher_type: DF.Literal["", "Journal Entry", "Disbursement Voucher", "Journal Voucher", "Other Voucher", "Reversal Voucher", "Write Off Entry", "Opening Entry", "Bank Entry"]
+		voucher_type: DF.Literal["", "Journal Entry", "Disbursement Voucher", "Journal Voucher", "Other Voucher", "Reversal Voucher", "Write Off Entry", "Opening Entry", "Bank Entry", "Contra Entry"]
 		workflow_state: DF.Link | None
 		write_off_amount: DF.Currency
 		write_off_based_on: DF.Literal["Accounts Receivable", "Accounts Payable"]
@@ -266,6 +266,8 @@ class JournalEntry(AccountsController):
 
 	def on_submit(self):
 		
+	
+		
 		self.validate_cheque_info()
 		self.check_credit_limit()
 		self.update_other_deposit_status()
@@ -279,6 +281,7 @@ class JournalEntry(AccountsController):
 
 		self.update_project_advance(cancel=self.docstatus == 2)
 		self.link_je_to_imprest(cancel=self.docstatus == 2)
+		
 
 
 	
@@ -338,6 +341,24 @@ class JournalEntry(AccountsController):
 		)
 
 	def on_cancel(self):
+		if self.cheque_lot and self.cheque_no:
+			ref_doc = frappe.get_doc("Cheque Lot", self.cheque_lot)
+
+			current_next = cint(ref_doc.next_no)
+			cancelled_cheque = cint(self.cheque_no)
+
+			# Only return if this was the latest cheque used
+			if current_next == cancelled_cheque + 1:
+
+				ref_doc.db_set(
+					"next_no",
+					str(cancelled_cheque).zfill(len(ref_doc.next_no))
+				)
+
+				if cancelled_cheque == cint(ref_doc.start_no):
+					ref_doc.db_set("status", "Available")
+				else:
+					ref_doc.db_set("status", "In Use")
 		# References for this Journal are removed on the `on_cancel` event in accounts_controller
 		super().on_cancel()
 		self.ignore_linked_doctypes = (

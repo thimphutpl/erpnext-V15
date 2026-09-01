@@ -677,7 +677,7 @@ class BankPayment(Document):
 								FROM `tabJournal Entry` je 
 								where je.docstatus = 1
 								{cond}
-								AND je.voucher_type in ('Bank Entry','Journal Entry','Disbursement Voucher') 
+								AND je.voucher_type in ('Bank Entry', 'Contra Entry','Journal Entry','Disbursement Voucher') 
 								AND NOT EXISTS(select 1
 									FROM `tabBank Payment Item` bpi
 									WHERE bpi.transaction_type = 'Journal Entry'
@@ -750,6 +750,66 @@ class BankPayment(Document):
 						)
 					if flt(p.debit) > 0:
 						debit_bank_account += 1
+
+			elif a.voucher_type == "Contra Entry":
+				# frappe.throw(str("hi"))
+				debit_amt = credit_amt = 0.00
+				debit_bank_account = 0
+				# t = frappe.db.sql(
+				# 	"""select a.account, round(a.debit_in_account_currency,2) as debit, 
+				# 					round(a.credit_in_account_currency,2) as credit,
+				# 					b.bank_name, b.bank_branch, b.bank_account_type, b.bank_account_no, b.company
+				# 					from `tabJournal Entry Account` a
+				# 					inner join `tabAccount` b on a.account = b.name
+				# 					where a.parent = '{journal_entry}'
+				# 					and b.account_type = "Bank"
+				# 					""".format(
+				# 		journal_entry=a.transaction_id
+				# 	),
+				# 	as_dict=True,
+				# )
+				# frappe.throw(str(t))
+				for p in frappe.db.sql(
+					"""select a.account, 
+							round(a.debit_in_account_currency,2) as debit, 
+							round(a.credit_in_account_currency,2) as credit,
+							b.bank_name, 
+							b.bank_branch, 
+							b.bank_account_type, 
+							b.bank_account_no, 
+							b.company
+						from `tabJournal Entry Account` a
+							inner join `tabAccount` b on a.account = b.name
+						where a.parent = '{journal_entry}'
+							and b.account_type = "Bank"
+									""".format(
+						journal_entry=a.transaction_id
+					),
+					as_dict=True,
+				):
+					# frappe.throw(str(p))
+					debit_amt += p.debit
+					credit_amt += p.credit
+					if p.debit > 0:
+						data.append(
+							frappe._dict(
+								{
+									"transaction_type": "Journal Entry",
+									"transaction_id": a.transaction_id,
+									"transaction_date": a.transaction_date,
+									"beneficiary_name": p.company,
+									"bank_name": p.bank_name,
+									"bank_branch": p.bank_branch,
+									"bank_account_type": p.bank_account_type,
+									"bank_account_no": p.bank_account_no,
+									"amount": flt(p.debit),
+									"status": "Draft",
+								}
+							)
+						)
+					if flt(p.debit) > 0:
+						debit_bank_account += 1
+
 			elif a.voucher_type == "Disbursement Voucher":
 			
 				
