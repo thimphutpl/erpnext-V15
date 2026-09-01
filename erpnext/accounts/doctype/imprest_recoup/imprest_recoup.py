@@ -50,6 +50,7 @@ class ImprestRecoup(Document):
 
 	def validate(self):
 		validate_workflow_states(self)
+		self.validate_previous_draft_recoup()
 		self.calculate_amount()
 		self.calculate_gst_amount()
 		self.populate_imprest_advance()
@@ -57,6 +58,43 @@ class ImprestRecoup(Document):
 		if self.workflow_state != "Recouped":
 			notify_workflow_states(self)
 		self.calculate_amount_final()
+
+	#added by kinzang.N
+	def validate_previous_draft_recoup(self):
+		if not self.branch or not self.imprest_type:
+			return
+		filters = {
+			"branch": self.branch,
+			"imprest_type": self.imprest_type,
+			"docstatus": 0,
+		}
+
+		# Don't compare the current document with itself
+		if self.name:
+			filters["name"] = ["!=", self.name]
+
+			previous_draft = frappe.db.get_value(
+				"Imprest Recoup",
+				filters,
+				["name", "posting_date"],
+				as_dict=True
+			)
+
+		if previous_draft:
+			frappe.throw(
+				_(
+                	"A previous Draft Imprest Recoup already exists for "
+                	"Branch <b>{0}</b> and Imprest Type <b>{1}</b>.<br><br>"
+                	"Please complete or cancel Imprest Recoup <b>{2}</b> "
+                	"before creating a new one."
+            	).format(
+                	self.branch,
+                	self.imprest_type,
+                	frappe.get_desk_link("Imprest Recoup", previous_draft.name)
+            	)
+        	)			
+	#till here
+
 	
 	def set_recoup_account(self, validate=False):
 		for d in self.items:
