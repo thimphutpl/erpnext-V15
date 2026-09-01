@@ -770,7 +770,6 @@
   }
  ],
  "search_fields": "voucher_type,posting_date, due_date, cheque_no",
- "show_preview_popup": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],

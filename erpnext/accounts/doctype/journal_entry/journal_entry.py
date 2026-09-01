@@ -1334,7 +1334,7 @@ class JournalEntry(AccountsController):
 					party_amount += flt(d.debit_in_account_currency) or flt(d.credit_in_account_currency)
 					party_account_currency = d.account_currency
 
-			elif frappe.get_cached_value("Account", d.account, "account_type") in ["Bank", "Cash"]:
+			elif frappe.get_cached_value("Account", d.account, "account_type") in ["Bank", "Cash", ,"Current Asset"]:
 				bank_amount += flt(d.debit_in_account_currency) or flt(d.credit_in_account_currency)
 				bank_account_currency = d.account_currency
 
