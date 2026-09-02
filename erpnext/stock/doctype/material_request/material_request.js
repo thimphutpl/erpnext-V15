@@ -605,13 +605,13 @@ frappe.ui.form.on("Material Request Item", {
 		frm.events.get_item_data(frm, item, false);
 	},
 	//added by kinzang.n to get same uom in stock_uom
-	uom: function (frm, cdt, cdn) {
-		let row = locals[cdt][cdn];
-		if (row.uom) {
-			frappe.model.set_value(cdt, cdn, "stock_uom", row.uom);
-		}
+	// uom: function (frm, cdt, cdn) {
+	// 	let row = locals[cdt][cdn];
+	// 	if (row.uom) {
+	// 		frappe.model.set_value(cdt, cdn, "stock_uom", row.uom);
+	// 	}
 
-	},
+	// },
 
 	from_warehouse: function (frm, doctype, name) {
 		const item = locals[doctype][name];

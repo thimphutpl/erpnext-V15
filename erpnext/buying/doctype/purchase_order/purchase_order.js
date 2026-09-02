@@ -311,13 +311,13 @@ frappe.ui.form.on("Purchase Order Item", {
 
 	},
 	//added by kinzang.n to get same uom in stock_uom
-	uom: function (frm, cdt, cdn) {
-		let row = locals[cdt][cdn];
-		if (row.uom) {
-			frappe.model.set_value(cdt, cdn, "stock_uom", row.uom);
-		}
+	// uom: function (frm, cdt, cdn) {
+	// 	let row = locals[cdt][cdn];
+	// 	if (row.uom) {
+	// 		frappe.model.set_value(cdt, cdn, "stock_uom", row.uom);
+	// 	}
 
-	},
+	// },
 
 
 	item_code: function (frm, cdt, cdn) {
