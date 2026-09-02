@@ -638,7 +638,7 @@ frappe.ui.form.on("Material Request Item", {
 
 		set_schedule_date(frm);
 		frm.events.get_item_data(frm, item, true);
-
+        set_item_uom(frm, doctype, name);
 		// Fetch and set item_sub_group automatically, added by Kinzang.N on 16/10/2025
 		frappe.call({
 			method: "frappe.client.get_value",
@@ -779,4 +779,62 @@ function set_schedule_date(frm) {
 			"schedule_date"
 		);
 	}
+}
+function set_item_uom(frm, cdt, cdn) {
+	let row = locals[cdt][cdn];
+
+	if (!row.item_code) return;
+
+	frappe.call({
+		method: "frappe.client.get",
+		args: {
+			doctype: "Item",
+			name: row.item_code
+		},
+		callback: function (r) {
+			if (!r.message) return;
+
+			let item = r.message;
+			let uom_list = [];
+
+			// Stock UOM
+			if (item.stock_uom) {
+				uom_list.push(item.stock_uom);
+			}
+
+			// Item UOM table
+			if (item.uoms && item.uoms.length) {
+				item.uoms.forEach(function (u) {
+					if (u.uom && !uom_list.includes(u.uom)) {
+						uom_list.push(u.uom);
+					}
+				});
+			}
+
+			console.log("UOM List:", uom_list);
+
+			// Set first UOM automatically
+			if (uom_list.length) {
+				frappe.model.set_value(
+					cdt,
+					cdn,
+					"uom",
+					uom_list[0]
+				);
+			}
+
+			// Restrict UOM dropdown
+			frm.fields_dict.items.grid
+				.get_field("uom")
+				.get_query = function () {
+					return {
+						filters: [
+							["UOM", "name", "in", uom_list]
+						]
+					};
+				};
+
+			frm.refresh_field("items");
+		}
+	});
 }
