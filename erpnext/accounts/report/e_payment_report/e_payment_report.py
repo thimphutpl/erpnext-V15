@@ -41,11 +41,11 @@ def get_data(filters):
 			bpi.transaction_reference, 
 			bpi.party_type,
 			CASE
-                WHEN bpi.party_type = 'Supplier' THEN bpi.supplier
-                WHEN bpi.party_type = 'Employee' THEN bpi.employee
-                WHEN bpi.party_type = 'Customer' THEN bpi.customer
-			ELSE NULL
-		    END AS party,
+				WHEN bpi.party_type = 'Supplier' THEN bpi.supplier
+				WHEN bpi.party_type = 'Employee' THEN bpi.employee
+				WHEN bpi.party_type = 'Customer' THEN bpi.customer
+				ELSE COALESCE(bpi.supplier, bpi.employee, bpi.customer)
+			END AS party,
         
 			bpi.beneficiary_name, 
 			bpi.bank_account_no, 
