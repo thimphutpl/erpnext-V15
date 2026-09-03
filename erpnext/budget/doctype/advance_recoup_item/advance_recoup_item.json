@@ -10,6 +10,7 @@
   "invoice_date",
   "account",
   "broad_head",
+  "ignore_budget_details",
   "budget_activity",
   "budget_sub_activity",
   "source_of_fund",
@@ -47,28 +48,31 @@
    "reqd": 1
   },
   {
+   "depends_on": "eval:!doc.ignore_budget_details",
    "fieldname": "budget_activity",
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Budget Activity",
-   "options": "Budget Activity",
-   "reqd": 1
+   "mandatory_depends_on": "eval:!doc.ignore_budget_details",
+   "options": "Budget Activity"
   },
   {
+   "depends_on": "eval:!doc.ignore_budget_details",
    "fieldname": "budget_sub_activity",
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Budget Sub Activity",
-   "options": "Budget Sub Activity",
-   "reqd": 1
+   "mandatory_depends_on": "eval:!doc.ignore_budget_details",
+   "options": "Budget Sub Activity"
   },
   {
+   "depends_on": "eval:!doc.ignore_budget_details",
    "fieldname": "source_of_fund",
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Source of Fund",
-   "options": "Source of Fund",
-   "reqd": 1
+   "mandatory_depends_on": "eval:!doc.ignore_budget_details",
+   "options": "Source of Fund"
   },
   {
    "fieldname": "bill_attachment",
@@ -89,12 +93,18 @@
    "fieldtype": "Small Text",
    "in_list_view": 1,
    "label": "Remark"
+  },
+  {
+   "default": "0",
+   "fieldname": "ignore_budget_details",
+   "fieldtype": "Check",
+   "label": "Ignore Budget Details"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-07-16 09:28:22.188631",
+ "modified": "2026-08-24 23:52:00.260313",
  "modified_by": "Administrator",
  "module": "Budget",
  "name": "Advance Recoup Item",

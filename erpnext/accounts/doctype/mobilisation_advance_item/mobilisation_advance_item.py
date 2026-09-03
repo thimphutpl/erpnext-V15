@@ -16,6 +16,7 @@ class MobilisationAdvanceItem(Document):
 
 		account: DF.Link | None
 		advance_amount: DF.Currency
+		advance_entry: DF.Link | None
 		advance_type: DF.Data | None
 		allocated_amount: DF.Currency
 		balance_amount: DF.Currency

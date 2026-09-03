@@ -20,6 +20,7 @@ class AdvanceSettlement(Document):
 		from erpnext.budget.doctype.advance_recoup_item.advance_recoup_item import AdvanceRecoupItem
 		from frappe.types import DF
 
+		adjustment_type: DF.Literal["", "Advance Settlement", "Recovery"]
 		advance_list: DF.Table[MobilisationAdvanceItem]
 		advance_type: DF.Link | None
 		amended_from: DF.Link | None
@@ -32,8 +33,10 @@ class AdvanceSettlement(Document):
 		expense_details: DF.Table[AdvanceRecoupItem]
 		is_running_bill: DF.Check
 		journal_entry: DF.Data | None
+		mode_of_payment: DF.Link | None
 		net_amount: DF.Currency
 		party_type: DF.Literal["", "Customer", "Supplier", "Employee"]
+		payment_status: DF.Data | None
 		posting_date: DF.Date | None
 		retention: DF.Link | None
 		retention_account: DF.Data | None
@@ -71,6 +74,29 @@ class AdvanceSettlement(Document):
 		self.calculate_tds()
 		self.calculate_retention()
 		self.calculate_net_amount()
+
+	def before_cancel(self):
+		if not self.journal_entry:
+			return
+		
+		je = frappe.get_doc("Journal Entry", self.journal_entry)			
+		if je.workflow_state in (
+			"Waiting For Verification",
+			"Waiting Approval",
+		):
+			frappe.throw(
+				_(
+					"Cannot cancel Advance {0} because linked Journal Entry {1}. "
+					"Please Reject it first."
+				).format(self.name, self.journal_entry)
+		)
+	def on_cancel(self):
+		self.ignore_linked_doctypes = (
+					"GL Entry",
+					"Payment Ledger Entry",
+				)
+		self.return_advance_amount()
+		self.removed_journal_entry()
 
 	
 		
@@ -126,53 +152,133 @@ class AdvanceSettlement(Document):
 			self.retention_amount = expense_amount * flt(self.retention_rate) / 100
 		else:
 			self.retention_amount = 0
+	# def calculate_net_amount(self):
+	# 	allocated_amount = self.get_allocated_amount()
+	# 	expense_amount = self.get_expense_amount()
+
+	# 	self.net_amount = (expense_amount-
+	# 		allocated_amount
+	# 		- flt(self.tds_amount)
+	# 		- flt(self.retention_amount)
+	# 	)
 	def calculate_net_amount(self):
-		allocated_amount = self.get_allocated_amount()
-		expense_amount = self.get_expense_amount()
+		allocated_amount = flt(self.get_allocated_amount())
+		expense_amount = flt(self.get_expense_amount())
+		tds_amount = flt(self.tds_amount)
+		retention_amount = flt(self.retention_amount)
+		if expense_amount:
+			if expense_amount <= allocated_amount:
+				self.net_amount = (
+					allocated_amount
+					- expense_amount
+					- tds_amount
+					- retention_amount
+				)
+			else:
+				self.net_amount = (
+					expense_amount
+					- allocated_amount
+					- tds_amount
+					- retention_amount
+				)
+		else:
+			self.net_amount = 0
+	
+	def return_advance_amount(self):
+		for item in self.advance_list:
+			if not item.reference:
+				continue
 
-		self.net_amount = (expense_amount-
-			allocated_amount
-			- flt(self.tds_amount)
-			- flt(self.retention_amount)
+			advance_entry = frappe.db.get_value(
+				"Advance Entry",
+				{
+					"advance": item.reference,
+					"docstatus": 1
+				},
+				"name"
+			)
+
+			if not advance_entry:
+				continue
+
+			doc = frappe.get_doc("Advance Entry", advance_entry)
+
+			for row in doc.mobilisation_entry:
+				if row.reference != item.reference:
+					continue
+
+				deduction = flt(item.allocated_amount)
+
+				row.allocated_amount = max(
+					0,
+					flt(row.allocated_amount) - deduction
+				)
+
+				row.balance_amount = (
+					flt(row.advance_amount) - flt(row.allocated_amount)
+				)
+
+			doc.save(ignore_permissions=True)
+
+	def removed_journal_entry(self):
+		
+		if not self.journal_entry:
+			return
+
+		je_name = self.journal_entry
+
+		# Find linked Advance
+		advance_name = frappe.db.get_value(
+			"Advance",
+			{"journal_entry": je_name},
+			"name"
 		)
-	
 
+		if advance_name:
+			# Remove the Journal Entry link from Advance
+			frappe.db.set_value(
+				"Advance",
+				advance_name,
+				"journal_entry",
+				None
+			)
 
+		# Delete Journal Entry if Draft
+		if frappe.db.exists("Journal Entry", je_name):
+			je = frappe.get_doc("Journal Entry", je_name)
 
-	
+			if je.workflow_state in ["Draft","Rejected","Cancelled"] and je.docstatus == 0:
+				frappe.delete_doc(
+					"Journal Entry",
+					je_name,
+					ignore_permissions=True
+				)
 
+			self.db_set("journal_entry", None)
 	def make_mobilisation_entry(self, cancel=False):
-		frappe.db.sql("""
-			UPDATE `tabAdvance Entry`
-			SET is_running_bill = 0
-			WHERE customer = %s AND branch = %s AND is_running_bill = 1
-		""", (self.customer, self.branch))
-		if self.is_running_bill:
-			con = frappe.new_doc("Advance Entry")
-			con.branch = self.branch
-			con.posting_date = self.posting_date
-			con.posting_time = nowtime()
-			con.customer = self.customer
-			con.branch = self.branch
-			con.reference_type = 'Advance Entry'
-			con.is_running_bill = self.is_running_bill
-			con.advance_settlement = self.name
-			con.party_type= self.party_type
-			for acc in self.advance_list:
-				con.append("mobilisation_entry", {
-					"reference":acc.reference,
-					"advance_type": acc.advance_type,
-					"allocated_amount": acc.allocated_amount,
-					"total_amount": acc.balance_amount,
-					"balance_amount": acc.balance_amount,
-					"advance_amount": acc.advance_amount,
-					"budget_activity": acc.budget_activity,
-					"budget_sub_activity":acc.budget_sub_activity,
-					"account": acc.account,
-					"source_of_fund":acc.source_of_fund, 
-				})
-			con.insert(ignore_permissions=True)
-			con.submit()
+
+		for acc in self.advance_list:
+
+			con = frappe.get_doc("Advance Entry", acc.advance_entry)
+
+			for row in con.mobilisation_entry:
+
+				if row.reference == acc.reference:
+
+					if cancel:
+						row.allocated_amount -= flt(acc.allocated_amount)
+					else:
+						row.allocated_amount += flt(acc.allocated_amount)
+
+					row.balance_amount = (
+						flt(row.advance_amount)
+						- flt(row.allocated_amount)
+					)
+
+					break
+
+			con.flags.ignore_validate_update_after_submit = True
+			con.save(ignore_permissions=True)
 	
 	
 	
@@ -181,8 +287,14 @@ class AdvanceSettlement(Document):
 	def post_journal_entry(self):
 		
 		credit_account = frappe.db.get_value("Company", self.company, "default_bank_account")
-		voucher_type = "Disbursement Voucher"
-		naming_series = "Disbursement Voucher"
+		voucher_type=""
+		naming_series=""
+		if self.adjustment_type=="Recovery":
+			voucher_type = "Other Voucher"
+			naming_series = "Other Voucher"
+		else:
+			voucher_type = "Disbursement Voucher"
+			naming_series = "Disbursement Voucher"
 		prefix = frappe.db.get_value(
 					"Journal Entry Series",
 					naming_series,
@@ -191,6 +303,7 @@ class AdvanceSettlement(Document):
 		party_type = ""
 		party = ""
 		account_type = ""
+		expense_account_type = ""
 		credit_account_type = frappe.db.get_value("Account", credit_account, "account_type")
 		tds_account = frappe.db.get_value("Account", self.tds_account, "account_type")
 		retention_account = frappe.db.get_value("Account", self.retention_account, "account_type")
@@ -201,12 +314,23 @@ class AdvanceSettlement(Document):
 			account_type = frappe.db.get_value(
 				"Account", advance_account, "account_type"
 			)
-		
-		
+		for i in self.expense_details:
+			expense_account = i.account
+
+			expense_account_type = frappe.db.get_value(
+				"Account", expense_account, "account_type"
+			)
+
+		debit_account=None
+		if self.mode_of_payment == "Cash":
+			debit_account = frappe.db.get_value("Company", self.company, "default_cash_account")
+		elif self.mode_of_payment == "Wire Transfer":
+			debit_account = frappe.db.get_value("Company", self.company, "default_bank_account")
+	
 	
 		
 		
-		if credit_account_type in ("Payable", "Receivable") or account_type in ("Payable", "Receivable") or tds_account in ("Payable", "Receivable") or retention_account in ("Payable", "Receivable"):
+		if credit_account_type in ("Payable", "Receivable") or account_type in ("Payable", "Receivable") or tds_account in ("Payable", "Receivable") or retention_account in ("Payable", "Receivable")or expense_account_type in ("Payable", "Receivable"):
 			party_type = self.party_type
 			party = self.customer
 
@@ -225,66 +349,150 @@ class AdvanceSettlement(Document):
 		je.company=self.company
 		je.branch=self.branch
 		je.total_amount_in_words= money_in_words(self.net_amount),
+		je.reference_doctype=self.doctype
+		je.reference_link=self.name
 
 	
+		# if self.adjustment_type=="Advance Settlement":
+			# for i in self.advance_list:
+			# 	allocated_amount = flt(i.allocated_amount)
+			# 	if allocated_amount > 0:
+			# 		je.append("accounts", {
+			# 			"account": i.account,
+			# 			"reference_type": self.doctype,
+			# 			"reference_name": self.name,
+			# 			"cost_center": self.cost_center,
+			# 			"credit_in_account_currency": allocated_amount,
+			# 			"credit": allocated_amount,
+			# 			"party_type": party_type,
+			# 			"party": party,
+			# 			"budget_activity": i.budget_activity,
+			# 			"budget_sub_activity": i.budget_sub_activity,
+			# 			"source_of_fund": i.source_of_fund
+			# 		})
 
+			# for item in self.expense_details:
+			# 	expense_amount = flt(item.amount)
 
-		for item in self.expense_details:
-			account=item.account
-			broad_head = item.broad_head
-			budget_activity = item.budget_activity
-			budget_sub_activity = item.budget_sub_activity
-			source_of_fund = item.source_of_fund
+			# 	if expense_amount > 0:
+			# 		je.append("accounts", {
+			# 			"account": item.account,
+			# 			"reference_type": self.doctype,
+			# 			"reference_name": self.name,
+			# 			"cost_center": self.cost_center,
+			# 			"debit_in_account_currency": expense_amount,
+			# 			"debit": expense_amount,
+			# 			"broad_head": item.broad_head,
+			# 			"party_type": party_type,
+			# 			"party": party,
+			# 			"budget_activity": item.budget_activity,
+			# 			"budget_sub_activity": item.budget_sub_activity,
+			# 			"source_of_fund": item.source_of_fund
+			# 		})
+		if self.adjustment_type=="Recovery":
+			for i in self.advance_list:
+				allocated_amount = flt(i.allocated_amount)
 
-		for i in self.advance_list:
-			je.append("accounts", {
-					"account": i.account,
-					"reference_type": self.doctype,
+				if allocated_amount > 0:
+					je.append("accounts", {
+						"account": i.account,
+						"reference_type": self.doctype,
+						"reference_name": self.name,
+						"cost_center": self.cost_center,
+						"credit_in_account_currency": allocated_amount,
+						"credit": allocated_amount,
+						"party_type": party_type,
+						"party": party,
+						"budget_activity": i.budget_activity,
+						"budget_sub_activity": i.budget_sub_activity,
+						"source_of_fund": i.source_of_fund
+					})
+					je.append("accounts", {
+						"account": debit_account,
+						"reference_type": self.doctype,
+						"reference_name": self.name,
+						"cost_center": self.cost_center,
+						"debit_in_account_currency": allocated_amount,
+						"debit": allocated_amount,
+						"budget_activity": item.budget_activity,
+						"budget_sub_activity": item.budget_sub_activity,
+						"source_of_fund": item.source_of_fund
+					})
+
+					
+		elif self.adjustment_type=="Advance Settlement":
+			for item in self.expense_details:
+				account=item.account
+				broad_head = item.broad_head
+				budget_activity = item.budget_activity
+				budget_sub_activity = item.budget_sub_activity
+				source_of_fund = item.source_of_fund
+
+			for i in self.advance_list:
+				je.append("accounts", {
+						"account": i.account,
+						"reference_type": self.doctype,
+						"reference_name": self.name,
+						"cost_center": self.cost_center,
+						"credit_in_account_currency": flt(i.allocated_amount),
+						"credit": flt(i.allocated_amount),
+						"party_type": party_type,
+						"party": party,
+						"budget_activity": i.budget_activity,
+						"budget_sub_activity": i.budget_sub_activity,
+						"source_of_fund": i.source_of_fund
+		
+					})
+				
+			if self.net_amount > 0:
+				je.append("accounts", {
+						"account": account,
+						"reference_type": self.doctype,
+						"reference_name": self.name,
+						"cost_center": self.cost_center,
+						"debit_in_account_currency": flt(expense_amount),
+						"debit": flt(expense_amount),
+						"broad_head": broad_head,
+						"budget_activity": budget_activity,
+						"budget_sub_activity": budget_sub_activity,
+						"source_of_fund": source_of_fund,
+						"party_type": party_type,
+						"party": party
+
+						})
+				je.append("accounts", {
+					"account": credit_account,
+					"reference_type":self.doctype,
 					"reference_name": self.name,
 					"cost_center": self.cost_center,
-					"credit_in_account_currency": flt(i.allocated_amount),
-					"credit": flt(i.allocated_amount),
-					"party_type": party_type,
-					"party": party,
+					"credit_in_account_currency": flt(self.net_amount),
+					"credit": flt(self.net_amount),
 					"budget_activity": budget_activity,
 					"budget_sub_activity": budget_sub_activity,
 					"source_of_fund": source_of_fund
-	
+
 				})
-			
-		if self.net_amount > 0:
-			je.append("accounts", {
-					"account": account,
-					"reference_type": self.doctype,
-					"reference_name": self.name,
-					"cost_center": self.cost_center,
-					"debit_in_account_currency": flt(expense_amount),
-					"debit": flt(expense_amount),
-					"broad_head": broad_head,
-					"budget_activity": budget_activity,
-					"budget_sub_activity": budget_sub_activity,
-					"source_of_fund": source_of_fund,
-					"party_type": party_type,
-					"party": party
+			else:
+				for item in self.expense_details:
+					amount = flt(item.amount)
+					if allocated_amount > 0:
+						je.append("accounts", {
+							"account": item.account,
+							"reference_type": self.doctype,
+							"reference_name": self.name,
+							"cost_center": self.cost_center,
+							"debit_in_account_currency": amount,
+							"debit": amount,
+							"party_type": party_type,
+							"party": party,
+							"broad_head": broad_head,
+							"budget_activity": budget_activity,
+							"budget_sub_activity":budget_sub_activity,
+							"source_of_fund": source_of_fund
 
-					})
-
+						})
 			
-			
-			je.append("accounts", {
-				"account": credit_account,
-				"reference_type":self.doctype,
-				"reference_name": self.name,
-				"cost_center": self.cost_center,
-				"credit_in_account_currency": flt(self.net_amount),
-				"credit": flt(self.net_amount),
-				"party_type": party_type,
-				"party": party,
-				"budget_activity": budget_activity,
-				"budget_sub_activity": budget_sub_activity,
-				"source_of_fund": source_of_fund
 
-			})
 			if self.tds_amount > 0 :
 				je.append("accounts", {
 				"account": self.tds_account,
@@ -295,6 +503,7 @@ class AdvanceSettlement(Document):
 				"credit": flt(self.tds_amount),
 				"party_type": self.party_type,
 				"party": party,
+				"ignore_budget_details":1
 			})
 			if self.retention_amount > 0:
 				je.append("accounts", {
@@ -306,6 +515,7 @@ class AdvanceSettlement(Document):
 				"credit": flt(self.retention_amount),
 				"party_type": self.party_type,
 				"party": party,
+				"ignore_budget_details":1
 			})
 		je.insert()
 		# frappe.db.commit()		

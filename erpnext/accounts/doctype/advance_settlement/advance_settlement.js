@@ -11,7 +11,9 @@ frappe.ui.form.on("Advance Settlement", {
         frappe.call({
             method: "erpnext.accounts.doctype.advance_entry.advance_entry.get_advance",
             args: {
+                party_type: frm.doc.party_type,
                 customer: frm.doc.customer,
+                advance_type: frm.doc.advance_type,
                 branch: frm.doc.branch
 
             },
@@ -26,6 +28,7 @@ frappe.ui.form.on("Advance Settlement", {
                     } else {
                         response.message.forEach(function (advance) {
                             let row = frm.add_child('advance_list');
+                            row.advance_entry = advance.advance_entry;
                             row.reference = advance.reference;
                             row.account = advance.account;
                             row.budget_activity = advance.budget_activity;

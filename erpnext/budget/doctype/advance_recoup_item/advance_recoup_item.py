@@ -18,15 +18,16 @@ class AdvanceRecoupItem(Document):
 		amount: DF.Currency
 		bill_attachment: DF.Attach | None
 		broad_head: DF.Link
-		budget_activity: DF.Link
-		budget_sub_activity: DF.Link
+		budget_activity: DF.Link | None
+		budget_sub_activity: DF.Link | None
+		ignore_budget_details: DF.Check
 		invoice_date: DF.Date | None
 		invoice_no: DF.Data | None
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
 		remark: DF.SmallText | None
-		source_of_fund: DF.Link
+		source_of_fund: DF.Link | None
 	# end: auto-generated types
 
 	pass

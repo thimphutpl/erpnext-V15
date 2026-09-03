@@ -15,7 +15,8 @@
   "budget_sub_activity",
   "source_of_fund",
   "account",
-  "advance_type"
+  "advance_type",
+  "advance_entry"
  ],
  "fields": [
   {
@@ -62,7 +63,8 @@
   {
    "fieldname": "total_amount",
    "fieldtype": "Currency",
-   "label": "Total Amount"
+   "label": "Total Amount",
+   "read_only": 1
   },
   {
    "fieldname": "budget_activity",
@@ -83,12 +85,19 @@
    "in_list_view": 1,
    "label": "Source of Fund",
    "options": "Source of Fund"
+  },
+  {
+   "fieldname": "advance_entry",
+   "fieldtype": "Link",
+   "label": "Advance Entry",
+   "options": "Advance Entry",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-08-17 15:09:23.892497",
+ "modified": "2026-08-24 23:37:32.575121",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Mobilisation Advance Item",

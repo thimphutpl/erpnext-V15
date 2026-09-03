@@ -265,12 +265,11 @@ class JournalEntry(AccountsController):
 			return self._cancel()
 
 	def on_submit(self):
-		
-	
-		
 		self.validate_cheque_info()
 		self.check_credit_limit()
 		self.update_other_deposit_status()
+		self.update_advance()
+		self.update_advance_settlement()
 		self.make_gl_entries()
 		self.update_advance_paid()
 		self.update_asset_value()
@@ -320,27 +319,48 @@ class JournalEntry(AccountsController):
 				self.db_set("repost_required", self.needs_repost)
 	def update_other_deposit_status(self):
 
-		# Only process approved Journal Entries
 		if self.workflow_state != "Approved":
 			return
-
-		# Only Other Deposit Claim Journal Entries
 		if self.reference_doctype != "Other Deposit Claim":
 			return
-
-		# Must have a claim reference
 		if not self.reference_link:
 			return
-
-		# Update the claim as Paid
 		frappe.db.set_value(
 			"Other Deposit Claim",
 			self.reference_link,
 			"payment_status",
 			"Paid"
 		)
+	def update_advance(self, cancel=False):
+		if self.workflow_state != "Approved":
+			return
+		if self.reference_doctype != "Advance":
+			return
+		if not self.reference_link:
+			return
+		frappe.db.set_value(
+			"Advance",
+			self.reference_link,
+			"payment_status",
+			"Paid"
+		)
+	def update_advance_settlement(self, cancel=False):
+			if self.workflow_state != "Approved":
+				return
+			if self.reference_doctype != "Advance Settlement":
+				return
+			if not self.reference_link:
+				return
+			frappe.db.set_value(
+				"Advance Settlement",
+				self.reference_link,
+				"payment_status",
+				"Paid"
+			)
 
 	def on_cancel(self):
+		if self.workflow_state == "Approved":
+			frappe.throw(_("This Journal Entry {0} Already Approved. Please cancel it first.").format(self.name))
 		if self.cheque_lot and self.cheque_no:
 			ref_doc = frappe.get_doc("Cheque Lot", self.cheque_lot)
 

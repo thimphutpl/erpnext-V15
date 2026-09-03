@@ -17,6 +17,7 @@
   "advance_type",
   "is_running_bill",
   "is_opening",
+  "is_cancelled",
   "section_break_grmq",
   "mobilisation_entry",
   "advance_recoup",
@@ -113,11 +114,17 @@
    "label": "Advance Type",
    "options": "Advance Type",
    "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_cancelled",
+   "fieldtype": "Check",
+   "label": "Is Cancelled"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-08-24 22:33:13.046038",
+ "modified": "2026-09-03 11:32:53.713398",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Advance Entry",

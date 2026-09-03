@@ -31,6 +31,7 @@ class Advance(Document):
 		journal_entry: DF.Link | None
 		mode_of_payment: DF.Link | None
 		party_type: DF.Literal["", "Supplier", "Employee", "Customer"]
+		payment_status: DF.Data | None
 		posting_date: DF.Date | None
 		remarks: DF.SmallText | None
 		total_amount: DF.Currency
@@ -76,10 +77,25 @@ class Advance(Document):
 	def on_submit(self):
 		self.post_journal_entry()
 		self.make_mobilisation_entry()
+	
+	def before_cancel(self):
+		if not self.journal_entry:
+			return
+		
+		je = frappe.get_doc("Journal Entry", self.journal_entry)	
+		if je.workflow_state in (
+			"Waiting For Verification",
+			"Waiting Approval",
+		):
+			frappe.throw(
+				_(
+					"Cannot cancel Advance {0} because linked Journal Entry {1}. "
+					"Please Reject it first."
+				).format(self.name, self.journal_entry)
+		)
 
 	def cancel(self):
 		self.ignore_linked_doctypes = (
-			"Journal Entry",
 			"GL Entry",
 			"Payment Ledger Entry",
 		)
@@ -88,12 +104,32 @@ class Advance(Document):
 
 
 	def on_cancel(self):
-		self.cancel_linked_advance_entry()
+		self.cancel_advance_entry()
+		self.removed_journal_entry()
 
 
+	def on_trash(self):
+		self.delete_linked_advance_entries()
+		
+	
 
+	def delete_linked_advance_entries(self):
+		advance_entries = frappe.get_all(
+			"Advance Entry",
+			filters={
+				"advance": self.name
+			},
+			pluck="name"
+		)
 
-	def cancel_linked_advance_entry(self):
+		for advance_entry in advance_entries:
+			frappe.delete_doc(
+				"Advance Entry",
+				advance_entry,
+				ignore_permissions=True
+			)
+
+	def cancel_advance_entry(self):
 		advance_entries = frappe.get_all(
 			"Advance Entry",
 			filters={
@@ -104,20 +140,46 @@ class Advance(Document):
 		)
 
 		for advance_entry in advance_entries:
-			doc = frappe.get_doc("Mobilisation Entry Item", advance_entry)
-			doc.cancel()
+			doc = frappe.get_doc("Advance Entry", advance_entry)
+			doc.db_set("is_cancelled", 1)
+			if doc.docstatus == 1:
+				doc.cancel()
+	
+	def removed_journal_entry(self):
+		
+		if not self.journal_entry:
+			return
 
+		je_name = self.journal_entry
 
-	# def cancel_general_ledger(self):
-	# 	frappe.db.sql("""
-	# 		UPDATE `tabGL Entry`
-	# 		SET is_cancelled = 1
-	# 		where voucher_no = %s
-	# 		AND is_cancelled = 0
-	# 	""", (self.name,))
+		# Find linked Advance
+		advance_name = frappe.db.get_value(
+			"Advance",
+			{"journal_entry": je_name},
+			"name"
+		)
 
-		frappe.db.commit()
+		if advance_name:
+			# Remove the Journal Entry link from Advance
+			frappe.db.set_value(
+				"Advance",
+				advance_name,
+				"journal_entry",
+				None
+			)
 
+		# Delete Journal Entry if Draft
+		if frappe.db.exists("Journal Entry", je_name):
+			je = frappe.get_doc("Journal Entry", je_name)
+
+			if je.workflow_state in ["Draft","Rejected","Cancelled"] and je.docstatus == 0:
+				frappe.delete_doc(
+					"Journal Entry",
+					je_name,
+					ignore_permissions=True
+				)
+
+			self.db_set("journal_entry", None)
 
 	def calculate_total_amount(self):
 		total_amount = 0
