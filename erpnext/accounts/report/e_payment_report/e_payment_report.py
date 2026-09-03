@@ -19,7 +19,7 @@ def get_column():
 		("Transaction ID") + ":Data:150",
 		("Transaction Date") + ":Date:100",
 		("Transaction Reference") + ":Data:100",
-		("Supplier") + ":Link/Supplier:120",
+		("Party") + ":Link/Party:120",
 		("Beneficiary Name") + ":Data:150",
 		("Beneficiary Bank Acc No.") + ":Data:150",
 		("Total Amount") + ":Currency:100",
@@ -38,7 +38,12 @@ def get_data(filters):
 			bpi.transaction_id, 
 			bpi.transaction_date, 
 			bpi.transaction_reference, 
-			bpi.supplier, 
+			CASE
+                WHEN bpi.party_type = 'Supplier' THEN bpi.supplier
+                WHEN bpi.party_type = 'Employee' THEN bpi.employee
+                WHEN bpi.party_type = 'Customer' THEN bpi.customer
+			ELSE NULL
+		    END AS party,
 			bpi.beneficiary_name, 
 			bpi.bank_account_no, 
 			bpi.amount, bpi.status, 
@@ -89,13 +94,43 @@ def get_utility_data(filters):
 	""".format(condition=cond))
 	return data
 
+# def get_condition(filters):
+# 	conds = ""
+# 	if filters.payment_type == "Bank Payment":
+# 		if filters.transaction_type:
+# 			conds += "and bpi.transaction_type='{}'".format(filters.transaction_type)
+# 		if filters.party_type:
+# 			conds += "and bpi.party_type='{}'".format(filters.party_type)
+			
+# 		if filters.party:
+# 			parties = filters.party
+
+# 			if isinstance(parties, str):
+# 				parties = [parties]
+
+# 			party_list = ", ".join(
+# 				frappe.db.escape(party) for party in parties
+# 			)
+
+# 			conds += " and bpi.supplier IN ({})".format(party_list)
+# 		if filters.status:
+# 			conds += "and bpi.status='{}'".format(filters.status)
+# 	return conds
 def get_condition(filters):
 	conds = ""
+
 	if filters.payment_type == "Bank Payment":
+
 		if filters.transaction_type:
-			conds += "and bpi.transaction_type='{}'".format(filters.transaction_type)
+			conds += " AND bpi.transaction_type = {}".format(
+				frappe.db.escape(filters.transaction_type)
+			)
+
 		if filters.party_type:
-			conds += "and bpi.party_type='{}'".format(filters.party_type)
+			conds += " AND bpi.party_type = {}".format(
+				frappe.db.escape(filters.party_type)
+			)
+
 		if filters.party:
 			parties = filters.party
 
@@ -103,10 +138,22 @@ def get_condition(filters):
 				parties = [parties]
 
 			party_list = ", ".join(
-				frappe.db.escape(party) for party in parties
+				frappe.db.escape(party)
+				for party in parties
 			)
 
-			conds += " and bpi.supplier IN ({})".format(party_list)
+			if filters.party_type == "Supplier":
+				conds += " AND bpi.supplier IN ({})".format(party_list)
+
+			elif filters.party_type == "Employee":
+				conds += " AND bpi.employee IN ({})".format(party_list)
+
+			elif filters.party_type == "Customer":
+				conds += " AND bpi.customer IN ({})".format(party_list)
+
 		if filters.status:
-			conds += "and bpi.status='{}'".format(filters.status)
+			conds += " AND bpi.status = {}".format(
+				frappe.db.escape(filters.status)
+			)
+
 	return conds
