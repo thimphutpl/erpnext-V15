@@ -525,6 +525,7 @@
    "label": "Withdrawal Budget"
   },
   {
+   "allow_on_submit": 1,
    "depends_on": "eval:parent.workflow_state==\"Waiting for MOF Finance Approval\" || parent.workflow_state==\"Approved\"",
    "fieldname": "approved_budget",
    "fieldtype": "Float",
@@ -577,7 +578,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-07-23 13:24:51.802669",
+ "modified": "2026-09-03 07:41:19.427564",
  "modified_by": "Administrator",
  "module": "Budget",
  "name": "Budget Proposal Account",
