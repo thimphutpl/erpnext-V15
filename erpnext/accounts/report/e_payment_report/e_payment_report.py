@@ -19,6 +19,7 @@ def get_column():
 		("Transaction ID") + ":Data:150",
 		("Transaction Date") + ":Date:100",
 		("Transaction Reference") + ":Data:100",
+		("Party Type") + ":Data:100",
 		("Party") + ":Data:120",
 		("Beneficiary Name") + ":Data:150",
 		("Beneficiary Bank Acc No.") + ":Data:150",
@@ -38,12 +39,14 @@ def get_data(filters):
 			bpi.transaction_id, 
 			bpi.transaction_date, 
 			bpi.transaction_reference, 
+			bpi.party_type,
 			CASE
                 WHEN bpi.party_type = 'Supplier' THEN bpi.supplier
                 WHEN bpi.party_type = 'Employee' THEN bpi.employee
                 WHEN bpi.party_type = 'Customer' THEN bpi.customer
 			ELSE NULL
 		    END AS party,
+        
 			bpi.beneficiary_name, 
 			bpi.bank_account_no, 
 			bpi.amount, bpi.status, 
