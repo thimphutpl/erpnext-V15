@@ -33,7 +33,17 @@ def get_data(filters):
 	cond = get_condition(filters)
 	data = frappe.db.sql("""
 		SELECT 
-			bp.name, bpi.transaction_type, bpi.transaction_id, bpi.transaction_date, bpi.transaction_reference, bpi.supplier, bpi.beneficiary_name, bpi.bank_account_no, bpi.amount, bpi.status, bpi.bank_journal_no, bpi.pi_number
+			bp.name,
+			bpi.transaction_type, 
+			bpi.transaction_id, 
+			bpi.transaction_date, 
+			bpi.transaction_reference, 
+			bpi.supplier, 
+			bpi.beneficiary_name, 
+			bpi.bank_account_no, 
+			bpi.amount, bpi.status, 
+			bpi.bank_journal_no, 
+			bpi.pi_number
 		FROM `tabBank Payment` bp, `tabBank Payment Item` bpi
 		WHERE bp.name=bpi.parent
 		{condition}
@@ -61,7 +71,18 @@ def get_utility_data(filters):
 	cond = get_condition(filters)
 	data = frappe.db.sql("""
 		SELECT 
-			uti.utility_service_type, uti.party, ut.expense_account, ut.bank_account, uti.debit_account, uti.consumer_code, uti.outstanding_amount, uti.payment_status, uti.payment_response_msg, uti.create_direct_payment, uti.tds_applicable, uti.pi_number
+			uti.utility_service_type, 
+			uti.party, 
+			ut.expense_account, 
+			ut.bank_account, 
+			uti.debit_account, 
+			uti.consumer_code, 
+			uti.outstanding_amount, 
+			uti.payment_status, 
+			uti.payment_response_msg, 
+			uti.create_direct_payment, 
+			uti.tds_applicable, 
+			uti.pi_number
 		FROM `tabUtility Bill` ut, `tabUtility Bill Item` uti 
 		WHERE ut.name=uti.parent
 		{condition}
@@ -73,11 +94,17 @@ def get_condition(filters):
 	if filters.payment_type == "Bank Payment":
 		if filters.transaction_type:
 			conds += "and bpi.transaction_type='{}'".format(filters.transaction_type)
-		if filters.supplier:
-			conds += "and bpi.supplier='{}'".format(filters.supplier)
+		if filters.party:
+			parties = filters.party
+
+			if isinstance(parties, str):
+				parties = [parties]
+
+			party_list = ", ".join(
+				frappe.db.escape(party) for party in parties
+			)
+
+			conds += " and bpi.supplier IN ({})".format(party_list)
 		if filters.status:
 			conds += "and bpi.status='{}'".format(filters.status)
-	else:
-		if filters.party:
-			conds = "and uti.party='{}'".format(filters.party)
 	return conds
