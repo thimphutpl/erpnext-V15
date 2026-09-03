@@ -19,7 +19,7 @@ def get_column():
 		("Transaction ID") + ":Data:150",
 		("Transaction Date") + ":Date:100",
 		("Transaction Reference") + ":Data:100",
-		("Party") + ":Link/Party:120",
+		("Party") + ":Data:120",
 		("Beneficiary Name") + ":Data:150",
 		("Beneficiary Bank Acc No.") + ":Data:150",
 		("Total Amount") + ":Currency:100",
