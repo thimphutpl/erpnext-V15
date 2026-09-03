@@ -897,6 +897,7 @@ class BankPayment(Document):
 								"transaction_type": "Journal Entry",
 								"transaction_id": a.transaction_id,
 								"transaction_date": a.transaction_date,
+								"party_type": i["party_type"],
 								"employee": employee,
 								"supplier": supplier,
 								"beneficiary_name": dtl[0]["beneficiary_name"],

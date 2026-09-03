@@ -10,6 +10,7 @@
   "transaction_date",
   "transaction_reference",
   "column_break_0",
+  "party_type",
   "employee",
   "supplier",
   "customer",
@@ -217,11 +218,18 @@
    "label": "Customer",
    "options": "Customer",
    "read_only": 1
+  },
+  {
+   "fieldname": "party_type",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Party Type",
+   "read_only": 1
   }
  ],
  "istable": 1,
  "links": [],
- "modified": "2026-08-19 14:47:20.203600",
+ "modified": "2026-09-03 11:16:51.304186",
  "modified_by": "Administrator",
  "module": "ePayment",
  "name": "Bank Payment Item",

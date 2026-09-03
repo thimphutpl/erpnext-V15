@@ -31,6 +31,7 @@ class BankPaymentItem(Document):
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
+		party_type: DF.Data | None
 		pi_number: DF.Data | None
 		remarks: DF.SmallText | None
 		status: DF.Literal["", "Draft", "Pending", "In progress", "Upload Failed", "Waiting Acknowledgement", "Processing Acknowledgement", "Failed", "Partial Payment", "Completed", "Cancelled"]
