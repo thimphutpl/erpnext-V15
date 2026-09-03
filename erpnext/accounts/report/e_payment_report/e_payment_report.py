@@ -94,6 +94,8 @@ def get_condition(filters):
 	if filters.payment_type == "Bank Payment":
 		if filters.transaction_type:
 			conds += "and bpi.transaction_type='{}'".format(filters.transaction_type)
+		if filters.party_type:
+			conds += "and bpi.party_type='{}'".format(filters.party_type)
 		if filters.party:
 			parties = filters.party
 
