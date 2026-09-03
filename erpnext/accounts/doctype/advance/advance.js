@@ -233,8 +233,8 @@ function toggle_party_field(frm) {
     frm.set_query("advance_type", function() {
         return {
             filters: {
-                company: frm.doc.company,
-                party_type: frm.doc.party_type
+                company: frm.doc.company
+                // party_type: frm.doc.party_type
             }
         };
     });
