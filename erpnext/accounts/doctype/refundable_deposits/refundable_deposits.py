@@ -29,7 +29,7 @@ class RefundableDeposits(Document):
 		journal_entry: DF.Link | None
 		other_deposits: DF.Table[MOFPaymentItem]
 		party: DF.DynamicLink
-		party_type: DF.Literal["", "Employee", "Customer", "Employee"]
+		party_type: DF.Literal["", "Employee", "Customer", "Supplier"]
 		posting_date: DF.Date
 		remarks: DF.SmallText | None
 	# end: auto-generated types
