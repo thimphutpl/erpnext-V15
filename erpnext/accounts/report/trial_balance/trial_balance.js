@@ -104,6 +104,7 @@ frappe.query_reports["Trial Balance"] = {
 			fieldname: "show_unclosed_fy_pl_balances",
 			label: __("Show unclosed fiscal year's P&L balances"),
 			fieldtype: "Check",
+			default: 1,
 		},
 		{
 			fieldname: "include_default_book_entries",
