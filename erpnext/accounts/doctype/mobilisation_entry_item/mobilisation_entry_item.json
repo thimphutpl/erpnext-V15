@@ -15,7 +15,8 @@
   "advance_amount",
   "total_amount",
   "allocated_amount",
-  "balance_amount"
+  "balance_amount",
+  "is_opening"
  ],
  "fields": [
   {
@@ -87,12 +88,20 @@
    "in_list_view": 1,
    "label": "Source of Fund",
    "options": "Source of Fund"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_opening",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Is Opening",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-09-03 18:19:21.598423",
+ "modified": "2026-09-05 10:39:06.425438",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Mobilisation Entry Item",

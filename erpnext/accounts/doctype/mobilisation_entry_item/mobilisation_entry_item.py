@@ -21,6 +21,7 @@ class MobilisationEntryItem(Document):
 		balance_amount: DF.Currency
 		budget_activity: DF.Link | None
 		budget_sub_activity: DF.Link | None
+		is_opening: DF.Check
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
