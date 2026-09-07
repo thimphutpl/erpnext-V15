@@ -279,6 +279,7 @@ class Advance(Document):
 		je.branch = self.branch
 		je.reference_doctype= self.doctype
 		je.reference_link = self.name
+		je.user_remark = self.remarks
 		je.mode_of_payment=self.mode_of_payment
 		if flt(self.total_amount) > 0:
 	  
