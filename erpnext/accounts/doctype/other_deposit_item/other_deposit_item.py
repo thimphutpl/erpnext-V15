@@ -17,6 +17,7 @@ class OtherDepositItem(Document):
 		account: DF.Link | None
 		amount: DF.Currency
 		assignment: DF.Data | None
+		is_opening: DF.Data | None
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
