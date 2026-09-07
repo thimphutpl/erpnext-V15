@@ -17,12 +17,11 @@ class BuyingSettings(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		afd_procurement_head_approval: DF.Link | None
 		allow_multiple_items: DF.Check
 		auto_create_purchase_receipt: DF.Check
 		auto_create_subcontracting_order: DF.Check
-		backflush_raw_materials_of_subcontract_based_on: DF.Literal[
-			"BOM", "Material Transferred for Subcontract"
-		]
+		backflush_raw_materials_of_subcontract_based_on: DF.Literal["BOM", "Material Transferred for Subcontract"]
 		bill_for_rejected_quantity_in_purchase_invoice: DF.Check
 		blanket_order_allowance: DF.Float
 		buying_price_list: DF.Link | None

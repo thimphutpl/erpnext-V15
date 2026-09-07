@@ -9,6 +9,7 @@
   "supp_master_name",
   "supplier_group",
   "buying_price_list",
+  "afd_procurement_head_approval",
   "column_break_4",
   "maintain_same_rate_action",
   "role_to_override_stop_action",
@@ -207,6 +208,12 @@
    "fieldtype": "Select",
    "label": "Update frequency of Project",
    "options": "Each Transaction\nManual"
+  },
+  {
+   "fieldname": "afd_procurement_head_approval",
+   "fieldtype": "Link",
+   "label": "AFD Procurement Head Approval",
+   "options": "Employee"
   }
  ],
  "icon": "fa fa-cog",
@@ -214,7 +221,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-01-31 13:34:18.101256",
+ "modified": "2026-09-07 12:34:41.699704",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Buying Settings",
