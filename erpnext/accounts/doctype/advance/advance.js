@@ -39,6 +39,13 @@ frappe.ui.form.on("Advance", {
 
             }
         })
+          frm.set_query("advance_type", function() {
+            return {
+                filters: {
+                    company: frm.doc.company
+                }
+            };
+        })
     },
 
  
