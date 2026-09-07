@@ -22,10 +22,11 @@ class AdvanceEntry(Document):
 		advance_type: DF.Link | None
 		amended_from: DF.Link | None
 		branch: DF.Link | None
+		company: DF.Link | None
 		cost_center: DF.Link | None
 		customer: DF.DynamicLink | None
+		fiscal_year: DF.Link | None
 		is_cancelled: DF.Check
-		is_opening: DF.Check
 		is_running_bill: DF.Check
 		mobilisation_entry: DF.Table[MobilisationEntryItem]
 		party_type: DF.Literal["", "Supplier", "Employee", "Customer"]
@@ -35,27 +36,62 @@ class AdvanceEntry(Document):
 
 	pass
 @frappe.whitelist()
-def get_advance(customer,party_type,advance_type,branch=None):
-    if not customer:
-        frappe.throw(_("Customer is required"))
+def get_advance(customer,party_type,advance_type,branch):
 
-    filters = {"customer": customer}
+    filters = {}
+    if not customer:
+        frappe.throw(_("Please select customer"))
+    if not party_type:
+        frappe.throw(_("Please select party type"))
+    if not advance_type:
+        frappe.throw(_("Please select advance type"))
+    if not branch:
+        frappe.throw(_("Please select branch"))
+    if customer:
+        filters["customer"]= customer
     if branch:
         filters["branch"] = branch
-
     if party_type:
         filters["party_type"] = party_type
     if advance_type:
         filters["advance_type"] = advance_type
+    filters["is_cancelled"] = 0
 
-
-    entries = frappe.get_all(
-        "Advance Entry",
-        filters=filters,
-        fields=["name","branch","posting_date"],
-    )
-   
+    # frappe.throw(str(filters))
+    # entries = frappe.get_all(
+    #     "Advance Entry",
+    #     filters=filters,
+    #     fields=["name","branch","posting_date","customer", "branch", "party_type", "advance_type"],
+    # )
+    entries = frappe.db.sql("""
+        SELECT
+            ae.name,
+            ae.branch,
+            ae.posting_date,
+            ae.customer,
+            ae.party_type,
+            ae.advance_type
+        FROM `tabAdvance Entry` ae
+        INNER JOIN `tabAdvance` a
+            ON a.name = ae.advance
+        WHERE
+            ae.customer = %s
+            AND ae.branch = %s
+            AND ae.party_type = %s
+            AND ae.advance_type = %s
+            AND ae.is_cancelled = 0
+            AND a.payment_status = 'Paid'
+        ORDER BY ae.posting_date ASC
+    """, (
+        customer,
+        branch,
+        party_type,
+        advance_type
+    ), as_dict=True)
+    # frappe.throw(str(entries))
+    
     result = []
+    # frappe.throw(str(entries))
 
     for entry in entries:
         children = frappe.get_all(

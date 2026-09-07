@@ -361,7 +361,7 @@ class Advance(Document):
 		con.branch = self.branch
 		con.reference_type = "Advance Entry"
 		con.is_running_bill = 0
-		# con.is_opening=self.is_opening
+		con.fiscal_year=self.fiscal_year
 		con.advance = self.name
   
 		for item in self.advance_details:

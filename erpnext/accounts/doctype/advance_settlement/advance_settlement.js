@@ -101,6 +101,13 @@ frappe.ui.form.on("Advance Settlement", {
 
             }
         })
+        frm.set_query("advance_type", function () {
+            return {
+                filters: {
+                    company: frm.doc.company
+                }
+            }
+        });
 
     },
     company: function (frm) {

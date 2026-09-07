@@ -8,6 +8,8 @@
  "field_order": [
   "section_break_hppa",
   "amended_from",
+  "company",
+  "fiscal_year",
   "posting_date",
   "posting_time",
   "branch",
@@ -16,7 +18,6 @@
   "customer",
   "advance_type",
   "is_running_bill",
-  "is_opening",
   "is_cancelled",
   "section_break_grmq",
   "mobilisation_entry",
@@ -103,28 +104,35 @@
    "read_only": 1
   },
   {
-   "default": "0",
-   "fieldname": "is_opening",
-   "fieldtype": "Check",
-   "label": "Is Opening"
-  },
-  {
    "fieldname": "advance_type",
    "fieldtype": "Link",
    "label": "Advance Type",
-   "options": "Advance Type",
-   "read_only": 1
+   "options": "Advance Type"
   },
   {
    "default": "0",
    "fieldname": "is_cancelled",
    "fieldtype": "Check",
    "label": "Is Cancelled"
+  },
+  {
+   "fieldname": "fiscal_year",
+   "fieldtype": "Link",
+   "label": "Fiscal Year",
+   "options": "Fiscal Year",
+   "read_only": 1
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-09-03 11:32:53.713398",
+ "modified": "2026-09-05 19:54:24.691817",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Advance Entry",
