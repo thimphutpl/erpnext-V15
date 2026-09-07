@@ -163,7 +163,7 @@ def get_all_other_deposit(company, account_deposit, party_type, party, posting_d
 			gl.voucher_type,
 			gl.voucher_no,
 			gl.is_opening,
-			gl.remarks
+			gl.remarks as assignment
 		FROM `tabGL Entry` gl
 		WHERE
 			gl.account = %s
