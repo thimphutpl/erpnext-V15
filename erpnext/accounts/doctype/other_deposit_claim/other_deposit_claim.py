@@ -161,7 +161,8 @@ def get_all_other_deposit(company, account_deposit, party_type, party, posting_d
 			gl.party,
 			gl.party_type,
 			gl.voucher_type,
-			gl.voucher_no
+			gl.voucher_no,
+			gl.is_opening
 		FROM `tabGL Entry` gl
 		WHERE
 			gl.account = %s
@@ -171,6 +172,7 @@ def get_all_other_deposit(company, account_deposit, party_type, party, posting_d
 			AND gl.is_cancelled = 0
 			AND gl.credit > 0
 			AND gl.posting_date <= %s
+			AND gl.is_opening IN ('Yes')
 			{existing_cond}
 	""", (
 		account_deposit,

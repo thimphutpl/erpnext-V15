@@ -90,12 +90,13 @@ frappe.ui.form.on("Refundable Deposits", {
 
                         let child = frm.add_child("other_deposits");
                         child.party_type = d.party_type;
+                        child.party = d.party;
                         child.voucher_no = d.voucher_no;
                         child.voucher_type = d.voucher_type;
                         child.assignment = d.assignment;
                         child.amount = d.outstanding;
                         child.account = d.account;
-                        child.party = d.party;
+                      
                        
 
                     });

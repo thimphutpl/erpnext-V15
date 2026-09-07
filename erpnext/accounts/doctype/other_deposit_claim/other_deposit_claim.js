@@ -47,7 +47,8 @@ frappe.ui.form.on("Other Deposit Claim", {
                         child.account = d.account;
                         child.party = d.party;
                         child.voucher_type=d.voucher_type;
-                        child.voucher_no=d.voucher_no
+                        child.voucher_no=d.voucher_no,
+                        child.is_opening = d.is_opening
                        
 
                     });
