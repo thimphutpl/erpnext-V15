@@ -12,6 +12,7 @@
   "entry_type_and_date",
   "is_system_generated",
   "title",
+  "company",
   "branch",
   "voucher_type",
   "naming_series",
@@ -21,7 +22,6 @@
   "column_break1",
   "mode_of_payment",
   "from_template",
-  "company",
   "posting_date",
   "apply_tds",
   "tax_withholding_category",
@@ -724,7 +724,7 @@
    "table_fieldname": "payment_entries"
   }
  ],
- "modified": "2026-09-01 10:45:35.183099",
+ "modified": "2026-09-07 10:44:09.570195",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Journal Entry",

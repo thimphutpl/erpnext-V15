@@ -30,7 +30,8 @@ frappe.ui.form.on("Journal Entry", {
             return {
                 filters: {
                     "company": frm.doc.company,
-                    "is_group": 1
+                    "is_group": 1,
+                
                 }
             };
         });
@@ -39,13 +40,15 @@ frappe.ui.form.on("Journal Entry", {
                 filters: {
                     "company": frm.doc.company,
                     "is_group": 0,
+                    
                 }
             };
         });
         frm.set_query("branch", function () {
             return {
                 filters: {
-                    "company": frm.doc.company
+                    "company": frm.doc.company,
+                    "disabled":0
                 }
             };
         });
