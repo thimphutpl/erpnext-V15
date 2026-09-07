@@ -304,7 +304,11 @@ class Advance(Document):
 					"debit_in_account_currency": flt(amount),
 					"debit": flt(amount),
 					"party_type": party_type,
-					"party": party
+					"party": party,
+					"budget_activity": item.budget_activity,
+					"budget_sub_activity": item.budget_sub_activity,
+					"source_of_fund": item.source_of_fund,
+					"user_remark":self.remarks
 
 				})
 
@@ -358,7 +362,8 @@ class Advance(Document):
 		con.party_type= self.party_type
 		con.customer = party
 		con.advance_type=self.advance_type
-		con.branch = self.branch
+		con.branch = self.branch,
+		con.company = self.company,
 		con.reference_type = "Advance Entry"
 		con.is_running_bill = 0
 		con.fiscal_year=self.fiscal_year
