@@ -131,47 +131,6 @@ def get_extra_entries(filters, from_date, to_date):
     
     consumed_entries = frappe.db.sql(consumed_query, tuple(consumed_params), as_dict=True)
 
-    # """Get committed/consumed entries that don't have corresponding budget records"""
-    # data = []
-    # budget_level = filters.budget_against
-    
-    # committed_conditions = get_committed_conditions(filters)
-    # committed_query = """
-    #     SELECT DISTINCT account, cost_center, project, budget_activity, 
-    #            budget_sub_activity, source_of_fund
-    #     FROM `tabCommitted Budget`
-    #     WHERE reference_date BETWEEN %s AND %s
-    #     {conditions}
-    # """.format(conditions=committed_conditions)
-    
-    # committed_params = [from_date, to_date]
-    # if filters.cost_center:
-    #     committed_params.append(filters.cost_center)     
-    # if filters.project:
-    #     committed_params.append(filters.project)
-    # if filters.budget_type:
-    #     committed_params.append(filters.budget_type)
-        
-    # committed_entries = frappe.db.sql(committed_query, tuple(committed_params), as_dict=True)
-    
-    # consumed_conditions = get_consumed_conditions(filters)
-    # consumed_query = """
-    #     SELECT DISTINCT account, cost_center, project, budget_activity, 
-    #            budget_sub_activity, source_of_fund
-    #     FROM `tabConsumed Budget`
-    #     WHERE reference_date BETWEEN %s AND %s
-    #     {conditions}
-    # """.format(conditions=consumed_conditions)
-    
-    # consumed_params = [from_date, to_date]ud
-    # if filters.cost_center:
-    #     consumed_params.append(filters.cost_center)        
-    # if filters.project:
-    #     consumed_params.append(filters.project)
-    # if filters.budget_type:
-    #     consumed_params.append(filters.budget_type)
-        
-    # consumed_entries = frappe.db.sql(consumed_query, tuple(consumed_params), as_dict=True)
     
     all_entries = committed_entries + consumed_entries
     unique_entries = {(
@@ -245,6 +204,7 @@ def get_extra_entries(filters, from_date, to_date):
             
         if filters.budget_against != "Project":
             row = {
+                 "company": entry["company"],
                 "account": entry['account'],
                 "cost_center": entry['cost_center'],
                 "budget_activity": entry['budget_activity'],
@@ -264,6 +224,7 @@ def get_extra_entries(filters, from_date, to_date):
             }
         else:
             row = {
+                 "company": entry["company"],
                 "account": entry['account'],
                 "project": entry.get('project'),
                 "project_name": frappe.db.get_value("Project", entry.get('project'), "project_name") if entry.get('project') else "",
@@ -285,25 +246,6 @@ def get_extra_entries(filters, from_date, to_date):
     
     return data
 
-def get_committed_conditions(filters):
-    conditions = ""
-    if filters.cost_center:
-        conditions += " AND cost_center = %s"
-    if filters.project:
-        conditions += " AND project = %s"
-    if filters.budget_type:
-        conditions += " AND budget_type = %s"
-    return conditions
-
-def get_consumed_conditions(filters):
-    conditions = ""
-    if filters.cost_center:
-        conditions += " AND cost_center = %s"
-    if filters.project:
-        conditions += " AND project = %s"
-    if filters.budget_type:
-        conditions += " AND budget_type = %s"
-    return conditions
 
 def get_data(query, from_date, to_date, filters):
     data = []
@@ -451,6 +393,7 @@ def get_data(query, from_date, to_date, filters):
                 #     "release_available": release_available,
                 # }
                 row = {
+                    "company": d.company,
                     "account": d.account,
 
                     "budget_cost_center": d.cost_center,
@@ -517,6 +460,7 @@ def get_data(query, from_date, to_date, filters):
                 }
             else:
                 row = {
+                    "company":d.company,
                     "account": d.account,
                     "project": d.project,
                     "project_name": d.project_name,
@@ -545,6 +489,9 @@ def get_supplementary_items(filters, from_date, to_date):
     if filters.parent_budget:
         conditions.append("sbi.parent=%s")
         params.append(filters.parent_budget)
+    if filters.company:
+        conditions.append("sb.company=%s")
+        params.append(filters.company)
     where_clause = " AND ".join(conditions)
 
     query = f"""
@@ -584,6 +531,7 @@ def get_supplementary_items(filters, from_date, to_date):
         available = flt(d.amount) - consumed
 
         row = {
+              "company":d.company,
             "account": d.account,
             "cost_center": d.cost_center,
             "budget_activity": d.budget_activity,
@@ -604,90 +552,6 @@ def get_supplementary_items(filters, from_date, to_date):
 
     return data
 
-# # The rest of the functions (construct_query, validate_filters, get_columns) remain the same as in the previous version
-# def construct_query(from_date, to_date, filters=None):
-#     condition = ''
-#     if filters.budget_against == "Cost Center" and filters.cost_center:
-#         condition += " and b.cost_center = \'" + str(filters.cost_center) + "\' "
-#         condition += " and br.cost_center = \'" + str(filters.cost_center) + "\' "
-        
-#     if filters.budget_type:
-#         condition += " and ba.budget_type = \'" + str(filters.budget_type) + "\' "
-#         condition += " and br.budget_type = \'" + str(filters.budget_type) + "\' "
-    
-#     if filters.cost_center and not filters.group_by_account:
-#         lft, rgt = frappe.db.get_value("Cost Center", filters.cost_center, ["lft", "rgt"])
-#         condition += """ and (b.cost_center in (select a.name 
-#                                         from `tabCost Center` a 
-#                                         where a.lft >= {1} and a.rgt <= {2}
-#                                         ) 
-#                  or b.cost_center = '{0}')
-#         """.format(filters.cost_center, lft, rgt)
-#         condition += """ and (br.cost_center in (select a.name 
-#                                         from `tabCost Center` a 
-#                                         where a.lft >= {1} and a.rgt <= {2}
-#                                         ) 
-#                  or br.cost_center = '{0}')
-#         """.format(filters.cost_center, lft, rgt)
-#     if filters.budget_type:
-#         condition += " and ba.budget_type = \'" + str(filters.budget_type) + "\' "
-#         condition += " and bra.budget_type = \'" + str(filters.budget_type) + "\' "
-
-#     if filters.monthly_budget and filters.month:
-#         month_field_name = filters.month
-#         query = """select b.cost_center, ba.account, b.project, ba.budget_activity, ba.budget_sub_activity, ba.source_of_fund,
-#             (select a.account_number from `tabAccount` a where a.name = ba.account) as account_number, 
-#             ba.budget_type,
-#             SUM(ba.approved_budget) as approved_budget,
-#             SUM(ba.budget_amount) as budget_amount,
-#             sum(ba.{month_name}) as monthly_budget,
-#             SUM(ba.initial_budget) as initial_budget, 
-#             SUM(ba.budget_received) as added, 
-#             SUM(ba.budget_sent) as deducted, 
-#             SUM(ba.supplementary_budget) as supplement
-#         from `tabBudget` b, `tabBudget Account` ba 
-#         where b.docstatus = 1 
-#             and b.name = ba.parent 
-#             and b.fiscal_year = "{fiscal_year}"
-#         {condition}
-#         group by ba.account, b.cost_center, ba.budget_activity, ba.budget_sub_activity, ba.source_of_fund order by b.cost_center
-#         """.format(fiscal_year=filters.fiscal_year, condition=condition, month_name=month_field_name.lower())
-#     else:
-#         query = """select b.cost_center, ba.account, b.project, ba.budget_activity, ba.budget_sub_activity, ba.source_of_fund,
-#             (select a.account_number from `tabAccount` a where a.name = ba.account) as account_number, 
-#             ba.budget_type,
-#             SUM(ba.approved_budget) as approved_budget,
-#             SUM(ba.budget_amount) as budget_amount, 
-#             SUM(bra.budget_amount) as budget_release_amount, 
-#             (ba.initial_budget) as initial_budget, 
-#             SUM(bra.released_budget) as initial_budget_release, 
-#             SUM(ba.budget_received) as added, 
-#             SUM(bra.budget_received) as release_added, 
-#             SUM(ba.budget_sent) as deducted, 
-#             SUM(bra.budget_sent) as release_deducted, 
-#             SUM(ba.supplementary_budget) as supplement,
-#             SUM(bra.supplementary_budget) as release_supplement
-#         from `tabBudget` b 
-#         left join `tabBudget Account` ba on ba.parent = b.name 
-#         left join `tabBudget Release` br on br.budget_id = b.name and br.docstatus = 1 
-#         left join `tabBudget Release Account` bra on bra.parent = br.name 
-#             and bra.budget_activity = ba.budget_activity 
-#             and bra.budget_sub_activity = ba.budget_sub_activity 
-#             and bra.source_of_fund = ba.source_of_fund 
-#             and bra.account = ba.account
-#         where b.docstatus = 1
-#             and b.fiscal_year = "{fiscal_year}"
-#         {condition}
-#         """.format(fiscal_year=filters.fiscal_year, condition=condition)
-        
-#         if filters.group_by_account:
-#             query += " group by ba.account "
-#         elif filters.budget_against == "Project":
-#             query += " group by b.cost_center, b.project"
-#         else:
-#             query += " group by ba.account, b.cost_center, ba.budget_activity, ba.budget_sub_activity, ba.source_of_fund order by b.cost_center"
-    
-#     return query
 
 def construct_query(from_date, to_date, filters=None):
     condition = ''
@@ -696,6 +560,8 @@ def construct_query(from_date, to_date, filters=None):
         
     if filters.budget_type:
         condition += " and ba.budget_type = \'" + str(filters.budget_type) + "\' "
+    if filters.company:
+        condition += " and b.company = \'" + str(filters.company) + "\' "
 
     if filters.cost_center and not filters.group_by_account:
         lft, rgt = frappe.db.get_value("Cost Center", filters.cost_center, ["lft", "rgt"])
@@ -708,7 +574,8 @@ def construct_query(from_date, to_date, filters=None):
 
     if filters.monthly_budget and filters.month:
         month_field_name = filters.month
-        query = """select b.cost_center, ba.account, b.project, ba.budget_activity, ba.budget_sub_activity, ba.source_of_fund,
+        query = """
+            select b.company, b.cost_center, ba.account, b.project, ba.budget_activity, ba.budget_sub_activity, ba.source_of_fund,
             (select a.account_number from `tabAccount` a where a.name = ba.account) as account_number, 
             ba.budget_type,
             SUM(ba.approved_budget) as approved_budget,
@@ -736,7 +603,7 @@ def construct_query(from_date, to_date, filters=None):
             and b.name = ba.parent 
             and b.fiscal_year = "{fiscal_year}"
         {condition}
-        group by ba.account, b.cost_center, ba.budget_activity, ba.budget_sub_activity, ba.source_of_fund order by b.cost_center
+        group by  b.company, ba.account, b.cost_center, ba.budget_activity, ba.budget_sub_activity, ba.source_of_fund order by b.cost_center
         """.format(
             fiscal_year=filters.fiscal_year, 
             condition=condition, 
@@ -746,7 +613,7 @@ def construct_query(from_date, to_date, filters=None):
         )
         
     else:
-        query = """select b.cost_center, ba.account, b.project, ba.budget_activity, ba.budget_sub_activity, ba.source_of_fund,
+        query = """select b.company, b.cost_center, ba.account, b.project, ba.budget_activity, ba.budget_sub_activity, ba.source_of_fund,
             (select a.account_number from `tabAccount` a where a.name = ba.account) as account_number, 
             ba.budget_type,
             SUM(ba.approved_budget) as approved_budget,
@@ -833,11 +700,11 @@ def construct_query(from_date, to_date, filters=None):
         )
         
         if filters.group_by_account:
-            query += " group by ba.account "
+            query += " group by b.company,ba.account "
         elif filters.budget_against == "Project":
-            query += " group by b.cost_center, b.project"
+            query += " group by b.company, b.cost_center, b.project"
         else:
-            query += " group by ba.account, b.cost_center, ba.budget_activity, ba.budget_sub_activity, ba.source_of_fund order by b.cost_center"
+            query += " group by b.company, ba.account, b.cost_center, ba.budget_activity, ba.budget_sub_activity, ba.source_of_fund order by b.cost_center"
     
     return query
 
