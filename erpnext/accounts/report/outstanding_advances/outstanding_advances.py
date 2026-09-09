@@ -481,6 +481,13 @@ def validate_filters(filters):
 def get_columns():
     return [
         {
+            "fieldname": "company",
+            "label": _("Company"),
+            "fieldtype": "Link",
+            "options": "Company",
+            "width": 100,
+        },
+        {
             "fieldname": "party",
             "label": _("Party"),
             "fieldtype": "Data",
@@ -535,6 +542,97 @@ def get_columns():
             "width": 150,
         },
     ]
+# def get_data(filters):
+
+#     fiscal_year = filters.get("fiscal_year")
+#     company = filters.get("company")
+
+#     party_type = filters.get("party_type")
+#     party = filters.get("party")
+#     account = filters.get("account")
+#     budget_sub_activity = filters.get("budget_sub_activity")
+#     source_of_fund = filters.get("source_of_fund")
+
+#     conditions = [
+#         "ae.company = %s",
+#         "ae.fiscal_year = %s",
+#         "ae.is_cancelled = 0"
+#     ]
+
+#     values = [
+#         company,
+#         fiscal_year,
+#     ]
+
+#     if party_type:
+#         conditions.append("ae.party_type = %s")
+#         values.append(party_type)
+
+#     if party:
+#         if isinstance(party, str):
+#             party = frappe.parse_json(party)
+
+#         if party:
+#             conditions.append("ae.customer IN %s")
+#             values.append(tuple(party))
+
+#     if account:
+#         conditions.append("mei.account = %s")
+#         values.append(account)
+
+#     if budget_sub_activity:
+#         conditions.append("mei.budget_activity = %s")
+#         values.append(budget_sub_activity)
+
+#     if source_of_fund:
+#         conditions.append("mei.source_of_fund = %s")
+#         values.append(source_of_fund)
+
+#     data = frappe.db.sql(
+#         f"""
+#         SELECT
+#             ae.customer AS party,
+#             ae.party_type as party_type,
+#             mei.account AS code,
+#             mei.budget_activity AS activity_code,
+#             mei.source_of_fund AS fi_code,
+#             CASE
+#                 WHEN COALESCE(mei.is_opening, 0) = 0
+#                 THEN COALESCE(mei.advance_amount, 0)
+#                 ELSE 0
+#             END AS advance_amount,
+
+#             CASE
+#                 WHEN COALESCE(mei.is_opening, 0) = 1
+#                 THEN COALESCE(mei.advance_amount, 0)
+#                 ELSE 0
+#             END AS opening_balance,
+#             COALESCE(mei.allocated_amount, 0) AS settlement_amount,
+
+#             (
+#                 COALESCE(mei.advance_amount, 0)
+#                 - COALESCE(mei.allocated_amount, 0)
+#             ) AS total_outstanding
+
+#         FROM `tabAdvance Entry` ae
+
+#         INNER JOIN `tabAdvance` a
+#             ON a.name = ae.advance
+
+#         INNER JOIN `tabMobilisation Entry Item` mei
+#             ON mei.parent = ae.name
+
+#         WHERE {" AND ".join(conditions)}
+
+#         ORDER BY ae.posting_date ASC
+#         """,
+#         values,
+#         as_dict=True,
+#     )
+
+
+#     return data
+
 def get_data(filters):
 
     fiscal_year = filters.get("fiscal_year")
@@ -543,6 +641,7 @@ def get_data(filters):
     party_type = filters.get("party_type")
     party = filters.get("party")
     account = filters.get("account")
+    budget_activity = filters.get("budget_activity")
     budget_sub_activity = filters.get("budget_sub_activity")
     source_of_fund = filters.get("source_of_fund")
 
@@ -550,7 +649,6 @@ def get_data(filters):
         "ae.company = %s",
         "ae.fiscal_year = %s",
         "ae.is_cancelled = 0",
-        "a.payment_status = 'Paid'",
     ]
 
     values = [
@@ -574,8 +672,12 @@ def get_data(filters):
         conditions.append("mei.account = %s")
         values.append(account)
 
-    if budget_sub_activity:
+    if budget_activity:
         conditions.append("mei.budget_activity = %s")
+        values.append(budget_activity)
+
+    if budget_sub_activity:
+        conditions.append("mei.budget_sub_activity = %s")
         values.append(budget_sub_activity)
 
     if source_of_fund:
@@ -585,16 +687,17 @@ def get_data(filters):
     data = frappe.db.sql(
         f"""
         SELECT
+            ae.company AS company,
             ae.customer AS party,
-            ae.party_type as party_type,
+            ae.party_type AS party_type,
+            ae.advance AS reference,
             mei.account AS code,
             mei.budget_activity AS activity_code,
+            mei.budget_sub_activity AS sub_activity_code,
             mei.source_of_fund AS fi_code,
-             CASE
-                WHEN mei.is_opening = 0
-                THEN COALESCE(mei.advance_amount, 0)
-                ELSE 0
-            END AS advance_amount,
+
+            COALESCE(mei.advance_amount, 0) AS advance_amount,
+            COALESCE(mei.allocated_amount, 0) AS settlement_amount,
 
             CASE
                 WHEN mei.is_opening = 1
@@ -602,21 +705,14 @@ def get_data(filters):
                 ELSE 0
             END AS opening_balance,
 
-            COALESCE(mei.allocated_amount, 0) AS settlement_amount,
-
             (
                 COALESCE(mei.advance_amount, 0)
                 - COALESCE(mei.allocated_amount, 0)
             ) AS total_outstanding
 
         FROM `tabAdvance Entry` ae
-
-        INNER JOIN `tabAdvance` a
-            ON a.name = ae.advance
-
         INNER JOIN `tabMobilisation Entry Item` mei
             ON mei.parent = ae.name
-
         WHERE {" AND ".join(conditions)}
 
         ORDER BY ae.posting_date ASC
