@@ -137,14 +137,16 @@ frappe.ui.form.on("Advance Item", {
     },
 
     form_render: function(frm, cdt, cdn) {
-        toggle_tds(frm, cdt, cdn);
-        toggle_retention(frm, cdt, cdn);
+        // toggle_tds(frm, cdt, cdn);
+        // toggle_retention(frm, cdt, cdn);
+        toggle_tds(frm, cdt, cdn, false);
+        toggle_retention(frm, cdt, cdn, false);
     }
 });
 
 
 
-function toggle_tds(frm, cdt, cdn) {
+function toggle_tds(frm, cdt, cdn,clear_values) {
     let row = locals[cdt][cdn];
     let grid_row = frm.fields_dict.advance_details.grid.grid_rows_by_docname[cdn];
 
@@ -174,16 +176,17 @@ function toggle_tds(frm, cdt, cdn) {
         grid_row.toggle_display("tds", false);
         grid_row.toggle_display("tds_rate", false);
         grid_row.toggle_display("tds_amount", false);
-
+        if (clear_values) {
         frappe.model.set_value(cdt, cdn, "tds", "");
         frappe.model.set_value(cdt, cdn, "tds_rate", 0);
         frappe.model.set_value(cdt, cdn, "tds_amount", 0);
           frappe.model.set_value(cdt, cdn, "tds_account","");
+        }
     }
 }
 
 
-function toggle_retention(frm, cdt, cdn) {
+function toggle_retention(frm, cdt, cdn,clear_values) {
     let row = locals[cdt][cdn];
     let grid_row = frm.fields_dict.advance_details.grid.grid_rows_by_docname[cdn];
 
@@ -213,11 +216,12 @@ function toggle_retention(frm, cdt, cdn) {
         grid_row.toggle_display("retention_account", false);
         grid_row.toggle_display("retention_rate", false);
         grid_row.toggle_display("retention_amount", false);
-
+           if (clear_values) {
         frappe.model.set_value(cdt, cdn, "retention", "");
         frappe.model.set_value(cdt, cdn, "retention_rate", 0);
         frappe.model.set_value(cdt, cdn, "retention_account", 0);
         frappe.model.set_value(cdt, cdn, "retention_account", "");
+           }
     }
 }
 
@@ -271,7 +275,7 @@ function calculate_tds(frm, cdt, cdn) {
 function calculate_retention(frm, cdt, cdn) {
     let row = locals[cdt][cdn];
 
-    if (!row.apply_tds || !row.opening_balance || !row.retention_rate) {
+    if (!row.apply_retention || !row.opening_balance || !row.retention_rate) {
         frappe.model.set_value(cdt, cdn, "retention_amount", 0);
         return;
     }
