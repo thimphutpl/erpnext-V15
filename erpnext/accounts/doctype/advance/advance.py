@@ -22,17 +22,17 @@ class Advance(Document):
 		branch: DF.Link
 		company: DF.Link
 		cost_center: DF.Link | None
-		customer: DF.DynamicLink | None
+		customer: DF.DynamicLink
 		customer_cid: DF.Data | None
 		employee: DF.Link | None
 		employee_name: DF.Data | None
-		fiscal_year: DF.Link | None
+		fiscal_year: DF.Link
 		is_opening: DF.Check
 		journal_entry: DF.Link | None
 		mode_of_payment: DF.Link | None
 		party_type: DF.Literal["", "Supplier", "Employee", "Customer"]
 		payment_status: DF.Data | None
-		posting_date: DF.Date | None
+		posting_date: DF.Date
 		remarks: DF.SmallText | None
 		total_amount: DF.Currency
 	# end: auto-generated types

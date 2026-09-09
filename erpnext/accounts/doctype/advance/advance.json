@@ -108,7 +108,8 @@
    "default": "Today",
    "fieldname": "posting_date",
    "fieldtype": "Date",
-   "label": "Posting Date"
+   "label": "Posting Date",
+   "reqd": 1
   },
   {
    "fetch_from": "branch.cost_center",
@@ -182,7 +183,8 @@
    "fieldname": "customer",
    "fieldtype": "Dynamic Link",
    "label": "Party",
-   "options": "party_type"
+   "options": "party_type",
+   "reqd": 1
   },
   {
    "fieldname": "column_break_rfnx",
@@ -192,7 +194,8 @@
    "fieldname": "fiscal_year",
    "fieldtype": "Link",
    "label": "Fiscal Year",
-   "options": "Fiscal Year"
+   "options": "Fiscal Year",
+   "reqd": 1
   },
   {
    "fieldname": "section_break_vfwg",
@@ -234,7 +237,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-09-03 18:30:34.522257",
+ "modified": "2026-09-09 10:17:09.631543",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Advance",
