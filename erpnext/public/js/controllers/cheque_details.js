@@ -3,7 +3,8 @@ frappe.ui.form.on(cur_frm.doctype, "onload", function(frm){
 		return {
 			"filters": [
 				["status", "!=", "Used"],
-				["docstatus", "=", "1"]
+				["docstatus", "=", "1"],
+                ["company", "=", frm.doc.company]
 			]
 		}
 	});

@@ -57,7 +57,7 @@ class JournalEntry(AccountsController):
 		bank_payment: DF.Link | None
 		bill_date: DF.Date | None
 		bill_no: DF.Data | None
-		branch: DF.Link | None
+		branch: DF.Link
 		capital_release: DF.Check
 		cheque_date: DF.Date | None
 		cheque_lot: DF.Link | None

@@ -18,6 +18,7 @@ class ChequeLot(Document):
 		amended_from: DF.Link | None
 		bank_name: DF.Link | None
 		branch: DF.Link | None
+		company: DF.Link
 		end_no: DF.Data | None
 		next_no: DF.Data | None
 		no_of_cheques: DF.Int
