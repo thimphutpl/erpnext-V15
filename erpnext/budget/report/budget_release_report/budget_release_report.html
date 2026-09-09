@@ -98,7 +98,10 @@
             return "TOTAL " + text(code || title).toUpperCase();
         }
     
-        var company_name = get_company_title(filters.company || "Royal Bhutan Army");
+        var company_name = get_company_title(
+            filters.company || "Royal Bhutan Army"
+        );
+    
         var fiscal_year = filters.fiscal_year || "";
     
         var last_costcenter = "";
@@ -110,6 +113,8 @@
     
         var financing_total = 0;
         var subactivity_total = 0;
+        var costcenter_total = 0;
+        var all_costcenter_total = 0;
     %}
     
     <div class="report-title-section">
@@ -118,46 +123,27 @@
     </div>
 
 
-    <!-- <div style="display: flex; justify-content: space-between; align-items: center;">
-    <div style="margin:0;">
-        <p style="font-style: italic;">
-            Administartive Unit: 303.01 SUNCHOB SERVICES
-        </p>
-        <p style="margin:0;">
-            Program: {%= frappe.query_report.program_code || "" %}
-            -
-            {%= frappe.query_report.program_name || "" %}
-        </p>
+    <div class="report-info-section">
 
+        <div class="report-info-left">
+            <p class="administrative-unit">
+                <strong>Administrative Unit:</strong>
+                303.01 SUNCHOB SERVICES
+            </p>
+
+            <p class="program-info">
+                <strong>Program:</strong>
+                {%= frappe.query_report.program_code || "" %}
+                -
+                {%= frappe.query_report.program_name || "" %}
+            </p>
+        </div>
+
+        <div class="report-currency">
+            (Ngultrum in Millions)
+        </div>
 
     </div>
-
-    <p style="margin: 0;">
-        (Ngultrum in Millions)
-    </p>
-</div> -->
-
-<div class="report-info-section">
-
-    <div class="report-info-left">
-        <p class="administrative-unit">
-            <strong>Administrative Unit:</strong>
-            303.01 SUNCHOB SERVICES
-        </p>
-
-        <p class="program-info">
-            <strong>Program:</strong>
-            {%= frappe.query_report.program_code || "" %}
-            -
-            {%= frappe.query_report.program_name || "" %}
-        </p>
-    </div>
-
-    <div class="report-currency">
-        (Ngultrum in Millions)
-    </div>
-
-</div>
     
     <table class="release-table">
         <thead>
@@ -174,21 +160,51 @@
         </thead>
     
         <tbody>
+
             {% for (var j = 0; j < data.length; j++) { %}
                 {% 
                     var row = data[j] || {};
     
-                    var cost_center_value = row.budget_cost_center || row.cost_center || row.branch || "";
-                    var cost_center_code = row.sub_program_code || row.budget_cost_center_code || get_code(cost_center_value);
-                    var cost_center_title = row.cost_center_name || get_title(cost_center_value);
+                    var cost_center_value =
+                        row.budget_cost_center ||
+                        row.cost_center ||
+                        row.branch ||
+                        "";
     
-                    var activity_value = row.budget_activity || row.activity || "";
-                    var activity_code = row.activity_code || row.budget_activity_code || get_code(activity_value);
-                    var activity_title = get_title(activity_value);
+                    var cost_center_code =
+                        row.sub_program_code ||
+                        row.budget_cost_center_code ||
+                        get_code(cost_center_value);
     
-                    var subactivity_value = row.budget_sub_activity || row.sub_activity || "";
-                    var subactivity_code = row.sub_activity_code || row.budget_sub_activity_code || get_code(subactivity_value);
-                    var subactivity_title = get_title(subactivity_value);
+                    var cost_center_title =
+                        row.cost_center_name ||
+                        get_title(cost_center_value);
+    
+                    var activity_value =
+                        row.budget_activity ||
+                        row.activity ||
+                        "";
+    
+                    var activity_code =
+                        row.activity_code ||
+                        row.budget_activity_code ||
+                        get_code(activity_value);
+    
+                    var activity_title =
+                        get_title(activity_value);
+    
+                    var subactivity_value =
+                        row.budget_sub_activity ||
+                        row.sub_activity ||
+                        "";
+    
+                    var subactivity_code =
+                        row.sub_activity_code ||
+                        row.budget_sub_activity_code ||
+                        get_code(subactivity_value);
+    
+                    var subactivity_title =
+                        get_title(subactivity_value);
     
                     var financing_code =
                         row.financing_code ||
@@ -196,45 +212,109 @@
                         row.source_of_fund_code ||
                         get_code(row.source_of_fund || "");
     
-                    var financing_title = row.financing_title || row.source_of_fund || "";
-                    var financing_total_label = get_total_financing_label(financing_code, financing_title);
+                    var financing_title =
+                        row.financing_title ||
+                        row.source_of_fund ||
+                        "";
     
-                    var account_code = row.account_code || get_code(row.account || "");
-                    var account_title = row.title || row.account_name || get_title(row.account || "");
+                    var financing_total_label =
+                        get_total_financing_label(
+                            financing_code,
+                            financing_title
+                        );
     
-                    var release_date = row.posting_date || row.release_date || row.date || "";
+                    var account_code =
+                        row.account_code ||
+                        get_code(row.account || "");
     
-                    var released_amount = number(
-                        row.released_amount ||
-                        row.released_budget ||
-                        row.budget_amount ||
-                        row.budget_received ||
-                        0
-                    );
+                    var account_title =
+                        row.title ||
+                        row.account_name ||
+                        get_title(row.account || "");
+    
+                    var release_date =
+                        row.posting_date ||
+                        row.release_date ||
+                        row.date ||
+                        "";
+    
+                    var released_amount =
+                        number(row.released_budget);
+    
+                
+                    var is_release_row =
+                        account_code &&
+                        text(account_code).trim() !== "";
                 %}
     
+    
+                <!-- COST CENTER CHANGE -->
                 {% if (cost_center_value && cost_center_value != last_costcenter) { %}
     
+                    <!-- FINISH PREVIOUS FINANCING -->
                     {% if (last_financing) { %}
                         <tr class="total-row financing-total-row">
-                            <td></td><td></td><td></td><td></td><td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
                             <td>{%= last_financing_label %}</td>
                             <td></td>
-                            <td class="amount-cell">{%= money(financing_total) %}</td>
+                            <td class="amount-cell">
+                                {%= money(financing_total) %}
+                            </td>
                         </tr>
-                        {% financing_total = 0; last_financing = ""; %}
+    
+                        {% financing_total = 0; %}
+                        {% last_financing = ""; %}
                     {% } %}
     
+    
+                    <!-- FINISH PREVIOUS SUB-ACTIVITY -->
                     {% if (last_subactivity) { %}
                         <tr class="total-row subactivity-total-row">
-                            <td></td><td></td><td></td><td></td><td></td>
-                            <td>TOTAL SUB-ACTIVITY {%= last_subactivity_code %}</td>
                             <td></td>
-                            <td class="amount-cell">{%= money(subactivity_total) %}</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td>
+                                TOTAL SUB-ACTIVITY {%= last_subactivity_code %}
+                            </td>
+                            <td></td>
+                            <td class="amount-cell">
+                                {%= money(subactivity_total) %}
+                            </td>
                         </tr>
-                        {% subactivity_total = 0; last_subactivity = ""; %}
+    
+                        {% subactivity_total = 0; %}
+                        {% last_subactivity = ""; %}
                     {% } %}
     
+    
+                    <!-- TOTAL PREVIOUS COST CENTER -->
+                    {% if (last_costcenter) { %}
+                        <tr class="total-row costcenter-total-row">
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td>
+                                TOTAL {%= get_code(last_costcenter) %}
+                            </td>
+                            <td></td>
+                            <td class="amount-cell">
+                                {%= money(costcenter_total) %}
+                            </td>
+                        </tr>
+    
+                        {% costcenter_total = 0; %}
+                    {% } %}
+    
+    
+                    <!-- NEW COST CENTER -->
                     <tr class="costcenter-row">
                         <td>{%= cost_center_code %}</td>
                         <td></td>
@@ -254,29 +334,52 @@
                         last_financing = "";
                         last_financing_label = "";
                     %}
+    
                 {% } %}
     
+    
+                <!-- ACTIVITY CHANGE -->
                 {% if (activity_value && activity_value != last_activity) { %}
     
                     {% if (last_financing) { %}
                         <tr class="total-row financing-total-row">
-                            <td></td><td></td><td></td><td></td><td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
                             <td>{%= last_financing_label %}</td>
                             <td></td>
-                            <td class="amount-cell">{%= money(financing_total) %}</td>
+                            <td class="amount-cell">
+                                {%= money(financing_total) %}
+                            </td>
                         </tr>
-                        {% financing_total = 0; last_financing = ""; %}
+    
+                        {% financing_total = 0; %}
+                        {% last_financing = ""; %}
                     {% } %}
+    
     
                     {% if (last_subactivity) { %}
                         <tr class="total-row subactivity-total-row">
-                            <td></td><td></td><td></td><td></td><td></td>
-                            <td>TOTAL SUB-ACTIVITY {%= last_subactivity_code %}</td>
                             <td></td>
-                            <td class="amount-cell">{%= money(subactivity_total) %}</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td>
+                                TOTAL SUB-ACTIVITY {%= last_subactivity_code %}
+                            </td>
+                            <td></td>
+                            <td class="amount-cell">
+                                {%= money(subactivity_total) %}
+                            </td>
                         </tr>
-                        {% subactivity_total = 0; last_subactivity = ""; %}
+    
+                        {% subactivity_total = 0; %}
+                        {% last_subactivity = ""; %}
                     {% } %}
+    
     
                     <tr class="activity-row">
                         <td></td>
@@ -296,29 +399,51 @@
                         last_financing = "";
                         last_financing_label = "";
                     %}
+    
                 {% } %}
     
+    
+                <!-- SUB ACTIVITY CHANGE -->
                 {% if (subactivity_value && subactivity_value != last_subactivity) { %}
     
                     {% if (last_financing) { %}
                         <tr class="total-row financing-total-row">
-                            <td></td><td></td><td></td><td></td><td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
                             <td>{%= last_financing_label %}</td>
                             <td></td>
-                            <td class="amount-cell">{%= money(financing_total) %}</td>
+                            <td class="amount-cell">
+                                {%= money(financing_total) %}
+                            </td>
                         </tr>
-                        {% financing_total = 0; last_financing = ""; %}
+    
+                        {% financing_total = 0; %}
+                        {% last_financing = ""; %}
                     {% } %}
+    
     
                     {% if (last_subactivity) { %}
                         <tr class="total-row subactivity-total-row">
-                            <td></td><td></td><td></td><td></td><td></td>
-                            <td>TOTAL SUB-ACTIVITY {%= last_subactivity_code %}</td>
                             <td></td>
-                            <td class="amount-cell">{%= money(subactivity_total) %}</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td>
+                                TOTAL SUB-ACTIVITY {%= last_subactivity_code %}
+                            </td>
+                            <td></td>
+                            <td class="amount-cell">
+                                {%= money(subactivity_total) %}
+                            </td>
                         </tr>
+    
                         {% subactivity_total = 0; %}
                     {% } %}
+    
     
                     <tr class="subactivity-row">
                         <td></td>
@@ -337,19 +462,30 @@
                         last_financing = "";
                         last_financing_label = "";
                     %}
+    
                 {% } %}
     
+    
+                <!-- FINANCING CHANGE -->
                 {% if (financing_code && financing_code != last_financing) { %}
     
                     {% if (last_financing) { %}
                         <tr class="total-row financing-total-row">
-                            <td></td><td></td><td></td><td></td><td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
                             <td>{%= last_financing_label %}</td>
                             <td></td>
-                            <td class="amount-cell">{%= money(financing_total) %}</td>
+                            <td class="amount-cell">
+                                {%= money(financing_total) %}
+                            </td>
                         </tr>
+    
                         {% financing_total = 0; %}
                     {% } %}
+    
     
                     <tr class="financing-row">
                         <td></td>
@@ -366,47 +502,117 @@
                         last_financing = financing_code;
                         last_financing_label = financing_total_label;
                     %}
+    
                 {% } %}
     
-                <tr class="data-row">
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td>{%= account_code %}</td>
-                    <td>{%= account_title %}</td>
-                    <td class="date-cell">{%= format_date(release_date) %}</td>
-                    <td class="amount-cell">{%= money(released_amount) %}</td>
-                </tr>
     
-                {% 
-                    financing_total += released_amount;
-                    subactivity_total += released_amount;
-                %}
+                {% if (is_release_row) { %}
+                    <tr class="data-row">
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>{%= account_code %}</td>
+                        <td>{%= account_title %}</td>
+                        <td class="date-cell">
+                            {%= format_date(release_date) %}
+                        </td>
+                        <td class="amount-cell">
+                            {%= money(released_amount) %}
+                        </td>
+                    </tr>
+    
+                    {% 
+                        financing_total += released_amount;
+                        subactivity_total += released_amount;
+                        costcenter_total += released_amount;
+                        all_costcenter_total += released_amount;
+                    %}
+                {% } %}
     
             {% } %}
     
+    
+            <!-- FINISH LAST FINANCING -->
             {% if (last_financing) { %}
                 <tr class="total-row financing-total-row">
-                    <td></td><td></td><td></td><td></td><td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
                     <td>{%= last_financing_label %}</td>
                     <td></td>
-                    <td class="amount-cell">{%= money(financing_total) %}</td>
+                    <td class="amount-cell">
+                        {%= money(financing_total) %}
+                    </td>
                 </tr>
             {% } %}
     
-            {% if (last_subactivity) { %}
-                <tr class="total-row subactivity-total-row">
-                    <td></td><td></td><td></td><td></td><td></td>
-                    <td>TOTAL SUB-ACTIVITY {%= last_subactivity_code %}</td>
-                    <td></td>
-                    <td class="amount-cell">{%= money(subactivity_total) %}</td>
-                </tr>
-            {% } %}
+    
+          <!-- FINISH LAST SUB-ACTIVITY -->
+        {% if (last_subactivity) { %}
+            <tr 
+                style="font-weight: bold; background-color: #dcdcdc;">
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>
+                    TOTAL SUB-ACTIVITY {%= last_subactivity_code %}
+                </td>
+                <td></td>
+                <td class="amount-cell">
+                    {%= money(subactivity_total) %}
+                </td>
+            </tr>
+        {% } %}
+
+
+    <!-- TOTAL LAST COST CENTER -->
+    {% if (last_costcenter) { %}
+        <tr 
+            style="font-weight: bold; background-color: #b5b5b5;">
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>
+                TOTAL {%= get_code(last_costcenter) %}
+            </td>
+            <td></td>
+            <td class="amount-cell">
+                {%= money(costcenter_total) %}
+            </td>
+        </tr>
+    {% } %}
+
+
+        <!-- GRAND TOTAL ALL COST CENTERS -->
+        <tr 
+            style="font-weight: bold; background-color: #808080;">
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>
+                TOTAL
+            </td>
+            <td></td>
+            <td class="amount-cell">
+                {%= money(all_costcenter_total) %}
+            </td>
+        </tr>
+    
         </tbody>
     </table>
     
-    </div>
+</div>
+
+
     
     <style>
         @page {
@@ -564,13 +770,14 @@
         }
     
         .financing-total-row td:nth-child(6),
-        .subactivity-total-row td:nth-child(6) {
-            text-align: right;
+        .subactivity-total-row td:nth-child(6), .subactivity-total-row td:nth-child(6) {
+            text-align: left;
             text-transform: uppercase;
         }
     
+    
         .financing-total-row td:nth-child(8),
-        .subactivity-total-row td:nth-child(8) {
+        .subactivity-total-row td:nth-child(8), .subactivity-total-row td:nth-child(8) {
             font-weight: 700;
         }
     
