@@ -120,39 +120,39 @@ frappe.ui.form.on("Employee", {
         });
     },
 
-    employee_group: function (frm) {
+    // employee_group: function (frm) {
 
-        if (!frm.doc.employee_group || !frm.doc.grade) {
-            return;
-        }
+    //     if (!frm.doc.employee_group || !frm.doc.grade) {
+    //         return;
+    //     }
 
-        frappe.call({
-            method: "erpnext.setup.doctype.employee.employee.check_grade_in_employee_group",
-            args: {
-                employee_group: frm.doc.employee_group,
-                grade: frm.doc.grade
-            },
-            callback: function (r) {
+    //     frappe.call({
+    //         method: "erpnext.setup.doctype.employee.employee.check_grade_in_employee_group",
+    //         args: {
+    //             employee_group: frm.doc.employee_group,
+    //             grade: frm.doc.grade
+    //         },
+    //         callback: function (r) {
 
-                if (r.message === false) {
-                    frappe.msgprint({
-                        title: __("Invalid Employee Group"),
-                        message: __(
-                            "Grade {0} is not available under Employee Group {1}",
-                            [
-                                frm.doc.grade,
-                                frm.doc.employee_group
-                            ]
-                        ),
-                        indicator: "red"
-                    });
+    //             if (r.message === false) {
+    //                 frappe.msgprint({
+    //                     title: __("Invalid Employee Group"),
+    //                     message: __(
+    //                         "Grade {0} is not available under Employee Group {1}",
+    //                         [
+    //                             frm.doc.grade,
+    //                             frm.doc.employee_group
+    //                         ]
+    //                     ),
+    //                     indicator: "red"
+    //                 });
 
-                    frm.set_value("employee_group", null);
-                }
+    //                 frm.set_value("employee_group", null);
+    //             }
 
-            }
-        });
-    },
+    //         }
+    //     });
+    // },
     // grade: function (frm) {
 
     //     if (!frm.doc.grade) {
