@@ -201,7 +201,7 @@ class BudgetRelease(Document):
 		import frappe
 
 
-		company = frappe.defaults.get_user_default("Company")
+		company = self.company
 		expense_bank_account = frappe.db.get_value("Company", company, "default_mof_account")
 		bra_account = frappe.db.get_value("Company", company, "budget_receive_account")
 
