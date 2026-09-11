@@ -39,6 +39,7 @@ frappe.ui.form.on("Advance Settlement", {
                             row.total_amount = advance.total_amount;
                             row.balance_amount = advance.balance_amount;
                             row.posting_date = advance.posting_date;
+                            row.child_reference = advance.child_reference;
                             // Add any other fields you have in child table
                         });
 

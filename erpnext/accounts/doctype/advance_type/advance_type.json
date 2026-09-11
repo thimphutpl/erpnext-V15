@@ -16,8 +16,7 @@
   {
    "fieldname": "advance_name",
    "fieldtype": "Data",
-   "label": "Advance Name",
-   "unique": 1
+   "label": "Advance Name"
   },
   {
    "fieldname": "advance_account",
@@ -49,7 +48,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-05-23 12:54:54.469529",
+ "modified": "2026-09-07 11:35:40.168312",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Advance Type",

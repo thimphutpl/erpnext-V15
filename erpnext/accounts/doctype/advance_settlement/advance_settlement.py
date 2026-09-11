@@ -255,6 +255,30 @@ class AdvanceSettlement(Document):
 				)
 
 			self.db_set("journal_entry", None)
+	# def make_mobilisation_entry(self, cancel=False):
+
+	# 	for acc in self.advance_list:
+
+	# 		con = frappe.get_doc("Advance Entry", acc.advance_entry)
+
+	# 		for row in con.mobilisation_entry:
+
+	# 			if row.reference == acc.reference:
+
+	# 				if cancel:
+	# 					row.allocated_amount -= flt(acc.allocated_amount)
+	# 				else:
+	# 					row.allocated_amount += flt(acc.allocated_amount)
+
+	# 				row.balance_amount = (
+	# 					flt(row.advance_amount)
+	# 					- flt(row.allocated_amount)
+	# 				)
+
+	# 				break
+
+	# 		con.flags.ignore_validate_update_after_submit = True
+	# 		con.save(ignore_permissions=True)
 	def make_mobilisation_entry(self, cancel=False):
 
 		for acc in self.advance_list:
@@ -263,7 +287,7 @@ class AdvanceSettlement(Document):
 
 			for row in con.mobilisation_entry:
 
-				if row.reference == acc.reference:
+				if row.child_reference == acc.child_reference:
 
 					if cancel:
 						row.allocated_amount -= flt(acc.allocated_amount)

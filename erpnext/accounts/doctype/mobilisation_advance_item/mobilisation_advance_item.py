@@ -22,6 +22,7 @@ class MobilisationAdvanceItem(Document):
 		balance_amount: DF.Currency
 		budget_activity: DF.Link | None
 		budget_sub_activity: DF.Link | None
+		child_reference: DF.Data | None
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data

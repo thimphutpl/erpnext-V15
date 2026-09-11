@@ -74,7 +74,7 @@ def get_advance(customer,party_type,advance_type,branch):
             AND ae.party_type = %s
             AND ae.advance_type = %s
             AND ae.is_cancelled = 0
-            AND a.payment_status = 'Paid'
+        
         ORDER BY ae.posting_date ASC
     """, (
         customer,
@@ -93,7 +93,9 @@ def get_advance(customer,party_type,advance_type,branch):
             filters={"parent": entry.name,
                      "balance_amount": [">", 0]},
             fields=[
+                 
                     "name",
+                    "child_reference",
                     "reference",
                     "advance_type",
                     "account",
@@ -103,6 +105,7 @@ def get_advance(customer,party_type,advance_type,branch):
                     "budget_activity",
                     "budget_sub_activity",
                     "source_of_fund",
+
                      
                 ],
         )
@@ -110,6 +113,7 @@ def get_advance(customer,party_type,advance_type,branch):
             if flt(child.balance_amount) > 0:
                 result.append({
                     "parent": entry.parent,
+                    "child_reference": child.child_reference,
                     "advance_entry": entry.name,
                     "posting_date": entry.posting_date,
                     "branch": entry.branch,
@@ -122,6 +126,7 @@ def get_advance(customer,party_type,advance_type,branch):
                     "total_amount": child.balance_amount,
                     "advance_amount": child.advance_amount,
                     "balance_amount": child.balance_amount
+                   
                 })
         if not result:
             return "No advance available"
