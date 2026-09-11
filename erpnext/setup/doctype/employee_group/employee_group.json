@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "field:employee_group_name",
+ "autoname": "format:{employee_group_name}-{abbr}",
  "creation": "2018-11-19 12:33:31.351364",
  "doctype": "DocType",
  "editable_grid": 1,
@@ -11,6 +11,7 @@
   "retirement_age",
   "column_break_avwq",
   "company",
+  "abbr",
   "section_break_00",
   "employee_list",
   "payroll_settings_section",
@@ -265,18 +266,25 @@
    "fieldtype": "Section Break"
   },
   {
+   "allow_bulk_edit": 1,
    "fieldname": "employee_grade",
    "fieldtype": "Table",
    "label": "Employee Grade",
    "options": "Employee Group Master Item"
+  },
+  {
+   "fetch_from": "company.abbr",
+   "fieldname": "abbr",
+   "fieldtype": "Data",
+   "label": "Abbr"
   }
  ],
  "links": [],
- "modified": "2026-08-06 14:01:13.213467",
+ "modified": "2026-08-19 15:27:49.443112",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee Group",
- "naming_rule": "By fieldname",
+ "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
   {

@@ -57,12 +57,6 @@ def get_advance(customer,party_type,advance_type,branch):
         filters["advance_type"] = advance_type
     filters["is_cancelled"] = 0
 
-    # frappe.throw(str(filters))
-    # entries = frappe.get_all(
-    #     "Advance Entry",
-    #     filters=filters,
-    #     fields=["name","branch","posting_date","customer", "branch", "party_type", "advance_type"],
-    # )
     entries = frappe.db.sql("""
         SELECT
             ae.name,

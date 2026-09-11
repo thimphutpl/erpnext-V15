@@ -17,6 +17,7 @@ class EmployeeGroup(Document):
 		from hrms.hr.doctype.employee_group_item.employee_group_item import EmployeeGroupItem
 		from hrms.hr.doctype.employee_group_master_item.employee_group_master_item import EmployeeGroupMasterItem
 
+		abbr: DF.Data | None
 		budget_activity: DF.Link | None
 		budget_sub_activity: DF.Link | None
 		company: DF.Link
