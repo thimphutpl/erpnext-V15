@@ -1,0 +1,42 @@
+{
+ "add_total_row": 1,
+ "columns": [],
+ "creation": "2026-09-14 15:25:24.600361",
+ "disabled": 0,
+ "docstatus": 0,
+ "doctype": "Report",
+ "filters": [],
+ "idx": 0,
+ "is_standard": "Yes",
+ "letter_head": "Head Office",
+ "letterhead": null,
+ "modified": "2026-09-14 15:25:24.600361",
+ "modified_by": "Administrator",
+ "module": "Projects",
+ "name": "Site Budget Consumption",
+ "owner": "Administrator",
+ "prepared_report": 0,
+ "ref_doctype": "Cost Center",
+ "report_name": "Site Budget Consumption",
+ "report_type": "Script Report",
+ "roles": [
+  {
+   "role": "Accounts Manager"
+  },
+  {
+   "role": "Stock User"
+  },
+  {
+   "role": "Auditor"
+  },
+  {
+   "role": "Accounts User"
+  },
+  {
+   "role": "Projects Readonly"
+  },
+  {
+   "role": "Project Engineer"
+  }
+ ]
+}

@@ -1,0 +1,102 @@
+.common-dashboard-surface {
+    --dashboard-bg: #2e363b;
+    --dashboard-text: #edf0f2;
+    --dashboard-muted: #b7c3cf;
+    --dashboard-border: #8999a3;
+    background: var(--dashboard-bg);
+    color: var(--dashboard-text);
+    border: 1px solid var(--dashboard-border);
+    border-radius: 8px;
+    padding-top: 8px;
+    overflow: hidden;
+}
+
+.common-dashboard-surface .site-budget-panel {
+    --charts-label-color: #dce4eb;
+    --charts-axis-line-color: #4b5962;
+    --charts-tooltip-bg: #20282e;
+    --charts-tooltip-title: #edf0f2;
+    --charts-tooltip-label: #b7c3cf;
+    --charts-tooltip-value: #ffffff;
+    background: var(--dashboard-bg);
+    border: 1px solid var(--dashboard-border);
+    border-radius: 8px;
+    color: var(--dashboard-text);
+    padding: 16px;
+    margin: 0 8px 8px;
+}
+
+.common-dashboard-surface .site-budget-panel h4 {
+    color: var(--dashboard-text);
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.common-dashboard-surface .text-muted {
+    color: var(--dashboard-muted) !important;
+}
+
+.common-dashboard-surface .btn-default {
+    background: #39464f;
+    border: 1px solid #71838f;
+    color: var(--dashboard-text);
+}
+
+.common-dashboard-surface .btn-default:hover,
+.common-dashboard-surface .btn-default:focus-visible {
+    background: #465762;
+    border-color: #b7c3cf;
+    color: #ffffff;
+}
+
+.common-dashboard-surface .site-budget-chart svg text {
+    fill: var(--dashboard-text);
+}
+
+.common-dashboard-surface .site-budget-over-budget {
+    color: #B22222;
+}
+
+.common-dashboard-surface .site-budget-details {
+    margin: 16px 0 20px;
+}
+
+.common-dashboard-surface .site-budget-details .table {
+    margin-bottom: 0;
+    white-space: nowrap;
+    font-size: 12px;
+}
+
+.common-dashboard-surface .site-budget-totals th,
+.common-dashboard-surface .site-budget-totals td {
+    font-weight: 700;
+    border-top: 2px solid var(--dashboard-border);
+}
+
+.common-dashboard-surface .table {
+    color: var(--dashboard-text);
+    background: transparent;
+}
+
+.common-dashboard-surface .table th,
+.common-dashboard-surface .table td {
+    background: transparent;
+    border-color: #71838f;
+}
+
+.common-dashboard-surface .table thead th {
+    color: var(--dashboard-muted);
+}
+
+.common-dashboard-surface .common-dashboard-metabase {
+    display: block;
+    width: 100%;
+    border: 0;
+    background: var(--dashboard-bg);
+}
+
+@media (max-width: 767px) {
+    .common-dashboard-surface .site-budget-panel {
+        padding: 12px;
+    }
+}

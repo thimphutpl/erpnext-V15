@@ -16,6 +16,7 @@
   "company",
   "warehouse",
   "expense_account",
+  "estimated_budget",
   "cb0",
   "is_group",
   "disabled",
@@ -177,13 +178,18 @@
    "fieldtype": "Link",
    "label": "Muster Roll Expense Bank Account",
    "options": "Account"
+  },
+  {
+   "fieldname": "estimated_budget",
+   "fieldtype": "Currency",
+   "label": "Estimated Budget"
   }
  ],
  "icon": "fa fa-money",
  "idx": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2025-04-25 10:45:15.133484",
+ "modified": "2026-09-14 17:02:14.256429",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Cost Center",

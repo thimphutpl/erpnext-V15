@@ -1,7 +1,49 @@
+<div class="common-dashboard-surface">
 <iframe
+    class="common-dashboard-metabase"
     src="https://erp.ns.bt/metabase/embed/dashboard/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyZXNvdXJjZSI6eyJkYXNoYm9hcmQiOjN9LCJwYXJhbXMiOnt9fQ.bE71dTjID7KszC8L30c2acSHyqCh2OktFoYfsEd5oLU#theme=night&bordered=true&titled=true"
     frameborder="0"
     width="100%"
     height="3000"
     allowtransparency
 ></iframe>
+<section class="site-budget-panel">
+    <div class="flex justify-between align-center" style="gap: 16px; flex-wrap: wrap;">
+        <div>
+            <h4 style="margin: 0 0 6px;">{{ __("Site Budget — Estimated Budget vs Total Expenses") }}</h4>
+            <p class="site-budget-period text-muted" style="margin: 0;"></p>
+        </div>
+        <div class="flex" style="gap: 8px;">
+            <a class="btn btn-default btn-sm" href="/app/query-report/Site%20Budget%20Consumption">{{ __("Open Report") }}</a>
+        </div>
+    </div>
+    <p class="site-budget-status text-muted" role="status" aria-live="polite" style="margin-top: 16px;"></p>
+    <p class="site-budget-notice text-muted" hidden></p>
+    <p class="site-budget-allocation-summary text-muted"></p>
+    <p class="site-budget-allocation-notice text-muted" hidden></p>
+    <div class="site-budget-details table-responsive" hidden>
+            <table class="table table-bordered">
+                <thead><tr>
+                    <th scope="col">{{ __("Site / Parent Cost Center") }}</th>
+                    <th scope="col" class="text-right">{{ __("Estimated Budget") }}</th>
+                    <th scope="col" class="text-right">{{ __("Actual Expenses") }}</th>
+                    <th scope="col" class="text-right">{{ __("Inventory Balance") }}</th>
+                    <th scope="col" class="text-right">{{ __("Advance to Suppliers Balance") }}</th>
+                    <th scope="col" class="text-right">{{ __("Head Office Allocation") }}</th>
+                    <th scope="col" class="text-right">{{ __("Total Expenses") }}</th>
+                </tr></thead>
+                <tbody class="site-budget-values"></tbody>
+                <tfoot class="site-budget-totals"></tfoot>
+            </table>
+    </div>
+    <style class="site-budget-bar-colors"></style>
+    <svg width="0" height="0" aria-hidden="true" focusable="false" style="position: absolute;">
+        <defs class="site-budget-color-definitions"></defs>
+    </svg>
+    <p class="site-budget-over-budget" hidden></p>
+    <div style="overflow-x: auto;">
+        <div class="site-budget-chart" role="img" aria-label="{{ __("Estimated Budget and Total Expenses by site") }}" style="min-width: 600px;"></div>
+    </div>
+</section>
+
+</div>
