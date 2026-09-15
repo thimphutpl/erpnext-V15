@@ -16,7 +16,7 @@ vm.runInNewContext(fs.readFileSync(path.join(__dirname, "common_dashboard.js"), 
     frappe,
     document,
     setInterval: (callback, delay) => {
-        assert.equal(delay, 300000);
+        assert.equal(delay, 60000);
         timers.set(++next_timer, callback);
         return next_timer;
     },
@@ -38,9 +38,13 @@ document.hidden = false;
 listeners.get("visibilitychange")();
 assert.equal(requests, 3, "Returning to the browser tab must fetch fresh data");
 chart.start_auto_refresh();
+assert.equal(requests, 3, "Page load followed by page show must not fetch twice");
 assert.equal(timers.size, 1, "Repeated page show events must not duplicate timers");
 assert.equal(listeners.size, 1);
 chart.stop_auto_refresh();
 assert.equal(timers.size, 0, "Leaving the dashboard must stop the timer");
 assert.equal(listeners.size, 0, "Leaving the dashboard must remove the tab listener");
-console.log("PASS: automatic loading, five-minute updates, hidden-tab pause, immediate tab return and timer cleanup.");
+chart.start_auto_refresh();
+assert.equal(requests, 4, "Reopening the dashboard must immediately request current values");
+chart.stop_auto_refresh();
+console.log("PASS: immediate loading and reopening, minute updates, hidden-tab pause and timer cleanup.");

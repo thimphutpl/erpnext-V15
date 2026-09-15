@@ -7,7 +7,7 @@ const elements = new Map();
 function element(selector) {
     if (!elements.has(selector)) {
         elements.set(selector, {
-            0: {},
+            0: { querySelectorAll: () => [] },
             find: element,
             text(value) { this.content = value; return this; },
             prop(name, value) { this[name] = value; return this; },
@@ -29,6 +29,7 @@ const frappe = {
 };
 vm.runInNewContext(fs.readFileSync(path.join(__dirname, "common_dashboard.js"), "utf8"), {
     frappe,
+    MutationObserver: class { observe() {} disconnect() {} },
     $: element,
     __: (text, values = []) => text.replace("{0}", values[0]),
 });

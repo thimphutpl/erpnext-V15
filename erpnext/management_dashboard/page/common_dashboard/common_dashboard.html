@@ -11,16 +11,13 @@
     <div class="flex justify-between align-center" style="gap: 16px; flex-wrap: wrap;">
         <div>
             <h4 style="margin: 0 0 6px;">{{ __("Site Budget — Estimated Budget vs Total Expenses") }}</h4>
-            <p class="site-budget-period text-muted" style="margin: 0;"></p>
         </div>
         <div class="flex" style="gap: 8px;">
             <a class="btn btn-default btn-sm" href="/app/query-report/Site%20Budget%20Consumption">{{ __("Open Report") }}</a>
         </div>
     </div>
-    <p class="site-budget-status text-muted" role="status" aria-live="polite" style="margin-top: 16px;"></p>
+    <p class="site-budget-status text-muted" role="status" aria-live="polite">{{ __("Loading current site budgets and expenses…") }}</p>
     <p class="site-budget-notice text-muted" hidden></p>
-    <p class="site-budget-allocation-summary text-muted"></p>
-    <p class="site-budget-allocation-notice text-muted" hidden></p>
     <div class="site-budget-details table-responsive" hidden>
             <table class="table table-bordered">
                 <thead><tr>

@@ -86,6 +86,25 @@ class TestCommonDashboard(unittest.TestCase):
             "head_office_allocation": 0,
         })
 
+    def test_each_request_reads_current_report_values(self):
+        row = {
+            "cost_center": "Gyalpozhing - GYALSUNG", "estimated_budget": 100,
+            "actual_annual_budget": 10, "inventory_budget": 20,
+            "advance_to_suppliers": 30, "budget_consumed": 60,
+        }
+        dashboard.execute.side_effect = [
+            ([], [row], None),
+            ([], [{**row, "actual_annual_budget": 40, "budget_consumed": 90}], None),
+        ]
+        # Even a populated legacy cache must never replace a fresh ledger read.
+        with patch.object(dashboard.frappe, "cache", Mock()) as cache:
+            before = dashboard.get_site_budget_chart.__wrapped__()
+            after = dashboard.get_site_budget_chart.__wrapped__()
+        self.assertEqual(before["sites"][0]["total_expenses"], 60)
+        self.assertEqual(after["sites"][0]["total_expenses"], 90)
+        self.assertEqual(dashboard.execute.call_count, 2)
+        cache.assert_not_called()
+
     def test_head_office_is_distributed_to_five_sites_and_included_once_in_totals(self):
         rows = [
             {

@@ -188,8 +188,7 @@ def get_site_amounts(filters, sites):
     default_finance_book = frappe.db.get_value("Company", filters.company, "default_finance_book")
     finance_books = tuple(sorted({"", default_finance_book or ""}))
 
-    # This report spans the full ledger history. A sequential scan avoids the
-    # account index's costly row lookups, particularly for a single site.
+    # The covering ledger index supplies balances without fetching every ledger row.
     # If a specific cost center filter is provided, limit the cost centers
     # to that cost center and its descendants so the Trial Balance matches
     # the user's filtered view.
@@ -204,12 +203,19 @@ def get_site_amounts(filters, sites):
     else:
         cost_center_names = tuple(site_by_cost_center)
 
+    # MariaDB can underestimate random row lookups through the account-only index.
+    # Use the covering index when installed, retaining the scan until migration.
+    ledger_index = (
+        "site_budget_consumption_index"
+        if frappe.db.has_index("tabGL Entry", "site_budget_consumption_index")
+        else "PRIMARY"
+    )
     ledger_totals = frappe.db.sql(
-        """
+        f"""
         SELECT
             cost_center, account,
             SUM(debit - credit) AS closing_balance
-        FROM `tabGL Entry` FORCE INDEX (PRIMARY)
+        FROM `tabGL Entry` FORCE INDEX ({ledger_index})
         WHERE company = %(company)s
             AND is_cancelled = 0
             AND posting_date <= %(to_date)s

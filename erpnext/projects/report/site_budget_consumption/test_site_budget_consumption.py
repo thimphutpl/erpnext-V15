@@ -47,7 +47,7 @@ class TestSiteBudgetConsumption(unittest.TestCase):
 
     def query(self, sql, values, as_dict):
         # Execute the report's aggregation and predicates against a small ledger.
-        sql = sql.replace(" FORCE INDEX (PRIMARY)", "")
+        sql = sql.replace(" FORCE INDEX (PRIMARY)", "").replace(" FORCE INDEX (site_budget_consumption_index)", "")
         parameters = {}
         for key, value in values.items():
             if isinstance(value, tuple):
@@ -95,7 +95,7 @@ class TestSiteBudgetConsumption(unittest.TestCase):
             self.add_entry(1000, account=account, company="Other Company")
             self.add_entry(1000, account=account, cost_center="Head Office - GYALSUNG")
         amounts = report.get_site_amounts(self.filters, [self.site])
-        self.assertEqual(amounts[self.site.name], [145, 145, 145])
+        self.assertEqual(amounts[self.site.name], [145, 1145, 145])
 
     def test_empty_site_has_zero_balances(self):
         amounts = report.get_site_amounts(self.filters, [self.site])
@@ -144,8 +144,29 @@ class TestSiteBudgetConsumption(unittest.TestCase):
             if doctype == "Cost Center" else self.accounts
         ):
             amounts = report.get_site_amounts(self.filters, [self.site, head_office])
-        self.assertEqual(amounts[self.site.name], [100, 0, 0])
+        self.assertEqual(amounts[self.site.name], [100, 999, 0])
         self.assertEqual(amounts[head_office.name], [250, 30, 20])
+
+    def test_inventory_uses_warehouse_account_across_all_cost_centers(self):
+        # A cost-center-only view is negative; the full warehouse balance is 150.
+        self.add_entry(0, 200, account=self.warehouse)
+        self.add_entry(100, account=self.warehouse, cost_center=None)
+        self.add_entry(150, account=self.warehouse, cost_center="")
+        self.add_entry(100, account=self.warehouse, cost_center="Another Site")
+        self.add_entry(999, account="Expense", cost_center=None)
+        self.add_entry(999, account=report.DEFAULT_ADVANCE_ACCOUNT, cost_center="Another Site")
+        amounts = report.get_site_amounts(self.filters, [self.site])
+        self.assertEqual(amounts[self.site.name], [0, 150, 0])
+
+    def test_inventory_includes_child_accounts_and_preserves_credit_balances(self):
+        self.accounts[3].rgt = 14
+        self.accounts.append(frappe._dict(name="Warehouse Child", lft=10, rgt=11, root_type="Asset"))
+        self.accounts[4].lft, self.accounts[4].rgt = 15, 16
+        self.accounts[5].lft, self.accounts[5].rgt = 17, 18
+        self.add_entry(100, account=self.warehouse, cost_center=None)
+        self.add_entry(0, 125, account="Warehouse Child", cost_center="Another Site")
+        amounts = report.get_site_amounts(self.filters, [self.site])
+        self.assertEqual(amounts[self.site.name], [0, -25, 0])
 
     def test_actual_budget_only_includes_operating_expense_tree(self):
         self.add_entry(100, account=report.OPERATING_EXPENSE_ACCOUNT)

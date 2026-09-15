@@ -19,8 +19,9 @@ def get_site_budget_chart():
     company = "GYALSUNG INFRA"
     if not frappe.get_list("Company", filters={"name": company}, pluck="name", limit_page_length=1):
         frappe.throw(_("You do not have permission to view this company's budget."), frappe.PermissionError)
-
     filters = {"company": company, "from_date": "2020-01-01", "to_date": nowdate()}
+
+    # Always read committed ledger balances; an hours-old snapshot is not live data.
     _columns, rows, _message = execute(filters)
     sites = [
         {
