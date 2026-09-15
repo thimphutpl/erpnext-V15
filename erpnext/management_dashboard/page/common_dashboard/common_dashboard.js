@@ -244,7 +244,7 @@ class ProjectProgressChart {
         ];
         const svg = [
             '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 360" width="1100" height="360" class="site-progress-svg">',
-            `<title>${escape(__("Project Physical vs Financial Progress"))}</title>`,
+            `<title>${escape(__("Physical Progress vs Financial Progress"))}</title>`,
         ];
         series.forEach((dataset, index) => {
             const x = 8 + index * 170;
