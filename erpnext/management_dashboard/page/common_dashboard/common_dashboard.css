@@ -11,7 +11,8 @@
     overflow: hidden;
 }
 
-.common-dashboard-surface .site-budget-panel {
+.common-dashboard-surface .site-budget-panel,
+.common-dashboard-surface .site-progress-panel {
     --charts-label-color: #dce4eb;
     --charts-axis-line-color: #4b5962;
     --charts-tooltip-bg: #20282e;
@@ -26,7 +27,8 @@
     margin: 0 8px 8px;
 }
 
-.common-dashboard-surface .site-budget-panel h4 {
+.common-dashboard-surface .site-budget-panel h4,
+.common-dashboard-surface .site-progress-panel h4 {
     color: var(--dashboard-text);
     font-size: 16px;
     font-weight: 600;
@@ -49,7 +51,8 @@
     color: #ffffff;
 }
 
-.common-dashboard-surface .site-budget-chart svg text {
+.common-dashboard-surface .site-budget-chart svg text,
+.common-dashboard-surface .site-progress-chart svg text {
     fill: var(--dashboard-text);
 }
 
@@ -96,23 +99,60 @@
 }
 
 @media (max-width: 767px) {
-    .common-dashboard-surface .site-budget-panel {
+    .common-dashboard-surface .site-budget-panel,
+    .common-dashboard-surface .site-progress-panel {
         padding: 12px;
     }
 }
 
 /* Each value is attached to its bar so it stays centered above it. */
-.common-dashboard-surface .site-budget-chart .data-point-value {
+.common-dashboard-surface .site-budget-chart .data-point-value,
+.common-dashboard-surface .site-progress-chart .data-point-value {
     font-size: 12px;
     font-weight: 600;
     pointer-events: none;
     text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
 }
 
-.common-dashboard-surface .site-budget-chart .dataset-0 .data-point-value {
+.common-dashboard-surface .site-budget-chart .dataset-0 .data-point-value,
+.common-dashboard-surface .site-progress-chart .dataset-0 .data-point-value {
     fill: #60A5FA;
 }
 
 .common-dashboard-surface .site-budget-chart .dataset-1 .data-point-value {
     fill: #FBBF24;
+}
+
+.common-dashboard-surface .site-progress-chart .dataset-1 .data-point-value {
+    fill: #8BC34A;
+}
+
+.common-dashboard-surface .site-progress-svg {
+    display: block;
+    width: 100%;
+    height: 360px;
+}
+
+.common-dashboard-surface .site-progress-grid {
+    stroke: var(--charts-axis-line-color);
+    stroke-dasharray: 4 4;
+}
+
+.common-dashboard-surface .site-progress-tick,
+.common-dashboard-surface .site-progress-project {
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.common-dashboard-surface .site-progress-legend,
+.common-dashboard-surface .site-progress-axis-title,
+.common-dashboard-surface .site-progress-value {
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.common-dashboard-surface .site-progress-overflow {
+    fill: none;
+    stroke: var(--dashboard-text);
+    stroke-width: 2;
 }

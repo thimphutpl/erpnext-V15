@@ -12,6 +12,15 @@ from erpnext.projects.report.site_budget_consumption.site_budget_consumption imp
 )
 
 
+SITE_PROJECT_DEFINITIONS = {
+    "Pemathang - GYALSUNG": "GI-Pemathang - GYALSUNG",
+    "Gyalpozhing - GYALSUNG": "GI-Gyalpoizhing - GYALSUNG",
+    "Jamtsholing - GYALSUNG": "GI-Jamtsholing - GYALSUNG",
+    "Khotokha - GYALSUNG": "GI-Khotokha - GYALSUNG",
+    "Tareythang - GYALSUNG": "GI-Tareythang - GYALSUNG",
+}
+
+
 @frappe.whitelist()
 def get_site_budget_chart():
     """Use the report's permissions and live calculations for the dashboard."""
@@ -46,6 +55,7 @@ def get_site_budget_chart():
         "currency": frappe.db.get_value("Company", company, "default_currency"),
         "updated_at": str(now_datetime()),
         "sites": sites,
+        "progress": get_site_progress(sites),
         "head_office_total_expenses": head_office_total,
         "allocation_message": allocation_message,
         "totals": {
@@ -56,6 +66,44 @@ def get_site_budget_chart():
             )
         },
     }
+
+
+def get_site_progress(sites):
+    """Read physical progress once and reuse the dashboard's allocated expenses."""
+    if not sites:
+        return []
+    try:
+        projects = frappe.get_list(
+            "Project Definition",
+            filters={"name": ["in", list(SITE_PROJECT_DEFINITIONS.values())]},
+            fields=["name", "percent_completed"],
+            limit_page_length=len(SITE_PROJECT_DEFINITIONS),
+        )
+    except frappe.PermissionError:
+        # Existing budget readers can still view financial progress.
+        projects = []
+    physical_by_project = {project["name"]: project["percent_completed"] for project in projects}
+
+    def percent(value):
+        return float(Decimal(str(value)).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP))
+
+    progress = []
+    for site in sites:
+        project = SITE_PROJECT_DEFINITIONS[site["cost_center"]]
+        physical = physical_by_project.get(project)
+        budget = site["estimated_budget"]
+        financial = (
+            Decimal(str(site["total_expenses"])) / Decimal(str(budget)) * 100
+            if budget is not None and budget > 0 else None
+        )
+        progress.append({
+            "project": project.removesuffix(" - GYALSUNG"),
+            "physical_progress": percent(physical) if physical is not None else None,
+            "financial_progress": percent(financial) if financial is not None else None,
+        })
+    return sorted(progress, key=lambda row: (
+        row["physical_progress"] is None, row["physical_progress"] or 0, row["project"],
+    ))
 
 
 def allocate_head_office_expenses(sites, head_office_total):

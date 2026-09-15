@@ -26,6 +26,7 @@ class TestCommonDashboard(unittest.TestCase):
                 require("assert")(html.includes("<iframe"));
                 require("assert")(html.indexOf('class="site-budget-details') < html.indexOf('class="site-budget-chart"'));
                 require("assert")(html.includes('class="site-budget-totals"'));
+                require("assert")(html.indexOf('class="site-progress-panel"') > html.indexOf('class="site-budget-chart"'));
                 require("assert")(!html.includes("<details"));
             '''],
             input=script, text=True, capture_output=True,
@@ -45,7 +46,7 @@ class TestCommonDashboard(unittest.TestCase):
             self.addCleanup(patcher.stop)
         for target, replacement in [
             ("db", Mock()),
-            ("get_list", Mock(return_value=["GYALSUNG INFRA"])),
+            ("get_list", Mock(side_effect=lambda doctype, **kwargs: ["GYALSUNG INFRA"] if doctype == "Company" else [])),
         ]:
             patcher = patch.object(dashboard.frappe, target, replacement)
             patcher.start()
@@ -130,7 +131,48 @@ class TestCommonDashboard(unittest.TestCase):
         self.assertEqual(result["totals"]["head_office_allocation"], 100)
         self.assertEqual(result["totals"]["total_expenses"], 850)
         self.assertEqual(result["sites"][0]["total_expenses"], 156.67)
+        financial = {row["project"]: row["financial_progress"] for row in result["progress"]}
+        self.assertEqual(financial["GI-Gyalpoizhing"], 15667)
+        dashboard.execute.assert_called_once()
         self.assertIsNone(result["allocation_message"])
+
+    def test_progress_maps_projects_and_uses_expense_ratio_in_physical_order(self):
+        dashboard.frappe.get_list.side_effect = None
+        dashboard.frappe.get_list.return_value = [
+            {"name": "GI-Jamtsholing - GYALSUNG", "percent_completed": 90.024, "f_progress": 70.65},
+            {"name": "GI-Gyalpoizhing - GYALSUNG", "percent_completed": 85.567, "f_progress": 49.79},
+        ]
+        result = dashboard.get_site_progress([
+            {"cost_center": "Jamtsholing - GYALSUNG", "estimated_budget": 9_000_000_000, "total_expenses": 10_470_000_000},
+            {"cost_center": "Gyalpozhing - GYALSUNG", "estimated_budget": 100, "total_expenses": 25},
+        ])
+        self.assertEqual(result, [
+            {"project": "GI-Gyalpoizhing", "physical_progress": 85.57, "financial_progress": 25},
+            {"project": "GI-Jamtsholing", "physical_progress": 90.02, "financial_progress": 116.33},
+        ])
+        dashboard.execute.assert_not_called()
+        dashboard.frappe.get_list.assert_called_once()
+        self.assertEqual(dashboard.frappe.get_list.call_args.kwargs["fields"], ["name", "percent_completed"])
+        self.assertEqual(dashboard.frappe.get_list.call_args.kwargs["filters"], {"name": ["in", list(dashboard.SITE_PROJECT_DEFINITIONS.values())]})
+
+    def test_progress_handles_missing_physical_and_nonpositive_budgets(self):
+        sites = [
+            {"cost_center": name, "estimated_budget": budget, "total_expenses": 0}
+            for name, budget in zip(dashboard.SITE_PROJECT_DEFINITIONS, [None, 0, -100, 100, 100])
+        ]
+        result = dashboard.get_site_progress(sites)
+        by_project = {row["project"]: row for row in result}
+        for name in ["GI-Pemathang", "GI-Gyalpoizhing", "GI-Jamtsholing"]:
+            self.assertIsNone(by_project[name]["financial_progress"])
+        self.assertEqual(by_project["GI-Khotokha"]["financial_progress"], 0)
+        self.assertTrue(all(row["physical_progress"] is None for row in result))
+
+    def test_progress_respects_project_read_permissions(self):
+        dashboard.frappe.get_list.side_effect = frappe.PermissionError
+        result = dashboard.get_site_progress([
+            {"cost_center": "Pemathang - GYALSUNG", "estimated_budget": 100, "total_expenses": 75},
+        ])
+        self.assertEqual(result, [{"project": "GI-Pemathang", "physical_progress": None, "financial_progress": 75}])
 
     def test_allocation_handles_zero_missing_and_negative_budgets(self):
         sites = [{"estimated_budget": budget, "total_expenses": 10} for budget in [100, 0, None]]
@@ -159,6 +201,7 @@ class TestCommonDashboard(unittest.TestCase):
         dashboard.frappe.get_list.assert_not_called()
 
     def test_company_permission_is_checked_before_reading_financial_data(self):
+        dashboard.frappe.get_list.side_effect = None
         dashboard.frappe.get_list.return_value = []
         with patch.object(dashboard, "_", lambda text: text), patch.object(
             dashboard.frappe, "throw", side_effect=frappe.PermissionError

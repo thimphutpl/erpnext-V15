@@ -18,6 +18,8 @@ frappe.pages["common-dashboard"].SiteBudgetChart = class {
     constructor(body) {
         this.panel = body.find(".site-budget-panel");
         this.status = this.panel.find(".site-budget-status");
+        this.progress_panel = body.find(".site-progress-panel");
+        this.progress_status = this.progress_panel.find(".site-progress-status");
         this.on_visibility_change = () => {
             if (!document.hidden) this.refresh();
         };
@@ -42,6 +44,7 @@ frappe.pages["common-dashboard"].SiteBudgetChart = class {
         if (this.loading) return;
         this.loading = true;
         this.status.prop("hidden", false).text(__("Loading current site budgets and expenses…"));
+        this.progress_status.prop("hidden", false).text(__("Loading current project progress…"));
         try {
             const response = await frappe.call({
                 method: "erpnext.management_dashboard.page.common_dashboard.common_dashboard.get_site_budget_chart",
@@ -53,6 +56,7 @@ frappe.pages["common-dashboard"].SiteBudgetChart = class {
                 this.destroy_chart();
                 this.panel.find(".site-budget-chart").empty();
                 this.panel.find(".site-budget-details, .site-budget-notice, .site-budget-over-budget").prop("hidden", true);
+                this.progress_panel.find(".site-progress-chart").empty();
             }
             this.status.prop("hidden", false).text(
                 error && error.status === 403
@@ -60,6 +64,13 @@ frappe.pages["common-dashboard"].SiteBudgetChart = class {
                     : this.chart
                         ? __("Could not refresh site budgets. Showing the last loaded values; retrying automatically.")
                         : __("Could not load site budgets. The dashboard will retry automatically."),
+            );
+            this.progress_status.prop("hidden", false).text(
+                error && error.status === 403
+                    ? __("You do not have permission to view project financial progress.")
+                    : this.progress_chart
+                        ? __("Could not refresh project progress. Showing the last loaded values; retrying automatically.")
+                        : __("Could not load project progress. The dashboard will retry automatically."),
             );
         } finally {
             this.loading = false;
@@ -102,6 +113,7 @@ frappe.pages["common-dashboard"].SiteBudgetChart = class {
             .text(__("Estimated Budget is not configured for: {0}.", [missing.map(site => site.site).join(", ")]));
         if (!sites.length) {
             this.status.text(__("No site data is available."));
+            this.render_progress([]);
             return;
         }
 
@@ -150,9 +162,29 @@ frappe.pages["common-dashboard"].SiteBudgetChart = class {
         // Render compact value labels on top of each bar for quick glance.
         this.stop_value_labels = renderBarValueLabels(chart_element[0], sites);
         this.status.text("").prop("hidden", true);
+        this.render_progress(data.progress || []);
+    }
+
+    render_progress(progress) {
+        this.destroy_progress_chart();
+        const chart_element = this.progress_panel.find(".site-progress-chart").empty();
+        if (!progress.length) {
+            this.progress_status.text(__("No project progress data is available.")).prop("hidden", false);
+            return;
+        }
+        this.progress_chart = new ProjectProgressChart(chart_element[0], progress);
+        this.progress_status.text("").prop("hidden", true);
+    }
+
+    destroy_progress_chart() {
+        if (this.progress_chart) {
+            this.progress_chart.destroy();
+            this.progress_chart = null;
+        }
     }
 
     destroy_chart() {
+        this.destroy_progress_chart();
         if (this.stop_value_labels) {
             this.stop_value_labels();
             this.stop_value_labels = null;
@@ -175,14 +207,18 @@ function formatShortNumber(value) {
     return sign + abs.toFixed(2);
 }
 
-function renderBarValueLabels(chartElement, sites) {
+function formatProgressPercent(value) {
+    return value == null ? __("N/A") : `${Number(value).toFixed(2)}%`;
+}
+
+function renderBarValueLabels(chartElement, sites, fields = ["estimated_budget", "total_expenses"], formatter = formatShortNumber) {
     // Native SVG labels move with their bars during animation and resizing.
     // Redraws recreate the labels, so reapply compact formatting afterwards.
     const format_labels = () => {
-        ["estimated_budget", "total_expenses"].forEach((field, dataset) => {
+        fields.forEach((field, dataset) => {
             chartElement.querySelectorAll(`.dataset-${dataset} .data-point-value`).forEach(label => {
                 const index = Number(label.parentNode.getAttribute("data-point-index"));
-                const text = formatShortNumber(sites[index]?.[field]);
+                const text = formatter(sites[index]?.[field]);
                 if (label.textContent !== text) label.textContent = text;
             });
         });
@@ -191,4 +227,71 @@ function renderBarValueLabels(chartElement, sites) {
     observer.observe(chartElement, { childList: true, subtree: true });
     format_labels();
     return () => observer.disconnect();
+}
+
+// A fixed SVG scale keeps both percentage axes at 0–100 in 10% steps.
+// Only the drawn height is bounded; labels and tooltips retain the actual ratio.
+class ProjectProgressChart {
+    constructor(element, progress) {
+        this.element = element;
+        const escape = value => frappe.utils.escape_html(String(value));
+        const left = 86, right = 1014, top = 52, bottom = 302;
+        const step = (right - left) / progress.length;
+        const bar_width = Math.min(64, step * 0.34);
+        const series = [
+            { field: "physical_progress", name: __("Physical Progress"), color: "#60A5FA" },
+            { field: "financial_progress", name: __("Financial Progress"), color: "#8BC34A" },
+        ];
+        const svg = [
+            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 360" width="1100" height="360" class="site-progress-svg">',
+            `<title>${escape(__("Project Physical vs Financial Progress"))}</title>`,
+        ];
+        series.forEach((dataset, index) => {
+            const x = 8 + index * 170;
+            svg.push(`<circle cx="${x}" cy="18" r="5" fill="${dataset.color}" />`,
+                `<text x="${x + 12}" y="22" class="site-progress-legend">${escape(dataset.name)}</text>`);
+        });
+        for (let percent = 0; percent <= 100; percent += 10) {
+            const y = bottom - (bottom - top) * percent / 100;
+            svg.push(
+                `<line x1="${left}" x2="${right}" y1="${y}" y2="${y}" class="site-progress-grid" />`,
+                `<text x="${left - 9}" y="${y}" dy="0.35em" text-anchor="end" class="site-progress-tick">${percent.toFixed(2)}%</text>`,
+                `<text x="${right + 9}" y="${y}" dy="0.35em" class="site-progress-tick">${percent}%</text>`,
+            );
+        }
+        const middle_y = (top + bottom) / 2;
+        const axis_title = escape(__("Progress Percent"));
+        svg.push(
+            `<text transform="translate(20 ${middle_y}) rotate(-90)" text-anchor="middle" class="site-progress-axis-title">${axis_title}</text>`,
+            `<text transform="translate(1080 ${middle_y}) rotate(90)" text-anchor="middle" class="site-progress-axis-title">${axis_title}</text>`,
+            `<text x="550" y="349" text-anchor="middle" class="site-progress-axis-title">${escape(__("Gyalsung Project"))}</text>`,
+        );
+        progress.forEach((row, index) => {
+            const center = left + step * (index + 0.5);
+            svg.push(`<text x="${center}" y="322" text-anchor="middle" class="site-progress-project">${escape(row.project)}</text>`);
+            series.forEach((dataset, series_index) => {
+                const value = row[dataset.field];
+                const height = (bottom - top) * Math.max(0, Math.min(100, value ?? 0)) / 100;
+                const x = center + (series_index - 1) * bar_width;
+                const y = bottom - height;
+                const label = escape(formatProgressPercent(value));
+                svg.push(`<g class="site-progress-bar" data-series="${dataset.field}" data-point-index="${index}">`,
+                    `<title>${escape(row.project)} — ${escape(dataset.name)}: ${label}</title>`);
+                if (value != null) {
+                    svg.push(`<rect x="${x}" y="${y}" width="${bar_width}" height="${height}" fill="${dataset.color}" />`);
+                }
+                if (value > 100) {
+                    const midpoint = x + bar_width / 2;
+                    svg.push(`<path d="M ${midpoint - 4} ${top + 10} L ${midpoint} ${top + 4} L ${midpoint + 4} ${top + 10}" class="site-progress-overflow" />`);
+                }
+                svg.push(`<text x="${x + bar_width / 2}" y="${y - 7}" text-anchor="middle" class="site-progress-value">${label}</text>`, '</g>');
+            });
+        });
+        svg.push('</svg>');
+        this.element.innerHTML = svg.join("");
+    }
+
+    destroy() {
+        this.element.innerHTML = "";
+    }
 }
