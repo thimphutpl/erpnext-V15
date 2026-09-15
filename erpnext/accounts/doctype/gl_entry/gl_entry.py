@@ -458,6 +458,18 @@ def update_against_account(voucher_type, voucher_no):
 def on_doctype_update():
 	frappe.db.add_index("GL Entry", ["against_voucher_type", "against_voucher"])
 	frappe.db.add_index("GL Entry", ["voucher_type", "voucher_no"])
+	add_site_budget_consumption_index()
+
+
+def add_site_budget_consumption_index():
+	frappe.db.add_index(
+		"GL Entry",
+		[
+			"company", "is_cancelled", "account", "finance_book", "posting_date",
+			"cost_center", "debit", "credit",
+		],
+		index_name="site_budget_consumption_index",
+	)
 
 
 def rename_gle_sle_docs():

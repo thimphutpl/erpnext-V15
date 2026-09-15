@@ -179,10 +179,6 @@ def get_site_amounts(filters, sites):
         for account in names
     }
     advance_accounts = descendants(DEFAULT_ADVANCE_ACCOUNT)
-    relevant_accounts = expense_accounts | advance_accounts
-    for names in warehouse_accounts.values():
-        relevant_accounts |= names
-
     # Match Trial Balance with Include Default FB Entries enabled and no
     # specific finance book selected: blank entries plus the company's default.
     default_finance_book = frappe.db.get_value("Company", filters.company, "default_finance_book")
@@ -210,44 +206,58 @@ def get_site_amounts(filters, sites):
         if frappe.db.has_index("tabGL Entry", "site_budget_consumption_index")
         else "PRIMARY"
     )
-    ledger_totals = frappe.db.sql(
+    query_values = {
+        "company": filters.company,
+        "to_date": filters.to_date,
+        "finance_books": finance_books,
+        "cost_centers": cost_center_names,
+        "warehouse_accounts": tuple(sorted(site_by_warehouse_account)),
+        "expense_accounts": tuple(sorted(expense_accounts)),
+        "advance_accounts": tuple(sorted(advance_accounts)),
+        "operating_accounts": tuple(sorted(expense_accounts | advance_accounts)),
+    }
+    # Aggregate the two operating balances by cost center directly. Grouping
+    # every account/cost-center combination adds work that the report discards.
+    operating_totals = frappe.db.sql(
         f"""
-        SELECT
-            cost_center, account,
-            SUM(debit - credit) AS closing_balance
+        SELECT cost_center,
+            SUM(CASE WHEN account IN %(expense_accounts)s THEN debit - credit ELSE 0 END)
+                AS actual_expenses,
+            SUM(CASE WHEN account IN %(advance_accounts)s THEN debit - credit ELSE 0 END)
+                AS advance_to_suppliers
         FROM `tabGL Entry` FORCE INDEX ({ledger_index})
         WHERE company = %(company)s
             AND is_cancelled = 0
             AND posting_date <= %(to_date)s
             AND (finance_book IN %(finance_books)s OR finance_book IS NULL)
-            AND (cost_center IN %(cost_centers)s OR account IN %(warehouse_accounts)s)
-            AND account IN %(accounts)s
-        GROUP BY cost_center, account
+            AND cost_center IN %(cost_centers)s
+            AND account IN %(operating_accounts)s
+        GROUP BY cost_center
         """,
-        {
-            "company": filters.company,
-            "to_date": filters.to_date,
-            "finance_books": finance_books,
-            "cost_centers": cost_center_names,
-            "warehouse_accounts": tuple(sorted(site_by_warehouse_account)),
-            "accounts": tuple(sorted(relevant_accounts)),
-        },
+        query_values,
+        as_dict=True,
+    )
+    # Inventory belongs to the warehouse account regardless of cost center.
+    inventory_totals = frappe.db.sql(
+        f"""
+        SELECT account, SUM(debit - credit) AS closing_balance
+        FROM `tabGL Entry` FORCE INDEX ({ledger_index})
+        WHERE company = %(company)s
+            AND is_cancelled = 0
+            AND posting_date <= %(to_date)s
+            AND (finance_book IN %(finance_books)s OR finance_book IS NULL)
+            AND account IN %(warehouse_accounts)s
+        GROUP BY account
+        """,
+        query_values,
         as_dict=True,
     )
     amounts = {site.name: [0.0, 0.0, 0.0] for site in sites}
-    for row in ledger_totals:
-        # Inventory matches the site's warehouse row in Trial Balance with no
-        # cost center selected, including entries assigned elsewhere or nowhere.
-        warehouse_site = site_by_warehouse_account.get(row.account)
-        if warehouse_site:
-            amounts[warehouse_site][1] += flt(row.closing_balance)
-
+    for row in operating_totals:
         site_name = site_by_cost_center.get(row.cost_center)
-        if not site_name:
-            continue
-        if row.account in expense_accounts:
-            # Trial Balance closing P&L = opening balance + period movement.
-            amounts[site_name][0] += frappe.utils.flt(row.closing_balance)
-        if row.account in advance_accounts:
-            amounts[site_name][2] += frappe.utils.flt(row.closing_balance)
+        if site_name:
+            amounts[site_name][0] += flt(row.actual_expenses)
+            amounts[site_name][2] += flt(row.advance_to_suppliers)
+    for row in inventory_totals:
+        amounts[site_by_warehouse_account[row.account]][1] += flt(row.closing_balance)
     return amounts
