@@ -144,6 +144,7 @@ def get_site_amounts(filters, sites):
     cost_centers = frappe.get_all(
         "Cost Center", filters={"company": filters.company}, fields=["name", "lft", "rgt"]
     )
+    cost_centers_by_name = {cc.name: cc for cc in cost_centers}
     site_by_cost_center = {
         cc.name: site.name
         for site in sites
@@ -172,6 +173,11 @@ def get_site_amounts(filters, sites):
         site.name: descendants(PARENT_WAREHOUSE_ACCOUNTS[site.name])
         for site in sites
     }
+    site_by_warehouse_account = {
+        account: site_name
+        for site_name, names in warehouse_accounts.items()
+        for account in names
+    }
     advance_accounts = descendants(DEFAULT_ADVANCE_ACCOUNT)
     relevant_accounts = expense_accounts | advance_accounts
     for names in warehouse_accounts.values():
@@ -184,6 +190,20 @@ def get_site_amounts(filters, sites):
 
     # This report spans the full ledger history. A sequential scan avoids the
     # account index's costly row lookups, particularly for a single site.
+    # If a specific cost center filter is provided, limit the cost centers
+    # to that cost center and its descendants so the Trial Balance matches
+    # the user's filtered view.
+    if filters.get("cost_center"):
+        selected = filters.get("cost_center")
+        parent = cost_centers_by_name.get(selected)
+        if not parent:
+            frappe.throw(_("Cost Center {0} not found for company {1}").format(selected, filters.company))
+        cost_center_names = tuple(
+            cc.name for cc in cost_centers if cc.lft >= parent.lft and cc.rgt <= parent.rgt
+        )
+    else:
+        cost_center_names = tuple(site_by_cost_center)
+
     ledger_totals = frappe.db.sql(
         """
         SELECT
@@ -194,7 +214,7 @@ def get_site_amounts(filters, sites):
             AND is_cancelled = 0
             AND posting_date <= %(to_date)s
             AND (finance_book IN %(finance_books)s OR finance_book IS NULL)
-            AND cost_center IN %(cost_centers)s
+            AND (cost_center IN %(cost_centers)s OR account IN %(warehouse_accounts)s)
             AND account IN %(accounts)s
         GROUP BY cost_center, account
         """,
@@ -202,19 +222,26 @@ def get_site_amounts(filters, sites):
             "company": filters.company,
             "to_date": filters.to_date,
             "finance_books": finance_books,
-            "cost_centers": tuple(site_by_cost_center),
+            "cost_centers": cost_center_names,
+            "warehouse_accounts": tuple(sorted(site_by_warehouse_account)),
             "accounts": tuple(sorted(relevant_accounts)),
         },
         as_dict=True,
     )
     amounts = {site.name: [0.0, 0.0, 0.0] for site in sites}
     for row in ledger_totals:
-        site_name = site_by_cost_center[row.cost_center]
+        # Inventory matches the site's warehouse row in Trial Balance with no
+        # cost center selected, including entries assigned elsewhere or nowhere.
+        warehouse_site = site_by_warehouse_account.get(row.account)
+        if warehouse_site:
+            amounts[warehouse_site][1] += flt(row.closing_balance)
+
+        site_name = site_by_cost_center.get(row.cost_center)
+        if not site_name:
+            continue
         if row.account in expense_accounts:
             # Trial Balance closing P&L = opening balance + period movement.
             amounts[site_name][0] += frappe.utils.flt(row.closing_balance)
-        if row.account in warehouse_accounts[site_name]:
-            amounts[site_name][1] += frappe.utils.flt(row.closing_balance)
         if row.account in advance_accounts:
             amounts[site_name][2] += frappe.utils.flt(row.closing_balance)
     return amounts
