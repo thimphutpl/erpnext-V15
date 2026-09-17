@@ -84,4 +84,20 @@ var apply_account_filter = function(frm){
 			}
 		};
 	});
+	frm.set_query("from_broad_head", "items", function(doc, cdt, cdn) {
+		return {
+			filters: {
+				"company": frm.doc.company,
+				"is_group":1
+			}
+		};
+	});
+	frm.set_query("to_broad_head", "items", function(doc, cdt, cdn) {
+		return {
+			filters: {
+				"company": frm.doc.company,
+				"is_group":1
+			}
+		};
+	});
 }

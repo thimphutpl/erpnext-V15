@@ -646,13 +646,13 @@ def get_permission_query_conditions(user=None):
 
     if "Budget User" in roles:
         return f"""
-            `tabSupplementary Budget`.owner = {frappe.db.escape(user)}
-            AND `tabBudget Proposal`.workflow_state  IN('Draft','Waiting for Approval','Approved','Rejected')
+            `tabBudget Reappropiation`.owner = {frappe.db.escape(user)}
+            AND `tabBudget Reappropiation`.workflow_state  IN('Draft','Waiting for Approval','Approved','Rejected')
         """
 
     if "Budget Approver" in roles:
         return """
-            `tabSupplementary Budget`.workflow_state IN('Waiting for Approval')
+            `tabBudget Reappropiation`.workflow_state IN('Waiting for Approval')
         """
 
     return "1=0"
