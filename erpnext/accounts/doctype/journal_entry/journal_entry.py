@@ -57,7 +57,7 @@ class JournalEntry(AccountsController):
 		bank_payment: DF.Link | None
 		bill_date: DF.Date | None
 		bill_no: DF.Data | None
-		branch: DF.Link
+		branch: DF.Link | None
 		capital_release: DF.Check
 		cheque_date: DF.Date | None
 		cheque_lot: DF.Link | None
@@ -357,7 +357,66 @@ class JournalEntry(AccountsController):
 				"payment_status",
 				"Paid"
 			)
+	def on_update(self):
+		if self.has_value_changed("workflow_state"):
+			self.update_advance_entry_status()
+	def update_advance_entry_status(self):
+		"""Update Mobilisation Entry Item status when Journal Entry is approved."""
 
+		if self.reference_doctype != "Advance":
+			return
+
+		if not self.reference_link:
+			return
+
+		if self.workflow_state != "Approved":
+			return
+
+		if self.docstatus != 1:
+			return
+
+		advance_name = self.reference_link
+
+		# Find the parent Mobilisation Entry
+		advance_entry_name = frappe.db.get_value(
+			"Mobilisation Entry Item",
+			{"reference": advance_name},
+			"parent",
+		)
+
+		if not advance_entry_name:
+			frappe.log_error(
+				title="Mobilisation Entry Not Found",
+				message=(
+					f"Journal Entry: {self.name}\n"
+					f"Advance: {advance_name}\n"
+					f"Mobilisation Entry Item with reference "
+					f"{advance_name} was not found."
+				),
+			)
+			return
+
+		# Find the exact Mobilisation Entry Item row
+		child_row_name = frappe.db.get_value(
+			"Mobilisation Entry Item",
+			{
+				"parent": advance_entry_name,
+				"reference": advance_name,
+			},
+			"name",
+		)
+
+		if not child_row_name:
+			return
+
+		# Update status in the child table
+		frappe.db.set_value(
+			"Mobilisation Entry Item",
+			child_row_name,
+			"status",
+			"Approved",
+		)
+				
 	def on_cancel(self):
 		if self.workflow_state == "Approved":
 			frappe.throw(_("This Journal Entry {0} Already Approved. Please cancel it first.").format(self.name))

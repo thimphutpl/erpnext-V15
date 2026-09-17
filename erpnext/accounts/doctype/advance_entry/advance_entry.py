@@ -68,12 +68,16 @@ def get_advance(customer,party_type,advance_type,branch):
         FROM `tabAdvance Entry` ae
         INNER JOIN `tabAdvance` a
             ON a.name = ae.advance
+        INNER JOIN `tabMobilisation Entry Item` mei
+            ON mei.parent = ae.name
         WHERE
+
             ae.customer = %s
             AND ae.branch = %s
             AND ae.party_type = %s
             AND ae.advance_type = %s
             AND ae.is_cancelled = 0
+            AND mei.status = 'Approved'
         
         ORDER BY ae.posting_date ASC
     """, (

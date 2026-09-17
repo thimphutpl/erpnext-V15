@@ -28,6 +28,7 @@ class MobilisationEntryItem(Document):
 		parenttype: DF.Data
 		reference: DF.Link | None
 		source_of_fund: DF.Link | None
+		status: DF.Data | None
 		total_amount: DF.Currency
 	# end: auto-generated types
 
