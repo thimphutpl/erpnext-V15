@@ -19,6 +19,7 @@
   "amended_from",
   "budget_type",
   "posting_date",
+  "new_supplementary_budget_check",
   "sb_bulk_data",
   "column_break_ilct",
   "budget_activities",
@@ -45,6 +46,7 @@
   "actual_total",
   "reference_section",
   "budget_proposal",
+  "new_supplement_budget",
   "section_break_6",
   "applicable_on_material_request",
   "action_if_annual_budget_exceeded_on_mr",
@@ -408,12 +410,25 @@
    "label": "Budget Proposal",
    "options": "Budget Proposal",
    "read_only": 1
+  },
+  {
+   "fieldname": "new_supplement_budget",
+   "fieldtype": "Link",
+   "label": "New Supplementary Budget",
+   "options": "Supplementary Budget",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "new_supplementary_budget_check",
+   "fieldtype": "Check",
+   "label": "New Supplementary Check"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-07-21 09:53:19.512019",
+ "modified": "2026-09-24 09:20:46.231786",
  "modified_by": "Administrator",
  "module": "Budget",
  "name": "Budget",

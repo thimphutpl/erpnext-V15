@@ -63,6 +63,8 @@ class Budget(Document):
 		initial_budget: DF.Currency
 		initial_total: DF.Currency
 		monthly_distribution: DF.Link | None
+		new_supplement_budget: DF.Link | None
+		new_supplementary_budget_check: DF.Check
 		posting_date: DF.Date
 		project: DF.Link | None
 		project_name: DF.Data | None
@@ -197,7 +199,7 @@ class Budget(Document):
 			select
 				b.name, ba.account from `tabBudget` b, `tabBudget Account` ba
 			where
-				ba.parent = b.name and b.docstatus < 2 and b.company = %s and ba.%s=%s and
+				ba.parent = b.name and b.docstatus < 2 and b.new_supplementary_budget_check=1 and b.company = %s and ba.%s=%s and
 				b.fiscal_year=%s and b.name != %s and ba.account in (%s) """
 			% ("%s", budget_against_field, "%s", "%s", "%s", ",".join(["%s"] * len(accounts))),
 			(self.company, budget_against, self.fiscal_year, self.name) + tuple(accounts),

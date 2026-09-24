@@ -7,6 +7,31 @@ from frappe.model.document import Document
 from frappe.utils import flt, nowdate
 
 class SupplementaryBudget(Document):
+    # begin: auto-generated types
+    # This code is auto-generated. Do not modify anything in this block.
+
+    from typing import TYPE_CHECKING
+
+    if TYPE_CHECKING:
+        from erpnext.budget.doctype.supplementary_budget_item.supplementary_budget_item import SupplementaryBudgetItem
+        from frappe.types import DF
+
+        amended_from: DF.Link | None
+        approver: DF.Link | None
+        approver_designation: DF.Data | None
+        approver_name: DF.Data | None
+        attachment: DF.Attach | None
+        branch: DF.Link
+        budget_against: DF.Literal["", "Cost Center", "Project"]
+        company: DF.Link
+        cost_center: DF.Link
+        fiscal_year: DF.Link
+        items: DF.Table[SupplementaryBudgetItem]
+        posting_date: DF.Date
+        project: DF.Link | None
+        remarks: DF.SmallText | None
+        supplementary_type: DF.Literal["", "New Supplementary Budget", "Additional Supplementary Budget"]
+    # end: auto-generated types
 
     def validate(self):
         self.validate_budget()
@@ -16,12 +41,14 @@ class SupplementaryBudget(Document):
             self.supplement_budget(cancel=False)
         elif self.supplementary_type == "New Supplementary Budget":
             self.new_supplement_budget(cancel=False)
+            self.create_budget_doc()
 
     def on_cancel(self):
         if self.supplementary_type == "Additional Supplementary Budget":
             self.supplement_budget(cancel=True)
         elif self.supplementary_type == "New Supplementary Budget":
             self.new_supplement_budget(cancel=True)
+            self.cancel_budget()
 
     def set_broad_head_from_account(self):
         """Auto-set broad_head as parent_account of selected account"""
@@ -117,6 +144,9 @@ class SupplementaryBudget(Document):
             if d.get('budget_sub_activity'):
                 query += " AND ba.budget_sub_activity = %s"
                 params.append(d.budget_sub_activity)
+            if d.get('budget_sub_activity'):
+                query += " AND ba.source_of_fund = %s"
+                params.append(d.source_of_fund)    
 
             result = frappe.db.sql(query, params, as_dict=1)
 
@@ -277,6 +307,58 @@ class SupplementaryBudget(Document):
                 supp_details.posting_date = nowdate()
                 supp_details.fiscal_year = self.fiscal_year
                 supp_details.insert(ignore_permissions=True)
+
+    def create_budget_doc(self):
+        """Create a new Budget document from Supplementary Budget"""
+        budget = frappe.new_doc("Budget")
+        self.map_proposal_to_budget(budget)
+        budget.new_supplement_budget = self.name  # Link back to proposal
+        budget.submit()
+        return budget
+
+    def update_budget_doc(self, budget):
+        """Update existing Budget document from Supplementary Budget"""
+        self.map_proposal_to_budget(budget)
+        budget.new_supplement_budget = self.name
+
+    def map_proposal_to_budget(self, budget):
+        """Map fields from Supplementary Budget to Budget"""
+        # Map basic fields
+        budget.company = self.company
+        budget.fiscal_year = self.fiscal_year
+        budget.budget_against = self.budget_against
+        budget.cost_center = self.cost_center
+        budget.branch = self.branch
+        
+        # Clear existing accounts in budget
+        budget.set('accounts', [])
+        
+        # Map items from supplementary to budget
+        for supp_account in self.items:
+            budget_account = budget.append('accounts', {})
+            budget_account.account = supp_account.account
+            budget_account.cost_center = self.cost_center
+            budget_account.broad_head = supp_account.broad_head
+            budget_account.budget_activity = supp_account.budget_activity
+            budget_account.budget_sub_activity = supp_account.budget_sub_activity
+            budget_account.source_of_fund = supp_account.source_of_fund
+            # budget_account.approved_budget = supp_account.approved_budget
+            budget_account.supplementary_budget = supp_account.amount
+            budget_account.budget_amount = supp_account.amount
+            budget.new_supplementary_budget_check = 1
+
+    def cancel_budget(self):
+        """Cancel the associated Budget document"""
+        existing_budget = frappe.db.exists("Budget", {
+            "new_supplement_budget": self.name,
+            "docstatus": 1  # Submitted
+        })
+        
+        if existing_budget:
+            budget_doc = frappe.get_doc("Budget", existing_budget)
+            budget_doc.cancel()
+            frappe.msgprint(_("Budget {0} has been cancelled").format(budget_doc.name))	            
+
 def get_permission_query_conditions(user=None):
     if not user:
         user = frappe.session.user
