@@ -18,6 +18,7 @@ class BudgetProposalAccount(Document):
 		account_name: DF.Data | None
 		account_number: DF.Data | None
 		approved_budget: DF.Float
+		approved_budget_manually_changed: DF.Check
 		april: DF.Currency
 		august: DF.Currency
 		br_april: DF.Data | None
