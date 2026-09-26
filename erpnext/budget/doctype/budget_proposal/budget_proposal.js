@@ -139,13 +139,7 @@ frappe.ui.form.on('Budget Proposal', {
 			};
 		});
 		//erpnext.accounts.dimensions.setup_dimension_filters(frm, frm.doctype);
-
-		// Ensure any existing rows have approved_budget populated
-        frm.doc.accounts.forEach(function(row) {
-            if (row.initial_budget && (!row.approved_budget || row.approved_budget === 0)) {
-                frappe.model.set_value(row.doctype, row.name, 'approved_budget', row.initial_budget);
-            }
-        });
+		
 	},
 
 	refresh: function(frm) {
@@ -549,21 +543,27 @@ frappe.ui.form.on("Budget Proposal Account", {
 		})
 	},
 	initial_budget: function(frm, cdt, cdn) {
-        let row = locals[cdt][cdn];
-        // If approved_budget is empty or 0, auto-fill with initial_budget
-        if (row.initial_budget && (!row.approved_budget || row.approved_budget === 0)) {
-            frappe.model.set_value(cdt, cdn, 'approved_budget', row.initial_budget);
-        }
-    },
-    
-    approved_budget: function(frm, cdt, cdn) {
-        // Optional: Track that user manually changed approved_budget
-        let row = locals[cdt][cdn];
-        if (row.approved_budget && row.initial_budget && row.approved_budget !== row.initial_budget) {
-            // User manually changed approved_budget - you can add a flag if needed
-            // row.approved_budget_manually_changed = 1;
-        }
-    }
+		let row = locals[cdt][cdn];
+	
+		// Only auto-fill if user hasn't manually changed approved_budget
+		if (!row.approved_budget_manually_changed) {
+			frappe.model.set_value(cdt, cdn, 'approved_budget', row.initial_budget || 0);
+		}
+	},
+	
+	approved_budget: function(frm, cdt, cdn) {
+		let row = locals[cdt][cdn];
+	
+		// Mark as manually changed ONLY if approved_budget differs from initial_budget
+		// and it's not the auto-fill trigger (avoid flagging during auto-fill)
+		if (row.initial_budget !== undefined &&
+			flt(row.approved_budget) !== flt(row.initial_budget)) {
+			frappe.model.set_value(cdt, cdn, 'approved_budget_manually_changed', 1);
+		} else {
+			// If user set it back equal to initial_budget, we can unflag
+			frappe.model.set_value(cdt, cdn, 'approved_budget_manually_changed', 0);
+		}
+	},
 }); 
 
 function set_initial_budget(frm, cdt, cdn){
