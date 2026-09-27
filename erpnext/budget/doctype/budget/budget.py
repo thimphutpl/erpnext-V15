@@ -63,8 +63,8 @@ class Budget(Document):
         initial_budget: DF.Currency
         initial_total: DF.Currency
         monthly_distribution: DF.Link | None
-		new_supplement_budget: DF.Link | None
-		new_supplementary_budget_check: DF.Check
+        new_supplement_budget: DF.Link | None
+        new_supplementary_budget_check: DF.Check
         posting_date: DF.Date
         project: DF.Link | None
         project_name: DF.Data | None

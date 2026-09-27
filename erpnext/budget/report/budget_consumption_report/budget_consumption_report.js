@@ -73,18 +73,45 @@ frappe.query_reports["Budget Consumption Report"] = {
             "label": __("Budget Activity"),
             "fieldtype": "Link",
             "options": "Budget Activity",
+            "get_query": function () {
+                var company = frappe.query_report.get_filter_value("company");
+                return {
+                    filters: {
+                        "company": company || undefined,
+                        "disabled": 0
+                    }
+                };
+            }
         },
         {
             "fieldname": "budget_sub_activity",
             "label": __("Budget Sub Activity"),
             "fieldtype": "Link",
             "options": "Budget Sub Activity",
+            "get_query": function () {
+                var company = frappe.query_report.get_filter_value("company");
+                return {
+                    filters: {
+                        "company": company || undefined,
+                        "disabled": 0
+                    }
+                };
+            }
         },
         {
             "fieldname": "source_of_fund",
             "label": __("Source of Fund"),
             "fieldtype": "Link",
             "options": "Source of Fund",
+            "get_query": function () {
+                var company = frappe.query_report.get_filter_value("company");
+                return {
+                    filters: {
+                        "company": company || undefined,
+                        "disabled": 0
+                    }
+                };
+            }
         },
         {
             "fieldname": "budget_against",
@@ -116,7 +143,7 @@ frappe.query_reports["Budget Consumption Report"] = {
         },
         {
             "fieldname": "cost_center",
-            "label": __("Branch"),
+            "label": __("Cost Center"),
             "fieldtype": "Link",
             "options": "Cost Center",
             "get_query": function () {
