@@ -931,7 +931,8 @@ $.extend(erpnext.journal_entry, {
         frappe.call({
             method: "erpnext.accounts.doctype.journal_entry.journal_entry.get_tds_account",
             args: {
-                tax_withholding_category: frm.doc.tax_withholding_category || null
+                tax_withholding_category: frm.doc.tax_withholding_category || null,
+                company: frm.doc.company
             },
             callback: function (r) {
                 if (r.message) {
@@ -1130,7 +1131,7 @@ var toggle_remarks_display = function (frm, args) {
 
 /* ePayment Begins */
 var create_custom_buttons = function (frm) {
-    if (frm.doc.docstatus == 1 && (frm.doc.voucher_type == "Bank Entry" || frm.doc.voucher_type == "Contra Entry") && frm.doc.mode_of_payment == "ePayment" && frm.doc.payment_status != "Payment Successful") {
+    if (frm.doc.docstatus == 1 && (frm.doc.voucher_type == "Bank Entry" || frm.doc.voucher_type == "Contra Entry") && frm.doc.mode_of_payment == "Wire Transfer" && frm.doc.payment_status != "Payment Successful") {
         if (!frm.doc.bank_payment || frm.doc.payment_status == 'Failed' || frm.doc.payment_status == 'Payment Failed') {
             frm.page.set_primary_action(__('Process Payment'), () => {
                 frappe.model.open_mapped_doc({

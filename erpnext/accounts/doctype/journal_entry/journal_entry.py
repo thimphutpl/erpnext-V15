@@ -2181,19 +2181,34 @@ def make_reverse_journal_entry(source_name, target_doc=None):
 	return doclist
 
 @frappe.whitelist()
-def get_tds_account(tax_withholding_category):
-	account = frappe.db.sql("""select t.name,
-			ifnull((select tax_withholding_rate
-				from `tabTax Withholding Rate` r
-				where r.parent = t.name
-				limit 1),0) as tax_withholding_rate,
-			(select account
-				from `tabTax Withholding Account` a
-				where a.parent = t.name
-				limit 1) as tax_withholding_account
-		from `tabTax Withholding Category` t
-		where t.name = "{}" """.format(tax_withholding_category), as_dict=True)
-	return account[0] if account else None
+def get_tds_account(tax_withholding_category, company=None):
+    account = frappe.db.sql("""
+        SELECT
+            t.name,
+            IFNULL(
+                (
+                    SELECT tax_withholding_rate
+                    FROM `tabTax Withholding Rate` r
+                    WHERE r.parent = t.name
+                    LIMIT 1
+                ),
+                0
+            ) AS tax_withholding_rate,
+            (
+                SELECT account
+                FROM `tabTax Withholding Account` a
+                WHERE a.parent = t.name
+                    AND a.company = %(company)s
+                LIMIT 1
+            ) AS tax_withholding_account
+        FROM `tabTax Withholding Category` t
+        WHERE t.name = %(tax_withholding_category)s
+    """, {
+        "company": company,
+        "tax_withholding_category": tax_withholding_category
+    }, as_dict=True)
+
+    return account[0] if account else None
 
 # def get_permission_query_conditions(user):
 # 	if not user: user = frappe.session.user

@@ -586,8 +586,7 @@
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Branch",
-   "options": "Branch",
-   "reqd": 1
+   "options": "Branch"
   },
   {
    "allow_on_submit": 1,
@@ -725,7 +724,7 @@
    "table_fieldname": "payment_entries"
   }
  ],
- "modified": "2026-09-09 10:24:13.103026",
+ "modified": "2026-09-15 11:03:18.618683",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Journal Entry",
