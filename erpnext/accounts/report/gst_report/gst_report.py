@@ -678,6 +678,7 @@ def get_data(filters):
 					MAX(r.gst_amount),
 					MAX(pji.gst_amount),
 					MAX(hci.gst_amount),
+					MAX(jc.total_gst_amount),
 					(
 						SELECT SUM(si_tax.tax_amount)
 						FROM `tabSales Taxes and Charges` si_tax
@@ -733,12 +734,18 @@ def get_data(filters):
 				ON gl.voucher_type = 'Rental'
 				AND gl.voucher_no = r.name
 
+			LEFT JOIN `tabJob Cards` jc
+				ON gl.voucher_type = 'Job Cards'
+				AND gl.voucher_no = jc.name
+					
+
 			WHERE gl.voucher_type IN (
 				'Sales Invoice',
 				'Hire Charge Invoice',
 				'Project Invoice',
 				'Rental',
 				'Journal Entry',
+				'Job Cards',
 				'Mechanical Payment'
 			)
 
@@ -755,6 +762,8 @@ def get_data(filters):
 					r.gst_amount,
 					pji.gst_amount,
 					hci.gst_amount,
+					jc.total_gst_amount,
+					
 					(
 						SELECT SUM(si_tax.tax_amount)
 						FROM `tabSales Taxes and Charges` si_tax
