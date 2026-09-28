@@ -1126,5 +1126,8 @@ def get_permission_query_conditions(user=None):
         return """
             `tabBudget Release`.workflow_state IN('Waiting for MOF Finance Approval','Approved','Rejected')
         """
+	if "Budget Manager" in roles:
+        return """
+            `tabBudget Release`.workflow_state IN('Waiting for MOF Finance Approval','Approved','Rejected')	
 
     return "1=0"
