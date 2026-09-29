@@ -679,6 +679,7 @@ def get_data(filters):
 					MAX(pji.gst_amount),
 					MAX(hci.gst_amount),
 					MAX(jc.total_gst_amount),
+					MAX(fbb.total_gst_amount),
 					(
 						SELECT SUM(si_tax.tax_amount)
 						FROM `tabSales Taxes and Charges` si_tax
@@ -737,6 +738,10 @@ def get_data(filters):
 			LEFT JOIN `tabJob Cards` jc
 				ON gl.voucher_type = 'Job Cards'
 				AND gl.voucher_no = jc.name
+
+			LEFT JOIN `tabFabrication And Bailey Bridge` fbb
+				ON gl.voucher_type = 'Fabrication And Bailey Bridge'
+				AND gl.voucher_no = fbb.name
 					
 
 			WHERE gl.voucher_type IN (
@@ -746,6 +751,7 @@ def get_data(filters):
 				'Rental',
 				'Journal Entry',
 				'Job Cards',
+				'Fabrication And Bailey Bridge',
 				'Mechanical Payment'
 			)
 
@@ -763,6 +769,7 @@ def get_data(filters):
 					pji.gst_amount,
 					hci.gst_amount,
 					jc.total_gst_amount,
+					fbb.total_gst_amount,
 					
 					(
 						SELECT SUM(si_tax.tax_amount)

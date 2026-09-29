@@ -112,6 +112,7 @@ frappe.query_reports["GST Report"] = {
                     "Project Invoice",
                     "Journal Entry",
                     "Job Cards",
+                    "Fabrication And Bailey Bridge",
                     "Rental"
                 ]);
             }
