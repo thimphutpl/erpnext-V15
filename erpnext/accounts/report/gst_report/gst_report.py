@@ -714,7 +714,20 @@ def get_data(filters):
 					MAX(r.total_amount),
 					MAX(pji.gross_invoice_amount),
 					MAX(hci.total_invoice_amount),
-					MAX(si.total)
+					MAX(jc.total_amount),
+					MAX(fbb.total_amount),
+					MAX(si.total),
+					(
+					SELECT SUM(gl2.credit_in_account_currency)
+        				FROM `tabGL Entry` gl2
+       				 	WHERE gl2.voucher_no = gl.voucher_no
+          				AND gl2.voucher_type = gl.voucher_type
+          				AND gl2.is_cancelled = 0
+          				AND gl2.account != %(account_type)s
+          				AND gl2.account != 'Internal Company Transaction - CDCL'
+          				AND gl2.credit_in_account_currency > 0
+
+					)
 				) AS bill_amount
 
 			FROM `tabGL Entry` gl
