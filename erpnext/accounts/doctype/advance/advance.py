@@ -380,6 +380,7 @@ class Advance(Document):
    
 			con.append("mobilisation_entry", {
 				"reference":self.name,
+                "child_reference":item.name,
                 "is_opening":self.is_opening,
 				"advance_type":self.advance_type,
 				"total_amount": net_amount,
