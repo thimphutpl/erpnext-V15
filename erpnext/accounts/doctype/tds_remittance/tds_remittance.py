@@ -267,6 +267,94 @@ def get_tds_invoices(tax_withholding_category, from_date, to_date, name, filter_
 		{party_cond}
 		{cond}""".format(accounts_cond = accounts_cond, cond = cond, existing_cond = existing_cond,\
 			party_cond = party_cond, from_date=from_date, to_date=to_date, cost_center=cost_center), as_dict=True)
+	# Advance Settlement
+
+	# Advance Settlement
+
+	as_entries = frappe.db.sql("""
+		select
+			t.posting_date,
+			t.name as invoice_no,
+			'Advance Settlement' as invoice_type,
+            t.party_type AS party_type,
+			t.customer as party,
+
+			(
+				select supplier_tpn_no
+				from `tabSupplier`
+				where name = t.customer
+			) as tpn,
+            CASE
+                WHEN t.party_type = 'Supplier' THEN (
+                    SELECT supplier_name
+                    FROM `tabSupplier`
+                    WHERE name = t.customer
+                )
+                WHEN t.party_type = 'Customer' THEN (
+                    SELECT customer_name
+                    FROM `tabCustomer`
+                    WHERE name = t.customer
+                )
+                WHEN t.party_type = 'Employee' THEN (
+                    SELECT employee_name
+                    FROM `tabEmployee`
+                    WHERE name = t.customer
+                )
+                ELSE NULL
+            END AS party_name,
+
+			t.cost_center,
+
+			SUM(t1.amount) as bill_amount,
+
+			t.tds_amount as tds_amount,
+
+			t.tds_account as tax_account,
+
+			tre.tds_remittance,
+			tre.tds_receipt_update,
+
+			t1.invoice_no as bill_no,
+			t1.invoice_date as bill_date,
+            case
+                when tre.tds_receipt_update is not null
+                    then 'Paid'
+                else 'Unpaid'
+            end as remittance_status
+
+
+
+		from `tabAdvance Settlement` t
+
+		inner join `tabAdvance Recoup Item` t1
+			on t1.parent = t.name
+
+		left join `tabTDS Receipt Entry` tre
+			on tre.invoice_no = t.name
+
+		where t.posting_date between '{from_date}' and '{to_date}'
+
+		and t.docstatus = 1
+
+		and t.apply_tds = 1
+
+		and ifnull(t.tds_amount, 0) > 0
+
+		and t.cost_center = '{cost_center}'
+
+		{existing_cond}
+
+		{cond}
+
+	""".format(
+		existing_cond=existing_cond,
+		cond=cond,
+		from_date=from_date,
+		to_date=to_date,
+		cost_center=cost_center
+	), as_dict=True)
+
+	# frappe.throw("as_entries:"+str(as_entries))
 	# Transporter Invoice
 	# ti_entries = frappe.db.sql("""select t.posting_date, t.name as invoice_no, 'Transporter Invoice' as invoice_type,
 	# 			'Supplier' as party_type, t.supplier as party, 
@@ -326,7 +414,7 @@ def get_tds_invoices(tax_withholding_category, from_date, to_date, name, filter_
 	# 			{cond}
 	# 			""".format(accounts_cond = accounts_cond_eme, cond = cond, existing_cond = existing_cond,\
 	# 					party_cond = party_cond, from_date=from_date, to_date=to_date, cost_center=cost_center), as_dict=True)
-	entries = pi_entries + pe_entries + je_entries
+	entries = pi_entries + pe_entries + je_entries + as_entries
 	entries = sorted(entries, key=lambda d: (d['posting_date'], d['invoice_no']))
 	return entries
 
