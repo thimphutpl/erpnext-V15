@@ -1051,8 +1051,10 @@ def validate_budget_records(args, error, budget_records, throw_error):
 #     commit_budget(args)   
 
 def validate_expense_against_budget(args, throw_error=True):
-    # frappe.msgprint(str(args))
+  
     args = frappe._dict(args)
+    if args.ignore_budget_details:
+        return
     if args.is_cancelled:
         delete_committed_consumed_budget(args.voucher_type, args.voucher_no)
         return
