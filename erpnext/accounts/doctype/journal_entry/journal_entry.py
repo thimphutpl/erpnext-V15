@@ -286,7 +286,10 @@ class JournalEntry(AccountsController):
 	
 
 	def budget_validation(self):
+
 		for d in self.get("accounts"):
+			if d.ignore_budget_details:
+				return
 			account_type = frappe.db.get_value(
 				"Account", d.account, "account_type"
 			)
@@ -1542,7 +1545,6 @@ class JournalEntry(AccountsController):
 								"source_of_fund": d.source_of_fund,
 								"project": d.project,
 								"finance_book": self.finance_book,
-								"ignore_budget_details": d.ignore_budget_details,
 								# "business_activity": d.business_activity,
 							},
 							item=d,
@@ -2183,33 +2185,33 @@ def make_reverse_journal_entry(source_name, target_doc=None):
 
 @frappe.whitelist()
 def get_tds_account(tax_withholding_category, company=None):
-    account = frappe.db.sql("""
-        SELECT
-            t.name,
-            IFNULL(
-                (
-                    SELECT tax_withholding_rate
-                    FROM `tabTax Withholding Rate` r
-                    WHERE r.parent = t.name
-                    LIMIT 1
-                ),
-                0
-            ) AS tax_withholding_rate,
-            (
-                SELECT account
-                FROM `tabTax Withholding Account` a
-                WHERE a.parent = t.name
-                    AND a.company = %(company)s
-                LIMIT 1
-            ) AS tax_withholding_account
-        FROM `tabTax Withholding Category` t
-        WHERE t.name = %(tax_withholding_category)s
-    """, {
-        "company": company,
-        "tax_withholding_category": tax_withholding_category
-    }, as_dict=True)
+	account = frappe.db.sql("""
+		SELECT
+			t.name,
+			IFNULL(
+				(
+					SELECT tax_withholding_rate
+					FROM `tabTax Withholding Rate` r
+					WHERE r.parent = t.name
+					LIMIT 1
+				),
+				0
+			) AS tax_withholding_rate,
+			(
+				SELECT account
+				FROM `tabTax Withholding Account` a
+				WHERE a.parent = t.name
+					AND a.company = %(company)s
+				LIMIT 1
+			) AS tax_withholding_account
+		FROM `tabTax Withholding Category` t
+		WHERE t.name = %(tax_withholding_category)s
+	""", {
+		"company": company,
+		"tax_withholding_category": tax_withholding_category
+	}, as_dict=True)
 
-    return account[0] if account else None
+	return account[0] if account else None
 
 # def get_permission_query_conditions(user):
 # 	if not user: user = frappe.session.user
