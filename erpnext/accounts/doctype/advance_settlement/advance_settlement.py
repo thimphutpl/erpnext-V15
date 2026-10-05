@@ -8,7 +8,7 @@ from frappe.utils import money_in_words
 from erpnext.custom_utils import prepare_gl
 from frappe import _
 from erpnext.custom_utils import check_budget_available
-
+import math
 class AdvanceSettlement(Document):
 	# begin: auto-generated types
 	# This code is auto-generated. Do not modify anything in this block.
@@ -535,8 +535,8 @@ class AdvanceSettlement(Document):
 				"reference_type":self.doctype,
 				"reference_name": self.name,
 				"cost_center": self.cost_center,
-				"credit_in_account_currency": flt(self.retention_amount),
-				"credit": flt(self.retention_amount),
+				"credit_in_account_currency": roundoff(flt(self.retention_amount)),
+				"credit": roundoff(flt(self.retention_amount)),
 				"party_type": self.party_type,
 				"party": party,
 				"ignore_budget_details":1
@@ -545,6 +545,11 @@ class AdvanceSettlement(Document):
 		# frappe.db.commit()		
 		self.db_set("journal_entry", je.name)
 		frappe.msgprint("Journal Entry created. {}".format(frappe.get_desk_link("Journal Entry", je.name)))
+def roundoff(amount):
+	if amount:
+		return math.ceil(amount) if (amount - int(amount)) >= 0.5 else math.floor(amount)
+	else:
+		return 0
 
 def get_permission_query_conditions(user):
 	if not user: user = frappe.session.user
@@ -559,4 +564,3 @@ def get_permission_query_conditions(user):
 			where e.branch = `tabAdvance Settlement`.branch
 			and e.user_id = '{user}')
 	)""".format(user=user)
-	
