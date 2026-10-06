@@ -165,7 +165,7 @@ class AdvanceSettlement(Document):
 		allocated_amount = flt(self.get_allocated_amount())
 		expense_amount = flt(self.get_expense_amount())
 		tds_amount = flt(self.tds_amount)
-		retention_amount = flt(self.retention_amount)
+		retention_amount = roundoff(flt(self.retention_amount))
 		if expense_amount:
 			if expense_amount <= allocated_amount:
 				self.net_amount = (
