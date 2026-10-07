@@ -227,8 +227,12 @@ def inter_payment(Amt, PayeeAcctNum, BnfcryAcct, BnfcryName, BnfcryAcctTyp, Bnfc
 
     if Amt > 1000000:
         clearingType = 1
+        orderType = 101
+        beneficiaryBankIdentifierType = 150
     else:
         clearingType = 3
+        orderType = 103
+        beneficiaryBankIdentifierType = 315
     
     payload = {
                 "skipErrorIds": [
@@ -252,7 +256,7 @@ def inter_payment(Amt, PayeeAcctNum, BnfcryAcct, BnfcryName, BnfcryAcctTyp, Bnfc
                         "debtorAccount": PayeeAcctNum,
                         "orderingCustomerName": RemitterName,
                         "direction": 2,
-                        "orderType": 101
+                        "orderType": orderType
                     },
                     "pymntDetails": {
                         "clearingType": clearingType,
@@ -260,7 +264,7 @@ def inter_payment(Amt, PayeeAcctNum, BnfcryAcct, BnfcryName, BnfcryAcctTyp, Bnfc
                         "beneficiaryIdentifierType": 5,
                         "beneficiaryAccountType": BnfcryAcctTyp,
                         "beneficiaryAccount": BnfcryAcct,
-                        "beneficiaryBankIdentifierType": 150,
+                        "beneficiaryBankIdentifierType": beneficiaryBankIdentifierType,
                         "beneficiaryBankIdentifier": BfscCode
                     },
                     "additionalDetails": {
