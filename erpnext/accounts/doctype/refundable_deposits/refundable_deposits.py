@@ -48,6 +48,58 @@ class RefundableDeposits(Document):
 	def on_submit(self):
 		self.post_journal_entry()
 		self.create_mof_entries()
+	def before_cancel(self):
+		if not self.journal_entry:
+			return
+		
+		je = frappe.get_doc("Journal Entry", self.journal_entry)	
+		if je.workflow_state in (
+			"Waiting For Verification",
+			"Waiting Approval",
+		):
+			frappe.throw(
+				_(
+					"Cannot cancel Refundable Deposits {0} because linked Journal Entry {1}. "
+					"Please Reject it first."
+				).format(self.name, self.journal_entry)
+		)
+	def on_cancel(self):
+		self.removed_journal_entry()
+	def removed_journal_entry(self):
+			
+		if not self.journal_entry:
+			return
+
+		je_name = self.journal_entry
+
+		# Find linked Advance
+		advance_name = frappe.db.get_value(
+			"Refundable Deposits",
+			{"journal_entry": je_name},
+			"name"
+		)
+
+		if advance_name:
+			# Remove the Journal Entry link from Advance
+			frappe.db.set_value(
+				"Refundable Deposits",
+				advance_name,
+				"journal_entry",
+				None
+			)
+
+		# Delete Journal Entry if Draft
+		if frappe.db.exists("Journal Entry", je_name):
+			je = frappe.get_doc("Journal Entry", je_name)
+
+			if je.workflow_state in ["Draft","Rejected","Cancelled"] and je.docstatus == 0:
+				frappe.delete_doc(
+					"Journal Entry",
+					je_name,
+					ignore_permissions=True
+				)
+
+			self.db_set("journal_entry", None)
 	
 	
 	def post_journal_entry(self):
