@@ -1545,6 +1545,7 @@ class JournalEntry(AccountsController):
 								"source_of_fund": d.source_of_fund,
 								"project": d.project,
 								"finance_book": self.finance_book,
+								"ignore_budget_details": d.ignore_budget_details
 								# "business_activity": d.business_activity,
 							},
 							item=d,
