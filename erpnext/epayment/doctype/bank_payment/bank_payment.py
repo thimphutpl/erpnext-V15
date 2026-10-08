@@ -684,7 +684,7 @@ class BankPayment(Document):
 									AND bpi.transaction_id = je.name
 									AND bpi.parent != '{bank_payment}'
 									AND bpi.docstatus != 2
-									AND bpi.status NOT IN ('Cancelled', 'Failed')
+									AND bpi.status = 'Completed'
 								)
 								ORDER BY je.posting_date
 							""".format(
@@ -853,7 +853,7 @@ class BankPayment(Document):
 							"amount": amount,
 						}
 					)
-				supplier, employee = None, None
+				supplier, employee,customer = None, None,None
 				for i in payment_dtl:
 					if i["party_type"] == "Supplier":
 						query = """select s.bank_name, s.bank_branch, s.bank_account_type, 
@@ -900,6 +900,7 @@ class BankPayment(Document):
 								"party_type": i["party_type"],
 								"employee": employee,
 								"supplier": supplier,
+								"customer": customer,
 								"beneficiary_name": dtl[0]["beneficiary_name"],
 								"bank_name": dtl[0]["bank_name"],
 								"bank_branch": dtl[0]["bank_branch"],
