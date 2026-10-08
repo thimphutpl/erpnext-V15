@@ -684,7 +684,8 @@ class BankPayment(Document):
 									AND bpi.transaction_id = je.name
 									AND bpi.parent != '{bank_payment}'
 									AND bpi.docstatus != 2
-									AND bpi.status = 'Completed'
+									AND bpi.status NOT IN ('Cancelled', 'Failed')
+									AND (select count(bpii.name) from `tabBank Payment Item` bpii where bpii.parent = bpi.parent and bpii.status IN ('Cancelled')) = (select count(bpii.name) from `tabBank Payment Item` bpii where bpii.parent = bpi.parent and bpii.status NOT IN ('Cancelled') )
 								)
 								ORDER BY je.posting_date
 							""".format(
@@ -891,29 +892,35 @@ class BankPayment(Document):
 							party=i["party"]
 						)
 					dtl = frappe.db.sql(query, as_dict=True)
-					data.append(
-						frappe._dict(
-							{
-								"transaction_type": "Journal Entry",
-								"transaction_id": a.transaction_id,
-								"transaction_date": a.transaction_date,
-								"party_type": i["party_type"],
-								"employee": employee,
-								"supplier": supplier,
-								"customer": customer,
-								"beneficiary_name": dtl[0]["beneficiary_name"],
-								"bank_name": dtl[0]["bank_name"],
-								"bank_branch": dtl[0]["bank_branch"],
-								"bank_account_type": dtl[0]["bank_account_type"],
-								"bank_account_no": dtl[0]["bank_account_no"],
-								"amount": flt(i["amount"]),
-								# "inr_bank_code": dtl[0]["inr_bank_code"],
-								# "inr_purpose_code": dtl[0]["inr_purpose_code"],
-								"status": "Draft",
-								"remarks": a.user_remark,
-							}
+					exists = frappe.db.sql("""
+						select name from `tabBank Payment Item` where
+						transaction_id = '{}' and parent != '{}'
+						and bank_account_no = '{}' and status = "Completed"
+					""".format(a.transaction_id, self.name, dtl[0]["bank_account_no"]))
+					if not exists:
+						data.append(
+							frappe._dict(
+								{
+									"transaction_type": "Journal Entry",
+									"transaction_id": a.transaction_id,
+									"transaction_date": a.transaction_date,
+									"party_type": i["party_type"],
+									"employee": employee,
+									"supplier": supplier,
+									"customer": customer,
+									"beneficiary_name": dtl[0]["beneficiary_name"],
+									"bank_name": dtl[0]["bank_name"],
+									"bank_branch": dtl[0]["bank_branch"],
+									"bank_account_type": dtl[0]["bank_account_type"],
+									"bank_account_no": dtl[0]["bank_account_no"],
+									"amount": flt(i["amount"]),
+									# "inr_bank_code": dtl[0]["inr_bank_code"],
+									# "inr_purpose_code": dtl[0]["inr_purpose_code"],
+									"status": "Draft",
+									"remarks": a.user_remark,
+								}
+							)
 						)
-					)
 		return data
 	def get_loan_detail(self):
 		if not self.institution_name:
