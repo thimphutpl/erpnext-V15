@@ -199,6 +199,23 @@ class PurchaseOrder(BuyingController):
 
 		self.validate_uom_is_integer("uom", "qty")
 		self.validate_uom_is_integer("stock_uom", "stock_qty")
+		
+		# To Validate/ check UOM conversion factor in item; added by Kinzang. 
+		for item in self.items:
+			if (
+				item.uom
+				and item.stock_uom
+				and item.uom != item.stock_uom
+				and flt(item.conversion_factor) == 1
+			):
+				frappe.throw(
+					_(
+						"Please first set conversion factor in Item; "
+						"your UoM and stock UoM are different for Item <b>{0}</b>."
+					).format(item.item_code)
+				)
+
+
 
 		# self.validate_with_previous_doc()
 		# self.validate_for_subcontracting()

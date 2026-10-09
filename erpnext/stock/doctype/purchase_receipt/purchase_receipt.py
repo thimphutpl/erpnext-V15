@@ -263,6 +263,21 @@ class PurchaseReceipt(BuyingController):
 		self.reset_default_field_value("rejected_warehouse", "items", "rejected_warehouse")
 		self.reset_default_field_value("set_from_warehouse", "items", "from_warehouse")
 
+		# To Validate/ check UOM conversion factor in item; added by Kinzang. 
+		for item in self.items:
+			if (
+				item.uom
+				and item.stock_uom
+				and item.uom != item.stock_uom
+				and flt(item.conversion_factor) == 1
+			):
+				frappe.throw(
+					_(
+						"Please first set conversion factor in Item; "
+						"your UoM and stock UoM are different for Item <b>{0}</b>."
+					).format(item.item_code)
+				)
+
 	def validate_uom_is_integer(self):
 		super().validate_uom_is_integer("uom", ["qty", "received_qty"], "Purchase Receipt Item")
 		super().validate_uom_is_integer("stock_uom", "stock_qty", "Purchase Receipt Item")

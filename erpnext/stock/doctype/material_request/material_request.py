@@ -160,6 +160,21 @@ class MaterialRequest(BuyingController):
 			self.approval_date = nowdate()
 		if self.workflow_state != "Approved":
 			notify_workflow_states(self)
+
+		# To Validate/ check UOM conversion factor in item; added by Kinzang. 
+		for item in self.items:
+			if (
+				item.uom
+				and item.stock_uom
+				and item.uom != item.stock_uom
+				and flt(item.conversion_factor) == 1
+			):
+				frappe.throw(
+					_(
+						"Please first set conversion factor in Item; "
+						"your UoM and stock UoM are different for Item <b>{0}</b>."
+					).format(item.item_code)
+				)	
 		
 	def before_update_after_submit(self):
 		self.validate_schedule_date()
