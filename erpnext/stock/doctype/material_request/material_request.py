@@ -163,8 +163,16 @@ class MaterialRequest(BuyingController):
 
 		# To Validate/ check UOM conversion factor in item; added by Kinzang. 
 		for item in self.items:
+			# Get Is Services Item checkbox from Item master
+			is_services_item = frappe.db.get_value(
+				"Item",
+				item.item_code,
+				"is_services_item"
+				)
+			# Skip validation for Services Items
 			if (
-				item.uom
+				not is_services_item
+				and item.uom
 				and item.stock_uom
 				and item.uom != item.stock_uom
 				and flt(item.conversion_factor) == 1
