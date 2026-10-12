@@ -23,7 +23,6 @@ from erpnext.stock.stock_ledger import (
 
 RecoverableErrors = (JobTimeoutException, QueryDeadlockError, QueryTimeoutError)
 
-
 class RepostItemValuation(Document):
 	# begin: auto-generated types
 	# This code is auto-generated. Do not modify anything in this block.

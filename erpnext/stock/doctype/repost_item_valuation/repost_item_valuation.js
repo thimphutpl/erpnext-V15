@@ -102,6 +102,7 @@ frappe.ui.form.on("Repost Item Valuation", {
 		});
 	},
 
+	
 	show_reposting_progress: function (frm) {
 		var bars = [];
 
