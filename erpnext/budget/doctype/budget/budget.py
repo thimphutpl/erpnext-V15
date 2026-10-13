@@ -1111,7 +1111,7 @@ def validate_expense_against_budget(args, throw_error=True):
                         message=f"budget_cost_center: {budget_cost_center}\nargs: {args}"
                     )
                 else:
-                    if frappe.db.get_value("Account", args.account, "is_centralized_budget") == 1 and frappe.db.get_value("Account", args.account, "cost_center") and args.employee_group != "Teachers (RBA)":
+                    if frappe.db.get_value("Account", args.account, "is_centralized_budget") == 1 and frappe.db.get_value("Account", args.account, "cost_center") and args.employee_group != "Teachers (RBA)" and args.employee_group != "MTO (RBG)-RBG" and args.employee_group != "NAS (RBG)-RBG" and args.employee_group != "Trongsa Penlop (RBG)" and args.employee_group != "Pre-School-RBG" and args.employee_group != "Contract (RBG)" and args.employee_group != "Deputation -RBG" and args.employee_group != "Teachers (RBG)" and args.employee_group != "NILL-RBG":
                         args.cost_center = frappe.db.get_value("Account", args.account, "cost_center")
                     bud_acc_dtl = frappe.get_doc("Account", args.account)
                     if bud_acc_dtl.is_centralized_budget:
