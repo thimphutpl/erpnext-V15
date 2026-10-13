@@ -1140,7 +1140,7 @@ def validate_expense_against_budget(args, throw_error=True):
                     bud_acc_dtl = frappe.get_doc("Account", args.account)
                     if bud_acc_dtl.is_centralized_budget:
                         budget_cost_center = bud_acc_dtl.cost_center
-                    elif frappe.db.get_value("Cost Center", args.cost_center, "use_budget_from_head_quarter_cost_center") == 1 and args.employee_group == "Teachers (RBA)":	
+                    elif frappe.db.get_value("Cost Center", args.cost_center, "use_budget_from_head_quarter_cost_center") == 1 and args.employee_group in EXCLUDED_EMPLOYEE_GROUPS:	
                         cc_doc = frappe.get_doc("Cost Center", args.cost_center)
                         budget_cost_center = cc_doc.head_quarter_cost_center if cc_doc.head_quarter_cost_center else args.cost_center
                     else:
