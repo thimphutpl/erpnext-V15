@@ -39,6 +39,7 @@ class Supplier(TransactionBase):
 		bank_branch: DF.Link | None
 		bank_name: DF.Link | None
 		companies: DF.Table[AllowedToTransactWith]
+		company: DF.Link | None
 		country: DF.Link | None
 		default_bank_account: DF.Link | None
 		default_currency: DF.Link | None

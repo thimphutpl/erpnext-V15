@@ -11,6 +11,7 @@
  "engine": "InnoDB",
  "field_order": [
   "basic_info",
+  "company",
   "naming_series",
   "salutation",
   "customer_cid",
@@ -615,6 +616,13 @@
    "fieldname": "account_number",
    "fieldtype": "Data",
    "label": "Account Number"
+  },
+  {
+   "allow_in_quick_entry": 1,
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company"
   }
  ],
  "icon": "fa fa-user",
@@ -628,7 +636,7 @@
    "link_fieldname": "party"
   }
  ],
- "modified": "2026-08-31 11:04:49.712925",
+ "modified": "2026-10-15 11:51:03.889650",
  "modified_by": "Administrator",
  "module": "Selling",
  "name": "Customer",

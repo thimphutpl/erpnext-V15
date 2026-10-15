@@ -43,6 +43,7 @@ class Customer(TransactionBase):
 		bank_branch: DF.Link | None
 		bank_name: DF.Link | None
 		companies: DF.Table[AllowedToTransactWith]
+		company: DF.Link | None
 		credit_limits: DF.Table[CustomerCreditLimit]
 		customer_cid: DF.Data | None
 		customer_details: DF.Text | None

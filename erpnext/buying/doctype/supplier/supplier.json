@@ -10,6 +10,7 @@
  "document_type": "Setup",
  "engine": "InnoDB",
  "field_order": [
+  "company",
   "naming_series",
   "supplier_name",
   "country",
@@ -40,8 +41,6 @@
   "bank_name",
   "bank_account_type",
   "account_number",
-  "inr_bank_code",
-  "inr_purpose_code",
   "column_break_yeyl",
   "bank_branch",
   "tax_tab",
@@ -525,6 +524,13 @@
    "fieldtype": "Link",
    "label": "Bank Branch",
    "options": "Financial Institution Branch"
+  },
+  {
+   "allow_in_quick_entry": 1,
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company"
   }
  ],
  "icon": "fa fa-user",
@@ -537,7 +543,7 @@
    "link_fieldname": "party"
   }
  ],
- "modified": "2026-06-16 20:04:34.824747",
+ "modified": "2026-10-15 11:50:39.289403",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Supplier",
