@@ -50,6 +50,31 @@ frappe.ui.form.on("Refundable Deposits", {
                 }
             }
         })
+         frm.set_query("party", function () {
+            if (frm.doc.party_type === "Customer") {
+                return {
+                    filters: {
+                        company: frm.doc.company
+                    }
+                };
+            }
+
+            if (frm.doc.party_type === "Supplier") {
+                return {
+                    filters: {
+                        company: frm.doc.company
+                    }
+                };
+            }
+
+            if (frm.doc.party_type === "Employee") {
+                return {
+                    filters: {
+                        company: frm.doc.company
+                    }
+                };
+            }
+        });
         
     },
     // get_all_other_deposite:function(frm){

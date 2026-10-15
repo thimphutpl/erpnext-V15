@@ -64,6 +64,35 @@ frappe.ui.form.on("Journal Entry", {
             };
         });
 
+        frm.set_query("party", "accounts", function (doc, cdt, cdn) {
+            const row = locals[cdt][cdn];
+
+            if (row.party_type === "Customer") {
+                return {
+                    filters: {
+                        company: frm.doc.company
+                    }
+                };
+            }
+
+            if (row.party_type === "Supplier") {
+                return {
+                    filters: {
+                        company: frm.doc.company
+                    }
+                };
+            }
+
+            if (row.party_type === "Employee") {
+                return {
+                    filters: {
+                        company: frm.doc.company
+                    }
+                };
+            }
+        });
+
+
     },
     onload: function (frm) {
         draw_tds_table(frm);

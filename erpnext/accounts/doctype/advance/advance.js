@@ -46,6 +46,33 @@ frappe.ui.form.on("Advance", {
                 }
             };
         })
+
+        frm.set_query("customer", function () {
+            if (frm.doc.party_type === "Customer") {
+                return {
+                    filters: {
+                        company: frm.doc.company
+                    }
+                };
+            }
+
+            if (frm.doc.party_type === "Supplier") {
+                return {
+                    filters: {
+                        company: frm.doc.company
+                    }
+                };
+            }
+
+            if (frm.doc.party_type === "Employee") {
+                return {
+                    filters: {
+                        company: frm.doc.company
+                    }
+                };
+            }
+        });
+    
     },
 
  
