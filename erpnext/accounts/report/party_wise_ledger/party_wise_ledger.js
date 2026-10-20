@@ -54,11 +54,42 @@ frappe.query_reports["Party Wise Ledger"] = {
 		{
 			"fieldtype": "Break",
 		},
+		// {
+		// 	"fieldname":"cost_center",
+		// 	"label": __("Cost Center"),
+		// 	"fieldtype": "Link",
+		// 	"options": "Cost Center"
+		// },
 		{
-			"fieldname":"cost_center",
+			"fieldname": "cost_center",
 			"label": __("Cost Center"),
 			"fieldtype": "Link",
-			"options": "Cost Center"
+			"options": "Cost Center",
+			"on_change": function() {
+				frappe.query_report.set_filter_value("project", "");
+			}
+		},
+
+		{
+			"fieldname": "project",
+			"label": __("Project"),
+			"fieldtype": "Link",
+			"options": "Project",
+			"get_query": function () {
+				const filters = frappe.query_report.get_filter_values();
+
+				let project_filters = {
+					"company": filters.company
+				};
+
+				if (filters.cost_center) {
+					project_filters.cost_center = filters.cost_center;
+				}
+
+				return {
+					filters: project_filters
+				};
+			}
 		},
 		{
 			"fieldname":"accounts",

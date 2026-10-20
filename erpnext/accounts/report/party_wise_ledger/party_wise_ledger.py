@@ -36,72 +36,180 @@ def execute(filters=None):
 
 # Following code added by SHIV on 2018/12/11
 # For better performance
+# def get_data(filters, show_party_name):
+# 	party_name_field = "customer_name" if filters.get("party_type")=="Customer" else "supplier_name" if filters.get("party_type")=="Supplier" else "employee_name"
+# 	if not filters.get("inter_company"):
+# 		parties = frappe.get_all(filters.get("party_type"), fields = ["name", party_name_field], order_by="name")
+# 	elif filters.get("party_type") == "Employee":
+# 		parties = frappe.get_all(filters.get("party_type"), fields = ["name", party_name_field], order_by="name")
+# 	else:
+# 		parties = frappe.get_all(filters.get("party_type"), fields = ["name", party_name_field], filters = {"inter_company": 1}, order_by="name")
+	
+# 	company_currency = frappe.db.get_value("Company", filters.company, "default_currency")
+
+# 	party_balances = get_balances(filters)
+
+# 	data = []
+# 	tot_op_dr, tot_op_cr, total_debit, total_credit, tot_cl_dr, tot_cl_cr = 0, 0, 0, 0, 0, 0
+# 	for party in parties:
+# 		if party_balances.get(party.name):
+# 			for cc, values in party_balances.get(party.name).items():
+# 				row = {"party": party.name, "cost_center": cc}
+# 				opening_debit, opening_credit, debit, credit = values
+				
+# 				if show_party_name:
+# 					row["party_name"] = party.get(party_name_field)
+
+# 				tot_op_dr += flt(opening_debit)
+# 				tot_op_cr += flt(opening_credit)
+
+# 				row.update({"opening_debit": opening_debit, "opening_credit": opening_credit, "debit": debit, "credit": credit})
+
+# 				total_debit += debit
+# 				total_credit += credit
+				
+# 				closing_debit, closing_credit = toggle_debit_credit(opening_debit + debit, opening_credit + credit)
+# 				row.update({
+# 					"closing_debit": closing_debit,
+# 					"closing_credit": closing_credit
+# 				})
+
+# 				tot_cl_dr += flt(closing_debit)
+# 				tot_cl_cr += flt(closing_credit)
+				
+# 				row.update({
+# 					"currency": company_currency
+# 				})
+				
+# 				has_value = False
+# 				if (opening_debit or opening_credit or debit or credit or closing_debit or closing_credit):
+# 					has_value  =True
+				
+# 				if cint(filters.show_zero_values) or has_value:
+# 					data.append(row)
+
+# 	# Add total row
+# 	if total_debit or total_credit:
+# 		data.append({
+# 			"party": "'" + _("Totals") + "'",
+# 			"opening_debit": tot_op_dr,
+# 			"opening_credit": tot_op_cr,
+# 			"debit": total_debit,
+# 			"credit": total_credit,
+# 			"currency": company_currency,
+# 			"closing_debit": tot_cl_dr,
+# 			"closing_credit": tot_cl_cr
+# 		})
+	
+# 	return data
+
+
 def get_data(filters, show_party_name):
-	party_name_field = "customer_name" if filters.get("party_type")=="Customer" else "supplier_name" if filters.get("party_type")=="Supplier" else "employee_name"
-	if not filters.get("inter_company"):
-		parties = frappe.get_all(filters.get("party_type"), fields = ["name", party_name_field], order_by="name")
-	elif filters.get("party_type") == "Employee":
-		parties = frappe.get_all(filters.get("party_type"), fields = ["name", party_name_field], order_by="name")
-	else:
-		parties = frappe.get_all(filters.get("party_type"), fields = ["name", party_name_field], filters = {"inter_company": 1}, order_by="name")
-	
-	company_currency = frappe.db.get_value("Company", filters.company, "default_currency")
+    party_name_field = "customer_name" if filters.get("party_type") == "Customer" else "supplier_name" if filters.get("party_type") == "Supplier" else "employee_name"
 
-	party_balances = get_balances(filters)
+    if not filters.get("inter_company"):
+        parties = frappe.get_all(
+            filters.get("party_type"),
+            fields=["name", party_name_field],
+            order_by="name"
+        )
+    elif filters.get("party_type") == "Employee":
+        parties = frappe.get_all(
+            filters.get("party_type"),
+            fields=["name", party_name_field],
+            order_by="name"
+        )
+    else:
+        parties = frappe.get_all(
+            filters.get("party_type"),
+            fields=["name", party_name_field],
+            filters={"inter_company": 1},
+            order_by="name"
+        )
 
-	data = []
-	tot_op_dr, tot_op_cr, total_debit, total_credit, tot_cl_dr, tot_cl_cr = 0, 0, 0, 0, 0, 0
-	for party in parties:
-		if party_balances.get(party.name):
-			for cc, values in party_balances.get(party.name).items():
-				row = {"party": party.name, "cost_center": cc}
-				opening_debit, opening_credit, debit, credit = values
-				
-				if show_party_name:
-					row["party_name"] = party.get(party_name_field)
+    company_currency = frappe.db.get_value(
+        "Company", filters.company, "default_currency"
+    )
 
-				tot_op_dr += flt(opening_debit)
-				tot_op_cr += flt(opening_credit)
+    party_balances = get_balances(filters)
 
-				row.update({"opening_debit": opening_debit, "opening_credit": opening_credit, "debit": debit, "credit": credit})
+    data = []
 
-				total_debit += debit
-				total_credit += credit
-				
-				closing_debit, closing_credit = toggle_debit_credit(opening_debit + debit, opening_credit + credit)
-				row.update({
-					"closing_debit": closing_debit,
-					"closing_credit": closing_credit
-				})
+    tot_op_dr, tot_op_cr, total_debit, total_credit, tot_cl_dr, tot_cl_cr = 0, 0, 0, 0, 0, 0
 
-				tot_cl_dr += flt(closing_debit)
-				tot_cl_cr += flt(closing_credit)
-				
-				row.update({
-					"currency": company_currency
-				})
-				
-				has_value = False
-				if (opening_debit or opening_credit or debit or credit or closing_debit or closing_credit):
-					has_value  =True
-				
-				if cint(filters.show_zero_values) or has_value:
-					data.append(row)
+    for party in parties:
+        if party_balances.get(party.name):
 
-	# Add total row
-	if total_debit or total_credit:
-		data.append({
-			"party": "'" + _("Totals") + "'",
-			"opening_debit": tot_op_dr,
-			"opening_credit": tot_op_cr,
-			"debit": total_debit,
-			"credit": total_credit,
-			"currency": company_currency,
-			"closing_debit": tot_cl_dr,
-			"closing_credit": tot_cl_cr
-		})
-	
-	return data
+            # UPDATED: Group by Cost Center and Project
+            for (cc, project), values in party_balances.get(party.name).items():
+
+                row = {
+                    "party": party.name,
+                    "cost_center": cc,
+                    "project": project
+                }
+
+                opening_debit, opening_credit, debit, credit = values
+
+                if show_party_name:
+                    row["party_name"] = party.get(party_name_field)
+
+                tot_op_dr += flt(opening_debit)
+                tot_op_cr += flt(opening_credit)
+
+                row.update({
+                    "opening_debit": opening_debit,
+                    "opening_credit": opening_credit,
+                    "debit": debit,
+                    "credit": credit
+                })
+
+                total_debit += debit
+                total_credit += credit
+
+                closing_debit, closing_credit = toggle_debit_credit(
+                    opening_debit + debit,
+                    opening_credit + credit
+                )
+
+                row.update({
+                    "closing_debit": closing_debit,
+                    "closing_credit": closing_credit
+                })
+
+                tot_cl_dr += flt(closing_debit)
+                tot_cl_cr += flt(closing_credit)
+
+                row.update({
+                    "currency": company_currency
+                })
+
+                has_value = False
+
+                if (
+                    opening_debit or opening_credit or
+                    debit or credit or
+                    closing_debit or closing_credit
+                ):
+                    has_value = True
+
+                if cint(filters.show_zero_values) or has_value:
+                    data.append(row)
+
+    # Add total row
+    if total_debit or total_credit:
+        data.append({
+            "party": "'" + _("Totals") + "'",
+            "opening_debit": tot_op_dr,
+            "opening_credit": tot_op_cr,
+            "debit": total_debit,
+            "credit": total_credit,
+            "currency": company_currency,
+            "closing_debit": tot_cl_dr,
+            "closing_credit": tot_cl_cr
+        })
+
+    return data
 
 def get_cost_centers_with_children(cost_centers):
     if not cost_centers:
@@ -120,41 +228,188 @@ def get_cost_centers_with_children(cost_centers):
 
     return list(set(all_cost_centers))
 
+# def get_balances(filters):
+# 	filters.accounts    = None if filters.get("accounts") == '%' else filters.get("accounts")
+# 	filters.cost_center = None if filters.get("cost_center") == '%' else get_cost_centers_with_children(filters.get("cost_center"))
+	
+# 	cond = ""
+# 	cond += " and account = '{0}'".format(filters.accounts) if filters.get("accounts") else ""
+# 	cond += " and cost_center in %(cost_center)s" if filters.get("cost_center") else ""
+	
+# 	sql = """
+# 		select
+# 			{group_by} as cost_center,
+# 			sum(case when ifnull(is_opening, 'No') = 'Yes' or posting_date < '{from_date}' then ifnull(debit,0) else 0 end) as opening_debit,
+# 			sum(case when ifnull(is_opening, 'No') = 'Yes' or posting_date < '{from_date}' then ifnull(credit,0) else 0 end) as opening_credit,
+# 			sum(case when ifnull(is_opening, 'No') = 'No' and posting_date between '{from_date}' and '{to_date}' then ifnull(debit,0) else 0 end) as debit,
+# 			sum(case when ifnull(is_opening, 'No') = 'No' and posting_date between '{from_date}' and '{to_date}' then ifnull(credit,0) else 0 end) as credit
+# 		from `tabGL Entry` as ge
+# 		where company='{company}' 
+# 		and ifnull(party_type, '') = '{party_type}' and ifnull(party, '') != ''
+# 		and posting_date <= '{to_date}'
+# 		{cond}
+# 		group by {group_by}""".format(
+# 			company = filters.company,
+# 			from_date = filters.from_date,
+# 			to_date = filters.to_date,
+# 			party_type = filters.party_type,
+# 			group_by = "party,''" if filters.get("group_by_party") else "party, cost_center",
+# 			cond = cond
+# 	)
+# 	gle = frappe.db.sql(sql, {"cost_center": filters.cost_center}, as_dict=True)
+	
+# 	balances = frappe._dict()
+# 	for d in gle:
+# 		opening_debit, opening_credit = toggle_debit_credit(d.opening_debit, d.opening_credit)
+# 		balances.setdefault(d.party, frappe._dict()).setdefault(d.cost_center, [opening_debit, opening_credit, flt(d.debit), flt(d.credit)])
+# 	return balances
+
+
 def get_balances(filters):
-	filters.accounts    = None if filters.get("accounts") == '%' else filters.get("accounts")
-	filters.cost_center = None if filters.get("cost_center") == '%' else get_cost_centers_with_children(filters.get("cost_center"))
-	
-	cond = ""
-	cond += " and account = '{0}'".format(filters.accounts) if filters.get("accounts") else ""
-	cond += " and cost_center in %(cost_center)s" if filters.get("cost_center") else ""
-	
-	sql = """
-		select
-			{group_by} as cost_center,
-			sum(case when ifnull(is_opening, 'No') = 'Yes' or posting_date < '{from_date}' then ifnull(debit,0) else 0 end) as opening_debit,
-			sum(case when ifnull(is_opening, 'No') = 'Yes' or posting_date < '{from_date}' then ifnull(credit,0) else 0 end) as opening_credit,
-			sum(case when ifnull(is_opening, 'No') = 'No' and posting_date between '{from_date}' and '{to_date}' then ifnull(debit,0) else 0 end) as debit,
-			sum(case when ifnull(is_opening, 'No') = 'No' and posting_date between '{from_date}' and '{to_date}' then ifnull(credit,0) else 0 end) as credit
-		from `tabGL Entry` as ge
-		where company='{company}' 
-		and ifnull(party_type, '') = '{party_type}' and ifnull(party, '') != ''
-		and posting_date <= '{to_date}'
-		{cond}
-		group by {group_by}""".format(
-			company = filters.company,
-			from_date = filters.from_date,
-			to_date = filters.to_date,
-			party_type = filters.party_type,
-			group_by = "party,''" if filters.get("group_by_party") else "party, cost_center",
-			cond = cond
-	)
-	gle = frappe.db.sql(sql, {"cost_center": filters.cost_center}, as_dict=True)
-	
-	balances = frappe._dict()
-	for d in gle:
-		opening_debit, opening_credit = toggle_debit_credit(d.opening_debit, d.opening_credit)
-		balances.setdefault(d.party, frappe._dict()).setdefault(d.cost_center, [opening_debit, opening_credit, flt(d.debit), flt(d.credit)])
-	return balances
+    accounts = filters.get("accounts")
+    cost_center = filters.get("cost_center")
+    project = filters.get("project")
+
+    if accounts == "%":
+        accounts = None
+
+    if cost_center == "%":
+        cost_center = None
+
+    cost_centers = (
+        get_cost_centers_with_children(cost_center)
+        if cost_center else None
+    )
+
+    conditions = [
+        "ge.company = %(company)s",
+        "ge.party_type = %(party_type)s",
+        "IFNULL(ge.party, '') != ''",
+        "ge.posting_date <= %(to_date)s",
+        "IFNULL(ge.is_cancelled, 0) = 0"
+    ]
+
+    params = {
+        "company": filters.company,
+        "party_type": filters.party_type,
+        "from_date": filters.from_date,
+        "to_date": filters.to_date
+    }
+
+    if accounts:
+        conditions.append("ge.account = %(account)s")
+        params["account"] = accounts
+
+    if cost_centers:
+        conditions.append("ge.cost_center IN %(cost_centers)s")
+        params["cost_centers"] = tuple(cost_centers)
+
+    if project:
+        conditions.append("ge.project = %(project)s")
+        params["project"] = project
+
+    group_by_party = cint(filters.get("group_by_party"))
+
+    if group_by_party:
+        # Retain the original party-only summary behavior.
+        select_dimensions = """
+            ge.party,
+            '' AS cost_center,
+            '' AS project
+        """
+        group_dimensions = "ge.party"
+    else:
+        select_dimensions = """
+            ge.party,
+            ge.cost_center,
+            ge.project
+        """
+        group_dimensions = """
+            ge.party,
+            ge.cost_center,
+            ge.project
+        """
+
+    sql = """
+        SELECT
+            {select_dimensions},
+
+            SUM(
+                CASE
+                    WHEN IFNULL(ge.is_opening, 'No') = 'Yes'
+                      OR ge.posting_date < %(from_date)s
+                    THEN IFNULL(ge.debit, 0)
+                    ELSE 0
+                END
+            ) AS opening_debit,
+
+            SUM(
+                CASE
+                    WHEN IFNULL(ge.is_opening, 'No') = 'Yes'
+                      OR ge.posting_date < %(from_date)s
+                    THEN IFNULL(ge.credit, 0)
+                    ELSE 0
+                END
+            ) AS opening_credit,
+
+            SUM(
+                CASE
+                    WHEN IFNULL(ge.is_opening, 'No') = 'No'
+                     AND ge.posting_date
+                         BETWEEN %(from_date)s AND %(to_date)s
+                    THEN IFNULL(ge.debit, 0)
+                    ELSE 0
+                END
+            ) AS debit,
+
+            SUM(
+                CASE
+                    WHEN IFNULL(ge.is_opening, 'No') = 'No'
+                     AND ge.posting_date
+                         BETWEEN %(from_date)s AND %(to_date)s
+                    THEN IFNULL(ge.credit, 0)
+                    ELSE 0
+                END
+            ) AS credit
+
+        FROM `tabGL Entry` ge
+
+        WHERE {conditions}
+
+        GROUP BY {group_dimensions}
+
+    """.format(
+        select_dimensions=select_dimensions,
+        conditions=" AND ".join(conditions),
+        group_dimensions=group_dimensions
+    )
+
+    gle = frappe.db.sql(sql, params, as_dict=True)
+
+    balances = frappe._dict()
+
+    for d in gle:
+        opening_debit, opening_credit = toggle_debit_credit(
+            d.opening_debit,
+            d.opening_credit
+        )
+
+        cost_center_key = d.cost_center or ""
+        project_key = d.project or ""
+
+        balances.setdefault(
+            d.party, frappe._dict()
+        ).setdefault(
+            (cost_center_key, project_key),
+            [
+                opening_debit,
+                opening_credit,
+                flt(d.debit),
+                flt(d.credit)
+            ]
+        )
+
+    return balances
 	
 def get_opening_balances(filters):
 	gle = frappe.db.sql("""
@@ -223,83 +478,172 @@ def toggle_debit_credit(debit, credit):
 		
 	return debit, credit
 	
-def get_columns(filters, show_party_name):
-	columns = [
-		{
-			"fieldname": "party",
-			"label": _(filters.party_type),
-			"fieldtype": "Link",
-			"options": filters.party_type,
-			"width": 200
-		},
-		{
-			"fieldname": "opening_debit",
-			"label": _("Opening (Dr)"),
-			"fieldtype": "Currency",
-			"options": "currency",
-			"width": 120
-		},
-		{
-			"fieldname": "opening_credit",
-			"label": _("Opening (Cr)"),
-			"fieldtype": "Currency",
-			"options": "currency",
-			"width": 120
-		},
-		{
-			"fieldname": "debit",
-			"label": _("Debit"),
-			"fieldtype": "Currency",
-			"options": "currency",
-			"width": 120
-		},
-		{
-			"fieldname": "credit",
-			"label": _("Credit"),
-			"fieldtype": "Currency",
-			"options": "currency",
-			"width": 120
-		},
-		{
-			"fieldname": "closing_debit",
-			"label": _("Closing (Dr)"),
-			"fieldtype": "Currency",
-			"options": "currency",
-			"width": 120
-		},
-		{
-			"fieldname": "closing_credit",
-			"label": _("Closing (Cr)"),
-			"fieldtype": "Currency",
-			"options": "currency",
-			"width": 120
-		},
-		{
-			"fieldname": "currency",
-			"label": _("Currency"),
-			"fieldtype": "Link",
-			"options": "Currency",
-			"hidden": 1
-		}
-	]
+# def get_columns(filters, show_party_name):
+# 	columns = [
+# 		{
+# 			"fieldname": "party",
+# 			"label": _(filters.party_type),
+# 			"fieldtype": "Link",
+# 			"options": filters.party_type,
+# 			"width": 200
+# 		},
+# 		{
+# 			"fieldname": "opening_debit",
+# 			"label": _("Opening (Dr)"),
+# 			"fieldtype": "Currency",
+# 			"options": "currency",
+# 			"width": 120
+# 		},
+# 		{
+# 			"fieldname": "opening_credit",
+# 			"label": _("Opening (Cr)"),
+# 			"fieldtype": "Currency",
+# 			"options": "currency",
+# 			"width": 120
+# 		},
+# 		{
+# 			"fieldname": "debit",
+# 			"label": _("Debit"),
+# 			"fieldtype": "Currency",
+# 			"options": "currency",
+# 			"width": 120
+# 		},
+# 		{
+# 			"fieldname": "credit",
+# 			"label": _("Credit"),
+# 			"fieldtype": "Currency",
+# 			"options": "currency",
+# 			"width": 120
+# 		},
+# 		{
+# 			"fieldname": "closing_debit",
+# 			"label": _("Closing (Dr)"),
+# 			"fieldtype": "Currency",
+# 			"options": "currency",
+# 			"width": 120
+# 		},
+# 		{
+# 			"fieldname": "closing_credit",
+# 			"label": _("Closing (Cr)"),
+# 			"fieldtype": "Currency",
+# 			"options": "currency",
+# 			"width": 120
+# 		},
+# 		{
+# 			"fieldname": "currency",
+# 			"label": _("Currency"),
+# 			"fieldtype": "Link",
+# 			"options": "Currency",
+# 			"hidden": 1
+# 		}
+# 	]
 	
-	if show_party_name:
-		columns.insert(1, {
-			"fieldname": "party_name",
-			"label": _(filters.party_type) + " Name",
-			"fieldtype": "Data",
-			"width": 200
-		})
+# 	if show_party_name:
+# 		columns.insert(1, {
+# 			"fieldname": "party_name",
+# 			"label": _(filters.party_type) + " Name",
+# 			"fieldtype": "Data",
+# 			"width": 200
+# 		})
 
-	if not filters.get("group_by_party"):
-		columns.append({
-			"fieldname": "cost_center",
-			"label": _("Cost Center"),
-			"fieldtype": "Link",
-			"options": "Cost Center",
-			"width": 200
-		})
-	return columns
+# 	if not filters.get("group_by_party"):
+# 		columns.append({
+# 			"fieldname": "cost_center",
+# 			"label": _("Cost Center"),
+# 			"fieldtype": "Link",
+# 			"options": "Cost Center",
+# 			"width": 200
+# 		})
+# 	return columns
+
+
+def get_columns(filters, show_party_name):
+    columns = [
+        {
+            "fieldname": "party",
+            "label": _(filters.party_type),
+            "fieldtype": "Link",
+            "options": filters.party_type,
+            "width": 200
+        },
+        {
+            "fieldname": "opening_debit",
+            "label": _("Opening (Dr)"),
+            "fieldtype": "Currency",
+            "options": "currency",
+            "width": 120
+        },
+        {
+            "fieldname": "opening_credit",
+            "label": _("Opening (Cr)"),
+            "fieldtype": "Currency",
+            "options": "currency",
+            "width": 120
+        },
+        {
+            "fieldname": "debit",
+            "label": _("Debit"),
+            "fieldtype": "Currency",
+            "options": "currency",
+            "width": 120
+        },
+        {
+            "fieldname": "credit",
+            "label": _("Credit"),
+            "fieldtype": "Currency",
+            "options": "currency",
+            "width": 120
+        },
+        {
+            "fieldname": "closing_debit",
+            "label": _("Closing (Dr)"),
+            "fieldtype": "Currency",
+            "options": "currency",
+            "width": 120
+        },
+        {
+            "fieldname": "closing_credit",
+            "label": _("Closing (Cr)"),
+            "fieldtype": "Currency",
+            "options": "currency",
+            "width": 120
+        },
+        {
+            "fieldname": "currency",
+            "label": _("Currency"),
+            "fieldtype": "Link",
+            "options": "Currency",
+            "hidden": 1
+        }
+    ]
+
+    if show_party_name:
+        columns.insert(1, {
+            "fieldname": "party_name",
+            "label": _(filters.party_type) + " Name",
+            "fieldtype": "Data",
+            "width": 200
+        })
+
+    if not filters.get("group_by_party"):
+        columns.append({
+            "fieldname": "cost_center",
+            "label": _("Cost Center"),
+            "fieldtype": "Link",
+            "options": "Cost Center",
+            "width": 200
+        })
+
+        # NEW: Project column
+        columns.append({
+            "fieldname": "project",
+            "label": _("Project"),
+            "fieldtype": "Link",
+            "options": "Project",
+            "width": 250
+        })
+
+    return columns
 		
 def is_party_name_visible(filters):
 	if filters.get("party_type") == "Employee":
