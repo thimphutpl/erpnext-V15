@@ -44,92 +44,131 @@
     <table class="table table-bordered custom-table">
         <thead>
             <tr>
-                <th>Party/Employee</th>
                 <th>Code</th>
+                <th>Party/Employee</th>
                 <th>Name</th>
-                <th>Activity Code</th>
-                <th>FI Code</th>
+                <th style="width: 10%;white-space: nowrap;">Activity Code</th>
+                <th style="width: 5%;white-space: nowrap;">FI Code</th>
                 <th>Opening Balance</th>
                 <th>Settlement Amount</th>
                 <th>Total Outstanding</th>
             </tr>
         </thead>
 
-        <tbody>
-            {%
-                function to_number(value) {
-                    if (value === undefined || value === null || value === "") {
-                        return 0;
-                    }
+ 
+<tbody>
+    {% 
+        var party_rowspans = {};
+        var party_name_rowspans = {};
 
-                    if (typeof value === "number") {
-                        return value;
-                    }
+        data.forEach(function(row, index) {
+            var party = row.party || "";
+            var party_name = row.party_name || "";
 
-                    var cleaned = String(value).replace(/[^0-9.-]/g, "");
-                    return Number(cleaned) || 0;
+            if (
+                index === 0 ||
+                party !== (data[index - 1].party || "")
+            ) {
+                var count = 1;
+
+                for (var j = index + 1; j < data.length; j++) {
+                    if ((data[j].party || "") === party) {
+                        count++;
+                    } else {
+                        break;
+                    }
                 }
 
-                function format_amount(value) {
-                    return to_number(value).toLocaleString("en-US", {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2
-                    });
+                party_rowspans[index] = count;
+            }
+
+            if (
+                index === 0 ||
+                party !== (data[index - 1].party || "") ||
+                party_name !== (data[index - 1].party_name || "")
+            ) {
+                var name_count = 1;
+
+                for (var k = index + 1; k < data.length; k++) {
+                    if (
+                        (data[k].party || "") === party &&
+                        (data[k].party_name || "") === party_name
+                    ) {
+                        name_count++;
+                    } else {
+                        break;
+                    }
                 }
 
-                var total_opening_balance = 0;
-                var total_settlement_amount = 0;
-                var total_outstanding = 0;
-            %}
+                party_name_rowspans[index] = name_count;
+            }
+        });
+    %}
 
-            {% for (var i = 0; i < data.length; i++) { %}
-                {%
-                    var row = data[i];
-                    var opening_balance = to_number(row.opening_balance);
-                    var settlement_amount = to_number(row.settlement_amount);
-                    var outstanding_amount = to_number(row.total_outstanding);
-
-                    var is_total_row =
-                        (
-                            String(row.customer || "").trim().toLowerCase() === "total"
-                            ||
-                            (
-                                !row.customer &&
-                                !row.code &&
-                                !row.name &&
-                                !row.activity_code &&
-                                !row.fi_code &&
-                                (
-                                    opening_balance !== 0 ||
-                                    settlement_amount !== 0 ||
-                                    outstanding_amount !== 0
-                                )
-                            )
-                        );
-                %}
-
-                {% if (is_total_row) { %}
-                    <tr class="total-row">
-                        <td colspan="5">TOTAL</td>
-                        <td class="amount">{%= format_amount(opening_balance) %}</td>
-                        <td class="amount">{%= format_amount(settlement_amount) %}</td>
-                        <td class="amount">{%= format_amount(outstanding_amount) %}</td>
-                    </tr>
-                {% } else { %}
-                    <tr>
-                        <td>{%= row.customer || "" %}</td>
-                        <td>{%= row.code || "" %}</td>
-                        <td>{%= row.name || "" %}</td>
-                        <td class="text-center">{%= row.activity_code || "" %}</td>
-                        <td class="text-center">{%= row.fi_code || "" %}</td>
-                        <td class="amount">{%= format_amount(opening_balance) %}</td>
-                        <td class="amount">{%= format_amount(settlement_amount) %}</td>
-                        <td class="amount">{%= format_amount(outstanding_amount) %}</td>
-                    </tr>
-                {% } %}
+    {% for row in data %}
+        <tr>
+            {% if (party_rowspans[data.indexOf(row)]) { %}
+                <td rowspan="{%= party_rowspans[data.indexOf(row)] %}">
+                    {%= row.party || "" %}
+                </td>
             {% } %}
 
-        </tbody>
+            {% if (party_name_rowspans[data.indexOf(row)]) { %}
+                <td rowspan="{%= party_name_rowspans[data.indexOf(row)] %}">
+                    {%= row.party_name || "" %}
+                </td>
+            {% } %}
+
+            <td>{%= row.associated_remarks || "" %}</td>
+            <td >
+           
+             {%= row.program_code || "" %}.{%= row.budget_activity_code || "" %}.{%= row.budget_sub_activity_code || "" %}
+
+            </td>
+            <td >{%= row.fi_code || "" %}</td>
+
+            <td class="amount">
+                {%= format_currency(row.opening_balance || 0) %}
+            </td>
+            <td class="amount">
+                {%= format_currency(row.settlement_amount || 0) %}
+            </td>
+            <td class="amount">
+                {%= format_currency(row.total_outstanding || 0) %}
+            </td>
+        </tr>
+    {% endfor %}
+    {% 
+    var grand_opening = 0;
+    var grand_settlement = 0;
+    var grand_outstanding = 0;
+
+    data.forEach(function(row) {
+        grand_opening += flt(row.opening_balance);
+        grand_settlement += flt(row.settlement_amount);
+        grand_outstanding += flt(row.total_outstanding);
+    });
+%}
+
+<tr class="total-row">
+    <td colspan="5" style="text-align: right; font-weight: bold;">
+        Grand Total
+    </td>
+
+    <td class="amount">
+        {%= format_currency(grand_opening) %}
+    </td>
+
+    <td class="amount">
+        {%= format_currency(grand_settlement) %}
+    </td>
+
+    <td class="amount">
+        {%= format_currency(grand_outstanding) %}
+    </td>
+</tr>
+</tbody>
+
     </table>
 </div>
 
@@ -237,7 +276,6 @@
     .total-row td {
         background-color: #f1f1f1 !important;
         font-weight: 700;
-        border-top: 2px solid #555 !important;
     }
 
     .total-row td:first-child {
