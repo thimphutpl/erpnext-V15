@@ -59,6 +59,7 @@
   "company",
   "department",
   "employee_number",
+  "custom_source_application",
   "column_break_25",
   "branch",
   "cost_center",
@@ -1247,6 +1248,13 @@
    "fieldname": "exit_details",
    "fieldtype": "Section Break",
    "label": "Exit Details"
+  },
+  {
+   "fieldname": "custom_source_application",
+   "fieldtype": "Link",
+   "label": "Source Application",
+   "options": "Online Job Application",
+   "read_only": 1
   }
  ],
  "icon": "fa fa-user",
@@ -1269,7 +1277,7 @@
    "link_fieldname": "employee"
   }
  ],
- "modified": "2025-09-14 13:06:04.506446",
+ "modified": "2026-05-17 02:37:22.445671",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee",
