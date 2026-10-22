@@ -1251,9 +1251,9 @@
   },
   {
    "fieldname": "custom_source_application",
-   "fieldtype": "Link",
+   "fieldtype": "Data",
    "label": "Source Application",
-   "options": "Online Job Application",
+   "options": "",
    "read_only": 1
   }
  ],
