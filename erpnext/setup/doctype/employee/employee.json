@@ -59,7 +59,6 @@
   "company",
   "department",
   "employee_number",
-  "custom_source_application",
   "column_break_25",
   "branch",
   "cost_center",
@@ -106,6 +105,8 @@
   "attendance_device_id",
   "casual_leave_allocated",
   "leave_block_list",
+  "leave_balance_reset_date",
+  "previous_leave_benefits_settled",
   "column_break_44",
   "holiday_list",
   "salary_information",
@@ -1250,11 +1251,15 @@
    "label": "Exit Details"
   },
   {
-   "fieldname": "custom_source_application",
-   "fieldtype": "Data",
-   "label": "Source Application",
-   "options": "",
-   "read_only": 1
+   "fieldname": "leave_balance_reset_date",
+   "fieldtype": "Date",
+   "label": "Leave Balance Reset Date"
+  },
+  {
+   "default": "0",
+   "fieldname": "previous_leave_benefits_settled",
+   "fieldtype": "Check",
+   "label": "Previous Leave Benefits Settled"
   }
  ],
  "icon": "fa fa-user",
@@ -1277,7 +1282,7 @@
    "link_fieldname": "employee"
   }
  ],
- "modified": "2026-05-17 02:37:22.445671",
+ "modified": "2026-10-22 16:18:21.447679",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee",
