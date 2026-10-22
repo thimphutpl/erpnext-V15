@@ -1,4 +1,4 @@
-{%
+<!-- {%
 function is_empty(value) {
 return value === undefined || value === null || value === "";
 }
@@ -891,4 +891,817 @@ return String(label)
                     page-break-inside: avoid !important;
                 }
             }
-        </style>
+        </style> -->
+
+
+
+ <div class="report-header">
+    <h4>EXPENDITURE STATEMENT</h4>
+
+    {% if (filters.account_no) { %}
+        <p>For A/c. No. {%= filters.account_no %}</p>
+    {% } %}
+
+    {% if (filters.program_code) { %}
+        <p>Program Code : {%= filters.program_code %}</p>
+    {% } %}
+
+    {% if (period_text) { %}
+        <p class="period-text">For the period of {%= period_text %}</p>
+    {% } %}
+</div>
+{%
+    function show_amount(value) {
+        var amount = parseFloat(value) || 0;
+
+        return amount.toLocaleString("en-US", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+    }
+%}
+
+<table class="expenditure-table">
+    <thead>
+        <tr>
+            <th colspan="5" class="section-header">Codes</th>
+
+            <th rowspan="2"
+                class="section-header"
+                style="text-align: center !important; vertical-align: middle !important;">
+                Names
+            </th>
+
+            <th colspan="3" class="section-header"  style="text-align: center !important; vertical-align: middle !important;">
+                Expenditure for the Month (Nu.)
+            </th>
+            <th rowspan="2" class="section-header">
+               Current Budget Amount(Nu.)
+            </th>
+            
+
+            <th colspan="3" class="section-header"  style="text-align: center !important; vertical-align: middle !important;">
+                Annual Progressive Expenditure
+            </th>
+        </tr>
+
+        <tr>
+            <th class="section-header">SP</th>
+            <th class="section-header">AC</th>
+            <th class="section-header">SAC</th>
+            <th class="section-header">FIC</th>
+            <th class="section-header">OBC</th>
+
+            <th class="section-header">Amount</th>
+            <th class="section-header">Personal Advance</th>
+            <th class="section-header">Suspense</th>
+
+            <th class="section-header">Amount</th>
+            <th class="section-header">Personal Advance</th>
+            <th class="section-header">Suspense</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+    {%
+
+    var last_cost_center = "";
+    var last_ac = "";
+    var last_sac = "";
+    var last_fic = "";
+    var last_obc = "";
+
+    var fic_monthly_amount = 0;
+    var fic_monthly_personal_advance = 0;
+    var fic_monthly_suspense = 0;
+    var current_budget=0;
+
+    var fic_annual_amount = 0;
+    var fic_annual_personal_advance = 0;
+    var fic_annual_suspense = 0;
+
+    var ac_monthly_amount = 0;
+    var ac_monthly_personal_advance = 0;
+    var ac_monthly_suspense = 0;
+
+    var ac_annual_amount = 0;
+    var ac_annual_personal_advance = 0;
+    var ac_annual_suspense = 0;
+
+    var cost_center_monthly_amount = 0;
+    var cost_center_monthly_personal_advance = 0;
+    var cost_center_monthly_suspense = 0;
+
+    var cost_center_annual_amount = 0;
+    var cost_center_annual_personal_advance = 0;
+    var cost_center_annual_suspense = 0;
+
+    var grand_amount_total = 0;
+    var grand_pa_total = 0;
+    var grand_suspense_total = 0;
+    var grand_annual_amount_total = 0;
+    var grand_annual_pa_total = 0;
+    var grand_annual_suspense_total = 0;
+
+
+    for (var j = 0; j < data.length; j++) {
+
+        var row = data[j];
+
+        var cost_center_number = row.cost_center_number || "";
+        var cost_center_name = row.cost_center_name || "";
+
+        var ac = row.ac || "";
+        var ac_name = row.ac_name || "";
+
+        var sac = row.sac || "";
+        var sac_name = row.sub_activity_name || "";
+
+        var source_of_fund = row.fic || "";
+        var source_of_fund_name = row.fic_name || "";
+
+        var account_code = row.obc || "";
+        var account_code_name = row.names || "";
+
+        var monthly_amount = Number(row.monthly_amount) || 0;
+        var monthly_personal_advance = Number(row.monthly_personal_advance) || 0;
+        var monthly_suspense = Number(row.monthly_suspense) || 0;
+        var current_budget = Number(row.budget_amount) || 0;
+
+        var annual_amount = Number(row.annual_amount) || 0;
+        var annual_personal_advance = Number(row.annual_personal_advance) || 0;
+        var annual_suspense = Number(row.annual_suspense) || 0;
+
+
+        var show_cost_center =
+            cost_center_number != last_cost_center;
+
+        var show_ac =
+            show_cost_center ||
+            ac != last_ac;
+
+        var show_bsa =
+            show_ac ||
+            sac != last_sac;
+
+        var show_fic =
+            show_bsa ||
+            source_of_fund != last_fic;
+
+        var show_obc =
+            show_fic ||
+            account_code != last_obc;
+
+
+        if (show_fic && last_fic) {
+    %}
+
+        <tr style="font-weight: bold; background-color: #f5f5f5;">
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+           
+
+            <td>
+                <strong>Total for FIC {%= last_fic %}</strong>
+            </td>
+
+            <td>
+                <strong>{%= show_amount(fic_monthly_amount) %}</strong>
+            </td>
+
+            <td>
+                <strong>{%= show_amount(fic_monthly_personal_advance) %}</strong>
+            </td>
+
+
+            <td>
+                <strong>{%= show_amount(fic_monthly_suspense) %}</strong>
+            </td>
+            <td></td>
+
+            <td>
+                <strong>{%= show_amount(fic_annual_amount) %}</strong>
+            </td>
+
+            <td>
+                <strong>{%= show_amount(fic_annual_personal_advance) %}</strong>
+            </td>
+
+            <td>
+                <strong>{%= show_amount(fic_annual_suspense) %}</strong>
+            </td>
+         
+        </tr>
+
+    {%
+        }
+
+
+        if (show_ac && last_ac) {
+    %}
+
+        <tr style="font-weight: bold; background-color: #e9e9e9;">
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+
+            <td>
+                <strong>Total for Activity {%= last_ac %}</strong>
+            </td>
+
+            <td>
+                <strong>{%= ac_monthly_amount %}</strong>
+            </td>
+
+            <td>
+                <strong>{%= ac_monthly_personal_advance %}</strong>
+            </td>
+
+            <td>
+                <strong>{%= ac_monthly_suspense %}</strong>
+            </td>
+            <td></td>
+
+            <td>
+                <strong>{%= ac_annual_amount %}</strong>
+            </td>
+
+            <td>
+                <strong>{%= ac_annual_personal_advance %}</strong>
+            </td>
+
+            <td>
+                <strong>{%= ac_annual_suspense %}</strong>
+            </td>
+        </tr>
+
+    {%
+        }
+
+
+        if (show_cost_center && last_cost_center) {
+    %}
+
+        <tr style="font-weight: bold; background-color: #dcdcdc;">
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+
+            <td>
+                <strong>
+                    Total for Sub Programme of {%= last_cost_center %}
+                </strong>
+            </td>
+
+            <td>
+                <strong>{%= show_amount(cost_center_monthly_amount) %}</strong>
+            </td>
+
+            <td>
+                <strong>{%= show_amount(cost_center_monthly_personal_advance) %}</strong>
+            </td>
+
+            <td>
+                <strong>{%= show_amount(cost_center_monthly_suspense) %}</strong>
+            </td>
+            <td></td>
+
+            <td>
+                <strong>{%= show_amount(cost_center_annual_amount) %}</strong>
+            </td>
+
+            <td>
+                <strong>{%= show_amount(cost_center_annual_personal_advance) %}</strong>
+            </td>
+
+            <td>
+                <strong>{%= show_amount(cost_center_annual_suspense) %}</strong>
+            </td>
+        </tr>
+
+    {%
+        }
+
+
+        if (show_fic) {
+
+            fic_monthly_amount = 0;
+            fic_monthly_personal_advance = 0;
+            fic_monthly_suspense = 0;
+
+            fic_annual_amount = 0;
+            fic_annual_personal_advance = 0;
+            fic_annual_suspense = 0;
+        }
+
+
+        if (show_ac) {
+
+            ac_monthly_amount = 0;
+            ac_monthly_personal_advance = 0;
+            ac_monthly_suspense = 0;
+
+            ac_annual_amount = 0;
+            ac_annual_personal_advance = 0;
+            ac_annual_suspense = 0;
+        }
+
+
+        if (show_cost_center) {
+
+            cost_center_monthly_amount = 0;
+            cost_center_monthly_personal_advance = 0;
+            cost_center_monthly_suspense = 0;
+
+            cost_center_annual_amount = 0;
+            cost_center_annual_personal_advance = 0;
+            cost_center_annual_suspense = 0;
+        }
+
+
+        fic_monthly_amount += monthly_amount;
+        fic_monthly_personal_advance += monthly_personal_advance;
+        fic_monthly_suspense += monthly_suspense;
+
+        fic_annual_amount += annual_amount;
+        fic_annual_personal_advance += annual_personal_advance;
+        fic_annual_suspense += annual_suspense;
+
+
+        ac_monthly_amount += monthly_amount;
+        ac_monthly_personal_advance += monthly_personal_advance;
+        ac_monthly_suspense += monthly_suspense;
+
+        ac_annual_amount += annual_amount;
+        ac_annual_personal_advance += annual_personal_advance;
+        ac_annual_suspense += annual_suspense;
+
+
+        cost_center_monthly_amount += fic_monthly_amount;
+        cost_center_monthly_personal_advance += fic_monthly_personal_advance;
+        cost_center_monthly_suspense += fic_monthly_suspense;
+
+        cost_center_annual_amount += annual_amount;
+        cost_center_annual_personal_advance += annual_personal_advance;
+        cost_center_annual_suspense += annual_suspense;
+
+
+        grand_amount_total += monthly_amount;
+        grand_pa_total += monthly_personal_advance;
+        grand_suspense_total += monthly_suspense;
+        grand_annual_amount_total += annual_amount;
+        grand_annual_pa_total += annual_personal_advance;
+        grand_annual_suspense_total += annual_suspense;
+
+    %}
+
+
+    {% if (show_cost_center) { %}
+
+        <tr>
+            <td>{%= cost_center_number %}</td>
+
+            <td></td>
+            <td></td>
+            <td></td>
+
+
+            <td></td>
+
+            <td>{%= cost_center_name %}</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+
+    {% } %}
+
+
+    {% if (show_ac) { %}
+
+        <tr>
+            <td></td>
+
+            <td>{%= ac %}</td>
+
+            <td></td>
+            <td></td>
+
+            <td></td>
+
+            <td>{%= ac_name %}</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+
+    {% } %}
+
+
+    {% if (show_bsa) { %}
+
+        <tr>
+            <td></td>
+            <td></td>
+
+            <td>{%= sac %}</td>
+
+            <td></td>
+
+            <td></td>
+
+            <td>{%= sac_name %}</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+
+        </tr>
+
+    {% } %}
+
+
+    {% if (show_fic) { %}
+
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+
+            <td>{%= source_of_fund %}</td>
+
+            <td></td>
+
+            <td>{%= source_of_fund_name %}</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+
+    {% } %}
+
+
+    {% if (show_obc) { %}
+
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+
+            <td>{%= account_code %}</td>
+
+            <td>{%= account_code_name %}</td>
+
+            <td>{%= monthly_amount %}</td>
+            <td>{%= monthly_personal_advance %}</td>
+          
+            <td>{%= monthly_suspense %}</td>
+            <td>{%= current_budget %}</td>
+
+            <td>{%= annual_amount %}</td>
+            <td>{%= annual_personal_advance %}</td>
+            <td>{%= annual_suspense %}</td>
+        </tr>
+
+    {% } %}
+
+
+    {%
+
+        last_cost_center = cost_center_number;
+        last_ac = ac;
+        last_sac = sac;
+        last_fic = source_of_fund;
+        last_obc = account_code;
+
+    }
+
+    %}
+
+
+    {% if (last_fic) { %}
+
+        <tr style="font-weight: bold; background-color: #dcdcdc;">
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          
+
+            <td>
+                <strong>Total for FIC {%= show_amount(last_fic) %}</strong>
+            </td>
+
+            <td>
+                <strong>{%= show_amount(fic_monthly_amount) %}</strong>
+            </td>
+
+            <td>
+                <strong>{%= show_amount(fic_monthly_personal_advance) %}</strong>
+            </td>
+
+            <td>
+                <strong>{%=show_amount( fic_monthly_suspense) %}</strong>
+            </td>
+            <td></td>
+
+            <td>
+                <strong>{%= show_amount(fic_annual_amount) %}</strong>
+            </td>
+
+            <td>
+                <strong>{%= show_amount(fic_annual_personal_advance) %}</strong>
+            </td>
+
+            <td>
+                <strong>{%= show_amount(fic_annual_suspense) %}</strong>
+            </td>
+        
+        </tr>
+
+    {% } %}
+
+
+    {% if (last_ac) { %}
+
+        <tr style="font-weight: bold; background-color: #e9e9e9;">
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+              <td></td>
+
+            <td>
+                <strong>Total for Activity {%= show_amount(last_ac) %}</strong>
+            </td>
+
+            <td>
+                <strong>{%= show_amount(ac_monthly_amount) %}</strong>
+            </td>
+
+            <td>
+                <strong>{%= show_amount(ac_monthly_personal_advance) %}</strong>
+            </td>
+
+
+            <td>
+                <strong>{%= show_amount(ac_monthly_suspense)%}</strong>
+            </td>
+            <td></td>
+
+            <td>
+                <strong>{%= show_amount(ac_annual_amount) %}</strong>
+            </td>
+
+            <td>
+                <strong>{%= show_amount(ac_annual_personal_advance) %}</strong>
+            </td>
+
+            <td>
+                <strong>{%= show_amount(ac_annual_suspense) %}</strong>
+            </td>
+          
+        </tr>
+
+    {% } %}
+
+
+    {% if (last_cost_center) { %}
+
+        <tr style="font-weight: bold; background-color: #dcdcdc;">
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+              <td></td>
+
+            <td>
+                <strong>
+                    Total for Sub Programme of {%= show_amount(last_cost_center)  %}
+                </strong>
+            </td>
+
+            <td>
+                <strong>{%= show_amount(cost_center_monthly_amount) %}</strong>
+            </td>
+
+            <td>
+                <strong>{%= show_amount(cost_center_monthly_personal_advance) %}</strong>
+            </td>
+
+            <td>
+                <strong>{%= show_amount(cost_center_monthly_suspense) %}</strong>
+            </td>
+            <td></td>
+
+            <td>
+                <strong>{%= show_amount(cost_center_annual_amount) %}</strong>
+            </td>
+
+            <td>
+                <strong>{%= show_amount(cost_center_annual_personal_advance) %}</strong>
+            </td>
+
+            <td>
+                <strong>{%= show_amount(cost_center_annual_suspense) %}</strong>
+            </td>
+          
+        </tr>
+
+    {% } %}
+
+    <tr style="font-weight:bold;background:#c8c8c8">
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>Grand Total for the Account</td>
+        <td>{%= show_amount(grand_amount_total)%}</td>
+        <td>{%=show_amount(grand_pa_total)%}</td>
+        <td>{%= show_amount(grand_suspense_total) %}</td>
+        <td>{%= show_amount (grand_annual_amount_total) %}</td>
+        <td>{%= show_amount (grand_annual_pa_total) %}</td>
+        <td>{%= show_amount (grand_annual_suspense_total)%}</td>
+    </tr>
+
+    </tbody>
+</table>
+
+<style>
+    .expenditure-table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+        font-family: Arial, sans-serif;
+        font-size: 10px;
+    }
+
+    .expenditure-table th,
+    .expenditure-table td {
+        border: 1px solid #000;
+        padding: 4px 3px;
+        vertical-align: middle;
+        text-align: center;
+        font-size: 10px;
+        font-weight: 500;
+
+        /* Prevent overlapping */
+        letter-spacing: normal;
+        line-height: 1.35;
+        white-space: normal !important;
+        overflow-wrap: anywhere;
+        word-break: normal;
+        height: auto;
+    }
+
+    /* Main header */
+    .expenditure-table thead th {
+        text-align: center;
+        font-weight: 700;
+        line-height: 1.3;
+        vertical-align: middle;
+    }
+
+    /* Column widths */
+    .expenditure-table th:nth-child(1),
+    .expenditure-table td:nth-child(1) {
+        width: 6%;
+    }
+
+    .expenditure-table th:nth-child(2),
+    .expenditure-table td:nth-child(2) {
+        width: 6%;
+    }
+
+    .expenditure-table th:nth-child(3),
+    .expenditure-table td:nth-child(3) {
+        width: 7%;
+    }
+
+    .expenditure-table th:nth-child(4),
+    .expenditure-table td:nth-child(4) {
+        width: 6%;
+    }
+
+    .expenditure-table th:nth-child(5),
+    .expenditure-table td:nth-child(5) {
+        width: 9%;
+    }
+
+    /* Name / description column */
+    .expenditure-table th:nth-child(6),
+    .expenditure-table td:nth-child(6) {
+        width: 25%;
+        text-align: left;
+        padding-left: 5px;
+        overflow-wrap: break-word;
+    }
+
+    /* Amount columns */
+    .expenditure-table th:nth-child(n+7),
+    .expenditure-table td:nth-child(n+7) {
+        width: 6.5%;
+        font-size: 9px;
+        padding-left: 2px;
+        padding-right: 2px;
+        overflow-wrap: anywhere;
+    }
+
+    /* Section headings */
+    .expenditure-table .section-header {
+        font-size: 10px;
+        text-transform: uppercase;
+        font-weight: 700;
+        line-height: 1.35;
+        color: #000;
+        white-space: normal !important;
+        overflow-wrap: anywhere;
+    }
+
+    /* Report header */
+    .report-header {
+        text-align: center !important;
+        margin-bottom: 14px !important;
+    }
+
+    .report-header h3 {
+        font-size: 18px !important;
+        font-weight: 700 !important;
+        margin: 0 0 4px 0 !important;
+        padding: 0 !important;
+        text-transform: uppercase !important;
+    }
+
+    .report-header h4 {
+        font-size: 16px !important;
+        font-weight: 700 !important;
+        margin: 0 0 8px 0 !important;
+        padding: 0 !important;
+        text-transform: uppercase !important;
+    }
+
+    .report-header p {
+        font-size: 12px !important;
+        font-weight: 600 !important;
+        margin: 2px 0 !important;
+        padding: 0 !important;
+    }
+
+    .period-text {
+        text-align: left !important;
+        margin-top: 15px !important;
+        font-weight: 600 !important;
+    }
+
+    /* Print / PDF */
+    @media print {
+        .expenditure-table {
+            width: 100%;
+            font-size: 9px;
+        }
+
+        .expenditure-table th,
+        .expenditure-table td {
+            padding: 3px 2px;
+            white-space: normal !important;
+            line-height: 1.35;
+            letter-spacing: normal;
+        }
+
+        .expenditure-table thead {
+            display: table-header-group;
+        }
+
+        .expenditure-table tr {
+            page-break-inside: avoid;
+            height: auto;
+        }
+    }
+</style>
