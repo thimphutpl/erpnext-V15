@@ -1380,7 +1380,7 @@ return String(label)
             <td>{%= monthly_personal_advance %}</td>
           
             <td>{%= monthly_suspense %}</td>
-            <td>{%= current_budget %}</td>
+            <td>{%=current_budget %}</td>
 
             <td>{%= annual_amount %}</td>
             <td>{%= annual_personal_advance %}</td>
@@ -1541,10 +1541,10 @@ return String(label)
         <td></td>
         <td></td>
         <td></td>
-        <td></td>
         <td>Grand Total for the Account</td>
         <td>{%= show_amount(grand_amount_total)%}</td>
         <td>{%=show_amount(grand_pa_total)%}</td>
+        <td></td>
         <td>{%= show_amount(grand_suspense_total) %}</td>
         <td>{%= show_amount (grand_annual_amount_total) %}</td>
         <td>{%= show_amount (grand_annual_pa_total) %}</td>
