@@ -13,12 +13,26 @@ def execute(filters=None):
 def get_columns(filters):
 	return [
 		{
-			"label": "Employee",
-			"fieldname": "employee",
+			"label": "Company",
+			"fieldname": "company",
 			"fieldtype": "Link",
-			"options": "Employee",
+			"options": "Company",
 			"width": 120,
 		},
+		{
+			"label": "Fiscal Year",
+			"fieldname": "fiscal_year",
+			"fieldtype": "Link",
+			"options": "Fiscal Year",
+			"width": 120
+		},
+        {
+            "label":"Code",
+            "fieldname":"code",
+            "fieldtype": "Data",
+			"width": 180
+
+        },
 		{
 			"label": "Employee Name",
 			"fieldname": "employee_name",
@@ -45,6 +59,7 @@ def get_columns(filters):
 			"options": "Account",
 			"width": 180,
 		},
+		
 		{
 			"label": "Advance Amount",
 			"fieldname": "advance_amount",
@@ -52,7 +67,7 @@ def get_columns(filters):
 			"width": 120,
 		},
 		{
-			"label": "Paid Amount",
+			"label": "Settlement amount",
 			"fieldname": "paid_amount",
 			"fieldtype": "Currency",
 			"width": 120,
@@ -76,61 +91,270 @@ def get_columns(filters):
 			"fieldtype": "Link",
 			"options": "Journal Entry",
 			"width": 120
+		},
+		{
+			"label": "Against Voucher Type",
+			"fieldname": "against_voucher_type",
+			"fieldtype": "Data",
+			"width": 140,
 		}
 	]
 
 
-def get_data(filters):
+# def get_data(filters):
 	
   
 
+# 	conditions = [
+# 		"""
+# 		(
+# 			gl.against_voucher_type IN (
+# 				'Employee Advance',
+# 				'Payroll Entry'
+# 			)
+# 			OR
+# 			(
+#             gl.account IN (
+#                 '88.01 - Personal Advances - RBA',
+#                 '88.02 - Personal Advances - RBG'
+#             )
+#             AND
+#             gl.voucher_subtype = 'Other Voucher'
+#         	)
+# 			AND gl.against_voucher_type != 'Advance Settlement'
+# 		)
+	
+# 		"""
+# 	]
+# 	values = []
 
-	conditions = []
-	values = []
+# 	if filters.get("fiscal_year"):
+# 		conditions.append("gl.fiscal_year = %s")
+# 		values.append(filters.get("fiscal_year"))
 
-	if filters.get("fiscal_year"):
-		conditions.append("gl.fiscal_year = %s")
-		values.append(filters.get("fiscal_year"))
+# 	if filters.get("from_date") and filters.get("to_date"):
+# 		conditions.append("gl.posting_date BETWEEN %s AND %s")
+# 		values.extend([filters.get("from_date"), filters.get("to_date")])
 
-	if filters.get("from_date") and filters.get("to_date"):
-		conditions.append("gl.posting_date BETWEEN %s AND %s")
-		values.extend([filters.get("from_date"), filters.get("to_date")])
+# 	if filters.get("company"):
+# 		conditions.append("gl.company = %s")
+# 		values.append(filters.get("company"))
 
-	if filters.get("company"):
-		conditions.append("gl.company = %s")
-		values.append(filters.get("company"))
+# 	if filters.get("employee"):
+# 		conditions.append("gl.party = %s")
+# 		values.append(filters.get("employee"))
 
-	if filters.get("employee"):
-		conditions.append("gl.party = %s")
-		values.append(filters.get("employee"))
 
-	conditions.append("gl.against_voucher_type = 'Employee Advance'")
-	conditions.append("gl.is_cancelled = 0")
+# 	where_clause = " AND ".join(conditions)
 
-	where_clause = " AND ".join(conditions)
+# 	query = f"""
+# 		SELECT
+# 		    gl.company as company,
+# 			gl.fiscal_year as fiscal_year,
+# 			gl.party AS employee,
+# 			emp.employee_name,
+# 			gl.cost_center,
+# 			gl.posting_date,
+# 			gl.account,
+# 			gl.voucher_type,
+# 			gl.voucher_no,
+# 			gl.against_voucher_type,
 
-	query = f"""
-		SELECT
-			gl.party AS employee,
-			emp.employee_name ,
-			gl.cost_center,
-			gl.posting_date  ,
-			gl.account ,
-			gl.debit AS advance_amount,
-			gl.credit AS paid_amount,
-			gl.debit - gl.credit AS total_outstanding,
-			gl.voucher_type,
-			gl.voucher_no
 
-		FROM `tabGL Entry` gl
+# 			SUM(
+# 				CASE
+# 					WHEN gl.against_voucher_type = 'Employee Advance'
+# 					THEN gl.debit
+# 					ELSE 0
+# 				END
+# 			) AS advance_amount,
 
-		LEFT JOIN `tabEmployee` emp
-			ON emp.name = gl.party
+# 			SUM(
+# 				CASE
+# 					WHEN gl.against_voucher_type ='Payroll Entry'
+# 					OR 
+# 					(
+# 						gl.account IN (
+# 							'88.01 - Personal Advances - RBA',
+# 							'88.02 - Personal Advances - RBG'
+# 						)
+# 						AND gl.voucher_subtype = 'Other Voucher'
+# 					)
+# 					AND gl.against_voucher_type != 'Advance Settlement'
 
-		WHERE {where_clause}
-		ORDER BY
-			gl.posting_date ASC,
-			gl.voucher_no ASC
-	"""
+				
+# 					THEN gl.credit
+				
+# 					ELSE 0
+# 				END
+# 			) AS paid_amount,
 
-	return frappe.db.sql(query, values, as_dict=True)
+# 			SUM(
+# 				CASE
+# 					WHEN gl.against_voucher_type = 'Employee Advance'
+# 					THEN gl.debit
+# 					WHEN gl.against_voucher_type ='Payroll Entry'
+# 					OR 
+# 					(
+# 						gl.account IN (
+# 							'88.01 - Personal Advances - RBA',
+# 							'88.02 - Personal Advances - RBG'
+# 						)
+# 						AND gl.voucher_subtype = 'Other Voucher'
+# 					)
+# 					AND gl.against_voucher_type != 'Advance Settlement'
+# 					THEN -gl.credit
+
+# 					ELSE 0
+# 				END
+# 			) AS total_outstanding
+
+# 		FROM `tabGL Entry` gl
+
+# 		INNER JOIN `tabEmployee` emp
+# 			ON emp.name = gl.party
+
+
+# 		WHERE {where_clause}
+
+# 		GROUP BY
+# 			gl.party
+
+		
+# 		ORDER BY
+# 			gl.party ASC
+# 	"""
+
+# 	return frappe.db.sql(query, values, as_dict=True)
+
+def get_data(filters):
+
+    conditions = [
+        "gl.is_cancelled = 0",
+        """
+        (
+            (
+                gl.against_voucher_type IN (
+                    'Employee Advance',
+                    'Payroll Entry'
+                )
+                OR
+                (
+                    gl.account IN (
+                        '88.01 - Personal Advances - RBA',
+                        '88.02 - Personal Advances - RBG'
+                    )
+                    AND gl.voucher_subtype = 'Other Voucher'
+					AND (
+						gl.against_voucher_type IS NULL
+						OR gl.against_voucher_type != 'Advance Settlement'
+					)
+                )
+            )
+
+        )
+        """
+    ]
+
+    values = []
+
+    if filters.get("fiscal_year"):
+        conditions.append("gl.fiscal_year = %s")
+        values.append(filters.get("fiscal_year"))
+
+    if filters.get("from_date") and filters.get("to_date"):
+        conditions.append("gl.posting_date BETWEEN %s AND %s")
+        values.extend([
+            filters.get("from_date"),
+            filters.get("to_date")
+        ])
+
+    if filters.get("company"):
+        conditions.append("gl.company = %s")
+        values.append(filters.get("company"))
+
+    if filters.get("employee"):
+        conditions.append("gl.party = %s")
+        values.append(filters.get("employee"))
+
+    where_clause = " AND ".join(conditions)
+
+    query = f"""
+        SELECT
+            gl.company AS company,
+            gl.fiscal_year AS fiscal_year,
+            gl.party AS code,
+            emp.employee_name,
+            gl.cost_center,
+            gl.posting_date,
+            gl.account,
+            gl.voucher_type,
+            gl.voucher_no,
+            gl.against_voucher_type,
+
+            /* Advance */
+            SUM(
+                CASE
+                    WHEN gl.against_voucher_type = 'Employee Advance'
+                    THEN COALESCE(gl.debit, 0)
+                    ELSE 0
+                END
+            ) AS advance_amount,
+
+            /* Paid */
+            SUM(
+                CASE
+                    WHEN (
+                        gl.against_voucher_type = 'Payroll Entry'
+                        OR
+                        (
+                            gl.account IN (
+                                '88.01 - Personal Advances - RBA',
+                                '88.02 - Personal Advances - RBG'
+                            )
+                            AND gl.voucher_subtype = 'Other Voucher'
+                        )
+                    )
+                    THEN COALESCE(gl.credit, 0)
+                    ELSE 0
+                END
+            ) AS paid_amount,
+
+            /* Outstanding */
+            SUM(
+                CASE
+                    WHEN gl.against_voucher_type = 'Employee Advance'
+                    THEN COALESCE(gl.debit, 0)
+
+                    WHEN (
+                        gl.against_voucher_type = 'Payroll Entry' 
+                        OR
+                        (
+                            gl.account IN (
+                                '88.01 - Personal Advances - RBA',
+                                '88.02 - Personal Advances - RBG'
+                            )
+                            AND gl.voucher_subtype = 'Other Voucher'
+                        )
+                    )
+                    THEN -COALESCE(gl.credit, 0)
+
+                    ELSE 0
+                END
+            ) AS total_outstanding
+
+        FROM `tabGL Entry` gl
+
+        INNER JOIN `tabEmployee` emp
+            ON emp.name = gl.party
+
+        WHERE {where_clause}
+
+        GROUP BY
+            gl.party
+
+        ORDER BY
+            gl.party ASC
+    """
+
+    return frappe.db.sql(query, values, as_dict=True)

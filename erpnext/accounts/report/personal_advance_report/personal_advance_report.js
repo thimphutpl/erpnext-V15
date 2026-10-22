@@ -24,6 +24,8 @@ frappe.query_reports["Personal Advance Report"] = {
             "label": __("Fiscal Year"),
             "fieldtype": "Link",
             "options": "Fiscal Year",
+            "reqd": 1
+
 
         },
         {
