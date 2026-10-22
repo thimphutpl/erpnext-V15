@@ -383,6 +383,7 @@ class Advance(Document):
                 "child_reference":item.name,
                 "is_opening":self.is_opening,
 				"advance_type":self.advance_type,
+                "particular":item.particular,
 				"total_amount": net_amount,
 				"budget_activity": budget_activity,
 				"budget_sub_activity":budget_sub_activity,
