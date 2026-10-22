@@ -404,6 +404,13 @@ def get_data(filters):
         conditions.append("mei.source_of_fund = %s")
         values.append(source_of_fund)
 
+    if filters.get("from_date") and filters.get("to_date"):
+        conditions.append("ae.posting_date BETWEEN %s AND %s")
+        values.extend([
+            filters.get("from_date"),
+            filters.get("to_date")
+        ])    
+
     data = frappe.db.sql(
         f"""
         SELECT

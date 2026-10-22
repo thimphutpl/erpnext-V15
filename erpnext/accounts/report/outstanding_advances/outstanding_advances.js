@@ -94,7 +94,22 @@ frappe.query_reports["Outstanding Advances"] = {
             label: __("Source of Fund"),
             fieldtype: "Link",
             options: "Source of Fund"
-        }
+        },
+        {
+            "fieldname": "from_date",
+            "label": __("From Date"),
+            "fieldtype": "Date",
+
+            "default": frappe.datetime.month_start(),
+            "reqd": 1
+        },
+        {
+            "fieldname": "to_date",
+            "label": __("To Date"),
+            "fieldtype": "Date",
+            "default": frappe.datetime.month_end(),
+            "reqd": 1
+        },
     ],
 
     onload: async function (report) {
