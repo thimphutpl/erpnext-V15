@@ -431,7 +431,7 @@ def get_data(filters):
             mei.budget_sub_activity AS budget_sub_activity,
             bsf.sub_activity_code as budget_sub_activity_code,
             mei.source_of_fund AS fi_code,
-            a.remarks AS associated_remarks,
+            mei.particular AS associated_remarks,
 
             COALESCE(mei.advance_amount, 0) AS advance_amount,
             COALESCE(mei.allocated_amount, 0) AS settlement_amount,
@@ -450,8 +450,6 @@ def get_data(filters):
         FROM `tabAdvance Entry` ae
         INNER JOIN `tabMobilisation Entry Item` mei
             ON mei.parent = ae.name
-        INNER JOIN `tabAdvance` a
-            ON a.name = ae.advance
         INNER JOIN `tabBudget Activity` ba
             ON mei.budget_activity = ba.name
         INNER JOIN `tabBudget Sub Activity` bsf
@@ -472,7 +470,7 @@ def get_data(filters):
             AND cust.name = ae.customer
         WHERE {" AND ".join(conditions)}
 
-        ORDER BY ae.posting_date,ae.customer ASC
+        ORDER BY ae.customer ASC
         """,
         values,
         as_dict=True,
