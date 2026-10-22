@@ -18,6 +18,7 @@
   "balance_amount",
   "is_opening",
   "child_reference",
+  "particular",
   "status"
  ],
  "fields": [
@@ -114,12 +115,18 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Status"
+  },
+  {
+   "fieldname": "particular",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "label": "Particular"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-10-02 09:24:36.824928",
+ "modified": "2026-10-22 11:59:57.459477",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Mobilisation Entry Item",

@@ -26,6 +26,7 @@ class MobilisationEntryItem(Document):
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
+		particular: DF.SmallText | None
 		reference: DF.Link | None
 		source_of_fund: DF.Link | None
 		status: DF.Data | None
