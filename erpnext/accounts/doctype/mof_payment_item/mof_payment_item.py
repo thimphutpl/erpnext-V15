@@ -20,8 +20,8 @@ class MOFPaymentItem(Document):
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
-		party: DF.Data | None
-		party_type: DF.Data | None
+		party: DF.DynamicLink | None
+		party_type: DF.Literal["Customer", "Supplier", "Employee"]
 		voucher_no: DF.DynamicLink | None
 		voucher_type: DF.Link | None
 	# end: auto-generated types
