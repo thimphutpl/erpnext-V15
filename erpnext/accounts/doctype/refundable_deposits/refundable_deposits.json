@@ -130,7 +130,7 @@
   {
    "fieldname": "account_deposit",
    "fieldtype": "Link",
-   "label": "Account",
+   "label": "Security Deposit Account",
    "options": "Account",
    "reqd": 1
   },
@@ -193,7 +193,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-09-04 20:37:07.679618",
+ "modified": "2026-09-14 12:22:37.243233",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Refundable Deposits",
