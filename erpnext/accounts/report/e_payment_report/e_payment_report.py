@@ -14,51 +14,121 @@ def execute(filters=None):
 
 def get_column():
 	columns = [
-		("Company") + ":Link/Company:100",
-		("Transaction") + ":Link/Bank Payment:100",
-		("Transaction Type") + ":Data:150",
-		("Transaction ID") + ":Data:150",
-		("Transaction Date") + ":Date:100",
-		("Transaction Reference") + ":Data:100",
-		("Party Type") + ":Data:100",
-		("Party") + ":Data:120",
-		("Beneficiary Name") + ":Data:150",
-		("Beneficiary Bank Acc No.") + ":Data:150",
-		("Total Amount") + ":Currency:100",
-		("Status") + ":Data:100",
-		("Journal No.") + ":Data:100",
-		("PI Number") + ":Data:100"
+		{
+			"label": _("Company"),
+			"fieldname": "company",
+			"fieldtype": "Link",
+			"options": "Company",
+			"width": 100
+		},
+		{
+			"label": _("Transaction"),
+			"fieldname": "name",
+			"fieldtype": "Link",
+			"options": "Bank Payment",
+			"width": 100
+		},
+		{
+			"label": _("Transaction Type"),
+			"fieldname": "transaction_type",
+			"fieldtype": "Data",
+			"width": 150
+		},
+		{
+			"label": _("Transaction ID"),
+			"fieldname": "transaction_id",
+			"fieldtype": "Data",
+			"width": 150
+		},
+		{
+			"label": _("Transaction Date"),
+			"fieldname": "transaction_date",
+			"fieldtype": "Date",
+			"width": 100
+		},
+		{
+			"label": _("Party Type"),
+			"fieldname": "party_type",
+			"fieldtype": "Data",
+			"width": 100
+		},
+		{
+			"label": _("Party"),
+			"fieldname": "party",
+			"fieldtype": "Data",
+			"width": 120
+		},
+		{
+			"label": _("Beneficiary Name"),
+			"fieldname": "beneficiary_name",
+			"fieldtype": "Data",
+			"width": 150
+		},
+		{
+			"label": _("Beneficiary Bank Acc No."),
+			"fieldname": "bank_account_no",
+			"fieldtype": "Data",
+			"width": 150
+		},
+		{
+			"label": _("Total Amount"),
+			"fieldname": "amount",
+			"fieldtype": "Currency",
+			"width": 100
+		},
+		{
+			"label": _("Status"),
+			"fieldname": "status",
+			"fieldtype": "Data",
+			"width": 100
+		},
+		{
+			"label": _("Journal No."),
+			"fieldname": "bank_journal_no",
+			"fieldtype": "Data",
+			"width": 100
+		},
+		{
+			"label": _("PI Number"),
+			"fieldname": "pi_number",
+			"fieldtype": "Data",
+			"width": 100
+		}
 	]
+
+    
 	return columns
 
 def get_data(filters):
-	cond = get_condition(filters)
-	data = frappe.db.sql("""
-		SELECT 
-			bp.company,
-			bp.name,
-			bpi.transaction_type, 
-			bpi.transaction_id, 
-			bpi.transaction_date, 
-			bpi.transaction_reference, 
-			bpi.party_type,
-			CASE
-				WHEN bpi.party_type = 'Supplier' THEN bpi.supplier
-				WHEN bpi.party_type = 'Employee' THEN bpi.employee
-				WHEN bpi.party_type = 'Customer' THEN bpi.customer
-				ELSE COALESCE(bpi.supplier, bpi.employee, bpi.customer)
-			END AS party,
-		
-			bpi.beneficiary_name, 
-			bpi.bank_account_no, 
-			bpi.amount, bpi.status, 
-			bpi.bank_journal_no, 
-			bpi.pi_number
-		FROM `tabBank Payment` bp, `tabBank Payment Item` bpi
-		WHERE bp.name=bpi.parent
-		{condition}
-	""".format(condition=cond))
-	return data
+    cond = get_condition(filters)
+
+    data = frappe.db.sql("""
+        SELECT 
+            bp.company AS company,
+            bp.name AS transaction,
+            bpi.transaction_type AS transaction_type,
+            bpi.transaction_id AS transaction_id,
+            bpi.transaction_date AS transaction_date,
+            bpi.party_type AS party_type,
+            CASE
+                WHEN bpi.party_type = 'Supplier' THEN bpi.supplier
+                WHEN bpi.party_type = 'Employee' THEN bpi.employee
+                WHEN bpi.party_type = 'Customer' THEN bpi.customer
+                ELSE COALESCE(bpi.supplier, bpi.employee, bpi.customer)
+            END AS party,
+            bpi.beneficiary_name AS beneficiary_name,
+            bpi.bank_account_no AS bank_account_no,
+            bpi.amount AS amount,
+            bpi.status AS status,
+            bpi.bank_journal_no AS bank_journal_no,
+            bpi.pi_number AS pi_number
+        FROM `tabBank Payment` bp
+        INNER JOIN `tabBank Payment Item` bpi
+            ON bp.name = bpi.parent
+        {condition}
+    """.format(condition=cond), as_dict=True)
+
+    return data
 
 def get_utility_column():
 	columns = [
@@ -140,6 +210,14 @@ def get_condition(filters):
 		if filters.company:
 			conds += " AND bp.company = {}".format(
 				frappe.db.escape(filters.company)
+			)
+		if filters.from_date:
+			conds += " AND bpi.transaction_date >= {}".format(
+				frappe.db.escape(filters.from_date)
+			)
+		if filters.to_date:
+			conds += " AND bpi.transaction_date <= {}".format(
+				frappe.db.escape(filters.to_date)
 			)
 
 

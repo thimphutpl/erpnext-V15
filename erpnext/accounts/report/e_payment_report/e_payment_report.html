@@ -1,0 +1,87 @@
+<div class="outstanding-advance-print">
+    <table class="table table-bordered custom-table">
+        <thead>
+            <tr>
+                <th>Transaction</th>
+                <th>Transaction Date</th>
+                <th>Transaction Type</th>
+                <th>Transaction ID</th>
+                <th>Party Type</th>
+                <th>Party</th>
+                <th>Beneficiary Name</th>
+                <th>Beneficiary Bank Acc No.</th>
+                <th>Total Amount</th>
+                <th>Journal No.</th>
+                <th>PI Number</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for (var j = 0; j < data.length; j++) { %}
+                {% 
+                    var row = data[j] || {};
+                %}
+                <tr>
+                    <td>{%= row.transaction || "" %}</td>
+                    <td>{%= row.transaction_date || "" %}</td>
+                    <td>{%= row.transaction_type || "" %}</td>
+                    <td>{%= row.transaction_id || "" %}</td>
+                    <td>{%= row.party_type || "" %}</td>
+                    <td>{%= row.party || "" %}</td>
+                    <td>{%= row.beneficiary_name || "" %}</td>
+                    <td>{%= row.bank_account_no || "" %}</td>
+                    <td>{%=row.amount%}</td>
+                    <td>{%= row.bank_journal_no || "" %}</td>
+                    <td>{%= row.pi_number || "" %}</td>
+                    <td>{%= row.status || "" %}</td>
+                </tr>
+            {% } %}
+        </tbody>
+    </table>
+</div>
+
+<style>
+    .outstanding-advance-print {
+        width: 100%;
+        color: #000;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .custom-table {
+        width: 100%;
+        table-layout: fixed;
+        border-collapse: collapse;
+        border: 1px solid #8f8f8f !important;
+    }
+
+    .custom-table th,
+    .custom-table td {
+        border: 1px solid #8f8f8f !important;
+        vertical-align: middle;
+        padding: 7px 6px;
+    }
+
+    .custom-table th {
+        background-color: #e8e8e8 !important;
+        text-align: center;
+        font-size: 11px;
+        font-weight: 700;
+        line-height: 1.25;
+    }
+
+    .custom-table td {
+        font-size: 10.5px;
+        line-height: 1.35;
+        overflow-wrap: anywhere;
+    }
+
+    @media print {
+        .custom-table thead {
+            display: table-header-group;
+        }
+
+        .custom-table tr {
+            page-break-inside: avoid;
+        }
+    }
+</style>
