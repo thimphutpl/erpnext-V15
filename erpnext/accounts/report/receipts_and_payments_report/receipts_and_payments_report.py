@@ -2319,11 +2319,12 @@ def get_data(filters):
 
     closing_groups = [
         {
+            "label": "Cash",
             "source_parent": "12 a - Cash - RBA",
             "children": ["80.01 - Cash Transactions - RBA"],
         },
         {
-
+            "label": "Bank",
             "source_parent": "12 b - Bank - RBA",
             "children": ["80.02 - Bank Transactions - RBA"],
         },
