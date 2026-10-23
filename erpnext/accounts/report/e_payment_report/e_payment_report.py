@@ -14,6 +14,7 @@ def execute(filters=None):
 
 def get_column():
 	columns = [
+		("Company") + ":Link/Company:100",
 		("Transaction") + ":Link/Bank Payment:100",
 		("Transaction Type") + ":Data:150",
 		("Transaction ID") + ":Data:150",
@@ -34,6 +35,7 @@ def get_data(filters):
 	cond = get_condition(filters)
 	data = frappe.db.sql("""
 		SELECT 
+			bp.company,
 			bp.name,
 			bpi.transaction_type, 
 			bpi.transaction_id, 
@@ -46,7 +48,7 @@ def get_data(filters):
 				WHEN bpi.party_type = 'Customer' THEN bpi.customer
 				ELSE COALESCE(bpi.supplier, bpi.employee, bpi.customer)
 			END AS party,
-        
+		
 			bpi.beneficiary_name, 
 			bpi.bank_account_no, 
 			bpi.amount, bpi.status, 
@@ -60,6 +62,7 @@ def get_data(filters):
 
 def get_utility_column():
 	columns = [
+		("Company") + ":Link/Company:100",
 		("Utility Service Type") + ":Data:150",
 		("Party") + ":Data:150",
 		("Branch Expense Account") + ":Data:200",
@@ -79,6 +82,7 @@ def get_utility_data(filters):
 	cond = get_condition(filters)
 	data = frappe.db.sql("""
 		SELECT 
+			ut.company as company,
 			uti.utility_service_type, 
 			uti.party, 
 			ut.expense_account, 
@@ -133,6 +137,11 @@ def get_condition(filters):
 			conds += " AND bpi.party_type = {}".format(
 				frappe.db.escape(filters.party_type)
 			)
+		if filters.company:
+			conds += " AND bp.company = {}".format(
+				frappe.db.escape(filters.company)
+			)
+
 
 		if filters.party:
 			parties = filters.party
@@ -153,6 +162,7 @@ def get_condition(filters):
 
 			elif filters.party_type == "Customer":
 				conds += " AND bpi.customer IN ({})".format(party_list)
+
 
 		if filters.status:
 			conds += " AND bpi.status = {}".format(

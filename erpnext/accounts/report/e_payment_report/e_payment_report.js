@@ -6,6 +6,13 @@ frappe.query_reports["e-Payment Report"] = {
     	query_report.filters_by_name.party.toggle(false);
     },
 	"filters": [
+        {
+            fieldname:"company",
+            label:"Company",
+            fieldtype:"Link",
+            options:"Company"
+        },
+        
 		{
             fieldname: "payment_type",
             label: "Payment Type",
