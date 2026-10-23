@@ -10,10 +10,12 @@
                 <th>Party</th>
                 <th>Beneficiary Name</th>
                 <th>Beneficiary Bank Acc No.</th>
-                <th>Total Amount</th>
+                <th style="width:10% !important;">Total Amount</th>
                 <th>Journal No.</th>
                 <th>PI Number</th>
+                <th >Remarks</th>
                 <th>Status</th>
+
             </tr>
         </thead>
         <tbody>
@@ -33,6 +35,7 @@
                     <td>{%=row.amount%}</td>
                     <td>{%= row.bank_journal_no || "" %}</td>
                     <td>{%= row.pi_number || "" %}</td>
+                    <td>{%= row.remarks || "" %}</td>
                     <td>{%= row.status || "" %}</td>
                 </tr>
             {% } %}

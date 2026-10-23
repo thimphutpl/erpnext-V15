@@ -93,6 +93,12 @@ def get_column():
 			"fieldname": "pi_number",
 			"fieldtype": "Data",
 			"width": 100
+		},
+		{
+			"label": _("Remarks"),
+			"fieldname": "remarks",
+			"fieldtype": "Data",
+			"width": 100
 		}
 	]
 
@@ -110,6 +116,7 @@ def get_data(filters):
             bpi.transaction_id AS transaction_id,
             bpi.transaction_date AS transaction_date,
             bpi.party_type AS party_type,
+			bp.remarks as remarks,
             CASE
                 WHEN bpi.party_type = 'Supplier' THEN bpi.supplier
                 WHEN bpi.party_type = 'Employee' THEN bpi.employee
