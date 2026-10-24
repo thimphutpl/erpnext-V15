@@ -1018,6 +1018,19 @@ return String(label)
     var grand_annual_pa_total = 0;
     var grand_annual_suspense_total = 0;
 
+    var current_grand_total=0;
+    var capital_grand_total=0;
+    var lending_grand_total=0;
+    var repayment_grand_total=0;
+
+    var annual_current_grand_total=0;
+    var annual_capital_grand_total=0;
+    var annual_lending_grand_total=0;
+    var annual_repayment_grand_total=0;
+    
+
+    
+
 
     for (var j = 0; j < data.length; j++) {
 
@@ -1408,6 +1421,16 @@ return String(label)
         grand_annual_pa_total += annual_personal_advance;
         grand_annual_suspense_total += annual_suspense;
 
+        current_grand_total += current;
+        capital_grand_total +=capital;
+        lending_grand_total +=lending;
+        repayment_grand_total +=repayment;
+        annual_current_grand_total+=current;
+        annual_capital_grand_total +=capital;
+        annual_lending_grand_total +=lending;
+        annual_repayment_grand_total +=repayment;
+
+
     %}
 
 
@@ -1524,15 +1547,15 @@ return String(label)
 
             <td>{%= account_code_name %}</td>
 
-            <td>{%= monthly_amount %}</td>
-            <td>{%= monthly_personal_advance %}</td>
+            <td>{%= show_amount(monthly_amount) %}</td>
+            <td>{%= show_amount(monthly_personal_advance) %}</td>
           
-            <td>{%= monthly_suspense %}</td>
-            <td>{%=current_budget %}</td>
+            <td>{%= show_amount(monthly_suspense) %}</td>
+            <td>{%= show_amount(current_budget) %}</td>
 
-            <td>{%= annual_amount %}</td>
-            <td>{%= annual_personal_advance %}</td>
-            <td>{%= annual_suspense %}</td>
+            <td>{%= show_amount(annual_amount) %}</td>
+            <td>{%= show_amount(annual_personal_advance) %}</td>
+            <td>{%= show_amount(annual_suspense) %}</td>
         </tr>
 
     {% } %}
@@ -1700,6 +1723,67 @@ return String(label)
         <td>{%= show_amount (grand_annual_pa_total) %}</td>
         <td>{%= show_amount (grand_annual_suspense_total)%}</td>
     </tr>
+     <tr style="font-weight:bold;background:#c8c8c8">
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>Grand Total Current</td>
+        <td>{%= show_amount(current_grand_total)%}</td>
+        <td></td>
+        <td></td>
+        <td>{%= show_amount(annual_current_grand_total) %}</td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+     <tr style="font-weight:bold;background:#c8c8c8">
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>Capital</td>
+        <td>{%= show_amount(capital_grand_total)%}</td>
+        <td></td>
+        <td></td>
+        <td>{%= show_amount(annual_capital_grand_total) %}</td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+     <tr style="font-weight:bold;background:#c8c8c8">
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>Lending</td>
+        <td>{%= show_amount(lending_grand_total)%}</td>
+        <td></td>
+        <td></td>
+        <td>{%= show_amount(annual_lending_grand_total) %}</td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+     <tr style="font-weight:bold;background:#c8c8c8">
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>Repayment</td>
+        <td>{%= show_amount(repayment_grand_total)%}</td>
+        <td></td>
+        <td></td>
+        <td>{%= show_amount(annual_repayment_grand_total) %}</td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+
 
     </tbody>
 </table>

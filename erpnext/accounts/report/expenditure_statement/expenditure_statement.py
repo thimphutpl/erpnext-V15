@@ -1616,9 +1616,10 @@ def get_data(filters):
         values["fiscal_year"] = filters["fiscal_year"]
 
     where_clause = " AND ".join(conditions)
+    
     data = []
 
-    if filters.get("company")=="Royal Bhutan Army":
+    if filters.get("company") == "Royal Bhutan Army":
 
         data = frappe.db.sql(
             f"""
@@ -1626,20 +1627,37 @@ def get_data(filters):
                 gle.company AS company,
                 gle.fiscal_year AS fiscal_year,
                 gle.cost_center AS sp,
-                
+
                 cc.cost_center_name AS cost_center_name,
                 cc.cost_center_number AS cost_center_number,
+
                 ba.activity_code AS ac,
                 ba.activity_name AS ac_name,
+
                 bsa.name AS sub_activity_code,
                 bsa.sub_activity_code AS sac,
-                bsa.sub_activity_name as sub_activity_name,
+                bsa.sub_activity_name AS sub_activity_name,
+
                 gle.source_of_fund AS source_of_fund,
                 sof.fic AS fic,
                 sof.source_of_fund AS fic_name,
+
                 acc.account_number AS obc,
-                gle.account as names,
-                ba_acc.budget_amount AS budget_amount,
+                gle.account AS names,
+
+                COALESCE((
+                    SELECT MAX(ba_check.budget_amount)
+                    FROM `tabBudget` bud_check
+                    INNER JOIN `tabBudget Account` ba_check
+                        ON ba_check.parent = bud_check.name
+                    WHERE bud_check.company = gle.company
+                        AND bud_check.fiscal_year = gle.fiscal_year
+                        AND bud_check.docstatus = 1
+                        AND ba_check.account = gle.account
+                        AND ba_check.budget_activity = gle.budget_activity
+                        AND ba_check.budget_sub_activity = gle.budget_sub_activity
+                        AND ba_check.source_of_fund = gle.source_of_fund
+                ), 0) AS budget_amount,
 
                 SUM(
                     CASE
@@ -1653,7 +1671,7 @@ def get_data(filters):
                 SUM(
                     CASE
                         WHEN gle.posting_date BETWEEN %(from_date)s AND %(to_date)s
-                            AND acc.parent_account = '10 c - Lending - RBA'
+                            AND acc.parent_account = '7 - Personal Advances - RBA'
                         THEN gle.debit - gle.credit
                         ELSE 0
                     END
@@ -1662,14 +1680,14 @@ def get_data(filters):
                 SUM(
                     CASE
                         WHEN gle.posting_date BETWEEN %(from_date)s AND %(to_date)s
-                            AND acc.parent_account = '10 d - Repayment - RBA'
+                            AND acc.parent_account = '9 c - PW Advances - RBA'
                         THEN gle.debit - gle.credit
                         ELSE 0
                     END
                 ) AS monthly_suspense,
 
-
                 /* ANNUAL PROGRESSIVE */
+
                 SUM(
                     CASE
                         WHEN gle.posting_date BETWEEN fy.year_start_date AND %(to_date)s
@@ -1680,89 +1698,112 @@ def get_data(filters):
                 ) AS annual_amount,
 
                 SUM(
-                    IF(
-                        acc.account_number = '88.01',
-                        gle.debit - gle.credit,
-                        0
-                    )
+                    CASE
+                        WHEN gle.posting_date BETWEEN fy.year_start_date AND %(to_date)s
+                            AND acc.parent_account = '7 - Personal Advances - RBA'
+                        THEN gle.debit - gle.credit
+                        ELSE 0
+                    END
                 ) AS annual_personal_advance,
 
-        
                 SUM(
-                    IF(
-                        acc.account_number IN (
-                            '88.02',
-                            '89.01',
-                            '89.02'
-                        ),
-
-                        gle.debit - gle.credit,
-                        0
-                    )
+                    CASE
+                        WHEN gle.posting_date BETWEEN fy.year_start_date AND %(to_date)s
+                            AND acc.parent_account = '9 c - PW Advances - RBA'
+                        THEN gle.debit - gle.credit
+                        ELSE 0
+                    END
                 ) AS annual_suspense,
-             SUM(
-                CASE
-                    WHEN gle.posting_date BETWEEN %(from_date)s AND %(to_date)s
-                        AND acc.parent_account = '10 a - Current - RBA'
-                    THEN gle.debit - gle.credit
-                    ELSE 0
-                END
-            ) AS current,
-             SUM(
-                CASE
-                    WHEN gle.posting_date BETWEEN %(from_date)s AND %(to_date)s
-                        AND acc.parent_account = '10 b - Capital - RBA'
-                    THEN gle.debit - gle.credit
-                    ELSE 0
-                END
-            ) AS capital,
-            SUM(
-                                CASE
-                                    WHEN gle.posting_date BETWEEN %(from_date)s AND %(to_date)s
-                                        AND acc.parent_account = '10 c - Lending - RBA'
-                                    THEN gle.debit - gle.credit
-                                    ELSE 0
-                                END
-                            ) AS lending,
-            
-                            SUM(
-                                CASE
-                                    WHEN gle.posting_date BETWEEN %(from_date)s AND %(to_date)s
-                                        AND acc.parent_account = '10 d - Repayment - RBA'
-                                    THEN gle.debit - gle.credit
-                                    ELSE 0
-                                END
-                            ) AS repayment
-            
+
+                SUM(
+                    CASE
+                        WHEN gle.posting_date BETWEEN %(from_date)s AND %(to_date)s
+                            AND acc.parent_account = '10 a - Current - RBA'
+                        THEN gle.debit - gle.credit
+                        ELSE 0
+                    END
+                ) AS current,
+
+                SUM(
+                    CASE
+                        WHEN gle.posting_date BETWEEN %(from_date)s AND %(to_date)s
+                            AND acc.parent_account = '10 b - Capital - RBA'
+                        THEN gle.debit - gle.credit
+                        ELSE 0
+                    END
+                ) AS capital,
+
+                SUM(
+                    CASE
+                        WHEN gle.posting_date BETWEEN %(from_date)s AND %(to_date)s
+                            AND acc.parent_account = '10 c - Lending - RBA'
+                        THEN gle.debit - gle.credit
+                        ELSE 0
+                    END
+                ) AS lending,
+
+                SUM(
+                    CASE
+                        WHEN gle.posting_date BETWEEN %(from_date)s AND %(to_date)s
+                            AND acc.parent_account = '10 d - Repayment - RBA'
+                        THEN gle.debit - gle.credit
+                        ELSE 0
+                    END
+                ) AS repayment
 
             FROM `tabGL Entry` gle
+
             INNER JOIN `tabAccount` acc
                 ON acc.name = gle.account
+
             INNER JOIN `tabCost Center` cc
                 ON cc.name = gle.cost_center
+
             INNER JOIN `tabBudget Activity` ba
                 ON ba.name = gle.budget_activity
+
             INNER JOIN `tabBudget Sub Activity` bsa
                 ON bsa.name = gle.budget_sub_activity
-            INNER JOIN `tabSource of Fund` sof
 
+            INNER JOIN `tabSource of Fund` sof
                 ON sof.name = gle.source_of_fund
+
             INNER JOIN `tabFiscal Year` fy
                 ON fy.name = %(fiscal_year)s
-            INNER JOIN `tabBudget` bud
+
+            LEFT JOIN `tabBudget` bud
                 ON bud.company = gle.company
                 AND bud.fiscal_year = gle.fiscal_year
                 AND bud.docstatus = 1
 
-            INNER JOIN `tabBudget Account` ba_acc
+            LEFT JOIN `tabBudget Account` ba_acc
                 ON ba_acc.parent = bud.name
-                AND ba_acc.account = gle.account  
+                AND ba_acc.account = gle.account
                 AND ba_acc.budget_activity = gle.budget_activity
                 AND ba_acc.budget_sub_activity = gle.budget_sub_activity
-                AND ba_acc.source_of_fund = gle.source_of_fund 
-
+                AND ba_acc.source_of_fund = gle.source_of_fund
 
             WHERE {where_clause}
+
+            AND (
+                EXISTS (
+                    SELECT 1
+                    FROM `tabBudget` bud_check
+                    INNER JOIN `tabBudget Account` ba_check
+                        ON ba_check.parent = bud_check.name
+                    WHERE bud_check.company = gle.company
+                        AND bud_check.fiscal_year = gle.fiscal_year
+                        AND bud_check.docstatus = 1
+                        AND ba_check.account = gle.account
+                        AND ba_check.budget_activity = gle.budget_activity
+                        AND ba_check.budget_sub_activity = gle.budget_sub_activity
+                        AND ba_check.source_of_fund = gle.source_of_fund
+                )
+                OR acc.parent_account IN (
+                    '7 - Personal Advances - RBA',
+                    '9 c - PW Advances - RBA'
+                )
+            )
 
             GROUP BY
                 gle.cost_center,
@@ -1770,129 +1811,209 @@ def get_data(filters):
                 gle.budget_sub_activity,
                 gle.source_of_fund,
                 gle.account
+
+    
             """,
             values,
             as_dict=True,
         )
     elif filters.get("company")!="Royal Body Guard":
-        data = frappe.db.sql(
-                f"""
-                SELECT
-                    gle.company AS company,
-                    gle.fiscal_year AS fiscal_year,
-                    gle.cost_center AS sp,
-                    
-                    cc.cost_center_name AS cost_center_name,
-                    cc.cost_center_number AS cost_center_number,
-                    ba.activity_code AS ac,
-                    ba.activity_name AS ac_name,
-                    bsa.name AS sub_activity_code,
-                    bsa.sub_activity_code AS sac,
-                    bsa.sub_activity_name as sub_activity_name,
-                    gle.source_of_fund AS source_of_fund,
-                    sof.fic AS fic,
-                    sof.source_of_fund AS fic_name,
-                    acc.account_number AS obc,
-                    gle.account as names,
-                    ba_acc.budget_amount AS budget_amount,
-    
-                    SUM(
-                        CASE
-                            WHEN gle.posting_date BETWEEN %(from_date)s AND %(to_date)s
-                                AND acc.parent_account = '10 a - Current - RBG'
-                            THEN gle.debit - gle.credit
-                            ELSE 0
-                        END
-                    ) AS monthly_amount,
-    
-                    SUM(
-                        CASE
-                            WHEN gle.posting_date BETWEEN %(from_date)s AND %(to_date)s
-                                AND acc.parent_account = '10 c - Lending - RBG'
-                            THEN gle.debit - gle.credit
-                            ELSE 0
-                        END
-                    ) AS monthly_personal_advance,
-    
-                    SUM(
-                        CASE
-                            WHEN gle.posting_date BETWEEN %(from_date)s AND %(to_date)s
-                                AND acc.parent_account = '10 d - Repayment - RBG'
-                            THEN gle.debit - gle.credit
-                            ELSE 0
-                        END
-                    ) AS monthly_suspense,
-    
-    
-                    /* ANNUAL PROGRESSIVE */
-                    SUM(
-                        CASE
-                            WHEN gle.posting_date BETWEEN fy.year_start_date AND %(to_date)s
-                                AND acc.parent_account = '10 a - Current - RBG'
-                            THEN gle.debit - gle.credit
-                            ELSE 0
-                        END
-                    ) AS annual_amount,
-    
-                    SUM(
-                            IF(
-                                acc.account_number = '88.01',
-                                gle.debit - gle.credit,
-                                0
-                            )
-                        ) AS annual_personal_advance,
-        
-                
-                    SUM(
-                        IF(
-                            acc.account_number IN (
-                                '88.02',
-                                '89.01',
-                                '89.02'
-                            ),
-    
-                            gle.debit - gle.credit,
-                            0
-                        )
-                    ) AS annual_suspense
-    
-                FROM `tabGL Entry` gle
-                INNER JOIN `tabAccount` acc
-                    ON acc.name = gle.account
-                INNER JOIN `tabCost Center` cc
-                    ON cc.name = gle.cost_center
-                INNER JOIN `tabBudget Activity` ba
-                    ON ba.name = gle.budget_activity
-                INNER JOIN `tabBudget Sub Activity` bsa
-                    ON bsa.name = gle.budget_sub_activity
-                INNER JOIN `tabSource of Fund` sof
-    
-                    ON sof.name = gle.source_of_fund
-                INNER JOIN `tabFiscal Year` fy
-                    ON fy.name = %(fiscal_year)s
-                INNER JOIN `tabBudget` bud
-                    ON bud.company = gle.company
-                    AND bud.fiscal_year = gle.fiscal_year
-                    AND bud.docstatus = 1
+       data = frappe.db.sql(
+            f"""
+            SELECT
+                gle.company AS company,
+                gle.fiscal_year AS fiscal_year,
+                gle.cost_center AS sp,
 
-                INNER JOIN `tabBudget Account` ba_acc
-                    ON ba_acc.parent = bud.name
-                    AND ba_acc.account = gle.account 
-                    AND ba_acc.budget_activity = gle.budget_activity
-                    AND ba_acc.budget_sub_activity = gle.budget_sub_activity
-                    AND ba_acc.source_of_fund = gle.source_of_fund 
-                WHERE {where_clause}
-    
-                GROUP BY
-                    gle.cost_center,
-                    gle.budget_activity,
-                    gle.budget_sub_activity,
-                    gle.source_of_fund,
-                    gle.account
-                """,
-                values,
-                as_dict=True,
+                cc.cost_center_name AS cost_center_name,
+                cc.cost_center_number AS cost_center_number,
+
+                ba.activity_code AS ac,
+                ba.activity_name AS ac_name,
+
+                bsa.name AS sub_activity_code,
+                bsa.sub_activity_code AS sac,
+                bsa.sub_activity_name AS sub_activity_name,
+
+                gle.source_of_fund AS source_of_fund,
+                sof.fic AS fic,
+                sof.source_of_fund AS fic_name,
+
+                acc.account_number AS obc,
+                gle.account AS names,
+
+                COALESCE((
+                    SELECT MAX(ba_check.budget_amount)
+                    FROM `tabBudget` bud_check
+                    INNER JOIN `tabBudget Account` ba_check
+                        ON ba_check.parent = bud_check.name
+                    WHERE bud_check.company = gle.company
+                        AND bud_check.fiscal_year = gle.fiscal_year
+                        AND bud_check.docstatus = 1
+                        AND ba_check.account = gle.account
+                        AND ba_check.budget_activity = gle.budget_activity
+                        AND ba_check.budget_sub_activity = gle.budget_sub_activity
+                        AND ba_check.source_of_fund = gle.source_of_fund
+                ), 0) AS budget_amount,
+
+                SUM(
+                    CASE
+                        WHEN gle.posting_date BETWEEN %(from_date)s AND %(to_date)s
+                            AND acc.parent_account = '10 a - Current - RBG'
+                        THEN gle.debit - gle.credit
+                        ELSE 0
+                    END
+                ) AS monthly_amount,
+
+                SUM(
+                    CASE
+                        WHEN gle.posting_date BETWEEN %(from_date)s AND %(to_date)s
+                            AND acc.parent_account = '7 - Personal Advances - RBG'
+                        THEN gle.debit - gle.credit
+                        ELSE 0
+                    END
+                ) AS monthly_personal_advance,
+
+                SUM(
+                    CASE
+                        WHEN gle.posting_date BETWEEN %(from_date)s AND %(to_date)s
+                            AND acc.parent_account = '9 c - PW Advances - RBG'
+                        THEN gle.debit - gle.credit
+                        ELSE 0
+                    END
+                ) AS monthly_suspense,
+
+                /* ANNUAL PROGRESSIVE */
+
+                SUM(
+                    CASE
+                        WHEN gle.posting_date BETWEEN fy.year_start_date AND %(to_date)s
+                            AND acc.parent_account = '10 a - Current - RBG'
+                        THEN gle.debit - gle.credit
+                        ELSE 0
+                    END
+                ) AS annual_amount,
+
+                SUM(
+                    CASE
+                        WHEN gle.posting_date BETWEEN fy.year_start_date AND %(to_date)s
+                            AND acc.parent_account = '7 - Personal Advances - RBG'
+                        THEN gle.debit - gle.credit
+                        ELSE 0
+                    END
+                ) AS annual_personal_advance,
+
+                SUM(
+                    CASE
+                        WHEN gle.posting_date BETWEEN fy.year_start_date AND %(to_date)s
+                            AND acc.parent_account = '9 c - PW Advances - RBG'
+                        THEN gle.debit - gle.credit
+                        ELSE 0
+                    END
+                ) AS annual_suspense,
+
+                SUM(
+                    CASE
+                        WHEN gle.posting_date BETWEEN %(from_date)s AND %(to_date)s
+                            AND acc.parent_account = '10 a - Current - RBG'
+                        THEN gle.debit - gle.credit
+                        ELSE 0
+                    END
+                ) AS current,
+
+                SUM(
+                    CASE
+                        WHEN gle.posting_date BETWEEN %(from_date)s AND %(to_date)s
+                            AND acc.parent_account = '10 b - Capital - RBG'
+                        THEN gle.debit - gle.credit
+                        ELSE 0
+                    END
+                ) AS capital,
+
+                SUM(
+                    CASE
+                        WHEN gle.posting_date BETWEEN %(from_date)s AND %(to_date)s
+                            AND acc.parent_account = '10 c - Lending - RBG'
+                        THEN gle.debit - gle.credit
+                        ELSE 0
+                    END
+                ) AS lending,
+
+                SUM(
+                    CASE
+                        WHEN gle.posting_date BETWEEN %(from_date)s AND %(to_date)s
+                            AND acc.parent_account = '10 d - Repayment - RBG'
+                        THEN gle.debit - gle.credit
+                        ELSE 0
+                    END
+                ) AS repayment
+
+            FROM `tabGL Entry` gle
+
+            INNER JOIN `tabAccount` acc
+                ON acc.name = gle.account
+
+            INNER JOIN `tabCost Center` cc
+                ON cc.name = gle.cost_center
+
+            INNER JOIN `tabBudget Activity` ba
+                ON ba.name = gle.budget_activity
+
+            INNER JOIN `tabBudget Sub Activity` bsa
+                ON bsa.name = gle.budget_sub_activity
+
+            INNER JOIN `tabSource of Fund` sof
+                ON sof.name = gle.source_of_fund
+
+            INNER JOIN `tabFiscal Year` fy
+                ON fy.name = %(fiscal_year)s
+
+            LEFT JOIN `tabBudget` bud
+                ON bud.company = gle.company
+                AND bud.fiscal_year = gle.fiscal_year
+                AND bud.docstatus = 1
+
+            LEFT JOIN `tabBudget Account` ba_acc
+                ON ba_acc.parent = bud.name
+                AND ba_acc.account = gle.account
+                AND ba_acc.budget_activity = gle.budget_activity
+                AND ba_acc.budget_sub_activity = gle.budget_sub_activity
+                AND ba_acc.source_of_fund = gle.source_of_fund
+
+            WHERE {where_clause}
+
+            AND (
+                EXISTS (
+                    SELECT 1
+                    FROM `tabBudget` bud_check
+                    INNER JOIN `tabBudget Account` ba_check
+                        ON ba_check.parent = bud_check.name
+                    WHERE bud_check.company = gle.company
+                        AND bud_check.fiscal_year = gle.fiscal_year
+                        AND bud_check.docstatus = 1
+                        AND ba_check.account = gle.account
+                        AND ba_check.budget_activity = gle.budget_activity
+                        AND ba_check.budget_sub_activity = gle.budget_sub_activity
+                        AND ba_check.source_of_fund = gle.source_of_fund
+                )
+                OR acc.parent_account IN (
+                    '7 - Personal Advances - RBG',
+                    '9 c - PW Advances - RBG'
+                )
             )
+
+            GROUP BY
+                gle.cost_center,
+                gle.budget_activity,
+                gle.budget_sub_activity,
+                gle.source_of_fund,
+                gle.account
+
+    
+            """,
+            values,
+            as_dict=True,
+        )
 
     return data
 
