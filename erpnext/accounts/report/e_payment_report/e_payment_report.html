@@ -4,7 +4,6 @@
             <tr>
                 <th>Transaction</th>
                 <th>Transaction Date</th>
-                <th>Transaction Type</th>
                 <th>Transaction ID</th>
                 <th>Party Type</th>
                 <th>Party</th>
@@ -26,7 +25,6 @@
                 <tr>
                     <td>{%= row.transaction || "" %}</td>
                     <td>{%= row.transaction_date || "" %}</td>
-                    <td>{%= row.transaction_type || "" %}</td>
                     <td>{%= row.transaction_id || "" %}</td>
                     <td>{%= row.party_type || "" %}</td>
                     <td>{%= row.party || "" %}</td>
@@ -34,8 +32,8 @@
                     <td>{%= row.bank_account_no || "" %}</td>
                     <td>{%=row.amount%}</td>
                     <td>{%= row.bank_journal_no || "" %}</td>
-                    <td>{%= row.pi_number || "" %}</td>
-                    <td>{%= row.remarks || "" %}</td>
+                    <td class="pi-number">{%= row.pi_number || "" %}</td>
+                    <td class="wrap-text">{%= row.remarks || "" %}</td>
                     <td>{%= row.status || "" %}</td>
                 </tr>
             {% } %}
@@ -77,6 +75,28 @@
         line-height: 1.35;
         overflow-wrap: anywhere;
     }
+    .custom-table td {
+    font-size: 8.5px;
+    line-height: 1.3;
+    white-space: normal !important;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    vertical-align: top;
+}
+
+/* PI Number: wrap long values onto the next line */
+.custom-table td.pi-number {
+    white-space: normal !important;
+    word-break: break-all;
+    overflow-wrap: anywhere;
+}
+
+/* Remarks and other long text */
+.custom-table td.wrap-text {
+    white-space: normal !important;
+    overflow-wrap: anywhere;
+    word-break: normal;
+}
 
     @media print {
         .custom-table thead {
