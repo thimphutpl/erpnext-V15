@@ -935,7 +935,7 @@ return String(label)
             <th colspan="3" class="section-header"  style="text-align: center !important; vertical-align: middle !important;width: 10% !important;">
                 Expenditure for the Month (Nu.)
             </th>
-            <th rowspan="2" class="section-header">
+            <th rowspan="2" class="section-header" style="text-align: center !important; vertical-align: middle !important; width: 3% !important;"> 
                Current
                Budget 
                (Nu.)
@@ -949,11 +949,11 @@ return String(label)
 
 
         <tr>
-            <th class="section-header" style="width: 3% !important;">SP</th>
-            <th class="section-header" style="width: 3% !important;">AC</th>
-            <th class="section-header"  style="width: 3% !important;">SAC</th>
-            <th class="section-header"  style="width: 3% !important;">FIC</th>
-            <th class="section-header"  style="width: 3% !important;">OBC</th>
+            <th class="section-header" style="width: 5% !important;">SP</th>
+            <th class="section-header" style="width: 5% !important;">AC</th>
+            <th class="section-header"  style="width: 5% !important;">SAC</th>
+            <th class="section-header"  style="width: 5% !important;">FIC</th>
+            <th class="section-header"  style="width: 5% !important;">OBC</th>
 
             <th class="section-header amount-column" >Amount</th>
             <th class="section-header" >Personal Advance</th>
@@ -1414,7 +1414,7 @@ return String(label)
     {% if (show_cost_center) { %}
 
         <tr>
-            <td>{%= cost_center_number %}</td>
+            <td class="code-column">{%= cost_center_number %}</td>
 
             <td></td>
             <td></td>
@@ -1441,7 +1441,7 @@ return String(label)
         <tr>
             <td></td>
 
-            <td>{%= ac %}</td>
+            <td class="code-column">{%= ac %}</td>
 
             <td></td>
             <td></td>
@@ -1467,7 +1467,7 @@ return String(label)
             <td></td>
             <td></td>
 
-            <td>{%= sac %}</td>
+            <td class="code-column">{%= sac %}</td>
 
             <td></td>
 
@@ -1494,7 +1494,7 @@ return String(label)
             <td></td>
             <td></td>
 
-            <td>{%= source_of_fund %}</td>
+            <td class="code-column">{%= source_of_fund %}</td>
 
             <td></td>
 
@@ -1562,7 +1562,7 @@ return String(label)
           
 
             <td>
-                <strong>Total for FIC {%= show_amount(last_fic) %}</strong>
+                <strong>Total for FIC {%= last_fic%}</strong>
             </td>
 
             <td>
@@ -1607,7 +1607,7 @@ return String(label)
               <td></td>
 
             <td>
-                <strong>Total for Activity {%= show_amount(last_ac) %}</strong>
+                <strong>Total for Activity {%= last_ac%}</strong>
             </td>
 
             <td>
@@ -1652,7 +1652,7 @@ return String(label)
 
             <td>
                 <strong>
-                    Total for Sub Programme of {%= show_amount(last_cost_center)  %}
+                    Total for Sub Programme of {%= last_cost_center %}
                 </strong>
             </td>
 
@@ -1770,6 +1770,11 @@ return String(label)
         padding-left: 5px;
         overflow-wrap: break-word;
     }
+    .code-column {
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+    overflow-wrap: normal !important;
+}
 
     /* Amount columns */
     .expenditure-table th:nth-child(n+7),
