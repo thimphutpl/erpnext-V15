@@ -24,13 +24,14 @@
                 %}
                 <tr>
                     <td>{%= row.transaction || "" %}</td>
-                    <td>{%= row.transaction_date || "" %}</td>
+                    <td>{%= row.transaction_date ? frappe.datetime.str_to_user(row.transaction_date).replace(/\//g, "-") : "" %}</td>
+                    
                     <td>{%= row.transaction_id || "" %}</td>
                     <td>{%= row.party_type || "" %}</td>
                     <td>{%= row.party || "" %}</td>
                     <td>{%= row.beneficiary_name || "" %}</td>
                     <td>{%= row.bank_account_no || "" %}</td>
-                    <td>{%=row.amount%}</td>
+                    <td>{%= (parseFloat(row.amount) || 0).toFixed(2) %}</td>
                     <td>{%= row.bank_journal_no || "" %}</td>
                     <td class="pi-number">{%= row.pi_number || "" %}</td>
                     <td class="wrap-text">{%= row.remarks || "" %}</td>
