@@ -62,6 +62,7 @@ class BankPayment(Document):
 		department: DF.Link | None
 		division: DF.Link | None
 		employee: DF.Link | None
+		employee_group: DF.Link | None
 		fiscal_year: DF.Link | None
 		from_date: DF.Date | None
 		institution_name: DF.Link | None
@@ -1300,6 +1301,8 @@ class BankPayment(Document):
 			frappe.throw(_("Please select Fiscal Year"))
 		elif not self.month:
 			frappe.throw(_("Please select Month"))
+		elif not self.employee_group:
+			frappe.throw(_("Please select Employee Group"))
 		month_number = datetime.strptime(self.month, "%B").strftime("%m")
 		
 
@@ -1320,6 +1323,7 @@ class BankPayment(Document):
 						LEFT JOIN `tabBank Branch` fib ON fib.name = e.bank_branch
 					WHERE t1.fiscal_year = '{salary_year}'
 					AND t1.month = '{salary_month}'
+					AND t1.employee_group = '{employee_group}'
 					AND t1.docstatus = 1
 					AND e.salary_mode = 'Bank'
 					{cond}
@@ -1338,6 +1342,7 @@ class BankPayment(Document):
 				salary_year=self.fiscal_year,
 				salary_month=month_number,
 				month=month_number,
+				employee_group=self.employee_group,
 				bank_payment=self.name,
 				cond=cond,
 			),
