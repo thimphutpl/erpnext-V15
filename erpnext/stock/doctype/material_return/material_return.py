@@ -72,17 +72,48 @@ class MaterialReturn(StockController):
 		self.make_sl_entries(sl_entries, self.amended_from and 'Yes' or 'No')
 	
 	def make_gl_entry(self):
+		self.make_gl_entries(gl_entries=self._get_material_return_gl_entries())
+
+	def make_gl_entries(self, gl_entries=None, from_repost=False, via_landed_cost_voucher=False):
+		if gl_entries is None:
+			gl_entries = self.get_gl_entries()
+		if gl_entries:
+			make_gl_entries(
+				gl_entries,
+				cancel=(self.docstatus == 2),
+				update_outstanding="No",
+				merge_entries=False,
+				from_repost=from_repost,
+			)
+
+	def get_gl_entries(self, warehouse_account=None, default_expense_account=None, default_cost_center=None):
+		# Reposting calls this method directly, without running validate_details.
+		# Keep the project and warehouse cost centers and the adjustment entries.
+		return self._get_material_return_gl_entries(self.get_stock_ledger_details(), warehouse_account)
+
+	def _get_material_return_gl_entries(self, sle_map=None, warehouse_account=None):
 		gl_entries = []
 
 		for a in self.items:
+			amount = flt(a.amount)
+			if sle_map is not None:
+				if not sle_map.get(a.name):
+					continue
+				amount = flt(
+					sum(flt(sle.stock_value_difference) for sle in sle_map[a.name]),
+					self.get_debit_field_precision(),
+				)
 			inter_company_account = frappe.db.get_value("Company", self.company, "inter_company_account")
 			if not inter_company_account:
 				frappe.throw("Please set Default adjustment Account in Company {}".format(self.company))
 			if not a.expense_account:
 				frappe.throw("Expense Account is mandatory for Item {}".format(a.item_name))
-			wh_account = frappe.db.get_value("Warehouse", a.warehouse, "account")
+			if warehouse_account is not None:
+				wh_account = (warehouse_account.get(a.warehouse) or {}).get("account")
+			else:
+				wh_account = frappe.db.get_value("Warehouse", a.warehouse, "account")
 			if not wh_account:
-				frappe.throw(str(self.warehouse) + " Please set Account for warehouse.")
+				frappe.throw(str(a.warehouse) + " Please set Account for warehouse.")
 
 			expense_account = a.expense_account
 			if not expense_account:
@@ -93,8 +124,8 @@ class MaterialReturn(StockController):
 			
 			gl_entries.append(
 				prepare_gl(self, {"account": expense_account,
-						"credit": flt(a.amount),
-						"credit_in_account_currency": flt(a.amount),
+						"credit": amount,
+						"credit_in_account_currency": amount,
 						"cost_center": a.project_cost_center,
 						"remarks": a.remarks,
 						"project": expense_project
@@ -102,8 +133,8 @@ class MaterialReturn(StockController):
 				)
 			gl_entries.append(
 			prepare_gl(self, {"account": inter_company_account,
-					"debit": flt(a.amount),
-					"debit_in_account_currency": flt(a.amount),
+					"debit": amount,
+					"debit_in_account_currency": amount,
 					"cost_center": a.project_cost_center,
 					"remarks": a.remarks,
 					"project": expense_project
@@ -111,21 +142,20 @@ class MaterialReturn(StockController):
 			)
 			gl_entries.append(
 				prepare_gl(self, {"account": wh_account,
-						"debit": flt(a.amount),
-						"debit_in_account_currency": flt(a.amount),
+						"debit": amount,
+						"debit_in_account_currency": amount,
 						"cost_center": self.cost_center,
 						"remarks": a.remarks
 					})
 				)
 			gl_entries.append(
 				prepare_gl(self, {"account": inter_company_account,
-						"credit": flt(a.amount),
-						"credit_in_account_currency": flt(a.amount),
+						"credit": amount,
+						"credit_in_account_currency": amount,
 						"cost_center": self.cost_center,
 						"remarks": a.remarks
 						})
 				)
 
-		if gl_entries:
-			make_gl_entries(gl_entries, cancel=(self.docstatus == 2), update_outstanding="No", merge_entries=False)
+		return gl_entries
 
