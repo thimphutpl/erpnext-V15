@@ -7,6 +7,15 @@ cur_frm.add_fetch("paid_from", "bank_branch", "bank_branch");
 cur_frm.add_fetch("paid_from", "bank_account_type", "bank_account_type");	
 cur_frm.add_fetch("paid_from", "bank_account_no", "bank_account_no");
 frappe.ui.form.on("Bank Payment", {
+    setup: function(frm) {
+        frm.set_query("employee_group", function() {
+            return {
+                filters: {
+                    company: frm.doc.company
+                }
+            };
+        });
+    },
 	onload: function(frm){
 		enable_disable(frm);
 		create_custom_buttons(frm);
@@ -33,7 +42,8 @@ frappe.ui.form.on("Bank Payment", {
 			return {
 				"filters": {
 					"docstatus": 1,
-					"branch": cur_frm.doc.branch
+					"mode_of_payment": "Wire Transfer",
+					"branch": cur_frm.doc.branch,
 				}
 			};
 		});

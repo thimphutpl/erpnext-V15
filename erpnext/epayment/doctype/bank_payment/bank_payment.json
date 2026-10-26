@@ -9,6 +9,7 @@
   "company",
   "branch",
   "transaction_type",
+  "employee_group",
   "transaction_no",
   "institution_name",
   "fiscal_year",
@@ -334,11 +335,19 @@
    "fieldname": "approver",
    "fieldtype": "Data",
    "label": "Approver"
+  },
+  {
+   "depends_on": "eval:doc.transaction_type==\"Salary\"",
+   "fieldname": "employee_group",
+   "fieldtype": "Link",
+   "label": "Employee Group",
+   "mandatory_depends_on": "eval:doc.transaction_type==\"Salary\"",
+   "options": "Employee Group"
   }
  ],
  "is_submittable": 1,
  "links": [],
- "modified": "2026-08-21 12:29:59.300252",
+ "modified": "2026-10-26 12:08:58.417431",
  "modified_by": "Administrator",
  "module": "ePayment",
  "name": "Bank Payment",
