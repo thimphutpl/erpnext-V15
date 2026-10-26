@@ -23,7 +23,7 @@ def get_column():
 		},
 		{
 			"label": _("Transaction"),
-			"fieldname": "name",
+			"fieldname": "transaction",
 			"fieldtype": "Link",
 			"options": "Bank Payment",
 			"width": 100
@@ -37,7 +37,8 @@ def get_column():
 		{
 			"label": _("Transaction ID"),
 			"fieldname": "transaction_id",
-			"fieldtype": "Data",
+			"fieldtype": "Link",
+			"options": "Journal Entry",
 			"width": 150
 		},
 		{
