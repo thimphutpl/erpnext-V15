@@ -1153,14 +1153,14 @@ return String(label)
             <td>
                 <strong>{%= show_amount(fic_current) %}</strong>
             </td>
-            <td></td>
-            <td></td>
+            <td><strong>{%=show_amount(fic_monthly_personal_advance)%}</strong></td>
+            <td><strong>{%=show_amount(fic_monthly_suspense)%}</strong></td>
             <td></td>
             <td>
                 <strong>{%= show_amount(fic_annual_current)%}</strong>
             </td>
-            <td></td>
-            <td></td>
+            <td><strong>{%=show_amount(fic_annual_personal_advance)%}</strong></td>
+            <td><strong>{%=show_amount(fic_annual_suspense)%}</strong></td>
         </tr>
 
         {% } 
@@ -1731,11 +1731,11 @@ return String(label)
         <td></td>
         <td>Grand Total Current</td>
         <td>{%= show_amount(current_grand_total)%}</td>
-        <td></td>
-        <td></td>
+        <td>{%=show_amount(grand_pa_total)%}</td>
+        <td>{%=show_amount(grand_suspense_total)%}</td>
         <td>{%= show_amount(annual_current_grand_total) %}</td>
-        <td></td>
-        <td></td>
+        <td>{%= show_amount (grand_annual_pa_total) %}</td>
+        <td>{%= show_amount (grand_annual_suspense_total)%}</td>
         <td></td>
     </tr>
      <tr style="font-weight:bold;background:#c8c8c8">

@@ -1,4 +1,14 @@
 <div class="outstanding-advance-print">
+     {%
+        function format_amount(value) {
+            var amount = flt(value || 0);
+
+            return amount.toLocaleString("en-US", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+    %}
 
     <div class="report-header">
         <div class="header-left">
@@ -128,13 +138,13 @@
             <td >{%= row.fi_code || "" %}</td>
 
             <td class="amount">
-                {%= format_currency(row.opening_balance || 0) %}
+                {%= format_amount(row.opening_balance || 0) %}
             </td>
             <td class="amount">
-                {%= format_currency(row.settlement_amount || 0) %}
+                {%= format_amount(row.settlement_amount || 0) %}
             </td>
             <td class="amount">
-                {%= format_currency(row.total_outstanding || 0) %}
+                {%= format_amount(row.total_outstanding || 0) %}
             </td>
         </tr>
     {% endfor %}
@@ -156,15 +166,15 @@
     </td>
 
     <td class="amount">
-        {%= format_currency(grand_opening) %}
+        {%= format_amount(grand_opening) %}
     </td>
 
     <td class="amount">
-        {%= format_currency(grand_settlement) %}
+        {%= format_amount(grand_settlement) %}
     </td>
 
     <td class="amount">
-        {%= format_currency(grand_outstanding) %}
+        {%= format_amount(grand_outstanding) %}
     </td>
 </tr>
 </tbody>
