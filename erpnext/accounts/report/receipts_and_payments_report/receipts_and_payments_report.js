@@ -28,28 +28,40 @@ frappe.query_reports["Receipts and Payments Report"] = {
 				query_report.refresh();
 			}
 		},
-		{
-			"fieldname": "month",
-			"label": __("Month"),
-			"fieldtype": "Select",
-            "options": "January\nFebruary\nMarch\nApril\nMay\nJune\nJuly\nAugust\nSeptember\nOctober\nNovember\nDecember",
+		// {
+		// 	"fieldname": "month",
+		// 	"label": __("Month"),
+		// 	"fieldtype": "Select",
+        //     "options": "January\nFebruary\nMarch\nApril\nMay\nJune\nJuly\nAugust\nSeptember\nOctober\nNovember\nDecember",
 
-            "default": [
-                "January",
-                "February",
-                "March",
-                "April",
-                "May",
-                "June",
-                "July",
-                "August",
-                "September",
-                "October",
-                "November",
-                "December"
-            ][frappe.datetime.str_to_obj(frappe.datetime.get_today()).getMonth()],
-			"reqd": 1
-		},
+        //     "default": [
+        //         "January",
+        //         "February",
+        //         "March",
+        //         "April",
+        //         "May",
+        //         "June",
+        //         "July",
+        //         "August",
+        //         "September",
+        //         "October",
+        //         "November",
+        //         "December"
+        //     ][frappe.datetime.str_to_obj(frappe.datetime.get_today()).getMonth()],
+		// 	"reqd": 1
+		// },
+        {
+            "fieldname":"from_date",
+            "label":"From Date",
+            "fieldtype":"Date",
+            "default": frappe.datetime.month_start(),
+        },
+        {
+            "fieldname":"to_date",
+            "label":"To Date",
+            "fieldtype":"Date",
+            "default": frappe.datetime.month_end(),
+        },
 		{
 			"fieldname": "cost_center",
 			"label": __("Cost Center"),

@@ -1846,7 +1846,7 @@
 
 import frappe
 from frappe import _
-from frappe.utils import flt
+from frappe.utils import flt,getdate
 
 
 def execute(filters=None):
@@ -1860,7 +1860,7 @@ def execute(filters=None):
 
 
 def validate_filters(filters):
-    for field in ("company", "fiscal_year", "month"):
+    for field in ("company", "fiscal_year"):
         if not filters.get(field):
             frappe.throw(
                 _("Please select {0}").format(
@@ -1873,31 +1873,12 @@ def validate_filters(filters):
 
     if not frappe.db.exists("Fiscal Year", filters.fiscal_year):
         frappe.throw(_("Invalid Fiscal Year"))
-
-    month_map = {
-        "January": 1,
-        "February": 2,
-        "March": 3,
-        "April": 4,
-        "May": 5,
-        "June": 6,
-        "July": 7,
-        "August": 8,
-        "September": 9,
-        "October": 10,
-        "November": 11,
-        "December": 12,
-    }
-
-    filters.month_number = month_map.get(filters.month)
-
-    if not filters.month_number:
-        frappe.throw(_("Please select a valid month"))
-
+    
+  
     # Fiscal year runs from July through June.
-    filters.progressive_month = (
-        (filters.month_number - 7) % 12
-    ) + 1
+    # filters.progressive_month = (
+    #     (filters.month_number - 7) % 12
+    # ) + 1
 
 
 def get_columns():
@@ -1938,10 +1919,8 @@ def get_columns():
 def get_data(filters):
     conditions = [
         "gle.company = %(company)s",
-        "gle.fiscal_year = %(fiscal_year)s",
         "gle.is_cancelled = 0",
         "acc.company = %(company)s",
-        "COALESCE(gle.is_opening, '') != 'Yes'",
         "COALESCE(gle.voucher_type, '') != 'Period Closing Voucher'",
     ]
 
@@ -1978,7 +1957,8 @@ def get_data(filters):
 
             SUM(
                 CASE
-                    WHEN MONTH(gle.posting_date) = %(month_number)s
+                    WHEN gle.posting_date BETWEEN %(from_date)s AND %(to_date)s
+                        AND gle.fiscal_year = %(fiscal_year)s
                     THEN gle.credit
                     ELSE 0
                 END
@@ -1986,9 +1966,8 @@ def get_data(filters):
 
             SUM(
                 CASE
-                    WHEN 
-                        gle.fiscal_year = %(fiscal_year)s 
-                    
+                    WHEN gle.posting_date <= %(to_date)s
+                        AND gle.fiscal_year = %(fiscal_year)s
                     THEN gle.credit
                     ELSE 0
                 END
@@ -1996,7 +1975,8 @@ def get_data(filters):
 
             SUM(
                 CASE
-                    WHEN MONTH(gle.posting_date) = %(month_number)s
+                    WHEN gle.posting_date BETWEEN %(from_date)s AND %(to_date)s
+                        AND gle.fiscal_year = %(fiscal_year)s
                     THEN gle.debit
                     ELSE 0
                 END
@@ -2005,14 +1985,15 @@ def get_data(filters):
             SUM(
                 CASE
                     WHEN  
-                        gle.fiscal_year = %(fiscal_year)s 
+                        gle.posting_date <= %(to_date)s 
+
+                        AND gle.fiscal_year = %(fiscal_year)s
                     THEN gle.debit
                     ELSE 0
                 END
             ) AS anually_debit
 
         FROM `tabGL Entry` gle
-
         INNER JOIN `tabAccount` acc
             ON acc.name = gle.account
 
@@ -2229,16 +2210,17 @@ def get_data(filters):
             f"""
             SELECT
                 account,
-                MONTH(posting_date) AS opening_month,
+                posting_date AS opening_month,
                 SUM(debit) AS debit,
                 SUM(credit) AS credit
             FROM `tabGL Entry`
             WHERE {" AND ".join(opening_conditions)}
-            GROUP BY account, MONTH(posting_date)
+            GROUP BY account,posting_date
             """,
             opening_params,
             as_dict=True,
         )
+        # frappe.throw(str(opening_rows))
 
         opening_map = {}
 
@@ -2266,9 +2248,18 @@ def get_data(filters):
             )
 
             # Net debit opening balance displayed as a receipt.
-            annual_receipt = max(
-                total_debit - total_credit,
-                0.0,
+            # annual_receipt = max(
+            #     total_debit - total_credit,
+            #     0.0,
+            # )
+
+            annual_receipt = sum(
+                max(
+                    flt(row.debit) - flt(row.credit),
+                    0.0,
+                )
+                for row in rows
+                if getdate(row.opening_month) <= getdate(filters.to_date)
             )
 
             # Monthly receipt appears only in the selected
@@ -2279,8 +2270,14 @@ def get_data(filters):
                     0.0,
                 )
                 for row in rows
-                if row.opening_month == filters.month_number
+                if (
+                    getdate(filters.from_date)
+                    <= getdate(row.opening_month)
+                    <= getdate(filters.to_date)
+                )
             )
+
+            
 
             parent_annual_receipt += annual_receipt
             parent_monthly_receipt += monthly_receipt
