@@ -70,7 +70,7 @@ class AdvanceSettlement(Document):
 		posting_date: DF.Date | None
 		total_amount: DF.Currency
 	def validate(self):
-		self.calculate_advance_balance()
+	
 		self.calculate_tds()
 		self.calculate_retention()
 		self.calculate_net_amount()
@@ -101,8 +101,7 @@ class AdvanceSettlement(Document):
 	
 		
 	def on_submit(self):
-
-
+		self.calculate_advance_balance()
 		if self.is_running_bill:
 			self.post_journal_entry()
 			self.make_mobilisation_entry()
@@ -113,6 +112,7 @@ class AdvanceSettlement(Document):
 
 			advance_amount = flt(item.advance_amount)
 			allocated_amount = flt(item.allocated_amount)
+			total_amount = flt(item.total_amount)
 
 			if allocated_amount > advance_amount:
 				frappe.throw(
@@ -121,8 +121,9 @@ class AdvanceSettlement(Document):
 					)
 				)
 
-			item.total_amount = advance_amount
-			item.balance_amount = advance_amount - allocated_amount
+			item.total_amount = item.total_amount - allocated_amount
+			item.balance_amount = total_amount - allocated_amount
+			# item.balance_amount = item.total_amount - allocated_amount
 	def get_expense_amount(self):
 		total = 0
 
