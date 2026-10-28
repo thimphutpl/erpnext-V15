@@ -18,7 +18,9 @@ class TDSReceiptEntry(Document):
 		branch: DF.Link | None
 		cheque_date: DF.Date | None
 		cheque_no: DF.Data | None
+		company: DF.Link | None
 		cost_center: DF.Link | None
+		employee_group: DF.Link | None
 		fiscal_year: DF.Data | None
 		invoice_no: DF.Data | None
 		invoice_type: DF.Data | None

@@ -15,6 +15,23 @@ frappe.ui.form.on('TDS Receipt Update', {
 			};
 		});
 	},
+    setup: function (frm) {
+        frm.set_query("employee_group","employee_group",function() {
+            return {
+                filters: {
+                    "company": frm.doc.company
+                },
+            };
+        });
+        frm.set_query("branch",function() {
+            return {
+                filters: {
+                    "company": frm.doc.company
+                },
+            };
+            
+        })
+    },
 
 	purpose:function(frm){
 		if (frm.doc.docstatus == 0 && in_list(["Other Invoice","Leave Encashment","Overtime"], frm.doc.purpose)){

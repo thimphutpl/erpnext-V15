@@ -6,6 +6,7 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "company",
   "purpose",
   "posting_date",
   "fiscal_year",
@@ -23,7 +24,8 @@
   "cheque_date",
   "tds_receipt_update",
   "tds_remittance",
-  "region"
+  "region",
+  "employee_group"
  ],
  "fields": [
   {
@@ -135,11 +137,23 @@
    "fieldname": "region",
    "fieldtype": "Data",
    "label": "Region"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company"
+  },
+  {
+   "fieldname": "employee_group",
+   "fieldtype": "Link",
+   "label": "Employee Group",
+   "options": "Employee Group"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-21 11:46:56.096649",
+ "modified": "2026-10-28 14:35:40.909050",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "TDS Receipt Entry",

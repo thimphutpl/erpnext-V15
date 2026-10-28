@@ -16,6 +16,7 @@ class TDSReceiptUpdate(Document):
 	if TYPE_CHECKING:
 		from erpnext.accounts.doctype.tds_remittance_item.tds_remittance_item import TDSRemittanceItem
 		from frappe.types import DF
+		from hrms.hr.doctype.tds_employee_group.tds_employee_group import TDSEmployeeGroup
 
 		amended_from: DF.Link | None
 		branch: DF.Link
@@ -23,6 +24,7 @@ class TDSReceiptUpdate(Document):
 		cheque_no: DF.Data
 		company: DF.Link
 		cost_center: DF.Link | None
+		employee_group: DF.Table[TDSEmployeeGroup]
 		fiscal_year: DF.Link | None
 		from_date: DF.Date | None
 		items: DF.Table[TDSRemittanceItem]
@@ -37,6 +39,7 @@ class TDSReceiptUpdate(Document):
 		total_bill_amount: DF.Currency
 		total_tax_amount: DF.Currency
 	# end: auto-generated types
+
 	
 	def validate(self):
 		self.calculate_total()
@@ -82,13 +85,18 @@ class TDSReceiptUpdate(Document):
 
 	def get_entries(self):
 		entries = []
+		employee_groups = self.get("employee_group") or []
+	
 		if self.purpose in ["Employee Salary","PBVA","Bonus"]:
-			name = make_autoname('TDSRE.YYYY.MM.#######')
-			entries.append((name, str(today()), self.branch, self.cost_center, 
-				self.purpose, self.fiscal_year, self.month or "", self.pbva or "" if self.purpose == "PBVA" else "", "", 
-				"", "", "", 
-				self.tds_receipt_date, self.tds_receipt_number, self.cheque_no, self.cheque_date,
-				self.name, "", 0, 0, frappe.session.user, str(get_datetime()), str(get_datetime()), frappe.session.user))
+			for group in employee_groups:
+				name = make_autoname('TDSRE.YYYY.MM.#######')
+				entries.append((name, str(today()), self.branch, self.cost_center, 
+					self.purpose, self.fiscal_year, self.month or "", self.pbva or "" if self.purpose == "PBVA" else "", "", 
+					"", "", "", 
+					group.employee_group,
+					self.tds_receipt_date, self.tds_receipt_number, self.cheque_no, self.cheque_date,
+					self.name, "", 0, 0, frappe.session.user, str(get_datetime()), str(get_datetime()), frappe.session.user))
+
 		else:
 			for d in self.items:
 				name = make_autoname('TDSRE.YYYY.MM.#######')
@@ -110,17 +118,20 @@ class TDSReceiptUpdate(Document):
 
 	def make_tds_receipt_entries(self):
 		entries = self.get_entries()
+		# frappe.throw(str(entries))
+		
 		if len(entries):
 			entries = ', '.join(map(str, entries))
-			query = """INSERT INTO `tabTDS Receipt Entry`(name, posting_date, branch, cost_center, 
-				purpose, fiscal_year, month, pbva, region,  
-				invoice_type, invoice_no, bill_no,
-				receipt_date, receipt_number, cheque_no, cheque_date, 
-				tds_receipt_update, tds_remittance, idx, docstatus, owner, creation, modified, modified_by)
-				VALUES {}""".format(entries)
+			# frappe.throw(str(entries))
+			# query = """INSERT INTO `tabTDS Receipt Entry`( name, posting_date, branch, cost_center, 
+			# 	purpose, fiscal_year, month, pbva, region,  
+			# 	invoice_type, invoice_no, bill_no,employee_group,
+			# 	receipt_date, receipt_number, cheque_no, cheque_date, 
+			# 	tds_receipt_update, tds_remittance, idx, docstatus, owner, creation, modified, modified_by)
+			# 	VALUES {}""".format(entries)
 			frappe.db.sql("""INSERT INTO `tabTDS Receipt Entry`(name, posting_date, branch, cost_center, 
 				purpose, fiscal_year, month, pbva, region,  
-				invoice_type, invoice_no, bill_no, 
+				invoice_type, invoice_no, bill_no, employee_group,
 				receipt_date, receipt_number, cheque_no, cheque_date, 
 				tds_receipt_update, tds_remittance, idx, docstatus, owner, creation, modified, modified_by)
 				VALUES {}""".format(entries))

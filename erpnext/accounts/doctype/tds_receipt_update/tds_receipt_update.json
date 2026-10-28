@@ -16,6 +16,8 @@
   "fiscal_year",
   "month",
   "pbva",
+  "section_break_beyf",
+  "employee_group",
   "sb_filters",
   "from_date",
   "cb_9",
@@ -217,12 +219,24 @@
    "label": "Company",
    "options": "Company",
    "reqd": 1
+  },
+  {
+   "fieldname": "section_break_beyf",
+   "fieldtype": "Section Break"
+  },
+  {
+   "depends_on": "eval:doc.purpose==\"Employee Salary\"",
+   "fieldname": "employee_group",
+   "fieldtype": "Table",
+   "label": "Employee Group",
+   "mandatory_depends_on": "eval:doc.purpose==\"Employee Salary\"",
+   "options": "TDS Employee Group"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-12-02 23:12:53.852014",
+ "modified": "2026-10-28 14:49:42.283255",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "TDS Receipt Update",
