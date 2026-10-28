@@ -60,6 +60,7 @@
                 <th style="width: 13%;white-space: nowrap;">Activity Code</th>
                 <th style="width: 5%;white-space: nowrap;">FI Code</th>
                 <th>Opening Balance</th>
+                <th>Advance Amount</th>
                 <th>Settlement Amount</th>
                 <th>Total Outstanding</th>
             </tr>
@@ -141,6 +142,9 @@
                 {%= format_amount(row.opening_balance || 0) %}
             </td>
             <td class="amount">
+                {%= format_amount(row.advance_amount || 0) %}
+            </td>
+            <td class="amount">
                 {%= format_amount(row.settlement_amount || 0) %}
             </td>
             <td class="amount">
@@ -150,13 +154,16 @@
     {% endfor %}
     {% 
     var grand_opening = 0;
+    var grand_advance =0;
     var grand_settlement = 0;
     var grand_outstanding = 0;
 
     data.forEach(function(row) {
         grand_opening += flt(row.opening_balance);
+        grand_advance += flt(row.advance_amount);
         grand_settlement += flt(row.settlement_amount);
         grand_outstanding += flt(row.total_outstanding);
+
     });
 %}
 
@@ -167,6 +174,10 @@
 
     <td class="amount">
         {%= format_amount(grand_opening) %}
+    </td>
+
+    <td class="amount">
+        {%= format_amount(grand_advance) %}
     </td>
 
     <td class="amount">
@@ -265,14 +276,14 @@
         overflow-wrap: anywhere;
     }
 
-    .custom-table th:nth-child(1) { width: 17%; }
+    /* .custom-table th:nth-child(1) { width: 17%; }
     .custom-table th:nth-child(2) { width: 10%; }
     .custom-table th:nth-child(3) { width: 19%; }
     .custom-table th:nth-child(4),
     .custom-table th:nth-child(5) { width: 9%; }
     .custom-table th:nth-child(6),
     .custom-table th:nth-child(7),
-    .custom-table th:nth-child(8) { width: 12%; }
+    .custom-table th:nth-child(8) { width: 12%; } */
 
     .text-center {
         text-align: center;
