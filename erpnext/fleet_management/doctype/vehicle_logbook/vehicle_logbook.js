@@ -176,13 +176,14 @@ frappe.ui.form.on('Vehicle Logbook', {
 					branch: frm.doc.branch
 				},
 				callback: function (response) {
-					if (response.message) {
+					if (response.message && response.message.length > 0) {
 						let data = response.message;
 
 						// Process and display the fetched data
 						frappe.msgprint({
 							title: __('Fetched Equipment Data'),
-							message: `<pre>${JSON.stringify(data, null, 4)}</pre>`,
+							message: `<pre>${frappe.utils.escape_html(
+								JSON.stringify(data[0], null, 4))}</pre>`,
 							indicator: 'green'
 						});
 

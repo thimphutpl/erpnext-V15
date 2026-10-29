@@ -62,8 +62,7 @@
    "fieldname": "system_balance",
    "fieldtype": "Float",
    "in_list_view": 1,
-   "label": "System Balance as of Date",
-   "reqd": 1
+   "label": "System Balance as of Date"
   },
   {
    "fetch_from": "equipment.engine_number",
@@ -85,7 +84,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-04-10 12:52:43.123317",
+ "modified": "2026-10-20 19:50:26.889167",
  "modified_by": "Administrator",
  "module": "Fleet Management",
  "name": "HSD Adjustment Item",

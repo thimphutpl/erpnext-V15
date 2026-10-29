@@ -7,7 +7,7 @@ import frappe
 from frappe.model.document import Document
 from frappe.utils import flt, cint, getdate, add_days, get_datetime
 from erpnext.custom_utils import check_uncancelled_linked_doc, check_future_date
-from erpnext.fleet_management.report.hsd_consumption_report.fleet_management_report import get_pol_tills, get_pol_consumed_tills
+from erpnext.fleet_management.report.hsd_consumption_report.fleet_management_report import get_pol_tills, get_pol_consumed_tills,get_pol_consumed_tills_op
 
 
 class VehicleLogbook(Document):
@@ -58,6 +58,7 @@ class VehicleLogbook(Document):
 		pool_equipment: DF.Link | None
 		pool_equipment_number: DF.Data | None
 		posting_date: DF.Date
+		posting_time: DF.Time | None
 		rate_type: DF.Data | None
 		reason: DF.Data | None
 		registration_number: DF.Data | None
@@ -491,65 +492,468 @@ def get_opening(equipment, from_date, to_date, pol_type):
 	return result
 
 
-@frappe.whitelist()
-def get_equipment_data(equipment_name,all_equipment=0, branch=None,to_date=None):
-	data = []
+# @frappe.whitelist()
+# def get_equipment_data(equipment_name,all_equipment=0, branch=None,to_date=None):
+# 	data = []
 
-	query = """
-		SELECT e.name, e.branch, e.registration_number, e.hsd_type, e.equipment_type
-		FROM `tabEquipment` e
-		JOIN `tabEquipment Type` et ON e.equipment_type = et.name
-	"""
+# 	query = """
+# 		SELECT e.name, e.branch, e.registration_number, e.hsd_type, e.equipment_type
+# 		FROM `tabEquipment` e
+# 		JOIN `tabEquipment Type` et ON e.equipment_type = et.name
+# 	"""
 
-	if not all_equipment:
-		query += " WHERE et.is_container = 1"
-	else:
-		query += " WHERE 1=1"
+# 	if not all_equipment:
+# 		query += " WHERE et.is_container = 1"
+# 	else:
+# 		query += " WHERE 1=1"
 	
-	if branch:
-		query += " AND e.branch = %(branch)s"
-	if equipment_name:
-		query += " AND e.name = %(equipment_name)s"
+# 	if branch:
+# 		query += " AND e.branch = %(branch)s"
+# 	if equipment_name:
+# 		query += " AND e.name = %(equipment_name)s"
 	
-	query += " ORDER BY e.branch"
+# 	query += " ORDER BY e.branch"
 	
-	items = frappe.db.sql("""
-		SELECT item_code, item_name, stock_uom 
-		FROM `tabItem`
-		WHERE is_hsd_item = 1 AND disabled = 0
-	""", as_dict=True)
+# 	items = frappe.db.sql("""
+# 		SELECT item_code, item_name, stock_uom 
+# 		FROM `tabItem`
+# 		WHERE is_hsd_item = 1 AND disabled = 0
+# 	""", as_dict=True)
 	
-	equipment_details = frappe.db.sql(query, {
-		'branch': branch,
-		'equipment_name': equipment_name
+# 	equipment_details = frappe.db.sql(query, {
+# 		'branch': branch,
+# 		'equipment_name': equipment_name
 		
-	}, as_dict=True)
+# 	}, as_dict=True)
 	
-	for eq in equipment_details:
-		for item in items:
-			received = issued = 0
+# 	for eq in equipment_details:
+# 		for item in items:
+# 			received = consumed = 0
 
-			if all_equipment:
-				if eq.hsd_type == item.item_code:
-					received = get_pol_tills("Receive", eq.name, item.item_code,to_date )
-					issued = get_pol_consumed_tills(eq.name)
-			else:
-				received = get_pol_tills("Stock", eq.name, item.item_code)
-				issued = get_pol_tills("Issue", eq.name, item.item_code)
+# 			if all_equipment:
+# 				if eq.hsd_type == item.item_code:
+# 					received = get_pol_tills("Receive", eq.name, item.item_code,to_date )
+# 					consumed = get_pol_consumed_tills(eq.name)
+# 			else:
+# 				received = get_pol_tills("Stock", eq.name, item.item_code)
+# 				consumed = get_pol_tills("Issue", eq.name, item.item_code)
 						
 			
-			if received or issued:
-				data.append({
-					'received': received,
-					'issued': issued,
-					'balance': flt(received) - flt(issued)
-				})
+# 			if received or consumed:
+# 				data.append({
+# 					'received': received,
+# 					'consumed': consumed,
+# 					'balance': flt(received) - flt(consumed)
+# 				})
 
-			# if received or issued:
-			# 		row = [received, issued, flt(received) - flt(issued)]
-			# 		data.append(row)	
+# 			# if received or issued:
+# 			# 		row = [received, issued, flt(received) - flt(issued)]
+# 			# 		data.append(row)	
 	
-	return data
+# 	return data
+
+
+# @frappe.whitelist()
+# def get_equipment_data(equipment_name, all_equipment=0, branch=None, to_date=None):
+#     data = []
+
+#     query = """
+#         SELECT
+#             e.name,
+#             e.branch,
+#             e.registration_number,
+#             e.hsd_type,
+#             e.equipment_type
+#         FROM `tabEquipment` e
+#         JOIN `tabEquipment Type` et ON e.equipment_type = et.name
+#     """
+
+#     if not all_equipment:
+#         query += " WHERE et.is_container = 1"
+#     else:
+#         query += " WHERE 1 = 1"
+
+#     if branch:
+#         query += " AND e.branch = %(branch)s"
+
+#     if equipment_name:
+#         query += " AND e.name = %(equipment_name)s"
+
+#     query += " ORDER BY e.branch"
+
+#     equipment_details = frappe.db.sql(
+#         query,
+#         {
+#             "branch": branch,
+#             "equipment_name": equipment_name,
+#         },
+#         as_dict=True,
+#     )
+
+#     items = frappe.db.sql(
+#         """
+#         SELECT item_code, item_name, stock_uom
+#         FROM `tabItem`
+#         WHERE is_hsd_item = 1 AND disabled = 0
+#         """,
+#         as_dict=True,
+#     )
+
+#     for eq in equipment_details:
+#         for item in items:
+#             received = 0
+#             consumed = 0
+#             opening_qty = 0
+
+#             if all_equipment and eq.hsd_type == item.item_code:
+#                 # Find the latest submitted opening entry for this equipment
+#                 # and fuel type.
+#                 opening_conditions = """
+#                     SELECT name, qty, posting_date, posting_time
+#                     FROM `tabPOL Entry`
+#                     WHERE docstatus = 1
+#                       AND is_opening = 1
+#                       AND equipment = %s
+#                       AND pol_type = %s
+#                 """
+#                 opening_values = [eq.name, item.item_code]
+
+#                 if to_date:
+#                     opening_conditions += " AND posting_date <= %s"
+#                     opening_values.append(to_date)
+
+#                 opening_conditions += """
+#                     ORDER BY posting_date DESC, posting_time DESC, creation DESC
+#                     LIMIT 1
+#                 """
+
+#                 opening = frappe.db.sql(
+#                     opening_conditions,
+#                     tuple(opening_values),
+#                     as_dict=True,
+#                 )
+
+#                 if opening:
+#                     opening_entry = opening[0]
+#                     opening_qty = flt(opening_entry.qty)
+
+#                     # Include only receipts after the opening entry.
+#                     receipt_conditions = """
+#                         SELECT COALESCE(SUM(qty), 0) AS qty
+#                         FROM `tabPOL Entry`
+#                         WHERE docstatus = 1
+#                           AND equipment = %s
+#                           AND pol_type = %s
+#                           AND type = 'Receive'
+#                           AND (
+#                               posting_date > %s
+#                               OR (
+#                                   posting_date = %s
+#                                   AND posting_time > %s
+#                               )
+#                           )
+#                     """
+#                     receipt_values = [
+#                         eq.name,
+#                         item.item_code,
+#                         opening_entry.posting_date,
+#                         opening_entry.posting_date,
+#                         opening_entry.posting_time,
+#                     ]
+
+#                     if to_date:
+#                         receipt_conditions += " AND posting_date <= %s"
+#                         receipt_values.append(to_date)
+
+#                     receipt_result = frappe.db.sql(
+#                         receipt_conditions,
+#                         tuple(receipt_values),
+#                         as_dict=True,
+#                     )
+
+#                     received = flt(receipt_result[0].qty) if receipt_result else 0
+
+#                     # Consumed POL has a date field in your existing code.
+#                     # Count consumption dated after the opening date.
+#                     consumption_conditions = """
+#                         SELECT COALESCE(SUM(qty), 0) AS qty
+#                         FROM `tabConsumed POL`
+#                         WHERE docstatus = 1
+#                           AND equipment = %s
+#                           AND pol_type = %s
+#                           AND date > %s
+#                     """
+#                     consumption_values = [
+#                         eq.name,
+#                         item.item_code,
+#                         opening_entry.posting_date,
+#                     ]
+
+#                     if to_date:
+#                         consumption_conditions += " AND date <= %s"
+#                         consumption_values.append(to_date)
+
+#                     consumption_result = frappe.db.sql(
+#                         consumption_conditions,
+#                         tuple(consumption_values),
+#                         as_dict=True,
+#                     )
+
+#                     consumed = (
+#                         flt(consumption_result[0].qty)
+#                         if consumption_result
+#                         else 0
+#                     )
+					
+
+#                     balance = opening_qty + received - consumed
+
+#                 else:
+#                     # No opening entry: preserve the existing calculation.
+#                     received = get_pol_tills(
+#                         "Receive", eq.name, item.item_code, to_date
+#                     )
+#                     consumed = get_pol_consumed_tills(eq.name)
+
+#                     balance = flt(received) - flt(consumed)
+
+#             elif not all_equipment:
+#                 received = get_pol_tills(
+#                     "Stock", eq.name, item.item_code
+#                 )
+#                 consumed = get_pol_tills(
+#                     "Issue", eq.name, item.item_code
+#                 )
+
+#                 balance = flt(received) - flt(consumed)
+
+#             else:
+#                 continue
+
+#             if received or consumed or opening_qty:
+#                 data.append({
+#                     "equipment": eq.name,
+#                     "pol_type": item.item_code,
+#                     "opening_qty": opening_qty,
+#                     "received": flt(received),
+#                     "consumed": flt(consumed),
+#                     "balance": flt(balance),
+#                 })
+
+#     return data
+
+
+@frappe.whitelist()
+def get_equipment_data(equipment_name, all_equipment=0, branch=None, to_date=None):
+    data = []
+
+    all_equipment = cint(all_equipment)
+
+    query = """
+        SELECT
+            e.name,
+            e.branch,
+            e.registration_number,
+            e.hsd_type,
+            e.equipment_type
+        FROM `tabEquipment` e
+        INNER JOIN `tabEquipment Type` et
+            ON et.name = e.equipment_type
+    """
+
+    if not all_equipment:
+        query += " WHERE et.is_container = 1"
+    else:
+        query += " WHERE 1 = 1"
+
+    if branch:
+        query += " AND e.branch = %(branch)s"
+
+    if equipment_name:
+        query += " AND e.name = %(equipment_name)s"
+
+    query += " ORDER BY e.branch"
+
+    equipment_details = frappe.db.sql(
+        query,
+        {
+            "branch": branch,
+            "equipment_name": equipment_name,
+        },
+        as_dict=True,
+    )
+
+    items = frappe.db.sql(
+        """
+        SELECT item_code, item_name, stock_uom
+        FROM `tabItem`
+        WHERE is_hsd_item = 1
+          AND disabled = 0
+        ORDER BY item_code
+        """,
+        as_dict=True,
+    )
+
+    for eq in equipment_details:
+        for item in items:
+            received = 0
+            consumed = 0
+            opening_qty = 0
+
+            if all_equipment and eq.hsd_type == item.item_code:
+
+                # Find the latest opening entry up to the report date.
+                opening_conditions = """
+                    SELECT
+                        name,
+                        qty,
+                        posting_date,
+                        posting_time,
+                        creation
+                    FROM `tabPOL Entry`
+                    WHERE docstatus = 1
+                      AND IFNULL(is_opening, 0) = 1
+                      AND equipment = %s
+                      AND pol_type = %s
+                """
+
+                opening_values = [eq.name, item.item_code]
+
+                if to_date:
+                    opening_conditions += " AND posting_date <= %s"
+                    opening_values.append(to_date)
+
+                opening_conditions += """
+                    ORDER BY
+                        posting_date DESC,
+                        IFNULL(posting_time, '00:00:00') DESC,
+                        creation DESC,
+                        name DESC
+                    LIMIT 1
+                """
+
+                opening_rows = frappe.db.sql(
+                    opening_conditions,
+                    tuple(opening_values),
+                    as_dict=True,
+                )
+
+                if opening_rows:
+                    opening = opening_rows[0]
+                    opening_qty = flt(opening.qty)
+
+                    # Calculate receipts after the opening entry.
+                    receipt_conditions = """
+                        SELECT COALESCE(SUM(qty), 0) AS qty
+                        FROM `tabPOL Entry`
+                        WHERE docstatus = 1
+                          AND IFNULL(is_opening, 0) = 0
+                          AND equipment = %s
+                          AND pol_type = %s
+                          AND type IN ('Receive', 'Stock')
+                          AND (
+                                posting_date > %s
+                                OR (
+                                    posting_date = %s
+                                    AND IFNULL(posting_time, '00:00:00') > %s
+                                )
+                                OR (
+                                    posting_date = %s
+                                    AND IFNULL(posting_time, '00:00:00') = %s
+                                    AND creation > %s
+                                )
+                                OR (
+                                    posting_date = %s
+                                    AND IFNULL(posting_time, '00:00:00') = %s
+                                    AND creation = %s
+                                    AND name > %s
+                                )
+                          )
+                    """
+
+                    receipt_values = [
+                        eq.name,
+                        item.item_code,
+                        opening.posting_date,
+                        opening.posting_date,
+                        opening.posting_time or "00:00:00",
+                        opening.posting_date,
+                        opening.posting_time or "00:00:00",
+                        opening.creation,
+                        opening.posting_date,
+                        opening.posting_time or "00:00:00",
+                        opening.creation,
+                        opening.name,
+                    ]
+
+                    if to_date:
+                        receipt_conditions += " AND posting_date <= %s"
+                        receipt_values.append(to_date)
+
+                    receipt_result = frappe.db.sql(
+                        receipt_conditions,
+                        tuple(receipt_values),
+                        as_dict=True,
+                    )
+
+                    received = flt(receipt_result[0].qty)
+
+					
+
+                    consumed = get_pol_consumed_tills_op(
+						equipment=eq.name,
+						opening_date=opening.posting_date,
+						posting_date=to_date,
+
+					)
+
+                    balance = flt(opening_qty) + flt(received) - flt(consumed)
+
+                else:
+                    # No opening: retain the existing calculation.
+                    received = get_pol_tills(
+                        "Receive",
+                        eq.name,
+                        item.item_code,
+                        to_date,
+                    )
+
+                    consumed = get_pol_consumed_tills(eq.name)
+
+                    balance = flt(received) - flt(consumed)
+
+            elif not all_equipment:
+                received = get_pol_tills(
+                    "Stock",
+                    eq.name,
+                    item.item_code,
+                )
+
+                consumed = get_pol_tills(
+                    "Issue",
+                    eq.name,
+                    item.item_code,
+                )
+
+                balance = flt(received) - flt(consumed)
+
+            else:
+                continue
+
+            if received or consumed or opening_qty:
+                data.append({
+                    "equipment": eq.name,
+                    "pol_type": item.item_code,
+                    "opening_qty": flt(opening_qty),
+                    "received": flt(received),
+                    "consumed": flt(consumed),
+                    "balance": flt(balance),
+                })
+
+    return data
+
+
+
 
 def get_permission_query_conditions(user):
 	if not user: user = frappe.session.user
