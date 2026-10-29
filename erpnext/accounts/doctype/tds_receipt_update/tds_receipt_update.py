@@ -55,25 +55,46 @@ class TDSReceiptUpdate(Document):
 		frappe.db.sql("delete from `tabTDS Receipt Entry` where tds_receipt_update = '{}'".format(self.name))
 
 	def check_duplicate_entries(self):
-		if self.purpose in ["Employee Salary","PBVA","Bonus"]:
-			filters = {"purpose": self.purpose, "fiscal_year": self.fiscal_year}
+		if self.purpose in ["Employee Salary", "PBVA", "Bonus"]:
+			# Get employee_group from TDS Employee Group child table
+			employee_groups = [d.employee_group for d in (self.get("employee_group") or []) if d.employee_group]
+
+			if not employee_groups:
+				return
+
+			filters = {
+				"purpose": self.purpose,
+				"fiscal_year": self.fiscal_year,
+				"employee_group": ["in", employee_groups],
+			}
 			if self.purpose == "Employee Salary":
 				filters.update({"month": self.month})
 
 			for t in frappe.db.get_all("TDS Receipt Entry", filters, "tds_receipt_update"):
-				frappe.throw(_("Receipt details for <b>{}</b> already updated via {}")\
-					.format(self.purpose, frappe.get_desk_link("TDS Receipt Update", t.tds_receipt_update)))
+				frappe.throw(
+					_("Receipt details for <b>{}</b> employee group already updated via {}").format(
+						self.purpose,
+						frappe.get_desk_link("TDS Receipt Update", t.tds_receipt_update),
+					)
+				)
 		else:
-			for t in frappe.db.sql("""select t1.tds_receipt_update, t1.invoice_type, t1.invoice_no 
+			for t in frappe.db.sql(
+				"""select t1.tds_receipt_update, t1.invoice_type, t1.invoice_no 
 					from `tabTDS Receipt Entry` t1
 					where exists(select 1
 						from `tabTDS Remittance Item` t2
 						where t2.parent = "{parent}"
 						and t2.invoice_type = t1.invoice_type
 						and t2.invoice_no = t1.invoice_no)
-				""".format(parent=self.name), as_dict=True):
-				frappe.throw(_("Receipt details for {} already updated via {}")\
-					.format(frappe.get_desk_link(t.invoice_type, t.invoice_no), frappe.get_desk_link("TDS Receipt Update", t.tds_receipt_update)))
+				""".format(parent=self.name),
+				as_dict=True,
+			):
+				frappe.throw(
+					_("Receipt details for {} already updated via {}").format(
+						frappe.get_desk_link(t.invoice_type, t.invoice_no),
+						frappe.get_desk_link("TDS Receipt Update", t.tds_receipt_update),
+					)
+				)
 
 	def calculate_total(self):
 		total_bill_amount = total_tds_amount = 0
