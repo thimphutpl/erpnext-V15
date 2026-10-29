@@ -9,6 +9,20 @@
             });
         }
     %}
+    {%
+        var report_data = (data || []).filter(function(row) {
+            return !(
+                !row.party &&
+                !row.party_name &&
+                !row.associated_remarks &&
+                !row.fi_code &&
+                !row.program_code &&
+                !row.budget_activity_code &&
+                !row.budget_sub_activity_code &&
+                flt(row.opening_balance) === 0
+            );
+        });
+    %}
 
     <div class="report-header">
         <div class="header-left">
@@ -54,10 +68,10 @@
     <table class="table table-bordered custom-table">
         <thead>
             <tr>
-                <th>Code</th>
+                <th style="width: 8%; min-width: 80px; white-space: nowrap; text-align: center;">Code</th>
                 <th>Party/Employee</th>
                 <th>Name</th>
-                <th style="width: 13%;white-space: nowrap;">Activity Code</th>
+                <th style="width: 15%;white-space: nowrap;">Activity Code</th>
                 <th style="width: 5%;white-space: nowrap;">FI Code</th>
                 <th>Opening Balance</th>
                 <th>Advance Amount</th>
@@ -116,7 +130,7 @@
         });
     %}
 
-    {% for row in data %}
+    {% for row in report_data %}
         <tr>
             {% if (party_rowspans[data.indexOf(row)]) { %}
                 <td rowspan="{%= party_rowspans[data.indexOf(row)] %}">
