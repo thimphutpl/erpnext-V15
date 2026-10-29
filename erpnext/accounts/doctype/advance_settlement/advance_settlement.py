@@ -113,13 +113,18 @@ class AdvanceSettlement(Document):
 			advance_amount = flt(item.advance_amount)
 			allocated_amount = flt(item.allocated_amount)
 			total_amount = flt(item.total_amount)
+			balance_amount = flt(item.balance_amount)
 
-			if allocated_amount > advance_amount:
+			if (balance_amount + allocated_amount) > flt(item.advance_amount):
 				frappe.throw(
-					_("Allocated Amount cannot be greater than Advance Amount for {0}").format(
-						item.reference
-					)
+				_("Allocated Amount cannot be greater than Advance Amount for {0}. "
+				"Allocated Amount: {1}, Balance Amount: {2}").format(
+					item.reference,
+					allocated_amount,
+					balance_amount
+			
 				)
+			)
 
 			item.total_amount = item.total_amount - allocated_amount
 			item.balance_amount = total_amount - allocated_amount
