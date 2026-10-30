@@ -333,37 +333,94 @@ class BankPayment(Document):
 					title="Transaction Details",
 				)
 
+	# def update_transaction_status(self, cancel=False):
+	# 	"""update respective transactions status"""
+	# 	for i in self.get("items"):
+	# 		if cancel:
+	# 			status = "Payment Cancelled"
+	# 		elif i.status == "Completed":
+	# 			status = "Payment Successful"
+	# 		elif i.status == "Failed":
+	# 			status = "Payment Failed"
+	# 		else:
+	# 			status = "Payment Under Process"
+
+	# 		if self.transaction_type == "Direct Payment":
+	# 			doc = frappe.get_doc("Direct Payment", i.transaction_id)
+	# 			doc.payment_status = status
+	# 			for rec in doc.item:
+	# 				if rec.name == i.transaction_reference:
+	# 					rec.payment_status = status
+	# 					rec.bank_payment = self.name
+	# 			doc.save(ignore_permissions=True)
+
+	# 		elif self.transaction_type == "Payment Entry":
+	# 			doc = frappe.get_doc("Payment Entry", i.transaction_id)
+	# 			doc.payment_status = status
+	# 			doc.bank_payment = self.name
+	# 			doc.save(ignore_permissions=True)
+	# 		elif self.transaction_type == "Journal Entry":
+	# 			doc = frappe.get_doc("Journal Entry", i.transaction_id)
+	# 			doc.payment_status = status
+	# 			doc.bank_payment = self.name
+	# 			doc.save(ignore_permissions=True)
+
 	def update_transaction_status(self, cancel=False):
-		"""update respective transactions status"""
-		for i in self.get("items"):
+		"""Update linked transaction statuses efficiently."""
+
+		grouped_items = {}
+
+		# Group items by transaction ID
+		for item in self.get("items"):
+			if item.transaction_id:
+				grouped_items.setdefault(item.transaction_id, []).append(item)
+
+		def get_status(item):
 			if cancel:
-				status = "Payment Cancelled"
-			elif i.status == "Completed":
-				status = "Payment Successful"
-			elif i.status == "Failed":
-				status = "Payment Failed"
-			else:
-				status = "Payment Under Process"
+				return "Payment Cancelled"
+			if item.status == "Completed":
+				return "Payment Successful"
+			if item.status == "Failed":
+				return "Payment Failed"
+			return "Payment Under Process"
+
+		for transaction_id, items in grouped_items.items():
+
+			# Preserve original behavior: last item determines parent status
+			status = get_status(items[-1])
 
 			if self.transaction_type == "Direct Payment":
-				doc = frappe.get_doc("Direct Payment", i.transaction_id)
+
+				doc = frappe.get_doc("Direct Payment", transaction_id)
 				doc.payment_status = status
-				for rec in doc.item:
-					if rec.name == i.transaction_reference:
-						rec.payment_status = status
-						rec.bank_payment = self.name
+
+				item_statuses = {
+					item.transaction_reference: get_status(item)
+					for item in items
+					if item.transaction_reference
+				}
+
+				for row in doc.get("item"):
+					if row.name in item_statuses:
+						row.payment_status = item_statuses[row.name]
+						row.bank_payment = self.name
+
 				doc.save(ignore_permissions=True)
 
 			elif self.transaction_type == "Payment Entry":
-				doc = frappe.get_doc("Payment Entry", i.transaction_id)
+
+				doc = frappe.get_doc("Payment Entry", transaction_id)
 				doc.payment_status = status
 				doc.bank_payment = self.name
 				doc.save(ignore_permissions=True)
+
 			elif self.transaction_type == "Journal Entry":
-				doc = frappe.get_doc("Journal Entry", i.transaction_id)
+
+				doc = frappe.get_doc("Journal Entry", transaction_id)
 				doc.payment_status = status
 				doc.bank_payment = self.name
 				doc.save(ignore_permissions=True)
+
 
 	def set_defaults(self):
 		self.posting_date = now()
