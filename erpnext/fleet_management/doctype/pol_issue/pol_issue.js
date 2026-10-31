@@ -263,11 +263,11 @@ frappe.ui.form.on("POL Issue Items", {
                         let data = response.message;
 
                         // Optional: Display fetched data
-                        frappe.msgprint({
-                            title: __('Fetched Equipment Data'),
-                            message: `<pre>${JSON.stringify(data, null, 4)}</pre>`,
-                            indicator: 'green'
-                        });
+                        // frappe.msgprint({
+                        //     title: __('Fetched Equipment Data'),
+                        //     message: `<pre>${JSON.stringify(data, null, 4)}</pre>`,
+                        //     indicator: 'green'
+                        // });
 
                         // Set the balance in the current row
                         frappe.model.set_value(cdt, cdn, "equipment_balance", data[0]?.balance || 0);
@@ -308,11 +308,11 @@ frappe.ui.form.on('POL Issue Items', {
                         let data = response.message;
 
                         // Optional: Display fetched data
-                        frappe.msgprint({
-                            title: __('Fetched Equipment Data'),
-                            message: `<pre>${JSON.stringify(data, null, 4)}</pre>`,
-                            indicator: 'green'
-                        });
+                        // frappe.msgprint({
+                        //     title: __('Fetched Equipment Data'),
+                        //     message: `<pre>${JSON.stringify(data, null, 4)}</pre>`,
+                        //     indicator: 'green'
+                        // });
 
                         // Set the balance in the current row
                         frappe.model.set_value(cdt, cdn, "equipment_balance", data[0]?.balance || 0);
