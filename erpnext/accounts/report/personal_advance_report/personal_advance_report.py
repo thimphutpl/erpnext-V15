@@ -46,6 +46,38 @@ def get_columns(filters):
 			"options": "Cost Center",
 			"width": 120
 		},
+        {
+            "label":"Budget Activity",
+            "fieldname":"budget_activity",
+            "fieldtype": "Link",
+            "options": "Budget Activity",
+            "width": 180
+        },
+        {
+            "label":"Budget Sub Activity",
+            "fieldname":"budget_sub_activity",
+            "fieldtype": "Link",
+            "options": "Budget Sub Activity",
+            "width": 180
+        },
+        {
+            "label":"Program Code",
+            "fieldname":"program_code",
+            "fieldtype": "Data",
+            "width": 180
+        },
+        {
+            "label":"Budget Activity Code",
+            "fieldname":"budget_activity_code",
+            "fieldtype": "Data",
+            "width": 180
+        },
+        {
+            "label":"Budget Sub Activity Code",
+            "fieldname":"budget_sub_activity_code",
+            "fieldtype": "Data",
+            "width": 180
+        },
 		{
 			"label": "Posting Date",
 			"fieldname": "posting_date",
@@ -63,27 +95,39 @@ def get_columns(filters):
 		{
 			"label": "Advance Amount",
 			"fieldname": "advance_amount",
-			"fieldtype": "Currency",
+			"fieldtype": "Float",
 			"width": 120,
 		},
 		{
 			"label": "Settlement amount",
 			"fieldname": "paid_amount",
-			"fieldtype": "Currency",
+			"fieldtype": "Float",
 			"width": 120,
 		},
 		{
 			"label": "Total Outstanding",
 			"fieldname": "total_outstanding",
-			"fieldtype": "Currency",
+			"fieldtype": "Float",
 			"width": 140,
 		},
+        {
+           "Lable":"Remark",
+           "fieldname":"remark",
+           "fieldtype": "Data",
+           "width": 120
+        },
 		{
 			"label": "Voucher Type",
 			"fieldname": "voucher_type",
 			"fieldtype": "Data",
 			"width": 120,
 		},
+        {
+            "label": "Source of Fund",
+            "fieldname": "source_of_fund",
+            "fieldtype": "Data",
+            "width": 120
+        },
 		{
 			
 			"label": "Voucher No",
@@ -291,6 +335,13 @@ def get_data(filters):
             gl.voucher_type,
             gl.voucher_no,
             gl.against_voucher_type,
+            gl.remarks as remark,
+            gl.source_of_fund as source_of_fund,
+            gl.budget_activity as budget_activity,
+            gl.budget_sub_activity as budget_sub_activity,
+            c.program_code as program_code,
+            ba.activity_code as budget_activity_code,
+            bsf.sub_activity_code as budget_sub_activity_code,
 
             /* Advance */
             SUM(
@@ -347,6 +398,12 @@ def get_data(filters):
 
         INNER JOIN `tabEmployee` emp
             ON emp.name = gl.party
+        INNER JOIN `tabBudget Activity` ba
+            ON gl.budget_activity = ba.name
+        INNER JOIN `tabBudget Sub Activity` bsf
+            ON gl.budget_sub_activity = bsf.name
+        INNER JOIN `tabCompany` c
+            ON gl.company = c.name
 
         WHERE {where_clause}
 

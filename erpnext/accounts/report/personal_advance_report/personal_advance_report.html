@@ -1,0 +1,142 @@
+<div>
+    <div class="report-header">
+        <div class="report-title">
+            Printed date: {%= frappe.datetime.get_today() %}
+        </div>
+
+        <div class="header-center">
+            <div class="report-title">
+                {%= __(report.report_name) %}
+                for the Year:
+                {%= filters.fiscal_year || "" %}
+            </div>
+        </div>
+    </div>
+    <table class="table table-bordered advance-report">
+        <thead>
+            <tr>
+                <th colspan="2" class="text-center">Party/Employee</th>
+                <th rowspan="2" class="text-center">Remark</th>
+                <th rowspan="2">Activity Code</th>
+                <th rowspan="2">FI Code</th>
+                <th rowspan="2">Advance Amount</th>
+                <th rowspan="2">Settlement Amount</th>
+                <th rowspan="2">Total Outstanding</th>
+            </tr>
+            <tr>
+                <th>Code</th>
+                <th>Name</th>
+            </tr>
+        </thead>
+        {%
+            function format_amount(value) {
+                var amount = flt(value || 0);
+    
+                return amount.toLocaleString("en-US", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+            }
+        %}
+
+        <tbody>
+            {% for (let row of data) { %}
+                {% if (row.code || row.employee_name) { %}
+                <tr>
+                    <td>{{ row.code || "" }}</td>
+                    <td>{{ row.employee_name || "" }}</td>
+                    <td>{{ row.remark || "" }}</td>
+                    <td>{{ 303.01 || "" }}.{{row.program_code || "" }}.{{row.budget_activity_code || "" }}.{{row.budget_sub_activity_code || "" }}</td>
+                    <td>{{ row.source_of_fund || "" }}</td>
+                    <td>{{ format_amount(row.advance_amount || 0) }}</td>
+         
+                    <td>{{ format_amount(row.paid_amount || 0) }}</td>
+                    <td>{{ format_amount(row.total_outstanding || 0) }}</td>
+                </tr>
+                {% } %}
+            {% } %}
+        </tbody>
+    </table>
+</div>
+
+<style>
+    .advance-report {
+        width: 100%;
+        border-collapse: collapse !important;
+        font-size: 9px;
+        font-family: Arial, sans-serif;
+    }
+
+    .advance-report th {
+        background-color: #DBDBDB !important;
+        color: #000 !important;
+        font-weight: bold;
+        text-align: center !important;
+        vertical-align: middle !important;
+        border: 1px solid #555 !important;
+        padding: 7px 5px !important;
+    }
+
+    .advance-report td {
+        border: 1px solid #999 !important;
+        padding: 5px !important;
+        vertical-align: middle !important;
+    }
+
+    .advance-report .code-col {
+        width: 12%;
+    }
+
+    .advance-report .name-col {
+        width: 16%;
+    }
+
+    .advance-report .remark-col {
+        width: 18%;
+    }
+
+    .advance-report .activity-col {
+        width: 14%;
+    }
+
+    .advance-report .fi-col {
+        width: 8%;
+        text-align: center;
+    }
+
+    .advance-report .amount-col {
+        width: 10.5%;
+        text-align: right !important;
+        white-space: nowrap;
+    }
+
+    .advance-report .amount {
+        text-align: right !important;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .advance-report tbody tr:nth-child(even) {
+        background-color: #F7F7F7;
+    }
+
+    .advance-report tbody tr {
+        page-break-inside: avoid;
+    }
+
+    @media print {
+        .advance-report {
+            font-size: 8px;
+        }
+
+        .advance-report th,
+        .advance-report td {
+            padding: 4px !important;
+        }
+    }
+    .report-title{
+        font-size: 10px;
+        font-family: Arial, sans-serif;
+
+    }
+</style>
