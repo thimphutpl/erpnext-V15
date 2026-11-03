@@ -433,7 +433,13 @@ def get_data(filters):
             mei.source_of_fund AS fi_code,
             mei.particular AS associated_remarks,
 
-            COALESCE(mei.advance_amount, 0) AS advance_amount,
+
+
+            CASE
+                WHEN mei.is_opening = 0
+                THEN COALESCE(mei.advance_amount, 0)
+                ELSE 0
+            END AS advance_amount,
             COALESCE(mei.allocated_amount, 0) AS settlement_amount,
 
             CASE
