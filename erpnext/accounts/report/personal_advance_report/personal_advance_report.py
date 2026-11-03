@@ -111,7 +111,7 @@ def get_columns(filters):
 			"width": 140,
 		},
         {
-           "Lable":"Remark",
+           "label":"Remark",
            "fieldname":"remark",
            "fieldtype": "Data",
            "width": 120
@@ -335,7 +335,7 @@ def get_data(filters):
             gl.voucher_type,
             gl.voucher_no,
             gl.against_voucher_type,
-            gl.remarks as remark,
+            ea.purpose as remark,
             gl.source_of_fund as source_of_fund,
             gl.budget_activity as budget_activity,
             gl.budget_sub_activity as budget_sub_activity,
@@ -405,6 +405,8 @@ def get_data(filters):
             ON gl.budget_sub_activity = bsf.name
         INNER JOIN `tabCompany` c
             ON gl.company = c.name
+        INNER JOIN `tabEmployee Advance` ea
+            ON gl.against_voucher=ea.name
 
         WHERE {where_clause}
 
