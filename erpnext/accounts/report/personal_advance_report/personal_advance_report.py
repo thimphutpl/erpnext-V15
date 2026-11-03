@@ -286,7 +286,7 @@ def get_data(filters):
                 (
                     gl.account IN (
                         '88.01 - Personal Advances - RBA',
-                        '88.02 - Personal Advances - RBG'
+                        '88.01 - Personal Advances - RBG'
                     )
                     AND gl.voucher_subtype = 'Other Voucher'
 					AND (
@@ -361,7 +361,8 @@ def get_data(filters):
                         (
                             gl.account IN (
                                 '88.01 - Personal Advances - RBA',
-                                '88.02 - Personal Advances - RBG'
+                                '88.01 - Personal Advances - RBG'
+                                
                             )
                             AND gl.voucher_subtype = 'Other Voucher'
                         )
@@ -383,7 +384,7 @@ def get_data(filters):
                         (
                             gl.account IN (
                                 '88.01 - Personal Advances - RBA',
-                                '88.02 - Personal Advances - RBG'
+                                '88.01 - Personal Advances - RBG'
                             )
                             AND gl.voucher_subtype = 'Other Voucher'
                         )
