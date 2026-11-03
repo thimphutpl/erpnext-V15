@@ -260,6 +260,19 @@ def get_columns():
             "width": 100,
         },
         {
+         "fieldname": "reference",
+            "label": _("Reference"),
+            "fieldtype": "Link",
+            "options": "Advance",
+            "width": 100,
+        },
+        {
+         "fieldname": "posting_date",
+            "label": _("Posting Date"),
+            "fieldtype": "Date",
+            "width": 100,
+        },
+        {
             "fieldname": "party",
             "label": _("Party"),
             "fieldtype": "Data",
@@ -329,25 +342,25 @@ def get_columns():
         {
             "fieldname": "advance_amount",
             "label": _("Advance Amount"),
-            "fieldtype": "Currency",
+            "fieldtype": "Float",
             "width": 150,
         },
         {
             "fieldname": "opening_balance",
             "label": _("Opening Balance"),
-            "fieldtype": "Currency",
+            "fieldtype": "Float",
             "width": 150,
         },
         {
             "fieldname": "settlement_amount",
             "label": _("Settlement Amount"),
-            "fieldtype": "Currency",
+            "fieldtype": "Float",
             "width": 150,
         },
         {
             "fieldname": "total_outstanding",
             "label": _("Total Outstanding"),
-            "fieldtype": "Currency",
+            "fieldtype": "Float",
             "width": 150,
         },
     ]
@@ -432,6 +445,8 @@ def get_data(filters):
             bsf.sub_activity_code as budget_sub_activity_code,
             mei.source_of_fund AS fi_code,
             mei.particular AS associated_remarks,
+            ae.posting_date as posting_date,
+
 
 
 
@@ -476,10 +491,11 @@ def get_data(filters):
             AND cust.name = ae.customer
         WHERE {" AND ".join(conditions)}
 
-        ORDER BY ae.customer ASC
+        ORDER BY ae.customer ASC,ae.posting_date ASC
         """,
         values,
         as_dict=True,
     )
+
 
     return data
