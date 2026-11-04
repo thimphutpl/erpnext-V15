@@ -889,7 +889,7 @@ def get_permission_query_conditions(user):
 
 #added by kinzang from here
 
-# Equipment Balance
+# Equipment own bank Balance
 
 @frappe.whitelist()
 def get_equipment_datas(
@@ -1016,7 +1016,7 @@ def get_equipment_datas(
             SELECT
                 COALESCE(SUM(
                     CASE
-                        WHEN type IN ('Receive', 'Stock') THEN qty
+                        WHEN type IN ('Receive') THEN qty
                         ELSE 0
                     END
                 ), 0) AS received,
@@ -1080,7 +1080,7 @@ def get_equipment_datas(
 
 
 
-# Tank Balance
+# Tanker Balance
 @frappe.whitelist()	
 def get_tank_data(equipment, all_equipment=0, equipment_branch=None):
     """
