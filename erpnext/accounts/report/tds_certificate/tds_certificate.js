@@ -3,6 +3,13 @@
 
 frappe.query_reports["TDS Certificate"] = {
 	"filters": [
+        {
+            "fieldname": "company",
+            "label": __("Company"),
+            "fieldtype": "Link",
+            "options": "Company",
+            "reqd": 1,
+        },
 		{
 			"fieldname": "party_type",
 			"label": __("Party Type"),
