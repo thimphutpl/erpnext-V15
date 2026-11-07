@@ -126,7 +126,7 @@ class TDSRemittance(AccountsController):
 			frappe.throw("Total TDS Amount is Zero.")
 
 
-def get_tds_invoices(tax_withholding_category, from_date, to_date, name, filter_existing = False, cond='', party_type = None, cost_center = None):
+def get_tds_invoices(company,tax_withholding_category, from_date, to_date, name, filter_existing = False, cond='', party_type = None, cost_center = None):
 	accounts_cond = accounts_cond_ti = accounts_cond_eme = existing_cond = party_cond = "" 
 	entries = pi_entries = pe_entries = je_entries = []
 
@@ -179,8 +179,9 @@ def get_tds_invoices(tax_withholding_category, from_date, to_date, name, filter_
 			{accounts_cond}
 			and t.docstatus = 1 
 			and t.cost_center = '{cost_center}'
+			and t.company = '{company}'
 			{existing_cond}
-			{cond}""".format(accounts_cond = accounts_cond, cond = cond, existing_cond = existing_cond,\
+			{cond}""".format(company=company,accounts_cond = accounts_cond, cond = cond, existing_cond = existing_cond,\
 				from_date=from_date, to_date=to_date, cost_center=cost_center), as_dict=True)
 
 	# Payment Entry
@@ -203,9 +204,10 @@ def get_tds_invoices(tax_withholding_category, from_date, to_date, name, filter_
 		{accounts_cond}
 		and t.docstatus = 1
 		and t.cost_center = '{cost_center}'
+        and t.company = '{company}'
 		{existing_cond}
 		{party_cond}
-		{cond}""".format(accounts_cond = accounts_cond, cond = cond, existing_cond = existing_cond,\
+		{cond}""".format(company=company,accounts_cond = accounts_cond, cond = cond, existing_cond = existing_cond,\
 			party_cond = party_cond, from_date=from_date, to_date=to_date, cost_center=cost_center), as_dict=True)
 
 	# Journal Entry
@@ -239,7 +241,7 @@ def get_tds_invoices(tax_withholding_category, from_date, to_date, name, filter_
 		party_cond = "and t1.party_type = '{}'".format(party_type)
 
 	je_entries = frappe.db.sql("""select t.posting_date, t.name as invoice_no, 'Journal Entry' as invoice_type,
-		t1.party_type, t1.party, 
+		t1.party_type, t1.party,t.company,
 		(case when t1.party_type = 'Customer' then c.tax_id 
 			when t1.party_type = 'Supplier' then s.supplier_tpn_no else null end) as tpn, 
 		t1.cost_center,
@@ -263,9 +265,10 @@ def get_tds_invoices(tax_withholding_category, from_date, to_date, name, filter_
 		{accounts_cond}
 		and t.docstatus = 1 and t.apply_tds = 1 
 		and t1.cost_center = '{cost_center}'
+		and t.company = '{company}'
 		{existing_cond}
 		{party_cond}
-		{cond}""".format(accounts_cond = accounts_cond, cond = cond, existing_cond = existing_cond,\
+		{cond}""".format(company=company,accounts_cond = accounts_cond, cond = cond, existing_cond = existing_cond,\
 			party_cond = party_cond, from_date=from_date, to_date=to_date, cost_center=cost_center), as_dict=True)
 	# Advance Settlement
 
@@ -285,23 +288,24 @@ def get_tds_invoices(tax_withholding_category, from_date, to_date, name, filter_
 				where name = t.customer
 			) as tpn,
             CASE
-                WHEN t.party_type = 'Supplier' THEN (
-                    SELECT supplier_name
-                    FROM `tabSupplier`
-                    WHERE name = t.customer
-                )
-                WHEN t.party_type = 'Customer' THEN (
-                    SELECT customer_name
-                    FROM `tabCustomer`
-                    WHERE name = t.customer
-                )
-                WHEN t.party_type = 'Employee' THEN (
-                    SELECT employee_name
-                    FROM `tabEmployee`
-                    WHERE name = t.customer
-                )
-                ELSE NULL
-            END AS party_name,
+				WHEN t.party_type = 'Supplier' THEN (
+					SELECT supplier_name
+					FROM `tabSupplier`
+					WHERE name = t.customer
+				)
+				WHEN t.party_type = 'Customer' THEN (
+					SELECT customer_name
+					FROM `tabCustomer`
+					WHERE name = t.customer
+				)
+				WHEN t.party_type = 'Employee' THEN (
+					SELECT employee_name
+					FROM `tabEmployee`
+					WHERE name = t.customer
+				)
+				ELSE NULL
+			END AS party_name,
+
 
 			t.cost_center,
 
@@ -321,6 +325,8 @@ def get_tds_invoices(tax_withholding_category, from_date, to_date, name, filter_
                     then 'Paid'
                 else 'Unpaid'
             end as remittance_status
+			
+			
 
 
 
@@ -341,18 +347,26 @@ def get_tds_invoices(tax_withholding_category, from_date, to_date, name, filter_
 		and ifnull(t.tds_amount, 0) > 0
 
 		and t.cost_center = '{cost_center}'
+		and t.company = '{company}'
 
 		{existing_cond}
 
 		{cond}
+	
 
 	""".format(
+		company=company,
 		existing_cond=existing_cond,
 		cond=cond,
 		from_date=from_date,
 		to_date=to_date,
 		cost_center=cost_center
 	), as_dict=True)
+	    # GROUP BY
+        #         t.posting_date,
+        #         t.name,
+        #         t.party_type,
+        #         t.customer
 
 	# frappe.throw("as_entries:"+str(as_entries))
 	# Transporter Invoice
@@ -415,7 +429,15 @@ def get_tds_invoices(tax_withholding_category, from_date, to_date, name, filter_
 	# 			""".format(accounts_cond = accounts_cond_eme, cond = cond, existing_cond = existing_cond,\
 	# 					party_cond = party_cond, from_date=from_date, to_date=to_date, cost_center=cost_center), as_dict=True)
 	entries = pi_entries + pe_entries + je_entries + as_entries
-	entries = sorted(entries, key=lambda d: (d['posting_date'], d['invoice_no']))
+	# entries = sorted(entries, key=lambda d: (d['posting_date'], d['invoice_no']))
+	entries = sorted(
+    entries,
+        key=lambda d: (
+            d.get("posting_date") is None,
+            d.get("posting_date"),
+            d.get("invoice_no") or "",
+        )
+    )
 	return entries
 
 @frappe.whitelist()
@@ -452,7 +474,12 @@ def get_permission_query_conditions(user):
 
 	if user == "Administrator" or "System Manager" in user_roles or "Accounts User" in user_roles: 
 		return
-
+	
+	if "Accounts Manager" in user_roles:
+		return """
+			`tabTDS Remittance`.workflow_state
+			IN ('Waiting Approval', 'Approved')
+		"""
 	return """(
 		exists(select 1
 			from `tabEmployee` as e

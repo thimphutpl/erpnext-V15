@@ -131,7 +131,7 @@ class TDSReceiptUpdate(Document):
 					d.tds_remittance = ''
 				entries.append((name, d.posting_date, self.branch, self.cost_center,
 					self.purpose, self.fiscal_year or "", self.month or "", "", self.region or "",
-					d.invoice_type, d.invoice_no, bill_no, 
+					d.invoice_type, d.invoice_no, bill_no,"",
 					self.tds_receipt_date, self.tds_receipt_number, self.cheque_no, self.cheque_date, 
 					self.name, d.tds_remittance, 0, 0, frappe.session.user, str(get_datetime()), str(get_datetime()), frappe.session.user))
 				# frappe.throw(str(entries))

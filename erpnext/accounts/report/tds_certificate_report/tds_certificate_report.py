@@ -14,7 +14,7 @@ def get_data(filters):
 	data = []
 	conditions = get_condition(filters)
 	for d in frappe.db.sql('''
-			SELECT ti.party, ti.posting_date, ti.bill_amount, t.tax_withholding_category, 
+			SELECT t.company, ti.party, ti.posting_date, ti.bill_amount, t.tax_withholding_category, 
 				ti.tds_amount, t.cheque_no, t.cheque_date, ti.invoice_no, ti.invoice_type,
 				t.tds_receipt_number, t.tds_receipt_date
 			FROM `tabTDS Receipt Update` t INNER JOIN `tabTDS Remittance Item` ti ON t.name = ti.parent
@@ -45,6 +45,8 @@ def get_data(filters):
 	return data
 def get_condition(filters):
 	conditions = []
+	if filters.get("company"):
+		conditions.append("t.company = '{}'".format(filters.get("company")))
 	if filters.get("party_type"):
 		conditions.append("ti.party_type = '{}'".format(filters.get("party_type")))
 	if filters.get("supplier") and filters.get("party_type") == "Supplier":
@@ -59,6 +61,13 @@ def get_condition(filters):
 	return "and {}".format(" and ".join(conditions)) if conditions else ""
 def get_columns():
 	return [
+		{
+            "fieldname":"company",
+            "label":_("Company"),
+            "fieldtype":"Link",
+            "options":"Company",
+            "width":120
+        },
 		{
 			"fieldname":"posting_date",
 			"label":_("Invoice Date"),
@@ -124,7 +133,7 @@ def get_datax(filters):
 	je_entries = []
 	if filters.customer_type == "Supplier" and filters.supplier:
 		if frappe.db.get_single_value("Accounts Settings", "book_purchase_tax_charges") == "Purchase Invoice":
-			query = """SELECT a.posting_date, t.total as tds_taxable_amount, round(t.rate) as tds_rate, t.tax_amount as tds_amount,
+			query = """SELECT a.company, a.posting_date, t.total as tds_taxable_amount, round(t.rate) as tds_rate, t.tax_amount as tds_amount,
 							b.cheque_number, b.cheque_date, 
 							b.receipt_number, b.receipt_date 
 							FROM `tabPurchase Invoice` AS a
@@ -132,11 +141,12 @@ def get_datax(filters):
 							on a.name = t.parent
 							inner join `tabRRCO Receipt Entries` AS b
 							on a.name = b.purchase_invoice
-							AND a.posting_date BETWEEN '{0}' AND '{1}'
-							AND a.supplier = '{2}'
-							AND a.currency = '{3}' """.format(filters.from_date, filters.to_date, filters.supplier, filters.currency)
+                            WHERE a.company = '{0}'
+							AND a.posting_date BETWEEN '{1}' AND '{2}'
+							AND a.supplier = '{3}'
+							AND a.currency = '{4}' """.format(filters.company,filters.from_date, filters.to_date, filters.supplier, filters.currency)
 		else:
-			query = """select t.posting_date,
+			query = """select t.company, t.posting_date,
 					case when t.currency != "BTN" 
 						then t1.base_total + t1.base_tax_amount 
 						else t1.total end 
@@ -153,10 +163,12 @@ def get_datax(filters):
 					on t.name = t1.parent
 					inner join `tabRRCO Receipt Entries` AS b
 					on t.name = b.purchase_invoice
-					AND t.posting_date BETWEEN '{0}' AND '{1}'
-					AND t.party = '{2}'
-					AND t.currency = '{3}'""".format(filters.from_date, filters.to_date, filters.supplier, filters.currency)
-		query1 = """SELECT  
+                    WHERE t.company = '{0}'
+					AND t.posting_date BETWEEN '{1}' AND '{2}'
+					AND t.party = '{3}'
+					AND t.currency = '{4}'""".format(filters.company,filters.from_date, filters.to_date, filters.supplier, filters.currency)
+		query1 = """SELECT 
+		                d.company, 
 						d.posting_date, d.name,
 						case when d.currency != "BTN"
 							then di.taxable_amount
@@ -175,15 +187,19 @@ def get_datax(filters):
 						`tabDirect Payment` AS d
 					INNER JOIN 
 						`tabDirect Payment Item` AS di ON di.parent = d.name 
-					WHERE d.posting_date BETWEEN '{0}' AND '{1}'
+					WHERE 
+					d.company = '{0}' 
+					AND
+					d.posting_date BETWEEN '{1}' AND '{2}'
+					
 					AND 
-						di.party = '{2}'
+						di.party = '{3}'
 					AND EXISTS(select 1 from `tabRRCO Receipt Entries` rr where rr.purchase_invoice = d.name and supplier = '{2}')
-					AND d.currency = '{3}'
-					""".format(filters.from_date, filters.to_date, filters.supplier, filters.currency)
+					AND d.currency = '{4}'
+					""".format(filters.company,filters.from_date, filters.to_date, filters.supplier, filters.currency)
 		je_entries = get_journal_entries(filters)
 	elif filters.customer_type == "Customer" and filters.customer:
-		query = """SELECT 
+		query = """SELECT
 						b.posting_date,i.taxable_amount as tds_taxable_amount,
 						 i.tds_percent as tds_rate,	i.tds_amount, 
 						rr.cheque_number,  rr.cheque_date, rr.receipt_number, rr.receipt_date  
@@ -218,7 +234,7 @@ def get_datax(filters):
 
 def get_journal_entries(filters):
 	return frappe.db.sql("""
-			SELECT t.posting_date, t2.debit as tds_taxable_amount,
+			SELECT t.company, t.posting_date, t2.debit as tds_taxable_amount,
 				(CASE 
 					WHEN t1.credit = ROUND(t2.debit*2/100,2) THEN 2
 					WHEN t1.credit = ROUND(t2.debit*3/100,2) THEN 3
@@ -241,10 +257,11 @@ def get_journal_entries(filters):
 			WHERE t.posting_date BETWEEN '{from_date}' AND '{to_date}' 
 			AND t.docstatus = 1
 			AND t1.credit > 0
+			AND t.company = "{company}"
 			AND t2.party = "{supplier}"
 			AND EXISTS(SELECT 1
 				FROM `tabSingles` s
 				WHERE s.doctype = 'Accounts Settings'
 				AND s.field IN ('tds_2_account', 'tds_3_account', 'tds_5_account', 'tds_10_account')
 				AND t1.account = s.value)
-		""".format(supplier = filters.supplier, from_date = str(filters.from_date), to_date = str(filters.to_date)), as_dict=True)
+		""".format(company = filters.company,supplier = filters.supplier, from_date = str(filters.from_date), to_date = str(filters.to_date)), as_dict=True)
