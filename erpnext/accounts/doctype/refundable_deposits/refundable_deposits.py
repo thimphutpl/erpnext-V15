@@ -19,14 +19,16 @@ class RefundableDeposits(Document):
 		from frappe.types import DF
 
 		account: DF.Link
-		account_deposit: DF.Link
+		account_deposit: DF.Link | None
 		amended_from: DF.Link | None
 		amount: DF.Currency
 		board_head: DF.Link
 		branch: DF.Link
 		company: DF.Link
 		cost_center: DF.Link
+		is_opening: DF.Check
 		journal_entry: DF.Link | None
+		opening_balance: DF.Currency
 		other_deposits: DF.Table[MOFPaymentItem]
 		party: DF.DynamicLink
 		party_type: DF.Literal["", "Employee", "Customer", "Supplier"]
@@ -36,6 +38,7 @@ class RefundableDeposits(Document):
 
 	
 	def validate(self):
+		
 		self.calculate_total_amount()
 	
 
@@ -65,6 +68,17 @@ class RefundableDeposits(Document):
 		)
 	def on_cancel(self):
 		self.removed_journal_entry()
+		self.cancel_mof_entries()
+
+	def cancel_mof_entries(self):
+
+		frappe.db.set_value(
+			"MOF Entry",
+			{"mof_payment": self.name},
+			"is_cancelled",
+			1
+		)
+		
 	def removed_journal_entry(self):
 			
 		if not self.journal_entry:
@@ -106,16 +120,24 @@ class RefundableDeposits(Document):
 		credit_account = frappe.db.get_value(
 			"Company",
 			self.company,
-			"default_bank_account"
+			"default_temporary_account" if self.is_opening else "default_bank_account"
 		)
 
-		if not credit_account:
-			frappe.throw("Setup Default Bank Account in Company Settings")
+		# if not credit_account:
 
+		# 	frappe.throw("Setup Default Bank Account in Company Settings")
+		if not credit_account:
+			frappe.throw(
+				_("Please configure {0} in Company Settings.").format(
+					"Default Temporary Account" if self.is_opening else "Default Bank Account"
+				)
+	)
 		
 
-		voucher_type = "Disbursement Voucher"
-		voucher_series = "Disbursement Voucher"
+		# voucher_type = "Disbursement Voucher"
+		# voucher_series = "Disbursement Voucher"
+		voucher_type = "Opening Entry" if self.is_opening else "Disbursement Voucher"
+		voucher_series = "Opening Entry" if self.is_opening else "Disbursement Voucher"
 
 		naming_series = frappe.db.get_value(
 			"Journal Entry Series",
@@ -149,33 +171,55 @@ class RefundableDeposits(Document):
 		)
 		je.posting_date = self.posting_date
 		je.company = self.company
-		je.total_amount_in_words = money_in_words(self.amount)
+		je.total_amount_in_words = money_in_words(self.opening_balance if self.is_opening else self.amount)
 		je.branch = self.branch
 		je.reference_doctype = self.doctype
 		je.reference_link = self.name
 
-	
-		je.append("accounts", {
-			"account": self.account,
-			"reference_type": "Refundable Deposits",
-			"reference_name": self.name,
-			"cost_center": self.cost_center,
-			"debit_in_account_currency": flt(self.amount),
-			"debit": flt(self.amount),
-			"party_type" : self.party_type,
-			"party" :self.party,
-			"ignore_budget_details":1
-			
-		})
-		je.append("accounts", {
-			"account": credit_account,
-			"reference_type": "Refundable Deposits",
-			"reference_name": self.name,
-			"cost_center": self.cost_center,
-			"credit_in_account_currency": self.amount,
-			"credit": self.amount,
-			"ignore_budget_details":1
-		})
+		if self.is_opening:
+			je.append("accounts", {
+					"account": credit_account ,
+					"reference_type": "Refundable Deposits",
+					"reference_name": self.name,
+					"cost_center": self.cost_center,
+					"debit_in_account_currency": flt(self.opening_balance if self.is_opening else self.amount),
+					"debit": flt(self.opening_balance if self.is_opening else self.amount),
+					"ignore_budget_details":1
+					
+				})
+			je.append("accounts", {
+				"account": self.account,
+				"reference_type": "Refundable Deposits",
+				"reference_name": self.name,
+				"cost_center": self.cost_center,
+				"credit_in_account_currency": self.opening_balance if self.is_opening else self.amount,
+				"credit": self.opening_balance if self.is_opening else self.amount,
+				"party_type" : self.party_type,
+				"party" :self.party,
+				"ignore_budget_details":1
+			})
+		else:
+			je.append("accounts", {
+				"account": self.account,
+				"reference_type": "Refundable Deposits",
+				"reference_name": self.name,
+				"cost_center": self.cost_center,
+				"debit_in_account_currency": flt(self.opening_balance if self.is_opening else self.amount),
+				"debit": flt(self.opening_balance if self.is_opening else self.amount),
+				"party_type" : self.party_type,
+				"party" :self.party,
+				"ignore_budget_details":1
+				
+			})
+			je.append("accounts", {
+				"account": credit_account,
+				"reference_type": "Refundable Deposits",
+				"reference_name": self.name,
+				"cost_center": self.cost_center,
+				"credit_in_account_currency": self.opening_balance if self.is_opening else self.amount,
+				"credit": self.opening_balance if self.is_opening else self.amount,
+				"ignore_budget_details":1
+			})
 
 		je.insert()
 		self.db_set("journal_entry", je.name)
@@ -183,23 +227,41 @@ class RefundableDeposits(Document):
 
 
 	def create_mof_entries(self):
-		for row in self.other_deposits:
-
+		if self.is_opening:
 			mof_entry = frappe.new_doc("MOF Entry")
-
 			mof_entry.company = self.company
 			mof_entry.posting_date = self.posting_date
 			mof_entry.branch = self.branch
 			mof_entry.cost_center = self.cost_center
 			mof_entry.board_head = self.board_head
-			mof_entry.account = row.account
-			mof_entry.party_type = row.party_type
-			mof_entry.party = row.party
-			mof_entry.amount = row.amount
-			mof_entry.refundable_deposits = self.name
-			mof_entry.voucher_type = row.voucher_type
-			mof_entry.voucher_no = row.voucher_no
+			mof_entry.account = self.account
+			mof_entry.party_type = self.party_type
+			mof_entry.party = self.party
+			mof_entry.amount = self.opening_balance
+			mof_entry.is_opening = self.is_opening
+			mof_entry.balance_amount = self.opening_balance
+			mof_entry.mof_payment = self.name
+			mof_entry.voucher_type = "Journal Entry"
+			mof_entry.voucher_no = self.journal_entry
 			mof_entry.insert(ignore_permissions=True)
+		else:
+
+			for row in self.other_deposits:
+				mof_entry = frappe.new_doc("MOF Entry")
+				mof_entry.company = self.company
+				mof_entry.posting_date = self.posting_date
+				mof_entry.branch = self.branch
+				mof_entry.cost_center = self.cost_center
+				mof_entry.board_head = self.board_head
+				mof_entry.account = row.account
+				mof_entry.party_type = row.party_type
+				mof_entry.party = row.party
+				mof_entry.amount = self.amount
+				mof_entry.balance_amount = self.amount
+				mof_entry.mof_payment = self.name
+				mof_entry.voucher_type = row.voucher_type
+				mof_entry.voucher_no = row.voucher_no
+				mof_entry.insert(ignore_permissions=True)
 		
 def _get_existing_cond():
 	return """

@@ -16,6 +16,7 @@ class OtherDepositEntry(Document):
 
 		account: DF.Link | None
 		amount: DF.Currency
+		amount_claim: DF.Currency
 		branch: DF.Link | None
 		company: DF.Link | None
 		cost_center: DF.Link | None
@@ -23,6 +24,7 @@ class OtherDepositEntry(Document):
 		party: DF.DynamicLink | None
 		party_type: DF.Literal["", "Employee", "Customer", "Supplier"]
 		positing_date: DF.Date | None
+		total_balance: DF.Currency
 		voucher_no: DF.DynamicLink | None
 		voucher_type: DF.Link | None
 	# end: auto-generated types

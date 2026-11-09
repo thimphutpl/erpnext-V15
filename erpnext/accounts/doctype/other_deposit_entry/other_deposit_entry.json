@@ -20,6 +20,10 @@
   "voucher_no",
   "section_break_ohqp",
   "amount",
+  "column_break_ehdd",
+  "amount_claim",
+  "column_break_yava",
+  "total_balance",
   "reference_section",
   "other_deposit_claim"
  ],
@@ -119,11 +123,29 @@
    "label": "Other Deposit Claim",
    "options": "Other Deposit Claim",
    "read_only": 1
+  },
+  {
+   "fieldname": "column_break_ehdd",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "amount_claim",
+   "fieldtype": "Currency",
+   "label": "Amount Claim"
+  },
+  {
+   "fieldname": "column_break_yava",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_balance",
+   "fieldtype": "Currency",
+   "label": "Total Balance"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-08-23 12:04:09.207262",
+ "modified": "2026-11-09 15:15:13.894042",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Other Deposit Entry",

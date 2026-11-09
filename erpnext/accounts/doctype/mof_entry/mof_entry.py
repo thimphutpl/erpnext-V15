@@ -16,14 +16,19 @@ class MOFEntry(Document):
 
 		account: DF.Link | None
 		amount: DF.Currency
+		balance_amount: DF.Currency
 		board_head: DF.Link | None
 		branch: DF.Link | None
+		claim_amount: DF.Currency
 		company: DF.Link | None
 		cost_center: DF.Link | None
+		is_cancelled: DF.Check
+		is_opening: DF.Check
 		mof_payment: DF.Link | None
+		other_deposit_claim: DF.Link | None
 		party: DF.DynamicLink | None
 		party_type: DF.Literal["", "Employee", "Customer", "Supplier"]
-		positing_date: DF.Date | None
+		posting_date: DF.Date | None
 		voucher_no: DF.DynamicLink | None
 		voucher_type: DF.Link | None
 	# end: auto-generated types

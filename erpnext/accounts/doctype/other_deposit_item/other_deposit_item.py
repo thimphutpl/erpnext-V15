@@ -16,13 +16,18 @@ class OtherDepositItem(Document):
 
 		account: DF.Link | None
 		amount: DF.Currency
+		amount_claim: DF.Currency
 		assignment: DF.Data | None
+		balance_amount: DF.Currency
+		broad_head: DF.Link | None
 		is_opening: DF.Data | None
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
 		party: DF.Data | None
 		party_type: DF.Data | None
+		reference: DF.Link | None
+		total_amount: DF.Currency
 		voucher_no: DF.DynamicLink | None
 		voucher_type: DF.Link | None
 	# end: auto-generated types

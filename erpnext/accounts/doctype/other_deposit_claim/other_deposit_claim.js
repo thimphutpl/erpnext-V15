@@ -52,8 +52,7 @@ frappe.ui.form.on("Other Deposit Claim", {
                 company: frm.doc.company,
                 account_deposit: frm.doc.account_deposit,
                 party: frm.doc.party,
-                party_type: frm.doc.party_type,
-                posting_date:frm.doc.posting_date
+                party_type: frm.doc.party_type
             },
             callback: function(r) {
                 if (r.message) {
@@ -66,15 +65,16 @@ frappe.ui.form.on("Other Deposit Claim", {
                     r.message.forEach(function(d) {
 
                         let child = frm.add_child("other_deposite_details");
+                        child.reference = d.name;
                         child.party_type = d.party_type;
                         child.assignment = d.assignment;
                         child.amount = d.amount;
                         child.account = d.account;
                         child.party = d.party;
-                        child.voucher_type=d.voucher_type;
-                        child.voucher_no=d.voucher_no,
-                        child.is_opening = d.is_opening
-                       
+                        child.balance_amount = d.balance_amount;
+                        child.broad_head = d.board_head;
+                        child.is_opening = d.is_opening;
+
 
                     });
 

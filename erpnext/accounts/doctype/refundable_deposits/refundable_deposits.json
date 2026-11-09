@@ -15,12 +15,16 @@
   "branch",
   "column_break_htto",
   "cost_center",
+  "section_break_eehy",
+  "is_opening",
   "paid_to_section",
   "party_type",
   "board_head",
   "column_break_yung",
   "party",
   "account",
+  "section_break_hkvz",
+  "opening_balance",
   "section_break_fcvs",
   "account_deposit",
   "get_all_other_deposite",
@@ -113,6 +117,7 @@
   },
   {
    "default": "0",
+   "depends_on": "eval:!doc.is_opening",
    "fieldname": "get_all_other_deposite",
    "fieldtype": "Button",
    "label": "Get All Other Deposits"
@@ -122,17 +127,19 @@
    "fieldtype": "Section Break"
   },
   {
+   "depends_on": "eval:!doc.is_opening",
    "fieldname": "amount",
    "fieldtype": "Currency",
    "label": "Amount",
    "read_only": 1
   },
   {
+   "depends_on": "eval:!doc.is_opening",
    "fieldname": "account_deposit",
    "fieldtype": "Link",
    "label": "Security Deposit Account",
-   "options": "Account",
-   "reqd": 1
+   "mandatory_depends_on": "eval:!doc.is_opening",
+   "options": "Account"
   },
   {
    "fieldname": "section_break_iekt",
@@ -161,6 +168,7 @@
    "fieldtype": "Section Break"
   },
   {
+   "depends_on": "eval:!doc.is_opening",
    "fieldname": "other_deposits",
    "fieldtype": "Table",
    "label": "Other Deposits",
@@ -188,12 +196,33 @@
    "label": "Party",
    "options": "party_type",
    "reqd": 1
+  },
+  {
+   "fieldname": "section_break_eehy",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_opening",
+   "fieldtype": "Check",
+   "label": "Is Opening"
+  },
+  {
+   "depends_on": "eval:doc.is_opening",
+   "fieldname": "opening_balance",
+   "fieldtype": "Currency",
+   "label": "Opening Balance",
+   "mandatory_depends_on": "eval:doc.is_opening"
+  },
+  {
+   "fieldname": "section_break_hkvz",
+   "fieldtype": "Section Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-09-14 12:22:37.243233",
+ "modified": "2026-11-09 21:39:04.770763",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Refundable Deposits",

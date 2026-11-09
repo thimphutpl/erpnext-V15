@@ -8,7 +8,7 @@
  "field_order": [
   "company",
   "column_break_pnlb",
-  "positing_date",
+  "posting_date",
   "section_break_audx",
   "branch",
   "party_type",
@@ -21,8 +21,16 @@
   "voucher_no",
   "section_break_ohqp",
   "amount",
+  "column_break_pxvg",
+  "claim_amount",
+  "column_break_jyfs",
+  "balance_amount",
+  "section_break_ywti",
+  "is_cancelled",
+  "is_opening",
   "reference_section",
-  "mof_payment"
+  "mof_payment",
+  "other_deposit_claim"
  ],
  "fields": [
   {
@@ -35,12 +43,6 @@
   {
    "fieldname": "column_break_pnlb",
    "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "positing_date",
-   "fieldtype": "Date",
-   "label": "Positing Date",
-   "read_only": 1
   },
   {
    "fieldname": "section_break_audx",
@@ -127,11 +129,58 @@
    "label": "Voucher No",
    "options": "voucher_type",
    "read_only": 1
+  },
+  {
+   "fieldname": "column_break_pxvg",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "claim_amount",
+   "fieldtype": "Currency",
+   "label": "Claim Amount"
+  },
+  {
+   "fieldname": "column_break_jyfs",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "balance_amount",
+   "fieldtype": "Currency",
+   "label": "Balance Amount"
+  },
+  {
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "label": "Posting Date",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_ywti",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_cancelled",
+   "fieldtype": "Check",
+   "label": "Is Cancelled",
+   "read_only": 1
+  },
+  {
+   "fieldname": "other_deposit_claim",
+   "fieldtype": "Link",
+   "label": "Other Deposit Claim",
+   "options": "Other Deposit Claim"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_opening",
+   "fieldtype": "Check",
+   "label": "Is Opening"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-08-23 11:45:08.818879",
+ "modified": "2026-11-09 21:36:45.725402",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "MOF Entry",
@@ -153,5 +202,6 @@
  ],
  "sort_field": "creation",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "track_changes": 1
 }
