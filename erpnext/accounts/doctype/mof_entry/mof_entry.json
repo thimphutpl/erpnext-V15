@@ -137,7 +137,8 @@
   {
    "fieldname": "claim_amount",
    "fieldtype": "Currency",
-   "label": "Claim Amount"
+   "label": "Claim Amount",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_jyfs",
@@ -146,7 +147,8 @@
   {
    "fieldname": "balance_amount",
    "fieldtype": "Currency",
-   "label": "Balance Amount"
+   "label": "Balance Amount",
+   "read_only": 1
   },
   {
    "fieldname": "posting_date",
@@ -180,7 +182,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-11-09 21:36:45.725402",
+ "modified": "2026-11-09 22:03:04.531320",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "MOF Entry",
