@@ -902,7 +902,7 @@ def get_equipment_datas(
     """Use only the latest opening entry for each equipment and POL type."""
 
     all_equipment = cint(all_equipment)
-    equipment_branch = equipment_branch or branch
+    # equipment_branch = equipment_branch or branch
     posting_date = getdate(posting_date or nowdate())
 
     if not equipment:
@@ -920,12 +920,20 @@ def get_equipment_datas(
     if not all_equipment:
         query += " AND et.is_container = 1"
 
-    if equipment_branch:
-        query += " AND e.branch = %(branch)s"
+
+
+    # if equipment_branch:
+    #     query += " AND e.branch = %(branch)s"
+
+    # equipment_rows = frappe.db.sql(
+    #     query,
+    #     {"equipment": equipment, "branch": equipment_branch},
+    #     as_dict=True
+    # )
 
     equipment_rows = frappe.db.sql(
         query,
-        {"equipment": equipment, "branch": equipment_branch},
+        {"equipment": equipment},
         as_dict=True
     )
 
