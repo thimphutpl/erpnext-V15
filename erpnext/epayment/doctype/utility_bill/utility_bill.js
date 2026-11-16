@@ -93,33 +93,58 @@ function get_utility_outstandings(frm) {
 }
 
 function get_utility_services(frm) {
-    if (frm.doc.utility_services && frm.doc.branch) {
-        frappe.call({
-            method: "erpnext.epayment.doctype.utility_bill.utility_bill.get_utility_services",
-            args: {
-                docname: frm.doc.name,
-                doctype: frm.doc.doctype,
-            },
-            callback: function (r) {
-                if (r.message) {
-                    frappe.show_alert({
-                        message: __("Utility services fetching started in background. You will be notified when complete."),
-                        indicator: "blue",
-                    });
-                }
-            },
-            freeze: false,
-        });
-    } else {
+    if (!frm.doc.utility_services || !frm.doc.branch) {
         frappe.msgprint(
             "To fetch Utility Outstanding Amount, provide Branch and Utility Services ID"
         );
+        return;
     }
+
+    // For unsaved docs, name is like "new-utility-bill-xxxx" — still usable as a key
+    frappe.call({
+        method: "erpnext.epayment.doctype.utility_bill.utility_bill.get_utility_services",
+        args: {
+            docname: frm.doc.name,
+            doctype: frm.doc.doctype,
+            utility_services: frm.doc.utility_services,
+            item_rows: frm.doc.item || [],
+        },
+        callback: function (r) {
+            if (r.message) {
+                frappe.show_alert({
+                    message: __(
+                        "Utility services fetching started in background. You will be notified when complete."
+                    ),
+                    indicator: "blue",
+                });
+            }
+        },
+        freeze: false,
+    });
 }
 
-// Listen for the realtime completion event
+// Results for UNSAVED docs — inject rows directly into the form
+frappe.realtime.on("utility_services_result", function (data) {
+    if (
+        cur_frm &&
+        cur_frm.doc.name === data.docname &&
+        cur_frm.doc.doctype === data.doctype
+    ) {
+        frm_clear_and_set_items(cur_frm, data.rows || []);
+        frappe.show_alert({
+            message: __("Utility services outstanding fetched!"),
+            indicator: "green",
+        });
+    }
+});
+
+// Results for SAVED docs — just reload
 frappe.realtime.on("utility_services_completed", function (data) {
-    if (cur_frm && cur_frm.doc.name === data.docname && cur_frm.doc.doctype === data.doctype) {
+    if (
+        cur_frm &&
+        cur_frm.doc.name === data.docname &&
+        cur_frm.doc.doctype === data.doctype
+    ) {
         cur_frm.reload_doc();
         frappe.show_alert({
             message: __("Utility services outstanding fetched successfully!"),
@@ -127,6 +152,20 @@ frappe.realtime.on("utility_services_completed", function (data) {
         });
     }
 });
+
+function frm_clear_and_set_items(frm, rows) {
+    // Clear existing child rows
+    frm.clear_table("item");
+    // Re-append from background job
+    rows.forEach(function (r) {
+        var child = frm.add_child("item");
+        Object.keys(r).forEach(function (k) {
+            if (k !== "doctype") child[k] = r[k];
+        });
+    });
+    frm.refresh_field("item");
+    frm.refresh_fields();
+}
 
 // function get_utility_services(frm) {
 //     if (frm.doc.utility_services && frm.doc.branch) {
