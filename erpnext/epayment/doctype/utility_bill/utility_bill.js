@@ -94,20 +94,56 @@ function get_utility_outstandings(frm) {
 
 function get_utility_services(frm) {
     if (frm.doc.utility_services && frm.doc.branch) {
-        return frappe.call({
-            method: "get_utility_services",
-            doc: cur_frm.doc,
-            callback: function (r, rt) {
-                frm.refresh_field("item");
-                frm.refresh_fields();
+        frappe.call({
+            method: "erpnext.epayment.doctype.utility_bill.utility_bill.get_utility_services",
+            args: {
+                docname: frm.doc.name,
+                doctype: frm.doc.doctype,
             },
-            freeze: true,
-            freeze_message: "Fetching Utility Outstanding Amount..... Please Wait"
+            callback: function (r) {
+                if (r.message) {
+                    frappe.show_alert({
+                        message: __("Utility services fetching started in background. You will be notified when complete."),
+                        indicator: "blue",
+                    });
+                }
+            },
+            freeze: false,
         });
     } else {
-        frappe.msgprint("To fetch Utility Outstanding Amount, provide Branch and Utility Services ID");
+        frappe.msgprint(
+            "To fetch Utility Outstanding Amount, provide Branch and Utility Services ID"
+        );
     }
 }
+
+// Listen for the realtime completion event
+frappe.realtime.on("utility_services_completed", function (data) {
+    if (cur_frm && cur_frm.doc.name === data.docname && cur_frm.doc.doctype === data.doctype) {
+        cur_frm.reload_doc();
+        frappe.show_alert({
+            message: __("Utility services outstanding fetched successfully!"),
+            indicator: "green",
+        });
+    }
+});
+
+// function get_utility_services(frm) {
+//     if (frm.doc.utility_services && frm.doc.branch) {
+//         return frappe.call({
+//             method: "get_utility_services",
+//             doc: cur_frm.doc,
+//             callback: function (r, rt) {
+//                 frm.refresh_field("item");
+//                 frm.refresh_fields();
+//             },
+//             freeze: true,
+//             freeze_message: "Fetching Utility Outstanding Amount..... Please Wait"
+//         });
+//     } else {
+//         frappe.msgprint("To fetch Utility Outstanding Amount, provide Branch and Utility Services ID");
+//     }
+// }
 
 function calculate_tds(frm) {
     frappe.call({
