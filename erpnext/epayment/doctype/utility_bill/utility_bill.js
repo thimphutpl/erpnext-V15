@@ -100,36 +100,74 @@ function get_utility_services(frm) {
         return;
     }
 
-    // For unsaved docs, name is like "new-utility-bill-xxxx" — still usable as a key
     frappe.call({
         method: "erpnext.epayment.doctype.utility_bill.utility_bill.get_utility_services",
         args: {
             docname: frm.doc.name,
             doctype: frm.doc.doctype,
             utility_services: frm.doc.utility_services,
-            item_rows: frm.doc.item || [],
         },
         callback: function (r) {
-            if (r.message) {
-                frappe.show_alert({
-                    message: __(
-                        "Utility services fetching started in background. You will be notified when complete."
-                    ),
-                    indicator: "blue",
-                });
-            }
+            if (!r.message) return;
+            var total = r.message.total || 0;
+            show_progress(frm, 0, total, "Starting...");
         },
         freeze: false,
     });
 }
 
-// Results for UNSAVED docs — inject rows directly into the form
+// ---- progress bar helpers ----
+
+function show_progress(frm, done, total, current) {
+    var pct = total ? Math.round((done / total) * 100) : 0;
+    var text = done + " / " + total + (current ? "  (" + current + ")" : "");
+
+    // Create or reuse the wrapper
+    if (!window._ub_progress_wrapper) {
+        var wrapper = $(
+            '<div id="ub-progress-wrapper" style="margin:8px 0;padding:8px 12px;border:1px solid #e5e7eb;border-radius:6px;background:#f9fafb;">' +
+                '<div style="font-size:13px;font-weight:600;color:#374151;margin-bottom:6px;">' +
+                    'Fetching Utility Outstanding <span id="ub-progress-count" style="float:right;color:#2563eb;"></span>' +
+                '</div>' +
+                '<div style="height:8px;background:#e5e7eb;border-radius:4px;overflow:hidden;">' +
+                    '<div id="ub-progress-bar" style="height:100%;width:0%;background:#2563eb;transition:width .2s ease;"></div>' +
+                '</div>' +
+            '</div>'
+        );
+        frm.$wrapper.find(".form-layout").first().prepend(wrapper);
+        window._ub_progress_wrapper = wrapper;
+    }
+
+    $("#ub-progress-count").text(text + "   " + pct + "%");
+    $("#ub-progress-bar").css("width", pct + "%");
+}
+
+function hide_progress() {
+    if (window._ub_progress_wrapper) {
+        window._ub_progress_wrapper.remove();
+        window._ub_progress_wrapper = null;
+    }
+}
+
+// ---- realtime listeners ----
+
+frappe.realtime.on("utility_services_progress", function (data) {
+    if (
+        cur_frm &&
+        cur_frm.doc.name === data.docname &&
+        cur_frm.doc.doctype === data.doctype
+    ) {
+        show_progress(cur_frm, data.done, data.total, data.current);
+    }
+});
+
 frappe.realtime.on("utility_services_result", function (data) {
     if (
         cur_frm &&
         cur_frm.doc.name === data.docname &&
         cur_frm.doc.doctype === data.doctype
     ) {
+        hide_progress();
         frm_clear_and_set_items(cur_frm, data.rows || []);
         frappe.show_alert({
             message: __("Utility services outstanding fetched!"),
@@ -138,25 +176,30 @@ frappe.realtime.on("utility_services_result", function (data) {
     }
 });
 
-// Results for SAVED docs — just reload
 frappe.realtime.on("utility_services_completed", function (data) {
     if (
         cur_frm &&
         cur_frm.doc.name === data.docname &&
         cur_frm.doc.doctype === data.doctype
     ) {
+        hide_progress();
         cur_frm.reload_doc();
         frappe.show_alert({
             message: __("Utility services outstanding fetched successfully!"),
             indicator: "green",
         });
+        if (data.errors && data.errors.length) {
+            frappe.msgprint({
+                title: __("Some services failed"),
+                indicator: "orange",
+                message: data.errors.join("<br>"),
+            });
+        }
     }
 });
 
 function frm_clear_and_set_items(frm, rows) {
-    // Clear existing child rows
     frm.clear_table("item");
-    // Re-append from background job
     rows.forEach(function (r) {
         var child = frm.add_child("item");
         Object.keys(r).forEach(function (k) {

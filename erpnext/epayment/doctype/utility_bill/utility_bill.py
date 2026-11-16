@@ -222,162 +222,6 @@ class UtilityBill(Document):
 	# 		row.fetch_status_code = res_status
 	# 		row.create_direct_payment = 1
 	# 		row.update(d)
-
-# ---------- module level (outside the UtilityBill class) ----------
-
-@frappe.whitelist()
-def get_utility_services(docname, doctype, utility_services, item_rows=None):
-	"""
-	Enqueue the utility services fetching as a background job.
-	Passes utility_services explicitly so it works even for unsaved docs.
-	"""
-	if not utility_services:
-		frappe.throw(_("Utility Services is required"))
-
-	frappe.enqueue(
-		method="erpnext.epayment.doctype.utility_bill.utility_bill.process_utility_services",
-		queue="long",
-		timeout=3600,
-		docname=docname,
-		doctype=doctype,
-		utility_services=utility_services,
-		existing_rows=item_rows or [],
-		now=frappe.flags.in_test,
-	)
-	return "Utility services fetching has been queued. Please wait for it to complete."
-
-
-def process_utility_services(docname, doctype, utility_services, existing_rows=None):
-	"""
-	Background job to fetch utility services.
-	Works whether or not the Utility Bill has been saved yet.
-	"""
-	# Fetch source rows from the Utility Services master (not from the bill)
-	data = frappe.db.sql(
-		"""
-		SELECT 
-			i.utility_service_type, i.customer_identification, 
-			i.consumer_code, i.party,
-			i.service_id, i.service_type
-		FROM `tabUtility Services` u 
-		INNER JOIN `tabUtility Services Item` i
-			ON u.name = i.parent
-		WHERE i.disabled = 0
-			AND u.name = %s
-		""",
-		(utility_services,),
-		as_dict=True,
-	)
-
-	if not data:
-		frappe.log_error(
-			title="Utility Services Fetch",
-			message=f"No active items found in Utility Services {utility_services}",
-		)
-		return
-
-	# Build the full list of child rows in memory first (fast)
-	rows = []
-	errors = []
-
-	for d in data:
-		try:
-			api_name, service_id, service_type, consumer_field, expense_account = frappe.db.get_value(
-				"Utility Service Type",
-				d.utility_service_type,
-				[
-					"fetch_outstanding_api",
-					"service_id",
-					"service_type",
-					"unique_key_field",
-					"expense_account",
-				],
-			)
-
-			if not api_name:
-				errors.append(f"{d.utility_service_type}: no fetch_outstanding_api configured")
-				continue
-
-			api_details = frappe.get_doc("API Detail", api_name)
-			url = api_details.api_link
-
-			api_param = {}
-			for a in api_details.item:
-				if a.pre_defined_value:
-					api_param[a.param] = a.defined_value
-				elif a.param == "SERVICEID":
-					api_param[a.param] = service_id
-				elif a.param == "SERVICETYPE":
-					api_param[a.param] = service_type
-
-			if str(consumer_field) != "RRCOTaxCode":
-				api_param[consumer_field.upper()] = d.consumer_code
-			else:
-				api_param[consumer_field] = d.consumer_code
-
-			headers = {"Content-Type": "application/json"}
-			response = requests.request(
-				"POST", url, headers=headers, json=api_param, timeout=30
-			)
-			details = response.json()
-
-			res_status = details.get("statusCode")
-			row = {
-				"doctype": "Utility Bill Item",
-				"utility_service_type": d.utility_service_type,
-				"customer_identification": d.customer_identification,
-				"consumer_code": d.consumer_code,
-				"party": d.party,
-				"service_id": d.service_id,
-				"service_type": d.service_type,
-				"payment_status": "Pending",
-				"debit_account": expense_account,
-				"outstanding_datetime": now_datetime(),
-				"fetch_status_code": res_status,
-				"create_direct_payment": 1,
-				"response_msg": "Success" if res_status == "00" else details.get("ErrorMessage", ""),
-			}
-
-			if res_status == "00":
-				row["invoice_amount"] = details["ResultMessage"]
-				row["outstanding_amount"] = details["ResultMessage"]
-				row["net_amount"] = details["ResultMessage"]
-			elif res_status == "01":
-				row["response_msg"] = details.get("ErrorMessage", "")
-
-			rows.append(row)
-
-		except Exception as e:
-			frappe.log_error(
-				title="Utility Service API Error",
-				message=f"{d.service_id}: {str(e)}",
-			)
-			errors.append(f"{d.service_id}: {str(e)}")
-
-	# Push the rows into the doc. Use db_set / direct update because the doc
-	# may be unsaved or may have been modified by the user while the job ran.
-	if frappe.db.exists(doctype, docname):
-		doc = frappe.get_doc(doctype, docname)
-		doc.set("item", [])
-		for r in rows:
-			doc.append("item", r)
-		doc.save(ignore_permissions=True)
-		frappe.db.commit()
-	else:
-		# Unsaved doc — push results to the user's browser via realtime
-		# and let the client-side handler inject them (see JS below).
-		frappe.publish_realtime(
-			event="utility_services_result",
-			message={"docname": docname, "doctype": doctype, "rows": rows, "errors": errors},
-			user=frappe.session.user,
-		)
-		return
-
-	frappe.publish_realtime(
-		event="utility_services_completed",
-		message={"docname": docname, "doctype": doctype, "errors": errors},
-		user=frappe.session.user,
-	)
 	
 	@frappe.whitelist()
 	def get_utility_outstandings(self):
@@ -476,3 +320,177 @@ def process_utility_services(docname, doctype, utility_services, existing_rows=N
 				to_remove.append(d)
 				
 		[self.remove(d) for d in to_remove]
+
+# ================= MODULE LEVEL — must be at column 0 =================
+
+@frappe.whitelist()
+def get_utility_services(docname, doctype, utility_services, item_rows=None):
+    """
+    Enqueue the utility services fetching as a background job.
+    Returns the total number of rows to be fetched so the client can show progress.
+    """
+    if not utility_services:
+        frappe.throw(_("Utility Services is required"))
+
+    # total count -> returned to the client to initialise the progress bar
+    total = frappe.db.count(
+        "Utility Services Item",
+        {"parent": utility_services, "disabled": 0},
+    )
+    if not total:
+        frappe.throw(_("No active items found in Utility Services {0}").format(utility_services))
+
+    frappe.enqueue(
+        method="erpnext.epayment.doctype.utility_bill.utility_bill.process_utility_services",
+        queue="long",
+        timeout=3600,
+        docname=docname,
+        doctype=doctype,
+        utility_services=utility_services,
+        user=frappe.session.user,
+        now=frappe.flags.in_test,
+    )
+    return {"total": total, "docname": docname, "doctype": doctype}
+
+
+def process_utility_services(docname, doctype, utility_services, user=None):
+    """
+    Background job to fetch utility services.
+    Publishes a progress event after every row.
+    """
+    user = user or frappe.session.user
+
+    data = frappe.db.sql(
+        """
+        SELECT 
+            i.utility_service_type, i.customer_identification, 
+            i.consumer_code, i.party,
+            i.service_id, i.service_type
+        FROM `tabUtility Services` u 
+        INNER JOIN `tabUtility Services Item` i
+            ON u.name = i.parent
+        WHERE i.disabled = 0
+            AND u.name = %s
+        """,
+        (utility_services,),
+        as_dict=True,
+    )
+
+    total = len(data)
+    if not total:
+        frappe.log_error(
+            title="Utility Services Fetch",
+            message=f"No active items found in Utility Services {utility_services}",
+        )
+        _publish_progress(docname, doctype, 0, 0, None, user)
+        return
+
+    # initial progress event
+    _publish_progress(docname, doctype, 0, total, None, user)
+
+    rows = []
+    errors = []
+    done = 0
+
+    for d in data:
+        try:
+            api_name, service_id, service_type, consumer_field, expense_account = frappe.db.get_value(
+                "Utility Service Type",
+                d.utility_service_type,
+                ["fetch_outstanding_api", "service_id", "service_type", "unique_key_field", "expense_account"],
+            )
+
+            if not api_name:
+                errors.append(f"{d.utility_service_type}: no fetch_outstanding_api configured")
+                done += 1
+                _publish_progress(docname, doctype, done, total, d.service_id, user)
+                continue
+
+            api_details = frappe.get_doc("API Detail", api_name)
+            url = api_details.api_link
+
+            api_param = {}
+            for a in api_details.item:
+                if a.pre_defined_value:
+                    api_param[a.param] = a.defined_value
+                elif a.param == "SERVICEID":
+                    api_param[a.param] = service_id
+                elif a.param == "SERVICETYPE":
+                    api_param[a.param] = service_type
+
+            if str(consumer_field) != "RRCOTaxCode":
+                api_param[consumer_field.upper()] = d.consumer_code
+            else:
+                api_param[consumer_field] = d.consumer_code
+
+            headers = {"Content-Type": "application/json"}
+            response = requests.request("POST", url, headers=headers, json=api_param, timeout=30)
+            details = response.json()
+
+            res_status = details.get("statusCode")
+            row = {
+                "doctype": "Utility Bill Item",
+                "utility_service_type": d.utility_service_type,
+                "customer_identification": d.customer_identification,
+                "consumer_code": d.consumer_code,
+                "party": d.party,
+                "service_id": d.service_id,
+                "service_type": d.service_type,
+                "payment_status": "Pending",
+                "debit_account": expense_account,
+                "outstanding_datetime": now_datetime(),
+                "fetch_status_code": res_status,
+                "create_direct_payment": 1,
+                "response_msg": "Success" if res_status == "00" else details.get("ErrorMessage", ""),
+            }
+
+            if res_status == "00":
+                row["invoice_amount"] = details["ResultMessage"]
+                row["outstanding_amount"] = details["ResultMessage"]
+                row["net_amount"] = details["ResultMessage"]
+            elif res_status == "01":
+                row["response_msg"] = details.get("ErrorMessage", "")
+
+            rows.append(row)
+
+        except Exception as e:
+            frappe.log_error(title="Utility Service API Error", message=f"{d.service_id}: {str(e)}")
+            errors.append(f"{d.service_id}: {str(e)}")
+
+        done += 1
+        _publish_progress(docname, doctype, done, total, d.service_id, user)
+
+    # persist rows
+    if frappe.db.exists(doctype, docname):
+        doc = frappe.get_doc(doctype, docname)
+        doc.set("item", [])
+        for r in rows:
+            doc.append("item", r)
+        doc.save(ignore_permissions=True)
+        frappe.db.commit()
+        frappe.publish_realtime(
+            event="utility_services_completed",
+            message={"docname": docname, "doctype": doctype, "errors": errors},
+            user=user,
+        )
+    else:
+        frappe.publish_realtime(
+            event="utility_services_result",
+            message={"docname": docname, "doctype": doctype, "rows": rows, "errors": errors},
+            user=user,
+        )
+
+
+def _publish_progress(docname, doctype, done, total, current, user):
+    frappe.publish_realtime(
+        event="utility_services_progress",
+        message={
+            "docname": docname,
+            "doctype": doctype,
+            "done": done,
+            "total": total,
+            "current": current,
+            "percent": int((done / total) * 100) if total else 0,
+        },
+        user=user,
+    )
