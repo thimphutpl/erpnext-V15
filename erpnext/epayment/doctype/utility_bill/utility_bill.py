@@ -98,9 +98,9 @@ class UtilityBill(Document):
 	def calculate_tds_net(self):
 		total_amount = total_tds = net_amount = 0.00
 		for a in self.item:
-			total_amount += a.invoice_amount
-			total_tds += a.tds_amount
-			net_amount += a.net_amount
+			total_amount += flt(a.invoice_amount)
+			total_tds += flt(a.tds_amount)
+			net_amount += flt(a.net_amount)
 		self.total_bill_amount = total_amount
 		self.total_tds_amount = total_tds
 		self.net_payable_amount = net_amount
