@@ -278,8 +278,8 @@ class UtilityBill(Document):
 		doc = frappe.new_doc("Journal Entry")
 		doc.branch = self.branch
 		doc.posting_date = self.posting_date
-		doc.voucher_type = "Bank Entry"
-		doc.naming_series = "Bank Payment Voucher"
+		doc.voucher_type = "Disbursement Voucher"
+		doc.naming_series = "Disbursement Voucher"
 		doc.company = self.company
 		doc.utility_bill = str(self.name)
 		doc.remarks = "Utility Bill Payment " + str(self.name)
