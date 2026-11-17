@@ -539,6 +539,8 @@
   {
    "fieldname": "passport_number",
    "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "CID/Passport Number"
   },
   {
@@ -1282,7 +1284,7 @@
    "link_fieldname": "employee"
   }
  ],
- "modified": "2026-10-22 16:18:21.447679",
+ "modified": "2026-11-17 17:06:54.452591",
  "modified_by": "Administrator",
  "module": "Setup",
  "name": "Employee",
