@@ -461,6 +461,7 @@
 </style> -->
 
 
+
 <div style="margin-bottom: 7px;" class="text-center">
     <div style="font-weight: bold; font-size: 14pt;">
         {%= filters.company || "" %}
@@ -468,7 +469,6 @@
 </div>
 
 <h4 class="text-center">Receipts and Payments Statement</h4>
-
 
 <hr>
 
@@ -497,15 +497,13 @@
             <th rowspan="2" class="account-col">Group/Broad Head Of Account</th>
             <th colspan="2">Receipt</th>
             <th colspan="2">Payment</th>
-            <th colspan="2">Cumulative Balance</th>
+            <th rowspan="2">Cumulative Balance<br><span style="font-size: 7pt; font-weight: normal;">(-)Cr, (+)Dr</span></th>
         </tr>
         <tr class="sub-header">
             <th>For the Month Receipt (Nu.)</th>
             <th>Annual Progressive Receipt (Nu.)</th>
             <th>For The Month Payment (Nu.)</th>
             <th>Annual Progressive Payment (Nu.)</th>
-            <th>Dr (Nu.)</th>
-            <th>Cr (Nu.)</th>
         </tr>
     </thead>
 
@@ -516,8 +514,7 @@
         var grand_annually_credit = 0;
         var grand_monthly_debit = 0;
         var grand_annually_debit = 0;
-        var grand_closing_debit = 0;
-        var grand_closing_credit = 0;
+        var grand_cumulative_balance = 0;
     %}
 
     {% for (var j = 0; j < data.length; j++) { %}
@@ -533,8 +530,7 @@
             var annually_credit = parseFloat(row.annually_credit) || 0;
             var monthly_debit = parseFloat(row.monthly_debit) || 0;
             var annually_debit = parseFloat(row.anually_debit) || 0;
-            var closing_debit = parseFloat(row.closing_debit) || 0;
-            var closing_credit = parseFloat(row.closing_credit) || 0;
+            var cumulative_balance = parseFloat(row.cumulative_balance) || 0;
         %}
 
         {% if (show_row && account_name) { %}
@@ -551,8 +547,7 @@
                     grand_annually_credit += annually_credit;
                     grand_monthly_debit += monthly_debit;
                     grand_annually_debit += annually_debit;
-                    grand_closing_debit += closing_debit;
-                    grand_closing_credit += closing_credit;
+                    grand_cumulative_balance += cumulative_balance;
                 }
             %}
 
@@ -603,13 +598,7 @@
 
                 <td class="amount-bold">
                     {% if (show_amounts) { %}
-                        {%= show_amount(row.closing_debit) %}
-                    {% } %}
-                </td>
-
-                <td class="amount-bold">
-                    {% if (show_amounts) { %}
-                        {%= show_amount(row.closing_credit) %}
+                        {%= show_amount(row.cumulative_balance) %}
                     {% } %}
                 </td>
             </tr>
@@ -640,11 +629,7 @@
             </td>
 
             <td class="amount-bold">
-                {%= show_amount(grand_closing_debit) %}
-            </td>
-
-            <td class="amount-bold">
-                {%= show_amount(grand_closing_credit) %}
+                {%= show_amount(grand_cumulative_balance) %}
             </td>
         </tr>
     </tbody>
@@ -662,8 +647,6 @@
     </div>
 
 </div>
-
-
 
 <style>
     .receipt-header th {
